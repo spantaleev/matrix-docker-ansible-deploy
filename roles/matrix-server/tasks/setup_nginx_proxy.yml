@@ -1,0 +1,41 @@
+---
+
+- name: Ensure Matrix nginx-proxy paths exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: root
+    group: root
+  with_items:
+    - "{{ matrix_nginx_proxy_data_path }}"
+    - "{{ matrix_nginx_proxy_confd_path }}"
+
+- name: Ensure nginx Docker image is pulled
+  docker_image:
+    name: "{{ docker_nginx_image }}"
+
+- name: Ensure Matrix Synapse proxy vhost configured
+  template:
+    src: "{{ role_path }}/templates/nginx-conf.d/{{ item }}.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/{{ item }}"
+    mode: 0644
+  with_items:
+    - "matrix-synapse.conf"
+    - "matrix-riot-web.conf"
+
+- name: Allow access to nginx proxy ports in firewalld
+  firewalld:
+    service: "{{ item }}"
+    state: enabled
+    immediate: yes
+    permanent: yes
+  with_items:
+    - "http"
+    - "https"
+
+- name: Ensure matrix-nginx-proxy.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-nginx-proxy.service.j2"
+    dest: "/etc/systemd/system/matrix-nginx-proxy.service"
+    mode: 0644

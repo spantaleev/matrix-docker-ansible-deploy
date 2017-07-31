@@ -1,0 +1,37 @@
+---
+
+- name: Allow access to HTTP/HTTPS in firewalld
+  firewalld:
+    service: "{{ item }}"
+    state: enabled
+    immediate: yes
+    permanent: yes
+  with_items:
+    - http
+    - https
+
+- name: Ensure acmetool Docker image is pulled
+  docker_image:
+    name: willwill/acme-docker
+
+- name: Ensure SSL certificates path exists
+  file:
+    path: "{{ ssl_certs_path }}"
+    state: directory
+    mode: 0770
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+
+- name: Ensure SSL certificates are marked as wanted in acmetool
+  shell: >-
+    /usr/bin/docker run --rm --name acmetool-host-grab -p 80:80
+    -v {{ ssl_certs_path }}:/certs
+    -e ACME_EMAIL={{ ssl_support_email }}
+    willwill/acme-docker
+    acmetool want {{ hostname_matrix }} {{ hostname_riot }} --xlog.severity=debug
+
+- name: Ensure periodic SSL renewal cronjob configured
+  template:
+    src: "{{ role_path }}/templates/cron.d/ssl-certificate-renewal.j2"
+    dest: "/etc/cron.d/ssl-certificate-renewal"
+    mode: 0600

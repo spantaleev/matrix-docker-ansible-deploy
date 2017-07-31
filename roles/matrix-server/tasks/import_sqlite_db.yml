@@ -1,0 +1,78 @@
+---
+
+- name: Fail if playbook called incorrectly
+  fail: msg="The `local_path_homeserver_db` variable needs to be provided to this playbook, via --extra-vars"
+  when: "local_path_homeserver_db is not defined or local_path_homeserver_db.startswith('<')"
+
+- name: Check if the provided SQLite homeserver.db file exists
+  stat: path="{{ local_path_homeserver_db }}"
+  delegate_to: 127.0.0.1
+  become: false
+  register: local_path_homeserver_db_stat
+
+- name: Fail if provided SQLite homeserver.db file doesn't exist
+  fail: msg="File cannot be found on the local machine at {{ local_path_homeserver_db }}"
+  when: not local_path_homeserver_db_stat.stat.exists
+
+- name: Ensure scratchpad directory exists
+  file:
+    path: "{{ matrix_scratchpad_dir }}"
+    state: directory
+    mode: 0755
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+
+- name: Ensure provided SQLite homeserver.db file is copied to scratchpad directory on the server
+  synchronize:
+    src: "{{ local_path_homeserver_db }}"
+    dest: "{{ matrix_scratchpad_dir }}/homeserver.db"
+
+- name: Ensure matrix-postgres is stopped
+  service: name=matrix-postgres state=stopped daemon_reload=yes
+
+- name: Ensure postgres data is wiped out
+  file:
+    path: "{{ matrix_postgres_data_path }}"
+    state: absent
+
+- name: Ensure postgres data path exists
+  file:
+    path: "{{ matrix_postgres_data_path }}"
+    state: directory
+    mode: 0700
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+
+- name: Ensure matrix-postgres is started
+  service: name=matrix-postgres state=restarted daemon_reload=yes
+
+- name: Wait a while, so that Postgres can manage to start
+  pause: seconds=7
+
+# Fixes a problem with porting the `user_directory_search` table.
+# https://github.com/matrix-org/synapse/issues/2287
+- name: Ensure synapse_port_db_with_patch exists
+  copy:
+    src: "{{ role_path }}/files/synapse_port_db_with_patch"
+    dest: "{{ matrix_scratchpad_dir }}/synapse_port_db_with_patch"
+
+- name: Importing SQLite database into Postgres
+  docker_container:
+    name: matrix-synapse-migrate
+    image: "{{ docker_matrix_image }}"
+    detach: no
+    cleanup: yes
+    entrypoint: /usr/bin/python
+    command: "/usr/local/bin/synapse_port_db_with_patch --sqlite-database /scratchpad/homeserver.db --postgres-config /data/homeserver.yaml"
+    user: "{{ matrix_user_uid }}:{{ matrix_user_gid }}"
+    volumes:
+      - "{{ matrix_synapse_data_path }}:/data"
+      - "{{ matrix_scratchpad_dir }}:/scratchpad"
+      - "{{ matrix_scratchpad_dir }}/synapse_port_db_with_patch:/usr/local/bin/synapse_port_db_with_patch"
+    links:
+      - "matrix-postgres:postgres"
+
+- name: Ensure scratchpad directory is deleted
+  file:
+    path: "{{ matrix_scratchpad_dir }}"
+    state: absent

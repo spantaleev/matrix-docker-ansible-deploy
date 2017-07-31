@@ -1,0 +1,14 @@
+MAILTO="{{ ssl_support_email }}"
+
+# The goal of this cronjob is to ask acmetool to check
+# the current SSL certificates and to see if some need renewal.
+# It so, it would attempt to renew.
+#
+# Various services depend on these certificates and would need to be restarted.
+# This is not our concern here. We simply make sure the certificates are up to date.
+# Restarting of services happens on its own different schedule (other cronjobs).
+#
+# acmetool is supposed to bind to port :80 (forwarded to the host) and solve the challenge directly.
+# We can afford to do that, because all our services run on other ports.
+
+15 4 */5 * * root /usr/bin/docker run --rm --name acmetool-once -p 80:80 -v {{ ssl_certs_path }}:/certs -e ACME_EMAIL={{ ssl_support_email }} willwill/acme-docker acmetool --batch reconcile # --xlog.severity=debug

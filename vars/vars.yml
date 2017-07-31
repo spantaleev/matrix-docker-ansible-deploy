@@ -1,0 +1,41 @@
+# The bare hostname which represents your identity.
+# This is something like "example.com".
+# Note: this playbook does not touch the server referenced here.
+hostname_identity: "{{ host_specific_hostname_identity }}"
+
+# This is where your data lives and what we set up here.
+# This and the Riot hostname (see below) are expected to be on the same server.
+hostname_matrix: "matrix.{{ hostname_identity }}"
+
+# This is where you access the web UI from and what we set up here.
+# This and the Matrix hostname (see above) are expected to be on the same server.
+hostname_riot: "riot.{{ hostname_identity }}"
+
+ssl_certs_path: /etc/pki/acmetool-certs
+ssl_support_email: "{{ host_specific_ssl_support_email }}"
+
+matrix_user_username: "matrix"
+matrix_user_uid: 991
+matrix_user_gid: 991
+
+matrix_postgres_connection_username: "synapse"
+matrix_postgres_connection_password: "synapse-password"
+matrix_postgres_db_name: "homeserver"
+
+matrix_base_data_path: "/matrix"
+matrix_environment_variables_data_path: "{{ matrix_base_data_path }}/environment-variables"
+matrix_synapse_data_path: "{{ matrix_base_data_path }}/synapse"
+matrix_postgres_data_path: "{{ matrix_base_data_path }}/postgres"
+matrix_nginx_proxy_data_path: "{{ matrix_base_data_path }}/nginx-proxy"
+matrix_nginx_proxy_confd_path: "{{ matrix_nginx_proxy_data_path }}/conf.d"
+matrix_nginx_riot_web_data_path: "{{ matrix_base_data_path }}/riot-web"
+matrix_scratchpad_dir: "{{ matrix_base_data_path }}/scratchpad"
+
+docker_postgres_image: "postgres:9.6.3-alpine"
+docker_matrix_image: "silviof/docker-matrix"
+docker_nginx_image: "nginx:1.13.3-alpine"
+docker_riot_image: "silviof/matrix-riot-docker"
+
+# Specifies when to restart the Matrix services so that
+# a new SSL certificate could go into effect (UTC time).
+matrix_services_restart_cron_time_definition: "15 4 3 * *"

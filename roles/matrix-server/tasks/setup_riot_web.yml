@@ -1,0 +1,30 @@
+---
+
+- name: Ensure Matrix riot-web paths exists
+  file:
+    path: "{{ matrix_nginx_riot_web_data_path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+
+- name: Ensure riot-web Docker image is pulled
+  docker_image:
+    name: "{{ docker_riot_image }}"
+
+- name: Ensure Matrix riot-web configured
+  template:
+    src: "{{ role_path }}/templates/riot-web/{{ item }}.j2"
+    dest: "{{ matrix_nginx_riot_web_data_path }}/{{ item }}"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  with_items:
+    - "riot.im.conf"
+    - "config.json"
+
+- name: Ensure matrix-riot-web.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-riot-web.service.j2"
+    dest: "/etc/systemd/system/matrix-riot-web.service"
+    mode: 0644

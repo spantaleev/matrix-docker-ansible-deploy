@@ -1,0 +1,32 @@
+---
+
+- name: Fail if playbook called incorrectly
+  fail: msg="The `local_path_media_store` variable needs to be provided to this playbook, via --extra-vars"
+  when: "local_path_media_store is not defined or local_path_media_store.startswith('<')"
+
+- name: Check if the provided media store directory exists
+  stat: path="{{ local_path_media_store }}"
+  delegate_to: 127.0.0.1
+  become: false
+  register: local_path_media_store_stat
+
+- name: Fail if provided media_store directory doesn't exist on the local machine
+  fail: msg="File cannot be found on the local machine at {{ local_path_media_store }}"
+  when: "not local_path_media_store_stat.stat.exists or not local_path_media_store_stat.stat.isdir"
+
+- name: Ensure matrix-synapse is stopped
+  service: name=matrix-synapse state=stopped daemon_reload=yes
+  register: stopping_result
+
+- name: Ensure provided media_store directory is copied to the server
+  synchronize:
+    src: "{{ local_path_media_store }}/"
+    dest: "{{ matrix_synapse_data_path }}/media_store"
+    delete: yes
+
+- name: Ensure Matrix Synapse is started (if it previously was)
+  service: name="{{ item }}" state=started daemon_reload=yes
+  when: stopping_result.changed
+  with_items:
+    - matrix-synapse
+    - matrix-nginx-proxy

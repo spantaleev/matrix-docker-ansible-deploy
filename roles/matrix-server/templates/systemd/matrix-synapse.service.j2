@@ -1,0 +1,26 @@
+[Unit]
+Description=Matrix Synapse server
+After=docker.service
+Requires=docker.service
+Requires=matrix-postgres.service
+After=matrix-postgres.service
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker kill matrix-synapse
+ExecStartPre=-/usr/bin/docker rm matrix-synapse
+ExecStartPre=-/usr/bin/chown {{ matrix_user_username }}:{{ matrix_user_username }} {{ ssl_certs_path }} -R
+ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
+			--link matrix-postgres:postgres \
+			-p 8448:8448 \
+			-p 3478:3478 \
+			-v {{ matrix_synapse_data_path }}:/data \
+			-v {{ ssl_certs_path }}:/acmetool-certs \
+			{{ docker_matrix_image }}
+ExecStop=-/usr/bin/docker kill matrix-synapse
+ExecStop=-/usr/bin/docker rm matrix-synapse
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

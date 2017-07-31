@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ $# -ne 2 ]; then
+	echo "Usage: "$0" <username> <password>"
+	exit 1
+fi
+
+user=$1
+password=$2
+
+docker exec matrix-synapse register_new_matrix_user -u $user -p $password -a -c /data/homeserver.yaml https://localhost:8448

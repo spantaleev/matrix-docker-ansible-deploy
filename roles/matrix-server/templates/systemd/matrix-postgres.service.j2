@@ -1,0 +1,24 @@
+[Unit]
+Description=Matrix Postgres server
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker stop matrix-postgres
+ExecStartPre=-/usr/bin/docker rm matrix-postgres
+ExecStartPre=-/usr/bin/mkdir {{ matrix_postgres_data_path }}
+ExecStartPre=-/usr/bin/chown {{ matrix_user_uid }}:{{ matrix_user_gid }} {{ matrix_postgres_data_path }}
+ExecStart=/usr/bin/docker run --rm --name matrix-postgres \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--env-file={{ matrix_environment_variables_data_path }}/env-postgres-server-docker \
+			-v {{ matrix_postgres_data_path }}:/var/lib/postgresql/data \
+			-v /etc/passwd:/etc/passwd:ro \
+			{{ docker_postgres_image }}
+ExecStop=-/usr/bin/docker stop matrix-postgres
+ExecStop=-/usr/bin/docker rm matrix-postgres
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

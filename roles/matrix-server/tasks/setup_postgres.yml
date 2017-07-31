@@ -1,0 +1,34 @@
+---
+
+- name: Ensure postgres data path exists
+  file:
+    path: "{{ matrix_postgres_data_path }}"
+    state: directory
+    mode: 0700
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+
+- name: Ensure postgres Docker image is pulled
+  docker_image:
+    name: "{{ docker_postgres_image }}"
+
+- name: Ensure Postgres environment variables file created
+  template:
+    src: "{{ role_path }}/templates/env/{{ item }}.j2"
+    dest: "{{ matrix_environment_variables_data_path }}/{{ item }}"
+    mode: 0640
+  with_items:
+    - "env-postgres-pgsql-docker"
+    - "env-postgres-server-docker"
+
+- name: Ensure matrix-postgres-cli script created
+  template:
+    src: "{{ role_path }}/templates/usr-local-bin/matrix-postgres-cli.j2"
+    dest: "/usr/local/bin/matrix-postgres-cli"
+    mode: 0750
+
+- name: Ensure matrix-postgres.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-postgres.service.j2"
+    dest: "/etc/systemd/system/matrix-postgres.service"
+    mode: 0644

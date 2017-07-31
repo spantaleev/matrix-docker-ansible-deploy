@@ -1,0 +1,87 @@
+---
+
+- name: Ensure Matrix Synapse data path exists
+  file:
+    path: "{{ matrix_synapse_data_path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+
+- name: Ensure Matrix Docker image is pulled
+  docker_image:
+    name: "{{ docker_matrix_image }}"
+
+- name: Generate initial Matrix config
+  docker_container:
+    name: matrix-config
+    image: "{{ docker_matrix_image }}"
+    detach: no
+    cleanup: yes
+    command: generate
+    env:
+      SERVER_NAME: "{{ hostname_matrix }}"
+      REPORT_STATS: "no"
+    user: "{{ matrix_user_uid }}:{{ matrix_user_gid }}"
+    volumes:
+      - "{{ matrix_synapse_data_path }}:/data"
+
+- name: Augment Matrix config (configure SSL fullchain location)
+  lineinfile: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
+  args:
+    regexp: "^tls_certificate_path:"
+    line: 'tls_certificate_path: "/acmetool-certs/live/{{ hostname_matrix }}/fullchain"'
+
+- name: Augment Matrix config (configure SSL private key location)
+  lineinfile: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
+  args:
+    regexp: "^tls_private_key_path:"
+    line: 'tls_private_key_path: "/acmetool-certs/live/{{ hostname_matrix }}/privkey"'
+
+- name: Augment Matrix config (configure server name)
+  lineinfile: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
+  args:
+    regexp: "^server_name:"
+    line: 'server_name: "{{ hostname_identity }}"'
+
+- name: Augment Matrix config (change database from SQLite to Postgres)
+  lineinfile:
+    dest: "{{ matrix_synapse_data_path }}/homeserver.yaml"
+    regexp: '(.*)name: "sqlite3"'
+    line: '\1name: "psycopg2"'
+    backrefs: yes
+
+- name: Augment Matrix config (add the Postgres connection parameters)
+  lineinfile:
+    dest: "{{ matrix_synapse_data_path }}/homeserver.yaml"
+    regexp: '(.*)database: "(.*)homeserver.db"'
+    line: '\1user: "{{ matrix_postgres_connection_username }}"\n\1password: "{{ matrix_postgres_connection_password }}"\n\1database: "homeserver"\n\1host: "postgres"\n\1cp_min: 5\n\1cp_max: 10'
+    backrefs: yes
+
+- name: Allow access to Matrix ports in firewalld
+  firewalld:
+    port: "{{ item }}/tcp"
+    state: enabled
+    immediate: yes
+    permanent: yes
+  with_items:
+    - 3478 # Coturn
+    - 8448 # Matrix federation
+
+- name: Ensure matrix-synapse.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-synapse.service.j2"
+    dest: "/etc/systemd/system/matrix-synapse.service"
+    mode: 0644
+
+- name: Ensure matrix-synapse-register-user script created
+  template:
+    src: "{{ role_path }}/templates/usr-local-bin/matrix-synapse-register-user.j2"
+    dest: "/usr/local/bin/matrix-synapse-register-user"
+    mode: 0750
+
+- name: Ensure periodic restarting of Matrix is configured (for SSL renewal)
+  template:
+    src: "{{ role_path }}/templates/cron.d/matrix-periodic-restarter.j2"
+    dest: "/etc/cron.d/matrix-periodic-restarter"
+    mode: 0600

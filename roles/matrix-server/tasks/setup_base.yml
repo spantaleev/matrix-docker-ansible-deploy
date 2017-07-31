@@ -1,0 +1,46 @@
+---
+
+- name: Ensure Docker repository is enabled (CentOS)
+  template:
+    src: "{{ role_path }}/files/yum.repos.d/{{ item }}"
+    dest: "/etc/yum.repos.d/{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  with_items:
+    - docker-ce.repo
+  when: ansible_distribution == 'CentOS'
+
+- name: Ensure Docker's RPM key is trusted
+  rpm_key:
+    state: present
+    key: https://download.docker.com/linux/centos/gpg
+  when: ansible_distribution == 'CentOS'
+
+- name: Ensure yum packages are installed (base)
+  yum: name="{{ item }}" state=latest update_cache=yes
+  with_items:
+    - bash-completion
+    - docker-ce
+    - docker-python
+    - ntp
+  when: ansible_distribution == 'CentOS'
+
+- name: Ensure Docker is started and autoruns
+  service: name=docker state=started enabled=yes
+
+- name: Ensure firewalld is started and autoruns
+  service: name=firewalld state=started enabled=yes
+
+- name: Ensure ntpd is started and autoruns
+  service: name=ntpd state=started enabled=yes
+
+- name: Ensure SELinux disabled
+  selinux: state=disabled
+
+- name: Ensure correct hostname set
+  hostname: name="{{ hostname_matrix }}"
+
+- name: Ensure timezone is UTC
+  timezone:
+    name: UTC

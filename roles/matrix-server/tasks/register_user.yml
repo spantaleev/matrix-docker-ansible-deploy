@@ -1,0 +1,20 @@
+---
+
+- name: Fail if playbook called incorrectly
+  fail: msg="The `username` variable needs to be provided to this playbook, via --extra-vars"
+  when: "username is not defined or username == '<your-username>'"
+
+- name: Fail if playbook called incorrectly
+  fail: msg="The `password` variable needs to be provided to this playbook, via --extra-vars"
+  when: "password is not defined or password == '<your-password>'"
+
+- name: Ensure matrix-synapse is started
+  service: name=matrix-synapse state=started daemon_reload=yes
+  register: start_result
+
+- name: Wait a while, so that Matrix Synapse can manage to start
+  pause: seconds=7
+  when: start_result.changed
+
+- name: Register user
+  shell: "matrix-synapse-register-user {{ username }} {{ password }}"
