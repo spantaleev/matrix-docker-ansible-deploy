@@ -8,6 +8,10 @@
   fail: msg="The `password` variable needs to be provided to this playbook, via --extra-vars"
   when: "password is not defined or password == '<your-password>'"
 
+- name: Fail if playbook called incorrectly
+  fail: msg="The `admin` variable needs to be provided to this playbook, via --extra-vars"
+  when: "admin is not defined or admin not in ['yes', 'no']"
+
 - name: Ensure matrix-synapse is started
   service: name=matrix-synapse state=started daemon_reload=yes
   register: start_result
@@ -17,4 +21,4 @@
   when: start_result.changed
 
 - name: Register user
-  shell: "matrix-synapse-register-user {{ username }} {{ password }}"
+  shell: "matrix-synapse-register-user {{ username }} {{ password }} {{ '1' if admin == 'yes' else '0' }}"

@@ -1,11 +1,18 @@
 #!/bin/bash
 
-if [ $# -ne 2 ]; then
-	echo "Usage: "$0" <username> <password>"
-	exit 1
+if [ $# -ne 3 ]; then
+        echo "Usage: "$0" <username> <password> <admin access: 0 or 1>"
+        exit 1
 fi
 
 user=$1
 password=$2
+admin=$3
 
-docker exec matrix-synapse register_new_matrix_user -u $user -p $password -a -c /data/homeserver.yaml https://localhost:8448
+extraFlags=""
+
+if [ "$admin" -eq "1" ]; then
+        extraFlags=$extraFlags" -a"
+fi
+
+docker exec matrix-synapse register_new_matrix_user -u $user -p $password $extraFlags -c /data/homeserver.yaml https://localhost:8448
