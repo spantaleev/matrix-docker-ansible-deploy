@@ -48,11 +48,11 @@ Special thanks goes to:
 
 - the [Ansible](http://ansible.com/) program, which is used to run this playbook and configures everything for you
 
-- properly configured DNS SRV record for `<your-domain>` (details in [Configuring DNS](#Configuring-DNS) below)
+- properly configured DNS SRV record for `<your-domain>` (details in [Configuring DNS](#configuring-dns) below)
 
-- `matrix.<your-domain>` domain name pointing to your new server - this is where the Matrix Synapse server will live (details in [Configuring DNS](#Configuring-DNS) below)
+- `matrix.<your-domain>` domain name pointing to your new server - this is where the Matrix Synapse server will live (details in [Configuring DNS](#configuring-dns) below)
 
-- `riot.<your-domain>` domain name pointing to your new server - this is where the Riot web UI will live (details in [Configuring DNS](#Configuring-DNS) below)
+- `riot.<your-domain>` domain name pointing to your new server - this is where the Riot web UI will live (details in [Configuring DNS](#configuring-dns) below)
 
 
 ## Configuring DNS
@@ -74,7 +74,7 @@ This playbook can then install all the services on that new server and you'll be
 
 ## Configuration
 
-Once you have your server and you have [configured your DNS records](#Configuring-DNS), you can proceed with configuring this playbook, so that it knows what to install and where.
+Once you have your server and you have [configured your DNS records](#configuring-dns), you can proceed with configuring this playbook, so that it knows what to install and where.
 
 You can follow these steps:
 
@@ -91,7 +91,7 @@ You can follow these steps:
 
 ## Installing
 
-Once you have your server and you have [configured your DNS records](#Configuring-DNS), you can proceed with installing.
+Once you have your server and you have [configured your DNS records](#configuring-dns), you can proceed with installing.
 
 To make use of this playbook, you should invoke the `setup.yml` playbook multiple times, with different tags.
 
@@ -148,7 +148,7 @@ You can do it via this Ansible playbook (make sure to edit the `<your-username>`
 
 	ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-username> password=<your-password> admin=<yes|no>' --tags=register-user
 
-**or** using the command-line after **SSH**-ing to your server (requires that [all services have been started](#Starting-the-services)):
+**or** using the command-line after **SSH**-ing to your server (requires that [all services have been started](#starting-the-services)):
 
 	matrix-synapse-register-user <your-username> <your-password> <admin access: 0 or 1>
 
