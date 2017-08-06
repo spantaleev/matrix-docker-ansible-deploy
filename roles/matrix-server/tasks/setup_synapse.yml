@@ -58,15 +58,27 @@
     line: '\1user: "{{ matrix_postgres_connection_username }}"\n\1password: "{{ matrix_postgres_connection_password }}"\n\1database: "homeserver"\n\1host: "postgres"\n\1cp_min: 5\n\1cp_max: 10'
     backrefs: yes
 
+- name: Augment Matrix config (configure Coturn)
+  lineinfile: "dest={{ matrix_synapse_data_path }}/turnserver.conf"
+  args:
+    regexp: "^{{ item.variable }}="
+    line: '{{ item.variable }}={{ item.value }}'
+  with_items:
+    - {'variable': 'min-port', 'value': "{{ matrix_coturn_turn_udp_min_port }}"}
+    - {'variable': 'max-port', 'value': "{{ matrix_coturn_turn_udp_max_port }}"}
+    - {'variable': 'external-ip', 'value': "{{ matrix_coturn_turn_external_ip_address }}"}
+
 - name: Allow access to Matrix ports in firewalld
   firewalld:
-    port: "{{ item }}/tcp"
+    port: "{{ item }}"
     state: enabled
     immediate: yes
     permanent: yes
   with_items:
-    - 3478 # Coturn
-    - 8448 # Matrix federation
+    - '8448/tcp' # Matrix federation
+    - '3478/tcp' # STUN
+    - '3478/udp' # STUN
+    - "{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}/udp" # TURN
 
 - name: Ensure matrix-synapse.service installed
   template:
