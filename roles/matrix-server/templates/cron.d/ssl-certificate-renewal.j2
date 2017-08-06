@@ -2,13 +2,20 @@ MAILTO="{{ ssl_support_email }}"
 
 # The goal of this cronjob is to ask acmetool to check
 # the current SSL certificates and to see if some need renewal.
-# It so, it would attempt to renew.
+# If so, it would attempt to renew.
 #
 # Various services depend on these certificates and would need to be restarted.
 # This is not our concern here. We simply make sure the certificates are up to date.
 # Restarting of services happens on its own different schedule (other cronjobs).
 #
-# acmetool is supposed to bind to port :80 (forwarded to the host) and solve the challenge directly.
-# We can afford to do that, because all our services run on other ports.
+#
+# How renewal works?
+#
+# acmetool will fail to bind to port :80 (because matrix-nginx-proxy is running there),
+# and will fall back to its "webroot" validation method.
+#
+# Thus, it would put validation files in `/var/run/acme/acme-challenge`.
+# These files can be retrieved via any vhost on port 80 of matrix-nginx-proxy,
+# because it aliases `/.well-known/acme-challenge` to that same directory.
 
-15 4 */5 * * root /usr/bin/docker run --rm --name acmetool-once -p 80:80 -v {{ ssl_certs_path }}:/certs -e ACME_EMAIL={{ ssl_support_email }} willwill/acme-docker acmetool --batch reconcile # --xlog.severity=debug
+15 4 */5 * * root /usr/bin/docker run --rm --name acmetool-host-grab --net=host -v {{ ssl_certs_path }}:/certs -v {{ ssl_certs_path }}/run:/var/run/acme -e ACME_EMAIL={{ ssl_support_email }} willwill/acme-docker acmetool --batch reconcile # --xlog.severity=debug
