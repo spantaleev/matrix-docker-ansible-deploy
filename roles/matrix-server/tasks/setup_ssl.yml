@@ -22,6 +22,14 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
 
+- name: Check matrix-nginx-proxy state
+  service: name=matrix-nginx-proxy
+  register: matrix_nginx_proxy_state
+
+- name: Ensure matrix-nginx-proxy is stopped (if previously installed & started)
+  service: name=matrix-nginx-proxy state=stopped
+  when: "matrix_nginx_proxy_state.status.ActiveState == 'active'"
+
 - name: Ensure SSL certificates are marked as wanted in acmetool
   shell: >-
     /usr/bin/docker run --rm --name acmetool-host-grab -p 80:80
@@ -29,6 +37,10 @@
     -e ACME_EMAIL={{ ssl_support_email }}
     willwill/acme-docker
     acmetool want {{ hostname_matrix }} {{ hostname_riot }} --xlog.severity=debug
+
+- name: Ensure matrix-nginx-proxy is started (if previously installed & started)
+  service: name=matrix-nginx-proxy state=started
+  when: "matrix_nginx_proxy_state.status.ActiveState == 'active'"
 
 - name: Ensure periodic SSL renewal cronjob configured
   template:
