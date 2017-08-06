@@ -54,6 +54,8 @@ Special thanks goes to:
 
 - `riot.<your-domain>` domain name pointing to your new server - this is where the Riot web UI will live (details in [Configuring DNS](#configuring-dns) below)
 
+- some TCP/UDP ports open. This playbook configures the server's internal firewall for you. In most cases, you don't need to do anything special. But **if your server is running behind another firewall**, you'd need to open these ports: `80/tcp` (HTTP webserver), `443/tcp` (HTTPS webserver), `3478/tcp`  (STUN over TCP), `3478/udp` (STUN over UDP), `8448/tcp` (Matrix federation HTTPS webserver), `49152-49172/udp` (TURN over UDP).
+
 
 ## Configuring DNS
 
@@ -106,6 +108,8 @@ Feel free to re-run this any time you think something is off with the server con
 
 
 ### Restoring an existing SQLite database (from another installation)
+
+**WARNING**: while this Ansible playbook supports importing an SQLite database from a previous installation, the actual program doing the migration (`synapse_port_db`, part of Matrix Synapse) may be buggy and not work for you.
 
 Run this if you'd like to import your database from a previous default installation of Matrix Synapse.
 (don't forget to import your `media_store` files as well - see below).
@@ -160,7 +164,5 @@ You can do it via this Ansible playbook (make sure to edit the `<your-username>`
 This Ansible playbook can be improved in the following ways:
 
 - setting up automatic backups to one or more storage providers
-
-- enabling TURN support for the Coturn server - see https://github.com/silvio/docker-matrix#coturn-server
 
 - [importing an old SQLite database](#Restoring-an-existing-SQLite=database-from-another-installation) likely works because of a patch, but may be fragile until [this](https://github.com/matrix-org/synapse/issues/2287) is fixed
