@@ -28,7 +28,7 @@
 
 - name: Ensure matrix-nginx-proxy is stopped (if previously installed & started)
   service: name=matrix-nginx-proxy state=stopped
-  when: "matrix_nginx_proxy_state.status.ActiveState == 'active'"
+  when: "matrix_nginx_proxy_state.status.ActiveState|default('missing') == 'active'"
 
 - name: Ensure SSL certificates are marked as wanted in acmetool
   shell: >-
@@ -40,7 +40,7 @@
 
 - name: Ensure matrix-nginx-proxy is started (if previously installed & started)
   service: name=matrix-nginx-proxy state=started
-  when: "matrix_nginx_proxy_state.status.ActiveState == 'active'"
+  when: "matrix_nginx_proxy_state.status.ActiveState|default('missing') == 'active'"
 
 - name: Ensure periodic SSL renewal cronjob configured
   template:
