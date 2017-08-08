@@ -23,14 +23,15 @@
     - bash-completion
     - docker-ce
     - docker-python
+    - firewalld
     - ntp
   when: ansible_distribution == 'CentOS'
 
-- name: Ensure Docker is started and autoruns
-  service: name=docker state=started enabled=yes
-
 - name: Ensure firewalld is started and autoruns
   service: name=firewalld state=started enabled=yes
+
+- name: Ensure Docker is started and autoruns
+  service: name=docker state=started enabled=yes
 
 - name: Ensure ntpd is started and autoruns
   service: name=ntpd state=started enabled=yes
