@@ -9,10 +9,9 @@ user=$1
 password=$2
 admin=$3
 
-extraFlags=""
-
 if [ "$admin" -eq "1" ]; then
-        extraFlags=$extraFlags" -a"
+        docker exec matrix-synapse register_new_matrix_user -a -u $user -p $password -c /data/homeserver.yaml https://localhost:8448
+else
+        # If `-a` is not passed, we need to answer to an "admin: yes/no" question
+        echo 'no' | docker exec -i matrix-synapse register_new_matrix_user -u $user -p $password $extraFlags -c /data/homeserver.yaml https://localhost:8448
 fi
-
-docker exec matrix-synapse register_new_matrix_user -u $user -p $password $extraFlags -c /data/homeserver.yaml https://localhost:8448
