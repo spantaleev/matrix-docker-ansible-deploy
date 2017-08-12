@@ -69,6 +69,14 @@
     line: 'url_preview_ip_range_blacklist: ["127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.64.0.0/10", "169.254.0.0/16"]'
     insertafter: '^# url_preview_ip_range_blacklist:$'
 
+# We only wish to do this for the 8008 port and not for the 8448 port
+# (2nd instance of `x_forwarded` found in the config)
+- name: Augment Matrix config (mark 8008 plain traffic as forwarded)
+  replace: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
+  args:
+    regexp: "8008((?:.|\n)*)x_forwarded(.*)"
+    replace: '8008\g<1>x_forwarded: true'
+
 - name: Augment Matrix config (change database from SQLite to Postgres)
   lineinfile:
     dest: "{{ matrix_synapse_data_path }}/homeserver.yaml"
