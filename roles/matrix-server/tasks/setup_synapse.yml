@@ -12,6 +12,11 @@
   docker_image:
     name: "{{ docker_matrix_image }}"
 
+- name: Check if a Matrix Synapse configuration exists
+  stat:
+    path: "{{ matrix_synapse_data_path }}/homeserver.yaml"
+  register: matrix_synapse_config_stat
+
 - name: Generate initial Matrix config
   docker_container:
     name: matrix-config
@@ -25,6 +30,7 @@
     user: "{{ matrix_user_uid }}:{{ matrix_user_gid }}"
     volumes:
       - "{{ matrix_synapse_data_path }}:/data"
+  when: "not matrix_synapse_config_stat.stat.exists"
 
 - name: Augment Matrix config (configure SSL fullchain location)
   lineinfile: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
