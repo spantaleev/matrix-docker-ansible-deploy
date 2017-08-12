@@ -44,6 +44,25 @@
     regexp: "^server_name:"
     line: 'server_name: "{{ hostname_identity }}"'
 
+- name: Augment Matrix config (disable TURN for guests)
+  lineinfile: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
+  args:
+    regexp: "^turn_allow_guests:"
+    line: 'turn_allow_guests: False'
+
+- name: Augment Matrix config (enable URL previews)
+  lineinfile: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
+  args:
+    regexp: "^url_preview_enabled:"
+    line: 'url_preview_enabled: True'
+
+- name: Augment Matrix config (specify URL previews blacklist)
+  lineinfile: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
+  args:
+    regexp: "^url_preview_ip_range_blacklist:"
+    line: 'url_preview_ip_range_blacklist: ["127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.64.0.0/10", "169.254.0.0/16"]'
+    insertafter: '^# url_preview_ip_range_blacklist:$'
+
 - name: Augment Matrix config (change database from SQLite to Postgres)
   lineinfile:
     dest: "{{ matrix_synapse_data_path }}/homeserver.yaml"
