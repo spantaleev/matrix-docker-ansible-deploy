@@ -84,7 +84,7 @@ You can follow these steps:
 
 - copy the sample configuration file (`cp examples/host-vars.yml inventory/matrix.<your-domain>/vars.yml`)
 
-- edit the configuration file (`inventory/matrix.<your-domain>/vars.yml`) to your liking
+- edit the configuration file (`inventory/matrix.<your-domain>/vars.yml`) to your liking. You may also take a look at `roles/matrix-server/defaults.main.yml` and see if there's something you'd like to copy over and override in your `vars.yml` configuration file.
 
 - copy the sample inventory hosts file (`cp examples/hosts inventory/hosts`)
 
