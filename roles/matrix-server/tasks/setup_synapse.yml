@@ -101,6 +101,12 @@
     - {'variable': 'max-port', 'value': "{{ matrix_coturn_turn_udp_max_port }}"}
     - {'variable': 'external-ip', 'value': "{{ matrix_coturn_turn_external_ip_address }}"}
 
+- name: Augment Matrix config (set max upload size)
+  lineinfile: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
+  args:
+    regexp: "^max_upload_size:"
+    line: 'max_upload_size: "{{ matrix_max_upload_size_mb }}M"'
+
 - name: Allow access to Matrix ports in firewalld
   firewalld:
     port: "{{ item }}"
