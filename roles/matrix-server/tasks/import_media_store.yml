@@ -10,8 +10,8 @@
   become: false
   register: local_path_media_store_stat
 
-- name: Fail if provided media_store directory doesn't exist on the local machine
-  fail: msg="File cannot be found on the local machine at {{ local_path_media_store }}"
+- name: Fail if provided media store directory doesn't exist on the local machine
+  fail: msg="{{ local_path_media_store }} cannot be found on the local machine"
   when: "not local_path_media_store_stat.stat.exists or not local_path_media_store_stat.stat.isdir"
 
 - name: Check if media store contains local_content
@@ -26,7 +26,7 @@
   become: false
   register: local_path_media_store_remote_content_stat
 
-- name: Fail if media_store directory doesn't look okay (lacking remote and local content)
+- name: Fail if media store directory doesn't look okay (lacking remote and local content)
   fail: msg="{{ local_path_media_store }} contains neither local_content nor remote_content. It's most likely a mistake and is not a media store directory."
   when: "not local_path_media_store_local_content_stat.stat.exists and not local_path_media_store_remote_content_stat.stat.exists"
 
@@ -34,11 +34,17 @@
   service: name=matrix-synapse state=stopped daemon_reload=yes
   register: stopping_result
 
-- name: Ensure provided media_store directory is copied to the server
+- name: Ensure provided media store directory is copied to the server
   synchronize:
     src: "{{ local_path_media_store }}/"
     dest: "{{ matrix_synapse_media_store_path }}"
     delete: yes
+
+- name: Ensure media store permissions are correct
+  file:
+    path: "{{ matrix_synapse_media_store_path }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
 
 - name: Ensure Matrix Synapse is started (if it previously was)
   service: name="{{ item }}" state=started daemon_reload=yes
