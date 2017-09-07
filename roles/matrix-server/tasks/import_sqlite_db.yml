@@ -66,7 +66,9 @@
     command: "/usr/local/bin/synapse_port_db_with_patch --sqlite-database /scratchpad/homeserver.db --postgres-config /data/homeserver.yaml"
     user: "{{ matrix_user_uid }}:{{ matrix_user_gid }}"
     volumes:
-      - "{{ matrix_synapse_data_path }}:/data"
+      - "{{ matrix_synapse_config_dir_path }}:/data"
+      - "{{ matrix_synapse_run_path }}:/matrix-run"
+      - "{{ matrix_synapse_media_store_path }}:/matrix-media-store"
       - "{{ matrix_scratchpad_dir }}:/scratchpad"
       - "{{ matrix_scratchpad_dir }}/synapse_port_db_with_patch:/usr/local/bin/synapse_port_db_with_patch"
     links:

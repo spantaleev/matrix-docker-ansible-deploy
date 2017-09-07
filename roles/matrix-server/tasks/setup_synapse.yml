@@ -1,12 +1,17 @@
 ---
 
-- name: Ensure Matrix Synapse data path exists
+- name: Ensure Matrix Synapse paths exists
   file:
-    path: "{{ matrix_synapse_data_path }}"
+    path: "{{ item }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
+  with_items:
+    - "{{ matrix_synapse_base_path }}"
+    - "{{ matrix_synapse_config_dir_path }}"
+    - "{{ matrix_synapse_run_path }}"
+    - "{{ matrix_synapse_media_store_path }}"
 
 - name: Ensure Matrix Docker image is pulled
   docker_image:
@@ -14,7 +19,7 @@
 
 - name: Check if a Matrix Synapse configuration exists
   stat:
-    path: "{{ matrix_synapse_data_path }}/homeserver.yaml"
+    path: "{{ matrix_synapse_config_dir_path }}/homeserver.yaml"
   register: matrix_synapse_config_stat
 
 - name: Generate initial Matrix config
@@ -29,41 +34,44 @@
       REPORT_STATS: "no"
     user: "{{ matrix_user_uid }}:{{ matrix_user_gid }}"
     volumes:
-      - "{{ matrix_synapse_data_path }}:/data"
+      - "{{ matrix_synapse_config_dir_path }}:/data"
   when: "not matrix_synapse_config_stat.stat.exists"
 
-- name: Augment Matrix config (configure SSL fullchain location)
-  lineinfile: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
-  args:
-    regexp: "^tls_certificate_path:"
-    line: 'tls_certificate_path: "/acmetool-certs/live/{{ hostname_matrix }}/fullchain"'
+- name: Ensure self-signed certificates are removed
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ matrix_synapse_config_dir_path }}/{{ hostname_matrix }}.tls.crt"
+    - "{{ matrix_synapse_config_dir_path }}/{{ hostname_matrix }}.tls.key"
 
-- name: Augment Matrix config (configure SSL private key location)
-  lineinfile: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
+- name: Augment Matrix log config
+  lineinfile: "dest={{ matrix_synapse_config_dir_path }}/{{ hostname_matrix }}.log.config"
   args:
-    regexp: "^tls_private_key_path:"
-    line: 'tls_private_key_path: "/acmetool-certs/live/{{ hostname_matrix }}/privkey"'
+    regexp: "{{ item.regexp }}"
+    line: '{{ item.line }}'
+  with_items:
+    - {"regexp": "^    filename:", "line": '    filename: /matrix-run/homeserver.log'}
+    - {"regexp": "^    maxBytes:", "line": '    maxBytes: {{ matrix_max_log_file_size_mb * 1024 * 1024 }}'}
+    - {"regexp": "^    backupCount:", "line": '    backupCount: {{ matrix_max_log_files_count }}'}
 
-- name: Augment Matrix config (configure server name)
-  lineinfile: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
+- name: Augment Matrix config
+  lineinfile: "dest={{ matrix_synapse_config_dir_path }}/homeserver.yaml"
   args:
-    regexp: "^server_name:"
-    line: 'server_name: "{{ hostname_identity }}"'
-
-- name: Augment Matrix config (disable TURN for guests)
-  lineinfile: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
-  args:
-    regexp: "^turn_allow_guests:"
-    line: 'turn_allow_guests: False'
-
-- name: Augment Matrix config (enable URL previews)
-  lineinfile: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
-  args:
-    regexp: "^url_preview_enabled:"
-    line: 'url_preview_enabled: True'
+    regexp: "{{ item.regexp }}"
+    line: '{{ item.line }}'
+  with_items:
+    - {"regexp": "^log_file:", "line": 'log_file: "/matrix-run/homeserver.log"'}
+    - {"regexp": "^tls_certificate_path:", "line": 'tls_certificate_path: "/acmetool-certs/live/{{ hostname_matrix }}/fullchain"'}
+    - {"regexp": "^tls_private_key_path:", "line": 'tls_private_key_path: "/acmetool-certs/live/{{ hostname_matrix }}/privkey"'}
+    - {"regexp": "^server_name:", "line": 'server_name: "{{ hostname_identity }}"'}
+    - {"regexp": "^turn_allow_guests:", "line": 'turn_allow_guests: False'}
+    - {"regexp": "^url_preview_enabled:", "line": 'url_preview_enabled: True'}
+    - {"regexp": "^max_upload_size:", "line": 'max_upload_size: "{{ matrix_max_upload_size_mb }}M"'}
+    - {"regexp": "^media_store_path:", "line": 'media_store_path: "/matrix-media-store"'}
 
 - name: Augment Matrix config (specify URL previews blacklist)
-  lineinfile: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
+  lineinfile: "dest={{ matrix_synapse_config_dir_path }}/homeserver.yaml"
   args:
     regexp: "^url_preview_ip_range_blacklist:"
     line: 'url_preview_ip_range_blacklist: ["127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.64.0.0/10", "169.254.0.0/16"]'
@@ -72,27 +80,27 @@
 # We only wish to do this for the 8008 port and not for the 8448 port
 # (2nd instance of `x_forwarded` found in the config)
 - name: Augment Matrix config (mark 8008 plain traffic as forwarded)
-  replace: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
+  replace: "dest={{ matrix_synapse_config_dir_path }}/homeserver.yaml"
   args:
     regexp: "8008((?:.|\n)*)x_forwarded(.*)"
     replace: '8008\g<1>x_forwarded: true'
 
 - name: Augment Matrix config (change database from SQLite to Postgres)
   lineinfile:
-    dest: "{{ matrix_synapse_data_path }}/homeserver.yaml"
+    dest: "{{ matrix_synapse_config_dir_path }}/homeserver.yaml"
     regexp: '(.*)name: "sqlite3"'
     line: '\1name: "psycopg2"'
     backrefs: yes
 
 - name: Augment Matrix config (add the Postgres connection parameters)
   lineinfile:
-    dest: "{{ matrix_synapse_data_path }}/homeserver.yaml"
+    dest: "{{ matrix_synapse_config_dir_path }}/homeserver.yaml"
     regexp: '(.*)database: "(.*)homeserver.db"'
     line: '\1user: "{{ matrix_postgres_connection_username }}"\n\1password: "{{ matrix_postgres_connection_password }}"\n\1database: "homeserver"\n\1host: "postgres"\n\1cp_min: 5\n\1cp_max: 10'
     backrefs: yes
 
 - name: Augment Matrix config (configure Coturn)
-  lineinfile: "dest={{ matrix_synapse_data_path }}/turnserver.conf"
+  lineinfile: "dest={{ matrix_synapse_config_dir_path }}/turnserver.conf"
   args:
     regexp: "^{{ item.variable }}="
     line: '{{ item.variable }}={{ item.value }}'
@@ -100,12 +108,6 @@
     - {'variable': 'min-port', 'value': "{{ matrix_coturn_turn_udp_min_port }}"}
     - {'variable': 'max-port', 'value': "{{ matrix_coturn_turn_udp_max_port }}"}
     - {'variable': 'external-ip', 'value': "{{ matrix_coturn_turn_external_ip_address }}"}
-
-- name: Augment Matrix config (set max upload size)
-  lineinfile: "dest={{ matrix_synapse_data_path }}/homeserver.yaml"
-  args:
-    regexp: "^max_upload_size:"
-    line: 'max_upload_size: "{{ matrix_max_upload_size_mb }}M"'
 
 - name: Allow access to Matrix ports in firewalld
   firewalld:
