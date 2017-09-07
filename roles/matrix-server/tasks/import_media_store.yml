@@ -39,6 +39,9 @@
     src: "{{ local_path_media_store }}/"
     dest: "{{ matrix_synapse_media_store_path }}"
     delete: yes
+    # It's wasteful to preserve owner/group now. We chown below anyway.
+    owner: no
+    group: no
 
 - name: Ensure media store permissions are correct
   file:
