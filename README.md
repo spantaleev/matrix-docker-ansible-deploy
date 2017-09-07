@@ -10,11 +10,13 @@ Using this playbook, you can get the following services configured on your serve
 
 - a [Matrix Synapse](https://github.com/matrix-org/synapse) homeserver - storing your data and managing your presence in the [Matrix](http://matrix.org/) network
 
+- (optional) [Amazon S3](https://aws.amazon.com/s3/) storage for your Matrix Synapse's content repository (`media_store`) files using [s3fs-fuse](https://github.com/s3fs-fuse/s3fs-fuse)
+
 - a [PostgreSQL](https://www.postgresql.org/) database for Matrix Synapse - providing better performance than the default [SQLite](https://sqlite.org/) database
 
-- a [STUN server](https://github.com/coturn/coturn) for WebRTC audio/video calls
+- a [STUN/TURN server](https://github.com/coturn/coturn) for WebRTC audio/video calls
 
-- a [Riot](https://riot.im/) web UI
+- a [Riot](https://riot.im/) web UI, which is configured to connect to your own Matrix Synapse server by default
 
 - free [Let's Encrypt](https://letsencrypt.org/) SSL certificate, which secures the connection to the Synapse server and the Riot web UI
 
@@ -32,6 +34,8 @@ This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EM
 - this one **runs everything in Docker containers** (like [silviof/docker-matrix](https://hub.docker.com/r/silviof/docker-matrix/) and [silviof/matrix-riot-docker](https://hub.docker.com/r/silviof/matrix-riot-docker/)), so it's likely more predictable
 
 - this one retrieves and automatically renews free [Let's Encrypt](https://letsencrypt.org/) **SSL certificates** for you
+
+- this one optionally can store the `media_store` content repository files on [Amazon S3](https://aws.amazon.com/s3/)
 
 Special thanks goes to:
 
@@ -89,6 +93,42 @@ You can follow these steps:
 - copy the sample inventory hosts file (`cp examples/hosts inventory/hosts`)
 
 - edit the inventory hosts file (`inventory/hosts`) to your liking
+
+
+## Amazon S3 configuration (optional)
+
+If you'd like to store Matrix Synapse's content repository (`media_store`) files on Amazon S3,
+you can let this playbook configure [s3fs-fuse](https://github.com/s3fs-fuse/s3fs-fuse) for you.
+
+You'll need an Amazon S3 bucket and some IAM user credentials (access key + secret key) with full write access to the bucket. Example security policy:
+
+```
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "Stmt1400105486000",
+			"Effect": "Allow",
+			"Action": [
+				"s3:*"
+			],
+			"Resource": [
+				"arn:aws:s3:::your-bucket-name",
+				"arn:aws:s3:::your-bucket-name/*"
+			]
+		}
+	]
+}
+```
+
+You then need to enable S3 support in your configuration file (`inventory/matrix.<your-domain>/vars.yml`).
+It would be something like this:
+
+```
+matrix_s3_media_store_bucket_name: "your-bucket-name"
+matrix_s3_media_store_aws_access_key: "access-key-goes-here"
+matrix_s3_media_store_aws_secret_key: "secret-key-goes-here"
+```
 
 
 ## Installing

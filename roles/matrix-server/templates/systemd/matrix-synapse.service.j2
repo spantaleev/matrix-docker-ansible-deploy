@@ -4,6 +4,10 @@ After=docker.service
 Requires=docker.service
 Requires=matrix-postgres.service
 After=matrix-postgres.service
+{% if matrix_s3_media_store_enabled %}
+After=matrix-s3fs.service
+Requires=matrix-s3fs.service
+{% endif %}
 
 [Service]
 Type=simple

@@ -42,13 +42,37 @@
     # It's wasteful to preserve owner/group now. We chown below anyway.
     owner: no
     group: no
+    # The default of times=yes does not work when s3fs is used.
+    times: "{{ False if matrix_s3_media_store_enabled else True }}"
+    perms: "{{ False if matrix_s3_media_store_enabled else True }}"
 
-- name: Ensure media store permissions are correct
+# This is for the generic case and fails for remote file systems,
+# because the base path (matrix_synapse_media_store_path) is a mount point.
+- name: Ensure media store permissions are correct (generic case)
   file:
     path: "{{ matrix_synapse_media_store_path }}"
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
     recurse: yes
+  when: "not matrix_s3_media_store_enabled"
+
+- name: Determine media store subdirectories
+  find: paths="{{ local_path_media_store }}" file_type=directory
+  delegate_to: 127.0.0.1
+  become: false
+  register: media_store_directories_result
+  when: "matrix_s3_media_store_enabled"
+
+# This is the s3fs special case. We chown the subdirectories one by one,
+# without touching the base directory.
+- name: Ensure media store permissions are correct (s3fs)
+  file:
+    path: "{{ matrix_synapse_media_store_path }}/{{ item.path|basename }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+    recurse: yes
+  with_items: "{{ media_store_directories_result.files }}"
+  when: "matrix_s3_media_store_enabled"
 
 - name: Ensure Matrix Synapse is started (if it previously was)
   service: name="{{ item }}" state=started daemon_reload=yes

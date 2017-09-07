@@ -35,9 +35,10 @@ matrix_nginx_riot_web_data_path: "{{ matrix_base_data_path }}/riot-web"
 matrix_scratchpad_dir: "{{ matrix_base_data_path }}/scratchpad"
 
 docker_postgres_image: "postgres:9.6.3-alpine"
-docker_matrix_image: "silviof/docker-matrix"
+docker_matrix_image: "silviof/docker-matrix:latest"
 docker_nginx_image: "nginx:1.13.3-alpine"
-docker_riot_image: "silviof/matrix-riot-docker"
+docker_riot_image: "silviof/matrix-riot-docker:latest"
+docker_s3fs_image: "xueshanf/s3fs:latest"
 
 # Specifies when to restart the Matrix services so that
 # a new SSL certificate could go into effect (UTC time).
@@ -52,3 +53,8 @@ matrix_coturn_turn_external_ip_address: "{{ ansible_host }}"
 matrix_max_upload_size_mb: 10
 matrix_max_log_file_size_mb: 100
 matrix_max_log_files_count: 10
+
+matrix_s3_media_store_enabled: false
+matrix_s3_media_store_bucket_name: "your-bucket-name"
+matrix_s3_media_store_aws_access_key: "your-aws-access-key"
+matrix_s3_media_store_aws_secret_key: "your-aws-secret-key"

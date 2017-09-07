@@ -1,0 +1,35 @@
+[Unit]
+Description=Matrix S3fs media store
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker kill %n
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=-/usr/bin/mkdir /tmp/matrix-s3fs-cache
+ExecStart=/usr/bin/docker run --rm --name %n \
+				-v {{ matrix_base_data_path }}/s3fs-credentials:/s3fs-credentials \
+				--security-opt apparmor:unconfined \
+				--cap-add mknod \
+				--cap-add sys_admin \
+				--device=/dev/fuse \
+				-v {{ matrix_synapse_media_store_path }}:/media-store:shared \
+				-v /tmp/matrix-s3fs-cache:/s3fs-cache \
+				{{ docker_s3fs_image }} \
+				/usr/bin/s3fs -f \
+					-o allow_other \
+					-o use_cache=/s3fs-cache \
+					-o storage_class=standard_ia \
+					-o passwd_file=/s3fs-credentials \
+					{{ matrix_s3_media_store_bucket_name }} /media-store
+TimeoutStartSec=5min
+ExecStop=-/usr/bin/docker stop %n
+ExecStop=-/usr/bin/docker kill %n
+ExecStop=-/usr/bin/docker rm %n
+ExecStop=-/usr/bin/rm -rf /tmp/matrix-s3fs-cache
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -11,7 +11,24 @@
     - "{{ matrix_synapse_base_path }}"
     - "{{ matrix_synapse_config_dir_path }}"
     - "{{ matrix_synapse_run_path }}"
-    - "{{ matrix_synapse_media_store_path }}"
+    # We handle matrix_synapse_media_store_path below, not here,
+    # because if it's using S3fs and it's already mounted (from before),
+    # trying to chown/chmod it here will cause trouble.
+
+- name: Check Matrix Synapse media store path
+  stat: path="{{ matrix_synapse_media_store_path }}"
+  register: local_path_media_store_stat
+
+# This is separate and conditional, to ensure we don't execute it
+# if the path already exists (and is likely used by an s3fs mount).
+- name: Ensure Matrix media store path exists
+  file:
+    path: "{{ matrix_synapse_media_store_path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  when: "not local_path_media_store_stat.stat.exists"
 
 - name: Ensure Matrix Docker image is pulled
   docker_image:

@@ -1,0 +1,49 @@
+#
+# Tasks related to setting up s3fs
+#
+
+- name: Ensure S3fs Docker image is pulled
+  docker_image:
+    name: "{{ docker_s3fs_image }}"
+  when: matrix_s3_media_store_enabled
+
+- name: Ensure s3fs-credentials file created
+  template:
+    src: "{{ role_path }}/templates/s3fs-credentials.j2"
+    dest: "{{ matrix_base_data_path }}/s3fs-credentials"
+    owner: root
+    mode: 0600
+  when: matrix_s3_media_store_enabled
+
+- name: Ensure matrix-s3fs.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-s3fs.service.j2"
+    dest: "/etc/systemd/system/matrix-s3fs.service"
+    mode: 0644
+  when: matrix_s3_media_store_enabled
+
+#
+# Tasks related to getting rid of s3fs (if it was previously enabled)
+#
+- name: Ensure matrix-s3fs is stopped
+  service: name=matrix-s3fs state=stopped daemon_reload=yes
+  register: stopping_result
+  when: "not matrix_s3_media_store_enabled"
+
+- name: Ensure matrix-s3fs.service doesn't exist
+  file:
+    path: "{{ matrix_base_data_path }}/s3fs-credentials"
+    state: absent
+  when: "not matrix_s3_media_store_enabled"
+
+- name: Ensure s3fs-credentials doesn't exist
+  file:
+    path: "{{ matrix_base_data_path }}/s3fs-credentials"
+    state: absent
+  when: "not matrix_s3_media_store_enabled"
+
+- name: Ensure S3fs Docker image doesn't exist
+  docker_image:
+    name: "{{ docker_s3fs_image }}"
+    state: absent
+  when: "not matrix_s3_media_store_enabled"
