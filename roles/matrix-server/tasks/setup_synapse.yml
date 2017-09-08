@@ -109,12 +109,11 @@
     line: '\1name: "psycopg2"'
     backrefs: yes
 
-- name: Augment Matrix config (add the Postgres connection parameters)
-  lineinfile:
+- name: Augment Matrix config (set the Postgres connection parameters)
+  replace:
     dest: "{{ matrix_synapse_config_dir_path }}/homeserver.yaml"
-    regexp: '(.*)database: "(.*)homeserver.db"'
-    line: '\1user: "{{ matrix_postgres_connection_username }}"\n\1password: "{{ matrix_postgres_connection_password }}"\n\1database: "homeserver"\n\1host: "postgres"\n\1cp_min: 5\n\1cp_max: 10'
-    backrefs: yes
+    regexp: '(.*)name: "psycopg2"((?:.|\n)*?)\n\n'
+    replace: '\1name: "psycopg2"\n\1args:\n\1\1user: "{{ matrix_postgres_connection_username }}"\n\1\1password: "{{ matrix_postgres_connection_password }}"\n\1\1database: "{{ matrix_postgres_db_name }}"\n\1\1host: "{{ matrix_postgres_connection_hostname }}"\n\1\1cp_min: 5\n\1\1cp_max: 10\n\n'
 
 - name: Augment Matrix config (configure Coturn)
   lineinfile: "dest={{ matrix_synapse_config_dir_path }}/turnserver.conf"

@@ -4,6 +4,8 @@ docker run \
 	-it \
 	--rm \
 	--env-file={{ matrix_environment_variables_data_path }}/env-postgres-pgsql-docker \
-	--link=matrix-postgres:postgres \
+	{% if not matrix_postgres_use_external %}
+	--link=matrix-postgres:{{ matrix_postgres_connection_hostname }} \
+	{% endif %}
 	{{ docker_postgres_image }} \
-	psql -h postgres
+	psql -h {{ matrix_postgres_connection_hostname }}

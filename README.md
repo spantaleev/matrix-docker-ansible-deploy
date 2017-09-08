@@ -12,7 +12,7 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) [Amazon S3](https://aws.amazon.com/s3/) storage for your Matrix Synapse's content repository (`media_store`) files using [s3fs-fuse](https://github.com/s3fs-fuse/s3fs-fuse)
 
-- a [PostgreSQL](https://www.postgresql.org/) database for Matrix Synapse - providing better performance than the default [SQLite](https://sqlite.org/) database
+- (optional default) [PostgreSQL](https://www.postgresql.org/) database for Matrix Synapse - providing better performance than the default [SQLite](https://sqlite.org/) database. Using an external PostgreSQL server [is possible](#using-an-external-postgresql-server-optional) as well
 
 - a [STUN/TURN server](https://github.com/coturn/coturn) for WebRTC audio/video calls
 
@@ -35,7 +35,9 @@ This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EM
 
 - this one retrieves and automatically renews free [Let's Encrypt](https://letsencrypt.org/) **SSL certificates** for you
 
-- this one optionally can store the `media_store` content repository files on [Amazon S3](https://aws.amazon.com/s3/)
+- this one optionally can store the `media_store` content repository files on [Amazon S3](https://aws.amazon.com/s3/) (but defaults to storing files on the server's filesystem)
+
+- this one optionally allows you to use an external PostgreSQL server for Matrix Synapse's database (but defaults to running one in a container)
 
 Special thanks goes to:
 
@@ -97,6 +99,9 @@ You can follow these steps:
 
 ## Amazon S3 configuration (optional)
 
+By default, this playbook configures your server to store Matrix Synapse's content repository (`media_store`) files on the local filesystem.
+If that's alright, you can skip ahead.
+
 If you'd like to store Matrix Synapse's content repository (`media_store`) files on Amazon S3,
 you can let this playbook configure [s3fs-fuse](https://github.com/s3fs-fuse/s3fs-fuse) for you.
 
@@ -129,6 +134,26 @@ matrix_s3_media_store_bucket_name: "your-bucket-name"
 matrix_s3_media_store_aws_access_key: "access-key-goes-here"
 matrix_s3_media_store_aws_secret_key: "secret-key-goes-here"
 ```
+
+
+## Using an external PostgreSQL server (optional)
+
+By default, this playbook would set up a PostgreSQL database server on your machine, running in a Docker container.
+If that's alright, you can skip ahead.
+
+If you'd like to use an external PostgreSQL server that you manage, you can edit your configuration file  (`inventory/matrix.<your-domain>/vars.yml`).
+It should be something like this:
+
+```
+matrix_postgres_use_external: true
+matrix_postgres_connection_hostname: "your-postgres-server-hostname"
+matrix_postgres_connection_username: "your-postgres-server-username"
+matrix_postgres_connection_password: "your-postgres-server-password"
+matrix_postgres_db_name: "your-postgres-server-database-name"
+```
+
+The database (as specified in `matrix_postgres_db_name`) must exist and be accessible with the given credentials.
+It must be empty or contain a valid Matrix Synapse database. If empty, Matrix Synapse would populate it the first time it runs.
 
 
 ## Installing

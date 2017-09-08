@@ -2,8 +2,10 @@
 Description=Matrix Synapse server
 After=docker.service
 Requires=docker.service
+{% if not matrix_postgres_use_external %}
 Requires=matrix-postgres.service
 After=matrix-postgres.service
+{% endif %}
 {% if matrix_s3_media_store_enabled %}
 After=matrix-s3fs.service
 Requires=matrix-s3fs.service
@@ -15,7 +17,9 @@ ExecStartPre=-/usr/bin/docker kill matrix-synapse
 ExecStartPre=-/usr/bin/docker rm matrix-synapse
 ExecStartPre=-/usr/bin/chown {{ matrix_user_username }}:{{ matrix_user_username }} {{ ssl_certs_path }} -R
 ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
-			--link matrix-postgres:postgres \
+			{% if not matrix_postgres_use_external %}
+			--link matrix-postgres:{{ matrix_postgres_connection_hostname }} \
+			{% endif %}
 			-p 8448:8448 \
 			-p 3478:3478 \
 			-p 3478:3478/udp \

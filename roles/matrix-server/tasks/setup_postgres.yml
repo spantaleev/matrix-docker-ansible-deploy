@@ -1,13 +1,10 @@
 ---
 
-- name: Ensure postgres data path exists
-  file:
-    path: "{{ matrix_postgres_data_path }}"
-    state: directory
-    mode: 0700
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+#
+# Generic tasks, no matter what kind of server we're using (internal/external)
+#
 
+# Even if we don't run the internal server, we still need this for running the CLI
 - name: Ensure postgres Docker image is pulled
   docker_image:
     name: "{{ docker_postgres_image }}"
@@ -27,8 +24,52 @@
     dest: "/usr/local/bin/matrix-postgres-cli"
     mode: 0750
 
+#
+# Tasks related to setting up an internal postgres server
+#
+
+- name: Ensure postgres data path exists
+  file:
+    path: "{{ matrix_postgres_data_path }}"
+    state: directory
+    mode: 0700
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  when: "not matrix_postgres_use_external"
+
 - name: Ensure matrix-postgres.service installed
   template:
     src: "{{ role_path }}/templates/systemd/matrix-postgres.service.j2"
     dest: "/etc/systemd/system/matrix-postgres.service"
     mode: 0644
+  when: "not matrix_postgres_use_external"
+
+#
+# Tasks related to getting rid of the internal postgres server (if it was previously enabled)
+#
+
+- name: Check existance of matrix-postgres service
+  stat: path="/etc/systemd/system/matrix-postgres.service"
+  register: matrix_postgres_service_stat
+  when: matrix_postgres_use_external
+
+- name: Ensure matrix-postgres is stopped
+  service: name=matrix-postgres state=stopped daemon_reload=yes
+  when: "matrix_postgres_use_external and matrix_postgres_service_stat.stat.exists"
+
+- name: Ensure matrix-postgres.service doesn't exist
+  file:
+    path: "/etc/systemd/system/matrix-postgres.service"
+    state: absent
+  when: "matrix_postgres_use_external and matrix_postgres_service_stat.stat.exists"
+
+- name: Check existance of matrix-postgres local data path
+  stat: path="{{ matrix_postgres_data_path }}"
+  register: matrix_postgres_data_path_stat
+  when: matrix_postgres_use_external
+
+# We just want to notify the user. Deleting data is too destructive.
+- name: Notify if matrix-postgres local data remains
+  debug:
+    msg: "Note: You are not using a local PostgreSQL database, but some old data remains from before in {{ matrix_postgres_data_path }}. Feel free to delete that."
+  when: "matrix_postgres_use_external and matrix_postgres_data_path_stat.stat.exists"
