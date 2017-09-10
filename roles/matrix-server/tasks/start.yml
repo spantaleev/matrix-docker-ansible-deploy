@@ -2,6 +2,7 @@
 
 - name: Ensure matrix-postgres autoruns and is restarted
   service: name=matrix-postgres enabled=yes state=restarted daemon_reload=yes
+  when: "not matrix_postgres_use_external"
 
 - name: Ensure matrix-s3fs autoruns and is restarted
   service: name=matrix-s3fs enabled=yes state=restarted daemon_reload=yes
