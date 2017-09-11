@@ -17,7 +17,7 @@
 
 - name: Ensure SSL certificates path exists
   file:
-    path: "{{ ssl_certs_path }}"
+    path: "{{ matrix_ssl_certs_path }}"
     state: directory
     mode: 0770
     owner: "{{ matrix_user_username }}"
@@ -34,10 +34,13 @@
 - name: Ensure SSL certificates are marked as wanted in acmetool
   shell: >-
     /usr/bin/docker run --rm --name acmetool-host-grab -p 80:80
-    -v {{ ssl_certs_path }}:/certs
-    -e ACME_EMAIL={{ ssl_support_email }}
+    -v {{ matrix_ssl_certs_path }}:/certs
+    -e ACME_EMAIL={{ matrix_ssl_support_email }}
     willwill/acme-docker
-    acmetool want {{ hostname_matrix }} {{ hostname_riot }} --xlog.severity=debug
+    acmetool want {{ item }} --xlog.severity=debug
+  with_items:
+    - "{{ hostname_matrix }}"
+    - "{{ hostname_riot }}"
 
 - name: Ensure matrix-nginx-proxy is started (if previously installed & started)
   service: name=matrix-nginx-proxy state=started
@@ -45,6 +48,6 @@
 
 - name: Ensure periodic SSL renewal cronjob configured
   template:
-    src: "{{ role_path }}/templates/cron.d/ssl-certificate-renewal.j2"
-    dest: "/etc/cron.d/ssl-certificate-renewal"
+    src: "{{ role_path }}/templates/cron.d/matrix-ssl-certificate-renewal.j2"
+    dest: "/etc/cron.d/matrix-ssl-certificate-renewal"
     mode: 0600

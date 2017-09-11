@@ -48,7 +48,7 @@
 # Tasks related to getting rid of the internal postgres server (if it was previously enabled)
 #
 
-- name: Check existance of matrix-postgres service
+- name: Check existence of matrix-postgres service
   stat: path="/etc/systemd/system/matrix-postgres.service"
   register: matrix_postgres_service_stat
   when: matrix_postgres_use_external
@@ -63,7 +63,7 @@
     state: absent
   when: "matrix_postgres_use_external and matrix_postgres_service_stat.stat.exists"
 
-- name: Check existance of matrix-postgres local data path
+- name: Check existence of matrix-postgres local data path
   stat: path="{{ matrix_postgres_data_path }}"
   register: matrix_postgres_data_path_stat
   when: matrix_postgres_use_external

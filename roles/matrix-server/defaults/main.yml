@@ -11,9 +11,6 @@ hostname_matrix: "matrix.{{ hostname_identity }}"
 # This and the Matrix hostname (see above) are expected to be on the same server.
 hostname_riot: "riot.{{ hostname_identity }}"
 
-ssl_certs_path: /etc/pki/acmetool-certs
-ssl_support_email: "{{ host_specific_ssl_support_email }}"
-
 matrix_user_username: "matrix"
 matrix_user_uid: 991
 matrix_user_gid: 991
@@ -27,6 +24,8 @@ matrix_postgres_connection_password: "synapse-password"
 matrix_postgres_db_name: "homeserver"
 
 matrix_base_data_path: "/matrix"
+matrix_ssl_certs_path: "{{ matrix_base_data_path }}/ssl"
+matrix_ssl_support_email: "{{ host_specific_matrix_ssl_support_email }}"
 matrix_environment_variables_data_path: "{{ matrix_base_data_path }}/environment-variables"
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
 matrix_synapse_config_dir_path: "{{ matrix_synapse_base_path }}/config"

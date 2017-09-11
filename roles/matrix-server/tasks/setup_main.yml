@@ -18,3 +18,13 @@
     path: "{{ matrix_environment_variables_data_path }}"
     state: directory
     mode: 0700
+
+- name: Ensure Matrix base path exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  with_items:
+    - "{{ matrix_synapse_base_path }}"
