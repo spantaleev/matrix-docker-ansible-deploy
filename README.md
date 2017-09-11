@@ -31,6 +31,8 @@ This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EM
 
 - this one **can be re-ran many times** without causing trouble
 
+- works on both **CentOS** (7.0+) and Debian-based distributions (**Debian** 9/Stretch+, **Ubuntu** 16.04+)
+
 - this one **runs everything in Docker containers** (like [silviof/docker-matrix](https://hub.docker.com/r/silviof/docker-matrix/) and [silviof/matrix-riot-docker](https://hub.docker.com/r/silviof/matrix-riot-docker/)), so it's likely more predictable
 
 - this one retrieves and automatically renews free [Let's Encrypt](https://letsencrypt.org/) **SSL certificates** for you
@@ -50,7 +52,7 @@ Special thanks goes to:
 
 ## Prerequisites
 
-- **CentOS server** with no services running on port 80/443 (making this run on non-CentOS servers should be possible in the future)
+- **CentOS** (7.0+), **Debian** (9/Stretch+) or **Ubuntu** (16.04+) server with no services running on port 80/443
 
 - the [Ansible](http://ansible.com/) program, which is used to run this playbook and configures everything for you
 

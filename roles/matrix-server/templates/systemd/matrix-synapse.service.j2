@@ -15,7 +15,7 @@ Requires=matrix-s3fs.service
 Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-synapse
 ExecStartPre=-/usr/bin/docker rm matrix-synapse
-ExecStartPre=-/usr/bin/chown {{ matrix_user_username }}:{{ matrix_user_username }} {{ ssl_certs_path }} -R
+ExecStartPre=-{{ '/usr/bin/chown' if ansible_os_family == 'RedHat' else '/bin/chown' }} {{ matrix_user_username }}:{{ matrix_user_username }} {{ ssl_certs_path }} -R
 ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
 			{% if not matrix_postgres_use_external %}
 			--link matrix-postgres:{{ matrix_postgres_connection_hostname }} \

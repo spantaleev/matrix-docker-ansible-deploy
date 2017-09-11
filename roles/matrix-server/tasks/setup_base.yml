@@ -17,7 +17,7 @@
     key: https://download.docker.com/linux/centos/gpg
   when: ansible_distribution == 'CentOS'
 
-- name: Ensure yum packages are installed (base)
+- name: Ensure yum packages are installed (CentOS)
   yum: name="{{ item }}" state=latest update_cache=yes
   with_items:
     - bash-completion
@@ -27,14 +27,54 @@
     - ntp
   when: ansible_distribution == 'CentOS'
 
+- name: Ensure APT usage dependencies are installed (Debian)
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure Docker's APT key is trusted (Debian)
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    state: present
+  register: add_repository_key
+  ignore_errors: true
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure Docker repository is enabled (Debian)
+  apt_repository:
+    repo: "deb https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable"
+    state: present
+    update_cache: yes
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure APT packages are installed (Debian)
+  apt: name="{{ item }}" state=latest update_cache=yes
+  with_items:
+    - bash-completion
+    - docker-ce
+    - python-docker
+    - ntp
+  when: ansible_os_family == 'Debian'
+
 - name: Ensure firewalld is started and autoruns
   service: name=firewalld state=started enabled=yes
+  when: ansible_os_family == 'RedHat'
 
 - name: Ensure Docker is started and autoruns
   service: name=docker state=started enabled=yes
 
 - name: Ensure ntpd is started and autoruns
-  service: name=ntpd state=started enabled=yes
+  service:
+    name: "{{ 'ntpd' if ansible_os_family == 'RedHat' else 'ntp' }}"
+    state: started
+    enabled: yes
 
 - name: Ensure SELinux disabled
   selinux: state=disabled
+  when: ansible_os_family == 'RedHat'
