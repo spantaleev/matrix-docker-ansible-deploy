@@ -230,6 +230,8 @@ You can do it via this Ansible playbook (make sure to edit the `<your-username>`
 
 This Ansible playbook can be improved in the following ways:
 
+- not expecting to run its own nginx server overtaking port 80/443, thus allowing own/custom proxying to be configured
+
 - setting up automatic backups to one or more storage providers
 
 - [importing an old SQLite database](#Restoring-an-existing-SQLite=database-from-another-installation) likely works because of a patch, but may be fragile until [this](https://github.com/matrix-org/synapse/issues/2287) is fixed
