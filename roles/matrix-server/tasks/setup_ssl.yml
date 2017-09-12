@@ -1,5 +1,14 @@
 ---
 
+- name: Determine domains to obtain certificates for (Matrix)
+  set_fact:
+    domains_to_obtain_certificate_for: "['{{ hostname_matrix }}']"
+
+- name: Determine domains to obtain certificates for (Riot)
+  set_fact:
+    domains_to_obtain_certificate_for: "{{ domains_to_obtain_certificate_for + [hostname_riot] }}"
+  when: matrix_riot_web_enabled
+
 - name: Allow access to HTTP/HTTPS in firewalld
   firewalld:
     service: "{{ item }}"
@@ -38,9 +47,7 @@
     -e ACME_EMAIL={{ matrix_ssl_support_email }}
     willwill/acme-docker
     acmetool want {{ item }} --xlog.severity=debug
-  with_items:
-    - "{{ hostname_matrix }}"
-    - "{{ hostname_riot }}"
+  with_items: "{{ domains_to_obtain_certificate_for }}"
 
 - name: Ensure matrix-nginx-proxy is started (if previously installed & started)
   service: name=matrix-nginx-proxy state=started

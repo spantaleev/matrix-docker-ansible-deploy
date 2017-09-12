@@ -16,9 +16,11 @@ Using this playbook, you can get the following services configured on your serve
 
 - a [STUN/TURN server](https://github.com/coturn/coturn) for WebRTC audio/video calls
 
-- a [Riot](https://riot.im/) web UI, which is configured to connect to your own Matrix Synapse server by default
+- (optional default) a [Riot](https://riot.im/) web UI, which is configured to connect to your own Matrix Synapse server by default
 
 - free [Let's Encrypt](https://letsencrypt.org/) SSL certificate, which secures the connection to the Synapse server and the Riot web UI
+
+- (optional default) an [nginx](http://nginx.org/) web server, listening on ports 80 and 443 - standing in front of all the other services. Using your own webserver [is possible](#using-your-own-webserver-instead-of-this-playbooks-nginx-proxy-optional)
 
 Basically, this playbook aims to get you up-and-running with all the basic necessities around Matrix, without you having to do anything else.
 
@@ -33,13 +35,17 @@ This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EM
 
 - works on both **CentOS** (7.0+) and Debian-based distributions (**Debian** 9/Stretch+, **Ubuntu** 16.04+)
 
+- this one keeps mostly everything in a single directory (`/matrix` by default) and **doesn't "contaminate" your server** with files all over the place
+
+- this one **doesn't necessarily take over** ports 80 and 443. By default, it sets up nginx for you there, but you can disable that and configure your own webserver (proxy)
+
 - this one **runs everything in Docker containers** (like [silviof/docker-matrix](https://hub.docker.com/r/silviof/docker-matrix/) and [silviof/matrix-riot-docker](https://hub.docker.com/r/silviof/matrix-riot-docker/)), so it's likely more predictable
 
 - this one retrieves and automatically renews free [Let's Encrypt](https://letsencrypt.org/) **SSL certificates** for you
 
 - this one optionally can store the `media_store` content repository files on [Amazon S3](https://aws.amazon.com/s3/) (but defaults to storing files on the server's filesystem)
 
-- this one optionally allows you to use an external PostgreSQL server for Matrix Synapse's database (but defaults to running one in a container)
+- this one optionally **allows you to use an external PostgreSQL server** for Matrix Synapse's database (but defaults to running one in a container)
 
 Special thanks goes to:
 
@@ -52,7 +58,7 @@ Special thanks goes to:
 
 ## Prerequisites
 
-- **CentOS** (7.0+), **Debian** (9/Stretch+) or **Ubuntu** (16.04+) server with no services running on port 80/443
+- **CentOS** (7.0+), **Debian** (9/Stretch+) or **Ubuntu** (16.04+) server. This playbook can take over your whole server or co-exist with other services that you have there.
 
 - the [Ansible](http://ansible.com/) program, which is used to run this playbook and configures everything for you
 
@@ -158,6 +164,33 @@ The database (as specified in `matrix_postgres_db_name`) must exist and be acces
 It must be empty or contain a valid Matrix Synapse database. If empty, Matrix Synapse would populate it the first time it runs.
 
 
+## Using your own webserver, instead of this playbook's nginx proxy (optional)
+
+By default, this playbook installs its own nginx webserver (in a Docker container) which listens on ports 80 and 443.
+If that's alright, you can skip ahead.
+
+If you don't want this playbook's nginx webserver to take over your server's 80/443 ports like that,
+and you'd like to use your own webserver (be it nginx, Apache, Varnish Cache, etc.), you can.
+
+All it takes is editing your configuration file (`inventory/matrix.<your-domain>/vars.yml`):
+
+```
+matrix_nginx_proxy_enabled: false
+```
+
+**Note**: even if you do this, in order [to install](#installing), this playbook still expects port 80 to be available. **Please manually stop your other webserver while installing**. You can start it back again afterwards.
+
+**If your own webserver is nginx**, you can most likely directly use the config files installed by this playbook at: `/matrix/nginx-proxy/conf.d`. Just include them in your `nginx.conf` like this: `include /matrix/nginx-proxy/conf.d/*.conf;`
+
+**If your own webserver is not nginx**, you can still take a look at the sample files in `/matrix/nginx-proxy/conf.d`, and:
+
+- ensure you set up (separate) vhosts that proxy for both Riot (`localhost:8765`) and Matrix Synapse (`localhost:8008`)
+
+- ensure that the `/.well-known/acme-challenge` location for each "port=80 vhost" is an alias to the `/matrix/ssl/run/acme-challenge` directory (for automated SSL renewal to work)
+
+- ensure that you restart/reload your webserver once in a while, so that renewed SSL certificates would take effect (once a month should be enough)
+
+
 ## Installing
 
 Once you have your server and you have [configured your DNS records](#configuring-dns), you can proceed with installing.
@@ -226,11 +259,30 @@ You can do it via this Ansible playbook (make sure to edit the `<your-username>`
 **Note**: `<your-username>` is just a plain username (like `john`), not your full `@<username>:<your-domain>` identifier.
 
 
+## Uninstalling
+
+**Note**: If you have some trouble with your installation configuration, you can just re-run the playbook and it will try to set things up again. You don't need to uninstall and install fresh.
+
+However, if you've installed this on some server where you have other stuff you wish to preserve, and now want get rid of Matrix, it's enough to do these:
+
+- ensure all Matrix services are stopped (`systemctl stop 'matrix*'`)
+
+- delete the Matrix-related systemd .service files (`rm -f /etc/systemd/system/matrix*`) and reload systemd (`systemctl daemon-reload`)
+
+- delete all Matrix-related cronjobs (`rm -f /etc/cron.d/matrix*'`)
+
+- delete some helper scripts (`rm -f /usr/local/bin/matrix*`)
+
+- delete some cached Docker images (or just delete them all: `docker rmi $(docker images -aq)`)
+
+- uninstall Docker itself, if necessary
+
+- delete the `/matrix` directory (`rm -rf /matrix`)
+
+
 ## Deficiencies
 
 This Ansible playbook can be improved in the following ways:
-
-- not expecting to run its own nginx server overtaking port 80/443, thus allowing own/custom proxying to be configured
 
 - setting up automatic backups to one or more storage providers
 

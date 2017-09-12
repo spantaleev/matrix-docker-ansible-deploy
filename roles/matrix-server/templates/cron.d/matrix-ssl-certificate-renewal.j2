@@ -11,11 +11,14 @@ MAILTO="{{ matrix_ssl_support_email }}"
 #
 # How renewal works?
 #
-# acmetool will fail to bind to port :80 (because matrix-nginx-proxy is running there),
+# acmetool will fail to bind to port :80 (because matrix-nginx-proxy or some other server is running there),
 # and will fall back to its "webroot" validation method.
 #
 # Thus, it would put validation files in `/var/run/acme/acme-challenge`.
 # These files can be retrieved via any vhost on port 80 of matrix-nginx-proxy,
 # because it aliases `/.well-known/acme-challenge` to that same directory.
+#
+# When a custom proxy server (not matrix-nginx-proxy provided by this playbook),
+# you'd need to make sure you alias these files corretly or SSL renewal would not work.
 
 15 4 */5 * * root /usr/bin/docker run --rm --name acmetool-host-grab --net=host -v {{ matrix_ssl_certs_path }}:/certs -v {{ matrix_ssl_certs_path }}/run:/var/run/acme -e ACME_EMAIL={{ matrix_ssl_support_email }} willwill/acme-docker acmetool --batch reconcile # --xlog.severity=debug

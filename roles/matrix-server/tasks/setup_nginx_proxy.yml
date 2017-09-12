@@ -1,5 +1,15 @@
 ---
 
+#
+# Generic tasks that we always want to happen, regardless
+# if the user wants matrix-nginx-proxy or not.
+#
+# If the user would set up their own nginx proxy server,
+# the config files from matrix-nginx-proxy can be reused.
+#
+# It doesn't hurt to put them in place, even if they turn out
+# to be unnecessary.
+#
 - name: Ensure Matrix nginx-proxy paths exists
   file:
     path: "{{ item }}"
@@ -11,10 +21,6 @@
     - "{{ matrix_nginx_proxy_data_path }}"
     - "{{ matrix_nginx_proxy_confd_path }}"
 
-- name: Ensure nginx Docker image is pulled
-  docker_image:
-    name: "{{ docker_nginx_image }}"
-
 - name: Ensure Matrix Synapse proxy vhost configured
   template:
     src: "{{ role_path }}/templates/nginx-conf.d/{{ item }}.j2"
@@ -23,6 +29,14 @@
   with_items:
     - "matrix-synapse.conf"
     - "matrix-riot-web.conf"
+
+#
+# Tasks related to setting up matrix-nginx-proxy
+#
+- name: Ensure nginx Docker image is pulled
+  docker_image:
+    name: "{{ docker_nginx_image }}"
+  when: matrix_nginx_proxy_enabled
 
 - name: Allow access to nginx proxy ports in firewalld
   firewalld:
@@ -33,10 +47,30 @@
   with_items:
     - "http"
     - "https"
-  when: ansible_os_family == 'RedHat'
+  when: "ansible_os_family == 'RedHat' and matrix_nginx_proxy_enabled"
 
 - name: Ensure matrix-nginx-proxy.service installed
   template:
     src: "{{ role_path }}/templates/systemd/matrix-nginx-proxy.service.j2"
     dest: "/etc/systemd/system/matrix-nginx-proxy.service"
     mode: 0644
+  when: matrix_nginx_proxy_enabled
+
+#
+# Tasks related to getting rid of matrix-nginx-proxy (if it was previously enabled)
+#
+
+- name: Check existence of matrix-nginx-proxy service
+  stat: path="/etc/systemd/system/matrix-nginx-proxy.service"
+  register: matrix_nginx_proxy_service_stat
+
+- name: Ensure matrix-nginx-proxy is stopped
+  service: name=matrix-nginx-proxy state=stopped daemon_reload=yes
+  register: stopping_result
+  when: "not matrix_nginx_proxy_enabled and matrix_nginx_proxy_service_stat.stat.exists"
+
+- name: Ensure matrix-nginx-proxy.service doesn't exist
+  file:
+    path: "/etc/systemd/system/matrix-nginx-proxy.service"
+    state: absent
+  when: "not matrix_nginx_proxy_enabled and matrix_nginx_proxy_service_stat.stat.exists"

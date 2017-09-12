@@ -6,7 +6,7 @@ server {
 
 	location /.well-known/acme-challenge {
 		default_type "text/plain";
-		alias /acmetool-certs/run/acme-challenge;
+		alias {{ matrix_ssl_certs_path }}/run/acme-challenge;
 	}
 
 	location / {
@@ -24,14 +24,14 @@ server {
 	root /dev/null;
 
 	ssl on;
-	ssl_certificate /acmetool-certs/live/{{ hostname_riot }}/fullchain;
-	ssl_certificate_key /acmetool-certs/live/{{ hostname_riot }}/privkey;
+	ssl_certificate {{ matrix_ssl_certs_path }}/live/{{ hostname_riot }}/fullchain;
+	ssl_certificate_key {{ matrix_ssl_certs_path }}/live/{{ hostname_riot }}/privkey;
 	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 	ssl_prefer_server_ciphers on;
 	ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
 
     location / {
-        proxy_pass http://riot:8765;
+        proxy_pass http://{{ 'riot' if matrix_nginx_proxy_enabled else 'localhost' }}:8765;
         proxy_set_header X-Forwarded-For $remote_addr;
     }
 }
