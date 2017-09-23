@@ -56,6 +56,13 @@
     mode: 0644
   when: matrix_nginx_proxy_enabled
 
+- name: Ensure periodic restarting of matrix-nginx-proxy is configured (for SSL renewal)
+  template:
+    src: "{{ role_path }}/templates/cron.d/matrix-nginx-proxy-periodic-restarter.j2"
+    dest: "/etc/cron.d/matrix-nginx-proxy-periodic-restarter"
+    mode: 0600
+  when: matrix_nginx_proxy_enabled
+
 #
 # Tasks related to getting rid of matrix-nginx-proxy (if it was previously enabled)
 #
@@ -74,3 +81,9 @@
     path: "/etc/systemd/system/matrix-nginx-proxy.service"
     state: absent
   when: "not matrix_nginx_proxy_enabled and matrix_nginx_proxy_service_stat.stat.exists"
+
+- name: Ensure periodic restarting of matrix-nginx-proxy is removed
+  file:
+    path: "/etc/cron.d/matrix-nginx-proxy-periodic-restarter"
+    state: absent
+  when: "not matrix_nginx_proxy_enabled"

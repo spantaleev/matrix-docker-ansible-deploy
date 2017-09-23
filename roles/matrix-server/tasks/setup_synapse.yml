@@ -53,14 +53,6 @@
       - "{{ matrix_synapse_config_dir_path }}:/data"
   when: "not matrix_synapse_config_stat.stat.exists"
 
-- name: Ensure self-signed certificates are removed
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - "{{ matrix_synapse_config_dir_path }}/{{ hostname_matrix }}.tls.crt"
-    - "{{ matrix_synapse_config_dir_path }}/{{ hostname_matrix }}.tls.key"
-
 - name: Augment Matrix log config
   lineinfile: "dest={{ matrix_synapse_config_dir_path }}/{{ hostname_matrix }}.log.config"
   args:
@@ -78,8 +70,6 @@
     line: '{{ item.line }}'
   with_items:
     - {"regexp": "^log_file:", "line": 'log_file: "/matrix-run/homeserver.log"'}
-    - {"regexp": "^tls_certificate_path:", "line": 'tls_certificate_path: "/acmetool-certs/live/{{ hostname_matrix }}/fullchain"'}
-    - {"regexp": "^tls_private_key_path:", "line": 'tls_private_key_path: "/acmetool-certs/live/{{ hostname_matrix }}/privkey"'}
     - {"regexp": "^server_name:", "line": 'server_name: "{{ hostname_identity }}"'}
     - {"regexp": "^turn_allow_guests:", "line": 'turn_allow_guests: False'}
     - {"regexp": "^url_preview_enabled:", "line": 'url_preview_enabled: True'}
@@ -148,9 +138,3 @@
     src: "{{ role_path }}/templates/usr-local-bin/matrix-synapse-register-user.j2"
     dest: "/usr/local/bin/matrix-synapse-register-user"
     mode: 0750
-
-- name: Ensure periodic restarting of Matrix is configured (for SSL renewal)
-  template:
-    src: "{{ role_path }}/templates/cron.d/matrix-periodic-restarter.j2"
-    dest: "/etc/cron.d/matrix-periodic-restarter"
-    mode: 0600

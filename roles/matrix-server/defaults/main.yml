@@ -43,10 +43,6 @@ docker_nginx_image: "nginx:1.13.5-alpine"
 docker_riot_image: "silviof/matrix-riot-docker:latest"
 docker_s3fs_image: "xueshanf/s3fs:latest"
 
-# Specifies when to restart the Matrix services so that
-# a new SSL certificate could go into effect (UTC time).
-matrix_services_restart_cron_time_definition: "15 4 3 * *"
-
 # UDP port-range to use for TURN
 matrix_coturn_turn_udp_min_port: 49152
 matrix_coturn_turn_udp_max_port: 49172
@@ -72,3 +68,7 @@ matrix_riot_web_enabled: true
 # But in case that's not the case, you may wish to prevent that
 # and take care of proxying by yourself.
 matrix_nginx_proxy_enabled: true
+
+# Specifies when to reload the matrix-nginx-proxy service so that
+# a new SSL certificate could go into effect (UTC time).
+matrix_nginx_proxy_reload_cron_time_definition: "15 4 3 * *"

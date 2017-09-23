@@ -21,6 +21,7 @@ ExecStart=/usr/bin/docker run --rm --name matrix-nginx-proxy \
 			{{ docker_nginx_image }}
 ExecStop=-/usr/bin/docker kill matrix-nginx-proxy
 ExecStop=-/usr/bin/docker rm matrix-nginx-proxy
+ExecReload=/usr/bin/docker exec matrix-nginx-proxy /usr/sbin/nginx -s reload
 Restart=always
 RestartSec=30
 
