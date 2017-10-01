@@ -24,11 +24,18 @@
   docker_image:
     name: willwill/acme-docker
 
+# Granting +rx to others as well, because the `nginx` user from within
+# matrix-nginx-proxy needs to be able to read the acme-challenge files inside
+# for renewal purposes.
+#
+# This should not be causing security trouble outside of the container,
+# as the parent directory (/matrix) does not allow "others" to access it or any of its children.
+# Still, it works when the /ssl subtree is mounted in the container.
 - name: Ensure SSL certificates path exists
   file:
     path: "{{ matrix_ssl_certs_path }}"
     state: directory
-    mode: 0770
+    mode: 0775
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
 
