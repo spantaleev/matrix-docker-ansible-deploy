@@ -16,8 +16,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-nginx-proxy \
 			-p 443:443 \
 			--link matrix-synapse:synapse \
 			--link matrix-riot-web:riot \
-			-v {{ matrix_nginx_proxy_confd_path }}:/etc/nginx/conf.d \
-			-v {{ matrix_ssl_certs_path }}:{{ matrix_ssl_certs_path }} \
+			-v {{ matrix_nginx_proxy_confd_path }}:/etc/nginx/conf.d:ro \
+			-v {{ matrix_ssl_certs_path }}:{{ matrix_ssl_certs_path }}:ro \
 			{{ docker_nginx_image }}
 ExecStop=-/usr/bin/docker kill matrix-nginx-proxy
 ExecStop=-/usr/bin/docker rm matrix-nginx-proxy
