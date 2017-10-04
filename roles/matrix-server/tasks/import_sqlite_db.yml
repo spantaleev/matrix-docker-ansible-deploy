@@ -49,13 +49,6 @@
 - name: Wait a while, so that Postgres can manage to start
   pause: seconds=7
 
-# Fixes a problem with porting the `user_directory_search` table.
-# https://github.com/matrix-org/synapse/issues/2287
-- name: Ensure synapse_port_db_with_patch exists
-  copy:
-    src: "{{ role_path }}/files/synapse_port_db_with_patch"
-    dest: "{{ matrix_scratchpad_dir }}/synapse_port_db_with_patch"
-
 - name: Importing SQLite database into Postgres
   docker_container:
     name: matrix-synapse-migrate
@@ -63,14 +56,13 @@
     detach: no
     cleanup: yes
     entrypoint: /usr/bin/python
-    command: "/usr/local/bin/synapse_port_db_with_patch --sqlite-database /scratchpad/homeserver.db --postgres-config /data/homeserver.yaml"
+    command: "/usr/local/bin/synapse_port_db --sqlite-database /scratchpad/homeserver.db --postgres-config /data/homeserver.yaml"
     user: "{{ matrix_user_uid }}:{{ matrix_user_gid }}"
     volumes:
       - "{{ matrix_synapse_config_dir_path }}:/data"
       - "{{ matrix_synapse_run_path }}:/matrix-run"
       - "{{ matrix_synapse_media_store_path }}:/matrix-media-store"
       - "{{ matrix_scratchpad_dir }}:/scratchpad"
-      - "{{ matrix_scratchpad_dir }}/synapse_port_db_with_patch:/usr/local/bin/synapse_port_db_with_patch"
     links:
       - "matrix-postgres:{{ matrix_postgres_connection_hostname }}"
 

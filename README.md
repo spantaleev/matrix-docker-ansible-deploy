@@ -210,8 +210,6 @@ Feel free to re-run this any time you think something is off with the server con
 
 ### Restoring an existing SQLite database (from another installation)
 
-**WARNING**: while this Ansible playbook supports importing an SQLite database from a previous installation, the actual program doing the migration (`synapse_port_db`, part of Matrix Synapse) may be buggy and not work for you.
-
 Run this if you'd like to import your database from a previous default installation of Matrix Synapse.
 (don't forget to import your `media_store` files as well - see below).
 
@@ -286,5 +284,3 @@ However, if you've installed this on some server where you have other stuff you 
 This Ansible playbook can be improved in the following ways:
 
 - setting up automatic backups to one or more storage providers
-
-- [importing an old SQLite database](#Restoring-an-existing-SQLite=database-from-another-installation) likely works because of a patch, but may be fragile until [this](https://github.com/matrix-org/synapse/issues/2287) is fixed
