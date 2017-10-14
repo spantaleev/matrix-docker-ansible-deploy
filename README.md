@@ -138,6 +138,7 @@ You then need to enable S3 support in your configuration file (`inventory/matrix
 It would be something like this:
 
 ```
+matrix_s3_media_store_enabled: true
 matrix_s3_media_store_bucket_name: "your-bucket-name"
 matrix_s3_media_store_aws_access_key: "access-key-goes-here"
 matrix_s3_media_store_aws_secret_key: "secret-key-goes-here"
