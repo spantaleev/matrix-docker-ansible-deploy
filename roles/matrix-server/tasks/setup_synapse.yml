@@ -76,6 +76,15 @@
     - {"regexp": "^max_upload_size:", "line": 'max_upload_size: "{{ matrix_max_upload_size_mb }}M"'}
     - {"regexp": "^media_store_path:", "line": 'media_store_path: "/matrix-media-store"'}
 
+- name: Augment Matrix config (configure Macaroon secret)
+  lineinfile: "dest={{ matrix_synapse_config_dir_path }}/homeserver.yaml"
+  args:
+    regexp: "{{ item.regexp }}"
+    line: '{{ item.line }}'
+  with_items:
+    - {"regexp": "^macaroon_secret_key:", "line": 'macaroon_secret_key: "{{ matrix_synapse_macaroon_secret_key }}"'}
+  when: "matrix_synapse_macaroon_secret_key is not none"
+
 - name: Augment Matrix config (specify URL previews blacklist)
   lineinfile: "dest={{ matrix_synapse_config_dir_path }}/homeserver.yaml"
   args:
