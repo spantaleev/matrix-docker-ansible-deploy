@@ -21,4 +21,4 @@ MAILTO="{{ matrix_ssl_support_email }}"
 # When a custom proxy server (not matrix-nginx-proxy provided by this playbook),
 # you'd need to make sure you alias these files correctly or SSL renewal would not work.
 
-15 4 */5 * * root /usr/bin/docker run --rm --net=host -v {{ matrix_ssl_certs_path }}:/certs -v {{ matrix_ssl_certs_path }}/run:/var/run/acme -e ACME_EMAIL={{ matrix_ssl_support_email }} willwill/acme-docker acmetool --batch reconcile # --xlog.severity=debug
+{{ matrix_ssl_renew_cron_time_definition }} root /usr/bin/docker run --rm --net=host -v {{ matrix_ssl_certs_path }}:/certs -v {{ matrix_ssl_certs_path }}/run:/var/run/acme -e ACME_EMAIL={{ matrix_ssl_support_email }} willwill/acme-docker acmetool --batch reconcile # --xlog.severity=debug
