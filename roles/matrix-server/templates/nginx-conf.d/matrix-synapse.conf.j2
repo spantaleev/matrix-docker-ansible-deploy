@@ -5,8 +5,18 @@ server {
 	server_tokens off;
 
 	location /.well-known/acme-challenge {
+		{#
+			The proxy can access the files directly.
+			An external server likely does not have permission to read these files,
+			so we'll just proxy to acme's :402 port.
+		#}
+
+		{%- if matrix_nginx_proxy_enabled -%}
 		default_type "text/plain";
 		alias {{ matrix_ssl_certs_path }}/run/acme-challenge;
+		{%- else -%}
+		proxy_pass http://localhost:402;
+		{% endif %}
 	}
 
 	location / {
