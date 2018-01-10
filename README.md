@@ -51,9 +51,9 @@ Special thanks goes to:
 
 - [EMnify/matrix-synapse-auto-deploy](https://github.com/EMnify/matrix-synapse-auto-deploy) - for the inspiration
 
-- [silviof/docker-matrix](https://hub.docker.com/r/silviof/docker-matrix/) - for packaging Matrix Synapse as a Docker image
+- [silviof/docker-matrix](https://hub.docker.com/r/silviof/docker-matrix/) - for packaging Matrix Synapse as a Docker image. Note: due to maintenance issues, we're now using [AVENTER-UG/docker-matrix](https://github.com/AVENTER-UG/docker-matrix)'s fork.
 
-- [silviof/matrix-riot-docker](https://hub.docker.com/r/silviof/matrix-riot-docker/) - for packaging Riot as a Docker image
+- [silviof/matrix-riot-docker](https://hub.docker.com/r/silviof/matrix-riot-docker/) - for packaging Riot as a Docker image. Note: due to maintenance issues, we're now using [AVENTER-UG/docker-matrix-riot](https://github.com/AVENTER-UG/docker-matrix-riot)'s fork.
 
 
 ## Prerequisites
