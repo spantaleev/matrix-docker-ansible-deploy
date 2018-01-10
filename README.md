@@ -27,7 +27,7 @@ Basically, this playbook aims to get you up-and-running with all the basic neces
 
 ## What's different about this Ansible playbook?
 
-This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EMnify/matrix-synapse-auto-deploy) Ansile deployment, but:
+This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EMnify/matrix-synapse-auto-deploy) Ansible deployment, but:
 
 - this one is a complete Ansible playbook (instead of just a role), so it should be **easier to run** - especially for folks not familiar with Ansible
 
