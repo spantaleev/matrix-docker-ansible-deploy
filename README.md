@@ -94,11 +94,11 @@ Once you have your server and you have [configured your DNS records](#configurin
 
 You can follow these steps:
 
-- create a directory to hold your configuration (`mkdir inventory/matrix.<your-domain>`)
+- create a directory to hold your configuration (`mkdir inventory/host_vars/matrix.<your-domain>`)
 
-- copy the sample configuration file (`cp examples/host-vars.yml inventory/matrix.<your-domain>/vars.yml`)
+- copy the sample configuration file (`cp examples/host-vars.yml inventory/host_vars/matrix.<your-domain>/vars.yml`)
 
-- edit the configuration file (`inventory/matrix.<your-domain>/vars.yml`) to your liking. You may also take a look at `roles/matrix-server/defaults.main.yml` and see if there's something you'd like to copy over and override in your `vars.yml` configuration file.
+- edit the configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) to your liking. You may also take a look at `roles/matrix-server/defaults.main.yml` and see if there's something you'd like to copy over and override in your `vars.yml` configuration file.
 
 - copy the sample inventory hosts file (`cp examples/hosts inventory/hosts`)
 
