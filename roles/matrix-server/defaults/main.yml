@@ -30,7 +30,8 @@ matrix_environment_variables_data_path: "{{ matrix_base_data_path }}/environment
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
 matrix_synapse_config_dir_path: "{{ matrix_synapse_base_path }}/config"
 matrix_synapse_run_path: "{{ matrix_synapse_base_path }}/run"
-matrix_synapse_media_store_path: "{{ matrix_synapse_base_path }}/media-store"
+matrix_synapse_storage_path: "{{ matrix_synapse_base_path }}/storage"
+matrix_synapse_media_store_path: "{{ matrix_synapse_storage_path }}/media-store"
 matrix_postgres_data_path: "{{ matrix_base_data_path }}/postgres"
 matrix_nginx_proxy_data_path: "{{ matrix_base_data_path }}/nginx-proxy"
 matrix_nginx_proxy_confd_path: "{{ matrix_nginx_proxy_data_path }}/conf.d"
@@ -42,6 +43,7 @@ docker_matrix_image: "avhost/docker-matrix:v0.26.0"
 docker_nginx_image: "nginx:1.13.8-alpine"
 docker_riot_image: "avhost/docker-matrix-riot:latest"
 docker_s3fs_image: "xueshanf/s3fs:latest"
+docker_goofys_image: "cloudproto/goofys:latest"
 
 # To avoid Synapse's macaroon secret key from changing every time
 # a new config is built from scratch, you can specify one here.
@@ -61,6 +63,7 @@ matrix_s3_media_store_enabled: false
 matrix_s3_media_store_bucket_name: "your-bucket-name"
 matrix_s3_media_store_aws_access_key: "your-aws-access-key"
 matrix_s3_media_store_aws_secret_key: "your-aws-secret-key"
+matrix_s3_media_store_region: "eu-central-1"
 
 # By default, this playbook installs the Riot.IM web UI on the `hostname_riot` domain.
 # If you wish to connect to your Matrix server by other means,

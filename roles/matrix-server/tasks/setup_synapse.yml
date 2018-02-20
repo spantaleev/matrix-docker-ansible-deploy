@@ -10,16 +10,19 @@
   with_items:
     - "{{ matrix_synapse_config_dir_path }}"
     - "{{ matrix_synapse_run_path }}"
+    - "{{ matrix_synapse_storage_path }}"
     # We handle matrix_synapse_media_store_path below, not here,
     # because if it's using S3fs and it's already mounted (from before),
     # trying to chown/chmod it here will cause trouble.
 
+# This will throw a Permission Denied error if already mounted using fuse
 - name: Check Matrix Synapse media store path
   stat: path="{{ matrix_synapse_media_store_path }}"
   register: local_path_media_store_stat
+  ignore_errors: yes
 
 # This is separate and conditional, to ensure we don't execute it
-# if the path already exists (and is likely used by an s3fs mount).
+# if the path already exists or we failed to check, because it's mounted using fuse.
 - name: Ensure Matrix media store path exists
   file:
     path: "{{ matrix_synapse_media_store_path }}"
@@ -27,7 +30,7 @@
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-  when: "not local_path_media_store_stat.stat.exists"
+  when: "not local_path_media_store_stat.failed and not local_path_media_store_stat.stat.exists"
 
 - name: Ensure Matrix Docker image is pulled
   docker_image:
@@ -74,7 +77,7 @@
     - {"regexp": "^turn_allow_guests:", "line": 'turn_allow_guests: False'}
     - {"regexp": "^url_preview_enabled:", "line": 'url_preview_enabled: True'}
     - {"regexp": "^max_upload_size:", "line": 'max_upload_size: "{{ matrix_max_upload_size_mb }}M"'}
-    - {"regexp": "^media_store_path:", "line": 'media_store_path: "/matrix-media-store"'}
+    - {"regexp": "^media_store_path:", "line": 'media_store_path: "/matrix-storage/media-store"'}
 
 - name: Augment Matrix config (configure Macaroon secret)
   lineinfile: "dest={{ matrix_synapse_config_dir_path }}/homeserver.yaml"

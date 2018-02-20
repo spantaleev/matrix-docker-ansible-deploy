@@ -7,14 +7,20 @@ Requires=matrix-postgres.service
 After=matrix-postgres.service
 {% endif %}
 {% if matrix_s3_media_store_enabled %}
-After=matrix-s3fs.service
-Requires=matrix-s3fs.service
+After=matrix-goofys.service
+Requires=matrix-goofys.service
 {% endif %}
 
 [Service]
 Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-synapse
 ExecStartPre=-/usr/bin/docker rm matrix-synapse
+{% if matrix_s3_media_store_enabled %}
+# Allow for some time before starting, so that media store can mount.
+# Mounting can happen later too, but if we start writing,
+# we'd write files to the local filesystem and fusermount will complain.
+ExecStartPre=/bin/sleep 5
+{% endif %}
 ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
 			{% if not matrix_postgres_use_external %}
 			--link matrix-postgres:{{ matrix_postgres_connection_hostname }} \
@@ -28,7 +34,7 @@ ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
 			-p {{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}:{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}/udp \
 			-v {{ matrix_synapse_config_dir_path }}:/data \
 			-v {{ matrix_synapse_run_path }}:/matrix-run \
-			-v {{ matrix_synapse_media_store_path }}:/matrix-media-store \
+			-v {{ matrix_synapse_storage_path }}:/matrix-storage:slave \
 			{{ docker_matrix_image }}
 ExecStop=-/usr/bin/docker kill matrix-synapse
 ExecStop=-/usr/bin/docker rm matrix-synapse
