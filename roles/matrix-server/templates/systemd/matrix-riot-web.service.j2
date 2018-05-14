@@ -8,7 +8,9 @@ Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-riot-web
 ExecStartPre=-/usr/bin/docker rm matrix-riot-web
 ExecStart=/usr/bin/docker run --rm --name matrix-riot-web \
-			-v {{ matrix_nginx_riot_web_data_path }}:/data:ro \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			-v {{ matrix_nginx_riot_web_data_path }}/config.json:/riot-web/webapp/config.json:ro \
+			-v {{ matrix_nginx_riot_web_data_path }}/riot.im.conf:/data/riot.im.conf:ro \
 			{% if not matrix_nginx_proxy_enabled %}
 			-p 127.0.0.1:8765:8765 \
 			{% endif %}
