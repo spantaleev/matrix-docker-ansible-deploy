@@ -49,8 +49,9 @@
     cleanup: yes
     command: generate
     env:
-      SERVER_NAME: "{{ hostname_matrix }}"
-      REPORT_STATS: "no"
+      SYNAPSE_CONFIG_PATH: "/data/homeserver.yaml"
+      SYNAPSE_SERVER_NAME: "{{ hostname_matrix }}"
+      SYNAPSE_REPORT_STATS: "no"
     user: "{{ matrix_user_uid }}:{{ matrix_user_gid }}"
     volumes:
       - "{{ matrix_synapse_config_dir_path }}:/data"
@@ -74,6 +75,7 @@
     line: '{{ item.line }}'
   with_items:
     - {"regexp": "^log_file:", "line": 'log_file: "/matrix-run/homeserver.log"'}
+    - {"regexp": "^uploads_path:", "line": 'uploads_path: "/matrix-run/uploads"'}
     - {"regexp": "^server_name:", "line": 'server_name: "{{ hostname_identity }}"'}
     - {"regexp": "^turn_allow_guests:", "line": 'turn_allow_guests: False'}
     - {"regexp": "^url_preview_enabled:", "line": 'url_preview_enabled: True'}
@@ -117,15 +119,14 @@
     regexp: '(.*)name: "psycopg2"((?:.|\n)*?)\n\n'
     replace: '\1name: "psycopg2"\n\1args:\n\1\1user: "{{ matrix_postgres_connection_username }}"\n\1\1password: "{{ matrix_postgres_connection_password }}"\n\1\1database: "{{ matrix_postgres_db_name }}"\n\1\1host: "{{ matrix_postgres_connection_hostname }}"\n\1\1cp_min: 5\n\1\1cp_max: 10\n\n'
 
-- name: Augment Matrix config (configure Coturn)
-  lineinfile: "dest={{ matrix_synapse_config_dir_path }}/turnserver.conf"
+- name: Augment Matrix config (configure TURN)
+  lineinfile: "dest={{ matrix_synapse_config_dir_path }}/homeserver.yaml"
   args:
-    regexp: "^{{ item.variable }}="
-    line: '{{ item.variable }}={{ item.value }}'
+    regexp: "{{ item.regexp }}"
+    line: '{{ item.line }}'
   with_items:
-    - {'variable': 'min-port', 'value': "{{ matrix_coturn_turn_udp_min_port }}"}
-    - {'variable': 'max-port', 'value': "{{ matrix_coturn_turn_udp_max_port }}"}
-    - {'variable': 'external-ip', 'value': "{{ matrix_coturn_turn_external_ip_address }}"}
+    - {"regexp": "^turn_uris:", "line": 'turn_uris: ["turn:{{ hostname_matrix }}:3478?transport=udp", "turn:{{ hostname_matrix }}:3478?transport=tcp"]'}
+    - {"regexp": "^turn_shared_secret:", "line": 'turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret }}"'}
 
 - name: Allow access to Matrix ports in firewalld
   firewalld:
@@ -135,9 +136,6 @@
     permanent: yes
   with_items:
     - '8448/tcp' # Matrix federation
-    - '3478/tcp' # STUN
-    - '3478/udp' # STUN
-    - "{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}/udp" # TURN
   when: ansible_os_family == 'RedHat'
 
 - name: Ensure matrix-synapse.service installed

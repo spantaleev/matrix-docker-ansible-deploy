@@ -36,24 +36,33 @@ matrix_postgres_data_path: "{{ matrix_base_data_path }}/postgres"
 matrix_nginx_proxy_data_path: "{{ matrix_base_data_path }}/nginx-proxy"
 matrix_nginx_proxy_confd_path: "{{ matrix_nginx_proxy_data_path }}/conf.d"
 matrix_nginx_riot_web_data_path: "{{ matrix_base_data_path }}/riot-web"
+matrix_coturn_base_path: "{{ matrix_base_data_path }}/coturn"
+matrix_coturn_config_path: "{{ matrix_coturn_base_path }}/turnserver.conf"
 matrix_scratchpad_dir: "{{ matrix_base_data_path }}/scratchpad"
 
 docker_postgres_image: "postgres:9.6.8-alpine"
-docker_matrix_image: "avhost/docker-matrix:v0.28.1"
+docker_matrix_image: "matrixdotorg/synapse:v0.30.0"
 docker_nginx_image: "nginx:1.13.12-alpine"
 docker_riot_image: "avhost/docker-matrix-riot:v0.14.2"
 docker_s3fs_image: "xueshanf/s3fs:latest"
 docker_goofys_image: "cloudproto/goofys:latest"
+docker_coturn_image: "instrumentisto/coturn:4.5.0.7"
 
 # To avoid Synapse's macaroon secret key from changing every time
 # a new config is built from scratch, you can specify one here.
 matrix_synapse_macaroon_secret_key: null
+
+
+# A shared secret (between Synapse and Coturn) used for authentication.
+# You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
+matrix_coturn_turn_static_auth_secret: ""
 
 # UDP port-range to use for TURN
 matrix_coturn_turn_udp_min_port: 49152
 matrix_coturn_turn_udp_max_port: 49172
 
 matrix_coturn_turn_external_ip_address: "{{ ansible_host }}"
+
 
 matrix_max_upload_size_mb: 10
 matrix_max_log_file_size_mb: 100
