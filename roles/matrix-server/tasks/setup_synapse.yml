@@ -61,10 +61,11 @@
   args:
     regexp: "{{ item.regexp }}"
     line: '{{ item.line }}'
+    backrefs: '{{ item.backrefs }}'
   with_items:
-    - {"regexp": "^    filename:", "line": '    filename: /matrix-run/homeserver.log'}
-    - {"regexp": "^    maxBytes:", "line": '    maxBytes: {{ matrix_max_log_file_size_mb * 1024 * 1024 }}'}
-    - {"regexp": "^    backupCount:", "line": '    backupCount: {{ matrix_max_log_files_count }}'}
+    - {"regexp": '^(\s+)filename:', "line": '\1filename: /matrix-run/homeserver.log', backrefs: yes}
+    - {"regexp": '^(\s+)maxBytes:', "line": '\1maxBytes: {{ matrix_max_log_file_size_mb * 1024 * 1024 }}', backrefs: yes}
+    - {"regexp": '^(\s+)backupCount:', "line": '\1backupCount: {{ matrix_max_log_files_count }}', backrefs: yes}
 
 - name: Augment Matrix config
   lineinfile: "dest={{ matrix_synapse_config_dir_path }}/homeserver.yaml"
