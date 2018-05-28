@@ -33,6 +33,10 @@
     docker_postgres_image_to_use: "{{ docker_postgres_image_v9 }}"
   when: "pg_version.startswith('9.')"
 
+- debug:
+    msg: "NOTE: Your setup is on an old Postgres version ({{ docker_postgres_image_to_use }}), while {{ docker_postgres_image_latest }} is supported. You can upgrade using --tags=upgrade-postgres"
+  when: "docker_postgres_image_to_use != docker_postgres_image_latest"
+
 # Even if we don't run the internal server, we still need this for running the CLI
 - name: Ensure postgres Docker image is pulled
   docker_image:
