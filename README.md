@@ -39,7 +39,7 @@ This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EM
 
 - this one **doesn't necessarily take over** ports 80 and 443. By default, it sets up nginx for you there, but you can disable that and configure your own webserver (proxy)
 
-- this one **runs everything in Docker containers** (like [silviof/docker-matrix](https://hub.docker.com/r/silviof/docker-matrix/) and [silviof/matrix-riot-docker](https://hub.docker.com/r/silviof/matrix-riot-docker/)), so it's likely more predictable
+- this one **runs everything in Docker containers** (like [matrixdotorg/synapse](https://hub.docker.com/r/matrixdotorg/synapse/) and [avhost/docker-matrix-riot](https://hub.docker.com/r/avhost/docker-matrix-riot/)), so it's likely more predictable and less fragile
 
 - this one retrieves and automatically renews free [Let's Encrypt](https://letsencrypt.org/) **SSL certificates** for you
 
@@ -51,9 +51,9 @@ Special thanks goes to:
 
 - [EMnify/matrix-synapse-auto-deploy](https://github.com/EMnify/matrix-synapse-auto-deploy) - for the inspiration
 
-- [silviof/docker-matrix](https://hub.docker.com/r/silviof/docker-matrix/) - for packaging Matrix Synapse as a Docker image. Note: due to maintenance issues, we're now using [AVENTER-UG/docker-matrix](https://github.com/AVENTER-UG/docker-matrix)'s fork.
+- [matrixdotorg/synapse](https://hub.docker.com/r/matrixdotorg/synapse/) - for packaging Matrix Synapse as a Docker image
 
-- [silviof/matrix-riot-docker](https://hub.docker.com/r/silviof/matrix-riot-docker/) - for packaging Riot as a Docker image. Note: due to maintenance issues, we're now using [AVENTER-UG/docker-matrix-riot](https://github.com/AVENTER-UG/docker-matrix-riot)'s fork.
+- [avhost/docker-matrix-riot](https://hub.docker.com/r/avhost/docker-matrix-riot/) - for packaging Riot as a Docker image
 
 
 ## Prerequisites
