@@ -40,13 +40,18 @@ matrix_coturn_base_path: "{{ matrix_base_data_path }}/coturn"
 matrix_coturn_config_path: "{{ matrix_coturn_base_path }}/turnserver.conf"
 matrix_scratchpad_dir: "{{ matrix_base_data_path }}/scratchpad"
 
-docker_postgres_image: "postgres:9.6.8-alpine"
+
+docker_postgres_image_v9: "postgres:9.6.8-alpine"
+docker_postgres_image_v10: "postgres:10.4-alpine"
+docker_postgres_image_latest: "{{ docker_postgres_image_v10 }}"
+
 docker_matrix_image: "matrixdotorg/synapse:v0.30.0"
 docker_nginx_image: "nginx:1.13.12-alpine"
 docker_riot_image: "avhost/docker-matrix-riot:v0.15.4"
 docker_s3fs_image: "xueshanf/s3fs:latest"
 docker_goofys_image: "cloudproto/goofys:latest"
 docker_coturn_image: "instrumentisto/coturn:4.5.0.7"
+
 
 # To avoid Synapse's macaroon secret key from changing every time
 # a new config is built from scratch, you can specify one here.

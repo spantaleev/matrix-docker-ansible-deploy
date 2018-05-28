@@ -14,7 +14,7 @@ ExecStart=/usr/bin/docker run --rm --name matrix-postgres \
 			--env-file={{ matrix_environment_variables_data_path }}/env-postgres-server-docker \
 			-v {{ matrix_postgres_data_path }}:/var/lib/postgresql/data \
 			-v /etc/passwd:/etc/passwd:ro \
-			{{ docker_postgres_image }}
+			{{ docker_postgres_image_to_use }}
 ExecStop=-/usr/bin/docker stop matrix-postgres
 ExecStop=-/usr/bin/docker rm matrix-postgres
 Restart=always
