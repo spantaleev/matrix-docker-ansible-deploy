@@ -316,3 +316,10 @@ This playbook sets up your server using the following Docker images:
 This Ansible playbook can be improved in the following ways:
 
 - setting up automatic backups to one or more storage providers
+
+
+## Support
+
+Matrix room: [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com)
+
+Github issues: [spantaleev/matrix-docker-ansible-deploy/issues](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues)
