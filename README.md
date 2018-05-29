@@ -39,21 +39,13 @@ This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EM
 
 - this one **doesn't necessarily take over** ports 80 and 443. By default, it sets up nginx for you there, but you can disable that and configure your own webserver (proxy)
 
-- this one **runs everything in Docker containers** (like [matrixdotorg/synapse](https://hub.docker.com/r/matrixdotorg/synapse/) and [avhost/docker-matrix-riot](https://hub.docker.com/r/avhost/docker-matrix-riot/)), so it's likely more predictable and less fragile
+- this one **runs everything in Docker containers**, so it's likely more predictable and less fragile (see [Docker images used by this playbook](#docker-images-used-by-this-playbook))
 
 - this one retrieves and automatically renews free [Let's Encrypt](https://letsencrypt.org/) **SSL certificates** for you
 
 - this one optionally can store the `media_store` content repository files on [Amazon S3](https://aws.amazon.com/s3/) (but defaults to storing files on the server's filesystem)
 
 - this one optionally **allows you to use an external PostgreSQL server** for Matrix Synapse's database (but defaults to running one in a container)
-
-Special thanks goes to:
-
-- [EMnify/matrix-synapse-auto-deploy](https://github.com/EMnify/matrix-synapse-auto-deploy) - for the inspiration
-
-- [matrixdotorg/synapse](https://hub.docker.com/r/matrixdotorg/synapse/) - for packaging Matrix Synapse as a Docker image
-
-- [avhost/docker-matrix-riot](https://hub.docker.com/r/avhost/docker-matrix-riot/) - for packaging Riot as a Docker image
 
 
 ## Prerequisites
@@ -300,6 +292,23 @@ However, if you've installed this on some server where you have other stuff you 
 - uninstall Docker itself, if necessary
 
 - delete the `/matrix` directory (`rm -rf /matrix`)
+
+
+## Docker images used by this playbook
+
+This playbook sets up your server using the following Docker images:
+
+- [matrixdotorg/synapse](https://hub.docker.com/r/matrixdotorg/synapse/) - the official [Matrix Synapse](https://github.com/matrix-org/synapse) server
+
+- [instrumentisto/coturn](https://hub.docker.com/r/instrumentisto/coturn/) - the [Coturn](https://github.com/coturn/coturn) STUN/TURN server
+
+- [avhost/docker-matrix-riot](https://hub.docker.com/r/avhost/docker-matrix-riot/) - the [Riot.im](https://about.riot.im/) web client (optional)
+
+- [postgres](https://hub.docker.com/_/postgres/) - the [Postgres](https://www.postgresql.org/) database server (optional)
+
+- [cloudproto/goofys](https://hub.docker.com/r/cloudproto/goofys/) - the [Goofys](https://github.com/kahing/goofys) Amazon [S3](https://aws.amazon.com/s3/) file-system-mounting program (optional)
+
+- [nginx](https://hub.docker.com/_/nginx/) - the [nginx](http://nginx.org/) web server (optional)
 
 
 ## Deficiencies
