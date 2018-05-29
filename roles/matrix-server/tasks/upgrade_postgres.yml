@@ -79,7 +79,7 @@
   command: |
     /usr/bin/docker run --rm --name matrix-postgres-dump \
     --link matrix-postgres:postgres \
-    --env-file=/matrix/environment-variables/env-postgres-pgsql-docker \
+    --env-file={{ matrix_environment_variables_data_path }}/env-postgres-pgsql-docker \
     -v {{ postgres_dump_dir }}:/out \
     {{ docker_postgres_image_to_use }} pg_dump -h postgres {{ matrix_postgres_db_name }} -f /out/{{ postgres_dump_name }}
 
@@ -107,9 +107,9 @@
   command: |
     /usr/bin/docker run --rm --name matrix-postgres-import \
     --link matrix-postgres:postgres \
-    --env-file=/matrix/environment-variables/env-postgres-pgsql-docker \
+    --env-file={{ matrix_environment_variables_data_path }}/env-postgres-pgsql-docker \
     -v {{ postgres_dump_dir }}:/in:ro \
-    {{ docker_postgres_image_to_use }} psql -h postgres -f /in/{{ postgres_dump_name }}
+    {{ docker_postgres_image_latest }} psql -h postgres -f /in/{{ postgres_dump_name }}
 
 - name: Delete Postgres database dump file
   file:
