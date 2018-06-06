@@ -206,7 +206,7 @@ Feel free to re-run this any time you think something is off with the server con
 Run this if you'd like to import your database from a previous default installation of Matrix Synapse.
 (don't forget to import your `media_store` files as well - see below).
 
-While this playbook always sets up PostgreSQL, by default, a Matrix Synapse installation would run
+While this playbook always sets up PostgreSQL, by default a Matrix Synapse installation would run
 using an SQLite database.
 
 If you have such a Matrix Synapse setup and wish to migrate it here (and over to PostgreSQL), this command is for you.
@@ -283,7 +283,7 @@ However, if you've installed this on some server where you have other stuff you 
 
 - delete the Matrix-related systemd .service files (`rm -f /etc/systemd/system/matrix*`) and reload systemd (`systemctl daemon-reload`)
 
-- delete all Matrix-related cronjobs (`rm -f /etc/cron.d/matrix*'`)
+- delete all Matrix-related cronjobs (`rm -f /etc/cron.d/matrix*`)
 
 - delete some helper scripts (`rm -f /usr/local/bin/matrix*`)
 
