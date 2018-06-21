@@ -50,7 +50,7 @@ This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EM
 
 ## Prerequisites
 
-- **CentOS** (7.0+), **Debian** (9/Stretch+) or **Ubuntu** (anything 16.04+, except 18.04 for now) server. This playbook can take over your whole server or co-exist with other services that you have there.
+- **CentOS** (7.0+), **Debian** (9/Stretch+) or **Ubuntu** (16.04+) server. This playbook can take over your whole server or co-exist with other services that you have there.
 
 - the [Ansible](http://ansible.com/) program, which is used to run this playbook and configures everything for you
 
