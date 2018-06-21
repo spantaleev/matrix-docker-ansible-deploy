@@ -52,7 +52,9 @@ This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EM
 
 - **CentOS** (7.0+), **Debian** (9/Stretch+) or **Ubuntu** (16.04+) server. This playbook can take over your whole server or co-exist with other services that you have there.
 
-- the [Ansible](http://ansible.com/) program, which is used to run this playbook and configures everything for you
+- [Python](https://www.python.org/) being installed on the server. Most distributions install Python by default, but some don't (e.g. Ubuntu 18.04) and require manual installation (something like `apt-get install python`).
+
+- the [Ansible](http://ansible.com/) program being installed on your own computer. It's used to run this playbook and configures your server for you
 
 - properly configured DNS SRV record for `<your-domain>` (details in [Configuring DNS](#configuring-dns) below)
 
