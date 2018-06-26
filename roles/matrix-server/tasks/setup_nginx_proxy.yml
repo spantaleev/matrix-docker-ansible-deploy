@@ -21,12 +21,13 @@
     - "{{ matrix_nginx_proxy_data_path }}"
     - "{{ matrix_nginx_proxy_confd_path }}"
 
-- name: Ensure Matrix Synapse proxy vhost configured
+- name: Ensure Matrix nginx-proxy configured
   template:
     src: "{{ role_path }}/templates/nginx-conf.d/{{ item }}.j2"
     dest: "{{ matrix_nginx_proxy_confd_path }}/{{ item }}"
     mode: 0644
   with_items:
+    - "nginx-http.conf"
     - "matrix-synapse.conf"
     - "matrix-riot-web.conf"
 
