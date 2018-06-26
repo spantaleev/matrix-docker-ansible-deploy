@@ -27,11 +27,29 @@ matrix_base_data_path: "/matrix"
 matrix_ssl_certs_path: "{{ matrix_base_data_path }}/ssl"
 matrix_ssl_support_email: "{{ host_specific_matrix_ssl_support_email }}"
 matrix_environment_variables_data_path: "{{ matrix_base_data_path }}/environment-variables"
+
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
 matrix_synapse_config_dir_path: "{{ matrix_synapse_base_path }}/config"
 matrix_synapse_run_path: "{{ matrix_synapse_base_path }}/run"
 matrix_synapse_storage_path: "{{ matrix_synapse_base_path }}/storage"
 matrix_synapse_media_store_path: "{{ matrix_synapse_storage_path }}/media-store"
+
+# Specifies which template files to use when configuring Synapse.
+# If you'd like to have your own different configuration, feel free to copy and paste
+# the original files into your inventory (e.g. in `inventory/host_vars/<host>/`)
+# and then change the specific host's `vars.yaml` file like this:
+# matrix_synapse_template_synapse_homeserver: "{{ playbook_dir }}/inventory/host_vars/<host>/homeserver.yaml.j2"
+matrix_synapse_template_synapse_homeserver: "{{ role_path }}/templates/synapse/homeserver.yaml.j2"
+matrix_synapse_template_synapse_log: "{{ role_path }}/templates/synapse/synapse.log.config.j2"
+
+matrix_synapse_macaroon_secret_key: ""
+matrix_synapse_registration_shared_secret: "{{ matrix_synapse_macaroon_secret_key }}"
+matrix_synapse_form_secret: "{{ matrix_synapse_macaroon_secret_key }}"
+
+matrix_max_upload_size_mb: 10
+matrix_max_log_file_size_mb: 100
+matrix_max_log_files_count: 10
+
 matrix_postgres_data_path: "{{ matrix_base_data_path }}/postgres"
 matrix_nginx_proxy_data_path: "{{ matrix_base_data_path }}/nginx-proxy"
 matrix_nginx_proxy_confd_path: "{{ matrix_nginx_proxy_data_path }}/conf.d"
@@ -53,11 +71,6 @@ docker_goofys_image: "cloudproto/goofys:latest"
 docker_coturn_image: "instrumentisto/coturn:4.5.0.7"
 
 
-# To avoid Synapse's macaroon secret key from changing every time
-# a new config is built from scratch, you can specify one here.
-matrix_synapse_macaroon_secret_key: null
-
-
 # A shared secret (between Synapse and Coturn) used for authentication.
 # You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
 matrix_coturn_turn_static_auth_secret: ""
@@ -67,11 +80,6 @@ matrix_coturn_turn_udp_min_port: 49152
 matrix_coturn_turn_udp_max_port: 49172
 
 matrix_coturn_turn_external_ip_address: "{{ ansible_host }}"
-
-
-matrix_max_upload_size_mb: 10
-matrix_max_log_file_size_mb: 100
-matrix_max_log_files_count: 10
 
 matrix_s3_media_store_enabled: false
 matrix_s3_media_store_bucket_name: "your-bucket-name"
