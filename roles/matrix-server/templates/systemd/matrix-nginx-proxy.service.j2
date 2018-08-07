@@ -4,8 +4,10 @@ After=docker.service
 Requires=docker.service
 Requires=matrix-synapse.service
 After=matrix-synapse.service
+{% if matrix_riot_web_enabled %}
 Requires=matrix-riot-web.service
 After=matrix-riot-web.service
+{% endif %}
 
 [Service]
 Type=simple
@@ -15,7 +17,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-nginx-proxy \
 			-p 80:80 \
 			-p 443:443 \
 			--link matrix-synapse:synapse \
+			{% if matrix_riot_web_enabled %}
 			--link matrix-riot-web:riot \
+			{% endif %}
 			-v {{ matrix_nginx_proxy_confd_path }}:/etc/nginx/conf.d:ro \
 			-v {{ matrix_ssl_certs_path }}:{{ matrix_ssl_certs_path }}:ro \
 			{{ docker_nginx_image }}
