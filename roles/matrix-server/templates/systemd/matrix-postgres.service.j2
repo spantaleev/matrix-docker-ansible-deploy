@@ -11,7 +11,7 @@ ExecStartPre=-/usr/bin/mkdir {{ matrix_postgres_data_path }}
 ExecStartPre=-/usr/bin/chown {{ matrix_user_uid }}:{{ matrix_user_gid }} {{ matrix_postgres_data_path }}
 ExecStart=/usr/bin/docker run --rm --name matrix-postgres \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
-			--network {{ matrix_docker_network }} \
+			--network={{ matrix_docker_network }} \
 			--env-file={{ matrix_environment_variables_data_path }}/env-postgres-server-docker \
 			-v {{ matrix_postgres_data_path }}:/var/lib/postgresql/data \
 			-v /etc/passwd:/etc/passwd:ro \
