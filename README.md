@@ -200,7 +200,7 @@ Run this as-is to set up a server.
 This doesn't start any services just yet (another step does this later - below).
 Feel free to re-run this any time you think something is off with the server configuration.
 
-	ansible-playbook -i inventory/hosts setup.yml --tags=setup-main
+	ansible-playbook -i inventory/hosts setup.yml --tags=setup-all
 
 
 ### Restoring an existing SQLite database (from another installation)
