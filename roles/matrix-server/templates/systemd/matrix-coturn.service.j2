@@ -14,7 +14,7 @@ ExecStart=/usr/bin/docker run --rm --name matrix-coturn \
 			-p {{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}:{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}/udp \
 			-v {{ matrix_synapse_config_dir_path }}:/matrix-config:ro \
 			-v {{ matrix_coturn_config_path }}:/turnserver.conf:ro \
-			{{ docker_coturn_image }} \
+			{{ matrix_docker_image_coturn }} \
 			-c /turnserver.conf
 ExecStop=-/usr/bin/docker kill matrix-coturn
 ExecStop=-/usr/bin/docker rm matrix-coturn

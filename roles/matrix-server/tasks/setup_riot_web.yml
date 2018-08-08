@@ -15,7 +15,7 @@
 
 - name: Ensure riot-web Docker image is pulled
   docker_image:
-    name: "{{ docker_riot_image }}"
+    name: "{{ matrix_docker_image_riot }}"
   when: matrix_riot_web_enabled
 
 - name: Ensure Matrix riot-web configured
@@ -64,6 +64,6 @@
 
 - name: Ensure riot-web Docker image doesn't exist
   docker_image:
-    name: "{{ docker_riot_image }}"
+    name: "{{ matrix_docker_image_riot }}"
     state: absent
   when: "not matrix_riot_web_enabled"

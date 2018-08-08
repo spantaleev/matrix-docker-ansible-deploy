@@ -1,6 +1,22 @@
 # 2018-08-08
 
 
+## (BC Break) Renaming playbook variables
+
+The following playbook variables were renamed:
+
+- from `matrix_max_upload_size_mb` to `matrix_synapse_max_upload_size_mb`
+- from `matrix_max_log_file_size_mb` to `matrix_synapse_max_log_file_size_mb`
+- from `matrix_max_log_files_count` to `matrix_synapse_max_log_files_count`
+- from `docker_matrix_image` to `matrix_docker_image_synapse`
+- from `docker_nginx_image` to `matrix_docker_image_nginx`
+- from `docker_riot_image` to `matrix_docker_image_riot`
+- from `docker_goofys_image` to `matrix_docker_image_goofys`
+- from `docker_coturn_image` to `matrix_docker_image_coturn`
+
+If you're overriding any of them in your `vars.yml` file, you'd need to change to the new names.
+
+
 ## Renaming Ansible playbook tag
 
 The command for executing the whole playbook has changed.

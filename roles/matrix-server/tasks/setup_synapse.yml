@@ -39,7 +39,7 @@
 
 - name: Ensure Matrix Docker image is pulled
   docker_image:
-    name: "{{ docker_matrix_image }}"
+    name: "{{ matrix_docker_image_synapse }}"
 
 - name: Check if a Matrix Synapse configuration exists
   stat:
@@ -51,7 +51,7 @@
 - name: Generate initial Matrix config
   docker_container:
     name: matrix-config
-    image: "{{ docker_matrix_image }}"
+    image: "{{ matrix_docker_image_synapse }}"
     detach: no
     cleanup: yes
     command: generate
