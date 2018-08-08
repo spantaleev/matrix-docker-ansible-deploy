@@ -1,4 +1,4 @@
-# Amazon S3 configuration (optional)
+# Storing Matrix media files on Amazon S3 (optional)
 
 By default, this playbook configures your server to store Matrix Synapse's content repository (`media_store`) files on the local filesystem.
 If that's alright, you can skip this.
