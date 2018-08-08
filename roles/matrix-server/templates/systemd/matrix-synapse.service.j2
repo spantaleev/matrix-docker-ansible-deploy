@@ -23,9 +23,7 @@ ExecStartPre=-/usr/bin/docker rm matrix-synapse
 ExecStartPre=/bin/sleep 5
 {% endif %}
 ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
-			{% if not matrix_postgres_use_external %}
-			--link matrix-postgres:{{ matrix_postgres_connection_hostname }} \
-			{% endif %}
+			--network {{ matrix_docker_network }} \
 			-p 8448:8448 \
 			{% if not matrix_nginx_proxy_enabled %}
 			-p 127.0.0.1:8008:8008 \

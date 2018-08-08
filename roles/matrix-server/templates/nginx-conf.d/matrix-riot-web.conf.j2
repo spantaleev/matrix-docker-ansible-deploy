@@ -40,7 +40,16 @@ server {
 	ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
 
     location / {
-        proxy_pass http://{{ 'riot' if matrix_nginx_proxy_enabled else 'localhost' }}:8765;
+		{% if matrix_nginx_proxy_enabled %}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver 127.0.0.11 valid=5s;
+			set $backend "matrix-riot-web:8765";
+			proxy_pass http://$backend;
+		{% else %}
+			{# Generic configuration for people to use outside of our container setup #}
+			proxy_pass http://localhost:8765;
+		{% endif %}
+
         proxy_set_header X-Forwarded-For $remote_addr;
     }
 }
