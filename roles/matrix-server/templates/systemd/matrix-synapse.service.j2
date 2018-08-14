@@ -10,6 +10,9 @@ After=matrix-postgres.service
 After=matrix-goofys.service
 Requires=matrix-goofys.service
 {% endif %}
+{% if matrix_mailer_enabled %}
+Wants=matrix-mailer.service
+{% endif %}
 Wants=matrix-coturn.service
 
 [Service]

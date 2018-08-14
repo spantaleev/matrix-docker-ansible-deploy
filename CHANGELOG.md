@@ -1,3 +1,13 @@
+# 2018-08-14
+
+## Email-sending support
+
+The playbook now configures an email-sending service (postfix) by default.
+Additional details are available in [Adjusting email-sending settings](docs/configuring-playbook-email.md).
+
+With this, Matrix Synapse is able to send email notifications for missed messages, etc.
+
+
 # 2018-08-08
 
 

@@ -69,6 +69,7 @@ matrix_docker_image_riot: "avhost/docker-matrix-riot:v0.16.0"
 matrix_docker_image_s3fs: "xueshanf/s3fs:latest"
 matrix_docker_image_goofys: "cloudproto/goofys:latest"
 matrix_docker_image_coturn: "instrumentisto/coturn:4.5.0.7"
+matrix_docker_image_mailer: "panubo/postfix:latest"
 
 # The Docker network that all services would be put into
 matrix_docker_network: "matrix"
@@ -88,6 +89,18 @@ matrix_s3_media_store_bucket_name: "your-bucket-name"
 matrix_s3_media_store_aws_access_key: "your-aws-access-key"
 matrix_s3_media_store_aws_secret_key: "your-aws-secret-key"
 matrix_s3_media_store_region: "eu-central-1"
+
+# By default, this playbook sets up a postfix mailer server (running in a container).
+# This is so that Matrix Synapse can send email reminders for unread messages.
+matrix_mailer_enabled: true
+
+matrix_mailer_sender_address: "matrix@{{ hostname_identity }}"
+matrix_mailer_relay_use: false
+matrix_mailer_relay_host_name: "mail.example.com"
+matrix_mailer_relay_host_port: 587
+matrix_mailer_relay_auth: false
+matrix_mailer_relay_auth_username: ""
+matrix_mailer_relay_auth_password: ""
 
 # By default, this playbook installs the Riot.IM web UI on the `hostname_riot` domain.
 # If you wish to connect to your Matrix server by other means,

@@ -86,7 +86,7 @@ web_client: False
 # web_client_location: "/path/to/web/root"
 
 # The public-facing base URL for the client API (not including _matrix/...)
-# public_baseurl: https://example.com:8448/
+public_baseurl: https://{{ hostname_matrix }}/
 
 # Set the soft limit on the number of file descriptors synapse can use
 # Zero is used to indicate synapse should set the soft limit to the
@@ -563,20 +563,20 @@ password_config:
 # If your SMTP server requires authentication, the optional smtp_user &
 # smtp_pass variables should be used
 #
-#email:
-#   enable_notifs: false
-#   smtp_host: "localhost"
-#   smtp_port: 25
-#   smtp_user: "exampleusername"
-#   smtp_pass: "examplepassword"
-#   require_transport_security: False
-#   notif_from: "Your Friendly %(app)s Home Server <noreply@example.com>"
-#   app_name: Matrix
-#   template_dir: res/templates
-#   notif_template_html: notif_mail.html
-#   notif_template_text: notif_mail.txt
-#   notif_for_new_users: True
-#   riot_base_url: "http://localhost/riot"
+{% if matrix_mailer_enabled %}
+email:
+   enable_notifs: true
+   smtp_host: "matrix-mailer"
+   smtp_port: 587
+   require_transport_security: false
+   notif_from: "Matrix <{{ matrix_mailer_sender_address }}>"
+   app_name: Matrix
+   template_dir: /synapse/res/templates
+   notif_template_html: notif_mail.html
+   notif_template_text: notif_mail.txt
+   notif_for_new_users: True
+   riot_base_url: "https://{{ hostname_riot }}"
+{% endif %}
 
 
 # password_providers:

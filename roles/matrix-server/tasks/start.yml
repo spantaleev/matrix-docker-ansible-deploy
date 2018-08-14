@@ -11,6 +11,10 @@
 - name: Ensure matrix-coturn autoruns and is restarted
   service: name=matrix-coturn enabled=yes state=restarted daemon_reload=yes
 
+- name: Ensure matrix-mailer autoruns and is restarted
+  service: name=matrix-mailer enabled=yes state=restarted daemon_reload=yes
+  when: matrix_mailer_enabled
+
 - name: Ensure matrix-synapse autoruns and is restarted
   service: name=matrix-synapse enabled=yes state=restarted daemon_reload=yes
 

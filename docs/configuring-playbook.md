@@ -23,6 +23,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ## Other configuration options
 
+- [Adjusting email-sending settings](configuring-playbook-email.md) (optional)
+
 - [Storing Matrix media files on Amazon S3](configuring-playbook-s3.md) (optional)
 
 - [Using an external PostgreSQL server](configuring-playbook-external-postgres.md) (optional)
