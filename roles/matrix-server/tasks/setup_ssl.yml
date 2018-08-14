@@ -49,8 +49,9 @@
 
 - name: Ensure SSL certificates are marked as wanted in acmetool
   shell: >-
-    /usr/bin/docker run --rm --name acmetool-host-grab -p 80:80
+    /usr/bin/docker run --rm --name acmetool --net=host
     -v {{ matrix_ssl_certs_path }}:/certs
+    -v {{ matrix_ssl_certs_path }}/run:/var/run/acme
     -e ACME_EMAIL={{ matrix_ssl_support_email }}
     willwill/acme-docker
     acmetool want {{ item }} --xlog.severity=debug
