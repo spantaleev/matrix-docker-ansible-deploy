@@ -35,6 +35,8 @@ This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EM
 
 - this one is a complete Ansible playbook (instead of just a role), so it's **easier to run** - especially for folks not familiar with Ansible
 
+- this one installs and hooks together **a lot more Matrix-related services** for you (see above)
+
 - this one **can be re-ran many times** without causing trouble
 
 - works on both **CentOS** (7.0+) and Debian-based distributions (**Debian** 9/Stretch+, **Ubuntu** 16.04+)
