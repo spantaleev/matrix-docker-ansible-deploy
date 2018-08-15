@@ -1,3 +1,11 @@
+# 2018-08-15
+
+## mxisd Identity Server support
+
+The playbook now sets up an [mxisd](https://github.com/kamax-io/mxisd) Identity Server for you by default.
+Additional details are available in [Adjusting mxisd Identity Server configuration](docs/configuring-playbook-mxisd.md).
+
+
 # 2018-08-14
 
 ## Email-sending support

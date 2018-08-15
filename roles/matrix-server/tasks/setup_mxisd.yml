@@ -1,0 +1,74 @@
+---
+
+#
+# Tasks related to setting up mxisd
+#
+
+- name: Fail if mailer is not enabled
+  fail:
+    msg: "You need to enable the mailer service (matrix_mailer_enabled) to install mxisd"
+  when: "matrix_mxisd_enabled and not matrix_mailer_enabled"
+
+- name: Ensure mxisd paths exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  with_items:
+    - "{{ matrix_mxisd_config_path }}"
+    - "{{ matrix_mxisd_data_path }}"
+  when: matrix_mxisd_enabled
+
+- name: Ensure mxisd image is pulled
+  docker_image:
+    name: "{{ matrix_docker_image_mxisd }}"
+  when: matrix_mxisd_enabled
+
+- name: Ensure mxisd config installed
+  template:
+    src: "{{ matrix_mxisd_template_config }}"
+    dest: "{{ matrix_mxisd_config_path }}/mxisd.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  when: matrix_mxisd_enabled
+
+- name: Ensure matrix-mxisd.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-mxisd.service.j2"
+    dest: "/etc/systemd/system/matrix-mxisd.service"
+    mode: 0644
+  when: matrix_mxisd_enabled
+
+#
+# Tasks related to getting rid of mxisd (if it was previously enabled)
+#
+
+- name: Check existence of matrix-mxisd service
+  stat: path="/etc/systemd/system/matrix-mxisd.service"
+  register: matrix_mxisd_service_stat
+
+- name: Ensure matrix-mxisd is stopped
+  service: name=matrix-mxisd state=stopped daemon_reload=yes
+  register: stopping_result
+  when: "not matrix_mxisd_enabled and matrix_mxisd_service_stat.stat.exists"
+
+- name: Ensure matrix-mxisd.service doesn't exist
+  file:
+    path: "/etc/systemd/system/matrix-mxisd.service"
+    state: absent
+  when: "not matrix_mxisd_enabled and matrix_mxisd_service_stat.stat.exists"
+
+- name: Ensure Matrix mxisd paths don't exist
+  file:
+    path: "{{ matrix_mxisd_base_path }}"
+    state: absent
+  when: "not matrix_mxisd_enabled"
+
+- name: Ensure mxisd Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_docker_image_mxisd }}"
+    state: absent
+  when: "not matrix_mxisd_enabled"

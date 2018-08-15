@@ -1,0 +1,19 @@
+matrix.domain: {{ hostname_identity }}
+server.name: {{ hostname_matrix }}
+
+key.path: /var/mxisd/sign.key
+
+storage.provider.sqlite.database: /var/mxisd/mxisd.db
+
+threepid.medium.email.identity.from: {{ matrix_mailer_sender_address }}
+threepid.medium.email.connectors.smtp.host: matrix-mailer
+threepid.medium.email.connectors.smtp.port: 587
+threepid.medium.email.connectors.smtp.tls: 0
+
+synapseSql.enabled: true
+synapseSql.type: postgresql
+synapseSql.connection: //{{ matrix_postgres_connection_hostname }}/{{ matrix_postgres_db_name }}?user={{ matrix_postgres_connection_username }}&password={{ matrix_postgres_connection_password }}
+
+{% if matrix_mxisd_matrixorg_forwarding_enabled %}
+forward.servers: ['matrix-org']
+{% endif %}

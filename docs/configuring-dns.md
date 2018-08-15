@@ -12,8 +12,12 @@ The SRV record should look like this:
 - Name: `_matrix._tcp` (use this text as-is)
 - Content: `10 0 8448 matrix.<your-domain>` (replace `<your-domain>` with your own)
 
-Once you've set up this DNS SRV record, you should create 2 other domain names (`matrix.<your-domain>` and `riot.<your-domain>`) and point both of them to your new server's IP address (DNS `A` record or `CNAME` is fine).
+To make the [mxisd](https://github.com/kamax-io/mxisd) Identity Server (which this playbook installs for you) be authoritative for your domain name, set up one more SRV record that looks like this:
+- Name: `_matrix-identity._tcp` (use this text as-is)
+- Content: `10 0 443 matrix.<your-domain>` (replace `<your-domain>` with your own)
 
-This playbook can then install all the services on that new server and you'll be able to join the Matrix network as `@<username>:<your-domain>`, even though everything is installed elsewhere (not on `<your-domain>`).
+Once you've set up these DNS SRV records, you should create 2 other domain names (`matrix.<your-domain>` and `riot.<your-domain>`) and point both of them to your new server's IP address (DNS `A` record or `CNAME` is fine).
+
+This playbook can then install all the services on that new server and you'll be able to join the Matrix network as `@<username>:<your-domain>`.
 
 When ready to proceed, continue with [Configuring this Ansible playbook](configuring-playbook.md).

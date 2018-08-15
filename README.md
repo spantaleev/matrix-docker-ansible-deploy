@@ -20,6 +20,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional default) a [Riot](https://riot.im/) web UI, which is configured to connect to your own Matrix Synapse server by default
 
+- (optional default) an [mxisd](https://github.com/kamax-io/mxisd) Matrix Identity server
+
 - (optional default) a [Postfix](http://www.postfix.org/) mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server)
 
 - (optional default) an [nginx](http://nginx.org/) web server, listening on ports 80 and 443 - standing in front of all the other services. Using your own webserver [is possible](#using-your-own-webserver-instead-of-this-playbooks-nginx-proxy-optional)
@@ -71,6 +73,8 @@ This playbook sets up your server using the following Docker images:
 - [instrumentisto/coturn](https://hub.docker.com/r/instrumentisto/coturn/) - the [Coturn](https://github.com/coturn/coturn) STUN/TURN server
 
 - [avhost/docker-matrix-riot](https://hub.docker.com/r/avhost/docker-matrix-riot/) - the [Riot.im](https://about.riot.im/) web client (optional)
+
+- [kamax/mxisd](https://hub.docker.com/r/kamax/mxisd/) - the [mxisd](https://github.com/kamax-io/mxisd) Matrix Identity server (optional)
 
 - [postgres](https://hub.docker.com/_/postgres/) - the [Postgres](https://www.postgresql.org/) database server (optional)
 
