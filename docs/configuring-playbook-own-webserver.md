@@ -12,7 +12,7 @@ All it takes is editing your configuration file (`inventory/matrix.<your-domain>
 matrix_nginx_proxy_enabled: false
 ```
 
-**Note**: even if you do this, in order [to install](#installing), this playbook still expects port 80 to be available. **Please manually stop your other webserver while installing**. You can start it back again afterwards.
+**Note**: even if you do this, in order [to install](installing.md), this playbook still expects port 80 to be available. **Please manually stop your other webserver while installing**. You can start it back again afterwards.
 
 **If your own webserver is nginx**, you can most likely directly use the config files installed by this playbook at: `/matrix/nginx-proxy/conf.d`. Just include them in your `nginx.conf` like this: `include /matrix/nginx-proxy/conf.d/*.conf;`
 
