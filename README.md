@@ -20,7 +20,7 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional default) a [Riot](https://riot.im/) web UI, which is configured to connect to your own Matrix Synapse server by default
 
-- (optional default) a [Postfix](http://postfix.org/) mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server)
+- (optional default) a [Postfix](http://www.postfix.org/) mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server)
 
 - (optional default) an [nginx](http://nginx.org/) web server, listening on ports 80 and 443 - standing in front of all the other services. Using your own webserver [is possible](#using-your-own-webserver-instead-of-this-playbooks-nginx-proxy-optional)
 
@@ -76,7 +76,7 @@ This playbook sets up your server using the following Docker images:
 
 - [cloudproto/goofys](https://hub.docker.com/r/cloudproto/goofys/) - the [Goofys](https://github.com/kahing/goofys) Amazon [S3](https://aws.amazon.com/s3/) file-system-mounting program (optional)
 
-- [panubo/postfix](https://hub.docker.com/r/panubo/postfix/) - the [Postfix](http://postfix.org/) email server (optional)
+- [panubo/postfix](https://hub.docker.com/r/panubo/postfix/) - the [Postfix](http://www.postfix.org/) email server (optional)
 
 - [nginx](https://hub.docker.com/_/nginx/) - the [nginx](http://nginx.org/) web server (optional)
 
