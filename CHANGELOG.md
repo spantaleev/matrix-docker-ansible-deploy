@@ -1,3 +1,15 @@
+# 2018-08-17
+
+## Disabling some unnecessary Synapse services
+
+The following services are not necessary, so they have been disabled:
+- on the federation port (8448): the `client` service
+- on the http port (80): the old Angular `webclient` and the `federation` service
+
+Federation runs only on the federation port (8448) now.
+The Client APIs run only on the http port (80) now.
+
+
 # 2018-08-15
 
 ## mxisd Identity Server support

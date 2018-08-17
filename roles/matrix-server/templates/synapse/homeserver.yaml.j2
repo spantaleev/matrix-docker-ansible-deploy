@@ -143,17 +143,6 @@ listeners:
 
     # List of HTTP resources to serve on this listener.
     resources:
-      -
-        # List of resources to host on this listener.
-        names:
-          - client     # The client-server APIs, both v1 and v2
-          - webclient  # The bundled webclient.
-
-        # Should synapse compress HTTP responses to clients that support it?
-        # This should be disabled if running synapse behind a load balancer
-        # that can do automatic compression.
-        compress: true
-
       - names: [federation]  # Federation APIs
         compress: false
 
@@ -174,10 +163,8 @@ listeners:
     x_forwarded: true
 
     resources:
-      - names: [client, webclient]
+      - names: [client]
         compress: true
-      - names: [federation]
-        compress: false
 
   # Turn on the twisted ssh manhole service on localhost on the given
   # port.
