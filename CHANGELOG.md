@@ -20,10 +20,10 @@ which drops the initial page load's size from 5.31MB to 1.86MB.
 
 The following services are not necessary, so they have been disabled:
 - on the federation port (8448): the `client` service
-- on the http port (80): the old Angular `webclient` and the `federation` service
+- on the http port (8008, exposed over 443): the old Angular `webclient` and the `federation` service
 
 Federation runs only on the federation port (8448) now.
-The Client APIs run only on the http port (80) now.
+The Client APIs run only on the http port (8008) now.
 
 
 # 2018-08-15
