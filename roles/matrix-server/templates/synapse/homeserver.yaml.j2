@@ -596,6 +596,11 @@ password_providers:
           profile:
             name: {{ matrix_synapse_ext_password_provider_rest_auth_login_profile_name_autofill }}
 {% endif %}
+{% if matrix_synapse_ext_password_provider_shared_secret_auth_enabled %}
+  - module: "shared_secret_authenticator.SharedSecretAuthenticator"
+    config:
+      sharedSecret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret }}"
+{% endif %}
 {% endif %}
 
 
