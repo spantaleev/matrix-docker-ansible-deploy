@@ -1,5 +1,14 @@
 # 2018-08-17
 
+## Compression improvements
+
+Shifted Matrix Synapse compression from happening in the Matrix Synapse,
+to happening in the nginx proxy that's in front of it.
+
+Additionally, `riot-web` also gets compressed now (in the nginx proxy),
+which drops the initial page load's size from 5.31MB to 1.86MB.
+
+
 ## Disabling some unnecessary Synapse services
 
 The following services are not necessary, so they have been disabled:
