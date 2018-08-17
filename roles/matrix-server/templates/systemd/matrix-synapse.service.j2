@@ -34,6 +34,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
 			-v {{ matrix_synapse_config_dir_path }}:/data \
 			-v {{ matrix_synapse_run_path }}:/matrix-run \
 			-v {{ matrix_synapse_storage_path }}:/matrix-storage:slave \
+			{% for volume in matrix_synapse_container_additional_volumes %}
+			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
+			{% endfor %}
 			-e SYNAPSE_CONFIG_PATH=/data/homeserver.yaml \
 			{{ matrix_docker_image_synapse }}
 ExecStop=-/usr/bin/docker kill matrix-synapse

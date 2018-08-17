@@ -1,0 +1,45 @@
+---
+
+#
+# Tasks related to setting up matrix-synapse-rest-auth
+#
+
+- name: Download matrix-synapse-rest-auth
+  get_url:
+    url: "{{ matrix_synapse_ext_password_provider_rest_auth_download_url }}"
+    dest: "{{ matrix_synapse_ext_path }}/rest_auth_provider.py"
+    mode: 0440
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+
+- set_fact:
+    matrix_synapse_password_providers_enabled: true
+  when: "matrix_synapse_ext_password_provider_rest_auth_enabled"
+
+- set_fact:
+    matrix_synapse_container_additional_volumes: >
+      {{ matrix_synapse_container_additional_volumes }}
+      +
+      {{ [{'src': '{{ matrix_synapse_ext_path }}/rest_auth_provider.py', 'dst': '/usr/local/lib/python2.7/site-packages/rest_auth_provider.py', 'options': 'ro'}] }}
+  when: "matrix_synapse_ext_password_provider_rest_auth_enabled"
+
+- set_fact:
+    matrix_synapse_additional_loggers: >
+      {{ matrix_synapse_additional_loggers }}
+      +
+      {{ [{'name': 'rest_auth_provider', 'level': 'DEBUG'}] }}
+  when: "matrix_synapse_ext_password_provider_rest_auth_enabled"
+
+- debug: var="matrix_synapse_container_additional_volumes"
+
+- debug: var="matrix_synapse_additional_loggers"
+
+#
+# Tasks related to getting rid of matrix-synapse-rest-auth (if it was previously enabled)
+#
+
+- name: Ensure matrix-synapse-rest-auth doesn't exist
+  file:
+    path: "{{ matrix_synapse_ext_path }}/rest_auth_provider.py"
+    state: absent
+  when: "not matrix_synapse_ext_password_provider_rest_auth_enabled"

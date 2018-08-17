@@ -1,5 +1,12 @@
 # 2018-08-17
 
+## REST auth support via matrix-synapse-rest-auth
+
+The playbook can now install and configure [matrix-synapse-rest-auth](https://github.com/kamax-io/matrix-synapse-rest-auth) for you.
+
+Additional details are available in [Setting up the REST authentication password provider module](docs/configuring-playbook-rest-auth.md).
+
+
 ## Compression improvements
 
 Shifted Matrix Synapse compression from happening in the Matrix Synapse,

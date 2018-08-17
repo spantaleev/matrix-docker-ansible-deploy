@@ -32,6 +32,11 @@ loggers:
         # information such as access tokens.
         level: INFO
 
+{% for logger in matrix_synapse_additional_loggers %}
+    {{ logger.name }}:
+        level: {{ logger.level }}
+{% endfor %}
+
 root:
     level: INFO
     handlers: [file, console]

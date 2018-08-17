@@ -580,7 +580,23 @@ email:
 #         #bind_dn:
 #         #bind_password:
 #         #filter: "(objectClass=posixAccount)"
-
+{% if matrix_synapse_password_providers_enabled %}
+password_providers:
+{% if matrix_synapse_ext_password_provider_rest_auth_enabled %}
+  - module: "rest_auth_provider.RestAuthProvider"
+    config:
+      endpoint: "{{ matrix_synapse_ext_password_provider_rest_auth_endpoint }}"
+      policy:
+        registration:
+          username:
+            enforceLowercase: {{ matrix_synapse_ext_password_provider_rest_auth_registration_enforce_lowercase }}
+          profile:
+            name: {{ matrix_synapse_ext_password_provider_rest_auth_registration_profile_name_autofill }}
+        login:
+          profile:
+            name: {{ matrix_synapse_ext_password_provider_rest_auth_login_profile_name_autofill }}
+{% endif %}
+{% endif %}
 
 
 # Clients requesting push notifications can either have the body of

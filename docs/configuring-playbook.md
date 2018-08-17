@@ -32,3 +32,5 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Adjusting mxisd Identity Server configuration](configuring-playbook-mxisd.md) (optional)
 
 - [Using your own webserver, instead of this playbook's nginx proxy](configuring-playbook-own-webserver.md) (optional)
+
+- [Setting up the REST authentication password provider module](configuring-playbook-rest-auth.md) (optional)
