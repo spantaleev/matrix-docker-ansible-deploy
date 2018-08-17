@@ -8,9 +8,11 @@
   get_url:
     url: "{{ matrix_synapse_ext_password_provider_rest_auth_download_url }}"
     dest: "{{ matrix_synapse_ext_path }}/rest_auth_provider.py"
+    force: true
     mode: 0440
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
+  when: "matrix_synapse_ext_password_provider_rest_auth_enabled"
 
 - set_fact:
     matrix_synapse_password_providers_enabled: true
