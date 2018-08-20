@@ -34,3 +34,5 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Using your own webserver, instead of this playbook's nginx proxy](configuring-playbook-own-webserver.md) (optional)
 
 - [Setting up the REST authentication password provider module](configuring-playbook-rest-auth.md) (optional)
+
+- [Setting up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md) (optional)

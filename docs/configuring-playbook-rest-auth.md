@@ -1,6 +1,6 @@
 # Setting up the REST authentication password provider module
 
-The playbook can now install and configure [matrix-synapse-rest-auth](https://github.com/kamax-io/matrix-synapse-rest-auth) for you.
+The playbook can install and configure [matrix-synapse-rest-auth](https://github.com/kamax-io/matrix-synapse-rest-auth) for you.
 
 See that project's documentation to learn what it does and why it might be useful to you.
 
