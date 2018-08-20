@@ -1,3 +1,21 @@
+# 2018-08-20
+
+## Matrix Synapse rate limit control variables
+
+The following new variables can now be configured to control Matrix Synapse's rate-limiting (default values are shown below).
+
+```yaml
+matrix_synapse_rc_messages_per_second: 0.2
+matrix_synapse_rc_message_burst_count: 10.0
+```
+
+## Shared Secret Auth support via matrix-synapse-shared-secret-auth
+
+The playbook can now install and configure [matrix-synapse-shared-secret-auth](https://github.com/devture/matrix-synapse-shared-secret-auth) for you.
+
+Additional details are available in [Setting up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md).
+
+
 # 2018-08-17
 
 ## REST auth support via matrix-synapse-rest-auth
