@@ -28,6 +28,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [matrix-synapse-rest-auth](https://github.com/kamax-io/matrix-synapse-rest-auth) REST authentication password provider module
 
+- (optional) the [matrix-synapse-shared-secret-auth](https://github.com/devture/matrix-synapse-shared-secret-auth) password provider module
+
 Basically, this playbook aims to get you up-and-running with all the basic necessities around Matrix, without you having to do anything else.
 
 
