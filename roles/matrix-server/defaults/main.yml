@@ -174,6 +174,29 @@ matrix_mxisd_matrixorg_forwarding_enabled: false
 matrix_mxisd_template_config: "{{ role_path }}/templates/mxisd/mxisd.yaml.j2"
 
 
+# Enable this to add support for matrix-corporal.
+# See: https://github.com/devture/matrix-corporal
+matrix_corporal_enabled: false
+
+matrix_corporal_docker_image: "devture/matrix-corporal:1.0"
+matrix_corporal_base_path: "{{ matrix_base_data_path }}/corporal"
+matrix_corporal_config_dir_path: "{{ matrix_corporal_base_path }}/config"
+matrix_corporal_cache_dir_path: "{{ matrix_corporal_base_path }}/cache"
+matrix_corporal_var_dir_path: "{{ matrix_corporal_base_path }}/var"
+
+matrix_corporal_matrix_timeout_milliseconds: 30000
+
+matrix_corporal_reconciliation_retry_interval_milliseconds: 30000
+matrix_corporal_reconciliation_user_id_local_part: "matrix-corporal"
+
+matrix_corporal_http_api_enabled: false
+matrix_corporal_http_api_auth_token: ""
+
+# Matrix Corporal policy provider configuration (goes directly into the configuration's `PolicyProvider` value)
+matrix_corporal_policy_provider_config: ""
+
+matrix_corporal_debug: false
+
 # By default, this playbook installs the Riot.IM web UI on the `hostname_riot` domain.
 # If you wish to connect to your Matrix server by other means,
 # you may wish to disable this.
@@ -187,6 +210,12 @@ matrix_riot_web_default_identity_server_url: "https://{{ matrix_synapse_trusted_
 # But in case that's not the case, you may wish to prevent that
 # and take care of proxying by yourself.
 matrix_nginx_proxy_enabled: true
+
+# The addresses where the Matrix Client API is.
+# Certain extensions (like matrix-corporal) may override this in order to capture all traffic.
+matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container: "matrix-synapse:8008"
+matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container: "localhost:8008"
+
 
 # Specifies when to attempt to retrieve new SSL certificates from Let's Encrypt.
 matrix_ssl_renew_cron_time_definition: "15 4 */5 * *"

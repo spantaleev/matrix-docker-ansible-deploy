@@ -1,3 +1,12 @@
+# 2018-08-21
+
+## Matrix Corporal support
+
+The playbook can now install and configure [matrix-corporal](https://github.com/devture/matrix-corporal) for you.
+
+Additional details are available in [Setting up Matrix Corporal](docs/configuring-playbook-matrix-corporal.md).
+
+
 # 2018-08-20
 
 ## Matrix Synapse rate limit control variables

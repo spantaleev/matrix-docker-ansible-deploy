@@ -36,3 +36,5 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up the REST authentication password provider module](configuring-playbook-rest-auth.md) (optional)
 
 - [Setting up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md) (optional)
+
+- [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (optional)

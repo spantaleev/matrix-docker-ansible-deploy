@@ -42,6 +42,20 @@ server {
 	ssl_prefer_server_ciphers on;
 	ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
 
+	{% if matrix_corporal_enabled and matrix_corporal_http_api_enabled %}
+	location /_matrix/corporal {
+		{% if matrix_nginx_proxy_enabled %}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver 127.0.0.11 valid=5s;
+			set $backend "matrix-corporal:41081";
+			proxy_pass http://$backend;
+		{% else %}
+			{# Generic configuration for use outside of our container setup #}
+			proxy_pass http://localhost:41081;
+		{% endif %}
+	}
+	{% endif %}
+
 	{% if matrix_mxisd_enabled %}
 	location /_matrix/identity {
 		{% if matrix_nginx_proxy_enabled %}
@@ -60,11 +74,11 @@ server {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver 127.0.0.11 valid=5s;
-			set $backend "matrix-synapse:8008";
+			set $backend "{{ matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container }}";
 			proxy_pass http://$backend;
 		{% else %}
 			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://localhost:8008;
+			proxy_pass http://{{ matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container }};
 		{% endif %}
 
 		proxy_set_header X-Forwarded-For $remote_addr;

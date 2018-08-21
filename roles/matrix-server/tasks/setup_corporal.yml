@@ -1,0 +1,68 @@
+---
+
+#
+# Tasks related to setting up matrix-corporal
+#
+
+- name: Fail if Shared Secret Auth extension not enabled
+  fail:
+    msg: "To use matrix-corporal, you need to enable the Shared Secret Auth module for Synapse (see matrix_synapse_ext_password_provider_shared_secret_auth_enabled)"
+  when: "matrix_corporal_enabled and not matrix_synapse_ext_password_provider_shared_secret_auth_enabled"
+
+- name: Fail if HTTP API enabled, but no token set
+  fail:
+    msg: "The Matrix Corporal HTTP API is enabled, but no auth token has been set in matrix_corporal_http_api_auth_token"
+  when: "matrix_corporal_enabled and matrix_corporal_http_api_enabled and matrix_corporal_http_api_auth_token == ''"
+
+- name: Fail if policy provider configuration not set
+  fail:
+    msg: "The Matrix Corporal policy provider configuration has not been set in matrix_corporal_policy_provider_config"
+  when: "matrix_corporal_enabled and matrix_corporal_policy_provider_config == ''"
+
+- name: Override configuration specifying where the Matrix Client API is
+  set_fact:
+    matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container: "matrix-corporal:41080"
+    matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container: "localhost:41080"
+  when: "matrix_corporal_enabled"
+
+- name: Ensure Matrix Corporal paths exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  with_items:
+    - "{{ matrix_corporal_config_dir_path }}"
+    - "{{ matrix_corporal_cache_dir_path }}"
+    - "{{ matrix_corporal_var_dir_path }}"
+  when: "matrix_corporal_enabled"
+
+- name: Ensure Matrix Corporal Docker image is pulled
+  docker_image:
+    name: "{{ matrix_corporal_docker_image }}"
+  when: "matrix_corporal_enabled"
+
+- name: Ensure Matrix Corporal config installed
+  template:
+    src: "{{ role_path }}/templates/corporal/config.json.j2"
+    dest: "{{ matrix_corporal_config_dir_path }}/config.json"
+    mode: 0644
+  when: "matrix_corporal_enabled"
+
+- name: Ensure matrix-corporal.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-corporal.service.j2"
+    dest: "/etc/systemd/system/matrix-corporal.service"
+    mode: 0644
+  when: "matrix_corporal_enabled"
+
+#
+# Tasks related to getting rid of matrix-corporal (if it was previously enabled)
+#
+
+- name: Ensure matrix-corporal.service doesn't exist
+  file:
+    path: "{{ role_path }}/templates/systemd/matrix-corporal.service.j2"
+    state: absent
+  when: "not matrix_corporal_enabled"

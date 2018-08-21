@@ -1,0 +1,30 @@
+{
+	"Matrix": {
+		"HomeserverDomainName": "{{ hostname_identity }}",
+		"HomeserverApiEndpoint": "http://matrix-synapse:8008",
+		"AuthSharedSecret": "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret }}",
+		"RegistrationSharedSecret": "{{ matrix_synapse_registration_shared_secret }}",
+		"TimeoutMilliseconds": {{ matrix_corporal_matrix_timeout_milliseconds }}
+	},
+
+	"Reconciliation": {
+		"UserId": "@{{ matrix_corporal_reconciliation_user_id_local_part }}:{{ hostname_identity }}",
+		"RetryIntervalMilliseconds": {{ matrix_corporal_reconciliation_retry_interval_milliseconds }}
+	},
+
+	"HttpGateway": {
+		"ListenAddress": "0.0.0.0:41080"
+	},
+
+	"HttpApi": {
+		"Enabled": {{ 'true' if matrix_corporal_http_api_enabled else 'false' }},
+		"ListenAddress": "0.0.0.0:41081",
+		"AuthorizationBearerToken": "{{ matrix_corporal_http_api_auth_token }}"
+	},
+
+	"PolicyProvider": {{ matrix_corporal_policy_provider_config }},
+
+	"Misc": {
+		"Debug": {{ 'true' if matrix_corporal_debug else 'false' }}
+	}
+}
