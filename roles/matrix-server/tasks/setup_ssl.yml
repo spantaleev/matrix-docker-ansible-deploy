@@ -20,46 +20,32 @@
     - https
   when: ansible_os_family == 'RedHat'
 
-- name: Ensure acmetool Docker image is pulled
+- name: Ensure certbot Docker image is pulled
   docker_image:
-    name: willwill/acme-docker
+    name: "{{ matrix_ssl_certbot_docker_image }}"
 
-# Granting +rx to others as well, because the `nginx` user from within
-# matrix-nginx-proxy needs to be able to read the acme-challenge files inside
-# for renewal purposes.
-#
-# This should not be causing security trouble outside of the container,
-# as the parent directory (/matrix) does not allow "others" to access it or any of its children.
-# Still, it works when the /ssl subtree is mounted in the container.
-- name: Ensure SSL certificates path exists
+- name: Ensure SSL certificate paths exists
   file:
-    path: "{{ matrix_ssl_certs_path }}"
+    path: "{{ item }}"
     state: directory
-    mode: 0775
+    mode: 0770
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
+  with_items:
+    - "{{ matrix_ssl_log_dir_path }}"
+    - "{{ matrix_ssl_config_dir_path }}"
 
-- name: Check matrix-nginx-proxy state
-  service: name=matrix-nginx-proxy
-  register: matrix_nginx_proxy_state
-
-- name: Ensure matrix-nginx-proxy is stopped (if previously installed & started)
-  service: name=matrix-nginx-proxy state=stopped
-  when: "matrix_nginx_proxy_state.status.ActiveState|default('missing') == 'active'"
-
-- name: Ensure SSL certificates are marked as wanted in acmetool
-  shell: >-
-    /usr/bin/docker run --rm --name acmetool --net=host
-    -v {{ matrix_ssl_certs_path }}:/certs
-    -v {{ matrix_ssl_certs_path }}/run:/var/run/acme
-    -e ACME_EMAIL={{ matrix_ssl_support_email }}
-    willwill/acme-docker
-    acmetool want {{ item }} --xlog.severity=debug
+- name: Obtain initial certificates
+  include_tasks: "setup_ssl_for_domain.yml"
   with_items: "{{ domains_to_obtain_certificate_for }}"
+  loop_control:
+    loop_var: domain_name
 
-- name: Ensure matrix-nginx-proxy is started (if previously installed & started)
-  service: name=matrix-nginx-proxy state=started
-  when: "matrix_nginx_proxy_state.status.ActiveState|default('missing') == 'active'"
+- name: Ensure SSL renewal script installed
+  template:
+    src: "{{ role_path }}/templates/usr-local-bin/matrix-ssl-certificates-renew.j2"
+    dest: "/usr/local/bin/matrix-ssl-certificates-renew"
+    mode: 0750
 
 - name: Ensure periodic SSL renewal cronjob configured
   template:

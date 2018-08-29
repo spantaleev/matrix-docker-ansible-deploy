@@ -1,24 +1,11 @@
 MAILTO="{{ matrix_ssl_support_email }}"
 
-# The goal of this cronjob is to ask acmetool to check
+# The goal of this cronjob is to ask certbot to check
 # the current SSL certificates and to see if some need renewal.
 # If so, it would attempt to renew.
 #
 # Various services depend on these certificates and would need to be restarted.
 # This is not our concern here. We simply make sure the certificates are up to date.
 # Restarting of services happens on its own different schedule (other cronjobs).
-#
-#
-# How renewal works?
-#
-# acmetool will fail to bind to port :80 (because matrix-nginx-proxy or some other server is running there),
-# and will fall back to its "webroot" validation method.
-#
-# Thus, it would put validation files in `/var/run/acme/acme-challenge`.
-# These files can be retrieved via any vhost on port 80 of matrix-nginx-proxy,
-# because it aliases `/.well-known/acme-challenge` to that same directory.
-#
-# When a custom proxy server (not matrix-nginx-proxy provided by this playbook),
-# you'd need to make sure you alias these files correctly or SSL renewal would not work.
 
-{{ matrix_ssl_renew_cron_time_definition }} root /usr/bin/docker run --rm --net=host -v {{ matrix_ssl_certs_path }}:/certs -v {{ matrix_ssl_certs_path }}/run:/var/run/acme -e ACME_EMAIL={{ matrix_ssl_support_email }} willwill/acme-docker acmetool --batch reconcile # --xlog.severity=debug
+{{ matrix_ssl_renew_cron_time_definition }} root /bin/bash /usr/local/bin/matrix-ssl-certificates-renew

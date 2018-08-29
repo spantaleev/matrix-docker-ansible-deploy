@@ -24,8 +24,7 @@ matrix_postgres_connection_password: "synapse-password"
 matrix_postgres_db_name: "homeserver"
 
 matrix_base_data_path: "/matrix"
-matrix_ssl_certs_path: "{{ matrix_base_data_path }}/ssl"
-matrix_ssl_support_email: "{{ host_specific_matrix_ssl_support_email }}"
+
 matrix_environment_variables_data_path: "{{ matrix_base_data_path }}/environment-variables"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
@@ -217,8 +216,17 @@ matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container: "matrix-synapse:
 matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container: "localhost:8008"
 
 
+matrix_ssl_base_path: "{{ matrix_base_data_path }}/ssl"
+matrix_ssl_config_dir_path: "{{ matrix_ssl_base_path }}/config"
+matrix_ssl_log_dir_path: "{{ matrix_ssl_base_path }}/log"
+matrix_ssl_support_email: "{{ host_specific_matrix_ssl_support_email }}"
+matrix_ssl_certbot_docker_image: "certbot/certbot:v0.26.1"
+matrix_ssl_certbot_standalone_http_port: 2402
+matrix_ssl_use_staging: false
+
 # Specifies when to attempt to retrieve new SSL certificates from Let's Encrypt.
 matrix_ssl_renew_cron_time_definition: "15 4 */5 * *"
+
 
 # Specifies when to reload the matrix-nginx-proxy service so that
 # a new SSL certificate could go into effect.
