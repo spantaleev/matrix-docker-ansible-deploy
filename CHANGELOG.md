@@ -9,7 +9,7 @@ Due to the Docker image being deprecated, and things looking bleak for acmetool'
 Simply re-running the playbook will retrieve new certificates (via certbot) for you.
 To ensure you don't leave any old files behind, though, you'd better do this:
 
-- `systemctl stop matrix*`
+- `systemctl stop 'matrix*'`
 - stop your custom webserver, if you're running one (only affects you if you've installed with `matrix_nginx_proxy_enabled: false`)
 - `mv /matrix/ssl /matrix/ssl-acmetool-delete-later`
 - re-run the playbook's [installation](docs/installing.md)
