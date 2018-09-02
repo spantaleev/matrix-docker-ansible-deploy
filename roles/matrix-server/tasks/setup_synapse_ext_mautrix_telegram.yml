@@ -14,6 +14,9 @@
     group: "{{ matrix_user_username }}"
   when: "matrix_mautrix_telegram_enabled"
 
+- stat: "path={{ matrix_mautrix_telegram_base_path }}/config.yaml"
+  register: mautrix_config_file
+
 - name: Ensure Matrix Mautrix telegram config installed
   template:
     src: "{{ role_path }}/templates/mautrix-telegram/config.yaml.j2"
@@ -21,7 +24,7 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-  when: "matrix_mautrix_telegram_enabled"
+  when: "matrix_mautrix_telegram_enabled and mautrix_config_file.stat.exists == False"
 
 - name: Ensure matrix-mautrix-telegram.service installed
   template:
@@ -60,6 +63,6 @@
 
 - name: Ensure matrix-mautrix-telegram.service doesn't exist
   file:
-    path: "{{ role_path }}/templates/systemd/matrix-mautrix-telegram.service.j2"
+    path: "{{ role_path }}/templates/systemd/matrix-mautrix-telegram.service"
     state: absent
   when: "not matrix_mautrix_telegram_enabled"
