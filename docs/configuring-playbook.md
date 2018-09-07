@@ -38,3 +38,5 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md) (optional)
 
 - [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (optional)
+
+- [Setting up Mautrix Telegram bridging](configuring-playbook-bridge-mautrix-telegram.md) (optional)

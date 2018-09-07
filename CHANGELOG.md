@@ -1,5 +1,12 @@
 # 2018-09-07
 
+## Mautrix Telegram bridging support
+
+The playbook now supports bridging with [Telegram](https://telegram.org/) by installing the [mautrix-telegram](https://github.com/tulir/mautrix-telegram) bridge. This playbook functionality is available thanks to [@izissise](https://github.com/izissise).
+
+Additional details are available in [Setting up Mautrix Telegram bridging](docs/configuring-playbook-bridge-mautrix-telegram.md).
+
+
 ## Events cache size increase and configurability for Matrix Synapse
 
 The playbook now lets you configure Matrix Synapse's `event_cache_size` configuration via the `matrix_synapse_event_cache_size` playbook variable.
