@@ -1,5 +1,12 @@
 # 2018-09-07
 
+## Events cache size increase and configurability for Matrix Synapse
+
+The playbook now lets you configure Matrix Synapse's `event_cache_size` configuration via the `matrix_synapse_event_cache_size` playbook variable.
+
+Previously, this value was hardcoded to `"10K"`. From now on, a more reasonable default of `"100K"` is used.
+
+
 ## Password-peppering support for Matrix Synapse
 
 The playbook now supports enabling password-peppering for increased security in Matrix Synapse via the `matrix_synapse_password_config_pepper` playbook variable. Using a password pepper is disabled by default (just like it used to be before this playbook variable got introduced) and is not to be enabled/disabled after initial setup, as that would invalidate all existing passwords.
