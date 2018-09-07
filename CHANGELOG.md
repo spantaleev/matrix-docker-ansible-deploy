@@ -1,3 +1,12 @@
+# 2018-09-07
+
+## Statistics-reporting support
+
+There's now a new `matrix_synapse_report_stats` playbook variable, which controls the `report_stats` configuration option for Matrix Synapse. It defaults to `false`, so no change is required to retain your privacy.
+
+If you'd like to start reporting statistics about your homeserver (things like number of users, number of messages sent, uptime, load, etc.) to matrix.org, you can turn on stats reporting.
+
+
 # 2018-08-29
 
 ## Changing the way SSL certificates are retrieved
