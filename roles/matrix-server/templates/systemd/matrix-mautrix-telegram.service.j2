@@ -1,0 +1,23 @@
+[Unit]
+Description=Matrix Mautrix Telegram server
+After=docker.service
+Requires=docker.service
+Requires=matrix-synapse.service
+After=matrix-synapse.service
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker kill matrix-mautrix-telegram
+ExecStartPre=-/usr/bin/docker rm matrix-mautrix-telegram
+ExecStart=/usr/bin/docker run --rm --name matrix-mautrix-telegram \
+			-e "UID={{ matrix_user_uid }}" -e "GID={{ matrix_user_gid }}" \
+			--network={{ matrix_docker_network }} \
+			-v {{ matrix_mautrix_telegram_base_path }}:/data:z \
+			{{ matrix_docker_image_mautrix_telegram }}
+ExecStop=-/usr/bin/docker kill matrix-mautrix-telegram
+ExecStop=-/usr/bin/docker rm matrix-mautrix-telegram
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

@@ -84,6 +84,11 @@ matrix_synapse_container_additional_volumes: []
 # Contains definition objects like this: `{"name": "..", "level": "DEBUG"}
 matrix_synapse_additional_loggers: []
 
+# A list of service config files
+# This list gets populated dynamically based on Synapse extensions that have been enabled.
+# Contains fs paths
+matrix_synapse_app_service_config_files: []
+
 # This is set dynamically during execution depending on whether
 # any password providers have been enabled or not.
 matrix_synapse_password_providers_enabled: false
@@ -110,6 +115,7 @@ matrix_nginx_riot_web_data_path: "{{ matrix_base_data_path }}/riot-web"
 matrix_coturn_base_path: "{{ matrix_base_data_path }}/coturn"
 matrix_coturn_config_path: "{{ matrix_coturn_base_path }}/turnserver.conf"
 matrix_scratchpad_dir: "{{ matrix_base_data_path }}/scratchpad"
+matrix_mautrix_telegram_base_path: "{{ matrix_base_data_path }}/mautrix-telegram"
 
 matrix_docker_image_postgres_v9: "postgres:9.6.10-alpine"
 matrix_docker_image_postgres_v10: "postgres:10.5-alpine"
@@ -122,6 +128,7 @@ matrix_docker_image_goofys: "cloudproto/goofys:latest"
 matrix_docker_image_coturn: "instrumentisto/coturn:4.5.0.7"
 matrix_docker_image_mailer: "panubo/postfix:latest"
 matrix_docker_image_mxisd: "kamax/mxisd:1.1.1"
+matrix_docker_image_mautrix_telegram: "tulir/mautrix-telegram:v0.3.0"
 
 # The Docker network that all services would be put into
 matrix_docker_network: "matrix"
@@ -211,6 +218,13 @@ matrix_corporal_debug: false
 matrix_riot_web_enabled: true
 
 matrix_riot_web_default_identity_server_url: "https://{{ matrix_synapse_trusted_third_party_id_servers[0] }}"
+
+# Matrix mautrix is a Matrix <-> Telegram bridge
+# Enable telegram bridge
+matrix_mautrix_telegram_enabled: false
+# Get your own API keys at https://my.telegram.org/apps
+matrix_mautrix_telegram_api_id: YOUR_TELEGRAM_APP_ID
+matrix_mautrix_telegram_api_hash: YOUR_TELEGRAM_API_HASH
 
 
 # By default, this playbook sets up its own nginx proxy server on port 80/443.
