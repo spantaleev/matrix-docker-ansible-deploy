@@ -1,6 +1,11 @@
 # 2018-09-07
 
-## Statistics-reporting support
+## Password-peppering support for Matrix Synapse
+
+The playbook now supports enabling password-peppering for increased security in Matrix Synapse via the `matrix_synapse_password_config_pepper` playbook variable. Using a password pepper is disabled by default (just like it used to be before this playbook variable got introduced) and is not to be enabled/disabled after initial setup, as that would invalidate all existing passwords.
+
+
+## Statistics-reporting support for Matrix Synapse
 
 There's now a new `matrix_synapse_report_stats` playbook variable, which controls the `report_stats` configuration option for Matrix Synapse. It defaults to `false`, so no change is required to retain your privacy.
 
