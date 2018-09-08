@@ -12,7 +12,7 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) [Amazon S3](https://aws.amazon.com/s3/) storage for your Matrix Synapse's content repository (`media_store`) files using [Goofys](https://github.com/kahing/goofys)
 
-- (optional default) [PostgreSQL](https://www.postgresql.org/) database for Matrix Synapse. [Using an external PostgreSQL server](configuring-playbook-external-postgres.md) is also possible.
+- (optional default) [PostgreSQL](https://www.postgresql.org/) database for Matrix Synapse. [Using an external PostgreSQL server](docs/configuring-playbook-external-postgres.md) is also possible.
 
 - a [coturn](https://github.com/coturn/coturn) STUN/TURN server for WebRTC audio/video calls
 
