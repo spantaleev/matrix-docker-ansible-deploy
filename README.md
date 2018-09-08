@@ -32,6 +32,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [Matrix Corporal](https://github.com/devture/matrix-corporal) reconciliator and gateway for a managed Matrix server
 
+- (optional) the [mautrix-telegram](https://github.com/tulir/mautrix-telegram) bridge for bridging your Matrix server to [Telegram](https://telegram.org/)
+
 Basically, this playbook aims to get you up-and-running with all the basic necessities around Matrix, without you having to do anything else.
 
 
@@ -95,6 +97,8 @@ This playbook sets up your server using the following Docker images:
 - [nginx](https://hub.docker.com/_/nginx/) - the [nginx](http://nginx.org/) web server (optional)
 
 - [certbot/certbot](https://hub.docker.com/r/certbot/certbot/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/)
+
+- [tulir/mautrix-telegram](https://hub.docker.com/r/tulir/mautrix-telegram/) - the [mautrix-telegram](https://github.com/tulir/mautrix-telegram) bridge to [Telegram](https://telegram.org/) (optional)
 
 
 ## Deficiencies
