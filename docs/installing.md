@@ -1,6 +1,6 @@
 # Installing
 
-If you've [configured your DNS](configuring-dns.md) and have [configured the playbook](configuring-playook.md), you can start the installation procedure.
+If you've [configured your DNS](configuring-dns.md) and have [configured the playbook](configuring-playbook.md), you can start the installation procedure.
 
 Run this as-is to set up a server:
 
