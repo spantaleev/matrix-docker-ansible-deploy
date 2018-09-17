@@ -6,7 +6,7 @@
 
 - name: Ensure Matrix riot-web path exists
   file:
-    path: "{{ matrix_nginx_riot_web_data_path }}"
+    path: "{{ matrix_riot_web_data_path }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
@@ -21,7 +21,7 @@
 - name: Ensure Matrix riot-web configured
   template:
     src: "{{ role_path }}/templates/riot-web/{{ item }}.j2"
-    dest: "{{ matrix_nginx_riot_web_data_path }}/{{ item }}"
+    dest: "{{ matrix_riot_web_data_path }}/{{ item }}"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
@@ -58,7 +58,7 @@
 
 - name: Ensure Matrix riot-web paths doesn't exist
   file:
-    path: "{{ matrix_nginx_riot_web_data_path }}"
+    path: "{{ matrix_riot_web_data_path }}"
     state: absent
   when: "not matrix_riot_web_enabled"
 

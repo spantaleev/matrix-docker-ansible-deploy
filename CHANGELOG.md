@@ -1,3 +1,12 @@
+# 2018-09-17
+
+## (BC Break) Renaming playbook variables
+
+The following playbook variables were renamed:
+
+- from `matrix_nginx_riot_web_data_path` to `matrix_riot_web_data_path`
+
+
 # 2018-09-07
 
 ## Mautrix Telegram bridging support

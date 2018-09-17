@@ -111,7 +111,7 @@ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret: ""
 matrix_postgres_data_path: "{{ matrix_base_data_path }}/postgres"
 matrix_nginx_proxy_data_path: "{{ matrix_base_data_path }}/nginx-proxy"
 matrix_nginx_proxy_confd_path: "{{ matrix_nginx_proxy_data_path }}/conf.d"
-matrix_nginx_riot_web_data_path: "{{ matrix_base_data_path }}/riot-web"
+matrix_riot_web_data_path: "{{ matrix_base_data_path }}/riot-web"
 matrix_coturn_base_path: "{{ matrix_base_data_path }}/coturn"
 matrix_coturn_config_path: "{{ matrix_coturn_base_path }}/turnserver.conf"
 matrix_scratchpad_dir: "{{ matrix_base_data_path }}/scratchpad"
@@ -238,6 +238,10 @@ matrix_nginx_proxy_enabled: true
 matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container: "matrix-synapse:8008"
 matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container: "localhost:8008"
 
+# Specifies when to reload the matrix-nginx-proxy service so that
+# a new SSL certificate could go into effect.
+matrix_nginx_proxy_reload_cron_time_definition: "20 4 */5 * *"
+
 
 matrix_ssl_base_path: "{{ matrix_base_data_path }}/ssl"
 matrix_ssl_config_dir_path: "{{ matrix_ssl_base_path }}/config"
@@ -249,8 +253,3 @@ matrix_ssl_use_staging: false
 
 # Specifies when to attempt to retrieve new SSL certificates from Let's Encrypt.
 matrix_ssl_renew_cron_time_definition: "15 4 */5 * *"
-
-
-# Specifies when to reload the matrix-nginx-proxy service so that
-# a new SSL certificate could go into effect.
-matrix_nginx_proxy_reload_cron_time_definition: "20 4 */5 * *"
