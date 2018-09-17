@@ -5,6 +5,7 @@
 The following playbook variables were renamed:
 
 - from `matrix_nginx_riot_web_data_path` to `matrix_riot_web_data_path`
+- from `matrix_riot_web_default_identity_server_url` to `matrix_identity_server_url`
 
 
 # 2018-09-07
