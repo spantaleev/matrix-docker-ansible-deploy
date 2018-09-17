@@ -39,6 +39,12 @@ server {
 	ssl_prefer_server_ciphers on;
 	ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
 
+	location /.well-known/matrix/client {
+		root {{ matrix_static_files_base_path }};
+		expires 1m;
+		default_type application/json;
+	}
+
 	{% if matrix_corporal_enabled and matrix_corporal_http_api_enabled %}
 	location /_matrix/corporal {
 		{% if matrix_nginx_proxy_enabled %}

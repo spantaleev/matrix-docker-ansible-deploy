@@ -6,7 +6,11 @@ If that's alright, you can skip this.
 If you don't want this playbook's nginx webserver to take over your server's 80/443 ports like that,
 and you'd like to use your own webserver (be it nginx, Apache, Varnish Cache, etc.), you can.
 
-All it takes is editing your configuration file (`inventory/matrix.<your-domain>/vars.yml`):
+All it takes is:
+
+1) making sure your web server user (something like `http`, `apache`, `www-data`, `nginx`) is part of the `matrix` group. You should run something like this: `usermod -a -G matrix nginx`
+
+2) editing your configuration file (`inventory/matrix.<your-domain>/vars.yml`):
 
 ```
 matrix_nginx_proxy_enabled: false

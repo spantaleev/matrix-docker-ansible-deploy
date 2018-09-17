@@ -11,3 +11,9 @@ You can do it via this Ansible playbook (make sure to edit the `<your-username>`
 	/usr/local/bin/matrix-synapse-register-user <your-username> <your-password> <admin access: 0 or 1>
 
 **Note**: `<your-username>` is just a plain username (like `john`), not your full `@<username>:<your-domain>` identifier.
+
+**You can then log in with that user** via the riot-web service that this playbook has created for you at a URL like this: `https://riot.<domain>/`.
+
+-----
+
+If you've just installed Matrix, **to finalize the installation process**, it's best if you proceed to [Configuring service discovery via .well-known](configuring-well-known.md)

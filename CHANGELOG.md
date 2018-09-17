@@ -1,5 +1,12 @@
 # 2018-09-17
 
+## Service discovery support
+
+The playbook now helps you set up [service discovery](https://matrix.org/docs/spec/client_server/r0.4.0.html#server-discovery) using a `/.well-known/matrix/client` file.
+
+Additional details are available in [Configuring service discovery via .well-known](docs/configuring-well-known.md).
+
+
 ## (BC Break) Renaming playbook variables
 
 The following playbook variables were renamed:

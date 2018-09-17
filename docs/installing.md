@@ -13,7 +13,7 @@ This **doesn't start any services just yet** (another step does this later - bel
 Feel free to **re-run this any time** you think something is off with the server configuration.
 
 
-# Things you might want to do after installing
+## Things you might want to do after installing
 
 After installing, but before starting the services, you may want to do additional things like:
 
@@ -22,7 +22,7 @@ After installing, but before starting the services, you may want to do additiona
 - [Restoring `media_store` data files from an existing installation](restoring-media-store.md) (optional)
 
 
-# Starting the services
+## Starting the services
 
 When you're ready to start the Matrix services (and set them up to auto-start in the future):
 
@@ -30,4 +30,7 @@ When you're ready to start the Matrix services (and set them up to auto-start in
 ansible-playbook -i inventory/hosts setup.yml --tags=start
 ```
 
-Now that the services are running, you might want to [create your first user account](registering-users.md)
+Now that the services are running, you might want to:
+
+- [create your first user account](registering-users.md)
+- or **finalize the installation process** by [Configuring service discovery via .well-known](configuring-well-known.md)
