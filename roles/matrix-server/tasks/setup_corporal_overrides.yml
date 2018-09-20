@@ -1,0 +1,11 @@
+# These overrides run with the `always` tag,
+# because they're important not only for the `setup-corporal` tag, but for other tags too.
+#
+# We want an nginx-proxy rebuild (`--tags=setup-nginx-proxy`) to also go through here
+# and be affected by these overrides.
+
+- name: Override configuration specifying where the Matrix Client API is
+  set_fact:
+    matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container: "matrix-corporal:41080"
+    matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container: "localhost:41080"
+  when: "matrix_corporal_enabled"

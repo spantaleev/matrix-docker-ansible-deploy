@@ -19,11 +19,8 @@
     msg: "The Matrix Corporal policy provider configuration has not been set in matrix_corporal_policy_provider_config"
   when: "matrix_corporal_enabled and matrix_corporal_policy_provider_config == ''"
 
-- name: Override configuration specifying where the Matrix Client API is
-  set_fact:
-    matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container: "matrix-corporal:41080"
-    matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container: "localhost:41080"
-  when: "matrix_corporal_enabled"
+# There are some additional initialization tasks in setup_corporal_overrides.yml,
+# which need to always run, no matter what tag the playbook is running with.
 
 - name: Ensure Matrix Corporal paths exist
   file:
