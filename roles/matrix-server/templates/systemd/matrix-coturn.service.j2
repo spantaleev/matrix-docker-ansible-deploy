@@ -8,6 +8,7 @@ Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-coturn
 ExecStartPre=-/usr/bin/docker rm matrix-coturn
 ExecStart=/usr/bin/docker run --rm --name matrix-coturn \
+			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			-p 3478:3478 \
 			-p 3478:3478/udp \

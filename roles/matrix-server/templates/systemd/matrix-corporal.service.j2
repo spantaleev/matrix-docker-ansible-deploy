@@ -10,6 +10,7 @@ Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-corporal
 ExecStartPre=-/usr/bin/docker rm matrix-corporal
 ExecStart=/usr/bin/docker run --rm --name matrix-corporal \
+			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--network={{ matrix_docker_network }} \
 			{% if not matrix_nginx_proxy_enabled %}

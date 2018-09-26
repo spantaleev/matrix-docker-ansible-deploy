@@ -10,6 +10,7 @@ Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-mautrix-telegram
 ExecStartPre=-/usr/bin/docker rm matrix-mautrix-telegram
 ExecStart=/usr/bin/docker run --rm --name matrix-mautrix-telegram \
+			--log-driver=none \
 			-e "UID={{ matrix_user_uid }}" -e "GID={{ matrix_user_gid }}" \
 			--network={{ matrix_docker_network }} \
 			-v {{ matrix_mautrix_telegram_base_path }}:/data:z \

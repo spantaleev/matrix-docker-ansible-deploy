@@ -1,3 +1,14 @@
+# 2018-09-26
+
+## Disabling Docker container logging
+
+`--log-driver=none` is used for all Docker containers now.
+
+All these containers are started through systemd anyway and get logged in journald, so there's no need for Docker to be logging the same thing using the default `json-file` driver. Doing that was growing `/var/lib/docker/containers/..` infinitely until service/container restart.
+
+As a result of this, things like `docker logs matrix-synapse` won't work anymore. `journalctl -u matrix-synapse` is how one can see the logs.
+
+
 # 2018-09-17
 
 ## Service discovery support

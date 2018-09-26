@@ -26,6 +26,7 @@ ExecStartPre=-/usr/bin/docker rm matrix-synapse
 ExecStartPre=/bin/sleep 5
 {% endif %}
 ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
+			--log-driver=none \
 			--network={{ matrix_docker_network }} \
 			-p 8448:8448 \
 			{% if not matrix_nginx_proxy_enabled %}

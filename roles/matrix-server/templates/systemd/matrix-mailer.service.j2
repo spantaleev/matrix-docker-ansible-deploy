@@ -8,6 +8,7 @@ Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-mailer
 ExecStartPre=-/usr/bin/docker rm matrix-mailer
 ExecStart=/usr/bin/docker run --rm --name matrix-mailer \
+			--log-driver=none \
 			--network={{ matrix_docker_network }} \
 			--env-file={{ matrix_environment_variables_data_path }}/env-mailer \
 			{{ matrix_docker_image_mailer }}
