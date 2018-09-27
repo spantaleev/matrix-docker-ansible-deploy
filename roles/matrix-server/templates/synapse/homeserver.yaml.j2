@@ -74,6 +74,8 @@ pid_file: /homeserver.pid
 # different cores. See
 # https://www.mirantis.com/blog/improve-performance-python-programs-restricting-single-cpu/.
 #
+# This setting requires the affinity package to be installed!
+#
 # cpu_affinity: 0xFFFFFFFF
 
 # Whether to serve a web client from the HTTP/HTTPS root resource.
@@ -92,6 +94,9 @@ public_baseurl: https://{{ hostname_matrix }}/
 # Zero is used to indicate synapse should set the soft limit to the
 # hard limit.
 soft_file_limit: 0
+
+# Set to false to disable presence tracking on this homeserver.
+use_presence: true
 
 # The GC threshold parameters to pass to `gc.set_threshold`, if defined
 # gc_thresholds: [700, 10, 10]
@@ -171,6 +176,33 @@ listeners:
   # - port: 9000
   #   bind_addresses: ['::1', '127.0.0.1']
   #   type: manhole
+
+
+  # Homeserver blocking
+  #
+  # How to reach the server admin, used in ResourceLimitError
+  # admin_contact: 'mailto:admin@server.com'
+  #
+  # Global block config
+  #
+  # hs_disabled: False
+  # hs_disabled_message: 'Human readable reason for why the HS is blocked'
+  # hs_disabled_limit_type: 'error code(str), to help clients decode reason'
+  #
+  # Monthly Active User Blocking
+  #
+  # Enables monthly active user checking
+  # limit_usage_by_mau: False
+  # max_mau_value: 50
+  # mau_trial_days: 2
+  #
+  # Sometimes the server admin will want to ensure certain accounts are
+  # never blocked by mau checking. These accounts are specified here.
+  #
+  # mau_limit_reserved_threepids:
+  # - medium: 'email'
+  #   address: 'reserved_user@example.com'
+
 
 
 # Database configuration
@@ -648,6 +680,9 @@ enable_group_creation: false
 
 
 # User Consent configuration
+#
+# for detailed instructions, see
+# https://github.com/matrix-org/synapse/blob/master/docs/consent_tracking.md
 #
 # Parts of this section are required if enabling the 'consent' resource under
 # 'listeners', in particular 'template_dir' and 'version'.
