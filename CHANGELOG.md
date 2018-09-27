@@ -1,3 +1,13 @@
+# 2018-09-27
+
+## Synapse Cache Factor made configurable
+
+The playbook now makes the Synapse cache factor configurable, through the playbook's `matrix_synapse_cache_factor` variable (having a default value of `0.5`).
+
+Changing that value allows you to potentially decrease RAM usage or to increase performance by caching more stuff.
+Some information on it is available here: https://github.com/matrix-org/synapse#help-synapse-eats-all-my-ram
+
+
 # 2018-09-26
 
 ## Disabling Docker container logging

@@ -61,6 +61,13 @@
     dest: "{{ matrix_synapse_config_dir_path }}/{{ hostname_matrix }}.log.config"
     mode: 0644
 
+- name: Ensure Synapse environment variables file created
+  template:
+    src: "{{ role_path }}/templates/env/env-synapse.j2"
+    dest: "{{ matrix_environment_variables_data_path }}/synapse"
+    owner: root
+    mode: 0600
+
 - name: Ensure matrix-synapse.service installed
   template:
     src: "{{ role_path }}/templates/systemd/matrix-synapse.service.j2"
