@@ -1,3 +1,12 @@
+# 2018-10-05
+
+## Presence tracking made configurable
+
+The playbook can now enable/disable user presence-status tracking in Synapse, through the playbook's `matrix_synapse_use_presence` variable (having a default value of `true` - enabled).
+
+If users participate in large rooms with many other servers, disabling presence will decrease server load significantly.
+
+
 # 2018-09-27
 
 ## Synapse Cache Factor made configurable
