@@ -18,24 +18,25 @@
   when: ansible_distribution == 'CentOS'
 
 - name: Ensure yum packages are installed (CentOS)
-  yum: name="{{ item }}" state=latest update_cache=yes
-  with_items:
-    - bash-completion
-    - docker-ce
-    - docker-python
-    - firewalld
-    - ntp
-    - fuse
+  yum:
+    name:
+      - bash-completion
+      - docker-ce
+      - docker-python
+      - firewalld
+      - ntp
+      - fuse
+    state: latest
+    update_cache: yes
   when: ansible_distribution == 'CentOS'
 
 - name: Ensure APT usage dependencies are installed (Debian)
   apt:
-    name: "{{ item }}"
+    name:
+      - apt-transport-https
+      - ca-certificates
     state: present
     update_cache: yes
-  with_items:
-    - apt-transport-https
-    - ca-certificates
   when: ansible_os_family == 'Debian'
 
 - name: Ensure Docker's APT key is trusted (Debian)
@@ -55,13 +56,15 @@
   when: ansible_os_family == 'Debian'
 
 - name: Ensure APT packages are installed (Debian)
-  apt: name="{{ item }}" state=latest update_cache=yes
-  with_items:
-    - bash-completion
-    - docker-ce
-    - python-docker
-    - ntp
-    - fuse
+  apt:
+    name:
+      - bash-completion
+      - docker-ce
+      - python-docker
+      - ntp
+      - fuse
+    state: latest
+    update_cache: yes
   when: ansible_os_family == 'Debian'
 
 - name: Ensure firewalld is started and autoruns
