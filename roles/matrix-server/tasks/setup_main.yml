@@ -30,7 +30,27 @@
     - "{{ matrix_base_data_path }}"
     - "{{ matrix_synapse_base_path }}"
 
-- name: Ensure Matrix network is created in Docker
-  docker_network:
-    name: "{{ matrix_docker_network }}"
-    driver: bridge
+# `docker_network` doesn't work as expected when the given network
+# is a substring of a network that already exists.
+#
+# See:
+# - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/12
+# - https://github.com/ansible/ansible/issues/32926
+#
+# Due to that, we employ a workaround below.
+#
+# - name: Ensure Matrix network is created in Docker
+#   docker_network:
+#     name: "{{ matrix_docker_network }}"
+#     driver: bridge
+
+- name: Check existence of Matrix network in Docker
+  shell:
+    cmd: "docker network ls -q --filter='name=^{{ matrix_docker_network }}$'"
+  register: result_check_docker_network
+  changed_when: false
+
+- name: Create Matrix network in Docker
+  shell:
+    cmd: "docker network create --driver=bridge {{ matrix_docker_network }}"
+  when: "result_check_docker_network.stdout == ''"
