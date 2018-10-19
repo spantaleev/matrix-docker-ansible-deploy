@@ -24,7 +24,7 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional default) a [Postfix](http://www.postfix.org/) mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server)
 
-- (optional default) an [nginx](http://nginx.org/) web server, listening on ports 80 and 443 - standing in front of all the other services. Using your own webserver [is possible](#using-your-own-webserver-instead-of-this-playbooks-nginx-proxy-optional)
+- (optional default) an [nginx](http://nginx.org/) web server, listening on ports 80 and 443 - standing in front of all the other services. Using your own webserver [is possible](docs/configuring-playbook-own-webserver.md)
 
 - (optional) the [matrix-synapse-rest-auth](https://github.com/kamax-io/matrix-synapse-rest-auth) REST authentication password provider module
 
