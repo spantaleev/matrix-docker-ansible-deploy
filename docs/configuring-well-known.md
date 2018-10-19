@@ -67,6 +67,12 @@ server {
 </VirtualHost>
 ```
 
+**For Caddy**, it would be something like this:
+
+```caddy
+proxy /.well-known/matrix https://matrix.DOMAIN
+```
+
 Make sure to:
 
 - **replace `DOMAIN`** in the server configuration with your actual domain name
