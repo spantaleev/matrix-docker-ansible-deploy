@@ -20,11 +20,11 @@ Once you've set up these DNS SRV records, you should create 2 other domain names
 
 This playbook can then install all the services on that new server and you'll be able to join the Matrix network as `@<username>:<your-domain>`.
 
-| Type | Host                    | Priority | Weight | Port | Target                 |
-| ---- | ----------------------- | -------- | ------ | ---- | ---------------------- |
-| SRV  | `_matrix._tcp`          | 10       | 0      | 8448 | `matrix.<your-domain>` |
-| SRV  | `_matrix-identity._tcp` | 10       | 0      | 443  | `matrix.<your-domain>` |
-| A    | `matrix`                | -        | -      | -    | `server-IP`            |
-| A    | `riot`                  | -        | -      | -    | `server-IP`            |
+| Type  | Host                    | Priority | Weight | Port | Target                 |
+| ----- | ----------------------- | -------- | ------ | ---- | ---------------------- |
+| SRV   | `_matrix._tcp`          | 10       | 0      | 8448 | `matrix.<your-domain>` |
+| SRV   | `_matrix-identity._tcp` | 10       | 0      | 443  | `matrix.<your-domain>` |
+| A     | `matrix`                | -        | -      | -    | `server-IP`            |
+| CNAME | `riot`                  | -        | -      | -    | `matrix.<your-domain>` |
 
 When ready to proceed, continue with [Configuring this Ansible playbook](configuring-playbook.md).
