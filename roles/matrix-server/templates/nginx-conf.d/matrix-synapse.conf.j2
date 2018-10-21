@@ -73,6 +73,20 @@ server {
 	}
 	{% endif %}
 
+	{% if matrix_mautrix_telegram_enabled %}
+	location {{ matrix_mautrix_telegram_public_endpoint }} {
+		{% if matrix_nginx_proxy_enabled %}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver 127.0.0.11 valid=5s;
+			set $backend "matrix-mautrix-telegram:8080";
+			proxy_pass http://$backend;
+		{% else %}
+			{# Generic configuration for use outside of our container setup #}
+			proxy_pass http://localhost:8080;
+		{% endif %}
+	}
+	{% endif %}
+
 	location /_matrix {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}

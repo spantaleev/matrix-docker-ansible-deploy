@@ -239,6 +239,9 @@ matrix_mautrix_telegram_enabled: false
 # Get your own API keys at https://my.telegram.org/apps
 matrix_mautrix_telegram_api_id: YOUR_TELEGRAM_APP_ID
 matrix_mautrix_telegram_api_hash: YOUR_TELEGRAM_API_HASH
+# Mautrix telegram public endpoint to log in to telegram
+# Use an uuid so it's not easily discoverable
+matrix_mautrix_telegram_public_endpoint: "/{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'telegram') | to_uuid }}"
 
 
 # By default, this playbook sets up its own nginx proxy server on port 80/443.
