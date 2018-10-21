@@ -1,0 +1,20 @@
+---
+
+- set_fact:
+    mxisd_url_endpoint_public: "https://{{ hostname_matrix }}/_matrix/identity/api/v1"
+
+- name: Check mxisd Identity Service
+  uri:
+    url: "{{ mxisd_url_endpoint_public }}"
+    follow_redirects: false
+  register: result_mxisd
+  ignore_errors: true
+
+- name: Fail if mxisd Identity Service not working
+  fail:
+    msg: "Failed checking mxisd is up at `{{ hostname_matrix }}` (checked endpoint: `{{ mxisd_url_endpoint_public }}`). Is mxisd running? Is port 443 open in your firewall? Full error: {{ result_mxisd }}"
+  when: "result_mxisd.failed or 'json' not in result_mxisd"
+
+- name: Report working mxisd Identity Service
+  debug:
+    msg: "mxisd at `{{ hostname_matrix }}` is working (checked endpoint: `{{ mxisd_url_endpoint_public }}`)"

@@ -1,0 +1,21 @@
+---
+
+- set_fact:
+    matrix_federation_api_url_endpoint_public: "https://{{ hostname_matrix }}:8448/_matrix/federation/v1/version"
+
+- name: Check Matrix Federation API
+  uri:
+    url: "{{ matrix_federation_api_url_endpoint_public }}"
+    follow_redirects: false
+    validate_certs: false
+  register: result_matrix_federation_api
+  ignore_errors: true
+
+- name: Fail if Matrix Federation API not working
+  fail:
+    msg: "Failed checking Matrix Federation API is up at `{{ hostname_matrix }}` (checked endpoint: `{{ matrix_federation_api_url_endpoint_public }}`). Is Synapse running? Is port 8448 open in your firewall? Full error: {{ result_matrix_federation_api }}"
+  when: "result_matrix_federation_api.failed or 'json' not in result_matrix_federation_api"
+
+- name: Report working Matrix Federation API
+  debug:
+    msg: "The Matrix Federation API at `{{ hostname_matrix }}` (checked endpoint: `{{ matrix_federation_api_url_endpoint_public }}`) is working"

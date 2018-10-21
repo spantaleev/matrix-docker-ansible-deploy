@@ -1,0 +1,46 @@
+---
+
+- set_fact:
+    well_known_url_matrix: "https://{{ hostname_matrix }}/.well-known/matrix/client"
+    well_known_url_identity: "https://{{ hostname_matrix }}/.well-known/matrix/client"
+
+
+- name: Check .well-known on the matrix hostname
+  uri:
+    url: "{{ well_known_url_matrix }}"
+    follow_redirects: false
+  register: result_well_known_matrix
+  ignore_errors: true
+
+- name: Fail if .well-known not working on the matrix hostname
+  fail:
+    msg: "Failed checking well-known is configured at `{{ hostname_matrix }}` (checked endpoint: `{{ well_known_url_matrix }}`). Is port 443 open in your firewall? Full error: {{ result_well_known_matrix }}"
+  when: "result_well_known_matrix.failed or 'json' not in result_well_known_matrix"
+
+- name: Report working .well-known on the matrix hostname
+  debug:
+    msg: "well-known is configured at `{{ hostname_matrix }}` (checked endpoint: `{{ well_known_url_matrix }}`)"
+
+
+- name: Check .well-known on the identity hostname
+  uri:
+    url: "{{ well_known_url_identity }}"
+    follow_redirects: false
+  register: result_well_known_identity
+  ignore_errors: true
+
+- name: Fail if .well-known not working on the identity hostname
+  fail:
+    msg: "Failed checking well-known is configured at `{{ hostname_identity }}` (checked endpoint: `{{ well_known_url_identity }}`). Is port 443 open in your firewall? Full error: {{ result_well_known_identity }}"
+  when: "result_well_known_identity.failed or 'json' not in result_well_known_identity"
+
+- name: Report working .well-known on the identity hostname
+  debug:
+    msg: "well-known is configured at `{{ hostname_identity }}` (checked endpoint: `{{ well_known_url_identity }}`)"
+
+
+# For people who manually copy the well-known file, try to detect if it's outdated
+- name: Fail if well-known is different on matrix hostname and identity hostname
+  fail:
+    msg: "The well-known files at `{{ hostname_matrix }}` and `{{ hostname_identity }}` are different. Perhaps you copied the file manually before and now it's outdated?"
+  when: "result_well_known_matrix.json|to_json != result_well_known_identity.json|to_json"

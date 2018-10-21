@@ -12,6 +12,8 @@
 
 - [Configuring service discovery via .well-known](configuring-well-known.md)
 
+- [Maintenance / checking if services work](maintenance-checking-services.md)
+
 - [Maintenance / upgrading services](maintenance-upgrading-services.md)
 
 - [Maintenance / upgrading PostgreSQL](maintenance-upgrading-postgres.md)

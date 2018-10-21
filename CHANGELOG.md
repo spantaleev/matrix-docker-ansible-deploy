@@ -1,3 +1,10 @@
+# 2018-10-21
+
+## Self-check maintenance command
+
+The playbook can now [check if services are configured correctly](docs/maintenance-checking-services.md).
+
+
 # 2018-10-05
 
 ## Presence tracking made configurable
