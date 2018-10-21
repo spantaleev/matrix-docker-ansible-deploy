@@ -1,80 +1,10 @@
 ---
 
-- include: tasks/setup_base.yml
-  tags:
-    - setup-all
-
-- include: tasks/setup_main.yml
-  tags:
-    - setup-all
-
-- include: tasks/setup_ssl.yml
-  tags:
-    - setup-all
-    - setup-ssl
+- include: tasks/setup/main.yml
 
 - include: tasks/upgrade_postgres.yml
   tags:
     - upgrade-postgres
-
-- include: tasks/setup_postgres.yml
-  tags:
-    - setup-all
-    - setup-postgres
-
-- include: tasks/setup_goofys.yml
-  tags:
-    - setup-all
-    - setup-goofys
-
-- include: tasks/setup_coturn.yml
-  tags:
-    - setup-all
-    - setup-coturn
-
-- include: tasks/setup_mailer.yml
-  tags:
-    - setup-all
-    - setup-mailer
-
-- include: tasks/setup_mxisd.yml
-  tags:
-    - setup-all
-    - setup-mxisd
-
-- include: tasks/setup_corporal_overrides.yml
-  tags:
-    - always
-
-- include: tasks/setup_corporal.yml
-  tags:
-    - setup-all
-    - setup-corporal
-
-- include: tasks/setup_synapse.yml
-  tags:
-    - setup-all
-    - setup-synapse
-    - setup-coturn
-
-- include: tasks/setup_riot_web.yml
-  tags:
-    - setup-all
-    - setup-riot-web
-
-- include: tasks/setup_well_known.yml
-  tags:
-    - setup-all
-    - setup-mxisd
-    - setup-synapse
-    - setup-nginx-proxy
-    - setup-well-known
-
-- include: tasks/setup_nginx_proxy.yml
-  tags:
-    - setup-all
-    - setup-nginx-proxy
-    - setup-well-known
 
 - include: tasks/start.yml
   tags:
@@ -92,7 +22,7 @@
   tags:
     - import-media-store
 
-- include: tasks/self_check.yml
+- include: tasks/self_check/main.yml
   delegate_to: 127.0.0.1
   become: false
   tags:

@@ -92,7 +92,7 @@
 - debug:
     msg: "NOTE: Your Postgres data directory has been moved from `{{ matrix_postgres_data_path }}` to `{{ postgres_auto_upgrade_backup_data_path }}`. In the event of failure, you can move it back and run the playbook with --tags=setup-postgres to restore operation."
 
-- include: tasks/setup_postgres.yml
+- include: tasks/setup/setup_postgres.yml
 
 - name: Ensure matrix-postgres autoruns and is restarted
   service: name=matrix-postgres enabled=yes state=restarted daemon_reload=yes
