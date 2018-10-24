@@ -24,6 +24,6 @@ matrix_nginx_proxy_enabled: false
 
 - ensure you set up (separate) vhosts that proxy for both Riot (`localhost:8765`) and Matrix Synapse (`localhost:8008`)
 
-- ensure that the `/.well-known/acme-challenge` location for each "port=80 vhost" is an alias to the `/matrix/ssl/run/acme-challenge` directory (for automated SSL renewal to work)
+- ensure that the `/.well-known/acme-challenge` location for each "port=80 vhost" gets proxied to `http://localhost:2402` (controlled by `matrix_ssl_certbot_standalone_http_port`) for automated SSL renewal to work
 
 - ensure that you restart/reload your webserver once in a while, so that renewed SSL certificates would take effect (once a month should be enough)
