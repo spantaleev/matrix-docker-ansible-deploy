@@ -34,11 +34,11 @@
   when: "matrix_mautrix_telegram_enabled"
 
 - stat: "path={{ matrix_mautrix_telegram_base_path }}/registration.yaml"
-  register: mautrix_registration_file
+  register: mautrix_telegram_registration_file
 
 - name: Generate matrix-mautrix-telegram registration.yaml if it doesn't exist
   shell: /usr/bin/docker run --rm --name matrix-mautrix-telegram-gen -v {{ matrix_mautrix_telegram_base_path }}:/data:z {{ matrix_docker_image_mautrix_telegram }} python3 -m mautrix_telegram -g -c /data/config.yaml -r /data/registration.yaml
-  when: "matrix_mautrix_telegram_enabled and mautrix_registration_file.stat.exists == False"
+  when: "matrix_mautrix_telegram_enabled and mautrix_telegram_registration_file.stat.exists == False"
 
 - set_fact:
     matrix_synapse_app_service_config_file_mautrix_telegram: '/app-registration/mautrix-telegram.yml'

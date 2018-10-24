@@ -128,6 +128,7 @@ matrix_coturn_base_path: "{{ matrix_base_data_path }}/coturn"
 matrix_coturn_config_path: "{{ matrix_coturn_base_path }}/turnserver.conf"
 matrix_scratchpad_dir: "{{ matrix_base_data_path }}/scratchpad"
 matrix_mautrix_telegram_base_path: "{{ matrix_base_data_path }}/mautrix-telegram"
+matrix_mautrix_whatsapp_base_path: "{{ matrix_base_data_path }}/mautrix-whatsapp"
 matrix_static_files_base_path: "{{ matrix_base_data_path }}/static-files"
 
 matrix_docker_image_postgres_v9: "postgres:9.6.10-alpine"
@@ -142,6 +143,7 @@ matrix_docker_image_coturn: "instrumentisto/coturn:4.5.0.8"
 matrix_docker_image_mailer: "panubo/postfix:latest"
 matrix_docker_image_mxisd: "kamax/mxisd:1.1.1"
 matrix_docker_image_mautrix_telegram: "tulir/mautrix-telegram:v0.3.0"
+matrix_docker_image_mautrix_whatsapp: "tulir/mautrix-whatsapp:latest"
 
 # The Docker network that all services would be put into
 matrix_docker_network: "matrix"
@@ -243,6 +245,9 @@ matrix_mautrix_telegram_api_hash: YOUR_TELEGRAM_API_HASH
 # Use an uuid so it's not easily discoverable
 matrix_mautrix_telegram_public_endpoint: "/{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'telegram') | to_uuid }}"
 
+# Matrix mautrix is a Matrix <-> Whatsapp bridge
+# Enable whatsapp bridge
+matrix_mautrix_whatsapp_enabled: false
 
 # By default, this playbook sets up its own nginx proxy server on port 80/443.
 # This is fine if you're dedicating the whole server to Matrix.
