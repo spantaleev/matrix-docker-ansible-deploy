@@ -39,6 +39,7 @@ No matter what Matrix user id you configure to run it with, make sure that:
 
 - the Matrix Corporal user is joined and has Admin/Moderator-level access to any rooms you want it to manage
 
+
 ## Matrix Corporal files
 
 The following local filesystem paths are mounted in the `matrix-corporal` container and can be used in your configuration (or policy):

@@ -1,3 +1,11 @@
+# 2018-10-24
+
+## Disabling riot-web guests
+
+From now on, Riot's configuration setting `disable_guests` would be set to `true`.
+The homeserver was rejecting guests anyway, so this is just a cosmetic change affecting Riot's UI.
+
+
 # 2018-10-21
 
 ## Self-check maintenance command
