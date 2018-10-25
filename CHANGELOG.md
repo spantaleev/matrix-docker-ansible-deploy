@@ -1,3 +1,10 @@
+# 2018-10-25
+
+## Support for controlling Matrix federation
+
+The playbook can now help you with [Controlling Matrix federation](docs/configuration-playbook-federation.md), should you wish to run a more private (isolated) server.
+
+
 # 2018-10-24
 
 ## Disabling riot-web guests
