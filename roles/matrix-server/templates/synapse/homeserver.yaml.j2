@@ -126,9 +126,9 @@ federation_domain_whitelist: {{ matrix_synapse_federation_domain_whitelist|to_js
 # List of ports that Synapse should listen on, their purpose and their
 # configuration.
 listeners:
+{% if matrix_synapse_federation_enabled %}
   # Main HTTPS listener
   # For when matrix traffic is sent directly to synapse.
-  {% if matrix_synapse_federation_enabled %}
   -
     # The port to listen for HTTPS requests on.
     port: 8448
@@ -161,7 +161,7 @@ listeners:
     #   "/_matrix/my/custom/endpoint":
     #     module: my_module.CustomRequestHandler
     #     config: {}
-  {% endif %}
+{% endif %}
 
   # Unsecure HTTP listener,
   # For when matrix traffic passes through loadbalancer that unwraps TLS.
