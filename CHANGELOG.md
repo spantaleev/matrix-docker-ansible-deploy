@@ -1,3 +1,12 @@
+# 2018-10-26
+
+## Mautrix Whatsapp bridging support
+
+The playbook now supports bridging with [Whatsapp](https://www.whatsapp.com/) by installing the [mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) bridge. This playbook functionality is available thanks to [@izissise](https://github.com/izissise).
+
+Additional details are available in [Setting up Mautrix Whatsapp bridging](docs/configuring-playbook-bridge-mautrix-whatsapp.md).
+
+
 # 2018-10-25
 
 ## Support for controlling Matrix federation
