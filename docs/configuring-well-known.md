@@ -81,6 +81,6 @@ Make sure to:
 
 ## Confirming it works
 
-No matter which method you've used to set up the well-known file, if you've done it correctly you should be able to see a JSON file at a URL like this: `https://matrix.<domain>/.well-known/matrix/client`.
+No matter which method you've used to set up the well-known file, if you've done it correctly you should be able to see a JSON file at a URL like this: `https://<domain>/.well-known/matrix/client`.
 
 You can also check if everything is configured correctly, by [checking if services work](maintenance-checking-services.md).
