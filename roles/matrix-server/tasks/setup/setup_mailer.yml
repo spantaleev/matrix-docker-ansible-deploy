@@ -14,7 +14,7 @@
 
 - name: Ensure mailer image is pulled
   docker_image:
-    name: "{{ matrix_docker_image_mailer }}"
+    name: "{{ matrix_mailer_docker_image }}"
   when: matrix_mailer_enabled
 
 - name: Ensure matrix-mailer.service installed
@@ -51,6 +51,6 @@
 
 - name: Ensure mailer Docker image doesn't exist
   docker_image:
-    name: "{{ matrix_docker_image_mailer }}"
+    name: "{{ matrix_mailer_docker_image }}"
     state: absent
   when: "not matrix_mailer_enabled"

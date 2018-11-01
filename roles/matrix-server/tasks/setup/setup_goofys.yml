@@ -4,7 +4,7 @@
 
 - name: Ensure Goofys Docker image is pulled
   docker_image:
-    name: "{{ matrix_docker_image_goofys }}"
+    name: "{{ matrix_s3_goofys_docker_image }}"
   when: matrix_s3_media_store_enabled
 
 # This will throw a Permission Denied error if already mounted
@@ -65,6 +65,6 @@
 
 - name: Ensure Goofys Docker image doesn't exist
   docker_image:
-    name: "{{ matrix_docker_image_goofys }}"
+    name: "{{ matrix_s3_goofys_docker_image }}"
     state: absent
   when: "not matrix_s3_media_store_enabled"

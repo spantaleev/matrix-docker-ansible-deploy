@@ -1,3 +1,24 @@
+# 2018-11-01
+
+## (BC Break) Renaming playbook variables
+
+Due to the large amount of features added to this playbook lately, to keep things manageable we've had to reorganize its configuration variables a bit.
+
+The following playbook variables were renamed:
+
+- from `matrix_docker_image_mxisd` to `matrix_mxisd_docker_image`
+- from `matrix_docker_image_mautrix_telegram` to `matrix_mautrix_telegram_docker_image`
+- from `matrix_docker_image_mautrix_whatsapp` to `matrix_mautrix_whatsapp_docker_image`
+- from `matrix_docker_image_mailer` to `matrix_mailer_docker_image`
+- from `matrix_docker_image_coturn` to `matrix_coturn_docker_image`
+- from `matrix_docker_image_goofys` to `matrix_s3_goofys_docker_image`
+- from `matrix_docker_image_riot` to `matrix_riot_web_docker_image`
+- from `matrix_docker_image_nginx` to `matrix_nginx_proxy_docker_image`
+- from `matrix_docker_image_synapse` to `matrix_synapse_docker_image`
+- from `matrix_docker_image_postgres_v9` to `matrix_postgres_docker_image_v9`
+- from `matrix_docker_image_postgres_v10` to `matrix_postgres_docker_image_v10`
+- from `matrix_docker_image_postgres_latest` to `matrix_postgres_docker_image_latest`
+
 # 2018-10-26
 
 ## Mautrix Whatsapp bridging support

@@ -52,16 +52,16 @@
 
 - name: Determine Postgres version to use (default to latest)
   set_fact:
-    matrix_docker_image_postgres_to_use: "{{ matrix_docker_image_postgres_latest }}"
+    matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_latest }}"
 
 - name: Determine Postgres version to use (use 9.x, if detected)
   set_fact:
-    matrix_docker_image_postgres_to_use: "{{ matrix_docker_image_postgres_v9 }}"
+    matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_v9 }}"
   when: "pg_version.startswith('9.')"
 
 - name: Abort, if already at latest Postgres version
   fail: msg="You are already running the latest Postgres version supported. Nothing to do"
-  when: "matrix_docker_image_postgres_to_use == matrix_docker_image_postgres_latest"
+  when: "matrix_postgres_docker_image_to_use == matrix_postgres_docker_image_latest"
 
 - name: Ensure matrix-synapse is stopped
   service: name=matrix-synapse state=stopped
@@ -81,7 +81,7 @@
     --link matrix-postgres:postgres \
     --env-file={{ matrix_environment_variables_data_path }}/env-postgres-pgsql-docker \
     -v {{ postgres_dump_dir }}:/out \
-    {{ matrix_docker_image_postgres_to_use }} pg_dump -h postgres {{ matrix_postgres_db_name }} -f /out/{{ postgres_dump_name }}
+    {{ matrix_postgres_docker_image_to_use }} pg_dump -h postgres {{ matrix_postgres_db_name }} -f /out/{{ postgres_dump_name }}
 
 - name: Ensure matrix-postgres is stopped
   service: name=matrix-postgres state=stopped
@@ -109,7 +109,7 @@
     --link matrix-postgres:postgres \
     --env-file={{ matrix_environment_variables_data_path }}/env-postgres-pgsql-docker \
     -v {{ postgres_dump_dir }}:/in:ro \
-    {{ matrix_docker_image_postgres_latest }} psql -h postgres -f /in/{{ postgres_dump_name }}
+    {{ matrix_postgres_docker_image_latest }} psql -h postgres -f /in/{{ postgres_dump_name }}
 
 - name: Delete Postgres database dump file
   file:

@@ -11,21 +11,24 @@ hostname_matrix: "matrix.{{ hostname_identity }}"
 # This and the Matrix hostname (see above) are expected to be on the same server.
 hostname_riot: "riot.{{ hostname_identity }}"
 
+
 matrix_user_username: "matrix"
 matrix_user_uid: 991
 matrix_user_gid: 991
 
-# The defaults below cause a postgres server to be configured (running within a container).
-# Using an external server is possible by tweaking all of the parameters below.
-matrix_postgres_use_external: false
-matrix_postgres_connection_hostname: "matrix-postgres"
-matrix_postgres_connection_username: "synapse"
-matrix_postgres_connection_password: "synapse-password"
-matrix_postgres_db_name: "homeserver"
-
 matrix_base_data_path: "/matrix"
-
 matrix_environment_variables_data_path: "{{ matrix_base_data_path }}/environment-variables"
+matrix_scratchpad_dir: "{{ matrix_base_data_path }}/scratchpad"
+matrix_static_files_base_path: "{{ matrix_base_data_path }}/static-files"
+
+matrix_homeserver_url: "https://{{ hostname_matrix }}"
+matrix_identity_server_url: "https://{{ matrix_synapse_trusted_third_party_id_servers[0] }}"
+
+# The Docker network that all services would be put into
+matrix_docker_network: "matrix"
+
+
+matrix_synapse_docker_image: "matrixdotorg/synapse:v0.33.7"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
 matrix_synapse_config_dir_path: "{{ matrix_synapse_base_path }}/config"
@@ -114,6 +117,7 @@ matrix_synapse_app_service_config_files: []
 # any password providers have been enabled or not.
 matrix_synapse_password_providers_enabled: false
 
+
 # Enable this to activate the REST auth password provider module.
 # See: https://github.com/kamax-io/matrix-synapse-rest-auth
 matrix_synapse_ext_password_provider_rest_auth_enabled: false
@@ -129,33 +133,26 @@ matrix_synapse_ext_password_provider_shared_secret_auth_enabled: false
 matrix_synapse_ext_password_provider_shared_secret_auth_download_url: "https://raw.githubusercontent.com/devture/matrix-synapse-shared-secret-auth/1.0/shared_secret_authenticator.py"
 matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret: ""
 
+
+# The defaults below cause a postgres server to be configured (running within a container).
+# Using an external server is possible by tweaking all of the parameters below.
+matrix_postgres_use_external: false
+matrix_postgres_connection_hostname: "matrix-postgres"
+matrix_postgres_connection_username: "synapse"
+matrix_postgres_connection_password: "synapse-password"
+matrix_postgres_db_name: "homeserver"
+
 matrix_postgres_data_path: "{{ matrix_base_data_path }}/postgres"
-matrix_nginx_proxy_data_path: "{{ matrix_base_data_path }}/nginx-proxy"
-matrix_nginx_proxy_confd_path: "{{ matrix_nginx_proxy_data_path }}/conf.d"
-matrix_riot_web_data_path: "{{ matrix_base_data_path }}/riot-web"
+
+matrix_postgres_docker_image_v9: "postgres:9.6.10-alpine"
+matrix_postgres_docker_image_v10: "postgres:10.5-alpine"
+matrix_postgres_docker_image_latest: "{{ matrix_postgres_docker_image_v10 }}"
+
+
+matrix_coturn_docker_image: "instrumentisto/coturn:4.5.0.8"
+
 matrix_coturn_base_path: "{{ matrix_base_data_path }}/coturn"
 matrix_coturn_config_path: "{{ matrix_coturn_base_path }}/turnserver.conf"
-matrix_scratchpad_dir: "{{ matrix_base_data_path }}/scratchpad"
-matrix_mautrix_telegram_base_path: "{{ matrix_base_data_path }}/mautrix-telegram"
-matrix_mautrix_whatsapp_base_path: "{{ matrix_base_data_path }}/mautrix-whatsapp"
-matrix_static_files_base_path: "{{ matrix_base_data_path }}/static-files"
-
-matrix_docker_image_postgres_v9: "postgres:9.6.10-alpine"
-matrix_docker_image_postgres_v10: "postgres:10.5-alpine"
-matrix_docker_image_postgres_latest: "{{ matrix_docker_image_postgres_v10 }}"
-
-matrix_docker_image_synapse: "matrixdotorg/synapse:v0.33.7"
-matrix_docker_image_nginx: "nginx:1.15.5-alpine"
-matrix_docker_image_riot: "avhost/docker-matrix-riot:v0.17.3"
-matrix_docker_image_goofys: "cloudproto/goofys:latest"
-matrix_docker_image_coturn: "instrumentisto/coturn:4.5.0.8"
-matrix_docker_image_mailer: "panubo/postfix:latest"
-matrix_docker_image_mxisd: "kamax/mxisd:1.1.1"
-matrix_docker_image_mautrix_telegram: "tulir/mautrix-telegram:v0.3.0"
-matrix_docker_image_mautrix_whatsapp: "tulir/mautrix-whatsapp:latest"
-
-# The Docker network that all services would be put into
-matrix_docker_network: "matrix"
 
 # A shared secret (between Synapse and Coturn) used for authentication.
 # You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
@@ -169,6 +166,7 @@ matrix_coturn_turn_external_ip_address: "{{ ansible_host }}"
 
 
 matrix_s3_media_store_enabled: false
+matrix_s3_goofys_docker_image: "cloudproto/goofys:latest"
 matrix_s3_media_store_bucket_name: "your-bucket-name"
 matrix_s3_media_store_aws_access_key: "your-aws-access-key"
 matrix_s3_media_store_aws_secret_key: "your-aws-secret-key"
@@ -179,6 +177,8 @@ matrix_s3_media_store_region: "eu-central-1"
 # This is so that Matrix Synapse can send email reminders for unread messages.
 # Other services (like mxisd), however, also use that mailer to send emails through it.
 matrix_mailer_enabled: true
+
+matrix_mailer_docker_image: "panubo/postfix:latest"
 
 matrix_mailer_sender_address: "matrix@{{ hostname_identity }}"
 matrix_mailer_relay_use: false
@@ -193,7 +193,7 @@ matrix_mailer_relay_auth_password: ""
 # If you wish to use the public identity servers (matrix.org, vector.im, riot.im) instead of your own,
 # you may wish to disable this.
 matrix_mxisd_enabled: true
-
+matrix_mxisd_docker_image: "kamax/mxisd:1.1.1"
 matrix_mxisd_base_path: "{{ matrix_base_data_path }}/mxisd"
 matrix_mxisd_config_path: "{{ matrix_mxisd_base_path }}/config"
 matrix_mxisd_data_path: "{{ matrix_mxisd_base_path }}/data"
@@ -236,17 +236,26 @@ matrix_corporal_policy_provider_config: ""
 
 matrix_corporal_debug: false
 
+
 # By default, this playbook installs the Riot.IM web UI on the `hostname_riot` domain.
 # If you wish to connect to your Matrix server by other means,
 # you may wish to disable this.
 matrix_riot_web_enabled: true
 
-matrix_homeserver_url: "https://{{ hostname_matrix }}"
-matrix_identity_server_url: "https://{{ matrix_synapse_trusted_third_party_id_servers[0] }}"
+matrix_riot_web_docker_image: "avhost/docker-matrix-riot:v0.17.3"
+
+matrix_riot_web_data_path: "{{ matrix_base_data_path }}/riot-web"
+
+
 
 # Matrix mautrix is a Matrix <-> Telegram bridge
 # Enable telegram bridge
 matrix_mautrix_telegram_enabled: false
+
+matrix_mautrix_telegram_docker_image: "tulir/mautrix-telegram:v0.3.0"
+
+matrix_mautrix_telegram_base_path: "{{ matrix_base_data_path }}/mautrix-telegram"
+
 # Get your own API keys at https://my.telegram.org/apps
 matrix_mautrix_telegram_api_id: YOUR_TELEGRAM_APP_ID
 matrix_mautrix_telegram_api_hash: YOUR_TELEGRAM_API_HASH
@@ -254,15 +263,26 @@ matrix_mautrix_telegram_api_hash: YOUR_TELEGRAM_API_HASH
 # Use an uuid so it's not easily discoverable
 matrix_mautrix_telegram_public_endpoint: "/{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'telegram') | to_uuid }}"
 
+
 # Matrix mautrix is a Matrix <-> Whatsapp bridge
 # Enable whatsapp bridge
 matrix_mautrix_whatsapp_enabled: false
+
+matrix_mautrix_whatsapp_docker_image: "tulir/mautrix-whatsapp:latest"
+
+matrix_mautrix_whatsapp_base_path: "{{ matrix_base_data_path }}/mautrix-whatsapp"
+
 
 # By default, this playbook sets up its own nginx proxy server on port 80/443.
 # This is fine if you're dedicating the whole server to Matrix.
 # But in case that's not the case, you may wish to prevent that
 # and take care of proxying by yourself.
 matrix_nginx_proxy_enabled: true
+
+matrix_nginx_proxy_docker_image: "nginx:1.15.5-alpine"
+
+matrix_nginx_proxy_data_path: "{{ matrix_base_data_path }}/nginx-proxy"
+matrix_nginx_proxy_confd_path: "{{ matrix_nginx_proxy_data_path }}/conf.d"
 
 # The addresses where the Matrix Client API is.
 # Certain extensions (like matrix-corporal) may override this in order to capture all traffic.

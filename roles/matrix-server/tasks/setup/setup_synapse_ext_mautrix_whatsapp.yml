@@ -2,7 +2,7 @@
 
 - name: Ensure Mautrix Whatsapp image is pulled
   docker_image:
-    name: "{{ matrix_docker_image_mautrix_whatsapp }}"
+    name: "{{ matrix_mautrix_whatsapp_docker_image }}"
   when: "matrix_mautrix_whatsapp_enabled"
 
 - name: Ensure Mautrix Whatsapp configuration path exists
@@ -37,7 +37,7 @@
   register: mautrix_whatsapp_registration_file
 
 - name: Generate matrix-mautrix-whatsapp registration.yaml if it doesn't exist
-  shell: /usr/bin/docker run --rm --name matrix-mautrix-whatsapp-gen -v {{ matrix_mautrix_whatsapp_base_path }}:/data:z {{ matrix_docker_image_mautrix_whatsapp }} /usr/bin/mautrix-whatsapp -g -c /data/config.yaml -r /data/registration.yaml
+  shell: /usr/bin/docker run --rm --name matrix-mautrix-whatsapp-gen -v {{ matrix_mautrix_whatsapp_base_path }}:/data:z {{ matrix_mautrix_whatsapp_docker_image }} /usr/bin/mautrix-whatsapp -g -c /data/config.yaml -r /data/registration.yaml
   when: "matrix_mautrix_whatsapp_enabled and mautrix_whatsapp_registration_file.stat.exists == False"
 
 - set_fact:

@@ -26,21 +26,21 @@
 
 - name: Determine Postgres version to use (default to latest)
   set_fact:
-    matrix_docker_image_postgres_to_use: "{{ matrix_docker_image_postgres_latest }}"
+    matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_latest }}"
 
 - name: Determine Postgres version to use (use 9.x, if detected)
   set_fact:
-    matrix_docker_image_postgres_to_use: "{{ matrix_docker_image_postgres_v9 }}"
+    matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_v9 }}"
   when: "pg_version.startswith('9.')"
 
 - debug:
-    msg: "NOTE: Your setup is on an old Postgres version ({{ matrix_docker_image_postgres_to_use }}), while {{ matrix_docker_image_postgres_latest }} is supported. You can upgrade using --tags=upgrade-postgres"
-  when: "matrix_docker_image_postgres_to_use != matrix_docker_image_postgres_latest"
+    msg: "NOTE: Your setup is on an old Postgres version ({{ matrix_postgres_docker_image_to_use }}), while {{ matrix_postgres_docker_image_latest }} is supported. You can upgrade using --tags=upgrade-postgres"
+  when: "matrix_postgres_docker_image_to_use != matrix_postgres_docker_image_latest"
 
 # Even if we don't run the internal server, we still need this for running the CLI
 - name: Ensure postgres Docker image is pulled
   docker_image:
-    name: "{{ matrix_docker_image_postgres_to_use }}"
+    name: "{{ matrix_postgres_docker_image_to_use }}"
 
 - name: Ensure Postgres environment variables file created
   template:

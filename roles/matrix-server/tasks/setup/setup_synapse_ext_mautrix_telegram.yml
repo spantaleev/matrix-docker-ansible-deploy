@@ -2,7 +2,7 @@
 
 - name: Ensure Mautrix Telegram image is pulled
   docker_image:
-    name: "{{ matrix_docker_image_mautrix_telegram }}"
+    name: "{{ matrix_mautrix_telegram_docker_image }}"
   when: "matrix_mautrix_telegram_enabled"
 
 - name: Ensure Mautrix Telegram configuration path exists
@@ -37,7 +37,7 @@
   register: mautrix_telegram_registration_file
 
 - name: Generate matrix-mautrix-telegram registration.yaml if it doesn't exist
-  shell: /usr/bin/docker run --rm --name matrix-mautrix-telegram-gen -v {{ matrix_mautrix_telegram_base_path }}:/data:z {{ matrix_docker_image_mautrix_telegram }} python3 -m mautrix_telegram -g -c /data/config.yaml -r /data/registration.yaml
+  shell: /usr/bin/docker run --rm --name matrix-mautrix-telegram-gen -v {{ matrix_mautrix_telegram_base_path }}:/data:z {{ matrix_mautrix_telegram_docker_image }} python3 -m mautrix_telegram -g -c /data/config.yaml -r /data/registration.yaml
   when: "matrix_mautrix_telegram_enabled and mautrix_telegram_registration_file.stat.exists == False"
 
 - set_fact:
