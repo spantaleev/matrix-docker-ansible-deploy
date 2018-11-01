@@ -33,6 +33,11 @@
     matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_v9 }}"
   when: "pg_version.startswith('9.')"
 
+- name: Determine Postgres version to use (use 10.x, if detected)
+  set_fact:
+    matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_v10 }}"
+  when: "pg_version == '10' or pg_version.startswith('10.')"
+
 - debug:
     msg: "NOTE: Your setup is on an old Postgres version ({{ matrix_postgres_docker_image_to_use }}), while {{ matrix_postgres_docker_image_latest }} is supported. You can upgrade using --tags=upgrade-postgres"
   when: "matrix_postgres_docker_image_to_use != matrix_postgres_docker_image_latest"

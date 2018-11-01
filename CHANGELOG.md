@@ -1,5 +1,12 @@
 # 2018-11-01
 
+## Postgres 11 support
+
+The playbook now installs [Postgres 11](https://www.postgresql.org/about/news/1894/) by default.
+
+If you have have an existing setup, it's likely running on an older Postgres version (9.x or 10.x). You can easily upgrade by following the [Maintenance / upgrading PostgreSQL](docs/maintenance-upgrading-postgres.md) guide.
+
+
 ## (BC Break) Renaming playbook variables
 
 Due to the large amount of features added to this playbook lately, to keep things manageable we've had to reorganize its configuration variables a bit.
@@ -18,6 +25,7 @@ The following playbook variables were renamed:
 - from `matrix_docker_image_postgres_v9` to `matrix_postgres_docker_image_v9`
 - from `matrix_docker_image_postgres_v10` to `matrix_postgres_docker_image_v10`
 - from `matrix_docker_image_postgres_latest` to `matrix_postgres_docker_image_latest`
+
 
 # 2018-10-26
 

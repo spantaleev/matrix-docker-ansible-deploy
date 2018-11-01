@@ -60,9 +60,17 @@
     matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_v9 }}"
   when: "pg_version.startswith('9.')"
 
+- name: Determine Postgres version to use (use 10.x, if detected)
+  set_fact:
+    matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_v10 }}"
+  when: "pg_version == '10' or pg_version.startswith('10.')"
+
 - name: Abort, if already at latest Postgres version
-  fail: msg="You are already running the latest Postgres version supported. Nothing to do"
+  fail: msg="You are already running the latest Postgres version supported ({{ matrix_postgres_docker_image_latest }}). Nothing to do"
   when: "matrix_postgres_docker_image_to_use == matrix_postgres_docker_image_latest"
+
+- debug:
+    msg: "Upgrading database from {{ matrix_postgres_docker_image_to_use }} to {{ matrix_postgres_docker_image_latest }}"
 
 - name: Ensure matrix-synapse is stopped
   service: name=matrix-synapse state=stopped
