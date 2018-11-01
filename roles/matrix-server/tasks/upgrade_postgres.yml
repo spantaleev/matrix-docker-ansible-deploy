@@ -79,10 +79,10 @@
 - name: Perform Postgres database dump
   command: |
     /usr/bin/docker run --rm --name matrix-postgres-dump \
-    --link matrix-postgres:postgres \
+    --network={{ matrix_docker_network }} \
     --env-file={{ matrix_environment_variables_data_path }}/env-postgres-pgsql-docker \
     -v {{ postgres_dump_dir }}:/out \
-    {{ matrix_postgres_docker_image_to_use }} pg_dump -h postgres {{ matrix_postgres_db_name }} -f /out/{{ postgres_dump_name }}
+    {{ matrix_postgres_docker_image_to_use }} pg_dump -h matrix-postgres {{ matrix_postgres_db_name }} -f /out/{{ postgres_dump_name }}
 
 - name: Ensure matrix-postgres is stopped
   service: name=matrix-postgres state=stopped
@@ -107,10 +107,10 @@
 - name: Perform Postgres database import
   command: |
     /usr/bin/docker run --rm --name matrix-postgres-import \
-    --link matrix-postgres:postgres \
+    --network={{ matrix_docker_network }} \
     --env-file={{ matrix_environment_variables_data_path }}/env-postgres-pgsql-docker \
     -v {{ postgres_dump_dir }}:/in:ro \
-    {{ matrix_postgres_docker_image_latest }} psql -h postgres -f /in/{{ postgres_dump_name }}
+    {{ matrix_postgres_docker_image_latest }} psql -h matrix-postgres -f /in/{{ postgres_dump_name }}
 
 - name: Delete Postgres database dump file
   file:
