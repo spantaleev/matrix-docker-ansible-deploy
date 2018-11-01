@@ -12,6 +12,7 @@
 
 - set_fact:
     postgres_auto_upgrade_backup_data_path: "{{ matrix_postgres_data_path }}-auto-upgrade-backup"
+  when: "postgres_auto_upgrade_backup_data_path|default('') == ''"
 
 - name: Fail, if trying to upgrade external Postgres database
   fail:
