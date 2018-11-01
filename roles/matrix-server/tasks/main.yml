@@ -1,29 +1,36 @@
 ---
 
 - include: tasks/setup/main.yml
+  when: run_setup
 
 - include: tasks/upgrade_postgres.yml
   tags:
     - upgrade-postgres
+  when: run_upgrade_postgres
 
 - include: tasks/start.yml
   tags:
     - start
+  when: run_start
 
 - include: tasks/register_user.yml
   tags:
     - register-user
+  when: run_register_user
 
 - include: tasks/import_sqlite_db.yml
   tags:
     - import-sqlite-db
+  when: run_import_sqlite_db
 
 - include: tasks/import_media_store.yml
   tags:
     - import-media-store
+  when: run_import_media_store
 
 - include: tasks/self_check/main.yml
   delegate_to: 127.0.0.1
   become: false
   tags:
     - self-check
+  when: run_self_check
