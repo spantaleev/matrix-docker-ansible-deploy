@@ -40,7 +40,7 @@ Additional details are available in [Setting up Mautrix Whatsapp bridging](docs/
 
 ## Support for controlling Matrix federation
 
-The playbook can now help you with [Controlling Matrix federation](docs/configuration-playbook-federation.md), should you wish to run a more private (isolated) server.
+The playbook can now help you with [Controlling Matrix federation](docs/configuring-playbook-federation), should you wish to run a more private (isolated) server.
 
 
 # 2018-10-24
