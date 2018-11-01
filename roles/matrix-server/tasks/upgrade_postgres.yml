@@ -10,9 +10,15 @@
     postgres_dump_name: "matrix-postgres.out"
   when: "postgres_dump_name|default('') == ''"
 
-- set_fact:
+- name: Set postgres_auto_upgrade_backup_data_path, if not provided
+  set_fact:
     postgres_auto_upgrade_backup_data_path: "{{ matrix_postgres_data_path }}-auto-upgrade-backup"
   when: "postgres_auto_upgrade_backup_data_path|default('') == ''"
+
+- name: Set postgres_start_wait_time, if not provided
+  set_fact:
+    postgres_start_wait_time: 15
+  when: "postgres_start_wait_time|default('') == ''"
 
 - name: Fail, if trying to upgrade external Postgres database
   fail:
@@ -80,7 +86,7 @@
 
 - name: Wait a bit, so that Postgres can start
   wait_for:
-    timeout: 5
+    timeout: "{{ postgres_start_wait_time }}"
   delegate_to: 127.0.0.1
   become: false
 
@@ -108,7 +114,7 @@
 
 - name: Wait a bit, so that Postgres can start
   wait_for:
-    timeout: 5
+    timeout: "{{ postgres_start_wait_time }}"
   delegate_to: 127.0.0.1
   become: false
 
