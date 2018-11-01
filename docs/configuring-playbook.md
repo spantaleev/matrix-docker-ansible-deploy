@@ -23,6 +23,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ## Other configuration options
 
+- [Enabling Telemetry for your Matrix server](configuring-playbook-telemetry.md) (optional)
+
 - [Controlling Matrix federation](configuring-playbook-federation) (optional)
 
 - [Adjusting email-sending settings](configuring-playbook-email.md) (optional)
