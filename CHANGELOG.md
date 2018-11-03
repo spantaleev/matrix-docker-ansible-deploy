@@ -1,3 +1,28 @@
+# 2018-11-03
+
+## Customize parts of Riot's config
+
+You can now customize some parts of Riot's `config.json`. These playbook variables, with these default values, have been added:
+
+```
+matrix_riot_web_disable_custom_urls: true
+matrix_riot_web_disable_guests: true
+matrix_riot_web_integrations_ui_url: "https://scalar.vector.im/"
+matrix_riot_web_integrations_rest_url: "https://scalar.vector.im/api"
+matrix_riot_web_integrations_widgets_urls: "https://scalar.vector.im/api"
+matrix_riot_web_integrations_jitsi_widget_url: "https://scalar.vector.im/api/widgets/jitsi.html"
+```
+
+This now allows you use a custom integrations manager like [Dimesion](https://dimension.t2bot.io). For example, if you wish to use the Dimension instance hosted at dimension.t2bot.io, you can set the following in your vars.yml file:
+
+```
+matrix_riot_web_integrations_ui_url: "https://dimension.t2bot.io/riot"
+matrix_riot_web_integrations_rest_url: "https://dimension.t2bot.io/api/v1/scalar"
+matrix_riot_web_integrations_widgets_urls: "https://dimension.t2bot.io/widgets"
+matrix_riot_web_integrations_jitsi_widget_url: "https://dimension.t2bot.io/widgets/jitsi"
+```
+
+
 # 2018-11-01
 
 ## Postgres 11 support
