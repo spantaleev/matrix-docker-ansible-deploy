@@ -22,6 +22,14 @@ matrix_riot_web_integrations_widgets_urls: "https://dimension.t2bot.io/widgets"
 matrix_riot_web_integrations_jitsi_widget_url: "https://dimension.t2bot.io/widgets/jitsi"
 ```
 
+## SSL protocols used to serve Riot and Synapse
+
+There's now a new `matrix_nginx_proxy_ssl_protocols` playbook variable, which controls the SSL protocols used to serve Riot and Synapse. Its default value is `TLSv1.1 TLSv1.2`. This playbook previously used `TLSv1 TLSv1.1 TLSv1.2` to serve Riot and Synapse.
+
+You may wish to reenable TLSv1 if you need to access Riot in older browsers.
+
+Note: Currently the dockerized nginx doesn't support TLSv1.3. See https://github.com/nginxinc/docker-nginx/issues/190 for more details.
+
 
 # 2018-11-01
 
