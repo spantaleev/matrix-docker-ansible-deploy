@@ -294,6 +294,11 @@ matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container: "localhost:8008"
 # a new SSL certificate could go into effect.
 matrix_nginx_proxy_reload_cron_time_definition: "20 4 */5 * *"
 
+# Specifies which SSL protocols to use when serving Riot and Synapse
+# Note TLSv1.3 is not yet available in dockerized nginx
+# See: https://github.com/nginxinc/docker-nginx/issues/190
+matrix_nginx_proxy_ssl_protocols: "TLSv1.1 TLSv1.2"
+
 
 matrix_ssl_base_path: "{{ matrix_base_data_path }}/ssl"
 matrix_ssl_config_dir_path: "{{ matrix_ssl_base_path }}/config"
