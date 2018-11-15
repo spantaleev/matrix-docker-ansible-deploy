@@ -1,3 +1,17 @@
+# 2018-11-14
+
+## Ability to set Synapse log levels
+
+The playbook now allows you to set the log levels used by Synapse. The default logging levels remain the same.
+
+You can now override following variables with any of the supported log levels listed here: https://docs.python.org/3/library/logging.html#logging-levels
+
+```
+matrix_synapse_log_level: "INFO"
+matrix_synapse_storage_sql_log_level: "INFO"
+matrix_synapse_root_log_level: "INFO"
+```
+
 # 2018-11-03
 
 ## Customize parts of Riot's config
