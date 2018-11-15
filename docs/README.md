@@ -18,4 +18,6 @@
 
 - [Maintenance / upgrading PostgreSQL](maintenance-upgrading-postgres.md)
 
+- [Maintenance and Troubleshooting](maintenance-and-troubleshooting.md)
+
 - [Uninstalling](uninstalling.md)
