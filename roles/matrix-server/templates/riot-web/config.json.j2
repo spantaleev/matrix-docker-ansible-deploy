@@ -10,10 +10,24 @@
     "integrations_jitsi_widget_url": "{{ matrix_riot_web_integrations_jitsi_widget_url }}",
     "bug_report_endpoint_url": "https://riot.im/bugreports/submit",
     "enableLabs": true,
+{% if riot_roomdir_servers is defined %}
+{% for server in riot_roomdir_servers %}
+    "roomDirectory": {
+        "servers": [
+            "{{ server }}"
+        ]
+    },
+{% endfor %}
+{% else %}
     "roomDirectory": {
         "servers": [
             "matrix.org"
         ]
+{% endif %}
+{% if riot_welcome_bot|default(true)|bool %}
     },
     "welcomeUserId": "@riot-bot:matrix.org"
+{% else %}
+    }
+{% endif %}
 }
