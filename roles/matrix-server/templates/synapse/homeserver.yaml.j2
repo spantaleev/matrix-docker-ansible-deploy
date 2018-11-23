@@ -483,6 +483,15 @@ auto_join_rooms:
 {{ matrix_synapse_auto_join_rooms|to_nice_yaml }}
 {% endif %}
 
+# Where auto_join_rooms are specified, setting this flag ensures that the
+# the rooms exist by creating them when the first user on the
+# homeserver registers.
+# Setting to false means that if the rooms are not manually created,
+# users cannot be auto-joined since they do not exist.
+autocreate_auto_join_rooms: true
+
+
+
 ## Metrics ###
 
 # Enable collection and rendering of performance metrics
@@ -712,6 +721,14 @@ enable_group_creation: false
 # until the user consents to the privacy policy. The value of the setting is
 # used as the text of the error.
 #
+# 'require_at_registration', if enabled, will add a step to the registration
+# process, similar to how captcha works. Users will be required to accept the
+# policy before their account is created.
+#
+# 'policy_name' is the display name of the policy users will see when registering
+# for an account. Has no effect unless `require_at_registration` is enabled.
+# Defaults to "Privacy Policy".
+#
 # user_consent:
 #   template_dir: res/templates/privacy
 #   version: 1.0
@@ -724,6 +741,8 @@ enable_group_creation: false
 #   block_events_error: >-
 #     To continue using this homeserver you must review and agree to the
 #     terms and conditions at %(consent_uri)s
+#   require_at_registration: False
+#   policy_name: Privacy Policy
 #
 
 
@@ -745,3 +764,19 @@ enable_group_creation: false
 #   system_mxid_display_name: "Server Notices"
 #   system_mxid_avatar_url: "mxc://server.com/oumMVlgDnLYFaPVkExemNVVZ"
 #   room_name: "Server Notices"
+
+
+
+# The `alias_creation` option controls who's allowed to create aliases
+# on this server.
+#
+# The format of this option is a list of rules that contain globs that
+# match against user_id and the new alias (fully qualified with server
+# name). The action in the first rule that matches is taken, which can
+# currently either be "allow" or "deny".
+#
+# If no rules match the request is denied.
+alias_creation_rules:
+    - user_id: "*"
+      alias: "*"
+      action: allow
