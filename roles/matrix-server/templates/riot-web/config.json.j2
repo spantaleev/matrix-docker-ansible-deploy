@@ -11,11 +11,7 @@
     "bug_report_endpoint_url": "https://riot.im/bugreports/submit",
     "enableLabs": true,
     "roomDirectory": {
-        "servers": {{ matrix_riot_web_roomdir_servers|to_nice_yaml }}
-{% if matrix_riot_web_welcome_user_id %}
+        "servers": {{ matrix_riot_web_roomdir_servers|to_json }}
     },
-    "welcomeUserId": "{{ matrix_riot_web_welcome_user_id }}"
-{% else %}
-    }
-{% endif %}
+    "welcomeUserId": {{ matrix_riot_web_welcome_user_id|to_json }}
 }
