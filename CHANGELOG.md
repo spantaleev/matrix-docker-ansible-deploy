@@ -1,3 +1,18 @@
+# 2018-11-23
+
+## Support for controlling public registration and room auto-join
+
+The playbook now lets you enable public registration for users (controlled via `matrix_synapse_enable_registration`).
+By default, public registration is forbidden.
+
+You can also make people automatically get auto-joined to rooms (controlled via `matrix_synapse_auto_join_rooms`).
+
+## Support for changing the welcome user id (welcome bot)
+
+By default, `@riot-bot:matrix.org` is used to welcome newly registered users.
+This can be changed to something else (or disabled) via the new `matrix_riot_web_welcome_user_id` variable.
+
+
 # 2018-11-14
 
 ## Ability to set Synapse log levels
@@ -11,6 +26,7 @@ matrix_synapse_log_level: "INFO"
 matrix_synapse_storage_sql_log_level: "INFO"
 matrix_synapse_root_log_level: "INFO"
 ```
+
 
 # 2018-11-03
 
