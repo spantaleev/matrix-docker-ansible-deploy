@@ -432,11 +432,7 @@ turn_allow_guests: False
 ## Registration ##
 
 # Enable registration for new users.
-{% if matrix_enable_reg|default(false)|bool %}
-enable_registration: True
-{% else %}
-enable_registration: False
-{% endif %}
+enable_registration: {{ matrix_homeserver_enable_registration|capitalize }}
 
 # The user must provide all of the below types of 3PID when registering.
 #
@@ -478,17 +474,11 @@ trusted_third_party_id_servers:
     - {{ server }}
 {% endfor %}
 
-# Users who register on this homeserver will automatically be joined
-# to these rooms
-{% if matrix_autojoin_rooms is defined %}
-{% for room in matrix_autojoin_rooms %}
-auto_join_rooms:
-    - "{{ room }}"
-{% endfor %}
-{% else %}
+# Users who register on this homeserver will automatically be joined to these rooms
+{% if matrix_synapse_autojoin_rooms|length >0 %}
 #auto_join_rooms:
 #    - "#example:example.com"
-
+auto_join_rooms: {{ matrix_synapse_autojoin_rooms|to_yaml }}
 {% endif %}
 
 ## Metrics ###
