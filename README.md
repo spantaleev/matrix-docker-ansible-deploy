@@ -12,31 +12,35 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) [Amazon S3](https://aws.amazon.com/s3/) storage for your Matrix Synapse's content repository (`media_store`) files using [Goofys](https://github.com/kahing/goofys)
 
-- (optional default) [PostgreSQL](https://www.postgresql.org/) database for Matrix Synapse. [Using an external PostgreSQL server](docs/configuring-playbook-external-postgres.md) is also possible.
+- (optional, default) [PostgreSQL](https://www.postgresql.org/) database for Matrix Synapse. [Using an external PostgreSQL server](docs/configuring-playbook-external-postgres.md) is also possible.
 
 - a [coturn](https://github.com/coturn/coturn) STUN/TURN server for WebRTC audio/video calls
 
 - free [Let's Encrypt](https://letsencrypt.org/) SSL certificate, which secures the connection to the Synapse server and the Riot web UI
 
-- (optional default) a [Riot](https://riot.im/) web UI, which is configured to connect to your own Matrix Synapse server by default
+- (optional, default) a [Riot](https://riot.im/) web UI, which is configured to connect to your own Matrix Synapse server by default
 
-- (optional default) an [mxisd](https://github.com/kamax-io/mxisd) Matrix Identity server
+- (optional, default) an [mxisd](https://github.com/kamax-io/mxisd) Matrix Identity server
 
-- (optional default) a [Postfix](http://www.postfix.org/) mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server)
+- (optional, default) a [Postfix](http://www.postfix.org/) mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server)
 
-- (optional default) an [nginx](http://nginx.org/) web server, listening on ports 80 and 443 - standing in front of all the other services. Using your own webserver [is possible](docs/configuring-playbook-own-webserver.md)
+- (optional, default) an [nginx](http://nginx.org/) web server, listening on ports 80 and 443 - standing in front of all the other services. Using your own webserver [is possible](docs/configuring-playbook-own-webserver.md)
 
-- (optional) the [matrix-synapse-rest-auth](https://github.com/kamax-io/matrix-synapse-rest-auth) REST authentication password provider module
+- (optional, advanced) the [matrix-synapse-rest-auth](https://github.com/kamax-io/matrix-synapse-rest-auth) REST authentication password provider module
 
-- (optional) the [matrix-synapse-shared-secret-auth](https://github.com/devture/matrix-synapse-shared-secret-auth) password provider module
+- (optional, advanced) the [matrix-synapse-shared-secret-auth](https://github.com/devture/matrix-synapse-shared-secret-auth) password provider module
 
-- (optional) the [Matrix Corporal](https://github.com/devture/matrix-corporal) reconciliator and gateway for a managed Matrix server
+- (optional, advanced) the [Matrix Corporal](https://github.com/devture/matrix-corporal) reconciliator and gateway for a managed Matrix server
 
 - (optional) the [mautrix-telegram](https://github.com/tulir/mautrix-telegram) bridge for bridging your Matrix server to [Telegram](https://telegram.org/)
 
 - (optional) the [mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) bridge for bridging your Matrix server to [Whatsapp](https://www.whatsapp.com/)
 
 Basically, this playbook aims to get you up-and-running with all the basic necessities around Matrix, without you having to do anything else.
+
+**Note**: the list above is exhaustive. It includes optional or even some advanced components that you will most likely not need.
+Sticking with the defaults (which install a subset of the above components) is the best choice, especially for a new installation.
+You can always re-run the playbook later to add or remove components.
 
 
 ## What's different about this Ansible playbook?
