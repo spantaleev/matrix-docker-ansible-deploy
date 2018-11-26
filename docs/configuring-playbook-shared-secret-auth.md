@@ -1,4 +1,4 @@
-# Setting up the Shared Secret Auth password provider module
+# Setting up the Shared Secret Auth password provider module (optional, advanced)
 
 The playbook can install and configure [matrix-synapse-shared-secret-auth](https://github.com/devture/matrix-synapse-shared-secret-auth) for you.
 

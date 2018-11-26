@@ -1,4 +1,4 @@
-# Using your own webserver, instead of this playbook's nginx proxy (optional)
+# Using your own webserver, instead of this playbook's nginx proxy (optional, advanced)
 
 By default, this playbook installs its own nginx webserver (in a Docker container) which listens on ports 80 and 443.
 If that's alright, you can skip this.
@@ -12,7 +12,7 @@ All it takes is:
 
 2) editing your configuration file (`inventory/matrix.<your-domain>/vars.yml`):
 
-```
+```yaml
 matrix_nginx_proxy_enabled: false
 ```
 
