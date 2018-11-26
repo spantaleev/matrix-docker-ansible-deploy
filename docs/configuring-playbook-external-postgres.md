@@ -16,3 +16,5 @@ matrix_postgres_db_name: "your-postgres-server-database-name"
 
 The database (as specified in `matrix_postgres_db_name`) must exist and be accessible with the given credentials.
 It must be empty or contain a valid Matrix Synapse database. If empty, Matrix Synapse would populate it the first time it runs.
+
+**Note**: the external server that you specify in `matrix_postgres_connection_hostname` must be accessible from within the container `matrix-synapse` Docker container (and possibly others). This means that it either needs to be a publicly accessible hostname or that it's a hostname on the same Docker network where all containers installed by this playbook run (a network called `matrix` by default). Using a local PostgreSQL instance on the host (running on the same machine, but not in a contianer) is not possible.
