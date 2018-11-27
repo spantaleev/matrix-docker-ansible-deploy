@@ -649,6 +649,23 @@ password_providers:
     config:
       sharedSecret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret }}"
 {% endif %}
+{% if matrix_synapse_ext_password_provider_ldap %}
+  - module: "ldap_auth_provider.LdapAuthProvider"
+    config:
+      enabled: true
+      uri: "{{ matrix_synapse_ext_password_provider_ldap_uri }}"
+      start_tls: {{ matrix_synapse_ext_password_provider_ldap_tls }}
+      base: "{{ matrix_synapse_ext_password_provider_ldap_base }}"
+      attributes:
+        uid: "{{ matrix_synapse_ext_password_provider_ldap_attr_uid }}"
+        mail: "{{ matrix_synapse_ext_password_provider_ldap_attr_mail }}"
+        name: "{{ matrix_synapse_ext_password_provider_ldap_attr_name }}"
+      bind_dn: "{{ matrix_synapse_ext_password_provider_ldap_binddn }}"
+      bind_password: "{{ matrix_synapse_ext_password_provider_ldap_bindpwd }}"
+      {% if matrix_synapse_ext_password_provider_ldap_filter %}
+      filter: "{{ matrix_synapse_ext_password_provider_ldap_filter }}"
+      {% endif %}
+{% endif %}
 {% endif %}
 
 
