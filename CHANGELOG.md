@@ -1,5 +1,10 @@
 # 2018-11-28
 
+## More scripts
+
+* matrix-remove-all allows to uninstall everything with a single command
+* matrix-make-user-admin allows to upgrade a user's privileges
+
 ## LDAP auth support via matrix-synapse-ldap3
 
 The playbook can now install and configure [LDAP auth support](https://github.com/matrix-org/matrix-synapse-ldap3) for you.

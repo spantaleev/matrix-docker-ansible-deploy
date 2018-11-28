@@ -54,3 +54,10 @@
   shell:
     cmd: "docker network create --driver=bridge {{ matrix_docker_network }}"
   when: "result_check_docker_network.stdout == ''"
+
+- name: Ensure matrix-remove-all script created
+  template:
+    src: "{{ role_path }}/templates/usr-local-bin/matrix-remove-all.j2"
+    dest: "/usr/local/bin/matrix-remove-all"
+    mode: 0750
+
