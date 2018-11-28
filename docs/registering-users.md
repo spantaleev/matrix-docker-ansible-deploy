@@ -17,3 +17,13 @@ You can do it via this Ansible playbook (make sure to edit the `<your-username>`
 -----
 
 If you've just installed Matrix, **to finalize the installation process**, it's best if you proceed to [Configuring service discovery via .well-known](configuring-well-known.md)
+
+-----
+
+The script `/usr/local/bin/matrix-make-user-admin` may be used to upgrade a user's privileges:
+
+* log on to your server with ssh
+* execute with the username:
+
+    /usr/local/bin/matrix-make-user-admin <username>
+
