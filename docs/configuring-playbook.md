@@ -41,6 +41,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md) (optional, advanced)
 
+- [Setting up the LDAP password provider module](configuring-playbook-ldap-auth.md) (optional, advanced)
+
 - [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (optional, advanced)
 
 - [Setting up Mautrix Telegram bridging](configuring-playbook-bridge-mautrix-telegram.md) (optional)

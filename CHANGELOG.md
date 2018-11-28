@@ -1,3 +1,12 @@
+# 2018-11-28
+
+## LDAP auth support via matrix-synapse-ldap3
+
+The playbook can now install and configure [LDAP auth support](https://github.com/matrix-org/matrix-synapse-ldap3) for you.
+
+Additional details are available in [Setting up the LDAP authentication password provider module](docs/configuring-playbook-ldap-auth.md).
+
+
 # 2018-11-23
 
 ## Support for controlling public registration and room auto-join
