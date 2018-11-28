@@ -1,0 +1,34 @@
+#!/bin/bash
+
+if [ "$(id -u)" != "0" ]; then
+        echo "This script must be executed as root! Aborting."
+        exit 1
+fi
+
+echo "WARNING! You are about to remove everything the playbook installs for matrix.{{ host_specific_hostname_identity }}: matrix, docker images,..."
+echo -n "If you're sure you want to do this, type: 'Yes, I really want to remove everything!'"
+read sure
+
+if [ "$sure" != "Yes, I really want to remove everything!" ]; then
+        echo "Good thing I asked, exiting"
+        exit 0
+else
+        echo "Stop and remove matrix services"
+        for s in $(find /etc/systemd/system/ -name "matrix-*" -printf "%f\n"); do
+                systemctl stop $s
+                rm -f /etc/systemd/system/$s
+        done
+        systemctl daemon-reload
+        echo "Remove matrix cronjobs"
+        find /etc/cron.d/ -name "matrix-*" -delete
+        echo "Remove matrix scripts"
+        find /usr/local/bin/ -name "matrix-*" -delete
+        echo "Remove every docker images"
+        docker rmi $(docker images -aq)
+        echo "Remove docker matrix network"
+        docker network rm matrix
+        echo "Remove /matrix directory"
+        rm -fr /matrix
+        exit 0
+fi
+

@@ -19,3 +19,6 @@ However, if you've installed this on some server where you have other stuff you 
 - uninstall Docker itself, if necessary
 
 - delete the `/matrix` directory (`rm -rf /matrix`)
+
+The script `/usr/local/bin/matrix-remove-all` performs all these steps (**use with caution!**).
+
