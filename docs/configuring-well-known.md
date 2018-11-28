@@ -71,6 +71,7 @@ server {
 
 ```caddy
 proxy /.well-known/matrix https://matrix.DOMAIN
+header /.well-known/matrix Access-Control-Allow-Origin  *
 ```
 
 Make sure to:
