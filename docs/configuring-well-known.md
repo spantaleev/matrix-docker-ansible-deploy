@@ -23,18 +23,28 @@ To make things easy for you to set up, this playbook generates and hosts the wel
 
 You have 2 options when it comes to installing the file on the base domain's server:
 
-1) (Option 1): **Copying the file manually** to your base domain's server
 
-All it takes is copying the `/.well-known/matrix/client` from the Matrix server (e.g. `matrix.example.com`) to your base domain's server (`example.com`).
+### (Option 1): **Copying the file manually** to your base domain's server
 
-This is easy to do and possibly your only choice if you can only host static files from the base domain's server.
-It is, however, a little fragile, as future updates performed by this playbook may regenerate the well-known file and you may need to notice that and copy it again.
+**Hint**: Option 2 (below) is generally a better way to do this. Make sure to go with that one, if possible.
 
-2) (Option 2): **Setting up reverse-proxying** of the well-known file from the base domain's server to the Matrix server.
+All you need to do is:
+
+- copy the `/.well-known/matrix/client` from the Matrix server (e.g. `matrix.example.com`) to your base domain's server (`example.com`).
+
+- set up the server at your base domain (e.g. `example.com`) so that it adds an extra HTTP header when serving the `/.well-known/matrix/client` file. [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), the `Access-Control-Allow-Origin` header should be set with a value of `*`. If you don't do this step, web-based Matrix clients (like Riot) may fail to work.
+
+This is relatively easy to do and possibly your only choice if you can only host static files from the base domain's server.
+It is, however, **a little fragile**, as future updates performed by this playbook may regenerate the well-known file and you may need to notice that and copy it again.
+
+
+### (Option 2): **Setting up reverse-proxying** of the well-known file from the base domain's server to the Matrix server
 
 This option is less fragile and generally better.
 
 On the base domain's server (e.g. `example.com`), you can set up reverse-proxying, so that any access for the `/.well-known/matrix` location prefix is forwarded to the Matrix domain's server (e.g. `matrix.example.com`).
+
+With this method, you **don't need** to add special HTTP headers for [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) reasons (like `Access-Control-Allow-Origin`), because your Matrix server (where requests ultimately go) will be configured by this playbook correctly.
 
 **For nginx**, it would be something like this:
 
