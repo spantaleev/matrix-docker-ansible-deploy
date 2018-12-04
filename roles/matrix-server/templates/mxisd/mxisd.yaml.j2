@@ -10,10 +10,59 @@ threepid.medium.email.connectors.smtp.host: matrix-mailer
 threepid.medium.email.connectors.smtp.port: 587
 threepid.medium.email.connectors.smtp.tls: 0
 
-synapseSql.enabled: true
-synapseSql.type: postgresql
-synapseSql.connection: //{{ matrix_postgres_connection_hostname }}/{{ matrix_postgres_db_name }}?user={{ matrix_postgres_connection_username }}&password={{ matrix_postgres_connection_password }}
-
 {% if matrix_mxisd_matrixorg_forwarding_enabled %}
 forward.servers: ['matrix-org']
 {% endif %}
+
+synapseSql.enabled: {{ matrix_mxisd_synapsesql_enabled }}
+synapseSql.type: {{ matrix_mxisd_synapsesql_type }}
+synapseSql.connection: {{ matrix_mxisd_synapsesql_connection }}
+
+ldap.enabled: {{ matrix_mxisd_ldap_enabled }}
+ldap.connection.host: {{ matrix_mxisd_ldap_connection_host }}
+ldap.connection.tls: {{ matrix_mxisd_ldap_connection_tls }}
+ldap.connection.port: {{ matrix_mxisd_ldap_connection_port }}
+ldap.connection.baseDn: {{ matrix_mxisd_ldap_connection_baseDn }}
+ldap.connection.bindDn: {{ matrix_mxisd_ldap_connection_bindDn }}
+ldap.connection.bindPassword: {{ matrix_mxisd_ldap_connection_bindPassword }}
+
+{% if matrix_mxisd_ldap_filter is defined %}
+ldap.filter: {{ matrix_mxisd_ldap_filter }}
+{% endif %}
+
+{% if matrix_mxisd_ldap_attribute_uid_type is defined %}
+ldap.attribute.uid.type: {{ matrix_mxisd_ldap_attribute_uid_type }}
+{% endif %}
+
+{% if matrix_mxisd_ldap_attribute_uid_value is defined %}
+ldap.attribute.uid.value: {{ matrix_mxisd_ldap_attribute_uid_value }}
+{% endif %}
+
+{% if matrix_mxisd_ldap_attribute_name is defined %}
+ldap.attribute.name: {{ matrix_mxisd_ldap_attribute_name }}
+{% endif %}
+
+{% if matrix_mxisd_ldap_attribute_threepid_email is defined %}
+ldap.attribute.threepid.email: {{ matrix_mxisd_ldap_attribute_threepid_email|to_yaml }}
+{% endif %}
+
+{% if matrix_mxisd_ldap_attribute_threepid_msisdn is defined %}
+ldap.attribute.threepid.msisdn: {{ matrix_mxisd_ldap_attribute_threepid_msisdn|to_yaml }}
+{% endif %}
+
+{% if matrix_mxisd_ldap_identity_filter is defined %}
+ldap.identity.filter: {{ matrix_mxisd_ldap_identity_filter }}
+{% endif %}
+
+{% if matrix_mxisd_ldap_identity_medium is defined %}
+ldap.identity.medium: {{ matrix_mxisd_ldap_identity_medium }}
+{% endif %}
+
+{% if matrix_mxisd_ldap_auth_filter is defined %}
+ldap.auth.filter: {{ matrix_mxisd_ldap_auth_filter }}
+{% endif %}
+
+{% if matrix_mxisd_ldap_directory_filter is defined %}
+ldap.directory.filter: {{ matrix_mxisd_ldap_directory_filter }}
+{% endif %}
+

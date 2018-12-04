@@ -237,6 +237,39 @@ matrix_mxisd_data_path: "{{ matrix_mxisd_base_path }}/data"
 # Enabling this is discouraged. Learn more here: https://github.com/kamax-io/mxisd/blob/master/docs/features/identity.md#lookups
 matrix_mxisd_matrixorg_forwarding_enabled: false
 
+# mxisd has serveral supported identity stores.
+# One of them is storing identities directly in Synapse's database.
+# Learn more here: https://github.com/kamax-matrix/mxisd/blob/master/docs/stores/synapse.md
+matrix_mxisd_synapsesql_enabled: true
+matrix_mxisd_synapsesql_type: postgresql
+matrix_mxisd_synapsesql_connection: //{{ matrix_postgres_connection_hostname }}/{{ matrix_postgres_db_name }}?user={{ matrix_postgres_connection_username }}&password={{ matrix_postgres_connection_password }}
+
+# LDAP is another identity store that's supported by mxisd.
+# Learn more here: https://github.com/kamax-matrix/mxisd/blob/master/docs/stores/ldap.md
+matrix_mxisd_ldap_enabled: false
+matrix_mxisd_ldap_connection_host: ldapHostnameOrIp
+matrix_mxisd_ldap_connection_tls: false
+matrix_mxisd_ldap_connection_port: 389
+matrix_mxisd_ldap_connection_baseDn: OU=Users,DC=example,DC=org
+matrix_mxisd_ldap_connection_bindDn: CN=My Mxisd User,OU=Users,DC=example,DC=org
+matrix_mxisd_ldap_connection_bindPassword: TheUserPassword
+# The following keys are optional:
+# matrix_mxisd_ldap_filter: ""
+# matrix_mxisd_ldap_attribute_uid_type: uid
+# matrix_mxisd_ldap_attribute_uid_value: sAMAccountName
+# matrix_mxisd_ldap_attribute_name: cn
+# matrix_mxisd_ldap_attribute_threepid_email:
+#   - mail
+#   - otherMailAttribute
+# matrix_mxisd_ldap_attribute_threepid_msisdn:
+#   - phone
+#   - otherPhoneAttribute
+# matrix_mxisd_ldap_identity_filter: ""
+# matrix_mxisd_ldap_identity_medium: ""
+# matrix_mxisd_ldap_auth_filter: ""
+# matrix_mxisd_ldap_directory_filter: ""
+
+
 # Specifies which template files to use when configuring mxisd.
 # If you'd like to have your own different configuration, feel free to copy and paste
 # the original files into your inventory (e.g. in `inventory/host_vars/<host>/`)
