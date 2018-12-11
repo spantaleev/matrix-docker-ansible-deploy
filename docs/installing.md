@@ -35,3 +35,4 @@ Now that the services are running, you might want to:
 - [create your first user account](registering-users.md)
 - or **finalize the installation process** by [Configuring service discovery via .well-known](configuring-well-known.md)
 - or [Check if services work](maintenance-checking-services.md)
+- or learn how to [upgrade your services when new versions are released](maintenance-upgrading-services.md)
