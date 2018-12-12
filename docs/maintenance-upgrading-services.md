@@ -2,6 +2,8 @@
 
 This playbook not only installs the various Matrix services for you, but can also upgrade them as new versions are made available.
 
+If you want to be notified when new versions of Synapse are released, you should join the Synapse Homeowners room: [#homeowners:matrix.org](https://matrix.to/#/#homeowners:matrix.org).
+
 To upgrade the services:
 
 - update your playbook directory (`git pull`), so you'd obtain everything new we've done
