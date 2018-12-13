@@ -49,22 +49,29 @@
 - name: Wait a while, so that Postgres can manage to start
   pause: seconds=7
 
+# If the actual migration command (below) fails, it will leave a container behind.
+# Starting it again later will relaunch that one, which may or may not work.
+# To ensure we're starting from a clean state, ensure any such leftovers are removed.
+- name: Cleanup any old leftover migration container
+  docker_container:
+    name: matrix-synapse-migrate
+    state: absent
+
 - name: Importing SQLite database into Postgres
   docker_container:
     name: matrix-synapse-migrate
     image: "{{ matrix_synapse_docker_image }}"
     detach: no
     cleanup: yes
-    entrypoint: /usr/bin/python
-    command: "/usr/local/bin/synapse_port_db --sqlite-database /scratchpad/homeserver.db --postgres-config /data/homeserver.yaml"
+    entrypoint: /usr/local/bin/python
+    command: "/usr/local/bin/synapse_port_db --sqlite-database /scratchpad/homeserver.db --postgres-config /data/homeserver.yaml
     user: "{{ matrix_user_uid }}:{{ matrix_user_gid }}"
     volumes:
       - "{{ matrix_synapse_config_dir_path }}:/data"
       - "{{ matrix_synapse_run_path }}:/matrix-run"
-      - "{{ matrix_synapse_media_store_path }}:/matrix-media-store"
       - "{{ matrix_scratchpad_dir }}:/scratchpad"
-    links:
-      - "matrix-postgres:{{ matrix_postgres_connection_hostname }}"
+    networks:
+      - name: "{{ matrix_docker_network }}"
 
 - name: Ensure scratchpad directory is deleted
   file:
