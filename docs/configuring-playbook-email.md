@@ -7,7 +7,15 @@ This may or may not work, depending on your domain configuration (SPF settings, 
 
 By default, emails are sent from `matrix@<your-domain-name>` (as specified by the `matrix_mailer_sender_address` playbook variable).
 
-Furthmore, if you'd like to relay email through another SMTP server, feel free to redefine a few more playbook variables.
+
+## Firewall settings
+
+No matter whether you send email directly (the default) or you relay email through another host (see how below), you'll probably need to allow outgoing traffic for TCP ports 25/587 (depending on configuration).
+
+
+## Relaying email through another SMTP server
+
+If you'd like to relay email through another SMTP server, feel free to redefine a few playbook variables.
 Example:
 
 ```yaml
@@ -20,6 +28,9 @@ matrix_mailer_relay_auth_username: "another.sender@example.com"
 matrix_mailer_relay_auth_password: "some-password"
 ```
 
-**Note**: no matter whether you relay email through another host (by defining `matrix_mailer_relay_host_name`) or you let the local (in-container) postfix deliver directly, you'll probably need to allow outgoing traffic for TCP ports 25/587 (depending on configuration).
+Keep in mind that postfix will look up the MX record of your relay host (`matrix_mailer_relay_host_name`) and, if available, will actually use that instead of what you've defined. This behavior is [documented here](http://www.postfix.org/postconf.5.html#relayhost). If you'd like to suppress this and use the relay host value as is, wrap it in square brackets (e.g. `matrix_mailer_relay_host_name: "[mail.example.com]"`).
+
+
+## Troubleshooting
 
 If you're having trouble with email not being delivered, it may be useful to inspect the mailer logs: `journalctl -f -u matrix-mailer`.
