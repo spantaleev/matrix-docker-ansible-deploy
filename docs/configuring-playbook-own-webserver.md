@@ -27,3 +27,74 @@ matrix_nginx_proxy_enabled: false
 - ensure that the `/.well-known/acme-challenge` location for each "port=80 vhost" gets proxied to `http://localhost:2402` (controlled by `matrix_ssl_certbot_standalone_http_port`) for automated SSL renewal to work
 
 - ensure that you restart/reload your webserver once in a while, so that renewed SSL certificates would take effect (once a month should be enough)
+
+**Apache2 sample configuration files**
+
+1. Create a new apache configuration file named 000-matrix-ssl.conf and enable it.
+
+    # Auto redirect http to https
+    <VirtualHost *:80>
+        ServerName matrix.DOMAIN
+        Redirect permanent / https://matrix.DOMAIN/
+    </VirtualHost>
+
+    <VirtualHost *:443>
+        ServerName matrix.DOMAIN
+
+        SSLEngine On
+        SSLCertificateFile /etc/letsencrypt/live/DOMAIN/fullchain.pem
+        SSLCertificateKeyFile /etc/letsencrypt/live/DOMAIN/privkey.pem
+
+        SSLProxyEngine on
+        SSLProxyProtocol +TLSv1.1 +TLSv1.2
+        SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+        
+        ProxyPreserveHost On
+        ProxyRequests Off
+        ProxyVia On
+        # Keep /.well-known/matrix/client and /_matrix/identity free for different proxy/location
+        ProxyPassMatch ^/.well-known/matrix/client !
+        ProxyPassMatch ^/_matrix/identity !
+        # Proxy all 443 traffic to the synapse matrix client api
+        ProxyPass / http://localhost:8008/
+        ProxyPassReverse / http://localhost:8008/
+
+        # Map /.well-known/matrix/client for client discovery
+        Alias /.well-known/matrix/client /matrix/static-files/.well-known/matrix/client
+        <Files "/matrix/static-files/.well-known/matrix/client">
+            Require all granted
+        </Files>
+        <Location "/.well-known/matrix/client>
+            Header always set Content-Type "application/json"
+            Header always set Access-Control-Allow-Origin "*"
+        </Location>
+        <Directory /matrix/static-files/.well-known/matrix/>
+            AllowOverride All
+            # Apache 2.4:
+            Require all granted
+            # Or for Apache 2.2:
+            #order allow,deny
+        </Directory>
+        
+        # Map /_matrix/identity to the identity server
+        <Location /_matrix/identity>
+            ProxyPass http://localhost:8090/_matrix/identity
+        </Location>
+
+        ErrorLog ${APACHE_LOG_DIR}/synapse-error.log
+        CustomLog ${APACHE_LOG_DIR}/synapse-access.log combined
+    </VirtualHost>
+
+2. Enable required apache2 modules
+
+    a2enmod proxy
+    a2enmod proxy_http
+    a2enmod proxy_connect
+    a2enmod proxy_html
+    a2enmod headers
+    
+3. Reload apache
+
+    systemctl restart apache2
+
+Notes: port 8448 does not get proxied and is left available for the homeserver federation api.
