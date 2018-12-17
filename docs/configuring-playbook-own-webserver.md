@@ -28,9 +28,9 @@ matrix_nginx_proxy_enabled: false
 
 - ensure that you restart/reload your webserver once in a while, so that renewed SSL certificates would take effect (once a month should be enough)
 
-**Apache2 sample configuration files**
+**Apache2 sample configuration file**
 
-1. Create a new apache configuration file named 000-matrix-ssl.conf and enable it.
+1. Create a new apache configuration file named 000-matrix-ssl.conf and enable it. Make certain to replace DOMAIN/SSL values with the correct ones for your server.
 
        # Auto redirect http to https
        <VirtualHost *:80>
