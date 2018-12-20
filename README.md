@@ -96,7 +96,7 @@ This playbook sets up your server using the following Docker images:
 
 - [postgres](https://hub.docker.com/_/postgres/) - the [Postgres](https://www.postgresql.org/) database server (optional)
 
-- [cloudproto/goofys](https://hub.docker.com/r/cloudproto/goofys/) - the [Goofys](https://github.com/kahing/goofys) Amazon [S3](https://aws.amazon.com/s3/) file-system-mounting program (optional)
+- [ewoutp/goofys](https://hub.docker.com/r/ewoutp/goofys/) - the [Goofys](https://github.com/kahing/goofys) Amazon [S3](https://aws.amazon.com/s3/) file-system-mounting program (optional)
 
 - [panubo/postfix](https://hub.docker.com/r/panubo/postfix/) - the [Postfix](http://www.postfix.org/) email server (optional)
 
