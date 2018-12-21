@@ -6,6 +6,21 @@ Synapse has been upgraded to 0.34.0 and now uses Python 3.
 Based on feedback from others, running Synapse on Python 3 is supposed to decrease memory usage significantly (~2x).
 
 
+# 2018-12-12
+
+## Riot homepage customization
+
+You can now customize some parts of the Riot homepage (or even completely replace it with your own custom page).
+See the `matrix_riot_web_homepage_` variables in `roles/matrix-server/defaults/main.yml`.
+
+
+# 2018-12-04
+
+## mxisd extensibility
+
+The [LDAP identity store for mxisd](https://github.com/kamax-matrix/mxisd/blob/master/docs/stores/ldap.md) can now be configured easily using playbook variables (see the `matrix_mxisd_ldap_` variables in `roles/matrix-server/defaults/main.yml`).
+
+
 # 2018-11-28
 
 ## More scripts
