@@ -1,3 +1,11 @@
+# 2018-12-21
+
+## Synapse 0.34.0 and Python 3
+
+Synapse has been upgraded to 0.34.0 and now uses Python 3.
+Based on feedback from others, running Synapse on Python 3 is supposed to decrease memory usage significantly (~2x).
+
+
 # 2018-11-28
 
 ## More scripts
