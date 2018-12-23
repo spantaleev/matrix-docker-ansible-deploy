@@ -22,38 +22,38 @@
     --net=host
     -v {{ matrix_ssl_config_dir_path }}:/etc/letsencrypt
     -v {{ matrix_ssl_log_dir_path }}:/var/log/letsencrypt
-    {{ matrix_ssl_certbot_docker_image }}
+    {{ matrix_ssl_lets_encrypt_certbot_docker_image }}
     certonly
     --non-interactive
-    {% if matrix_ssl_use_staging %}--staging{% endif %}
+    {% if matrix_ssl_lets_encrypt_staging %}--staging{% endif %}
     --standalone
     --preferred-challenges http
     --agree-tos
-    --email={{ matrix_ssl_support_email }}
+    --email={{ matrix_ssl_lets_encrypt_support_email }}
     -d {{ domain_name }}
   when: "domain_name_needs_cert"
   register: result_certbot_direct
   ignore_errors: true
 
 # If matrix-nginx-proxy is configured from a previous run of this playbook,
-# and it's running now, it may be able to proxy requests to `matrix_ssl_certbot_standalone_http_port`.
+# and it's running now, it may be able to proxy requests to `matrix_ssl_lets_encrypt_certbot_standalone_http_port`.
 - name: Attempt initial SSL certificate retrieval with standalone authenticator (via proxy)
   shell: >-
     /usr/bin/docker run
     --rm
     --name=matrix-certbot
-    -p 127.0.0.1:{{ matrix_ssl_certbot_standalone_http_port }}:80
+    -p 127.0.0.1:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }}:80
     --network={{ matrix_docker_network }}
     -v {{ matrix_ssl_config_dir_path }}:/etc/letsencrypt
     -v {{ matrix_ssl_log_dir_path }}:/var/log/letsencrypt
-    {{ matrix_ssl_certbot_docker_image }}
+    {{ matrix_ssl_lets_encrypt_certbot_docker_image }}
     certonly
     --non-interactive
-    {% if matrix_ssl_use_staging %}--staging{% endif %}
+    {% if matrix_ssl_lets_encrypt_staging %}--staging{% endif %}
     --standalone
     --preferred-challenges http
     --agree-tos
-    --email={{ matrix_ssl_support_email }}
+    --email={{ matrix_ssl_lets_encrypt_support_email }}
     -d {{ domain_name }}
   when: "domain_name_needs_cert and result_certbot_direct.failed"
   register: result_certbot_proxy
@@ -65,6 +65,6 @@
       Failed to obtain a certificate directly (by listening on port 80)
       and also failed to obtain by relying on the server at port 80 to proxy the request.
       See above for details.
-      You may wish to set up proxying of /.well-known/acme-challenge to {{ matrix_ssl_certbot_standalone_http_port }} or,
+      You may wish to set up proxying of /.well-known/acme-challenge to {{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }} or,
       more easily, stop the server on port 80 while this playbook runs.
   when: "domain_name_needs_cert and result_certbot_direct.failed and result_certbot_proxy.failed"

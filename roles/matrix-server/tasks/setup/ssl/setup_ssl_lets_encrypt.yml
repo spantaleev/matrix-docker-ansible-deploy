@@ -1,0 +1,61 @@
+---
+
+#
+# Tasks related to setting up Let's Encrypt's management of certificates
+#
+
+- name: (Deprecation) Fail if using outdated configuration
+  fail:
+    msg: "You're using the `host_specific_matrix_ssl_support_email` variable, which has been superseded by `host_specific_matrix_ssl_lets_encrypt_support_email`. Please change your configuration to use the new name!"
+  when: "matrix_ssl_retrieval_method == 'lets-encrypt' and host_specific_matrix_ssl_support_email is defined"
+
+- name: Allow access to HTTP/HTTPS in firewalld
+  firewalld:
+    service: "{{ item }}"
+    state: enabled
+    immediate: yes
+    permanent: yes
+  with_items:
+    - http
+    - https
+  when: "matrix_ssl_retrieval_method == 'lets-encrypt' and ansible_os_family == 'RedHat'"
+
+- name: Ensure certbot Docker image is pulled
+  docker_image:
+    name: "{{ matrix_ssl_lets_encrypt_certbot_docker_image }}"
+  when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
+
+- name: Obtain certificates
+  include_tasks: "tasks/setup/ssl/setup_ssl_lets_encrypt_obtain_for_domain.yml"
+  with_items: "{{ domains_requiring_certificates }}"
+  loop_control:
+    loop_var: domain_name
+  when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
+
+- name: Ensure SSL renewal script installed
+  template:
+    src: "{{ role_path }}/templates/usr-local-bin/matrix-ssl-certificates-renew.j2"
+    dest: "/usr/local/bin/matrix-ssl-certificates-renew"
+    mode: 0750
+  when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
+
+- name: Ensure periodic SSL renewal cronjob configured
+  template:
+    src: "{{ role_path }}/templates/cron.d/matrix-ssl-certificate-renewal.j2"
+    dest: "/etc/cron.d/matrix-ssl-certificate-renewal"
+    mode: 0600
+  when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
+
+
+#
+# Tasks related to getting rid of Let's Encrypt's management of certificates
+#
+
+- name: Ensure Let's Encrypt SSL certificate management files removed
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /usr/local/bin/matrix-ssl-certificates-renew
+    - /etc/cron.d/matrix-ssl-certificate-renewal
+  when: "matrix_ssl_retrieval_method != 'lets-encrypt'"

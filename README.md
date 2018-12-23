@@ -16,7 +16,7 @@ Using this playbook, you can get the following services configured on your serve
 
 - a [coturn](https://github.com/coturn/coturn) STUN/TURN server for WebRTC audio/video calls
 
-- free [Let's Encrypt](https://letsencrypt.org/) SSL certificate, which secures the connection to the Synapse server and the Riot web UI
+- (optional, default) free [Let's Encrypt](https://letsencrypt.org/) SSL certificate, which secures the connection to the Synapse server and the Riot web UI
 
 - (optional, default) a [Riot](https://riot.im/) web UI, which is configured to connect to your own Matrix Synapse server by default
 

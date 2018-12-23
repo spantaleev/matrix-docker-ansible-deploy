@@ -1,5 +1,20 @@
 # 2018-12-23
 
+## More SSL certificate retrieval methods
+
+The playbook now lets you decide between 3 different SSL certificate retrieval methods:
+- (default) obtaining free SSL certificates from Let's Encrypt
+- generating self-signed SSL certificates
+- managing SSL certificates manually
+
+Learn more in [Adjusting SSL certificate retrieval](docs/configuring-playbook-ssl-certificates.md).
+
+For people who use Let's Encrypt (mostly everyone, since it's the default), you'll also have to rename a variable in your configuration:
+
+- before: `host_specific_matrix_ssl_support_email`
+- after: `host_specific_matrix_ssl_lets_encrypt_support_email`
+
+
 ## (BC Break) mxisd upgrade with multiple base DN support
 
 mxisd has bee upgraded to [version 1.2.2](https://github.com/kamax-matrix/mxisd/releases/tag/v1.2.2), which supports [multiple base DNs](https://github.com/kamax-matrix/mxisd/blob/v1.2.2/docs/stores/ldap.md#base).

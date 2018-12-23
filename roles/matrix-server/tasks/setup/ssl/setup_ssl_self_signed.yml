@@ -1,0 +1,24 @@
+---
+
+- name: Ensure OpenSSL installed (RedHat)
+  yum:
+    name:
+      - openssl
+    state: present
+    update_cache: no
+  when: ansible_os_family == 'RedHat'
+
+- name: Ensure APT usage dependencies are installed (Debian)
+  apt:
+    name:
+      - openssl
+    state: present
+    update_cache: no
+  when: ansible_os_family == 'Debian'
+
+- name: Obtain certificates
+  include_tasks: "tasks/setup/ssl/setup_ssl_self_signed_obtain_for_domain.yml"
+  with_items: "{{ domains_requiring_certificates }}"
+  loop_control:
+    loop_var: domain_name
+  when: "matrix_ssl_retrieval_method == 'self-signed'"
