@@ -62,7 +62,7 @@
     src: "{{ role_path }}/templates/cron.d/matrix-nginx-proxy-periodic-restarter.j2"
     dest: "/etc/cron.d/matrix-nginx-proxy-periodic-restarter"
     mode: 0600
-  when: matrix_nginx_proxy_enabled
+  when: "matrix_nginx_proxy_enabled and matrix_ssl_retrieval_method == 'lets-encrypt'"
 
 #
 # Tasks related to getting rid of matrix-nginx-proxy (if it was previously enabled)
@@ -87,4 +87,4 @@
   file:
     path: "/etc/cron.d/matrix-nginx-proxy-periodic-restarter"
     state: absent
-  when: "not matrix_nginx_proxy_enabled"
+  when: "not matrix_nginx_proxy_enabled or matrix_ssl_retrieval_method != 'lets-encrypt'"
