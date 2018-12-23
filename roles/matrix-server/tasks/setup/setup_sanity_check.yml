@@ -9,3 +9,16 @@
   fail:
     msg: "You need to set a secret in the matrix_coturn_turn_static_auth_secret variable"
   when: "matrix_coturn_turn_static_auth_secret == ''"
+
+# This sanity check is only used to detect uppercase when people override these specific variables.
+#
+# If people set `host_specific_hostname_identity` without overriding other variables (the general use-case),
+# we take care to lower-case it automatically and it won't cause trouble anyway.
+- name: Fail if uppercase domain used
+  fail:
+    msg: "Detected that you're using an uppercase domain name - `{{ item }}`. This will cause trouble. Please use all-lowercase!"
+  when: "item != item|lower"
+  with_items:
+    - "{{ hostname_identity }}"
+    - "{{ hostname_matrix }}"
+    - "{{ hostname_riot }}"
