@@ -4,6 +4,11 @@
 # Tasks related to setting up mxisd
 #
 
+- name: (Deprecation) Fail if using outdated configuration
+  fail:
+    msg: "You're using the `matrix_mxisd_ldap_connection_baseDn` variable (single string), which has been superseded by `matrix_mxisd_ldap_connection_baseDns` (array of strings). See https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#bc-break-mxisd-upgrade-with-multiple-base-dn-support"
+  when: "matrix_mxisd_ldap_connection_baseDn is defined"
+
 - name: Fail if mailer is not enabled
   fail:
     msg: "You need to enable the mailer service (matrix_mailer_enabled) to install mxisd"

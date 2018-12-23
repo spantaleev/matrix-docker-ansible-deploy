@@ -1,3 +1,17 @@
+# 2018-12-23
+
+## (BC Break) mxisd upgrade with multiple base DN support
+
+mxisd has bee upgraded to [version 1.2.2](https://github.com/kamax-matrix/mxisd/releases/tag/v1.2.2), which supports [multiple base DNs](https://github.com/kamax-matrix/mxisd/blob/v1.2.2/docs/stores/ldap.md#base).
+
+If you were configuring this playbook's `matrix_mxisd_ldap_connection_baseDn` variable until now (a string containing a single base DN), you'll need to change to configuring the `matrix_mxisd_ldap_connection_baseDns` variable (an array containing multiple base DNs).
+
+Example change:
+
+- before: `matrix_mxisd_ldap_connection_baseDn: OU=Users,DC=example,DC=org`
+- after: `matrix_mxisd_ldap_connection_baseDns: ['OU=Users,DC=example,DC=org']`
+
+
 # 2018-12-21
 
 ## Synapse 0.34.0 and Python 3
