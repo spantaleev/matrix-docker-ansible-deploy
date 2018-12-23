@@ -1,6 +1,6 @@
 # 2018-12-23
 
-## More SSL certificate retrieval methods
+## (BC Break) More SSL certificate retrieval methods
 
 The playbook now lets you decide between 3 different SSL certificate retrieval methods:
 - (default) obtaining free SSL certificates from Let's Encrypt
