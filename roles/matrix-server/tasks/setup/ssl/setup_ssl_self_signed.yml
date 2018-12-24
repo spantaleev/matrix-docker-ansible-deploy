@@ -6,7 +6,7 @@
       - openssl
     state: present
     update_cache: no
-  when: ansible_os_family == 'RedHat'
+  when: "matrix_ssl_retrieval_method == 'self-signed' and ansible_os_family == 'RedHat'"
 
 - name: Ensure APT usage dependencies are installed (Debian)
   apt:
@@ -14,7 +14,7 @@
       - openssl
     state: present
     update_cache: no
-  when: ansible_os_family == 'Debian'
+  when: "matrix_ssl_retrieval_method == 'self-signed' and ansible_os_family == 'Debian'"
 
 - name: Obtain certificates
   include_tasks: "tasks/setup/ssl/setup_ssl_self_signed_obtain_for_domain.yml"
