@@ -16,7 +16,7 @@
     update_cache: no
   when: "matrix_ssl_retrieval_method == 'self-signed' and ansible_os_family == 'Debian'"
 
-- name: Obtain certificates
+- name: Generate self-signed certificates
   include_tasks: "tasks/setup/ssl/setup_ssl_self_signed_obtain_for_domain.yml"
   with_items: "{{ domains_requiring_certificates }}"
   loop_control:
