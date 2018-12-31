@@ -4,18 +4,24 @@
     well_known_url_matrix: "https://{{ hostname_matrix }}/.well-known/matrix/client"
     well_known_url_identity: "https://{{ hostname_identity }}/.well-known/matrix/client"
 
-
+# These well-known files may be served without a `Content-Type: application/json` header,
+# so we can't rely on the uri module's automatic parsing of JSON.
 - name: Check .well-known on the matrix hostname
   uri:
     url: "{{ well_known_url_matrix }}"
     follow_redirects: false
+    return_content: true
   register: result_well_known_matrix
   ignore_errors: true
 
 - name: Fail if .well-known not working on the matrix hostname
   fail:
-    msg: "Failed checking well-known is configured at `{{ hostname_matrix }}` (checked endpoint: `{{ well_known_url_matrix }}`). Is port 443 open in your firewall? Full error: {{ result_well_known_matrix }}"
-  when: "result_well_known_matrix.failed or 'json' not in result_well_known_matrix"
+    msg: "Failed checking that well-known is configured at `{{ hostname_matrix }}` (checked endpoint: `{{ well_known_url_matrix }}`). Is port 443 open in your firewall? Full error: {{ result_well_known_matrix }}"
+  when: "result_well_known_matrix.failed"
+
+- name: Parse JSON for well-known payload at the matrix hostname
+  set_fact:
+    well_known_matrix_payload: "{{ result_well_known_matrix.content|from_json }}"
 
 - name: Fail if .well-known not CORS-aware on the matrix hostname
   fail:
@@ -26,18 +32,22 @@
   debug:
     msg: "well-known is configured correctly for `{{ hostname_matrix }}` (checked endpoint: `{{ well_known_url_matrix }}`)"
 
-
 - name: Check .well-known on the identity hostname
   uri:
     url: "{{ well_known_url_identity }}"
     follow_redirects: false
+    return_content: true
   register: result_well_known_identity
   ignore_errors: true
 
 - name: Fail if .well-known not working on the identity hostname
   fail:
-    msg: "Failed checking well-known is configured at `{{ hostname_identity }}` (checked endpoint: `{{ well_known_url_identity }}`). Is port 443 open in your firewall? Full error: {{ result_well_known_identity }}"
-  when: "result_well_known_identity.failed or 'json' not in result_well_known_identity"
+    msg: "Failed checking that well-known is configured at `{{ hostname_identity }}` (checked endpoint: `{{ well_known_url_identity }}`). Is port 443 open in your firewall? Full error: {{ result_well_known_identity }}"
+  when: "result_well_known_identity.failed"
+
+- name: Parse JSON for well-known payload at the identity hostname
+  set_fact:
+    well_known_identity_payload: "{{ result_well_known_identity.content|from_json }}"
 
 - name: Fail if .well-known not CORS-aware on the identity hostname
   fail:
@@ -48,7 +58,7 @@
 - name: Fail if well-known is different on matrix hostname and identity hostname
   fail:
     msg: "The well-known files at `{{ hostname_matrix }}` and `{{ hostname_identity }}` are different. Perhaps you copied the file manually before and now it's outdated?"
-  when: "result_well_known_matrix.json|to_json != result_well_known_identity.json|to_json"
+  when: "well_known_matrix_payload != well_known_identity_payload"
 
 - name: Report working .well-known on the identity hostname
   debug:
