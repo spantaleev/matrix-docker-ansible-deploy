@@ -94,7 +94,7 @@
     --network={{ matrix_docker_network }} \
     --env-file={{ matrix_environment_variables_data_path }}/env-postgres-pgsql-docker \
     -v {{ postgres_dump_dir }}:/in:ro \
-    {{ matrix_postgres_docker_image_latest }} psql -h matrix-postgres -f /in/{{ postgres_dump_name }}
+    {{ matrix_postgres_docker_image_latest }} psql -v ON_ERROR_STOP=1 -h matrix-postgres -f /in/{{ postgres_dump_name }}
 
 - name: Delete Postgres database dump file
   file:
