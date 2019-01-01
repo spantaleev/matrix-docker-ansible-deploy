@@ -19,6 +19,8 @@ After installing, but before starting the services, you may want to do additiona
 
 - [Importing an existing SQLite database (from another installation)](importing-sqlite.md) (optional)
 
+- [Importing an existing Postgres database (from another installation)](importing-postgres.md) (optional)
+
 - [Restoring `media_store` data files from an existing installation](restoring-media-store.md) (optional)
 
 
