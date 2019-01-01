@@ -11,7 +11,7 @@ If you have such a Matrix Synapse setup and wish to migrate it here (and over to
 
 ## Prerequisites
 
-Before doing the actual import, **you need to upload your SQLite database file to the server**.
+Before doing the actual import, **you need to upload your SQLite database file to the server** (any path is okay).
 
 
 ## Importing
