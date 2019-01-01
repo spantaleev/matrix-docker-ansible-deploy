@@ -4,41 +4,17 @@
 # Generic tasks, no matter what kind of server we're using (internal/external)
 #
 
-- name: Determine existing Postgres version (check PG_VERSION file)
-  stat:
-    path: "{{ matrix_postgres_data_path }}/PG_VERSION"
-  register: result_pg_version_stat
+- include: tasks/util/detect_existing_postgres_version.yml
 
-- name: Determine existing Postgres version (read PG_VERSION file)
-  slurp:
-    src: "{{ matrix_postgres_data_path }}/PG_VERSION"
-  register: result_pg_version
-  when: "result_pg_version_stat.stat.exists"
+# If we have found an existing version (installed from before), we use its corresponding Docker image.
+# If not, we install using the latest Postgres.
+#
+# Upgrading is supposed to be performed separately and explicitly (see `upgrade_postgres.yml`).
+- set_fact:
+    matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_latest if matrix_postgres_detected_version_corresponding_docker_image == '' else matrix_postgres_detected_version_corresponding_docker_image }}"
 
-- name: Determine existing Postgres version (default to empty)
-  set_fact:
-    pg_version: ""
-
-- name: Determine existing Postgres version (make sense of PG_VERSION file)
-  set_fact:
-    pg_version: "{{ result_pg_version['content']|b64decode|replace('\n', '') }}"
-  when: "result_pg_version_stat.stat.exists"
-
-- name: Determine Postgres version to use (default to latest)
-  set_fact:
-    matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_latest }}"
-
-- name: Determine Postgres version to use (use 9.x, if detected)
-  set_fact:
-    matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_v9 }}"
-  when: "pg_version.startswith('9.')"
-
-- name: Determine Postgres version to use (use 10.x, if detected)
-  set_fact:
-    matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_v10 }}"
-  when: "pg_version == '10' or pg_version.startswith('10.')"
-
-- debug:
+- name: Warn if on an old version of Postgres
+  debug:
     msg: "NOTE: Your setup is on an old Postgres version ({{ matrix_postgres_docker_image_to_use }}), while {{ matrix_postgres_docker_image_latest }} is supported. You can upgrade using --tags=upgrade-postgres"
   when: "matrix_postgres_docker_image_to_use != matrix_postgres_docker_image_latest"
 

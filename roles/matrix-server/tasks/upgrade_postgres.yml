@@ -35,48 +35,18 @@
     msg: "Detected that a left-over {{ postgres_auto_upgrade_backup_data_path }} exists. You should rename it to {{ matrix_postgres_data_path }} if the previous upgrade went wrong, or delete it if it went well."
   when: "result_auto_upgrade_path.stat.exists"
 
-- name: Determine existing Postgres version (check PG_VERSION file)
-  stat:
-    path: "{{ matrix_postgres_data_path }}/PG_VERSION"
-  register: result_pg_version_stat
+- include: tasks/util/detect_existing_postgres_version.yml
 
 - name: Abort, if no existing Postgres version detected
   fail: msg="Could not find existing Postgres installation"
-  when: "not result_pg_version_stat.stat.exists"
-
-- name: Determine existing Postgres version (read PG_VERSION file)
-  slurp:
-    src: "{{ matrix_postgres_data_path }}/PG_VERSION"
-  register: result_pg_version
-
-- name: Determine existing Postgres version (default to empty)
-  set_fact:
-    pg_version: ""
-
-- name: Determine existing Postgres version (make sense of PG_VERSION file)
-  set_fact:
-    pg_version: "{{ result_pg_version['content']|b64decode|replace('\n', '') }}"
-
-- name: Determine Postgres version to use (default to latest)
-  set_fact:
-    matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_latest }}"
-
-- name: Determine Postgres version to use (use 9.x, if detected)
-  set_fact:
-    matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_v9 }}"
-  when: "pg_version.startswith('9.')"
-
-- name: Determine Postgres version to use (use 10.x, if detected)
-  set_fact:
-    matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_v10 }}"
-  when: "pg_version == '10' or pg_version.startswith('10.')"
+  when: "not matrix_postgres_detected_existing"
 
 - name: Abort, if already at latest Postgres version
   fail: msg="You are already running the latest Postgres version supported ({{ matrix_postgres_docker_image_latest }}). Nothing to do"
-  when: "matrix_postgres_docker_image_to_use == matrix_postgres_docker_image_latest"
+  when: "matrix_postgres_detected_version_corresponding_docker_image == matrix_postgres_docker_image_latest"
 
 - debug:
-    msg: "Upgrading database from {{ matrix_postgres_docker_image_to_use }} to {{ matrix_postgres_docker_image_latest }}"
+    msg: "Upgrading database from {{ matrix_postgres_detected_version_corresponding_docker_image }} to {{ matrix_postgres_docker_image_latest }}"
 
 - name: Ensure matrix-synapse is stopped
   service: name=matrix-synapse state=stopped
@@ -96,7 +66,7 @@
     --network={{ matrix_docker_network }} \
     --env-file={{ matrix_environment_variables_data_path }}/env-postgres-pgsql-docker \
     -v {{ postgres_dump_dir }}:/out \
-    {{ matrix_postgres_docker_image_to_use }} pg_dump -h matrix-postgres {{ matrix_postgres_db_name }} -f /out/{{ postgres_dump_name }}
+    {{ matrix_postgres_detected_version_corresponding_docker_image }} pg_dump -h matrix-postgres {{ matrix_postgres_db_name }} -f /out/{{ postgres_dump_name }}
 
 - name: Ensure matrix-postgres is stopped
   service: name=matrix-postgres state=stopped
