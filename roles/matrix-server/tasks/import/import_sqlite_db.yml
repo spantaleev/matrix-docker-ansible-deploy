@@ -1,31 +1,29 @@
 ---
 
+# Pre-checks
+
 - name: Fail if playbook called incorrectly
-  fail: msg="The `local_path_homeserver_db` variable needs to be provided to this playbook, via --extra-vars"
-  when: "local_path_homeserver_db is not defined or local_path_homeserver_db.startswith('<')"
+  fail: msg="The `server_path_homeserver_db` variable needs to be provided to this playbook, via --extra-vars"
+  when: "server_path_homeserver_db is not defined or server_path_homeserver_db.startswith('<')"
 
 - name: Check if the provided SQLite homeserver.db file exists
-  stat: path="{{ local_path_homeserver_db }}"
-  delegate_to: 127.0.0.1
-  become: false
-  register: local_path_homeserver_db_stat
+  stat: path="{{ server_path_homeserver_db }}"
+  register: result_server_path_homeserver_db_stat
 
 - name: Fail if provided SQLite homeserver.db file doesn't exist
-  fail: msg="File cannot be found on the local machine at {{ local_path_homeserver_db }}"
-  when: not local_path_homeserver_db_stat.stat.exists
+  fail: msg="File cannot be found on the local machine at {{ server_path_homeserver_db }}"
+  when: not result_server_path_homeserver_db_stat.stat.exists
 
-- name: Ensure scratchpad directory exists
-  file:
-    path: "{{ matrix_scratchpad_dir }}"
-    state: directory
-    mode: 0755
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
 
-- name: Ensure provided SQLite homeserver.db file is copied to scratchpad directory on the server
-  synchronize:
-    src: "{{ local_path_homeserver_db }}"
-    dest: "{{ matrix_scratchpad_dir }}/homeserver.db"
+# Defaults
+
+- name: Set postgres_start_wait_time, if not provided
+  set_fact:
+    postgres_start_wait_time: 15
+  when: "postgres_start_wait_time|default('') == ''"
+
+
+# Actual import work
 
 - name: Ensure matrix-postgres is stopped
   service: name=matrix-postgres state=stopped daemon_reload=yes
@@ -46,8 +44,11 @@
 - name: Ensure matrix-postgres is started
   service: name=matrix-postgres state=restarted daemon_reload=yes
 
-- name: Wait a while, so that Postgres can manage to start
-  pause: seconds=7
+- name: Wait a bit, so that Postgres can start
+  wait_for:
+    timeout: "{{ postgres_start_wait_time }}"
+  delegate_to: 127.0.0.1
+  become: false
 
 # If the actual migration command (below) fails, it will leave a container behind.
 # Starting it again later will relaunch that one, which may or may not work.
@@ -64,16 +65,11 @@
     detach: no
     cleanup: yes
     entrypoint: /usr/local/bin/python
-    command: "/usr/local/bin/synapse_port_db --sqlite-database /scratchpad/homeserver.db --postgres-config /data/homeserver.yaml"
+    command: "/usr/local/bin/synapse_port_db --sqlite-database {{ server_path_homeserver_db }} --postgres-config /data/homeserver.yaml"
     user: "{{ matrix_user_uid }}:{{ matrix_user_gid }}"
     volumes:
       - "{{ matrix_synapse_config_dir_path }}:/data"
       - "{{ matrix_synapse_run_path }}:/matrix-run"
-      - "{{ matrix_scratchpad_dir }}:/scratchpad"
+      - "{{ server_path_homeserver_db }}:/{{ server_path_homeserver_db }}:ro"
     networks:
       - name: "{{ matrix_docker_network }}"
-
-- name: Ensure scratchpad directory is deleted
-  file:
-    path: "{{ matrix_scratchpad_dir }}"
-    state: absent

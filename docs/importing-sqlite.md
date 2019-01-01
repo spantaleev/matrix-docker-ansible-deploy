@@ -8,8 +8,16 @@ using an SQLite database.
 
 If you have such a Matrix Synapse setup and wish to migrate it here (and over to PostgreSQL), this command is for you.
 
-Run this command (make sure to replace `<local-path-to-homeserver.db>` with a file path on your local machine):
 
-	ansible-playbook -i inventory/hosts setup.yml --extra-vars='local_path_homeserver_db=<local-path-to-homeserver.db>' --tags=import-sqlite-db
+## Prerequisites
 
-**Note**: `<local-path-to-homeserver.db>` must be a file path to a `homeserver.db` file on your local machine (not on the server!). This file is copied to the server and imported.
+Before doing the actual import, **you need to upload your SQLite database file to the server**.
+
+
+## Importing
+
+Run this command (make sure to replace `<server-path-to-homeserver.db>` with a file path on your server):
+
+	ansible-playbook -i inventory/hosts setup.yml --extra-vars='server_path_homeserver_db=<server-path-to-homeserver.db>' --tags=import-sqlite-db
+
+**Note**: `<server-path-to-homeserver.db>` must be a file path to a `homeserver.db` file on the server (not on your local machine!).
