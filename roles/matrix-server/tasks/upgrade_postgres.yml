@@ -35,7 +35,7 @@
     msg: "Detected that a left-over {{ postgres_auto_upgrade_backup_data_path }} exists. You should rename it to {{ matrix_postgres_data_path }} if the previous upgrade went wrong, or delete it if it went well."
   when: "result_auto_upgrade_path.stat.exists"
 
-- include: tasks/util/detect_existing_postgres_version.yml
+- import_tasks: tasks/util/detect_existing_postgres_version.yml
 
 - name: Abort, if no existing Postgres version detected
   fail: msg="Could not find existing Postgres installation"
@@ -77,7 +77,7 @@
 - debug:
     msg: "NOTE: Your Postgres data directory has been moved from `{{ matrix_postgres_data_path }}` to `{{ postgres_auto_upgrade_backup_data_path }}`. In the event of failure, you can move it back and run the playbook with --tags=setup-postgres to restore operation."
 
-- include: tasks/setup/setup_postgres.yml
+- import_tasks: tasks/setup/setup_postgres.yml
 
 - name: Ensure matrix-postgres autoruns and is restarted
   service: name=matrix-postgres enabled=yes state=restarted daemon_reload=yes
