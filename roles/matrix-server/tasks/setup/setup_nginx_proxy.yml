@@ -69,11 +69,15 @@
 #
 
 - name: Check existence of matrix-nginx-proxy service
-  stat: path="/etc/systemd/system/matrix-nginx-proxy.service"
+  stat:
+    path: "/etc/systemd/system/matrix-nginx-proxy.service"
   register: matrix_nginx_proxy_service_stat
 
 - name: Ensure matrix-nginx-proxy is stopped
-  service: name=matrix-nginx-proxy state=stopped daemon_reload=yes
+  service:
+    name: matrix-nginx-proxy
+    state: stopped
+    daemon_reload: yes
   register: stopping_result
   when: "not matrix_nginx_proxy_enabled and matrix_nginx_proxy_service_stat.stat.exists"
 

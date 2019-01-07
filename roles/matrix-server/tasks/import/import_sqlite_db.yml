@@ -3,15 +3,18 @@
 # Pre-checks
 
 - name: Fail if playbook called incorrectly
-  fail: msg="The `server_path_homeserver_db` variable needs to be provided to this playbook, via --extra-vars"
+  fail:
+    msg: "The `server_path_homeserver_db` variable needs to be provided to this playbook, via --extra-vars"
   when: "server_path_homeserver_db is not defined or server_path_homeserver_db.startswith('<')"
 
 - name: Check if the provided SQLite homeserver.db file exists
-  stat: path="{{ server_path_homeserver_db }}"
+  stat:
+    path: "{{ server_path_homeserver_db }}"
   register: result_server_path_homeserver_db_stat
 
 - name: Fail if provided SQLite homeserver.db file doesn't exist
-  fail: msg="File cannot be found on the server at {{ server_path_homeserver_db }}"
+  fail:
+    msg: "File cannot be found on the server at {{ server_path_homeserver_db }}"
   when: not result_server_path_homeserver_db_stat.stat.exists
 
 
@@ -26,7 +29,10 @@
 # Actual import work
 
 - name: Ensure matrix-postgres is stopped
-  service: name=matrix-postgres state=stopped daemon_reload=yes
+  service:
+    name: matrix-postgres
+    state: stopped
+    daemon_reload: yes
 
 - name: Ensure postgres data is wiped out
   file:
@@ -42,7 +48,10 @@
     group: "{{ matrix_user_username }}"
 
 - name: Ensure matrix-postgres is started
-  service: name=matrix-postgres state=restarted daemon_reload=yes
+  service:
+    name: matrix-postgres
+    state: restarted
+    daemon_reload: yes
 
 - name: Wait a bit, so that Postgres can start
   wait_for:

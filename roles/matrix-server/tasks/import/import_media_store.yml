@@ -3,38 +3,48 @@
 # Pre-checks
 
 - name: Fail if playbook called incorrectly
-  fail: msg="The `server_path_media_store` variable needs to be provided to this playbook, via --extra-vars"
+  fail:
+    msg: "The `server_path_media_store` variable needs to be provided to this playbook, via --extra-vars"
   when: "server_path_media_store is not defined or server_path_media_store.startswith('<')"
 
 - name: Fail if media store is on Amazon S3
-  fail: msg="Your media store is on Amazon S3. Due to technical limitations, restoring is not supported."
+  fail:
+    msg: "Your media store is on Amazon S3. Due to technical limitations, restoring is not supported."
   when: "matrix_s3_media_store_enabled"
 
 - name: Check if the provided media store directory exists
-  stat: path="{{ server_path_media_store }}"
+  stat:
+    path: "{{ server_path_media_store }}"
   register: server_path_media_store_stat
 
 - name: Fail if provided media store directory doesn't exist on the server
-  fail: msg="{{ server_path_media_store }} cannot be found on the server"
+  fail:
+    msg: "{{ server_path_media_store }} cannot be found on the server"
   when: "not server_path_media_store_stat.stat.exists or not server_path_media_store_stat.stat.isdir"
 
 - name: Check if media store contains local_content
-  stat: path="{{ server_path_media_store }}/local_content"
+  stat:
+    path: "{{ server_path_media_store }}/local_content"
   register: server_path_media_store_local_content_stat
 
 - name: Check if media store contains remote_content
-  stat: path="{{ server_path_media_store }}/remote_content"
+  stat:
+    path: "{{ server_path_media_store }}/remote_content"
   register: server_path_media_store_remote_content_stat
 
 - name: Fail if media store directory doesn't look okay (lacking remote and local content)
-  fail: msg="{{ server_path_media_store }} contains neither local_content nor remote_content directories. It's most likely a mistake and is not a media store directory."
+  fail:
+    msg: "{{ server_path_media_store }} contains neither local_content nor remote_content directories. It's most likely a mistake and is not a media store directory."
   when: "not server_path_media_store_local_content_stat.stat.exists and not server_path_media_store_remote_content_stat.stat.exists"
 
 
 # Actual import work
 
 - name: Ensure matrix-synapse is stopped
-  service: name=matrix-synapse state=stopped daemon_reload=yes
+  service:
+    name: matrix-synapse
+    state: stopped
+    daemon_reload: yes
   register: stopping_result
 
 # This can only work with local files, not if the media store is on Amazon S3,
@@ -64,7 +74,10 @@
 # all files become owned by whoever needs to own them.
 
 - name: Ensure Matrix Synapse is started (if it previously was)
-  service: name="{{ item }}" state=started daemon_reload=yes
+  service:
+    name: "{{ item }}"
+    state: started
+    daemon_reload: yes
   when: stopping_result.changed
   with_items:
     - matrix-synapse

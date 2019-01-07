@@ -9,7 +9,8 @@
 
 # This will throw a Permission Denied error if already mounted
 - name: Check Matrix Goofys external storage mountpoint path
-  stat: path="{{ matrix_synapse_media_store_path }}"
+  stat:
+    path: "{{ matrix_synapse_media_store_path }}"
   register: local_path_matrix_synapse_media_store_path_stat
   ignore_errors: yes
   when: matrix_s3_media_store_enabled
@@ -43,11 +44,15 @@
 #
 
 - name: Check existence of matrix-goofys service
-  stat: path="/etc/systemd/system/matrix-goofys.service"
+  stat:
+    path: "/etc/systemd/system/matrix-goofys.service"
   register: matrix_goofys_service_stat
 
 - name: Ensure matrix-goofys is stopped
-  service: name=matrix-goofys state=stopped daemon_reload=yes
+  service:
+    name: matrix-goofys
+    state: stopped
+    daemon_reload: yes
   register: stopping_result
   when: "not matrix_s3_media_store_enabled and matrix_goofys_service_stat.stat.exists"
 
