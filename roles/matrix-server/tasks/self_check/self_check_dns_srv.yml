@@ -1,0 +1,26 @@
+---
+
+# This requires the dnspython library and will fail with a friendly error when unavailable.
+- name: Check DNS SRV record for {{ dns_srv_record_check.service_and_protocol }} on {{ dns_srv_record_check.domain }}
+  set_fact:
+    result_dig_srv: "{{ lookup('dig', (dns_srv_record_check.service_and_protocol + '.' + dns_srv_record_check.domain + '/SRV'), 'flat=0', wantlist=False) }}"
+
+- name: Fail if DNS SRV record missing
+  fail:
+    msg: "It appears the DNS SRV record for {{ dns_srv_record_check.service_and_protocol }} on {{ dns_srv_record_check.domain }} is not set up correctly (the record is missing). See the 'Configuring DNS' documentation for this playbook."
+  when: "result_dig_srv == 'NXDOMAIN'"
+
+- name: Fail if DNS SRV record incorrect
+  fail:
+    msg: >
+      It appears the DNS SRV record for {{ dns_srv_record_check.service_and_protocol }} on {{ dns_srv_record_check.domain }} is not set up correctly.
+      Expected it to point to `{{ dns_srv_record_check.expected_target }}` (port {{ dns_srv_record_check.expected_port }}).
+      Found it pointing to `{{ result_dig_srv.target }}` (port {{ result_dig_srv.port }}).
+      See the 'Configuring DNS' documentation for this playbook.
+  when: "result_dig_srv.target != dns_srv_record_check.expected_target or result_dig_srv.port != dns_srv_record_check.expected_port"
+
+- name: Report correct DNS SRV record
+  debug:
+    msg: >
+      The DNS SRV record for `{{ dns_srv_record_check.service_and_protocol }}` on `{{ dns_srv_record_check.domain }}`
+      points to `{{ result_dig_srv.target }}` (port {{ dns_srv_record_check.expected_port }}), as expected
