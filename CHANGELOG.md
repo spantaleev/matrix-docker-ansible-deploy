@@ -1,3 +1,15 @@
+# 2019-01-08
+
+## (BC Break) Cronjob schedule no longer configurable
+
+Due to the way we manage cronjobs now, you can no longer configure the schedule they're invoked at.
+
+If you were previously using `matrix_ssl_lets_encrypt_renew_cron_time_definition` or `matrix_nginx_proxy_reload_cron_time_definition`
+to set a custom schedule, you should note that these variables don't affect anything anymore.
+
+If you miss this functionality, please [open an Issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/new) and let us know about your use case!
+
+
 # 2018-12-23
 
 ## (BC Break) More SSL certificate retrieval methods
