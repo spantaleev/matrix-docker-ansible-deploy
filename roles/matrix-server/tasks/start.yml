@@ -1,43 +1,87 @@
 ---
 
 - name: Ensure matrix-postgres autoruns and is restarted
-  service: name=matrix-postgres enabled=yes state=restarted daemon_reload=yes
+  service:
+    name: matrix-postgres
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
   when: "not matrix_postgres_use_external"
 
 - name: Ensure matrix-goofys autoruns and is restarted
-  service: name=matrix-goofys enabled=yes state=restarted daemon_reload=yes
+  service:
+    name: matrix-goofys
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
   when: matrix_s3_media_store_enabled
 
 - name: Ensure matrix-coturn autoruns and is restarted
-  service: name=matrix-coturn enabled=yes state=restarted daemon_reload=yes
+  service:
+    name: matrix-coturn
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
 
 - name: Ensure matrix-mailer autoruns and is restarted
-  service: name=matrix-mailer enabled=yes state=restarted daemon_reload=yes
+  service:
+    name: matrix-mailer
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
   when: matrix_mailer_enabled
 
 - name: Ensure matrix-mxisd autoruns and is restarted
-  service: name=matrix-mxisd enabled=yes state=restarted daemon_reload=yes
+  service:
+    name: matrix-mxisd
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
   when: matrix_mxisd_enabled
 
 - name: Ensure matrix-synapse autoruns and is restarted
-  service: name=matrix-synapse enabled=yes state=restarted daemon_reload=yes
+  service:
+    name: matrix-synapse
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
 
 - name: Ensure matrix-riot-web autoruns and is restarted
-  service: name=matrix-riot-web enabled=yes state=restarted daemon_reload=yes
+  service:
+    name: matrix-riot-web
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
   when: matrix_riot_web_enabled
 
 - name: Ensure matrix-nginx-proxy autoruns and is restarted
-  service: name=matrix-nginx-proxy enabled=yes state=restarted daemon_reload=yes
+  service:
+    name: matrix-nginx-proxy
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
   when: matrix_nginx_proxy_enabled
 
 - name: Ensure matrix-corporal autoruns and is restarted
-  service: name=matrix-corporal enabled=yes state=restarted daemon_reload=yes
+  service:
+    name: matrix-corporal
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
   when: matrix_corporal_enabled
 
 - name: Ensure matrix-mautrix-telegram autoruns and is restarted
-  service: name=matrix-mautrix-telegram enabled=yes state=restarted daemon_reload=yes
+  service:
+    name: matrix-mautrix-telegram
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
   when: matrix_mautrix_telegram_enabled
 
 - name: Ensure matrix-mautrix-whatsapp autoruns and is restarted
-  service: name=matrix-mautrix-whatsapp enabled=yes state=restarted daemon_reload=yes
+  service:
+    name: matrix-mautrix-whatsapp
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
   when: matrix_mautrix_whatsapp_enabled

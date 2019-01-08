@@ -43,11 +43,15 @@
 #
 
 - name: Check existence of matrix-riot-web service
-  stat: path="/etc/systemd/system/matrix-riot-web.service"
+  stat:
+    path: "/etc/systemd/system/matrix-riot-web.service"
   register: matrix_riot_web_service_stat
 
 - name: Ensure matrix-riot-web is stopped
-  service: name=matrix-riot-web state=stopped daemon_reload=yes
+  service:
+    name: matrix-riot-web
+    state: stopped
+    daemon_reload: yes
   register: stopping_result
   when: "not matrix_riot_web_enabled and matrix_riot_web_service_stat.stat.exists"
 

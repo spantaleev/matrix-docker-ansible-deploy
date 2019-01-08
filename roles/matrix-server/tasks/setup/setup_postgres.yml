@@ -69,12 +69,16 @@
 #
 
 - name: Check existence of matrix-postgres service
-  stat: path="/etc/systemd/system/matrix-postgres.service"
+  stat:
+    path: "/etc/systemd/system/matrix-postgres.service"
   register: matrix_postgres_service_stat
   when: matrix_postgres_use_external
 
 - name: Ensure matrix-postgres is stopped
-  service: name=matrix-postgres state=stopped daemon_reload=yes
+  service:
+    name: matrix-postgres
+    state: stopped
+    daemon_reload: yes
   when: "matrix_postgres_use_external and matrix_postgres_service_stat.stat.exists"
 
 - name: Ensure matrix-postgres.service doesn't exist
@@ -84,7 +88,8 @@
   when: "matrix_postgres_use_external and matrix_postgres_service_stat.stat.exists"
 
 - name: Check existence of matrix-postgres local data path
-  stat: path="{{ matrix_postgres_data_path }}"
+  stat:
+    path: "{{ matrix_postgres_data_path }}"
   register: matrix_postgres_data_path_stat
   when: matrix_postgres_use_external
 

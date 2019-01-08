@@ -29,11 +29,15 @@
 #
 
 - name: Check existence of matrix-mailer service
-  stat: path="/etc/systemd/system/matrix-mailer.service"
+  stat:
+    path: "/etc/systemd/system/matrix-mailer.service"
   register: matrix_mailer_service_stat
 
 - name: Ensure matrix-mailer is stopped
-  service: name=matrix-mailer state=stopped daemon_reload=yes
+  service:
+    name: matrix-mailer
+    state: stopped
+    daemon_reload: yes
   register: stopping_result
   when: "not matrix_mailer_enabled and matrix_mailer_service_stat.stat.exists"
 

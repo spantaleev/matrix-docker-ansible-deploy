@@ -38,21 +38,28 @@
 - import_tasks: tasks/util/detect_existing_postgres_version.yml
 
 - name: Abort, if no existing Postgres version detected
-  fail: msg="Could not find existing Postgres installation"
+  fail:
+    msg: "Could not find existing Postgres installation"
   when: "not matrix_postgres_detected_existing"
 
 - name: Abort, if already at latest Postgres version
-  fail: msg="You are already running the latest Postgres version supported ({{ matrix_postgres_docker_image_latest }}). Nothing to do"
+  fail:
+    msg: "You are already running the latest Postgres version supported ({{ matrix_postgres_docker_image_latest }}). Nothing to do"
   when: "matrix_postgres_detected_version_corresponding_docker_image == matrix_postgres_docker_image_latest"
 
 - debug:
     msg: "Upgrading database from {{ matrix_postgres_detected_version_corresponding_docker_image }} to {{ matrix_postgres_docker_image_latest }}"
 
 - name: Ensure matrix-synapse is stopped
-  service: name=matrix-synapse state=stopped
+  service:
+    name: matrix-synapse
+    state: stopped
 
 - name: Ensure matrix-postgres is started
-  service: name=matrix-postgres state=started daemon_reload=yes
+  service:
+    name: matrix-postgres
+    state: started
+    daemon_reload: yes
 
 - name: Wait a bit, so that Postgres can start
   wait_for:
@@ -69,7 +76,9 @@
     {{ matrix_postgres_detected_version_corresponding_docker_image }} pg_dump -h matrix-postgres {{ matrix_postgres_db_name }} -f /out/{{ postgres_dump_name }}
 
 - name: Ensure matrix-postgres is stopped
-  service: name=matrix-postgres state=stopped
+  service:
+    name: matrix-postgres
+    state: stopped
 
 - name: Rename existing Postgres data directory
   command: "mv {{ matrix_postgres_data_path }} {{ postgres_auto_upgrade_backup_data_path }}"
@@ -80,7 +89,11 @@
 - import_tasks: tasks/setup/setup_postgres.yml
 
 - name: Ensure matrix-postgres autoruns and is restarted
-  service: name=matrix-postgres enabled=yes state=restarted daemon_reload=yes
+  service:
+    name: matrix-postgres
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
 
 - name: Wait a bit, so that Postgres can start
   wait_for:
@@ -102,7 +115,10 @@
     state: absent
 
 - name: Ensure matrix-synapse is started
-  service: name=matrix-synapse state=started daemon_reload=yes
+  service:
+    name: matrix-synapse
+    state: started
+    daemon_reload: yes
 
 - debug:
     msg: "NOTE: Your old Postgres data directory is preserved at `{{ postgres_auto_upgrade_backup_data_path }}`. You might want to get rid of it once you've confirmed that all is well."
