@@ -273,6 +273,17 @@ matrix_mxisd_configuration_yaml: |
     servers: ['matrix-org']
   {% endif %}
 
+  threepid:
+    medium:
+      email:
+        identity:
+          from: {{ matrix_mailer_sender_address }}
+        connectors:
+          smtp:
+            host: matrix-mailer
+            port: 587
+            tls: 0
+
   synapseSql:
     enabled: {{ matrix_mxisd_synapsesql_enabled }}
     type: {{ matrix_mxisd_synapsesql_type }}
