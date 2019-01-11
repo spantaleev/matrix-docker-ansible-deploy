@@ -1,3 +1,43 @@
+# 2019-01-11
+
+## (BC Break) mxisd configuration changes
+
+To be more flexible and to support the upcoming [mxisd](https://github.com/kamax-io/mxisd) 1.3.0 (when it gets released),
+we've had to redo how mxisd gets configured.
+
+The following variables are no longer supported by this playbook:
+
+- `matrix_mxisd_ldap_enabled`
+- `matrix_mxisd_ldap_connection_host`
+- `matrix_mxisd_ldap_connection_tls`
+- `matrix_mxisd_ldap_connection_port`
+- `matrix_mxisd_ldap_connection_baseDn`
+- `matrix_mxisd_ldap_connection_baseDns`
+- `matrix_mxisd_ldap_connection_bindDn`
+- `matrix_mxisd_ldap_connection_bindDn`
+- `matrix_mxisd_ldap_connection_bindPassword`
+- `matrix_mxisd_ldap_filter`
+- `matrix_mxisd_ldap_attribute_uid_type`
+- `matrix_mxisd_ldap_attribute_uid_value`
+- `matrix_mxisd_ldap_connection_bindPassword`
+- `matrix_mxisd_ldap_attribute_name`
+- `matrix_mxisd_ldap_attribute_threepid_email`
+- `matrix_mxisd_ldap_attribute_threepid_msisdn`
+- `matrix_mxisd_ldap_identity_filter`
+- `matrix_mxisd_ldap_identity_medium`
+- `matrix_mxisd_ldap_auth_filter`
+- `matrix_mxisd_ldap_directory_filter`
+- `matrix_mxisd_template_config`
+
+You are encouraged to use the `matrix_mxisd_configuration_extension_yaml` variable to define your own mxisd configuration additions and overrides.
+Refer to the [default variables file](roles/matrix-server/defaults/main.yml) for more information.
+
+This new way of configuring mxisd is beneficial because:
+
+- it lets us support all mxisd configuration options, as the playbook simply forwards them to mxisd without needing to care or understand them
+- it lets you upgrade to newer mxisd versions and make use of their features, without us having to add support for them explicitly
+
+
 # 2019-01-08
 
 ## (BC Break) Cronjob schedule no longer configurable

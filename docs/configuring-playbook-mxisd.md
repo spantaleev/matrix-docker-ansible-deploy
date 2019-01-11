@@ -22,10 +22,14 @@ matrix_mxisd_matrixorg_forwarding_enabled: true
 
 What this playbook configures for your is some bare minimum Identity Server functionality, so that you won't need to rely on external 3rd party services.
 
-Still, mxisd can do much more.
-You can refer to the [mxisd website](https://github.com/kamax-io/mxisd) for more details.
+A few variables can be toggled in this playbook to alter the mxisd configuration that gets generated.
 
-You can override the `matrix_mxisd_template_config` variable and use your own custom configuration template.
+Still, mxisd can do much more.
+You can refer to the [mxisd website](https://github.com/kamax-io/mxisd) for more details and configuration options.
+
+To use a more custom configuration, you can define a `matrix_mxisd_configuration_extension_yaml` string variable
+and put your configuration in it.
+To learn more about how to do this, refer to the information about `matrix_mxisd_configuration_extension_yaml` in the [default variables file](../roles/matrix-server/defaults/main.yml).
 
 
 ## Troubleshooting

@@ -4,14 +4,47 @@
 # Tasks related to setting up mxisd
 #
 
-- name: (Deprecation) Fail if using outdated configuration
+- name: (Deprecation) Warn about mxisd variables that are not used anymore
   fail:
-    msg: "You're using the `matrix_mxisd_ldap_connection_baseDn` variable (single string), which has been superseded by `matrix_mxisd_ldap_connection_baseDns` (array of strings). See https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#bc-break-mxisd-upgrade-with-multiple-base-dn-support"
-  when: "matrix_mxisd_ldap_connection_baseDn is defined"
+    msg: >
+      The `{{ item }}` variable defined in your configuration is not used by this playbook anymore!
+      You'll need to adapt to the new way of extending mxisd configuration.
+      See the CHANGELOG and the `matrix_mxisd_configuration_extension_yaml` variable for more information and examples.
+  when: "matrix_mxisd_enabled and item in vars"
+  with_items:
+    - 'matrix_mxisd_ldap_enabled'
+    - 'matrix_mxisd_ldap_connection_host'
+    - 'matrix_mxisd_ldap_connection_tls'
+    - 'matrix_mxisd_ldap_connection_port'
+    - 'matrix_mxisd_ldap_connection_baseDn'
+    - 'matrix_mxisd_ldap_connection_baseDns'
+    - 'matrix_mxisd_ldap_connection_bindDn'
+    - 'matrix_mxisd_ldap_connection_bindPassword'
+    - 'matrix_mxisd_ldap_filter'
+    - 'matrix_mxisd_ldap_attribute_uid_type'
+    - 'matrix_mxisd_ldap_attribute_uid_value'
+    - 'matrix_mxisd_ldap_connection_bindPassword'
+    - 'matrix_mxisd_ldap_attribute_name'
+    - 'matrix_mxisd_ldap_attribute_threepid_email'
+    - 'matrix_mxisd_ldap_attribute_threepid_msisdn'
+    - 'matrix_mxisd_ldap_identity_filter'
+    - 'matrix_mxisd_ldap_identity_medium'
+    - 'matrix_mxisd_ldap_auth_filter'
+    - 'matrix_mxisd_ldap_directory_filter'
+    - 'matrix_mxisd_template_config'
+
+- name: Ensure mxisd configuration does not contain any dot-notation keys
+  fail:
+    msg: >
+      Since version 1.3.0, mxisd will not accept property-style configuration keys.
+      You have defined a key (`{{ item.key }}`) which contains a dot.
+      Instead, use nesting. See: https://github.com/kamax-matrix/mxisd/wiki/Upgrade#v130
+  when: "matrix_mxisd_enabled and '.' in item.key"
+  with_dict: "{{ matrix_mxisd_configuration }}"
 
 - name: Fail if mailer is not enabled
   fail:
-    msg: "You need to enable the mailer service (matrix_mailer_enabled) to install mxisd"
+    msg: "You need to enable the mailer service (`matrix_mailer_enabled`) to install mxisd"
   when: "matrix_mxisd_enabled and not matrix_mailer_enabled"
 
 - name: Ensure mxisd paths exist
@@ -32,8 +65,8 @@
   when: matrix_mxisd_enabled
 
 - name: Ensure mxisd config installed
-  template:
-    src: "{{ matrix_mxisd_template_config }}"
+  copy:
+    content: "{{ matrix_mxisd_configuration|to_nice_yaml }}"
     dest: "{{ matrix_mxisd_config_path }}/mxisd.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
@@ -59,7 +92,7 @@
 - name: Ensure matrix-mxisd is stopped
   service:
     name: matrix-mxisd
-    state: stopped 
+    state: stopped
     daemon_reload: yes
   register: stopping_result
   when: "not matrix_mxisd_enabled and matrix_mxisd_service_stat.stat.exists"
