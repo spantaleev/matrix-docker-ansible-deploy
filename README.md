@@ -90,7 +90,7 @@ This playbook sets up your server using the following Docker images:
 
 - [instrumentisto/coturn](https://hub.docker.com/r/instrumentisto/coturn/) - the [Coturn](https://github.com/coturn/coturn) STUN/TURN server
 
-- [avhost/docker-matrix-riot](https://hub.docker.com/r/avhost/docker-matrix-riot/) - the [Riot.im](https://about.riot.im/) web client (optional)
+- [bubuntux/riot-web](https://hub.docker.com/r/bubuntux/riot-web/) - the [Riot.im](https://about.riot.im/) web client (optional)
 
 - [kamax/mxisd](https://hub.docker.com/r/kamax/mxisd/) - the [mxisd](https://github.com/kamax-io/mxisd) Matrix Identity server (optional)
 
