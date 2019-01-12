@@ -23,6 +23,15 @@
       We'll stop Postgres and relocate the files there for you.
   when: "result_pg_old_data_dir_stat.stat.exists"
 
+# We should stop Postgres first, before building a list of files,
+# as to ignore any `postmaster.pid` files, etc.
+- name: Ensure matrix-postgres is stopped
+  service:
+    name: matrix-postgres
+    state: stopped
+    daemon_reload: yes
+  when: "result_pg_old_data_dir_stat.stat.exists"
+
 - name: Find files and directories in old Postgres data path
   find:
     paths: "{{ matrix_postgres_base_path }}"
@@ -38,13 +47,6 @@
     mode: 0700
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-  when: "result_pg_old_data_dir_stat.stat.exists"
-
-- name: Ensure matrix-postgres is stopped
-  service:
-    name: matrix-postgres
-    state: stopped
-    daemon_reload: yes
   when: "result_pg_old_data_dir_stat.stat.exists"
 
 - block:
