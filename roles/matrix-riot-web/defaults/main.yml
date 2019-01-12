@@ -1,0 +1,32 @@
+# By default, this playbook installs the Riot.IM web UI on the `hostname_riot` domain.
+# If you wish to connect to your Matrix server by other means,
+# you may wish to disable this.
+matrix_riot_web_enabled: true
+
+matrix_riot_web_docker_image: "bubuntux/riot-web:v0.17.8"
+
+matrix_riot_web_data_path: "{{ matrix_base_data_path }}/riot-web"
+
+# Riot config.json customizations
+matrix_riot_web_disable_custom_urls: true
+matrix_riot_web_disable_guests: true
+matrix_riot_web_integrations_ui_url: "https://scalar.vector.im/"
+matrix_riot_web_integrations_rest_url: "https://scalar.vector.im/api"
+matrix_riot_web_integrations_widgets_urls: "https://scalar.vector.im/api"
+matrix_riot_web_integrations_jitsi_widget_url: "https://scalar.vector.im/api/widgets/jitsi.html"
+# Riot public room directory server(s)
+matrix_riot_web_roomdir_servers: ['matrix.org']
+matrix_riot_web_welcome_user_id: "@riot-bot:matrix.org"
+
+
+# Riot home.html customizations
+# Default home.html template file
+matrix_riot_web_homepage_template: "{{ role_path }}/templates/home.html.j2"
+# Show general discussion about Matrix and Riot row
+matrix_riot_web_homepage_template_general: true
+# Show Matrix technical discussions row
+matrix_riot_web_homepage_template_technical: true
+# Show building services on Matrix row
+matrix_riot_web_homepage_template_building: true
+# Show contributing code to Matrix and Riot row
+matrix_riot_web_homepage_template_contributing: true

@@ -1,0 +1,50 @@
+# By default, this playbook sets up its own nginx proxy server on port 80/443.
+# This is fine if you're dedicating the whole server to Matrix.
+# But in case that's not the case, you may wish to prevent that
+# and take care of proxying by yourself.
+matrix_nginx_proxy_enabled: true
+
+matrix_nginx_proxy_docker_image: "nginx:1.15.8-alpine"
+
+matrix_nginx_proxy_data_path: "{{ matrix_base_data_path }}/nginx-proxy"
+matrix_nginx_proxy_confd_path: "{{ matrix_nginx_proxy_data_path }}/conf.d"
+
+# The addresses where the Matrix Client API is.
+# Certain extensions (like matrix-corporal) may override this in order to capture all traffic.
+matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container: "matrix-synapse:8008"
+matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container: "localhost:8008"
+
+# Specifies when to reload the matrix-nginx-proxy service so that
+# a new SSL certificate could go into effect.
+matrix_nginx_proxy_reload_cron_time_definition: "20 4 */5 * *"
+
+# Specifies which SSL protocols to use when serving Riot and Synapse
+# Note TLSv1.3 is not yet available in dockerized nginx
+# See: https://github.com/nginxinc/docker-nginx/issues/190
+matrix_nginx_proxy_ssl_protocols: "TLSv1.1 TLSv1.2"
+
+# By default, this playbook automatically retrieves and auto-renews
+# free SSL certificates from Let's Encrypt.
+#
+# The following retrieval methods are supported:
+# - "lets-encrypt" - the playbook obtains free SSL certificates from Let's Encrypt
+# - "self-signed" - the playbook generates and self-signs certificates
+# - "manually-managed" - lets you manage certificates by yourself (manually; see below)
+#
+# If you decide to manage certificates by yourself (`matrix_ssl_retrieval_method: manually-managed`),
+# you'd need to drop them into the directory specified by `matrix_ssl_config_dir_path`
+# obeying the following hierarchy:
+# - <matrix_ssl_config_dir_path>/live/<domain>/fullchain.pem
+# - <matrix_ssl_config_dir_path>/live/<domain>/privkey.pem
+# where <domain> refers to the domains that you need (usually `hostname_matrix` and `hostname_riot`).
+matrix_ssl_retrieval_method: "lets-encrypt"
+
+# Controls whether to obtain production or staging certificates from Let's Encrypt.
+matrix_ssl_lets_encrypt_staging: false
+matrix_ssl_lets_encrypt_certbot_docker_image: "certbot/certbot:v0.30.0"
+matrix_ssl_lets_encrypt_certbot_standalone_http_port: 2402
+matrix_ssl_lets_encrypt_support_email: "{{ host_specific_matrix_ssl_lets_encrypt_support_email }}"
+
+matrix_ssl_base_path: "{{ matrix_base_data_path }}/ssl"
+matrix_ssl_config_dir_path: "{{ matrix_ssl_base_path }}/config"
+matrix_ssl_log_dir_path: "{{ matrix_ssl_base_path }}/log"

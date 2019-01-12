@@ -1,0 +1,101 @@
+# By default, this playbook installs the mxisd identity server on the same domain as Synapse (`hostname_matrix`).
+# If you wish to use the public identity servers (matrix.org, vector.im, riot.im) instead of your own,
+# you may wish to disable this.
+matrix_mxisd_enabled: true
+matrix_mxisd_docker_image: "kamax/mxisd:1.2.2"
+matrix_mxisd_base_path: "{{ matrix_base_data_path }}/mxisd"
+matrix_mxisd_config_path: "{{ matrix_mxisd_base_path }}/config"
+matrix_mxisd_data_path: "{{ matrix_mxisd_base_path }}/data"
+
+# Controls whether the mxisd web server's port is exposed outside of the container.
+# Normally, matrix-nginx-proxy is enabled and nginx can reach mxisd over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# mxisd's web-server port to the local host (`127.0.0.1:8090`).
+matrix_mxisd_container_expose_port: "{{ not matrix_nginx_proxy_enabled }}"
+
+# Your identity server is private by default.
+# To ensure maximum discovery, you can make your identity server
+# also forward lookups to the central matrix.org Identity server
+# (at the cost of potentially leaking all your contacts information).
+# Enabling this is discouraged. Learn more here: https://github.com/kamax-io/mxisd/blob/master/docs/features/identity.md#lookups
+matrix_mxisd_matrixorg_forwarding_enabled: false
+
+# mxisd has serveral supported identity stores.
+# One of them (which we enable by default) is storing identities directly in Synapse's database.
+# Learn more here: https://github.com/kamax-matrix/mxisd/blob/master/docs/stores/synapse.md
+#
+# If you need to disable this in favor of some other store, you can toggle it to disabled here
+# and add your own mxisd configuration for the other store in `matrix_mxisd_configuration_extension_yaml`.
+matrix_mxisd_synapsesql_enabled: true
+matrix_mxisd_synapsesql_type: postgresql
+matrix_mxisd_synapsesql_connection: //{{ matrix_postgres_connection_hostname }}/{{ matrix_postgres_db_name }}?user={{ matrix_postgres_connection_username }}&password={{ matrix_postgres_connection_password }}
+
+# Default mxisd configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_mxisd_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_mxisd_configuration_yaml: |
+  matrix:
+    domain: {{ hostname_identity }}
+
+  server:
+    name: {{ hostname_matrix }}
+
+  key:
+    path: /var/mxisd/sign.key
+
+  storage:
+    provider:
+      sqlite:
+        database: /var/mxisd/mxisd.db
+
+  {% if matrix_mxisd_matrixorg_forwarding_enabled %}
+  forward:
+    servers: ['matrix-org']
+  {% endif %}
+
+  threepid:
+    medium:
+      email:
+        identity:
+          from: {{ matrix_mailer_sender_address }}
+        connectors:
+          smtp:
+            host: matrix-mailer
+            port: 587
+            tls: 0
+
+  synapseSql:
+    enabled: {{ matrix_mxisd_synapsesql_enabled }}
+    type: {{ matrix_mxisd_synapsesql_type }}
+    connection: {{ matrix_mxisd_synapsesql_connection }}
+
+matrix_mxisd_configuration_extension_yaml: |
+  # Your custom YAML configuration for mxisd goes here.
+  # This configuration extends the default starting configuration (`matrix_mxisd_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_mxisd_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  # ldap:
+  #   enabled: true
+  #   connection:
+  #     host: ldapHostnameOrIp
+  #     tls: false
+  #     port: 389
+  #     baseDns: ['OU=Users,DC=example,DC=org']
+  #     bindDn: CN=My Mxisd User,OU=Users,DC=example,DC=org
+  #     bindPassword: TheUserPassword
+
+# Doing `|from_yaml` when the extension contains nothing yields an empty string ("").
+# We need to ensure it's a dictionary or `|combine` (when building `matrix_mxisd_configuration`) will fail later.
+matrix_mxisd_configuration_extension: "{{ matrix_mxisd_configuration_extension_yaml|from_yaml if matrix_mxisd_configuration_extension_yaml|from_yaml else {} }}"
+
+# Holds the final mxisd configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_mxisd_configuration_yaml`.
+matrix_mxisd_configuration: "{{ matrix_mxisd_configuration_yaml|from_yaml|combine(matrix_mxisd_configuration_extension, recursive=True) }}"

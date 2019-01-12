@@ -29,7 +29,7 @@ You can refer to the [mxisd website](https://github.com/kamax-io/mxisd) for more
 
 To use a more custom configuration, you can define a `matrix_mxisd_configuration_extension_yaml` string variable
 and put your configuration in it.
-To learn more about how to do this, refer to the information about `matrix_mxisd_configuration_extension_yaml` in the [default variables file](../roles/matrix-server/defaults/main.yml).
+To learn more about how to do this, refer to the information about `matrix_mxisd_configuration_extension_yaml` in the [default variables file](../roles/matrix-mxisd/defaults/main.yml) of the mxisd component.
 
 
 ## Troubleshooting

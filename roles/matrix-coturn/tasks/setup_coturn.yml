@@ -1,0 +1,42 @@
+---
+
+- name: Fail if Coturn secret is missing
+  fail:
+    msg: "You need to set a secret in the matrix_coturn_turn_static_auth_secret variable"
+  when: "matrix_coturn_turn_static_auth_secret == ''"
+
+- name: Ensure Coturn image is pulled
+  docker_image:
+    name: "{{ matrix_coturn_docker_image }}"
+
+- name: Ensure Coturn configuration path exists
+  file:
+    path: "{{ matrix_coturn_base_path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+
+- name: Ensure turnserver.conf installed
+  template:
+    src: "{{ role_path }}/templates/turnserver.conf.j2"
+    dest: "{{ matrix_coturn_config_path }}"
+    mode: 0644
+
+- name: Ensure matrix-coturn.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-coturn.service.j2"
+    dest: "/etc/systemd/system/matrix-coturn.service"
+    mode: 0644
+
+- name: Allow access to Coturn ports in firewalld
+  firewalld:
+    port: "{{ item }}"
+    state: enabled
+    immediate: yes
+    permanent: yes
+  with_items:
+    - '3478/tcp' # STUN
+    - '3478/udp' # STUN
+    - "{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}/udp" # TURN
+  when: ansible_os_family == 'RedHat'

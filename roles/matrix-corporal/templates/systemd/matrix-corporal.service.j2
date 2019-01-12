@@ -1,0 +1,31 @@
+[Unit]
+Description=Matrix Corporal
+After=docker.service
+Requires=docker.service
+Requires=matrix-synapse.service
+After=matrix-synapse.service
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker kill matrix-corporal
+ExecStartPre=-/usr/bin/docker rm matrix-corporal
+ExecStart=/usr/bin/docker run --rm --name matrix-corporal \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_corporal_container_expose_ports %}
+			-p 127.0.0.1:41080:41080 \
+			-p 127.0.0.1:41081:41081 \
+			{% endif %}
+			-v {{ matrix_corporal_config_dir_path }}:/etc/matrix-corporal:ro \
+			-v {{ matrix_corporal_cache_dir_path }}:/var/cache/matrix-corporal:rw \
+			-v {{ matrix_corporal_var_dir_path }}:/var/matrix-corporal:rw \
+			{{ matrix_corporal_docker_image }} \
+			/matrix-corporal -config=/etc/matrix-corporal/config.json
+ExecStop=-/usr/bin/docker kill matrix-corporal
+ExecStop=-/usr/bin/docker rm matrix-corporal
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

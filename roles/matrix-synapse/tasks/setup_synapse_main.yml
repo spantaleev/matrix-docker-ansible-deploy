@@ -1,0 +1,80 @@
+---
+
+# This will throw a Permission Denied error if already mounted using fuse
+- name: Check Matrix Synapse media store path
+  stat:
+    path: "{{ matrix_synapse_media_store_path }}"
+  register: local_path_media_store_stat
+  ignore_errors: yes
+
+# This is separate and conditional, to ensure we don't execute it
+# if the path already exists or we failed to check, because it's mounted using fuse.
+- name: Ensure Matrix media store path exists
+  file:
+    path: "{{ matrix_synapse_media_store_path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  when: "not local_path_media_store_stat.failed and not local_path_media_store_stat.stat.exists"
+
+- name: Ensure Matrix Docker image is pulled
+  docker_image:
+    name: "{{ matrix_synapse_docker_image }}"
+
+- name: Check if a Matrix Synapse configuration exists
+  stat:
+    path: "{{ matrix_synapse_config_dir_path }}/homeserver.yaml"
+  register: matrix_synapse_config_stat
+
+# We do this mostly so that the keys would get generated.
+# We'll replace the rest of the configuration with our own templates below.
+- name: Generate initial Matrix config
+  docker_container:
+    name: matrix-config
+    image: "{{ matrix_synapse_docker_image }}"
+    detach: no
+    cleanup: yes
+    command: generate
+    env:
+      SYNAPSE_CONFIG_PATH: "/data/homeserver.yaml"
+      SYNAPSE_SERVER_NAME: "{{ hostname_matrix }}"
+      SYNAPSE_REPORT_STATS: "no"
+    user: "{{ matrix_user_uid }}:{{ matrix_user_gid }}"
+    volumes:
+      - "{{ matrix_synapse_config_dir_path }}:/data"
+  when: "not matrix_synapse_config_stat.stat.exists"
+
+- name: Ensure Matrix homeserver config installed
+  template:
+    src: "{{ matrix_synapse_template_synapse_homeserver }}"
+    dest: "{{ matrix_synapse_config_dir_path }}/homeserver.yaml"
+    mode: 0644
+
+- name: Ensure Matrix log config installed
+  template:
+    src: "{{ matrix_synapse_template_synapse_log }}"
+    dest: "{{ matrix_synapse_config_dir_path }}/{{ hostname_matrix }}.log.config"
+    mode: 0644
+
+- name: Ensure matrix-synapse.service installed
+  template:
+    src: "{{ role_path }}/templates/synapse/systemd/matrix-synapse.service.j2"
+    dest: "/etc/systemd/system/matrix-synapse.service"
+    mode: 0644
+
+- name: Ensure matrix-synapse-register-user script created
+  template:
+    src: "{{ role_path }}/templates/synapse/usr-local-bin/matrix-synapse-register-user.j2"
+    dest: "/usr/local/bin/matrix-synapse-register-user"
+    mode: 0750
+
+- name: Allow access to Matrix ports in firewalld
+  firewalld:
+    port: "{{ item }}"
+    state: enabled
+    immediate: yes
+    permanent: yes
+  with_items:
+    - '8448/tcp' # Matrix federation
+  when: ansible_os_family == 'RedHat'
