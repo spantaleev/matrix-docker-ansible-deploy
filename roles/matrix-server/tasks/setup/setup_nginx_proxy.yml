@@ -15,8 +15,9 @@
     path: "{{ item }}"
     state: directory
     mode: 0750
-    owner: root
-    group: root
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+    recurse: yes
   with_items:
     - "{{ matrix_nginx_proxy_data_path }}"
     - "{{ matrix_nginx_proxy_confd_path }}"
