@@ -1,0 +1,23 @@
+- import_tasks: "{{ role_path }}/tasks/init.yml"
+  tags:
+    - always
+
+- import_tasks: "{{ role_path }}/tasks/ssl/main.yml"
+  when: run_setup
+  tags:
+    - setup-all
+    - setup-nginx-proxy
+    - setup-ssl
+
+- import_tasks: "{{ role_path }}/tasks/setup_nginx_proxy.yml"
+  when: run_setup
+  tags:
+    - setup-all
+    - setup-nginx-proxy
+
+- import_tasks: "{{ role_path }}/tasks/self_check_well_known.yml"
+  delegate_to: 127.0.0.1
+  become: false
+  when: run_self_check
+  tags:
+    - self-check

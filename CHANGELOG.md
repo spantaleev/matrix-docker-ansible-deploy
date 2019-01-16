@@ -1,3 +1,15 @@
+# 2019-01-xx
+
+## Splitting the playbook into multiple roles
+
+For better maintainability, the playbook logic (which all used to reside in a single `matrix-server` role)
+has been split out into a number of different roles: `matrix-synapse`, `matrix-postgres`, `matrix-riot-web`, `matrix-mxisd`, etc. (see the `roles/` directory).
+
+To keep the filesystem more consistent with this separation, the **Postgres data had to be relocated**.
+
+The default value of `matrix_postgres_data_path` was changed from `/matrix/postgres` to `/matrix/postgres/data`. The `/matrix/postgres` directory is what we consider a base path now (new variable `matrix_postgres_base_path`). **Your Postgres data files will automatically be relocated by the playbook** (`/matrix/postgres/*` -> `/matrix/postgres/data/`) when you run with `--tags=setup-all` (or `--tags=setup-postgres`). While this shouldn't cause data-loss, **it's better if you do a Postgres backup just in case**. You'd need to restart all services after this migration (`--tags=start`).
+
+
 # 2019-01-11
 
 ## (BC Break) mxisd configuration changes
@@ -30,7 +42,7 @@ The following variables are no longer supported by this playbook:
 - `matrix_mxisd_template_config`
 
 You are encouraged to use the `matrix_mxisd_configuration_extension_yaml` variable to define your own mxisd configuration additions and overrides.
-Refer to the [default variables file](roles/matrix-server/defaults/main.yml) for more information.
+Refer to the [default variables file](roles/matrix-mxisd/defaults/main.yml) for more information.
 
 This new way of configuring mxisd is beneficial because:
 
@@ -92,7 +104,7 @@ Based on feedback from others, running Synapse on Python 3 is supposed to decrea
 ## Riot homepage customization
 
 You can now customize some parts of the Riot homepage (or even completely replace it with your own custom page).
-See the `matrix_riot_web_homepage_` variables in `roles/matrix-server/defaults/main.yml`.
+See the `matrix_riot_web_homepage_` variables in `roles/matrix-riot-web/defaults/main.yml`.
 
 
 # 2018-12-04

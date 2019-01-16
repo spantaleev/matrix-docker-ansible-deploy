@@ -1,0 +1,69 @@
+---
+
+- name: Ensure Mautrix Telegram image is pulled
+  docker_image:
+    name: "{{ matrix_mautrix_telegram_docker_image }}"
+  when: "matrix_mautrix_telegram_enabled"
+
+- name: Ensure Mautrix Telegram configuration path exists
+  file:
+    path: "{{ matrix_mautrix_telegram_base_path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  when: "matrix_mautrix_telegram_enabled"
+
+- stat: "path={{ matrix_mautrix_telegram_base_path }}/config.yaml"
+  register: mautrix_config_file
+
+- name: Ensure Matrix Mautrix telegram config installed
+  template:
+    src: "{{ role_path }}/templates/ext/mautrix-telegram/config.yaml.j2"
+    dest: "{{ matrix_mautrix_telegram_base_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  when: "matrix_mautrix_telegram_enabled and mautrix_config_file.stat.exists == False"
+
+- name: Ensure matrix-mautrix-telegram.service installed
+  template:
+    src: "{{ role_path }}/templates/ext/mautrix-telegram/systemd/matrix-mautrix-telegram.service.j2"
+    dest: "/etc/systemd/system/matrix-mautrix-telegram.service"
+    mode: 0644
+  when: "matrix_mautrix_telegram_enabled"
+
+- stat:
+    path: "{{ matrix_mautrix_telegram_base_path }}/registration.yaml"
+  register: mautrix_telegram_registration_file
+
+- name: Generate matrix-mautrix-telegram registration.yaml if it doesn't exist
+  shell: /usr/bin/docker run --rm --name matrix-mautrix-telegram-gen -v {{ matrix_mautrix_telegram_base_path }}:/data:z {{ matrix_mautrix_telegram_docker_image }} python3 -m mautrix_telegram -g -c /data/config.yaml -r /data/registration.yaml
+  when: "matrix_mautrix_telegram_enabled and mautrix_telegram_registration_file.stat.exists == False"
+
+- set_fact:
+    matrix_synapse_app_service_config_file_mautrix_telegram: '/app-registration/mautrix-telegram.yml'
+
+- set_fact:
+    matrix_synapse_container_additional_volumes: >
+      {{ matrix_synapse_container_additional_volumes }}
+      +
+      {{ [{'src': '{{ matrix_mautrix_telegram_base_path }}/registration.yaml', 'dst': '{{ matrix_synapse_app_service_config_file_mautrix_telegram }}', 'options': 'ro'}] }}
+  when: "matrix_mautrix_telegram_enabled"
+
+- set_fact:
+    matrix_synapse_app_service_config_files: >
+      {{ matrix_synapse_app_service_config_files }}
+      +
+      {{ ["{{ matrix_synapse_app_service_config_file_mautrix_telegram }}"] | to_nice_json  }}
+  when: "matrix_mautrix_telegram_enabled"
+
+#
+# Tasks related to getting rid of matrix-mautrix-telegram (if it was previously enabled)
+#
+
+- name: Ensure matrix-mautrix-telegram.service doesn't exist
+  file:
+    path: "/etc/systemd/system/matrix-mautrix-telegram.service"
+    state: absent
+  when: "not matrix_mautrix_telegram_enabled"

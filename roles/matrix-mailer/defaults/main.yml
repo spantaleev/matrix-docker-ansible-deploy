@@ -1,0 +1,16 @@
+# By default, this playbook sets up a postfix mailer server (running in a container).
+# This is so that Matrix Synapse can send email reminders for unread messages.
+# Other services (like mxisd), however, also use that mailer to send emails through it.
+matrix_mailer_enabled: true
+
+matrix_mailer_base_path: "{{ matrix_base_data_path }}/mailer"
+
+matrix_mailer_docker_image: "panubo/postfix:latest"
+
+matrix_mailer_sender_address: "matrix@{{ hostname_identity }}"
+matrix_mailer_relay_use: false
+matrix_mailer_relay_host_name: "mail.example.com"
+matrix_mailer_relay_host_port: 587
+matrix_mailer_relay_auth: false
+matrix_mailer_relay_auth_username: ""
+matrix_mailer_relay_auth_password: ""

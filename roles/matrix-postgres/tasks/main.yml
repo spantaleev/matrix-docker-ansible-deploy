@@ -1,0 +1,24 @@
+- import_tasks: "{{ role_path }}/tasks/init.yml"
+  tags:
+    - always
+
+- import_tasks: "{{ role_path }}/tasks/setup_postgres.yml"
+  when: run_setup
+  tags:
+    - setup-postgres
+    - setup-all
+
+- import_tasks: "{{ role_path }}/tasks/import_postgres.yml"
+  when: run_import_postgres
+  tags:
+    - import-postgres
+
+- import_tasks: "{{ role_path }}/tasks/import_sqlite_db.yml"
+  when: run_import_sqlite_db
+  tags:
+    - import-sqlite-db
+
+- import_tasks: "{{ role_path }}/tasks/upgrade_postgres.yml"
+  when: run_upgrade_postgres
+  tags:
+    - upgrade-postgres

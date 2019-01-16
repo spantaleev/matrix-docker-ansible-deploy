@@ -1,0 +1,33 @@
+- import_tasks: "{{ role_path }}/tasks/init.yml"
+  tags:
+    - always
+
+- import_tasks: "{{ role_path }}/tasks/setup_synapse_entrypoint.yml"
+  when: run_setup
+  tags:
+    - setup-all
+    - setup-synapse
+
+- import_tasks: "{{ role_path }}/tasks/import_media_store.yml"
+  when: run_import_media_store
+  tags:
+    - import-media-store
+
+- import_tasks: "{{ role_path }}/tasks/register_user.yml"
+  when: run_register_user
+  tags:
+    - register-user
+
+- import_tasks: "{{ role_path }}/tasks/self_check_client_api.yml"
+  delegate_to: 127.0.0.1
+  become: false
+  when: run_self_check
+  tags:
+    - self-check
+
+- import_tasks: "{{ role_path }}/tasks/self_check_federation_api.yml"
+  delegate_to: 127.0.0.1
+  become: false
+  when: run_self_check
+  tags:
+    - self-check

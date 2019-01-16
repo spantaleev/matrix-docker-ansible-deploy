@@ -1,0 +1,33 @@
+- import_tasks: "{{ role_path }}/tasks/clean_up_old_files.yml"
+  when: run_setup
+  tags:
+    - setup-all
+
+- import_tasks: "{{ role_path }}/tasks/setup_server_base.yml"
+  when: run_setup
+  tags:
+    - setup-all
+
+- import_tasks: "{{ role_path }}/tasks/setup_matrix_base.yml"
+  when: run_setup
+  tags:
+    - setup-all
+
+- import_tasks: "{{ role_path }}/tasks/setup_well_known.yml"
+  when: run_setup
+  tags:
+    - setup-all
+    - setup-mxisd
+    - setup-synapse
+    - setup-nginx-proxy
+
+- import_tasks: "{{ role_path }}/tasks/sanity_check.yml"
+  tags:
+    - always
+
+- import_tasks: "{{ role_path }}/tasks/self_check_dns.yml"
+  delegate_to: 127.0.0.1
+  become: false
+  when: run_self_check
+  tags:
+    - self-check

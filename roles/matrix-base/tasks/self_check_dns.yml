@@ -1,0 +1,28 @@
+---
+
+- name: Determine DNS SRV records to check (Matrix)
+  set_fact:
+    dns_srv_record_checks:
+      - service_and_protocol: "_matrix._tcp"
+        domain: "{{ (hostname_identity + '.') }}"
+        expected_target: "{{ (hostname_matrix + '.') }}"
+        expected_port: 8448
+
+- block:
+    - set_fact:
+        dns_srv_record_check_mxisd:
+          service_and_protocol: "_matrix-identity._tcp"
+          domain: "{{ (hostname_identity + '.') }}"
+          expected_target: "{{ (hostname_matrix + '.') }}"
+          expected_port: 443
+
+    - name: Determine domains that we require certificates for (mxisd)
+      set_fact:
+        dns_srv_record_checks: "{{ dns_srv_record_checks + [dns_srv_record_check_mxisd] }}"
+  when: "matrix_mxisd_enabled"
+
+- name: Perform DNS SRV checks
+  include_tasks: "{{ role_path }}/tasks/self_check_dns_srv.yml"
+  with_items: "{{ dns_srv_record_checks }}"
+  loop_control:
+    loop_var: dns_srv_record_check

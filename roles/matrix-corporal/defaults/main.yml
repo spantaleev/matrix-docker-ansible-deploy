@@ -1,0 +1,28 @@
+# Enable this to add support for matrix-corporal.
+# See: https://github.com/devture/matrix-corporal
+matrix_corporal_enabled: false
+
+# Controls whether the matrix-corporal web server's ports are exposed outside of the container.
+# Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-corporal over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# matrix-corporal's web-server ports to the local host (`127.0.0.1:41080` and `127.0.0.1:41081`).
+matrix_corporal_container_expose_ports: "{{ not matrix_nginx_proxy_enabled }}"
+
+matrix_corporal_docker_image: "devture/matrix-corporal:1.2.2"
+matrix_corporal_base_path: "{{ matrix_base_data_path }}/corporal"
+matrix_corporal_config_dir_path: "{{ matrix_corporal_base_path }}/config"
+matrix_corporal_cache_dir_path: "{{ matrix_corporal_base_path }}/cache"
+matrix_corporal_var_dir_path: "{{ matrix_corporal_base_path }}/var"
+
+matrix_corporal_matrix_timeout_milliseconds: 45000
+
+matrix_corporal_reconciliation_retry_interval_milliseconds: 30000
+matrix_corporal_reconciliation_user_id_local_part: "matrix-corporal"
+
+matrix_corporal_http_api_enabled: false
+matrix_corporal_http_api_auth_token: ""
+
+# Matrix Corporal policy provider configuration (goes directly into the configuration's `PolicyProvider` value)
+matrix_corporal_policy_provider_config: ""
+
+matrix_corporal_debug: false

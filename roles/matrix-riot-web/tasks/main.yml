@@ -1,0 +1,16 @@
+- import_tasks: "{{ role_path }}/tasks/init.yml"
+  tags:
+    - always
+
+- import_tasks: "{{ role_path }}/tasks/setup_riot_web.yml"
+  when: run_setup
+  tags:
+    - setup-all
+    - setup-riot-web
+
+- import_tasks: "{{ role_path }}/tasks/self_check_riot_web.yml"
+  delegate_to: 127.0.0.1
+  become: false
+  when: "run_self_check and matrix_riot_web_enabled"
+  tags:
+    - self-check
