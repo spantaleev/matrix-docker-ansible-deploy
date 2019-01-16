@@ -5,8 +5,10 @@
 #
 
 - import_tasks: "{{ role_path }}/tasks/migrate_postgres_data_directory.yml"
+  when: matrix_postgres_enabled
 
 - import_tasks: "{{ role_path }}/tasks/util/detect_existing_postgres_version.yml"
+  when: matrix_postgres_enabled
 
 # If we have found an existing version (installed from before), we use its corresponding Docker image.
 # If not, we install using the latest Postgres.
@@ -14,16 +16,18 @@
 # Upgrading is supposed to be performed separately and explicitly (see `upgrade_postgres.yml`).
 - set_fact:
     matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_latest if matrix_postgres_detected_version_corresponding_docker_image == '' else matrix_postgres_detected_version_corresponding_docker_image }}"
+  when: matrix_postgres_enabled
 
 - name: Warn if on an old version of Postgres
   debug:
     msg: "NOTE: Your setup is on an old Postgres version ({{ matrix_postgres_docker_image_to_use }}), while {{ matrix_postgres_docker_image_latest }} is supported. You can upgrade using --tags=upgrade-postgres"
-  when: "matrix_postgres_docker_image_to_use != matrix_postgres_docker_image_latest"
+  when: "matrix_postgres_enabled and matrix_postgres_docker_image_to_use != matrix_postgres_docker_image_latest"
 
 # Even if we don't run the internal server, we still need this for running the CLI
 - name: Ensure postgres Docker image is pulled
   docker_image:
     name: "{{ matrix_postgres_docker_image_to_use }}"
+  when: matrix_postgres_enabled
 
 # We always create these directories, even if an external Postgres is used,
 # because we store environment variable files there.
@@ -37,6 +41,7 @@
   with_items:
     - "{{ matrix_postgres_base_path }}"
     - "{{ matrix_postgres_data_path }}"
+  when: matrix_postgres_enabled
 
 - name: Ensure Postgres environment variables file created
   template:
@@ -46,18 +51,21 @@
   with_items:
     - "env-postgres-psql"
     - "env-postgres-server"
+  when: matrix_postgres_enabled
 
 - name: Ensure matrix-postgres-cli script created
   template:
     src: "{{ role_path }}/templates/usr-local-bin/matrix-postgres-cli.j2"
     dest: "/usr/local/bin/matrix-postgres-cli"
     mode: 0750
+  when: matrix_postgres_enabled
 
 - name: Ensure matrix-make-user-admin script created
   template:
     src: "{{ role_path }}/templates/usr-local-bin/matrix-make-user-admin.j2"
     dest: "/usr/local/bin/matrix-make-user-admin"
     mode: 0750
+  when: matrix_postgres_enabled
 
 #
 # Tasks related to setting up an internal postgres server
@@ -68,7 +76,7 @@
     src: "{{ role_path }}/templates/systemd/matrix-postgres.service.j2"
     dest: "/etc/systemd/system/matrix-postgres.service"
     mode: 0644
-  when: "not matrix_postgres_use_external"
+  when: matrix_postgres_enabled
 
 #
 # Tasks related to getting rid of the internal postgres server (if it was previously enabled)
@@ -78,29 +86,29 @@
   stat:
     path: "/etc/systemd/system/matrix-postgres.service"
   register: matrix_postgres_service_stat
-  when: matrix_postgres_use_external
+  when: "not matrix_postgres_enabled"
 
 - name: Ensure matrix-postgres is stopped
   service:
     name: matrix-postgres
     state: stopped
     daemon_reload: yes
-  when: "matrix_postgres_use_external and matrix_postgres_service_stat.stat.exists"
+  when: "not matrix_postgres_enabled and matrix_postgres_service_stat.stat.exists"
 
 - name: Ensure matrix-postgres.service doesn't exist
   file:
     path: "/etc/systemd/system/matrix-postgres.service"
     state: absent
-  when: "matrix_postgres_use_external and matrix_postgres_service_stat.stat.exists"
+  when: "not matrix_postgres_enabled and matrix_postgres_service_stat.stat.exists"
 
 - name: Check existence of matrix-postgres local data path
   stat:
     path: "{{ matrix_postgres_data_path }}"
   register: matrix_postgres_data_path_stat
-  when: matrix_postgres_use_external
+  when: "not matrix_postgres_enabled"
 
 # We just want to notify the user. Deleting data is too destructive.
 - name: Notify if matrix-postgres local data remains
   debug:
-    msg: "Note: You are not using a local PostgreSQL database, but some old data remains from before in {{ matrix_postgres_data_path }}. Feel free to delete it."
-  when: "matrix_postgres_use_external and matrix_postgres_data_path_stat.stat.exists"
+    msg: "Note: You are not using a local PostgreSQL database, but some old data remains from before in `{{ matrix_postgres_data_path }}`. Feel free to delete it."
+  when: "not matrix_postgres_enabled and matrix_postgres_data_path_stat.stat.exists"

@@ -2,6 +2,12 @@
   tags:
     - always
 
+- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: "run_setup and matrix_corporal_enabled"
+  tags:
+    - setup-all
+    - setup-corporal
+
 - import_tasks: "{{ role_path }}/tasks/setup_corporal.yml"
   when: run_setup
   tags:

@@ -1,13 +1,13 @@
 ---
 
-- name: Fail if Coturn secret is missing
-  fail:
-    msg: "You need to set a secret in the matrix_coturn_turn_static_auth_secret variable"
-  when: "matrix_coturn_turn_static_auth_secret == ''"
+#
+# Tasks related to setting up Coturn
+#
 
 - name: Ensure Coturn image is pulled
   docker_image:
     name: "{{ matrix_coturn_docker_image }}"
+  when: matrix_coturn_enabled
 
 - name: Ensure Coturn configuration path exists
   file:
@@ -16,18 +16,21 @@
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
+  when: matrix_coturn_enabled
 
 - name: Ensure turnserver.conf installed
   template:
     src: "{{ role_path }}/templates/turnserver.conf.j2"
     dest: "{{ matrix_coturn_config_path }}"
     mode: 0644
+  when: matrix_coturn_enabled
 
 - name: Ensure matrix-coturn.service installed
   template:
     src: "{{ role_path }}/templates/systemd/matrix-coturn.service.j2"
     dest: "/etc/systemd/system/matrix-coturn.service"
     mode: 0644
+  when: matrix_coturn_enabled
 
 - name: Allow access to Coturn ports in firewalld
   firewalld:
@@ -39,4 +42,39 @@
     - '3478/tcp' # STUN
     - '3478/udp' # STUN
     - "{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}/udp" # TURN
-  when: ansible_os_family == 'RedHat'
+  when: "matrix_coturn_enabled and ansible_os_family == 'RedHat'"
+
+#
+# Tasks related to getting rid of Coturn (if it was previously enabled)
+#
+
+- name: Check existence of matrix-coturn service
+  stat:
+    path: "/etc/systemd/system/matrix-coturn.service"
+  register: matrix_coturn_service_stat
+
+- name: Ensure matrix-coturn is stopped
+  service:
+    name: matrix-coturn
+    state: stopped
+    daemon_reload: yes
+  register: stopping_result
+  when: "not matrix_coturn_enabled and matrix_coturn_service_stat.stat.exists"
+
+- name: Ensure matrix-coturn.service doesn't exist
+  file:
+    path: "/etc/systemd/system/matrix-coturn.service"
+    state: absent
+  when: "not matrix_coturn_enabled and matrix_coturn_service_stat.stat.exists"
+
+- name: Ensure Matrix coturn paths don't exist
+  file:
+    path: "{{ matrix_coturn_base_path }}"
+    state: absent
+  when: "not matrix_coturn_enabled"
+
+- name: Ensure coturn Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_coturn_docker_image }}"
+    state: absent
+  when: "not matrix_coturn_enabled"

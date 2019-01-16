@@ -1,0 +1,22 @@
+---
+
+- name: (Deprecation) Warn about matrix_postgres_use_external usage
+  fail:
+    msg: >
+      The `matrix_postgres_use_external` variable defined in your configuration is not used by this playbook anymore!
+      You'll need to adapt to the new way of using an external Postgres server.
+      It's a combination of `matrix_postgres_enabled: false` and specifying Postgres connection
+      details in a few `matrix_synapse_database_` variables.
+      See the "Using an external PostgreSQL server (optional)" documentation page.
+  when: "'matrix_postgres_use_external' in vars"
+
+- name: Fail if required Postgres settings not defined
+  fail:
+    msg: >
+      You need to define a required configuration setting (`{{ item }}`) for using mxisd.
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_postgres_connection_hostname"
+    - "matrix_postgres_connection_username"
+    - "matrix_postgres_connection_password"
+    - "matrix_postgres_db_name"

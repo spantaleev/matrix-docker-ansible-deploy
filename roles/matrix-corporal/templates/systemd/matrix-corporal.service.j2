@@ -1,9 +1,9 @@
 [Unit]
 Description=Matrix Corporal
-After=docker.service
-Requires=docker.service
-Requires=matrix-synapse.service
-After=matrix-synapse.service
+{% for service in matrix_corporal_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
 
 [Service]
 Type=simple

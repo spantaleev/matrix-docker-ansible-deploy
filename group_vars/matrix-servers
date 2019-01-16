@@ -1,0 +1,289 @@
+---
+
+# This variables file wires together the various components (roles) used by the playbook.
+#
+# Roles used by playbook are pretty minimal and kept independent of one another as much as possible.
+# To deliver a turnkey fully-featured Matrix server, this playbook needs
+# to connect them all together. It does so by overriding role variables.
+#
+# You can also override ANY variable (seen here or in any given role),
+# by re-defining it in your own configuration file (`inventory/host_vars/matrix.<your-domain>`).
+
+
+######################################################################
+#
+# matrix-base
+#
+######################################################################
+
+matrix_identity_server_url: "{{ 'https://' + matrix_synapse_trusted_third_party_id_servers[0] if matrix_synapse_trusted_third_party_id_servers|length > 0 else None }}"
+
+
+######################################################################
+#
+# /matrix-base
+#
+######################################################################
+
+
+
+######################################################################
+#
+# matrix-corporal
+#
+######################################################################
+
+matrix_corporal_enabled: false
+
+# Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-corporal over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# matrix-corporal's web-server ports to the local host (`127.0.0.1:41080` and `127.0.0.1:41081`).
+matrix_corporal_container_expose_ports: "{{ not matrix_nginx_proxy_enabled }}"
+
+matrix_corporal_systemd_required_services_list: |
+  {{
+    (['docker.service'])
+    +
+    (['matrix-synapse.service'])
+  }}
+
+matrix_corporal_matrix_homeserver_api_endpoint: "http://matrix-synapse:8008"
+
+matrix_corporal_matrix_auth_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret }}"
+
+matrix_corporal_matrix_registration_shared_secret: "{{ matrix_synapse_registration_shared_secret }}"
+
+######################################################################
+#
+# /matrix-corporal
+#
+######################################################################
+
+
+
+######################################################################
+#
+# matrix-coturn
+#
+######################################################################
+
+matrix_coturn_enabled: true
+
+######################################################################
+#
+# /matrix-coturn
+#
+######################################################################
+
+
+
+######################################################################
+#
+# matrix-mailer
+#
+######################################################################
+
+# By default, this playbook sets up a postfix mailer server (running in a container).
+# This is so that Synapse can send email reminders for unread messages.
+# Other services (like mxisd), also use the mailer.
+matrix_mailer_enabled: true
+
+######################################################################
+#
+# /matrix-mailer
+#
+######################################################################
+
+
+
+######################################################################
+#
+# matrix-mxisd
+#
+######################################################################
+
+# By default, this playbook installs the mxisd identity server on the same domain as Synapse (`hostname_matrix`).
+# If you wish to use the public identity servers (matrix.org, vector.im) instead of your own you may wish to disable this.
+matrix_mxisd_enabled: true
+
+# Normally, matrix-nginx-proxy is enabled and nginx can reach mxisd over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# mxisd's web-server port to the local host (`127.0.0.1:8090`).
+matrix_mxisd_container_expose_port: "{{ not matrix_nginx_proxy_enabled }}"
+
+# We enable Synapse integration via its Postgres database by default.
+# When using another Identity store, you might wish to disable this and define
+# your own configuration in `matrix_mxisd_configuration_extension_yaml`.
+matrix_mxisd_synapsesql_enabled: true
+matrix_mxisd_synapsesql_type: postgresql
+matrix_mxisd_synapsesql_connection: //{{ matrix_synapse_database_host }}/{{ matrix_synapse_database_database }}?user={{ matrix_synapse_database_user }}&password={{ matrix_synapse_database_password }}
+
+# By default, we send mail through the `matrix-mailer` service.
+matrix_mxid_threepid_medium_email_identity_from: "{{ matrix_mailer_sender_address }}"
+matrix_mxid_threepid_medium_email_connectors_smtp_host: "matrix-mailer"
+matrix_mxid_threepid_medium_email_connectors_smtp_port: 587
+matrix_mxid_threepid_medium_email_connectors_smtp_tls: 0
+
+matrix_mxisd_systemd_wanted_services_list: |
+  {{
+    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-mailer.service'] if matrix_mailer_enabled else [])
+  }}
+
+######################################################################
+#
+# /matrix-mxisd
+#
+######################################################################
+
+
+
+######################################################################
+#
+# matrix-nginx-proxy
+#
+######################################################################
+
+# By default, this playbook sets up a reverse-proxy nginx proxy server on port 80/443.
+# This is fine if you're dedicating the whole server to Matrix.
+# If that's not the case, you may wish to disable this and take care of proxying yourself.
+matrix_nginx_proxy_enabled: true
+matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container: "{{ 'matrix-corporal:41080' if matrix_corporal_enabled else 'matrix-synapse:8008' }}"
+matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container: "{{ 'localhost:41080' if matrix_corporal_enabled else 'localhost:8008' }}"
+
+matrix_nginx_proxy_proxy_matrix_enabled: true
+matrix_nginx_proxy_proxy_riot_enabled: "{{ matrix_riot_web_enabled }}"
+
+matrix_nginx_proxy_systemd_wanted_services_list: |
+  {{
+    (['matrix-synapse.service'])
+    +
+    (['matrix-corporal.service'] if matrix_corporal_enabled else [])
+    +
+    (['matrix-mxisd.service'] if matrix_mxisd_enabled else [])
+    +
+    (['matrix-riot-web.service'] if matrix_riot_web_enabled else [])
+  }}
+
+matrix_ssl_domains_to_obtain_certificates_for: |
+  {{
+    ([hostname_matrix])
+    +
+    ([hostname_riot] if matrix_riot_web_enabled else [])
+  }}
+
+######################################################################
+#
+# /matrix-nginx-proxy
+#
+######################################################################
+
+
+
+######################################################################
+#
+# matrix-postgres
+#
+######################################################################
+
+matrix_postgres_enabled: true
+
+matrix_postgres_connection_hostname: "matrix-postgres"
+matrix_postgres_connection_username: "synapse"
+matrix_postgres_connection_password: "synapse-password"
+matrix_postgres_db_name: "homeserver"
+
+######################################################################
+#
+# /matrix-postgres
+#
+######################################################################
+
+
+
+######################################################################
+#
+# matrix-riot-web
+#
+######################################################################
+
+# By default, this playbook installs the Riot.IM web UI on the `hostname_riot` domain.
+# If you wish to connect to your Matrix server by other means, you may wish to disable this.
+matrix_riot_web_enabled: true
+
+# Normally, matrix-nginx-proxy is enabled and nginx can reach riot-web over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# the riot-web HTTP port to the local host (`127.0.0.1:80`).
+matrix_riot_web_container_expose_port: "{{ not matrix_nginx_proxy_enabled }}"
+
+matrix_riot_web_default_hs_url: "{{ matrix_homeserver_url }}"
+matrix_riot_web_default_is_url: "{{ matrix_identity_server_url }}"
+
+######################################################################
+#
+# /matrix-riot-web
+#
+######################################################################
+
+
+
+######################################################################
+#
+# matrix-synapse
+#
+######################################################################
+
+# When mxisd is enabled, we can use it instead of the default public Identity servers.
+matrix_synapse_trusted_third_party_id_servers: "{{ [hostname_matrix] if matrix_mxisd_enabled else matrix_synapse_id_servers_public }}"
+
+# Normally, matrix-nginx-proxy is enabled and nginx can reach Synapse over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# the Client/Server API's port to the local host (`127.0.0.1:8008`).
+matrix_synapse_container_expose_client_server_api_port: "{{ not matrix_nginx_proxy_enabled }}"
+
+matrix_synapse_database_host: "{{ matrix_postgres_connection_hostname }}"
+matrix_synapse_database_user: "{{ matrix_postgres_connection_username }}"
+matrix_synapse_database_password: "{{ matrix_postgres_connection_password }}"
+matrix_synapse_database_database: "{{ matrix_postgres_db_name }}"
+
+matrix_synapse_email_enabled: "{{ matrix_mailer_enabled }}"
+matrix_synapse_email_smtp_host: "matrix-mailer"
+matrix_synapse_email_smtp_port: 587
+matrix_synapse_email_smtp_require_transport_security: false
+matrix_synapse_email_notif_from: "Matrix <{{ matrix_mailer_sender_address }}>"
+matrix_synapse_email_riot_base_url: "https://{{ hostname_riot }}"
+
+matrix_synapse_turn_uris: |
+  {{
+    [
+      'turn:' + hostname_matrix + ':3478?transport=udp',
+      'turn:' + hostname_matrix + ':3478?transport=tcp',
+    ]
+    if matrix_coturn_enabled
+    else []
+  }}
+
+matrix_synapse_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
+
+matrix_synapse_systemd_required_services_list: |
+  {{
+    (['docker.service'])
+    +
+    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-goofys'] if matrix_s3_media_store_enabled else [])
+  }}
+
+matrix_synapse_systemd_wanted_services_list: |
+  {{
+    (['matrix-coturn.service'] if matrix_coturn_enabled else [])
+    +
+    (['matrix-mailer.service'] if matrix_mailer_enabled else [])
+  }}
+
+######################################################################
+#
+# /matrix-synapse
+#
+######################################################################

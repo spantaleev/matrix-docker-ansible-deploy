@@ -2,8 +2,14 @@
   tags:
     - always
 
+- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: "run_setup and matrix_coturn_enabled"
+  tags:
+    - setup-all
+    - setup-coturn
+
 - import_tasks: "{{ role_path }}/tasks/setup_coturn.yml"
   when: run_setup
   tags:
-    - setup-coturn
     - setup-all
+    - setup-coturn

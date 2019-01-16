@@ -8,17 +8,17 @@ That is, it lets you join the Matrix network with your own `@<username>:<your-do
 
 Using this playbook, you can get the following services configured on your server:
 
-- a [Matrix Synapse](https://github.com/matrix-org/synapse) homeserver - storing your data and managing your presence in the [Matrix](http://matrix.org/) network
+- a [Synapse](https://github.com/matrix-org/synapse) homeserver - storing your data and managing your presence in the [Matrix](http://matrix.org/) network
 
-- (optional) [Amazon S3](https://aws.amazon.com/s3/) storage for your Matrix Synapse's content repository (`media_store`) files using [Goofys](https://github.com/kahing/goofys)
+- (optional) [Amazon S3](https://aws.amazon.com/s3/) storage for Synapse's content repository (`media_store`) files using [Goofys](https://github.com/kahing/goofys)
 
-- (optional, default) [PostgreSQL](https://www.postgresql.org/) database for Matrix Synapse. [Using an external PostgreSQL server](docs/configuring-playbook-external-postgres.md) is also possible.
+- (optional, default) [PostgreSQL](https://www.postgresql.org/) database for Synapse. [Using an external PostgreSQL server](docs/configuring-playbook-external-postgres.md) is also possible.
 
-- a [coturn](https://github.com/coturn/coturn) STUN/TURN server for WebRTC audio/video calls
+- (optional, default) a [coturn](https://github.com/coturn/coturn) STUN/TURN server for WebRTC audio/video calls
 
 - (optional, default) free [Let's Encrypt](https://letsencrypt.org/) SSL certificate, which secures the connection to the Synapse server and the Riot web UI
 
-- (optional, default) a [Riot](https://riot.im/) web UI, which is configured to connect to your own Matrix Synapse server by default
+- (optional, default) a [Riot](https://riot.im/) web UI, which is configured to connect to your own Synapse server by default
 
 - (optional, default) an [mxisd](https://github.com/kamax-io/mxisd) Matrix Identity server
 
@@ -67,7 +67,7 @@ This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EM
 
 - this one optionally can store the `media_store` content repository files on [Amazon S3](https://aws.amazon.com/s3/) (but defaults to storing files on the server's filesystem)
 
-- this one optionally **allows you to use an external PostgreSQL server** for Matrix Synapse's database (but defaults to running one in a container)
+- this one optionally **allows you to use an external PostgreSQL server** for Synapse's database (but defaults to running one in a container)
 
 
 ## Installation

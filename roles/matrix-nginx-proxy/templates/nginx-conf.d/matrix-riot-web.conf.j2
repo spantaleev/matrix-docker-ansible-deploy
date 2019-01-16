@@ -1,6 +1,6 @@
 server {
 	listen 80;
-	server_name {{ hostname_riot }};
+	server_name {{ matrix_nginx_proxy_proxy_riot_hostname }};
 
 	server_tokens off;
 
@@ -25,7 +25,7 @@ server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
 
-    server_name {{ hostname_riot }};
+    server_name {{ matrix_nginx_proxy_proxy_riot_hostname }};
 
 	server_tokens off;
 	root /dev/null;
@@ -33,8 +33,8 @@ server {
 	gzip on;
 	gzip_types text/plain application/json application/javascript text/css image/x-icon font/ttf image/gif;
 
-	ssl_certificate {{ matrix_ssl_config_dir_path }}/live/{{ hostname_riot }}/fullchain.pem;
-	ssl_certificate_key {{ matrix_ssl_config_dir_path }}/live/{{ hostname_riot }}/privkey.pem;
+	ssl_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_riot_hostname }}/fullchain.pem;
+	ssl_certificate_key {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_riot_hostname }}/privkey.pem;
 	ssl_protocols {{ matrix_nginx_proxy_ssl_protocols }};
 	ssl_prefer_server_ciphers on;
 	ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";

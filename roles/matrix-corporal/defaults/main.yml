@@ -1,18 +1,33 @@
-# Enable this to add support for matrix-corporal.
+# matrix-corporal is a reconciliator and gateway for a managed Matrix server.
 # See: https://github.com/devture/matrix-corporal
-matrix_corporal_enabled: false
 
-# Controls whether the matrix-corporal web server's ports are exposed outside of the container.
-# Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-corporal over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# matrix-corporal's web-server ports to the local host (`127.0.0.1:41080` and `127.0.0.1:41081`).
-matrix_corporal_container_expose_ports: "{{ not matrix_nginx_proxy_enabled }}"
+matrix_corporal_enabled: true
+
+# Controls whether the matrix-corporal web server's ports (`41080` and `41081`) are exposed outside of the container.
+matrix_corporal_container_expose_ports: false
+
+# List of systemd services that matrix-corporal.service depends on
+matrix_corporal_systemd_required_services_list: ['docker.service']
 
 matrix_corporal_docker_image: "devture/matrix-corporal:1.2.2"
 matrix_corporal_base_path: "{{ matrix_base_data_path }}/corporal"
 matrix_corporal_config_dir_path: "{{ matrix_corporal_base_path }}/config"
 matrix_corporal_cache_dir_path: "{{ matrix_corporal_base_path }}/cache"
 matrix_corporal_var_dir_path: "{{ matrix_corporal_base_path }}/var"
+
+matrix_corporal_matrix_homeserver_domain_name: "{{ hostname_identity }}"
+
+# Controls where matrix-corporal can reach your Synapse server (e.g. "http://matrix-synapse:8008").
+# If Synapse runs on the same machine, you may need to add its service to `matrix_corporal_systemd_required_services_list`.
+matrix_corporal_matrix_homeserver_api_endpoint: ""
+
+# The shared secret between matrix-corporal and Synapse's shared-secret-auth password provider module.
+# To use matrix-corporal, the shared-secret-auth password provider needs to be enabled and the secret needs to be identical.
+matrix_corporal_matrix_auth_shared_secret: ""
+
+# The shared secret for registering users with Synapse.
+# Needs to be identical to Synapse's `registration_shared_secret` setting.
+matrix_corporal_matrix_registration_shared_secret: ""
 
 matrix_corporal_matrix_timeout_milliseconds: 45000
 

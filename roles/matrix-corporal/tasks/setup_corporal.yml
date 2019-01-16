@@ -4,24 +4,6 @@
 # Tasks related to setting up matrix-corporal
 #
 
-- name: Fail if Shared Secret Auth extension not enabled
-  fail:
-    msg: "To use matrix-corporal, you need to enable the Shared Secret Auth module for Synapse (see matrix_synapse_ext_password_provider_shared_secret_auth_enabled)"
-  when: "matrix_corporal_enabled and not matrix_synapse_ext_password_provider_shared_secret_auth_enabled"
-
-- name: Fail if HTTP API enabled, but no token set
-  fail:
-    msg: "The Matrix Corporal HTTP API is enabled, but no auth token has been set in matrix_corporal_http_api_auth_token"
-  when: "matrix_corporal_enabled and matrix_corporal_http_api_enabled and matrix_corporal_http_api_auth_token == ''"
-
-- name: Fail if policy provider configuration not set
-  fail:
-    msg: "The Matrix Corporal policy provider configuration has not been set in matrix_corporal_policy_provider_config"
-  when: "matrix_corporal_enabled and matrix_corporal_policy_provider_config == ''"
-
-# There are some additional initialization tasks in setup_corporal_overrides.yml,
-# which need to always run, no matter what tag the playbook is running with.
-
 - name: Ensure Matrix Corporal paths exist
   file:
     path: "{{ item }}"

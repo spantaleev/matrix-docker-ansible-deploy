@@ -1,11 +1,12 @@
 [Unit]
-Description=Matrix mxisd identity server
-After=docker.service
-Requires=docker.service
-{% if not matrix_postgres_use_external %}
-Requires=matrix-postgres.service
-After=matrix-postgres.service
-{% endif %}
+Description=Matrix mxisd Identity server
+{% for service in matrix_mxisd_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_mxisd_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
 
 [Service]
 Type=simple

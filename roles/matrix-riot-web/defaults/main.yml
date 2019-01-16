@@ -1,13 +1,17 @@
-# By default, this playbook installs the Riot.IM web UI on the `hostname_riot` domain.
-# If you wish to connect to your Matrix server by other means,
-# you may wish to disable this.
 matrix_riot_web_enabled: true
 
 matrix_riot_web_docker_image: "bubuntux/riot-web:v0.17.8"
 
 matrix_riot_web_data_path: "{{ matrix_base_data_path }}/riot-web"
 
+matrix_riot_web_container_expose_port: false
+
+# List of systemd services that matrix-riot-web.service depends on
+matrix_riot_web_systemd_required_services_list: ['docker.service']
+
 # Riot config.json customizations
+matrix_riot_web_default_hs_url: ""
+matrix_riot_web_default_is_url: ~
 matrix_riot_web_disable_custom_urls: true
 matrix_riot_web_disable_guests: true
 matrix_riot_web_integrations_ui_url: "https://scalar.vector.im/"
@@ -17,7 +21,6 @@ matrix_riot_web_integrations_jitsi_widget_url: "https://scalar.vector.im/api/wid
 # Riot public room directory server(s)
 matrix_riot_web_roomdir_servers: ['matrix.org']
 matrix_riot_web_welcome_user_id: "@riot-bot:matrix.org"
-
 
 # Riot home.html customizations
 # Default home.html template file

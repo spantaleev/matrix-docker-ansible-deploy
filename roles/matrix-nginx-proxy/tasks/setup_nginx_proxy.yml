@@ -17,21 +17,30 @@
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-    recurse: yes
   with_items:
     - "{{ matrix_nginx_proxy_data_path }}"
     - "{{ matrix_nginx_proxy_confd_path }}"
 
-- name: Ensure Matrix nginx-proxy configured
+- name: Ensure Matrix nginx-proxy configured (generic)
   template:
-    src: "{{ role_path }}/templates/nginx-conf.d/{{ item }}.j2"
-    dest: "{{ matrix_nginx_proxy_confd_path }}/{{ item }}"
+    src: "{{ role_path }}/templates/nginx-conf.d/nginx-http.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/nginx-http.conf"
     mode: 0644
-  with_items:
-    - "nginx-http.conf"
-    - "matrix-synapse.conf"
-    - "matrix-riot-web.conf"
+  when: "matrix_nginx_proxy_enabled"
 
+- name: Ensure Matrix nginx-proxy configuration for matrix domain exists
+  template:
+    src: "{{ role_path }}/templates/nginx-conf.d/matrix-synapse.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-synapse.conf"
+    mode: 0644
+  when: "matrix_nginx_proxy_proxy_matrix_enabled"
+
+- name: Ensure Matrix nginx-proxy configuration for riot domain exists
+  template:
+    src: "{{ role_path }}/templates/nginx-conf.d/matrix-riot-web.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-riot-web.conf"
+    mode: 0644
+  when: "matrix_nginx_proxy_proxy_riot_enabled"
 
 #
 # Tasks related to setting up matrix-nginx-proxy
@@ -50,7 +59,7 @@
   with_items:
     - "http"
     - "https"
-  when: "ansible_os_family == 'RedHat' and matrix_nginx_proxy_enabled"
+  when: "matrix_nginx_proxy_enabled and ansible_os_family == 'RedHat'"
 
 - name: Ensure matrix-nginx-proxy.service installed
   template:
@@ -82,3 +91,16 @@
     path: "/etc/systemd/system/matrix-nginx-proxy.service"
     state: absent
   when: "not matrix_nginx_proxy_enabled and matrix_nginx_proxy_service_stat.stat.exists"
+
+- name: Ensure Matrix nginx-proxy configuration for matrix domain deleted
+  file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-synapse.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_matrix_enabled"
+
+- name: Ensure Matrix nginx-proxy configuration for riot domain deleted
+  file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-riot-web.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_riot_enabled"
+
