@@ -120,8 +120,8 @@ use_presence: {{ matrix_synapse_use_presence|to_json }}
 #  - nyc.example.com
 #  - syd.example.com
 {% if matrix_synapse_federation_domain_whitelist is not none %}
-federation_domain_whitelist:
-{{ matrix_synapse_federation_domain_whitelist|to_nice_yaml }}
+{# Cannot use `|to_nice_yaml` here, as an empty list does not get serialized properly by it. #}
+federation_domain_whitelist: {{ matrix_synapse_federation_domain_whitelist|to_json }}
 {% endif %}
 
 # List of ports that Synapse should listen on, their purpose and their
