@@ -8,15 +8,6 @@
 
 # Common tasks, required by any method below.
 
-- name: Determine domains that we require certificates for (Matrix)
-  set_fact:
-    domains_requiring_certificates: "['{{ hostname_matrix }}']"
-
-- name: Determine domains that we require certificates for (Riot)
-  set_fact:
-    domains_requiring_certificates: "{{ domains_requiring_certificates + [hostname_riot] }}"
-  when: "matrix_riot_web_enabled"
-
 - name: Ensure SSL certificate paths exists
   file:
     path: "{{ item }}"

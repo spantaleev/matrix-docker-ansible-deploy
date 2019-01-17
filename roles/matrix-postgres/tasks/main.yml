@@ -2,11 +2,17 @@
   tags:
     - always
 
+- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: "run_setup and matrix_postgres_enabled"
+  tags:
+    - setup-all
+    - setup-postgres
+
 - import_tasks: "{{ role_path }}/tasks/setup_postgres.yml"
   when: run_setup
   tags:
-    - setup-postgres
     - setup-all
+    - setup-postgres
 
 - import_tasks: "{{ role_path }}/tasks/import_postgres.yml"
   when: run_import_postgres

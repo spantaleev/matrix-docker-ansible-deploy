@@ -216,10 +216,10 @@ database:
   # The database engine name
   name: "psycopg2"
   args:
-    user: {{ matrix_postgres_connection_username|to_json }}
-    password: {{ matrix_postgres_connection_password|to_json }}
-    database: "{{ matrix_postgres_db_name }}"
-    host: "{{ matrix_postgres_connection_hostname }}"
+    user: {{ matrix_synapse_database_user|to_json }}
+    password: {{ matrix_synapse_database_password|to_json }}
+    database: "{{ matrix_synapse_database_database }}"
+    host: "{{ matrix_synapse_database_host }}"
     cp_min: 5
     cp_max: 10
 
@@ -409,10 +409,10 @@ recaptcha_siteverify_api: "https://www.google.com/recaptcha/api/siteverify"
 ## Turn ##
 
 # The public URIs of the TURN server to give to clients
-turn_uris: ["turn:{{ hostname_matrix }}:3478?transport=udp", "turn:{{ hostname_matrix }}:3478?transport=tcp"]
+turn_uris: {{ matrix_synapse_turn_uris|to_json }}
 
 # The shared secret used to compute passwords for the TURN server
-turn_shared_secret: {{ matrix_coturn_turn_static_auth_secret|to_json }}
+turn_shared_secret: {{ matrix_synapse_turn_shared_secret|to_json }}
 
 # The Username and password if the TURN server needs them and
 # does not use a token
@@ -600,18 +600,18 @@ password_config:
 # If your SMTP server requires authentication, the optional smtp_user &
 # smtp_pass variables should be used
 #
-{% if matrix_mailer_enabled %}
+{% if matrix_synapse_email_enabled %}
 email:
    enable_notifs: true
-   smtp_host: "matrix-mailer"
-   smtp_port: 587
-   require_transport_security: false
-   notif_from: "Matrix <{{ matrix_mailer_sender_address }}>"
+   smtp_host: {{ matrix_synapse_email_smtp_host|to_json }}
+   smtp_port: {{ matrix_synapse_email_smtp_port|to_json }}
+   require_transport_security: {{ matrix_synapse_email_smtp_require_transport_security|to_json }}
+   notif_from: {{ matrix_synapse_email_notif_from|to_json }}
    app_name: Matrix
    notif_template_html: notif_mail.html
    notif_template_text: notif_mail.txt
    notif_for_new_users: True
-   riot_base_url: "https://{{ hostname_riot }}"
+   riot_base_url: {{ matrix_synapse_email_riot_base_url|to_json }}
 {% endif %}
 
 

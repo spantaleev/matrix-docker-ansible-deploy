@@ -2,6 +2,11 @@
 
 # Pre-checks
 
+- name: Fail if Postgres not enabled
+  fail:
+    msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot import."
+  when: "not matrix_postgres_enabled"
+
 - name: Fail if playbook called incorrectly
   fail:
     msg: "The `server_path_homeserver_db` variable needs to be provided to this playbook, via --extra-vars"

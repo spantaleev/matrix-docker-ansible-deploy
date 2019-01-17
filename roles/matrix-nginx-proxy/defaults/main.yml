@@ -1,7 +1,3 @@
-# By default, this playbook sets up its own nginx proxy server on port 80/443.
-# This is fine if you're dedicating the whole server to Matrix.
-# But in case that's not the case, you may wish to prevent that
-# and take care of proxying by yourself.
 matrix_nginx_proxy_enabled: true
 
 matrix_nginx_proxy_docker_image: "nginx:1.15.8-alpine"
@@ -9,10 +5,39 @@ matrix_nginx_proxy_docker_image: "nginx:1.15.8-alpine"
 matrix_nginx_proxy_data_path: "{{ matrix_base_data_path }}/nginx-proxy"
 matrix_nginx_proxy_confd_path: "{{ matrix_nginx_proxy_data_path }}/conf.d"
 
+# List of systemd services that matrix-nginx-proxy.service depends on
+matrix_nginx_proxy_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-nginx-proxy.service wants
+matrix_nginx_proxy_systemd_wanted_services_list: []
+
+# Controls whether proxying the riot domain should be done.
+matrix_nginx_proxy_proxy_riot_enabled: false
+matrix_nginx_proxy_proxy_riot_hostname: "{{ hostname_riot }}"
+
+# Controls whether proxying the matrix domain should be done.
+matrix_nginx_proxy_proxy_matrix_enabled: false
+matrix_nginx_proxy_proxy_matrix_hostname: "{{ hostname_matrix }}"
+
+# Controls whether proxying for the matrix-corporal API (`/_matrix/corporal`) should be done (on the matrix domain)
+matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: false
+matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
+matrix_nginx_proxy_proxy_matrix_corporal_api_addr_sans_container: "localhost:41081"
+
+# Controls whether proxying for the Identity API (`/_matrix/identity`) should be done (on the matrix domain)
+matrix_nginx_proxy_proxy_matrix_identity_api_enabled: false
+matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-mxisd:8090"
+matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "localhost:8090"
+
 # The addresses where the Matrix Client API is.
 # Certain extensions (like matrix-corporal) may override this in order to capture all traffic.
-matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container: "matrix-synapse:8008"
-matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container: "localhost:8008"
+matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "matrix-synapse:8008"
+matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "localhost:8008"
+# This needs to be equal or higher than the maximum upload size accepted by Synapse.
+matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size: "25M"
+
+# A list of strings containing additional configuration blocks to add to the matrix domain's server configuration.
+matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: []
 
 # Specifies when to reload the matrix-nginx-proxy service so that
 # a new SSL certificate could go into effect.
@@ -38,6 +63,9 @@ matrix_nginx_proxy_ssl_protocols: "TLSv1.1 TLSv1.2"
 # - <matrix_ssl_config_dir_path>/live/<domain>/privkey.pem
 # where <domain> refers to the domains that you need (usually `hostname_matrix` and `hostname_riot`).
 matrix_ssl_retrieval_method: "lets-encrypt"
+
+# The list of domains that this role will obtain certificates for.
+matrix_ssl_domains_to_obtain_certificates_for: []
 
 # Controls whether to obtain production or staging certificates from Let's Encrypt.
 matrix_ssl_lets_encrypt_staging: false

@@ -1,7 +1,9 @@
 [Unit]
 Description=Matrix Coturn server
-After=docker.service
-Requires=docker.service
+{% for service in matrix_coturn_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
 
 [Service]
 Type=simple

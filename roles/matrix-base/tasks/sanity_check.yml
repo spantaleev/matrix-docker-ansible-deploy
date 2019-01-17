@@ -15,16 +15,6 @@
     msg: "{{ matrix_ansible_outdated_fail_msg }}"
   when: "ansible_version.major == 2 and ansible_version.minor == 5 and ansible_version.revision < 2"
 
-- name: Fail if Macaroon key is missing
-  fail:
-    msg: "You need to set a secret in the matrix_synapse_macaroon_secret_key variable"
-  when: "matrix_synapse_macaroon_secret_key == ''"
-
-- name: Fail if Coturn Auth secret is missing
-  fail:
-    msg: "You need to set a secret in the matrix_coturn_turn_static_auth_secret variable"
-  when: "matrix_coturn_turn_static_auth_secret == ''"
-
 # This sanity check is only used to detect uppercase when people override these specific variables.
 #
 # If people set `host_specific_hostname_identity` without overriding other variables (the general use-case),

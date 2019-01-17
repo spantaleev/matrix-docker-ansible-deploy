@@ -22,8 +22,8 @@
 
 - name: Fail, if trying to upgrade external Postgres database
   fail:
-    msg: "Your configuration indicates that you're using an external Postgres database. Refusing to try and upgrade that."
-  when: "matrix_postgres_use_external"
+    msg: "Your configuration indicates that you're not using Postgres from this role. There is nothing to upgrade."
+  when: "not matrix_postgres_enabled"
 
 - name: Check Postgres auto-upgrade backup data directory
   stat:

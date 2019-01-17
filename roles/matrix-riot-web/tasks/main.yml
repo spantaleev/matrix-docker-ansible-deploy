@@ -2,6 +2,12 @@
   tags:
     - always
 
+- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: "run_setup and matrix_riot_web_enabled"
+  tags:
+    - setup-all
+    - setup-riot-web
+
 - import_tasks: "{{ role_path }}/tasks/setup_riot_web.yml"
   when: run_setup
   tags:

@@ -1,9 +1,3 @@
-- name: Override configuration specifying where the Matrix Client API is
-  set_fact:
-    matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container: "matrix-corporal:41080"
-    matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container: "localhost:41080"
-  when: "matrix_corporal_enabled"
-
 - set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-corporal'] }}"
   when: "matrix_corporal_enabled"

@@ -1,7 +1,9 @@
 [Unit]
-Description=Matrix Riot web server
-After=docker.service
-Requires=docker.service
+Description=Matrix riot-web server
+{% for service in matrix_riot_web_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
 
 [Service]
 Type=simple
@@ -12,7 +14,7 @@ ExecStart=/usr/bin/docker run --rm --name matrix-riot-web \
 			-v {{ matrix_riot_web_data_path }}/config.json:/etc/riot-web/config.json:ro \
 			-v {{ matrix_riot_web_data_path }}/home.html:/etc/riot-web/home.html:ro \
 			--network={{ matrix_docker_network }} \
-			{% if not matrix_nginx_proxy_enabled %}
+			{% if matrix_riot_web_container_expose_port %}
 			-p 127.0.0.1:8765:80 \
 			{% endif %}
 			{{ matrix_riot_web_docker_image }}
