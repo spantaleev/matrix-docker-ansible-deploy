@@ -71,6 +71,9 @@ server {
 			{# Generic configuration for use outside of our container setup #}
 			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container }};
 		{% endif %}
+
+		proxy_set_header Host $host;
+		proxy_set_header X-Forwarded-For $remote_addr;
 	}
 	{% endif %}
 
@@ -85,6 +88,9 @@ server {
 			{# Generic configuration for use outside of our container setup #}
 			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container }};
 		{% endif %}
+
+		proxy_set_header Host $host;
+		proxy_set_header X-Forwarded-For $remote_addr;
 	}
 	{% endif %}
 
