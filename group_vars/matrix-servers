@@ -149,11 +149,21 @@ matrix_mxisd_systemd_wanted_services_list: |
 # This is fine if you're dedicating the whole server to Matrix.
 # If that's not the case, you may wish to disable this and take care of proxying yourself.
 matrix_nginx_proxy_enabled: true
-matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container: "{{ 'matrix-corporal:41080' if matrix_corporal_enabled else 'matrix-synapse:8008' }}"
-matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container: "{{ 'localhost:41080' if matrix_corporal_enabled else 'localhost:8008' }}"
+
+matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "{{ 'matrix-corporal:41080' if matrix_corporal_enabled else 'matrix-synapse:8008' }}"
+matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "{{ 'localhost:41080' if matrix_corporal_enabled else 'localhost:8008' }}"
+matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size: "{{ matrix_synapse_max_upload_size_mb }}M"
 
 matrix_nginx_proxy_proxy_matrix_enabled: true
 matrix_nginx_proxy_proxy_riot_enabled: "{{ matrix_riot_web_enabled }}"
+
+matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: "{{ matrix_corporal_enabled and matrix_corporal_http_api_enabled }}"
+matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
+matrix_nginx_proxy_proxy_matrix_corporal_api_addr_sans_container: "localhost:41081"
+
+matrix_nginx_proxy_proxy_matrix_identity_api_enabled: "{{ matrix_mxisd_enabled }}"
+matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-mxisd:8090"
+matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "localhost:8090"
 
 matrix_nginx_proxy_systemd_wanted_services_list: |
   {{

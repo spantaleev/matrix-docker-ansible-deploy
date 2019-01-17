@@ -19,10 +19,25 @@ matrix_nginx_proxy_proxy_riot_hostname: "{{ hostname_riot }}"
 matrix_nginx_proxy_proxy_matrix_enabled: false
 matrix_nginx_proxy_proxy_matrix_hostname: "{{ hostname_matrix }}"
 
+# Controls whether proxying for the matrix-corporal API (`/_matrix/corporal`) should be done (on the matrix domain)
+matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: false
+matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
+matrix_nginx_proxy_proxy_matrix_corporal_api_addr_sans_container: "localhost:41081"
+
+# Controls whether proxying for the Identity API (`/_matrix/identity`) should be done (on the matrix domain)
+matrix_nginx_proxy_proxy_matrix_identity_api_enabled: false
+matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-mxisd:8090"
+matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "localhost:8090"
+
 # The addresses where the Matrix Client API is.
 # Certain extensions (like matrix-corporal) may override this in order to capture all traffic.
-matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container: "matrix-synapse:8008"
-matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container: "localhost:8008"
+matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "matrix-synapse:8008"
+matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "localhost:8008"
+# This needs to be equal or higher than the maximum upload size accepted by Synapse.
+matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size: "25M"
+
+# A list of strings containing additional configuration blocks to add to the matrix domain's server configuration.
+matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: []
 
 # Specifies when to reload the matrix-nginx-proxy service so that
 # a new SSL certificate could go into effect.

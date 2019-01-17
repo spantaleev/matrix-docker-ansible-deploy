@@ -46,63 +46,53 @@ server {
 		add_header Access-Control-Allow-Origin *;
 	}
 
-	{% if matrix_corporal_enabled and matrix_corporal_http_api_enabled %}
+	{% if matrix_nginx_proxy_proxy_matrix_corporal_api_enabled %}
 	location /_matrix/corporal {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver 127.0.0.11 valid=5s;
-			set $backend "matrix-corporal:41081";
+			set $backend "{{ matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container }}";
 			proxy_pass http://$backend;
 		{% else %}
 			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://localhost:41081;
+			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_corporal_api_addr_sans_container }};
 		{% endif %}
 	}
 	{% endif %}
 
-	{% if matrix_mxisd_enabled %}
+	{% if matrix_nginx_proxy_proxy_matrix_identity_api_enabled %}
 	location /_matrix/identity {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver 127.0.0.11 valid=5s;
-			set $backend "matrix-mxisd:8090";
+			set $backend "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}";
 			proxy_pass http://$backend;
 		{% else %}
 			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://localhost:8090;
+			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container }};
 		{% endif %}
 	}
 	{% endif %}
 
-	{% if matrix_mautrix_telegram_enabled %}
-	location {{ matrix_mautrix_telegram_public_endpoint }} {
-		{% if matrix_nginx_proxy_enabled %}
-			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
-			set $backend "matrix-mautrix-telegram:8080";
-			proxy_pass http://$backend;
-		{% else %}
-			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://localhost:8080;
-		{% endif %}
-	}
-	{% endif %}
+	{% for configuration_block in matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks %}
+		{{- configuration_block }}
+	{% endfor %}
 
 	location /_matrix {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver 127.0.0.11 valid=5s;
-			set $backend "{{ matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container }}";
+			set $backend "{{ matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container }}";
 			proxy_pass http://$backend;
 		{% else %}
 			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://{{ matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container }};
+			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container }};
 		{% endif %}
 
 		proxy_set_header X-Forwarded-For $remote_addr;
 
 		client_body_buffer_size 25M;
-		client_max_body_size {{ matrix_synapse_max_upload_size_mb }}M;
+		client_max_body_size {{ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size }};
 		proxy_max_temp_file_size 0;
 	}
 

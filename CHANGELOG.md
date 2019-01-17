@@ -8,21 +8,12 @@ The following change **affects people running a more non-standard setup** - exte
 Because people like using the playbook's components independently (outside of this playbook) and because it's much better for maintainability, we've continued working on separating them.
 Still, we'd like to offer a turnkey solution for running a fully-featured Matrix server, so this playbook remains important for wiring up the various components.
 
-With the new changes, the following roles are now only dependent on the minimal `matrix-base` role:
-- `matrix-corporal`
-- `matrix-coturn`
-- `matrix-mailer`
-- `matrix-mxisd`
-- `matrix-postgres`
-- `matrix-riot-web`
-- `matrix-synapse`
+With the new changes, **all roles are now only dependent on the minimal `matrix-base` role**. They are no longer dependent among themselves.
 
-The `matrix-nginx-proxy` role still does too much and remains dependent on the others.
-
-In addition, the following components can be completely disabled now (for those who want/need to):
-- `matrix-coturn`
-- `matrix-mailer`
-- `matrix-postgres`
+In addition, the following components can now be completely disabled (for those who want/need to):
+- `matrix-coturn` by using `matrix_coturn_enabled: false`
+- `matrix-mailer` by using `matrix_mailer_enabled: false`
+- `matrix-postgres` by using `matrix_postgres_enabled: false`
 
 The following changes had to be done:
 
@@ -30,7 +21,7 @@ The following changes had to be done:
 
 - `matrix_postgres_use_external` has been superceeded by the more consistently named `matrix_postgres_enabled` variable and a few other `matrix_synapse_database_` variables. See the [Using an external PostgreSQL server (optional)](docs/configuring-playbook-external-postgres.md) documentation page for an up-to-date replacement.
 
-- Postgres tools (`matrix-postgres-cli` and `matrix-make-user-admin`) are no longer installed if you're using an external Postgres server (`matrix_postgres_enabled: false`)
+- Postgres tools (`matrix-postgres-cli` and `matrix-make-user-admin`) are no longer installed if you're not enabling the `matrix-postgres` role (`matrix_postgres_enabled: false`)
 
 - roles, being more independent now, are more minimal and do not do so much magic for you. People that are building their own playbook using our roles will definitely need to take a look at the [`group_vars/matrix-servers`](group_vars/matrix-servers) file and adapt their playbooks with the same (or similar) wiring logic.
 

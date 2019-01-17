@@ -2,6 +2,15 @@
   tags:
     - always
 
+# Always validating the configuration, even if `matrix_nginx_proxy: false`.
+# This role performs actions even if the role is disabled, so we need
+# to ensure there's a valid configuration in any case.
+- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: run_setup
+  tags:
+    - setup-all
+    - setup-nginx-proxy
+
 - import_tasks: "{{ role_path }}/tasks/ssl/main.yml"
   when: run_setup
   tags:
@@ -21,3 +30,9 @@
   when: run_self_check
   tags:
     - self-check
+
+- name: Mark matrix-nginx-proxy role as executed
+  set_fact:
+    matrix_nginx_proxy_role_executed: true
+  tags:
+   - always
