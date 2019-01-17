@@ -74,6 +74,20 @@ server {
 	}
 	{% endif %}
 
+	{% if matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled %}
+	location /_matrix/client/r0/user_directory/search {
+		{% if matrix_nginx_proxy_enabled %}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver 127.0.0.11 valid=5s;
+			set $backend "{{ matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container }}";
+			proxy_pass http://$backend;
+		{% else %}
+			{# Generic configuration for use outside of our container setup #}
+			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container }};
+		{% endif %}
+	}
+	{% endif %}
+
 	{% for configuration_block in matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks %}
 		{{- configuration_block }}
 	{% endfor %}

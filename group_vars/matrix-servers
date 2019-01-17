@@ -118,6 +118,10 @@ matrix_mxisd_synapsesql_enabled: true
 matrix_mxisd_synapsesql_type: postgresql
 matrix_mxisd_synapsesql_connection: //{{ matrix_synapse_database_host }}/{{ matrix_synapse_database_database }}?user={{ matrix_synapse_database_user }}&password={{ matrix_synapse_database_password }}
 
+matrix_mxisd_dns_overwrite_enabled: true
+matrix_mxisd_dns_overwrite_homeserver_client_name: "matrix-mxisd"
+matrix_mxisd_dns_overwrite_homeserver_client_value: "http://{{ 'matrix-corporal:41080' if matrix_corporal_enabled else 'matrix-synapse:8008' }}"
+
 # By default, we send mail through the `matrix-mailer` service.
 matrix_mxisd_threepid_medium_email_identity_from: "{{ matrix_mailer_sender_address }}"
 matrix_mxisd_threepid_medium_email_connectors_smtp_host: "matrix-mailer"
@@ -126,6 +130,8 @@ matrix_mxisd_threepid_medium_email_connectors_smtp_tls: 0
 
 matrix_mxisd_systemd_wanted_services_list: |
   {{
+    (['matrix-corporal.service'] if matrix_corporal_enabled else ['matrix-synapse.service'])
+    +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
     +
     (['matrix-mailer.service'] if matrix_mailer_enabled else [])
@@ -164,6 +170,10 @@ matrix_nginx_proxy_proxy_matrix_corporal_api_addr_sans_container: "localhost:410
 matrix_nginx_proxy_proxy_matrix_identity_api_enabled: "{{ matrix_mxisd_enabled }}"
 matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-mxisd:8090"
 matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "localhost:8090"
+
+matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_mxisd_enabled }}"
+matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}"
+matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container }}"
 
 matrix_nginx_proxy_systemd_wanted_services_list: |
   {{

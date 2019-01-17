@@ -36,6 +36,13 @@ matrix_mxisd_threepid_medium_email_connectors_smtp_tls: 1
 matrix_mxisd_threepid_medium_email_connectors_smtp_login: ""
 matrix_mxisd_threepid_medium_email_connectors_smtp_password: ""
 
+# DNS overwrites are useful for telling mxisd how it can reach the homeserver directly.
+# Useful when reverse-proxying certain URLs (e.g. `/_matrix/client/r0/user_directory/search`) to mxisd,
+# so that mxisd can rewrite the original URL to one that would reach the homeserver.
+matrix_mxisd_dns_overwrite_enabled: false
+matrix_mxisd_dns_overwrite_homeserver_client_name: "matrix-mxisd"
+matrix_mxisd_dns_overwrite_homeserver_client_value: "http://matrix-synapse:8008"
+
 # Default mxisd configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
@@ -55,6 +62,15 @@ matrix_mxisd_configuration_yaml: |
     provider:
       sqlite:
         database: /var/mxisd/mxisd.db
+
+  {% if matrix_mxisd_dns_overwrite_enabled %}
+  dns:
+    overwrite:
+      homeserver:
+        client:
+          - name: {{ matrix_mxisd_dns_overwrite_homeserver_client_name }}
+            value: {{ matrix_mxisd_dns_overwrite_homeserver_client_value }}
+  {% endif %}
 
   {% if matrix_mxisd_matrixorg_forwarding_enabled %}
   forward:
