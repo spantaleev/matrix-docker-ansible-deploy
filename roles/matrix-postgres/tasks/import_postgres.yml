@@ -30,6 +30,11 @@
     postgres_start_wait_time: 15
   when: "postgres_start_wait_time|default('') == ''"
 
+- name: Set postgres_import_wait_time, if not provided
+  set_fact:
+    postgres_import_wait_time: "{{ 7 * 86400 }}"
+  when: "postgres_import_wait_time|default('') == ''"
+
 # Actual import work
 
 - name: Ensure matrix-postgres is started
@@ -74,3 +79,5 @@
 
 - name: Perform Postgres database import
   command: "{{ matrix_postgres_import_command }}"
+  async: "{{ postgres_import_wait_time }}"
+  poll: 10
