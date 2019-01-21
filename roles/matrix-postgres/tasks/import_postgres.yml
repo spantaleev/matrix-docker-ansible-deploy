@@ -30,7 +30,6 @@
     postgres_start_wait_time: 15
   when: "postgres_start_wait_time|default('') == ''"
 
-
 # Actual import work
 
 - name: Ensure matrix-postgres is started
@@ -52,14 +51,26 @@
     msg: "Could not find existing Postgres installation"
   when: "not matrix_postgres_detected_existing"
 
+- name: Generate Postgres database import command
+  set_fact:
+    matrix_postgres_import_command: >-
+      /usr/bin/docker run --rm --name matrix-postgres-import
+      --network={{ matrix_docker_network }}
+      --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
+      -v {{ server_path_postgres_dump }}:{{ server_path_postgres_dump }}:ro
+      --entrypoint=/bin/sh
+      {{ matrix_postgres_docker_image_latest }}
+      -c 'cat {{ server_path_postgres_dump }} |
+      {{ 'gunzip |' if server_path_postgres_dump.endswith('.gz') else '' }}
+      psql -v ON_ERROR_STOP=1 -h matrix-postgres'
+
+- name: Note about Postgres importing alternative
+  debug:
+    msg: >
+      Importing Postgres database using the following command: `{{ matrix_postgres_import_command }}`.
+      If this crashes, you can stop Postgres (`systemctl stop matrix-postgres`),
+      delete its existing data (`rm -rf {{ matrix_postgres_data_path }}/*`), start it again (`systemctl start matrix-postgres`)
+      and manually run the above import command directly on the server.
+
 - name: Perform Postgres database import
-  command: |
-    /usr/bin/docker run --rm --name matrix-postgres-import \
-    --network={{ matrix_docker_network }} \
-    --env-file={{ matrix_postgres_base_path }}/env-postgres-psql \
-    -v {{ server_path_postgres_dump }}:{{ server_path_postgres_dump }}:ro \
-    --entrypoint=/bin/sh
-    {{ matrix_postgres_docker_image_latest }}
-    -c 'cat {{ server_path_postgres_dump }} | \
-    {{ 'gunzip |' if server_path_postgres_dump.endswith('.gz') else '' }}
-    psql -v ON_ERROR_STOP=1 -h matrix-postgres'
+  command: "{{ matrix_postgres_import_command }}"
