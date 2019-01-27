@@ -20,11 +20,10 @@ ExecStartPre=/bin/sleep 5
 {% endif %}
 ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
 			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--entrypoint=python \
 			--network={{ matrix_docker_network }} \
-			-e SYNAPSE_CONFIG_PATH=/data/homeserver.yaml \
 			-e SYNAPSE_CACHE_FACTOR={{ matrix_synapse_cache_factor }} \
-			-e UID={{ matrix_user_uid }} \
-			-e GID={{ matrix_user_gid }} \
 			{% if matrix_synapse_federation_enabled %}
 			-p 8448:8448 \
 			{% endif %}
@@ -37,7 +36,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
 			{% for volume in matrix_synapse_container_additional_volumes %}
 			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
 			{% endfor %}
-			{{ matrix_synapse_docker_image }}
+			{{ matrix_synapse_docker_image }} \
+			-m synapse.app.homeserver -c /data/homeserver.yaml
 ExecStop=-/usr/bin/docker kill matrix-synapse
 ExecStop=-/usr/bin/docker rm matrix-synapse
 Restart=always

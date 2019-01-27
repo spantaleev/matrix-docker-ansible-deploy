@@ -1,6 +1,6 @@
 # Adjusting email-sending settings (optional)
 
-By default, this playbook sets up a [postfix](http://www.postfix.org/) email server through which all Matrix services send emails.
+By default, this playbook sets up an [Exim](https://www.exim.org/) email server through which all Matrix services send emails.
 
 The email server would attempt to deliver emails directly to their final destination.
 This may or may not work, depending on your domain configuration (SPF settings, etc.)
@@ -27,8 +27,6 @@ matrix_mailer_relay_auth: true
 matrix_mailer_relay_auth_username: "another.sender@example.com"
 matrix_mailer_relay_auth_password: "some-password"
 ```
-
-Keep in mind that postfix will look up the MX record of your relay host (`matrix_mailer_relay_host_name`) and, if available, will actually use that instead of what you've defined. This behavior is [documented here](http://www.postfix.org/postconf.5.html#relayhost). If you'd like to suppress this and use the relay host value as is, wrap it in square brackets (e.g. `matrix_mailer_relay_host_name: "[mail.example.com]"`).
 
 
 ## Troubleshooting

@@ -1,3 +1,29 @@
+# 2019-01-xx
+
+## Running container processes as non-root
+
+To improve security, this playbook no longer starts container processes as the `root` user.
+
+Usually, most containers were dropping privileges anyway, but by the time they do that, we were trusting them with `root` privileges.
+Not anymore -- container processes now start as a non-root user (usually `matrix`) from the get-go.
+
+The only images that we still start as `root` and trust to drop privileges are the optional bridge extensions (disabled by default):
+
+- [tulir/mautrix-telegram](https://hub.docker.com/r/tulir/mautrix-telegram)
+- [tulir/mautrix-whatsapp](https://hub.docker.com/r/tulir/mautrix-whatsapp)
+
+
+## matrix-mailer is now based on Exim, not Postfix
+
+While we would have preferred to stay with [Postfix](http://www.postfix.org/), we found out that it cannot run as a non-root user.
+We've had to replace it with [Exim](https://www.exim.org/) (via the [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay) container image).
+
+The internal `matrix-mailer` service (running in a container) now listens on port `8025` (used to be `587` before).
+The playbook will update your Synapse and mxisd email settings to match (`matrix-mailer:587` -> `matrix-mailer:8025`).
+
+Using the [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay) container image instead of [panubo/postfix](https://hub.docker.com/r/panubo/postfix/) also gives us a nice disk usage reduction (~200MB -> 8MB).
+
+
 # 2019-01-17
 
 ## (BC Break) Making the playbook's roles more independent of one another
