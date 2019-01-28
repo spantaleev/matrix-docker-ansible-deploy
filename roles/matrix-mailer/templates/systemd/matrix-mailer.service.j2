@@ -10,6 +10,7 @@ ExecStartPre=-/usr/bin/docker rm matrix-mailer
 ExecStart=/usr/bin/docker run --rm --name matrix-mailer \
 			--log-driver=none \
 			--user={{ matrix_mailer_container_user_uid }}:{{ matrix_mailer_container_user_gid }} \
+			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
 			--env-file={{ matrix_mailer_base_path }}/env-mailer \
 			--hostname={{ hostname_matrix }} \

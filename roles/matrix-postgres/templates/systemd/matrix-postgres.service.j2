@@ -10,6 +10,7 @@ ExecStartPre=-/usr/bin/docker rm matrix-postgres
 ExecStart=/usr/bin/docker run --rm --name matrix-postgres \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
 			--env-file={{ matrix_postgres_base_path }}/env-postgres-server \
 			-v {{ matrix_postgres_data_path }}:/var/lib/postgresql/data \

@@ -15,6 +15,7 @@ ExecStartPre=-/usr/bin/docker rm matrix-mxisd
 ExecStart=/usr/bin/docker run --rm --name matrix-mxisd \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
 			{% if matrix_mxisd_container_expose_port %}
 			-p 127.0.0.1:8090:8090 \

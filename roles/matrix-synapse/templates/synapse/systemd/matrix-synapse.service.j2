@@ -21,6 +21,7 @@ ExecStartPre=/bin/sleep 5
 ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
 			--entrypoint=python \
 			--network={{ matrix_docker_network }} \
 			-e SYNAPSE_CACHE_FACTOR={{ matrix_synapse_cache_factor }} \
