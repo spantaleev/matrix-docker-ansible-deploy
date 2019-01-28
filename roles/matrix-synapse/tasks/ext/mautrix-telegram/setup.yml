@@ -17,7 +17,7 @@
 - name: Check if a mautrix-telegram configuration file exists
   stat:
     path: "{{ matrix_mautrix_telegram_base_path }}/config.yaml"
-  register: mautrix_config_file_stat
+  register: mautrix_telegram_config_file_stat
 
 - name: Ensure Matrix Mautrix telegram config installed
   template:
@@ -26,7 +26,7 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-  when: "matrix_mautrix_telegram_enabled and not mautrix_config_file_stat.stat.exists"
+  when: "matrix_mautrix_telegram_enabled and not mautrix_telegram_config_file_stat.stat.exists"
 
 - name: (Migration) Fix up old configuration
   lineinfile:
@@ -37,7 +37,7 @@
   with_items:
     - {'regexp': '^(\s+)filename: \./mautrix-telegram.log', 'line': '\1filename: /data/mautrix-telegram.log'}
     - {'regexp': '^(\s+)database:', 'line': '\1database: sqlite:////data/mautrix-telegram.db'}
-  when: "matrix_mautrix_telegram_enabled and mautrix_config_file_stat.stat.exists"
+  when: "matrix_mautrix_telegram_enabled and mautrix_telegram_config_file_stat.stat.exists"
 
 - name: Ensure matrix-mautrix-telegram.service installed
   template:
