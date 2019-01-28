@@ -41,6 +41,7 @@
       SYNAPSE_SERVER_NAME: "{{ hostname_matrix }}"
       SYNAPSE_REPORT_STATS: "no"
     user: "{{ matrix_user_uid }}:{{ matrix_user_gid }}"
+    cap_drop: ['all']
     volumes:
       - "{{ matrix_synapse_config_dir_path }}:/data"
   when: "not matrix_synapse_config_stat.stat.exists"

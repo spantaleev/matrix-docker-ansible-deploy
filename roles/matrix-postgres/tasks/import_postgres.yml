@@ -61,6 +61,7 @@
     matrix_postgres_import_command: >-
       /usr/bin/docker run --rm --name matrix-postgres-import
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+      --cap-drop=ALL
       --network={{ matrix_docker_network }}
       --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
       -v {{ server_path_postgres_dump }}:/{{ server_path_postgres_dump|basename }}:ro
