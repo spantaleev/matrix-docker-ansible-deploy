@@ -4,13 +4,10 @@
 
 To improve security, this playbook no longer starts container processes as the `root` user.
 
-Usually, most containers were dropping privileges anyway, but by the time they do that, we were trusting them with `root` privileges.
+Most containers were dropping privileges anyway, but we were trusting them with `root` privileges until they would do that.
 Not anymore -- container processes now start as a non-root user (usually `matrix`) from the get-go.
 
-The only images that we still start as `root` and trust to drop privileges are the optional bridge extensions (disabled by default):
-
-- [tulir/mautrix-telegram](https://hub.docker.com/r/tulir/mautrix-telegram)
-- [tulir/mautrix-whatsapp](https://hub.docker.com/r/tulir/mautrix-whatsapp)
+For additional security, various [capabilities are also dropped](https://github.com/projectatomic/atomic-site/issues/203) for all containers.
 
 
 ## matrix-mailer is now based on Exim, not Postfix
