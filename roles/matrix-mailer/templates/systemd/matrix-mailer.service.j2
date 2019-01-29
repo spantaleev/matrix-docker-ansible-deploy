@@ -9,8 +9,13 @@ ExecStartPre=-/usr/bin/docker kill matrix-mailer
 ExecStartPre=-/usr/bin/docker rm matrix-mailer
 ExecStart=/usr/bin/docker run --rm --name matrix-mailer \
 			--log-driver=none \
+			--user={{ matrix_mailer_container_user_uid }}:{{ matrix_mailer_container_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--tmpfs=/var/spool/exim:rw,noexec,nosuid,size=100m \
 			--network={{ matrix_docker_network }} \
 			--env-file={{ matrix_mailer_base_path }}/env-mailer \
+			--hostname={{ hostname_matrix }} \
 			{{ matrix_mailer_docker_image }}
 ExecStop=-/usr/bin/docker kill matrix-mailer
 ExecStop=-/usr/bin/docker rm matrix-mailer

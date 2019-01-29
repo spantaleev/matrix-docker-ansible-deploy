@@ -18,26 +18,31 @@ ExecStartPre=-/usr/bin/docker rm matrix-synapse
 # we'd write files to the local filesystem and fusermount will complain.
 ExecStartPre=/bin/sleep 5
 {% endif %}
+
 ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
 			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--entrypoint=python \
+			--read-only \
+			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_synapse_tmp_directory_size_mb }}m \
 			--network={{ matrix_docker_network }} \
-			-e SYNAPSE_CONFIG_PATH=/data/homeserver.yaml \
 			-e SYNAPSE_CACHE_FACTOR={{ matrix_synapse_cache_factor }} \
-			-e UID={{ matrix_user_uid }} \
-			-e GID={{ matrix_user_gid }} \
 			{% if matrix_synapse_federation_enabled %}
 			-p 8448:8448 \
 			{% endif %}
 			{% if matrix_synapse_container_expose_client_server_api_port %}
 			-p 127.0.0.1:8008:8008 \
 			{% endif %}
-			-v {{ matrix_synapse_config_dir_path }}:/data \
-			-v {{ matrix_synapse_run_path }}:/matrix-run \
+			-v {{ matrix_synapse_config_dir_path }}:/data:ro \
+			-v {{ matrix_synapse_run_path }}:/matrix-run:rw \
 			-v {{ matrix_synapse_base_path }}/storage:/matrix-media-store-parent:slave \
 			{% for volume in matrix_synapse_container_additional_volumes %}
 			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
 			{% endfor %}
-			{{ matrix_synapse_docker_image }}
+			{{ matrix_synapse_docker_image }} \
+			-m synapse.app.homeserver -c /data/homeserver.yaml
+
 ExecStop=-/usr/bin/docker kill matrix-synapse
 ExecStop=-/usr/bin/docker rm matrix-synapse
 Restart=always

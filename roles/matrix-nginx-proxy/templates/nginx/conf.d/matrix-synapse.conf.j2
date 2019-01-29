@@ -1,5 +1,5 @@
 server {
-	listen 80;
+	listen {{ 8080 if matrix_nginx_proxy_enabled else 80 }};
 	server_name {{ matrix_nginx_proxy_proxy_matrix_hostname }};
 
 	server_tokens off;
@@ -8,7 +8,7 @@ server {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver 127.0.0.11 valid=5s;
-			set $backend "matrix-certbot:80";
+			set $backend "matrix-certbot:8080";
 			proxy_pass http://$backend;
 		{% else %}
 			{# Generic configuration for use outside of our container setup #}
@@ -22,8 +22,8 @@ server {
 }
 
 server {
-	listen 443 ssl http2;
-	listen [::]:443 ssl http2;
+	listen {{ 8443 if matrix_nginx_proxy_enabled else 443 }} ssl http2;
+	listen [::]:{{ 8443 if matrix_nginx_proxy_enabled else 443 }} ssl http2;
 
 	server_name {{ matrix_nginx_proxy_proxy_matrix_hostname }};
 
@@ -116,7 +116,7 @@ server {
 		proxy_set_header X-Forwarded-For $remote_addr;
 
 		client_body_buffer_size 25M;
-		client_max_body_size {{ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size }};
+		client_max_body_size {{ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb }}M;
 		proxy_max_temp_file_size 0;
 	}
 

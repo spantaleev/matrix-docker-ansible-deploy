@@ -14,8 +14,10 @@
     group: "{{ matrix_user_username }}"
   when: "matrix_mautrix_telegram_enabled"
 
-- stat: "path={{ matrix_mautrix_telegram_base_path }}/config.yaml"
-  register: mautrix_config_file
+- name: Check if a mautrix-telegram configuration file exists
+  stat:
+    path: "{{ matrix_mautrix_telegram_base_path }}/config.yaml"
+  register: mautrix_telegram_config_file_stat
 
 - name: Ensure Matrix Mautrix telegram config installed
   template:
@@ -24,7 +26,18 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-  when: "matrix_mautrix_telegram_enabled and mautrix_config_file.stat.exists == False"
+  when: "matrix_mautrix_telegram_enabled and not mautrix_telegram_config_file_stat.stat.exists"
+
+- name: (Migration) Fix up old configuration
+  lineinfile:
+    path: "{{ matrix_mautrix_telegram_base_path }}/config.yaml"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    backrefs: yes
+  with_items:
+    - {'regexp': '^(\s+)filename: \./mautrix-telegram.log', 'line': '\1filename: /data/mautrix-telegram.log'}
+    - {'regexp': '^(\s+)database:', 'line': '\1database: sqlite:////data/mautrix-telegram.db'}
+  when: "matrix_mautrix_telegram_enabled and mautrix_telegram_config_file_stat.stat.exists"
 
 - name: Ensure matrix-mautrix-telegram.service installed
   template:
@@ -33,13 +46,23 @@
     mode: 0644
   when: "matrix_mautrix_telegram_enabled"
 
-- stat:
+- name: Check if a mautrix-telegram registration file exists
+  stat:
     path: "{{ matrix_mautrix_telegram_base_path }}/registration.yaml"
-  register: mautrix_telegram_registration_file
+  register: mautrix_telegram_registration_file_stat
 
 - name: Generate matrix-mautrix-telegram registration.yaml if it doesn't exist
-  shell: /usr/bin/docker run --rm --name matrix-mautrix-telegram-gen -v {{ matrix_mautrix_telegram_base_path }}:/data:z {{ matrix_mautrix_telegram_docker_image }} python3 -m mautrix_telegram -g -c /data/config.yaml -r /data/registration.yaml
-  when: "matrix_mautrix_telegram_enabled and mautrix_telegram_registration_file.stat.exists == False"
+  shell:
+    cmd: >-
+      /usr/bin/docker run
+      --rm
+      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+      --cap-drop=ALL
+      --name matrix-mautrix-telegram-gen
+      -v {{ matrix_mautrix_telegram_base_path }}:/data:z
+      {{ matrix_mautrix_telegram_docker_image }}
+      python3 -m mautrix_telegram -g -c /data/config.yaml -r /data/registration.yaml
+  when: "matrix_mautrix_telegram_enabled and not mautrix_telegram_registration_file_stat.stat.exists"
 
 - set_fact:
     matrix_synapse_app_service_config_file_mautrix_telegram: '/app-registration/mautrix-telegram.yml'

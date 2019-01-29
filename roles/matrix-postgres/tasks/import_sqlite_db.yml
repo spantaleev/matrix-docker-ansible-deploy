@@ -79,11 +79,12 @@
     detach: no
     cleanup: yes
     entrypoint: /usr/local/bin/python
-    command: "/usr/local/bin/synapse_port_db --sqlite-database {{ server_path_homeserver_db }} --postgres-config /data/homeserver.yaml"
+    command: "/usr/local/bin/synapse_port_db --sqlite-database /{{ server_path_homeserver_db|basename }} --postgres-config /data/homeserver.yaml"
     user: "{{ matrix_user_uid }}:{{ matrix_user_gid }}"
+    cap_drop: ['all']
     volumes:
       - "{{ matrix_synapse_config_dir_path }}:/data"
       - "{{ matrix_synapse_run_path }}:/matrix-run"
-      - "{{ server_path_homeserver_db }}:/{{ server_path_homeserver_db }}:ro"
+      - "{{ server_path_homeserver_db }}:/{{ server_path_homeserver_db|basename }}:ro"
     networks:
       - name: "{{ matrix_docker_network }}"

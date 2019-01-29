@@ -2,7 +2,12 @@ matrix_mailer_enabled: true
 
 matrix_mailer_base_path: "{{ matrix_base_data_path }}/mailer"
 
-matrix_mailer_docker_image: "panubo/postfix:latest"
+matrix_mailer_docker_image: "devture/exim-relay:4.91-r1-0"
+
+# The user/group that the container runs with.
+# These match the `exim` user/group within the container image.
+matrix_mailer_container_user_uid: 100
+matrix_mailer_container_user_gid: 101
 
 matrix_mailer_sender_address: "matrix@{{ hostname_identity }}"
 matrix_mailer_relay_use: false

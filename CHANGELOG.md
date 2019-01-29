@@ -1,3 +1,31 @@
+# 2019-01-29
+
+## Running container processes as non-root, without capabilities and read-only
+
+To improve security, this playbook no longer starts container processes as the `root` user.
+Most containers were dropping privileges anyway, but we were trusting them with `root` privileges until they would do that.
+Not anymore -- container processes now start as a non-root user (usually `matrix`) from the get-go.
+
+For additional security, various capabilities are also dropped (see [why it's important](https://github.com/projectatomic/atomic-site/issues/203)) for all containers.
+
+Additionally, most containers now use a read-only filesystem (see [why it's important](https://www.projectatomic.io/blog/2015/12/making-docker-images-write-only-in-production/)).
+Containers are given write access only to the directories they need to write to.
+
+A minor breaking change is the `matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size` variable having being renamed to `matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb` (note the `_mb` suffix). The new variable expects a number value (e.g. `25M` -> `25`).
+If you weren't customizing this variable, this wouldn't affect you.
+
+
+## matrix-mailer is now based on Exim, not Postfix
+
+While we would have preferred to stay with [Postfix](http://www.postfix.org/), we found out that it cannot run as a non-root user.
+We've had to replace it with [Exim](https://www.exim.org/) (via the [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay) container image).
+
+The internal `matrix-mailer` service (running in a container) now listens on port `8025` (used to be `587` before).
+The playbook will update your Synapse and mxisd email settings to match (`matrix-mailer:587` -> `matrix-mailer:8025`).
+
+Using the [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay) container image instead of [panubo/postfix](https://hub.docker.com/r/panubo/postfix/) also gives us a nice disk usage reduction (~200MB -> 8MB).
+
+
 # 2019-01-17
 
 ## (BC Break) Making the playbook's roles more independent of one another

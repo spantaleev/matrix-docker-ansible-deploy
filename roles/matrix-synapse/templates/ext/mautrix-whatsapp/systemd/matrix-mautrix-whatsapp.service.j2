@@ -11,10 +11,13 @@ ExecStartPre=-/usr/bin/docker kill matrix-mautrix-whatsapp
 ExecStartPre=-/usr/bin/docker rm matrix-mautrix-whatsapp
 ExecStart=/usr/bin/docker run --rm --name matrix-mautrix-whatsapp \
 			--log-driver=none \
-			-e "UID={{ matrix_user_uid }}" -e "GID={{ matrix_user_gid }}" \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
 			-v {{ matrix_mautrix_whatsapp_base_path }}:/data:z \
-			{{ matrix_mautrix_whatsapp_docker_image }}
+			--workdir=/data \
+			{{ matrix_mautrix_whatsapp_docker_image }} \
+			/usr/bin/mautrix-whatsapp
 ExecStop=-/usr/bin/docker kill matrix-mautrix-whatsapp
 ExecStop=-/usr/bin/docker rm matrix-mautrix-whatsapp
 Restart=always

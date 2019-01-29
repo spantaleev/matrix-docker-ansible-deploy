@@ -12,15 +12,22 @@ Wants={{ service }}
 Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-nginx-proxy
 ExecStartPre=-/usr/bin/docker rm matrix-nginx-proxy
+
 ExecStart=/usr/bin/docker run --rm --name matrix-nginx-proxy \
 			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_nginx_proxy_tmp_directory_size_mb }}m \
 			--network={{ matrix_docker_network }} \
-			-p 80:80 \
-			-p 443:443 \
+			-p 80:8080 \
+			-p 443:8443 \
+			-v {{ matrix_nginx_proxy_data_path }}/nginx.conf:/etc/nginx/nginx.conf:ro \
 			-v {{ matrix_nginx_proxy_confd_path }}:/etc/nginx/conf.d:ro \
 			-v {{ matrix_ssl_config_dir_path }}:{{ matrix_ssl_config_dir_path }}:ro \
 			-v {{ matrix_static_files_base_path }}:{{ matrix_static_files_base_path }}:ro \
 			{{ matrix_nginx_proxy_docker_image }}
+
 ExecStop=-/usr/bin/docker kill matrix-nginx-proxy
 ExecStop=-/usr/bin/docker rm matrix-nginx-proxy
 ExecReload=/usr/bin/docker exec matrix-nginx-proxy /usr/sbin/nginx -s reload

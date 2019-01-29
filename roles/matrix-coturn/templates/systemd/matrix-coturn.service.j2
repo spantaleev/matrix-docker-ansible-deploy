@@ -12,6 +12,9 @@ ExecStartPre=-/usr/bin/docker rm matrix-coturn
 ExecStart=/usr/bin/docker run --rm --name matrix-coturn \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--tmpfs=/var/tmp:rw,noexec,nosuid,size=100m \
 			-p 3478:3478 \
 			-p 3478:3478/udp \
 			-p {{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}:{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}/udp \

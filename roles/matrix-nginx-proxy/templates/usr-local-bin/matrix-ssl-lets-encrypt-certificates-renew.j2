@@ -3,19 +3,23 @@
 # For renewal to work, matrix-nginx-proxy (or another webserver, if matrix-nginx-proxy is disabled)
 # need to forward requests for `/.well-known/acme-challenge` to the certbot container.
 #
-# This can happen inside the container network by proxying to `http://matrix-certbot:80`
+# This can happen inside the container network by proxying to `http://matrix-certbot:8080`
 # or outside (on the host) by proxying to `http://localhost:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }}`.
 
 docker run \
 	--rm \
 	--name=matrix-certbot \
+	--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+    --cap-drop=ALL \
 	--network="{{ matrix_docker_network }}" \
-	-p 127.0.0.1:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }}:80 \
+	-p 127.0.0.1:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }}:8080 \
 	-v {{ matrix_ssl_config_dir_path }}:/etc/letsencrypt \
 	-v {{ matrix_ssl_log_dir_path }}:/var/log/letsencrypt \
 	{{ matrix_ssl_lets_encrypt_certbot_docker_image }} \
 	renew \
 		--non-interactive \
+		--work-dir=/tmp \
+		--http-01-port 8080
 		{% if matrix_ssl_lets_encrypt_staging %}
 			--staging \
 		{% endif %}

@@ -19,12 +19,16 @@
     /usr/bin/docker run
     --rm
     --name=matrix-certbot
-    --net=host
+    --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+    --cap-drop=ALL \
+    -p 80:8080
     -v {{ matrix_ssl_config_dir_path }}:/etc/letsencrypt
     -v {{ matrix_ssl_log_dir_path }}:/var/log/letsencrypt
     {{ matrix_ssl_lets_encrypt_certbot_docker_image }}
     certonly
     --non-interactive
+    --work-dir=/tmp
+    --http-01-port 8080
     {% if matrix_ssl_lets_encrypt_staging %}--staging{% endif %}
     --standalone
     --preferred-challenges http
@@ -42,13 +46,17 @@
     /usr/bin/docker run
     --rm
     --name=matrix-certbot
-    -p 127.0.0.1:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }}:80
+    --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+    --cap-drop=ALL \
+    -p 127.0.0.1:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }}:8080
     --network={{ matrix_docker_network }}
     -v {{ matrix_ssl_config_dir_path }}:/etc/letsencrypt
     -v {{ matrix_ssl_log_dir_path }}:/var/log/letsencrypt
     {{ matrix_ssl_lets_encrypt_certbot_docker_image }}
     certonly
     --non-interactive
+    --work-dir=/tmp
+    --http-01-port 8080
     {% if matrix_ssl_lets_encrypt_staging %}--staging{% endif %}
     --standalone
     --preferred-challenges http

@@ -1,5 +1,8 @@
 matrix_nginx_proxy_enabled: true
 
+# We use an official nginx image, which we fix-up to run unprivileged.
+# An alternative would be an `nginxinc/nginx-unprivileged` image, but
+# those as more frequently out of date.
 matrix_nginx_proxy_docker_image: "nginx:1.15.8-alpine"
 
 matrix_nginx_proxy_data_path: "{{ matrix_base_data_path }}/nginx-proxy"
@@ -41,7 +44,10 @@ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "localhost:809
 matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "matrix-synapse:8008"
 matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "localhost:8008"
 # This needs to be equal or higher than the maximum upload size accepted by Synapse.
-matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size: "25M"
+matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: 25
+
+# The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
+matrix_nginx_proxy_tmp_directory_size_mb: "{{ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb * 50 }}"
 
 # A list of strings containing additional configuration blocks to add to the matrix domain's server configuration.
 matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: []

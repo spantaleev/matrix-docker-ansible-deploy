@@ -11,11 +11,17 @@ ExecStartPre=-/usr/bin/docker kill matrix-riot-web
 ExecStartPre=-/usr/bin/docker rm matrix-riot-web
 ExecStart=/usr/bin/docker run --rm --name matrix-riot-web \
 			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--tmpfs=/tmp:rw,noexec,nosuid,size=10m \
+			-v {{ matrix_riot_web_data_path }}/nginx.conf:/etc/nginx/nginx.conf:ro \
+			-v /dev/null:/etc/nginx/conf.d/default.conf:ro \
 			-v {{ matrix_riot_web_data_path }}/config.json:/etc/riot-web/config.json:ro \
 			-v {{ matrix_riot_web_data_path }}/home.html:/etc/riot-web/home.html:ro \
 			--network={{ matrix_docker_network }} \
 			{% if matrix_riot_web_container_expose_port %}
-			-p 127.0.0.1:8765:80 \
+			-p 127.0.0.1:8765:8080 \
 			{% endif %}
 			{{ matrix_riot_web_docker_image }}
 ExecStop=-/usr/bin/docker kill matrix-riot-web
