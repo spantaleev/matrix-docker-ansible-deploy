@@ -13,6 +13,7 @@ ExecStart=/usr/bin/docker run --rm --name matrix-corporal \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
+			--read-only \
 			--network={{ matrix_docker_network }} \
 			{% if matrix_corporal_container_expose_ports %}
 			-p 127.0.0.1:41080:41080 \

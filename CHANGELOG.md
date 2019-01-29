@@ -1,13 +1,18 @@
-# 2019-01-xx
+# 2019-01-29
 
-## Running container processes as non-root
+## Running container processes as non-root, without capabilities and read-only
 
 To improve security, this playbook no longer starts container processes as the `root` user.
-
 Most containers were dropping privileges anyway, but we were trusting them with `root` privileges until they would do that.
 Not anymore -- container processes now start as a non-root user (usually `matrix`) from the get-go.
 
-For additional security, various [capabilities are also dropped](https://github.com/projectatomic/atomic-site/issues/203) for all containers.
+For additional security, various capabilities are also dropped (see [why it's important](https://github.com/projectatomic/atomic-site/issues/203)) for all containers.
+
+Additionally, most containers now use a read-only filesystem (see [why it's important](https://www.projectatomic.io/blog/2015/12/making-docker-images-write-only-in-production/)).
+Containers are given write access only to the directories they need to write to.
+
+A minor breaking change is the `matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size` variable having being renamed to `matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb` (note the `_mb` suffix). The new variable expects a number value (e.g. `25M` -> `25`).
+If you weren't customizing this variable, this wouldn't affect you.
 
 
 ## matrix-mailer is now based on Exim, not Postfix

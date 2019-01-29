@@ -13,6 +13,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-riot-web \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
+			--read-only \
+			--tmpfs=/tmp:rw,noexec,nosuid,size=10m \
 			-v {{ matrix_riot_web_data_path }}/nginx.conf:/etc/nginx/nginx.conf:ro \
 			-v /dev/null:/etc/nginx/conf.d/default.conf:ro \
 			-v {{ matrix_riot_web_data_path }}/config.json:/etc/riot-web/config.json:ro \
