@@ -120,6 +120,28 @@ server {
 		proxy_max_temp_file_size 0;
 	}
 
+	{% if matrix_nginx_proxy_proxy_synapse_metrics %}
+	location /_synapse/metrics {
+		{% if matrix_nginx_proxy_enabled %}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver 127.0.0.11 valid=5s;
+			set $backend "{{ matrix_nginx_proxy_proxy_synapse_metrics_addr_with_container }}";
+			proxy_pass http://$backend;
+		{% else %}
+			{# Generic configuration for use outside of our container setup #}
+			proxy_pass http://{{ matrix_nginx_proxy_proxy_synapse_metrics_addr_sans_container }};
+		{% endif %}
+
+		proxy_set_header Host $host;
+		proxy_set_header X-Forwarded-For $remote_addr;
+
+		{% if matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled %}
+			auth_basic "protected";
+			auth_basic_user_file .matrix-synapse-metrics-htpasswd;
+		{% endif %}
+	}
+	{% endif %}
+
 	location / {
 		rewrite ^/$ /_matrix/static/ last;
 	}
