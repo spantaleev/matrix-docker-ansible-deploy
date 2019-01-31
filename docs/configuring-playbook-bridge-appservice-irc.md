@@ -7,7 +7,7 @@ See the project's [documentation](https://github.com/TeDomum/matrix-appservice-i
 You'll need to use the following playbook configuration:
 
 ```yaml
-matrix_matrix_appservice_irc_enabled: true
+matrix_appservice_irc_enabled: true
 matrix_appservice_irc_configuration_extension_yaml: |
   # Your custom YAML configuration for Appservice IRC servers goes here.
   # This configuration extends the default starting configuration (`matrix_appservice_irc_configuration_yaml`).
