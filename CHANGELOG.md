@@ -1,3 +1,11 @@
+# 2019-01-31
+
+## IRC bridging support
+
+[Devon Maloney (@Plailect)](https://github.com/Plailect) has done some great work bringing IRC bridging support via [matrix-appservice-irc](https://github.com/TeDomum/matrix-appservice-irc).
+To learn more, see the [Setting up Appservice IRC](docs/configuring-playbook-bridge-appservice-irc.md) documentation page.
+
+
 # 2019-01-29
 
 ## Running container processes as non-root, without capabilities and read-only
