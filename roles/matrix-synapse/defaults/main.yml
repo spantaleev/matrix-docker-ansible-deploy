@@ -575,11 +575,6 @@ matrix_appservice_irc_configuration_extension_yaml: |
   #       - "1d"
   #       - "1w"
   #
-  #   # The nedb database URI to connect to. This is the name of the directory to
-  #   # dump .db files to. This is relative to the project directory.
-  #   # Required.
-  #   databaseUri: "nedb://data"
-  #
   #   # Configuration options for the debug HTTP API. To access this API, you must
   #   # append ?access_token=$APPSERVICE_TOKEN (from the registration file) to the requests.
   #   #
@@ -615,19 +610,6 @@ matrix_appservice_irc_configuration_extension_yaml: |
   #   # send a password hash. As a result, passwords (NOT hashes) are stored encrypted in
   #   # the database.
   #   #
-  #   # To generate a .pem file:
-  #   # $ openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048
-  #   #
-  #   # The path to the RSA PEM-formatted private key to use when encrypting IRC passwords
-  #   # for storage in the database. Passwords are stored by using the admin room command
-  #   # `!storepass server.name passw0rd. When a connection is made to IRC on behalf of
-  #   # the Matrix user, this password will be sent as the server password (PASS command).
-  #   passwordEncryptionKeyPath: "passkey.pem"
-  #
-  #   # Config for Matrix -> IRC bridging
-  #   matrixHandler:
-  #     # Cache this many matrix events in memory to be used for m.relates_to messages (usually replies).
-  #     eventCacheSize: 4096
 
 matrix_appservice_irc_configuration_extension: "{{ matrix_appservice_irc_configuration_extension_yaml|from_yaml if matrix_appservice_irc_configuration_extension_yaml|from_yaml else {} }}"
 
