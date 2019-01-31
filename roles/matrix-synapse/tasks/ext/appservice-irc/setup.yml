@@ -22,13 +22,12 @@
     group: "{{ matrix_user_username }}"
   when: "matrix_appservice_irc_enabled"
 
-- stat:
-    path: "{{ matrix_appservice_irc_base_path }}/passkey.pem"
-  register: irc_passkey_file
-
 - name: Generate matrix-appservice-irc passkey if it doesn't exist
-  shell: /usr/bin/openssl genpkey -out {{ matrix_appservice_irc_base_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048
-  when: "matrix_appservice_irc_enabled and irc_passkey_file.stat.exists == False"
+  openssl_privatekey:
+    path: "{{ matrix_appservice_irc_base_path }}/passkey.pem"
+    size: 2048
+    force: false
+  when: "matrix_appservice_irc_enabled"
 
 - name: Ensure matrix-appservice-irc.service installed
   template:

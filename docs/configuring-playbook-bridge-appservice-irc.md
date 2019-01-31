@@ -4,6 +4,8 @@ The playbook can install and configure [matrix-appservice-irc](https://github.co
 
 See the project's [documentation](https://github.com/TeDomum/matrix-appservice-irc/blob/master/HOWTO.md) to learn what it does and why it might be useful to you.
 
+The Appservice IRC bridge configuration using Ansible will require that you have `python-pyOpenSSL` installed on your local machine.
+
 You'll need to use the following playbook configuration:
 
 ```yaml
