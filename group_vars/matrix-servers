@@ -9,6 +9,16 @@
 # You can also override ANY variable (seen here or in any given role),
 # by re-defining it in your own configuration file (`inventory/host_vars/matrix.<your-domain>`).
 
+######################################################################
+#
+# matrix-appservice-irc
+#
+######################################################################
+
+# Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-irc over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# matrix-appservice-irc's client-server port to the local host (`127.0.0.1:9999`).
+matrix_appservice_irc_container_expose_client_server_api_port: "{{ not matrix_nginx_proxy_enabled }}"
 
 ######################################################################
 #

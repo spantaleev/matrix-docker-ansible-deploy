@@ -1,0 +1,28 @@
+[Unit]
+Description=Matrix Appservice IRC server
+After=docker.service
+Requires=docker.service
+Requires=matrix-synapse.service
+After=matrix-synapse.service
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker kill matrix-appservice-irc
+ExecStartPre=-/usr/bin/docker rm matrix-appservice-irc
+ExecStart=/usr/bin/docker run --rm --name matrix-appservice-irc \
+			--log-driver=none \
+			-e "UID={{ matrix_user_uid }}" -e "GID={{ matrix_user_gid }}" \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_appservice_irc_container_expose_client_server_api_port %}
+			-p 127.0.0.1:9999:9999 \
+			{% endif %}
+			-v {{ matrix_appservice_irc_base_path }}:/data:z \
+			{{ matrix_appservice_irc_docker_image }} \
+			-c /data/config.yaml -f /data/registration.yaml -p 9999
+ExecStop=-/usr/bin/docker kill matrix-appservice-irc
+ExecStop=-/usr/bin/docker rm matrix-appservice-irc
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

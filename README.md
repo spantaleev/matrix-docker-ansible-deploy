@@ -38,6 +38,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) bridge for bridging your Matrix server to [Whatsapp](https://www.whatsapp.com/)
 
+- (optional) the [matrix-appservice-irc](https://github.com/TeDomum/matrix-appservice-irc) bridge for bridging your Matrix server to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat)
+
 Basically, this playbook aims to get you up-and-running with all the basic necessities around Matrix, without you having to do anything else.
 
 **Note**: the list above is exhaustive. It includes optional or even some advanced components that you will most likely not need.
@@ -109,6 +111,8 @@ This playbook sets up your server using the following Docker images:
 - [tulir/mautrix-telegram](https://hub.docker.com/r/tulir/mautrix-telegram/) - the [mautrix-telegram](https://github.com/tulir/mautrix-telegram) bridge to [Telegram](https://telegram.org/) (optional)
 
 - [tulir/mautrix-whatsapp](https://hub.docker.com/r/tulir/mautrix-whatsapp/) - the [mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) bridge to [Whatsapp](https://www.whatsapp.com/) (optional)
+
+- [tedomum/matrix-appservice-irc](https://hub.docker.com/r/tedomum/matrix-appservice-irc/) - the [matrix-appservice-irc](https://github.com/TeDomum/matrix-appservice-irc) bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) (optional)
 
 
 ## Deficiencies
