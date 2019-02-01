@@ -22,7 +22,7 @@ matrix_appservice_irc_configuration_extension_yaml: |
   # A simple example configuration extension follows:
   #
   ircService:
-    databaseUri: "nedb://data" # does not typically need modification
+    databaseUri: "nedb:///data" # does not typically need modification
     passwordEncryptionKeyPath: "/data/passkey.pem" # does not typically need modification
     matrixHandler:
       eventCacheSize: 4096
