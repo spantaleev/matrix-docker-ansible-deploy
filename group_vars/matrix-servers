@@ -181,6 +181,10 @@ matrix_nginx_proxy_proxy_matrix_identity_api_enabled: "{{ matrix_mxisd_enabled }
 matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-mxisd:8090"
 matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "localhost:8090"
 
+matrix_nginx_proxy_proxy_synapse_metrics: "{{ matrix_synapse_metrics_enabled }}"
+matrix_nginx_proxy_proxy_synapse_metrics_addr_with_container: "matrix-synapse:{{ matrix_synapse_metrics_port }}"
+matrix_nginx_proxy_proxy_synapse_metrics_addr_sans_container: "localhost:{{ matrix_synapse_metrics_port }}"
+
 matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_mxisd_enabled }}"
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}"
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container }}"
@@ -271,6 +275,8 @@ matrix_synapse_trusted_third_party_id_servers: "{{ [hostname_matrix] if matrix_m
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # the Client/Server API's port to the local host (`127.0.0.1:8008`).
 matrix_synapse_container_expose_client_server_api_port: "{{ not matrix_nginx_proxy_enabled }}"
+
+matrix_synapse_container_expose_metrics_port: "{{ not matrix_nginx_proxy_enabled }}"
 
 matrix_synapse_database_host: "{{ matrix_postgres_connection_hostname }}"
 matrix_synapse_database_user: "{{ matrix_postgres_connection_username }}"

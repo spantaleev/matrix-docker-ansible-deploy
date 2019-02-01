@@ -28,6 +28,15 @@
     mode: 0644
   when: "matrix_nginx_proxy_enabled"
 
+- name: Ensure matrix-synapse-metrics-htpasswd is present (protecting /_synapse/metrics URI)
+  template:
+    src: "{{ role_path }}/templates/nginx/matrix-synapse-metrics-htpasswd.j2"
+    dest: "{{ matrix_nginx_proxy_data_path }}/matrix-synapse-metrics-htpasswd"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+    mode: 0400
+  when: "matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled and matrix_nginx_proxy_proxy_synapse_metrics"
+
 - name: Ensure Matrix nginx-proxy configured (generic)
   template:
     src: "{{ role_path }}/templates/nginx/conf.d/nginx-http.conf.j2"
@@ -116,3 +125,9 @@
     path: "{{ matrix_nginx_proxy_data_path }}/nginx.conf"
     state: absent
   when: "not matrix_nginx_proxy_enabled"
+
+- name: Ensure Matrix nginx-proxy htpasswd is deleted (protecting /_synapse/metrics URI)
+  file:
+    path: "{{ matrix_nginx_proxy_data_path }}/matrix-synapse-metrics-htpasswd"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled or not matrix_nginx_proxy_proxy_synapse_metrics"

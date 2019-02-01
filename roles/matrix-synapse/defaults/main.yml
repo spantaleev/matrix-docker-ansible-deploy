@@ -13,6 +13,9 @@ matrix_synapse_container_expose_client_server_api_port: false
 # Controls whether the Appservice IRC container exposes the Client/Server API port (tcp/9999).
 matrix_appservice_irc_container_expose_client_server_api_port: false
 
+# Controls whether the matrix-synapse container exposes the metrics port (tcp/9100).
+matrix_synapse_container_expose_metrics_port: false
+
 # List of systemd services that matrix-synapse.service depends on
 matrix_synapse_systemd_required_services_list: ['docker.service']
 
@@ -117,6 +120,11 @@ matrix_synapse_app_service_config_files: []
 # This is set dynamically during execution depending on whether
 # any password providers have been enabled or not.
 matrix_synapse_password_providers_enabled: false
+
+# Enable exposure of metrics to Prometheus
+# See https://github.com/matrix-org/synapse/blob/master/docs/metrics-howto.rst
+matrix_synapse_metrics_enabled: false
+matrix_synapse_metrics_port: 9100
 
 # Postgres database information
 matrix_synapse_database_host: ""

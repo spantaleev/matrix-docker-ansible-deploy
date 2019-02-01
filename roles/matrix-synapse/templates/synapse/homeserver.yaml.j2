@@ -127,6 +127,12 @@ federation_domain_whitelist: {{ matrix_synapse_federation_domain_whitelist|to_js
 # List of ports that Synapse should listen on, their purpose and their
 # configuration.
 listeners:
+{% if matrix_synapse_metrics_enabled %}
+  - type: metrics
+    port: {{ matrix_synapse_metrics_port }}
+    bind_addresses:
+      - '0.0.0.0'
+{% endif %}
 {% if matrix_synapse_federation_enabled %}
   # Main HTTPS listener
   # For when matrix traffic is sent directly to synapse.
@@ -496,7 +502,7 @@ autocreate_auto_join_rooms: {{ matrix_synapse_autocreate_auto_join_rooms }}
 ## Metrics ###
 
 # Enable collection and rendering of performance metrics
-enable_metrics: False
+enable_metrics: {{ matrix_synapse_metrics_enabled }}
 report_stats: {{ matrix_synapse_report_stats|to_json }}
 
 
