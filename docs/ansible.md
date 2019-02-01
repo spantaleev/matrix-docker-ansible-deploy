@@ -2,6 +2,9 @@
 
 This playbook is meant to be run using [Ansible](https://www.ansible.com/).
 
+Ansible typically runs on your local computer and carries out tasks on a remote server.
+If your local computer cannot run Ansible, you can also run Ansible on some server somewhere (including the server you wish to install to).
+
 
 ## Supported Ansible versions
 
