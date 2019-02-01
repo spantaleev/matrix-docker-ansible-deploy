@@ -6,28 +6,50 @@ If that's alright, you can skip this.
 If you don't want this playbook's nginx webserver to take over your server's 80/443 ports like that,
 and you'd like to use your own webserver (be it nginx, Apache, Varnish Cache, etc.), you can.
 
-All it takes is:
 
-1) making sure your web server user (something like `http`, `apache`, `www-data`, `nginx`) is part of the `matrix` group. You should run something like this: `usermod -a -G matrix nginx`
+## Preparation
 
-2) editing your configuration file (`inventory/matrix.<your-domain>/vars.yml`):
+No matter which external webserver you decide to go with, you'll need to:
+
+1) Make sure your web server user (something like `http`, `apache`, `www-data`, `nginx`) is part of the `matrix` group. You should run something like this: `usermod -a -G matrix nginx`
+
+2) Edit your configuration file (`inventory/matrix.<your-domain>/vars.yml`) to disable the integrated nginx server:
 
 ```yaml
 matrix_nginx_proxy_enabled: false
-
-# If you use an external nginx, we'll generate some configuration for you in `/matrix/nginx-proxy/conf.d/`.
-# You might need to tweak the protocol list (removing `TLSv1.3`) to suit your nginx version.
-matrix_nginx_proxy_ssl_protocols: "TLSv1.1 TLSv1.2 TLSv1.3"
 ```
 
-**Note**: even if you do this, in order [to install](installing.md), this playbook still expects port 80 to be available. **Please manually stop your other webserver while installing**. You can start it back again afterwards.
+3) **If you'll manage SSL certificates by yourself**, edit your configuration file (`inventory/matrix.<your-domain>/vars.yml`) to disable SSL certificate retrieval:
 
-**If your own webserver is nginx**, you can most likely directly use the config files installed by this playbook at: `/matrix/nginx-proxy/conf.d`. Just include them in your `nginx.conf` like this: `include /matrix/nginx-proxy/conf.d/*.conf;`. Please note that if your nginx version is old, it might not like our default SSL protocols (particularly the fact that `TLSv1.3` is enabled). You can override the protocol list by redefining the `matrix_nginx_proxy_ssl_protocols` variable.
+```yaml
+matrix_ssl_retrieval_method: none
+```
 
-**If your own webserver is not nginx**, you can still take a look at the sample files in `/matrix/nginx-proxy/conf.d`, and:
+**Note**: During [installation](installing.md), unless you've disabled SSL certificate management (`matrix_ssl_retrieval_method: none`), the playbook would need 80 to be available, in order to retrieve SSL certificates. **Please manually stop your other webserver while installing**. You can start it back up afterwards.
 
-- ensure you set up (separate) vhosts that proxy for both Riot (`localhost:8765`) and Matrix Synapse (`localhost:8008`)
 
-- ensure that the `/.well-known/acme-challenge` location for each "port=80 vhost" gets proxied to `http://localhost:2402` (controlled by `matrix_ssl_lets_encrypt_certbot_standalone_http_port`) for automated SSL renewal to work
+## Using your own external nginx webserver
 
-- ensure that you restart/reload your webserver once in a while, so that renewed SSL certificates would take effect (once a month should be enough)
+Once you've followed the [Preparation](#preparation) guide above, it's time to set up your external nginx server.
+
+Even with `matrix_nginx_proxy_enabled: false`, the playbook still generates some helpful files for you in `/matrix/nginx-proxy/conf.d`.
+Those configuration files are adapted for use with an external web server (one not running in the container network).
+
+You can most likely directly use the config files installed by this playbook at: `/matrix/nginx-proxy/conf.d`. Just include them in your own `nginx.conf` like this: `include /matrix/nginx-proxy/conf.d/*.conf;`
+
+Note that if your nginx version is old, it might not like our default choice of SSL protocols (particularly the fact that the brand new `TLSv1.3` protocol is enabled). You can override the protocol list by redefining the `matrix_nginx_proxy_ssl_protocols` variable. Example:
+
+```yaml
+# Custom protocol list (removing `TLSv1.3`) to suit your nginx version.
+matrix_nginx_proxy_ssl_protocols: "TLSv1.1 TLSv1.2"
+```
+
+
+## Using your own external Apache webserver
+
+Once you've followed the [Preparation](#preparation) guide above, you can take a look at the [examples/apache](../examples/apache) directory for a sample configuration.
+
+
+## Using another external webserver
+
+Feel free to look at the [examples/apache](../examples/apache) directory, or the [template files in the matrix-nginx-proxy role](../roles/matrix-nginx-proxy/templates/conf.d/).
