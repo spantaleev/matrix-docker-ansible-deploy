@@ -1,3 +1,18 @@
+# 2019-02-01
+
+## TLS v1.3 support
+
+Now that the [nginx Docker image](https://hub.docker.com/_/nginx) has [added support for TLS v1.3](https://github.com/nginxinc/docker-nginx/issues/190), we have enabled that protocol by default.
+
+When using:
+
+- the **integrated nginx server**: TLS v1.3 support might not kick in immediately, because the nginx version hasn't been bumped and you may have an older build of the nginx Docker image (currently `nginx:1.15.8-alpine`). Typically, we do not re-pull images that you already have. When the nginx version gets bumped in the future, everyone will get the update. Until then, you could manually force-pull the rebuilt Docker image by running this on the server: `docker pull nginx:1.15.8-alpine`.
+
+- **your own external nginx server**: if your external nginx server is too old, the new configuration we generate for you in `/matrix/nginx-proxy/conf.d/` might not work anymore, because it mentions `TLSv1.3` and your nginx version might not support that. You can adjust the SSL protocol list by overriding the `matrix_nginx_proxy_ssl_protocols` variable. Learn more in the documentation page for [Using your own webserver, instead of this playbook's nginx proxy](docs/configuring-playbook-own-webserver.md)
+
+- **another web server**: you don't need to do anything to accommodate this change
+
+
 # 2019-01-31
 
 ## IRC bridging support

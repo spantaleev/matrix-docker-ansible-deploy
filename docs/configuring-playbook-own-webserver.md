@@ -14,11 +14,15 @@ All it takes is:
 
 ```yaml
 matrix_nginx_proxy_enabled: false
+
+# If you use an external nginx, we'll generate some configuration for you in `/matrix/nginx-proxy/conf.d/`.
+# You might need to tweak the protocol list (removing `TLSv1.3`) to suit your nginx version.
+matrix_nginx_proxy_ssl_protocols: "TLSv1.1 TLSv1.2 TLSv1.3"
 ```
 
 **Note**: even if you do this, in order [to install](installing.md), this playbook still expects port 80 to be available. **Please manually stop your other webserver while installing**. You can start it back again afterwards.
 
-**If your own webserver is nginx**, you can most likely directly use the config files installed by this playbook at: `/matrix/nginx-proxy/conf.d`. Just include them in your `nginx.conf` like this: `include /matrix/nginx-proxy/conf.d/*.conf;`
+**If your own webserver is nginx**, you can most likely directly use the config files installed by this playbook at: `/matrix/nginx-proxy/conf.d`. Just include them in your `nginx.conf` like this: `include /matrix/nginx-proxy/conf.d/*.conf;`. Please note that if your nginx version is old, it might not like our default SSL protocols (particularly the fact that `TLSv1.3` is enabled). You can override the protocol list by redefining the `matrix_nginx_proxy_ssl_protocols` variable.
 
 **If your own webserver is not nginx**, you can still take a look at the sample files in `/matrix/nginx-proxy/conf.d`, and:
 
