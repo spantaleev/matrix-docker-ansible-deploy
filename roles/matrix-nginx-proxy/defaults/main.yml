@@ -66,6 +66,7 @@ matrix_nginx_proxy_ssl_protocols: "TLSv1.1 TLSv1.2 TLSv1.3"
 # - "lets-encrypt" - the playbook obtains free SSL certificates from Let's Encrypt
 # - "self-signed" - the playbook generates and self-signs certificates
 # - "manually-managed" - lets you manage certificates by yourself (manually; see below)
+# - "none" - like "manually-managed", but doesn't care if you don't drop certificates in the location it expects
 #
 # If you decide to manage certificates by yourself (`matrix_ssl_retrieval_method: manually-managed`),
 # you'd need to drop them into the directory specified by `matrix_ssl_config_dir_path`
@@ -73,6 +74,10 @@ matrix_nginx_proxy_ssl_protocols: "TLSv1.1 TLSv1.2 TLSv1.3"
 # - <matrix_ssl_config_dir_path>/live/<domain>/fullchain.pem
 # - <matrix_ssl_config_dir_path>/live/<domain>/privkey.pem
 # where <domain> refers to the domains that you need (usually `hostname_matrix` and `hostname_riot`).
+#
+# The "none" type (`matrix_ssl_retrieval_method: none`), simply means that no certificate retrieval will happen.
+# It's useful for when you've disabled the nginx proxy (`matrix_nginx_proxy_enabled: false`)
+# and you'll be using another reverse-proxy server (like Apache) with your own certificates, managed by yourself.
 matrix_ssl_retrieval_method: "lets-encrypt"
 
 # The list of domains that this role will obtain certificates for.

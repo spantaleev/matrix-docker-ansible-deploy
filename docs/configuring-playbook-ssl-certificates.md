@@ -2,6 +2,8 @@
 
 By default, this playbook retrieves and auto-renews free SSL certificates from [Let's Encrypt](https://letsencrypt.org/).
 
+Those certificates are used when configuring the nginx reverse proxy installed by this playbook.
+
 If that's alright, you can skip this.
 
 
@@ -30,3 +32,14 @@ With such a configuration, the playbook would expect you to drop the SSL certifi
 - `<matrix_ssl_config_dir_path>/live/<domain>/privkey.pem`
 
 where `<domain>` refers to the domains that you need (usually `matrix.<your-domain>` and `riot.<your-domain>`).
+
+
+## Not bothering with SSL certificates
+
+If you're [using an external web server](configuring-playbook-own-webserver.md) which is not nginx, or you would otherwise want to manage its certificates without this playbook getting in the way, you can completely disable SSL certificate management with the following configuration:
+
+```yaml
+matrix_ssl_retrieval_method: none
+```
+
+With such a configuration, no certificates will be retrieved at all. You're free to manage them however you want.
