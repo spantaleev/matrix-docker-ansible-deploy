@@ -37,4 +37,6 @@
     -keyout {{ matrix_ssl_certificate_cert_key_path }} \
     -out {{ matrix_ssl_certificate_cert_path }} \
     -days 3650
+  become: true
+  become_user: "{{ matrix_user_username }}"
   when: "not matrix_ssl_certificate_cert_path_stat_result.stat.exists"
