@@ -110,6 +110,7 @@ server {
 		{% else %}
 			{# Generic configuration for use outside of our container setup #}
 			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container }};
+			resolver 127.0.0.1 ipv6=off;
 		{% endif %}
 
 		proxy_set_header Host $host;
