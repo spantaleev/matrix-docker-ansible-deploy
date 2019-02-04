@@ -12,7 +12,7 @@ server {
 			proxy_pass http://$backend;
 		{% else %}
 			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://localhost:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }};
+			proxy_pass http://127.0.0.1:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }};
 		{% endif %}
 	}
 
@@ -110,7 +110,6 @@ server {
 		{% else %}
 			{# Generic configuration for use outside of our container setup #}
 			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container }};
-			resolver 127.0.0.1 ipv6=off;
 		{% endif %}
 
 		proxy_set_header Host $host;

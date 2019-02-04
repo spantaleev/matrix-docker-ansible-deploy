@@ -167,7 +167,7 @@ matrix_mxisd_systemd_wanted_services_list: |
 matrix_nginx_proxy_enabled: true
 
 matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "{{ 'matrix-corporal:41080' if matrix_corporal_enabled else 'matrix-synapse:8008' }}"
-matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "{{ 'localhost:41080' if matrix_corporal_enabled else 'localhost:8008' }}"
+matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "{{ '127.0.0.1:41080' if matrix_corporal_enabled else '127.0.0.1:8008' }}"
 matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: "{{ matrix_synapse_max_upload_size_mb }}"
 
 matrix_nginx_proxy_proxy_matrix_enabled: true
@@ -175,15 +175,15 @@ matrix_nginx_proxy_proxy_riot_enabled: "{{ matrix_riot_web_enabled }}"
 
 matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: "{{ matrix_corporal_enabled and matrix_corporal_http_api_enabled }}"
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
-matrix_nginx_proxy_proxy_matrix_corporal_api_addr_sans_container: "localhost:41081"
+matrix_nginx_proxy_proxy_matrix_corporal_api_addr_sans_container: "127.0.0.1:41081"
 
 matrix_nginx_proxy_proxy_matrix_identity_api_enabled: "{{ matrix_mxisd_enabled }}"
 matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-mxisd:8090"
-matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "localhost:8090"
+matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "127.0.0.1:8090"
 
 matrix_nginx_proxy_proxy_synapse_metrics: "{{ matrix_synapse_metrics_enabled }}"
 matrix_nginx_proxy_proxy_synapse_metrics_addr_with_container: "matrix-synapse:{{ matrix_synapse_metrics_port }}"
-matrix_nginx_proxy_proxy_synapse_metrics_addr_sans_container: "localhost:{{ matrix_synapse_metrics_port }}"
+matrix_nginx_proxy_proxy_synapse_metrics_addr_sans_container: "127.0.0.1:{{ matrix_synapse_metrics_port }}"
 
 matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_mxisd_enabled }}"
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}"
