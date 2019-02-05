@@ -161,7 +161,7 @@ matrix_mxisd_systemd_wanted_services_list: |
 #
 ######################################################################
 
-# By default, this playbook sets up a reverse-proxy nginx proxy server on port 80/443.
+# By default, this playbook sets up a reverse-proxy nginx proxy server on TCP ports 80, 443 and 8448.
 # This is fine if you're dedicating the whole server to Matrix.
 # If that's not the case, you may wish to disable this and take care of proxying yourself.
 matrix_nginx_proxy_enabled: true
@@ -180,6 +180,11 @@ matrix_nginx_proxy_proxy_matrix_corporal_api_addr_sans_container: "127.0.0.1:410
 matrix_nginx_proxy_proxy_matrix_identity_api_enabled: "{{ matrix_mxisd_enabled }}"
 matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-mxisd:8090"
 matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "127.0.0.1:8090"
+
+# By default, we do TLS termination for the Matrix Federation API (port 8448) at matrix-nginx-proxy.
+matrix_nginx_proxy_proxy_matrix_federation_api_enabled: true
+matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container: "matrix-synapse:8048"
+matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "127.0.0.1:8048"
 
 matrix_nginx_proxy_proxy_synapse_metrics: "{{ matrix_synapse_metrics_enabled }}"
 matrix_nginx_proxy_proxy_synapse_metrics_addr_with_container: "matrix-synapse:{{ matrix_synapse_metrics_port }}"
@@ -272,9 +277,13 @@ matrix_riot_web_default_is_url: "{{ matrix_identity_server_url }}"
 matrix_synapse_trusted_third_party_id_servers: "{{ [hostname_matrix] if matrix_mxisd_enabled else matrix_synapse_id_servers_public }}"
 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Synapse over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# the Client/Server API's port to the local host (`127.0.0.1:8008`).
-matrix_synapse_container_expose_client_server_api_port: "{{ not matrix_nginx_proxy_enabled }}"
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose its ports
+# to the local host.
+#
+# For exposing the Matrix Client API's port (plain HTTP) to the local host (`127.0.0.1:8008`).
+matrix_synapse_container_expose_client_api_port: "{{ not matrix_nginx_proxy_enabled }}"
+# For exposing the Matrix Federation API's port (plain HTTP) to the local host (`127.0.0.1:8048`).
+matrix_synapse_container_expose_federation_api_port: "{{ not matrix_nginx_proxy_enabled }}"
 
 matrix_synapse_container_expose_metrics_port: "{{ not matrix_nginx_proxy_enabled }}"
 
@@ -282,6 +291,10 @@ matrix_synapse_database_host: "{{ matrix_postgres_connection_hostname }}"
 matrix_synapse_database_user: "{{ matrix_postgres_connection_username }}"
 matrix_synapse_database_password: "{{ matrix_postgres_connection_password }}"
 matrix_synapse_database_database: "{{ matrix_postgres_db_name }}"
+
+# We do not enable TLS in Synapse by default.
+# TLS is handled by the matrix-nginx-proxy, which proxies the requests to Synapse.
+matrix_synapse_no_tls: true
 
 matrix_synapse_email_enabled: "{{ matrix_mailer_enabled }}"
 matrix_synapse_email_smtp_host: "matrix-mailer"

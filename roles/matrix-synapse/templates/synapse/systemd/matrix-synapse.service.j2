@@ -28,11 +28,14 @@ ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_synapse_tmp_directory_size_mb }}m \
 			--network={{ matrix_docker_network }} \
 			-e SYNAPSE_CACHE_FACTOR={{ matrix_synapse_cache_factor }} \
-			{% if matrix_synapse_federation_enabled %}
+			{% if matrix_synapse_container_expose_client_api_port %}
+			-p 127.0.0.1:8008:8008 \
+			{% endif %}
+			{% if matrix_synapse_federation_enabled and matrix_synapse_tls_federation_listener_enabled %}
 			-p 8448:8448 \
 			{% endif %}
-			{% if matrix_synapse_container_expose_client_server_api_port %}
-			-p 127.0.0.1:8008:8008 \
+			{% if matrix_synapse_federation_enabled and matrix_synapse_container_expose_federation_api_port %}
+			-p 127.0.0.1:8048:8048 \
 			{% endif %}
 			{% if matrix_synapse_container_expose_metrics_port %}
 			-p 127.0.0.1:{{ matrix_synapse_metrics_port }}:{{ matrix_synapse_metrics_port }} \

@@ -39,7 +39,7 @@ server {
 	ssl_prefer_server_ciphers on;
 	ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
 
-	location /.well-known/matrix/client {
+	location /.well-known/matrix {
 		root {{ matrix_static_files_base_path }};
 		expires 1m;
 		default_type application/json;
@@ -101,6 +101,10 @@ server {
 		{{- configuration_block }}
 	{% endfor %}
 
+	{#
+		This handles the Matrix Client API only.
+		The Matrix Federation API is handled by a separate vhost.
+	#}
 	location /_matrix {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
@@ -146,3 +150,43 @@ server {
 		rewrite ^/$ /_matrix/static/ last;
 	}
 }
+
+{% if matrix_nginx_proxy_proxy_matrix_federation_api_enabled %}
+server {
+	listen 8448 ssl http2;
+	listen [::]:8448 ssl http2;
+
+	server_name {{ matrix_nginx_proxy_proxy_matrix_hostname }};
+
+	server_tokens off;
+	root /dev/null;
+
+	gzip on;
+	gzip_types text/plain application/json;
+
+	ssl_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/fullchain.pem;
+	ssl_certificate_key {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/privkey.pem;
+	ssl_protocols {{ matrix_nginx_proxy_ssl_protocols }};
+	ssl_prefer_server_ciphers on;
+	ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
+
+	location / {
+		{% if matrix_nginx_proxy_enabled %}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver 127.0.0.11 valid=5s;
+			set $backend "{{ matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container }}";
+			proxy_pass http://$backend;
+		{% else %}
+			{# Generic configuration for use outside of our container setup #}
+			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container }};
+		{% endif %}
+
+		proxy_set_header Host $host;
+		proxy_set_header X-Forwarded-For $remote_addr;
+
+		client_body_buffer_size 25M;
+		client_max_body_size {{ matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb }}M;
+		proxy_max_temp_file_size 0;
+	}
+}
+{% endif %}

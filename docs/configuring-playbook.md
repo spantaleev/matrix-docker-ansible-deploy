@@ -1,6 +1,6 @@
 # Configuring the Ansible playbook
 
-Once you have your server and you have [configured your DNS records](configuring-dns.md#configuring-dns), you can proceed with configuring this playbook, so that it knows what to install and where.
+Once you have your server and you have [configured your DNS records](configuring-dns.md), you can proceed with configuring this playbook, so that it knows what to install and where.
 
 You can follow these steps:
 

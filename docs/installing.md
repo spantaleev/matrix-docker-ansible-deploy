@@ -34,7 +34,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=start
 
 Now that the services are running, you might want to:
 
-- [create your first user account](registering-users.md)
-- or **finalize the installation process** by [Configuring service discovery via .well-known](configuring-well-known.md)
-- or [Check if services work](maintenance-checking-services.md)
+- **finalize the installation process** (required for federation to work!) by [Configuring Service Discovery via .well-known](configuring-well-known.md)
+- or [create your first user account](registering-users.md)
+- or [check if services work](maintenance-checking-services.md)
 - or learn how to [upgrade your services when new versions are released](maintenance-upgrading-services.md)

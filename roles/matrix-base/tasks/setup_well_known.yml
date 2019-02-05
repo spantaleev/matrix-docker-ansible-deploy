@@ -12,10 +12,13 @@
   with_items:
     - "{{ matrix_static_files_base_path }}/.well-known/matrix"
 
-- name: Ensure Matrix /.well-known/matrix/client configured
+- name: Ensure Matrix /.well-known/matrix files configured
   template:
-    src: "{{ role_path }}/templates/static-files/well-known/matrix-client.j2"
-    dest: "{{ matrix_static_files_base_path }}/.well-known/matrix/client"
+    src: "{{ role_path }}/templates/static-files/well-known/matrix-{{ item }}.j2"
+    dest: "{{ matrix_static_files_base_path }}/.well-known/matrix/{{ item }}"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
+  with_items:
+    - "client"
+    - "server"

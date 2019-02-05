@@ -1,19 +1,70 @@
 # vim:ft=yaml
-# PEM encoded X509 certificate for TLS.
-# You can replace the self-signed certificate that synapse
-# autogenerates on launch with your own SSL certificate + key pair
-# if you like.  Any required intermediary certificates can be
-# appended after the primary certificate in hierarchical order.
-tls_certificate_path: "/data/{{ hostname_matrix }}.tls.crt"
+# PEM-encoded X509 certificate for TLS.
+# This certificate, as of Synapse 1.0, will need to be a valid and verifiable
+# certificate, signed by a recognised Certificate Authority.
+#
+# See 'ACME support' below to enable auto-provisioning this certificate via
+# Let's Encrypt.
+#
+tls_certificate_path: "{{ matrix_synapse_tls_certificate_path }}"
 
-# PEM encoded private key for TLS
-tls_private_key_path: "/data/{{ hostname_matrix }}.tls.key"
+# PEM-encoded private key for TLS
+tls_private_key_path: "{{ matrix_synapse_tls_private_key_path }}"
 
-# PEM dh parameters for ephemeral keys
-tls_dh_params_path: "/data/{{ hostname_matrix }}.tls.dh"
+# ACME support: This will configure Synapse to request a valid TLS certificate
+# for your configured `server_name` via Let's Encrypt.
+#
+# Note that provisioning a certificate in this way requires port 80 to be
+# routed to Synapse so that it can complete the http-01 ACME challenge.
+# By default, if you enable ACME support, Synapse will attempt to listen on
+# port 80 for incoming http-01 challenges - however, this will likely fail
+# with 'Permission denied' or a similar error.
+#
+# There are a couple of potential solutions to this:
+#
+#  * If you already have an Apache, Nginx, or similar listening on port 80,
+#    you can configure Synapse to use an alternate port, and have your web
+#    server forward the requests. For example, assuming you set 'port: 8009'
+#    below, on Apache, you would write:
+#
+#    ProxyPass /.well-known/acme-challenge http://localhost:8009/.well-known/acme-challenge
+#
+#  * Alternatively, you can use something like `authbind` to give Synapse
+#    permission to listen on port 80.
+#
+acme:
+    # ACME support is disabled by default. Uncomment the following line
+    # to enable it.
+    #
+    # enabled: true
 
-# Don't bind to the https port
-no_tls: False
+    # Endpoint to use to request certificates. If you only want to test,
+    # use Let's Encrypt's staging url:
+    #     https://acme-staging.api.letsencrypt.org/directory
+    #
+    # url: https://acme-v01.api.letsencrypt.org/directory
+
+    # Port number to listen on for the HTTP-01 challenge. Change this if
+    # you are forwarding connections through Apache/Nginx/etc.
+    #
+    # port: 80
+
+    # Local addresses to listen on for incoming connections.
+    # Again, you may want to change this if you are forwarding connections
+    # through Apache/Nginx/etc.
+    #
+    # bind_addresses: ['::', '0.0.0.0']
+
+    # How many days remaining on a certificate before it is renewed.
+    #
+    # reprovision_threshold: 30
+
+# If your server runs behind a reverse-proxy which terminates TLS connections
+# (for both client and federation connections), it may be useful to disable
+# All TLS support for incoming connections. Setting no_tls to True will
+# do so (and avoid the need to give synapse a TLS private key).
+#
+no_tls: {{ matrix_synapse_no_tls|to_json }}
 
 # List of allowed TLS fingerprints for this server to publish along
 # with the signing keys for this server. Other matrix servers that
@@ -133,7 +184,8 @@ listeners:
     bind_addresses:
       - '0.0.0.0'
 {% endif %}
-{% if matrix_synapse_federation_enabled %}
+
+{% if matrix_synapse_federation_enabled and matrix_synapse_tls_federation_listener_enabled %}
   # Main HTTPS listener
   # For when matrix traffic is sent directly to synapse.
   -
@@ -168,7 +220,7 @@ listeners:
     #     config: {}
 {% endif %}
 
-  # Unsecure HTTP listener,
+  # Unsecure HTTP listener for the Client API,
   # For when matrix traffic passes through loadbalancer that unwraps TLS.
   - port: 8008
     tls: false
@@ -180,6 +232,21 @@ listeners:
     resources:
       - names: [client]
         compress: false
+
+{% if matrix_synapse_federation_enabled %}
+  # Unsecure HTTP listener for the Federation API,
+  # For when matrix traffic passes through loadbalancer that unwraps TLS.
+  - port: 8048
+    tls: false
+    bind_addresses: ['::']
+    type: http
+
+    x_forwarded: true
+
+    resources:
+      - names: [federation]
+        compress: false
+{% endif %}
 
   # Turn on the twisted ssh manhole service on localhost on the given
   # port.

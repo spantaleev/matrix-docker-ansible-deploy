@@ -6,11 +6,9 @@
 
 - the [Ansible](http://ansible.com/) program being installed on your own computer. It's used to run this playbook and configures your server for you. Take a look at [our guide about Ansible](ansible.md) for version requirements or alternative ways to run Ansible.
 
-- properly configured DNS SRV record for `<your-domain>` (details in [Configuring DNS](configuring-dns.md#configuring-dns) below)
+- an HTTPS-capable web server at the base domain name (`<your-domain>`) which is capable of serving static files
 
-- `matrix.<your-domain>` domain name pointing to your new server - this is where the Matrix Synapse server will live (details in [Configuring DNS](configuring-dns.md#configuring-dns) below)
-
-- `riot.<your-domain>` domain name pointing to your new server - this is where the Riot web UI will live (details in [Configuring DNS](configuring-dns.md#configuring-dns) below)
+- properly configured DNS records for `<your-domain>` (details in [Configuring DNS](configuring-dns.md))
 
 - some TCP/UDP ports open. This playbook configures the server's internal firewall for you. In most cases, you don't need to do anything special. But **if your server is running behind another firewall**, you'd need to open these ports: `80/tcp` (HTTP webserver), `443/tcp` (HTTPS webserver), `3478/tcp`  (STUN over TCP), `3478/udp` (STUN over UDP), `8448/tcp` (Matrix federation HTTPS webserver), `49152-49172/udp` (TURN over UDP).
 
