@@ -41,7 +41,12 @@ server {
 
 	location /.well-known/matrix {
 		root {{ matrix_static_files_base_path }};
-		expires 1m;
+		{#
+			A somewhat long expires value is used to prevent outages
+			in case this is unreachable due to network failure or
+			due to the base domain's server completely dying.
+		#}
+		expires 4h;
 		default_type application/json;
 		add_header Access-Control-Allow-Origin *;
 	}
