@@ -6,7 +6,7 @@
 
 - the [Ansible](http://ansible.com/) program being installed on your own computer. It's used to run this playbook and configures your server for you. Take a look at [our guide about Ansible](ansible.md) for version requirements or alternative ways to run Ansible.
 
-- an HTTPS-capable web server at the base domain name (`<your-domain>`) which is capable of serving static files
+- an HTTPS-capable web server at the base domain name (`<your-domain>`) which is capable of serving static files (unless you decide to use DNS SRV records for [Server Delegation](howto-server-delegation.md))
 
 - properly configured DNS records for `<your-domain>` (details in [Configuring DNS](configuring-dns.md))
 
