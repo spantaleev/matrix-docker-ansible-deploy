@@ -26,9 +26,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-nginx-proxy \
 			-v {{ matrix_nginx_proxy_confd_path }}:/etc/nginx/conf.d:ro \
 			-v {{ matrix_ssl_config_dir_path }}:{{ matrix_ssl_config_dir_path }}:ro \
 			-v {{ matrix_static_files_base_path }}:{{ matrix_static_files_base_path }}:ro \
-			{% if (matrix_nginx_proxy_proxy_synapse_metrics and matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled) %}
-			-v {{ matrix_nginx_proxy_data_path }}/matrix-synapse-metrics-htpasswd:/etc/nginx/.matrix-synapse-metrics-htpasswd:ro \
-			{% endif %}
+			{% for volume in matrix_nginx_proxy_container_additional_volumes %}
+			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
+			{% endfor %}
 			{{ matrix_nginx_proxy_docker_image }}
 
 ExecStop=-/usr/bin/docker kill matrix-nginx-proxy

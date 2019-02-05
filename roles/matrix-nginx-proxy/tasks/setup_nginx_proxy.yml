@@ -37,6 +37,14 @@
     mode: 0400
   when: "matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled and matrix_nginx_proxy_proxy_synapse_metrics"
 
+- name: Ensure matrix-synapse-metrics-htpasswd is mounted into the matrix-nginx-proxy container
+  - set_fact:
+    matrix_nginx_proxy_container_additional_volumes: >
+      {{ matrix_nginx_proxy_container_additional_volumes }}
+      +
+      {{ [{'src': '{{ matrix_nginx_proxy_data_path }}/matrix-synapse-metrics-htpasswd', 'dst': '/etc/nginx/.matrix-synapse-metrics-htpasswd', 'options': 'ro'}] }}
+  when: "matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled and matrix_nginx_proxy_proxy_synapse_metrics"
+
 - name: Ensure Matrix nginx-proxy configured (generic)
   template:
     src: "{{ role_path }}/templates/nginx/conf.d/nginx-http.conf.j2"
