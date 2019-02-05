@@ -99,6 +99,9 @@ matrix_nginx_proxy_container_additional_volumes:
 
 You then refer to them (for `matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate` and `matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate_key`) by using `/some/path/inside/the/container`.
 
+Make sure to reload matrix-nginx-proxy once in a while (`systemctl reload matrix-nginx-proxy`), so that newer certificates can kick in.
+Reloading doesn't cause any downtime.
+
 
 ### Serving the Federation API with your certificates and another webserver
 
@@ -106,6 +109,8 @@ You then refer to them (for `matrix_nginx_proxy_proxy_matrix_federation_api_ssl_
 Make sure to use the proper certificates for `<your-domain>` (not for `matrix.<your-domain>`) when serving the `tcp/8448` port.
 
 Proxying needs to happen to `127.0.0.1:8048` (unencrypted Synapse federation listener).
+
+Make sure to reload/restart your webserver once in a while, so that newer certificates can kick in.
 
 
 ### Serving the Federation API with your certificates and Synapse handling Federation
@@ -129,3 +134,5 @@ matrix_synapse_tls_federation_listener_enabled: true
 matrix_synapse_tls_certificate_path: /some/path/inside/the/container/certificate.crt
 matrix_synapse_tls_private_key_path: /some/path/inside/the/container/private.key
 ```
+
+Every once in a while (before the certificates expire), you'll need to completely restart Synapse (unless [Synapse becomes capable of reloading certificates without restarting - issue #1180](https://github.com/matrix-org/synapse/issues/1180)). Restarting Synapse can be done like this: `systemctl restart matrix-synapse`. Restarting causes some downtime.
