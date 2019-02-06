@@ -123,7 +123,7 @@ To do that, make sure the certificate files are mounted into the Synapse contain
 matrix_synapse_container_additional_volumes:
   - src: /some/path/on/the/host
     dst: /some/path/inside/the/container
-	options: ro
+    options: ro
 ```
 
 You can then tell Synapse to serve Federation traffic over TLS on `tcp/8448`:
