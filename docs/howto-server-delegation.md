@@ -94,7 +94,7 @@ If your files are not in `/matrix/ssl` but in some other location, you would nee
 matrix_nginx_proxy_container_additional_volumes:
   - src: /some/path/on/the/host
     dst: /some/path/inside/the/container
-	options: ro
+    options: ro
 ```
 
 You then refer to them (for `matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate` and `matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate_key`) by using `/some/path/inside/the/container`.
