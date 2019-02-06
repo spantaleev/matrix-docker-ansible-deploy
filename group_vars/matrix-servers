@@ -295,6 +295,11 @@ matrix_synapse_database_database: "{{ matrix_postgres_db_name }}"
 # We do not enable TLS in Synapse by default.
 # TLS is handled by the matrix-nginx-proxy, which proxies the requests to Synapse.
 matrix_synapse_no_tls: true
+# Even though we don't do TLS at the Synapse side, Synapse v0.99 would still like to read
+# some certificate file. The container contains a dummy certificate that could be used
+# to prevent certificate file reading errors. It won't actually be used for anything else.
+# See https://github.com/matrix-org/synapse/issues/4554
+matrix_synapse_tls_certificate_path: /conf/dummy.tls.crt
 
 matrix_synapse_email_enabled: "{{ matrix_mailer_enabled }}"
 matrix_synapse_email_smtp_host: "matrix-mailer"
