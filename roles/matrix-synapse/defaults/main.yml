@@ -1,4 +1,4 @@
-matrix_synapse_docker_image: "matrixdotorg/synapse:v0.34.1.1-py3"
+matrix_synapse_docker_image: "matrixdotorg/synapse:v0.99.0-py3"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
 matrix_synapse_config_dir_path: "{{ matrix_synapse_base_path }}/config"
@@ -8,7 +8,12 @@ matrix_synapse_media_store_path: "{{ matrix_synapse_storage_path }}/media-store"
 matrix_synapse_ext_path: "{{ matrix_synapse_base_path }}/ext"
 
 # Controls whether the Synapse container exposes the Client/Server API port (tcp/8008).
-matrix_synapse_container_expose_client_server_api_port: false
+matrix_synapse_container_expose_client_api_port: false
+
+# Controls whether the Synapse container exposes the Server/Server (Federation) API port (tcp/8048).
+# This is for the plain HTTP API. If you need Synapse to handle TLS encryption,
+# that would be on another port (tcp/8448) controlled by `matrix_synapse_tls_federation_listener_enabled`.
+matrix_synapse_container_expose_federation_api_port: false
 
 # Controls whether the Appservice IRC container exposes the Client/Server API port (tcp/9999).
 matrix_appservice_irc_container_expose_client_server_api_port: false
@@ -60,6 +65,17 @@ matrix_synapse_root_log_level: "INFO"
 matrix_synapse_rc_messages_per_second: 0.2
 matrix_synapse_rc_message_burst_count: 10.0
 
+# If you're serving Synapse behind an HTTPS-capable reverse-proxy,
+# you can disable TLS completely (`matrix_synapse_no_tls: true`).
+# Otherwise, you would need to provide certificate files to it.
+matrix_synapse_no_tls: false
+# Controls whether the TLS federation listener is enabled (tcp/8448).
+# Note that federation may potentially be enabled on tcp/8008 as well.
+# Only makes sense if federation is not disabled (`matrix_synapse_federation_enabled`).
+matrix_synapse_tls_federation_listener_enabled: "{{ not matrix_synapse_no_tls }}"
+matrix_synapse_tls_certificate_path: "/data/{{ hostname_matrix }}.tls.crt"
+matrix_synapse_tls_private_key_path: "/data/{{ hostname_matrix }}.tls.key"
+
 # Enable this to allow Synapse to report utilization statistics about your server to matrix.org
 # (things like number of users, number of messages sent, uptime, load, etc.)
 matrix_synapse_report_stats: false
@@ -95,6 +111,8 @@ matrix_synapse_cache_factor: 0.5
 
 # Controls whether Matrix Synapse will federate at all.
 # Disable this to completely isolate your server from the rest of the Matrix network.
+# Also see: `matrix_synapse_tls_federation_listener_enabled` if you wish to keep federation enabled,
+# but want to stop the TLS listener (port 8448).
 matrix_synapse_federation_enabled: true
 
 # A list of domain names that are allowed to federate with the given Matrix Synapse server.
