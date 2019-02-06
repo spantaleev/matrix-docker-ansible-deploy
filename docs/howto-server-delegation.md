@@ -74,6 +74,14 @@ If they get renewed automatically, you may also have to transfer them periodical
 
 Regardless of which method for obtaining certificates you've used, once you've managed to get certificates for your base domain onto the `matrix.<your-domain>` machine you can put them to use.
 
+Based on your setup, you have different ways to go about it:
+
+- [Serving the Federation API with your certificates and matrix-nginx-proxy](#serving-the-federation-api-with-your-certificates-and-matrix-nginx-proxy)
+
+- [Serving the Federation API with your certificates and another webserver](#serving-the-federation-api-with-your-certificates-and-another-webserver)
+
+- [Serving the Federation API with your certificates and Synapse handling Federation](#serving-the-federation-api-with-your-certificates-and-synapse-handling-federation)
+
 
 ### Serving the Federation API with your certificates and matrix-nginx-proxy
 
