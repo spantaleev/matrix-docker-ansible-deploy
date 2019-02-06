@@ -13,7 +13,7 @@ As we discuss in [Server Delegation](howto-server-delegation.md), there are 2 di
 - using DNS SRV records
 
 This playbook mostly discusses the well-known file method, because it's easier to manage with regard to certificates.
-If you decide to go with the alternative method ([Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-serv-record-advanced)), please be aware that the general flow that this playbook guides you through may not match what you need to do.
+If you decide to go with the alternative method ([Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)), please be aware that the general flow that this playbook guides you through may not match what you need to do.
 
 To make matters worse, for backward compatibility until the Synapse server reaches v1.0, you need to set up a DNS SRV record anyway.
 So don't be confused if the general flow of this playbook asks you for both DNS SRV records and for setting up a well-known file.

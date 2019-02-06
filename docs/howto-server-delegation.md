@@ -30,7 +30,7 @@ Server Delegation by means of a `/.well-known/matrix/server` file is the most st
 
 If this is not a concern for you, feel free to not read ahead.
 
-Otherwise, you can decide to go against the default for this playbook, and instead set up [Server Delegation via a DNS SRV record (advanced)](#server-delegation-via-a-dns-serv-record-advanced).
+Otherwise, you can decide to go against the default for this playbook, and instead set up [Server Delegation via a DNS SRV record (advanced)](#server-delegation-via-a-dns-srv-record-advanced).
 
 
 ## Server Delegation via a DNS SRV record (advanced)
