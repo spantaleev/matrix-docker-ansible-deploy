@@ -135,4 +135,5 @@ matrix_synapse_tls_certificate_path: /some/path/inside/the/container/certificate
 matrix_synapse_tls_private_key_path: /some/path/inside/the/container/private.key
 ```
 
-Every once in a while (before the certificates expire), you'll need to completely restart Synapse (unless [Synapse becomes capable of reloading certificates without restarting - issue #1180](https://github.com/matrix-org/synapse/issues/1180)). Restarting Synapse can be done like this: `systemctl restart matrix-synapse`. Restarting causes some downtime.
+Make sure to reload Synapse once in a while (`systemctl reload matrix-synapse`), so that newer certificates can kick in.
+Reloading doesn't cause any downtime.
