@@ -5,6 +5,20 @@ To set up Matrix on your domain, you'd need to do some DNS configuration.
 To use an identifier like `@<username>:<your-domain>`, you don't actually need
 to install anything on the actual `<your-domain>` server.
 
+You do, however need to instruct the Matrix network that Matrix services for `<your-domain>` are delegated
+over to `matrix.<your-domain>`.
+As we discuss in [Server Delegation](howto-server-delegation.md), there are 2 different ways to set up such delegation:
+
+- using a `https://<your-domain>/.well-known/matrix/server` file (on the base domain!)
+- using DNS SRV records
+
+This playbook mostly discusses the well-known file method, because it's easier to manage with regard to certificates.
+If you decide to go with the alternative method ([Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-serv-record-advanced)), please be aware that the general flow that this playbook guides you through may not match what you need to do.
+
+To make matters worse, for backward compatibility until the Synapse server reaches v1.0, you need to set up a DNS SRV record anyway.
+So don't be confused if the general flow of this playbook asks you for both DNS SRV records and for setting up a well-known file.
+It's a temporary requirement during the Synapse v0.99/v1.0 transition.
+
 
 ## General outline of DNS settings you need to do
 
