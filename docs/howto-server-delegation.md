@@ -54,20 +54,10 @@ To use DNS SRV record validation, you need to:
 
 How you can obtain a valid certificate for `<your-domain>` on the `matrix.<your-domain>` server is up to you.
 
-If `<your-domain>` and `matrix.<your-domain>` is the same machine, you can let the playbook obtain the certificate for you by redefining the `matrix_ssl_domains_to_obtain_certificates_for` variable. Example:
+If `<your-domain>` and `matrix.<your-domain>` are hosted on the same machine, you can let the playbook obtain the certificate for you, by following our [Obtaining SSL certificates for additional domains](configuring-playbook-ssl-certificates.md#obtaining-ssl-certificates-for-additional-domains) guide.
 
-```yaml
-matrix_ssl_domains_to_obtain_certificates_for:
-  - '{{ hostname_matrix }}'
-  - '{{ hostname_riot }}'
-  - '{{ hostname_identity }}'
-```
-
-This way, the playbook would obtain certificates for your base domain as well (referred to by the `hostname_identity` variable).
-The certificate files would be available in `/matrix/ssl/config/live/<your-domain>/...`.
-
-If `<your-domain>` and `matrix.<your-domain>` are not the same machine, you can copy over the certificate files manually.
-If they get renewed automatically, you may also have to transfer them periodically. How often you do that is up to you, as long as the certificate files don't expire.
+If `<your-domain>` and `matrix.<your-domain>` are not hosted on the same machine, you can copy over the certificate files manually.
+Don't forget that they may get renewed once in a while, so you may also have to transfer them periodically. How often you do that is up to you, as long as the certificate files don't expire.
 
 
 ### Serving the Federation API with your certificates
