@@ -14,4 +14,4 @@ To upgrade the services:
 
 - restart the services: `ansible-playbook -i inventory/hosts setup.yml --tags=start`
 
-**Note**: major version upgrades are not done to the internal PostgreSQL database. To upgrade that one, refer to the [upgrading PostgreSQL document](maintenance-upgrading-postgres.md).
+**Note**: major version upgrades are not done to the internal PostgreSQL database. To upgrade that one, refer to the [upgrading PostgreSQL guide](maintenance-postgres.md#upgrading-postgresql).

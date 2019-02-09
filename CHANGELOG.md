@@ -294,7 +294,7 @@ Note: Currently the dockerized nginx doesn't support TLSv1.3. See https://github
 
 The playbook now installs [Postgres 11](https://www.postgresql.org/about/news/1894/) by default.
 
-If you have have an existing setup, it's likely running on an older Postgres version (9.x or 10.x). You can easily upgrade by following the [Maintenance / upgrading PostgreSQL](docs/maintenance-upgrading-postgres.md) guide.
+If you have have an existing setup, it's likely running on an older Postgres version (9.x or 10.x). You can easily upgrade by following the [upgrading PostgreSQL guide](docs/maintenance-postgres.md#upgrading-postgresql).
 
 
 ## (BC Break) Renaming playbook variables

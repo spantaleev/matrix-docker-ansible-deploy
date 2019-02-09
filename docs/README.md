@@ -16,7 +16,7 @@
 
 - [Maintenance / upgrading services](maintenance-upgrading-services.md)
 
-- [Maintenance / upgrading PostgreSQL](maintenance-upgrading-postgres.md)
+- [Maintenance / PostgreSQL](maintenance-postgres.md)
 
 - [Maintenance and Troubleshooting](maintenance-and-troubleshooting.md)
 

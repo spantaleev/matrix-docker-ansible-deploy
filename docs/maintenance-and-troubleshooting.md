@@ -18,6 +18,4 @@ sudo journalctl -fu matrix-synapse
 
 ## Postgres
 
-You can access the Postgres command line interface using the script installed on your server at `/usr/local/bin/matrix-postgres-cli`.
-
-This playbook attempts to preserve the Postgres version it starts with. When you are ready to upgrade to a new Postgres version, read through the [guide for upgrading PostgreSQL](maintenance-upgrading-postgres.md).
+See the dedicated [PostgreSQL Maintenance](maintenances-postgres.md) documentation page.
