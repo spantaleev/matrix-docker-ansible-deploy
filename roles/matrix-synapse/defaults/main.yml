@@ -1,4 +1,4 @@
-matrix_synapse_docker_image: "matrixdotorg/synapse:v0.99.0-py3"
+matrix_synapse_docker_image: "matrixdotorg/synapse:v0.99.1-py3"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
 matrix_synapse_config_dir_path: "{{ matrix_synapse_base_path }}/config"
@@ -65,14 +65,12 @@ matrix_synapse_root_log_level: "INFO"
 matrix_synapse_rc_messages_per_second: 0.2
 matrix_synapse_rc_message_burst_count: 10.0
 
-# If you're serving Synapse behind an HTTPS-capable reverse-proxy,
-# you can disable TLS completely (`matrix_synapse_no_tls: true`).
-# Otherwise, you would need to provide certificate files to it.
-matrix_synapse_no_tls: false
 # Controls whether the TLS federation listener is enabled (tcp/8448).
-# Only makes sense if federation is not disabled (`matrix_synapse_federation_enabled`).
+# Only makes sense if federation is enabled (`matrix_synapse_federation_enabled`).
 # Note that federation may potentially be enabled as non-TLS on tcp/8048 as well.
-matrix_synapse_tls_federation_listener_enabled: "{{ not matrix_synapse_no_tls }}"
+# If you're serving Synapse behind an HTTPS-capable reverse-proxy,
+# you can disable the TLS listener (`matrix_synapse_tls_federation_listener_enabled: false`).
+matrix_synapse_tls_federation_listener_enabled: true
 matrix_synapse_tls_certificate_path: "/data/{{ hostname_matrix }}.tls.crt"
 matrix_synapse_tls_private_key_path: "/data/{{ hostname_matrix }}.tls.key"
 

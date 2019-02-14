@@ -127,7 +127,6 @@ matrix_synapse_container_additional_volumes:
 You can then tell Synapse to serve Federation traffic over TLS on `tcp/8448`:
 
 ```yaml
-matrix_synapse_no_tls: false
 matrix_synapse_tls_federation_listener_enabled: true
 matrix_synapse_tls_certificate_path: /some/path/inside/the/container/certificate.crt
 matrix_synapse_tls_private_key_path: /some/path/inside/the/container/private.key
