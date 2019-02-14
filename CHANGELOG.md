@@ -1,3 +1,13 @@
+# 2019-02-14
+
+## Synapse v0.99.1
+
+As we're moving toward Synapse v1.0, things are beginning to stabilize.
+Upgrading from v0.99.0 to v0.99.1 should be painless.
+
+If you've been overriding the default configuration so that you can terminate TLS at the Synapse side (`matrix_synapse_no_tls: false`), you'll now have to replace this custom configuration with `matrix_synapse_tls_federation_listener_enabled: true`. The `matrix_synapse_no_tls` variable is no more.
+
+
 # 2019-02-06
 
 ## Synapse v0.99 support and preparation for Synapse v1.0
