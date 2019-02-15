@@ -43,7 +43,7 @@ This prevents you from suffering the [Downsides of well-known-based Server Deleg
 
 To use DNS SRV record validation, you need to:
 
-- ensure that no `/.well-known/matrix/server` is served from the base domain, as that would interfere with DNS SRV record Server Delegation. To make the playbook **not** generate and serve the file, use the following configuration: `matrix_well_known_matrix_server_enabled: false`.
+- ensure that `/.well-known/matrix/server` is **not served** from the base domain, as that would interfere with DNS SRV record Server Delegation. To make the playbook **not** generate and serve the file, use the following configuration: `matrix_well_known_matrix_server_enabled: false`.
 
 - ensure that you have a `_matrix._tcp` DNS SRV record for your base domain (`<your-domain>`) with a value of `10 0 8448 matrix.<your-domain>`
 
