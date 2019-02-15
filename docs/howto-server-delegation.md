@@ -10,7 +10,7 @@ It is a complicated matter, so unless you are affected by the [Downsides of well
 
 ## Server Delegation via a well-known file
 
-Serving a `/.well-known/matrix/server` file from the base domain is the most straightforward way to set up server delegation, but it suffers from the following problems:
+Serving a `/.well-known/matrix/server` file from the base domain is the most straightforward way to set up server delegation, but it suffers from some problems that we list in [Downsides of well-known-based Server Delegation](#downsides-of-well-known-based-server-delegation).
 
 As we already mention in [Configuring DNS](configuring-dns.md) and [Configuring Service Discovery via .well-known](configuring-well-known.md),
 this playbook already properly guides you into setting up such delegation by means of a `/.well-known/matrix/server` file served from the base domain (`<your-domain>`).
