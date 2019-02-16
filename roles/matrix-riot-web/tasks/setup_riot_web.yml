@@ -18,7 +18,7 @@
     name: "{{ matrix_riot_web_docker_image }}"
   when: matrix_riot_web_enabled
 
-- name: Ensure Matrix riot-web configured
+- name: Ensure Matrix riot-web config files installed
   template:
     src: "{{ item.src }}"
     dest: "{{ matrix_riot_web_data_path }}/{{ item.name }}"
@@ -28,8 +28,16 @@
   with_items:
     - {src: "{{ role_path }}/templates/config.json.j2", name: "config.json"}
     - {src: "{{ role_path }}/templates/nginx.conf.j2", name: "nginx.conf"}
-    - {src: "{{ matrix_riot_web_homepage_template }}", name: "home.html"}
-  when: matrix_riot_web_enabled
+    - {src: "{{ matrix_riot_web_embedded_pages_home_path }}", name: "home.html"}
+  when: "matrix_riot_web_enabled and item.src is not none"
+
+- name: Ensure Matrix riot-web config files removed
+  file:
+    path: "{{ matrix_riot_web_data_path }}/{{ item.name }}"
+    state: absent
+  with_items:
+    - {src: "{{ matrix_riot_web_embedded_pages_home_path }}", name: "home.html"}
+  when: "matrix_riot_web_enabled and item.src is none"
 
 - name: Ensure matrix-riot-web.service installed
   template:
