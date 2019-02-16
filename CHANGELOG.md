@@ -6,7 +6,7 @@ You can now use the brand new and redesigned Riot.
 
 The new version no longer has a homepage by default, so we've also removed the custom homepage that we've been installing.
 
-However, we still provide you with hooks to install your own `home.html` file (using the `matrix_riot_web_embedded_pages_home_path` variable).
+However, we still provide you with hooks to install your own `home.html` file by specifying the `matrix_riot_web_embedded_pages_home_path` variable (used to be called `matrix_riot_web_homepage_template` before).
 
 
 # 2019-02-14
