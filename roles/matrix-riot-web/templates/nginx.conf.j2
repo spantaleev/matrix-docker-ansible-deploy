@@ -47,9 +47,14 @@ http {
 		listen 8080;
 		server_name localhost;
 
+		root /usr/share/nginx/html;
+
 		location / {
-			root /usr/share/nginx/html;
 			index index.html index.htm;
+		}
+
+		location ~* ^/(config(.+)?\.json$|(.+)\.html$|i18n) {
+			expires -1;
 		}
 
 		error_page 500 502 503 504 /50x.html;
