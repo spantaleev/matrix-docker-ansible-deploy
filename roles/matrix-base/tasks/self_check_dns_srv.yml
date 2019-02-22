@@ -30,12 +30,15 @@
       Full error from trying to run `dig`: {{ result_cli_dig_srv }}
   when: "lookup_dig_srv is not defined and result_cli_dig_srv.stderr != ''"
 
+# Some DNS servers may respond with '' (stands for "No Answer").
+# Most usually, a missing record would yield a 'NXDOMAIN' response.
+# In any case, we consider any non-mapping response to mean "missing record".
 - name: Fail if DNS SRV record missing (Ansible dig lookup)
   fail:
     msg: >-
       It appears the DNS SRV record for {{ dns_srv_record_check.service_and_protocol }} on {{ dns_srv_record_check.domain }} is not set up correctly (the record is missing).
       See the 'Configuring DNS' documentation for this playbook.
-  when: "lookup_dig_srv is defined and lookup_dig_srv == 'NXDOMAIN'"
+  when: "lookup_dig_srv is defined and lookup_dig_srv is not mapping"
 
 - name: Fail if DNS SRV record incorrect (Ansible dig lookup)
   fail:
