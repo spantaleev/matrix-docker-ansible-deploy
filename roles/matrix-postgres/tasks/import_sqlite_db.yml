@@ -64,27 +64,22 @@
   delegate_to: 127.0.0.1
   become: false
 
-# If the actual migration command (below) fails, it will leave a container behind.
-# Starting it again later will relaunch that one, which may or may not work.
-# To ensure we're starting from a clean state, ensure any such leftovers are removed.
-- name: Cleanup any old leftover migration container
-  docker_container:
-    name: matrix-synapse-migrate
-    state: absent
-
-- name: Importing SQLite database into Postgres
-  docker_container:
-    name: matrix-synapse-migrate
-    image: "{{ matrix_synapse_docker_image }}"
-    detach: no
-    cleanup: yes
-    entrypoint: /usr/local/bin/python
-    command: "/usr/local/bin/synapse_port_db --sqlite-database /{{ server_path_homeserver_db|basename }} --postgres-config /data/homeserver.yaml"
-    user: "{{ matrix_user_uid }}:{{ matrix_user_gid }}"
-    cap_drop: ['all']
-    volumes:
-      - "{{ matrix_synapse_config_dir_path }}:/data"
-      - "{{ matrix_synapse_run_path }}:/matrix-run"
-      - "{{ server_path_homeserver_db }}:/{{ server_path_homeserver_db|basename }}:ro"
-    networks:
-      - name: "{{ matrix_docker_network }}"
+# We don't use the `docker_container` module, because using it with `cap_drop` requires
+# a very recent version, which is not available for a lot of people yet.
+#
+# Also, some old `docker_container` versions were buggy and would leave containers behind
+# on failure, which we had to work around to allow retries (by re-running the playbook).
+- name: Import SQLite database into Postgres
+  command: |
+    docker run
+    --rm
+    --name=matrix-synapse-migrate
+    --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+    --cap-drop=ALL
+    --network={{ matrix_docker_network }}
+    --entrypoint=python
+    -v {{ matrix_synapse_config_dir_path }}:/data
+    -v {{ matrix_synapse_run_path }}:/matrix-run
+    -v {{ server_path_homeserver_db }}:/{{ server_path_homeserver_db|basename }}:ro
+    {{ matrix_synapse_docker_image }}
+    /usr/local/bin/synapse_port_db --sqlite-database /{{ server_path_homeserver_db|basename }} --postgres-config /data/homeserver.yaml
