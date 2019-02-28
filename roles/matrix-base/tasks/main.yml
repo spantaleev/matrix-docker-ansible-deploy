@@ -1,3 +1,7 @@
+- import_tasks: "{{ role_path }}/tasks/sanity_check.yml"
+  tags:
+    - always
+
 - import_tasks: "{{ role_path }}/tasks/clean_up_old_files.yml"
   when: run_setup
   tags:
@@ -20,10 +24,6 @@
     - setup-mxisd
     - setup-synapse
     - setup-nginx-proxy
-
-- import_tasks: "{{ role_path }}/tasks/sanity_check.yml"
-  tags:
-    - always
 
 - import_tasks: "{{ role_path }}/tasks/self_check_dns.yml"
   delegate_to: 127.0.0.1

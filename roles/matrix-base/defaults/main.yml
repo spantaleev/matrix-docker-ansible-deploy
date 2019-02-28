@@ -1,16 +1,19 @@
-# The bare hostname which represents your identity.
-# This is something like "example.com".
+# The bare domain name which represents your Matrix identity.
+# Matrix user ids for your server will be of the form (`@user:<matrix-domain>`).
+#
 # Note: this playbook does not touch the server referenced here.
-hostname_identity: "{{ host_specific_hostname_identity|lower }}"
+# Installation happens on another server ("matrix.<matrix-domain>", see `matrix_server_fqn_matrix`).
+#
+# Example value: example.com
+matrix_domain: ~
 
-# This is where your data lives and what we set up here.
-# This and the Riot hostname (see below) are expected to be on the same server.
-hostname_matrix: "matrix.{{ hostname_identity }}"
+# This is where your data lives and what we set up.
+# This and the Riot FQN (see below) are expected to be on the same server.
+matrix_server_fqn_matrix: "matrix.{{ matrix_domain }}"
 
 # This is where you access the web UI from and what we set up here.
-# This and the Matrix hostname (see above) are expected to be on the same server.
-hostname_riot: "riot.{{ hostname_identity }}"
-
+# This and the Matrix FQN (see above) are expected to be on the same server.
+matrix_server_fqn_riot: "riot.{{ matrix_domain }}"
 
 matrix_user_username: "matrix"
 matrix_user_uid: 991
@@ -21,7 +24,7 @@ matrix_base_data_path_mode: "750"
 
 matrix_static_files_base_path: "{{ matrix_base_data_path }}/static-files"
 
-matrix_homeserver_url: "https://{{ hostname_matrix }}"
+matrix_homeserver_url: "https://{{ matrix_server_fqn_matrix }}"
 
 matrix_identity_server_url: ~
 
@@ -32,8 +35,8 @@ matrix_docker_network: "matrix"
 #
 # If you wish to rely on DNS SRV records only, you can disable this.
 # Using DNS SRV records implies that you'll be handling Matrix Federation API traffic (tcp/8448)
-# using certificates for the base domain (`hostname_identity`) and not for the
-# matrix domain (`hostname_matrix`).
+# using certificates for the base domain (`matrix_domain`) and not for the
+# matrix domain (`matrix_server_fqn_matrix`).
 matrix_well_known_matrix_server_enabled: true
 
 # Variables to Control which parts of our roles run.

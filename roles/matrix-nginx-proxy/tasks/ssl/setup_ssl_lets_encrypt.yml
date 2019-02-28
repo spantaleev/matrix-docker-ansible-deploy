@@ -16,10 +16,22 @@
 # Tasks related to setting up Let's Encrypt's management of certificates
 #
 
-- name: (Deprecation) Fail if using outdated configuration
+- name: (Deprecation) Catch and report renamed settings
   fail:
-    msg: "You're using the `host_specific_matrix_ssl_support_email` variable, which has been superseded by `host_specific_matrix_ssl_lets_encrypt_support_email`. Please change your configuration to use the new name!"
-  when: "matrix_ssl_retrieval_method == 'lets-encrypt' and host_specific_matrix_ssl_support_email is defined"
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  with_items:
+    - {'old': 'host_specific_matrix_ssl_support_email', 'new': 'matrix_ssl_lets_encrypt_support_email'}
+    - {'old': 'host_specific_matrix_ssl_lets_encrypt_support_email', 'new': 'matrix_ssl_lets_encrypt_support_email'}
+  when: "matrix_ssl_retrieval_method == 'lets-encrypt' and item.old in vars"
+
+- name: Fail if required variables are undefined
+  fail:
+    msg: "Detected an undefined required variable"
+  with_items:
+    - "{{ matrix_ssl_lets_encrypt_support_email }}"
+  when: "matrix_ssl_retrieval_method == 'lets-encrypt' and item is none"
 
 - name: Allow access to HTTP/HTTPS in firewalld
   firewalld:

@@ -1,26 +1,21 @@
-# This is something which is provided to Let's Encrypt
-# when retrieving the SSL certificates for domains.
+# The bare domain name which represents your Matrix identity.
+# Matrix user ids for your server will be of the form (`@user:<matrix-domain>`).
 #
-# In case SSL renewal fails at some point, you'll also get
-# an email notification there.
-#
-# If you decide to use another method for managing SSL certifites (different than the default Let's Encrypt),
-# you won't be required to define this variable
-# (see `docs/configuring-playbook-ssl-certificates.md`).
-#
-# Example value: someone@example.com
-host_specific_matrix_ssl_lets_encrypt_support_email: YOUR_EMAIL_ADDRESS_HERE
-
-# This is your bare domain name (`<your-domain>`).
-#
-# Note: the server specified here is not touched.
-#
-# This playbook only installs to `matrix.<your-domain>`,
-# but it nevertheless requires to know the bare domain name
-# (for configuration purposes).
+# Note: this playbook does not touch the server referenced here.
+# Installation happens on another server ("matrix.<matrix-domain>").
 #
 # Example value: example.com
-host_specific_hostname_identity: YOUR_BARE_DOMAIN_NAME_HERE
+matrix_domain: YOUR_BARE_DOMAIN_NAME_HERE
+
+# This is something which is provided to Let's Encrypt when retrieving SSL certificates for domains.
+#
+# In case SSL renewal fails at some point, you'll also get an email notification there.
+#
+# If you decide to use another method for managing SSL certifites (different than the default Let's Encrypt),
+# you won't be required to define this variable (see `docs/configuring-playbook-ssl-certificates.md`).
+#
+# Example value: someone@example.com
+matrix_ssl_lets_encrypt_support_email: YOUR_EMAIL_ADDRESS_HERE
 
 # A shared secret (between Coturn and Synapse) used for authentication.
 # You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).

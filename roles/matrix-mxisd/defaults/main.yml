@@ -29,7 +29,7 @@ matrix_mxisd_synapsesql_type: ""
 matrix_mxisd_synapsesql_connection: ""
 
 # Setting up email-sending settings is required for using mxisd.
-matrix_mxisd_threepid_medium_email_identity_from: "matrix@{{ hostname_identity }}"
+matrix_mxisd_threepid_medium_email_identity_from: "matrix@{{ matrix_domain }}"
 matrix_mxisd_threepid_medium_email_connectors_smtp_host: ""
 matrix_mxisd_threepid_medium_email_connectors_smtp_port: 587
 matrix_mxisd_threepid_medium_email_connectors_smtp_tls: 1
@@ -40,7 +40,7 @@ matrix_mxisd_threepid_medium_email_connectors_smtp_password: ""
 # Useful when reverse-proxying certain URLs (e.g. `/_matrix/client/r0/user_directory/search`) to mxisd,
 # so that mxisd can rewrite the original URL to one that would reach the homeserver.
 matrix_mxisd_dns_overwrite_enabled: false
-matrix_mxisd_dns_overwrite_homeserver_client_name: "{{ hostname_matrix }}"
+matrix_mxisd_dns_overwrite_homeserver_client_name: "{{ matrix_server_fqn_matrix }}"
 matrix_mxisd_dns_overwrite_homeserver_client_value: "http://matrix-synapse:8008"
 
 # Default mxisd configuration template which covers the generic use case.
@@ -50,10 +50,10 @@ matrix_mxisd_dns_overwrite_homeserver_client_value: "http://matrix-synapse:8008"
 # or completely replace this variable with your own template.
 matrix_mxisd_configuration_yaml: |
   matrix:
-    domain: {{ hostname_identity }}
+    domain: {{ matrix_domain }}
 
   server:
-    name: {{ hostname_matrix }}
+    name: {{ matrix_server_fqn_matrix }}
 
   key:
     path: /var/mxisd/sign.key

@@ -66,13 +66,13 @@ If you are hosting other domains on the Matrix machine, you can make the playboo
 To do that, simply define your own custom configuration like this:
 
 ```yaml
-# Note: we need to include the matrix (`hostname_matrix`) and riot (`hostname_riot`) domains explicitly.
-# Your base domain is in the `hostname_identity` variable.
+# Note: we need to include the matrix (`matrix_server_fqn_matrix`) and riot (`matrix_server_fqn_riot`) domains explicitly.
+# Your base domain is in the `matrix_domain` variable.
 # Adding any other additional domains (hosted on the same machine) is possible.
 matrix_ssl_domains_to_obtain_certificates_for:
-  - '{{ hostname_matrix }}'
-  - '{{ hostname_riot }}'
-  - '{{ hostname_identity }}'
+  - '{{ matrix_server_fqn_matrix }}'
+  - '{{ matrix_server_fqn_riot }}'
+  - '{{ matrix_domain }}'
 ```
 
 After redefining `matrix_ssl_domains_to_obtain_certificates_for`, to actually obtain certificates you should:

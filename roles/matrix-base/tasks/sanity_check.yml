@@ -15,15 +15,32 @@
     msg: "{{ matrix_ansible_outdated_fail_msg }}"
   when: "ansible_version.major == 2 and ansible_version.minor == 5 and ansible_version.revision < 2"
 
-# This sanity check is only used to detect uppercase when people override these specific variables.
-#
-# If people set `host_specific_hostname_identity` without overriding other variables (the general use-case),
-# we take care to lower-case it automatically and it won't cause trouble anyway.
+- name: (Deprecation) Catch and report renamed settings
+  fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'host_specific_hostname_identity', 'new': 'matrix_domain'}
+    - {'old': 'hostname_identity', 'new': 'matrix_domain'}
+    - {'old': 'hostname_matrix', 'new': 'matrix_server_fqn_matrix'}
+    - {'old': 'hostname_riot', 'new': 'matrix_server_fqn_riot'}
+
+- name: Fail if required variables are undefined
+  fail:
+    msg: "The `{{ item }}` variable must be defined and have a non-null value"
+  with_items:
+    - matrix_domain
+    - matrix_server_fqn_matrix
+    - matrix_server_fqn_riot
+  when: "item not in vars or vars[item] is none"
+
 - name: Fail if uppercase domain used
   fail:
     msg: "Detected that you're using an uppercase domain name - `{{ item }}`. This will cause trouble. Please use all-lowercase!"
-  when: "item != item|lower"
   with_items:
-    - "{{ hostname_identity }}"
-    - "{{ hostname_matrix }}"
-    - "{{ hostname_riot }}"
+    - "{{ matrix_domain }}"
+    - "{{ matrix_server_fqn_matrix }}"
+    - "{{ matrix_server_fqn_riot }}"
+  when: "item != item|lower"

@@ -1,3 +1,18 @@
+# 2019-02-19
+
+## Renaming variables
+
+The following playbook variables were renamed:
+
+- from `host_specific_hostname_identity` to `matrix_domain`
+- from `hostname_identity` to `matrix_domain`
+- from `hostname_matrix` to `matrix_server_fqn_matrix`
+- from `hostname_riot` to `matrix_server_fqn_riot`
+- from `host_specific_matrix_ssl_lets_encrypt_support_email` to `matrix_ssl_lets_encrypt_support_email`
+
+Doing that, we've simplified things, made names less confusing (hopefully) and moved all variable names under the `matrix_` prefix.
+
+
 # 2019-02-16
 
 ## Riot v1.0.1 support

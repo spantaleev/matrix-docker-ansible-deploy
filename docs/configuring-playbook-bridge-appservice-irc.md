@@ -73,4 +73,4 @@ matrix_appservice_irc_configuration_extension_yaml: |
           lineLimit: 3
 ```
 
-You then need to start a chat with `@irc_bot:{{ hostname_identity }}`
+You then need to start a chat with `@irc_bot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).

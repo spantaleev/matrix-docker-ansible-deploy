@@ -10,4 +10,4 @@ Use the following playbook configuration:
 matrix_mautrix_whatsapp_enabled: true
 ```
 
-You then need to start a chat with `@whatsappbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base hostname, not the `matrix.` hostname).
+You then need to start a chat with `@whatsappbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).

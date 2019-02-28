@@ -12,4 +12,4 @@ matrix_mautrix_telegram_api_id: YOUR_TELEGRAM_APP_ID
 matrix_mautrix_telegram_api_hash: YOUR_TELEGRAM_API_HASH
 ```
 
-You then need to start a chat with `@telegrambot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base hostname, not the `matrix.` hostname).
+You then need to start a chat with `@telegrambot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).

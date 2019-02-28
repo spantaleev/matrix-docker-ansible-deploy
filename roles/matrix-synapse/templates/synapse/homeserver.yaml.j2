@@ -5,7 +5,7 @@
 # This is used by remote servers to connect to this server,
 # e.g. matrix.org, localhost:8080, etc.
 # This is also the last part of your UserID.
-server_name: "{{ hostname_identity }}"
+server_name: "{{ matrix_domain }}"
 
 # When running as a daemon, the file to store the pid in
 pid_file: /homeserver.pid
@@ -43,7 +43,7 @@ pid_file: /homeserver.pid
 # enter into the 'custom HS URL' field on their client. If you
 # use synapse with a reverse proxy, this should be the URL to reach
 # synapse via the proxy.
-public_baseurl: https://{{ hostname_matrix }}/
+public_baseurl: https://{{ matrix_server_fqn_matrix }}/
 
 # Set the soft limit on the number of file descriptors synapse can use
 # Zero is used to indicate synapse should set the soft limit to the
@@ -339,7 +339,7 @@ event_cache_size: "{{ matrix_synapse_event_cache_size }}"
 
 
 # A yaml python logging config file
-log_config: "/data/{{ hostname_matrix }}.log.config"
+log_config: "/data/{{ matrix_server_fqn_matrix }}.log.config"
 
 
 ## Ratelimiting ##
@@ -660,7 +660,7 @@ form_secret: {{ matrix_synapse_form_secret|to_json }}
 ## Signing Keys ##
 
 # Path to the signing key to sign messages with
-signing_key_path: "/data/{{ hostname_matrix }}.signing.key"
+signing_key_path: "/data/{{ matrix_server_fqn_matrix }}.signing.key"
 
 # The keys that the server used to sign messages with but won't use
 # to sign new messages. E.g. it has lost its private key
