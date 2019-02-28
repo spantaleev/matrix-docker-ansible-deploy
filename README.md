@@ -90,7 +90,7 @@ This playbook sets up your server using the following Docker images:
 
 - [matrixdotorg/synapse](https://hub.docker.com/r/matrixdotorg/synapse/) - the official [Matrix Synapse](https://github.com/matrix-org/synapse) server
 
-- [instrumentisto/coturn](https://hub.docker.com/r/instrumentisto/coturn/) - the [Coturn](https://github.com/coturn/coturn) STUN/TURN server
+- [instrumentisto/coturn](https://hub.docker.com/r/instrumentisto/coturn/) - the [Coturn](https://github.com/coturn/coturn) STUN/TURN server (optional)
 
 - [bubuntux/riot-web](https://hub.docker.com/r/bubuntux/riot-web/) - the [Riot.im](https://about.riot.im/) web client (optional)
 
@@ -106,7 +106,7 @@ This playbook sets up your server using the following Docker images:
 
 - [nginx](https://hub.docker.com/_/nginx/) - the [nginx](http://nginx.org/) web server (optional)
 
-- [certbot/certbot](https://hub.docker.com/r/certbot/certbot/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/)
+- [certbot/certbot](https://hub.docker.com/r/certbot/certbot/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) (optional)
 
 - [tulir/mautrix-telegram](https://hub.docker.com/r/tulir/mautrix-telegram/) - the [mautrix-telegram](https://github.com/tulir/mautrix-telegram) bridge to [Telegram](https://telegram.org/) (optional)
 
