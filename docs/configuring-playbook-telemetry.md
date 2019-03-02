@@ -42,3 +42,5 @@ If statistics reporting is enabled, the information that gets submitted to the m
 - cache setting information
 
 - CPU and memory statistics for the homeserver program
+
+- database engine type and version
