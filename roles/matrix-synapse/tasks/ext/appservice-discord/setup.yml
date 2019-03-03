@@ -40,6 +40,14 @@
 - set_fact:
     matrix_synapse_app_service_config_file_appservice_discord: '{{ matrix_appservice_discord_base_path }}/discord-registration.yml'
 
+- stat:
+    path: "{{ matrix_appservice_discord_base_path }}/invite_link"
+  register: appservice_discord_link_generated
+
+- name: Generate your discord invite link invite link
+  shell: /usr/bin/docker run --rm --name matrix-appservice-discord-link-gen -v {{ matrix_appservice_discord_base_path }}:/data -w /data {{ matrix_appservice_discord_docker_image }} /bin/sh -c "node .././build/tools/addbot.js > invite_link"
+  when: "matrix_appservice_discord_enabled and appservice_discord_link_generated.stat.exists == False"
+
 - set_fact:
     matrix_synapse_container_additional_volumes: >
       {{ matrix_synapse_container_additional_volumes }}
