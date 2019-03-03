@@ -30,7 +30,13 @@
     src: "{{ role_path }}/templates/systemd/matrix-coturn.service.j2"
     dest: "/etc/systemd/system/matrix-coturn.service"
     mode: 0644
+  register: matrix_coturn_systemd_service_result
   when: matrix_coturn_enabled
+
+- name: Ensure systemd reloaded after matrix-coturn.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_coturn_enabled and matrix_coturn_systemd_service_result.changed"
 
 - name: Allow access to Coturn ports in firewalld
   firewalld:
@@ -65,6 +71,11 @@
   file:
     path: "/etc/systemd/system/matrix-coturn.service"
     state: absent
+  when: "not matrix_coturn_enabled and matrix_coturn_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-coturn.service removal
+  service:
+    daemon_reload: yes
   when: "not matrix_coturn_enabled and matrix_coturn_service_stat.stat.exists"
 
 - name: Ensure Matrix coturn paths don't exist

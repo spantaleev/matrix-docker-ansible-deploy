@@ -64,6 +64,12 @@
     src: "{{ role_path }}/templates/synapse/systemd/matrix-synapse.service.j2"
     dest: "/etc/systemd/system/matrix-synapse.service"
     mode: 0644
+  register: matrix_synapse_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-synapse.service installation
+  service:
+    daemon_reload: yes
+  when: matrix_synapse_systemd_service_result.changed
 
 - name: Ensure matrix-synapse-register-user script created
   template:

@@ -33,7 +33,13 @@
     src: "{{ role_path }}/templates/ext/mautrix-whatsapp/systemd/matrix-mautrix-whatsapp.service.j2"
     dest: "/etc/systemd/system/matrix-mautrix-whatsapp.service"
     mode: 0644
+  register: matrix_mautrix_whatsapp_systemd_service_result
   when: "matrix_mautrix_whatsapp_enabled"
+
+- name: Ensure systemd reloaded after matrix-mautrix-whatsapp.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_mautrix_whatsapp_enabled and matrix_mautrix_whatsapp_systemd_service_result.changed"
 
 - name: Check if a mautrix-whatsapp registration file exists
   stat:

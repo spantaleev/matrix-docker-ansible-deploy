@@ -37,7 +37,13 @@
     src: "{{ role_path }}/templates/goofys/systemd/matrix-goofys.service.j2"
     dest: "/etc/systemd/system/matrix-goofys.service"
     mode: 0644
+  register: matrix_goofys_systemd_service_result
   when: matrix_s3_media_store_enabled
+
+- name: Ensure systemd reloaded after matrix-goofys.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_s3_media_store_enabled and matrix_goofys_systemd_service_result.changed"
 
 #
 # Tasks related to getting rid of goofys (if it was previously enabled)
@@ -60,6 +66,11 @@
   file:
     path: "/etc/systemd/system/matrix-goofys.service"
     state: absent
+  when: "not matrix_s3_media_store_enabled and matrix_goofys_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-goofys.service removal
+  service:
+    daemon_reload: yes
   when: "not matrix_s3_media_store_enabled and matrix_goofys_service_stat.stat.exists"
 
 - name: Ensure goofys environment variables file doesn't exist

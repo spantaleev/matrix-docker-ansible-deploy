@@ -76,7 +76,13 @@
     src: "{{ role_path }}/templates/systemd/matrix-postgres.service.j2"
     dest: "/etc/systemd/system/matrix-postgres.service"
     mode: 0644
+  register: matrix_postgres_systemd_service_result
   when: matrix_postgres_enabled
+
+- name: Ensure systemd reloaded after matrix-postgres.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_postgres_enabled and matrix_postgres_systemd_service_result.changed"
 
 #
 # Tasks related to getting rid of the internal postgres server (if it was previously enabled)
@@ -99,6 +105,11 @@
   file:
     path: "/etc/systemd/system/matrix-postgres.service"
     state: absent
+  when: "not matrix_postgres_enabled and matrix_postgres_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-postgres.service removal
+  service:
+    daemon_reload: yes
   when: "not matrix_postgres_enabled and matrix_postgres_service_stat.stat.exists"
 
 - name: Check existence of matrix-postgres local data path

@@ -44,7 +44,13 @@
     src: "{{ role_path }}/templates/ext/mautrix-telegram/systemd/matrix-mautrix-telegram.service.j2"
     dest: "/etc/systemd/system/matrix-mautrix-telegram.service"
     mode: 0644
+  register: matrix_mautrix_telegram_systemd_service_result
   when: "matrix_mautrix_telegram_enabled"
+
+- name: Ensure systemd reloaded after matrix-mautrix-telegram.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_mautrix_telegram_enabled and matrix_mautrix_telegram_systemd_service_result.changed"
 
 - name: Check if a mautrix-telegram registration file exists
   stat:

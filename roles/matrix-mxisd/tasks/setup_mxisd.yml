@@ -35,7 +35,13 @@
     src: "{{ role_path }}/templates/systemd/matrix-mxisd.service.j2"
     dest: "/etc/systemd/system/matrix-mxisd.service"
     mode: 0644
+  register: matrix_mxisd_systemd_service_result
   when: matrix_mxisd_enabled
+
+- name: Ensure systemd reloaded after matrix-mxisd.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_mxisd_enabled and matrix_mxisd_systemd_service_result.changed"
 
 #
 # Tasks related to getting rid of mxisd (if it was previously enabled)
@@ -58,6 +64,11 @@
   file:
     path: "/etc/systemd/system/matrix-mxisd.service"
     state: absent
+  when: "not matrix_mxisd_enabled and matrix_mxisd_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-mxisd.service removal
+  service:
+    daemon_reload: yes
   when: "not matrix_mxisd_enabled and matrix_mxisd_service_stat.stat.exists"
 
 - name: Ensure Matrix mxisd paths don't exist
