@@ -27,7 +27,13 @@
     src: "{{ role_path }}/templates/ext/appservice-discord/systemd/matrix-appservice-discord.service.j2"
     dest: "/etc/systemd/system/matrix-appservice-discord.service"
     mode: 0644
+  register: matrix_appservice_discord_systemd_service_result
   when: "matrix_appservice_discord_enabled"
+  
+- name: Ensure systemd reloaded after matrix-appservice-discord.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_appservice_discord_enabled and matrix_appservice_discord_systemd_service_result.changed"
 
 - stat:
     path: "{{ matrix_appservice_discord_base_path }}/discord-registration.yaml"
