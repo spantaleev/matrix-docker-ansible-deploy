@@ -22,13 +22,14 @@
     group: "{{ matrix_user_username }}"
   when: "matrix_appservice_irc_enabled"
 
-- stat:
+- name: Check if matrix-appservice-irc passkey exists
+  stat:
     path: "{{ matrix_appservice_irc_base_path }}/passkey.pem"
   register: irc_passkey_file
 
 - name: Generate matrix-appservice-irc passkey if it doesn't exist
   shell: /usr/bin/openssl genpkey -out {{ matrix_appservice_irc_base_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048
-  when: "matrix_appservice_irc_enabled and irc_passkey_file.stat.exists == False"
+  when: "matrix_appservice_irc_enabled and not irc_passkey_file.stat.exists"
 
 - name: Ensure matrix-appservice-irc.service installed
   template:
@@ -43,13 +44,23 @@
     daemon_reload: yes
   when: "matrix_appservice_irc_enabled and matrix_appservice_irc_systemd_service_result.changed"
 
-- stat:
+- name: Check if a matrix-appservice-irc registration file exists
+  stat:
     path: "{{ matrix_appservice_irc_base_path }}/registration.yaml"
   register: appservice_irc_registration_file
 
 - name: Generate matrix-appservice-irc registration.yaml if it doesn't exist
-  shell: /usr/bin/docker run --rm --name matrix-appservice-irc-gen -v {{ matrix_appservice_irc_base_path }}:/data:z {{ matrix_appservice_irc_docker_image }} node app.js -r -f /data/registration.yaml -u "http://matrix-appservice-irc:9999" -c /data/config.yaml -l irc_bot
-  when: "matrix_appservice_irc_enabled and appservice_irc_registration_file.stat.exists == False"
+  shell: >-
+    /usr/bin/docker run --rm --name matrix-appservice-irc-gen
+    -v {{ matrix_appservice_irc_base_path }}:/data:z
+    {{ matrix_appservice_irc_docker_image }}
+    node app.js
+    -r
+    -f /data/registration.yaml
+    -u "http://matrix-appservice-irc:9999"
+    -c /data/config.yaml
+    -l irc_bot
+  when: "matrix_appservice_irc_enabled and not appservice_irc_registration_file.stat.exists"
 
 - set_fact:
     matrix_synapse_app_service_config_file_appservice_irc: '/app-registration/appservice-irc.yml'
