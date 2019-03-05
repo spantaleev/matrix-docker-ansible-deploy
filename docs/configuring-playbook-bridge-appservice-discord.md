@@ -4,17 +4,23 @@ The playbook can install and configure [matrix-appservice-discord](https://githu
 
 See the project's [documentation](https://github.com/Half-Shot/matrix-appservice-discord/blob/master/README.md) to learn what it does and why it might be useful to you.
 
-Setup Instructions: 
+Setup Instructions:
 
 loosely based on [this](https://github.com/Half-Shot/matrix-appservice-discord#setting-up)
 
 1. Create a Discord Application [here](https://discordapp.com/developers/applications/me/create).
 2. Retrieve Client ID and Bot token from this Application.
-3. Enable the bridge with `matrix_appservice_discord_enabled: true` in your vars.yml and provide id and token.
-4. Rerun playbook with "setup-all" tag. Restart with tag "start" afterwards.
-5. Retrieve Discord invitelink from `{{ matrix_appservice_discord_base_path }}/invite_link` (this defaults to `/matrix/appservice-discord/invite_link`)
+3. Enable the bridge with the following configuration in your `vars.yml` file:
+
+```yaml
+matrix_appservice_discord_enabled: true
+matrix_appservice_discord_client_id: "YOUR DISCORD APP CLIENT ID"
+matrix_appservice_discord_bot_token: "YOUR DISCORD APP BOT TOKEN"
+```
+
+4. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
+5. Retrieve Discord invitelink from the `{{ matrix_appservice_discord_base_path }}/invite_link` file on the server (this defaults to `/matrix/appservice-discord/invite_link`)
 6. Invite the Bot to Discord servers you wish to bridge. Administrator permission is recommended.
-7. Join the rooms by following this syntax `#_discord_guildid_channelid`
- - can be easily retrieved by logging into Discord in a browser and opening the desired channel. URL will have this format: discordapp.com/channels/guild_id/channel_id
+7. Join the rooms by following this syntax `#_discord_guildid_channelid` - can be easily retrieved by logging into Discord in a browser and opening the desired channel. URL will have this format: discordapp.com/channels/guild_id/channel_id
 
 Other configuration options are available via the `matrix_appservice_discord_configuration_extension_yaml` variable.
