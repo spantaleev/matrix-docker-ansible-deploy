@@ -29,30 +29,50 @@
     mode: 0644
   register: matrix_appservice_discord_systemd_service_result
   when: "matrix_appservice_discord_enabled"
-  
+
 - name: Ensure systemd reloaded after matrix-appservice-discord.service installation
   service:
     daemon_reload: yes
   when: "matrix_appservice_discord_enabled and matrix_appservice_discord_systemd_service_result.changed"
 
-- stat:
+- name: Check if a matrix-appservice-discord registration file exists
+  stat:
     path: "{{ matrix_appservice_discord_base_path }}/discord-registration.yaml"
   register: appservice_discord_registration_file
 
 - name: Generate matrix-appservice-discord discord-registration.yaml if it doesn't exist
-  shell: /usr/bin/docker run --rm --name matrix-appservice-discord-gen -v {{ matrix_appservice_discord_base_path }}:/data:z {{ matrix_appservice_discord_docker_image }} node build/src/discordas.js -r -u "http://matrix-appservice-discord:9005" -c /data/config.yaml -f /data/discord-registration.yaml -l discord_bot
-  when: "matrix_appservice_discord_enabled and appservice_discord_registration_file.stat.exists == False"
+  shell: >-
+    /usr/bin/docker run --rm --name matrix-appservice-discord-gen
+    --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+    --cap-drop=ALL
+    -v {{ matrix_appservice_discord_base_path }}:/data:z
+    {{ matrix_appservice_discord_docker_image }}
+    node build/src/discordas.js
+    -r
+    -u "http://matrix-appservice-discord:9005"
+    -c /data/config.yaml
+    -f /data/discord-registration.yaml
+    -l discord_bot
+  when: "matrix_appservice_discord_enabled and not appservice_discord_registration_file.stat.exists"
 
 - set_fact:
     matrix_synapse_app_service_config_file_appservice_discord: '{{ matrix_appservice_discord_base_path }}/discord-registration.yml'
 
-- stat:
+- name: Check if a matrix-appservice-discord invite_link file exists
+  stat:
     path: "{{ matrix_appservice_discord_base_path }}/invite_link"
   register: appservice_discord_link_generated
 
-- name: Generate your discord invite link invite link
-  shell: /usr/bin/docker run --rm --name matrix-appservice-discord-link-gen -v {{ matrix_appservice_discord_base_path }}:/data -w /data {{ matrix_appservice_discord_docker_image }} /bin/sh -c "node .././build/tools/addbot.js > invite_link"
-  when: "matrix_appservice_discord_enabled and appservice_discord_link_generated.stat.exists == False"
+- name: Generate your discord invite link
+  shell: >-
+    /usr/bin/docker run --rm --name matrix-appservice-discord-link-gen
+    --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+    --cap-drop=ALL
+    -v {{ matrix_appservice_discord_base_path }}:/data
+    -w /data
+    {{ matrix_appservice_discord_docker_image }}
+    /bin/sh -c "node .././build/tools/addbot.js > invite_link"
+  when: "matrix_appservice_discord_enabled and not appservice_discord_link_generated.stat.exists"
 
 - set_fact:
     matrix_synapse_container_additional_volumes: >
