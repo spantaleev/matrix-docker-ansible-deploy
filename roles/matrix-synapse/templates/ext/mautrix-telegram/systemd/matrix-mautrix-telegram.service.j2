@@ -21,8 +21,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-mautrix-telegram \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
-			{% if matrix_mautrix_telegram_container_expose_port %}
-			-p 127.0.0.1:{{ matrix_mautrix_telegram_container_expose_port }}:8080 \
+			{% if matrix_mautrix_telegram_container_exposed_port_number is not none %}
+			-p 127.0.0.1:{{ matrix_mautrix_telegram_container_exposed_port_number }}:8080 \
 			{% endif %}
 			-v {{ matrix_mautrix_telegram_base_path }}:/data:z \
 			{{ matrix_mautrix_telegram_docker_image }} \
