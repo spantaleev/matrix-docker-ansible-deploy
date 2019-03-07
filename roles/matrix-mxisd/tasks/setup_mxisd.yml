@@ -30,6 +30,20 @@
     group: "{{ matrix_user_username }}"
   when: matrix_mxisd_enabled
 
+- name: Ensure custom templates are installed if any
+  copy:
+    content: "{{ item.value }}"
+    dest: "{{ matrix_mxisd_data_path }}/{{ item.location }}"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  with_items:
+    - {value: "{{ matrix_mxisd_threepid_medium_email_custom_invite_template }}", location: 'invite-template.eml'}
+    - {value: "{{ matrix_mxisd_threepid_medium_email_custom_session_validation_template }}", location: 'validate-template.eml'}
+    - {value: "{{ matrix_mxisd_threepid_medium_email_custom_unbind_fraudulent_template }}", location: 'unbind-fraudulent.eml'}
+    - {value: "{{ matrix_mxisd_threepid_medium_email_custom_matrixid_template }}", location: 'mxid-template.eml'}
+  when: matrix_mxisd_enabled and matrix_mxisd_threepid_medium_email_custom_templates_enabled and item.value
+
 - name: Ensure matrix-mxisd.service installed
   template:
     src: "{{ role_path }}/templates/systemd/matrix-mxisd.service.j2"
