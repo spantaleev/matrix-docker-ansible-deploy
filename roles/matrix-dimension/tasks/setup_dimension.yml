@@ -1,0 +1,79 @@
+---
+
+#
+# Tasks related to setting up the dimension
+#
+
+- name: Ensure dimension base path exists
+  file:
+    path: "{{ matrix_dimension_base_path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  when: matrix_dimension_enabled
+
+- name: Ensure dimension environment variables file created
+  template:
+    src: "{{ role_path }}/templates/config.yaml.j2"
+    dest: "{{ matrix_dimension_base_path }}/config.yaml"
+    mode: 0644
+  when: matrix_dimension_enabled
+
+- name: Ensure dimension image is pulled
+  docker_image:
+    name: "{{ matrix_dimension_docker_image }}"
+  when: matrix_dimension_enabled
+
+- name: Ensure matrix-dimension.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-dimension.service.j2"
+    dest: "/etc/systemd/system/matrix-dimension.service"
+    mode: 0644
+  register: matrix_dimension_systemd_service_result
+  when: matrix_dimension_enabled
+
+- name: Ensure systemd reloaded after matrix-dimension.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_dimension_enabled and matrix_dimension_systemd_service_result.changed"
+
+#
+# Tasks related to getting rid of the dimension (if it was previously enabled)
+#
+
+- name: Check existence of matrix-dimension service
+  stat:
+    path: "/etc/systemd/system/matrix-dimension.service"
+  register: matrix_dimension_service_stat
+
+- name: Ensure matrix-dimension is stopped
+  service:
+    name: matrix-dimension
+    state: stopped
+    daemon_reload: yes
+  register: stopping_result
+  when: "not matrix_dimension_enabled and matrix_dimension_service_stat.stat.exists"
+
+- name: Ensure matrix-dimension.service doesn't exist
+  file:
+    path: "/etc/systemd/system/matrix-dimension.service"
+    state: absent
+  when: "not matrix_dimension_enabled and matrix_dimension_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-dimension.service removal
+  service:
+    daemon_reload: yes
+  when: "not matrix_dimension_enabled and matrix_dimension_service_stat.stat.exists"
+
+- name: Ensure Matrix dimension environment variables path doesn't exist
+  file:
+    path: "{{ matrix_dimension_base_path }}"
+    state: absent
+  when: "not matrix_dimension_enabled"
+
+- name: Ensure dimension Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_dimension_docker_image }}"
+    state: absent
+  when: "not matrix_dimension_enabled"

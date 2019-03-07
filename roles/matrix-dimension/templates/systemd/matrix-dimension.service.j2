@@ -1,0 +1,23 @@
+[Unit]
+Description=Matrix Dimension
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker kill matrix-dimension
+ExecStartPre=-/usr/bin/docker rm matrix-dimension
+ExecStart=/usr/bin/docker run --rm --name matrix-dimension \
+			--log-driver=none \
+			--cap-drop=ALL \
+			--network={{ matrix_docker_network }} \
+			-p 127.0.0.1:8184:8184 \
+			-v {{ matrix_dimension_base_path }}:/data:rw \
+			{{ matrix_dimension_docker_image }}
+ExecStop=-/usr/bin/docker kill matrix-dimension
+ExecStop=-/usr/bin/docker rm matrix-dimension
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
