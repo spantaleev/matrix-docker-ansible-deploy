@@ -8,16 +8,18 @@
   file:
     path: "{{ matrix_dimension_base_path }}"
     state: directory
-    mode: 0750
+    mode: 0770
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_dimension_user_gid }}"
   when: matrix_dimension_enabled
 
 - name: Ensure dimension environment variables file created
   template:
     src: "{{ role_path }}/templates/config.yaml.j2"
     dest: "{{ matrix_dimension_base_path }}/config.yaml"
-    mode: 0644
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_dimension_user_gid }}"
   when: matrix_dimension_enabled
 
 - name: Ensure dimension image is pulled
@@ -46,6 +48,7 @@
   stat:
     path: "/etc/systemd/system/matrix-dimension.service"
   register: matrix_dimension_service_stat
+  when: not matrix_dimension_enabled
 
 - name: Ensure matrix-dimension is stopped
   service:

@@ -9,9 +9,12 @@ ExecStartPre=-/usr/bin/docker kill matrix-dimension
 ExecStartPre=-/usr/bin/docker rm matrix-dimension
 ExecStart=/usr/bin/docker run --rm --name matrix-dimension \
 			--log-driver=none \
+			--user={{ matrix_dimension_user_uid }}:{{ matrix_dimension_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
+			{% if matrix_dimension_container_expose_port %}
 			-p 127.0.0.1:8184:8184 \
+			{% endif %}
 			-v {{ matrix_dimension_base_path }}:/data:rw \
 			{{ matrix_dimension_docker_image }}
 ExecStop=-/usr/bin/docker kill matrix-dimension
