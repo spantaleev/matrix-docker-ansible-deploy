@@ -1,3 +1,11 @@
+# 2019-03-07
+
+## Ability to customize mxisd's email templates
+
+Thanks to [Sylvia van Os](https://github.com/TheLastProject), mxisd's email templates can now be customized easily.
+To learn more, see the [Customizing email templates](docs/configuring-playbook-mxisd.md#customizing-email-templates) documentation page.
+
+
 # 2019-03-05
 
 ## Discord bridging support

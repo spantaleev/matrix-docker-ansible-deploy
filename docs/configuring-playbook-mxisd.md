@@ -18,6 +18,12 @@ matrix_mxisd_matrixorg_forwarding_enabled: true
 ```
 
 
+## Customizing email templates
+
+If you'd like to change the default email templates used by mxisd, take a look at the `matrix_mxisd_threepid_medium_email_custom_` variables
+(in the `roles/matrix-mxisd/defaults/main.yml` file.
+
+
 ## Additional features
 
 What this playbook configures for your is some bare minimum Identity Server functionality, so that you won't need to rely on external 3rd party services.
