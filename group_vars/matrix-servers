@@ -295,6 +295,12 @@ matrix_riot_web_container_expose_port: "{{ not matrix_nginx_proxy_enabled }}"
 matrix_riot_web_default_hs_url: "{{ matrix_homeserver_url }}"
 matrix_riot_web_default_is_url: "{{ matrix_identity_server_url }}"
 
+# Use Dimension if enabled, otherwise fall back to Scalar
+matrix_riot_web_integrations_ui_url: "{{ matrix_dimension_integrations_ui_url if matrix_dimension_enabled else 'https://scalar.vector.im/' }}"
+matrix_riot_web_integrations_rest_url: "{{ matrix_dimension_integrations_rest_url if matrix_dimension_enabled else 'https://scalar.vector.im/api' }}"
+matrix_riot_web_integrations_widgets_urls: "{{ matrix_dimension_integrations_widgets_urls if matrix_dimension_enabled else ['https://scalar.vector.im/api'] }}"
+matrix_riot_web_integrations_jitsi_widget_url: "{{ matrix_dimension_integrations_jitsi_widget_url if matrix_dimension_enabled else 'https://scalar.vector.im/api/widgets/jitsi.html' }}"
+
 ######################################################################
 #
 # /matrix-riot-web
