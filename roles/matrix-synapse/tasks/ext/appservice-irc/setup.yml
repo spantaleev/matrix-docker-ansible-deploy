@@ -26,6 +26,7 @@
   stat:
     path: "{{ matrix_appservice_irc_base_path }}/passkey.pem"
   register: irc_passkey_file
+  when: "matrix_appservice_irc_enabled"
 
 - name: Generate matrix-appservice-irc passkey if it doesn't exist
   shell: /usr/bin/openssl genpkey -out {{ matrix_appservice_irc_base_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048
@@ -48,6 +49,7 @@
   stat:
     path: "{{ matrix_appservice_irc_base_path }}/registration.yaml"
   register: appservice_irc_registration_file
+  when: "matrix_appservice_irc_enabled"
 
 - name: Generate matrix-appservice-irc registration.yaml if it doesn't exist
   shell: >-
@@ -64,6 +66,7 @@
 
 - set_fact:
     matrix_synapse_app_service_config_file_appservice_irc: '/app-registration/appservice-irc.yml'
+  when: "matrix_appservice_irc_enabled"
 
 - set_fact:
     matrix_synapse_container_additional_volumes: >

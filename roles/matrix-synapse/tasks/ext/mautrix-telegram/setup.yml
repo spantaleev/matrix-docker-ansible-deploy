@@ -18,6 +18,7 @@
   stat:
     path: "{{ matrix_mautrix_telegram_base_path }}/config.yaml"
   register: mautrix_telegram_config_file_stat
+  when: "matrix_mautrix_telegram_enabled"
 
 - name: Ensure Matrix Mautrix telegram config installed
   template:
@@ -56,6 +57,7 @@
   stat:
     path: "{{ matrix_mautrix_telegram_base_path }}/registration.yaml"
   register: mautrix_telegram_registration_file_stat
+  when: "matrix_mautrix_telegram_enabled"
 
 - name: Generate matrix-mautrix-telegram registration.yaml if it doesn't exist
   shell:
@@ -72,6 +74,7 @@
 
 - set_fact:
     matrix_synapse_app_service_config_file_mautrix_telegram: '/app-registration/mautrix-telegram.yml'
+  when: "matrix_mautrix_telegram_enabled"
 
 - set_fact:
     matrix_synapse_container_additional_volumes: >

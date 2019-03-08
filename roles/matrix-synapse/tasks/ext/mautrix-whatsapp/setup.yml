@@ -18,6 +18,7 @@
   stat:
     path: "{{ matrix_mautrix_whatsapp_base_path }}/config.yaml"
   register: mautrix_whatsapp_config_file_stat
+  when: "matrix_mautrix_whatsapp_enabled"
 
 - name: Ensure Matrix Mautrix whatsapp config installed
   template:
@@ -45,6 +46,7 @@
   stat:
     path: "{{ matrix_mautrix_whatsapp_base_path }}/registration.yaml"
   register: mautrix_whatsapp_registration_file_stat
+  when: "matrix_mautrix_whatsapp_enabled"
 
 - name: Generate matrix-mautrix-whatsapp registration.yaml if it doesn't exist
   shell:
@@ -61,6 +63,7 @@
 
 - set_fact:
     matrix_synapse_app_service_config_file_mautrix_whatsapp: '/app-registration/mautrix-whatsapp.yml'
+  when: "matrix_mautrix_whatsapp_enabled"
 
 - set_fact:
     matrix_synapse_container_additional_volumes: >

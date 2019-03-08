@@ -39,6 +39,7 @@
   stat:
     path: "{{ matrix_appservice_discord_base_path }}/discord-registration.yaml"
   register: appservice_discord_registration_file
+  when: "matrix_appservice_discord_enabled"
 
 - name: Generate matrix-appservice-discord discord-registration.yaml if it doesn't exist
   shell: >-
@@ -57,11 +58,13 @@
 
 - set_fact:
     matrix_synapse_app_service_config_file_appservice_discord: '{{ matrix_appservice_discord_base_path }}/discord-registration.yml'
+  when: "matrix_appservice_discord_enabled"
 
 - name: Check if a matrix-appservice-discord invite_link file exists
   stat:
     path: "{{ matrix_appservice_discord_base_path }}/invite_link"
   register: appservice_discord_link_generated
+  when: "matrix_appservice_discord_enabled"
 
 - name: Generate your discord invite link
   shell: >-
