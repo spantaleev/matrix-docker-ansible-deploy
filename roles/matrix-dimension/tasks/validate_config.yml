@@ -1,0 +1,15 @@
+- name: Fail if required Dimension settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) for using Dimension.
+  with_items:
+    - "matrix_dimension_access_token"
+  when: "matrix_dimension_enabled and vars[item] == ''"
+
+- name: Fail if Matrix Federation is disabled
+  fail:
+    msg: >-
+      You need to enable Matrix Federation to use Dimension. Set `{{ item }}` to 'true'.
+  with_items:
+    - "matrix_synapse_federation_enabled"
+  when: "matrix_dimension_enabled and matrix_synapse_federation_enabled == false"
