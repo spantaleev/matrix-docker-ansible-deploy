@@ -4,7 +4,7 @@
 # Tasks related to setting up the dimension
 #
 
-- name: Ensure dimension base path exists
+- name: Ensure Dimension base path exists
   file:
     path: "{{ matrix_dimension_base_path }}"
     state: directory
@@ -13,16 +13,16 @@
     group: "{{ matrix_dimension_user_gid }}"
   when: matrix_dimension_enabled
 
-- name: Ensure dimension environment variables file created
-  template:
-    src: "{{ role_path }}/templates/config.yaml.j2"
+- name: Ensure Dimension config installed
+  copy:
+    content: "{{ matrix_dimension_configuration|to_nice_yaml }}"
     dest: "{{ matrix_dimension_base_path }}/config.yaml"
     mode: 0640
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_dimension_user_gid }}"
   when: matrix_dimension_enabled
 
-- name: Ensure dimension image is pulled
+- name: Ensure Dimension image is pulled
   docker_image:
     name: "{{ matrix_dimension_docker_image }}"
   when: matrix_dimension_enabled
@@ -69,13 +69,13 @@
     daemon_reload: yes
   when: "not matrix_dimension_enabled and matrix_dimension_service_stat.stat.exists"
 
-- name: Ensure Matrix dimension environment variables path doesn't exist
+- name: Ensure Dimension environment variables path doesn't exist
   file:
     path: "{{ matrix_dimension_base_path }}"
     state: absent
   when: "not matrix_dimension_enabled"
 
-- name: Ensure dimension Docker image doesn't exist
+- name: Ensure Dimension Docker image doesn't exist
   docker_image:
     name: "{{ matrix_dimension_docker_image }}"
     state: absent
