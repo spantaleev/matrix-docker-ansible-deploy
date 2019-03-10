@@ -1,8 +1,12 @@
 # Configuring the Ansible playbook
 
-Once you have your server and you have [configured your DNS records](configuring-dns.md), you can proceed with configuring this playbook, so that it knows what to install and where.
+To configure the playbook, you need to have done the following things:
 
-You can follow these steps:
+- have a server where Matrix services will run
+- [configured your DNS records](configuring-dns.md)
+- [retrieved the playbook's source code](getting-the-playbook.md) to your computer
+
+You can then follow these steps inside the playbook directory:
 
 - create a directory to hold your configuration (`mkdir inventory/host_vars/matrix.<your-domain>`)
 
