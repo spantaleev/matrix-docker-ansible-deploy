@@ -1,3 +1,11 @@
+# 2019-03-10
+
+## Dimension Integration Manager support
+
+Thanks to [NullIsNot0](https://github.com/NullIsNot0), the playbook can now (optionally) install the [Dimension](https://dimension.t2bot.io/) Integration Manager.
+To learn more, see the [Setting up Dimension](docs/configuring-playbook-dimension.md) documentation page.
+
+
 # 2019-03-07
 
 ## Ability to customize mxisd's email templates
