@@ -1,15 +1,20 @@
 # Setting up Dimension (optional)
 
-Dimension integrations manager installation is disabled by default. You can enable it in your configuration file (`inventory/matrix.<your-domain>/vars.yml`):
+**Dimension can only be installed after Matrix services are installed and running.**  
+If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) flow and come back here later.
+
+## Prerequisites
+For an Integration Manager like Dimension to work, your server needs to have federation enabled (`matrix_synapse_federation_enabled: true`). This is the default for this playbook, so unless you've explicitly disabled federation, you're okay.
+
+Other important prerequisite is the `dimension.<your-domain>` DNS record being set up correctly. See [Configuring your DNS server](configuring-dns.md) on how to set up DNS record correctly.
+
+## Enable
+[Dimension integrations manager](https://dimension.t2bot.io) installation is disabled by default. You can enable it in your configuration file (`inventory/matrix.<your-domain>/vars.yml`):
 
 ```yaml
 matrix_dimension_enabled: true
 ```
-Your Matrix also needs federation enabled for Dimension to work, so if you have disabled it by setting `matrix_synapse_federation_enabled` to `false`, please remove or comment this variable in your configuration file. Or set it to:
 
-```yaml
-matrix_synapse_federation_enabled: true
-```
 
 ## Define admin users
 These users can modify the integrations this Dimension supports. Admin interface is accessible by opening Dimension in Riot and clicking the settings icon.  

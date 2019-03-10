@@ -55,4 +55,4 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Appservice Discord bridging](configuring-playbook-bridge-appservice-discord.md) (optional)
 
-- [Setting up Dimension (optional)](configuring-playbook-dimension.md) (optional)
+- [Setting up Dimension](configuring-playbook-dimension.md) (optional)
