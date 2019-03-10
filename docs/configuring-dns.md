@@ -26,6 +26,7 @@ It's a temporary requirement during the Synapse v0.99/v1.0 transition.
 | ----- | ----------------------- | -------- | ------ | ---- | ---------------------- |
 | A     | `matrix`                | -        | -      | -    | `matrix-server-IP`     |
 | CNAME | `riot`                  | -        | -      | -    | `matrix.<your-domain>` |
+| CNAME | `dimension`             | -        | -      | -    | `matrix.<your-domain>` |
 | SRV   | `_matrix._tcp`          | 10       | 0      | 8448 | `matrix.<your-domain>` |
 | SRV   | `_matrix-identity._tcp` | 10       | 0      | 443  | `matrix.<your-domain>` |
 
@@ -39,6 +40,8 @@ As the table above illustrates, you need to create 2 subdomains (`matrix.<your-d
 
 The `riot.<your-domain>` subdomain is necessary, because this playbook installs the Riot web client for you.
 If you'd rather instruct the playbook not to install Riot (`matrix_riot_web_enabled: false` when [Configuring the playbook](configuring-playbook.md) later), feel free to skip the `riot.<your-domain>` DNS record.
+
+The `dimension.<your-domain>` subdomain is necessary, because this playbook installs the Dimension integrations manager for you. Dimension installation is disabled by default and if you explicitly do not enable it's installation (`matrix_dimension_enabled: true` when [Configuring the playbook](configuring-playbook.md) later), feel free to skip the `dimension.<your-domain>` DNS record.
 
 
 ## `_matrix._tcp` SRV record setup (temporary requirement)
