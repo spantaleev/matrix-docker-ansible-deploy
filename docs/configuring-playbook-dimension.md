@@ -1,10 +1,10 @@
 # Setting up Dimension (optional)
 
-**Dimension can only be installed after Matrix services are installed and running.**  
+**[Dimension](https://dimension.t2bot.io) can only be installed after Matrix services are installed and running.**
 If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) flow and come back here later.
 
 ## Prerequisites
-For an Integration Manager like Dimension to work, your server needs to have federation enabled (`matrix_synapse_federation_enabled: true`). This is the default for this playbook, so unless you've explicitly disabled federation, you're okay.
+For an Integration Manager like [Dimension](https://dimension.t2bot.io) to work, your server needs to have federation enabled (`matrix_synapse_federation_enabled: true`). This is the default for this playbook, so unless you've explicitly disabled federation, you're okay.
 
 Other important prerequisite is the `dimension.<your-domain>` DNS record being set up correctly. See [Configuring your DNS server](configuring-dns.md) on how to set up DNS record correctly.
 
@@ -17,7 +17,7 @@ matrix_dimension_enabled: true
 
 
 ## Define admin users
-These users can modify the integrations this Dimension supports. Admin interface is accessible by opening Dimension in Riot and clicking the settings icon.  
+These users can modify the integrations this Dimension supports. Admin interface is accessible by opening Dimension in Riot and clicking the settings icon.
 Add this to your configuration file (`inventory/matrix.<your-domain>/vars.yml`):
 
 ```yaml
@@ -25,7 +25,7 @@ matrix_dimension_admins: ['@user1:domain.com', '@user2:domain.com']
 ```
 
 ## Access token
-You are required to specify an access token for Dimension to work. 
+You are required to specify an access token for Dimension to work.
 To get an access token, follow these steps:
 
 1. In a private browsing session (incognito window), open Riot.
