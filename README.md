@@ -42,6 +42,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [matrix-appservice-discord](https://github.com/Half-Shot/matrix-appservice-discord) bridge for bridging your Matrix server to [Discord](https://discordapp.com/)
 
+- (optional) [Dimension](https://github.com/turt2live/matrix-dimension), an open source integrations manager for matrix clients
+
 Basically, this playbook aims to get you up-and-running with all the basic necessities around Matrix, without you having to do anything else.
 
 **Note**: the list above is exhaustive. It includes optional or even some advanced components that you will most likely not need.
@@ -117,6 +119,8 @@ This playbook sets up your server using the following Docker images:
 - [tedomum/matrix-appservice-irc](https://hub.docker.com/r/tedomum/matrix-appservice-irc/) - the [matrix-appservice-irc](https://github.com/TeDomum/matrix-appservice-irc) bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) (optional)
 
 - [tedomum/matrix-appservice-discord](https://hub.docker.com/r/halfshot/matrix-appservice-discord) - the [matrix-appservice-discord](https://github.com/Half-Shot/matrix-appservice-discord) bridge to [Discord](https://discordapp.com/)
+
+- [turt2live/matrix-dimension](https://hub.docker.com/r/turt2live/matrix-dimension) - the [Dimension](https://dimension.t2bot.io/) integrations manager (optional)
 
 
 ## Deficiencies
