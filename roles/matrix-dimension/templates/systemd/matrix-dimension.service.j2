@@ -12,6 +12,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-dimension \
 			--user={{ matrix_dimension_user_uid }}:{{ matrix_dimension_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
+			{% if matrix_dimension_widgets_allow_self_signed_ssl_certificates %}
+			-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+			{% endif %}
 			{% if matrix_dimension_container_expose_port %}
 			-p 127.0.0.1:8184:8184 \
 			{% endif %}
