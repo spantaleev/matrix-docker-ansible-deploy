@@ -25,7 +25,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-nginx-proxy \
 			{% if matrix_nginx_proxy_proxy_matrix_federation_api_enabled %}
 			-p 8448:8448 \
 			{% endif %}
-			-v {{ matrix_nginx_proxy_data_path }}/nginx.conf:/etc/nginx/nginx.conf:ro \
+			-v {{ matrix_nginx_proxy_base_path }}/nginx.conf:/etc/nginx/nginx.conf:ro \
+			-v {{ matrix_nginx_proxy_data_path }}:/nginx-data:ro \
 			-v {{ matrix_nginx_proxy_confd_path }}:/etc/nginx/conf.d:ro \
 			-v {{ matrix_ssl_config_dir_path }}:{{ matrix_ssl_config_dir_path }}:ro \
 			-v {{ matrix_static_files_base_path }}:{{ matrix_static_files_base_path }}:ro \

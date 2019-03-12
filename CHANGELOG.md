@@ -1,3 +1,12 @@
+# 2019-03-12
+
+## (BC break) matrix-nginx-proxy data variable renamed
+
+`matrix_nginx_proxy_data_path` was renamed to `matrix_nginx_proxy_base_path`.
+
+There's a new `matrix_nginx_proxy_data_path` variable, which has a different use-purpose now (it's a subdirectory of `matrix_nginx_proxy_base_path` and is meant for storing various data files).
+
+
 # 2019-03-10
 
 ## Dimension Integration Manager support

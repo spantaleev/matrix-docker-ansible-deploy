@@ -18,13 +18,14 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
   with_items:
+    - "{{ matrix_nginx_proxy_base_path }}"
     - "{{ matrix_nginx_proxy_data_path }}"
     - "{{ matrix_nginx_proxy_confd_path }}"
 
 - name: Ensure Matrix nginx-proxy configured (main config override)
   template:
     src: "{{ role_path }}/templates/nginx/nginx.conf.j2"
-    dest: "{{ matrix_nginx_proxy_data_path }}/nginx.conf"
+    dest: "{{ matrix_nginx_proxy_base_path }}/nginx.conf"
     mode: 0644
   when: "matrix_nginx_proxy_enabled"
 
@@ -35,14 +36,6 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
     mode: 0400
-  when: "matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled and matrix_nginx_proxy_proxy_synapse_metrics"
-
-- name: Ensure matrix-synapse-metrics-htpasswd is mounted into the matrix-nginx-proxy container
-  set_fact:
-    matrix_nginx_proxy_container_additional_volumes: >
-      {{ matrix_nginx_proxy_container_additional_volumes }}
-      +
-      {{ [{'src': '{{ matrix_nginx_proxy_data_path }}/matrix-synapse-metrics-htpasswd', 'dst': '/etc/nginx/.matrix-synapse-metrics-htpasswd', 'options': 'ro'}] }}
   when: "matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled and matrix_nginx_proxy_proxy_synapse_metrics"
 
 - name: Ensure Matrix nginx-proxy configured (generic)
@@ -154,7 +147,7 @@
 
 - name: Ensure Matrix nginx-proxy configuration for main config override deleted
   file:
-    path: "{{ matrix_nginx_proxy_data_path }}/nginx.conf"
+    path: "{{ matrix_nginx_proxy_base_path }}/nginx.conf"
     state: absent
   when: "not matrix_nginx_proxy_enabled"
 

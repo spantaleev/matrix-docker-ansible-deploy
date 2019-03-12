@@ -5,8 +5,9 @@ matrix_nginx_proxy_enabled: true
 # those as more frequently out of date.
 matrix_nginx_proxy_docker_image: "nginx:1.15.9-alpine"
 
-matrix_nginx_proxy_data_path: "{{ matrix_base_data_path }}/nginx-proxy"
-matrix_nginx_proxy_confd_path: "{{ matrix_nginx_proxy_data_path }}/conf.d"
+matrix_nginx_proxy_base_path: "{{ matrix_base_data_path }}/nginx-proxy"
+matrix_nginx_proxy_data_path: "{{ matrix_nginx_proxy_base_path }}/data"
+matrix_nginx_proxy_confd_path: "{{ matrix_nginx_proxy_base_path }}/conf.d"
 
 # List of systemd services that matrix-nginx-proxy.service depends on
 matrix_nginx_proxy_systemd_required_services_list: ['docker.service']
