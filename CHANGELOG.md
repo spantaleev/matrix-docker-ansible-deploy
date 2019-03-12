@@ -1,5 +1,13 @@
 # 2019-03-12
 
+## matrix-nginx-proxy support for serving the base domain
+
+If you don't have a dedicated server for your base domain and want to set up [Server Delegation via a well-known file](docs/howto-server-delegation.md#server-delegation-via-a-well-known-file), the playbook has got you covered now.
+
+It's now possible for the playbook to obtain an SSL certificate and serve the necessary files for Matrix Server Delegation on your base domain.
+Take a look at the new [Serving the base domain](docs/configuring-playbook-base-domain-serving.md) documentation page.
+
+
 ## (BC break) matrix-nginx-proxy data variable renamed
 
 `matrix_nginx_proxy_data_path` was renamed to `matrix_nginx_proxy_base_path`.

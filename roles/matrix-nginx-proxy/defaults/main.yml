@@ -21,6 +21,27 @@ matrix_nginx_proxy_systemd_wanted_services_list: []
 # Contains definition objects like this: `{"src": "/outside", "dst": "/inside", "options": "rw|ro|slave|.."}
 matrix_nginx_proxy_container_additional_volumes: []
 
+# Controls whether matrix-nginx-proxy should serve the base domain.
+#
+# This is useful for when you only have your Matrix server, but you need to serve
+# to serve `/.well-known/matrix/*` files from the base domain for the needs of
+# Server-Discovery (Federation) and for Client-Discovery.
+#
+# Besides serving these Matrix files, a homepage would be served with content
+# as specified in the `matrix_nginx_proxy_base_domain_homepage_template` variable.
+# You can also put additional files to use for this webpage
+# in the `{{ matrix_nginx_proxy_data_path }}/matrix-domain` (`/matrix/nginx-proxy/data/matrix-domain`) directory.
+matrix_nginx_proxy_base_domain_serving_enabled: false
+matrix_nginx_proxy_base_domain_hostname: "{{ matrix_domain }}"
+matrix_nginx_proxy_base_domain_homepage_template: |-
+  <!doctype html>
+  <meta charset="utf-8" />
+  <html>
+    <body>
+      Hello from {{ matrix_domain }}!
+    </body>
+  </html>
+
 # Controls whether proxying the riot domain should be done.
 matrix_nginx_proxy_proxy_riot_enabled: false
 matrix_nginx_proxy_proxy_riot_hostname: "{{ matrix_server_fqn_riot }}"

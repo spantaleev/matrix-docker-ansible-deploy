@@ -8,7 +8,7 @@
 
 - either the `dig` tool or `python-dns` installed on your own computer. Used later on, by the playbook's [services check](maintenance-checking-services.md) feature.
 
-- an HTTPS-capable web server at the base domain name (`<your-domain>`) which is capable of serving static files (unless you decide to use DNS SRV records for [Server Delegation](howto-server-delegation.md))
+- an HTTPS-capable web server at the base domain name (`<your-domain>`) which is capable of serving static files. Unless you decide to [Serve the base domain from the Matrix server](configuring-playbook-base-domain-serving.md) or alternatively, to use DNS SRV records for [Server Delegation](howto-server-delegation.md).
 
 - properly configured DNS records for `<your-domain>` (details in [Configuring DNS](configuring-dns.md))
 

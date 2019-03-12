@@ -15,7 +15,7 @@ Things discussed in this document:
 
 - [Not bothering with SSL certificates](#not-bothering-with-ssl-certificates), if you're using [your own webserver](docs/configuring-playbook-own-webserver.md) and would rather this playbook leaves SSL certificate management to you
 
-- [Obtaining SSL certificates for additional domains](#obtaining-ssl-certificates-for-additional-domains), if you'd like to host additional domains on the Matrix server (perhaps your base domain?) and would like the playbook to help you obtain and renew certificates for those domains automatically.
+- [Obtaining SSL certificates for additional domains](#obtaining-ssl-certificates-for-additional-domains), if you'd like to host additional domains on the Matrix server and would like the playbook to help you obtain and renew certificates for those domains automatically
 
 
 ## Using self-signed SSL certificates
@@ -64,6 +64,7 @@ By default, it obtains certificates for:
 - `matrix.<your-domain>` (`matrix_server_fqn_matrix`)
 - possibly for `riot.<your-domain>`, unless you have disabled the Riot component using `matrix_riot_web_enabled: false`
 - possibly for `dimension.<your-domain>`, if you have explicitly [set up Dimension](configuring-playbook-dimension.md).
+- possibly for your base domain (`<your-domain>`), if you have explicitly configured [Serving the base domain](configuring-playbook-base-domain-serving.md)
 
 If you are hosting other domains on the Matrix machine, you can make the playbook obtain and renew certificates for those other domains too.
 To do that, simply define your own custom configuration like this:
@@ -85,7 +86,7 @@ After redefining `matrix_ssl_domains_to_obtain_certificates_for`, to actually ob
 
 - re-run the SSL part of the playbook and restart all services: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-ssl,start`
 
-The certificate files would be available in `/matrix/ssl/config/live/<your-domain>/...`.
+The certificate files would be available in `/matrix/ssl/config/live/<your-other-domain>/...`.
 
 For automated certificate renewal to work, each port `80` vhost for each domain you are obtaining certificates for needs to forward requests for `/.well-known/acme-challenge` to the certbot container we use for renewal.
 

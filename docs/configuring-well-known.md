@@ -39,7 +39,13 @@ To learn how to set it up, read the Installing section below.
 
 ## Installing well-known files on the base domain's server
 
-To implement the two service discovery mechanisms, your base domain's server (e.g. `example.com`) needs to support HTTPS.
+To implement the two service discovery mechanisms, your base domain's server (e.g. `example.com`) needs to run an HTTPS-capable webserver.
+
+If you don't have a server for your base domain at all, you can use the Matrix server for this.
+See [Serving the base domain](configuring-playbook-base-domain-serving.md) to learn how the playbook can help you set it up.
+If you decide to go this route, you don't need to read ahead in this document. When **Serving the base domain**, the playbook takes care to serve the appropriate well-known files automatically.
+
+If you're managing the base domain by yourself somehow, you'll need to set up serving of some `/.well-known/matrix/*` files from it via HTTPS.
 
 To make things easy for you to set up, this playbook generates and hosts 2 well-known files on the Matrix domain's server (e.g. `https://matrix.example.com/.well-known/matrix/server` and `https://matrix.example.com/.well-known/matrix/client`), even though this is the wrong place to host them.
 

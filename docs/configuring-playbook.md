@@ -41,6 +41,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Adjusting SSL certificate retrieval](configuring-playbook-ssl-certificates.md) (optional, advanced)
 
+- [Serving your base domain using this playbook's nginx server](configuring-playbook-base-domain-serving.md) (optional)
+
 - [Using your own webserver, instead of this playbook's nginx proxy](configuring-playbook-own-webserver.md) (optional, advanced)
 
 - [Setting up the REST authentication password provider module](configuring-playbook-rest-auth.md) (optional, advanced)
