@@ -11,7 +11,8 @@ ExecStartPre=-/usr/bin/docker kill matrix-appservice-irc
 ExecStartPre=-/usr/bin/docker rm matrix-appservice-irc
 ExecStart=/usr/bin/docker run --rm --name matrix-appservice-irc \
 			--log-driver=none \
-			-e "UID={{ matrix_user_uid }}" -e "GID={{ matrix_user_gid }}" \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
 			{% if matrix_appservice_irc_container_expose_client_server_api_port %}
 			-p 127.0.0.1:9999:9999 \
