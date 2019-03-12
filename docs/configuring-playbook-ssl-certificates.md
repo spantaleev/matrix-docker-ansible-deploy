@@ -60,18 +60,22 @@ With such a configuration, no certificates will be retrieved at all. You're free
 
 The playbook tries to be smart about the certificates it will obtain for you.
 
-By default, it obtains certificates for `matrix.<your-domain>` and possibly for `riot.<your-domain>` (unless you have disabled the Riot component using `matrix_riot_web_enabled: false`).
+By default, it obtains certificates for:
+- `matrix.<your-domain>` (`matrix_server_fqn_matrix`)
+- possibly for `riot.<your-domain>`, unless you have disabled the Riot component using `matrix_riot_web_enabled: false`
+- possibly for `dimension.<your-domain>`, if you have explicitly [set up Dimension](configuring-playbook-dimension.md).
 
 If you are hosting other domains on the Matrix machine, you can make the playbook obtain and renew certificates for those other domains too.
 To do that, simply define your own custom configuration like this:
 
 ```yaml
-# Note: we need to include the matrix (`matrix_server_fqn_matrix`) and riot (`matrix_server_fqn_riot`) domains explicitly.
-# Your base domain is in the `matrix_domain` variable.
+# Note: we need to explicitly list the aforementioned Matrix domains that you use (Matrix, Riot, Dimension).
+# In this example, we retrieve an extra certificate - one for the base domain (in the `matrix_domain` variable).
 # Adding any other additional domains (hosted on the same machine) is possible.
 matrix_ssl_domains_to_obtain_certificates_for:
   - '{{ matrix_server_fqn_matrix }}'
   - '{{ matrix_server_fqn_riot }}'
+  - '{{ matrix_server_fqn_dimension }}'
   - '{{ matrix_domain }}'
 ```
 
