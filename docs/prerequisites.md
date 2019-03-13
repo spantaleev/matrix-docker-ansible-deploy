@@ -12,6 +12,6 @@
 
 - properly configured DNS records for `<your-domain>` (details in [Configuring DNS](configuring-dns.md))
 
-- some TCP/UDP ports open. This playbook configures the server's internal firewall for you. In most cases, you don't need to do anything special. But **if your server is running behind another firewall**, you'd need to open these ports: `80/tcp` (HTTP webserver), `443/tcp` (HTTPS webserver), `3478/tcp`  (STUN over TCP), `3478/udp` (STUN over UDP), `8448/tcp` (Matrix Federation API HTTPS webserver), `49152-49172/udp` (TURN over UDP).
+- some TCP/UDP ports open. This playbook configures the server's internal firewall for you. In most cases, you don't need to do anything special. But **if your server is running behind another firewall**, you'd need to open these ports: `80/tcp` (HTTP webserver), `443/tcp` (HTTPS webserver), `3478/tcp`  (STUN over TCP), `3478/udp` (STUN over UDP), `8448/tcp` (Matrix Federation API HTTPS webserver), the range `49152-49172/udp` (TURN over UDP).
 
 When ready to proceed, continue with [Configuring DNS](configuring-dns.md).
