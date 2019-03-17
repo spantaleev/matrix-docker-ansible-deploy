@@ -33,11 +33,6 @@ pid_file: /homeserver.pid
 #
 # cpu_affinity: 0xFFFFFFFF
 
-# The path to the web client which will be served at /_matrix/client/
-# if 'webclient' is configured under the 'listeners' configuration.
-#
-# web_client_location: "/path/to/web/root"
-
 # The public-facing base URL that clients use to access this HS
 # (not including _matrix/...). This is the same URL a user would
 # enter into the 'custom HS URL' field on their client. If you
@@ -63,6 +58,13 @@ use_presence: {{ matrix_synapse_use_presence|to_json }}
 # Whether room invites to users on this server should be blocked
 # (except those sent by local server admins). The default is False.
 # block_non_admin_invites: True
+
+# Room searching
+#
+# If disabled, new messages will not be indexed for searching and users
+# will receive errors when searching for messages. Defaults to enabled.
+#
+# enable_search: false
 
 # Restrict federation to the following whitelist of domains.
 # N.B. we recommend also firewalling your federation listener to limit
@@ -137,8 +139,6 @@ federation_domain_whitelist: {{ matrix_synapse_federation_domain_whitelist|to_js
 #   static: static resources under synapse/static (/_matrix/static). (Mostly
 #       useful for 'fallback authentication'.)
 #
-#   webclient: A web client. Requires web_client_location to be set.
-#
 listeners:
 {% if matrix_synapse_metrics_enabled %}
   - type: metrics
@@ -192,41 +192,33 @@ listeners:
   #   bind_addresses: ['::1', '127.0.0.1']
   #   type: manhole
 
-# Homeserver blocking
-#
+
+## Homeserver blocking ##
+
 # How to reach the server admin, used in ResourceLimitError
 # admin_contact: 'mailto:admin@server.com'
-#
-# Global block config
-#
+
+# Global blocking
 # hs_disabled: False
 # hs_disabled_message: 'Human readable reason for why the HS is blocked'
 # hs_disabled_limit_type: 'error code(str), to help clients decode reason'
-#
+
 # Monthly Active User Blocking
-#
-# Enables monthly active user checking
 # limit_usage_by_mau: False
 # max_mau_value: 50
 # mau_trial_days: 2
-#
+
 # If enabled, the metrics for the number of monthly active users will
 # be populated, however no one will be limited. If limit_usage_by_mau
 # is true, this is implied to be true.
 # mau_stats_only: False
-#
+
 # Sometimes the server admin will want to ensure certain accounts are
 # never blocked by mau checking. These accounts are specified here.
 #
 # mau_limit_reserved_threepids:
 # - medium: 'email'
 #   address: 'reserved_user@example.com'
-#
-# Room searching
-#
-# If disabled, new messages will not be indexed for searching and users
-# will receive errors when searching for messages. Defaults to enabled.
-# enable_search: true
 
 
 ## TLS ##
@@ -321,7 +313,8 @@ tls_fingerprints: []
 
 
 
-# Database configuration
+## Database ##
+
 database:
   # The database engine name
   name: "psycopg2"
@@ -337,6 +330,7 @@ database:
 event_cache_size: "{{ matrix_synapse_event_cache_size }}"
 
 
+## Logging ##
 
 # A yaml python logging config file
 log_config: "/data/{{ matrix_server_fqn_matrix }}.log.config"
@@ -368,6 +362,15 @@ federation_rc_reject_limit: 50
 # The number of federation requests to concurrently process from a
 # single server
 federation_rc_concurrent: 3
+
+# Number of registration requests a client can send per second.
+# Defaults to 1/minute (0.17).
+# rc_registration_requests_per_second: 0.17
+
+# Number of registration requests a client can send before being
+# throttled.
+# Defaults to 3.
+# rc_registration_request_burst_count: 3.0
 
 
 
@@ -404,7 +407,7 @@ max_image_pixels: "32M"
 # from a precalculated list.
 dynamic_thumbnails: false
 
-# List of thumbnail to precalculate when an image is uploaded.
+# List of thumbnails to precalculate when an image is uploaded.
 thumbnail_sizes:
 - width: 32
   height: 32
@@ -494,7 +497,6 @@ max_spider_size: "10M"
 
 
 
-
 ## Captcha ##
 # See docs/CAPTCHA_SETUP for full details of configuring this.
 
@@ -510,13 +512,13 @@ recaptcha_private_key: "YOUR_PRIVATE_KEY"
 enable_registration_captcha: False
 
 # A secret key used to bypass the captcha test entirely.
-#captcha_bypass_secret: "YOUR_SECRET_HERE"
+# captcha_bypass_secret: "YOUR_SECRET_HERE"
 
 # The API endpoint to use for verifying m.login.recaptcha responses.
-recaptcha_siteverify_api: "https://www.google.com/recaptcha/api/siteverify"
+recaptcha_siteverify_api: "https://www.recaptcha.net/recaptcha/api/siteverify"
 
 
-## Turn ##
+## TURN ##
 
 # The public URIs of the TURN server to give to clients
 turn_uris: {{ matrix_synapse_turn_uris|to_json }}
@@ -526,8 +528,8 @@ turn_shared_secret: {{ matrix_synapse_turn_shared_secret|to_json }}
 
 # The Username and password if the TURN server needs them and
 # does not use a token
-#turn_username: "TURNSERVER_USERNAME"
-#turn_password: "TURNSERVER_PASSWORD"
+# turn_username: "TURNSERVER_USERNAME"
+# turn_password: "TURNSERVER_PASSWORD"
 
 # How long generated TURN credentials last
 turn_user_lifetime: "1h"
@@ -541,6 +543,8 @@ turn_allow_guests: False
 
 
 ## Registration ##
+# Registration can be rate-limited using the parameters in the "Ratelimiting"
+# section of this file.
 
 # Enable registration for new users.
 enable_registration: {{ matrix_synapse_enable_registration|to_json }}
@@ -603,8 +607,6 @@ trusted_third_party_id_servers:
 
 # Users who register on this homeserver will automatically be joined
 # to these rooms
-#auto_join_rooms:
-#    - "#example:example.com"
 {% if matrix_synapse_auto_join_rooms|length > 0 %}
 auto_join_rooms:
 {{ matrix_synapse_auto_join_rooms|to_nice_yaml }}
@@ -623,6 +625,16 @@ autocreate_auto_join_rooms: {{ matrix_synapse_autocreate_auto_join_rooms }}
 # Enable collection and rendering of performance metrics
 enable_metrics: {{ matrix_synapse_metrics_enabled }}
 report_stats: {{ matrix_synapse_report_stats|to_json }}
+
+# Enable sentry integration
+# NOTE: While attempts are made to ensure that the logs don't contain
+# any sensitive information, this cannot be guaranteed. By enabling
+# this option the sentry server may therefore receive sensitive
+# information, and it in turn may then diseminate sensitive information
+# through insecure notification channels if so configured.
+#
+# sentry:
+#    dsn: "..."
 
 
 ## API Configuration ##
@@ -689,7 +701,8 @@ perspectives:
 
 # Enable SAML2 for registration and login. Uses pysaml2.
 #
-# saml2_config:
+# `sp_config` is the configuration for the pysaml2 Service Provider.
+# See pysaml2 docs for format of config.
 #
 #   # The following is the configuration for the pysaml2 Service Provider.
 #   # See pysaml2 docs for format of config.
@@ -847,6 +860,7 @@ password_providers:
 # For modern android devices the notification content will still appear
 # because it is loaded by the app. iPhone, however will send a
 # notification saying only that a message arrived and who it came from.
+
 push:
    include_content: {{ matrix_synapse_push_include_content|to_json }}
 
@@ -874,8 +888,8 @@ enable_group_creation: false
 # UPDATE user_directory_stream_pos SET stream_id = NULL;
 # on your database to tell it to rebuild the user_directory search indexes.
 #
-#user_directory:
-#   search_all_users: false
+# user_directory:
+#    search_all_users: false
 
 
 # User Consent configuration
@@ -954,12 +968,55 @@ enable_group_creation: false
 # on this server.
 #
 # The format of this option is a list of rules that contain globs that
-# match against user_id and the new alias (fully qualified with server
-# name). The action in the first rule that matches is taken, which can
-# currently either be "allow" or "deny".
+# match against user_id, room_id and the new alias (fully qualified with
+# server name). The action in the first rule that matches is taken,
+# which can currently either be "allow" or "deny".
 #
-# If no rules match the request is denied.
-alias_creation_rules:
-    - user_id: "*"
-      alias: "*"
-      action: allow
+# Missing user_id/room_id/alias fields default to "*".
+#
+# If no rules match the request is denied. An empty list means no one
+# can create aliases.
+#
+# Options for the rules include:
+#
+#   user_id: Matches against the creator of the alias
+#   alias: Matches against the alias being created
+#   room_id: Matches against the room ID the alias is being pointed at
+#   action: Whether to "allow" or "deny" the request if the rule matches
+#
+# The default is:
+#
+# alias_creation_rules:
+#   - user_id: "*"
+#     alias: "*"
+#     room_id: "*"
+#     action: allow
+
+# The `room_list_publication_rules` option controls who can publish and
+# which rooms can be published in the public room list.
+#
+# The format of this option is the same as that for
+# `alias_creation_rules`.
+#
+# If the room has one or more aliases associated with it, only one of
+# the aliases needs to match the alias rule. If there are no aliases
+# then only rules with `alias: *` match.
+#
+# If no rules match the request is denied. An empty list means no one
+# can publish rooms.
+#
+# Options for the rules include:
+#
+#   user_id: Matches against the creator of the alias
+#   room_id: Matches against the room ID being published
+#   alias: Matches against any current local or canonical aliases
+#            associated with the room
+#   action: Whether to "allow" or "deny" the request if the rule matches
+#
+# The default is:
+#
+# room_list_publication_rules:
+#   - user_id: "*"
+#     alias: "*"
+#     room_id: "*"
+#     action: allow
