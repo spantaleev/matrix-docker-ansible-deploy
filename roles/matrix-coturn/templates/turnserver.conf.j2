@@ -11,3 +11,16 @@ no-cli
 no-tls
 no-dtls
 prod
+no-tcp-relay
+{% if matrix_coturn_user_quota != None %}
+user-quota={{ matrix_coturn_user_quota }}
+{% endif %}
+{% if matrix_coturn_total_quota != None %}
+total-quota={{ matrix_coturn_total_quota }}
+{% endif %}
+{% for ip_range in matrix_coturn_denied_peer_ips %}
+denied-peer-ip={{ ip_range }}
+{% endfor %}
+{% for ip_range in matrix_coturn_allowed_peer_ips %}
+allowed-peer-ip={{ ip_range }}
+{% endfor %}
