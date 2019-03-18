@@ -15,6 +15,7 @@ ExecStart=/usr/bin/docker run --rm --name matrix-coturn \
 			--cap-drop=ALL \
 			--read-only \
 			--tmpfs=/var/tmp:rw,noexec,nosuid,size=100m \
+			--network={{ matrix_coturn_docker_network }} \
 			-p 3478:3478 \
 			-p 3478:3478/udp \
 			-p {{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}:{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}/udp \

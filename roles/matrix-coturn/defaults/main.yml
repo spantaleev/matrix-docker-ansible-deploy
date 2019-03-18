@@ -2,6 +2,15 @@ matrix_coturn_enabled: true
 
 matrix_coturn_docker_image: "instrumentisto/coturn:4.5.1.1"
 
+# The Docker network that Coturn would be put into.
+#
+# Because Coturn relays traffic to unvalidated IP addresses,
+# using a dedicated network, isolated from other Docker (and local) services is preferrable.
+#
+# Setting up deny/allow rules with `matrix_coturn_allowed_peer_ips`/`matrix_coturn_denied_peer_ips` is also
+# possible for achieving such isolation, but is more complicated due to the dynamic nature of Docker networking.
+matrix_coturn_docker_network: "matrix-coturn"
+
 matrix_coturn_base_path: "{{ matrix_base_data_path }}/coturn"
 matrix_coturn_config_path: "{{ matrix_coturn_base_path }}/turnserver.conf"
 

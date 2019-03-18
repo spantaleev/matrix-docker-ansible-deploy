@@ -25,6 +25,22 @@
     mode: 0644
   when: matrix_coturn_enabled
 
+# `docker_network` doesn't work as expected when the given network
+# is a substring of a network that already exists.
+#
+# See our other comments in `roles/matrix-base/tasks/setup_matrix_base.yml`
+- name: Check existence of Coturn network in Docker
+  shell:
+    cmd: "docker network ls -q --filter='name=^{{ matrix_coturn_docker_network }}$'"
+  register: matrix_coturn_result_docker_network
+  changed_when: false
+  when: matrix_coturn_enabled
+
+- name: Create Coturn network in Docker
+  shell:
+    cmd: "docker network create --driver=bridge {{ matrix_coturn_docker_network }}"
+  when: "matrix_coturn_enabled and matrix_coturn_result_docker_network.stdout == ''"
+
 - name: Ensure matrix-coturn.service installed
   template:
     src: "{{ role_path }}/templates/systemd/matrix-coturn.service.j2"
