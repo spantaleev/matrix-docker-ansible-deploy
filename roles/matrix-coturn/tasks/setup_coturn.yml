@@ -61,14 +61,39 @@
     immediate: yes
     permanent: yes
   with_items:
-    - '3478/tcp' # STUN
-    - '3478/udp' # STUN
+    - '3478/tcp'
+    - '3478/udp'
+    - '5349/tcp'
+    - '5349/udp'
     - "{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}/udp" # TURN
   when: "matrix_coturn_enabled and ansible_os_family == 'RedHat'"
+
+# This may be unnecessary when more long-lived certificates are used.
+# We optimize for the common use-case though (short-lived Let's Encrypt certificates).
+# Reloading doesn't hurt anyway, so there's no need to make this more flexible.
+- name: Ensure periodic reloading of matrix-coturn is configured for SSL renewal (matrix-coturn-reload)
+  cron:
+    user: root
+    cron_file: matrix-coturn-ssl-reload
+    name: matrix-coturn-ssl-reload
+    state: present
+    hour: 4
+    minute: 20
+    day: "*/5"
+    job: /bin/systemctl reload matrix-coturn.service
+  when: matrix_coturn_enabled and matrix_coturn_tls_enabled
+
 
 #
 # Tasks related to getting rid of Coturn (if it was previously enabled)
 #
+
+- name: Ensure matrix-coturn-ssl-reload cronjob removed
+  cron:
+    user: root
+    cron_file: matrix-coturn-ssl-reload
+    state: absent
+  when: "not matrix_coturn_enabled or not matrix_coturn_tls_enabled"
 
 - name: Check existence of matrix-coturn service
   stat:

@@ -1,3 +1,26 @@
+# 2019-03-19
+
+## TLS support for Coturn
+
+We've added TLS support to the Coturn TURN server installed by the playbook by default.
+The certificates from the Matrix domain will be used for the Coturn server.
+
+This feature is enabled by default for new installations.
+To make use of TLS support for your existing Matrix server's Coturn, make sure to rebuild both Coturn and Synapse:
+
+```bash
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-coturn,setup-synapse,start
+```
+
+People who have an extra firewall (besides the iptables firewall, which Docker manages automatically), will need to open these additional firewall ports: `5349/tcp` (TURN over TCP) and `5349/udp` (TURN over UDP).
+
+People who build their own custom playbook from our roles should be aware that:
+
+- the `matrix-coturn` role and actually starting Coturn (e.g. `--tags=start`), requires that certificates are already put in place. For this reason, it's usually a good idea to have the `matrix-coturn` role execute after `matrix-nginx-proxy` (which retrieves the certificates).
+
+- there are a few variables that can help you enable TLS support for Coturn. See the `matrix-coturn` section in [group_vars/matrix-servers](./group_vars/matrix-servers).
+
+
 # 2019-03-12
 
 ## matrix-nginx-proxy support for serving the base domain
