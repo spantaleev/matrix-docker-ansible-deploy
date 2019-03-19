@@ -10,9 +10,9 @@ Usually, there are 2 options:
 
 - either get a separate server for the base domain, just for serving the files necessary for [Server Delegation via a well-known file](howto-server-delegation.md#server-delegation-via-a-well-known-file)
 
-- or, arrange for the Matrix server to serve the base domain. This involves [using your own webserver](configuring-playbook-own-webserver.md) or making the integrated webserver somehow serve your base domain (possible, but complicated).
+- or, arrange for the Matrix server to serve the base domain. This either involves you [using your own webserver](configuring-playbook-own-webserver.md) or making the integrated webserver (`matrix-nginx-proxy`) serve the base domain for you.
 
-To solve this problem, we've created an easy way to let you serve the base domain from the Matrix server via the integrated webserver (`matrix-nginx-proxy`).
+We let you do the latter. With some easy changes, we make it possible to serve the base domain from the Matrix server via the integrated webserver (`matrix-nginx-proxy`).
 
 Just **adjust your DNS records**, so that your base domain is pointed to the Matrix server's IP address **and use the following configuration**:
 
