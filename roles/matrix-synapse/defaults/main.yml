@@ -202,6 +202,8 @@ matrix_s3_media_store_aws_access_key: "your-aws-access-key"
 matrix_s3_media_store_aws_secret_key: "your-aws-secret-key"
 matrix_s3_media_store_region: "eu-central-1"
 
+# Controls whether the self-check feature should validate SSL certificates.
+matrix_synapse_self_check_validate_certificates: true
 
 # Matrix mautrix is a Matrix <-> Telegram bridge
 # Enable telegram bridge
@@ -673,7 +675,7 @@ matrix_appservice_discord_configuration_yaml: |
     database:
         filename: "/data/discord.db"
         userStorePath: "/data/user-store.db"
-        roomStorePath: "/data/room-store.db"    
+        roomStorePath: "/data/room-store.db"
 
 matrix_appservice_discord_configuration_extension_yaml: |
     # This is a sample of the config file showing all avaliable options.
@@ -765,7 +767,7 @@ matrix_appservice_discord_configuration_extension_yaml: |
     #    # (Copies of a sent message may arrive from discord before we've
     #    # fininished handling it, causing us to echo it back to the room)
     #    discordSendDelay: 750
- 
+
 matrix_appservice_discord_configuration_extension: "{{ matrix_appservice_irc_configuration_extension_yaml|from_yaml if matrix_appservice_irc_configuration_extension_yaml|from_yaml else {} }}"
 
 matrix_appservice_discord_configuration: "{{ matrix_appservice_discord_configuration_yaml|from_yaml|combine(matrix_appservice_discord_configuration_extension, recursive=True) }}"

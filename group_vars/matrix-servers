@@ -181,6 +181,8 @@ matrix_mxisd_threepid_medium_email_connectors_smtp_host: "matrix-mailer"
 matrix_mxisd_threepid_medium_email_connectors_smtp_port: 8025
 matrix_mxisd_threepid_medium_email_connectors_smtp_tls: 0
 
+matrix_mxisd_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else false }}"
+
 matrix_mxisd_systemd_wanted_services_list: |
   {{
     (['matrix-corporal.service'] if matrix_corporal_enabled else ['matrix-synapse.service'])
@@ -237,6 +239,8 @@ matrix_nginx_proxy_proxy_synapse_metrics_addr_sans_container: "127.0.0.1:{{ matr
 matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_mxisd_enabled }}"
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}"
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container }}"
+
+matrix_nginx_proxy_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else false }}"
 
 matrix_nginx_proxy_systemd_wanted_services_list: |
   {{
@@ -313,6 +317,8 @@ matrix_riot_web_integrations_rest_url: "{{ matrix_dimension_integrations_rest_ur
 matrix_riot_web_integrations_widgets_urls: "{{ matrix_dimension_integrations_widgets_urls if matrix_dimension_enabled else ['https://scalar.vector.im/api'] }}"
 matrix_riot_web_integrations_jitsi_widget_url: "{{ matrix_dimension_integrations_jitsi_widget_url if matrix_dimension_enabled else 'https://scalar.vector.im/api/widgets/jitsi.html' }}"
 
+matrix_riot_web_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else false }}"
+
 ######################################################################
 #
 # /matrix-riot-web
@@ -374,6 +380,8 @@ matrix_synapse_turn_uris: |
   }}
 
 matrix_synapse_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
+
+matrix_synapse_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else false }}"
 
 matrix_synapse_systemd_required_services_list: |
   {{
