@@ -36,6 +36,20 @@ matrix_corporal_http_api_auth_token: "AUTH_TOKEN_HERE"
 # If you need to change the reconciliator user's id from the default (matrix-corporal)..
 # In any case, you need to make sure this Matrix user is created on your server.
 matrix_corporal_reconciliation_user_id_local_part: "matrix-corporal"
+
+# Because Corporal peridoically performs lots of user logins from the same IP,
+# you may need raise Synapse's ratelimits.
+# The values below are just an example. Tweak to your use-case (number of users, etc.)
+matrix_synapse_rc_login:
+  address:
+    per_second: 50
+    burst_count: 300
+  account:
+    per_second: 0.17
+    burst_count: 3
+  failed_attempts:
+    per_second: 0.17
+    burst_count: 3
 ```
 
 Matrix Corporal operates with a specific Matrix user on your server.
