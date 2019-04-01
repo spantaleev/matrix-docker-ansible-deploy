@@ -1,13 +1,16 @@
 # vim:ft=yaml
+
 ## Server ##
 
 # The domain name of the server, with optional explicit port.
 # This is used by remote servers to connect to this server,
 # e.g. matrix.org, localhost:8080, etc.
 # This is also the last part of your UserID.
+#
 server_name: "{{ matrix_domain }}"
 
 # When running as a daemon, the file to store the pid in
+#
 pid_file: /homeserver.pid
 
 # CPU affinity mask. Setting this restricts the CPUs on which the
@@ -31,40 +34,51 @@ pid_file: /homeserver.pid
 #
 # This setting requires the affinity package to be installed!
 #
-# cpu_affinity: 0xFFFFFFFF
+#cpu_affinity: 0xFFFFFFFF
+
+# The path to the web client which will be served at /_matrix/client/
+# if 'webclient' is configured under the 'listeners' configuration.
+#
+#web_client_location: "/path/to/web/root"
 
 # The public-facing base URL that clients use to access this HS
 # (not including _matrix/...). This is the same URL a user would
 # enter into the 'custom HS URL' field on their client. If you
 # use synapse with a reverse proxy, this should be the URL to reach
 # synapse via the proxy.
+#
 public_baseurl: https://{{ matrix_server_fqn_matrix }}/
 
 # Set the soft limit on the number of file descriptors synapse can use
 # Zero is used to indicate synapse should set the soft limit to the
 # hard limit.
-soft_file_limit: 0
+#
+#soft_file_limit: 0
 
 # Set to false to disable presence tracking on this homeserver.
+#
 use_presence: {{ matrix_synapse_use_presence|to_json }}
 
 # The GC threshold parameters to pass to `gc.set_threshold`, if defined
-# gc_thresholds: [700, 10, 10]
+#
+#gc_thresholds: [700, 10, 10]
 
 # Set the limit on the returned events in the timeline in the get
 # and sync operations. The default value is -1, means no upper limit.
-# filter_timeline_limit: 5000
+#
+#filter_timeline_limit: 5000
 
 # Whether room invites to users on this server should be blocked
 # (except those sent by local server admins). The default is False.
-# block_non_admin_invites: True
+#
+#block_non_admin_invites: True
 
 # Room searching
 #
 # If disabled, new messages will not be indexed for searching and users
 # will receive errors when searching for messages. Defaults to enabled.
 #
-# enable_search: false
+#enable_search: false
 
 # Restrict federation to the following whitelist of domains.
 # N.B. we recommend also firewalling your federation listener to limit
@@ -72,7 +86,7 @@ use_presence: {{ matrix_synapse_use_presence|to_json }}
 # purely on this application-layer restriction.  If not specified, the
 # default is to whitelist everything.
 #
-# federation_domain_whitelist:
+#federation_domain_whitelist:
 #  - lon.example.com
 #  - nyc.example.com
 #  - syd.example.com
@@ -139,6 +153,8 @@ federation_domain_whitelist: {{ matrix_synapse_federation_domain_whitelist|to_js
 #   static: static resources under synapse/static (/_matrix/static). (Mostly
 #       useful for 'fallback authentication'.)
 #
+#   webclient: A web client. Requires web_client_location to be set.
+#
 listeners:
 {% if matrix_synapse_metrics_enabled %}
   - type: metrics
@@ -196,29 +212,33 @@ listeners:
 ## Homeserver blocking ##
 
 # How to reach the server admin, used in ResourceLimitError
-# admin_contact: 'mailto:admin@server.com'
+#
+#admin_contact: 'mailto:admin@server.com'
 
 # Global blocking
-# hs_disabled: False
-# hs_disabled_message: 'Human readable reason for why the HS is blocked'
-# hs_disabled_limit_type: 'error code(str), to help clients decode reason'
+#
+#hs_disabled: False
+#hs_disabled_message: 'Human readable reason for why the HS is blocked'
+#hs_disabled_limit_type: 'error code(str), to help clients decode reason'
 
 # Monthly Active User Blocking
-# limit_usage_by_mau: False
-# max_mau_value: 50
-# mau_trial_days: 2
+#
+#limit_usage_by_mau: False
+#max_mau_value: 50
+#mau_trial_days: 2
 
 # If enabled, the metrics for the number of monthly active users will
 # be populated, however no one will be limited. If limit_usage_by_mau
 # is true, this is implied to be true.
-# mau_stats_only: False
+#
+#mau_stats_only: False
 
 # Sometimes the server admin will want to ensure certain accounts are
 # never blocked by mau checking. These accounts are specified here.
 #
-# mau_limit_reserved_threepids:
-# - medium: 'email'
-#   address: 'reserved_user@example.com'
+#mau_limit_reserved_threepids:
+#  - medium: 'email'
+#    address: 'reserved_user@example.com'
 
 
 ## TLS ##
@@ -230,9 +250,15 @@ listeners:
 # See 'ACME support' below to enable auto-provisioning this certificate via
 # Let's Encrypt.
 #
+# If supplying your own, be sure to use a `.pem` file that includes the
+# full certificate chain including any intermediate certificates (for
+# instance, if using certbot, use `fullchain.pem` as your certificate,
+# not `cert.pem`).
+#
 tls_certificate_path: {{ matrix_synapse_tls_certificate_path|to_json }}
 
 # PEM-encoded private key for TLS
+#
 tls_private_key_path: {{ matrix_synapse_tls_private_key_path|to_json }}
 
 # ACME support: This will configure Synapse to request a valid TLS certificate
@@ -260,28 +286,42 @@ acme:
     # ACME support is disabled by default. Uncomment the following line
     # (and tls_certificate_path and tls_private_key_path above) to enable it.
     #
-    # enabled: true
+    #enabled: true
 
     # Endpoint to use to request certificates. If you only want to test,
     # use Let's Encrypt's staging url:
     #     https://acme-staging.api.letsencrypt.org/directory
     #
-    # url: https://acme-v01.api.letsencrypt.org/directory
+    #url: https://acme-v01.api.letsencrypt.org/directory
 
     # Port number to listen on for the HTTP-01 challenge. Change this if
     # you are forwarding connections through Apache/Nginx/etc.
     #
-    # port: 80
+    #port: 80
 
     # Local addresses to listen on for incoming connections.
     # Again, you may want to change this if you are forwarding connections
     # through Apache/Nginx/etc.
     #
-    # bind_addresses: ['::', '0.0.0.0']
+    #bind_addresses: ['::', '0.0.0.0']
 
     # How many days remaining on a certificate before it is renewed.
     #
-    # reprovision_threshold: 30
+    #reprovision_threshold: 30
+
+    # The domain that the certificate should be for. Normally this
+    # should be the same as your Matrix domain (i.e., 'server_name'), but,
+    # by putting a file at 'https://<server_name>/.well-known/matrix/server',
+    # you can delegate incoming traffic to another server. If you do that,
+    # you should give the target of the delegation here.
+    #
+    # For example: if your 'server_name' is 'example.com', but
+    # 'https://example.com/.well-known/matrix/server' delegates to
+    # 'matrix.example.com', you should put 'matrix.example.com' here.
+    #
+    # If not set, defaults to your 'server_name'.
+    #
+    #domain: matrix.example.com
 
 # List of allowed TLS fingerprints for this server to publish along
 # with the signing keys for this server. Other matrix servers that
@@ -308,8 +348,7 @@ acme:
 #   openssl x509 -outform DER | openssl sha256 -binary | base64 | tr -d '='
 # or by checking matrix.org/federationtester/api/report?server_name=$host
 #
-tls_fingerprints: []
-# tls_fingerprints: [{"sha256": "<base64_encoded_sha256_fingerprint>"}]
+#tls_fingerprints: [{"sha256": "<base64_encoded_sha256_fingerprint>"}]
 
 
 
@@ -327,108 +366,158 @@ database:
     cp_max: 10
 
 # Number of events to cache in memory.
+#
 event_cache_size: "{{ matrix_synapse_event_cache_size }}"
 
 
 ## Logging ##
 
 # A yaml python logging config file
+#
 log_config: "/data/{{ matrix_server_fqn_matrix }}.log.config"
 
 
 ## Ratelimiting ##
 
 # Number of messages a client can send per second
+#
 rc_messages_per_second: {{ matrix_synapse_rc_messages_per_second }}
 
 # Number of message a client can send before being throttled
+#
 rc_message_burst_count: {{ matrix_synapse_rc_message_burst_count }}
 
+# Ratelimiting settings for registration and login.
+#
+# Each ratelimiting configuration is made of two parameters:
+#   - per_second: number of requests a client can send per second.
+#   - burst_count: number of requests a client can send before being throttled.
+#
+# Synapse currently uses the following configurations:
+#   - one for registration that ratelimits registration requests based on the
+#     client's IP address.
+#   - one for login that ratelimits login requests based on the client's IP
+#     address.
+#   - one for login that ratelimits login requests based on the account the
+#     client is attempting to log into.
+#   - one for login that ratelimits login requests based on the account the
+#     client is attempting to log into, based on the amount of failed login
+#     attempts for this account.
+#
+# The defaults are as shown below.
+#
+#rc_registration:
+#  per_second: 0.17
+#  burst_count: 3
+#
+#rc_login:
+#  address:
+#    per_second: 0.17
+#    burst_count: 3
+#  account:
+#    per_second: 0.17
+#    burst_count: 3
+#  failed_attempts:
+#    per_second: 0.17
+#    burst_count: 3
+
 # The federation window size in milliseconds
-federation_rc_window_size: 1000
+#
+#federation_rc_window_size: 1000
 
 # The number of federation requests from a single server in a window
 # before the server will delay processing the request.
-federation_rc_sleep_limit: 10
+#
+#federation_rc_sleep_limit: 10
 
 # The duration in milliseconds to delay processing events from
 # remote servers by if they go over the sleep limit.
-federation_rc_sleep_delay: 500
+#
+#federation_rc_sleep_delay: 500
 
 # The maximum number of concurrent federation requests allowed
 # from a single server
-federation_rc_reject_limit: 50
+#
+#federation_rc_reject_limit: 50
 
 # The number of federation requests to concurrently process from a
 # single server
-federation_rc_concurrent: 3
+#
+#federation_rc_concurrent: 3
 
-# Number of registration requests a client can send per second.
-# Defaults to 1/minute (0.17).
-# rc_registration_requests_per_second: 0.17
-
-# Number of registration requests a client can send before being
-# throttled.
-# Defaults to 3.
-# rc_registration_request_burst_count: 3.0
+# Target outgoing federation transaction frequency for sending read-receipts,
+# per-room.
+#
+# If we end up trying to send out more read-receipts, they will get buffered up
+# into fewer transactions.
+#
+#federation_rr_transactions_per_room_per_second: 50
 
 
 
 # Directory where uploaded images and attachments are stored.
+#
 media_store_path: "/matrix-media-store-parent/{{ matrix_synapse_media_store_directory_name }}"
 
 # Media storage providers allow media to be stored in different
 # locations.
-# media_storage_providers:
-# - module: file_system
-#   # Whether to write new local files.
-#   store_local: false
-#   # Whether to write new remote media
-#   store_remote: false
-#   # Whether to block upload requests waiting for write to this
-#   # provider to complete
-#   store_synchronous: false
-#   config:
-#     directory: /mnt/some/other/directory
+#
+#media_storage_providers:
+#  - module: file_system
+#    # Whether to write new local files.
+#    store_local: false
+#    # Whether to write new remote media
+#    store_remote: false
+#    # Whether to block upload requests waiting for write to this
+#    # provider to complete
+#    store_synchronous: false
+#    config:
+#       directory: /mnt/some/other/directory
 
 # Directory where in-progress uploads are stored.
+#
 uploads_path: "/matrix-run/uploads"
 
 # The largest allowed upload size in bytes
+#
 max_upload_size: "{{ matrix_synapse_max_upload_size_mb }}M"
 
 # Maximum number of pixels that will be thumbnailed
-max_image_pixels: "32M"
+#
+#max_image_pixels: 32M
 
 # Whether to generate new thumbnails on the fly to precisely match
 # the resolution requested by the client. If true then whenever
 # a new resolution is requested by the client the server will
 # generate a new thumbnail. If false the server will pick a thumbnail
 # from a precalculated list.
-dynamic_thumbnails: false
+#
+#dynamic_thumbnails: false
 
 # List of thumbnails to precalculate when an image is uploaded.
-thumbnail_sizes:
-- width: 32
-  height: 32
-  method: crop
-- width: 96
-  height: 96
-  method: crop
-- width: 320
-  height: 240
-  method: scale
-- width: 640
-  height: 480
-  method: scale
-- width: 800
-  height: 600
-  method: scale
+#
+#thumbnail_sizes:
+#  - width: 32
+#    height: 32
+#    method: crop
+#  - width: 96
+#    height: 96
+#    method: crop
+#  - width: 320
+#    height: 240
+#    method: scale
+#  - width: 640
+#    height: 480
+#    method: scale
+#  - width: 800
+#    height: 600
+#    method: scale
 
 # Is the preview URL API enabled?  If enabled, you *must* specify
 # an explicit url_preview_ip_range_blacklist of IPs that the spider is
 # denied from accessing.
-url_preview_enabled: True
+#
+#url_preview_enabled: false
 
 # List of IP address CIDR ranges that the URL preview spider is denied
 # from accessing.  There are no defaults: you must explicitly
@@ -438,16 +527,16 @@ url_preview_enabled: True
 # synapse to issue arbitrary GET requests to your internal services,
 # causing serious security issues.
 #
-url_preview_ip_range_blacklist:
-- '127.0.0.0/8'
-- '10.0.0.0/8'
-- '172.16.0.0/12'
-- '192.168.0.0/16'
-- '100.64.0.0/10'
-- '169.254.0.0/16'
-- '::1/128'
-- 'fe80::/64'
-- 'fc00::/7'
+#url_preview_ip_range_blacklist:
+#  - '127.0.0.0/8'
+#  - '10.0.0.0/8'
+#  - '172.16.0.0/12'
+#  - '192.168.0.0/16'
+#  - '100.64.0.0/10'
+#  - '169.254.0.0/16'
+#  - '::1/128'
+#  - 'fe80::/64'
+#  - 'fc00::/7'
 #
 # List of IP address CIDR ranges that the URL preview spider is allowed
 # to access even if they are specified in url_preview_ip_range_blacklist.
@@ -455,8 +544,8 @@ url_preview_ip_range_blacklist:
 # target IP ranges - e.g. for enabling URL previews for a specific private
 # website only visible in your network.
 #
-# url_preview_ip_range_whitelist:
-# - '192.168.1.1'
+#url_preview_ip_range_whitelist:
+#   - '192.168.1.1'
 
 # Optional list of URL matches that the URL preview spider is
 # denied from accessing.  You should use url_preview_ip_range_blacklist
@@ -474,105 +563,118 @@ url_preview_ip_range_blacklist:
 # specified component matches for a given list item succeed, the URL is
 # blacklisted.
 #
-# url_preview_url_blacklist:
-# # blacklist any URL with a username in its URI
-# - username: '*'
+#url_preview_url_blacklist:
+#  # blacklist any URL with a username in its URI
+#  - username: '*'
 #
-# # blacklist all *.google.com URLs
-# - netloc: 'google.com'
-# - netloc: '*.google.com'
+#  # blacklist all *.google.com URLs
+#  - netloc: 'google.com'
+#  - netloc: '*.google.com'
 #
-# # blacklist all plain HTTP URLs
-# - scheme: 'http'
+#  # blacklist all plain HTTP URLs
+#  - scheme: 'http'
 #
-# # blacklist http(s)://www.acme.com/foo
-# - netloc: 'www.acme.com'
-#   path: '/foo'
+#  # blacklist http(s)://www.acme.com/foo
+#  - netloc: 'www.acme.com'
+#    path: '/foo'
 #
-# # blacklist any URL with a literal IPv4 address
-# - netloc: '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
+#  # blacklist any URL with a literal IPv4 address
+#  - netloc: '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
 
 # The largest allowed URL preview spidering size in bytes
-max_spider_size: "10M"
-
+#
+#max_spider_size: 10M
 
 
 ## Captcha ##
 # See docs/CAPTCHA_SETUP for full details of configuring this.
 
 # This Home Server's ReCAPTCHA public key.
-recaptcha_public_key: "YOUR_PUBLIC_KEY"
+#
+#recaptcha_public_key: "YOUR_PUBLIC_KEY"
 
 # This Home Server's ReCAPTCHA private key.
-recaptcha_private_key: "YOUR_PRIVATE_KEY"
+#
+#recaptcha_private_key: "YOUR_PRIVATE_KEY"
 
 # Enables ReCaptcha checks when registering, preventing signup
 # unless a captcha is answered. Requires a valid ReCaptcha
 # public/private key.
-enable_registration_captcha: False
+#
+#enable_registration_captcha: false
 
 # A secret key used to bypass the captcha test entirely.
-# captcha_bypass_secret: "YOUR_SECRET_HERE"
+#
+#captcha_bypass_secret: "YOUR_SECRET_HERE"
 
 # The API endpoint to use for verifying m.login.recaptcha responses.
-recaptcha_siteverify_api: "https://www.recaptcha.net/recaptcha/api/siteverify"
+#
+#recaptcha_siteverify_api: "https://www.recaptcha.net/recaptcha/api/siteverify"
 
 
 ## TURN ##
 
 # The public URIs of the TURN server to give to clients
+#
 turn_uris: {{ matrix_synapse_turn_uris|to_json }}
 
 # The shared secret used to compute passwords for the TURN server
+#
 turn_shared_secret: {{ matrix_synapse_turn_shared_secret|to_json }}
 
 # The Username and password if the TURN server needs them and
 # does not use a token
-# turn_username: "TURNSERVER_USERNAME"
-# turn_password: "TURNSERVER_PASSWORD"
+#
+#turn_username: "TURNSERVER_USERNAME"
+#turn_password: "TURNSERVER_PASSWORD"
 
 # How long generated TURN credentials last
-turn_user_lifetime: "1h"
+#
+#turn_user_lifetime: 1h
 
 # Whether guests should be allowed to use the TURN server.
 # This defaults to True, otherwise VoIP will be unreliable for guests.
 # However, it does introduce a slight security risk as it allows users to
 # connect to arbitrary endpoints without having first signed up for a
 # valid account (e.g. by passing a CAPTCHA).
+#
 turn_allow_guests: False
 
 
 ## Registration ##
+#
 # Registration can be rate-limited using the parameters in the "Ratelimiting"
 # section of this file.
 
 # Enable registration for new users.
+#
 enable_registration: {{ matrix_synapse_enable_registration|to_json }}
 
 # The user must provide all of the below types of 3PID when registering.
 #
-# registrations_require_3pid:
-#     - email
-#     - msisdn
+#registrations_require_3pid:
+#  - email
+#  - msisdn
 
 # Explicitly disable asking for MSISDNs from the registration
 # flow (overrides registrations_require_3pid if MSISDNs are set as required)
 #
-# disable_msisdn_registration = True
+#disable_msisdn_registration: true
 
 # Mandate that users are only allowed to associate certain formats of
 # 3PIDs with accounts on this server.
 #
-# allowed_local_3pids:
-#     - medium: email
-#       pattern: '.*@matrix\.org'
-#     - medium: email
-#       pattern: '.*@vector\.im'
-#     - medium: msisdn
-#       pattern: '\+44'
+#allowed_local_3pids:
+#  - medium: email
+#    pattern: '.*@matrix\.org'
+#  - medium: email
+#    pattern: '.*@vector\.im'
+#  - medium: msisdn
+#    pattern: '\+44'
 
-# If set, allows registration by anyone who also has the shared
-# secret, even if registration is otherwise disabled.
+# If set, allows registration of standard or admin accounts by anyone who
+# has the shared secret, even if registration is otherwise disabled.
+#
 registration_shared_secret: {{ matrix_synapse_registration_shared_secret|to_json }}
 
 # Set the number of bcrypt rounds used to generate password hash.
@@ -580,12 +682,14 @@ registration_shared_secret: {{ matrix_synapse_registration_shared_secret|to_json
 # The default number is 12 (which equates to 2^12 rounds).
 # N.B. that increasing this will exponentially increase the time required
 # to register or login - e.g. 24 => 2^24 rounds which will take >20 mins.
-bcrypt_rounds: 12
+#
+#bcrypt_rounds: 12
 
 # Allows users to register as guests without a password/email/etc, and
 # participate in rooms hosted on this server which have been made
 # accessible to anonymous users.
-allow_guest_access: False
+#
+#allow_guest_access: false
 
 # The identity server which we suggest that clients should use when users log
 # in on this server.
@@ -593,13 +697,14 @@ allow_guest_access: False
 # (By default, no suggestion is made, so it is left up to the client.
 # This setting is ignored unless public_baseurl is also set.)
 #
-# default_identity_server: https://matrix.org
+#default_identity_server: https://matrix.org
 
 # The list of identity servers trusted to verify third party
 # identifiers by this server.
 #
 # Also defines the ID server which will be called when an account is
 # deactivated (one will be picked arbitrarily).
+#
 {% if matrix_synapse_trusted_third_party_id_servers|length > 0 %}
 trusted_third_party_id_servers:
 {{ matrix_synapse_trusted_third_party_id_servers|to_nice_yaml }}
@@ -607,6 +712,9 @@ trusted_third_party_id_servers:
 
 # Users who register on this homeserver will automatically be joined
 # to these rooms
+#
+#auto_join_rooms:
+#  - "#example:example.com"
 {% if matrix_synapse_auto_join_rooms|length > 0 %}
 auto_join_rooms:
 {{ matrix_synapse_auto_join_rooms|to_nice_yaml }}
@@ -617,14 +725,16 @@ auto_join_rooms:
 # homeserver registers.
 # Setting to false means that if the rooms are not manually created,
 # users cannot be auto-joined since they do not exist.
-autocreate_auto_join_rooms: {{ matrix_synapse_autocreate_auto_join_rooms }}
+#
+autocreate_auto_join_rooms: {{ matrix_synapse_autocreate_auto_join_rooms|to_json }}
 
 
 ## Metrics ###
 
 # Enable collection and rendering of performance metrics
-enable_metrics: {{ matrix_synapse_metrics_enabled }}
-report_stats: {{ matrix_synapse_report_stats|to_json }}
+#
+enable_metrics: {{ matrix_synapse_metrics_enabled|to_json  }}
+
 
 # Enable sentry integration
 # NOTE: While attempts are made to ensure that the logs don't contain
@@ -633,50 +743,61 @@ report_stats: {{ matrix_synapse_report_stats|to_json }}
 # information, and it in turn may then diseminate sensitive information
 # through insecure notification channels if so configured.
 #
-# sentry:
+#sentry:
 #    dsn: "..."
+
+# Whether or not to report anonymized homeserver usage statistics.
+report_stats: {{ matrix_synapse_report_stats|to_json }}
 
 
 ## API Configuration ##
 
 # A list of event types that will be included in the room_invite_state
-room_invite_state_types:
-    - "m.room.join_rules"
-    - "m.room.canonical_alias"
-    - "m.room.avatar"
-    - "m.room.encryption"
-    - "m.room.name"
+#
+#room_invite_state_types:
+#  - "m.room.join_rules"
+#  - "m.room.canonical_alias"
+#  - "m.room.avatar"
+#  - "m.room.encryption"
+#  - "m.room.name"
 
 
-# A list of application service config file to use
+# A list of application service config files to use
+#
 app_service_config_files: {{ matrix_synapse_app_service_config_files }}
 
-# Whether or not to track application service IP addresses. Implicitly
+# Uncomment to enable tracking of application service IP addresses. Implicitly
 # enables MAU tracking for application service users.
-track_appservice_user_ips: False
+#
+#track_appservice_user_ips: True
 
 
 # a secret which is used to sign access tokens. If none is specified,
 # the registration_shared_secret is used, if one is given; otherwise,
 # a secret key is derived from the signing key.
+#
 macaroon_secret_key: {{ matrix_synapse_macaroon_secret_key|to_json }}
 
 # Used to enable access token expiration.
-expire_access_token: False
+#
+#expire_access_token: False
 
 # a secret which is used to calculate HMACs for form values, to stop
 # falsification of values. Must be specified for the User Consent
 # forms to work.
+#
 form_secret: {{ matrix_synapse_form_secret|to_json }}
 
 ## Signing Keys ##
 
 # Path to the signing key to sign messages with
+#
 signing_key_path: "/data/{{ matrix_server_fqn_matrix }}.signing.key"
 
 # The keys that the server used to sign messages with but won't use
 # to sign new messages. E.g. it has lost its private key
-old_signing_keys: {}
+#
+#old_signing_keys:
 #  "ed25519:auto":
 #    # Base64 encoded public key
 #    key: "The public part of your old signing key."
@@ -687,16 +808,17 @@ old_signing_keys: {}
 # Used to set the valid_until_ts in /key/v2 APIs.
 # Determines how quickly servers will query to check which keys
 # are still valid.
-key_refresh_interval: "1d" # 1 Day.
+#
+#key_refresh_interval: 1d
 
 # The trusted servers to download signing keys from.
-perspectives:
-  servers:
-    "matrix.org":
-      verify_keys:
-        "ed25519:auto":
-          key: "Noi6WqcDj0QmPxCNQqgezwTlBKrfqehY1u2FyWP9uYw"
-
+#
+#perspectives:
+#  servers:
+#    "matrix.org":
+#      verify_keys:
+#        "ed25519:auto":
+#          key: "Noi6WqcDj0QmPxCNQqgezwTlBKrfqehY1u2FyWP9uYw"
 
 
 # Enable SAML2 for registration and login. Uses pysaml2.
@@ -704,48 +826,47 @@ perspectives:
 # `sp_config` is the configuration for the pysaml2 Service Provider.
 # See pysaml2 docs for format of config.
 #
-#   # The following is the configuration for the pysaml2 Service Provider.
-#   # See pysaml2 docs for format of config.
-#   #
-#   # Default values will be used for the 'entityid' and 'service' settings,
-#   # so it is not normally necessary to specify them unless you need to
-#   # override them.
+# Default values will be used for the 'entityid' and 'service' settings,
+# so it is not normally necessary to specify them unless you need to
+# override them.
 #
-#   sp_config:
-#     # point this to the IdP's metadata. You can use either a local file or
-#     # (preferably) a URL.
-#     metadata:
-#       # local: ["saml2/idp.xml"]
-#       remote:
-#         - url: https://our_idp/metadata.xml
+#saml2_config:
+#  sp_config:
+#    # point this to the IdP's metadata. You can use either a local file or
+#    # (preferably) a URL.
+#    metadata:
+#      #local: ["saml2/idp.xml"]
+#      remote:
+#        - url: https://our_idp/metadata.xml
 #
-#     # The following is just used to generate our metadata xml, and you
-#     # may well not need it, depending on your setup. Alternatively you
-#     # may need a whole lot more detail - see the pysaml2 docs!
+#    # The rest of sp_config is just used to generate our metadata xml, and you
+#    # may well not need it, depending on your setup. Alternatively you
+#    # may need a whole lot more detail - see the pysaml2 docs!
 #
-#     description: ["My awesome SP", "en"]
-#     name: ["Test SP", "en"]
+#    description: ["My awesome SP", "en"]
+#    name: ["Test SP", "en"]
 #
-#     organization:
-#       name: Example com
-#       display_name:
-#         - ["Example co", "en"]
-#       url: "http://example.com"
+#    organization:
+#      name: Example com
+#      display_name:
+#        - ["Example co", "en"]
+#      url: "http://example.com"
 #
-#     contact_person:
-#       - given_name: Bob
-#         sur_name: "the Sysadmin"
-#         email_address": ["admin@example.com"]
-#         contact_type": technical
+#    contact_person:
+#      - given_name: Bob
+#        sur_name: "the Sysadmin"
+#        email_address": ["admin@example.com"]
+#        contact_type": technical
 #
-#   # Instead of putting the config inline as above, you can specify a
-#   # separate pysaml2 configuration file:
-#   #
-#   # config_path: "/data/sp_conf.py"
+#  # Instead of putting the config inline as above, you can specify a
+#  # separate pysaml2 configuration file:
+#  #
+#  config_path: "/data/sp_conf.py"
 
 
 
 # Enable CAS for registration and login.
+#
 #cas_config:
 #   enabled: true
 #   server_url: "https://cas-server.com"
@@ -756,18 +877,20 @@ perspectives:
 
 # The JWT needs to contain a globally unique "sub" (subject) claim.
 #
-# jwt_config:
-#    enabled: true
-#    secret: "a secret"
-#    algorithm: "HS256"
+#jwt_config:
+#   enabled: true
+#   secret: "a secret"
+#   algorithm: "HS256"
 
 
-
-# Enable password for login.
 password_config:
-   enabled: true
+   # Uncomment to disable password login
+   #
+   #enabled: false
+
    # Uncomment and change to a secret random string for extra security.
    # DO NOT CHANGE THIS AFTER INITIAL SETUP!
+   #
    pepper: {{ matrix_synapse_password_config_pepper|to_json }}
 
 
@@ -795,20 +918,20 @@ email:
 {% endif %}
 
 
-# password_providers:
-#     - module: "ldap_auth_provider.LdapAuthProvider"
-#       config:
-#         enabled: true
-#         uri: "ldap://ldap.example.com:389"
-#         start_tls: true
-#         base: "ou=users,dc=example,dc=com"
-#         attributes:
-#            uid: "cn"
-#            mail: "email"
-#            name: "givenName"
-#         #bind_dn:
-#         #bind_password:
-#         #filter: "(objectClass=posixAccount)"
+#password_providers:
+#    - module: "ldap_auth_provider.LdapAuthProvider"
+#      config:
+#        enabled: true
+#        uri: "ldap://ldap.example.com:389"
+#        start_tls: true
+#        base: "ou=users,dc=example,dc=com"
+#        attributes:
+#           uid: "cn"
+#           mail: "email"
+#           name: "givenName"
+#        #bind_dn:
+#        #bind_password:
+#        #filter: "(objectClass=posixAccount)"
 {% if matrix_synapse_password_providers_enabled %}
 password_providers:
 {% if matrix_synapse_ext_password_provider_shared_secret_auth_enabled %}
@@ -856,31 +979,37 @@ password_providers:
 # notification request includes the content of the event (other details
 # like the sender are still included). For `event_id_only` push, it
 # has no effect.
-
+#
 # For modern android devices the notification content will still appear
 # because it is loaded by the app. iPhone, however will send a
 # notification saying only that a message arrived and who it came from.
-
+#
 push:
    include_content: {{ matrix_synapse_push_include_content|to_json }}
 
 
-# spam_checker:
-#     module: "my_custom_project.SuperSpamChecker"
-#     config:
-#         example_option: 'things'
+#spam_checker:
+#  module: "my_custom_project.SuperSpamChecker"
+#  config:
+#    example_option: 'things'
 
 
-# Whether to allow non server admins to create groups on this server
-enable_group_creation: false
+# Uncomment to allow non-server-admin users to create groups on this server
+#
+#enable_group_creation: true
 
 # If enabled, non server admins can only create groups with local parts
 # starting with this prefix
-# group_creation_prefix: "unofficial/"
+#
+#group_creation_prefix: "unofficial/"
 
 
 
 # User Directory configuration
+#
+# 'enabled' defines whether users can search the user directory. If
+# false then empty responses are returned to all queries. Defaults to
+# true.
 #
 # 'search_all_users' defines whether to search all users visible to your HS
 # when searching the user directory, rather than limiting to users visible
@@ -888,8 +1017,9 @@ enable_group_creation: false
 # UPDATE user_directory_stream_pos SET stream_id = NULL;
 # on your database to tell it to rebuild the user_directory search indexes.
 #
-# user_directory:
-#    search_all_users: false
+#user_directory:
+#  enabled: true
+#  search_all_users: false
 
 
 # User Consent configuration
@@ -926,20 +1056,20 @@ enable_group_creation: false
 # for an account. Has no effect unless `require_at_registration` is enabled.
 # Defaults to "Privacy Policy".
 #
-# user_consent:
-#   template_dir: res/templates/privacy
-#   version: 1.0
-#   server_notice_content:
-#     msgtype: m.text
-#     body: >-
-#       To continue using this homeserver you must review and agree to the
-#       terms and conditions at %(consent_uri)s
-#   send_server_notice_to_guests: True
-#   block_events_error: >-
-#     To continue using this homeserver you must review and agree to the
-#     terms and conditions at %(consent_uri)s
-#   require_at_registration: False
-#   policy_name: Privacy Policy
+#user_consent:
+#  template_dir: res/templates/privacy
+#  version: 1.0
+#  server_notice_content:
+#    msgtype: m.text
+#    body: >-
+#      To continue using this homeserver you must review and agree to the
+#      terms and conditions at %(consent_uri)s
+#  send_server_notice_to_guests: True
+#  block_events_error: >-
+#    To continue using this homeserver you must review and agree to the
+#    terms and conditions at %(consent_uri)s
+#  require_at_registration: False
+#  policy_name: Privacy Policy
 #
 
 
@@ -956,13 +1086,19 @@ enable_group_creation: false
 # It's also possible to override the room name, the display name of the
 # "notices" user, and the avatar for the user.
 #
-# server_notices:
-#   system_mxid_localpart: notices
-#   system_mxid_display_name: "Server Notices"
-#   system_mxid_avatar_url: "mxc://server.com/oumMVlgDnLYFaPVkExemNVVZ"
-#   room_name: "Server Notices"
+#server_notices:
+#  system_mxid_localpart: notices
+#  system_mxid_display_name: "Server Notices"
+#  system_mxid_avatar_url: "mxc://server.com/oumMVlgDnLYFaPVkExemNVVZ"
+#  room_name: "Server Notices"
 
 
+
+# Uncomment to disable searching the public room list. When disabled
+# blocks searching local and remote room lists for local and remote
+# users by always returning an empty list for all queries.
+#
+#enable_room_list_search: false
 
 # The `alias_creation` option controls who's allowed to create aliases
 # on this server.
@@ -986,11 +1122,11 @@ enable_group_creation: false
 #
 # The default is:
 #
-# alias_creation_rules:
-#   - user_id: "*"
-#     alias: "*"
-#     room_id: "*"
-#     action: allow
+#alias_creation_rules:
+#  - user_id: "*"
+#    alias: "*"
+#    room_id: "*"
+#    action: allow
 
 # The `room_list_publication_rules` option controls who can publish and
 # which rooms can be published in the public room list.
@@ -1007,7 +1143,7 @@ enable_group_creation: false
 #
 # Options for the rules include:
 #
-#   user_id: Matches against the creator of the alias
+#   user_id: Matches agaisnt the creator of the alias
 #   room_id: Matches against the room ID being published
 #   alias: Matches against any current local or canonical aliases
 #            associated with the room
@@ -1015,8 +1151,8 @@ enable_group_creation: false
 #
 # The default is:
 #
-# room_list_publication_rules:
-#   - user_id: "*"
-#     alias: "*"
-#     room_id: "*"
-#     action: allow
+#room_list_publication_rules:
+#  - user_id: "*"
+#    alias: "*"
+#    room_id: "*"
+#    action: allow
