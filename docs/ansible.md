@@ -40,7 +40,7 @@ If you find yourself needing to resort to such hacks, please consider reporting 
 
 ## Using Ansible via Docker
 
-Alternatively, you can run Ansible itself from a Docker container on your computer.
+Alternatively, you can run Ansible on your computer from inside a Docker container (powered by the [devture/ansible](https://hub.docker.com/r/devture/ansible/) Docker image).
 
 Here's a sample command to get you started (run this from the playbook's directory):
 
@@ -50,7 +50,7 @@ docker run -it --rm \
 -v `pwd`:/work \
 -v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro \
 --entrypoint=/bin/sh \
-qmxme/ansible
+devture/ansible:2.7.0-r1
 ```
 
 The above command tries to mount an SSH key (`$HOME/.ssh/id_rsa`) into the container (at `/root/.ssh/id_rsa`).
