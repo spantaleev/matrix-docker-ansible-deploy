@@ -1,3 +1,12 @@
+# 2019-04-03
+
+## Ansible >= 2.5 is required
+
+Due to recent playbook improvements and the fact that the world keeps turning, we're bumping the [version requirement for Ansible](docs/ansible.md#supported-ansible-versions) (2.4 -> 2.5).
+
+We've also started building our own Docker image of Ansible ([devture/ansible](https://hub.docker.com/r/devture/ansible/)), which is useful for people who can't upgrade their local Ansible installation (see [Using Ansible via Docker](docs/ansible.md#using-ansible-via-docker)).
+
+
 # 2019-03-19
 
 ## TLS support for Coturn
