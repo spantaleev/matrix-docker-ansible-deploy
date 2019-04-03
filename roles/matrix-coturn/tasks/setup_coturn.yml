@@ -54,20 +54,6 @@
     daemon_reload: yes
   when: "matrix_coturn_enabled and matrix_coturn_systemd_service_result.changed"
 
-- name: Allow access to Coturn ports in firewalld
-  firewalld:
-    port: "{{ item }}"
-    state: enabled
-    immediate: yes
-    permanent: yes
-  with_items:
-    - '3478/tcp'
-    - '3478/udp'
-    - '5349/tcp'
-    - '5349/udp'
-    - "{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}/udp" # TURN
-  when: "matrix_coturn_enabled and ansible_os_family == 'RedHat'"
-
 # This may be unnecessary when more long-lived certificates are used.
 # We optimize for the common use-case though (short-lived Let's Encrypt certificates).
 # Reloading doesn't hurt anyway, so there's no need to make this more flexible.

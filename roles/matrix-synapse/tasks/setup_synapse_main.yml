@@ -77,12 +77,3 @@
     dest: "/usr/local/bin/matrix-synapse-register-user"
     mode: 0750
 
-- name: Allow access to Matrix ports in firewalld
-  firewalld:
-    port: "{{ item }}"
-    state: enabled
-    immediate: yes
-    permanent: yes
-  with_items:
-    - '8448/tcp' # Matrix federation
-  when: ansible_os_family == 'RedHat'

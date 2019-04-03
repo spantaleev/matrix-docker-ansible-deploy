@@ -99,17 +99,6 @@
     name: "{{ matrix_nginx_proxy_docker_image }}"
   when: matrix_nginx_proxy_enabled
 
-- name: Allow access to nginx proxy ports in firewalld
-  firewalld:
-    service: "{{ item }}"
-    state: enabled
-    immediate: yes
-    permanent: yes
-  with_items:
-    - "http"
-    - "https"
-  when: "matrix_nginx_proxy_enabled and ansible_os_family == 'RedHat'"
-
 - name: Ensure matrix-nginx-proxy.service installed
   template:
     src: "{{ role_path }}/templates/systemd/matrix-nginx-proxy.service.j2"

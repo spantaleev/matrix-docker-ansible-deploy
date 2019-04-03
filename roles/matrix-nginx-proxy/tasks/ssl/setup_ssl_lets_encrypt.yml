@@ -33,17 +33,6 @@
     - "{{ matrix_ssl_lets_encrypt_support_email }}"
   when: "matrix_ssl_retrieval_method == 'lets-encrypt' and item is none"
 
-- name: Allow access to HTTP/HTTPS in firewalld
-  firewalld:
-    service: "{{ item }}"
-    state: enabled
-    immediate: yes
-    permanent: yes
-  with_items:
-    - http
-    - https
-  when: "matrix_ssl_retrieval_method == 'lets-encrypt' and ansible_os_family == 'RedHat'"
-
 - name: Ensure certbot Docker image is pulled
   docker_image:
     name: "{{ matrix_ssl_lets_encrypt_certbot_docker_image }}"

@@ -23,7 +23,6 @@
       - bash-completion
       - docker-ce
       - docker-python
-      - firewalld
       - ntp
       - fuse
     state: latest
@@ -66,13 +65,6 @@
     state: latest
     update_cache: yes
   when: ansible_os_family == 'Debian'
-
-- name: Ensure firewalld is started and autoruns
-  service:
-    name: firewalld
-    state: started
-    enabled: yes
-  when: ansible_os_family == 'RedHat'
 
 - name: Ensure Docker is started and autoruns
   service:
