@@ -8,9 +8,9 @@ If your local computer cannot run Ansible, you can also run Ansible on some serv
 
 ## Supported Ansible versions
 
-Generally, Ansible 2.4 or later is required.
+Ansible 2.5 or newer is required.
 
-If you're on Ansible 2.5.x, then at least Ansible 2.5.2 is required.
+If you're on Ansible 2.5.x, due to bugs in Ansible 2.5.0 and 2.5.1, at least Ansible 2.5.2 is required.
 
 
 ## Checking your Ansible version
@@ -20,7 +20,7 @@ The playbook will try to detect it and tell you if you're on an unsupported vers
 
 To manually check which verison of Ansible you're on, run: `ansible --version`.
 
-If you're on an old version of Ansible, you should upgrade to a newer version.
+If you're on an old version of Ansible, you should [upgrade Ansible to a newer version](#upgrading-ansible) or [use Ansible via Docker](#using-ansible-via-docker).
 
 
 ## Upgrading Ansible
