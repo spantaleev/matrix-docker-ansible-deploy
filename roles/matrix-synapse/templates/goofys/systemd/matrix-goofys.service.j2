@@ -20,7 +20,7 @@ ExecStart=/usr/bin/docker run --rm --name %n \
 			--env-file={{ matrix_synapse_config_dir_path }}/env-goofys \
 			--entrypoint /bin/sh \
 			{{ matrix_s3_goofys_docker_image }} \
-			-c 'goofys -f --storage-class=STANDARD_IA --region {{ matrix_s3_media_store_region }} --stat-cache-ttl 60m0s --type-cache-ttl 60m0s --dir-mode 0700 --file-mode 0700 {{ matrix_s3_media_store_bucket_name }} /s3'
+			-c 'goofys -f{% if matrix_s3_media_store_custom_endpoint_enabled is false %} --storage-class=STANDARD_IA{% endif %}{% matrix_s3_media_store_custom_endpoint_enabled %} --endpoint={{matrix_s3_media_store_custom_endpoint}}{% endif %} --region {{ matrix_s3_media_store_region }} --stat-cache-ttl 60m0s --type-cache-ttl 60m0s --dir-mode 0700 --file-mode 0700 {{ matrix_s3_media_store_bucket_name }} /s3'
 TimeoutStartSec=5min
 ExecStop=-/usr/bin/docker stop %n
 ExecStop=-/usr/bin/docker kill %n
