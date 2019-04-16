@@ -49,6 +49,9 @@ matrix_nginx_proxy_ssl_protocols: "TLSv1.1 TLSv1.2"
 
 Once you've followed the [Preparation](#preparation) guide above, you can take a look at the [examples/apache](../examples/apache) directory for a sample configuration.
 
+## Using your own external caddy webserver
+
+After following  the [Preparation](#preparation) guide above, you can take a look at the [examples/caddy](../examples/caddy) directory for a sample configuration.
 
 ## Using another external webserver
 
