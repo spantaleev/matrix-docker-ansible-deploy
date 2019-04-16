@@ -1,4 +1,5 @@
 https://matrix.DOMAIN {
+	# If you use your own certificates, your path may differ
 	tls /matrix/ssl/config/live/matrix.DOMAIN/fullchain.pem /matrix/ssl/config/live/matrix.DOMAIN/privkey.pem
 
 	root /matrix/static-files
@@ -10,14 +11,15 @@ https://matrix.DOMAIN {
 		X-XSS-Protection "1; mode=block"
 	}
 
+	# Identity server traffic
 	proxy /_matrix/identity matrix-msisd:8090 {
 		transparent
 	}
-
 	proxy /_matrix/client/r0/user_directory/search matrix-msisd:8090 {
 		transparent
 	}
 
+	# Synapse Client<>Server API
 	proxy / matrix-synapse:8008 {
 		transparent
 		without /.well-known/ /_matrix/identity/ /_matrix/client/r0/user_directory/search
