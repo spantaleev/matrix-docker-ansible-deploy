@@ -1,0 +1,46 @@
+https://matrix.finallycoffee.eu {
+	tls /tls_certs/finallycoffee.eu/fullchain.pem /tls_certs/finallycoffee.eu/privkey.pem
+	root /matrix_static
+	header / {
+		Access-Control-Allow-Origin *
+		Strict-Transport-Security "max-age=31536000;"
+		X-Frame-Options "DENY"
+		X-XSS-Protection "1; mode=block"
+	}
+	proxy /_matrix/identity matrix-mxisd:8090 {
+		transparent
+	}
+	proxy /_matrix matrix-synapse:8008 {
+		transparent
+	}
+}
+
+https://dimension.matrix.finallycoffee.eu {
+	tls /tls_certs/finallycoffee.eu/fullchain.pem /tls_certs/finallycoffee.eu/privkey.pem
+	header / {
+		Access-Control-Allow-Origin *
+	}
+	proxy / http://matrix-dimension:8184 {
+		transparent
+		header_upstream X-Forwarded-For {remote}
+		header_upstream Host {host}
+		websocket
+	}
+}
+
+https://chat.finallycoffee.eu {
+	tls /tls_certs/finallycoffee.eu/fullchain.pem /tls_certs/finallycoffee.eu/privkey.pem
+	proxy / matrix-riot-web:8080 {
+		transparent
+	}
+}
+
+# Federation listens on all IPs because older Synapse versions do not support SNI
+https://:8448 {
+	tls /tls_certs/finallycoffee.eu/fullchain.pem /tls_certs/finallycoffee.eu/privkey.pem
+	proxy /_matrix matrix-synapse:8048 {
+		transparent
+	}
+}
+
+
