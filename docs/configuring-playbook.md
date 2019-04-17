@@ -43,6 +43,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Serving your base domain using this playbook's nginx server](configuring-playbook-base-domain-serving.md) (optional)
 
+- [Configure Ngnix (optional, advanced)](configuring-playbook-ngnix.md) (optional, advanced)
+
 - [Using your own webserver, instead of this playbook's nginx proxy](configuring-playbook-own-webserver.md) (optional, advanced)
 
 - [Setting up the REST authentication password provider module](configuring-playbook-rest-auth.md) (optional, advanced)

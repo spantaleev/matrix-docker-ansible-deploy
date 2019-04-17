@@ -4,6 +4,15 @@ server {
 
 	server_tokens off;
 
+	{% if matrix_nginx_proxy_nginx_status_enabled %}
+		location /nginx_status {
+			stub_status on;
+			access_log off;
+			allow {{ ansible_default_ipv4.address }};
+			deny all;
+		}
+	{% endif %}
+
 	location /.well-known/acme-challenge {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
