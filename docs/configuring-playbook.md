@@ -46,6 +46,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Using your own webserver, instead of this playbook's nginx proxy](configuring-playbook-own-webserver.md) (optional, advanced)
 
+- [Adjusting TURN server configuration](configuring-playbook-turn.md) (optional, advanced)
+
 
 ### Server connectivity
 
