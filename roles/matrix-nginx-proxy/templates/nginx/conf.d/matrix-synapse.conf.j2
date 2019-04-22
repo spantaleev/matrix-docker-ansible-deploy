@@ -102,6 +102,12 @@ server {
 	}
 	{% endif %}
 
+	{% if matrix_nginx_proxy_proxy_matrix_password_change_disabled %}
+	location /_matrix/client/r0/account/password {
+		deny all;
+	}
+	{% endif %}
+
 	{% for configuration_block in matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks %}
 		{{- configuration_block }}
 	{% endfor %}
