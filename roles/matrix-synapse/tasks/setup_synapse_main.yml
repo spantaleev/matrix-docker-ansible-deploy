@@ -1,7 +1,7 @@
 ---
 
 # This will throw a Permission Denied error if already mounted using fuse
-- name: Check Matrix Synapse media store path
+- name: Check Synapse media store path
   stat:
     path: "{{ matrix_synapse_media_store_path }}"
   register: local_path_media_store_stat
@@ -9,7 +9,7 @@
 
 # This is separate and conditional, to ensure we don't execute it
 # if the path already exists or we failed to check, because it's mounted using fuse.
-- name: Ensure Matrix media store path exists
+- name: Ensure Synapse media store path exists
   file:
     path: "{{ matrix_synapse_media_store_path }}"
     state: directory
@@ -18,7 +18,7 @@
     group: "{{ matrix_user_username }}"
   when: "not local_path_media_store_stat.failed and not local_path_media_store_stat.stat.exists"
 
-- name: Ensure Matrix Docker image is pulled
+- name: Ensure Synapse Docker image is pulled
   docker_image:
     name: "{{ matrix_synapse_docker_image }}"
 
@@ -34,7 +34,7 @@
 #
 # We don't use the `docker_container` module, because using it with `cap_drop` requires
 # a very recent version, which is not available for a lot of people yet.
-- name: Generate initial Matrix config and signing key
+- name: Generate initial Synapse config and signing key
   command: |
     docker run
     --rm
@@ -49,13 +49,13 @@
     generate
   when: "not matrix_synapse_signing_key_stat.stat.exists"
 
-- name: Ensure Matrix homeserver config installed
+- name: Ensure Synapse homeserver config installed
   template:
     src: "{{ matrix_synapse_template_synapse_homeserver }}"
     dest: "{{ matrix_synapse_config_dir_path }}/homeserver.yaml"
     mode: 0644
 
-- name: Ensure Matrix log config installed
+- name: Ensure Synapse log config installed
   template:
     src: "{{ matrix_synapse_template_synapse_log }}"
     dest: "{{ matrix_synapse_config_dir_path }}/{{ matrix_server_fqn_matrix }}.log.config"

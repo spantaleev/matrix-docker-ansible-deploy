@@ -1,6 +1,6 @@
 # Importing `media_store` data files from an existing installation (optional)
 
-Run this if you'd like to import your `media_store` files from a previous installation of Matrix Synapse.
+Run this if you'd like to import your `media_store` files from a previous installation of Synapse.
 
 
 ## Prerequisites
