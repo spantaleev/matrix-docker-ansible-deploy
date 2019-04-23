@@ -1,9 +1,9 @@
 # Storing Matrix media files on Amazon S3 (optional)
 
-By default, this playbook configures your server to store Matrix Synapse's content repository (`media_store`) files on the local filesystem.
+By default, this playbook configures your server to store Synapse's content repository (`media_store`) files on the local filesystem.
 If that's alright, you can skip this.
 
-If you'd like to store Matrix Synapse's content repository (`media_store`) files on Amazon S3,
+If you'd like to store Synapse's content repository (`media_store`) files on Amazon S3,
 you can let this playbook configure [Goofys](https://github.com/kahing/goofys) for you.
 
 You'll need an Amazon S3 bucket and some IAM user credentials (access key + secret key) with full write access to the bucket. Example security policy:

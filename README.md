@@ -92,7 +92,7 @@ When updating the playbook, refer to [the changelog](CHANGELOG.md) to catch up w
 
 This playbook sets up your server using the following Docker images:
 
-- [matrixdotorg/synapse](https://hub.docker.com/r/matrixdotorg/synapse/) - the official [Matrix Synapse](https://github.com/matrix-org/synapse) server
+- [matrixdotorg/synapse](https://hub.docker.com/r/matrixdotorg/synapse/) - the official [Synapse](https://github.com/matrix-org/synapse) Matrix homeserver
 
 - [instrumentisto/coturn](https://hub.docker.com/r/instrumentisto/coturn/) - the [Coturn](https://github.com/coturn/coturn) STUN/TURN server (optional)
 

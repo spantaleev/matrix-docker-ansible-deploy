@@ -1,12 +1,12 @@
 # Importing an existing SQLite database from another installation (optional)
 
-Run this if you'd like to import your database from a previous default installation of Matrix Synapse.
+Run this if you'd like to import your database from a previous default installation of Synapse.
 (don't forget to import your `media_store` files as well - see [the importing-media-store guide](importing-media-store.md)).
 
-While this playbook always sets up PostgreSQL, by default a Matrix Synapse installation would run
+While this playbook always sets up PostgreSQL, by default a Synapse installation would run
 using an SQLite database.
 
-If you have such a Matrix Synapse setup and wish to migrate it here (and over to PostgreSQL), this command is for you.
+If you have such a Synapse setup and wish to migrate it here (and over to PostgreSQL), this command is for you.
 
 
 ## Prerequisites

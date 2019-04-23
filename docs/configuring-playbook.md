@@ -27,11 +27,12 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ## Other configuration options
 
-- [Enabling Telemetry for your Matrix server](configuring-playbook-telemetry.md) (optional)
+### Additional useful services
 
-- [Controlling Matrix federation](configuring-playbook-federation.md) (optional)
+- [Setting up the Dimension Integration Manager](configuring-playbook-dimension.md) (optional, but recommended; after [installing](installing.md))
 
-- [Adjusting email-sending settings](configuring-playbook-email.md) (optional)
+
+### Core service adjustments
 
 - [Storing Matrix media files on Amazon S3](configuring-playbook-s3.md) (optional)
 
@@ -47,6 +48,20 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Using your own webserver, instead of this playbook's nginx proxy](configuring-playbook-own-webserver.md) (optional, advanced)
 
+- [Adjusting TURN server configuration](configuring-playbook-turn.md) (optional, advanced)
+
+
+### Server connectivity
+
+- [Enabling Telemetry for your Matrix server](configuring-playbook-telemetry.md) (optional)
+
+- [Controlling Matrix federation](configuring-playbook-federation.md) (optional)
+
+- [Adjusting email-sending settings](configuring-playbook-email.md) (optional)
+
+
+### Authentication and user-related
+
 - [Setting up the REST authentication password provider module](configuring-playbook-rest-auth.md) (optional, advanced)
 
 - [Setting up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md) (optional, advanced)
@@ -55,6 +70,9 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (optional, advanced)
 
+
+### Bridging other networks
+
 - [Setting up Mautrix Telegram bridging](configuring-playbook-bridge-mautrix-telegram.md) (optional)
 
 - [Setting up Mautrix Whatsapp bridging](configuring-playbook-bridge-mautrix-whatsapp.md) (optional)
@@ -62,5 +80,3 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up Appservice IRC bridging](configuring-playbook-bridge-appservice-irc.md) (optional)
 
 - [Setting up Appservice Discord bridging](configuring-playbook-bridge-appservice-discord.md) (optional)
-
-- [Setting up Dimension](configuring-playbook-dimension.md) (optional)
