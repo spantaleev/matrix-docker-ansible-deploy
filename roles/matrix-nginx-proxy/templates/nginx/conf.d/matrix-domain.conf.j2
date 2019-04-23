@@ -4,25 +4,27 @@ server {
 
 	server_tokens off;
 
-	{% if matrix_nginx_proxy_nginx_status_enabled %}
-		location /nginx_status {
-			stub_status on;
-			access_log off;
-			allow {{ ansible_default_ipv4.address }};
-			deny all;
-		}
-	{% endif %}
+{% if matrix_nginx_proxy_nginx_status_enabled %}
+	location /nginx_status {
+		stub_status on;
+		access_log off;
+{% for address in matrix_nginx_proxy_nginx_status_allowed_addresses %}
+		allow {{ address }};
+{% endfor %}
+		deny all;
+	}
+{% endif %}
 
 	location /.well-known/acme-challenge {
-		{% if matrix_nginx_proxy_enabled %}
+{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver 127.0.0.11 valid=5s;
 			set $backend "matrix-certbot:8080";
 			proxy_pass http://$backend;
-		{% else %}
+{% else %}
 			{# Generic configuration for use outside of our container setup #}
 			proxy_pass http://127.0.0.1:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }};
-		{% endif %}
+{% endif %}
 	}
 
 	location / {

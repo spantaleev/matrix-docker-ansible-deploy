@@ -1,7 +1,5 @@
 matrix_nginx_proxy_enabled: true
 
-matrix_nginx_proxy_nginx_status_enabled: false
-
 # We use an official nginx image, which we fix-up to run unprivileged.
 # An alternative would be an `nginxinc/nginx-unprivileged` image, but
 # those as more frequently out of date.
@@ -142,3 +140,8 @@ matrix_ssl_lets_encrypt_support_email: ~
 matrix_ssl_base_path: "{{ matrix_base_data_path }}/ssl"
 matrix_ssl_config_dir_path: "{{ matrix_ssl_base_path }}/config"
 matrix_ssl_log_dir_path: "{{ matrix_ssl_base_path }}/log"
+
+
+# ngnix status page configurations.
+matrix_nginx_proxy_nginx_status_enabled: false
+matrix_nginx_proxy_nginx_status_allowed_addresses: ['{{ ansible_default_ipv4.address }}']
