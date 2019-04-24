@@ -69,7 +69,7 @@
       state: present
       hour: 4
       minute: 15
-      day: "*/5"
+      day: "*"
       job: /usr/local/bin/matrix-ssl-lets-encrypt-certificates-renew
 
   - name: Ensure periodic reloading of matrix-nginx-proxy is configured for SSL renewal (matrix-nginx-proxy-reload)
@@ -78,9 +78,9 @@
       cron_file: matrix-ssl-lets-encrypt
       name: matrix-nginx-proxy-reload
       state: present
-      hour: 4
+      hour: 5
       minute: 20
-      day: "*/5"
+      day: "*"
       job: /bin/systemctl reload matrix-nginx-proxy.service
     when: matrix_nginx_proxy_enabled
   when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
