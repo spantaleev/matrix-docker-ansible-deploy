@@ -25,6 +25,7 @@ ExecStart=/usr/bin/docker run --rm --name matrix-riot-web \
 			{% if matrix_riot_web_embedded_pages_home_path is not none %}
 			-v {{ matrix_riot_web_data_path }}/home.html:/etc/riot-web/home.html:ro \
 			{% endif %}
+			-v {{ matrix_riot_web_data_path }}/welcome.html:/etc/riot-web/welcome.html:ro \
 			{{ matrix_riot_web_docker_image }}
 ExecStop=-/usr/bin/docker kill matrix-riot-web
 ExecStop=-/usr/bin/docker rm matrix-riot-web
