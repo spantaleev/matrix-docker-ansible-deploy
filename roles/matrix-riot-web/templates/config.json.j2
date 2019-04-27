@@ -14,10 +14,8 @@
 		"servers": {{ matrix_riot_web_roomdir_servers|to_json }}
 	},
 	"welcomeUserId": {{ matrix_riot_web_welcome_user_id|to_json }},
-	{% if matrix_synapse_use_presence|to_json %}
-	"enable_presence_by_hs_url": {
-		{{ matrix_riot_web_default_hs_url|to_json }}: false
-	},
+	{% if matrix_riot_web_enable_presence_by_hs_url is not none %}
+		"enable_presence_by_hs_url": {{ matrix_riot_web_enable_presence_by_hs_url|to_json }},
 	{% endif %}
 	"embeddedPages": {
 		"homeUrl": {{ matrix_riot_web_embedded_pages_home_url|to_json }}
