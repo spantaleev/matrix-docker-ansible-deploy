@@ -26,9 +26,9 @@ else
 	echo "Remove every docker images"
 	docker rmi $(docker images -aq)
 	echo "Remove docker matrix network"
-	docker network rm matrix
-	echo "Remove /matrix directory"
-	rm -fr /matrix
+	docker network rm {{ matrix_docker_network }}
+	echo "Remove {{ matrix_base_data_path }} directory"
+	rm -fr "{{ matrix_base_data_path }}"
 	exit 0
 fi
 
