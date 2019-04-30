@@ -25,6 +25,7 @@
       - docker-python
       - ntp
       - fuse
+      - expect
     state: latest
     update_cache: yes
   when: ansible_distribution == 'CentOS'
@@ -62,13 +63,14 @@
       - python-docker
       - ntp
       - fuse
+      - expect
     state: latest
     update_cache: yes
   when: ansible_os_family == 'Debian'
 
 - name: Ensure Docker is started and autoruns
   service:
-    name: docker 
+    name: docker
     state: started
     enabled: yes
 
