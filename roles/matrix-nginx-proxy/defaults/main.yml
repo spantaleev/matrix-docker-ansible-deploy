@@ -87,7 +87,7 @@ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: 25
 matrix_nginx_proxy_proxy_matrix_federation_api_enabled: false
 matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container: "matrix-synapse:8048"
 matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "localhost:8048"
-matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb: "{{ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb * 3 }}"
+matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb: "{{ (matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb | int) * 3 }}"
 matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/fullchain.pem"
 matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate_key: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/privkey.pem"
 
