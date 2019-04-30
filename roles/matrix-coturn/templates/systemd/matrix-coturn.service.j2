@@ -27,6 +27,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-coturn \
 			{% for volume in matrix_coturn_container_additional_volumes %}
 			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
 			{% endfor %}
+			{% for arg in matrix_coturn_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
 			{{ matrix_coturn_docker_image }} \
 			-c /turnserver.conf
 

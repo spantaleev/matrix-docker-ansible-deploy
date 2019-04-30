@@ -22,6 +22,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-corporal \
 			-v {{ matrix_corporal_config_dir_path }}:/etc/matrix-corporal:ro \
 			-v {{ matrix_corporal_cache_dir_path }}:/var/cache/matrix-corporal:rw \
 			-v {{ matrix_corporal_var_dir_path }}:/var/matrix-corporal:rw \
+			{% for arg in matrix_corporal_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
 			{{ matrix_corporal_docker_image }} \
 			/matrix-corporal -config=/etc/matrix-corporal/config.json
 ExecStop=-/usr/bin/docker kill matrix-corporal
