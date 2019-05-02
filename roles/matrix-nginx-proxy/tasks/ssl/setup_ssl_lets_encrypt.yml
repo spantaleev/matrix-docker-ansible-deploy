@@ -30,8 +30,8 @@
   fail:
     msg: "Detected an undefined required variable"
   with_items:
-    - "{{ matrix_ssl_lets_encrypt_support_email }}"
-  when: "matrix_ssl_retrieval_method == 'lets-encrypt' and item is none"
+    - "matrix_ssl_lets_encrypt_support_email"
+  when: "matrix_ssl_retrieval_method == 'lets-encrypt' and vars[item] is none"
 
 - name: Ensure certbot Docker image is pulled
   docker_image:

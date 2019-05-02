@@ -525,7 +525,7 @@ max_upload_size: "{{ matrix_synapse_max_upload_size_mb }}M"
 # an explicit url_preview_ip_range_blacklist of IPs that the spider is
 # denied from accessing.
 #
-#url_preview_enabled: false
+url_preview_enabled: {{ matrix_synapse_url_preview_enabled|to_json }}
 
 # List of IP address CIDR ranges that the URL preview spider is denied
 # from accessing.  There are no defaults: you must explicitly
@@ -534,18 +534,18 @@ max_upload_size: "{{ matrix_synapse_max_upload_size_mb }}M"
 # to connect to, otherwise anyone in any Matrix room could cause your
 # synapse to issue arbitrary GET requests to your internal services,
 # causing serious security issues.
-#
-#url_preview_ip_range_blacklist:
-#  - '127.0.0.0/8'
-#  - '10.0.0.0/8'
-#  - '172.16.0.0/12'
-#  - '192.168.0.0/16'
-#  - '100.64.0.0/10'
-#  - '169.254.0.0/16'
-#  - '::1/128'
-#  - 'fe80::/64'
-#  - 'fc00::/7'
-#
+
+url_preview_ip_range_blacklist:
+  - '127.0.0.0/8'
+  - '10.0.0.0/8'
+  - '172.16.0.0/12'
+  - '192.168.0.0/16'
+  - '100.64.0.0/10'
+  - '169.254.0.0/16'
+  - '::1/128'
+  - 'fe80::/64'
+  - 'fc00::/7'
+
 # List of IP address CIDR ranges that the URL preview spider is allowed
 # to access even if they are specified in url_preview_ip_range_blacklist.
 # This is useful for specifying exceptions to wide-ranging blacklisted
@@ -590,8 +590,8 @@ max_upload_size: "{{ matrix_synapse_max_upload_size_mb }}M"
 #  - netloc: '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
 
 # The largest allowed URL preview spidering size in bytes
-#
-#max_spider_size: 10M
+
+max_spider_size: 10M
 
 
 ## Captcha ##
