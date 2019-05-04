@@ -169,7 +169,7 @@ matrix_mxisd_container_expose_port: "{{ not matrix_nginx_proxy_enabled }}"
 # your own configuration in `matrix_mxisd_configuration_extension_yaml`.
 matrix_mxisd_synapsesql_enabled: true
 matrix_mxisd_synapsesql_type: postgresql
-matrix_mxisd_synapsesql_connection: //{{ matrix_synapse_database_host }}/{{ matrix_synapse_database_database }}?user={{ matrix_synapse_database_user }}&password={{ matrix_synapse_database_password }}
+matrix_mxisd_synapsesql_connection: //{{ matrix_synapse_database_host }}/{{ matrix_synapse_database_database }}?user={{ matrix_synapse_database_user | urlencode() }}&password={{ matrix_synapse_database_password | urlencode() }}
 
 matrix_mxisd_dns_overwrite_enabled: true
 matrix_mxisd_dns_overwrite_homeserver_client_name: "{{ matrix_server_fqn_matrix }}"
