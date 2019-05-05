@@ -13,15 +13,19 @@ There are 2 types of well-known service discovery that Matrix makes use of:
 
 All services created by this playbook are meant to be installed on their own server (such as `matrix.<your-domain>`).
 
-As [per the Server-Server specification](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), to use a Matrix user identifier like `@<username>:<your-domain>` while hosting services on a subdomain like `matrix.<your-domain>`, we need to instruct the Matrix network of such a delegation/redirection by means of setting up a `/.well-known/matrix/server` file on the base domain (`<your-domain.com>).
+As [per the Server-Server specification](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), to use a Matrix user identifier like `@<username>:<your-domain>` while hosting services on a subdomain like `matrix.<your-domain>`, the Matrix network needs to be instructed of such delegation/redirection.
 
-We have discussed this same thing already in the "`_matrix._tcp` SRV record setup (temporary requirement)" section of [Configuring DNS](configuring-dns.md).
+Server delegation can be configured using DNS SRV records or by setting up a `/.well-known/matrix/server` file on the base domain (`<your-domain.com>`).
 
-In short, you are required to set up both a `_matrix._tcp` DNS SRV record and the `/.well-known/matrix/server` file at the moment.
+We have discussed the DNS SRV record method already in the "`_matrix._tcp` SRV record setup (temporary requirement)" section of [Configuring DNS](configuring-dns.md).
 
-As the Synapse server progresses towards v1.0, only the `/.well-known/matrix/server` file will be used. At that future moment, you would need to remove the `_matrix._tcp` SRV record because Synapse v1.0+ will do the wrong thing if a SRV record exists. During the transitional phase (before Synapse 1.0), we do need to have both a SRV record and a `/.well-known/matrix/server` file, in order to federate correctly with v0.99 and older Synapse versions.
+Both methods have their place and will continue to do so. Usually, you would need to use just one of these delegation methods.
+For simplicity reasons, our setup advocates for the `/.well-known/matrix/server` method and guides you into using that.
+For backward compatibility with older Synapse servers (< v0.99), however, for now you are also required to set up a `_matrix._tcp` DNS SRV record (in addition to the `/.well-known/matrix/server` file on the base domain).
 
-To learn how to set it up, read the Installing section below.
+As the Synapse server progresses towards v1.0, only the `/.well-known/matrix/server` file will be used by us, unless you have a more special setup necessitating a DNS SRV record. At that future moment, you would need to remove the `_matrix._tcp` SRV record because Synapse v1.0+ will do the wrong thing if a SRV record exists.
+
+To learn how to set up `/.well-known/matrix/server`, read the Installing section below.
 
 
 ## Introduction to Client Server Discovery
