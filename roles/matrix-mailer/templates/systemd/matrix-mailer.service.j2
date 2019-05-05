@@ -16,6 +16,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-mailer \
 			--network={{ matrix_docker_network }} \
 			--env-file={{ matrix_mailer_base_path }}/env-mailer \
 			--hostname={{ matrix_server_fqn_matrix }} \
+			{% for arg in matrix_mailer_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
 			{{ matrix_mailer_docker_image }}
 ExecStop=-/usr/bin/docker kill matrix-mailer
 ExecStop=-/usr/bin/docker rm matrix-mailer
