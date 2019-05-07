@@ -31,6 +31,7 @@ matrix_dimension_integrations_jitsi_widget_url: "https://{{ matrix_server_fqn_di
 # For a more advanced customization, you can extend the default (see `matrix_dimension_configuration_extension_yaml`)
 # or completely replace this variable with your own template.
 matrix_dimension_configuration_yaml: |
+  #jinja2: lstrip_blocks: True
   # The web settings for the service (API and UI).
   # It is best to have this run on localhost and use a reverse proxy to access Dimension.
   web:
@@ -125,5 +126,3 @@ matrix_dimension_configuration_extension_yaml: |
 # Holds the final Dimension configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_dimension_configuration_yaml`.
 matrix_dimension_configuration: "{{ matrix_dimension_configuration_yaml|from_yaml|combine(matrix_dimension_configuration_extension, recursive=True) }}"
-
-
