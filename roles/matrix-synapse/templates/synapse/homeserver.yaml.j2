@@ -358,8 +358,8 @@ database:
   # The database engine name
   name: "psycopg2"
   args:
-    user: {{ matrix_synapse_database_user|to_json }}
-    password: {{ matrix_synapse_database_password|to_json }}
+    user: {{ matrix_synapse_database_user|string|to_json }}
+    password: {{ matrix_synapse_database_password|string|to_json }}
     database: "{{ matrix_synapse_database_database }}"
     host: "{{ matrix_synapse_database_host }}"
     cp_min: 5
@@ -635,7 +635,7 @@ turn_uris: {{ matrix_synapse_turn_uris|to_json }}
 
 # The shared secret used to compute passwords for the TURN server
 #
-turn_shared_secret: {{ matrix_synapse_turn_shared_secret|to_json }}
+turn_shared_secret: {{ matrix_synapse_turn_shared_secret|string|to_json }}
 
 # The Username and password if the TURN server needs them and
 # does not use a token
@@ -690,7 +690,7 @@ enable_registration: {{ matrix_synapse_enable_registration|to_json }}
 # If set, allows registration of standard or admin accounts by anyone who
 # has the shared secret, even if registration is otherwise disabled.
 #
-registration_shared_secret: {{ matrix_synapse_registration_shared_secret|to_json }}
+registration_shared_secret: {{ matrix_synapse_registration_shared_secret|string|to_json }}
 
 # Set the number of bcrypt rounds used to generate password hash.
 # Larger numbers increase the work factor needed to generate the hash.
@@ -791,7 +791,7 @@ app_service_config_files: {{ matrix_synapse_app_service_config_files }}
 # the registration_shared_secret is used, if one is given; otherwise,
 # a secret key is derived from the signing key.
 #
-macaroon_secret_key: {{ matrix_synapse_macaroon_secret_key|to_json }}
+macaroon_secret_key: {{ matrix_synapse_macaroon_secret_key|string|to_json }}
 
 # Used to enable access token expiration.
 #
@@ -801,7 +801,7 @@ macaroon_secret_key: {{ matrix_synapse_macaroon_secret_key|to_json }}
 # falsification of values. Must be specified for the User Consent
 # forms to work.
 #
-form_secret: {{ matrix_synapse_form_secret|to_json }}
+form_secret: {{ matrix_synapse_form_secret|string|to_json }}
 
 ## Signing Keys ##
 
@@ -906,7 +906,7 @@ password_config:
    # Uncomment and change to a secret random string for extra security.
    # DO NOT CHANGE THIS AFTER INITIAL SETUP!
    #
-   pepper: {{ matrix_synapse_password_config_pepper|to_json }}
+   pepper: {{ matrix_synapse_password_config_pepper|string|to_json }}
 
 
 
@@ -921,15 +921,15 @@ password_config:
 {% if matrix_synapse_email_enabled %}
 email:
    enable_notifs: true
-   smtp_host: {{ matrix_synapse_email_smtp_host|to_json }}
+   smtp_host: {{ matrix_synapse_email_smtp_host|string|to_json }}
    smtp_port: {{ matrix_synapse_email_smtp_port|to_json }}
    require_transport_security: {{ matrix_synapse_email_smtp_require_transport_security|to_json }}
-   notif_from: {{ matrix_synapse_email_notif_from|to_json }}
+   notif_from: {{ matrix_synapse_email_notif_from|string|to_json }}
    app_name: Matrix
    notif_template_html: notif_mail.html
    notif_template_text: notif_mail.txt
    notif_for_new_users: True
-   riot_base_url: {{ matrix_synapse_email_riot_base_url|to_json }}
+   riot_base_url: {{ matrix_synapse_email_riot_base_url|string|to_json }}
 {% endif %}
 
 
@@ -952,12 +952,12 @@ password_providers:
 {% if matrix_synapse_ext_password_provider_shared_secret_auth_enabled %}
   - module: "shared_secret_authenticator.SharedSecretAuthenticator"
     config:
-      sharedSecret: {{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret|to_json }}
+      sharedSecret: {{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret|string|to_json }}
 {% endif %}
 {% if matrix_synapse_ext_password_provider_rest_auth_enabled %}
   - module: "rest_auth_provider.RestAuthProvider"
     config:
-      endpoint: {{ matrix_synapse_ext_password_provider_rest_auth_endpoint|to_json }}
+      endpoint: {{ matrix_synapse_ext_password_provider_rest_auth_endpoint|string|to_json }}
       policy:
         registration:
           username:
@@ -972,16 +972,16 @@ password_providers:
   - module: "ldap_auth_provider.LdapAuthProvider"
     config:
       enabled: true
-      uri: {{ matrix_synapse_ext_password_provider_ldap_uri|to_json }}
-      start_tls: {{ matrix_synapse_ext_password_provider_ldap_start_tls|to_json }}
-      base: {{ matrix_synapse_ext_password_provider_ldap_base|to_json }}
+      uri: {{ matrix_synapse_ext_password_provider_ldap_uri|string|to_json }}
+      start_tls: {{ matrix_synapse_ext_password_provider_ldap_start_tls|string|to_json }}
+      base: {{ matrix_synapse_ext_password_provider_ldap_base|string|to_json }}
       attributes:
-        uid: {{ matrix_synapse_ext_password_provider_ldap_attributes_uid|to_json }}
-        mail: {{ matrix_synapse_ext_password_provider_ldap_attributes_mail|to_json }}
-        name: {{ matrix_synapse_ext_password_provider_ldap_attributes_name|to_json }}
-      bind_dn: {{ matrix_synapse_ext_password_provider_ldap_bind_dn|to_json }}
-      bind_password: {{ matrix_synapse_ext_password_provider_ldap_bind_password|to_json }}
-      filter: {{ matrix_synapse_ext_password_provider_ldap_filter|to_json }}
+        uid: {{ matrix_synapse_ext_password_provider_ldap_attributes_uid|string|to_json }}
+        mail: {{ matrix_synapse_ext_password_provider_ldap_attributes_mail|string|to_json }}
+        name: {{ matrix_synapse_ext_password_provider_ldap_attributes_name|string|to_json }}
+      bind_dn: {{ matrix_synapse_ext_password_provider_ldap_bind_dn|string|to_json }}
+      bind_password: {{ matrix_synapse_ext_password_provider_ldap_bind_password|string|to_json }}
+      filter: {{ matrix_synapse_ext_password_provider_ldap_filter|string|to_json }}
 {% endif %}
 {% endif %}
 
