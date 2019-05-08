@@ -75,6 +75,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Mautrix Whatsapp bridging](configuring-playbook-bridge-mautrix-whatsapp.md) (optional)
 
+- [Setting up Mautrix Facebook bridging](configuring-playbook-bridge-mautrix-facebook.md) (optional)
+
 - [Setting up Appservice IRC bridging](configuring-playbook-bridge-appservice-irc.md) (optional)
 
 - [Setting up Appservice Discord bridging](configuring-playbook-bridge-appservice-discord.md) (optional)
