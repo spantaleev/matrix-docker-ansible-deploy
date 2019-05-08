@@ -671,6 +671,9 @@ enable_registration: {{ matrix_synapse_enable_registration|to_json }}
 #registrations_require_3pid:
 #  - email
 #  - msisdn
+{% if matrix_synapse_registrations_require_3pid %}
+registrations_require_3pid: {{ matrix_synapse_registrations_require_3pid|to_json }}
+{% endif %}
 
 # Explicitly disable asking for MSISDNs from the registration
 # flow (overrides registrations_require_3pid if MSISDNs are set as required)
