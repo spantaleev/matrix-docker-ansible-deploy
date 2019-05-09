@@ -1,3 +1,33 @@
+# 2019-05-09
+
+Besides a myriad of bug fixes and minor improvements, here are the more notable (bigger) features we can announce today.
+
+## Mautrix Facebook/Messenger bridging support
+
+The playbook now supports bridging with [Facebook](https://www.facebook.com/) by installing the [mautrix-facebook](https://github.com/tulir/mautrix-facebook) bridge. This playbook functionality is available thanks to [@izissise](https://github.com/izissise).
+
+Additional details are available in [Setting up Mautrix Facebook bridging](docs/configuring-playbook-bridge-mautrix-facebook).
+
+## mxisd Registration feature integration
+
+The playbook can now help you integrate with mxisd's [Registration](https://github.com/kamax-matrix/mxisd/blob/master/docs/features/registration.md) feature.
+
+Learn more in [mxisd-controlled Registration](docs/configuring-playbook-mxisd.md#mxisd-controlled-registration).
+
+
+# 2019-04-16
+
+## Caddy webserver examples
+
+If you prefer using the [Caddy](https://caddyserver.com/) webserver instead of our own integrated nginx, we now have examples for it in the [`examples/caddy`](examples/caddy) directory
+
+# 2019-04-10
+
+## Goofys support for other S3-compatible object stores
+
+Until now, you could optionally host Synapse's media repository on Amazon S3, but we now also support [using other S3-compatible object stores](docs/configuring-playbook-s3.md),
+
+
 # 2019-04-03
 
 ## Ansible >= 2.5 is required
