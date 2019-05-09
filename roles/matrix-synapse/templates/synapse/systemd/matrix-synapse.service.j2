@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: "True"
 [Unit]
 Description=Synapse server
 {% for service in matrix_synapse_systemd_required_services_list %}
@@ -45,6 +46,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
 			-v {{ matrix_synapse_base_path }}/storage:/matrix-media-store-parent:slave \
 			{% for volume in matrix_synapse_container_additional_volumes %}
 			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
+			{% endfor %}
+			{% for arg in matrix_synapse_container_extra_arguments %}
+			{{ arg }} \
 			{% endfor %}
 			{{ matrix_synapse_docker_image }} \
 			-m synapse.app.homeserver -c /data/homeserver.yaml

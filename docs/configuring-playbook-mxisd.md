@@ -24,6 +24,19 @@ If you'd like to change the default email templates used by mxisd, take a look a
 (in the `roles/matrix-mxisd/defaults/main.yml` file.
 
 
+## mxisd-controlled Registration
+
+To use the [Registration](https://github.com/kamax-matrix/mxisd/blob/master/docs/features/registration.md) feature of mxisd, you can make use of the following variables:
+
+- `matrix_synapse_enable_registration` - to enable user-initiated registration in Synapse
+
+- `matrix_synapse_registrations_require_3pid` - to control the types of 3pid (`'email'`, `'msisdn'`) required by the Synapse server for registering
+
+- variables prefixed with `matrix_nginx_proxy_proxy_matrix_3pid_registration_` (e.g. `matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled`) - to configure the integrated nginx webserver to send registration requests to mxisd (instead of Synapse), so it can apply its additional functionality
+
+- `matrix_mxisd_configuration_extension_yaml` - to configure mxisd as required. See the [Registration feature's docs](https://github.com/kamax-matrix/mxisd/blob/master/docs/features/registration.md) for inspiration. Also see the [Additional features](#additional-features) section below to learn more about how to use `matrix_mxisd_configuration_extension_yaml`.
+
+
 ## Additional features
 
 What this playbook configures for your is some bare minimum Identity Server functionality, so that you won't need to rely on external 3rd party services.

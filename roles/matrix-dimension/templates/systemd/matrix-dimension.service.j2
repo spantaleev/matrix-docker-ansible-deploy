@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: "True"
 [Unit]
 Description=Matrix Dimension
 After=docker.service
@@ -19,6 +20,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-dimension \
 			-p 127.0.0.1:8184:8184 \
 			{% endif %}
 			-v {{ matrix_dimension_base_path }}:/data:rw \
+			{% for arg in matrix_dimension_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
 			{{ matrix_dimension_docker_image }}
 ExecStop=-/usr/bin/docker kill matrix-dimension
 ExecStop=-/usr/bin/docker rm matrix-dimension

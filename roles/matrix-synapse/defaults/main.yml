@@ -1,4 +1,4 @@
-matrix_synapse_docker_image: "matrixdotorg/synapse:v0.99.3-py3"
+matrix_synapse_docker_image: "matrixdotorg/synapse:v0.99.3.2"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
 matrix_synapse_config_dir_path: "{{ matrix_synapse_base_path }}/config"
@@ -23,6 +23,9 @@ matrix_appservice_discord_container_expose_client_server_api_port: false
 
 # Controls whether the matrix-synapse container exposes the metrics port (tcp/9100).
 matrix_synapse_container_expose_metrics_port: false
+
+# A list of extra arguments to pass to the container
+matrix_synapse_container_extra_arguments: []
 
 # List of systemd services that matrix-synapse.service depends on
 matrix_synapse_systemd_required_services_list: ['docker.service']
@@ -110,6 +113,9 @@ matrix_synapse_use_presence: true
 
 # Controls whether people with access to the homeserver can register by themselves.
 matrix_synapse_enable_registration: false
+
+# A list of 3PID types which users must supply when registering (possible values: email, msisdn).
+matrix_synapse_registrations_require_3pid: []
 
 # Users who register on this homeserver will automatically be joined to these rooms.
 # Rooms are to be specified using addresses (e.g. `#address:example.com`)
@@ -258,6 +264,18 @@ matrix_mautrix_whatsapp_docker_image: "tulir/mautrix-whatsapp:latest"
 
 matrix_mautrix_whatsapp_base_path: "{{ matrix_base_data_path }}/mautrix-whatsapp"
 
+# Matrix mautrix is a Matrix <-> Facebook bridge
+# Enable facebook bridge
+matrix_mautrix_facebook_enabled: false
+
+matrix_mautrix_facebook_docker_image: "tulir/mautrix-facebook:latest"
+
+matrix_mautrix_facebook_base_path: "{{ matrix_base_data_path }}/mautrix-facebook"
+
+# Get your own API keys at https://developers.facebook.com/docs/apis-and-sdks/
+matrix_mautrix_facebook_api_id: YOUR_FACEBOOK_APP_ID
+matrix_mautrix_facebook_api_hash: YOUR_FACEBOOK_API_HASH
+
 # Matrix Appservice IRC is a Matrix <-> IRC bridge
 # Enable IRC bridge
 matrix_appservice_irc_enabled: false
@@ -267,6 +285,7 @@ matrix_appservice_irc_docker_image: "tedomum/matrix-appservice-irc:latest"
 matrix_appservice_irc_base_path: "{{ matrix_base_data_path }}/appservice-irc"
 
 matrix_appservice_irc_configuration_yaml: |
+  #jinja2: lstrip_blocks: True
   homeserver:
     url: "https://{{ matrix_server_fqn_matrix }}"
     domain: "{{ matrix_domain }}"

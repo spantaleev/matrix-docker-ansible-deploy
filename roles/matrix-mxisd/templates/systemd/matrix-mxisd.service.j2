@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: "True"
 [Unit]
 Description=Matrix mxisd Identity server
 {% for service in matrix_mxisd_systemd_required_services_list %}
@@ -27,6 +28,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-mxisd \
 			{% endif %}
 			-v {{ matrix_mxisd_config_path }}:/etc/mxisd:ro \
 			-v {{ matrix_mxisd_data_path }}:/var/mxisd:rw \
+			{% for arg in matrix_mxisd_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
 			{{ matrix_mxisd_docker_image }}
 
 ExecStop=-/usr/bin/docker kill matrix-mxisd

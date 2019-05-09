@@ -54,9 +54,9 @@ The SRV record should look like this:
 - Name: `_matrix._tcp` (use this text as-is)
 - Content: `10 0 8448 matrix.<your-domain>` (replace `<your-domain>` with your own)
 
-A [new file-based mechanism for Federation Server Discovery](configuring-well-known.md#introduction-to-federation-server-discovery) is superseding the `_matrix._tcp` SRV record. **During the transition phase, you'll need to set up both mechanisms**. We'll instruct you how to set up the file-based mechanism after the [installation phase](installing.md) for this playbook.
+A [new file-based mechanism for Federation Server Discovery](configuring-well-known.md#introduction-to-federation-server-discovery) is superseding the `_matrix._tcp` SRV record for our use case. **During the transition phase, you'll need to set up both mechanisms**. We'll instruct you how to set up the file-based mechanism after the [installation phase](installing.md) for this playbook.
 
-Doing delegation/redirection of Matrix services using a DNS SRV record (`_matrix._tcp`) is a **temporary measure** that is only necessary before Synapse v1.0 is released.
+Doing delegation/redirection of Matrix services using a DNS SRV record (`_matrix._tcp`) is a **temporary measure** for our use-case, that will only be necessary before Synapse v1.0 is released.
 
 As more and more people upgrade to the Synapse v0.99 transitional release and just before the final Synapse v1.0 gets released, at some point in the near future **you will need to remove the `_matrix._tcp` SRV record** and leave only the [new file-based mechanism for Federation Server Discovery](configuring-well-known.md#introduction-to-federation-server-discovery) in place.
 

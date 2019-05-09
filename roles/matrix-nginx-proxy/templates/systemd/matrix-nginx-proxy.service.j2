@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: "True"
 [Unit]
 Description=Matrix nginx-proxy server
 {% for service in matrix_nginx_proxy_systemd_required_services_list %}
@@ -32,6 +33,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-nginx-proxy \
 			-v {{ matrix_static_files_base_path }}:{{ matrix_static_files_base_path }}:ro \
 			{% for volume in matrix_nginx_proxy_container_additional_volumes %}
 			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
+			{% endfor %}
+			{% for arg in matrix_nginx_proxy_container_extra_arguments %}
+			{{ arg }} \
 			{% endfor %}
 			{{ matrix_nginx_proxy_docker_image }}
 

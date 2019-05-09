@@ -123,3 +123,10 @@
   debug:
     msg: "Note: You are not using a local PostgreSQL database, but some old data remains from before in `{{ matrix_postgres_data_path }}`. Feel free to delete it."
   when: "not matrix_postgres_enabled and matrix_postgres_data_path_stat.stat.exists"
+
+- name: Ensure matrix-postgres-update-user-password-hash script created
+  template:
+    src: "{{ role_path }}/templates/usr-local-bin/matrix-postgres-update-user-password-hash.j2"
+    dest: "/usr/local/bin/matrix-postgres-update-user-password-hash"
+    mode: 0750
+  when: matrix_postgres_enabled

@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: "True"
 [Unit]
 Description=Matrix riot-web server
 {% for service in matrix_riot_web_systemd_required_services_list %}
@@ -26,6 +27,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-riot-web \
 			-v {{ matrix_riot_web_data_path }}/home.html:/etc/riot-web/home.html:ro \
 			{% endif %}
 			-v {{ matrix_riot_web_data_path }}/welcome.html:/etc/riot-web/welcome.html:ro \
+			{% for arg in matrix_riot_web_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
 			{{ matrix_riot_web_docker_image }}
 ExecStop=-/usr/bin/docker kill matrix-riot-web
 ExecStop=-/usr/bin/docker rm matrix-riot-web

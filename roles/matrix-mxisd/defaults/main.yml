@@ -8,6 +8,9 @@ matrix_mxisd_data_path: "{{ matrix_mxisd_base_path }}/data"
 # Controls whether the mxisd web server's port (`8090`) is exposed outside of the container.
 matrix_mxisd_container_expose_port: false
 
+# A list of extra arguments to pass to the container
+matrix_mxisd_container_extra_arguments: []
+
 # List of systemd services that matrix-mxisd.service depends on
 matrix_mxisd_systemd_required_services_list: ['docker.service']
 
@@ -64,6 +67,7 @@ matrix_mxisd_self_check_validate_certificates: true
 # For a more advanced customization, you can extend the default (see `matrix_mxisd_configuration_extension_yaml`)
 # or completely replace this variable with your own template.
 matrix_mxisd_configuration_yaml: |
+  #jinja2: lstrip_blocks: True
   matrix:
     domain: {{ matrix_domain }}
 
