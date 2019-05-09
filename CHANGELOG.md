@@ -6,7 +6,7 @@ Besides a myriad of bug fixes and minor improvements, here are the more notable 
 
 The playbook now supports bridging with [Facebook](https://www.facebook.com/) by installing the [mautrix-facebook](https://github.com/tulir/mautrix-facebook) bridge. This playbook functionality is available thanks to [@izissise](https://github.com/izissise).
 
-Additional details are available in [Setting up Mautrix Facebook bridging](docs/configuring-playbook-bridge-mautrix-facebook).
+Additional details are available in [Setting up Mautrix Facebook bridging](docs/configuring-playbook-bridge-mautrix-facebook.md).
 
 ## mxisd Registration feature integration
 
