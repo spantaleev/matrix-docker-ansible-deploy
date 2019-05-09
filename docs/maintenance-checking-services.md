@@ -10,4 +10,4 @@ ansible-playbook -i inventory/hosts setup.yml --tags=self-check
 
 If it's all green, everything is probably running correctly.
 
-Besides this self-check, you can also check your server using the [Federation Tester](https://neo.lain.haus/fed-tester/).
+Besides this self-check, you can also check your server using the [Federation Tester](https://federationtester.matrix.org/).
