@@ -1,6 +1,14 @@
 # Updating users passwords
 
-If you are using the matrix-postgres container(default), you can do it via this Ansible playbook (make sure to edit the `<your-username>` and `<your-password>` part below):
+## Option 1
+
+Use the Synapse User Admin API as described here: https://github.com/matrix-org/synapse/blob/master/docs/admin_api/user_admin_api.rst#reset-password
+
+This requires an access token from a server admin account. If you didn't make your account a server admin when you created it, you can use the `/usr/local/bin/matrix-make-user-admin` script as described in [registering-users.md](registering-users.md).
+
+## Option 2 (if you are using the default matrix-postgres container):
+
+You can reset a user's password via the Ansible playbook (make sure to edit the `<your-username>` and `<your-password>` part below):
 
 	ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-username> password=<your-password>' --tags=update-user-password
 
@@ -8,7 +16,9 @@ If you are using the matrix-postgres container(default), you can do it via this 
 
 **You can then log in with that user** via the riot-web service that this playbook has created for you at a URL like this: `https://riot.<domain>/`.
 
-If you are NOT using the matrix-postgres container, you can generate the password hash by using the command-line after **SSH**-ing to your server (requires that [all services have been started](#starting-the-services)):
+## Option 3 (if you are using an external Postgres server):
+
+You can manually generate the password hash by using the command-line after **SSH**-ing to your server (requires that [all services have been started](installing.md#starting-the-services)):
 
 	docker exec -it matrix-synapse /usr/local/bin/hash_password -c /data/homeserver.yaml
 
