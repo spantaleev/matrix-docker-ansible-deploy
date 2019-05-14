@@ -1,10 +1,13 @@
 #jinja2: lstrip_blocks: "True"
 [Unit]
 Description=Matrix Mautrix Telegram server
-After=docker.service
-Requires=docker.service
-Requires=matrix-synapse.service
-After=matrix-synapse.service
+{% for service in matrix_mautrix_telegram_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_mautrix_telegram_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
 
 [Service]
 Type=simple
@@ -17,6 +20,7 @@ ExecStartPre=/usr/bin/docker run --rm --name matrix-mautrix-telegram-db \
 			-v {{ matrix_mautrix_telegram_base_path }}:/data:z \
 			{{ matrix_mautrix_telegram_docker_image }} \
 			alembic -x config=/data/config.yaml upgrade head
+
 ExecStart=/usr/bin/docker run --rm --name matrix-mautrix-telegram \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
@@ -26,8 +30,12 @@ ExecStart=/usr/bin/docker run --rm --name matrix-mautrix-telegram \
 			-p 127.0.0.1:{{ matrix_mautrix_telegram_container_exposed_port_number }}:8080 \
 			{% endif %}
 			-v {{ matrix_mautrix_telegram_base_path }}:/data:z \
+			{% for arg in matrix_mautrix_telegram_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
 			{{ matrix_mautrix_telegram_docker_image }} \
 			python3 -m mautrix_telegram -c /data/config.yaml
+
 ExecStop=-/usr/bin/docker kill matrix-mautrix-telegram
 ExecStop=-/usr/bin/docker rm matrix-mautrix-telegram
 Restart=always

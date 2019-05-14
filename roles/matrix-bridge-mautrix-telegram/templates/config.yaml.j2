@@ -2,9 +2,9 @@
 # Homeserver details
 homeserver:
     # The address that this appservice can use to connect to the homeserver.
-    address: https://{{ matrix_server_fqn_matrix }}
+    address: {{ matrix_mautrix_telegram_homeserver_address }}
     # The domain of the homeserver (for MXIDs, etc).
-    domain: {{ matrix_domain }}
+    domain: {{ matrix_mautrix_telegram_homeserver_domain }}
     # Whether or not to verify the SSL certificate of the homeserver.
     # Only applies if address starts with https://
     verify_ssl: true
@@ -13,7 +13,7 @@ homeserver:
 # Changing these values requires regeneration of the registration.
 appservice:
     # The address that the homeserver can use to connect to this appservice.
-    address: http://matrix-mautrix-telegram:8080
+    address: {{ matrix_mautrix_telegram_appservice_address }}
 
     # The hostname and port where this appservice should listen.
     hostname: 0.0.0.0
@@ -39,7 +39,7 @@ appservice:
         prefix: {{ matrix_mautrix_telegram_public_endpoint }}
         # The base URL where the public-facing endpoints are available. The prefix is not added
         # implicitly.
-        external: https://{{ matrix_server_fqn_matrix }}{{ matrix_mautrix_telegram_public_endpoint }}
+        external: {{ matrix_mautrix_telegram_appservice_public_external }}
 
     # Provisioning API part of the web server for automated portal creation and fetching information.
     # Used by things like Dimension (https://dimension.t2bot.io/).
@@ -207,7 +207,7 @@ bridge:
     #   domain - All users on that homeserver
     #     mxid - Specific user
     permissions:
-        '{{ matrix_domain }}': full
+        '{{ matrix_mautrix_telegram_homeserver_domain }}': full
 
     # Options related to the message relay Telegram bot.
     relaybot:

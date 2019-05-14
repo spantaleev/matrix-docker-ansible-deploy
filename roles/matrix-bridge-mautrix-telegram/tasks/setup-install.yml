@@ -1,33 +1,38 @@
 ---
 
+# If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
+# We don't want to fail in such cases.
+- name: Fail if matrix-synapse role already executed
+  fail:
+    msg: >-
+      The matrix-bridge-mautrix-telegram role needs to execute before the matrix-synapse role.
+  when: "matrix_synapse_role_executed|default(False)"
+
 - name: Ensure Mautrix Telegram image is pulled
   docker_image:
     name: "{{ matrix_mautrix_telegram_docker_image }}"
-  when: "matrix_mautrix_telegram_enabled"
 
-- name: Ensure Mautrix Telegram configuration path exists
+- name: Ensure Mautrix Telegram base directory exists
   file:
     path: "{{ matrix_mautrix_telegram_base_path }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-  when: "matrix_mautrix_telegram_enabled"
 
 - name: Check if a mautrix-telegram configuration file exists
   stat:
     path: "{{ matrix_mautrix_telegram_base_path }}/config.yaml"
   register: mautrix_telegram_config_file_stat
-  when: "matrix_mautrix_telegram_enabled"
 
 - name: Ensure Matrix Mautrix telegram config installed
   template:
-    src: "{{ role_path }}/templates/ext/mautrix-telegram/config.yaml.j2"
+    src: "{{ role_path }}/templates/config.yaml.j2"
     dest: "{{ matrix_mautrix_telegram_base_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-  when: "matrix_mautrix_telegram_enabled and not mautrix_telegram_config_file_stat.stat.exists"
+  when: "not mautrix_telegram_config_file_stat.stat.exists"
 
 - name: (Migration) Fix up old configuration
   lineinfile:
@@ -38,26 +43,24 @@
   with_items:
     - {'regexp': '^(\s+)filename: \./mautrix-telegram.log', 'line': '\1filename: /data/mautrix-telegram.log'}
     - {'regexp': '^(\s+)database:', 'line': '\1database: sqlite:////data/mautrix-telegram.db'}
-  when: "matrix_mautrix_telegram_enabled and mautrix_telegram_config_file_stat.stat.exists"
+  when: "mautrix_telegram_config_file_stat.stat.exists"
 
 - name: Ensure matrix-mautrix-telegram.service installed
   template:
-    src: "{{ role_path }}/templates/ext/mautrix-telegram/systemd/matrix-mautrix-telegram.service.j2"
+    src: "{{ role_path }}/templates/systemd/matrix-mautrix-telegram.service.j2"
     dest: "/etc/systemd/system/matrix-mautrix-telegram.service"
     mode: 0644
   register: matrix_mautrix_telegram_systemd_service_result
-  when: "matrix_mautrix_telegram_enabled"
 
 - name: Ensure systemd reloaded after matrix-mautrix-telegram.service installation
   service:
     daemon_reload: yes
-  when: "matrix_mautrix_telegram_enabled and matrix_mautrix_telegram_systemd_service_result.changed"
+  when: "matrix_mautrix_telegram_systemd_service_result.changed"
 
 - name: Check if a mautrix-telegram registration file exists
   stat:
     path: "{{ matrix_mautrix_telegram_base_path }}/registration.yaml"
   register: mautrix_telegram_registration_file_stat
-  when: "matrix_mautrix_telegram_enabled"
 
 - name: Generate matrix-mautrix-telegram registration.yaml if it doesn't exist
   shell:
@@ -70,25 +73,22 @@
       -v {{ matrix_mautrix_telegram_base_path }}:/data:z
       {{ matrix_mautrix_telegram_docker_image }}
       python3 -m mautrix_telegram -g -c /data/config.yaml -r /data/registration.yaml
-  when: "matrix_mautrix_telegram_enabled and not mautrix_telegram_registration_file_stat.stat.exists"
+  when: "not mautrix_telegram_registration_file_stat.stat.exists"
 
 - set_fact:
     matrix_synapse_app_service_config_file_mautrix_telegram: '/app-registration/mautrix-telegram.yml'
-  when: "matrix_mautrix_telegram_enabled"
 
+# If the matrix-synapse role is not used, these variables may not exist.
 - set_fact:
     matrix_synapse_container_additional_volumes: >
-      {{ matrix_synapse_container_additional_volumes }}
+      {{ matrix_synapse_container_additional_volumes|default([]) }}
       +
       {{ [{'src': '{{ matrix_mautrix_telegram_base_path }}/registration.yaml', 'dst': '{{ matrix_synapse_app_service_config_file_mautrix_telegram }}', 'options': 'ro'}] }}
-  when: "matrix_mautrix_telegram_enabled"
 
-- set_fact:
     matrix_synapse_app_service_config_files: >
-      {{ matrix_synapse_app_service_config_files }}
+      {{ matrix_synapse_app_service_config_files|default([]) }}
       +
       {{ ["{{ matrix_synapse_app_service_config_file_mautrix_telegram }}"] | to_nice_json  }}
-  when: "matrix_mautrix_telegram_enabled"
 
 - block:
   - name: Fail if matrix-nginx-proxy role already executed
@@ -97,7 +97,7 @@
         Trying to append Mautrix Telegram's reverse-proxying configuration to matrix-nginx-proxy,
         but it's pointless since the matrix-nginx-proxy role had already executed.
         To fix this, please change the order of roles in your plabook,
-        so that the matrix-nginx-proxy role would run after the matrix-synapse role.
+        so that the matrix-nginx-proxy role would run after the matrix-bridge-mautrix-telegram role.
     when: "matrix_nginx_proxy_role_executed"
 
   - name: Generate Mautrix Telegram proxying configuration for matrix-nginx-proxy
@@ -124,7 +124,7 @@
           [matrix_mautrix_telegram_matrix_nginx_proxy_configuration]
         }}
 
-  when: "matrix_mautrix_telegram_enabled and matrix_nginx_proxy_enabled|default(False)"
+  when: "matrix_nginx_proxy_enabled|default(False)"
   tags:
    - always
 
@@ -135,14 +135,4 @@
       reverse proxy.
       Please make sure that you're proxying the `{{ matrix_mautrix_telegram_public_endpoint }}`
       URL endpoint to the matrix-mautrix-telegram container.
-  when: "matrix_mautrix_telegram_enabled and matrix_nginx_proxy_enabled is not defined"
-
-#
-# Tasks related to getting rid of matrix-mautrix-telegram (if it was previously enabled)
-#
-
-- name: Ensure matrix-mautrix-telegram.service doesn't exist
-  file:
-    path: "/etc/systemd/system/matrix-mautrix-telegram.service"
-    state: absent
-  when: "not matrix_mautrix_telegram_enabled"
+  when: "matrix_nginx_proxy_enabled is not defined"

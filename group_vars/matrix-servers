@@ -48,6 +48,43 @@ matrix_identity_server_url: "{{ 'https://' + matrix_synapse_trusted_third_party_
 ######################################################################
 
 
+######################################################################
+#
+# matrix-bridge-mautrix-telegram
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_mautrix_telegram_enabled: false
+
+matrix_mautrix_telegram_systemd_required_services_list: ['docker.service', 'matrix-synapse.service']
+
+matrix_mautrix_telegram_public_endpoint: "/{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'telegram') | to_uuid }}"
+
+######################################################################
+#
+# /matrix-bridge-mautrix-telegram
+#
+######################################################################
+
+
+######################################################################
+#
+# matrix-bridge-mautrix-whatsapp
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_mautrix_whatsapp_enabled: false
+
+matrix_mautrix_whatsapp_systemd_required_services_list: ['docker.service', 'matrix-synapse.service']
+
+######################################################################
+#
+# /matrix-bridge-mautrix-whatsapp
+#
+######################################################################
+
 
 ######################################################################
 #

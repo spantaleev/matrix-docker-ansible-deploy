@@ -1,0 +1,21 @@
+- import_tasks: "{{ role_path }}/tasks/init.yml"
+  tags:
+    - always
+
+- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: "run_setup and matrix_mautrix_telegram_enabled"
+  tags:
+    - setup-all
+    - setup-mautrix-telegram
+
+- import_tasks: "{{ role_path }}/tasks/setup-install.yml"
+  when: "run_setup and matrix_mautrix_telegram_enabled"
+  tags:
+    - setup-all
+    - setup-mautrix-telegram
+
+- import_tasks: "{{ role_path }}/tasks/setup-uninstall.yml"
+  when: "run_setup and not matrix_mautrix_telegram_enabled"
+  tags:
+    - setup-all
+    - setup-mautrix-telegram
