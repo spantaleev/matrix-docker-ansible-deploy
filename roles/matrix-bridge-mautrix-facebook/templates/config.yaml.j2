@@ -2,9 +2,9 @@
 # Homeserver details
 homeserver:
     # The address that this appservice can use to connect to the homeserver.
-    address: https://{{ matrix_server_fqn_matrix }}
+    address: {{ matrix_mautrix_facebook_homeserver_address }}
     # The domain of the homeserver (for MXIDs, etc).
-    domain: {{ matrix_domain }}
+    domain: {{ matrix_mautrix_facebook_homeserver_domain }}
     # Whether or not to verify the SSL certificate of the homeserver.
     # Only applies if address starts with https://
     verify_ssl: true
@@ -13,7 +13,7 @@ homeserver:
 # Changing these values requires regeneration of the registration.
 appservice:
     # The address that the homeserver can use to connect to this appservice.
-    address: http://matrix-mautrix-facebook:8080
+    address: {{ matrix_mautrix_facebook_appservice_address }}
 
     # The hostname and port where this appservice should listen.
     hostname: 0.0.0.0
@@ -73,7 +73,7 @@ bridge:
     #   domain - All users on that homeserver
     #     mxid - Specific user
     permissions:
-        '{{ matrix_domain }}': user
+        '{{ matrix_mautrix_facebook_homeserver_domain }}': user
 
 # Python logging configuration.
 #
