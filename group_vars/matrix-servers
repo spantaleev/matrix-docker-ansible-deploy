@@ -9,28 +9,6 @@
 # You can also override ANY variable (seen here or in any given role),
 # by re-defining it in your own configuration file (`inventory/host_vars/matrix.<your-domain>`).
 
-######################################################################
-#
-# matrix-appservice-irc
-#
-######################################################################
-
-# Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-irc over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# matrix-appservice-irc's client-server port to the local host (`127.0.0.1:9999`).
-matrix_appservice_irc_container_expose_client_server_api_port: "{{ not matrix_nginx_proxy_enabled }}"
-
-######################################################################
-#
-# matrix-appservice-discord
-#
-######################################################################
-
-# Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-discord over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# matrix-appservice-discord's client-server port to the local host (`127.0.0.1:9005`).
-matrix_appservice_discord_container_expose_client_server_api_port: "{{ not matrix_nginx_proxy_enabled }}"
-
 
 ######################################################################
 #
@@ -40,10 +18,55 @@ matrix_appservice_discord_container_expose_client_server_api_port: "{{ not matri
 
 matrix_identity_server_url: "{{ 'https://' + matrix_synapse_trusted_third_party_id_servers[0] if matrix_synapse_trusted_third_party_id_servers|length > 0 else None }}"
 
-
 ######################################################################
 #
 # /matrix-base
+#
+######################################################################
+
+
+######################################################################
+#
+# matrix-bridge-appservice-discord
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_appservice_discord_enabled: false
+
+# Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-discord over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# matrix-appservice-discord's client-server port to the local host (`127.0.0.1:9005`).
+matrix_appservice_discord_container_expose_client_server_api_port: "{{ not matrix_nginx_proxy_enabled }}"
+
+matrix_appservice_discord_systemd_required_services_list: ['docker.service', 'matrix-synapse.service']
+
+######################################################################
+#
+# /matrix-bridge-appservice-discord
+#
+######################################################################
+
+
+######################################################################
+#
+# matrix-bridge-appservice-irc
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_appservice_irc_enabled: false
+
+# Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-irc over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# matrix-appservice-irc's client-server port to the local host (`127.0.0.1:9999`).
+matrix_appservice_irc_container_expose_client_server_api_port: "{{ not matrix_nginx_proxy_enabled }}"
+
+matrix_appservice_irc_systemd_required_services_list: ['docker.service', 'matrix-synapse.service']
+
+######################################################################
+#
+# /matrix-bridge-appservice-irc
 #
 ######################################################################
 
