@@ -17,6 +17,7 @@ ExecStartPre=/usr/bin/docker run --rm --name matrix-mautrix-facebook-db \
 			-v {{ matrix_mautrix_facebook_base_path }}:/data:z \
 			{{ matrix_mautrix_facebook_docker_image }} \
 			alembic -x config=/data/config.yaml upgrade head
+
 ExecStart=/usr/bin/docker run --rm --name matrix-mautrix-facebook \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
@@ -25,10 +26,12 @@ ExecStart=/usr/bin/docker run --rm --name matrix-mautrix-facebook \
 			-v {{ matrix_mautrix_facebook_base_path }}:/data:z \
 			{{ matrix_mautrix_facebook_docker_image }} \
 			python3 -m mautrix_facebook -c /data/config.yaml
+
 ExecStop=-/usr/bin/docker kill matrix-mautrix-facebook
 ExecStop=-/usr/bin/docker rm matrix-mautrix-facebook
 Restart=always
 RestartSec=30
+SyslogIdentifier=matrix-mautrix-facebook
 
 [Install]
 WantedBy=multi-user.target

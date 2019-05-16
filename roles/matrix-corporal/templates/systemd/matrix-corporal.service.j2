@@ -10,6 +10,7 @@ After={{ service }}
 Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-corporal
 ExecStartPre=-/usr/bin/docker rm matrix-corporal
+
 ExecStart=/usr/bin/docker run --rm --name matrix-corporal \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
@@ -28,10 +29,12 @@ ExecStart=/usr/bin/docker run --rm --name matrix-corporal \
 			{% endfor %}
 			{{ matrix_corporal_docker_image }} \
 			/matrix-corporal -config=/etc/matrix-corporal/config.json
+
 ExecStop=-/usr/bin/docker kill matrix-corporal
 ExecStop=-/usr/bin/docker rm matrix-corporal
 Restart=always
 RestartSec=30
+SyslogIdentifier=matrix-corporal
 
 [Install]
 WantedBy=multi-user.target

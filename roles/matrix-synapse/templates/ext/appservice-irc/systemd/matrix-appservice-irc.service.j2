@@ -10,6 +10,7 @@ After=matrix-synapse.service
 Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-appservice-irc
 ExecStartPre=-/usr/bin/docker rm matrix-appservice-irc
+
 ExecStart=/usr/bin/docker run --rm --name matrix-appservice-irc \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
@@ -21,10 +22,12 @@ ExecStart=/usr/bin/docker run --rm --name matrix-appservice-irc \
 			-v {{ matrix_appservice_irc_base_path }}:/data:z \
 			{{ matrix_appservice_irc_docker_image }} \
 			-c /data/config.yaml -f /data/registration.yaml -p 9999
+
 ExecStop=-/usr/bin/docker kill matrix-appservice-irc
 ExecStop=-/usr/bin/docker rm matrix-appservice-irc
 Restart=always
 RestartSec=30
+SyslogIdentifier=matrix-appservice-irc
 
 [Install]
 WantedBy=multi-user.target

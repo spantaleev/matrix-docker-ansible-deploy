@@ -8,6 +8,7 @@ Requires=docker.service
 Type=simple
 ExecStartPre=-/usr/bin/docker kill %n
 ExecStartPre=-/usr/bin/docker rm %n
+
 ExecStart=/usr/bin/docker run --rm --name %n \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
@@ -22,6 +23,7 @@ ExecStart=/usr/bin/docker run --rm --name %n \
 			--entrypoint /bin/sh \
 			{{ matrix_s3_goofys_docker_image }} \
 			-c 'goofys -f{% if not matrix_s3_media_store_custom_endpoint_enabled %} --storage-class=STANDARD_IA{% endif %}{% if matrix_s3_media_store_custom_endpoint_enabled %} --endpoint={{ matrix_s3_media_store_custom_endpoint }}{% endif %} --region {{ matrix_s3_media_store_region }} --stat-cache-ttl 60m0s --type-cache-ttl 60m0s --dir-mode 0700 --file-mode 0700 {{ matrix_s3_media_store_bucket_name }} /s3'
+
 TimeoutStartSec=5min
 ExecStop=-/usr/bin/docker stop %n
 ExecStop=-/usr/bin/docker kill %n
@@ -29,6 +31,7 @@ ExecStop=-/usr/bin/docker rm %n
 ExecStop=-/bin/fusermount -u {{ matrix_synapse_media_store_path }}
 Restart=always
 RestartSec=5
+SyslogIdentifier=matrix-goofys
 
 [Install]
 WantedBy=multi-user.target
