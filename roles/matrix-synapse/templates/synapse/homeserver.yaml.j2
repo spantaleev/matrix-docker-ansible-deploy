@@ -60,6 +60,20 @@ public_baseurl: https://{{ matrix_server_fqn_matrix }}/
 #
 use_presence: {{ matrix_synapse_use_presence|to_json }}
 
+# Whether to require authentication to retrieve profile data (avatars,
+# display names) of other users through the client API. Defaults to
+# 'false'. Note that profile data is also available via the federation
+# API, so this setting is of limited value if federation is enabled on
+# the server.
+#
+#require_auth_for_profile_requests: true
+
+# If set to 'true', requires authentication to access the server's
+# public rooms directory through the client API, and forbids any other
+# homeserver to fetch it via federation. Defaults to 'false'.
+#
+#restrict_public_rooms_to_local_users: true
+
 # The GC threshold parameters to pass to `gc.set_threshold`, if defined
 #
 #gc_thresholds: [700, 10, 10]
@@ -131,8 +145,8 @@ federation_domain_whitelist: {{ matrix_synapse_federation_domain_whitelist|to_js
 #
 # Valid resource names are:
 #
-#   client: the client-server API (/_matrix/client). Also implies 'media' and
-#       'static'.
+#   client: the client-server API (/_matrix/client), and the synapse admin
+#       API (/_synapse/admin). Also implies 'media' and 'static'.
 #
 #   consent: user consent forms (/_matrix/consent). See
 #       docs/consent_tracking.md.
@@ -241,6 +255,11 @@ listeners:
 #  - medium: 'email'
 #    address: 'reserved_user@example.com'
 
+# Whether to require a user to be in the room to add an alias to it.
+# Defaults to 'true'.
+#
+#require_membership_for_aliases: false
+
 
 ## TLS ##
 
@@ -261,6 +280,40 @@ tls_certificate_path: {{ matrix_synapse_tls_certificate_path|to_json }}
 # PEM-encoded private key for TLS
 #
 tls_private_key_path: {{ matrix_synapse_tls_private_key_path|to_json }}
+
+# Whether to verify TLS certificates when sending federation traffic.
+#
+# This currently defaults to `false`, however this will change in
+# Synapse 1.0 when valid federation certificates will be required.
+#
+#federation_verify_certificates: true
+
+# Skip federation certificate verification on the following whitelist
+# of domains.
+#
+# This setting should only be used in very specific cases, such as
+# federation over Tor hidden services and similar. For private networks
+# of homeservers, you likely want to use a private CA instead.
+#
+# Only effective if federation_verify_certicates is `true`.
+#
+#federation_certificate_verification_whitelist:
+#  - lon.example.com
+#  - *.domain.com
+#  - *.onion
+
+# List of custom certificate authorities for federation traffic.
+#
+# This setting should only normally be used within a private network of
+# homeservers.
+#
+# Note that this list will replace those that are provided by your
+# operating environment. Certificates must be in PEM format.
+#
+#federation_custom_ca_list:
+#  - myCA1.pem
+#  - myCA2.pem
+#  - myCA3.pem
 
 # ACME support: This will configure Synapse to request a valid TLS certificate
 # for your configured `server_name` via Let's Encrypt.
@@ -691,6 +744,10 @@ registrations_require_3pid: {{ matrix_synapse_registrations_require_3pid|to_json
 #  - medium: msisdn
 #    pattern: '\+44'
 
+# Enable 3PIDs lookup requests to identity servers from this server.
+#
+#enable_3pid_lookup: true
+
 # If set, allows registration of standard or admin accounts by anyone who
 # has the shared secret, even if registration is otherwise disabled.
 #
@@ -914,7 +971,7 @@ password_config:
 
 
 
-# Enable sending emails for notification events
+# Enable sending emails for notification events or expiry notices
 # Defining a custom URL for Riot is only needed if email notifications
 # should contain links to a self-hosted installation of Riot; when set
 # the "app_name" setting is ignored.
@@ -932,6 +989,9 @@ email:
    app_name: Matrix
    notif_template_html: notif_mail.html
    notif_template_text: notif_mail.txt
+   # Templates for account expiry notices.
+   expiry_template_html: notice_expiry.html
+   expiry_template_text: notice_expiry.txt
    notif_for_new_users: True
    riot_base_url: {{ matrix_synapse_email_riot_base_url|string|to_json }}
 {% endif %}
@@ -977,7 +1037,7 @@ password_providers:
     config:
       enabled: true
       uri: {{ matrix_synapse_ext_password_provider_ldap_uri|string|to_json }}
-      start_tls: {{ matrix_synapse_ext_password_provider_ldap_start_tls|string|to_json }}
+      start_tls: {{ matrix_synapse_ext_password_provider_ldap_start_tls|to_json }}
       base: {{ matrix_synapse_ext_password_provider_ldap_base|string|to_json }}
       attributes:
         uid: {{ matrix_synapse_ext_password_provider_ldap_attributes_uid|string|to_json }}

@@ -8,7 +8,7 @@ If you decide that you'd like to let this playbook install it for you, you need 
 
 ```yaml
 matrix_synapse_ext_password_provider_rest_auth_enabled: true
-matrix_synapse_ext_password_provider_rest_auth_endpoint: "http://change.me.example.com:12345"
+matrix_synapse_ext_password_provider_rest_auth_endpoint: "http://matrix-mxisd:8090"
 matrix_synapse_ext_password_provider_rest_auth_registration_enforce_lowercase: false
 matrix_synapse_ext_password_provider_rest_auth_registration_profile_name_autofill: true
 matrix_synapse_ext_password_provider_rest_auth_login_profile_name_autofill: false

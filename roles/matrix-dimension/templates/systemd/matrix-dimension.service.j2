@@ -8,6 +8,7 @@ Requires=docker.service
 Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-dimension
 ExecStartPre=-/usr/bin/docker rm matrix-dimension
+
 ExecStart=/usr/bin/docker run --rm --name matrix-dimension \
 			--log-driver=none \
 			--user={{ matrix_dimension_user_uid }}:{{ matrix_dimension_user_gid }} \
@@ -24,10 +25,12 @@ ExecStart=/usr/bin/docker run --rm --name matrix-dimension \
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_dimension_docker_image }}
+
 ExecStop=-/usr/bin/docker kill matrix-dimension
 ExecStop=-/usr/bin/docker rm matrix-dimension
 Restart=always
 RestartSec=30
+SyslogIdentifier=matrix-dimension
 
 [Install]
 WantedBy=multi-user.target

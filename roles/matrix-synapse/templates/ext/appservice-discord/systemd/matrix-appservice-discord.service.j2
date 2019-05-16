@@ -10,6 +10,7 @@ After=matrix-synapse.service
 Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-appservice-discord
 ExecStartPre=-/usr/bin/docker rm matrix-appservice-discord
+
 ExecStart=/usr/bin/docker run --rm --name matrix-appservice-discord \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
@@ -20,12 +21,12 @@ ExecStart=/usr/bin/docker run --rm --name matrix-appservice-discord \
 			{% endif %}
 			-v {{ matrix_appservice_discord_base_path }}:/data \
 			{{ matrix_appservice_discord_docker_image }}
-			
-			
+
 ExecStop=-/usr/bin/docker kill matrix-appservice-discord
 ExecStop=-/usr/bin/docker rm matrix-appservice-discord
 Restart=always
 RestartSec=30
+SyslogIdentifier=matrix-appservice-discord
 
  [Install]
 WantedBy=multi-user.target
