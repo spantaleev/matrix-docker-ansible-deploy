@@ -15,6 +15,13 @@
     - "{{ matrix_synapse_config_dir_path }}"
     - "{{ matrix_synapse_run_path }}"
     - "{{ matrix_synapse_ext_path }}"
-    # We handle matrix_synapse_media_store_path elsewhere (in setup_synapse_main.yml),
+    # We handle matrix_synapse_media_store_path elsewhere (in ./synapse/setup_install.yml),
     # because if it's using Goofys and it's already mounted (from before),
     # trying to chown/chmod it here will cause trouble.
+  when: "matrix_synapse_enabled or matrix_s3_media_store_enabled"
+
+- import_tasks: "{{ role_path }}/tasks/ext/setup.yml"
+
+- import_tasks: "{{ role_path }}/tasks/synapse/setup.yml"
+
+- import_tasks: "{{ role_path }}/tasks/goofys/setup.yml"
