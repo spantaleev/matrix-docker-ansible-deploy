@@ -20,6 +20,15 @@ Each bridge now lives in its own separate role (`roles/matrix-bridge-*`).
 These bridge roles are independent of the `matrix-synapse` role, so it should be possible to use them with a Synapse instance installed another way (not through the playbook).
 
 
+## Renaming inconsistently-named Synapse variables
+
+For better consistency, the following variables have been renamed:
+
+- `matrix_enable_room_list_search` was renamed to `matrix_synapse_enable_room_list_search`
+- `matrix_alias_creation_rules` was renamed to `matrix_synapse_alias_creation_rules`
+- `matrix_nginx_proxy_matrix_room_list_publication_rulesdata_path` was renamed to `matrix_synapse_room_list_publication_rules`
+
+
 # 2019-05-09
 
 Besides a myriad of bug fixes and minor improvements, here are the more notable (bigger) features we can announce today.
