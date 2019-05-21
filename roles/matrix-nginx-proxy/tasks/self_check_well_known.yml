@@ -21,7 +21,7 @@
     - name: Determine domains that we require certificates for (mxisd)
       set_fact:
         well_known_file_checks: "{{ well_known_file_checks + [well_known_file_check_matrix_server] }}"
-  when: "matrix_well_known_matrix_server_enabled"
+  when: matrix_well_known_matrix_server_enabled|bool
 
 - name: Perform well-known checks
   include_tasks: "{{ role_path }}/tasks/self_check_well_known_file.yml"

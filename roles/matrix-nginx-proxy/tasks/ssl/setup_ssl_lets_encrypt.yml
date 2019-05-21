@@ -82,7 +82,7 @@
       minute: 20
       day: "*"
       job: /bin/systemctl reload matrix-nginx-proxy.service
-    when: matrix_nginx_proxy_enabled
+    when: matrix_nginx_proxy_enabled|bool
   when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
 
 
@@ -98,7 +98,7 @@
     cron_file: matrix-ssl-lets-encrypt
     name: matrix-nginx-proxy-reload
     state: absent
-  when: "not matrix_nginx_proxy_enabled"
+  when: "not matrix_nginx_proxy_enabled|bool"
 
 # When Let's Encrypt is not used at all, remove all cronjobs in that cron file.
 - name: Ensure matrix-ssl-lets-encrypt-renew cronjob removed

@@ -98,7 +98,7 @@
         but it's pointless since the matrix-nginx-proxy role had already executed.
         To fix this, please change the order of roles in your plabook,
         so that the matrix-nginx-proxy role would run after the matrix-bridge-mautrix-telegram role.
-    when: "matrix_nginx_proxy_role_executed"
+    when: matrix_nginx_proxy_role_executed|bool
 
   - name: Generate Mautrix Telegram proxying configuration for matrix-nginx-proxy
     set_fact:

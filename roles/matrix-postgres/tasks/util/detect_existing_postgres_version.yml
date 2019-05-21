@@ -23,12 +23,12 @@
   slurp:
     src: "{{ matrix_postgres_detection_pg_version_path }}"
   register: result_pg_version
-  when: "matrix_postgres_detected_existing"
+  when: matrix_postgres_detected_existing|bool
 
 - name: Determine existing Postgres version (make sense of PG_VERSION file)
   set_fact:
     matrix_postgres_detected_version: "{{ result_pg_version['content']|b64decode|replace('\n', '') }}"
-  when: "matrix_postgres_detected_existing"
+  when: matrix_postgres_detected_existing|bool
 
 - name: Determine corresponding Docker image to detected version (assume default of latest)
   set_fact:
