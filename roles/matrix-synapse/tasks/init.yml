@@ -1,8 +1,7 @@
 - set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-synapse'] }}"
+  when: matrix_synapse_enabled
 
 - set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-goofys'] }}"
   when: matrix_s3_media_store_enabled
-
-- import_tasks: "{{ role_path }}/tasks/ext/init.yml"

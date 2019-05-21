@@ -1,0 +1,34 @@
+# mautrix-telegram is a Matrix <-> Telegram bridge
+# See: https://github.com/tulir/mautrix-telegram
+
+matrix_mautrix_telegram_enabled: true
+
+matrix_mautrix_telegram_docker_image: "tulir/mautrix-telegram:v0.5.1"
+
+matrix_mautrix_telegram_base_path: "{{ matrix_base_data_path }}/mautrix-telegram"
+
+# Get your own API keys at https://my.telegram.org/apps
+matrix_mautrix_telegram_api_id: ''
+matrix_mautrix_telegram_api_hash: ''
+
+# Mautrix telegram public endpoint to log in to telegram
+# Use an uuid so it's not easily discoverable.
+# Example: /741a0483-ba17-4682-9900-30bd7269f1cc
+matrix_mautrix_telegram_public_endpoint: ''
+
+matrix_mautrix_telegram_homeserver_address: 'https://{{ matrix_server_fqn_matrix }}'
+matrix_mautrix_telegram_homeserver_domain: '{{ matrix_domain }}'
+matrix_mautrix_telegram_appservice_address: 'http://matrix-mautrix-telegram:8080'
+matrix_mautrix_telegram_appservice_public_external: 'https://{{ matrix_server_fqn_matrix }}{{ matrix_mautrix_telegram_public_endpoint }}'
+
+# Set this to a port number to expose on the host when not using matrix-nginx-proxy
+matrix_mautrix_telegram_container_exposed_port_number: ~
+
+# A list of extra arguments to pass to the container
+matrix_mautrix_telegram_container_extra_arguments: []
+
+# List of systemd services that matrix-mautrix-telegram.service depends on.
+matrix_mautrix_telegram_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-mautrix-telegram.service wants
+matrix_mautrix_telegram_systemd_wanted_services_list: []

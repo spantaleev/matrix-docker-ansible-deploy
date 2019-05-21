@@ -8,7 +8,7 @@
     - setup-all
     - setup-synapse
 
-- import_tasks: "{{ role_path }}/tasks/setup_synapse_entrypoint.yml"
+- import_tasks: "{{ role_path }}/tasks/setup_synapse.yml"
   when: run_setup
   tags:
     - setup-all
@@ -42,3 +42,9 @@
   when: run_update_user_password
   tags:
     - update-user-password
+
+- name: Mark matrix-synapse role as executed
+  set_fact:
+    matrix_synapse_role_executed: true
+  tags:
+   - always

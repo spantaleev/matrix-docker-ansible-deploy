@@ -1,0 +1,80 @@
+---
+
+# If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
+# We don't want to fail in such cases.
+- name: Fail if matrix-synapse role already executed
+  fail:
+    msg: >-
+      The matrix-bridge-mautrix-whatsapp role needs to execute before the matrix-synapse role.
+  when: "matrix_synapse_role_executed|default(False)"
+
+- name: Ensure Mautrix Whatsapp image is pulled
+  docker_image:
+    name: "{{ matrix_mautrix_whatsapp_docker_image }}"
+
+- name: Ensure Mautrix Whatsapp base directory exists
+  file:
+    path: "{{ matrix_mautrix_whatsapp_base_path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+
+- name: Check if a mautrix-whatsapp configuration file exists
+  stat:
+    path: "{{ matrix_mautrix_whatsapp_base_path }}/config.yaml"
+  register: mautrix_whatsapp_config_file_stat
+
+- name: Ensure Matrix Mautrix whatsapp config installed
+  template:
+    src: "{{ role_path }}/templates//config.yaml.j2"
+    dest: "{{ matrix_mautrix_whatsapp_base_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  when: "not mautrix_whatsapp_config_file_stat.stat.exists"
+
+- name: Ensure matrix-mautrix-whatsapp.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-mautrix-whatsapp.service.j2"
+    dest: "/etc/systemd/system/matrix-mautrix-whatsapp.service"
+    mode: 0644
+  register: matrix_mautrix_whatsapp_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-mautrix-whatsapp.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_mautrix_whatsapp_systemd_service_result.changed"
+
+- name: Check if a mautrix-whatsapp registration file exists
+  stat:
+    path: "{{ matrix_mautrix_whatsapp_base_path }}/registration.yaml"
+  register: mautrix_whatsapp_registration_file_stat
+
+- name: Generate matrix-mautrix-whatsapp registration.yaml if it doesn't exist
+  shell:
+    cmd: >-
+      /usr/bin/docker run
+      --rm
+      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+      --cap-drop=ALL
+      --name matrix-mautrix-whatsapp-gen
+      -v {{ matrix_mautrix_whatsapp_base_path }}:/data:z
+      {{ matrix_mautrix_whatsapp_docker_image }}
+      /usr/bin/mautrix-whatsapp -g -c /data/config.yaml -r /data/registration.yaml
+  when: "not mautrix_whatsapp_registration_file_stat.stat.exists"
+
+- set_fact:
+    matrix_synapse_app_service_config_file_mautrix_whatsapp: '/app-registration/mautrix-whatsapp.yml'
+
+# If the matrix-synapse role is not used, these variables may not exist.
+- set_fact:
+    matrix_synapse_container_additional_volumes: >
+      {{ matrix_synapse_container_additional_volumes|default([]) }}
+      +
+      {{ [{'src': '{{ matrix_mautrix_whatsapp_base_path }}/registration.yaml', 'dst': '{{ matrix_synapse_app_service_config_file_mautrix_whatsapp }}', 'options': 'ro'}] }}
+
+    matrix_synapse_app_service_config_files: >
+      {{ matrix_synapse_app_service_config_files|default([]) }}
+      +
+      {{ ["{{ matrix_synapse_app_service_config_file_mautrix_whatsapp }}"] | to_nice_json  }}

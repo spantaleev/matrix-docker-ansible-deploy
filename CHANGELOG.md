@@ -1,3 +1,25 @@
+# 2019-05-21
+
+## Synapse no longer required
+
+The playbook no longer insists on installing [Synapse](https://github.com/matrix-org/synapse) via the `matrix-synapse` role.
+
+If you would prefer to install Synapse another way and just use the playbook to install other services, it should be possible (`matrix_synapse_enabled: false`).
+
+Note that it won't necessarily be the best experience, since the playbook wires things to Synapse by default.
+If you're using your own Synapse instance (especially one not running in a container), you may have to override many variables to point them to the correct place.
+
+Having Synapse not be a required component potentially opens the door for installing alternative Matrix homeservers.
+
+
+## Bridges are now separate from the Synapse role
+
+Bridges are no longer part of the `matrix-synapse` role.
+Each bridge now lives in its own separate role (`roles/matrix-bridge-*`).
+
+These bridge roles are independent of the `matrix-synapse` role, so it should be possible to use them with a Synapse instance installed another way (not through the playbook).
+
+
 # 2019-05-09
 
 Besides a myriad of bug fixes and minor improvements, here are the more notable (bigger) features we can announce today.
