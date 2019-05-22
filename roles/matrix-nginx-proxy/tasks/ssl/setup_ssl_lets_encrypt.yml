@@ -36,7 +36,7 @@
 - name: Ensure certbot Docker image is pulled
   docker_image:
     name: "{{ matrix_ssl_lets_encrypt_certbot_docker_image }}"
-    source: "pull"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
   when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
 
 - name: Obtain Let's Encrypt certificates

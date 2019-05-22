@@ -16,7 +16,7 @@
 - name: Ensure riot-web Docker image is pulled
   docker_image:
     name: "{{ matrix_riot_web_docker_image }}"
-    source: "pull"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
   when: matrix_riot_web_enabled|bool
 
 - name: Ensure Matrix riot-web config files installed

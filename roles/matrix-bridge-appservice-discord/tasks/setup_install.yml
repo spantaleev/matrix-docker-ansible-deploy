@@ -11,7 +11,7 @@
 - name: Ensure Appservice Discord image is pulled
   docker_image:
     name: "{{ matrix_appservice_discord_docker_image }}"
-    source: "pull"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
 
 - name: Ensure Appservice Discord base directory exists
   file:

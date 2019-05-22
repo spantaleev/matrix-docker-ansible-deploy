@@ -20,7 +20,7 @@
 - name: Ensure Matrix Corporal Docker image is pulled
   docker_image:
     name: "{{ matrix_corporal_docker_image }}"
-    source: "pull"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
   when: matrix_corporal_enabled|bool
 
 - name: Ensure Matrix Corporal config installed

@@ -27,7 +27,7 @@
 - name: Ensure postgres Docker image is pulled
   docker_image:
     name: "{{ matrix_postgres_docker_image_to_use }}"
-    source: "pull"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
   when: matrix_postgres_enabled|bool
 
 # We always create these directories, even if an external Postgres is used,

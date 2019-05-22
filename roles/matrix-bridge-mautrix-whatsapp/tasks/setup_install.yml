@@ -11,7 +11,7 @@
 - name: Ensure Mautrix Whatsapp image is pulled
   docker_image:
     name: "{{ matrix_mautrix_whatsapp_docker_image }}"
-    source: "pull"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
 
 - name: Ensure Mautrix Whatsapp base directory exists
   file:

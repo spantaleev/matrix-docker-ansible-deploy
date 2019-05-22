@@ -21,7 +21,7 @@
 - name: Ensure Synapse Docker image is pulled
   docker_image:
     name: "{{ matrix_synapse_docker_image }}"
-    source: "pull"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
 
 - name: Check if a Synapse signing key exists
   stat:
