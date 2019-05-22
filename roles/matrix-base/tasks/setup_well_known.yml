@@ -27,10 +27,10 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-  when: matrix_well_known_matrix_server_enabled
+  when: matrix_well_known_matrix_server_enabled|bool
 
 - name: Ensure Matrix /.well-known/matrix/server file deleted
   file:
     path: "{{ matrix_static_files_base_path }}/.well-known/matrix/server"
     state: absent
-  when: "not matrix_well_known_matrix_server_enabled"
+  when: "not matrix_well_known_matrix_server_enabled|bool"

@@ -11,6 +11,7 @@
 - name: Ensure Appservice IRC image is pulled
   docker_image:
     name: "{{ matrix_appservice_irc_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
 
 - name: Ensure Appservice IRC base directory exists
   file:

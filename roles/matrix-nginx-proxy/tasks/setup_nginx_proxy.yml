@@ -27,7 +27,7 @@
     src: "{{ role_path }}/templates/nginx/nginx.conf.j2"
     dest: "{{ matrix_nginx_proxy_base_path }}/nginx.conf"
     mode: 0644
-  when: "matrix_nginx_proxy_enabled"
+  when: matrix_nginx_proxy_enabled|bool
 
 - name: Ensure matrix-synapse-metrics-htpasswd is present (protecting /_synapse/metrics URI)
   template:
@@ -36,35 +36,35 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
     mode: 0400
-  when: "matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled and matrix_nginx_proxy_proxy_synapse_metrics"
+  when: "matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled|bool and matrix_nginx_proxy_proxy_synapse_metrics|bool"
 
 - name: Ensure Matrix nginx-proxy configured (generic)
   template:
     src: "{{ role_path }}/templates/nginx/conf.d/nginx-http.conf.j2"
     dest: "{{ matrix_nginx_proxy_confd_path }}/nginx-http.conf"
     mode: 0644
-  when: "matrix_nginx_proxy_enabled"
+  when: matrix_nginx_proxy_enabled|bool
 
 - name: Ensure Matrix nginx-proxy configuration for matrix domain exists
   template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-synapse.conf.j2"
     dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-synapse.conf"
     mode: 0644
-  when: "matrix_nginx_proxy_proxy_matrix_enabled"
+  when: matrix_nginx_proxy_proxy_matrix_enabled|bool
 
 - name: Ensure Matrix nginx-proxy configuration for riot domain exists
   template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-riot-web.conf.j2"
     dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-riot-web.conf"
     mode: 0644
-  when: "matrix_nginx_proxy_proxy_riot_enabled"
+  when: matrix_nginx_proxy_proxy_riot_enabled|bool
 
 - name: Ensure Matrix nginx-proxy configuration for dimension domain exists
   template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-dimension.conf.j2"
     dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-dimension.conf"
     mode: 0644
-  when: "matrix_nginx_proxy_proxy_dimension_enabled"
+  when: matrix_nginx_proxy_proxy_dimension_enabled|bool
 
 - name: Ensure Matrix nginx-proxy data directory for base domain exists
   file:
@@ -73,7 +73,7 @@
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-  when: "matrix_nginx_proxy_base_domain_serving_enabled"
+  when: matrix_nginx_proxy_base_domain_serving_enabled|bool
 
 - name: Ensure Matrix nginx-proxy homepage for base domain exists
   copy:
@@ -82,14 +82,14 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-  when: "matrix_nginx_proxy_base_domain_serving_enabled"
+  when: matrix_nginx_proxy_base_domain_serving_enabled|bool
 
 - name: Ensure Matrix nginx-proxy configuration for base domain exists
   template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-domain.conf.j2"
     dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-domain.conf"
     mode: 0644
-  when: "matrix_nginx_proxy_base_domain_serving_enabled"
+  when: matrix_nginx_proxy_base_domain_serving_enabled|bool
 
 #
 # Tasks related to setting up matrix-nginx-proxy
@@ -97,7 +97,8 @@
 - name: Ensure nginx Docker image is pulled
   docker_image:
     name: "{{ matrix_nginx_proxy_docker_image }}"
-  when: matrix_nginx_proxy_enabled
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+  when: matrix_nginx_proxy_enabled|bool
 
 - name: Ensure matrix-nginx-proxy.service installed
   template:
@@ -105,7 +106,7 @@
     dest: "/etc/systemd/system/matrix-nginx-proxy.service"
     mode: 0644
   register: matrix_nginx_proxy_systemd_service_result
-  when: matrix_nginx_proxy_enabled
+  when: matrix_nginx_proxy_enabled|bool
 
 - name: Ensure systemd reloaded after matrix-nginx-proxy.service installation
   service:
@@ -121,7 +122,7 @@
   stat:
     path: "/etc/systemd/system/matrix-nginx-proxy.service"
   register: matrix_nginx_proxy_service_stat
-  when: "not matrix_nginx_proxy_enabled"
+  when: "not matrix_nginx_proxy_enabled|bool"
 
 - name: Ensure matrix-nginx-proxy is stopped
   service:
@@ -129,57 +130,57 @@
     state: stopped
     daemon_reload: yes
   register: stopping_result
-  when: "not matrix_nginx_proxy_enabled and matrix_nginx_proxy_service_stat.stat.exists"
+  when: "not matrix_nginx_proxy_enabled|bool and matrix_nginx_proxy_service_stat.stat.exists"
 
 - name: Ensure matrix-nginx-proxy.service doesn't exist
   file:
     path: "/etc/systemd/system/matrix-nginx-proxy.service"
     state: absent
-  when: "not matrix_nginx_proxy_enabled and matrix_nginx_proxy_service_stat.stat.exists"
+  when: "not matrix_nginx_proxy_enabled|bool and matrix_nginx_proxy_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-nginx-proxy.service removal
   service:
     daemon_reload: yes
-  when: "not matrix_nginx_proxy_enabled and matrix_nginx_proxy_service_stat.stat.exists"
+  when: "not matrix_nginx_proxy_enabled|bool and matrix_nginx_proxy_service_stat.stat.exists"
 
 - name: Ensure Matrix nginx-proxy configuration for matrix domain deleted
   file:
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-synapse.conf"
     state: absent
-  when: "not matrix_nginx_proxy_proxy_matrix_enabled"
+  when: "not matrix_nginx_proxy_proxy_matrix_enabled|bool"
 
 - name: Ensure Matrix nginx-proxy configuration for riot domain deleted
   file:
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-riot-web.conf"
     state: absent
-  when: "not matrix_nginx_proxy_proxy_riot_enabled"
+  when: "not matrix_nginx_proxy_proxy_riot_enabled|bool"
 
 - name: Ensure Matrix nginx-proxy configuration for dimension domain deleted
   file:
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-dimension.conf"
     state: absent
-  when: "not matrix_nginx_proxy_proxy_dimension_enabled"
+  when: "not matrix_nginx_proxy_proxy_dimension_enabled|bool"
 
 - name: Ensure Matrix nginx-proxy homepage for base domain deleted
   file:
     path: "{{ matrix_nginx_proxy_data_path }}/matrix-domain/index.html"
     state: absent
-  when: "not matrix_nginx_proxy_base_domain_serving_enabled"
+  when: "not matrix_nginx_proxy_base_domain_serving_enabled|bool"
 
 - name: Ensure Matrix nginx-proxy configuration for base domain deleted
   file:
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-domain.conf"
     state: absent
-  when: "not matrix_nginx_proxy_base_domain_serving_enabled"
+  when: "not matrix_nginx_proxy_base_domain_serving_enabled|bool"
 
 - name: Ensure Matrix nginx-proxy configuration for main config override deleted
   file:
     path: "{{ matrix_nginx_proxy_base_path }}/nginx.conf"
     state: absent
-  when: "not matrix_nginx_proxy_enabled"
+  when: "not matrix_nginx_proxy_enabled|bool"
 
 - name: Ensure Matrix nginx-proxy htpasswd is deleted (protecting /_synapse/metrics URI)
   file:
     path: "{{ matrix_nginx_proxy_data_path }}/matrix-synapse-metrics-htpasswd"
     state: absent
-  when: "not matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled or not matrix_nginx_proxy_proxy_synapse_metrics"
+  when: "not matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled|bool or not matrix_nginx_proxy_proxy_synapse_metrics|bool"

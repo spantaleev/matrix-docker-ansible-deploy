@@ -1,6 +1,7 @@
 - name: Ensure Goofys Docker image is pulled
   docker_image:
     name: "{{ matrix_s3_goofys_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
 
 # This will throw a Permission Denied error if already mounted
 - name: Check Matrix Goofys external storage mountpoint path

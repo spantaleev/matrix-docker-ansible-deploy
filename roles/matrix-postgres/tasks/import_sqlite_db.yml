@@ -5,7 +5,7 @@
 - name: Fail if Postgres not enabled
   fail:
     msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot import."
-  when: "not matrix_postgres_enabled"
+  when: "not matrix_postgres_enabled|bool"
 
 - name: Fail if playbook called incorrectly
   fail:
@@ -20,7 +20,7 @@
 - name: Fail if provided SQLite homeserver.db file doesn't exist
   fail:
     msg: "File cannot be found on the server at {{ server_path_homeserver_db }}"
-  when: not result_server_path_homeserver_db_stat.stat.exists
+  when: "not result_server_path_homeserver_db_stat.stat.exists"
 
 
 # Defaults

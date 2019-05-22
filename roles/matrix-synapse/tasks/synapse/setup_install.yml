@@ -21,6 +21,7 @@
 - name: Ensure Synapse Docker image is pulled
   docker_image:
     name: "{{ matrix_synapse_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
 
 - name: Check if a Synapse signing key exists
   stat:
@@ -71,11 +72,10 @@
 - name: Ensure systemd reloaded after matrix-synapse.service installation
   service:
     daemon_reload: yes
-  when: matrix_synapse_systemd_service_result.changed
+  when: "matrix_synapse_systemd_service_result.changed"
 
 - name: Ensure matrix-synapse-register-user script created
   template:
     src: "{{ role_path }}/templates/synapse/usr-local-bin/matrix-synapse-register-user.j2"
     dest: "/usr/local/bin/matrix-synapse-register-user"
     mode: 0750
-

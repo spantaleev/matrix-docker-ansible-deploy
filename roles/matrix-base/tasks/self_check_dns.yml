@@ -19,7 +19,7 @@
     - name: Determine domains that we require certificates for (mxisd)
       set_fact:
         dns_srv_record_checks: "{{ dns_srv_record_checks + [dns_srv_record_check_mxisd] }}"
-  when: "matrix_mxisd_enabled"
+  when: matrix_mxisd_enabled|bool
 
 - name: Perform DNS SRV checks
   include_tasks: "{{ role_path }}/tasks/self_check_dns_srv.yml"

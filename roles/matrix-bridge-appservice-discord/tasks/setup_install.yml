@@ -11,6 +11,7 @@
 - name: Ensure Appservice Discord image is pulled
   docker_image:
     name: "{{ matrix_appservice_discord_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
 
 - name: Ensure Appservice Discord base directory exists
   file:
@@ -90,4 +91,3 @@
       {{ matrix_synapse_app_service_config_files|default([]) }}
       +
       {{ ["{{ matrix_synapse_app_service_config_file_appservice_discord }}"] | to_nice_json  }}
-
