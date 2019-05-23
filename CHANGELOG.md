@@ -1,3 +1,47 @@
+# 2019-05-23
+
+## Ansible 2.8 compatibility
+
+Thanks to [@danbob](https://github.com/danbob), the playbook now [supports the new Ansible 2.8](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/187).
+
+A manual change is required to the `inventory/hosts` file, changing the group name from `matrix-servers` to `matrix_servers` (dash to underscore).
+
+To avoid doing it manually, run this:
+- Linux: `sed -i 's/matrix-servers/matrix_servers/g' inventory/hosts`
+- Mac: `sed -i '' 's/matrix-servers/matrix_servers/g' inventory/hosts`
+
+
+# 2019-05-21
+
+## Synapse no longer required
+
+The playbook no longer insists on installing [Synapse](https://github.com/matrix-org/synapse) via the `matrix-synapse` role.
+
+If you would prefer to install Synapse another way and just use the playbook to install other services, it should be possible (`matrix_synapse_enabled: false`).
+
+Note that it won't necessarily be the best experience, since the playbook wires things to Synapse by default.
+If you're using your own Synapse instance (especially one not running in a container), you may have to override many variables to point them to the correct place.
+
+Having Synapse not be a required component potentially opens the door for installing alternative Matrix homeservers.
+
+
+## Bridges are now separate from the Synapse role
+
+Bridges are no longer part of the `matrix-synapse` role.
+Each bridge now lives in its own separate role (`roles/matrix-bridge-*`).
+
+These bridge roles are independent of the `matrix-synapse` role, so it should be possible to use them with a Synapse instance installed another way (not through the playbook).
+
+
+## Renaming inconsistently-named Synapse variables
+
+For better consistency, the following variables have been renamed:
+
+- `matrix_enable_room_list_search` was renamed to `matrix_synapse_enable_room_list_search`
+- `matrix_alias_creation_rules` was renamed to `matrix_synapse_alias_creation_rules`
+- `matrix_nginx_proxy_matrix_room_list_publication_rulesdata_path` was renamed to `matrix_synapse_room_list_publication_rules`
+
+
 # 2019-05-09
 
 Besides a myriad of bug fixes and minor improvements, here are the more notable (bigger) features we can announce today.

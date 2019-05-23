@@ -1,4 +1,9 @@
-matrix_synapse_docker_image: "matrixdotorg/synapse:v0.99.3.2"
+# Synapse is a Matrix homeserver
+# See: https://github.com/matrix-org/synapse
+
+matrix_synapse_enabled: true
+
+matrix_synapse_docker_image: "matrixdotorg/synapse:v0.99.5.1"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
 matrix_synapse_config_dir_path: "{{ matrix_synapse_base_path }}/config"
@@ -14,12 +19,6 @@ matrix_synapse_container_expose_client_api_port: false
 # This is for the plain HTTP API. If you need Synapse to handle TLS encryption,
 # that would be on another port (tcp/8448) controlled by `matrix_synapse_tls_federation_listener_enabled`.
 matrix_synapse_container_expose_federation_api_port: false
-
-# Controls whether the Appservice IRC container exposes the Client/Server API port (tcp/9999).
-matrix_appservice_irc_container_expose_client_server_api_port: false
-
-# Controls whether the Appservice Discord container exposes the Client/Server API port (tcp/9005).
-matrix_appservice_discord_container_expose_client_server_api_port: false
 
 # Controls whether the matrix-synapse container exposes the metrics port (tcp/9100).
 matrix_synapse_container_expose_metrics_port: false
@@ -68,8 +67,9 @@ matrix_synapse_storage_sql_log_level: "INFO"
 matrix_synapse_root_log_level: "INFO"
 
 # Rate limits
-matrix_synapse_rc_messages_per_second: 0.2
-matrix_synapse_rc_message_burst_count: 10.0
+matrix_synapse_rc_message:
+  per_second: 0.2
+  burst_count: 10
 
 matrix_synapse_rc_registration:
   per_second: 0.17
@@ -86,11 +86,13 @@ matrix_synapse_rc_login:
     per_second: 0.17
     burst_count: 3
 
-matrix_synapse_federation_rc_window_size: 1000
-matrix_synapse_federation_rc_sleep_limit: 10
-matrix_synapse_federation_rc_sleep_delay: 500
-matrix_synapse_federation_rc_reject_limit: 50
-matrix_synapse_federation_rc_concurrent: 3
+matrix_synapse_rc_federation:
+  window_size: 1000
+  sleep_limit: 10
+  sleep_delay: 500
+  reject_limit: 50
+  concurrent: 3
+
 matrix_synapse_federation_rr_transactions_per_room_per_second: 50
 
 # Controls whether the TLS federation listener is enabled (tcp/8448).
@@ -159,9 +161,9 @@ matrix_synapse_container_additional_volumes: []
 # Contains definition objects like this: `{"name": "..", "level": "DEBUG"}
 matrix_synapse_additional_loggers: []
 
-# A list of service config files
+# A list of appservice config files (in-container filesystem paths).
 # This list gets populated dynamically based on Synapse extensions that have been enabled.
-# Contains fs paths
+# You may wish to use this together with `matrix_synapse_container_additional_volumes`.
 matrix_synapse_app_service_config_files: []
 
 # This is set dynamically during execution depending on whether
@@ -239,599 +241,18 @@ matrix_s3_media_store_region: "eu-central-1"
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_synapse_self_check_validate_certificates: true
 
-# Matrix mautrix is a Matrix <-> Telegram bridge
-# Enable telegram bridge
-matrix_mautrix_telegram_enabled: false
-
-matrix_mautrix_telegram_docker_image: "tulir/mautrix-telegram:v0.5.1"
-
-matrix_mautrix_telegram_base_path: "{{ matrix_base_data_path }}/mautrix-telegram"
-
-# Get your own API keys at https://my.telegram.org/apps
-matrix_mautrix_telegram_api_id: YOUR_TELEGRAM_APP_ID
-matrix_mautrix_telegram_api_hash: YOUR_TELEGRAM_API_HASH
-# Mautrix telegram public endpoint to log in to telegram
-# Use an uuid so it's not easily discoverable
-matrix_mautrix_telegram_public_endpoint: "/{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'telegram') | to_uuid }}"
-# Set this to a port number to expose on the host when not using the nginx proxy
-matrix_mautrix_telegram_container_exposed_port_number: ~
-
-# Matrix mautrix is a Matrix <-> Whatsapp bridge
-# Enable whatsapp bridge
-matrix_mautrix_whatsapp_enabled: false
-
-matrix_mautrix_whatsapp_docker_image: "tulir/mautrix-whatsapp:latest"
-
-matrix_mautrix_whatsapp_base_path: "{{ matrix_base_data_path }}/mautrix-whatsapp"
-
-# Matrix mautrix is a Matrix <-> Facebook bridge
-# Enable facebook bridge
-matrix_mautrix_facebook_enabled: false
-
-matrix_mautrix_facebook_docker_image: "tulir/mautrix-facebook:latest"
-
-matrix_mautrix_facebook_base_path: "{{ matrix_base_data_path }}/mautrix-facebook"
-
-# Get your own API keys at https://developers.facebook.com/docs/apis-and-sdks/
-matrix_mautrix_facebook_api_id: YOUR_FACEBOOK_APP_ID
-matrix_mautrix_facebook_api_hash: YOUR_FACEBOOK_API_HASH
-
-# Matrix Appservice IRC is a Matrix <-> IRC bridge
-# Enable IRC bridge
-matrix_appservice_irc_enabled: false
-
-matrix_appservice_irc_docker_image: "tedomum/matrix-appservice-irc:latest"
-
-matrix_appservice_irc_base_path: "{{ matrix_base_data_path }}/appservice-irc"
-
-matrix_appservice_irc_configuration_yaml: |
-  #jinja2: lstrip_blocks: True
-  homeserver:
-    url: "https://{{ matrix_server_fqn_matrix }}"
-    domain: "{{ matrix_domain }}"
-    enablePresence: true
-
-matrix_appservice_irc_configuration_extension_yaml: |
-  # Your custom YAML configuration for Appservice IRC servers goes here.
-  # This configuration extends the default starting configuration (`matrix_appservice_irc_configuration_yaml`).
-  #
-  # You can override individual variables from the default configuration, or introduce new ones.
-  #
-  # If you need something more special, you can take full control by
-  # completely redefining `matrix_appservice_irc_configuration_yaml`.
-  #
-  # Example configuration extension follows:
-  #
-  # ircService:
-  #   databaseUri: "nedb:///data" # does not typically need modification
-  #   passwordEncryptionKeyPath: "/data/passkey.pem" # does not typically need modification
-  #   matrixHandler:
-  #     eventCacheSize: 4096
-  #   servers:
-  #     # The address of the server to connect to.
-  #     irc.example.com:
-  #       # A human-readable short name. This is used to label IRC status rooms
-  #       # where matrix users control their connections.
-  #       # E.g. 'ExampleNet IRC Bridge status'.
-  #       # It is also used in the Third Party Lookup API as the instance `desc`
-  #       # property, where each server is an instance.
-  #       name: "ExampleNet"
-  #
-  #       additionalAddresses: [ "irc2.example.com" ]
-  #       #
-  #       # [DEPRECATED] Use `name`, above, instead.
-  #       # A human-readable description string
-  #       # description: "Example.com IRC network"
-  #
-  #       # An ID for uniquely identifying this server amongst other servers being bridged.
-  #       # networkId: "example"
-  #
-  #       # URL to an icon used as the network icon whenever this network appear in
-  #       # a network list. (Like in the riot room directory, for instance.)
-  #       # icon: https://example.com/images/hash.png
-  #
-  #       # The port to connect to. Optional.
-  #       port: 6697
-  #       # Whether to use SSL or not. Default: false.
-  #       ssl: true
-  #       # Whether or not IRC server is using a self-signed cert or not providing CA Chain
-  #       sslselfsign: false
-  #       # Should the connection attempt to identify via SASL (if a server or user password is given)
-  #       # If false, this will use PASS instead. If SASL fails, we do not fallback to PASS.
-  #       sasl: false
-  #       # Whether to allow expired certs when connecting to the IRC server.
-  #       # Usually this should be off. Default: false.
-  #       allowExpiredCerts: false
-  #       # A specific CA to trust instead of the default CAs. Optional.
-  #       #ca: |
-  #       #  -----BEGIN CERTIFICATE-----
-  #       #  ...
-  #       #  -----END CERTIFICATE-----
-  #
-  #       #
-  #       # The connection password to send for all clients as a PASS (or SASL, if enabled above) command. Optional.
-  #       # password: 'pa$$w0rd'
-  #       #
-  #       # Whether or not to send connection/error notices to real Matrix users. Default: true.
-  #       sendConnectionMessages: true
-  #
-  #       quitDebounce:
-  #         # Whether parts due to net-splits are debounced for delayMs, to allow
-  #         # time for the netsplit to resolve itself. A netsplit is detected as being
-  #         # a QUIT rate higher than quitsPerSecond. Default: false.
-  #         enabled: false
-  #         # The maximum number of quits per second acceptable above which a netsplit is
-  #         # considered ongoing. Default: 5.
-  #         quitsPerSecond: 5
-  #         # The time window in which to wait before bridging a QUIT to Matrix that occurred during
-  #         # a netsplit. Debouncing is jittered randomly between delayMinMs and delayMaxMs so that the HS
-  #         # is not sent many requests to leave rooms all at once if a netsplit occurs and many
-  #         # people to not rejoin.
-  #         # If the user with the same IRC nick as the one who sent the quit rejoins a channel
-  #         # they are considered back online and the quit is not bridged, so long as the rejoin
-  #         # occurs before the randomly-jittered timeout is not reached.
-  #         # Default: 3600000, = 1h
-  #         delayMinMs: 3600000 # 1h
-  #         # Default: 7200000, = 2h
-  #         delayMaxMs: 7200000 # 2h
-  #
-  #       # A map for conversion of IRC user modes to Matrix power levels. This enables bridging
-  #       # of IRC ops to Matrix power levels only, it does not enable the reverse. If a user has
-  #       # been given multiple modes, the one that maps to the highest power level will be used.
-  #       modePowerMap:
-  #         o: 50
-  #
-  #       botConfig:
-  #         # Enable the presence of the bot in IRC channels. The bot serves as the entity
-  #         # which maps from IRC -> Matrix. You can disable the bot entirely which
-  #         # means IRC -> Matrix chat will be shared by active "M-Nick" connections
-  #         # in the room. If there are no users in the room (or if there are users
-  #         # but their connections are not on IRC) then nothing will be bridged to
-  #         # Matrix. If you're concerned about the bot being treated as a "logger"
-  #         # entity, then you may want to disable the bot. If you want IRC->Matrix
-  #         # but don't want to have TCP connections to IRC unless a Matrix user speaks
-  #         # (because your client connection limit is low), then you may want to keep
-  #         # the bot enabled. Default: true.
-  #         # NB: If the bot is disabled, you SHOULD have matrix-to-IRC syncing turned
-  #         #     on, else there will be no users and no bot in a channel (meaning no
-  #         #     messages to Matrix!) until a Matrix user speaks which makes a client
-  #         #     join the target IRC channel.
-  #         # NBB: The bridge bot IRC client will still join the target IRC network so
-  #         #      it can service bridge-specific queries from the IRC-side e.g. so
-  #         #      real IRC clients have a way to change their Matrix display name.
-  #         #      See https://github.com/matrix-org/matrix-appservice-irc/issues/55
-  #         enabled: true
-  #         # The nickname to give the AS bot.
-  #         nick: "MatrixBot"
-  #         # The password to give to NickServ or IRC Server for this nick. Optional.
-  #         # password: "helloworld"
-  #         #
-  #         # Join channels even if there are no Matrix users on the other side of
-  #         # the bridge. Set to false to prevent the bot from joining channels which have no
-  #         # real matrix users in them, even if there is a mapping for the channel.
-  #         # Default: true
-  #         joinChannelsIfNoUsers: true
-  #
-  #       # Configuration for PMs / private 1:1 communications between users.
-  #       privateMessages:
-  #         # Enable the ability for PMs to be sent to/from IRC/Matrix.
-  #         # Default: true.
-  #         enabled: true
-  #         # Prevent Matrix users from sending PMs to the following IRC nicks.
-  #         # Optional. Default: [].
-  #         # exclude: ["Alice", "Bob"] # NOT YET IMPLEMENTED
-  #
-  #         # Should created Matrix PM rooms be federated? If false, only users on the
-  #         # HS attached to this AS will be able to interact with this room.
-  #         # Optional. Default: true.
-  #         federate: true
-  #
-  #       # Configuration for mappings not explicitly listed in the 'mappings'
-  #       # section.
-  #       dynamicChannels:
-  #         # Enable the ability for Matrix users to join *any* channel on this IRC
-  #         # network.
-  #         # Default: false.
-  #         enabled: true
-  #         # Should the AS create a room alias for the new Matrix room? The form of
-  #         # the alias can be modified via 'aliasTemplate'. Default: true.
-  #         createAlias: true
-  #         # Should the AS publish the new Matrix room to the public room list so
-  #         # anyone can see it? Default: true.
-  #         published: true
-  #         # What should the join_rule be for the new Matrix room? If 'public',
-  #         # anyone can join the room. If 'invite', only users with an invite can
-  #         # join the room. Note that if an IRC channel has +k or +i set on it,
-  #         # join_rules will be set to 'invite' until these modes are removed.
-  #         # Default: "public".
-  #         joinRule: public
-  #         # This will set the m.room.related_groups state event in newly created rooms
-  #         # with the given groupId. This means flares will show up on IRC users in those rooms.
-  #         # This should be set to the same thing as namespaces.users.group_id in irc_registration.
-  #         # This does not alter existing rooms.
-  #         # Leaving this option empty will not set the event.
-  #         groupId: +myircnetwork:localhost
-  #         # Should created Matrix rooms be federated? If false, only users on the
-  #         # HS attached to this AS will be able to interact with this room.
-  #         # Default: true.
-  #         federate: true
-  #         # The room alias template to apply when creating new aliases. This only
-  #         # applies if createAlias is 'true'. The following variables are exposed:
-  #         # $SERVER => The IRC server address (e.g. "irc.example.com")
-  #         # $CHANNEL => The IRC channel (e.g. "#python")
-  #         # This MUST have $CHANNEL somewhere in it.
-  #         # Default: '#irc_$SERVER_$CHANNEL'
-  #         aliasTemplate: "#irc_$CHANNEL"
-  #         # A list of user IDs which the AS bot will send invites to in response
-  #         # to a !join. Only applies if joinRule is 'invite'. Default: []
-  #         # whitelist:
-  #         #   - "@foo:example.com"
-  #         #   - "@bar:example.com"
-  #         #
-  #         # Prevent the given list of channels from being mapped under any
-  #         # circumstances.
-  #         # exclude: ["#foo", "#bar"]
-  #
-  #       # Configuration for controlling how Matrix and IRC membership lists are
-  #       # synced.
-  #       membershipLists:
-  #         # Enable the syncing of membership lists between IRC and Matrix. This
-  #         # can have a significant effect on performance on startup as the lists are
-  #         # synced. This must be enabled for anything else in this section to take
-  #         # effect. Default: false.
-  #         enabled: false
-  #
-  #         # Syncing membership lists at startup can result in hundreds of members to
-  #         # process all at once. This timer drip feeds membership entries at the
-  #         # specified rate. Default: 10000. (10s)
-  #         floodDelayMs: 10000
-  #
-  #         global:
-  #           ircToMatrix:
-  #             # Get a snapshot of all real IRC users on a channel (via NAMES) and
-  #             # join their virtual matrix clients to the room.
-  #             initial: false
-  #             # Make virtual matrix clients join and leave rooms as their real IRC
-  #             # counterparts join/part channels. Default: false.
-  #             incremental: false
-  #
-  #           matrixToIrc:
-  #             # Get a snapshot of all real Matrix users in the room and join all of
-  #             # them to the mapped IRC channel on startup. Default: false.
-  #             initial: false
-  #             # Make virtual IRC clients join and leave channels as their real Matrix
-  #             # counterparts join/leave rooms. Make sure your 'maxClients' value is
-  #             # high enough! Default: false.
-  #             incremental: false
-  #
-  #         # Apply specific rules to Matrix rooms. Only matrix-to-IRC takes effect.
-  #         rooms:
-  #           - room: "!fuasirouddJoxtwfge:localhost"
-  #             matrixToIrc:
-  #               initial: false
-  #               incremental: false
-  #
-  #         # Apply specific rules to IRC channels. Only IRC-to-matrix takes effect.
-  #         channels:
-  #           - channel: "#foo"
-  #             ircToMatrix:
-  #               initial: false
-  #               incremental: false
-  #
-  #       mappings:
-  #         # 1:many mappings from IRC channels to room IDs on this IRC server.
-  #         # The matrix room must already exist. Your matrix client should expose
-  #         # the room ID in a "settings" page for the room.
-  #         "#thepub": ["!kieouiJuedJoxtVdaG:localhost"]
-  #
-  #       # Configuration for virtual matrix users. The following variables are
-  #       # exposed:
-  #       # $NICK => The IRC nick
-  #       # $SERVER => The IRC server address (e.g. "irc.example.com")
-  #       matrixClients:
-  #         # The user ID template to use when creating virtual matrix users. This
-  #         # MUST have $NICK somewhere in it.
-  #         # Optional. Default: "@$SERVER_$NICK".
-  #         # Example: "@irc.example.com_Alice:example.com"
-  #         userTemplate: "@irc_$NICK"
-  #         # The display name to use for created matrix clients. This should have
-  #         # $NICK somewhere in it if it is specified. Can also use $SERVER to
-  #         # insert the IRC domain.
-  #         # Optional. Default: "$NICK (IRC)". Example: "Alice (IRC)"
-  #         displayName: "$NICK (IRC)"
-  #         # Number of tries a client can attempt to join a room before the request
-  #         # is discarded. You can also use -1 to never retry or 0 to never give up.
-  #         # Optional. Default: -1
-  #         joinAttempts: -1
-  #
-  #       # Configuration for virtual IRC users. The following variables are exposed:
-  #       # $LOCALPART => The user ID localpart ("alice" in @alice:localhost)
-  #       # $USERID => The user ID
-  #       # $DISPLAY => The display name of this user, with excluded characters
-  #       #             (e.g. space) removed. If the user has no display name, this
-  #       #             falls back to $LOCALPART.
-  #       ircClients:
-  #         # The template to apply to every IRC client nick. This MUST have either
-  #         # $DISPLAY or $USERID or $LOCALPART somewhere in it.
-  #         # Optional. Default: "M-$DISPLAY". Example: "M-Alice".
-  #         nickTemplate: "$DISPLAY[m]"
-  #         # True to allow virtual IRC clients to change their nick on this server
-  #         # by issuing !nick <server> <nick> commands to the IRC AS bot.
-  #         # This is completely freeform: it will NOT follow the nickTemplate.
-  #         allowNickChanges: true
-  #         # The max number of IRC clients that will connect. If the limit is
-  #         # reached, the client that spoke the longest time ago will be
-  #         # disconnected and replaced.
-  #         # Optional. Default: 30.
-  #         maxClients: 30
-  #         # IPv6 configuration.
-  #         ipv6:
-  #           # Optional. Set to true to force IPv6 for outgoing connections.
-  #           only: false
-  #           # Optional. The IPv6 prefix to use for generating unique addresses for each
-  #           # connected user. If not specified, all users will connect from the same
-  #           # (default) address. This may require additional OS-specific work to allow
-  #           # for the node process to bind to multiple different source addresses
-  #           # e.g IP_FREEBIND on Linux, which requires an LD_PRELOAD with the library
-  #           # https://github.com/matrix-org/freebindfree as Node does not expose setsockopt.
-  #           # prefix: "2001:0db8:85a3::"  # modify appropriately
-  #         #
-  #         # The maximum amount of time in seconds that the client can exist
-  #         # without sending another message before being disconnected. Use 0 to
-  #         # not apply an idle timeout. This value is ignored if this IRC server is
-  #         # mirroring matrix membership lists to IRC. Default: 172800 (48 hours)
-  #         idleTimeout: 10800
-  #         # The number of millseconds to wait between consecutive reconnections if a
-  #         # client gets disconnected. Setting to 0 will cause the scheduling to be
-  #         # disabled, i.e. it will be scheduled immediately (with jitter.
-  #         # Otherwise, the scheduling interval will be used such that one client
-  #         # reconnect for this server will be handled every reconnectIntervalMs ms using
-  #         # a FIFO queue.
-  #         # Default: 5000 (5 seconds)
-  #         reconnectIntervalMs: 5000
-  #         # The number of concurrent reconnects if a user has been disconnected unexpectedly
-  #         # (e.g. a netsplit). You should set this to a reasonably high number so that
-  #         # bridges are not waiting an eternity to reconnect all its clients if
-  #         # we see a massive number of disconnect. This is unrelated to the reconnectIntervalMs
-  #         # setting above which is for connecting on restart of the bridge. Set to 0 to
-  #         # immediately try to reconnect all users.
-  #         # Default: 50
-  #         concurrentReconnectLimit: 50
-  #         # The number of lines to allow being sent by the IRC client that has received
-  #         # a large block of text to send from matrix. If the number of lines that would
-  #         # be sent is > lineLimit, the text will instead be uploaded to matrix and the
-  #         # resulting URI is treated as a file. As such, a link will be sent to the IRC
-  #         # side instead of potentially spamming IRC and getting the IRC client kicked.
-  #         # Default: 3.
-  #         lineLimit: 3
-  #         # A list of user modes to set on every IRC client. For example, "RiG" would set
-  #         # +R, +i and +G on every IRC connection when they have successfully connected.
-  #         # User modes vary wildly depending on the IRC network you're connecting to,
-  #         # so check before setting this value. Some modes may not work as intended
-  #         # through the bridge e.g. caller ID as there is no way to /ACCEPT.
-  #         # Default: "" (no user modes)
-  #         # userModes: "R"
-  #
-  #   # Configuration for an ident server. If you are running a public bridge it is
-  #   # advised you setup an ident server so IRC mods can ban specific matrix users
-  #   # rather than the application service itself.
-  #   ident:
-  #     # True to listen for Ident requests and respond with the
-  #     # matrix user's user_id (converted to ASCII, respecting RFC 1413).
-  #     # Default: false.
-  #     enabled: false
-  #     # The port to listen on for incoming ident requests.
-  #     # Ports below 1024 require root to listen on, and you may not want this to
-  #     # run as root. Instead, you can get something like an Apache to yank up
-  #     # incoming requests to 113 to a high numbered port. Set the port to listen
-  #     # on instead of 113 here.
-  #     # Default: 113.
-  #     port: 1113
-  #     # The address to listen on for incoming ident requests.
-  #     # Default: 0.0.0.0
-  #     address: "::"
-  #
-  #   # Configuration for logging. Optional. Default: console debug level logging
-  #   # only.
-  #   logging:
-  #     # Level to log on console/logfile. One of error|warn|info|debug
-  #     level: "debug"
-  #     # The file location to log to. This is relative to the project directory.
-  #     logfile: "debug.log"
-  #     # The file location to log errors to. This is relative to the project
-  #     # directory.
-  #     errfile: "errors.log"
-  #     # Whether to log to the console or not.
-  #     toConsole: true
-  #     # The max number of files to keep. Files will be overwritten eventually due
-  #     # to rotations.
-  #     maxFiles: 5
-  #
-  #   # Optional. Enable Prometheus metrics. If this is enabled, you MUST install `prom-client`:
-  #   #   $ npm install prom-client@6.3.0
-  #   # Metrics will then be available via GET /metrics on the bridge listening port (-p).
-  #   metrics:
-  #     # Whether to actually enable the metric endpoint. Default: false
-  #     enabled: true
-  #     # When collecting remote user active times, which "buckets" should be used. Defaults are given below.
-  #     # The bucket name is formed of a duration and a period. (h=hours,d=days,w=weeks).
-  #     remoteUserAgeBuckets:
-  #       - "1h"
-  #       - "1d"
-  #       - "1w"
-  #
-  #   # Configuration options for the debug HTTP API. To access this API, you must
-  #   # append ?access_token=$APPSERVICE_TOKEN (from the registration file) to the requests.
-  #   #
-  #   # The debug API exposes the following endpoints:
-  #   #
-  #   #   GET /irc/$domain/user/$user_id => Return internal state for the IRC client for this user ID.
-  #   #
-  #   #   POST /irc/$domain/user/$user_id => Issue a raw IRC command down this connection.
-  #   #                                      Format: new line delimited commands as per IRC protocol.
-  #   #
-  #   debugApi:
-  #     # True to enable the HTTP API endpoint. Default: false.
-  #     enabled: false
-  #     # The port to host the HTTP API.
-  #     port: 11100
-  #
-  #   # Configuration for the provisioning API.
-  #   #
-  #   # GET /_matrix/provision/link
-  #   # GET /_matrix/provision/unlink
-  #   # GET /_matrix/provision/listlinks
-  #   #
-  #   provisioning:
-  #     # True to enable the provisioning HTTP endpoint. Default: false.
-  #     enabled: false
-  #     # The number of seconds to wait before giving up on getting a response from
-  #     # an IRC channel operator. If the channel operator does not respond within the
-  #     # allotted time period, the provisioning request will fail.
-  #     # Default: 300 seconds (5 mins)
-  #     requestTimeoutSeconds: 300
-  #
-  #   # WARNING: The bridge needs to send plaintext passwords to the IRC server, it cannot
-  #   # send a password hash. As a result, passwords (NOT hashes) are stored encrypted in
-  #   # the database.
-  #   #
-
-matrix_appservice_irc_configuration_extension: "{{ matrix_appservice_irc_configuration_extension_yaml|from_yaml if matrix_appservice_irc_configuration_extension_yaml|from_yaml else {} }}"
-
-matrix_appservice_irc_configuration: "{{ matrix_appservice_irc_configuration_yaml|from_yaml|combine(matrix_appservice_irc_configuration_extension, recursive=True) }}"
-
-
-# Matrix Appservice Discord is a Matrix <-> Discord bridge
-# Enable Discord bridge
-matrix_appservice_discord_enabled: false
-
-matrix_appservice_discord_docker_image: "halfshot/matrix-appservice-discord:latest"
-
-matrix_appservice_discord_base_path: "{{ matrix_base_data_path }}/appservice-discord"
-
-matrix_appservice_discord_client_id: "YOUR DISCORD APP CLIENT ID"
-matrix_appservice_discord_bot_token: "YOUR DISCORD APP BOT TOKEN"
-
-matrix_appservice_discord_configuration_yaml: |
-    bridge:
-        domain: "{{ matrix_domain }}"
-        homeserverUrl: "{{ matrix_homeserver_url }}"
-    auth:
-        clientID: "{{matrix_appservice_discord_client_id}}"
-        botToken: "{{matrix_appservice_discord_bot_token}}"
-    database:
-        filename: "/data/discord.db"
-        userStorePath: "/data/user-store.db"
-        roomStorePath: "/data/room-store.db"
-
-matrix_appservice_discord_configuration_extension_yaml: |
-    # This is a sample of the config file showing all avaliable options.
-    # Where possible we have documented what they do, and all values are the
-    # default values.
-    #
-    #bridge:
-    #  # Domain part of the bridge, e.g. matrix.org
-    #  domain: "localhost"
-    #  # This should be your publically facing URL because Discord may use it to
-    #  # fetch media from the media store.
-    #  homeserverUrl: "http://localhost:8008"
-    #  # Interval at which to process users in the 'presence queue'. If you have
-    #  # 5 users, one user will be processed every 500 milliseconds according to the
-    #  # value below. This has a minimum value of 250.
-    #  # WARNING: This has a high chance of spamming the homeserver with presence
-    #  # updates since it will send one each time somebody changes state or is online.
-    #  presenceInterval: 500
-    #  # Disable setting presence for 'ghost users' which means Discord users on Matrix
-    #  # will not be shown as away or online.
-    #  disablePresence: false
-    #  # Disable sending typing notifications when somebody on Discord types.
-    #  disableTypingNotifications: false
-    #  # Disable deleting messages on Discord if a message is redacted on Matrix.
-    #  disableDeletionForwarding: false
-    #  # Enable users to bridge rooms using !discord commands. See
-    #  # https://t2bot.io/discord for instructions.
-    #  enableSelfServiceBridging: false
-    #  # Disable sending of read receipts for Matrix events which have been
-    #  # successfully bridged to Discord.
-    #  disableReadReceipts: false
-    # Authentication configuration for the discord bot.
-    #auth:
-    #  clientID: "12345"
-    #  botToken: "foobar"
-    #logging:
-    #  # What level should the logger output to the console at.
-    #  console: "warn" #silly, verbose, info, http, warn, error, silent
-    #  lineDateFormat: "MMM-D HH:mm:ss.SSS" # This is in moment.js format
-    #  files:
-    #    - file: "debug.log"
-    #      disable:
-    #        - "PresenceHandler" # Will not capture presence logging
-    #    - file: "warn.log" # Will capture warnings
-    #      level: "warn"
-    #    - file: "botlogs.log" # Will capture logs from DiscordBot
-    #      level: "info"
-    #      enable:
-    #        - "DiscordBot"
-    #database:
-    #  userStorePath: "user-store.db"
-    #  roomStorePath: "room-store.db"
-    #  # You may either use SQLite or Postgresql for the bridge database, which contains
-    #  # important mappings for events and user puppeting configurations.
-    #  # Use the filename option for SQLite, or connString for Postgresql.
-    #  # If you are migrating, see https://github.com/Half-Shot/matrix-appservice-discord/blob/master/docs/howto.md#migrate-to-postgres-from-sqlite
-    #  # WARNING: You will almost certainly be fine with sqlite unless your bridge
-    #  # is in heavy demand and you suffer from IO slowness.
-    #  filename: "discord.db"
-    #  # connString: "postgresql://user:password@localhost/database_name"
-    #room:
-    #  # Set the default visibility of alias rooms, defaults to "public".
-    #  # One of: "public", "private"
-    #  defaultVisibility: "public"
-    #channel:
-    #    # Pattern of the name given to bridged rooms.
-    #    # Can use :guild for the guild name and :name for the channel name.
-    #    namePattern: "[Discord] :guild :name"
-    #    # Changes made to rooms when a channel is deleted.
-    #    deleteOptions:
-    #       # Prefix the room name with a string.
-    #       #namePrefix: "[Deleted]"
-    #       # Prefix the room topic with a string.
-    #       #topicPrefix: "This room has been deleted"
-    #       # Disable people from talking in the room by raising the event PL to 50
-    #       disableMessaging: false
-    #       # Remove the discord alias from the room.
-    #       unsetRoomAlias: true
-    #       # Remove the room from the directory.
-    #       unlistFromDirectory: true
-    #       # Set the room to be unavaliable for joining without an invite.
-    #       setInviteOnly: true
-    #       # Make all the discord users leave the room.
-    #       ghostsLeave: true
-    #limits:
-    #    # Delay in milliseconds between discord users joining a room.
-    #    roomGhostJoinDelay: 6000
-    #    # Delay in milliseconds before sending messages to discord to avoid echos.
-    #    # (Copies of a sent message may arrive from discord before we've
-    #    # fininished handling it, causing us to echo it back to the room)
-    #    discordSendDelay: 750
-
-matrix_appservice_discord_configuration_extension: "{{ matrix_appservice_irc_configuration_extension_yaml|from_yaml if matrix_appservice_irc_configuration_extension_yaml|from_yaml else {} }}"
-
-matrix_appservice_discord_configuration: "{{ matrix_appservice_discord_configuration_yaml|from_yaml|combine(matrix_appservice_discord_configuration_extension, recursive=True) }}"
-
-
 # Controls whether searching the public room list is enabled.
-matrix_enable_room_list_search: true
+matrix_synapse_enable_room_list_search: true
 
 # Controls who's allowed to create aliases on this server.
-matrix_alias_creation_rules:
+matrix_synapse_alias_creation_rules:
   - user_id: "*"
     alias: "*"
     room_id: "*"
     action: allow
 
 # Controls who can publish and which rooms can be published in the public room list.
-matrix_room_list_publication_rules:
+matrix_synapse_room_list_publication_rules:
   - user_id: "*"
     alias: "*"
     room_id: "*"

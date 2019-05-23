@@ -1,48 +1,7 @@
 ---
 
-#
-# Tasks related to setting up matrix-synapse-rest-auth
-#
+- import_tasks: "{{ role_path }}/tasks/ext/rest-auth/setup_install.yml"
+  when: matrix_synapse_ext_password_provider_rest_auth_enabled|bool
 
-- name: Fail if REST Auth enabled, but endpoint not configured
-  fail:
-    msg: "You have enabled the REST Auth password provider, but have not configured its endpoint in the `matrix_synapse_ext_password_provider_rest_auth_endpoint` variable. Consult the documentation."
-  when: "matrix_synapse_ext_password_provider_rest_auth_enabled and matrix_synapse_ext_password_provider_rest_auth_endpoint == ''"
-
-- name: Download matrix-synapse-rest-auth
-  get_url:
-    url: "{{ matrix_synapse_ext_password_provider_rest_auth_download_url }}"
-    dest: "{{ matrix_synapse_ext_path }}/rest_auth_provider.py"
-    force: true
-    mode: 0440
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
-  when: "matrix_synapse_ext_password_provider_rest_auth_enabled"
-
-- set_fact:
-    matrix_synapse_password_providers_enabled: true
-  when: "matrix_synapse_ext_password_provider_rest_auth_enabled"
-
-- set_fact:
-    matrix_synapse_container_additional_volumes: >
-      {{ matrix_synapse_container_additional_volumes }}
-      +
-      {{ [{'src': '{{ matrix_synapse_ext_path }}/rest_auth_provider.py', 'dst': '{{ matrix_synapse_in_container_python_packages_path }}/rest_auth_provider.py', 'options': 'ro'}] }}
-  when: "matrix_synapse_ext_password_provider_rest_auth_enabled"
-
-- set_fact:
-    matrix_synapse_additional_loggers: >
-      {{ matrix_synapse_additional_loggers }}
-      +
-      {{ [{'name': 'rest_auth_provider', 'level': 'INFO'}] }}
-  when: "matrix_synapse_ext_password_provider_rest_auth_enabled"
-
-#
-# Tasks related to getting rid of matrix-synapse-rest-auth (if it was previously enabled)
-#
-
-- name: Ensure matrix-synapse-rest-auth doesn't exist
-  file:
-    path: "{{ matrix_synapse_ext_path }}/rest_auth_provider.py"
-    state: absent
-  when: "not matrix_synapse_ext_password_provider_rest_auth_enabled"
+- import_tasks: "{{ role_path }}/tasks/ext/rest-auth/setup_uninstall.yml"
+  when: "not matrix_synapse_ext_password_provider_rest_auth_enabled|bool"

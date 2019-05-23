@@ -2,7 +2,7 @@
     msg: "Dealing with SSL certificate retrieval for domain: {{ domain_name }}"
 
 - set_fact:
-    domain_name_certificate_path: "{{ matrix_ssl_config_dir_path }}/live/{{ domain_name }}/cert.pem"
+    domain_name_certificate_path: "{{ matrix_ssl_config_dir_path }}/live/{{ domain_name }}/fullchain.pem"
 
 - name: Check if a certificate for the domain already exists
   stat:
@@ -35,7 +35,7 @@
     --agree-tos
     --email={{ matrix_ssl_lets_encrypt_support_email }}
     -d {{ domain_name }}
-  when: "domain_name_needs_cert"
+  when: domain_name_needs_cert|bool
   register: result_certbot_direct
   ignore_errors: true
 

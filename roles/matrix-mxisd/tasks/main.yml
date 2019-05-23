@@ -3,7 +3,7 @@
     - always
 
 - import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: "run_setup and matrix_mxisd_enabled"
+  when: "run_setup|bool and matrix_mxisd_enabled|bool"
   tags:
     - setup-all
     - setup-mxisd
@@ -16,6 +16,6 @@
 - import_tasks: "{{ role_path }}/tasks/self_check_mxisd.yml"
   delegate_to: 127.0.0.1
   become: false
-  when: "run_self_check and matrix_mxisd_enabled"
+  when: "run_self_check|bool and matrix_mxisd_enabled|bool"
   tags:
     - self-check

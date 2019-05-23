@@ -1,0 +1,93 @@
+---
+
+# If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
+# We don't want to fail in such cases.
+- name: Fail if matrix-synapse role already executed
+  fail:
+    msg: >-
+      The matrix-bridge-appservice-discord role needs to execute before the matrix-synapse role.
+  when: "matrix_synapse_role_executed|default(False)"
+
+- name: Ensure Appservice Discord image is pulled
+  docker_image:
+    name: "{{ matrix_appservice_discord_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+
+- name: Ensure Appservice Discord base directory exists
+  file:
+    path: "{{ matrix_appservice_discord_base_path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+
+- name: Ensure Matrix Appservice Discord config installed
+  copy:
+    content: "{{ matrix_appservice_discord_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_appservice_discord_base_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+
+- name: Ensure matrix-appservice-discord.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-appservice-discord.service.j2"
+    dest: "/etc/systemd/system/matrix-appservice-discord.service"
+    mode: 0644
+  register: matrix_appservice_discord_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-appservice-discord.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_appservice_discord_systemd_service_result.changed"
+
+- name: Check if a matrix-appservice-discord registration file exists
+  stat:
+    path: "{{ matrix_appservice_discord_base_path }}/discord-registration.yaml"
+  register: appservice_discord_registration_file
+
+- name: Generate matrix-appservice-discord discord-registration.yaml if it doesn't exist
+  shell: >-
+    /usr/bin/docker run --rm --name matrix-appservice-discord-gen
+    --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+    --cap-drop=ALL
+    -v {{ matrix_appservice_discord_base_path }}:/data:z
+    {{ matrix_appservice_discord_docker_image }}
+    node build/src/discordas.js
+    -r
+    -u "http://matrix-appservice-discord:9005"
+    -c /data/config.yaml
+    -f /data/discord-registration.yaml
+    -l discord_bot
+  when: "not appservice_discord_registration_file.stat.exists"
+
+- set_fact:
+    matrix_synapse_app_service_config_file_appservice_discord: '{{ matrix_appservice_discord_base_path }}/discord-registration.yml'
+
+- name: Check if a matrix-appservice-discord invite_link file exists
+  stat:
+    path: "{{ matrix_appservice_discord_base_path }}/invite_link"
+  register: appservice_discord_link_generated
+
+- name: Generate your discord invite link
+  shell: >-
+    /usr/bin/docker run --rm --name matrix-appservice-discord-link-gen
+    --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+    --cap-drop=ALL
+    -v {{ matrix_appservice_discord_base_path }}:/data
+    -w /data
+    {{ matrix_appservice_discord_docker_image }}
+    /bin/sh -c "node .././build/tools/addbot.js > invite_link"
+  when: "not appservice_discord_link_generated.stat.exists"
+
+# If the matrix-synapse role is not used, these variables may not exist.
+- set_fact:
+    matrix_synapse_container_additional_volumes: >
+      {{ matrix_synapse_container_additional_volumes|default([]) }}
+      +
+      {{ [{'src': '{{ matrix_appservice_discord_base_path }}/discord-registration.yaml', 'dst': '{{ matrix_synapse_app_service_config_file_appservice_discord }}', 'options': 'ro'}] }}
+
+    matrix_synapse_app_service_config_files: >
+      {{ matrix_synapse_app_service_config_files|default([]) }}
+      +
+      {{ ["{{ matrix_synapse_app_service_config_file_appservice_discord }}"] | to_nice_json  }}

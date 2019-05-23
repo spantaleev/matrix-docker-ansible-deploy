@@ -11,19 +11,20 @@
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-  when: matrix_mailer_enabled
+  when: matrix_mailer_enabled|bool
 
 - name: Ensure mailer environment variables file created
   template:
     src: "{{ role_path }}/templates/env-mailer.j2"
     dest: "{{ matrix_mailer_base_path }}/env-mailer"
     mode: 0640
-  when: matrix_mailer_enabled
+  when: matrix_mailer_enabled|bool
 
 - name: Ensure mailer image is pulled
   docker_image:
     name: "{{ matrix_mailer_docker_image }}"
-  when: matrix_mailer_enabled
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+  when: matrix_mailer_enabled|bool
 
 - name: Ensure matrix-mailer.service installed
   template:
@@ -31,12 +32,12 @@
     dest: "/etc/systemd/system/matrix-mailer.service"
     mode: 0644
   register: matrix_mailer_systemd_service_result
-  when: matrix_mailer_enabled
+  when: matrix_mailer_enabled|bool
 
 - name: Ensure systemd reloaded after matrix-mailer.service installation
   service:
     daemon_reload: yes
-  when: "matrix_mailer_enabled and matrix_mailer_systemd_service_result.changed"
+  when: "matrix_mailer_enabled|bool and matrix_mailer_systemd_service_result.changed"
 
 #
 # Tasks related to getting rid of the mailer (if it was previously enabled)
@@ -46,7 +47,7 @@
   stat:
     path: "/etc/systemd/system/matrix-mailer.service"
   register: matrix_mailer_service_stat
-  when: "not matrix_mailer_enabled"
+  when: "not matrix_mailer_enabled|bool"
 
 - name: Ensure matrix-mailer is stopped
   service:
@@ -54,27 +55,27 @@
     state: stopped
     daemon_reload: yes
   register: stopping_result
-  when: "not matrix_mailer_enabled and matrix_mailer_service_stat.stat.exists"
+  when: "not matrix_mailer_enabled|bool and matrix_mailer_service_stat.stat.exists"
 
 - name: Ensure matrix-mailer.service doesn't exist
   file:
     path: "/etc/systemd/system/matrix-mailer.service"
     state: absent
-  when: "not matrix_mailer_enabled and matrix_mailer_service_stat.stat.exists"
+  when: "not matrix_mailer_enabled|bool and matrix_mailer_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-mailer.service removal
   service:
     daemon_reload: yes
-  when: "not matrix_mailer_enabled and matrix_mailer_service_stat.stat.exists"
+  when: "not matrix_mailer_enabled|bool and matrix_mailer_service_stat.stat.exists"
 
 - name: Ensure Matrix mailer environment variables path doesn't exist
   file:
     path: "{{ matrix_mailer_base_path }}"
     state: absent
-  when: "not matrix_mailer_enabled"
+  when: "not matrix_mailer_enabled|bool"
 
 - name: Ensure mailer Docker image doesn't exist
   docker_image:
     name: "{{ matrix_mailer_docker_image }}"
     state: absent
-  when: "not matrix_mailer_enabled"
+  when: "not matrix_mailer_enabled|bool"

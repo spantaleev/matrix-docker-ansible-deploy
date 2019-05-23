@@ -7,7 +7,8 @@
 - name: Ensure Coturn image is pulled
   docker_image:
     name: "{{ matrix_coturn_docker_image }}"
-  when: matrix_coturn_enabled
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+  when: matrix_coturn_enabled|bool
 
 - name: Ensure Coturn configuration path exists
   file:
@@ -16,14 +17,14 @@
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-  when: matrix_coturn_enabled
+  when: matrix_coturn_enabled|bool
 
 - name: Ensure turnserver.conf installed
   template:
     src: "{{ role_path }}/templates/turnserver.conf.j2"
     dest: "{{ matrix_coturn_config_path }}"
     mode: 0644
-  when: matrix_coturn_enabled
+  when: matrix_coturn_enabled|bool
 
 # `docker_network` doesn't work as expected when the given network
 # is a substring of a network that already exists.
@@ -34,12 +35,12 @@
     cmd: "docker network ls -q --filter='name=^{{ matrix_coturn_docker_network }}$'"
   register: matrix_coturn_result_docker_network
   changed_when: false
-  when: matrix_coturn_enabled
+  when: matrix_coturn_enabled|bool
 
 - name: Create Coturn network in Docker
   shell:
     cmd: "docker network create --driver=bridge {{ matrix_coturn_docker_network }}"
-  when: "matrix_coturn_enabled and matrix_coturn_result_docker_network.stdout == ''"
+  when: "matrix_coturn_enabled|bool and matrix_coturn_result_docker_network.stdout == ''"
 
 - name: Ensure matrix-coturn.service installed
   template:
@@ -47,12 +48,12 @@
     dest: "/etc/systemd/system/matrix-coturn.service"
     mode: 0644
   register: matrix_coturn_systemd_service_result
-  when: matrix_coturn_enabled
+  when: matrix_coturn_enabled|bool
 
 - name: Ensure systemd reloaded after matrix-coturn.service installation
   service:
     daemon_reload: yes
-  when: "matrix_coturn_enabled and matrix_coturn_systemd_service_result.changed"
+  when: "matrix_coturn_enabled|bool and matrix_coturn_systemd_service_result.changed"
 
 # This may be unnecessary when more long-lived certificates are used.
 # We optimize for the common use-case though (short-lived Let's Encrypt certificates).
@@ -63,11 +64,11 @@
     cron_file: matrix-coturn-ssl-reload
     name: matrix-coturn-ssl-reload
     state: present
-    hour: 4
-    minute: 20
+    hour: "4"
+    minute: "20"
     day: "*/5"
     job: /bin/systemctl reload matrix-coturn.service
-  when: matrix_coturn_enabled and matrix_coturn_tls_enabled
+  when: "matrix_coturn_enabled|bool and matrix_coturn_tls_enabled|bool"
 
 
 #
@@ -79,13 +80,13 @@
     user: root
     cron_file: matrix-coturn-ssl-reload
     state: absent
-  when: "not matrix_coturn_enabled or not matrix_coturn_tls_enabled"
+  when: "not matrix_coturn_enabled|bool or not matrix_coturn_tls_enabled|bool"
 
 - name: Check existence of matrix-coturn service
   stat:
     path: "/etc/systemd/system/matrix-coturn.service"
   register: matrix_coturn_service_stat
-  when: "not matrix_coturn_enabled"
+  when: "not matrix_coturn_enabled|bool"
 
 - name: Ensure matrix-coturn is stopped
   service:
@@ -93,27 +94,27 @@
     state: stopped
     daemon_reload: yes
   register: stopping_result
-  when: "not matrix_coturn_enabled and matrix_coturn_service_stat.stat.exists"
+  when: "not matrix_coturn_enabled|bool and matrix_coturn_service_stat.stat.exists"
 
 - name: Ensure matrix-coturn.service doesn't exist
   file:
     path: "/etc/systemd/system/matrix-coturn.service"
     state: absent
-  when: "not matrix_coturn_enabled and matrix_coturn_service_stat.stat.exists"
+  when: "not matrix_coturn_enabled|bool and matrix_coturn_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-coturn.service removal
   service:
     daemon_reload: yes
-  when: "not matrix_coturn_enabled and matrix_coturn_service_stat.stat.exists"
+  when: "not matrix_coturn_enabled|bool and matrix_coturn_service_stat.stat.exists"
 
 - name: Ensure Matrix coturn paths don't exist
   file:
     path: "{{ matrix_coturn_base_path }}"
     state: absent
-  when: "not matrix_coturn_enabled"
+  when: "not matrix_coturn_enabled|bool"
 
 - name: Ensure coturn Docker image doesn't exist
   docker_image:
     name: "{{ matrix_coturn_docker_image }}"
     state: absent
-  when: "not matrix_coturn_enabled"
+  when: "not matrix_coturn_enabled|bool"

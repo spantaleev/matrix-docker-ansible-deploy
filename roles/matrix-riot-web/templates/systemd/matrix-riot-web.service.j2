@@ -10,6 +10,7 @@ After={{ service }}
 Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-riot-web
 ExecStartPre=-/usr/bin/docker rm matrix-riot-web
+
 ExecStart=/usr/bin/docker run --rm --name matrix-riot-web \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
@@ -31,10 +32,12 @@ ExecStart=/usr/bin/docker run --rm --name matrix-riot-web \
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_riot_web_docker_image }}
+
 ExecStop=-/usr/bin/docker kill matrix-riot-web
 ExecStop=-/usr/bin/docker rm matrix-riot-web
 Restart=always
 RestartSec=30
+SyslogIdentifier=matrix-riot-web
 
 [Install]
 WantedBy=multi-user.target

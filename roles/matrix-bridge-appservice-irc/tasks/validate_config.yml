@@ -1,0 +1,16 @@
+---
+
+# Our base configuration (`matrix_appservice_irc_configuration_yaml`) is not enough to
+# let the playbook run without errors.
+#
+# Unless the final configuration (`matrix_appservice_irc_configuration`) contains an `ircService` definition,
+# we'd fail generating the registration.yaml file with a non-helpful error.
+#
+# This is a safety check to ensure we fail earlier and in a nicer way.
+- name: Fail if no additional configuration provided
+  fail:
+    msg: >-
+      Your Appservice IRC configuration is incomplete (lacking an `ircService` key).
+      You need to define additional configuration in `matrix_appservice_irc_configuration_extension_yaml` or to override `matrix_appservice_irc_configuration`.
+  when: "matrix_appservice_irc_configuration.ircService|default(none) is none"
+

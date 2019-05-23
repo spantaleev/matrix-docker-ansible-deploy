@@ -2,7 +2,7 @@
 
 - name: Fail if required Synapse settings not defined
   fail:
-    msg: >
+    msg: >-
       You need to define a required configuration setting (`{{ item }}`) for using Synapse.
   when: "vars[item] == ''"
   with_items:
@@ -17,3 +17,13 @@
   with_items:
     - {'old': 'matrix_synapse_container_expose_api_port', 'new': 'matrix_synapse_container_expose_client_api_port'}
     - {'old': 'matrix_synapse_no_tls', 'new': '<removed>'}
+    - {'old': 'matrix_enable_room_list_search', 'new': 'matrix_synapse_enable_room_list_search'}
+    - {'old': 'matrix_alias_creation_rules', 'new': 'matrix_synapse_alias_creation_rules'}
+    - {'old': 'matrix_room_list_publication_rules', 'new': 'matrix_synapse_room_list_publication_rules'}
+    - {'old': 'matrix_synapse_rc_messages_per_second', 'new': '<per_second subkey of matrix_synapse_rc_message>'}
+    - {'old': 'matrix_synapse_rc_message_burst_count', 'new': '<burst_count subkey of matrix_synapse_rc_message>'}
+    - {'old': 'matrix_synapse_federation_rc_window_size', 'new': '<window_size subkey of matrix_synapse_rc_federation>'}
+    - {'old': 'matrix_synapse_federation_rc_sleep_limit', 'new': '<sleep_limit subkey of matrix_synapse_rc_federation>'}
+    - {'old': 'matrix_synapse_federation_rc_sleep_delay', 'new': '<sleep_delay subkey of matrix_synapse_rc_federation>'}
+    - {'old': 'matrix_synapse_federation_rc_reject_limit', 'new': '<reject_limit subkey of matrix_synapse_rc_federation>'}
+    - {'old': 'matrix_synapse_federation_rc_concurrent', 'new': '<concurrent subkey of matrix_synapse_rc_federation>'}

@@ -8,6 +8,7 @@ Requires=docker.service
 Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-mailer
 ExecStartPre=-/usr/bin/docker rm matrix-mailer
+
 ExecStart=/usr/bin/docker run --rm --name matrix-mailer \
 			--log-driver=none \
 			--user={{ matrix_mailer_container_user_uid }}:{{ matrix_mailer_container_user_gid }} \
@@ -21,10 +22,12 @@ ExecStart=/usr/bin/docker run --rm --name matrix-mailer \
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_mailer_docker_image }}
+
 ExecStop=-/usr/bin/docker kill matrix-mailer
 ExecStop=-/usr/bin/docker rm matrix-mailer
 Restart=always
 RestartSec=30
+SyslogIdentifier=matrix-mailer
 
 [Install]
 WantedBy=multi-user.target

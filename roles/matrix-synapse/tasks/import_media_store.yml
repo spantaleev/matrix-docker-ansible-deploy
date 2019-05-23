@@ -10,7 +10,7 @@
 - name: Fail if media store is on Amazon S3
   fail:
     msg: "Your media store is on Amazon S3. Due to technical limitations, restoring is not supported."
-  when: "matrix_s3_media_store_enabled"
+  when: matrix_s3_media_store_enabled|bool
 
 - name: Check if the provided media store directory exists
   stat:
@@ -68,7 +68,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
     recurse: yes
-  when: "not matrix_s3_media_store_enabled"
+  when: "not matrix_s3_media_store_enabled|bool"
 
 # We don't chown for Goofys, because due to the way it's mounted,
 # all files become owned by whoever needs to own them.
@@ -78,6 +78,6 @@
     name: "{{ item }}"
     state: started
     daemon_reload: yes
-  when: stopping_result.changed
+  when: "stopping_result.changed"
   with_items:
     - matrix-synapse

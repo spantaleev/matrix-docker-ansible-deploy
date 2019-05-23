@@ -1,6 +1,6 @@
 ---
 - name: "Set up a Matrix server"
-  hosts: "{{ target if target is defined else 'matrix-servers' }}"
+  hosts: "{{ target if target is defined else 'matrix_servers' }}"
   become: true
 
   roles:
@@ -8,6 +8,11 @@
     - matrix-mailer
     - matrix-postgres
     - matrix-corporal
+    - matrix-bridge-appservice-discord
+    - matrix-bridge-appservice-irc
+    - matrix-bridge-mautrix-facebook
+    - matrix-bridge-mautrix-telegram
+    - matrix-bridge-mautrix-whatsapp
     - matrix-synapse
     - matrix-riot-web
     - matrix-mxisd

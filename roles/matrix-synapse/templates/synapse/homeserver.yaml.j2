@@ -60,6 +60,20 @@ public_baseurl: https://{{ matrix_server_fqn_matrix }}/
 #
 use_presence: {{ matrix_synapse_use_presence|to_json }}
 
+# Whether to require authentication to retrieve profile data (avatars,
+# display names) of other users through the client API. Defaults to
+# 'false'. Note that profile data is also available via the federation
+# API, so this setting is of limited value if federation is enabled on
+# the server.
+#
+#require_auth_for_profile_requests: true
+
+# If set to 'true', requires authentication to access the server's
+# public rooms directory through the client API, and forbids any other
+# homeserver to fetch it via federation. Defaults to 'false'.
+#
+#restrict_public_rooms_to_local_users: true
+
 # The GC threshold parameters to pass to `gc.set_threshold`, if defined
 #
 #gc_thresholds: [700, 10, 10]
@@ -96,6 +110,24 @@ use_presence: {{ matrix_synapse_use_presence|to_json }}
 federation_domain_whitelist: {{ matrix_synapse_federation_domain_whitelist|to_json }}
 {% endif %}
 
+# Prevent federation requests from being sent to the following
+# blacklist IP address CIDR ranges. If this option is not specified, or
+# specified with an empty list, no ip range blacklist will be enforced.
+#
+# (0.0.0.0 and :: are always blacklisted, whether or not they are explicitly
+# listed here, since they correspond to unroutable addresses.)
+#
+federation_ip_range_blacklist:
+  - '127.0.0.0/8'
+  - '10.0.0.0/8'
+  - '172.16.0.0/12'
+  - '192.168.0.0/16'
+  - '100.64.0.0/10'
+  - '169.254.0.0/16'
+  - '::1/128'
+  - 'fe80::/64'
+  - 'fc00::/7'
+
 # List of ports that Synapse should listen on, their purpose and their
 # configuration.
 #
@@ -131,8 +163,8 @@ federation_domain_whitelist: {{ matrix_synapse_federation_domain_whitelist|to_js
 #
 # Valid resource names are:
 #
-#   client: the client-server API (/_matrix/client). Also implies 'media' and
-#       'static'.
+#   client: the client-server API (/_matrix/client), and the synapse admin
+#       API (/_synapse/admin). Also implies 'media' and 'static'.
 #
 #   consent: user consent forms (/_matrix/consent). See
 #       docs/consent_tracking.md.
@@ -241,6 +273,17 @@ listeners:
 #  - medium: 'email'
 #    address: 'reserved_user@example.com'
 
+# Whether to require a user to be in the room to add an alias to it.
+# Defaults to 'true'.
+#
+#require_membership_for_aliases: false
+
+# Whether to allow per-room membership profiles through the send of membership
+# events with profile information that differ from the target's global profile.
+# Defaults to 'true'.
+#
+#allow_per_room_profiles: false
+
 
 ## TLS ##
 
@@ -261,6 +304,40 @@ tls_certificate_path: {{ matrix_synapse_tls_certificate_path|to_json }}
 # PEM-encoded private key for TLS
 #
 tls_private_key_path: {{ matrix_synapse_tls_private_key_path|to_json }}
+
+# Whether to verify TLS certificates when sending federation traffic.
+#
+# This currently defaults to `false`, however this will change in
+# Synapse 1.0 when valid federation certificates will be required.
+#
+#federation_verify_certificates: true
+
+# Skip federation certificate verification on the following whitelist
+# of domains.
+#
+# This setting should only be used in very specific cases, such as
+# federation over Tor hidden services and similar. For private networks
+# of homeservers, you likely want to use a private CA instead.
+#
+# Only effective if federation_verify_certicates is `true`.
+#
+#federation_certificate_verification_whitelist:
+#  - lon.example.com
+#  - *.domain.com
+#  - *.onion
+
+# List of custom certificate authorities for federation traffic.
+#
+# This setting should only normally be used within a private network of
+# homeservers.
+#
+# Note that this list will replace those that are provided by your
+# operating environment. Certificates must be in PEM format.
+#
+#federation_custom_ca_list:
+#  - myCA1.pem
+#  - myCA2.pem
+#  - myCA3.pem
 
 # ACME support: This will configure Synapse to request a valid TLS certificate
 # for your configured `server_name` via Let's Encrypt.
@@ -380,21 +457,15 @@ log_config: "/data/{{ matrix_server_fqn_matrix }}.log.config"
 
 ## Ratelimiting ##
 
-# Number of messages a client can send per second
-#
-rc_messages_per_second: {{ matrix_synapse_rc_messages_per_second }}
-
-# Number of message a client can send before being throttled
-#
-rc_message_burst_count: {{ matrix_synapse_rc_message_burst_count }}
-
-# Ratelimiting settings for registration and login.
+# Ratelimiting settings for client actions (registration, login, messaging).
 #
 # Each ratelimiting configuration is made of two parameters:
 #   - per_second: number of requests a client can send per second.
 #   - burst_count: number of requests a client can send before being throttled.
 #
 # Synapse currently uses the following configurations:
+#   - one for messages that ratelimits sending based on the account the client
+#     is using
 #   - one for registration that ratelimits registration requests based on the
 #     client's IP address.
 #   - one for login that ratelimits login requests based on the client's IP
@@ -406,6 +477,12 @@ rc_message_burst_count: {{ matrix_synapse_rc_message_burst_count }}
 #     attempts for this account.
 #
 # The defaults are as shown below.
+#
+#rc_message:
+#  per_second: 0.2
+#  burst_count: 10
+#
+rc_message: {{ matrix_synapse_rc_message|to_json }}
 #
 #rc_registration:
 #  per_second: 0.17
@@ -424,34 +501,29 @@ rc_registration: {{ matrix_synapse_rc_registration|to_json }}
 #    burst_count: 3
 rc_login: {{ matrix_synapse_rc_login|to_json }}
 
-# The federation window size in milliseconds
-#
-#federation_rc_window_size: 1000
-federation_rc_window_size: {{ matrix_synapse_federation_rc_window_size }}
 
-# The number of federation requests from a single server in a window
-# before the server will delay processing the request.
+# Ratelimiting settings for incoming federation
 #
-#federation_rc_sleep_limit: 10
-federation_rc_sleep_limit: {{ matrix_synapse_federation_rc_sleep_limit }}
-
-# The duration in milliseconds to delay processing events from
-# remote servers by if they go over the sleep limit.
+# The rc_federation configuration is made up of the following settings:
+#   - window_size: window size in milliseconds
+#   - sleep_limit: number of federation requests from a single server in
+#     a window before the server will delay processing the request.
+#   - sleep_delay: duration in milliseconds to delay processing events
+#     from remote servers by if they go over the sleep limit.
+#   - reject_limit: maximum number of concurrent federation requests
+#     allowed from a single server
+#   - concurrent: number of federation requests to concurrently process
+#     from a single server
 #
-#federation_rc_sleep_delay: 500
-federation_rc_sleep_delay: {{ matrix_synapse_federation_rc_sleep_delay }}
-
-# The maximum number of concurrent federation requests allowed
-# from a single server
+# The defaults are as shown below.
 #
-#federation_rc_reject_limit: 50
-federation_rc_reject_limit: {{ matrix_synapse_federation_rc_reject_limit }}
-
-# The number of federation requests to concurrently process from a
-# single server
-#
-#federation_rc_concurrent: 3
-federation_rc_concurrent: {{ matrix_synapse_federation_rc_concurrent }}
+#rc_federation:
+#  window_size: 1000
+#  sleep_limit: 10
+#  sleep_delay: 500
+#  reject_limit: 50
+#  concurrent: 3
+rc_federation: {{ matrix_synapse_rc_federation|to_json }}
 
 # Target outgoing federation transaction frequency for sending read-receipts,
 # per-room.
@@ -666,6 +738,40 @@ turn_allow_guests: False
 #
 enable_registration: {{ matrix_synapse_enable_registration|to_json }}
 
+# Optional account validity configuration. This allows for accounts to be denied
+# any request after a given period.
+#
+# ``enabled`` defines whether the account validity feature is enabled. Defaults
+# to False.
+#
+# ``period`` allows setting the period after which an account is valid
+# after its registration. When renewing the account, its validity period
+# will be extended by this amount of time. This parameter is required when using
+# the account validity feature.
+#
+# ``renew_at`` is the amount of time before an account's expiry date at which
+# Synapse will send an email to the account's email address with a renewal link.
+# This needs the ``email`` and ``public_baseurl`` configuration sections to be
+# filled.
+#
+# ``renew_email_subject`` is the subject of the email sent out with the renewal
+# link. ``%(app)s`` can be used as a placeholder for the ``app_name`` parameter
+# from the ``email`` section.
+#
+# Once this feature is enabled, Synapse will look for registered users without an
+# expiration date at startup and will add one to every account it found using the
+# current settings at that time.
+# This means that, if a validity period is set, and Synapse is restarted (it will
+# then derive an expiration date from the current validity period), and some time
+# after that the validity period changes and Synapse is restarted, the users'
+# expiration dates won't be updated unless their account is manually renewed.
+#
+#account_validity:
+#  enabled: True
+#  period: 6w
+#  renew_at: 1w
+#  renew_email_subject: "Renew your %(app)s account"
+
 # The user must provide all of the below types of 3PID when registering.
 #
 #registrations_require_3pid:
@@ -690,6 +796,10 @@ registrations_require_3pid: {{ matrix_synapse_registrations_require_3pid|to_json
 #    pattern: '.*@vector\.im'
 #  - medium: msisdn
 #    pattern: '\+44'
+
+# Enable 3PIDs lookup requests to identity servers from this server.
+#
+#enable_3pid_lookup: true
 
 # If set, allows registration of standard or admin accounts by anyone who
 # has the shared secret, even if registration is otherwise disabled.
@@ -914,7 +1024,7 @@ password_config:
 
 
 
-# Enable sending emails for notification events
+# Enable sending emails for notification events or expiry notices
 # Defining a custom URL for Riot is only needed if email notifications
 # should contain links to a self-hosted installation of Riot; when set
 # the "app_name" setting is ignored.
@@ -932,6 +1042,9 @@ email:
    app_name: Matrix
    notif_template_html: notif_mail.html
    notif_template_text: notif_mail.txt
+   # Templates for account expiry notices.
+   expiry_template_html: notice_expiry.html
+   expiry_template_text: notice_expiry.txt
    notif_for_new_users: True
    riot_base_url: {{ matrix_synapse_email_riot_base_url|string|to_json }}
 {% endif %}
@@ -977,7 +1090,7 @@ password_providers:
     config:
       enabled: true
       uri: {{ matrix_synapse_ext_password_provider_ldap_uri|string|to_json }}
-      start_tls: {{ matrix_synapse_ext_password_provider_ldap_start_tls|string|to_json }}
+      start_tls: {{ matrix_synapse_ext_password_provider_ldap_start_tls|to_json }}
       base: {{ matrix_synapse_ext_password_provider_ldap_base|string|to_json }}
       attributes:
         uid: {{ matrix_synapse_ext_password_provider_ldap_attributes_uid|string|to_json }}
@@ -1119,7 +1232,7 @@ push:
 #
 #enable_room_list_search: false
 
-enable_room_list_search: {{ matrix_enable_room_list_search|to_json }}
+enable_room_list_search: {{ matrix_synapse_enable_room_list_search|to_json }}
 
 # The `alias_creation` option controls who's allowed to create aliases
 # on this server.
@@ -1149,7 +1262,7 @@ enable_room_list_search: {{ matrix_enable_room_list_search|to_json }}
 #    room_id: "*"
 #    action: allow
 
-alias_creation_rules: {{ matrix_alias_creation_rules|to_json }}
+alias_creation_rules: {{ matrix_synapse_alias_creation_rules|to_json }}
 
 # The `room_list_publication_rules` option controls who can publish and
 # which rooms can be published in the public room list.
@@ -1180,4 +1293,4 @@ alias_creation_rules: {{ matrix_alias_creation_rules|to_json }}
 #    room_id: "*"
 #    action: allow
 
-room_list_publication_rules: {{ matrix_room_list_publication_rules|to_json }}
+room_list_publication_rules: {{ matrix_synapse_room_list_publication_rules|to_json }}
