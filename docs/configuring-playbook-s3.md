@@ -29,7 +29,7 @@ You'll need an Amazon S3 bucket and some IAM user credentials (access key + secr
 }
 ```
 
-You then need to enable S3 support in your configuration file (`inventory/matrix.<your-domain>/vars.yml`).
+You then need to enable S3 support in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`).
 It would be something like this:
 
 ```yaml

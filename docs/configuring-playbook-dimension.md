@@ -9,7 +9,7 @@ For an Integration Manager like [Dimension](https://dimension.t2bot.io) to work,
 Other important prerequisite is the `dimension.<your-domain>` DNS record being set up correctly. See [Configuring your DNS server](configuring-dns.md) on how to set up DNS record correctly.
 
 ## Enable
-[Dimension integrations manager](https://dimension.t2bot.io) installation is disabled by default. You can enable it in your configuration file (`inventory/matrix.<your-domain>/vars.yml`):
+[Dimension integrations manager](https://dimension.t2bot.io) installation is disabled by default. You can enable it in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
 matrix_dimension_enabled: true
@@ -18,7 +18,7 @@ matrix_dimension_enabled: true
 
 ## Define admin users
 These users can modify the integrations this Dimension supports. Admin interface is accessible by opening Dimension in Riot and clicking the settings icon.
-Add this to your configuration file (`inventory/matrix.<your-domain>/vars.yml`):
+Add this to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
 matrix_dimension_admins: ['@user1:domain.com', '@user2:domain.com']
@@ -37,7 +37,7 @@ To get an access token, follow these steps:
 
 **Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.**
 
-Add access token to your configuration file (`inventory/matrix.<your-domain>/vars.yml`):
+Add access token to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
 matrix_dimension_access_token: "YOUR ACCESS TOKEN HERE"
