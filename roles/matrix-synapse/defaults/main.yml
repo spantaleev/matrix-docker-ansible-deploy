@@ -3,7 +3,7 @@
 
 matrix_synapse_enabled: true
 
-matrix_synapse_docker_image: "matrixdotorg/synapse:v0.99.4"
+matrix_synapse_docker_image: "matrixdotorg/synapse:v0.99.5.1"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
 matrix_synapse_config_dir_path: "{{ matrix_synapse_base_path }}/config"
@@ -67,8 +67,9 @@ matrix_synapse_storage_sql_log_level: "INFO"
 matrix_synapse_root_log_level: "INFO"
 
 # Rate limits
-matrix_synapse_rc_messages_per_second: 0.2
-matrix_synapse_rc_message_burst_count: 10.0
+matrix_synapse_rc_message:
+  per_second: 0.2
+  burst_count: 10
 
 matrix_synapse_rc_registration:
   per_second: 0.17
@@ -85,11 +86,13 @@ matrix_synapse_rc_login:
     per_second: 0.17
     burst_count: 3
 
-matrix_synapse_federation_rc_window_size: 1000
-matrix_synapse_federation_rc_sleep_limit: 10
-matrix_synapse_federation_rc_sleep_delay: 500
-matrix_synapse_federation_rc_reject_limit: 50
-matrix_synapse_federation_rc_concurrent: 3
+matrix_synapse_rc_federation:
+  window_size: 1000
+  sleep_limit: 10
+  sleep_delay: 500
+  reject_limit: 50
+  concurrent: 3
+
 matrix_synapse_federation_rr_transactions_per_room_per_second: 50
 
 # Controls whether the TLS federation listener is enabled (tcp/8448).
