@@ -17,8 +17,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-dimension \
 			{% if matrix_dimension_widgets_allow_self_signed_ssl_certificates %}
 			-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
 			{% endif %}
-			{% if matrix_dimension_container_expose_port %}
-			-p 127.0.0.1:8184:8184 \
+			{% if matrix_dimension_container_http_host_bind_port %}
+			-p {{ matrix_dimension_container_http_host_bind_port }}:8184 \
 			{% endif %}
 			-v {{ matrix_dimension_base_path }}:/data:rw \
 			{% for arg in matrix_dimension_container_extra_arguments %}

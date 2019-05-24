@@ -12,16 +12,32 @@ matrix_synapse_storage_path: "{{ matrix_synapse_base_path }}/storage"
 matrix_synapse_media_store_path: "{{ matrix_synapse_storage_path }}/media-store"
 matrix_synapse_ext_path: "{{ matrix_synapse_base_path }}/ext"
 
-# Controls whether the Synapse container exposes the Client/Server API port (tcp/8008).
-matrix_synapse_container_expose_client_api_port: false
+# Controls whether the matrix-synapse container exposes the Client/Server API port (tcp/8008 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8008"), or empty string to not expose.
+matrix_synapse_container_client_api_host_bind_port: ''
 
-# Controls whether the Synapse container exposes the Server/Server (Federation) API port (tcp/8048).
-# This is for the plain HTTP API. If you need Synapse to handle TLS encryption,
-# that would be on another port (tcp/8448) controlled by `matrix_synapse_tls_federation_listener_enabled`.
-matrix_synapse_container_expose_federation_api_port: false
+# Controls whether the matrix-synapse container exposes the plain (unencrypted) Server/Server (Federation) API port (tcp/8048 in the container).
+#
+# Takes effect only if federation is enabled (matrix_synapse_federation_enabled).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8048"), or empty string to not expose.
+matrix_synapse_container_federation_api_plain_host_bind_port: ''
 
-# Controls whether the matrix-synapse container exposes the metrics port (tcp/9100).
-matrix_synapse_container_expose_metrics_port: false
+# Controls whether the matrix-synapse container exposes the tls (encrypted) Server/Server (Federation) API port (tcp/8448 in the container).
+#
+# Takes effect only if federation is enabled (matrix_synapse_federation_enabled)
+# and TLS support is enabled (matrix_synapse_tls_federation_listener_enabled).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "8448"), or empty string to not expose.
+matrix_synapse_container_federation_api_tls_host_bind_port: ''
+
+# Controls whether the matrix-synapse container exposes the metrics port (tcp/9100 in the container).
+#
+# Takes effect only if metrics are enabled (matrix_synapse_metrics_enabled).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9100"), or empty string to not expose.
+matrix_synapse_container_metrics_api_host_bind_port: ''
 
 # A list of extra arguments to pass to the container
 matrix_synapse_container_extra_arguments: []

@@ -19,8 +19,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-appservice-discord \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
-			{% if matrix_appservice_discord_container_expose_client_server_api_port %}
-			-p 127.0.0.1:9005:9005 \
+			{% if matrix_appservice_discord_container_http_host_bind_port %}
+			-p {{ matrix_appservice_discord_container_http_host_bind_port }}:9005 \
 			{% endif %}
 			-v {{ matrix_appservice_discord_base_path }}:/data \
 			{% for arg in matrix_appservice_discord_container_extra_arguments %}

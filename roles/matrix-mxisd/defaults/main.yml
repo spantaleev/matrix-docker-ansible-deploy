@@ -1,3 +1,6 @@
+# mxisd is a Federated Matrix Identity Server
+# See: https://github.com/kamax-matrix/mxisd
+
 matrix_mxisd_enabled: true
 
 matrix_mxisd_docker_image: "kamax/mxisd:1.4.3"
@@ -5,8 +8,10 @@ matrix_mxisd_base_path: "{{ matrix_base_data_path }}/mxisd"
 matrix_mxisd_config_path: "{{ matrix_mxisd_base_path }}/config"
 matrix_mxisd_data_path: "{{ matrix_mxisd_base_path }}/data"
 
-# Controls whether the mxisd web server's port (`8090`) is exposed outside of the container.
-matrix_mxisd_container_expose_port: false
+# Controls whether the matrix-mxisd container exposes its HTTP port (tcp/8090 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8090"), or empty string to not expose.
+matrix_mxisd_container_http_host_bind_port: ''
 
 # A list of extra arguments to pass to the container
 matrix_mxisd_container_extra_arguments: []
