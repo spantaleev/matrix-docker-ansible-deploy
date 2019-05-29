@@ -17,13 +17,11 @@
 - set_fact:
     matrix_synapse_password_providers_enabled: true
 
-- set_fact:
-    matrix_synapse_container_additional_volumes: >
-      {{ matrix_synapse_container_additional_volumes }}
+    matrix_synapse_container_extra_arguments: >
+      {{ matrix_synapse_container_extra_arguments|default([]) }}
       +
-      {{ [{'src': '{{ matrix_synapse_ext_path }}/rest_auth_provider.py', 'dst': '{{ matrix_synapse_in_container_python_packages_path }}/rest_auth_provider.py', 'options': 'ro'}] }}
+      {{ ["--mount type=bind,src={{ matrix_synapse_ext_path }}/rest_auth_provider.py,dst={{ matrix_synapse_in_container_python_packages_path }}/rest_auth_provider.py,ro"] }}
 
-- set_fact:
     matrix_synapse_additional_loggers: >
       {{ matrix_synapse_additional_loggers }}
       +

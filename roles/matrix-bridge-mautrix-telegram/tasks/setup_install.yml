@@ -76,20 +76,17 @@
       python3 -m mautrix_telegram -g -c /data/config.yaml -r /data/registration.yaml
   when: "not mautrix_telegram_registration_file_stat.stat.exists"
 
-- set_fact:
-    matrix_synapse_app_service_config_file_mautrix_telegram: '/app-registration/mautrix-telegram.yml'
-
 # If the matrix-synapse role is not used, these variables may not exist.
 - set_fact:
-    matrix_synapse_container_additional_volumes: >
-      {{ matrix_synapse_container_additional_volumes|default([]) }}
+    matrix_synapse_container_extra_arguments: >
+      {{ matrix_synapse_container_extra_arguments|default([]) }}
       +
-      {{ [{'src': '{{ matrix_mautrix_telegram_base_path }}/registration.yaml', 'dst': '{{ matrix_synapse_app_service_config_file_mautrix_telegram }}', 'options': 'ro'}] }}
+      {{ ["--mount type=bind,src={{ matrix_mautrix_telegram_base_path }}/registration.yaml,dst=/matrix-mautrix-telegram-registration.yaml,ro"] }}
 
     matrix_synapse_app_service_config_files: >
       {{ matrix_synapse_app_service_config_files|default([]) }}
       +
-      {{ ["{{ matrix_synapse_app_service_config_file_mautrix_telegram }}"] | to_nice_json  }}
+      {{ ["/matrix-mautrix-telegram-registration.yaml"] }}
 
 - block:
   - name: Fail if matrix-nginx-proxy role already executed
