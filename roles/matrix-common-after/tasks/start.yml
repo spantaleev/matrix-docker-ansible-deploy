@@ -36,6 +36,6 @@
     msg: >-
       {{ item }} was not detected to be running.
       It's possible that there's a configuration problem or another service on your server interferes with it (uses the same ports, etc.).
-      Try running `systemctl status {{ item }}` and `systemctl -fu {{ item }}` on the server to investigate.
+      Try running `systemctl status {{ item }}` and `journalctl -fu {{ item }}` on the server to investigate.
   with_items: "{{ matrix_systemd_services_list }}"
   when: "ansible_facts.services[item + '.service']|default(none) is none or ansible_facts.services[item + '.service'].state != 'running'"
