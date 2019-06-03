@@ -8,9 +8,9 @@
   with_items:
     - "matrix_riot_web_default_hs_url"
 
-- name: (Deprecation) Catch and report renamed settings
+- name: (Deprecation) Catch and report renamed riot-web variables
   fail:
-    msg: >
+    msg: >-
       Your configuration contains a variable, which now has a different name.
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
   when: "item.old in vars"
@@ -20,3 +20,4 @@
     - {'old': 'matrix_riot_web_homepage_template_technical', 'new': '<removed>'}
     - {'old': 'matrix_riot_web_homepage_template_building', 'new': '<removed>'}
     - {'old': 'matrix_riot_web_homepage_template_contributing', 'new': '<removed>'}
+    - {'old': 'matrix_riot_web_container_expose_port', 'new': '<superseded by matrix_riot_web_container_http_host_bind_port>'}

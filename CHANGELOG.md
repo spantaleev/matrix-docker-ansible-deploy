@@ -1,3 +1,38 @@
+# 2019-05-25
+
+## Support for exposing container ports publicly (not just to the host)
+
+Until now, various roles supported a `matrix_*_expose_port` variable, which would expose their container's port to the host. This was mostly useful for reverse-proxying manually (in case `matrix-nginx-proxy` was disabled). It could also be used for installing some playbook services (e.g. bridges, etc.) and wiring them to a separate (manual) Matrix setup.
+
+`matrix_*_expose_port` variables were not granular enough - sometimes they would expose one port, other times multiple. They also didn't provide control over **where** to expose (to which port number and to which network interface), because they would usually hardcode something like `127.0.0.1:8080`.
+
+All such variables have been superseded by a better (more flexible) way to do it.
+
+**Most** people (including those not using `matrix-nginx-proxy`), **don't need** to bother with this.
+
+Porting examples follow for people having more customized setups:
+
+- **from** `matrix_synapse_container_expose_client_api_port: true` **to** `matrix_synapse_container_client_api_host_bind_port: '127.0.0.1:8008'`
+
+- **from** `matrix_synapse_container_expose_federation_api_port: true` **to** `matrix_synapse_container_federation_api_plain_host_bind_port: '127.0.0.1:8048'` and possibly `matrix_synapse_container_federation_api_tls_host_bind_port: '8448'`
+
+- **from** `matrix_synapse_container_expose_metrics_port: true` **to** `matrix_synapse_container_metrics_api_host_bind_port: '127.0.0.1:9100'`
+
+- **from** `matrix_riot_web_container_expose_port: true` **to** `matrix_riot_web_container_http_host_bind_port: '127.0.0.1:8765'`
+
+- **from** `matrix_mxisd_container_expose_port: true` **to** `matrix_mxisd_container_http_host_bind_port: '127.0.0.1:8090'`
+
+- **from** `matrix_dimension_container_expose_port: true` **to** `matrix_dimension_container_http_host_bind_port: '127.0.0.1:8184'`
+
+- **from** `matrix_corporal_container_expose_ports: true` **to** `matrix_corporal_container_http_gateway_host_bind_port: '127.0.0.1:41080'` and possibly `matrix_corporal_container_http_api_host_bind_port: '127.0.0.1:41081'`
+
+- **from** `matrix_appservice_irc_container_expose_client_server_api_port: true` **to** `matrix_appservice_irc_container_http_host_bind_port: '127.0.0.1:9999'`
+
+- **from** `matrix_appservice_discord_container_expose_client_server_api_port: true` **to** `matrix_appservice_discord_container_http_host_bind_port: '127.0.0.1:9005'`
+
+As always, if you forget to remove usage of some outdated variable, the playbook will warn you.
+
+
 # 2019-05-23
 
 ## Ansible 2.8 compatibility

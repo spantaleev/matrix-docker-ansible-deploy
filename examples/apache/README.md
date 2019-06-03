@@ -6,7 +6,7 @@ This is for when you wish to have your own Apache webserver sitting in front of 
 See the [Using your own webserver, instead of this playbook's nginx proxy](../../docs/configuring-playbook-own-webserver.md) documentation page.
 
 To use your own Apache reverse-proxy, you first need to disable the integrated nginx server.
-You do that with the following custom configuration (`inventory/matrix.<your-domain>/vars.yml`):
+You do that with the following custom configuration (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
 matrix_nginx_proxy_enabled: false

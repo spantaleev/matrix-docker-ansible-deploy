@@ -17,9 +17,11 @@ ExecStart=/usr/bin/docker run --rm --name matrix-corporal \
 			--cap-drop=ALL \
 			--read-only \
 			--network={{ matrix_docker_network }} \
-			{% if matrix_corporal_container_expose_ports %}
-			-p 127.0.0.1:41080:41080 \
-			-p 127.0.0.1:41081:41081 \
+			{% if matrix_corporal_container_http_gateway_host_bind_port %}
+			-p {{ matrix_corporal_container_http_gateway_host_bind_port }}:41080 \
+			{% endif %}
+			{% if matrix_corporal_container_http_api_host_bind_port %}
+			-p {{ matrix_corporal_container_http_api_host_bind_port }}:41081 \
 			{% endif %}
 			-v {{ matrix_corporal_config_dir_path }}:/etc/matrix-corporal:ro \
 			-v {{ matrix_corporal_cache_dir_path }}:/var/cache/matrix-corporal:rw \

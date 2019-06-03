@@ -29,17 +29,17 @@ ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_synapse_tmp_directory_size_mb }}m \
 			--network={{ matrix_docker_network }} \
 			-e SYNAPSE_CACHE_FACTOR={{ matrix_synapse_cache_factor }} \
-			{% if matrix_synapse_container_expose_client_api_port %}
-			-p 127.0.0.1:8008:8008 \
+			{% if matrix_synapse_container_client_api_host_bind_port %}
+			-p {{ matrix_synapse_container_client_api_host_bind_port }}:8008 \
 			{% endif %}
-			{% if matrix_synapse_federation_enabled and matrix_synapse_tls_federation_listener_enabled %}
-			-p 8448:8448 \
+			{% if matrix_synapse_federation_enabled and matrix_synapse_tls_federation_listener_enabled and matrix_synapse_container_federation_api_tls_host_bind_port %}
+			-p {{ matrix_synapse_container_federation_api_tls_host_bind_port }}:8448 \
 			{% endif %}
-			{% if matrix_synapse_federation_enabled and matrix_synapse_container_expose_federation_api_port %}
-			-p 127.0.0.1:8048:8048 \
+			{% if matrix_synapse_federation_enabled and matrix_synapse_container_federation_api_plain_host_bind_port %}
+			-p {{ matrix_synapse_container_federation_api_plain_host_bind_port }}:8048 \
 			{% endif %}
-			{% if matrix_synapse_container_expose_metrics_port %}
-			-p 127.0.0.1:{{ matrix_synapse_metrics_port }}:{{ matrix_synapse_metrics_port }} \
+			{% if matrix_synapse_metrics_enabled and matrix_synapse_container_metrics_api_host_bind_port %}
+			-p {{ matrix_synapse_container_metrics_api_host_bind_port }}:{{ matrix_synapse_metrics_port }} \
 			{% endif %}
 			-v {{ matrix_synapse_config_dir_path }}:/data:ro \
 			-v {{ matrix_synapse_run_path }}:/matrix-run:rw \

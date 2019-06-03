@@ -17,8 +17,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-riot-web \
 			--cap-drop=ALL \
 			--read-only \
 			--network={{ matrix_docker_network }} \
-			{% if matrix_riot_web_container_expose_port %}
-			-p 127.0.0.1:8765:8080 \
+			{% if matrix_riot_web_container_http_host_bind_port %}
+			-p {{ matrix_riot_web_container_http_host_bind_port }}:8080 \
 			{% endif %}
 			--tmpfs=/tmp:rw,noexec,nosuid,size=10m \
 			-v {{ matrix_riot_web_data_path }}/nginx.conf:/etc/nginx/nginx.conf:ro \

@@ -6,7 +6,7 @@ That is, people on your server can communicate with people on any other Matrix s
 
 ## Federating only with select servers
 
-To make your server only federate with servers of your choosing, add this to your configuration file (`inventory/matrix.<your-domain>/vars.yml`):
+To make your server only federate with servers of your choosing, add this to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
 matrix_synapse_federation_domain_whitelist:
@@ -19,7 +19,7 @@ If you wish to disable federation, you can do that with an empty list (`[]`), or
 
 ## Disabling federation
 
-To completely disable federation, isolating your server from the rest of the Matrix network, add this to your configuration file (`inventory/matrix.<your-domain>/vars.yml`):
+To completely disable federation, isolating your server from the rest of the Matrix network, add this to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
 matrix_synapse_federation_enabled: false

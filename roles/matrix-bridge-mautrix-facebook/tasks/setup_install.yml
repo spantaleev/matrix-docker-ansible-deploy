@@ -65,17 +65,14 @@
       python3 -m mautrix_facebook -g -c /data/config.yaml -r /data/registration.yaml
   when: "not mautrix_facebook_registration_file_stat.stat.exists"
 
-- set_fact:
-    matrix_synapse_app_service_config_file_mautrix_facebook: '/app-registration/mautrix-facebook.yml'
-
 # If the matrix-synapse role is not used, these variables may not exist.
 - set_fact:
-    matrix_synapse_container_additional_volumes: >
-      {{ matrix_synapse_container_additional_volumes|default([]) }}
+    matrix_synapse_container_extra_arguments: >
+      {{ matrix_synapse_container_extra_arguments|default([]) }}
       +
-      {{ [{'src': '{{ matrix_mautrix_facebook_base_path }}/registration.yaml', 'dst': '{{ matrix_synapse_app_service_config_file_mautrix_facebook }}', 'options': 'ro'}] }}
+      {{ ["--mount type=bind,src={{ matrix_mautrix_facebook_base_path }}/registration.yaml,dst=/matrix-mautrix-facebook-registration.yaml,ro"] }}
 
     matrix_synapse_app_service_config_files: >
       {{ matrix_synapse_app_service_config_files|default([]) }}
       +
-      {{ ["{{ matrix_synapse_app_service_config_file_mautrix_facebook }}"] | to_nice_json  }}
+      {{ ["/matrix-mautrix-facebook-registration.yaml"] }}

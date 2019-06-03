@@ -13,13 +13,13 @@ No matter which external webserver you decide to go with, you'll need to:
 
 1) Make sure your web server user (something like `http`, `apache`, `www-data`, `nginx`) is part of the `matrix` group. You should run something like this: `usermod -a -G matrix nginx`
 
-2) Edit your configuration file (`inventory/matrix.<your-domain>/vars.yml`) to disable the integrated nginx server:
+2) Edit your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) to disable the integrated nginx server:
 
 ```yaml
 matrix_nginx_proxy_enabled: false
 ```
 
-3) **If you'll manage SSL certificates by yourself**, edit your configuration file (`inventory/matrix.<your-domain>/vars.yml`) to disable SSL certificate retrieval:
+3) **If you'll manage SSL certificates by yourself**, edit your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) to disable SSL certificate retrieval:
 
 ```yaml
 matrix_ssl_retrieval_method: none

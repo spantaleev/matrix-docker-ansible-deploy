@@ -23,8 +23,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-mxisd \
 			--read-only \
 			--tmpfs=/tmp:rw,exec,nosuid,size=10m \
 			--network={{ matrix_docker_network }} \
-			{% if matrix_mxisd_container_expose_port %}
-			-p 127.0.0.1:8090:8090 \
+			{% if matrix_mxisd_container_http_host_bind_port %}
+			-p {{ matrix_mxisd_container_http_host_bind_port }}:8090 \
 			{% endif %}
 			-v {{ matrix_mxisd_config_path }}:/etc/mxisd:ro \
 			-v {{ matrix_mxisd_data_path }}:/var/mxisd:rw \
