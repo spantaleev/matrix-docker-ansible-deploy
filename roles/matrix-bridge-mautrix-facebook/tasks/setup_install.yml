@@ -21,19 +21,21 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
 
-- name: Check if a mautrix-facebook configuration file exists
-  stat:
-    path: "{{ matrix_mautrix_facebook_base_path }}/config.yaml"
-  register: mautrix_facebook_config_file_stat
-
-- name: Ensure Matrix Mautrix facebook config installed
-  template:
-    src: "{{ role_path }}/templates/config.yaml.j2"
+- name: Ensure mautrix-facebook config.yaml installed
+  copy:
+    content: "{{ matrix_mautrix_facebook_configuration|to_nice_yaml }}"
     dest: "{{ matrix_mautrix_facebook_base_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-  when: "not mautrix_facebook_config_file_stat.stat.exists"
+
+- name: Ensure mautrix-facebook registration.yaml installed
+  copy:
+    content: "{{ matrix_mautrix_facebook_registration|to_nice_yaml }}"
+    dest: "{{ matrix_mautrix_facebook_base_path }}/registration.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
 
 - name: Ensure matrix-mautrix-facebook.service installed
   template:
@@ -46,24 +48,6 @@
   service:
     daemon_reload: yes
   when: "matrix_mautrix_facebook_systemd_service_result.changed"
-
-- name: Check if a mautrix-facebook registration file exists
-  stat:
-    path: "{{ matrix_mautrix_facebook_base_path }}/registration.yaml"
-  register: mautrix_facebook_registration_file_stat
-
-- name: Generate matrix-mautrix-facebook registration.yaml if it doesn't exist
-  shell:
-    cmd: >-
-      /usr/bin/docker run
-      --rm
-      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
-      --cap-drop=ALL
-      --name matrix-mautrix-facebook-gen
-      -v {{ matrix_mautrix_facebook_base_path }}:/data:z
-      {{ matrix_mautrix_facebook_docker_image }}
-      python3 -m mautrix_facebook -g -c /data/config.yaml -r /data/registration.yaml
-  when: "not mautrix_facebook_registration_file_stat.stat.exists"
 
 # If the matrix-synapse role is not used, these variables may not exist.
 - set_fact:
