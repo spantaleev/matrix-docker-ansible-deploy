@@ -51,7 +51,7 @@ If your Matrix server is in a wildly different location than where you usually u
 
 If you happen to run into this problem while [setting up bridging](#set-up-bridging), try to first get a successful session up by logging in to Facebook through the Matrix server's IP address.
 
-The easiest way to do this may be to use [sshutle](https://sshuttle.readthedocs.io/) to proxy your traffic through the Matrix server.
+The easiest way to do this may be to use [sshuttle](https://sshuttle.readthedocs.io/) to proxy your traffic through the Matrix server.
 
 Example command for proxying your traffic through the Matrix server:
 
