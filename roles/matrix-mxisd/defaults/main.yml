@@ -161,6 +161,8 @@ matrix_mxisd_configuration_extension_yaml: |
   #     bindDn: CN=My Mxisd User,OU=Users,DC=example,DC=org
   #     bindPassword: TheUserPassword
 
+matrix_mxisd_configuration_extension: "{{ matrix_mxisd_configuration_extension_yaml|from_yaml if matrix_mxisd_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
 # Holds the final mxisd configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_mxisd_configuration_yaml`.
 matrix_mxisd_configuration: "{{ matrix_mxisd_configuration_yaml|from_yaml|combine(matrix_mxisd_configuration_extension, recursive=True) }}"

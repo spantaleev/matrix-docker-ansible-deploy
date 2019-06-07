@@ -433,6 +433,6 @@ matrix_appservice_irc_configuration_extension_yaml: |
   #   # the database.
   #   #
 
-matrix_appservice_irc_configuration_extension: "{{ matrix_appservice_irc_configuration_extension_yaml|from_yaml if matrix_appservice_irc_configuration_extension_yaml|from_yaml else {} }}"
+matrix_appservice_irc_configuration_extension: "{{ matrix_appservice_irc_configuration_extension_yaml|from_yaml if matrix_appservice_irc_configuration_extension_yaml|from_yaml is mapping else {} }}"
 
 matrix_appservice_irc_configuration: "{{ matrix_appservice_irc_configuration_yaml|from_yaml|combine(matrix_appservice_irc_configuration_extension, recursive=True) }}"

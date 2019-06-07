@@ -128,6 +128,6 @@ matrix_appservice_discord_configuration_extension_yaml: |
     #    # fininished handling it, causing us to echo it back to the room)
     #    discordSendDelay: 750
 
-matrix_appservice_discord_configuration_extension: "{{ matrix_appservice_discord_configuration_extension_yaml|from_yaml if matrix_appservice_discord_configuration_extension_yaml|from_yaml else {} }}"
+matrix_appservice_discord_configuration_extension: "{{ matrix_appservice_discord_configuration_extension_yaml|from_yaml if matrix_appservice_discord_configuration_extension_yaml|from_yaml is mapping else {} }}"
 
 matrix_appservice_discord_configuration: "{{ matrix_appservice_discord_configuration_yaml|from_yaml|combine(matrix_appservice_discord_configuration_extension, recursive=True) }}"
