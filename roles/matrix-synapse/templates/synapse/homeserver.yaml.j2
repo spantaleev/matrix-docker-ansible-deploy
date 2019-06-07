@@ -872,8 +872,10 @@ enable_metrics: {{ matrix_synapse_metrics_enabled|to_json  }}
 # information, and it in turn may then diseminate sensitive information
 # through insecure notification channels if so configured.
 #
-#sentry:
-#    dsn: "..."
+{% if matrix_synapse_sentry_dsn != "" %}
+sentry:
+    dsn: {{ matrix_synapse_sentry_dsn|to_json }}
+{% endif %}
 
 # Whether or not to report anonymized homeserver usage statistics.
 report_stats: {{ matrix_synapse_report_stats|to_json }}
