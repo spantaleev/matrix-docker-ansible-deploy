@@ -21,6 +21,9 @@ ExecStartPre=/usr/bin/docker run --rm --name matrix-mautrix-telegram-db \
 			{{ matrix_mautrix_telegram_docker_image }} \
 			alembic -x config=/data/config.yaml upgrade head
 
+# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
+ExecStartPre=/bin/sleep 5
+
 ExecStart=/usr/bin/docker run --rm --name matrix-mautrix-telegram \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
