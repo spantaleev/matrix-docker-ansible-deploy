@@ -17,6 +17,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-postgres \
 			--tmpfs=/tmp:rw,noexec,nosuid,size=100m \
 			--tmpfs=/run/postgresql:rw,noexec,nosuid,size=100m \
 			--network={{ matrix_docker_network }} \
+			{% if matrix_postgres_container_postgres_bind_port %}
+			-p {{ matrix_postgres_container_postgres_bind_port }}:5432 \
+			{% endif %}
 			--env-file={{ matrix_postgres_base_path }}/env-postgres-server \
 			-v {{ matrix_postgres_data_path }}:/var/lib/postgresql/data:rw \
 			-v /etc/passwd:/etc/passwd:ro \
