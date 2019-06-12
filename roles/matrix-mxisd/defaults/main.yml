@@ -3,7 +3,9 @@
 
 matrix_mxisd_enabled: true
 
-matrix_mxisd_docker_image: "kamax/mxisd:1.4.4"
+matrix_mxisd_docker_image: "kamax/mxisd:1.4.5"
+matrix_mxisd_docker_image_force_pull: "{{ matrix_mxisd_docker_image.endswith(':latest') }}"
+
 matrix_mxisd_base_path: "{{ matrix_base_data_path }}/mxisd"
 matrix_mxisd_config_path: "{{ matrix_mxisd_base_path }}/config"
 matrix_mxisd_data_path: "{{ matrix_mxisd_base_path }}/data"
@@ -160,6 +162,8 @@ matrix_mxisd_configuration_extension_yaml: |
   #     baseDNs: ['OU=Users,DC=example,DC=org']
   #     bindDn: CN=My Mxisd User,OU=Users,DC=example,DC=org
   #     bindPassword: TheUserPassword
+
+matrix_mxisd_configuration_extension: "{{ matrix_mxisd_configuration_extension_yaml|from_yaml if matrix_mxisd_configuration_extension_yaml|from_yaml is mapping else {} }}"
 
 # Holds the final mxisd configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_mxisd_configuration_yaml`.

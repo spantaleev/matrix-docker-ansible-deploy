@@ -1,3 +1,19 @@
+# 2019-06-07
+
+## (BC Break) Facebook bridge configuration is now entirely managed by the playbook
+
+Until now, configuration files for the [Facebook bridge](docs/configuring-playbook-bridge-mautrix-facebook.md) were created by the playbook initially, but never modified later on.
+
+From now on, the playbook will keep those configuration in sync for you.
+
+This means that if you were making manual changes to the `/matrix/mautrix-facebook/config.yaml` or `/matrix/mautrix-facebook/registration.yaml` configuration files, those would be lost the next time you run the playbook.
+
+The bridge now stores configuration in a subdirectory (`/matrix/mautrix-facebook/config`), so your old configuration remains in the base directory (`/matrix/mautrix-facebook`).
+You need to migrate any manual changes over to the new `matrix_mautrix_facebook_configuration_extension_yaml` variable, so that the playbook would apply them for you.
+
+Likewise, data is now also stored in a subdirectory (`/matrix/mautrix-facebook/data`). When you run the playbook with an existing database file (`/matrix/mautrix-facebook/mautrix-facebook.db`), the playbook will stop the bridge and relocate the database file to the `./data` directory. There's no data-loss involved. You'll need to restart the bridge manually though (`--tags=start`).
+
+
 # 2019-05-25
 
 ## Support for exposing container ports publicly (not just to the host)

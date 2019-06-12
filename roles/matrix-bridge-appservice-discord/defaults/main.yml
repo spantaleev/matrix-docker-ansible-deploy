@@ -4,6 +4,7 @@
 matrix_appservice_discord_enabled: true
 
 matrix_appservice_discord_docker_image: "halfshot/matrix-appservice-discord:latest"
+matrix_appservice_discord_docker_image_force_pull: "{{ matrix_appservice_discord_docker_image.endswith(':latest') }}"
 
 matrix_appservice_discord_base_path: "{{ matrix_base_data_path }}/appservice-discord"
 
@@ -128,6 +129,6 @@ matrix_appservice_discord_configuration_extension_yaml: |
     #    # fininished handling it, causing us to echo it back to the room)
     #    discordSendDelay: 750
 
-matrix_appservice_discord_configuration_extension: "{{ matrix_appservice_discord_configuration_extension_yaml|from_yaml if matrix_appservice_discord_configuration_extension_yaml|from_yaml else {} }}"
+matrix_appservice_discord_configuration_extension: "{{ matrix_appservice_discord_configuration_extension_yaml|from_yaml if matrix_appservice_discord_configuration_extension_yaml|from_yaml is mapping else {} }}"
 
 matrix_appservice_discord_configuration: "{{ matrix_appservice_discord_configuration_yaml|from_yaml|combine(matrix_appservice_discord_configuration_extension, recursive=True) }}"

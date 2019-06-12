@@ -3,7 +3,8 @@
 
 matrix_synapse_enabled: true
 
-matrix_synapse_docker_image: "matrixdotorg/synapse:v0.99.5.2"
+matrix_synapse_docker_image: "matrixdotorg/synapse:v1.0.0"
+matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
 matrix_synapse_config_dir_path: "{{ matrix_synapse_base_path }}/config"
@@ -205,6 +206,12 @@ matrix_synapse_url_preview_enabled: true
 matrix_synapse_metrics_enabled: false
 matrix_synapse_metrics_port: 9100
 
+# Send ERROR logs to sentry.io for easier tracking
+# To set this up: go to sentry.io, create a python project, and set
+# matrix_synapse_sentry_dsn to the URL it gives you.
+# See https://github.com/matrix-org/synapse/issues/4632 for important privacy concerns
+matrix_synapse_sentry_dsn: ""
+
 # Postgres database information
 matrix_synapse_database_host: ""
 matrix_synapse_database_user: ""
@@ -253,6 +260,7 @@ matrix_synapse_ext_password_provider_ldap_filter: ""
 matrix_s3_media_store_enabled: false
 matrix_s3_media_store_custom_endpoint_enabled: false
 matrix_s3_goofys_docker_image: "ewoutp/goofys:latest"
+matrix_s3_goofys_docker_image_force_pull: "{{ matrix_s3_goofys_docker_image.endswith(':latest') }}"
 matrix_s3_media_store_custom_endpoint: "your-custom-endpoint"
 matrix_s3_media_store_bucket_name: "your-bucket-name"
 matrix_s3_media_store_aws_access_key: "your-aws-access-key"
@@ -278,3 +286,5 @@ matrix_synapse_room_list_publication_rules:
     alias: "*"
     room_id: "*"
     action: allow
+
+matrix_synapse_default_room_version: "4"

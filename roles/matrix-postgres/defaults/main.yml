@@ -13,5 +13,18 @@ matrix_postgres_docker_image_v10: "postgres:10.8-alpine"
 matrix_postgres_docker_image_v11: "postgres:11.3-alpine"
 matrix_postgres_docker_image_latest: "{{ matrix_postgres_docker_image_v11 }}"
 
+# This variable is assigned at runtime. Overriding its value has no effect.
+matrix_postgres_docker_image_to_use: '{{ matrix_postgres_docker_image_latest }}'
+
+matrix_postgres_docker_image_force_pull: "{{ matrix_postgres_docker_image_to_use.endswith(':latest') }}"
+
 # A list of extra arguments to pass to the container
 matrix_postgres_container_extra_arguments: []
+
+# Controls whether the matrix-postgres container exposes a port (tcp/5432 in the
+# container) that can be used to access the database from outside the container (e.g. with psql)
+#
+# psql postgresql://username:password@localhost:<port>/database_name
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:5432"), or empty string to not expose.
+matrix_postgres_container_postgres_bind_port: ""

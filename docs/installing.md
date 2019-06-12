@@ -39,3 +39,4 @@ Now that the services are running, you might want to:
 - or [set up the Dimension Integrations Manager](configuring-playbook-dimension.md)
 - or [check if services work](maintenance-checking-services.md)
 - or learn how to [upgrade your services when new versions are released](maintenance-upgrading-services.md)
+- or learn how to [migrate to another server](maintenance-migrating.md)
