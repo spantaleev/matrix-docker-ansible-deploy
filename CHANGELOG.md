@@ -1,3 +1,16 @@
+# 2019-06-12
+
+## Synapse v1.0
+
+With [Synapse v1.0 now available](https://matrix.org/blog/2019/06/11/introducing-matrix-1-0-and-the-matrix-org-foundation) and most people being on at least Synapse v0.99, it's time to remove the `_matrix._tcp` DNS SRV record that we've been keeping for compatibility with old Synapse versions (<= 0.34).
+
+According to the [Server Discovery specification](https://matrix.org/docs/spec/server_server/r0.1.2.html#server-discovery), it's no harm to keep the DNS SRV record. But since it's not necessary for federating with the larger Matrix network anymore, you should be safe to get rid of it.
+
+**Note**: don't confuse the `_matrix._tcp` and `_matrix-identity._tcp` DNS SRV records. The latter, **must not** be removed.
+
+Besides this optional/non-urgent DNS change, assuming you're already on Synapse v0.99, upgrading to Synapse v1.0 should be as simple as [re-running the playbook](docs/maintenance-upgrading-services.md).
+
+
 # 2019-06-07
 
 ## (BC Break) Facebook bridge configuration is now entirely managed by the playbook
