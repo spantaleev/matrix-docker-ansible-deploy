@@ -20,6 +20,8 @@ Also, we're now following the default configuration for the Telegram bridge, so 
 - `authless_portals` (used to be `false`, now `true`) - creating portals from the Telegram side is now possible
 - `whitelist_group_admins` (used to be `false`, now `true`) - allows Telegram group admins to use the bot commands
 
+If the new values are not to your liking, use `matrix_mautrix_telegram_configuration_extension_yaml` to specify an override (refer to `matrix_mautrix_telegram_configuration_yaml` to figure out which variable goes where).
+
 
 # 2019-06-12
 
