@@ -1,3 +1,26 @@
+# 2019-06-15
+
+## (BC Break) Telegram bridge configuration is now entirely managed by the playbook
+
+Until now, configuration files for the [Telegram bridge](docs/configuring-playbook-bridge-mautrix-telegram.md) were created by the playbook initially, but never modified later on.
+
+From now on, the playbook will keep those configuration in sync for you.
+
+This means that if you were making manual changes to the `/matrix/mautrix-telegram/config.yaml` or `/matrix/mautrix-telegram/registration.yaml` configuration files, those would be lost the next time you run the playbook.
+
+The bridge now stores configuration in a subdirectory (`/matrix/mautrix-telegram/config`), so your old configuration remains in the base directory (`/matrix/mautrix-telegram`).
+You need to migrate any manual changes over to the new `matrix_mautrix_telegram_configuration_extension_yaml` variable, so that the playbook would apply them for you.
+
+Likewise, data is now also stored in a subdirectory (`/matrix/mautrix-telegram/data`). When you run the playbook with an existing database file (`/matrix/mautrix-telegram/mautrix-telegram.db`), the playbook will stop the bridge and relocate the database file to the `./data` directory. There's no data-loss involved. You'll need to restart the bridge manually though (`--tags=start`).
+
+Also, we're now following the default configuration for the Telegram bridge, so some default configuration values are different:
+
+- `edits_as_replies` (used to be `false`, now `true`) - previously replies were not sent over to Matrix at all; ow they are sent over as a reply to the original message
+- `inline_images` (used to be `true`, now `false`) - this has to do with captioned images. Inline-image (included caption) are said to exhibit troubles on Riot iOS. When `false`, the caption arrives on the Matrix side as a separate message.
+- `authless_portals` (used to be `false`, now `true`) - creating portals from the Telegram side is now possible
+- `whitelist_group_admins` (used to be `false`, now `true`) - allows Telegram group admins to use the bot commands
+
+
 # 2019-06-12
 
 ## Synapse v1.0

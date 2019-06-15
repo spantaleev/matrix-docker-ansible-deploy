@@ -17,9 +17,10 @@ ExecStartPre=/usr/bin/docker run --rm --name matrix-mautrix-telegram-db \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
-			-v {{ matrix_mautrix_telegram_base_path }}:/data:z \
+			-v {{ matrix_mautrix_telegram_config_path }}:/config:z \
+			-v {{ matrix_mautrix_telegram_data_path }}:/data:z \
 			{{ matrix_mautrix_telegram_docker_image }} \
-			alembic -x config=/data/config.yaml upgrade head
+			alembic -x config=/config/config.yaml upgrade head
 
 # Intentional delay, so that the homeserver (we likely depend on) can manage to start.
 ExecStartPre=/bin/sleep 5
@@ -32,12 +33,13 @@ ExecStart=/usr/bin/docker run --rm --name matrix-mautrix-telegram \
 			{% if matrix_mautrix_telegram_container_http_host_bind_port %}
 			-p {{ matrix_mautrix_telegram_container_http_host_bind_port }}:8080 \
 			{% endif %}
-			-v {{ matrix_mautrix_telegram_base_path }}:/data:z \
+			-v {{ matrix_mautrix_telegram_config_path }}:/config:z \
+			-v {{ matrix_mautrix_telegram_data_path }}:/data:z \
 			{% for arg in matrix_mautrix_telegram_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_mautrix_telegram_docker_image }} \
-			python3 -m mautrix_telegram -c /data/config.yaml
+			python3 -m mautrix_telegram -c /config/config.yaml
 
 ExecStop=-/usr/bin/docker kill matrix-mautrix-telegram
 ExecStop=-/usr/bin/docker rm matrix-mautrix-telegram
