@@ -1,12 +1,7 @@
 ---
 
-- name: Determine DNS SRV records to check (Matrix)
-  set_fact:
-    dns_srv_record_checks:
-      - service_and_protocol: "_matrix._tcp"
-        domain: "{{ (matrix_domain + '.') }}"
-        expected_target: "{{ (matrix_server_fqn_matrix + '.') }}"
-        expected_port: 8448
+- set_fact:
+    dns_srv_record_checks: []
 
 - block:
     - set_fact:

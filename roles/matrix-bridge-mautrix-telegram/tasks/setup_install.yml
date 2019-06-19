@@ -15,38 +15,50 @@
     force_source: "{{ matrix_mautrix_telegram_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_telegram_docker_image_force_pull }}"
 
-- name: Ensure Mautrix Telegram base directory exists
+- name: Ensure Mautrix Telegram paths exist
   file:
-    path: "{{ matrix_mautrix_telegram_base_path }}"
+    path: "{{ item }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
+  with_items:
+    - "{{ matrix_mautrix_telegram_base_path }}"
+    - "{{ matrix_mautrix_telegram_config_path }}"
+    - "{{ matrix_mautrix_telegram_data_path }}"
 
-- name: Check if a mautrix-telegram configuration file exists
+- name: Check if an old database file already exists
   stat:
-    path: "{{ matrix_mautrix_telegram_base_path }}/config.yaml"
-  register: mautrix_telegram_config_file_stat
+    path: "{{ matrix_mautrix_telegram_base_path }}/mautrix-telegram.db"
+  register: matrix_mautrix_telegram_stat_database
 
-- name: Ensure Matrix Mautrix telegram config installed
-  template:
-    src: "{{ role_path }}/templates/config.yaml.j2"
-    dest: "{{ matrix_mautrix_telegram_base_path }}/config.yaml"
+- name: (Data relocation) Ensure matrix-mautrix-telegram.service is stopped
+  service:
+    name: matrix-mautrix-telegram
+    state: stopped
+    daemon_reload: yes
+  failed_when: false
+  when: "matrix_mautrix_telegram_stat_database.stat.exists"
+
+- name: (Data relocation) Move mautrix-telegram database file to ./data directory
+  command: "mv {{ matrix_mautrix_telegram_base_path }}/mautrix-telegram.db {{ matrix_mautrix_telegram_data_path }}/mautrix-telegram.db"
+  when: "matrix_mautrix_telegram_stat_database.stat.exists"
+
+- name: Ensure mautrix-telegram config.yaml installed
+  copy:
+    content: "{{ matrix_mautrix_telegram_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_mautrix_telegram_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-  when: "not mautrix_telegram_config_file_stat.stat.exists"
 
-- name: (Migration) Fix up old configuration
-  lineinfile:
-    path: "{{ matrix_mautrix_telegram_base_path }}/config.yaml"
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-    backrefs: yes
-  with_items:
-    - {'regexp': '^(\s+)filename: \./mautrix-telegram.log', 'line': '\1filename: /data/mautrix-telegram.log'}
-    - {'regexp': '^(\s+)database:', 'line': '\1database: sqlite:////data/mautrix-telegram.db'}
-  when: "mautrix_telegram_config_file_stat.stat.exists"
+- name: Ensure mautrix-telegram registration.yaml installed
+  copy:
+    content: "{{ matrix_mautrix_telegram_registration|to_nice_yaml }}"
+    dest: "{{ matrix_mautrix_telegram_config_path }}/registration.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
 
 - name: Ensure matrix-mautrix-telegram.service installed
   template:
@@ -59,79 +71,3 @@
   service:
     daemon_reload: yes
   when: "matrix_mautrix_telegram_systemd_service_result.changed"
-
-- name: Check if a mautrix-telegram registration file exists
-  stat:
-    path: "{{ matrix_mautrix_telegram_base_path }}/registration.yaml"
-  register: mautrix_telegram_registration_file_stat
-
-- name: Generate matrix-mautrix-telegram registration.yaml if it doesn't exist
-  shell:
-    cmd: >-
-      /usr/bin/docker run
-      --rm
-      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
-      --cap-drop=ALL
-      --name matrix-mautrix-telegram-gen
-      -v {{ matrix_mautrix_telegram_base_path }}:/data:z
-      {{ matrix_mautrix_telegram_docker_image }}
-      python3 -m mautrix_telegram -g -c /data/config.yaml -r /data/registration.yaml
-  when: "not mautrix_telegram_registration_file_stat.stat.exists"
-
-# If the matrix-synapse role is not used, these variables may not exist.
-- set_fact:
-    matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      {{ ["--mount type=bind,src={{ matrix_mautrix_telegram_base_path }}/registration.yaml,dst=/matrix-mautrix-telegram-registration.yaml,ro"] }}
-
-    matrix_synapse_app_service_config_files: >
-      {{ matrix_synapse_app_service_config_files|default([]) }}
-      +
-      {{ ["/matrix-mautrix-telegram-registration.yaml"] }}
-
-- block:
-  - name: Fail if matrix-nginx-proxy role already executed
-    fail:
-      msg: >-
-        Trying to append Mautrix Telegram's reverse-proxying configuration to matrix-nginx-proxy,
-        but it's pointless since the matrix-nginx-proxy role had already executed.
-        To fix this, please change the order of roles in your plabook,
-        so that the matrix-nginx-proxy role would run after the matrix-bridge-mautrix-telegram role.
-    when: matrix_nginx_proxy_role_executed|default(False)|bool
-
-  - name: Generate Mautrix Telegram proxying configuration for matrix-nginx-proxy
-    set_fact:
-      matrix_mautrix_telegram_matrix_nginx_proxy_configuration: |
-        location {{ matrix_mautrix_telegram_public_endpoint }} {
-        {% if matrix_nginx_proxy_enabled|default(False) %}
-        	{# Use the embedded DNS resolver in Docker containers to discover the service #}
-        	resolver 127.0.0.11 valid=5s;
-        	set $backend "matrix-mautrix-telegram:8080";
-        	proxy_pass http://$backend;
-        {% else %}
-        	{# Generic configuration for use outside of our container setup #}
-        	proxy_pass http://127.0.0.1:9006;
-        {% endif %}
-        }
-
-  - name: Register Mautrix Telegram proxying configuration with matrix-nginx-proxy
-    set_fact:
-      matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: |
-        {{
-          matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks|default([])
-          +
-          [matrix_mautrix_telegram_matrix_nginx_proxy_configuration]
-        }}
-  tags:
-   - always
-
-- name: Warn about reverse-proxying if matrix-nginx-proxy not used
-  debug:
-    msg: >-
-      NOTE: You've enabled the Mautrix Telegram bridge but are not using the matrix-nginx-proxy
-      reverse proxy.
-      Please make sure that you're proxying the `{{ matrix_mautrix_telegram_public_endpoint }}`
-      URL endpoint to the matrix-mautrix-telegram container.
-      You can expose the container's port using the `matrix_mautrix_telegram_container_http_host_bind_port` variable.
-  when: "matrix_nginx_proxy_enabled is not defined"

@@ -66,15 +66,3 @@
       {{ matrix_mautrix_whatsapp_docker_image }}
       /usr/bin/mautrix-whatsapp -g -c /data/config.yaml -r /data/registration.yaml
   when: "not mautrix_whatsapp_registration_file_stat.stat.exists"
-
-# If the matrix-synapse role is not used, these variables may not exist.
-- set_fact:
-    matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      {{ ["--mount type=bind,src={{ matrix_mautrix_whatsapp_base_path }}/registration.yaml,dst=/matrix-mautrix-whatsapp-registration.yaml,ro"] }}
-
-    matrix_synapse_app_service_config_files: >
-      {{ matrix_synapse_app_service_config_files|default([]) }}
-      +
-      {{ ["/matrix-mautrix-whatsapp-registration.yaml"] }}

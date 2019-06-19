@@ -17,13 +17,8 @@ As [per the Server-Server specification](https://matrix.org/docs/spec/server_ser
 
 Server delegation can be configured using DNS SRV records or by setting up a `/.well-known/matrix/server` file on the base domain (`<your-domain.com>`).
 
-We have discussed the DNS SRV record method already in the "`_matrix._tcp` SRV record setup (temporary requirement)" section of [Configuring DNS](configuring-dns.md).
-
-Both methods have their place and will continue to do so. Usually, you would need to use just one of these delegation methods.
+Both methods have their place and will continue to do so. You only need to use just one of these delegation methods.
 For simplicity reasons, our setup advocates for the `/.well-known/matrix/server` method and guides you into using that.
-For backward compatibility with older Synapse servers (< v0.99), however, for now you are also required to set up a `_matrix._tcp` DNS SRV record (in addition to the `/.well-known/matrix/server` file on the base domain).
-
-As the Synapse server progresses towards v1.0, only the `/.well-known/matrix/server` file will be used by us, unless you have a more special setup necessitating a DNS SRV record. At that future moment, you would need to remove the `_matrix._tcp` SRV record because Synapse v1.0+ will do the wrong thing if a SRV record exists.
 
 To learn how to set up `/.well-known/matrix/server`, read the Installing section below.
 

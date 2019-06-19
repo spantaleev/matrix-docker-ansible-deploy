@@ -1,3 +1,43 @@
+# 2019-06-15
+
+## (BC Break) Telegram bridge configuration is now entirely managed by the playbook
+
+Until now, configuration files for the [Telegram bridge](docs/configuring-playbook-bridge-mautrix-telegram.md) were created by the playbook initially, but never modified later on.
+
+From now on, the playbook will keep those configuration in sync for you.
+
+This means that if you were making manual changes to the `/matrix/mautrix-telegram/config.yaml` or `/matrix/mautrix-telegram/registration.yaml` configuration files, those would be lost the next time you run the playbook.
+
+The bridge now stores configuration in a subdirectory (`/matrix/mautrix-telegram/config`), so your old configuration remains in the base directory (`/matrix/mautrix-telegram`).
+You need to migrate any manual changes over to the new `matrix_mautrix_telegram_configuration_extension_yaml` variable, so that the playbook would apply them for you.
+
+Likewise, data is now also stored in a subdirectory (`/matrix/mautrix-telegram/data`). When you run the playbook with an existing database file (`/matrix/mautrix-telegram/mautrix-telegram.db`), the playbook will stop the bridge and relocate the database file to the `./data` directory. There's no data-loss involved. You'll need to restart the bridge manually though (`--tags=start`).
+
+Also, we're now following the default configuration for the Telegram bridge, so some default configuration values are different:
+
+- `edits_as_replies` (used to be `false`, now `true`) - previously replies were not sent over to Matrix at all; ow they are sent over as a reply to the original message
+- `inline_images` (used to be `true`, now `false`) - this has to do with captioned images. Inline-image (included caption) are said to exhibit troubles on Riot iOS. When `false`, the caption arrives on the Matrix side as a separate message.
+- `authless_portals` (used to be `false`, now `true`) - creating portals from the Telegram side is now possible
+- `whitelist_group_admins` (used to be `false`, now `true`) - allows Telegram group admins to use the bot commands
+
+If the new values are not to your liking, use `matrix_mautrix_telegram_configuration_extension_yaml` to specify an override (refer to `matrix_mautrix_telegram_configuration_yaml` to figure out which variable goes where).
+
+
+# 2019-06-12
+
+## Synapse v1.0
+
+With [Synapse v1.0 now available](https://matrix.org/blog/2019/06/11/introducing-matrix-1-0-and-the-matrix-org-foundation) and most people being on at least Synapse v0.99, it's time to remove the `_matrix._tcp` DNS SRV record that we've been keeping for compatibility with old Synapse versions (<= 0.34).
+
+According to the [Server Discovery specification](https://matrix.org/docs/spec/server_server/r0.1.2.html#server-discovery), it's no harm to keep the DNS SRV record. But since it's not necessary for federating with the larger Matrix network anymore, you should be safe to get rid of it.
+
+**Note**: don't confuse the `_matrix._tcp` and `_matrix-identity._tcp` DNS SRV records. The latter, **must not** be removed.
+
+For completeness, we must say that using a `_matrix._tcp` [SRV record for Server Delegation](docs/howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced) is still valid and useful for certain deployments. It's just that our guide recommends the [`/.well-known/matrix/server` Server Delegation method](docs/howto-server-delegation.md#server-delegation-via-a-well-known-file), due to its easier implementation when using this playbook.
+
+Besides this optional/non-urgent DNS change, assuming you're already on Synapse v0.99, upgrading to Synapse v1.0 should be as simple as [re-running the playbook](docs/maintenance-upgrading-services.md).
+
+
 # 2019-06-07
 
 ## (BC Break) Facebook bridge configuration is now entirely managed by the playbook
