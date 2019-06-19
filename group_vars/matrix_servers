@@ -67,6 +67,10 @@ matrix_appservice_irc_enabled: false
 # matrix-appservice-irc's client-server port to the local host.
 matrix_appservice_irc_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9999' }}"
 
+# The IRC bridge docs say that if homeserver presence is disabled, it's better to also disable
+# IRC bridge presence, for performance reasons.
+matrix_appservice_irc_homeserver_enablePresence: "{{ matrix_synapse_use_presence }}"
+
 matrix_appservice_irc_systemd_required_services_list: |
   {{
     ['docker.service']
