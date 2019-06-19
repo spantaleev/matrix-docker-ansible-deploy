@@ -18,4 +18,4 @@ sudo journalctl -fu matrix-synapse
 
 ## Postgres
 
-See the dedicated [PostgreSQL Maintenance](maintenances-postgres.md) documentation page.
+See the dedicated [PostgreSQL Maintenance](maintenance-postgres.md) documentation page.
