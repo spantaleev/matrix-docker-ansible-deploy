@@ -1,5 +1,14 @@
 ---
 
+- name: Fail if required settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_appservice_irc_appservice_token"
+    - "matrix_appservice_irc_homeserver_token"
+
 # Our base configuration (`matrix_appservice_irc_configuration_yaml`) is not enough to
 # let the playbook run without errors.
 #
@@ -10,9 +19,11 @@
 - name: Fail if no additional configuration provided
   fail:
     msg: >-
-      Your Appservice IRC configuration is incomplete (lacking an `ircService` key).
-      You need to define additional configuration in `matrix_appservice_irc_configuration_extension_yaml` or to override `matrix_appservice_irc_configuration`.
-  when: "matrix_appservice_irc_configuration.ircService|default(none) is none"
+      Your Appservice IRC configuration is incomplete (lacking an `ircService.servers` configuration).
+      You need to define one or more servers by either using `matrix_appservice_irc_ircService_servers`
+      or by extending the base configuration with additional configuration in `matrix_appservice_irc_configuration_extension_yaml`.
+      Overriding the whole bridge's configuration (`matrix_appservice_irc_configuration`) is yet another possibility.
+  when: "matrix_appservice_irc_configuration.ircService.servers|length == 0"
 
 - name: (Deprecation) Catch and report renamed appservice-irc variables
   fail:
