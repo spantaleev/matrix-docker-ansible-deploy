@@ -91,7 +91,7 @@ As always, if you forget to remove usage of some outdated variable, the playbook
 
 # 2019-05-23
 
-## Ansible 2.8 compatibility
+## (BC Break) Ansible 2.8 compatibility
 
 Thanks to [@danbob](https://github.com/danbob), the playbook now [supports the new Ansible 2.8](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/187).
 
