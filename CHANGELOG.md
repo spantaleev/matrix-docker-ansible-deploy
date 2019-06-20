@@ -1,10 +1,30 @@
+# 2019-06-20
+
+## (BC Break) IRC bridge configuration is now entirely managed by the playbook
+
+Until now, configuration files for the [IRC bridge](docs/configuring-playbook-bridge-appservice-irc.md) were created by the playbook initially, but never modified later on.
+
+From now on, the playbook will keep the configuration in sync for you.
+
+This means that if you were making manual changes to the `/matrix/appservice-irc/config.yaml` or `/matrix/appservice-irc/registration.yaml` configuration files, those would be lost the next time you run the playbook.
+
+The bridge now stores configuration in a subdirectory (`/matrix/appservice-irc/config`), so your old configuration remains in the base directory (`/matrix/appservice-irc`).
+
+Previously, we asked people to configure bridged IRC servers by extending the bridge configuration (`matrix_appservice_irc_configuration_extension_yaml`). While this is still possible and will continue working forever, **we now recommend defining IRC servers in the easier to use `matrix_appservice_irc_ircService_servers` variable**. See [our IRC bridge documentation page](docs/configuring-playbook-bridge-appservice-irc.md) for an example.
+
+If you decide to continue using `matrix_appservice_irc_configuration_extension_yaml`, you might be interested to know that `ircService.databaseUri` and a few other keys now have default values in the base configuration (`matrix_appservice_irc_configuration_yaml`). You may wish to stop redefining those keys, unless you really intend to override them. You most likely only need to override `ircService.servers`.
+
+Bridge data (`passkey.pem` and database files) is now also stored in a subdirectory (`/matrix/appservice-irc/data`).
+When you run the playbook with an existing `/matrix/appservice-irc/passkey.pem` file, the playbook will stop the bridge and relocate the passkey and database files (`rooms.db` and `users.db`) to the `./data` directory. There's no data-loss involved. You'll need to restart the bridge manually though (`--tags=start`).
+
+
 # 2019-06-15
 
 ## (BC Break) Telegram bridge configuration is now entirely managed by the playbook
 
 Until now, configuration files for the [Telegram bridge](docs/configuring-playbook-bridge-mautrix-telegram.md) were created by the playbook initially, but never modified later on.
 
-From now on, the playbook will keep those configuration in sync for you.
+From now on, the playbook will keep the configuration in sync for you.
 
 This means that if you were making manual changes to the `/matrix/mautrix-telegram/config.yaml` or `/matrix/mautrix-telegram/registration.yaml` configuration files, those would be lost the next time you run the playbook.
 
@@ -44,7 +64,7 @@ Besides this optional/non-urgent DNS change, assuming you're already on Synapse 
 
 Until now, configuration files for the [Facebook bridge](docs/configuring-playbook-bridge-mautrix-facebook.md) were created by the playbook initially, but never modified later on.
 
-From now on, the playbook will keep those configuration in sync for you.
+From now on, the playbook will keep the configuration in sync for you.
 
 This means that if you were making manual changes to the `/matrix/mautrix-facebook/config.yaml` or `/matrix/mautrix-facebook/registration.yaml` configuration files, those would be lost the next time you run the playbook.
 
