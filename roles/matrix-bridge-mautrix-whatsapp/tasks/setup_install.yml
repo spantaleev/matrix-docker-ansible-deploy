@@ -15,27 +15,59 @@
     force_source: "{{ matrix_mautrix_whatsapp_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_whatsapp_docker_image_force_pull }}"
 
-- name: Ensure Mautrix Whatsapp base directory exists
+- name: Ensure Mautrix Whatsapp paths exists
   file:
-    path: "{{ matrix_mautrix_whatsapp_base_path }}"
+    path: "{{ item }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-
-- name: Check if a mautrix-whatsapp configuration file exists
+  with_items:
+    - "{{ matrix_mautrix_whatsapp_base_path }}"
+    - "{{ matrix_mautrix_whatsapp_config_path }}"
+    - "{{ matrix_mautrix_whatsapp_data_path }}"
+    
+- name: Check if an old database file exists
   stat:
-    path: "{{ matrix_mautrix_whatsapp_base_path }}/config.yaml"
-  register: mautrix_whatsapp_config_file_stat
+    path: "{{ matrix_mautrix_whatsapp_base_path }}/mautrix-whatsapp.db"
+  register: matrix_mautrix_whatsapp_stat_database
+  
+- name: Check if an old matrix state file exists
+  stat:
+    path: "{{ matrix_mautrix_whatsapp_base_path }}/mx-state.json"
+  register: matrix_mautrix_whatsapp_stat_mx_state
 
-- name: Ensure Matrix Mautrix whatsapp config installed
-  template:
-    src: "{{ role_path }}/templates//config.yaml.j2"
-    dest: "{{ matrix_mautrix_whatsapp_base_path }}/config.yaml"
+- name: (Data relocation) Ensure matrix-mautrix-whatsapp.service is stopped
+  service:
+    name: matrix-mautrix-whatsapp
+    state: stopped
+    daemon_reload: yes
+  failed_when: false
+  when: "matrix_mautrix_whatsapp_stat_database.stat.exists"
+
+- name: (Data relocation) Move mautrix-whatsapp database file to ./data directory
+  command: "mv {{ matrix_mautrix_whatsapp_base_path }}/mautrix-whatsapp.db {{ matrix_mautrix_whatsapp_data_path }}/mautrix-whatsapp.db"
+  when: "matrix_mautrix_whatsapp_stat_database.stat.exists"
+  
+- name: (Data relocation) Move mautrix-whatsapp mx-state file to ./data directory
+  command: "mv {{ matrix_mautrix_whatsapp_base_path }}/mx-state.json {{ matrix_mautrix_whatsapp_data_path }}/mx-state.json"
+  when: "matrix_mautrix_whatsapp_stat_mx_state.stat.exists"
+
+- name: Ensure mautrix-whatsapp config.yaml installed
+  copy:
+    content: "{{ matrix_mautrix_whatsapp_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_mautrix_whatsapp_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-  when: "not mautrix_whatsapp_config_file_stat.stat.exists"
+
+- name: Ensure mautrix-whatsapp registration.yaml installed
+  copy:
+    content: "{{ matrix_mautrix_whatsapp_registration|to_nice_yaml }}"
+    dest: "{{ matrix_mautrix_whatsapp_config_path }}/registration.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
 
 - name: Ensure matrix-mautrix-whatsapp.service installed
   template:
@@ -48,21 +80,3 @@
   service:
     daemon_reload: yes
   when: "matrix_mautrix_whatsapp_systemd_service_result.changed"
-
-- name: Check if a mautrix-whatsapp registration file exists
-  stat:
-    path: "{{ matrix_mautrix_whatsapp_base_path }}/registration.yaml"
-  register: mautrix_whatsapp_registration_file_stat
-
-- name: Generate matrix-mautrix-whatsapp registration.yaml if it doesn't exist
-  shell:
-    cmd: >-
-      /usr/bin/docker run
-      --rm
-      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
-      --cap-drop=ALL
-      --name matrix-mautrix-whatsapp-gen
-      -v {{ matrix_mautrix_whatsapp_base_path }}:/data:z
-      {{ matrix_mautrix_whatsapp_docker_image }}
-      /usr/bin/mautrix-whatsapp -g -c /data/config.yaml -r /data/registration.yaml
-  when: "not mautrix_whatsapp_registration_file_stat.stat.exists"
