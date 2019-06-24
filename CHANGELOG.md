@@ -1,3 +1,20 @@
+# 2019-06-24
+
+## (BC Break) WhatsApp bridge configuration is now entirely managed by the playbook
+
+Until now, configuration files for the [WhatsApp bridge](docs/configuring-playbook-bridge-mautrix-whatsapp.md) were created by the playbook initially, but never modified later on.
+
+From now on, the playbook will keep the configuration in sync for you.
+
+This means that if you were making manual changes to the `/matrix/mautrix-whatsapp/config.yaml` or `/matrix/mautrix-whatsapp/registration.yaml` configuration files, those would be lost the next time you run the playbook.
+
+The bridge now stores configuration in a subdirectory (`/matrix/mautrix-whatsapp/config`), so your old configuration remains in the base directory (`/matrix/mautrix-whatsapp`).
+You need to migrate any manual changes over to the new `matrix_mautrix_whatsapp_configuration_extension_yaml` variable, so that the playbook would apply them for you.
+
+Likewise, data is now also stored in a subdirectory (`/matrix/mautrix-whatsapp/data`). When you run the playbook with an existing database file (`/matrix/mautrix-whatsapp/mautrix-whatsapp.db`), the playbook will stop the bridge and relocate the database file to the `./data` directory. There's no data-loss involved. You'll need to restart the bridge manually though (`--tags=start`).
+
+We're now following the default configuration for the WhatsApp bridge.
+
 # 2019-06-20
 
 ## (BC Break) IRC bridge configuration is now entirely managed by the playbook
