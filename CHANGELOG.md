@@ -1,3 +1,23 @@
+# 2019-06-26
+
+## (BC Break) Discord bridge configuration is now entirely managed by the playbook
+
+Until now, the `config.yaml` file for the [Discord bridge](docs/configuring-playbook-bridge-appservice-discord.md) was managed by the playbook, but the `registration.yaml` file was not.
+
+From now on, the playbook will keep both configuration files sync for you.
+
+This means that if you were making manual changes to the `/matrix/appservice-discord/discord-registration.yaml` configuration file, those would be lost the next time you run the playbook.
+
+The bridge now stores configuration in a subdirectory (`/matrix/appservice-discord/config`).
+
+Likewise, data is now also stored in a subdirectory (`/matrix/mautrix-whatsapp/data`). When you run the playbook with an existing database file (`/matrix/appservice-discord/discord.db`), the playbook will stop the bridge and relocate the database file to the `./data` directory. There's no data-loss involved. You'll need to restart the bridge manually though (`--tags=start`).
+
+The main directory (`/matrix/appservice-discord`) may contain some leftover files (`user-store.db`, `room-store.db`, `config.yaml`, `discord-registration.yaml`, `invite_link`). These are no longer necessary and can be deleted manually.
+
+We're now following the default sample configuration for the Discord bridge.
+If you need to override some values, define them in `matrix_appservice_discord_configuration_extension_yaml`.
+
+
 # 2019-06-24
 
 ## (BC Break) WhatsApp bridge configuration is now entirely managed by the playbook
@@ -14,6 +34,7 @@ You need to migrate any manual changes over to the new `matrix_mautrix_whatsapp_
 Likewise, data is now also stored in a subdirectory (`/matrix/mautrix-whatsapp/data`). When you run the playbook with an existing database file (`/matrix/mautrix-whatsapp/mautrix-whatsapp.db`), the playbook will stop the bridge and relocate the database file to the `./data` directory. There's no data-loss involved. You'll need to restart the bridge manually though (`--tags=start`).
 
 We're now following the default configuration for the WhatsApp bridge.
+
 
 # 2019-06-20
 
