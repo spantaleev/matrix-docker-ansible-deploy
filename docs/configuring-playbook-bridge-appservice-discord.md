@@ -19,8 +19,8 @@ matrix_appservice_discord_bot_token: "YOUR DISCORD APP BOT TOKEN"
 ```
 
 4. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
-5. Retrieve Discord invitelink from the `{{ matrix_appservice_discord_base_path }}/invite_link` file on the server (this defaults to `/matrix/appservice-discord/invite_link`)
+5. Retrieve Discord invite link from the `{{ matrix_appservice_discord_config_path }}/invite_link` file on the server (this defaults to `/matrix/appservice-discord/config/invite_link`)
 6. Invite the Bot to Discord servers you wish to bridge. Administrator permission is recommended.
-7. Join the rooms by following this syntax `#_discord_guildid_channelid` - can be easily retrieved by logging into Discord in a browser and opening the desired channel. URL will have this format: discordapp.com/channels/guild_id/channel_id
+7. Join the rooms by following this syntax `#_discord_guildid_channelid` - can be easily retrieved by logging into Discord in a browser and opening the desired channel. URL will have this format: `discordapp.com/channels/guild_id/channel_id`
 
 Other configuration options are available via the `matrix_appservice_discord_configuration_extension_yaml` variable.
