@@ -115,6 +115,14 @@
     daemon_reload: yes
   when: "matrix_nginx_proxy_enabled and matrix_nginx_proxy_systemd_service_result.changed"
 
+- name: Ensure Matrix nginx-proxy access.log file exist
+  file:
+    path: "{{ matrix_nginx_proxy_base_path }}/access.log"
+    state: touch
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  when: matrix_nginx_access_log_to_file|bool
 
 #
 # Tasks related to getting rid of matrix-nginx-proxy (if it was previously enabled)
@@ -186,3 +194,9 @@
     path: "{{ matrix_nginx_proxy_data_path }}/matrix-synapse-metrics-htpasswd"
     state: absent
   when: "not matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled|bool or not matrix_nginx_proxy_proxy_synapse_metrics|bool"
+
+- name: Ensure Matrix nginx-proxy configuration for base domain deleted
+  file:
+    path: "{{ matrix_nginx_proxy_base_path }}/access.log"
+    state: absent
+  when: "not matrix_nginx_proxy_enabled|bool"

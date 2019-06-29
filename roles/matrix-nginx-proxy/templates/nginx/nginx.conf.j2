@@ -33,7 +33,11 @@ http {
 					'$status $body_bytes_sent "$http_referer" '
 					'"$http_user_agent" "$http_x_forwarded_for"';
 
+	{% if matrix_nginx_access_log_to_file %}
+	access_log /var/log/nginx/access_file.log main;
+	{% else %}
 	access_log /var/log/nginx/access.log main;
+	{% endif %}
 
 	sendfile on;
 	#tcp_nopush on;
