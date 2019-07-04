@@ -18,3 +18,12 @@ matrix_synapse_ext_password_provider_ldap_bind_dn: ""
 matrix_synapse_ext_password_provider_ldap_bind_password: ""
 matrix_synapse_ext_password_provider_ldap_filter: ""
 ```
+
+
+## Authenticating only using a password provider
+
+If you wish for users to **authenticate only against configured password providers** (like this one), **without consulting Synapse's local database**, feel free to disable it:
+
+```yaml
+matrix_synapse_password_config_localdb_enabled: false
+```
