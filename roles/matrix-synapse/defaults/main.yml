@@ -3,7 +3,7 @@
 
 matrix_synapse_enabled: true
 
-matrix_synapse_docker_image: "matrixdotorg/synapse:v1.0.0"
+matrix_synapse_docker_image: "matrixdotorg/synapse:v1.1.0"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
@@ -49,7 +49,7 @@ matrix_synapse_systemd_required_services_list: ['docker.service']
 # List of systemd services that matrix-synapse.service wants
 matrix_synapse_systemd_wanted_services_list: []
 
-matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.6/site-packages"
+matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.7/site-packages"
 
 # Specifies which template files to use when configuring Synapse.
 # If you'd like to have your own different configuration, feel free to copy and paste
@@ -69,8 +69,6 @@ matrix_synapse_form_secret: "{{ matrix_synapse_macaroon_secret_key }}"
 matrix_synapse_trusted_third_party_id_servers: "{{ matrix_synapse_id_servers_public }}"
 
 matrix_synapse_max_upload_size_mb: 10
-matrix_synapse_max_log_file_size_mb: 100
-matrix_synapse_max_log_files_count: 10
 
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_synapse_tmp_directory_size_mb: "{{ matrix_synapse_max_upload_size_mb * 50 }}"
@@ -146,6 +144,11 @@ matrix_synapse_autocreate_auto_join_rooms: true
 
 # Controls password-peppering for Synapse. Not to be changed after initial setup.
 matrix_synapse_password_config_pepper: ""
+
+# Controls if Synapse allows people to authenticate against its local database.
+# It may be useful to disable this if you've configured additional password providers
+# and only wish authentication to happen through them.
+matrix_synapse_password_config_localdb_enabled: true
 
 # Controls the number of events that Synapse caches in memory.
 matrix_synapse_event_cache_size: "100K"

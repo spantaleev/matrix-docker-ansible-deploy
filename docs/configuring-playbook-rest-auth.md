@@ -13,3 +13,12 @@ matrix_synapse_ext_password_provider_rest_auth_registration_enforce_lowercase: f
 matrix_synapse_ext_password_provider_rest_auth_registration_profile_name_autofill: true
 matrix_synapse_ext_password_provider_rest_auth_login_profile_name_autofill: false
 ```
+
+
+## Authenticating only using a password provider
+
+If you wish for users to **authenticate only against configured password providers** (like this one), **without consulting Synapse's local database**, feel free to disable it:
+
+```yaml
+matrix_synapse_password_config_localdb_enabled: false
+```

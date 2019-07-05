@@ -14,29 +14,6 @@ server_name: "{{ matrix_domain }}"
 #
 pid_file: /homeserver.pid
 
-# CPU affinity mask. Setting this restricts the CPUs on which the
-# process will be scheduled. It is represented as a bitmask, with the
-# lowest order bit corresponding to the first logical CPU and the
-# highest order bit corresponding to the last logical CPU. Not all CPUs
-# may exist on a given system but a mask may specify more CPUs than are
-# present.
-#
-# For example:
-#    0x00000001  is processor #0,
-#    0x00000003  is processors #0 and #1,
-#    0xFFFFFFFF  is all processors (#0 through #31).
-#
-# Pinning a Python process to a single CPU is desirable, because Python
-# is inherently single-threaded due to the GIL, and can suffer a
-# 30-40% slowdown due to cache blow-out and thread context switching
-# if the scheduler happens to schedule the underlying threads across
-# different cores. See
-# https://www.mirantis.com/blog/improve-performance-python-programs-restricting-single-cpu/.
-#
-# This setting requires the affinity package to be installed!
-#
-#cpu_affinity: 0xFFFFFFFF
-
 # The path to the web client which will be served at /_matrix/client/
 # if 'webclient' is configured under the 'listeners' configuration.
 #
@@ -68,11 +45,15 @@ use_presence: {{ matrix_synapse_use_presence|to_json }}
 #
 #require_auth_for_profile_requests: true
 
-# If set to 'true', requires authentication to access the server's
-# public rooms directory through the client API, and forbids any other
-# homeserver to fetch it via federation. Defaults to 'false'.
+# If set to 'false', requires authentication to access the server's public rooms
+# directory through the client API. Defaults to 'true'.
 #
-#restrict_public_rooms_to_local_users: true
+#allow_public_rooms_without_auth: false
+
+# If set to 'false', forbids any other homeserver to fetch the server's public
+# rooms directory via federation. Defaults to 'true'.
+#
+#allow_public_rooms_over_federation: false
 
 # The default room version for newly created rooms.
 #
@@ -338,6 +319,15 @@ tls_private_key_path: {{ matrix_synapse_tls_private_key_path|to_json }}
 #
 #federation_verify_certificates: false
 
+# The minimum TLS version that will be used for outbound federation requests.
+#
+# Defaults to `1`. Configurable to `1`, `1.1`, `1.2`, or `1.3`. Note
+# that setting this value higher than `1.2` will prevent federation to most
+# of the public Matrix network: only configure it to `1.3` if you have an
+# entirely private federation setup and you can ensure TLS 1.3 support.
+#
+#federation_client_minimum_tls_version: 1.2
+
 # Skip federation certificate verification on the following whitelist
 # of domains.
 #
@@ -426,6 +416,13 @@ acme:
     # If not set, defaults to your 'server_name'.
     #
     #domain: matrix.example.com
+
+    # file to use for the account key. This will be generated if it doesn't
+    # exist.
+    #
+    # If unspecified, we will use CONFDIR/client.key.
+    #
+    account_key_file: /data/acme_account.key
 
 # List of allowed TLS fingerprints for this server to publish along
 # with the signing keys for this server. Other matrix servers that
@@ -696,7 +693,7 @@ url_preview_ip_range_blacklist:
 #  - netloc: '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
 
 # The largest allowed URL preview spidering size in bytes
-
+#
 max_spider_size: 10M
 
 
@@ -1020,6 +1017,12 @@ signing_key_path: "/data/{{ matrix_server_fqn_matrix }}.signing.key"
 # so it is not normally necessary to specify them unless you need to
 # override them.
 #
+# Once SAML support is enabled, a metadata file will be exposed at
+# https://<server>:<port>/_matrix/saml2/metadata.xml, which you may be able to
+# use to configure your SAML IdP with. Alternatively, you can manually configure
+# the IdP to use an ACS location of
+# https://<server>:<port>/_matrix/saml2/authn_response.
+#
 #saml2_config:
 #  sp_config:
 #    # point this to the IdP's metadata. You can use either a local file or
@@ -1029,7 +1032,15 @@ signing_key_path: "/data/{{ matrix_server_fqn_matrix }}.signing.key"
 #      remote:
 #        - url: https://our_idp/metadata.xml
 #
-#    # The rest of sp_config is just used to generate our metadata xml, and you
+#    # By default, the user has to go to our login page first. If you'd like to
+#    # allow IdP-initiated login, set 'allow_unsolicited: True' in a
+#    # 'service.sp' section:
+#    #
+#    #service:
+#    #  sp:
+#    #    allow_unsolicited: True
+#
+#    # The examples below are just used to generate our metadata xml, and you
 #    # may well not need it, depending on your setup. Alternatively you
 #    # may need a whole lot more detail - see the pysaml2 docs!
 #
@@ -1052,6 +1063,12 @@ signing_key_path: "/data/{{ matrix_server_fqn_matrix }}.signing.key"
 #  # separate pysaml2 configuration file:
 #  #
 #  config_path: "/data/sp_conf.py"
+#
+#  # the lifetime of a SAML session. This defines how long a user has to
+#  # complete the authentication process, if allow_unsolicited is unset.
+#  # The default is 5 minutes.
+#  #
+#  # saml_session_lifetime: 5m
 
 
 
@@ -1078,6 +1095,12 @@ password_config:
    #
    #enabled: false
 
+   # Uncomment to disable authentication against the local password
+   # database. This is ignored if `enabled` is false, and is only useful
+   # if you have other password_providers.
+   #
+   localdb_enabled: {{ matrix_synapse_password_config_localdb_enabled|to_json }}
+
    # Uncomment and change to a secret random string for extra security.
    # DO NOT CHANGE THIS AFTER INITIAL SETUP!
    #
@@ -1102,11 +1125,13 @@ password_config:
 #   app_name: Matrix
 #
 #   # Enable email notifications by default
+#   #
 #   notif_for_new_users: True
 #
 #   # Defining a custom URL for Riot is only needed if email notifications
 #   # should contain links to a self-hosted installation of Riot; when set
 #   # the "app_name" setting is ignored
+#   #
 #   riot_base_url: "http://localhost/riot"
 #
 #   # Enable sending password reset emails via the configured, trusted
@@ -1119,16 +1144,22 @@ password_config:
 #   #
 #   # If this option is set to false and SMTP options have not been
 #   # configured, resetting user passwords via email will be disabled
+#   #
 #   #trust_identity_server_for_password_resets: false
 #
 #   # Configure the time that a validation email or text message code
 #   # will expire after sending
 #   #
 #   # This is currently used for password resets
+#   #
 #   #validation_token_lifetime: 1h
 #
 #   # Template directory. All template files should be stored within this
-#   # directory
+#   # directory. If not set, default templates from within the Synapse
+#   # package will be used
+#   #
+#   # For the list of default templates, please see
+#   # https://github.com/matrix-org/synapse/tree/master/synapse/res/templates
 #   #
 #   #template_dir: res/templates
 #
@@ -1325,6 +1356,7 @@ push:
 #
 
 
+
 # Local statistics collection. Used in populating the room directory.
 #
 # 'bucket_size' controls how large each statistics timeslice is. It can
@@ -1429,3 +1461,16 @@ alias_creation_rules: {{ matrix_synapse_alias_creation_rules|to_json }}
 #    action: allow
 
 room_list_publication_rules: {{ matrix_synapse_room_list_publication_rules|to_json }}
+
+
+# Server admins can define a Python module that implements extra rules for
+# allowing or denying incoming events. In order to work, this module needs to
+# override the methods defined in synapse/events/third_party_rules.py.
+#
+# This feature is designed to be used in closed federations only, where each
+# participating server enforces the same rules.
+#
+#third_party_event_rules:
+#  module: "my_custom_project.SuperRulesSet"
+#  config:
+#    example_option: 'things'

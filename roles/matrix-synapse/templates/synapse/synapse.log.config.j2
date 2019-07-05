@@ -12,14 +12,6 @@ filters:
         request: ""
 
 handlers:
-    file:
-        class: logging.handlers.RotatingFileHandler
-        formatter: precise
-        filename: /matrix-run/homeserver.log
-        maxBytes: {{ matrix_synapse_max_log_file_size_mb * 1024 * 1024 }}
-        backupCount: {{ matrix_synapse_max_log_files_count }}
-        filters: [context]
-        encoding: utf8
     console:
         class: logging.StreamHandler
         formatter: precise
@@ -41,4 +33,4 @@ loggers:
 
 root:
     level: {{ matrix_synapse_root_log_level }}
-    handlers: [file, console]
+    handlers: [console]
