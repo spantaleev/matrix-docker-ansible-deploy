@@ -27,7 +27,7 @@ To perform a `FULL` Postgres [VACUUM](https://www.postgresql.org/docs/current/sq
 Example:
 
 ```bash
-ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-vacuum
+ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-vacuum,start
 ```
 
 **Note**: this will automatically stop Synapse temporarily and restart it later. You'll also need plenty of available disk space in your Postgres data directory (usually `/matrix/postgres/data`).

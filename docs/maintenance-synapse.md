@@ -21,7 +21,7 @@ There are external tools (like [synapse-janitor](https://github.com/xwiki-labs/s
 To ask the playbook to run synapse-janitor, execute:
 
 ```bash
-ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-synapse-janitor
+ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-synapse-janitor,start
 ```
 
 **Note**: this will automatically stop Synapse temporarily and restart it later.
@@ -35,7 +35,7 @@ However, disk space only ever gets released after a [`FULL` Postgres `VACUUM`](.
 It's easiest if you ask the playbook to run both synapse-janitor and a `VACUUM FULL` in one call:
 
 ```bash
-ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-synapse-janitor,run-postgres-vacuum
+ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-synapse-janitor,run-postgres-vacuum,start
 ```
 
 **Note**: this will automatically stop Synapse temporarily and restart it later. You'll also need plenty of available disk space in your Postgres data directory (usually `/matrix/postgres/data`).
