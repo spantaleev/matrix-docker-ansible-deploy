@@ -1,3 +1,22 @@
+# 2019-07-08
+
+## (BC Break) Rename run control variables
+
+Some internal playbook control variables have been renamed.
+
+This change **only affects people who run this playbook's roles from another playbook**.
+If you're using this playbook as-is, you're not affected and don't need to do anything.
+
+The following variables have been renamed:
+
+- from `run_import_postgres` to `run_postgres_import`
+- from `run_import_sqlite_db` to `run_postgres_import_sqlite_db`
+- from `run_upgrade_postgres` to `run_postgres_upgrade`
+- from `run_import_media_store` to `run_synapse_import_media_store`
+- from `run_register_user` to `run_synapse_register_user`
+- from `run_update_user_password` to `run_synapse_update_user_password`
+
+
 # 2019-07-04
 
 ## Synapse no longer logs to text files
