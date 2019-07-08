@@ -69,4 +69,4 @@ Don't forget that disk space only ever gets released after a [`FULL` Postgres `V
 
 Unfortunately, at this time the playbook can't help you run this **experimental tool**.
 
-Since it's also experimental, you may wish to stay away from it, or at least [make Postgres backups](./docs/maintenance-postgres.md#backing-up-postgresql) first.
+Since it's also experimental, you may wish to stay away from it, or at least [make Postgres backups](./maintenance-postgres.md#backing-up-postgresql) first.
