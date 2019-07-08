@@ -28,3 +28,13 @@
   when: run_postgres_upgrade|bool
   tags:
     - upgrade-postgres
+
+- import_tasks: "{{ role_path }}/tasks/run_synapse_janitor.yml"
+  when: run_postgres_synapse_janitor|bool
+  tags:
+    - run-postgres-synapse-janitor
+
+- import_tasks: "{{ role_path }}/tasks/run_vacuum.yml"
+  when: run_postgres_vacuum|bool
+  tags:
+    - run-postgres-vacuum

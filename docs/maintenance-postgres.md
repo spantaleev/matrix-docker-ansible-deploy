@@ -6,6 +6,8 @@ Table of contents:
 
 - [Getting a database terminal](#getting-a-database-terminal), for when you wish to execute SQL queries
 
+- [Vacuuming PostgreSQL](#vacuuming-postgresql), for when you wish to run a Postgres [VACUUM](https://www.postgresql.org/docs/current/sql-vacuum.html) (optimizing disk space)
+
 - [Backing up PostgreSQL](#backing-up-postgresql), for when you wish to make a backup
 
 - [Upgrading PostgreSQL](#upgrading-postgresql), for upgrading to new major versions of PostgreSQL. Such **manual upgrades are sometimes required**.
@@ -16,6 +18,19 @@ Table of contents:
 You can use the `/usr/local/bin/matrix-postgres-cli` tool to get interactive terminal access ([psql](https://www.postgresql.org/docs/11/app-psql.html)) to the PostgreSQL server.
 
 If you are using an [external Postgres server](configuring-playbook-external-postgres.md), the above tool will not be available.
+
+
+## Vacuuming PostgreSQL
+
+To perform a `FULL` Postgres [VACUUM](https://www.postgresql.org/docs/current/sql-vacuum.html), run the playbook with `--tags=run-postgres-vacuum`.
+
+Example:
+
+```bash
+ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-vacuum
+```
+
+**Note**: this will automatically stop Synapse temporarily and restart it later. You'll also need plenty of available disk space in your Postgres data directory (usually `/matrix/postgres/data`).
 
 
 ## Backing up PostgreSQL

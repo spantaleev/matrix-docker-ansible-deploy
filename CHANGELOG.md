@@ -1,5 +1,14 @@
 # 2019-07-08
 
+## Synapse Maintenance docs and synapse-janitor support are available
+
+The playbook can now help you with Synapse's maintenance.
+
+There's a new documentation page about [Synapse maintenance](./docs/maintenance-synapse.md) and another section on [Postgres vacuuming](./docs/maintenance-postgres.md#vacuuming-postgresql).
+
+Among other things, if your Postgres database has grown significantly over time, you may wish to [ask the playbook to purge unused data with synapse-janitor](./docs/maintenance-synapse.md#purging-unused-data-with-synapse-janitor) for you.
+
+
 ## (BC Break) Rename run control variables
 
 Some internal playbook control variables have been renamed.
