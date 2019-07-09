@@ -103,11 +103,11 @@
     state: absent
   when: "not matrix_nginx_proxy_enabled|bool"
 
-# When Let's Encrypt is not used at all, remove all cronjobs in that cron file.
 - name: Ensure matrix-ssl-lets-encrypt-renew cronjob removed
   cron:
     user: root
     cron_file: matrix-ssl-lets-encrypt
+    name: matrix-ssl-lets-encrypt-certificates-renew
     state: absent
   when: "matrix_ssl_retrieval_method != 'lets-encrypt'"
 
