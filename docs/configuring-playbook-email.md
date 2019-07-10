@@ -28,6 +28,8 @@ matrix_mailer_relay_auth_username: "another.sender@example.com"
 matrix_mailer_relay_auth_password: "some-password"
 ```
 
+**Note**: only the secure submission protocol (using `STARTTLS`, usually on port `587`) is supported. **SMTPS** (encrypted SMTP, usually on port `465`) **is not supported**.
+
 
 ## Troubleshooting
 
