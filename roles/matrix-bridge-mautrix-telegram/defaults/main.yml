@@ -3,7 +3,7 @@
 
 matrix_mautrix_telegram_enabled: true
 
-matrix_mautrix_telegram_docker_image: "tulir/mautrix-telegram:v0.5.2"
+matrix_mautrix_telegram_docker_image: "tulir/mautrix-telegram:v0.6.0"
 matrix_mautrix_telegram_docker_image_force_pull: "{{ matrix_mautrix_telegram_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_telegram_base_path: "{{ matrix_base_data_path }}/mautrix-telegram"
@@ -196,6 +196,8 @@ matrix_mautrix_telegram_configuration_yaml: |
       inline_images: false
       # Maximum size of image in megabytes before sending to Telegram as a document.
       image_as_file_size: 10
+      # Maximum size of Telegram documents in megabytes to bridge.
+      max_document_size: 100
 
       # Whether to bridge Telegram bot messages as m.notices or m.texts.
       bot_messages_as_notices: true
@@ -295,6 +297,40 @@ matrix_mautrix_telegram_configuration_yaml: |
       api_hash: {{ matrix_mautrix_telegram_api_hash }}
       # (Optional) Create your own bot at https://t.me/BotFather
       bot_token: disabled
+
+      # Telethon connection options.
+      connection:
+          # The timeout in seconds to be used when connecting.
+          timeout: 120
+          # How many times the reconnection should retry, either on the initial connection or when
+          # Telegram disconnects us. May be set to a negative or null value for infinite retries, but
+          # this is not recommended, since the program can get stuck in an infinite loop.
+          retries: 5
+          # The delay in seconds to sleep between automatic reconnections.
+          retry_delay: 1
+          # The threshold below which the library should automatically sleep on flood wait errors
+          # (inclusive). For instance, if a FloodWaitError for 17s occurs and flood_sleep_threshold
+          # is 20s, the library will sleep automatically. If the error was for 21s, it would raise
+          # the error instead. Values larger than a day (86400) will be changed to a day.
+          flood_sleep_threshold: 60
+          # How many times a request should be retried. Request are retried when Telegram is having
+          # internal issues, when there is a FloodWaitError less than flood_sleep_threshold, or when
+          # there's a migrate error. May take a negative or null value for infinite retries, but this
+          # is not recommended, since some requests can always trigger a call fail (such as searching
+          # for messages).
+          request_retries: 5
+
+      # Device info sent to Telegram.
+      device_info:
+          # "auto" = OS name+version.
+          device_model: auto
+          # "auto" = Telethon version.
+          system_version: auto
+          # "auto" = mautrix-telegram version.
+          app_version: auto
+          lang_code: en
+          system_lang_code: en
+
       # Custom server to connect to.
       server:
           # Set to true to use these server settings. If false, will automatically
@@ -306,6 +342,7 @@ matrix_mautrix_telegram_configuration_yaml: |
           ip: 149.154.167.40
           # The port to connect to. 443 may not work, 80 is better and both are equally secure.
           port: 80
+
       # Telethon proxy configuration.
       # You must install PySocks from pip for proxies to work.
       proxy:
