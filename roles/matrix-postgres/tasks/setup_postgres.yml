@@ -1,7 +1,7 @@
 ---
 
 #
-# Generic tasks, no matter what kind of server we're using (internal/external)
+# Tasks related to setting up an internal postgres server
 #
 
 - import_tasks: "{{ role_path }}/tasks/migrate_postgres_data_directory.yml"
@@ -32,8 +32,6 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_postgres_docker_image_force_pull }}"
   when: matrix_postgres_enabled|bool
 
-# We always create these directories, even if an external Postgres is used,
-# because we store environment variable files there.
 - name: Ensure Postgres paths exist
   file:
     path: "{{ item }}"
@@ -70,9 +68,12 @@
     mode: 0750
   when: matrix_postgres_enabled|bool
 
-#
-# Tasks related to setting up an internal postgres server
-#
+- name: Ensure matrix-postgres-update-user-password-hash script created
+  template:
+    src: "{{ role_path }}/templates/usr-local-bin/matrix-postgres-update-user-password-hash.j2"
+    dest: "/usr/local/bin/matrix-postgres-update-user-password-hash"
+    mode: 0750
+  when: matrix_postgres_enabled|bool
 
 - name: Ensure matrix-postgres.service installed
   template:
@@ -127,9 +128,12 @@
     msg: "Note: You are not using a local PostgreSQL database, but some old data remains from before in `{{ matrix_postgres_data_path }}`. Feel free to delete it."
   when: "not matrix_postgres_enabled|bool and matrix_postgres_data_path_stat.stat.exists"
 
-- name: Ensure matrix-postgres-update-user-password-hash script created
-  template:
-    src: "{{ role_path }}/templates/usr-local-bin/matrix-postgres-update-user-password-hash.j2"
-    dest: "/usr/local/bin/matrix-postgres-update-user-password-hash"
-    mode: 0750
-  when: matrix_postgres_enabled|bool
+- name: Remove Postgres scripts
+  file:
+    path: "/usr/local/bin/{{ item }}"
+    state: absent
+  with_items:
+    - matrix-postgres-cli
+    - matrix-make-user-admin
+    - matrix-postgres-update-user-password-hash
+  when: "not matrix_postgres_enabled|bool"

@@ -20,6 +20,8 @@
 
 - [Maintenance / upgrading services](maintenance-upgrading-services.md)
 
+- [Maintenance / Synapse](maintenance-synapse.md)
+
 - [Maintenance / PostgreSQL](maintenance-postgres.md)
 
 - [Maintenance and Troubleshooting](maintenance-and-troubleshooting.md)
