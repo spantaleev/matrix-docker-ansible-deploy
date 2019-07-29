@@ -191,6 +191,13 @@ server {
 	location / {
 		rewrite ^/$ /_matrix/static/ last;
 	}
+
+	{% if matrix_mautrix_hangouts_enabled %}
+	location /login {
+	proxy_pass http://127.0.0.1:8080;
+	proxy_set_header X-Forwarded-For $remote_addr;
+	}
+	{% endif %}
 }
 
 {% if matrix_nginx_proxy_proxy_matrix_federation_api_enabled %}
