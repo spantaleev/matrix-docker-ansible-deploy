@@ -107,9 +107,22 @@ matrix_mautrix_hangouts_configuration_yaml: |
       # Whether or not to use /sync to get presence, read receipts and typing notifications when using
       # your own Matrix account as the Matrix puppet for your Hangouts account.
       sync_with_custom_puppets: true
+      
       # Whether or not to bridge presence in both directions. Hangouts allows users not to broadcast
       # presence, but then it won't send other users' presence to the client.
       presence: true
+      
+      # Public website and API configs
+      web:
+          # Auth server config
+          auth:
+              # Publicly accessible base URL for the login endpoints.
+              # The prefix below is not implicitly added. This URL and all subpaths should be proxied
+              # or otherwise pointed to the appservice's webserver to the path specified below (prefix).
+              # This path should usually include a trailing slash.
+              public: "{{ matrix_mautrix_hangouts_homeserver_domain }}login/"
+              # Internal prefix in the appservice web server for the login endpoints.
+              prefix: /login
 
       # Permissions for using the bridge.
       # Permitted values:
