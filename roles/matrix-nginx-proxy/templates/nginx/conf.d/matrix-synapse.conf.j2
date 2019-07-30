@@ -213,12 +213,6 @@ server {
 	ssl_prefer_server_ciphers on;
 	ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
 	
-	{% if matrix_mautrix_hangouts_enabled %}
-	location /login {
-			proxy_pass http://matrix-mautrix-hangouts:8080;
-			proxy_set_header X-Forwarded-For $remote_addr;
-	}
-	{% endif %}
 
 	location / {
 		{% if matrix_nginx_proxy_enabled %}
