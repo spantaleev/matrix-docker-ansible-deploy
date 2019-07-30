@@ -192,12 +192,6 @@ server {
 		rewrite ^/$ /_matrix/static/ last;
 	}
 
-	{% if matrix_mautrix_hangouts_enabled %}
-	location /login {
-	proxy_pass http://127.0.0.1:8080;
-	proxy_set_header X-Forwarded-For $remote_addr;
-	}
-	{% endif %}
 }
 
 {% if matrix_nginx_proxy_proxy_matrix_federation_api_enabled %}
@@ -218,6 +212,13 @@ server {
 	ssl_protocols {{ matrix_nginx_proxy_ssl_protocols }};
 	ssl_prefer_server_ciphers on;
 	ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
+	
+	{% if matrix_mautrix_hangouts_enabled %}
+	location /login {
+			proxy_pass http://matrix-mautrix-hangouts:8080;
+			proxy_set_header X-Forwarded-For $remote_addr;
+	}
+	{% endif %}
 
 	location / {
 		{% if matrix_nginx_proxy_enabled %}
