@@ -10,3 +10,8 @@
     - {'old': 'matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container', 'new': 'matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container'}
     - {'old': 'matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container', 'new': 'matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container'}
 
+- name: Fail on unknown matrix_ssl_retrieval_method
+  fail:
+    msg: >-
+      `matrix_ssl_retrieval_method` needs to be set to a known value.
+  when: "matrix_ssl_retrieval_method not in ['lets-encrypt', 'self-signed', 'manually-managed', 'none']"
