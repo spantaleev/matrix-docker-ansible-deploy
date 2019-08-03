@@ -8,7 +8,7 @@ To configure the playbook, you need to have done the following things:
 
 You can then follow these steps inside the playbook directory:
 
-- create a directory to hold your configuration (`mkdir inventory/host_vars/matrix.<your-domain>`)
+- create a directory to hold your configuration (`mkdir -p inventory/host_vars/matrix.<your-domain>`)
 
 - copy the sample configuration file (`cp examples/host-vars.yml inventory/host_vars/matrix.<your-domain>/vars.yml`)
 
