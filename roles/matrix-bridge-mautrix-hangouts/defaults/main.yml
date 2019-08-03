@@ -10,7 +10,7 @@ matrix_mautrix_hangouts_base_path: "{{ matrix_base_data_path }}/mautrix-hangouts
 matrix_mautrix_hangouts_config_path: "{{ matrix_mautrix_hangouts_base_path }}/config"
 matrix_mautrix_hangouts_data_path: "{{ matrix_mautrix_hangouts_base_path }}/data"
 
-matrix_mautrix_hangouts_public_endpoint: 'matrix-hangouts'
+matrix_mautrix_hangouts_public_endpoint: '/mautrix-hangouts'
 
 matrix_mautrix_hangouts_homeserver_address: 'http://matrix-synapse:8008'
 matrix_mautrix_hangouts_homeserver_domain: '{{ matrix_domain }}'
@@ -122,9 +122,10 @@ matrix_mautrix_hangouts_configuration_yaml: |
               # The prefix below is not implicitly added. This URL and all subpaths should be proxied
               # or otherwise pointed to the appservice's webserver to the path specified below (prefix).
               # This path should usually include a trailing slash.
-              public: "mautrix-hangouts/login/"
               # Internal prefix in the appservice web server for the login endpoints.
-              prefix: /login
+              public: "{{ matrix_homeserver_url }}{{ matrix_mautrix_hangouts_public_endpoint }}/"
+              prefix: "{{ matrix_mautrix_hangouts_public_endpoint }}/login"
+
 
       # Permissions for using the bridge.
       # Permitted values:
