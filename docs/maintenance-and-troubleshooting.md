@@ -16,6 +16,24 @@ You can see the logs by using journalctl. Example:
 sudo journalctl -fu matrix-synapse
 ```
 
+
+## Increasing Synapse logging
+
+Because the [Synapse](https://github.com/matrix-org/synapse) Matrix server is originally very chatty when it comes to logging, we intentionally reduce its [logging level](https://docs.python.org/3/library/logging.html#logging-levels) from `INFO` to `WARNING`.
+
+If you'd like to debug an issue or [report a Synapse bug](https://github.com/matrix-org/synapse/issues/new/choose) to the developers, it'd be better if you temporarily increasing the logging level to `INFO` or even `DEBUG`.
+
+Example configuration (`inventory/host_vars/matrix.DOMAIN/vars.yml`):
+
+```yaml
+matrix_synapse_log_level: "DEBUG"
+matrix_synapse_storage_sql_log_level: "DEBUG"
+matrix_synapse_root_log_level: "DEBUG"
+```
+
+Re-run the playbook after making these configuration changes.
+
+
 ## Postgres
 
 See the dedicated [PostgreSQL Maintenance](maintenance-postgres.md) documentation page.
