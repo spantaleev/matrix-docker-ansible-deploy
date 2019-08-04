@@ -29,7 +29,7 @@ You are required to specify an access token for Dimension to work.
 To get an access token, follow these steps:
 
 1. In a private browsing session (incognito window), open Riot.
-2. It's better to you use dedicated user for getting access token, so log in with this user's username and password.
+2. It's preferable to use a dedicated user for the access token, so create and log in with that user's username and password.
 3. Set the display name and avatar, if required.
 4. In the settings page choose "Help & About", scroll down to the bottom and click `Access Token: <click to reveal>`.
 5. Copy the highlighted text to your configuration.
