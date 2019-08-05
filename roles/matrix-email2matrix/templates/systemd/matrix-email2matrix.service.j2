@@ -1,0 +1,32 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Email2Matrix
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker kill matrix-email2matrix
+ExecStartPre=-/usr/bin/docker rm matrix-email2matrix
+
+ExecStart=/usr/bin/docker run --rm --name matrix-email2matrix \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--network={{ matrix_docker_network }} \
+			-p {{ matrix_email2matrix_smtp_host_bind_port }}:2525 \
+			--mount type=bind,src={{ matrix_email2matrix_config_dir_path }}/config.json,dst=/config.json,ro \
+			{% for arg in matrix_email2matrix_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_email2matrix_docker_image }}
+
+ExecStop=-/usr/bin/docker kill matrix-email2matrix
+ExecStop=-/usr/bin/docker rm matrix-email2matrix
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-email2matrix
+
+[Install]
+WantedBy=multi-user.target

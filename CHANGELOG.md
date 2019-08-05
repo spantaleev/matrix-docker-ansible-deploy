@@ -1,3 +1,14 @@
+# 2019-08-05
+
+## Email2Matrix support
+
+Support for [Email2Matrix](https://github.com/devture/email2matrix) has been added.
+
+It's an optional feature that you can enable via the playbook.
+
+To learn more, see the [playbook's documentation on Email2Matrix](./docs/configuring-playbook-email2matrix.md).
+
+
 # 2019-08-03
 
 ## Synapse logging level has been reduced to WARNING
