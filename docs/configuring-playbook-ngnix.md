@@ -12,7 +12,9 @@ This will serve a statuspage to the hosting machine only. Useful for monitoring 
 matrix_nginx_proxy_proxy_matrix_nginx_status_enabled: true
 ```
 
-This will serve the status page under ```https://matrix.DOMAIN/nginx_status``` 
+This will serve the status page under the following addresses:
+- `http://matrix.DOMAIN/nginx_status` (using HTTP)
+- `https://matrix.DOMAIN/nginx_status` (using HTTPS)
 
 By default, if ```matrix_nginx_proxy_nginx_status_enabled``` is enabled, access to the status page would be allowed from the local IP address of the server. If you wish to allow access from other IP addresses, you can provide them as a list:
 
