@@ -17,6 +17,17 @@ server {
 		{% endif %}
 	}
 
+{% if matrix_nginx_proxy_proxy_matrix_nginx_status_enabled %}
+	location /nginx_status {
+		stub_status on;
+		access_log off;
+{% for address in matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses %}
+		allow {{ address }};
+{% endfor %}
+		deny all;
+	}
+{% endif %}
+
 	location / {
 		return 301 https://$http_host$request_uri;
 	}
