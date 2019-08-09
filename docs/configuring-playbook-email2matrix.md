@@ -13,6 +13,7 @@ Ensure that port 25 is available on your Matrix server and open in your firewall
 If you have `postfix` or some other email server software installed, you may need to manually remove it first (unless you need it, of course).
 
 If you really need to run an email server on the Matrix machine for other purposes, it may be possible to run Email2Matrix on another port (with a configuration like `matrix_email2matrix_smtp_host_bind_port: "127.0.0.01:2525"`) and have your other email server relay messages there.
+For details about using Email2Matrix alongside [Postfix](http://www.postfix.org/), see [here](https://github.com/devture/email2matrix/blob/master/docs/setup_with_postfix.md).
 
 ### Creating a user
 
