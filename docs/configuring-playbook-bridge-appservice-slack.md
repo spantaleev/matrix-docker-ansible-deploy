@@ -40,18 +40,20 @@ Note that the bot's domain is your server's domain **without the `matrix.` prefi
     - team_domain_change
     - message.channels
     - message.groups (if you want to bridge private channels)
-    - team.info
+    - reaction_added
+    - reaction_removed
 
 7. Click on OAuth & Permissions and add the following scopes:
 
     - chat:write:bot
     - users:read
+    - reactions:write
 
     If you want to bridge files, also add the following:
 
     - files:write:user
 
-    Note: any media uploaded to matrix is currently accessible by anyone who knows the url. In order to make Slack files visible to matrix users, this bridge will make Slack files visible to anyone with the url (including files in private channels). This is different then the current behavior in Slack, which only allows authenticated access to media posted in private channels. See MSC701 for details.
+    Note: In order to make Slack files visible to matrix users, this bridge will make Slack files visible to anyone with the url (including files in private channels). This is different than the current behavior in Slack, which only allows authenticated access to media posted in private channels. See MSC701 for details.
 
 8. Click on Install App and Install App to Workspace. Note the access tokens shown. You will need the Bot User OAuth Access Token and if you want to bridge files, the OAuth Access Token whenever you link a room.
 
