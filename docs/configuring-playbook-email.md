@@ -7,6 +7,8 @@ This may or may not work, depending on your domain configuration (SPF settings, 
 
 By default, emails are sent from `matrix@<your-domain-name>` (as specified by the `matrix_mailer_sender_address` playbook variable).
 
+**Note**: If you are using a Google Cloud instance, [port 25 is always blocked](https://cloud.google.com/compute/docs/tutorials/sending-mail/), so you need to relay email through another SMTP server as described below.   
+
 
 ## Firewall settings
 
@@ -30,6 +32,23 @@ matrix_mailer_relay_auth_password: "some-password"
 
 **Note**: only the secure submission protocol (using `STARTTLS`, usually on port `587`) is supported. **SMTPS** (encrypted SMTP, usually on port `465`) **is not supported**.
 
+
+### Configuations for sending emails using Sendgrid
+An easy and free STMP service to set up is [Sendgrid](https://sendgrid.com/), the free tier allows for up to 100 emails per day to be sent. In the settings below you can provide any email for `matrix_mailer_sender_address`.
+
+The only other thing you need to change is the `matrix_mailer_relay_auth_password`, which you can generate at https://app.sendgrid.com/settings/api_keys. The API key password looks something like `SG.955oW1mLSfwds7i9Yd6IA5Q.q8GTaB8q9kGDzasegdG6u95fQ-6zkdwrPP8bOeuI`.
+
+Note that the `matrix_mailer_relay_auth_username` is literally the string `apikey`, it's always the same for Sendgrid.
+
+```yaml
+matrix_mailer_sender_address: "arbitrary@email.com"
+matrix_mailer_relay_use: true
+matrix_mailer_relay_host_name: "smtp.sendgrid.net"
+matrix_mailer_relay_host_port: 587
+matrix_mailer_relay_auth: true
+matrix_mailer_relay_auth_username: "apikey"
+matrix_mailer_relay_auth_password: "<your api key password>" 
+```
 
 ## Troubleshooting
 
