@@ -122,7 +122,7 @@ This playbook sets up your server using the following Docker images:
 
 - [tulir/mautrix-facebook](https://hub.docker.com/r/tulir/mautrix-facebook/) - the [mautrix-facebook](https://github.com/tulir/mautrix-facebook) bridge to [Facebook](https://facebook.com/) (optional)
 
-- [tulir/mautrix-facebook](https://hub.docker.com/r/tulir/mautrix-hangouts/) - the [mautrix-hangouts](https://github.com/tulir/mautrix-hangouts) bridge to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts) (optional)
+- [tulir/mautrix-hangouts](https://hub.docker.com/r/tulir/mautrix-hangouts/) - the [mautrix-hangouts](https://github.com/tulir/mautrix-hangouts) bridge to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts) (optional)
 
 - [tedomum/matrix-appservice-irc](https://hub.docker.com/r/tedomum/matrix-appservice-irc/) - the [matrix-appservice-irc](https://github.com/TeDomum/matrix-appservice-irc) bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) (optional)
 
