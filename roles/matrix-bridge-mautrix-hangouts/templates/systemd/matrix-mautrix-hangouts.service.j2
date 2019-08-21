@@ -1,0 +1,48 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Mautrix Hangouts server
+{% for service in matrix_mautrix_hangouts_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_mautrix_hangouts_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker kill matrix-mautrix-hangouts
+ExecStartPre=-/usr/bin/docker rm matrix-mautrix-hangouts
+ExecStartPre=/usr/bin/docker run --rm --name matrix-mautrix-hangouts-db \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			-v {{ matrix_mautrix_hangouts_config_path }}:/config:z \
+			-v {{ matrix_mautrix_hangouts_data_path }}:/data:z \
+			{{ matrix_mautrix_hangouts_docker_image }} \
+			alembic -x config=/config/config.yaml upgrade head
+
+# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
+ExecStartPre=/bin/sleep 5
+
+ExecStart=/usr/bin/docker run --rm --name matrix-mautrix-hangouts \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_docker_network }} \
+			-v {{ matrix_mautrix_hangouts_config_path }}:/config:z \
+			-v {{ matrix_mautrix_hangouts_data_path }}:/data:z \
+			{% for arg in matrix_mautrix_hangouts_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_mautrix_hangouts_docker_image }} \
+			python3 -m mautrix_hangouts -c /config/config.yaml
+
+ExecStop=-/usr/bin/docker kill matrix-mautrix-hangouts
+ExecStop=-/usr/bin/docker rm matrix-mautrix-hangouts
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-mautrix-hangouts
+
+[Install]
+WantedBy=multi-user.target
