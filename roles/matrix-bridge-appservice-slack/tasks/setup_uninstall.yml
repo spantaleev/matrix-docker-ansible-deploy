@@ -1,0 +1,24 @@
+---
+
+- name: Check existence of matrix-appservice-slack service
+  stat:
+    path: "/etc/systemd/system/matrix-appservice-slack.service"
+  register: matrix_appservice_slack_service_stat
+
+- name: Ensure matrix-appservice-slack is stopped
+  service:
+    name: matrix-appservice-slack
+    state: stopped
+    daemon_reload: yes
+  when: "matrix_appservice_slack_service_stat.stat.exists"
+
+- name: Ensure matrix-appservice-slack.service doesn't exist
+  file:
+    path: "/etc/systemd/system/matrix-appservice-slack.service"
+    state: absent
+  when: "matrix_appservice_slack_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-appservice-slack.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_appservice_slack_service_stat.stat.exists"

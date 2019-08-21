@@ -1,0 +1,43 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Appservice Slack server
+{% for service in matrix_appservice_slack_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_appservice_slack_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker kill matrix-appservice-slack
+ExecStartPre=-/usr/bin/docker rm matrix-appservice-slack
+
+# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
+ExecStartPre=/bin/sleep 5
+
+ExecStart=/usr/bin/docker run --rm --name matrix-appservice-slack \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_appservice_slack_container_http_host_bind_port %}
+			-p {{ matrix_appservice_slack_container_http_host_bind_port }}:{{matrix_appservice_slack_slack_port}} \
+			{% endif %}
+			-v {{ matrix_appservice_slack_config_path }}:/config:z \
+			-v {{ matrix_appservice_slack_data_path }}:/data:z \
+			{% for arg in matrix_appservice_slack_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_appservice_slack_docker_image }} \
+			node app.js -p {{matrix_appservice_slack_matrix_port}} -c /config/config.yaml -f /config/slack-registration.yaml
+
+ExecStop=-/usr/bin/docker kill matrix-appservice-slack
+ExecStop=-/usr/bin/docker rm matrix-appservice-slack
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-appservice-slack
+
+[Install]
+WantedBy=multi-user.target
