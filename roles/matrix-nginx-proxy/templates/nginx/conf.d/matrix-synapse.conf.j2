@@ -1,4 +1,17 @@
 #jinja2: lstrip_blocks: "True"
+{% macro render_nginx_status_location_block(addresses) %}
+	{# Empty first line to make indentation prettier. #}
+
+	location /nginx_status {
+		stub_status on;
+		access_log off;
+		{% for address in addresses %}
+		allow {{ address }};
+		{% endfor %}
+		deny all;
+	}
+{% endmacro %}
+
 server {
 	listen {{ 8080 if matrix_nginx_proxy_enabled else 80 }};
 	server_name {{ matrix_nginx_proxy_proxy_matrix_hostname }};
@@ -16,6 +29,10 @@ server {
 			proxy_pass http://127.0.0.1:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }};
 		{% endif %}
 	}
+
+	{% if matrix_nginx_proxy_proxy_matrix_nginx_status_enabled %}
+		{{ render_nginx_status_location_block(matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses) }}
+	{% endif %}
 
 	location / {
 		return 301 https://$http_host$request_uri;
@@ -51,6 +68,10 @@ server {
 		default_type application/json;
 		add_header Access-Control-Allow-Origin *;
 	}
+
+	{% if matrix_nginx_proxy_proxy_matrix_nginx_status_enabled %}
+		{{ render_nginx_status_location_block(matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses) }}
+	{% endif %}
 
 	{% if matrix_nginx_proxy_proxy_matrix_corporal_api_enabled %}
 	location /_matrix/corporal {

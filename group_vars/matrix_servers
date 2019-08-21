@@ -158,6 +158,36 @@ matrix_mautrix_facebook_homeserver_token: "{{ matrix_synapse_macaroon_secret_key
 
 ######################################################################
 #
+# matrix-bridge-mautrix-hangouts
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_mautrix_hangouts_enabled: false
+
+matrix_mautrix_hangouts_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+  }}
+
+matrix_mautrix_hangouts_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'ho.as.token') | to_uuid }}"
+
+matrix_mautrix_hangouts_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'ho.hs.token') | to_uuid }}"
+
+######################################################################
+#
+# /matrix-bridge-mautrix-hangouts
+#
+######################################################################
+
+
+
+
+
+######################################################################
+#
 # matrix-bridge-mautrix-telegram
 #
 ######################################################################
@@ -292,6 +322,21 @@ matrix_dimension_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_ena
 ######################################################################
 #
 # /matrix-dimension
+#
+######################################################################
+
+
+######################################################################
+#
+# matrix-email2matrix
+#
+######################################################################
+
+matrix_email2matrix_enabled: false
+
+######################################################################
+#
+# /matrix-email2matrix
 #
 ######################################################################
 

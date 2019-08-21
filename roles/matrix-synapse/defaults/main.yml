@@ -3,7 +3,7 @@
 
 matrix_synapse_enabled: true
 
-matrix_synapse_docker_image: "matrixdotorg/synapse:v1.2.1"
+matrix_synapse_docker_image: "matrixdotorg/synapse:v1.3.1"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
@@ -61,7 +61,10 @@ matrix_synapse_template_synapse_log: "{{ role_path }}/templates/synapse/synapse.
 
 matrix_synapse_macaroon_secret_key: ""
 matrix_synapse_registration_shared_secret: "{{ matrix_synapse_macaroon_secret_key }}"
+matrix_synapse_allow_guest_access: false
 matrix_synapse_form_secret: "{{ matrix_synapse_macaroon_secret_key }}"
+
+matrix_synapse_id_servers_public: ['matrix.org', 'vector.im']
 
 # The list of identity servers to use for Synapse.
 # We assume this role runs standalone without a local Identity server, so we point Synapse to public ones.
@@ -77,9 +80,9 @@ matrix_synapse_tmp_directory_size_mb: "{{ matrix_synapse_max_upload_size_mb * 50
 # Possible options are defined here https://docs.python.org/3/library/logging.html#logging-levels
 # warning: setting log level to DEBUG will make synapse log sensitive information such
 # as access tokens
-matrix_synapse_log_level: "INFO"
-matrix_synapse_storage_sql_log_level: "INFO"
-matrix_synapse_root_log_level: "INFO"
+matrix_synapse_log_level: "WARNING"
+matrix_synapse_storage_sql_log_level: "WARNING"
+matrix_synapse_root_log_level: "WARNING"
 
 # Rate limits
 matrix_synapse_rc_message:
@@ -223,6 +226,7 @@ matrix_synapse_database_database: ""
 
 matrix_synapse_turn_uris: []
 matrix_synapse_turn_shared_secret: ""
+matrix_synapse_turn_allow_guests: False
 
 matrix_synapse_email_enabled: false
 matrix_synapse_email_smtp_host: ""

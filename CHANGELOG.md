@@ -1,3 +1,38 @@
+# 2019-08-21
+
+## Google Hangouts support
+
+Thanks to the [great work](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/251) of [Eduardo Beltrame (Munfred)](https://github.com/Munfred) and [Robbie D (microchipster)](https://github.com/microchipster), the playbook now supports bridging to [Google Hangouts](https://hangouts.google.com/) via the [mautrix-hangouts](https://mau.dev/tulir/mautrix-hangouts) bridge.
+
+Additional details are available in [Setting up Mautrix Hangouts bridging](docs/configuring-playbook-bridge-mautrix-hangouts.md).
+
+
+# 2019-08-05
+
+## Email2Matrix support
+
+Support for [Email2Matrix](https://github.com/devture/email2matrix) has been added.
+
+It's an optional feature that you can enable via the playbook.
+
+To learn more, see the [playbook's documentation on Email2Matrix](./docs/configuring-playbook-email2matrix.md).
+
+
+# 2019-08-03
+
+## Synapse logging level has been reduced to WARNING
+
+After [some discussion in our support room](https://matrix.to/#/!PukFFdIcHgtaaHZflT:devture.com/$156476852524179TBeKy:matrix.org?via=devture.com&via=matrix.org&via=librem.one), we've decided to change the default logging level for Synapse from `INFO` to `WARNING`.
+
+This greatly reduces the number of log messages that are being logged, leading to:
+
+- much less disk space dedicated to Synapse and thus, logs kept for longer
+- easier to find some important `WARNING`, `ERROR` and `CRITICAL` messages, as they're not longer buried in thousands of non-important `INFO` messages
+
+If you'd like to track down an issue, you [can always increase the logging level as described here](./docs/maintenance-and-troubleshooting.md#increasing-synapse-logging).
+
+
+
 # 2019-07-08
 
 ## Synapse Maintenance docs and synapse-janitor support are available

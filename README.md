@@ -38,11 +38,15 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) bridge for bridging your Matrix server to [Whatsapp](https://www.whatsapp.com/)
 
-- (optional) the [mautrix-facebook](https://github.com/tulir/mautrix-facebook) bridge for bridging your Matrix server to [facebook](https://facebook.com/)
+- (optional) the [mautrix-facebook](https://github.com/tulir/mautrix-facebook) bridge for bridging your Matrix server to [Facebook](https://facebook.com/)
+
+- (optional) the [mautrix-hangouts](https://github.com/tulir/mautrix-hangouts) bridge for bridging your Matrix server to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts)
 
 - (optional) the [matrix-appservice-irc](https://github.com/TeDomum/matrix-appservice-irc) bridge for bridging your Matrix server to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat)
 
 - (optional) the [matrix-appservice-discord](https://github.com/Half-Shot/matrix-appservice-discord) bridge for bridging your Matrix server to [Discord](https://discordapp.com/)
+
+- (optional) [Email2Matrix](https://github.com/devture/email2matrix) for relaying email messages to Matrix rooms
 
 - (optional) [Dimension](https://github.com/turt2live/matrix-dimension), an open source integrations manager for matrix clients
 
@@ -108,6 +112,8 @@ This playbook sets up your server using the following Docker images:
 
 - [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay/) - the [Exim](https://www.exim.org/) email server (optional)
 
+- [devture/email2matrix](https://hub.docker.com/r/devture/email2matrix/) - the [Email2Matrix](https://github.com/devture/email2matrix) email server, which can relay email messages to Matrix rooms (optional)
+
 - [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal/) - [Matrix Corporal](https://github.com/devture/matrix-corporal): reconciliator and gateway for a managed Matrix server (optional)
 
 - [nginx](https://hub.docker.com/_/nginx/) - the [nginx](http://nginx.org/) web server (optional)
@@ -119,6 +125,8 @@ This playbook sets up your server using the following Docker images:
 - [tulir/mautrix-whatsapp](https://hub.docker.com/r/tulir/mautrix-whatsapp/) - the [mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) bridge to [Whatsapp](https://www.whatsapp.com/) (optional)
 
 - [tulir/mautrix-facebook](https://hub.docker.com/r/tulir/mautrix-facebook/) - the [mautrix-facebook](https://github.com/tulir/mautrix-facebook) bridge to [Facebook](https://facebook.com/) (optional)
+
+- [tulir/mautrix-hangouts](https://hub.docker.com/r/tulir/mautrix-hangouts/) - the [mautrix-hangouts](https://github.com/tulir/mautrix-hangouts) bridge to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts) (optional)
 
 - [tedomum/matrix-appservice-irc](https://hub.docker.com/r/tedomum/matrix-appservice-irc/) - the [matrix-appservice-irc](https://github.com/TeDomum/matrix-appservice-irc) bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) (optional)
 
