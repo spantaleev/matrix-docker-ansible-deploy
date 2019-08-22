@@ -1,3 +1,18 @@
+# 2019-08-22
+
+## Extensible Synapse configuration
+
+Previously, we had to create custom Ansible variables for each and every Synapse setting.
+This lead to too much effort (and configuration ugliness) to all of Synapse's settings, so naturally, not all features of Synapse could be controlled through the playbook.
+
+From now on, you can extend/override the Synapse server's configuration by making use of the `matrix_synapse_configuration_extension_yaml` variable.
+This should be enough for most customization needs.
+
+If you need even more power, you can now also take full control and override `matrix_synapse_configuration` (or `matrix_synapse_configuration_yaml`) directly.
+
+Learn more here in [Configuring Synapse](docs/configuring-playbook-synapse.md).
+
+
 # 2019-08-21
 
 ## Slack bridging support

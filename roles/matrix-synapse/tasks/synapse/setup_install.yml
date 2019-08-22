@@ -53,10 +53,12 @@
   when: "not matrix_synapse_signing_key_stat.stat.exists"
 
 - name: Ensure Synapse homeserver config installed
-  template:
-    src: "{{ matrix_synapse_template_synapse_homeserver }}"
+  copy:
+    content: "{{ matrix_synapse_configuration|to_nice_yaml }}"
     dest: "{{ matrix_synapse_config_dir_path }}/homeserver.yaml"
     mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
 
 - name: Ensure Synapse log config installed
   template:
