@@ -1,3 +1,17 @@
+# 2019-08-25
+
+## Extensible Riot-web configuration
+
+Similarly to [Extensible Synapse configuration](#extensible-synapse-configuration) (below), Riot-web configuration is also extensible now.
+
+From now on, you can extend/override Riot-web's configuration by making use of the `matrix_riot_web_configuration_extension_json` variable.
+This should be enough for most customization needs.
+
+If you need even more power, you can now also take full control and override `matrix_riot_web_configuration_default` (or `matrix_riot_web_configuration`) directly.
+
+Learn more here in [Configuring Riot-web](docs/configuring-playbook-riot-web.md).
+
+
 # 2019-08-22
 
 ## Extensible Synapse configuration

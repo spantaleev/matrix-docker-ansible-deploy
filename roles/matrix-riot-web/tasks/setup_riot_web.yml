@@ -21,6 +21,14 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_riot_web_docker_image_force_pull }}"
   when: matrix_riot_web_enabled|bool
 
+- name: Ensure Matrix riot-web configuration installed
+  copy:
+    content: "{{ matrix_riot_web_configuration|to_nice_json }}"
+    dest: "{{ matrix_riot_web_data_path }}/config.json"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+
 - name: Ensure Matrix riot-web config files installed
   template:
     src: "{{ item.src }}"
@@ -29,7 +37,6 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
   with_items:
-    - {src: "{{ role_path }}/templates/config.json.j2", name: "config.json"}
     - {src: "{{ role_path }}/templates/nginx.conf.j2", name: "nginx.conf"}
     - {src: "{{ role_path }}/templates/welcome.html.j2", name: "welcome.html"}
     - {src: "{{ matrix_riot_web_embedded_pages_home_path }}", name: "home.html"}

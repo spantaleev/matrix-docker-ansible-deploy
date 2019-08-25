@@ -43,3 +43,36 @@ matrix_riot_web_registration_enabled: false
 
 # Controls whether Riot shows the presence features
 matrix_riot_web_enable_presence_by_hs_url: ~
+
+# Default riot-web configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_riot_web_configuration_extension_json`)
+# or completely replace this variable with your own template.
+#
+# The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
+# This is unlike what it does when looking up YAML template files (no automatic parsing there).
+matrix_riot_web_configuration_default: "{{ lookup('template', 'templates/config.json.j2') }}"
+
+# Your custom JSON configuration for riot-web should go to `matrix_riot_web_configuration_extension_json`.
+# This configuration extends the default starting configuration (`matrix_riot_web_configuration_default`).
+#
+# You can override individual variables from the default configuration, or introduce new ones.
+#
+# If you need something more special, you can take full control by
+# completely redefining `matrix_riot_web_configuration_default`.
+#
+# Example configuration extension follows:
+#
+# matrix_riot_web_configuration_extension_json: |
+#  {
+#  "disable_3pid_login": true,
+#  "disable_login_language_selector": true
+#  }
+matrix_riot_web_configuration_extension_json: '{}'
+
+matrix_riot_web_configuration_extension: "{{ matrix_riot_web_configuration_extension_json|from_json if matrix_riot_web_configuration_extension_json|from_json is mapping else {} }}"
+
+# Holds the final riot-web configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_riot_web_configuration_default`.
+matrix_riot_web_configuration: "{{ matrix_riot_web_configuration_default|combine(matrix_riot_web_configuration_extension, recursive=True) }}"
