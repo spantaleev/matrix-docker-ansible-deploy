@@ -21,5 +21,5 @@ You can then use the configuration files from this directory as an example for h
 HAproxy, unlike Apache, Nginx and others, does not provide you with a webserver to serve static files (i.e., `/.well-known/` directory). For this reason, in this folder you can find an example on how to use HAproxy together with a simple Nginx container whose only task is to serve those files.
 
 * Build the Docker image. `docker build -t local/nginx .` 
-* Start the container. `docker-compose up -d`. Note that if you want to run Nginx on a different port, you will have to change the port both in the `docker-compose.yml` and in `haproxy.cfg` files.
+* Start the container. `docker-compose up -d`. Note that if you want to run Nginx on a different port, you will have to change the port both in the `docker-compose.yml` and in `haproxy.cfg`.
 * Start HAproxy with the proposed configuration.
