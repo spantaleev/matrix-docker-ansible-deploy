@@ -26,10 +26,12 @@
   when: matrix_corporal_enabled|bool
 
 - name: Ensure Matrix Corporal config installed
-  template:
-    src: "{{ role_path }}/templates/config.json.j2"
+  copy:
+    content: "{{ matrix_corporal_configuration|to_nice_json }}"
     dest: "{{ matrix_corporal_config_dir_path }}/config.json"
     mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
   when: matrix_corporal_enabled|bool
 
 - name: Ensure matrix-corporal.service installed
