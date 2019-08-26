@@ -22,4 +22,5 @@ HAproxy, unlike Apache, Nginx and others, does not provide you with a webserver 
 
 * Build the Docker image. `docker build -t local/nginx .` 
 * Start the container. `docker-compose up -d`. Note that if you want to run Nginx on a different port, you will have to change the port both in the `docker-compose.yml` and in `haproxy.cfg`.
+* If you don't want to use a wildcard certificate, you will need to modify the corresponding line in the HTTPS frontent and add the paths of all the specific certificates (as for the commented example in `haproxy.cfg`).
 * Start HAproxy with the proposed configuration.
