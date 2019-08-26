@@ -53,6 +53,9 @@ Once you've followed the [Preparation](#preparation) guide above, you can take a
 
 After following  the [Preparation](#preparation) guide above, you can take a look at the [examples/caddy](../examples/caddy) directory for a sample configuration.
 
+## Using your own HAproxy reverse proxy
+After following  the [Preparation](#preparation) guide above, you can take a look at the [examples/haproxy](../examples/haproxy) directory for a sample configuration. In this case HAproxy is used as a reverse proxy and a simple Nginx container is used to serve statically `.well-known` files.
+
 ## Using another external webserver
 
 Feel free to look at the [examples/apache](../examples/apache) directory, or the [template files in the matrix-nginx-proxy role](../roles/matrix-nginx-proxy/templates/conf.d/).
