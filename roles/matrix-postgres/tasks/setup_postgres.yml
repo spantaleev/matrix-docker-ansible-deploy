@@ -44,6 +44,18 @@
     - "{{ matrix_postgres_data_path }}"
   when: matrix_postgres_enabled|bool
 
+# We do this as a separate task, because:
+# - we'd like to do it for the data path only, not for the base path (which contains root-owned environment variable files we'd like to leave as-is)
+# - we need to do it without `mode`, or we risk making certain `.conf` and other files's executable bit to flip to true
+- name: Ensure Postgres data path ownership is correct
+  file:
+    path: "{{ matrix_postgres_data_path }}"
+    state: directory
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+    recurse: yes
+  when: matrix_postgres_enabled|bool
+
 - name: Ensure Postgres environment variables file created
   template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
