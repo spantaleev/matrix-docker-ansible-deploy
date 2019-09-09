@@ -1,3 +1,14 @@
+# 2019-09-09
+
+## Synapse Simple Antispam support
+
+There have been lots of invite-spam attacks lately and [Travis](https://github.com/t2bot) has created a Synapse module ([synapse-simple-antispam](https://github.com/t2bot/synapse-simple-antispam)) to let people protect themselves.
+
+From now on, you can easily install and configure this spam checker module through the playbook.
+
+Learn more in [Setting up Synapse Simple Antispam](docs/configuring-playbook-synapse-simple-antispam.md).
+
+
 # 2019-08-25
 
 ## Extensible Riot-web configuration
@@ -9,7 +20,7 @@ This should be enough for most customization needs.
 
 If you need even more power, you can now also take full control and override `matrix_riot_web_configuration_default` (or `matrix_riot_web_configuration`) directly.
 
-Learn more here in [Configuring Riot-web](docs/configuring-playbook-riot-web.md).
+Learn more in [Configuring Riot-web](docs/configuring-playbook-riot-web.md).
 
 
 # 2019-08-22
