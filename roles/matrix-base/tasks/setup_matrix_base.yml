@@ -42,11 +42,12 @@
     cmd: "docker network ls -q --filter='name=^{{ matrix_docker_network }}$'"
   register: result_check_docker_network
   changed_when: false
+  check_mode: no
 
 - name: Create Matrix network in Docker
   shell:
     cmd: "docker network create --driver=bridge {{ matrix_docker_network }}"
-  when: "result_check_docker_network.stdout == ''"
+  when: "result_check_docker_network.stdout == '' and not ansible_check_mode"
 
 - name: Ensure matrix-remove-all script created
   template:
