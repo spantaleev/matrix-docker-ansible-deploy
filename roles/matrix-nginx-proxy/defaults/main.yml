@@ -25,6 +25,7 @@ matrix_nginx_proxy_container_additional_volumes: []
 # A list of extra arguments to pass to the container
 matrix_nginx_proxy_container_extra_arguments: []
 
+
 # Controls whether matrix-nginx-proxy should serve the base domain.
 #
 # This is useful for when you only have your Matrix server, but you need to serve
@@ -36,7 +37,17 @@ matrix_nginx_proxy_container_extra_arguments: []
 # You can also put additional files to use for this webpage
 # in the `{{ matrix_nginx_proxy_data_path }}/matrix-domain` (`/matrix/nginx-proxy/data/matrix-domain`) directory.
 matrix_nginx_proxy_base_domain_serving_enabled: false
+
 matrix_nginx_proxy_base_domain_hostname: "{{ matrix_domain }}"
+
+# Controls whether `matrix_nginx_proxy_base_domain_homepage_template` would be dumped to an `index.html` file
+# in the `/matrix/nginx-proxy/data/matrix-domain` directory.
+#
+# If you would instead like to serve a static website by yourself, you can disable this.
+# When disabled, you're expected to put website files in `/matrix/nginx-proxy/data/matrix-domain` manually
+# and can expect that the playbook won't intefere with the `index.html` file.
+matrix_nginx_proxy_base_domain_homepage_enabled: true
+
 matrix_nginx_proxy_base_domain_homepage_template: |-
   <!doctype html>
   <meta charset="utf-8" />
@@ -45,6 +56,7 @@ matrix_nginx_proxy_base_domain_homepage_template: |-
       Hello from {{ matrix_domain }}!
     </body>
   </html>
+
 
 # Controls whether proxying the riot domain should be done.
 matrix_nginx_proxy_proxy_riot_enabled: false
