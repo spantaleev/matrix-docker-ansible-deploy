@@ -1,3 +1,18 @@
+# 2019-10-03
+
+## Synapse 1.4.0
+
+Synapse 1.4.0 [is out](https://matrix.org/blog/2019/10/03/synapse-1-4-0-released) with lots of changes related to privacy.
+
+Its new defaults (which we adopt as well) mean that certain old data will automatically get purged after a certain number of days. 1.4.0 automatically garbage collects redacted messages (defaults to 7 days) and removes unused IP and user agent information stored in the user_ips table (defaults to 30 days). If you'd like to preserve this data, we encourage you to look at the `redaction_retention_period` and `user_ips_max_age` options (controllable by the `matrix_synapse_redaction_retention_period` and `matrix_synapse_user_ips_max_age` playbook variables, respectively) before doing the upgrade. If you'd like to keep data indefinitely, set these variables to `null` (e.g. `matrix_synapse_redaction_retention_period: ~`).
+
+From now on the `trusted_key_servers` setting for Synapse is configurable. It still defaults to `matrix.org` just like it always has, but in a more explicit way now. If you'd like to use another trusted key server, adjust the `matrix_synapse_trusted_key_servers` playbook variable.
+
+Synapse 1.4.0 also changes lots of things related to identity server integration.
+Because Synapse will now by default be responsible for validating email addresses for user accounts, running without an identity server looks more feasible.
+We still [have concerns](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/275/files#r331104117) over disabling the identity server by default, so for now it remains enabled.
+
+
 # 2019-09-09
 
 ## Synapse Simple Antispam support

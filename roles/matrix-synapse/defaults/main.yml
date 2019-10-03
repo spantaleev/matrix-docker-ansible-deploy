@@ -3,7 +3,7 @@
 
 matrix_synapse_enabled: true
 
-matrix_synapse_docker_image: "matrixdotorg/synapse:v1.3.1"
+matrix_synapse_docker_image: "matrixdotorg/synapse:v1.4.0"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
@@ -307,6 +307,13 @@ matrix_synapse_default_room_version: "4"
 # If a spam-checker extension is enabled, this variable's value is set automatically by the playbook during runtime.
 # If not, you can also control its value manually.
 matrix_synapse_spam_checker: ~
+
+matrix_synapse_trusted_key_servers:
+  - server_name: "matrix.org"
+
+matrix_synapse_redaction_retention_period: 7d
+
+matrix_synapse_user_ips_max_age: 28d
 
 # Default Synapse configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
