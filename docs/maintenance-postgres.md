@@ -42,7 +42,7 @@ docker run \
 --rm \
 --network matrix \
 --env-file=/matrix/postgres/env-postgres-psql \
-postgres:11.1-alpine \
+postgres:12.0-alpine \
 pg_dump -h matrix-postgres \
 | gzip -c \
 > /postgres.sql.gz

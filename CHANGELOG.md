@@ -1,3 +1,12 @@
+# 2019-10-04
+
+## Postgres 12 support
+
+The playbook now installs [Postgres 12](https://www.postgresql.org/about/news/1976/) by default.
+
+If you have have an existing setup, it's likely running on an older Postgres version (9.x, 10.x or 11.x). You can easily upgrade by following the [upgrading PostgreSQL guide](docs/maintenance-postgres.md#upgrading-postgresql).
+
+
 # 2019-10-03
 
 ## Synapse 1.4.0
