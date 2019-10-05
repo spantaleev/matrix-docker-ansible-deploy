@@ -12,6 +12,8 @@ If your database name differs, be sure to change `matrix_postgres_db_name` to yo
 
 The playbook supports importing Postgres dump files in **text** (e.g. `pg_dump > dump.sql`) or **gzipped** formats (e.g. `pg_dump | gzip -c > dump.sql.gz`).
 
+Importing multiple databases (as dumped by `pg_dumpall`) is also supported.
+
 Before doing the actual import, **you need to upload your Postgres dump file to the server** (any path is okay).
 
 

@@ -67,14 +67,21 @@
   delegate_to: 127.0.0.1
   become: false
 
+# We dump all databases, roles, etc.
+#
+# Because we'll be importing into a new container which initializes the default
+# role (`matrix_postgres_connection_username`) and database (`matrix_postgres_db_name`) by itself on startup,
+# we need to remove these from the dump, or we'll get errors saying these already exist.
 - name: Perform Postgres database dump
-  command: |
-    /usr/bin/docker run --rm --name matrix-postgres-dump \
-    --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
-    --network={{ matrix_docker_network }} \
-    --env-file={{ matrix_postgres_base_path }}/env-postgres-psql \
-    -v {{ postgres_dump_dir }}:/out \
-    {{ matrix_postgres_detected_version_corresponding_docker_image }} pg_dump -h matrix-postgres {{ matrix_postgres_db_name }} -f /out/{{ postgres_dump_name }}
+  command: >-
+    /usr/bin/docker run --rm --name matrix-postgres-dump
+    --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+    --network={{ matrix_docker_network }}
+    --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
+    --entrypoint=/bin/sh
+    -v {{ postgres_dump_dir }}:/out
+    {{ matrix_postgres_detected_version_corresponding_docker_image }}
+    -c "pg_dumpall -h matrix-postgres > /out/{{ postgres_dump_name }}"
 
 - name: Ensure matrix-postgres is stopped
   service:
@@ -102,15 +109,43 @@
   delegate_to: 127.0.0.1
   become: false
 
+# Starting the database container had automatically created the default
+# role (`matrix_postgres_connection_username`) and database (`matrix_postgres_db_name`).
+# The dump most likely contains those same entries and would try to re-create them, leading to errors.
+# We need to skip over those lines.
+- name: Generate Postgres database import command
+  set_fact:
+    matrix_postgres_import_command: >-
+      /usr/bin/docker run --rm --name matrix-postgres-import
+      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+      --cap-drop=ALL
+      --network={{ matrix_docker_network }}
+      --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
+      --entrypoint=/bin/sh
+      -v {{ postgres_dump_dir }}:/in:ro
+      {{ matrix_postgres_docker_image_latest }}
+      -c "cat /in/{{ postgres_dump_name }} |
+      grep -vE '^CREATE ROLE {{ matrix_postgres_connection_username }}' |
+      grep -vE '^CREATE DATABASE {{ matrix_postgres_db_name }}' |
+      psql -v ON_ERROR_STOP=1 -h matrix-postgres"
+
+# This is a hack.
+# See: https://ansibledaily.com/print-to-standard-output-without-escaping/
+#
+# We want to run `debug: msg=".."`, but that dumps it as JSON and escapes double quotes within it,
+# which ruins the command (`matrix_postgres_import_command`)
+- name: Note about Postgres importing
+  set_fact:
+    dummy: true
+  with_items:
+    - >-
+        Importing Postgres database using the following command: `{{ matrix_postgres_import_command }}`.
+        If this crashes, you can stop Postgres (`systemctl stop matrix-postgres`),
+        delete the new database data (`rm -rf {{ matrix_postgres_data_path }}`)
+        and restore the automatically-made backup (`mv {{ postgres_auto_upgrade_backup_data_path }} {{ matrix_postgres_data_path }}`).
+
 - name: Perform Postgres database import
-  command: |
-    /usr/bin/docker run --rm --name matrix-postgres-import \
-    --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
-    --cap-drop=ALL \
-    --network={{ matrix_docker_network }} \
-    --env-file={{ matrix_postgres_base_path }}/env-postgres-psql \
-    -v {{ postgres_dump_dir }}:/in:ro \
-    {{ matrix_postgres_docker_image_latest }} psql -v ON_ERROR_STOP=1 -h matrix-postgres -f /in/{{ postgres_dump_name }}
+  command: "{{ matrix_postgres_import_command }}"
 
 - name: Delete Postgres database dump file
   file:

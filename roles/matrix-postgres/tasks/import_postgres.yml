@@ -56,6 +56,10 @@
     msg: "Could not find existing Postgres installation"
   when: "not matrix_postgres_detected_existing|bool"
 
+# Starting the database container had automatically created the default
+# role (`matrix_postgres_connection_username`) and database (`matrix_postgres_db_name`).
+# The dump most likely contains those same entries and would try to re-create them, leading to errors.
+# We need to skip over those lines.
 - name: Generate Postgres database import command
   set_fact:
     matrix_postgres_import_command: >-
@@ -67,17 +71,26 @@
       -v {{ server_path_postgres_dump }}:/{{ server_path_postgres_dump|basename }}:ro
       --entrypoint=/bin/sh
       {{ matrix_postgres_docker_image_latest }}
-      -c 'cat /{{ server_path_postgres_dump|basename }} |
+      -c "cat /{{ server_path_postgres_dump|basename }} |
       {{ 'gunzip |' if server_path_postgres_dump.endswith('.gz') else '' }}
-      psql -v ON_ERROR_STOP=1 -h matrix-postgres'
+      grep -vE '^CREATE ROLE {{ matrix_postgres_connection_username }}' |
+      grep -vE '^CREATE DATABASE {{ matrix_postgres_db_name }}' |
+      psql -v ON_ERROR_STOP=1 -h matrix-postgres"
 
+# This is a hack.
+# See: https://ansibledaily.com/print-to-standard-output-without-escaping/
+#
+# We want to run `debug: msg=".."`, but that dumps it as JSON and escapes double quotes within it,
+# which ruins the command (`matrix_postgres_import_command`)
 - name: Note about Postgres importing alternative
-  debug:
-    msg: >-
-      Importing Postgres database using the following command: `{{ matrix_postgres_import_command }}`.
-      If this crashes, you can stop Postgres (`systemctl stop matrix-postgres`),
-      delete its existing data (`rm -rf {{ matrix_postgres_data_path }}/*`), start it again (`systemctl start matrix-postgres`)
-      and manually run the above import command directly on the server.
+  set_fact:
+    dummy: true
+  with_items:
+    - >-
+        Importing Postgres database using the following command: `{{ matrix_postgres_import_command }}`.
+        If this crashes, you can stop Postgres (`systemctl stop matrix-postgres`),
+        delete its existing data (`rm -rf {{ matrix_postgres_data_path }}/*`), start it again (`systemctl start matrix-postgres`)
+        and manually run the above import command directly on the server.
 
 - name: Perform Postgres database import
   command: "{{ matrix_postgres_import_command }}"

@@ -1,3 +1,17 @@
+# 2019-10-05
+
+## Improved Postgres upgrading/importing
+
+Postgres [upgrading](docs/maintenance-postgres.md#upgrading-postgresql) and [importing](docs/importing-postgres.md) have been improved to add support for multiple databases and roles.
+
+Previously, the playbook would only take care of the `homeserver` database and `synapse` user.
+We now back up and restore all databases and users on the Postgres server.
+
+For now, the playbook only uses that one database (`homeserver`) and that one single user (`synapse`), so it's all the same.
+However, in the future, additional components besides Synapse may also make use the Postgres database server.
+One such example is the [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) bridge, which strongly encourages use of Postgres in its v1.0 release. We are yet to upgrade to it.
+
+
 # 2019-10-04
 
 ## Postgres 12 support
