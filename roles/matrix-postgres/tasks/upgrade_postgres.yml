@@ -7,7 +7,7 @@
 
 - name: Set postgres_dump_name, if not provided
   set_fact:
-    postgres_dump_name: "matrix-postgres.out"
+    postgres_dump_name: "matrix-postgres-dump.sql.gz"
   when: "postgres_dump_name|default('') == ''"
 
 - name: Set postgres_auto_upgrade_backup_data_path, if not provided
@@ -81,7 +81,9 @@
     --entrypoint=/bin/sh
     -v {{ postgres_dump_dir }}:/out
     {{ matrix_postgres_detected_version_corresponding_docker_image }}
-    -c "pg_dumpall -h matrix-postgres > /out/{{ postgres_dump_name }}"
+    -c "pg_dumpall -h matrix-postgres
+    {{ '| gzip -c ' if postgres_dump_name.endswith('.gz') else '' }}
+    > /out/{{ postgres_dump_name }}"
 
 - name: Ensure matrix-postgres is stopped
   service:
@@ -125,6 +127,7 @@
       -v {{ postgres_dump_dir }}:/in:ro
       {{ matrix_postgres_docker_image_latest }}
       -c "cat /in/{{ postgres_dump_name }} |
+      {{ 'gunzip |' if postgres_dump_name.endswith('.gz') else '' }}
       grep -vE '^CREATE ROLE {{ matrix_postgres_connection_username }}' |
       grep -vE '^CREATE DATABASE {{ matrix_postgres_db_name }}' |
       psql -v ON_ERROR_STOP=1 -h matrix-postgres"
