@@ -4,7 +4,6 @@ By default, this playbook configures an [mxisd](https://github.com/kamax-io/mxis
 
 This server is private by default, potentially at the expense of user discoverability.
 
-
 ## Matrix.org lookup forwarding
 
 To ensure maximum discovery, you can make your identity server also forward lookups to the central matrix.org Identity server (at the cost of potentially leaking all your contacts information).
@@ -17,25 +16,22 @@ Enabling matrix.org forwarding can happen with the following configuration:
 matrix_mxisd_matrixorg_forwarding_enabled: true
 ```
 
-
 ## Customizing email templates
 
 If you'd like to change the default email templates used by mxisd, take a look at the `matrix_mxisd_threepid_medium_email_custom_` variables
 (in the `roles/matrix-mxisd/defaults/main.yml` file.
 
-
 ## mxisd-controlled Registration
 
 To use the [Registration](https://github.com/kamax-matrix/mxisd/blob/master/docs/features/registration.md) feature of mxisd, you can make use of the following variables:
 
-- `matrix_synapse_enable_registration` - to enable user-initiated registration in Synapse
+-   `matrix_synapse_enable_registration` - to enable user-initiated registration in Synapse
 
-- `matrix_synapse_registrations_require_3pid` - to control the types of 3pid (`'email'`, `'msisdn'`) required by the Synapse server for registering
+-   `matrix_synapse_registrations_require_3pid` - to control the types of 3pid (`'email'`, `'msisdn'`) required by the Synapse server for registering
 
-- variables prefixed with `matrix_nginx_proxy_proxy_matrix_3pid_registration_` (e.g. `matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled`) - to configure the integrated nginx webserver to send registration requests to mxisd (instead of Synapse), so it can apply its additional functionality
+-   variables prefixed with `matrix_nginx_proxy_proxy_matrix_3pid_registration_` (e.g. `matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled`) - to configure the integrated nginx webserver to send registration requests to mxisd (instead of Synapse), so it can apply its additional functionality
 
-- `matrix_mxisd_configuration_extension_yaml` - to configure mxisd as required. See the [Registration feature's docs](https://github.com/kamax-matrix/mxisd/blob/master/docs/features/registration.md) for inspiration. Also see the [Additional features](#additional-features) section below to learn more about how to use `matrix_mxisd_configuration_extension_yaml`.
-
+-   `matrix_mxisd_configuration_extension_yaml` - to configure mxisd as required. See the [Registration feature's docs](https://github.com/kamax-matrix/mxisd/blob/master/docs/features/registration.md) for inspiration. Also see the [Additional features](#additional-features) section below to learn more about how to use `matrix_mxisd_configuration_extension_yaml`.
 
 ## Additional features
 
@@ -50,7 +46,14 @@ To use a more custom configuration, you can define a `matrix_mxisd_configuration
 and put your configuration in it.
 To learn more about how to do this, refer to the information about `matrix_mxisd_configuration_extension_yaml` in the [default variables file](../roles/matrix-mxisd/defaults/main.yml) of the mxisd component.
 
-
 ## Troubleshooting
 
 If email address validation emails sent by mxisd are not reaching you, you should look into [Adjusting email-sending settings](configuring-playbook-email.md).
+
+If you'd like additional logging information, temporarily enable verbose logging for mxisd.
+
+Example configuration (`inventory/host_vars/matrix.DOMAIN/vars.yml`):
+
+```yaml
+matrix_mxisd_verbose_logging: true
+```
