@@ -3,7 +3,6 @@
 ## How to see the current status of your services
 
 You can check the status of your services by using `systemctl status`. Example:
-
 ```
 sudo systemctl status matrix-nginx-proxy
 
@@ -13,10 +12,10 @@ sudo systemctl status matrix-nginx-proxy
 ```
 
 You can see the logs by using journalctl. Example:
-
 ```
 sudo journalctl -fu matrix-synapse
 ```
+
 
 ## Increasing Synapse logging
 
@@ -34,10 +33,11 @@ matrix_synapse_root_log_level: "INFO"
 
 Re-run the playbook after making these configuration changes.
 
+
 ## Postgres
 
 See the dedicated [PostgreSQL Maintenance](maintenance-postgres.md) documentation page.
 
 ## Mxisd
 
-See the dedicated [Adjusting mxisd Identity Server configuration](configuring-playbook-mxisd.md) documentation page
+See the dedicated [Adjusting mxisd Identity Server configuration](configuring-playbook-mxisd.md) documentation page.
