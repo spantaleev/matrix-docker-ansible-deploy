@@ -54,3 +54,11 @@ To learn more about how to do this, refer to the information about `matrix_mxisd
 ## Troubleshooting
 
 If email address validation emails sent by mxisd are not reaching you, you should look into [Adjusting email-sending settings](configuring-playbook-email.md).
+
+If you'd like additional logging information, temporarily enable verbose logging for mxisd.
+
+Example configuration (`inventory/host_vars/matrix.DOMAIN/vars.yml`):
+
+```yaml
+matrix_mxisd_verbose_logging: true
+```

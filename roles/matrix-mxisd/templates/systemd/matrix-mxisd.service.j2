@@ -26,6 +26,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-mxisd \
 			{% if matrix_mxisd_container_http_host_bind_port %}
 			-p {{ matrix_mxisd_container_http_host_bind_port }}:8090 \
 			{% endif %}
+			{% if matrix_mxisd_verbose_logging %}
+			-e MXISD_LOG_LEVEL=debug \
+			{% endif %}
 			-v {{ matrix_mxisd_config_path }}:/etc/mxisd:ro \
 			-v {{ matrix_mxisd_data_path }}:/var/mxisd:rw \
 			{% for arg in matrix_mxisd_container_extra_arguments %}
