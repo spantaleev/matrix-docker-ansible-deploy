@@ -29,4 +29,4 @@ matrix_synapse_password_config_localdb_enabled: false
 ```
 
 ## Using mxisd Identity Server for authentication
-If you wish to use the mxisd Identity Server for LDAP authentication instead of [matrix-synapse-ldap3](https://github.com/matrix-org/matrix-synapse-ldap3) consult [Adjusting mxisd Identity Server configuration](https://github.com/kamax-matrix/mxisd/blob/master/docs/features/configuring-playbook-mxisd.md#authentication).
+If you wish to use the mxisd Identity Server for LDAP authentication instead of [matrix-synapse-ldap3](https://github.com/matrix-org/matrix-synapse-ldap3) consult [Adjusting mxisd Identity Server configuration](configuring-dns.md#authentication).
