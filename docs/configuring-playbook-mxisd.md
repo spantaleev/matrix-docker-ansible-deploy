@@ -36,6 +36,27 @@ To use the [Registration](https://github.com/kamax-matrix/mxisd/blob/master/docs
 
 - `matrix_mxisd_configuration_extension_yaml` - to configure mxisd as required. See the [Registration feature's docs](https://github.com/kamax-matrix/mxisd/blob/master/docs/features/registration.md) for inspiration. Also see the [Additional features](#additional-features) section below to learn more about how to use `matrix_mxisd_configuration_extension_yaml`.
 
+## Authentication
+
+[Authentication](https://github.com/kamax-matrix/mxisd/blob/master/docs/features/authentication.md) provides the possibility to use your own [Identity Stores](https://github.com/kamax-matrix/mxisd/blob/master/docs/stores/README.md) (for example LDAP) to authenticate users on your Homeserver. The following configuration can be used to authenticate against an LDAP server:
+
+```yaml
+matrix_synapse_ext_password_provider_rest_auth_enabled: true
+
+# matrix-mxisd is the hostname of the mxisd Docker container
+matrix_synapse_ext_password_provider_rest_auth_endpoint: "http://matrix-mxisd:8090"
+
+matrix_mxisd_configuration_extension_yaml: |
+  ldap:
+    enabled: true
+    connection:
+      host: ldapHostnameOrIp
+      tls: false
+      port: 389
+      baseDNs: ['OU=Users,DC=example,DC=org']
+      bindDn: CN=My Mxisd User,OU=Users,DC=example,DC=org
+      bindPassword: TheUserPassword
+```
 
 ## Additional features
 
