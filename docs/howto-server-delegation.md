@@ -90,7 +90,7 @@ If your files are not in `/matrix/ssl` but in some other location, you would nee
 
 ```yaml
 matrix_synapse_container_extra_arguments:
-  - "--mount type-bind,src=/some/path/on/the/host,dst=/some/path/inside/the/container,ro"
+  - "--mount type=bind,src=/some/path/on/the/host,dst=/some/path/inside/the/container,ro"
 ```
 
 You then refer to them (for `matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate` and `matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate_key`) by using `/some/path/inside/the/container`.
@@ -117,7 +117,7 @@ To do that, make sure the certificate files are mounted into the Synapse contain
 
 ```yaml
 matrix_synapse_container_extra_arguments:
-  - "--mount type-bind,src=/some/path/on/the/host,dst=/some/path/inside/the/container,ro"
+  - "--mount type=bind,src=/some/path/on/the/host,dst=/some/path/inside/the/container,ro"
 ```
 
 You can then tell Synapse to serve Federation traffic over TLS on `tcp/8448`:
