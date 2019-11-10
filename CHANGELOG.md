@@ -1,3 +1,15 @@
+# 2019-11-10
+
+## Tightened security around room directory publishing
+
+As per this [advisory blog post](https://matrix.org/blog/2019/11/09/avoiding-unwelcome-visitors-on-private-matrix-servers), we've decided to change the default publishing rules for the Matrix room directory.
+
+Our general goal is to favor privacy and security when running personal (family & friends) and corporate homeservers.
+Both of these likely benefit from having a more secure default of **not showing the room directory without authentication** and **not publishing the room directory over federation**.
+
+As with anything else, these new defaults can be overriden by changing the `matrix_synapse_allow_public_rooms_without_auth` and `matrix_synapse_allow_public_rooms_over_federation` variables, respectively.
+
+
 # 2019-10-05
 
 ## Improved Postgres upgrading/importing
