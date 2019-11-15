@@ -38,6 +38,10 @@
     update_cache: yes
   when: ansible_os_family == 'Debian'
 
+- name: Gather package facts (Debian)
+  package_facts:
+  when: ansible_os_family == 'Debian'
+
 - name: Ensure Docker's APT key is trusted (Debian)
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
@@ -45,26 +49,33 @@
     state: present
   register: add_repository_key
   ignore_errors: true
-  when: ansible_os_family == 'Debian'
+  when: ansible_os_family == 'Debian' and 'docker.io' not in ansible_facts.packages
 
 - name: Ensure Docker repository is enabled (Debian)
   apt_repository:
     repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable"
     state: present
     update_cache: yes
-  when: ansible_os_family == 'Debian'
+  when: ansible_os_family == 'Debian' and 'docker.io' not in ansible_facts.packages
 
 - name: Ensure APT packages are installed (Debian)
   apt:
     name:
       - bash-completion
-      - docker-ce
       - python-docker
       - ntp
       - fuse
     state: latest
     update_cache: yes
   when: ansible_os_family == 'Debian'
+
+- name: Ensure docker-ce is installed (Debian)
+  apt:
+    name:
+      - docker-ce
+    state: latest
+    update_cache: yes
+  when: "'docker.io' not in ansible_facts.packages"
 
 - name: Ensure Docker is started and autoruns
   service:
