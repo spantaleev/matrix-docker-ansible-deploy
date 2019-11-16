@@ -75,7 +75,7 @@
       - docker-ce
     state: latest
     update_cache: yes
-  when: "'docker.io' not in ansible_facts.packages"
+  when: ansible_os_family == 'Debian' and 'docker.io' not in ansible_facts.packages
 
 - name: Ensure Docker is started and autoruns
   service:
