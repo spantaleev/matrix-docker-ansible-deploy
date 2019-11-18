@@ -1,5 +1,11 @@
 ---
 
+- name: Gather package facts
+  package_facts:
+
+- set_fact:
+    run_docker_installation: "{{ matrix_docker_installation_enabled|bool and 'docker.io' not in ansible_facts.packages }}"
+
 - include_tasks: "{{ role_path }}/tasks/server_base/setup_centos.yml"
   when: ansible_distribution == 'CentOS'
 

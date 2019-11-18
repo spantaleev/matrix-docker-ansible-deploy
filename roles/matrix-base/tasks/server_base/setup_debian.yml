@@ -15,12 +15,14 @@
     state: present
   register: add_repository_key
   ignore_errors: true
+  when: run_docker_installation|bool
 
 - name: Ensure Docker repository is enabled
   apt_repository:
     repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable"
     state: present
     update_cache: yes
+  when: run_docker_installation|bool
 
 - name: Ensure APT packages are installed
   apt:
@@ -38,3 +40,4 @@
       - docker-ce
     state: latest
     update_cache: yes
+  when: run_docker_installation|bool
