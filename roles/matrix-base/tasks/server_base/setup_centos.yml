@@ -9,13 +9,13 @@
     mode: 0644
   with_items:
     - docker-ce.repo
-  when: run_docker_installation|bool
+  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure Docker's RPM key is trusted
   rpm_key:
     state: present
     key: https://download.docker.com/linux/centos/gpg
-  when: run_docker_installation|bool
+  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure yum packages are installed
   yum:
@@ -27,10 +27,10 @@
     state: latest
     update_cache: yes
 
-- name: Ensure docker-ce is installed
+- name: Ensure Docker is installed
   yum:
     name:
-      - docker-ce
+      - "{{ matrix_docker_package_name }}"
     state: latest
     update_cache: yes
-  when: run_docker_installation|bool
+  when: matrix_docker_installation_enabled|bool

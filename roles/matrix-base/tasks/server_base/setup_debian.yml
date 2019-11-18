@@ -15,14 +15,14 @@
     state: present
   register: add_repository_key
   ignore_errors: true
-  when: run_docker_installation|bool
+  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure Docker repository is enabled
   apt_repository:
     repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable"
     state: present
     update_cache: yes
-  when: run_docker_installation|bool
+  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure APT packages are installed
   apt:
@@ -34,10 +34,10 @@
     state: latest
     update_cache: yes
 
-- name: Ensure docker-ce is installed
+- name: Ensure Docker is installed
   apt:
     name:
-      - docker-ce
+      - "{{ matrix_docker_package_name }}"
     state: latest
     update_cache: yes
-  when: run_docker_installation|bool
+  when: matrix_docker_installation_enabled|bool
