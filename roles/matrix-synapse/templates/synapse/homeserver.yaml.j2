@@ -229,11 +229,13 @@ listeners:
         compress: false
 {% endif %}
 
+{% if matrix_synapse_manhole_enabled %}
   # Turn on the twisted ssh manhole service on localhost on the given
   # port.
-  # - port: 9000
-  #   bind_addresses: ['::1', '127.0.0.1']
-  #   type: manhole
+  - port: 9000
+    bind_addresses: ['0.0.0.0']
+    type: manhole
+{% endif %}
 
 
 ## Homeserver blocking ##
