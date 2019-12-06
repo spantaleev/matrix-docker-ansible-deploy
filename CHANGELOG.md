@@ -1,3 +1,15 @@
+# 2019-12-06
+
+## Added support for an alternative method for using another webserver
+
+We have added support for making `matrix-nginx-proxy` not being so invasive, so that it would be easier to [use your own webserver](docs/configuring-playbook-own-webserver.md).
+
+The documentation has been updated with a **Method 2**, which might make "own webserver" setup easier in some cases (such as [reverse-proxying using Traefik](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/296)).
+
+**Existing users** are not affected by this and **don't need to change anything**.
+The defaults are still the same (`matrix-nginx-proxy` obtaining SSL certificates and doing everything for you automatically).
+
+
 # 2019-11-10
 
 ## Tightened security around room directory publishing

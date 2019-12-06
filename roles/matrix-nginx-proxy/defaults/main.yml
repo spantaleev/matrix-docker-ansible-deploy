@@ -25,6 +25,41 @@ matrix_nginx_proxy_container_additional_volumes: []
 # A list of extra arguments to pass to the container
 matrix_nginx_proxy_container_extra_arguments: []
 
+# Controls whether matrix-nginx-proxy serves its vhosts over HTTPS or HTTP.
+#
+# If enabled:
+# - SSL certificates would be expected to be available (see `matrix_ssl_retrieval_method`)
+# - the HTTP vhost would be made a redirect to the HTTPS vhost
+#
+# If not enabled:
+# - you don't need any SSL certificates (you can set `matrix_ssl_retrieval_method: none`)
+# - naturally, there's no HTTPS vhost
+# - services are served directly from the HTTP vhost
+matrix_nginx_proxy_https_enabled: true
+
+# Controls whether the matrix-nginx-proxy container exposes its HTTP port (tcp/8080 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:80"), or empty string to not expose.
+matrix_nginx_proxy_container_http_host_bind_port: '80'
+
+# Controls whether the matrix-nginx-proxy container exposes its HTTPS port (tcp/8443 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:443"), or empty string to not expose.
+#
+# This only makes sense and applies if `matrix_nginx_proxy_https_enabled` is set to `true`.
+# Otherwise, there are no HTTPS vhosts to expose.
+matrix_nginx_proxy_container_https_host_bind_port: '443'
+
+# Controls whether the matrix-nginx-proxy container exposes the Matrix Federation port (tcp/8448 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8448"), or empty string to not expose.
+#
+# This only makes sense and applies if `matrix_nginx_proxy_proxy_matrix_federation_api_enabled` is set to `true`.
+# Otherwise, there is no Matrix Federation port to expose.
+#
+# This port can take HTTP or HTTPS traffic, depending on `matrix_nginx_proxy_https_enabled`.
+# When HTTPS is disabled, you'd likely want to only expose the port locally, and front it with another HTTPS-enabled reverse-proxy.
+matrix_nginx_proxy_container_federation_host_bind_port: '8448'
 
 # Controls whether matrix-nginx-proxy should serve the base domain.
 #
@@ -149,6 +184,8 @@ matrix_nginx_proxy_self_check_validate_certificates: true
 # The "none" type (`matrix_ssl_retrieval_method: none`), simply means that no certificate retrieval will happen.
 # It's useful for when you've disabled the nginx proxy (`matrix_nginx_proxy_enabled: false`)
 # and you'll be using another reverse-proxy server (like Apache) with your own certificates, managed by yourself.
+# It's also useful if you're using `matrix_nginx_proxy_https_enabled: false` to make this nginx proxy serve
+# plain HTTP traffic only (usually, on the loopback interface only) and you'd be terminating SSL using another reverse-proxy.
 matrix_ssl_retrieval_method: "lets-encrypt"
 
 # The list of domains that this role will obtain certificates for.
