@@ -115,5 +115,83 @@ All services would be served locally on `127.0.0.1:81` and `127.0.0.1:8449` (as 
 You can then set up another reverse-proxy server on ports 80/443/8448 for all of the expected domains and make traffic go to these local ports.
 The expected domains vary depending on the services you have enabled (`matrix.DOMAIN` for sure; `riot.DOMAIN` and `dimension.DOMAIN` are optional).
 
-We don't have sample webserver configuration for this use-case yet, but hope to expand on this documentation entry in the future.
-For [Traefik](https://traefik.io/), you can [see some work in progress examples here](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/296).
+### Sample configuration for running behind Traefik 2.0
+
+Below is a sample configuration for using this playbook with a [Traefik](https://traefik.io/) 2.0 reverse proxy.
+
+```yaml
+# Disable generation and retrieval of SSL certs
+matrix_ssl_retrieval_method: none
+
+# Configure Nginx to only use plain HTTP
+matrix_nginx_proxy_https_enabled: false
+
+# Don't bind any HTTP or federation port to the host
+# (Traefik will proxy directly into the containers)
+matrix_nginx_proxy_container_http_host_bind_port: ''
+matrix_nginx_proxy_container_federation_host_bind_port: ''
+
+# Disable Coturn because it needs SSL certs
+# (Clients can, though exposing IP address, use Matrix.org TURN)
+matrix_coturn_enabled: false
+
+# All containers need to be on the same Docker network as Traefik
+# (This network should already exist and Traefik should be using this network)
+matrix_docker_network: 'traefik'
+
+matrix_nginx_proxy_container_extra_arguments:
+  # May be unnecessary depending on Traefik config, but can't hurt
+  - '--label "traefik.enable=true"'
+
+  # The Nginx proxy container will receive traffic from these subdomains
+  # (Replace DOMAIN with your domain, e.g. example.com)
+  - '--label "traefik.http.routers.matrix-nginx-proxy.rule=Host(`matrix.DOMAIN`,`riot.DOMAIN`,`dimension.DOMAIN`)"'
+
+  # (The 'web-secure' entrypoint must bind to port 443 in Traefik config)
+  - '--label "traefik.http.routers.matrix-nginx-proxy.entrypoints=web-secure"'
+
+  # (The 'default' certificate resolver must be defined in Traefik config)
+  - '--label "traefik.http.routers.matrix-nginx-proxy.tls.certResolver=default"'
+
+  # The Nginx proxy container uses port 8080 internally
+  - '--label "traefik.http.services.matrix-nginx-proxy.loadbalancer.server.port=8080"'
+
+matrix_synapse_container_extra_arguments:
+  # May be unnecessary depending on Traefik config, but can't hurt
+  - '--label "traefik.enable=true"'
+
+  # The Synapse container will receive traffic from this subdomain
+  # (Replace DOMAIN with your domain, e.g. example.com)
+  - '--label "traefik.http.routers.matrix-synapse.rule=Host(`matrix.DOMAIN`)"'
+
+  # (The 'synapse' entrypoint must bind to port 8448 in Traefik config)
+  - '--label "traefik.http.routers.matrix-synapse.entrypoints=synapse"'
+
+  # (The 'default' certificate resolver must be defined in Traefik config)
+  - '--label "traefik.http.routers.matrix-synapse.tls.certResolver=default"'
+
+  # The Synapse container uses port 8048 internally
+  - '--label "traefik.http.services.matrix-synapse.loadbalancer.server.port=8048"'
+```
+
+This method uses labels attached to the Nginx and Synapse containers to provide the Traefik Docker provider with the information it needs to proxy `matrix.DOMAIN`, `riot.DOMAIN`, and `dimension.DOMAIN`. Some [static configuration](https://docs.traefik.io/v2.0/reference/static-configuration/file/) is required in Traefik; namely, having endpoints on ports 443 and 8448 and having a certificate resolver.
+
+Note that this configuration on its own does **not** redirect traffic on port 80 (plain HTTP) to port 433 for HTTPS, which may cause some issues, since the built-in Nginx proxy usually does this. If you are not already doing this in Traefik, it can be added to Traefik in a [file provider](https://docs.traefik.io/v2.0/providers/file/) as follows:
+
+```toml
+[http]
+  [http.routers]
+    [http.routers.redirect-http]
+      entrypoints = ["web"] # The 'web' entrypoint must bind to port 80
+      rule = "HostRegexp(`{host:.+}`)" # Change if you don't want to redirect all hosts to HTTPS
+      service = "dummy" # Unused, but all routers need services (for now)
+      middlewares = ["https"]
+  [http.services]
+    [http.services.dummy.loadbalancer]
+      [[http.services.dummy.loadbalancer.servers]]
+        url = "localhost"
+  [http.middlewares]
+    [http.middlewares.https.redirectscheme]
+      scheme = "https"
+      permanent = true
+```
