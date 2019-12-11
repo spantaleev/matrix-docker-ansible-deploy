@@ -37,6 +37,7 @@ matrix_appservice_discord_bridge_domain: "{{ matrix_domain }}"
 # As of right now, the homeserver URL must be a public URL. See below.
 matrix_appservice_discord_bridge_homeserverUrl: "{{ matrix_homeserver_url }}"
 matrix_appservice_discord_bridge_disablePresence: false
+matrix_appservice_discord_bridge_enableSelfServiceBridging: false
 
 matrix_appservice_discord_configuration_yaml: |
   #jinja2: lstrip_blocks: "True"
@@ -61,7 +62,7 @@ matrix_appservice_discord_configuration_yaml: |
     disableDeletionForwarding: false
     # Enable users to bridge rooms using !discord commands. See
     # https://t2bot.io/discord for instructions.
-    enableSelfServiceBridging: false
+    enableSelfServiceBridging: {{ matrix_appservice_discord_bridge_enableSelfServiceBridging|to_json }}
     # Disable sending of read receipts for Matrix events which have been
     # successfully bridged to Discord.
     disableReadReceipts: false
