@@ -27,13 +27,31 @@ matrix_coturn_container_additional_volumes: []
 # A list of extra arguments to pass to the container
 matrix_coturn_container_extra_arguments: []
 
-# A shared secret (between Synapse and Coturn) used for authentication.
-# You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
-matrix_coturn_turn_static_auth_secret: ""
+# Controls whether the Coturn container exposes its plain STUN port (tcp/3478 and udp/3478 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:3478"), or empty string to not expose.
+matrix_coturn_container_stun_plain_host_bind_port: '3478'
+
+# Controls whether the Coturn container exposes its TLS STUN port (tcp/5349 and udp/5349 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:5349"), or empty string to not expose.
+matrix_coturn_container_stun_tls_host_bind_port: '5349'
+
+# Controls whether the Coturn container exposes its TURN UDP port range and which interface to do it on.
+#
+# Takes an interface "<ip address>" (e.g. "127.0.0.1"), or empty string to listen on all interfaces.
+# Takes a null/none value (`~`) to prevent listening.
+#
+# The UDP port-range itself is specified using `matrix_coturn_turn_udp_min_port` and `matrix_coturn_turn_udp_max_port`.
+matrix_coturn_container_turn_range_listen_interface: ''
 
 # UDP port-range to use for TURN
 matrix_coturn_turn_udp_min_port: 49152
 matrix_coturn_turn_udp_max_port: 49172
+
+# A shared secret (between Synapse and Coturn) used for authentication.
+# You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
+matrix_coturn_turn_static_auth_secret: ""
 
 # The external IP address of the machine where Coturn is.
 matrix_coturn_turn_external_ip_address: ''
