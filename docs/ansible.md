@@ -65,7 +65,7 @@ You can execute `ansible-playbook` commands as per normal now.
 ### If you don't use SSH keys for authentication 
 
 If you don't use SSH keys for authentication, simply remove that whole line (`-v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro`).
-To authenticate at your server using a password, you need to add a package. So, when you are in the shell of the ansible docker container (previous used `docker run -it ...`), run:
+To authenticate at your server using a password, you need to add a package. So, when you are in the shell of the ansible docker container (the previously used `docker run -it ...` command), run:
 ```bash
 apk add sshpass
 ```
