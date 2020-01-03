@@ -17,5 +17,5 @@ You then need to start a chat with `@telegrambot:YOUR_DOMAIN` (where `YOUR_DOMAI
 If you want to use the relay-bot feature ([relay bot documentation](https://github.com/tulir/mautrix-telegram/wiki/Relay-bot)), which allows anonymous user to chat with telegram users, use the following additional playbook configuration:
 
 ```yaml
-matrix_mautrix_telegram_bot_token: YOUT_TELEGRAM_BOT_TOKEN
+matrix_mautrix_telegram_bot_token: YOUR_TELEGRAM_BOT_TOKEN
 ```
