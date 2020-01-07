@@ -44,7 +44,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Using an external PostgreSQL server](configuring-playbook-external-postgres.md) (optional)
 
-- [Adjusting mxisd Identity Server configuration](configuring-playbook-mxisd.md) (optional)
+- [Adjusting ma1sd Identity Server configuration](configuring-playbook-ma1sd.md) (optional)
 
 - [Adjusting SSL certificate retrieval](configuring-playbook-ssl-certificates.md) (optional, advanced)
 

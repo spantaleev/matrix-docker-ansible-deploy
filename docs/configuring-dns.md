@@ -44,7 +44,7 @@ The `jitsi.<your-domain>` subdomain may be necessary, because this playbook coul
 
 ## `_matrix-identity._tcp` SRV record setup
 
-To make the [mxisd](https://github.com/kamax-io/mxisd) Identity Server (which this playbook installs for you) be authoritative for your domain name, set up one more SRV record that looks like this:
+To make the [ma1sd](https://github.com/ma1uta/ma1sd) Identity Server (which this playbook installs for you) be authoritative for your domain name, set up one more SRV record that looks like this:
 - Name: `_matrix-identity._tcp` (use this text as-is)
 - Content: `10 0 443 matrix.<your-domain>` (replace `<your-domain>` with your own)
 
