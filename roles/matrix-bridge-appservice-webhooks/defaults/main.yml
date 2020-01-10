@@ -46,6 +46,9 @@ matrix_appservice_webhooks_homeserver_token: ''
 matrix_appservice_webhooks_id_token: ''
 matrix_appservice_webhooks_api_secret: ''
 
+# Logging information (error, warn, info, verbose, debug is availabe) default is: info
+matrix_appservice_webhooks_log_level: 'info'
+
 matrix_appservice_webhooks_configuration_yaml: |
 
   # Configuration specific to the application service. All fields (unless otherwise marked) are required.
@@ -79,9 +82,9 @@ matrix_appservice_webhooks_configuration_yaml: |
   logging:
     file: data/webhook.log
     console: true
-    consoleLevel: info
+    consoleLevel: {{ matrix_appservice_webhooks_log_level }}
     fileLevel: verbose
-    writeFiles: true
+    writeFiles: false
     rotate:
       size: 52428800 # bytes, default is 50mb
       count: 5
