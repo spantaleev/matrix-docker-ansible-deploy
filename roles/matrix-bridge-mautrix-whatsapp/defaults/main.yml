@@ -102,9 +102,18 @@ matrix_mautrix_whatsapp_configuration_yaml: |
       # Whether or not the bridge should send a notice to the user's management room when it retries connecting.
       # If false, it will only report when it stops retrying.
       report_connection_retry: true
-      # Number of seconds to wait for contacts and chats to be sent at startup before syncing.
-      # If you have lots of chats, it might take more than a second.
-      contact_wait_delay: 1
+      # Maximum number of seconds to wait for chats to be sent at startup.
+      # If this is too low and you have lots of chats, it could cause backfilling to fail.
+      chat_list_wait: 30
+      # Maximum number of seconds to wait to sync portals before force unlocking message processing.
+      # If this is too low and you have lots of chats, it could cause backfilling to fail.
+      portal_sync_wait: 600
+
+      # Whether or not to send call start/end notices to Matrix.
+      call_notices:
+          start: true
+          end: true
+
       # Number of chats to sync for new users.
       initial_chat_sync_count: 10
       # Number of old messages to fill when creating new portal rooms.
@@ -123,6 +132,13 @@ matrix_mautrix_whatsapp_configuration_yaml: |
       # Whether or not to sync with custom puppets to receive EDUs that
       # are not normally sent to appservices.
       sync_with_custom_puppets: true
+      # Shared secret for https://github.com/devture/matrix-synapse-shared-secret-auth
+      #
+      # If set, custom puppets will be enabled automatically for local users
+      # instead of users having to find an access token and run `login-matrix`
+      # manually.
+      login_shared_secret: null
+
       # Whether or not to invite own WhatsApp user's Matrix puppet into private
       # chat portals when backfilling if needed.
       # This always uses the default puppet instead of custom puppets due to
@@ -132,6 +148,10 @@ matrix_mautrix_whatsapp_configuration_yaml: |
       # chat portal rooms. This can be useful if the previous field works fine,
       # but causes room avatar/name bugs.
       private_chat_portal_meta: false
+
+      # Allow invite permission for user. User can invite any bots to room with whatsapp
+      # users (private chat and groups)
+      allow_user_invite: false
 
       # The prefix for commands. Only required in non-management rooms.
       command_prefix: "!wa"
@@ -146,6 +166,26 @@ matrix_mautrix_whatsapp_configuration_yaml: |
       #     mxid - Specific user
       permissions:
           "{{ matrix_mautrix_whatsapp_homeserver_domain }}": user
+
+      relaybot:
+          # Whether or not relaybot support is enabled.
+          enabled: false
+          # The management room for the bot. This is where all status notifications are posted and
+          # in this room, you can use `!wa <command>` instead of `!wa relaybot <command>`. Omitting
+          # the command prefix completely like in user management rooms is not possible.
+          management: !foo:example.com
+          # List of users to invite to all created rooms that include the relaybot.
+          invites: []
+          # The formats to use when sending messages to WhatsApp via the relaybot.
+          message_formats:
+              m.text: "<b>{{ .Sender.Displayname }}</b>: {{ .Message }}"
+              m.notice: "<b>{{ .Sender.Displayname }}</b>: {{ .Message }}"
+              m.emote: "* <b>{{ .Sender.Displayname }}</b> {{ .Message }}"
+              m.file: "<b>{{ .Sender.Displayname }}</b> sent a file"
+              m.image: "<b>{{ .Sender.Displayname }}</b> sent an image"
+              m.audio: "<b>{{ .Sender.Displayname }}</b> sent an audio file"
+              m.video: "<b>{{ .Sender.Displayname }}</b> sent a video"
+              m.location: "<b>{{ .Sender.Displayname }}</b> sent a location"
   # Logging config.
   logging:
       # The directory for log files. Will be created if not found.

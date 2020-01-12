@@ -146,6 +146,8 @@ matrix_mautrix_telegram_configuration_yaml: |
       - full name
       - username
       - phone number
+      # Maximum length of displayname
+      displayname_max_length: 100
 
       # Maximum number of members to sync per portal when starting up. Other members will be
       # synced when they send messages. The maximum is 10000, after which the Telegram server
@@ -165,6 +167,8 @@ matrix_mautrix_telegram_configuration_yaml: |
       # Dialogs include groups and private chats, but only groups are synced.
       # Set to 0 to remove limit.
       sync_dialog_limit: 30
+      # Whether or not to sync and create portals for direct chats at startup.
+      sync_direct_chats: false
       # The maximum number of simultaneous Telegram deletions to handle.
       # A large number of simultaneous redactions could put strain on your homeserver.
       max_telegram_delete: 10
@@ -178,19 +182,17 @@ matrix_mautrix_telegram_configuration_yaml: |
       # Only enable this if your displayname_template has some static part that the bridge can use to
       # reliably identify what is a plaintext highlight.
       plaintext_highlights: false
-      # Show message editing as a reply to the original message.
-      # If this is false, message edits are not shown at all, as Matrix does not support editing yet.
-      edits_as_replies: true
-      # Highlight changed/added parts in edits. Requires lxml.
-      highlight_edits: false
       # Whether or not to make portals of publicly joinable channels/supergroups publicly joinable on Matrix.
       public_portals: true
-      # Whether or not to fetch and handle Telegram updates at startup from the time the bridge was down.
-      # Currently only works for private chats and normal groups.
-      catch_up: false
       # Whether or not to use /sync to get presence, read receipts and typing notifications when using
       # your own Matrix account as the Matrix puppet for your Telegram account.
       sync_with_custom_puppets: true
+      # Shared secret for https://github.com/devture/matrix-synapse-shared-secret-auth
+      #
+      # If set, custom puppets will be enabled automatically for local users
+      # instead of users having to find an access token and run `login-matrix`
+      # manually.
+      login_shared_secret: null
       # Set to false to disable link previews in messages sent to Telegram.
       telegram_link_preview: true
       # Use inline images instead of a separate message for the caption.
@@ -200,6 +202,32 @@ matrix_mautrix_telegram_configuration_yaml: |
       image_as_file_size: 10
       # Maximum size of Telegram documents in megabytes to bridge.
       max_document_size: 100
+      # Enable experimental parallel file transfer, which makes uploads/downloads much faster by
+      # streaming from/to Matrix and using many connections for Telegram.
+      # Note that generating HQ thumbnails for videos is not possible with streamed transfers.
+      parallel_file_transfer: false
+      # Whether or not created rooms should have federation enabled.
+      # If false, created portal rooms will never be federated.
+      federate_rooms: true
+      # Settings for converting animated stickers.
+      animated_sticker:
+          # Format to which animated stickers should be converted.
+          # disable - No conversion, send as-is (gzipped lottie)
+          # png - converts to non-animated png (fastest),
+          # gif - converts to animated gif, but loses transparency
+          # webm - converts to webm video, requires ffmpeg executable with vp9 codec and webm container support
+          target: gif
+          # Arguments for converter. All converters take width and height.
+          # GIF converter takes background as a hex color.
+          args:
+              width: 256
+              height: 256
+              background: "020202"  # only for gif
+              fps: 30               # only for webm
+      # Overrides for base power levels.
+      initial_power_level_overrides:
+          user: {}
+          group: {}
 
       # Whether to bridge Telegram bot messages as m.notices or m.texts.
       bot_messages_as_notices: true
@@ -233,12 +261,20 @@ matrix_mautrix_telegram_configuration_yaml: |
       #   $message               - The message content as HTML
       message_formats:
           m.text: "<b>$sender_displayname</b>: $message"
+          m.notice: "<b>$sender_displayname</b>: $message"
           m.emote: "* <b>$sender_displayname</b> $message"
           m.file: "<b>$sender_displayname</b> sent a file: $message"
           m.image: "<b>$sender_displayname</b> sent an image: $message"
           m.audio: "<b>$sender_displayname</b> sent an audio file: $message"
           m.video: "<b>$sender_displayname</b> sent a video: $message"
           m.location: "<b>$sender_displayname</b> sent a location: $message"
+      # Telegram doesn't have built-in emotes, this field specifies how m.emote's from authenticated
+      # users are sent to telegram. All fields in message_formats are supported. Additionally, the
+      # Telegram user info is available in the following variables:
+      #    $displayname - Telegram displayname
+      #    $username    - Telegram username (may not exist)
+      #    $mention     - Telegram @username or displayname mention (depending on which exists)
+      emote_format: "* $mention $formatted_body"
 
       # The formats to use when sending state events to Telegram via the relay bot.
       #
@@ -283,6 +319,22 @@ matrix_mautrix_telegram_configuration_yaml: |
 
       # Options related to the message relay Telegram bot.
       relaybot:
+          private_chat:
+              # List of users to invite to the portal when someone starts a private chat with the bot.
+              # If empty, private chats with the bot won't create a portal.
+              invite: []
+              # Whether or not to bridge state change messages in relaybot private chats.
+              state_changes: true
+              # When private_chat_invite is empty, this message is sent to users /starting the
+              # relaybot. Telegram's "markdown" is supported.
+              message: This is a Matrix bridge relaybot and does not support direct chats
+          # List of users to invite to all group chat portals created by the bridge.
+          group_chat_invite: []
+          # Whether or not the relaybot should not bridge events in unbridged group chats.
+          # If false, portals will be created when the relaybot receives messages, just like normal
+          # users. This behavior is usually not desirable, as it interferes with manually bridging
+          # the chat to another room.
+          ignore_unbridged_group_chat: true
           # Whether or not to allow creating portals from Telegram.
           authless_portals: true
           # Whether or not to allow Telegram group admins to use the bot commands.

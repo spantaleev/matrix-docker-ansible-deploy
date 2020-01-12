@@ -64,6 +64,16 @@ matrix_mautrix_facebook_configuration_yaml: |
       #   Postgres: postgres://username:password@hostname/dbname
       database: sqlite:////data/mautrix-facebook.db
 
+      # Public part of web server for out-of-Matrix interaction with the bridge.
+      public:
+          # Whether or not the public-facing endpoints should be enabled.
+          enabled: false
+          # The prefix to use in the public-facing endpoints.
+          prefix: /public
+          # The base URL where the public-facing endpoints are available. The prefix is not added
+          # implicitly.
+          external: https://example.com/public
+
       # The unique ID of this appservice.
       id: facebook
       # Username of the appservice bot.
@@ -114,9 +124,17 @@ matrix_mautrix_facebook_configuration_yaml: |
       # Whether or not to use /sync to get presence, read receipts and typing notifications when using
       # your own Matrix account as the Matrix puppet for your Facebook account.
       sync_with_custom_puppets: true
+      # Shared secret for https://github.com/devture/matrix-synapse-shared-secret-auth
+      #
+      # If set, custom puppets will be enabled automatically for local users
+      # instead of users having to find an access token and run `login-matrix`
+      # manually.
+      login_shared_secret: null
       # Whether or not to bridge presence in both directions. Facebook allows users not to broadcast
       # presence, but then it won't send other users' presence to the client.
       presence: true
+      # Whether or not to update avatars when syncing all contacts at startup.
+      update_avatar_initial_sync: true
 
       # Permissions for using the bridge.
       # Permitted values:
@@ -150,6 +168,8 @@ matrix_mautrix_facebook_configuration_yaml: |
               level: DEBUG
           fbchat:
               level: DEBUG
+          hbmqtt:
+              level: INFO
           aiohttp:
               level: INFO
       root:
