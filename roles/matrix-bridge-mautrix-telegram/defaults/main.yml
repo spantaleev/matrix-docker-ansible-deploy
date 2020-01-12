@@ -43,6 +43,9 @@ matrix_mautrix_telegram_systemd_wanted_services_list: []
 matrix_mautrix_telegram_appservice_token: ''
 matrix_mautrix_telegram_homeserver_token: ''
 
+# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
+matrix_mautrix_telegram_login_shared_secret: ''
+
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
@@ -192,7 +195,7 @@ matrix_mautrix_telegram_configuration_yaml: |
       # If set, custom puppets will be enabled automatically for local users
       # instead of users having to find an access token and run `login-matrix`
       # manually.
-      login_shared_secret: null
+      login_shared_secret: {{ matrix_mautrix_telegram_login_shared_secret|to_json }}
       # Set to false to disable link previews in messages sent to Telegram.
       telegram_link_preview: true
       # Use inline images instead of a separate message for the caption.

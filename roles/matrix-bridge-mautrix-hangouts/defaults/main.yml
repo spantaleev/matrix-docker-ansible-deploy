@@ -29,6 +29,9 @@ matrix_mautrix_hangouts_systemd_wanted_services_list: []
 matrix_mautrix_hangouts_appservice_token: ''
 matrix_mautrix_hangouts_homeserver_token: ''
 
+# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
+matrix_mautrix_hangouts_login_shared_secret: ''
+
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
@@ -115,7 +118,7 @@ matrix_mautrix_hangouts_configuration_yaml: |
       # If set, custom puppets will be enabled automatically for local users
       # instead of users having to find an access token and run `login-matrix`
       # manually.
-      login_shared_secret: null
+      login_shared_secret: {{ matrix_mautrix_hangouts_login_shared_secret|to_json }}
       # Whether or not to update avatars when syncing all contacts at startup.
       update_avatar_initial_sync: true
 

@@ -27,6 +27,9 @@ matrix_mautrix_whatsapp_systemd_wanted_services_list: []
 matrix_mautrix_whatsapp_appservice_token: ''
 matrix_mautrix_whatsapp_homeserver_token: ''
 
+# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
+matrix_mautrix_whatsapp_login_shared_secret: ''
+
 # Default mautrix-whatsapp configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
@@ -137,7 +140,7 @@ matrix_mautrix_whatsapp_configuration_yaml: |
       # If set, custom puppets will be enabled automatically for local users
       # instead of users having to find an access token and run `login-matrix`
       # manually.
-      login_shared_secret: null
+      login_shared_secret: {{ matrix_mautrix_whatsapp_login_shared_secret|to_json }}
 
       # Whether or not to invite own WhatsApp user's Matrix puppet into private
       # chat portals when backfilling if needed.

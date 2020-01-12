@@ -1,3 +1,14 @@
+# 2020-01-12
+
+## Added support for automatic Double Puppeting for all Mautrix bridges
+
+Double Puppeting can now be easily enabled for all Mautrix bridges supported by the playbook (Facebook, Hangouts, Whatsapp, Telegram).
+
+This is possible due to those bridges' integration with [matrix-synapse-shared-secret-auth](https://github.com/devture/matrix-synapse-shared-secret-auth) - yet another component that this playbook can install for you.
+
+To get started, following the playbook's documentation for the bridge you'd like to configure.
+
+
 # 2019-12-06
 
 ## Added support for an alternative method for using another webserver

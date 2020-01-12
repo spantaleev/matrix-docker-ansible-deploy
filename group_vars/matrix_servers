@@ -149,6 +149,8 @@ matrix_mautrix_facebook_appservice_token: "{{ matrix_synapse_macaroon_secret_key
 
 matrix_mautrix_facebook_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'fb.hs.token') | to_uuid }}"
 
+matrix_mautrix_facebook_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
 ######################################################################
 #
 # /matrix-bridge-mautrix-facebook
@@ -176,6 +178,8 @@ matrix_mautrix_hangouts_appservice_token: "{{ matrix_synapse_macaroon_secret_key
 
 matrix_mautrix_hangouts_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'ho.hs.token') | to_uuid }}"
 
+matrix_mautrix_hangouts_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
 ######################################################################
 #
 # /matrix-bridge-mautrix-hangouts
@@ -195,7 +199,6 @@ matrix_mautrix_hangouts_homeserver_token: "{{ matrix_synapse_macaroon_secret_key
 # We don't enable bridges by default.
 matrix_mautrix_telegram_enabled: false
 
-
 matrix_mautrix_telegram_systemd_required_services_list: |
   {{
     ['docker.service']
@@ -210,6 +213,8 @@ matrix_mautrix_telegram_homeserver_token: "{{ matrix_synapse_macaroon_secret_key
 matrix_mautrix_telegram_public_endpoint: "/{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'telegram') | to_uuid }}"
 
 matrix_mautrix_telegram_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9006' }}"
+
+matrix_mautrix_telegram_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
 ######################################################################
 #
@@ -237,6 +242,8 @@ matrix_mautrix_whatsapp_systemd_required_services_list: |
 matrix_mautrix_whatsapp_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'whats.as.token') | to_uuid }}"
 
 matrix_mautrix_whatsapp_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'whats.hs.token') | to_uuid }}"
+
+matrix_mautrix_whatsapp_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
 ######################################################################
 #

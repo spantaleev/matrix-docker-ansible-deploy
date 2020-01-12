@@ -11,6 +11,37 @@ To enable the [Google Hangouts](https://hangouts.google.com/) bridge just use th
 matrix_mautrix_hangouts_enabled: true
 ```
 
+
+## Set up Double Puppeting
+
+If you'd like to use [Double Puppeting](https://github.com/tulir/mautrix-hangouts/wiki/Authentication#double-puppeting) (hint: you most likely do), you have 2 ways of going about it.
+
+### Method 1: automatically, by enabling Shared Secret Auth
+
+The bridge will automatically perform Double Puppeting if you enable [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) for this playbook.
+
+This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
+
+
+### Method 2: manually, by asking each user to provide a working access token
+
+**Note**: This method for enabling Double Puppeting can be configured only after you've already set up bridging (see [Usage](#usage)).
+
+When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
+
+- retrieve a Matrix access token for yourself. You can use the following command:
+
+```
+curl \
+--data '{"identifier": {"type": "m.id.user", "user": "YOUR_MATRIX_USERNAME" }, "password": "YOUR_MATRIX_PASSWORD", "type": "m.login.password", "device_id": "Mautrix-Hangouts", "initial_device_display_name": "Mautrix-Hangouts"}' \
+https://matrix.DOMAIN/_matrix/client/r0/login
+```
+
+- send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
+
+- make sure you don't log out the `Mautrix-Hangouts` device some time in the future, as that would break the Double Puppeting feature
+
+
 ## Usage
 
 Once the bot is enabled you need to start a chat with `Hangouts bridge bot` with handle `@hangoutsbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
@@ -22,3 +53,6 @@ Automatic login may not work. If it does not, reload the page and select the "Ma
 Once logged in, recent chats should show up as new conversations automatically. Other chats will get portals as you receive messages.
 
 You can learn more about authentication from the bridge's [official documentation on Authentication](https://github.com/tulir/mautrix-hangouts/wiki/Authentication).
+
+After successfully enabling bridging, you may wish to [set up Double Puppeting](#set-up-double-puppeting), if you haven't already done so.
+
