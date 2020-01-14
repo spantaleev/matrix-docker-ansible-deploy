@@ -1,3 +1,12 @@
+# 2020-01-14
+
+## Added support for Appservice Webhooks
+
+Thanks to a contribution from [Björn Marten](https://github.com/tripleawwy) from [netresearch](https://www.netresearch.de/), the playbook can now install and configure [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) for you. This bridge provides support for Slack-compatible webhooks.
+
+Learn more in [Setting up Appservice Webhooks](docs/configuring-playbook-bridge-appservice-webhooks.md).
+
+
 # 2020-01-12
 
 ## Added support for automatic Double Puppeting for all Mautrix bridges

@@ -2,6 +2,8 @@
 
 The playbook can install and configure [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) for you.
 
+This bridge provides support for Slack-compatible webhooks.
+
 Setup Instructions:
 
 loosely based on [this](https://github.com/turt2live/matrix-appservice-webhooks/blob/master/README.md)
