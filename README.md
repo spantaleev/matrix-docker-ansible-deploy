@@ -50,6 +50,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) bridge for bridging your Matrix server to [Slack](https://slack.com/)
 
+- (optional) the [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) bridge for slack compatible webhooks ([ConcourseCI](https://concourse-ci.org/), [Slack](https://slack.com/) etc. pp.)
+
 - (optional) [Email2Matrix](https://github.com/devture/email2matrix) for relaying email messages to Matrix rooms
 
 - (optional) [Dimension](https://github.com/turt2live/matrix-dimension), an open source integrations manager for matrix clients
