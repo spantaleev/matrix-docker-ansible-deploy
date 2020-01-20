@@ -2,7 +2,7 @@
 
 ## Option 1 (if you are using the default matrix-postgres container):
 
-You can reset a user's password via the Ansible playbook (make sure to edit the `<your-username>` and `<your-password>` part below)
+You can reset a user's password via the Ansible playbook (make sure to edit the `<your-username>` and `<your-password>` part below):
 
 ```
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='user:w
