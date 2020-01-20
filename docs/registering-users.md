@@ -24,7 +24,10 @@ If you've just installed Matrix, **to finalize the installation process**, it's 
 
 -----
 
-The script `/usr/local/bin/matrix-change-user-admin-status` may be used to change a user's admin privileges:
+
+## Adding/Removing Administrator privileges to an existing user.  
+
+The script `/usr/local/bin/matrix-change-user-admin-status` may be used to change a user's admin privileges.
 
 * log on to your server with ssh
 * execute with the username and 0/1 (0 = non-admin | 1 = admin)
