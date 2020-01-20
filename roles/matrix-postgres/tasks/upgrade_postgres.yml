@@ -20,6 +20,11 @@
     postgres_start_wait_time: 15
   when: "postgres_start_wait_time|default('') == ''"
 
+- name: Set postgres_force_upgrade, if not provided
+  set_fact:
+    postgres_force_upgrade: false
+  when: "postgres_force_upgrade|default('') == ''"
+
 - name: Fail, if trying to upgrade external Postgres database
   fail:
     msg: "Your configuration indicates that you're not using Postgres from this role. There is nothing to upgrade."
@@ -45,7 +50,7 @@
 - name: Abort, if already at latest Postgres version
   fail:
     msg: "You are already running the latest Postgres version supported ({{ matrix_postgres_docker_image_latest }}). Nothing to do"
-  when: "matrix_postgres_detected_version_corresponding_docker_image == matrix_postgres_docker_image_latest"
+  when: "matrix_postgres_detected_version_corresponding_docker_image == matrix_postgres_docker_image_latest and not postgres_force_upgrade"
 
 - debug:
     msg: "Upgrading database from {{ matrix_postgres_detected_version_corresponding_docker_image }} to {{ matrix_postgres_docker_image_latest }}"
