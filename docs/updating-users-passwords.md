@@ -5,8 +5,7 @@
 You can reset a user's password via the Ansible playbook (make sure to edit the `<your-username>` and `<your-password>` part below):
 
 ```
-ansible-playbook -i inventory/hosts setup.yml --extra-vars='user:w
-name=<your-username> password=<your-password>' --tags=update-user-password
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-username> password=<your-password>' --tags=update-user-password
 ```
 
 **Note**: `<your-username>` is just a plain username (like `john`), not your full `@<username>:<your-domain>` identifier.
