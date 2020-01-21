@@ -42,7 +42,7 @@ docker run \
 --rm \
 --network=matrix \
 --env-file=/matrix/postgres/env-postgres-psql \
-postgres:12.0-alpine \
+postgres:12.1-alpine \
 pg_dumpall -h matrix-postgres \
 | gzip -c \
 > /postgres.sql.gz
