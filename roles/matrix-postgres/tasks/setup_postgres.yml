@@ -73,11 +73,17 @@
     mode: 0750
   when: matrix_postgres_enabled|bool
 
-- name: Ensure matrix-make-user-admin script created
+- name: Ensure matrix-change-user-admin-status script created
   template:
-    src: "{{ role_path }}/templates/usr-local-bin/matrix-make-user-admin.j2"
-    dest: "/usr/local/bin/matrix-make-user-admin"
+    src: "{{ role_path }}/templates/usr-local-bin/matrix-change-user-admin-status.j2"
+    dest: "/usr/local/bin/matrix-change-user-admin-status"
     mode: 0750
+  when: matrix_postgres_enabled|bool
+
+- name: (Migration) Ensure old matrix-make-user-admin script deleted
+  file:
+    path: "/usr/local/bin/matrix-make-user-admin"
+    state: absent
   when: matrix_postgres_enabled|bool
 
 - name: Ensure matrix-postgres-update-user-password-hash script created
@@ -146,6 +152,6 @@
     state: absent
   with_items:
     - matrix-postgres-cli
-    - matrix-make-user-admin
+    - matrix-change-user-admin-status
     - matrix-postgres-update-user-password-hash
   when: "not matrix_postgres_enabled|bool"

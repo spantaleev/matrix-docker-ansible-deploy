@@ -1,0 +1,19 @@
+#jinja2: lstrip_blocks: "True"
+#!/bin/bash
+
+if [ $# -ne 2 ]; then
+	echo "Usage: "$0" <username> <0/1>"
+	echo "Usage: 0 = non-admin"
+	echo "Usage: 1 = admin"
+	exit 1
+fi
+
+docker run \
+	-it \
+	--rm \
+	--user=991:991 \
+	--cap-drop=ALL \
+	--env-file=/matrix/postgres/env-postgres-psql \
+	--network matrix \
+	postgres:12.1-alpine \
+	psql -h matrix-postgres -c "UPDATE users set admin=$2 WHERE name like '@$1:{{ matrix_domain }}'"
