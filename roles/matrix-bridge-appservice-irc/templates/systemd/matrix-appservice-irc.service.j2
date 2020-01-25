@@ -30,8 +30,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-appservice-irc \
 			{% for arg in matrix_appservice_irc_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
+			--entrypoint=/bin/bash \
 			{{ matrix_appservice_irc_docker_image }} \
-			-c /config/config.yaml -f /config/registration.yaml -p 9999
+			-c 'node app.js -c /config/config.yaml -f /config/registration.yaml -p 9999'
 
 ExecStop=-/usr/bin/docker kill matrix-appservice-irc
 ExecStop=-/usr/bin/docker rm matrix-appservice-irc
