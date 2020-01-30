@@ -1,3 +1,12 @@
+# 2020-01-30
+
+## Disabling TLSv1.1
+
+To improve security, we've removed TLSv1.1 support from our default matrix-nginx-proxy configuration.
+
+If you need to support old clients, you can re-enable it with the following configuration: `matrix_nginx_proxy_ssl_protocols: "TLSv1.1 TLSv1.2 TLSv1.3"`
+
+
 # 2020-01-21
 
 ## Postgres collation changes (action required!)
