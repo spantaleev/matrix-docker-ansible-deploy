@@ -1,8 +1,8 @@
 # Setting up Appservice IRC (optional)
 
-The playbook can install and configure [matrix-appservice-irc](https://github.com/TeDomum/matrix-appservice-irc) for you.
+The playbook can install and configure [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) for you.
 
-See the project's [documentation](https://github.com/TeDomum/matrix-appservice-irc/blob/master/HOWTO.md) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/matrix-org/matrix-appservice-irc/blob/master/HOWTO.md) to learn what it does and why it might be useful to you.
 
 You'll need to use the following playbook configuration:
 
