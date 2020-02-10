@@ -1,0 +1,22 @@
+matrix_maubot_enabled: true
+matrix_maubot_host_data_dir: "{{ matrix_base_data_path }}/maubot/data"
+matrix_maubot_host_config_dir: "{{ matrix_base_data_path }}/maubot/config"
+matrix_maubot_container_data_dir: "/data"
+matrix_maubot_container_config_dir: "/root/.config/"
+matrix_maubot_config_filename: "config.yaml"
+matrix_maubot_config_path: "{{ matrix_maubot_host_data_dir + '/' + matrix_maubot_config_filename }}"
+matrix_maubot_systemd_required_services_list: ['docker.service']
+matrix_maubot_systemd_wanted_services_list: []
+matrix_maubot_container_extra_arguments: []
+
+matrix_maubot_database_url: "sqlite:///{{ matrix_maubot_container_data_dir }}/maubot.db"
+matrix_maubot_management_port: 29316
+matrix_maubot_management_hostname: "0.0.0.0"
+
+matrix_maubot_shared_secret: false
+matrix_maubot_registration_shared_secret:
+matrix_maubot_cs_url: http://matrix-synapse:8008
+matrix_maubot_admins: false
+
+matrix_maubot_docker_image: dock.mau.dev/maubot/maubot:latest
+matrix_maubot_docker_image_force_pull: "{{ matrix_dimension_docker_image.endswith(':latest') }}"
