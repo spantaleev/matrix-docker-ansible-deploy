@@ -3,7 +3,7 @@
 
 matrix_appservice_irc_enabled: true
 
-matrix_appservice_irc_docker_image: "tedomum/matrix-appservice-irc:latest"
+matrix_appservice_irc_docker_image: "matrixdotorg/matrix-appservice-irc:release-0.14.1"
 matrix_appservice_irc_docker_image_force_pull: "{{ matrix_appservice_irc_docker_image.endswith(':latest') }}"
 
 matrix_appservice_irc_base_path: "{{ matrix_base_data_path }}/appservice-irc"
@@ -377,11 +377,6 @@ matrix_appservice_irc_configuration_yaml: |
     enablePresence: {{ matrix_appservice_irc_homeserver_enablePresence|to_json }}
 
   ircService:
-    # The nedb database URI to connect to. This is the name of the directory to
-    # dump .db files to. This is relative to the project directory.
-    # Required.
-    databaseUri: "nedb:///data"
-
     # WARNING: The bridge needs to send plaintext passwords to the IRC server, it cannot
     # send a password hash. As a result, passwords (NOT hashes) are stored encrypted in
     # the database.
@@ -473,6 +468,15 @@ matrix_appservice_irc_configuration_yaml: |
     # accidentally overloading the homeserver. Defaults to 1000, which should be
     # enough for the vast majority of use cases.
     maxHttpSockets: 1000
+
+  # Use an external database to store bridge state.
+  database:
+    # database engine (must be 'postgres' or 'nedb'). Default: nedb
+    engine: "nedb"
+    # Either a PostgreSQL connection string, or a path to the NeDB storage directory.
+    # For postgres, it must start with postgres://
+    # For NeDB, it must start with nedb://. The path is relative to the project directory.
+    connectionString: "nedb:///data"
 
 matrix_appservice_irc_configuration_extension_yaml: |
   # Your custom YAML configuration for Appservice IRC servers goes here.

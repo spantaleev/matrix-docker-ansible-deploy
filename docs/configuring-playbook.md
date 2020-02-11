@@ -93,4 +93,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Appservice Slack bridging](configuring-playbook-bridge-appservice-slack.md) (optional)
 
+- [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (optional)
+
 - [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (optional)

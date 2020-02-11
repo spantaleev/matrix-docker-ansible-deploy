@@ -98,13 +98,15 @@
     --cap-drop=ALL
     -v {{ matrix_appservice_irc_config_path }}:/config:z
     -v {{ matrix_appservice_irc_data_path }}:/data:z
+    --entrypoint=/bin/bash
     {{ matrix_appservice_irc_docker_image }}
-    node app.js
+    -c
+    'node app.js
     -r
     -f /config/registration-template.yaml
     -u "http://matrix-appservice-irc:9999"
     -c /config/config.yaml
-    -l irc_bot
+    -l irc_bot'
   changed_when: false
 
 - name: Read Appservice IRC registration-template.yaml

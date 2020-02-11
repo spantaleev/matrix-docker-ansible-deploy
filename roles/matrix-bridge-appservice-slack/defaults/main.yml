@@ -3,7 +3,7 @@
 
 matrix_appservice_slack_enabled: true
 
-matrix_appservice_slack_docker_image: "matrixdotorg/matrix-appservice-slack:release-1.0.2"
+matrix_appservice_slack_docker_image: "cadair/matrix-appservice-slack:latest"
 matrix_appservice_slack_docker_image_force_pull: "{{ matrix_appservice_slack_docker_image.endswith(':latest') }}"
 
 matrix_appservice_slack_base_path: "{{ matrix_base_data_path }}/appservice-slack"
@@ -50,24 +50,6 @@ matrix_appservice_slack_configuration_yaml: |
     inbound_uri_prefix: "{{ matrix_appservice_slack_inbound_uri_prefix }}"
     bot_username: "{{ matrix_appservice_slack_bot_name }}"
     username_prefix: {{ matrix_appservice_slack_user_prefix }}
-
-    # Optional if slack_hook_port and inbound_uri_prefix are defined, required otherwise.
-    rtm:
-      # Use the RTM API to listen for requests, which does not require
-      # the bridge to listen on the hook port.
-      # You should leave this enabled, unless you plan to use the
-      # bridge exclusively for webhooks.
-      enable: true
-      logging: "silent" # Logging level specific to RTM traffic.
-      # A prefix similar to inbound_uri_prefix for oauth2 requests. inbound_uri_prefix will be used if this is not set
-      # Optional
-      # redirect_prefix: "https://my.server.here:9898/mycustomoauthendpoint"
-
-    # Allow users to add channels dynamically by using oauth, or puppet themselves.
-    # Optional
-    oauth2:
-      client_id: ""
-      client_secret: ""
 
     homeserver:
         media_url: "{{ matrix_appservice_slack_homeserver_media_url }}"

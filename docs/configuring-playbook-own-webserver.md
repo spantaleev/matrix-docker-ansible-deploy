@@ -52,7 +52,7 @@ Note that if your nginx version is old, it might not like our default choice of 
 
 ```yaml
 # Custom protocol list (removing `TLSv1.3`) to suit your nginx version.
-matrix_nginx_proxy_ssl_protocols: "TLSv1.1 TLSv1.2"
+matrix_nginx_proxy_ssl_protocols: "TLSv1.2"
 ```
 
 

@@ -24,11 +24,14 @@ If you've just installed Matrix, **to finalize the installation process**, it's 
 
 -----
 
-The script `/usr/local/bin/matrix-make-user-admin` may be used to upgrade a user's privileges:
+
+## Adding/Removing Administrator privileges to an existing user.  
+
+The script `/usr/local/bin/matrix-change-user-admin-status` may be used to change a user's admin privileges.
 
 * log on to your server with ssh
-* execute with the username:
+* execute with the username and 0/1 (0 = non-admin | 1 = admin)
 
 ```
-/usr/local/bin/matrix-make-user-admin <username>
+/usr/local/bin/matrix-change-user-admin-status <username> <0/1>
 ```

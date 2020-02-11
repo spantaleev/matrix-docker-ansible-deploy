@@ -152,15 +152,27 @@ matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate_key: "{{ matrix_s
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_nginx_proxy_tmp_directory_size_mb: "{{ (matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb | int) * 50 }}"
 
-# A list of strings containing additional configuration blocks to add to the matrix domain's server configuration.
+# A list of strings containing additional configuration blocks to add to the nginx http's server configuration.
+matrix_nginx_proxy_proxy_http_additional_server_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to the matrix synapse's server configuration.
 matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to the matrix riot's server configuration.
+matrix_nginx_proxy_proxy_riot_additional_server_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to the matrix dimension's server configuration.
+matrix_nginx_proxy_proxy_dimension_additional_server_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to the matrix domain server configuration.
+matrix_nginx_proxy_proxy_domain_additional_server_configuration_blocks: []
 
 # Specifies when to reload the matrix-nginx-proxy service so that
 # a new SSL certificate could go into effect.
 matrix_nginx_proxy_reload_cron_time_definition: "20 4 */5 * *"
 
 # Specifies which SSL protocols to use when serving Riot and Synapse
-matrix_nginx_proxy_ssl_protocols: "TLSv1.1 TLSv1.2 TLSv1.3"
+matrix_nginx_proxy_ssl_protocols: "TLSv1.2 TLSv1.3"
 
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_nginx_proxy_self_check_validate_certificates: true

@@ -1,0 +1,12 @@
+---
+
+- name: Fail if required settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_appservice_webhooks_appservice_token"
+    - "matrix_appservice_webhooks_homeserver_token"
+    - "matrix_appservice_webhooks_id_token"
+    - "matrix_appservice_webhooks_api_secret"

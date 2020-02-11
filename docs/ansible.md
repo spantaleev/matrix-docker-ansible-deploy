@@ -9,9 +9,7 @@ If your local computer cannot run Ansible, you can also run Ansible on some serv
 
 ## Supported Ansible versions
 
-Ansible 2.5 or newer is required.
-
-If you're on Ansible 2.5.x, due to bugs in Ansible 2.5.0 and 2.5.1, at least Ansible 2.5.2 is required.
+Ansible 2.5.2 or newer is required.
 
 
 ## Checking your Ansible version
@@ -28,7 +26,7 @@ If you're on an old version of Ansible, you should [upgrade Ansible to a newer v
 
 Depending on your distribution, you may be able to upgrade Ansible in a few different ways:
 
-- by using an additional repository (PPA, etc.), which provides newer Ansible versions
+- by using an additional repository (PPA, etc.), which provides newer Ansible versions. See instructions for [CentOS](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-rhel-centos-or-fedora), [Debian](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-debian), or [Ubuntu](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-ubuntu) on the Ansible website.
 
 - by removing the Ansible package (`yum remove ansible` or `apt-get remove ansible`) and installing via [pip](https://pip.pypa.io/en/stable/installing/) (`pip install ansible`).
 

@@ -8,9 +8,11 @@ Run this as-is to set up a server:
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all
 ```
 
-This **doesn't start any services just yet** (another step does this later - below).
+**Note**: if you don't use SSH keys for authentication, but rather a regular password, you may need to add `--ask-pass` to the above (and all other) Ansible commands.
 
-Feel free to **re-run this any time** you think something is off with the server configuration.
+The above command **doesn't start any services just yet** (another step does this later - below).
+
+Feel free to **re-run this setup command any time** you think something is off with the server configuration.
 
 
 ## Things you might want to do after installing

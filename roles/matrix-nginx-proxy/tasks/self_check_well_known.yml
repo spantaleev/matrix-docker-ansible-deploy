@@ -6,7 +6,7 @@
       - path: /.well-known/matrix/client
         purpose: Client Discovery
         cors: true
-        follow_redirects: false
+        follow_redirects: none
         validate_certs: "{{ matrix_nginx_proxy_self_check_validate_certificates }}"
 
 - block:
@@ -15,7 +15,7 @@
           path: /.well-known/matrix/server
           purpose: Server Discovery
           cors: false
-          follow_redirects: true
+          follow_redirects: safe
           validate_certs: "{{ matrix_nginx_proxy_self_check_validate_certificates }}"
 
     - name: Determine domains that we require certificates for (mxisd)

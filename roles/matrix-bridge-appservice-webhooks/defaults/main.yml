@@ -1,0 +1,105 @@
+# matrix-appservice-webhooks is a Matrix <-> webhook bridge
+# See: https://github.com/turt2live/matrix-appservice-webhooks
+
+matrix_appservice_webhooks_enabled: true
+
+matrix_appservice_webhooks_docker_image: "turt2live/matrix-appservice-webhooks:latest"
+matrix_appservice_webhooks_docker_image_force_pull: "{{ matrix_appservice_webhooks_docker_image.endswith(':latest') }}"
+
+matrix_appservice_webhooks_base_path: "{{ matrix_base_data_path }}/appservice-webhooks"
+matrix_appservice_webhooks_config_path: "{{ matrix_appservice_webhooks_base_path }}/config"
+matrix_appservice_webhooks_data_path: "{{ matrix_appservice_webhooks_base_path }}/data"
+
+# If nginx-proxy is disabled, the bridge itself expects its endpoint to be on its own domain (e.g. "localhost:6789")
+matrix_appservice_webhooks_public_endpoint: /appservice-webhooks
+matrix_appservice_webhooks_inbound_uri_prefix: "{{ matrix_homeserver_url }}{{ matrix_appservice_webhooks_public_endpoint }}"
+
+# Once you make a control room in Matrix, you can get its ID by typing any message and checking its source
+matrix_appservice_webhooks_control_room_id: ''
+matrix_appservice_webhooks_bot_name: 'webhookbot'
+matrix_appservice_webhooks_user_prefix: '_webhook'
+
+# Controls the webhooks_PORT and MATRIX_PORT of the installation
+matrix_appservice_webhooks_matrix_port: 6789
+matrix_appservice_webhooks_webhooks_port: 6788
+
+# Controls whether the appservice-webhooks container exposes its HTTP port (tcp/6788 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9999"), or empty string to not expose.
+matrix_appservice_webhooks_container_http_host_bind_port: ''
+
+matrix_appservice_webhooks_homeserver_media_url: "matrix.{{ matrix_domain }}"
+matrix_appservice_webhooks_homeserver_url: "http://matrix-synapse:8008"
+matrix_appservice_webhooks_homeserver_domain: "{{ matrix_domain }}"
+matrix_appservice_webhooks_appservice_url: 'http://matrix-appservice-webhooks'
+
+# A list of extra arguments to pass to the container
+matrix_appservice_webhooks_container_extra_arguments: []
+
+# List of systemd services that matrix-appservice-webhooks.service depends on.
+matrix_appservice_webhooks_systemd_required_services_list: ['docker.service', 'matrix-synapse.service']
+
+# List of systemd services that matrix-appservice-webhooks.service wants
+matrix_appservice_webhooks_systemd_wanted_services_list: []
+
+matrix_appservice_webhooks_appservice_token: ''
+matrix_appservice_webhooks_homeserver_token: ''
+matrix_appservice_webhooks_id_token: ''
+matrix_appservice_webhooks_api_secret: ''
+
+# Logging information (info and verbose is available) default is: info
+matrix_appservice_webhooks_log_level: 'info'
+
+matrix_appservice_webhooks_configuration_yaml: |
+
+  # Configuration specific to the application service. All fields (unless otherwise marked) are required.
+  homeserver:
+    # The domain for the client-server API calls.
+    url: "{{ matrix_appservice_webhooks_homeserver_url }}"
+
+    # The domain part for user IDs on this home server. Usually, but not always, this is the same as the
+    # home server's URL.
+    domain: "{{ matrix_domain }}"
+
+  # Configuration specific to the bridge. All fields (unless otherwise marked) are required.
+  webhookBot:
+    # The localpart to use for the bot. May require re-registering the application service.
+    localpart: "_webhook"
+
+  # Provisioning API options
+  provisioning:
+    # Your secret for the API. Required for all provisioning API requests.
+    secret: '{{ matrix_appservice_webhooks_api_secret }}'
+
+  # Configuration related to the web portion of the bridge. Handles the inbound webhooks
+  web:
+    hookUrlBase:  "{{ matrix_appservice_webhooks_inbound_uri_prefix }}"
+
+  logging:
+    console: true
+    consoleLevel: {{ matrix_appservice_webhooks_log_level }}
+    writeFiles: false
+
+matrix_appservice_webhooks_configuration_extension_yaml: |
+  #
+
+matrix_appservice_webhooks_configuration_extension: "{{ matrix_appservice_webhooks_configuration_extension_yaml|from_yaml if matrix_appservice_webhooks_configuration_extension_yaml|from_yaml else {} }}"
+
+matrix_appservice_webhooks_configuration: "{{ matrix_appservice_webhooks_configuration_yaml|from_yaml|combine(matrix_appservice_webhooks_configuration_extension, recursive=True) }}"
+
+matrix_appservice_webhooks_registration_yaml: |
+  id: "{{ matrix_appservice_webhooks_id_token }}"
+  hs_token: "{{ matrix_appservice_webhooks_homeserver_token }}"
+  as_token: "{{ matrix_appservice_webhooks_appservice_token }}"
+  namespaces:
+    users:
+      - exclusive: true
+        regex: '^@{{ matrix_appservice_webhooks_user_prefix | regex_escape }}.*:{{ matrix_domain | regex_escape }}$'
+    aliases: []
+    rooms: []
+  url: "{{ matrix_appservice_webhooks_appservice_url }}:{{ matrix_appservice_webhooks_matrix_port }}"
+  sender_localpart: _webhook
+  rate_limited: false
+  protocols: null
+
+matrix_appservice_webhooks_registration: "{{ matrix_appservice_webhooks_registration_yaml|from_yaml }}"

@@ -1,3 +1,38 @@
+# 2020-01-30
+
+## Disabling TLSv1.1
+
+To improve security, we've removed TLSv1.1 support from our default matrix-nginx-proxy configuration.
+
+If you need to support old clients, you can re-enable it with the following configuration: `matrix_nginx_proxy_ssl_protocols: "TLSv1.1 TLSv1.2 TLSv1.3"`
+
+
+# 2020-01-21
+
+## Postgres collation changes (action required!)
+
+By default, we've been using a UTF-8 collation for Postgres. This is known to cause Synapse some troubles (see the [relevant issue](https://github.com/matrix-org/synapse/issues/6722)) on systems that use [glibc](https://www.gnu.org/software/libc/). We run Postgres in an [Alpine Linux](https://alpinelinux.org/) container (which uses [musl](https://www.musl-libc.org/), and not glibc), so our users are likely not affected by the index corruption problem observed by others.
+
+Still, we might become affected in the future. In any case, it's imminent that Synapse will complain about databases which do not use a C collation.
+
+To avoid future problems, we recommend that you run the following command:
+
+```
+ansible-playbook -i inventory/hosts setup.yml --tags=upgrade-postgres --extra-vars='{"postgres_force_upgrade": true}'
+```
+
+It forces a [Postgres database upgrade](docs/maintenance-postgres.md#upgrading-postgresql), which would recreate your Postgres database using the proper (`C`) collation. If you are low on disk space, or run into trouble, refer to the Postgres database upgrade documentation page.
+
+
+# 2020-01-14
+
+## Added support for Appservice Webhooks
+
+Thanks to a contribution from [Björn Marten](https://github.com/tripleawwy) from [netresearch](https://www.netresearch.de/), the playbook can now install and configure [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) for you. This bridge provides support for Slack-compatible webhooks.
+
+Learn more in [Setting up Appservice Webhooks](docs/configuring-playbook-bridge-appservice-webhooks.md).
+
+
 # 2020-01-12
 
 ## Added support for automatic Double Puppeting for all Mautrix bridges
