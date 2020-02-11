@@ -5,6 +5,9 @@
 
 	gzip on;
 	gzip_types text/plain application/json;
+	{% for configuration_block in matrix_nginx_proxy_proxy_domain_additional_server_configuration_blocks %}
+		{{- configuration_block }}
+	{% endfor %}
 
 	location /.well-known/matrix {
 		root {{ matrix_static_files_base_path }};
