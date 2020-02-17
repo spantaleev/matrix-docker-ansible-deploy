@@ -4,10 +4,10 @@
   when: ansible_distribution == 'CentOS'
 
 - include_tasks: "{{ role_path }}/tasks/server_base/setup_debian.yml"
-     when: (ansible_os_family == 'Debian') and (ansible_lsb.id != 'Raspbian') 
+  when: (ansible_os_family == 'Debian') and (ansible_lsb.id != 'Raspbian') 
 
 - include_tasks: "{{ role_path }}/tasks/server_base/setup_raspbian.yml"
-     when: (ansible_os_family == 'Debian') and (ansible_lsb.id == 'Raspbian') 
+  when: "matrix_raspberry_pi" 
 
 - name: Ensure Docker is started and autoruns
   service:
