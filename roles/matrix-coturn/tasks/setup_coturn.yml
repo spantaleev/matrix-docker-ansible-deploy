@@ -10,7 +10,25 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_coturn_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_coturn_docker_image_force_pull }}"
-  when: matrix_coturn_enabled|bool
+  when: matrix_coturn_enabled|bool and not matrix_raspberry_pi
+
+- name: Ensure Coturn repository is present on Raspberry pi
+  git:
+    repo: https://github.com/instrumentisto/coturn-docker-image.git
+    dest: "{{ matrix_docker_coturn_src_files_path }}"
+    version: "{{ matrix_coturn_docker_image.split(':')[1] }}"
+    force: "yes"
+  when: "matrix_raspberry_pi"
+
+- name: Ensure Coturn Docker image is build (Raspberry pi)
+  docker_image:
+    name: "{{ matrix_coturn_docker_image }}"
+    source: build
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_docker_coturn_src_files_path }}"
+      pull: yes
+  when: "matrix_raspberry_pi"
 
 - name: Ensure Coturn configuration path exists
   file:
