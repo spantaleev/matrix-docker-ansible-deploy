@@ -26,7 +26,7 @@ matrix_appservice_webhooks_log_level: '<log_level>'
 
 3. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
 
-4. Configure Webhooks bridge by opening the Dimension integration manager -> Settings -> Bridges and select edit action for "Webhook Bridge". Press "Add self-hosted Bridge" button and populate "Provisioning URL"  & "Shared Secret" values from appservice-webhooks/config/config.yaml file's homeserver URL value and provisioning secret value respectively. 
+4. If you're using the [Dimension Integration Manager](configuring-playbook-dimension.md), you can configure the Webhooks bridge by opening the Dimension integration manager -> Settings -> Bridges and selecting edit action for "Webhook Bridge". Press "Add self-hosted Bridge" button and populate "Provisioning URL"  & "Shared Secret" values from `/matrix/appservice-webhooks/config/config.yaml` file's homeserver URL value and provisioning secret value, respectively. 
 
 4. Invite the bridge bot user to your room:
 
