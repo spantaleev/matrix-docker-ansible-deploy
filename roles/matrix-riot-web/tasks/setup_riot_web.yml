@@ -19,7 +19,25 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_riot_web_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_riot_web_docker_image_force_pull }}"
-  when: matrix_riot_web_enabled|bool
+  when: matrix_riot_web_enabled|bool and not matrix_raspberry_pi
+
+- name: Ensure Riot Web repository is present on Raspberry pi
+  git:
+    repo: https://github.com/vector-im/riot-web.git
+    dest: "{{ matrix_docker_riot_web_src_files_path }}"
+    version: "v{{ matrix_riot_web_docker_image.split(':')[1] }}"
+    force: "yes"
+  when: "matrix_riot_web_enabled|bool and matrix_raspberry_pi"
+
+- name: Ensure Riot Web Docker image is build (Raspberry pi)
+  docker_image:
+    name: "{{ matrix_riot_web_docker_image }}"
+    source: build
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_docker_riot_web_src_files_path }}"
+      pull: yes
+  when: "matrix_riot_web_enabled|bool and matrix_raspberry_pi"
 
 - name: Ensure Matrix riot-web configuration installed
   copy:
