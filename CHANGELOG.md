@@ -1,3 +1,20 @@
+# 2020-02-24
+
+## Customize the server name in Riot's login page
+
+You can now customize the server name string that Riot-web displays in its login page.
+
+These playbook variables, with these default values, have been added:
+
+```
+matrix_riot_web_default_server_name: "{{ matrix_domain }}"
+```
+
+The login page previously said "Sign in to your Matrix account on matrix.example.org" (the homeserver's domain name). It will now say "Sign in ... on example.org" (the server name) by default, or "Sign in ... on Our Server" if you set the variable to "Our Server".
+
+To support this, the config.json template is changed to use the configuration key `default_server_config` for setting the default HS/IS, and the new configuration key `server_name` is added in there.
+
+
 # 2020-01-30
 
 ## Disabling TLSv1.1
