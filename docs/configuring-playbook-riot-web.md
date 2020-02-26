@@ -27,3 +27,14 @@ Alternatively, **if there is no pre-defined variable** for a riot-web setting yo
 - or, you can **extend and override the default configuration** ([`config.json.j2`](../roles/matrix-riot-web/templates/config.json.j2)) by making use of the `matrix_riot_web_configuration_extension_json_` variable. You can find information about this in [`roles/matrix-riot-web/defaults/main.yml`](../roles/matrix-riot-web/defaults/main.yml).
 
 - or, if extending the configuration is still not powerful enough for your needs, you can **override the configuration completely** using `matrix_riot_web_configuration_default` (or `matrix_riot_web_configuration`). You can find information about this in [`roles/matrix-riot-web/defaults/main.yml`](../roles/matrix-riot-web/defaults/main.yml).
+
+
+## Themes
+
+To change the look of riot-web, you can define your own themes manually by using the `matrix_riot_web_settingDefaults_custom_themes` setting.
+
+Or better yet, you can automatically pull it all themes provided by the [aaronraimist/riot-web-themes](https://github.com/aaronraimist/riot-web-themes) project by simply flipping a flag (`matrix_riot_web_themes_enabled: true`).
+
+If you make your own theme, we encourage you to submit it to the **aaronraimist/riot-web-themes** project, so that the whole community could easily enjoy it.
+
+Note that for a custom theme to work well, all riot-web/riot-desktop instances that you use must have the same theme installed.

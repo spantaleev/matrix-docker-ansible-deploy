@@ -1,3 +1,12 @@
+# 2020-02-26
+
+## Riot-web themes are here
+
+The playbook now makes it easy to install custom riot-web themes.
+
+To learn more, take a look at our [riot-web documentation on Themes](docs/configuring-playbook-riot-web.md#themes).
+
+
 # 2020-02-24
 
 ## Customize the server name in Riot's login page
