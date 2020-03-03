@@ -72,7 +72,7 @@ matrix_appservice_webhooks_enabled: false
 # Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-webhooks over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # matrix-appservice-webhooks' client-server port to the local host.
-matrix_appservice_webhooks_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:{{ matrix_appservice_webhooks_webhooks_port }}' }}"
+matrix_appservice_webhooks_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:{{ matrix_appservice_webhooks_matrix_port }}' }}"
 
 matrix_appservice_webhooks_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'webhook.as.token') | to_uuid }}"
 
