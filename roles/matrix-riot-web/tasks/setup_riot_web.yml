@@ -13,7 +13,7 @@
     group: "{{ matrix_user_username }}"
   with_items:
     - "{{ matrix_riot_web_data_path }}"
-    - { src: "{{ matrix_docker_riot_web_src_files_path }}", when: "{{ matrix_riot_web_self_build }}" }
+    - { src: "{{ matrix_riot_web_docker_src_files_path }}", when: "{{ matrix_riot_web_self_build }}" }
   when: matrix_riot_web_enabled|bool
 
 - name: Ensure riot-web Docker image is pulled
@@ -27,7 +27,7 @@
 - name: Ensure Riot Web repository is present on self-build
   git:
     repo: https://github.com/vector-im/riot-web.git
-    dest: "{{ matrix_docker_riot_web_src_files_path }}"
+    dest: "{{ matrix_riot_web_docker_src_files_path }}"
     version: "v{{ matrix_riot_web_docker_image.split(':')[1] }}"
     force: "yes"
   when: "matrix_riot_web_enabled|bool and matrix_riot_web_self_build"
@@ -38,7 +38,7 @@
     source: build
     build:
       dockerfile: Dockerfile
-      path: "{{ matrix_docker_riot_web_src_files_path }}"
+      path: "{{ matrix_riot_web_docker_src_files_path }}"
       pull: yes
   when: "matrix_riot_web_enabled|bool and matrix_self_build"
 

@@ -21,7 +21,7 @@
 - name: Ensure Synapse repository is present on self-build
   git:
     repo: https://github.com/matrix-org/synapse.git
-    dest: "{{ matrix_docker_synapse_src_files_path }}"
+    dest: "{{ matrix_synapse_docker_src_files_path }}"
     version: "{{ matrix_synapse_docker_image.split(':')[1] }}"
     force: "yes"
   when: "matrix_synapse_self_build"
@@ -32,7 +32,7 @@
     source: build
     build:
       dockerfile: docker/Dockerfile
-      path: "{{ matrix_docker_synapse_src_files_path }}"
+      path: "{{ matrix_synapse_docker_src_files_path }}"
       pull: yes
   when: "matrix_synapse_self_build"
 

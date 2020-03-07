@@ -14,7 +14,7 @@
   with_items:
     - "{{ matrix_mxisd_config_path }}"
     - "{{ matrix_mxisd_data_path }}"
-    - { src: "{{ matrix_docker_mxisd_src_files_path }}", when: "{{ matrix_mxisd_self_build }}"}
+    - { src: "{{ matrix_mxisd_docker_src_files_path }}", when: "{{ matrix_mxisd_self_build }}"}
   when: matrix_mxisd_enabled|bool
 
 - name: Ensure mxisd image is pulled
@@ -36,7 +36,7 @@
 - name: Ensure mxisd repository is present on self-build
   git:
     repo: https://github.com/kamax-matrix/mxisd.git
-    dest: "{{ matrix_docker_mxisd_src_files_path }}"
+    dest: "{{ matrix_mxisd_docker_src_files_path }}"
     version: "v{{ matrix_mxisd_docker_image.split(':')[1] }}"
     force: "yes"
   when: "matrix_mxisd_enabled|bool and matrix_mxisd_self_build"
@@ -44,7 +44,7 @@
 - name: Ensure mxisd Docker image is build
   shell: "./gradlew dockerBuild"
   args:
-    chdir: "{{ matrix_docker_mxisd_src_files_path }}"
+    chdir: "{{ matrix_mxisd_docker_src_files_path }}"
   when: "matrix_mxisd_enabled|bool and matrix_mxisd_self_build"
 
 - name: Ensure mxisd config installed
