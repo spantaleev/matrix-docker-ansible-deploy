@@ -1,6 +1,16 @@
 {
-	"default_hs_url": {{ matrix_riot_web_default_hs_url|string|to_json }},
-	"default_is_url": {{ matrix_riot_web_default_is_url|string|to_json }},
+	"default_server_config": {
+		"m.homeserver": {
+			"base_url": {{ matrix_riot_web_default_hs_url|string|to_json }},
+			"server_name": {{ matrix_riot_web_default_server_name|string|to_json }}
+		},
+		"m.identity_server": {
+			"base_url": {{ matrix_riot_web_default_is_url|string|to_json }}
+		}
+	},
+	"settingDefaults": {
+		"custom_themes": {{ matrix_riot_web_settingDefaults_custom_themes|to_json }}
+	},
 	"disable_custom_urls": {{ matrix_riot_web_disable_custom_urls|to_json }},
 	"disable_guests": {{ matrix_riot_web_disable_guests|to_json }},
 	"brand": {{ matrix_riot_web_brand|to_json }},
@@ -19,5 +29,10 @@
 	{% endif %}
 	"embeddedPages": {
 		"homeUrl": {{ matrix_riot_web_embedded_pages_home_url|string|to_json }}
+	},
+	"branding": {
+		"authFooterLinks": {{ matrix_riot_web_branding_authFooterLinks|to_json }},
+		"authHeaderLogoUrl": {{ matrix_riot_web_branding_authHeaderLogoUrl|to_json }},
+		"welcomeBackgroundUrl": {{ matrix_riot_web_branding_welcomeBackgroundUrl|to_json }}
 	}
 }

@@ -1,6 +1,6 @@
 matrix_riot_web_enabled: true
 
-matrix_riot_web_docker_image: "vectorim/riot-web:v1.5.10"
+matrix_riot_web_docker_image: "vectorim/riot-web:v1.5.12"
 matrix_riot_web_docker_image_force_pull: "{{ matrix_riot_web_docker_image.endswith(':latest') }}"
 
 matrix_riot_web_data_path: "{{ matrix_base_data_path }}/riot-web"
@@ -17,6 +17,7 @@ matrix_riot_web_container_extra_arguments: []
 matrix_riot_web_systemd_required_services_list: ['docker.service']
 
 # Riot config.json customizations
+matrix_riot_web_default_server_name: "{{ matrix_domain }}"
 matrix_riot_web_default_hs_url: ""
 matrix_riot_web_default_is_url: ~
 matrix_riot_web_disable_custom_urls: true
@@ -31,6 +32,25 @@ matrix_riot_web_welcome_user_id: "@riot-bot:matrix.org"
 # Branding of riot web
 matrix_riot_web_brand: "Riot"
 
+# URL to Logo on welcome page
+matrix_riot_web_welcome_logo: "welcome/images/logo.svg"
+
+# URL of link on welcome image
+matrix_riot_web_welcome_logo_link: "https://riot.im"
+
+matrix_riot_web_welcome_headline: "_t('Welcome to Riot.im')"
+matrix_riot_web_welcome_text: "_t('Decentralised, encrypted chat &amp; collaboration powered by [matrix]')"
+
+# Links, shown in footer of welcome page:
+# [{"text": "Link text", "url": "https://link.target"}, {"text": "Other link"}]
+matrix_riot_web_branding_authFooterLinks: ~
+
+# URL to image, shown during Login
+matrix_riot_web_branding_authHeaderLogoUrl: "{{ matrix_riot_web_welcome_logo }}"
+
+# URL to Wallpaper, shown in background of welcome page
+matrix_riot_web_branding_welcomeBackgroundUrl: ~
+
 # By default, there's no Riot homepage (when logged in). If you wish to have one,
 # point this to a `home.html` template file on your local filesystem.
 matrix_riot_web_embedded_pages_home_path: ~
@@ -43,6 +63,21 @@ matrix_riot_web_registration_enabled: false
 
 # Controls whether Riot shows the presence features
 matrix_riot_web_enable_presence_by_hs_url: ~
+
+# Controls whether custom riot-web themes will be installed.
+# When enabled, all themes found in the `matrix_riot_web_themes_repository_url` repository
+# will be installed and enabled automatically.
+matrix_riot_web_themes_enabled: false
+matrix_riot_web_themes_repository_url: https://github.com/aaronraimist/riot-web-themes
+
+# Controls the `settingsDefault.custom_themes` setting of the riot-web configuration.
+# You can use this setting to define custom themes.
+#
+# Also, look at `matrix_riot_web_themes_enabled` for a way to pull in a bunch of custom themes automatically.
+# If you define your own themes here and set `matrix_riot_web_themes_enabled: true`, your themes will be preserved as well.
+#
+# Note that for a custom theme to work well, all riot-web/riot-desktop instances that you use must have the same theme installed.
+matrix_riot_web_settingDefaults_custom_themes: []
 
 # Default riot-web configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
