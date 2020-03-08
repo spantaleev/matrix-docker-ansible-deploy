@@ -44,10 +44,3 @@
     - "{{ matrix_server_fqn_matrix }}"
     - "{{ matrix_server_fqn_riot }}"
   when: "item != item|lower"
-
-# ansible lower than 2.8, does not support docker_image build parameters
-# for Raspberry pi it is explicitly needed, so we rather fail here
-- name: Fail if running on Ansible lower than 2.8 and targeting Raspberry pi
-  fail:
-    msg: "To target Raspberry pi, you should usa ansible 2.8 or higher. E.g. pip contains such packages."
-  when: "ansible_version.major == 2 and ansible_version.minor < 8 and matrix_raspberry_pi"
