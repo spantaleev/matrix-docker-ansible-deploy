@@ -2,7 +2,7 @@
 
 ## Raspberry Pi support
 
-The playbook supports installing to a Raspberry Pi server, for at least some of the services.
+Thanks to [Gergely Horváth](https://github.com/hooger)'s effort, the playbook supports installing to a Raspberry Pi server, for at least some of the services.
 
 Since most ready-made container images do not support that architecture, we achieve this by building images locally on the device itself.
 See our [Self-building documentation page](docs/self-building.md) for how to get started.
