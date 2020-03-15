@@ -11,6 +11,7 @@
     - "{{ matrix_synapse_config_dir_path }}"
     - "{{ matrix_synapse_run_path }}"
     - "{{ matrix_synapse_ext_path }}"
+    - { src: "{{ matrix_synapse_docker_src_files_path }}", when: "{{ matrix_synapse_container_image_self_build }}" }
     # We handle matrix_synapse_media_store_path elsewhere (in ./synapse/setup_install.yml),
     # because if it's using Goofys and it's already mounted (from before),
     # trying to chown/chmod it here will cause trouble.

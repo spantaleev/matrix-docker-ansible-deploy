@@ -18,12 +18,31 @@
     group: "{{ matrix_user_username }}"
   when: "not local_path_media_store_stat.failed and not local_path_media_store_stat.stat.exists"
 
+- name: Ensure Synapse repository is present on self-build
+  git:
+    repo: https://github.com/matrix-org/synapse.git
+    dest: "{{ matrix_synapse_docker_src_files_path }}"
+    version: "{{ matrix_synapse_docker_image.split(':')[1] }}"
+    force: "yes"
+  when: "matrix_synapse_container_image_self_build"
+
+- name: Ensure Synapse Docker image is built
+  docker_image:
+    name: "{{ matrix_synapse_docker_image }}"
+    source: build
+    build:
+      dockerfile: docker/Dockerfile
+      path: "{{ matrix_synapse_docker_src_files_path }}"
+      pull: yes
+  when: "matrix_synapse_container_image_self_build"
+
 - name: Ensure Synapse Docker image is pulled
   docker_image:
     name: "{{ matrix_synapse_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_synapse_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_synapse_docker_image_force_pull }}"
+  when: "not matrix_synapse_container_image_self_build"
 
 - name: Check if a Synapse signing key exists
   stat:

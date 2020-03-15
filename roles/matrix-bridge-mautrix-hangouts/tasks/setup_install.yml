@@ -14,6 +14,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mautrix_hangouts_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_hangouts_docker_image_force_pull }}"
+  when: matrix_mautrix_hangouts_enabled|bool and not matrix_mautrix_hangouts_container_image_self_build
 
 - name: Ensure Mautrix Hangouts paths exist
   file:
@@ -26,6 +27,26 @@
     - "{{ matrix_mautrix_hangouts_base_path }}"
     - "{{ matrix_mautrix_hangouts_config_path }}"
     - "{{ matrix_mautrix_hangouts_data_path }}"
+    - { src: "{{ matrix_mautrix_hangouts_docker_src_files_path }}", when: "{{ matrix_mautrix_hangouts_container_image_self_build }}" }
+
+  when: matrix_mautrix_hangouts_enabled|bool and not matrix_mautrix_hangouts_container_image_self_build
+
+- name: Ensure Mautrix Hangots repository is present on self build
+  git:
+    repo: https://github.com/tulir/mautrix-hangouts.git
+    dest: "{{ matrix_mautrix_hangouts_docker_src_files_path }}"
+    force: "yes"
+  when: "matrix_mautrix_hangouts_enabled|bool and matrix_mautrix_hangouts_container_image_self_build"
+
+- name: Ensure Mautrix Hangouts Docker image is built
+  docker_image:
+    name: "{{ matrix_mautrix_hangouts_docker_image }}"
+    source: build
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_mautrix_hangouts_docker_src_files_path }}"
+      pull: yes
+  when: "matrix_mautrix_hangouts_enabled|bool and matrix_mautrix_hangouts_container_image_self_build"
 
 - name: Check if an old database file already exists
   stat:
