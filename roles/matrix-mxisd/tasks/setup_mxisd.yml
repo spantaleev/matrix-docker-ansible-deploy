@@ -25,26 +25,31 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mxisd_docker_image_force_pull }}"
   when: matrix_mxisd_enabled|bool and not matrix_mxisd_container_image_self_build
 
-- name: Ensure gradel is installed for self-building
-  apt:
-    name:
-      - gradle
-    state: present
-    update_cache: yes    
-  when: "matrix_mxisd_enabled|bool and matrix_mxisd_container_image_self_build"
+- block:
+  - name: Ensure gradle is installed for self-building
+    apt:
+      name:
+        - gradle
+      state: present
+      update_cache: yes
+    when: (ansible_os_family == 'Debian')
 
-- name: Ensure mxisd repository is present on self-build
-  git:
-    repo: https://github.com/kamax-matrix/mxisd.git
-    dest: "{{ matrix_mxisd_docker_src_files_path }}"
-    version: "v{{ matrix_mxisd_docker_image.split(':')[1] }}"
-    force: "yes"
-  when: "matrix_mxisd_enabled|bool and matrix_mxisd_container_image_self_build"
+  - name: Ensure gradle is installed for self-building
+    fail:
+      msg: "Installing gradle on CentOS is currently not supported, so self-building mxisd cannot happen at this time"
+    when: ansible_distribution == 'CentOS'
 
-- name: Ensure mxisd Docker image is build
-  shell: "./gradlew dockerBuild"
-  args:
-    chdir: "{{ matrix_mxisd_docker_src_files_path }}"
+  - name: Ensure mxisd repository is present on self-build
+    git:
+      repo: https://github.com/kamax-matrix/mxisd.git
+      dest: "{{ matrix_mxisd_docker_src_files_path }}"
+      version: "v{{ matrix_mxisd_docker_image.split(':')[1] }}"
+      force: "yes"
+
+  - name: Ensure mxisd Docker image is built
+    shell: "./gradlew dockerBuild"
+    args:
+      chdir: "{{ matrix_mxisd_docker_src_files_path }}"
   when: "matrix_mxisd_enabled|bool and matrix_mxisd_container_image_self_build"
 
 - name: Ensure mxisd config installed
