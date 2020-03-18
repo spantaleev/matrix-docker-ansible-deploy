@@ -6,14 +6,14 @@
 
 - name: Ensure Matrix Coturn path exists
   file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
   with_items:
-    - { src: "{{ matrix_coturn_docker_src_files_path }}", when: "{{ matrix_coturn_container_image_self_build }}"}
-  when: matrix_riot_web_enabled|bool
+    - { path: "{{ matrix_coturn_docker_src_files_path }}", when: "{{ matrix_coturn_container_image_self_build }}"}
+  when: matrix_riot_web_enabled|bool and item.when
 
 - name: Ensure Coturn image is pulled
   docker_image:
