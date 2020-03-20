@@ -41,9 +41,9 @@ Add access token to your configuration file (`inventory/host_vars/matrix.<your-d
 
 ```yaml
 matrix_dimension_access_token: "YOUR ACCESS TOKEN HERE"
+```
 
 For more information on how to acquire an access token, visit [https://t2bot.io/docs/access_tokens](https://t2bot.io/docs/access_tokens).
-```
 
 After these variables have been set, please run the following command to re-run setup and to restart Dimension:
 
