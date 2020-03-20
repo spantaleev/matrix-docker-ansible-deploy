@@ -43,6 +43,13 @@ Add access token to your configuration file (`inventory/host_vars/matrix.<your-d
 matrix_dimension_access_token: "YOUR ACCESS TOKEN HERE"
 ```
 
+After these variables have been set, please run the following command to setup and start dimensions:
+
+```
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all
+ansible-playbook -i inventory/hosts setup.yml --tags=start
+```
+
 For more information on how to acquire an access token, visit [https://t2bot.io/docs/access_tokens](https://t2bot.io/docs/access_tokens).
 
 ## Additional features
