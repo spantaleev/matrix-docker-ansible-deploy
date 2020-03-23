@@ -4,13 +4,42 @@
 # Tasks related to setting up Coturn
 #
 
+- name: Ensure Matrix Coturn path exists
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  with_items:
+    - { path: "{{ matrix_coturn_docker_src_files_path }}", when: "{{ matrix_coturn_container_image_self_build }}"}
+  when: matrix_riot_web_enabled|bool and item.when
+
 - name: Ensure Coturn image is pulled
   docker_image:
     name: "{{ matrix_coturn_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_coturn_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_coturn_docker_image_force_pull }}"
-  when: matrix_coturn_enabled|bool
+  when: matrix_coturn_enabled|bool and not matrix_coturn_container_image_self_build
+
+- name: Ensure Coturn repository is present on self-build
+  git:
+    repo: https://github.com/instrumentisto/coturn-docker-image.git
+    dest: "{{ matrix_coturn_docker_src_files_path }}"
+    version: "{{ matrix_coturn_docker_image.split(':')[1] }}"
+    force: "yes"
+  when: "matrix_coturn_enabled|bool and matrix_coturn_container_image_self_build"
+
+- name: Ensure Coturn Docker image is built
+  docker_image:
+    name: "{{ matrix_coturn_docker_image }}"
+    source: build
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_coturn_docker_src_files_path }}"
+      pull: yes
+  when: "matrix_coturn_enabled|bool and matrix_coturn_container_image_self_build"
 
 - name: Ensure Coturn configuration path exists
   file:

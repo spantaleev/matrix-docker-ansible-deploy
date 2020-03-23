@@ -3,10 +3,13 @@
 
 matrix_synapse_enabled: true
 
-matrix_synapse_docker_image: "matrixdotorg/synapse:v1.10.0"
+matrix_synapse_container_image_self_build: false
+
+matrix_synapse_docker_image: "matrixdotorg/synapse:v1.11.1"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
+matrix_synapse_docker_src_files_path: "{{ matrix_synapse_base_path }}/docker-src"
 matrix_synapse_config_dir_path: "{{ matrix_synapse_base_path }}/config"
 matrix_synapse_run_path: "{{ matrix_synapse_base_path }}/run"
 matrix_synapse_storage_path: "{{ matrix_synapse_base_path }}/storage"
@@ -154,6 +157,9 @@ matrix_synapse_allow_public_rooms_over_federation: false
 
 # Controls whether people with access to the homeserver can register by themselves.
 matrix_synapse_enable_registration: false
+
+# Allows non-server-admin users to create groups on this server
+matrix_synapse_enable_group_creation: false
 
 # A list of 3PID types which users must supply when registering (possible values: email, msisdn).
 matrix_synapse_registrations_require_3pid: []

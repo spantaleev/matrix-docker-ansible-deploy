@@ -6,15 +6,16 @@
 
 - name: Ensure mxisd paths exist
   file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
   with_items:
-    - "{{ matrix_mxisd_config_path }}"
-    - "{{ matrix_mxisd_data_path }}"
-  when: matrix_mxisd_enabled|bool
+    - { path: "{{ matrix_mxisd_config_path }}", when: true }
+    - { path: "{{ matrix_mxisd_data_path }}", when: true }
+    - { path: "{{ matrix_mxisd_docker_src_files_path }}", when: "{{ matrix_mxisd_container_image_self_build }}"}
+  when: matrix_mxisd_enabled|bool and item.when
 
 - name: Ensure mxisd image is pulled
   docker_image:
@@ -22,7 +23,34 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mxisd_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mxisd_docker_image_force_pull }}"
-  when: matrix_mxisd_enabled|bool
+  when: matrix_mxisd_enabled|bool and not matrix_mxisd_container_image_self_build
+
+- block:
+  - name: Ensure gradle is installed for self-building
+    apt:
+      name:
+        - gradle
+      state: present
+      update_cache: yes
+    when: (ansible_os_family == 'Debian')
+
+  - name: Ensure gradle is installed for self-building
+    fail:
+      msg: "Installing gradle on CentOS is currently not supported, so self-building mxisd cannot happen at this time"
+    when: ansible_distribution == 'CentOS'
+
+  - name: Ensure mxisd repository is present on self-build
+    git:
+      repo: https://github.com/kamax-matrix/mxisd.git
+      dest: "{{ matrix_mxisd_docker_src_files_path }}"
+      version: "v{{ matrix_mxisd_docker_image.split(':')[1] }}"
+      force: "yes"
+
+  - name: Ensure mxisd Docker image is built
+    shell: "./gradlew dockerBuild"
+    args:
+      chdir: "{{ matrix_mxisd_docker_src_files_path }}"
+  when: "matrix_mxisd_enabled|bool and matrix_mxisd_container_image_self_build"
 
 - name: Ensure mxisd config installed
   copy:

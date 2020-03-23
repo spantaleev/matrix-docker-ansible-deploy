@@ -59,4 +59,11 @@
       Please make sure that you're proxying the `{{ matrix_mautrix_hangouts_public_endpoint }}`
       URL endpoint to the matrix-mautrix-hangouts container.
       You can expose the container's port using the `matrix_mautrix_hangouts_container_http_host_bind_port` variable.
-  when: "matrix_mautrix_hangouts_enabled|bool and matrix_nginx_proxy_enabled is not defined"
+  when: "matrix_mautrix_hangouts_enabled|bool and (matrix_nginx_proxy_enabled is not defined or matrix_nginx_proxy_enabled|bool == false)"
+
+# ansible lower than 2.8, does not support docker_image build parameters
+# for self buildig it is explicitly needed, so we rather fail here
+- name: Fail if running on Ansible lower than 2.8 and trying self building
+  fail:
+    msg: "To self build Mautrix Hangouts image, you should usa ansible 2.8 or higher. E.g. pip contains such packages."
+  when: "ansible_version.major == 2 and ansible_version.minor < 8 and matrix_mautrix_hangouts_container_image_self_build"

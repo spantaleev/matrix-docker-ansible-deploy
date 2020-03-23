@@ -45,6 +45,12 @@ matrix_dimension_access_token: "YOUR ACCESS TOKEN HERE"
 
 For more information on how to acquire an access token, visit [https://t2bot.io/docs/access_tokens](https://t2bot.io/docs/access_tokens).
 
+After these variables have been set, please run the following command to re-run setup and to restart Dimension:
+
+```
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
+
 ## Additional features
 
 To use a more custom configuration, you can define a `matrix_dimension_configuration_extension_yaml` string variable and put your configuration in it.

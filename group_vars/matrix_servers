@@ -72,7 +72,7 @@ matrix_appservice_webhooks_enabled: false
 # Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-webhooks over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # matrix-appservice-webhooks' client-server port to the local host.
-matrix_appservice_webhooks_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:{{ matrix_appservice_webhooks_webhooks_port }}' }}"
+matrix_appservice_webhooks_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:{{ matrix_appservice_webhooks_matrix_port }}' }}"
 
 matrix_appservice_webhooks_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'webhook.as.token') | to_uuid }}"
 
@@ -106,7 +106,7 @@ matrix_appservice_slack_enabled: false
 # Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-slack over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # matrix-appservice-slack's client-server port to the local host.
-matrix_appservice_slack_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:{{ matrix_appservice_slack_slack_port }}' }}"
+matrix_appservice_slack_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else ('127.0.0.1:' ~ matrix_appservice_slack_slack_port) }}"
 
 matrix_appservice_slack_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'slack.as.token') | to_uuid }}"
 
@@ -172,6 +172,8 @@ matrix_appservice_irc_homeserver_token: "{{ matrix_synapse_macaroon_secret_key |
 # We don't enable bridges by default.
 matrix_mautrix_facebook_enabled: false
 
+matrix_mautrix_facebook_container_image_self_build: "{{ matrix_container_images_self_build }}"
+
 matrix_mautrix_facebook_systemd_required_services_list: |
   {{
     ['docker.service']
@@ -200,6 +202,8 @@ matrix_mautrix_facebook_login_shared_secret: "{{ matrix_synapse_ext_password_pro
 
 # We don't enable bridges by default.
 matrix_mautrix_hangouts_enabled: false
+
+matrix_mautrix_hangouts_container_image_self_build: "{{ matrix_container_images_self_build }}"
 
 matrix_mautrix_hangouts_systemd_required_services_list: |
   {{
@@ -329,6 +333,8 @@ matrix_corporal_matrix_registration_shared_secret: "{{ matrix_synapse_registrati
 
 matrix_coturn_enabled: true
 
+matrix_coturn_container_image_self_build: "{{ matrix_container_images_self_build }}"
+
 matrix_coturn_turn_external_ip_address: "{{ ansible_host }}"
 
 matrix_coturn_tls_enabled: true
@@ -414,6 +420,8 @@ matrix_mailer_enabled: true
 # By default, this playbook installs the mxisd identity server on the same domain as Synapse (`matrix_server_fqn_matrix`).
 # If you wish to use the public identity servers (matrix.org, vector.im) instead of your own you may wish to disable this.
 matrix_mxisd_enabled: true
+
+matrix_mxisd_container_image_self_build: "{{ matrix_container_images_self_build }}"
 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach mxisd over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
@@ -559,6 +567,8 @@ matrix_postgres_db_name: "homeserver"
 # If you wish to connect to your Matrix server by other means, you may wish to disable this.
 matrix_riot_web_enabled: true
 
+matrix_riot_web_container_image_self_build: "{{ matrix_container_images_self_build }}"
+
 # Normally, matrix-nginx-proxy is enabled and nginx can reach riot-web over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # the riot-web HTTP port to the local host.
@@ -599,6 +609,8 @@ matrix_riot_web_welcome_user_id: ~
 # matrix-synapse
 #
 ######################################################################
+
+matrix_synapse_container_image_self_build: "{{ matrix_container_images_self_build }}"
 
 # When mxisd is enabled, we can use it instead of the default public Identity servers.
 matrix_synapse_trusted_third_party_id_servers: "{{ [matrix_server_fqn_matrix] if matrix_mxisd_enabled else matrix_synapse_id_servers_public }}"
