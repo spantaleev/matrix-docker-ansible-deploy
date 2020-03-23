@@ -18,12 +18,15 @@ If you decide to go with the alternative method ([Server Delegation via a DNS SR
 
 ## General outline of DNS settings you need to do
 
-| Type  | Host                    | Priority | Weight | Port | Target                 |
-| ----- | ----------------------- | -------- | ------ | ---- | ---------------------- |
-| A     | `matrix`                | -        | -      | -    | `matrix-server-IP`     |
-| CNAME | `riot`                  | -        | -      | -    | `matrix.<your-domain>` |
-| CNAME | `dimension`             | -        | -      | -    | `matrix.<your-domain>` |
-| SRV   | `_matrix-identity._tcp` | 10       | 0      | 443  | `matrix.<your-domain>` |
+| Type  | Host                         | Priority | Weight | Port | Target                 |
+| ----- | ---------------------------- | -------- | ------ | ---- | ---------------------- |
+| A     | `matrix`                     | -        | -      | -    | `matrix-server-IP`     |
+| CNAME | `riot`                       | -        | -      | -    | `matrix.<your-domain>` |
+| CNAME | `dimension` (*)              | -        | -      | -    | `matrix.<your-domain>` |
+| SRV   | `_matrix-identity._tcp`      | 10       | 0      | 443  | `matrix.<your-domain>` |
+
+
+DNS records marked with `(*)` above are optional. They refer to services that will not be installed by default (see the section below). If you won't be installing these services, feel free to skip creating these DNS records.
 
 
 ## Subdomains setup
