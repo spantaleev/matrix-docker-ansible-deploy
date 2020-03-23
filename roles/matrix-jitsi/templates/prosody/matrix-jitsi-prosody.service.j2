@@ -1,0 +1,31 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix jitsi-prosody server
+{% for service in matrix_jitsi_prosody_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker kill matrix-jitsi-prosody
+ExecStartPre=-/usr/bin/docker rm matrix-jitsi-prosody
+
+ExecStart=/usr/bin/docker run --rm --name matrix-jitsi-prosody \
+			--log-driver=none \
+			--network={{ matrix_docker_network }} \
+			--env-file={{ matrix_jitsi_prosody_base_path }}/env \
+			-v {{ matrix_jitsi_prosody_config_path }}:/config \
+			{% for arg in matrix_jitsi_prosody_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_jitsi_prosody_docker_image }}
+
+ExecStop=-/usr/bin/docker kill matrix-jitsi-prosody
+ExecStop=-/usr/bin/docker rm matrix-jitsi-prosody
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-jitsi-prosody
+
+[Install]
+WantedBy=multi-user.target
