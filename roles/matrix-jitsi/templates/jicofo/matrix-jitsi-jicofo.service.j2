@@ -1,0 +1,31 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix jitsi-jicofo server
+{% for service in matrix_jitsi_jicofo_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker kill matrix-jitsi-jicofo
+ExecStartPre=-/usr/bin/docker rm matrix-jitsi-jicofo
+
+ExecStart=/usr/bin/docker run --rm --name matrix-jitsi-jicofo \
+			--log-driver=none \
+			--network={{ matrix_docker_network }} \
+			--env-file={{ matrix_jitsi_jicofo_base_path }}/env \
+			-v {{ matrix_jitsi_jicofo_config_path }}:/config \
+			{% for arg in matrix_jitsi_jicofo_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_jitsi_jicofo_docker_image }}
+
+ExecStop=-/usr/bin/docker kill matrix-jitsi-jicofo
+ExecStop=-/usr/bin/docker rm matrix-jitsi-jicofo
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-jitsi-jicofo
+
+[Install]
+WantedBy=multi-user.target

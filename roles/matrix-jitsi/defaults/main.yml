@@ -1,0 +1,116 @@
+matrix_jitsi_enabled: true
+
+matrix_jitsi_base_path: "{{ matrix_base_data_path }}/jitsi"
+
+matrix_jitsi_enable_auth: false
+matrix_jitsi_enable_guests: false
+matrix_jitsi_enable_recording: true
+matrix_jitsi_enable_transcriptions: true
+
+matrix_jitsi_timezone: UTC
+
+matrix_jitsi_xmpp_domain: matrix-jitsi-web
+matrix_jitsi_xmpp_server: matrix-jitsi-prosody
+matrix_jitsi_xmpp_auth_domain: auth.meet.jitsi
+matrix_jitsi_xmpp_bosh_url_base: http://{{ matrix_jitsi_xmpp_server }}:5280
+matrix_jitsi_xmpp_guest_domain: guest.meet.jitsi
+matrix_jitsi_xmpp_muc_domain: muc.meet.jitsi
+matrix_jitsi_xmpp_internal_muc_domain: internal-muc.meet.jitsi
+
+matrix_jitsi_recorder_domain: recorder.meet.jitsi
+
+
+matrix_jitsi_jibri_brewery_muc: jibribrewery
+matrix_jitsi_jibri_pending_timeout: 90
+matrix_jitsi_jibri_xmpp_user: jibri
+matrix_jitsi_jibri_xmpp_password: jibri-password
+matrix_jitsi_jibri_recorder_user: recorder
+matrix_jitsi_jibri_recorder_password: recorder-password
+
+
+matrix_jitsi_web_docker_image: "jitsi/web:4101"
+matrix_jitsi_web_docker_image_force_pull: "{{ matrix_jitsi_web_docker_image.endswith(':latest') }}"
+
+matrix_jitsi_web_base_path: "{{ matrix_base_data_path }}/jitsi/web"
+matrix_jitsi_web_config_path: "{{ matrix_jitsi_web_base_path }}/config"
+matrix_jitsi_web_transcripts_path: "{{ matrix_jitsi_web_base_path }}/transcripts"
+
+matrix_jitsi_web_public_url: "https://{{ matrix_server_fqn_jitsi }}"
+
+# STUN servers used in the web UI. Feel free to point them to your own STUN server.
+matrix_jitsi_web_stun_servers: ['stun.l.google.com:19302', 'stun1.l.google.com:19302', 'stun2.l.google.com:19302']
+
+# Controls whether the matrix-jitsi-web container exposes its HTTP port (tcp/80 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:12080"), or empty string to not expose.
+matrix_jitsi_web_container_http_host_bind_port: ''
+
+# A list of extra arguments to pass to the container
+matrix_jitsi_web_container_extra_arguments: []
+
+# List of systemd services that matrix-jitsi-web.service depends on
+matrix_jitsi_web_systemd_required_services_list: ['docker.service']
+
+
+matrix_jitsi_prosody_docker_image: "jitsi/prosody:4101"
+matrix_jitsi_prosody_docker_image_force_pull: "{{ matrix_jitsi_prosody_docker_image.endswith(':latest') }}"
+
+matrix_jitsi_prosody_base_path: "{{ matrix_base_data_path }}/jitsi/prosody"
+matrix_jitsi_prosody_config_path: "{{ matrix_jitsi_prosody_base_path }}/config"
+
+# A list of extra arguments to pass to the container
+matrix_jitsi_prosody_container_extra_arguments: []
+
+# List of systemd services that matrix-jitsi-prosody.service depends on
+matrix_jitsi_prosody_systemd_required_services_list: ['docker.service']
+
+
+matrix_jitsi_jicofo_docker_image: "jitsi/jicofo:4101"
+matrix_jitsi_jicofo_docker_image_force_pull: "{{ matrix_jitsi_jicofo_docker_image.endswith(':latest') }}"
+
+matrix_jitsi_jicofo_base_path: "{{ matrix_base_data_path }}/jitsi/jicofo"
+matrix_jitsi_jicofo_config_path: "{{ matrix_jitsi_jicofo_base_path }}/config"
+
+# A list of extra arguments to pass to the container
+matrix_jitsi_jicofo_container_extra_arguments: []
+
+# List of systemd services that matrix-jitsi-jicofo.service depends on
+matrix_jitsi_jicofo_systemd_required_services_list: ['docker.service', 'matrix-jitsi-prosody.service']
+
+matrix_jitsi_jicofo_component_secret: s3cr37
+matrix_jitsi_jicofo_auth_user: focus
+matrix_jitsi_jicofo_auth_password: passw0rd
+
+
+matrix_jitsi_jvb_docker_image: "jitsi/jvb:4101"
+matrix_jitsi_jvb_docker_image_force_pull: "{{ matrix_jitsi_jvb_docker_image.endswith(':latest') }}"
+
+matrix_jitsi_jvb_base_path: "{{ matrix_base_data_path }}/jitsi/jvb"
+matrix_jitsi_jvb_config_path: "{{ matrix_jitsi_jvb_base_path }}/config"
+
+# A list of extra arguments to pass to the container
+matrix_jitsi_jvb_container_extra_arguments: []
+
+# List of systemd services that matrix-jitsi-jvb.service depends on
+matrix_jitsi_jvb_systemd_required_services_list: ['docker.service', 'matrix-jitsi-prosody.service']
+
+matrix_jitsi_jvb_auth_user: jvb
+matrix_jitsi_jvb_auth_password: passw0rd
+
+# STUN servers used by JVB on the server-side, so it can discover its own external IP address.
+# Pointing this to a STUN server running on the same Docker network may lead to incorrect IP address discovery.
+matrix_jitsi_jvb_stun_servers: ['stun.l.google.com:19302', 'stun1.l.google.com:19302', 'stun2.l.google.com:19302']
+
+matrix_jitsi_jvb_brewery_muc: jvbbrewery
+matrix_jitsi_jvb_rtp_udp_port: 10000
+matrix_jitsi_jvb_rtp_tcp_port: 4443
+
+# Controls whether the matrix-jitsi-jvb container exposes its RTP UDP port (udp/10000 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:10000"), or empty string to not expose.
+matrix_jitsi_jvb_container_rtp_udp_host_bind_port: "{{ matrix_jitsi_jvb_rtp_udp_port }}"
+
+# Controls whether the matrix-jitsi-jvb container exposes its RTP UDP port (udp/4443 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:4443"), or empty string to not expose.
+matrix_jitsi_jvb_container_rtp_tcp_host_bind_port: "{{ matrix_jitsi_jvb_rtp_tcp_port }}"

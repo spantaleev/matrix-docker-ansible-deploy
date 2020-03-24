@@ -394,6 +394,41 @@ matrix_email2matrix_enabled: false
 
 ######################################################################
 #
+# matrix-jitsi
+#
+######################################################################
+
+matrix_jitsi_enabled: false
+
+# Normally, matrix-nginx-proxy is enabled and nginx can reach jitsi/web over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# the Jitsi HTTP port to the local host.
+matrix_jitsi_web_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:12080' }}"
+
+matrix_jitsi_jibri_xmpp_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'jibri') | to_uuid }}"
+matrix_jitsi_jicofo_auth_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'jicofo') | to_uuid }}"
+matrix_jitsi_jvb_auth_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'jvb') | to_uuid }}"
+
+matrix_jitsi_web_stun_servers: |
+  {{
+    [
+      matrix_server_fqn_matrix + ':5349',
+      matrix_server_fqn_matrix + ':3478',
+    ]
+    if matrix_coturn_enabled
+    else [ 'stun.l.google.com:19302', 'stun1.l.google.com:19302', 'stun2.l.google.com:19302']
+  }}
+
+######################################################################
+#
+# /matrix-jitsi
+#
+######################################################################
+
+
+
+######################################################################
+#
 # matrix-mailer
 #
 ######################################################################
@@ -482,6 +517,7 @@ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: "{{ matrix_s
 matrix_nginx_proxy_proxy_matrix_enabled: true
 matrix_nginx_proxy_proxy_riot_enabled: "{{ matrix_riot_web_enabled }}"
 matrix_nginx_proxy_proxy_dimension_enabled: "{{ matrix_dimension_enabled }}"
+matrix_nginx_proxy_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
 
 matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: "{{ matrix_corporal_enabled and matrix_corporal_http_api_enabled }}"
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
@@ -524,6 +560,8 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     ([matrix_server_fqn_riot] if matrix_riot_web_enabled else [])
     +
     ([matrix_server_fqn_dimension] if matrix_dimension_enabled else [])
+    +
+    ([matrix_server_fqn_jitsi])
     +
     ([matrix_domain] if matrix_nginx_proxy_base_domain_serving_enabled else [])
   }}
@@ -595,6 +633,8 @@ matrix_riot_web_enable_presence_by_hs_url: |
   }}
 
 matrix_riot_web_welcome_user_id: ~
+
+matrix_riot_web_jitsi_preferredDomain: "{{ matrix_server_fqn_jitsi if matrix_jitsi_enabled else '' }}"
 
 ######################################################################
 #

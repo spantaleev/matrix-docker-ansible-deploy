@@ -1,0 +1,35 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix jitsi-web server
+{% for service in matrix_jitsi_web_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker kill matrix-jitsi-web
+ExecStartPre=-/usr/bin/docker rm matrix-jitsi-web
+
+ExecStart=/usr/bin/docker run --rm --name matrix-jitsi-web \
+			--log-driver=none \
+			--network={{ matrix_docker_network }} \
+			--env-file={{ matrix_jitsi_web_base_path }}/env \
+			{% if matrix_jitsi_web_container_http_host_bind_port %}
+			-p {{ matrix_jitsi_web_container_http_host_bind_port }}:80 \
+			{% endif %}
+			-v {{ matrix_jitsi_web_config_path }}:/config \
+			-v {{ matrix_jitsi_web_transcripts_path }}:/usr/share/jitsi-meet/transcripts \
+			{% for arg in matrix_jitsi_web_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_jitsi_web_docker_image }}
+
+ExecStop=-/usr/bin/docker kill matrix-jitsi-web
+ExecStop=-/usr/bin/docker rm matrix-jitsi-web
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-jitsi-web
+
+[Install]
+WantedBy=multi-user.target
