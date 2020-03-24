@@ -32,6 +32,16 @@
     mode: 0640
   when: matrix_jitsi_enabled|bool
 
+- name: Ensure jitsi-web configuration files created
+  template:
+    src: "{{ role_path }}/templates/web/{{ item }}.j2"
+    dest: "{{ matrix_jitsi_web_config_path }}/{{ item }}"
+    mode: 0644
+  with_items:
+    - config.js
+    - interface_config.js
+  when: matrix_jitsi_enabled|bool
+
 - name: Ensure matrix-jitsi-web.service installed
   template:
     src: "{{ role_path }}/templates/web/matrix-jitsi-web.service.j2"

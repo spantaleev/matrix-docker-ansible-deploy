@@ -34,6 +34,3 @@ Then re-run the playbook: `ansible-playbook -i inventory/hosts setup.yml --tags=
 .. and fully reload your riot-web page (at `riot.DOMAIN`).
 
 Starting a video-conference in a room with more than 2 members should then create a Jitsi widget which utilizes your self-hosted Jitsi server.
-
-
-**NOTE**: the playbook currently configures the Jitsi JVB component to use Google's STUN servers even in cases where our own [Coturn TURN server](configuring-playbook-turn.md) is enabled (it is by default). This is because JVB fails to discover its own external IP correctly when pointed to our own Coturn server. The failure happens because JVB reaches Coturn via the localnetwork and discovers a local Docker IP address instead of the public one, leading to a non-working service.

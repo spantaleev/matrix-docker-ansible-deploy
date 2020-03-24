@@ -31,6 +31,16 @@
     mode: 0640
   when: matrix_jitsi_enabled|bool
 
+- name: Ensure jitsi-jicofo configuration files created
+  template:
+    src: "{{ role_path }}/templates/jicofo/{{ item }}.j2"
+    dest: "{{ matrix_jitsi_jicofo_config_path }}/{{ item }}"
+    mode: 0644
+  with_items:
+    - sip-communicator.properties
+    - logging.properties
+  when: matrix_jitsi_enabled|bool
+
 - name: Ensure matrix-jitsi-jicofo.service installed
   template:
     src: "{{ role_path }}/templates/jicofo/matrix-jitsi-jicofo.service.j2"

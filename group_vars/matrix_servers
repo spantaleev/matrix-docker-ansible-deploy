@@ -409,20 +409,15 @@ matrix_jitsi_jibri_xmpp_password: "{{ matrix_synapse_macaroon_secret_key | passw
 matrix_jitsi_jicofo_auth_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'jicofo') | to_uuid }}"
 matrix_jitsi_jvb_auth_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'jvb') | to_uuid }}"
 
-# TODO. Using our own STUN server fails, so we're using Google's STUN servers (the default for the matrix-jitsi role).
-#
-# When using our STUN server, JVB tries to discover its own IP by contacting it and gets a local Docker IP address instead of the external one.
-# > matrix-jitsi-jvb[30965]: JVB 2020-03-23 14:52:59.253 INFO: [21] org.ice4j.ice.harvest.StunMappingCandidateHarvester.discover() Discovered public address 172.19.0.1:60385/udp from STUN server x.x.x.x:5349/udp using local address 172.18.0.10:0/udp
-#
-# matrix_jitsi_jvb_stun_servers: |
-#   {{
-#     [
-#       matrix_server_fqn_matrix + ':5349',
-#       matrix_server_fqn_matrix + ':3478',
-#     ]
-#     if matrix_coturn_enabled
-#     else [ 'stun.l.google.com:19302', 'stun1.l.google.com:19302', 'stun2.l.google.com:19302']
-#   }}
+matrix_jitsi_web_stun_servers: |
+  {{
+    [
+      matrix_server_fqn_matrix + ':5349',
+      matrix_server_fqn_matrix + ':3478',
+    ]
+    if matrix_coturn_enabled
+    else [ 'stun.l.google.com:19302', 'stun1.l.google.com:19302', 'stun2.l.google.com:19302']
+  }}
 
 ######################################################################
 #
