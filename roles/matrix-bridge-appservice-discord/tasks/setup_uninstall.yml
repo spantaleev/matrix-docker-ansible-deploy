@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-appservice-discord service
   stat:
-    path: "/etc/systemd/system/matrix-appservice-discord.service"
+    path: "{{ matrix_systemd_path }}/matrix-appservice-discord.service"
   register: matrix_appservice_discord_service_stat
 
 - name: Ensure matrix-appservice-discord is stopped
@@ -14,7 +14,7 @@
 
 - name: Ensure matrix-appservice-discord.service doesn't exist
   file:
-    path: "/etc/systemd/system/matrix-appservice-discord.service"
+    path: "{{ matrix_systemd_path }}/matrix-appservice-discord.service"
     state: absent
   when: "matrix_appservice_discord_service_stat.stat.exists"
 

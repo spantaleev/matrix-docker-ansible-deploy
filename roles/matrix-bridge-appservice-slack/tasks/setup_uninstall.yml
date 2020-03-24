@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-appservice-slack service
   stat:
-    path: "/etc/systemd/system/matrix-appservice-slack.service"
+    path: "{{ matrix_systemd_path }}/matrix-appservice-slack.service"
   register: matrix_appservice_slack_service_stat
 
 - name: Ensure matrix-appservice-slack is stopped
@@ -14,7 +14,7 @@
 
 - name: Ensure matrix-appservice-slack.service doesn't exist
   file:
-    path: "/etc/systemd/system/matrix-appservice-slack.service"
+    path: "{{ matrix_systemd_path }}/matrix-appservice-slack.service"
     state: absent
   when: "matrix_appservice_slack_service_stat.stat.exists"
 

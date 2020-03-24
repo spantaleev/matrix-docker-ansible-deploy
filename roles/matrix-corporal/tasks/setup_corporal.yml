@@ -37,7 +37,7 @@
 - name: Ensure matrix-corporal.service installed
   template:
     src: "{{ role_path }}/templates/systemd/matrix-corporal.service.j2"
-    dest: "/etc/systemd/system/matrix-corporal.service"
+    dest: "{{ matrix_systemd_path }}/matrix-corporal.service"
     mode: 0644
   register: matrix_corporal_systemd_service_result
   when: matrix_corporal_enabled|bool
@@ -54,7 +54,7 @@
 
 - name: Check existence of matrix-corporal service
   stat:
-    path: "/etc/systemd/system/matrix-corporal.service"
+    path: "{{ matrix_systemd_path }}/matrix-corporal.service"
   register: matrix_corporal_service_stat
   when: "not matrix_corporal_enabled|bool"
 
@@ -68,7 +68,7 @@
 
 - name: Ensure matrix-corporal.service doesn't exist
   file:
-    path: "/etc/systemd/system/matrix-corporal.service"
+    path: "{{ matrix_systemd_path }}/matrix-corporal.service"
     state: absent
   when: "not matrix_corporal_enabled|bool and matrix_corporal_service_stat.stat.exists"
 
@@ -82,7 +82,7 @@
     path: "{{ item }}"
     state: absent
   with_items:
-    - /etc/systemd/system/matrix-corporal.service
+    - "{{ matrix_systemd_path }}/matrix-corporal.service"
     - "{{ matrix_corporal_config_dir_path }}/config.json"
   when: "not matrix_corporal_enabled|bool"
 

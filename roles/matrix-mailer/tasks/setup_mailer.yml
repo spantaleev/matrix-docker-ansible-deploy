@@ -31,7 +31,7 @@
 - name: Ensure matrix-mailer.service installed
   template:
     src: "{{ role_path }}/templates/systemd/matrix-mailer.service.j2"
-    dest: "/etc/systemd/system/matrix-mailer.service"
+    dest: "{{ matrix_systemd_path }}/matrix-mailer.service"
     mode: 0644
   register: matrix_mailer_systemd_service_result
   when: matrix_mailer_enabled|bool
@@ -47,7 +47,7 @@
 
 - name: Check existence of matrix-mailer service
   stat:
-    path: "/etc/systemd/system/matrix-mailer.service"
+    path: "{{ matrix_systemd_path }}/matrix-mailer.service"
   register: matrix_mailer_service_stat
   when: "not matrix_mailer_enabled|bool"
 
@@ -61,7 +61,7 @@
 
 - name: Ensure matrix-mailer.service doesn't exist
   file:
-    path: "/etc/systemd/system/matrix-mailer.service"
+    path: "{{ matrix_systemd_path }}/matrix-mailer.service"
     state: absent
   when: "not matrix_mailer_enabled|bool and matrix_mailer_service_stat.stat.exists"
 
