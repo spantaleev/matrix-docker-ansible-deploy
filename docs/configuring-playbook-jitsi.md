@@ -31,6 +31,9 @@ matrix_riot_web_docker_image: "vectorim/riot-web:develop"
 
 Then re-run the playbook: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
 
-.. and fully reload your riot-web page (at `riot.DOMAIN`).
 
-Starting a video-conference in a room with more than 2 members should then create a Jitsi widget which utilizes your self-hosted Jitsi server.
+## Usage
+
+You can use the self-hosted Jitsi server through Riot, through an Integration Manager like [Dimension](docs/configuring-playbook-dimension.md) or directly at `https://jitsi.DOMAIN`.
+
+To use it via riot-web, make sure you've installed the `develop` version and fully reloaded your riot-web page (at `riot.DOMAIN`). Starting a video-conference in a room containing more than 2 members should then create a Jitsi widget which utilizes your self-hosted Jitsi server.
