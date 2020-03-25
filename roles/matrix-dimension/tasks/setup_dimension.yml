@@ -33,7 +33,7 @@
 - name: Ensure matrix-dimension.service installed
   template:
     src: "{{ role_path }}/templates/systemd/matrix-dimension.service.j2"
-    dest: "/etc/systemd/system/matrix-dimension.service"
+    dest: "{{ matrix_systemd_path }}/matrix-dimension.service"
     mode: 0644
   register: matrix_dimension_systemd_service_result
   when: matrix_dimension_enabled|bool
@@ -49,7 +49,7 @@
 
 - name: Check existence of matrix-dimension service
   stat:
-    path: "/etc/systemd/system/matrix-dimension.service"
+    path: "{{ matrix_systemd_path }}/matrix-dimension.service"
   register: matrix_dimension_service_stat
   when: "not matrix_dimension_enabled|bool"
 
@@ -63,7 +63,7 @@
 
 - name: Ensure matrix-dimension.service doesn't exist
   file:
-    path: "/etc/systemd/system/matrix-dimension.service"
+    path: "{{ matrix_systemd_path }}/matrix-dimension.service"
     state: absent
   when: "not matrix_dimension_enabled|bool and matrix_dimension_service_stat.stat.exists"
 

@@ -69,34 +69,34 @@
 - name: Ensure matrix-postgres-cli script created
   template:
     src: "{{ role_path }}/templates/usr-local-bin/matrix-postgres-cli.j2"
-    dest: "/usr/local/bin/matrix-postgres-cli"
+    dest: "{{ matrix_local_bin_path }}/matrix-postgres-cli"
     mode: 0750
   when: matrix_postgres_enabled|bool
 
 - name: Ensure matrix-change-user-admin-status script created
   template:
     src: "{{ role_path }}/templates/usr-local-bin/matrix-change-user-admin-status.j2"
-    dest: "/usr/local/bin/matrix-change-user-admin-status"
+    dest: "{{ matrix_local_bin_path }}/matrix-change-user-admin-status"
     mode: 0750
   when: matrix_postgres_enabled|bool
 
 - name: (Migration) Ensure old matrix-make-user-admin script deleted
   file:
-    path: "/usr/local/bin/matrix-make-user-admin"
+    path: "{{ matrix_local_bin_path }}/matrix-make-user-admin"
     state: absent
   when: matrix_postgres_enabled|bool
 
 - name: Ensure matrix-postgres-update-user-password-hash script created
   template:
     src: "{{ role_path }}/templates/usr-local-bin/matrix-postgres-update-user-password-hash.j2"
-    dest: "/usr/local/bin/matrix-postgres-update-user-password-hash"
+    dest: "{{ matrix_local_bin_path }}/matrix-postgres-update-user-password-hash"
     mode: 0750
   when: matrix_postgres_enabled|bool
 
 - name: Ensure matrix-postgres.service installed
   template:
     src: "{{ role_path }}/templates/systemd/matrix-postgres.service.j2"
-    dest: "/etc/systemd/system/matrix-postgres.service"
+    dest: "{{ matrix_systemd_path }}/matrix-postgres.service"
     mode: 0644
   register: matrix_postgres_systemd_service_result
   when: matrix_postgres_enabled|bool
@@ -112,7 +112,7 @@
 
 - name: Check existence of matrix-postgres service
   stat:
-    path: "/etc/systemd/system/matrix-postgres.service"
+    path: "{{ matrix_systemd_path }}/matrix-postgres.service"
   register: matrix_postgres_service_stat
   when: "not matrix_postgres_enabled|bool"
 
@@ -125,7 +125,7 @@
 
 - name: Ensure matrix-postgres.service doesn't exist
   file:
-    path: "/etc/systemd/system/matrix-postgres.service"
+    path: "{{ matrix_systemd_path }}/matrix-postgres.service"
     state: absent
   when: "not matrix_postgres_enabled|bool and matrix_postgres_service_stat.stat.exists"
 
@@ -148,7 +148,7 @@
 
 - name: Remove Postgres scripts
   file:
-    path: "/usr/local/bin/{{ item }}"
+    path: "{{ matrix_local_bin_path }}/{{ item }}"
     state: absent
   with_items:
     - matrix-postgres-cli

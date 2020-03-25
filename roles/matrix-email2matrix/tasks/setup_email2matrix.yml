@@ -36,7 +36,7 @@
 - name: Ensure matrix-email2matrix.service installed
   template:
     src: "{{ role_path }}/templates/systemd/matrix-email2matrix.service.j2"
-    dest: "/etc/systemd/system/matrix-email2matrix.service"
+    dest: "{{ matrix_systemd_path }}/matrix-email2matrix.service"
     mode: 0644
   register: matrix_email2matrix_systemd_service_result
   when: matrix_email2matrix_enabled|bool
@@ -52,7 +52,7 @@
 
 - name: Check existence of matrix-email2matrix service
   stat:
-    path: "/etc/systemd/system/matrix-email2matrix.service"
+    path: "{{ matrix_systemd_path }}/matrix-email2matrix.service"
   register: matrix_email2matrix_service_stat
   when: "not matrix_email2matrix_enabled|bool"
 
@@ -66,7 +66,7 @@
 
 - name: Ensure matrix-email2matrix.service doesn't exist
   file:
-    path: "/etc/systemd/system/matrix-email2matrix.service"
+    path: "{{ matrix_systemd_path }}/matrix-email2matrix.service"
     state: absent
   when: "not matrix_email2matrix_enabled|bool and matrix_email2matrix_service_stat.stat.exists"
 

@@ -37,7 +37,7 @@
 - name: Ensure matrix-jitsi-jvb.service installed
   template:
     src: "{{ role_path }}/templates/jvb/matrix-jitsi-jvb.service.j2"
-    dest: "/etc/systemd/system/matrix-jitsi-jvb.service"
+    dest: "{{ matrix_systemd_path }}/matrix-jitsi-jvb.service"
     mode: 0644
   register: matrix_jitsi_jvb_systemd_service_result
   when: matrix_jitsi_enabled|bool
@@ -53,7 +53,7 @@
 
 - name: Check existence of matrix-jitsi-jvb service
   stat:
-    path: "/etc/systemd/system/matrix-jitsi-jvb.service"
+    path: "{{ matrix_systemd_path }}/matrix-jitsi-jvb.service"
   register: matrix_jitsi_jvb_service_stat
   when: "not matrix_jitsi_enabled|bool"
 
@@ -67,7 +67,7 @@
 
 - name: Ensure matrix-jitsi-jvb.service doesn't exist
   file:
-    path: "/etc/systemd/system/matrix-jitsi-jvb.service"
+    path: "{{ matrix_systemd_path }}/matrix-jitsi-jvb.service"
     state: absent
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_jvb_service_stat.stat.exists"
 

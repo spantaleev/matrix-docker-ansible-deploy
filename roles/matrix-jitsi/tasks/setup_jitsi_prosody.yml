@@ -34,7 +34,7 @@
 - name: Ensure matrix-jitsi-prosody.service installed
   template:
     src: "{{ role_path }}/templates/prosody/matrix-jitsi-prosody.service.j2"
-    dest: "/etc/systemd/system/matrix-jitsi-prosody.service"
+    dest: "{{ matrix_systemd_path }}/matrix-jitsi-prosody.service"
     mode: 0644
   register: matrix_jitsi_prosody_systemd_service_result
   when: matrix_jitsi_enabled|bool
@@ -50,7 +50,7 @@
 
 - name: Check existence of matrix-jitsi-prosody service
   stat:
-    path: "/etc/systemd/system/matrix-jitsi-prosody.service"
+    path: "{{ matrix_systemd_path }}/matrix-jitsi-prosody.service"
   register: matrix_jitsi_prosody_service_stat
   when: "not matrix_jitsi_enabled|bool"
 
@@ -64,7 +64,7 @@
 
 - name: Ensure matrix-jitsi-prosody.service doesn't exist
   file:
-    path: "/etc/systemd/system/matrix-jitsi-prosody.service"
+    path: "{{ matrix_systemd_path }}/matrix-jitsi-prosody.service"
     state: absent
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_prosody_service_stat.stat.exists"
 
