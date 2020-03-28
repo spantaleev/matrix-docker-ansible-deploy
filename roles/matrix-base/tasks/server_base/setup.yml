@@ -9,6 +9,9 @@
 - include_tasks: "{{ role_path }}/tasks/server_base/setup_raspbian.yml"
   when: (ansible_os_family == 'Debian') and (ansible_lsb.id == 'Raspbian') 
 
+- include_tasks: "{{ role_path }}/tasks/server_base/setup_archlinux.yml"
+  when: ansible_distribution == 'Archlinux'
+
 - name: Ensure Docker is started and autoruns
   service:
     name: docker
@@ -17,6 +20,6 @@
 
 - name: Ensure ntpd is started and autoruns
   service:
-    name: "{{ 'ntpd' if ansible_os_family == 'RedHat' else 'ntp' }}"
+    name: "{{ 'ntpd' if ansible_os_family == 'RedHat' or ansible_distribution == 'Archlinux' else 'ntp' }}"
     state: started
     enabled: yes

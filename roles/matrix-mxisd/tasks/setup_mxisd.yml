@@ -39,6 +39,14 @@
       msg: "Installing gradle on CentOS is currently not supported, so self-building mxisd cannot happen at this time"
     when: ansible_distribution == 'CentOS'
 
+  - name: Ensure gradle is installed for self-building (Archlinux)
+    pacman:
+      name:
+        - gradle
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == 'Archlinux'
+
   - name: Ensure mxisd repository is present on self-build
     git:
       repo: https://github.com/kamax-matrix/mxisd.git
