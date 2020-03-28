@@ -13,8 +13,8 @@ Before installing Jitsi, make sure you've created the `jitsi.DOMAIN` DNS record.
 
 You may also need to open the following ports to your server:
 
-- `udp/10000` - RTP media over UDP
-- `tcp/4443` - RTP media fallback over TCP
+- `10000/udp` - RTP media over UDP
+- `4443/tcp` - RTP media fallback over TCP
 
 
 ## Installation
