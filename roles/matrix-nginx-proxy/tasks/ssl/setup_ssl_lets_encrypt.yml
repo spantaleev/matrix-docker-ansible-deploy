@@ -7,9 +7,9 @@
     path: "{{ item }}"
     state: absent
   with_items:
-    - /usr/local/bin/matrix-ssl-certificates-renew
-    - /etc/cron.d/matrix-ssl-certificate-renewal
-    - /etc/cron.d/matrix-nginx-proxy-periodic-restarter
+    - "{{ matrix_local_bin_path }}/matrix-ssl-certificates-renew"
+    - "{{ matrix_cron_path }}/matrix-ssl-certificate-renewal"
+    - "{{ matrix_cron_path }}/matrix-nginx-proxy-periodic-restarter"
 
 
 #
@@ -51,7 +51,7 @@
 - name: Ensure Let's Encrypt SSL renewal script installed
   template:
     src: "{{ role_path }}/templates/usr-local-bin/matrix-ssl-lets-encrypt-certificates-renew.j2"
-    dest: /usr/local/bin/matrix-ssl-lets-encrypt-certificates-renew
+    dest: "{{ matrix_local_bin_path }}/matrix-ssl-lets-encrypt-certificates-renew"
     mode: 0750
   when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
 
@@ -73,7 +73,7 @@
       hour: "4"
       minute: "15"
       day: "*"
-      job: /usr/local/bin/matrix-ssl-lets-encrypt-certificates-renew
+      job: "{{ matrix_local_bin_path }}/matrix-ssl-lets-encrypt-certificates-renew"
 
   - name: Ensure periodic reloading of matrix-nginx-proxy is configured for SSL renewal (matrix-nginx-proxy-reload)
     cron:
@@ -113,6 +113,6 @@
 
 - name: Ensure Let's Encrypt SSL renewal script removed
   file:
-    path: /usr/local/bin/matrix-ssl-lets-encrypt-certificates-renew
+    path: "{{ matrix_local_bin_path }}/matrix-ssl-lets-encrypt-certificates-renew"
     state: absent
   when: "matrix_ssl_retrieval_method != 'lets-encrypt'"

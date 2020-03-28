@@ -31,6 +31,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up the Dimension Integration Manager](configuring-playbook-dimension.md) (optional, but recommended; after [installing](installing.md))
 
+- [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md) (optional)
+
 
 ### Core service adjustments
 

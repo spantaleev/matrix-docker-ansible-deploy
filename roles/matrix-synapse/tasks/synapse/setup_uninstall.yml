@@ -1,6 +1,6 @@
 - name: Check existence of matrix-synapse service
   stat:
-    path: "/etc/systemd/system/matrix-synapse.service"
+    path: "{{ matrix_systemd_path }}/matrix-synapse.service"
   register: matrix_synapse_service_stat
 
 - name: Ensure matrix-synapse is stopped
@@ -13,7 +13,7 @@
 
 - name: Ensure matrix-synapse.service doesn't exist
   file:
-    path: "/etc/systemd/system/matrix-synapse.service"
+    path: "{{ matrix_systemd_path }}/matrix-synapse.service"
     state: absent
   when: "matrix_synapse_service_stat.stat.exists"
 

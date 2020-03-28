@@ -1,0 +1,36 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix jitsi-jvb server
+{% for service in matrix_jitsi_jvb_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker kill matrix-jitsi-jvb
+ExecStartPre=-/usr/bin/docker rm matrix-jitsi-jvb
+
+ExecStart=/usr/bin/docker run --rm --name matrix-jitsi-jvb \
+			--log-driver=none \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_jitsi_jvb_container_rtp_udp_host_bind_port %}
+			-p {{ matrix_jitsi_jvb_container_rtp_udp_host_bind_port }}:{{ matrix_jitsi_jvb_rtp_udp_port }}/udp \
+			{% endif %}
+			{% if matrix_jitsi_jvb_container_rtp_tcp_host_bind_port %}
+			-p {{ matrix_jitsi_jvb_container_rtp_tcp_host_bind_port }}:{{ matrix_jitsi_jvb_rtp_tcp_port }} \
+			{% endif %}
+			-v {{ matrix_jitsi_jvb_config_path }}:/config \
+			{% for arg in matrix_jitsi_jvb_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_jitsi_jvb_docker_image }}
+
+ExecStop=-/usr/bin/docker kill matrix-jitsi-jvb
+ExecStop=-/usr/bin/docker rm matrix-jitsi-jvb
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-jitsi-jvb
+
+[Install]
+WantedBy=multi-user.target

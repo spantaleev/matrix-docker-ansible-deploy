@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-appservice-irc service
   stat:
-    path: "/etc/systemd/system/matrix-appservice-irc.service"
+    path: "{{ matrix_systemd_path }}/matrix-appservice-irc.service"
   register: matrix_appservice_irc_service_stat
 
 - name: Ensure matrix-appservice-irc is stopped
@@ -14,7 +14,7 @@
 
 - name: Ensure matrix-appservice-irc.service doesn't exist
   file:
-    path: "/etc/systemd/system/matrix-appservice-irc.service"
+    path: "{{ matrix_systemd_path }}/matrix-appservice-irc.service"
     state: absent
   when: "matrix_appservice_irc_service_stat.stat.exists"
 

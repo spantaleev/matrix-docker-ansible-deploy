@@ -11,8 +11,8 @@ Wants={{ service }}
 
 [Service]
 Type=simple
-ExecStartPre=-/usr/bin/docker kill matrix-mautrix-hangouts
-ExecStartPre=-/usr/bin/docker rm matrix-mautrix-hangouts
+ExecStartPre=-/usr/bin/docker kill matrix-mautrix-hangouts matrix-mautrix-hangouts-db
+ExecStartPre=-/usr/bin/docker rm matrix-mautrix-hangouts matrix-mautrix-hangouts-db
 ExecStartPre=/usr/bin/docker run --rm --name matrix-mautrix-hangouts-db \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \

@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-mautrix-hangouts service
   stat:
-    path: "/etc/systemd/system/matrix-mautrix-hangouts.service"
+    path: "{{ matrix_systemd_path }}/matrix-mautrix-hangouts.service"
   register: matrix_mautrix_hangouts_service_stat
 
 - name: Ensure matrix-mautrix-hangouts is stopped
@@ -14,7 +14,7 @@
 
 - name: Ensure matrix-mautrix-hangouts.service doesn't exist
   file:
-    path: "/etc/systemd/system/matrix-mautrix-hangouts.service"
+    path: "{{ matrix_systemd_path }}/matrix-mautrix-hangouts.service"
     state: absent
   when: "matrix_mautrix_hangouts_service_stat.stat.exists"
 

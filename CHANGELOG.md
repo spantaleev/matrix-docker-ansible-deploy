@@ -1,3 +1,12 @@
+# 2020-03-24
+
+## Jitsi support
+
+The playbook can now (optionally) install the [Jitsi](https://jitsi.org/) video-conferencing platform and integrate it with [Riot](docs/configuring-playbook-riot-web.md).
+
+See our [Jitsi documentation page](docs/configuring-playbook-jitsi.md) to get started.
+
+
 # 2020-03-15
 
 ## Raspberry Pi support

@@ -30,6 +30,12 @@
 	"embeddedPages": {
 		"homeUrl": {{ matrix_riot_web_embedded_pages_home_url|string|to_json }}
 	},
+	{% if matrix_riot_web_jitsi_preferredDomain is not none %}
+	"jitsi": {
+        "preferredDomain": {{ matrix_riot_web_jitsi_preferredDomain|to_json }},
+        "externalApiUrl": "https://{{ matrix_riot_web_jitsi_preferredDomain }}/libs/external_api.min.js"
+    },
+	{% endif %}
 	"branding": {
 		"authFooterLinks": {{ matrix_riot_web_branding_authFooterLinks|to_json }},
 		"authHeaderLogoUrl": {{ matrix_riot_web_branding_authHeaderLogoUrl|to_json }},

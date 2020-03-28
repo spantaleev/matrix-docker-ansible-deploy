@@ -15,15 +15,15 @@ if [ "$sure" != "Yes, I really want to remove everything!" ]; then
 	exit 0
 else
 	echo "Stop and remove matrix services"
-	for s in $(find /etc/systemd/system/ -name "matrix-*" -printf "%f\n"); do
+	for s in $(find {{ matrix_systemd_path }}/ -name "matrix-*" -printf "%f\n"); do
 		systemctl stop $s
-		rm -f /etc/systemd/system/$s
+		rm -f {{ matrix_systemd_path }}/$s
 	done
 	systemctl daemon-reload
 	echo "Remove matrix cronjobs"
 	find /etc/cron.d/ -name "matrix-*" -delete
 	echo "Remove matrix scripts"
-	find /usr/local/bin/ -name "matrix-*" -delete
+	find {{ matrix_local_bin_path }}/ -name "matrix-*" -delete
 	echo "Remove every docker images"
 	docker rmi $(docker images -aq)
 	echo "Remove docker matrix network"
