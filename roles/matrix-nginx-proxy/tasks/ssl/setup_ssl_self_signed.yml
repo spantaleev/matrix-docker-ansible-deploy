@@ -16,6 +16,14 @@
     update_cache: no
   when: "matrix_ssl_retrieval_method == 'self-signed' and ansible_os_family == 'Debian'"
 
+- name: Ensure OpenSSL installed (Archlinux)
+  pacman:
+    name:
+      - openssl
+    state: latest
+    update_cache: no
+  when: "matrix_ssl_retrieval_method == 'self-signed' and ansible_distribution == 'Archlinux'"
+
 - name: Generate self-signed certificates
   include_tasks: "{{ role_path }}/tasks/ssl/setup_ssl_self_signed_obtain_for_domain.yml"
   with_items: "{{ matrix_ssl_domains_to_obtain_certificates_for }}"

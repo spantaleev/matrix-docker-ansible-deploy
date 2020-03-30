@@ -1,3 +1,10 @@
+# 2020-03-29
+
+## Archlinux support
+
+Thanks to [Christian](https://github.com/christianlupus)'s efforts, the playbook now supports installing to an [Archlinux](https://www.archlinux.org/) server.
+
+
 # 2020-03-24
 
 ## Jitsi support

@@ -16,10 +16,18 @@
 - name: Ensure git installed (Debian)
   apt:
     name:
-      - openssl
+      - git
     state: present
     update_cache: no
   when: "ansible_os_family == 'Debian'"
+
+- name: Ensure git installed (Archlinux)
+  pacman:
+    name:
+      - git
+    state: present
+    update_cache: no
+  when: "ansible_distribution == 'Archlinux'"
 
 - name: Clone synapse-simple-antispam git repository
   git:

@@ -26,7 +26,7 @@
   when: matrix_mxisd_enabled|bool and not matrix_mxisd_container_image_self_build
 
 - block:
-  - name: Ensure gradle is installed for self-building
+  - name: Ensure gradle is installed for self-building (Debian)
     apt:
       name:
         - gradle
@@ -34,10 +34,18 @@
       update_cache: yes
     when: (ansible_os_family == 'Debian')
 
-  - name: Ensure gradle is installed for self-building
+  - name: Ensure gradle is installed for self-building (CentOS)
     fail:
       msg: "Installing gradle on CentOS is currently not supported, so self-building mxisd cannot happen at this time"
     when: ansible_distribution == 'CentOS'
+
+  - name: Ensure gradle is installed for self-building (Archlinux)
+    pacman:
+      name:
+        - gradle
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == 'Archlinux'
 
   - name: Ensure mxisd repository is present on self-build
     git:

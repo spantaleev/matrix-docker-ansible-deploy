@@ -44,3 +44,10 @@
     - "{{ matrix_server_fqn_matrix }}"
     - "{{ matrix_server_fqn_riot }}"
   when: "item != item|lower"
+
+- name: Fail if using python2 on Archlinux
+  fail:
+    msg: "Detected that you're using python2 when installing onto Archlinux. Archlinux by default only supports python3."
+  when:
+    - ansible_distribution == 'Archlinux'
+    - ansible_python.version.major != 3
