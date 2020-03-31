@@ -9,8 +9,9 @@ Setup Instructions:
 loosely based on [this](https://github.com/Half-Shot/matrix-appservice-discord#setting-up).
 
 1. Create a Discord Application [here](https://discordapp.com/developers/applications).
-2. Retrieve Client ID and Bot token from this Application.
-3. Enable the bridge with the following configuration in your `vars.yml` file:
+2. Retrieve Client ID.
+3. Create a bot from the Bot tab and retrieve the Bot token.
+4. Enable the bridge with the following configuration in your `vars.yml` file:
 
 ```yaml
 matrix_appservice_discord_enabled: true
