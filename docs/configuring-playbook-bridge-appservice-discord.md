@@ -6,9 +6,9 @@ See the project's [documentation](https://github.com/Half-Shot/matrix-appservice
 
 Setup Instructions:
 
-loosely based on [this](https://github.com/Half-Shot/matrix-appservice-discord#setting-up)
+loosely based on [this](https://github.com/Half-Shot/matrix-appservice-discord#setting-up).
 
-1. Create a Discord Application [here](https://discordapp.com/developers/applications/me/create).
+1. Create a Discord Application [here](https://discordapp.com/developers/applications).
 2. Retrieve Client ID and Bot token from this Application.
 3. Enable the bridge with the following configuration in your `vars.yml` file:
 
