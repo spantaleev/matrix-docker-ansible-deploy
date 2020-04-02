@@ -52,7 +52,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
-  when: "item.old in vars"
+  when: "vars | dict2items | selectattr('key', 'match', item.old) | list | items2dict"
   with_items:
     - {'old': 'matrix_ma1sd_container_expose_port', 'new': '<superseded by matrix_ma1sd_container_http_host_bind_port>'}
     - {'old': 'matrix_mxisd_.*', 'new': 'matrix_ma1sd_.*'}
