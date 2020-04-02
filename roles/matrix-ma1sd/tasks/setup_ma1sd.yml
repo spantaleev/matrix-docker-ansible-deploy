@@ -4,6 +4,9 @@
 # Tasks related to setting up ma1sd
 #
 
+- import_tasks: "{{ role_path }}/tasks/migrate_mxisd.yml"
+  when: matrix_ma1sd_enabled|bool
+
 - name: Ensure ma1sd paths exist
   file:
     path: "{{ item.path }}"
