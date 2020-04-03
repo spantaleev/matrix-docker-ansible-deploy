@@ -4,13 +4,13 @@
 
 - name: Check for existent mxisd data
   stat:
-    path: "{{ matrix_base_data_path }}/mxisd"
+    path: "{{ matrix_base_data_path }}/mxisd/data"
   register: ma1sd_migrate_mxisd_data_dir_stat
 
 - name: Warn if mxisd data detected
   debug:
     msg: >
-      You seem to have an existing mxisd data folder in `{{ matrix_base_data_path }}`.
+      You seem to have an existing mxisd folder in `{{ matrix_base_data_path }}/mxisd`.
       We are going to migrate it to ma1sd and rename the folder to mxisd.migrated.
   when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists"
 
@@ -40,41 +40,34 @@
     daemon_reload: yes
   when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists and matrix_ma1sd_service_stat.stat.exists"
 
-- name: Ensure ma1sd data path exist
-  file:
-    path: "{{ matrix_ma1sd_data_path }}"
-    state: directory
-    mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
-  when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists"
+# We use shell commands for the migration, because the Ansible copy module cannot
+# recursively copy remote directories (like `/matrix/mxisd/data/sign.key`) in older versions of Ansible.
+- block:
+  - name: Copy mxisd data files to ma1sd folder
+    command: "cp -ar {{ matrix_base_data_path }}/mxisd/data {{ matrix_ma1sd_base_path }}"
 
-- name: Copy mxisd data files to ma1sd folder
-  copy:
-    src: "{{ item.src }}"
-    remote_src: true
-    dest: "{{ matrix_ma1sd_data_path }}/{{ item.dst_name }}"
-    mode: "preserve"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
-  with_items:
-    - {"src": "{{ matrix_base_data_path }}/mxisd/data/mxisd.db", "dst_name": "ma1sd.db"}
-    - {"src": "{{ matrix_base_data_path }}/mxisd/data/sign.key", "dst_name": "sign.key"}
-  when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists"
+  - name: Check existence of mxisd.db file
+    stat:
+      path: "{{ matrix_ma1sd_data_path }}/mxisd.db"
+    register: matrix_ma1sd_mxisd_db_stat
 
-- name: Rename mxisd folder
-  command: "mv {{ matrix_base_data_path }}/mxisd {{ matrix_base_data_path }}/mxisd.migrated"
+  - name: Rename database (mxisd.db -> ma1sd.db)
+    command: "mv {{ matrix_ma1sd_data_path }}/mxisd.db {{ matrix_ma1sd_data_path }}/ma1sd.db"
+    when: "matrix_ma1sd_mxisd_db_stat.stat.exists"
+
+  - name: Rename mxisd folder
+    command: "mv {{ matrix_base_data_path }}/mxisd {{ matrix_base_data_path }}/mxisd.migrated"
   when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists"
 
 - name: Ensure outdated matrix-mxisd.service doesn't exist
   file:
     path: "{{ matrix_systemd_path }}/matrix-mxisd.service"
     state: absent
-  when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists"
+  when: "matrix_ma1sd_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after removing outdated matrix-mxisd.service
   service:
     daemon_reload: yes
-  when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists"
+  when: "matrix_ma1sd_service_stat.stat.exists"
 
 
