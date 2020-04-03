@@ -18,9 +18,11 @@ var config = {
         // XMPP domain.
         domain: '{{ matrix_jitsi_xmpp_domain }}',
 
+        {% if matrix_jitsi_enable_auth %}
         {% if matrix_jitsi_enable_guests %}
         // When using authentication, domain for guest users.
-		anonymousdomain: 'guest.example.com',
+		anonymousdomain: '{{ matrix_jitsi_xmpp_guest_domain }}',
+        {% endif %}
 
         // Domain for authenticated users. Defaults to <domain>.
         authdomain: '{{ matrix_jitsi_xmpp_domain }}',
