@@ -435,7 +435,7 @@ matrix_jitsi_web_stun_servers: |
 
 # By default, this playbook sets up a postfix mailer server (running in a container).
 # This is so that Synapse can send email reminders for unread messages.
-# Other services (like mxisd), also use the mailer.
+# Other services (like ma1sd), also use the mailer.
 matrix_mailer_enabled: true
 
 ######################################################################
@@ -448,41 +448,41 @@ matrix_mailer_enabled: true
 
 ######################################################################
 #
-# matrix-mxisd
+# matrix-ma1sd
 #
 ######################################################################
 
-# By default, this playbook installs the mxisd identity server on the same domain as Synapse (`matrix_server_fqn_matrix`).
+# By default, this playbook installs the ma1sd identity server on the same domain as Synapse (`matrix_server_fqn_matrix`).
 # If you wish to use the public identity servers (matrix.org, vector.im) instead of your own you may wish to disable this.
-matrix_mxisd_enabled: true
+matrix_ma1sd_enabled: true
 
-matrix_mxisd_container_image_self_build: "{{ matrix_container_images_self_build }}"
+matrix_ma1sd_container_image_self_build: "{{ matrix_container_images_self_build }}"
 
-# Normally, matrix-nginx-proxy is enabled and nginx can reach mxisd over the container network.
+# Normally, matrix-nginx-proxy is enabled and nginx can reach ma1sd over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# mxisd's web-server port.
-matrix_mxisd_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8090' }}"
+# ma1sd's web-server port.
+matrix_ma1sd_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8090' }}"
 
 # We enable Synapse integration via its Postgres database by default.
 # When using another Identity store, you might wish to disable this and define
-# your own configuration in `matrix_mxisd_configuration_extension_yaml`.
-matrix_mxisd_synapsesql_enabled: true
-matrix_mxisd_synapsesql_type: postgresql
-matrix_mxisd_synapsesql_connection: //{{ matrix_synapse_database_host }}/{{ matrix_synapse_database_database }}?user={{ matrix_synapse_database_user | urlencode() }}&password={{ matrix_synapse_database_password | urlencode() }}
+# your own configuration in `matrix_ma1sd_configuration_extension_yaml`.
+matrix_ma1sd_synapsesql_enabled: true
+matrix_ma1sd_synapsesql_type: postgresql
+matrix_ma1sd_synapsesql_connection: //{{ matrix_synapse_database_host }}/{{ matrix_synapse_database_database }}?user={{ matrix_synapse_database_user | urlencode() }}&password={{ matrix_synapse_database_password | urlencode() }}
 
-matrix_mxisd_dns_overwrite_enabled: true
-matrix_mxisd_dns_overwrite_homeserver_client_name: "{{ matrix_server_fqn_matrix }}"
-matrix_mxisd_dns_overwrite_homeserver_client_value: "http://{{ 'matrix-corporal:41080' if matrix_corporal_enabled else 'matrix-synapse:8008' }}"
+matrix_ma1sd_dns_overwrite_enabled: true
+matrix_ma1sd_dns_overwrite_homeserver_client_name: "{{ matrix_server_fqn_matrix }}"
+matrix_ma1sd_dns_overwrite_homeserver_client_value: "http://{{ 'matrix-corporal:41080' if matrix_corporal_enabled else 'matrix-synapse:8008' }}"
 
 # By default, we send mail through the `matrix-mailer` service.
-matrix_mxisd_threepid_medium_email_identity_from: "{{ matrix_mailer_sender_address }}"
-matrix_mxisd_threepid_medium_email_connectors_smtp_host: "matrix-mailer"
-matrix_mxisd_threepid_medium_email_connectors_smtp_port: 8025
-matrix_mxisd_threepid_medium_email_connectors_smtp_tls: 0
+matrix_ma1sd_threepid_medium_email_identity_from: "{{ matrix_mailer_sender_address }}"
+matrix_ma1sd_threepid_medium_email_connectors_smtp_host: "matrix-mailer"
+matrix_ma1sd_threepid_medium_email_connectors_smtp_port: 8025
+matrix_ma1sd_threepid_medium_email_connectors_smtp_tls: 0
 
-matrix_mxisd_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else false }}"
+matrix_ma1sd_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else false }}"
 
-matrix_mxisd_systemd_wanted_services_list: |
+matrix_ma1sd_systemd_wanted_services_list: |
   {{
     (['matrix-corporal.service'] if matrix_corporal_enabled else ['matrix-synapse.service'])
     +
@@ -493,7 +493,7 @@ matrix_mxisd_systemd_wanted_services_list: |
 
 ######################################################################
 #
-# /matrix-mxisd
+# /matrix-ma1sd
 #
 ######################################################################
 
@@ -523,8 +523,8 @@ matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: "{{ matrix_corporal_enable
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_sans_container: "127.0.0.1:41081"
 
-matrix_nginx_proxy_proxy_matrix_identity_api_enabled: "{{ matrix_mxisd_enabled }}"
-matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-mxisd:8090"
+matrix_nginx_proxy_proxy_matrix_identity_api_enabled: "{{ matrix_ma1sd_enabled }}"
+matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-ma1sd:8090"
 matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "127.0.0.1:8090"
 
 # By default, we do TLS termination for the Matrix Federation API (port 8448) at matrix-nginx-proxy.
@@ -536,7 +536,7 @@ matrix_nginx_proxy_proxy_synapse_metrics: "{{ matrix_synapse_metrics_enabled }}"
 matrix_nginx_proxy_proxy_synapse_metrics_addr_with_container: "matrix-synapse:{{ matrix_synapse_metrics_port }}"
 matrix_nginx_proxy_proxy_synapse_metrics_addr_sans_container: "127.0.0.1:{{ matrix_synapse_metrics_port }}"
 
-matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_mxisd_enabled }}"
+matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_ma1sd_enabled }}"
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}"
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container }}"
 
@@ -548,7 +548,7 @@ matrix_nginx_proxy_systemd_wanted_services_list: |
     +
     (['matrix-corporal.service'] if matrix_corporal_enabled else [])
     +
-    (['matrix-mxisd.service'] if matrix_mxisd_enabled else [])
+    (['matrix-ma1sd.service'] if matrix_ma1sd_enabled else [])
     +
     (['matrix-riot-web.service'] if matrix_riot_web_enabled else [])
   }}
@@ -652,8 +652,13 @@ matrix_riot_web_jitsi_preferredDomain: "{{ matrix_server_fqn_jitsi if matrix_jit
 
 matrix_synapse_container_image_self_build: "{{ matrix_container_images_self_build }}"
 
-# When mxisd is enabled, we can use it instead of the default public Identity servers.
-matrix_synapse_trusted_third_party_id_servers: "{{ [matrix_server_fqn_matrix] if matrix_mxisd_enabled else matrix_synapse_id_servers_public }}"
+# When ma1sd is enabled, we can use it instead of the default public Identity servers.
+matrix_synapse_trusted_third_party_id_servers: "{{ [matrix_server_fqn_matrix] if matrix_ma1sd_enabled else matrix_synapse_id_servers_public }}"
+
+# When ma1sd is enabled, we can use it to validate email addresses and phone numbers.
+# Synapse can validate email addresses by itself as well, but it's probably not what we want by default when we have an identity server.
+matrix_synapse_account_threepid_delegates_email: "{{ 'http://matrix-ma1sd:8090' if matrix_ma1sd_enabled else '' }}"
+matrix_synapse_account_threepid_delegates_msisdn: "{{ 'http://matrix-ma1sd:8090' if matrix_ma1sd_enabled else '' }}"
 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Synapse over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it,

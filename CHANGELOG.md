@@ -1,3 +1,15 @@
+# 2020-04-03
+
+## (Potential Backward Compatibility Break) ma1sd replaces mxisd
+
+Thanks to [Marcel Partap](https://github.com/eMPee584)'s efforts, the [mxisd](https://github.com/kamax-io/mxisd) identity server, which has been deprecated for a long time, has finally been replaced by [ma1sd](https://github.com/kamax-io/mxisd), a compatible fork.
+
+**If you're using the default playbook configuration**, you don't need to do anything -- your mxisd installation will be replaced with ma1sd and all existing data will be migrated automatically the next time you run the playbook.
+
+**If you're doing something more special** (defining custom `matrix_mxisd_*` variables), the playbook will ask you to rename them to `matrix_ma1sd_*`.
+You're also encouraged to test that ma1sd works well for such a more custom setup.
+
+
 # 2020-03-29
 
 ## Archlinux support
