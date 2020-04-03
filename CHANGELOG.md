@@ -14,7 +14,7 @@ You're also encouraged to test that ma1sd works well for such a more custom setu
 
 ## Archlinux support
 
-Thanks to [Christian](https://github.com/christianlupus)'s efforts, the playbook now supports installing to an [Archlinux](https://www.archlinux.org/) server.
+Thanks to [Christian Lupus](https://github.com/christianlupus)'s efforts, the playbook now supports installing to an [Archlinux](https://www.archlinux.org/) server.
 
 
 # 2020-03-24
