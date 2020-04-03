@@ -655,6 +655,11 @@ matrix_synapse_container_image_self_build: "{{ matrix_container_images_self_buil
 # When ma1sd is enabled, we can use it instead of the default public Identity servers.
 matrix_synapse_trusted_third_party_id_servers: "{{ [matrix_server_fqn_matrix] if matrix_ma1sd_enabled else matrix_synapse_id_servers_public }}"
 
+# When ma1sd is enabled, we can use it to validate email addresses and phone numbers.
+# Synapse can validate email addresses by itself as well, but it's probably not what we want by default when we have an identity server.
+matrix_synapse_account_threepid_delegates_email: "{{ 'http://matrix-ma1sd:8090' if matrix_ma1sd_enabled else '' }}"
+matrix_synapse_account_threepid_delegates_msisdn: "{{ 'http://matrix-ma1sd:8090' if matrix_ma1sd_enabled else '' }}"
+
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Synapse over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it,
 # you can expose Synapse's ports to the host.
