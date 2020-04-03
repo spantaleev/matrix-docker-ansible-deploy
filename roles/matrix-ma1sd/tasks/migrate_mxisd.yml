@@ -51,15 +51,15 @@
 
 - name: Copy mxisd data files to ma1sd folder
   copy:
-    src: "{{ item }}"
+    src: "{{ item.src }}"
     remote_src: true
-    dest: "{{ matrix_ma1sd_data_path }}/"
+    dest: "{{ matrix_ma1sd_data_path }}/{{ item.dst_name }}"
     mode: "preserve"
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
   with_items:
-    - "{{ matrix_base_data_path }}/mxisd/data/mxisd.db"
-    - "{{ matrix_base_data_path }}/mxisd/data/sign.key"
+    - {"src": "{{ matrix_base_data_path }}/mxisd/data/mxisd.db", "dst_name": "ma1sd.db"}
+    - {"src": "{{ matrix_base_data_path }}/mxisd/data/sign.key", "dst_name": "sign.key"}
   when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists"
 
 - name: Rename mxisd folder
