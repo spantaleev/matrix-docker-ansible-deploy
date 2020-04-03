@@ -2,7 +2,7 @@
 
 ## (Potential Backward Compatibility Break) ma1sd replaces mxisd
 
-Thanks to [Marcel Partap](https://github.com/eMPee584)'s efforts, the [mxisd](https://github.com/kamax-io/mxisd) identity server, which has been deprecated for a long time, has finally been replaced by [ma1sd](https://github.com/kamax-io/mxisd), a compatible fork.
+Thanks to [Marcel Partap](https://github.com/eMPee584)'s efforts, the [mxisd](https://github.com/kamax-io/mxisd) identity server, which has been deprecated for a long time, has finally been replaced by [ma1sd](https://github.com/ma1uta/ma1sd), a compatible fork.
 
 **If you're using the default playbook configuration**, you don't need to do anything -- your mxisd installation will be replaced with ma1sd and all existing data will be migrated automatically the next time you run the playbook.
 
