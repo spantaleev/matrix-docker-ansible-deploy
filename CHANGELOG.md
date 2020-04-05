@@ -1,3 +1,14 @@
+# 2020-04-05
+
+## Private Jitsi support
+
+The [Jitsi support](#jitsi-support) we had landed a few weeks ago was working well, but it was always open to the whole world.
+
+Running such an open instance is not desirable to most people, so [teutat3s](https://github.com/teutat3s) has contributed support for making Jitsi use authentication.
+
+To make your Jitsi server more private, see the [configure internal Jitsi authentication and guests mode](docs/configuring-playbook-jitsi.md#optional-configure-internal-jitsi-authentication-and-guests-mode) section in our Jitsi documentation.
+
+
 # 2020-04-03
 
 ## (Potential Backward Compatibility Break) ma1sd replaces mxisd
