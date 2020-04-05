@@ -51,7 +51,13 @@ Please SSH into your matrix host machine and execute the following command targe
 docker exec matrix-jitsi-prosody prosodyctl --config /config/prosody.cfg.lua register <USERNAME> matrix-jitsi-web <PASSWORD>
 ```
 
-Run this command for each user you would like to create, replacing `<USERNAME>` and `<PASSWORD>` accordingly. After you've finished, please exit the host. 
+Run this command for each user you would like to create, replacing `<USERNAME>` and `<PASSWORD>` accordingly. After you've finished, please exit the host.
+
+**If you get an error** like this: "Error: Account creation/modification not supported.", it's likely that you had previously installed Jitsi without auth/guest support. The playbook can't yet rebuild all configuration files for some Jitsi services (like `matrix-jitsi-prosody`), which may cause such an error. **If you encounter this error**, we encourage you to:
+- stop all Jitsi services (`systemctl stop matrix-jitsi-*`)
+- remove the Jitsi Prosody configuration & data (`rm -rf /matrix/jitsi/prosody`)
+- rebuild Jitsi configuration and restart services (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-jitsi,start`)
+- try the previously-failing command once again
 
 
 ## Usage
