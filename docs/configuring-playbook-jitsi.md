@@ -25,7 +25,33 @@ Add this to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
 matrix_jitsi_enabled: true
 ```
 
+## (Optional) configure internal Jitsi authentication and guests mode
+
+By default the Jitsi Meet instance does not require any kind of login and is open to use for anyone without registration.
+If you would like to control who is allowed to open meetings on your new Jitsi instance, then please follow this step to enable Jitsi's `internal` authentication and guests mode. With this optional configuration, all meeting rooms have to be opened by at least one registered user, after that guests are free to join. If a registered host is not present yet, guests are put on hold into a waiting room.
+If you prefer an open Jitsi instance, please skip to [Apply changes](#apply-changes).
+
+Add these two lines to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
+
+```yaml
+matrix_jitsi_enable_auth: true
+matrix_jitsi_enable_guests: true
+```
+
+## Apply changes
+
 Then re-run the playbook: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
+
+## Required if configuring Jitsi with its internal authentication: register new users
+
+Until this gets integrated into the playbook, we need to register new users / meeting hosts for Jitsi manually.
+Please SSH into your matrix host machine and execute the following command targeting the `matrix-jitsi-prosody` container:
+
+```bash
+docker exec matrix-jitsi-prosody prosodyctl --config /config/prosody.cfg.lua register <USERNAME> matrix-jitsi-web <PASSWORD>
+```
+
+Run this command for each user you would like to create, replacing `<USERNAME>` and `<PASSWORD>` accordingly. After you've finished, please exit the host. 
 
 
 ## Usage
