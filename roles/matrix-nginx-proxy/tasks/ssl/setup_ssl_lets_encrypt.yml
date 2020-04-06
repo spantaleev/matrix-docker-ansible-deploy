@@ -39,7 +39,26 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_ssl_lets_encrypt_certbot_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_ssl_lets_encrypt_certbot_docker_image_force_pull }}"
-  when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
+  when: "matrix_ssl_retrieval_method == 'lets-encrypt' and not matrix_ssl_lets_encrypt_self_build"
+
+- name: Ensure certbot repository is present on self-build
+  git:
+    repo: https://github.com/certbot-docker/certbot-docker/
+    dest: "{{ matrix_ssl_lets_encrypt_docker_src_files_path }}"
+    version: "{{ matrix_ssl_lets_encrypt_docker_image.split(':')[1] }}"
+    force: "yes"
+  when: "matrix_ssl_lets_encrypt_enabled|bool and matrix_ssl_lets_encrypt_container_image_self_build"
+
+- name: Ensure certbot Docker image is built
+  docker_image:
+    name: "{{ matrix_ssl_lets_encrypt_docker_image }}"
+    source: build
+    build:
+      args: "TARGET_ARCH={{ ansible_architecture }}, CERTBOT_VERSION={{ matrix_ssl_lets_encrypt_docker_image.split('v')[1] }}"
+      dockerfile: "core/Dockerfile"
+      path: "{{ matrix_ssl_lets_encrypt_docker_src_files_path }}"
+      pull: yes
+  when: "matrix_ssl_lets_encrypt_enabled|bool and matrix_ssl_lets_encrypt_container_image_self_build"
 
 - name: Obtain Let's Encrypt certificates
   include_tasks: "{{ role_path }}/tasks/ssl/setup_ssl_lets_encrypt_obtain_for_domain.yml"

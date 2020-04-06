@@ -10,6 +10,7 @@ Setting that variable will self-build every role which supports self-building. S
 
 List of roles where self-building the docker image is currently possible:
 - synapse
+- ssl-lets-encrypt
 - riot-web
 - coturn
 - ma1sd
