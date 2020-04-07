@@ -25,6 +25,17 @@ Add this to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
 matrix_jitsi_enabled: true
 ```
 
+## Securing your Jitsi instance with strong passwords
+
+Please use the bash script provided in this repo to generate strong passwords for your Jitsi instance.
+Execute the following commands in your terminal from the root of this repo:
+```bash
+cd inventory/scripts
+bash generate-jitsi-passwords.sh
+```
+
+The script will add the corresponding ansible variables and passwords generated with `openssl rand -hex 16` to the bottom of your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration.
+
 ## (Optional) configure internal Jitsi authentication and guests mode
 
 By default the Jitsi Meet instance does not require any kind of login and is open to use for anyone without registration.
