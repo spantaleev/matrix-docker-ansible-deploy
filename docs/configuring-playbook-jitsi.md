@@ -23,18 +23,16 @@ Add this to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
 
 ```yaml
 matrix_jitsi_enabled: true
+
+# Run `bash inventory/scripts/generate-jitsi-passwords.sh` to generate these passwords,
+# or define your own strong passwords manually.
+matrix_jitsi_jicofo_component_secret: ""
+matrix_jitsi_jicofo_auth_password: ""
+matrix_jitsi_jvb_auth_password: ""
+matrix_jitsi_jibri_recorder_password: ""
+matrix_jitsi_jibri_xmpp_password: ""
 ```
 
-## Securing your Jitsi instance with strong passwords
-
-Please use the bash script provided in this repo to generate strong passwords for your Jitsi instance.
-Execute the following commands in your terminal from the root of this repo:
-```bash
-cd inventory/scripts
-bash generate-jitsi-passwords.sh
-```
-
-The script will add the corresponding ansible variables and passwords generated with `openssl rand -hex 16` to the bottom of your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration.
 
 ## (Optional) configure internal Jitsi authentication and guests mode
 
