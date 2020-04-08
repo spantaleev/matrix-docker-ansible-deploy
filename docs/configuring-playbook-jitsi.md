@@ -82,7 +82,7 @@ To use it via riot-web (the one configured by the playbook at `https://riot.DOMA
 
 **If you ever run into any trouble** or **if you change configuration (`matrix_jitsi_*` variables) too much**, we urge you to rebuild your Jitsi setup.
 
-We normally don't require such manual intervention for other services, for Jitsi services generate a lot of configuration files on their own.
+We normally don't require such manual intervention for other services, but Jitsi services generate a lot of configuration files on their own.
 
 These files are not all managed by Ansible (at least not yet), so you may sometimes need to delete them all and start fresh.
 
