@@ -12,21 +12,21 @@ function generatePassword() {
 # helper function to get the matrix domain in the host_vars directory
 function get_domain_dir() {
 	counter=0
-	
+
 	for f in *; do
 	    counter=$(( counter + 1 ))
 	    if [ ! -d "$f" ]; then
-    		echo "Error: could not find directory 'matrix.your.domain'"
-    		echo "Did you create it already? Please first setup your matrix homeserver before running this script."                   
-    		echo "You should start here: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/prerequisites.md"
-    		exit 1
-	    elif [[ "$counter" -gt 1 ]]; then
-    		echo "Error: multiple directories found in ../host_vars/. Only one directory like 'matrix.your.domain' expected."
-		echo "Please make sure there is only one directory holding your vars.yml for this ansible playbook."
-		echo "Cannot continue script, exiting."
-    		exit 1
-	    fi
-	    
+            echo "Error: could not find directory 'matrix.your.domain'"
+            echo "Did you create it already? Please first setup your matrix homeserver before running this script."
+            echo "You should start here: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/prerequisites.md"
+            exit 1
+        elif [[ "$counter" -gt 1 ]]; then
+            echo "Error: multiple directories found in ../host_vars/. Only one directory like 'matrix.your.domain' expected."
+            echo "Please make sure there is only one directory holding your vars.yml for this ansible playbook."
+            echo "Cannot continue script, exiting."
+            exit 1
+        fi
+
 	    # Will not set domain if zero or multiple directories are detected
 	    domain=$f
 	done
