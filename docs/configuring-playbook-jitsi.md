@@ -66,11 +66,7 @@ docker exec matrix-jitsi-prosody prosodyctl --config /config/prosody.cfg.lua reg
 
 Run this command for each user you would like to create, replacing `<USERNAME>` and `<PASSWORD>` accordingly. After you've finished, please exit the host.
 
-**If you get an error** like this: "Error: Account creation/modification not supported.", it's likely that you had previously installed Jitsi without auth/guest support. The playbook can't yet rebuild all configuration files for some Jitsi services (like `matrix-jitsi-prosody`), which may cause such an error. **If you encounter this error**, we encourage you to:
-- stop all Jitsi services (`systemctl stop matrix-jitsi-*`)
-- remove the Jitsi Prosody configuration & data (`rm -rf /matrix/jitsi/prosody`)
-- rebuild Jitsi configuration and restart services (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-jitsi,start`)
-- try the previously-failing command once again
+**If you get an error** like this: "Error: Account creation/modification not supported.", it's likely that you had previously installed Jitsi without auth/guest support. In such a case, you should look into [Rebuilding your Jitsi installation](#rebuilding-your-jitsi-installation).
 
 
 ## Usage
@@ -78,3 +74,21 @@ Run this command for each user you would like to create, replacing `<USERNAME>` 
 You can use the self-hosted Jitsi server through Riot, through an Integration Manager like [Dimension](docs/configuring-playbook-dimension.md) or directly at `https://jitsi.DOMAIN`.
 
 To use it via riot-web (the one configured by the playbook at `https://riot.DOMAIN`), just start a voice or a video call in a room containing more than 2 members and that would create a Jitsi widget which utilizes your self-hosted Jitsi server.
+
+
+## Troubleshooting
+
+### Rebuilding your Jitsi installation
+
+**If you ever run into any trouble** or **if you change configuration (`matrix_jitsi_*` variables) too much**, we urge you to rebuild your Jitsi setup.
+
+We normally don't require such manual intervention for other services, for Jitsi services generate a lot of configuration files on their own.
+
+These files are not all managed by Ansible (at least not yet), so you may sometimes need to delete them all and start fresh.
+
+To rebuild your Jitsi configuration:
+
+- SSH into the server and do this:
+  - stop all Jitsi services (`systemctl stop matrix-jitsi-*`).
+  - remove all Jitsi configuration & data (`rm -rf /matrix/jitsi`)
+- ask Ansible to set up Jitsi anew and restart services (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-jitsi,start`)
