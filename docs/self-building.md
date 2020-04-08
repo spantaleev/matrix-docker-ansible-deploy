@@ -4,7 +4,7 @@ The playbook supports the self-building of some of its components. This may be u
 
 To use these modification there is a variable that needs to be switched to enable this functionality. Add this to your `vars.yaml` file:
 ```yaml
-matrix_container_images_self_build = true
+matrix_container_images_self_build: true
 ```
 Setting that variable will self-build every role which supports self-building. Self-building can be set on a per-role basis as well.
 
