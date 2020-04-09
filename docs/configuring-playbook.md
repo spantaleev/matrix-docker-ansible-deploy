@@ -97,4 +97,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (optional)
 
+- [Setting up MX Puppet Skype bridging](configuring-playbook-bridge-mx-puppet-skype.md) (optional)
+
 - [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (optional)

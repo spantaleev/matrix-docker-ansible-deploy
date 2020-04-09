@@ -1,3 +1,12 @@
+# 2020-04-09
+
+## Skype bridging support
+
+Thanks to [Rodrigo Belem](https://github.com/rbelem)'s efforts, the playbook now supports bridging to [Skype](https://www.skype.com) via the [mx-puppet-skype](https://github.com/Sorunome/mx-puppet-skype) bridge.
+
+See our [Setting up MX Puppet Skype bridging](docs/configuring-playbook-bridge-mx-puppet-skype.md) documentation page for getting started.
+
+
 # 2020-04-05
 
 ## Private Jitsi support
