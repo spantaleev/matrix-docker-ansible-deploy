@@ -3,9 +3,7 @@
 The playbook can install and configure
 [mx-puppet-skype](https://github.com/Sorunome/mx-puppet-skype) for you.
 
-See the project's
-[documentation](https://github.com/tulir/mautrix-hangouts/wiki#usage) to learn
-what it does and why it might be useful to you.
+See the project page to learn what it does and why it might be useful to you.
 
 To enable the [Skype](https://www.skype.com/) bridge just use the following
 playbook configuration:
