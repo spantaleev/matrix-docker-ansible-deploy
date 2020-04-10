@@ -1,0 +1,34 @@
+---
+
+- name: Ensure individual worker services are stopped
+  service:
+    name: "matrix-synapse-worker@{{ item.worker }}:{{ item.port }}.service"
+    state: stopped
+  with_items: "{{ matrix_synapse_workers_enabled_list }}"
+
+# As we cannot know the ports of workers removed from the enabled_list..
+# => .. just kill them all (FIXME?)
+- name: Ensure previous worker service symlinks are cleaned
+  file:
+    path: "{{ item.root + '/' + item.path }}"
+    state: absent
+  when:
+    - item.state == 'link'
+    - item.path is match('matrix-synapse-worker@*.service')
+  with_filetree:
+    - "{{ matrix_systemd_path }}/matrix-synapse.service.wants"
+
+- name: Ensure synapse worker base service file gets removed
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-synapse-worker@.service"
+    state: absent
+  register: matrix_synapse_worker_systemd_service_result
+
+- name: Remove workers from synapse.wants list
+  set_fact:
+    matrix_synapse_systemd_wanted_services_list: "{{ matrix_synapse_systemd_wanted_services_list | reject('search', item) | list }}"
+  with_items: "{{ matrix_synapse_workers_avail_list }}"
+
+- name: Ensure systemd noticed removal of worker service units
+  service:
+    daemon_reload: yes

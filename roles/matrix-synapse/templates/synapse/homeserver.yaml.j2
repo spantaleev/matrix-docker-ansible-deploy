@@ -251,6 +251,44 @@ listeners:
     type: manhole
 {% endif %}
 
+{% if matrix_synapse_workers_enabled %}
+  # c.f. https://github.com/matrix-org/synapse/tree/master/docs/workers.md
+  # TCP replication: streaming data from the master to the workers
+  - port: {{ matrix_synapse_replication_tcp_port }}
+    bind_addresses: ['0.0.0.0']
+    type: replication
+
+  # HTTP replication: for the workers to send data to the main synapse process
+  - port: {{ matrix_synapse_replication_http_port }}
+    bind_addresses: ['0.0.0.0']
+    type: http
+    resources:
+      - names: [replication]
+
+# c.f. https://github.com/matrix-org/synapse/tree/master/contrib/systemd-with-workers/README.md
+worker_app: synapse.app.homeserver
+
+# thx https://oznetnerd.com/2017/04/18/jinja2-selectattr-filter/
+# reduce the main worker's offerings to core homeserver business
+{% if matrix_synapse_workers_enabled_list|selectattr('worker', 'equalto', 'appservice')|list  %}
+notify_appservices: false
+{% endif %}
+{% if matrix_synapse_workers_enabled_list|selectattr('worker', 'equalto', 'federation_sender')|list  %}
+send_federation: false
+{% endif %}
+{% if matrix_synapse_workers_enabled_list|selectattr('worker', 'equalto', 'media_repository')|list  %}
+enable_media_repo: false
+{% endif %}
+{% if matrix_synapse_workers_enabled_list|selectattr('worker', 'equalto', 'pusher')|list  %}
+start_pushers: false
+{% endif %}
+{% if matrix_synapse_workers_enabled_list|selectattr('worker', 'equalto', 'user_dir')|list  %}
+update_user_directory: false
+{% endif %}
+
+# rather let systemd handle the forking
+daemonize: false
+{% endif %}
 
 ## Homeserver blocking ##
 

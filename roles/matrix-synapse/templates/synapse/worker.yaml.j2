@@ -1,0 +1,29 @@
+#jinja2: lstrip_blocks: "True"
+worker_app: synapse.app.{{ item.worker }}
+
+worker_replication_host: 127.0.0.1
+worker_replication_port: {{ matrix_synapse_replication_tcp_port }}
+worker_replication_http_port: {{ matrix_synapse_replication_http_port }}
+
+{% if item.worker not in [ 'appservice', 'federation_sender', 'pusher' ] %}
+worker_listeners:
+  - type: http
+    port: {{ item.port }}
+    resources:
+      - names:
+{% if item.worker in [ 'synchrotron', 'client_reader', 'event_creator', 'frontend_proxy', 'user_dir' ] %}
+        - client
+{% elif item.worker in [ 'federation_reader' ] %}
+        - federation
+{% elif item.worker in [ 'media_repository' ] %}
+        - media
+{% endif %}
+{% endif %}
+
+{% if item.worker == 'frontend_proxy' %}
+worker_main_http_uri: http://127.0.0.1:8008
+{% endif %}
+  
+worker_daemonize: false
+worker_pid_file: /matrix-run/{{ item.worker }}.port{{ item.port }}.pid
+worker_log_config: /data/{{ matrix_server_fqn_matrix }}.log.config
