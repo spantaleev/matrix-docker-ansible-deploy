@@ -1,0 +1,70 @@
+- set_fact:
+    matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-mx-puppet-slack'] }}"
+  when: matrix_mx_puppet_slack_enabled|bool
+
+# If the matrix-synapse role is not used, these variables may not exist.
+- set_fact:
+    matrix_synapse_container_extra_arguments: >
+      {{ matrix_synapse_container_extra_arguments|default([]) }}
+      +
+      ["--mount type=bind,src={{ matrix_mx_puppet_slack_config_path }}/registration.yaml,dst=/matrix-mx-puppet-slack-registration.yaml,ro"]
+
+    matrix_synapse_app_service_config_files: >
+      {{ matrix_synapse_app_service_config_files|default([]) }}
+      +
+      {{ ["/matrix-mx-puppet-slack-registration.yaml"] }}
+  when: matrix_mx_puppet_slack_enabled|bool
+
+- block:
+  - name: Fail if matrix-nginx-proxy role already executed
+    fail:
+      msg: >-
+        Trying to append Slack Appservice's reverse-proxying configuration to matrix-nginx-proxy,
+        but it's pointless since the matrix-nginx-proxy role had already executed.
+        To fix this, please change the order of roles in your plabook,
+        so that the matrix-nginx-proxy role would run after the matrix-mx-puppet-slack role.
+    when: matrix_nginx_proxy_role_executed|default(False)|bool
+
+  - name: Generate Matrix MX Puppet Slack proxying configuration for matrix-nginx-proxy
+    set_fact:
+      matrix_mx_puppet_slack_matrix_nginx_proxy_configuration: |
+        location {{ matrix_mx_puppet_slack_redirect_path }} {
+        {% if matrix_nginx_proxy_enabled|default(False) %}
+        	{# Use the embedded DNS resolver in Docker containers to discover the service #}
+        	resolver 127.0.0.11 valid=5s;
+        	set $backend "{{ matrix_mx_puppet_slack_appservice_address }}";
+        	proxy_pass $backend;
+        {% else %}
+        	{# Generic configuration for use outside of our container setup #}
+        	proxy_pass http://127.0.0.1:{{ matrix_mx_puppet_slack_appservice_port }};
+        {% endif %}
+        }
+
+  - name: Register Slack Appservice proxying configuration with matrix-nginx-proxy
+    set_fact:
+      matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: |
+        {{
+          matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks|default([])
+          +
+          [matrix_mx_puppet_slack_matrix_nginx_proxy_configuration]
+        }}
+  tags:
+   - always
+  when: matrix_appservice_slack_enabled|bool
+
+- name: Warn about reverse-proxying if matrix-nginx-proxy not used
+  debug:
+    msg: >-
+      NOTE: You've enabled the Matrix Slack bridge but are not using the matrix-nginx-proxy
+      reverse proxy.
+      Please make sure that you're proxying the `{{ something }}`
+      URL endpoint to the matrix-appservice-slack container.
+      You can expose the container's port using the `matrix_appservice_slack_container_http_host_bind_port` variable.
+  when: "matrix_appservice_slack_enabled|bool and matrix_nginx_proxy_enabled is not defined"
+
+# ansible lower than 2.8, does not support docker_image build parameters
+# for self buildig it is explicitly needed, so we rather fail here
+- name: Fail if running on Ansible lower than 2.8 and trying self building
+  fail:
+    msg: "To self build Puppet Slack image, you should usa ansible 2.8 or higher. E.g. pip contains such packages."
+  when: "ansible_version.major == 2 and ansible_version.minor < 8 and matrix_mx_puppet_slack_container_image_self_build"
