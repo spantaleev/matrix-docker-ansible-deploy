@@ -63,7 +63,7 @@ Note that the bot's domain is your server's domain **without the `matrix.` prefi
 
     * Invite the bot user to both the Slack and Matrix channels you would like to bridge using `/invite @slackbot` for slack and `/invite @slackbot:MY.DOMAIN` for matrix.
 
-    * Determine the "channel ID" that Slack uses to identify the channel, which can be found in the url https://XXX.slack.com/messages/<channel id>/.
+    * Determine the "channel ID" that Slack uses to identify the channel, which can be found in the url `https://XXX.slack.com/messages/<the channel id you need>/`. Or, even simpler, if you open a channel in a browser, the URL reads like this: `https://app.slack.com/client/XXX/<the channel id you need>/details/`.
 
     * Issue a link command in the administration control room with these collected values as arguments:
 
