@@ -20,7 +20,6 @@
 - name: Ensure yum packages are installed
   yum:
     name:
-      - docker-python
       - "{{ matrix_ntpd_package }}"
       - fuse
     state: latest
@@ -30,5 +29,6 @@
   yum:
     name:
       - "{{ matrix_docker_package_name }}"
+      - docker-python
     state: latest
   when: matrix_docker_installation_enabled|bool
