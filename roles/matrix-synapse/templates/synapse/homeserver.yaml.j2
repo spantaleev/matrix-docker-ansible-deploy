@@ -226,7 +226,11 @@ listeners:
     x_forwarded: true
 
     resources:
-      - names: [client]
+      - names:
+        - client
+{% if matrix_dimension_enabled and not matrix_synapse_federation_enabled %}
+        - openid
+{% endif %}
         compress: false
 
 {% if matrix_synapse_federation_enabled %}
