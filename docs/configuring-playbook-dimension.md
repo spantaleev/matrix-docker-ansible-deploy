@@ -4,7 +4,7 @@
 If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) flow and come back here later.
 
 ## Prerequisites
-For an Integration Manager like [Dimension](https://dimension.t2bot.io) to work, your server needs to have federation enabled (`matrix_synapse_federation_enabled: true`). This is the default for this playbook, so unless you've explicitly disabled federation, you're okay.
+This playbook now supports running [Dimension](https://dimension.t2bot.io) in both a federated and an [unfederated](https://github.com/turt2live/matrix-dimension/blob/master/docs/unfederated.md) environment. This is handled automatically based on the value of `matrix_synapse_federation_enabled`.
 
 Other important prerequisite is the `dimension.<your-domain>` DNS record being set up correctly. See [Configuring your DNS server](configuring-dns.md) on how to set up DNS record correctly.
 
