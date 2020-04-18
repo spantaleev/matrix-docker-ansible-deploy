@@ -35,6 +35,7 @@
     repo: https://github.com/Sorunome/mx-puppet-skype.git
     dest: "{{ matrix_mx_puppet_skype_docker_src_files_path }}"
     force: "yes"
+  register: matrix_mx_puppet_skype_git_pull_results
   when: "matrix_mx_puppet_skype_enabled|bool and matrix_mx_puppet_skype_container_image_self_build"
 
 - name: Ensure MX Puppet Skype Docker image is built
@@ -45,7 +46,7 @@
       dockerfile: Dockerfile
       path: "{{ matrix_mx_puppet_skype_docker_src_files_path }}"
       pull: yes
-  when: "matrix_mx_puppet_skype_enabled|bool and matrix_mx_puppet_skype_container_image_self_build"
+  when: "matrix_mx_puppet_skype_enabled|bool and matrix_mx_puppet_skype_container_image_self_build and matrix_mx_puppet_skype_git_pull_results.changed"
 
 - name: Check if an old database file already exists
   stat:
