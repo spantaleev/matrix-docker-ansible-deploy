@@ -188,7 +188,7 @@ matrix_appservice_irc_homeserver_token: "{{ matrix_synapse_macaroon_secret_key |
 # We don't enable bridges by default.
 matrix_mautrix_facebook_enabled: false
 
-matrix_mautrix_facebook_container_image_self_build: "{{ (matrix_architecture != 'amd64') and (matrix_architecture != 'arm64') }}"
+matrix_mautrix_facebook_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 matrix_mautrix_facebook_systemd_required_services_list: |
   {{
@@ -219,7 +219,7 @@ matrix_mautrix_facebook_login_shared_secret: "{{ matrix_synapse_ext_password_pro
 # We don't enable bridges by default.
 matrix_mautrix_hangouts_enabled: false
 
-matrix_mautrix_hangouts_container_image_self_build: "{{ (matrix_architecture != 'amd64') and (matrix_architecture != 'arm64') }}"
+matrix_mautrix_hangouts_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 matrix_mautrix_hangouts_systemd_required_services_list: |
   {{
