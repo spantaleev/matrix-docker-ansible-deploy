@@ -131,7 +131,7 @@
 	location ^/_matrix/client/(versions$|(api/v1|r0|unstable)/(publicRooms$|rooms/.*/joined_me|rooms/.*/context/.|rooms/.*/members$|rooms/.*/messages$|rooms/.*/state$|login$|account/3pid$|keys/query$|keys/changes$|voip/turnServer$|joined_groups$|publicised_groups$|publicised_groups/|pushrules/.*$|groups/.*$|register$|auth/.*/fallback/web$)) {
 		{# Use the embedded DNS resolver in Docker containers to discover the service #}
 		resolver 127.0.0.11 valid=5s;
-		set $backend "matrix-synapse:{{ client_reader_worker.port }}"
+		set $backend "matrix-synapse:{{ client_reader_worker.port }}";
 		proxy_pass http://$backend$request_uri;
 		proxy_set_header Host $host;
 		proxy_set_header X-Forwarded-For $remote_addr;
@@ -144,7 +144,7 @@
 	location /_matrix/media/ {
 		{# Use the embedded DNS resolver in Docker containers to discover the service #}
 		resolver 127.0.0.11 valid=5s;
-		set $backend "matrix-synapse:{{ media_repository_worker.port }}"
+		set $backend "matrix-synapse:{{ media_repository_worker.port }}";
 		proxy_pass http://$backend$request_uri;
 		proxy_set_header Host $host;
 		proxy_set_header X-Forwarded-For $remote_addr;
@@ -153,7 +153,7 @@
 	location ~ ^/_synapse/admin/v1/(purge_media_cache|room/.*/media.*|user/.*/media.*|media/.*|quarantine_media/.*)$ {
 		{# Use the embedded DNS resolver in Docker containers to discover the service #}
 		resolver 127.0.0.11 valid=5s;
-		set $backend "matrix-synapse:{{ media_repository_worker.port }}"
+		set $backend "matrix-synapse:{{ media_repository_worker.port }}";
 		proxy_pass http://$backend$request_uri;
 		proxy_set_header Host $host;
 		proxy_set_header X-Forwarded-For $remote_addr;
@@ -166,7 +166,7 @@
 	location ~ ^/_matrix/client/(api/v1|r0|unstable)/(rooms/.*/send|rooms/.*/state/|rooms/.*/(join|invite|leave|ban|unban|kick)$|join/|profile/) {
 		{# Use the embedded DNS resolver in Docker containers to discover the service #}
 		resolver 127.0.0.11 valid=5s;
-		set $backend "matrix-synapse:{{ event_creator_worker.port }}"
+		set $backend "matrix-synapse:{{ event_creator_worker.port }}";
 		proxy_pass http://$backend$request_uri;
 		proxy_set_header Host $host;
 		proxy_set_header X-Forwarded-For $remote_addr;
@@ -179,7 +179,7 @@
 	location ~ ^/_matrix/client/(api/v1|r0|unstable)/keys/upload {
 		{# Use the embedded DNS resolver in Docker containers to discover the service #}
 		resolver 127.0.0.11 valid=5s;
-		set $backend "matrix-synapse:{{ frontend_proxy_worker.port }}"
+		set $backend "matrix-synapse:{{ frontend_proxy_worker.port }}";
 		proxy_pass http://$backend$request_uri;
 		proxy_set_header Host $host;
 		proxy_set_header X-Forwarded-For $remote_addr;
@@ -188,7 +188,7 @@
 		location ~ ^/_matrix/client/(api/v1|r0|unstable)/presence/[^/]+/status {
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver 127.0.0.11 valid=5s;
-			set $backend "matrix-synapse:{{ frontend_proxy_worker.port }}"
+			set $backend "matrix-synapse:{{ frontend_proxy_worker.port }}";
 			proxy_pass http://$backend$request_uri;
 			proxy_set_header Host $host;
 			proxy_set_header X-Forwarded-For $remote_addr;
@@ -202,7 +202,7 @@
 	location ~ ^/_matrix/client/(api/v1|r0|unstable)/user_directory/search$ {
 		{# Use the embedded DNS resolver in Docker containers to discover the service #}
 		resolver 127.0.0.11 valid=5s;
-		set $backend "matrix-synapse:{{ user_dir_worker.port }}"
+		set $backend "matrix-synapse:{{ user_dir_worker.port }}";
 		proxy_pass http://$backend$request_uri;
 		proxy_set_header Host $host;
 		proxy_set_header X-Forwarded-For $remote_addr;
@@ -292,7 +292,7 @@ upstream synchrotron {
 	{% for synchrotron_worker in synchrotron_workers %}
 		{# Use the embedded DNS resolver in Docker containers to discover the service #}
 		resolver 127.0.0.11 valid=5s;
-		set $backend "matrix-synapse:{{ synchrotron_worker.port }}"
+		set $backend "matrix-synapse:{{ synchrotron_worker.port }}";
 		server $backend:{{ synchrotron_worker.port }};
 	{% endfor %}
 }
@@ -385,7 +385,7 @@ server {
 	location ~ ^(/_matrix/federation/v1/event/|/_matrix/federation/v1/state/|/_matrix/federation/v1/state_ids/|/_matrix/federation/v1/backfill/|/_matrix/federation/v1/get_missing_events/|/_matrix/federation/v1/publicRooms|/_matrix/federation/v1/query/|/_matrix/federation/v1/make_join/|/_matrix/federation/v1/make_leave/|/_matrix/federation/v1/send_join/|/_matrix/federation/v2/send_join/|/_matrix/federation/v1/send_leave/|/_matrix/federation/v2/send_leave/|/_matrix/federation/v1/invite/|/_matrix/federation/v2/invite/|/_matrix/federation/v1/query_auth/|/_matrix/federation/v1/event_auth/|/_matrix/federation/v1/exchange_third_party_invite/|/_matrix/federation/v1/user/devices/|/_matrix/federation/v1/send/|/_matrix/federation/v1/get_groups_publicised$|/_matrix/key/v2/query|/_matrix/federation/v1/groups/) {
 		{# Use the embedded DNS resolver in Docker containers to discover the service #}
 		resolver 127.0.0.11 valid=5s;
-		set $backend "matrix-synapse:{{ federation_reader_worker.port }}"
+		set $backend "matrix-synapse:{{ federation_reader_worker.port }}";
 		proxy_pass http://$backend$request_uri;
 		proxy_set_header Host $host;
 		proxy_set_header X-Forwarded-For $remote_addr;
