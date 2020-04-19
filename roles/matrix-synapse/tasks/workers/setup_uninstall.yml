@@ -1,10 +1,13 @@
 ---
 
-- name: Ensure individual worker services are stopped
+- name: Populate service facts
+  service_facts:
+
+- name: Ensure any worker services are stopped
   service:
-    name: "matrix-synapse-worker@{{ item.worker }}:{{ item.port }}.service"
+    name: "{{ item.key }}"
     state: stopped
-  with_items: "{{ matrix_synapse_workers_enabled_list }}"
+  with_dict: "{{ ansible_facts.services|default({})|dict2items|selectattr('key', 'match', 'matrix-synapse-worker@.+\\.service')|list|items2dict }}"
 
 # As we cannot know the ports of workers removed from the enabled_list..
 # => .. just kill them all (FIXME?)
@@ -13,8 +16,9 @@
     path: "{{ item.root + '/' + item.path }}"
     state: absent
   when:
+    - not matrix_synapse_workers_enabled|bool
     - item.state == 'link'
-    - item.path is match('matrix-synapse-worker@*.service')
+    - item.path is match('matrix-synapse-worker@.*\\.service')
   with_filetree:
     - "{{ matrix_systemd_path }}/matrix-synapse.service.wants"
 

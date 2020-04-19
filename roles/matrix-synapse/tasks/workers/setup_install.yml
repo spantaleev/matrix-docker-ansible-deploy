@@ -12,8 +12,9 @@
     path: "{{ item.root + '/' + item.path }}"
     state: absent
   when:
+    - matrix_synapse_workers_enabled|bool
     - item.state == 'link'
-    - item.path is match('matrix-synapse-worker@*.service')
+    - item.path is match('matrix-synapse-worker@.*\\.service')
   with_filetree:
     - "{{ matrix_systemd_path }}/matrix-synapse.service.wants"
 
