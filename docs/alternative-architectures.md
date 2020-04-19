@@ -10,6 +10,11 @@ Currently supported architectures are the following:
 - `arm64`
 - `arm32`
 
+so for the Raspberry Pi the following should be in your `vars.yaml` file:
+```
+matrix_architecture = "arm32"
+```
+
 ## Implementation details
 This subsection is used for a reminder, how the different roles implement architecture differenes. This is **not** aimed at the users, so one does not have to do anything based on this subsection.
 
