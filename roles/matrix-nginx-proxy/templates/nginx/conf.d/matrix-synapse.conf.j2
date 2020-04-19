@@ -290,10 +290,7 @@ upstream synchrotron {
 	ip_hash;
 
 	{% for synchrotron_worker in synchrotron_workers %}
-		{# Use the embedded DNS resolver in Docker containers to discover the service #}
-		resolver 127.0.0.11 valid=5s;
-		set $backend "matrix-synapse:{{ synchrotron_worker.port }}";
-		server $backend:{{ synchrotron_worker.port }};
+	server "matrix-synapse:{{ synchrotron_worker.port }}";
 	{% endfor %}
 }
 {% endif %}
