@@ -44,6 +44,11 @@ ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
 			{% if matrix_synapse_manhole_enabled and matrix_synapse_container_manhole_api_host_bind_port %}
 			-p {{ matrix_synapse_container_manhole_api_host_bind_port }}:9000 \
 			{% endif %}
+			{% if matrix_synapse_workers_enabled %}
+			{% for worker in matrix_synapse_workers_enabled_list %}
+			-p {{ worker.port }}:{{ worker.port }} \
+			{% endfor %}
+			{% endif %}
 			-v {{ matrix_synapse_config_dir_path }}:/data:ro \
 			-v {{ matrix_synapse_run_path }}:/matrix-run:rw \
 			-v {{ matrix_synapse_storage_path }}:/matrix-media-store-parent:slave \
