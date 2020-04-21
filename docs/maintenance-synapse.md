@@ -8,10 +8,16 @@ Table of contents:
 
 - [Purging old data with the Purge History API](#purging-old-data-with-the-purge-history-api), for when you wish to delete in-use (but old) data from the Synapse database
 
-- [Compressing state with rust-synapse-compress-state](#compressing-state-with-rust-synapse-compress-state), for when you wish to compress some Synapse state tables using the [rust-synapse-compress-state](https://github.com/matrix-org/rust-synapse-compress-state) tool
+- [Synapse maintenance](#synapse-maintenance)
+	- [Purging unused data with synapse-janitor](#purging-unused-data-with-synapse-janitor)
+		- [Vacuuming Postgres](#vacuuming-postgres)
+	- [Purging old data with the Purge History API](#purging-old-data-with-the-purge-history-api)
+	- [Compressing state with rust-synapse-compress-state](#compressing-state-with-rust-synapse-compress-state)
 
 
 ## Purging unused data with synapse-janitor
+
+**NOTE**: There are [reports](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/465) that **synapse-janitor is dangerous to use and causes database corruption**. You may wish to refrain from using it.
 
 When you **leave** and **forget** a room, Synapse can clean up its data, but currently doesn't.
 This **unused and unreachable data** remains in your database forever.
