@@ -1,0 +1,21 @@
+---
+
+- name: Fail if required Jitsi settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) for using Jitsi.
+
+      If you're setting up Jitsi for the first time, you may have missed a step.
+      Refer to our setup instructions (docs/configuring-playbook-jitsi.md).
+
+      If you had setup Jitsi successfully before and it's just now that you're observing this failure,
+      it means that your installation may be using some default passwords that the playbook used to define until now.
+      This is not secure and we urge you to rebuild your Jitsi setup.
+      Refer to the "Rebuilding your Jitsi installation" section in our setup instructions (docs/configuring-playbook-jitsi.md).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_jitsi_jibri_xmpp_password"
+    - "matrix_jitsi_jibri_recorder_password"
+    - "matrix_jitsi_jicofo_component_secret"
+    - "matrix_jitsi_jicofo_auth_password"
+    - "matrix_jitsi_jvb_auth_password"

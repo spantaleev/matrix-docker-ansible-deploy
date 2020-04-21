@@ -227,6 +227,18 @@ matrix_mautrix_telegram_configuration_yaml: |
               height: 256
               background: "020202"  # only for gif
               fps: 30               # only for webm
+      # End-to-bridge encryption support options. These require matrix-nio to be installed with pip
+      # and login_shared_secret to be configured in order to get a device for the bridge bot.
+      #
+      # Additionally, https://github.com/matrix-org/synapse/pull/5758 is required if using a normal
+      # application service.
+      encryption:
+          # Allow encryption, work in group chat rooms with e2ee enabled
+          allow: false
+          # Default to encryption, force-enable encryption in all portals the bridge creates
+          # This will cause the bridge bot to be in private chats for the encryption to work properly.
+          default: false
+
       # Overrides for base power levels.
       initial_power_level_overrides:
           user: {}

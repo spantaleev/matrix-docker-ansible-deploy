@@ -38,6 +38,6 @@ Re-run the playbook after making these configuration changes.
 
 See the dedicated [PostgreSQL Maintenance](maintenance-postgres.md) documentation page.
 
-## Mxisd
+## Ma1sd
 
-See the dedicated [Adjusting mxisd Identity Server configuration](configuring-playbook-mxisd.md) documentation page.
+See the dedicated [Adjusting ma1sd Identity Server configuration](configuring-playbook-ma1sd.md) documentation page.

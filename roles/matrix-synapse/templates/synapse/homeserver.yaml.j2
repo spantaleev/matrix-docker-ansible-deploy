@@ -967,7 +967,7 @@ account_validity:
 #registrations_require_3pid:
 #  - email
 #  - msisdn
-{% if matrix_synapse_registrations_require_3pid %}
+{% if matrix_synapse_registrations_require_3pid|length > 0 %}
 registrations_require_3pid: {{ matrix_synapse_registrations_require_3pid|to_json }}
 {% endif %}
 
@@ -986,6 +986,9 @@ registrations_require_3pid: {{ matrix_synapse_registrations_require_3pid|to_json
 #    pattern: '.*@vector\.im'
 #  - medium: msisdn
 #    pattern: '\+44'
+{% if matrix_synapse_allowed_local_3pids|length > 0 %}
+allowed_local_3pids: {{ matrix_synapse_allowed_local_3pids|to_json }}
+{% endif %}
 
 # Enable 3PIDs lookup requests to identity servers from this server.
 #
@@ -1060,8 +1063,8 @@ trusted_third_party_id_servers:
 # If a delegate is specified, the config option public_baseurl must also be filled out.
 #
 account_threepid_delegates:
-    #email: https://example.com     # Delegate email sending to example.com
-    #msisdn: http://localhost:8090  # Delegate SMS sending to this local process
+    email: {{ matrix_synapse_account_threepid_delegates_email|to_json }}
+    msisdn: {{ matrix_synapse_account_threepid_delegates_msisdn|to_json }}
 
 # Users who register on this homeserver will automatically be joined
 # to these rooms

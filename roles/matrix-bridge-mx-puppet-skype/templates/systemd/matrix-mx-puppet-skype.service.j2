@@ -1,0 +1,41 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Mx Puppet Skype server
+{% for service in matrix_mx_puppet_skype_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_mx_puppet_skype_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker kill matrix-mx-puppet-skype
+ExecStartPre=-/usr/bin/docker rm matrix-mx-puppet-skype
+
+# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
+ExecStartPre=/bin/sleep 5
+
+ExecStart=/usr/bin/docker run --rm --name matrix-mx-puppet-skype \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_docker_network }} \
+			-e CONFIG_PATH=/config/config.yaml \
+			-e REGISTRATION_PATH=/config/registration.yaml \
+			-v {{ matrix_mx_puppet_skype_config_path }}:/config:z \
+			-v {{ matrix_mx_puppet_skype_data_path }}:/data:z \
+			{% for arg in matrix_mx_puppet_skype_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_mx_puppet_skype_docker_image }}
+
+ExecStop=-/usr/bin/docker kill matrix-mx-puppet-skype
+ExecStop=-/usr/bin/docker rm matrix-mx-puppet-skype
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-mx-puppet-skype
+
+[Install]
+WantedBy=multi-user.target

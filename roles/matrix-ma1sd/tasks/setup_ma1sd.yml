@@ -1,0 +1,140 @@
+---
+
+#
+# Tasks related to setting up ma1sd
+#
+
+- name: Ensure ma1sd paths exist
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  with_items:
+    - { path: "{{ matrix_ma1sd_config_path }}", when: true }
+    - { path: "{{ matrix_ma1sd_data_path }}", when: true }
+    - { path: "{{ matrix_ma1sd_docker_src_files_path }}", when: "{{ matrix_ma1sd_container_image_self_build }}"}
+  when: matrix_ma1sd_enabled|bool and item.when
+
+- import_tasks: "{{ role_path }}/tasks/migrate_mxisd.yml"
+  when: matrix_ma1sd_enabled|bool
+
+- name: Ensure ma1sd image is pulled
+  docker_image:
+    name: "{{ matrix_ma1sd_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_ma1sd_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_ma1sd_docker_image_force_pull }}"
+  when: matrix_ma1sd_enabled|bool and not matrix_ma1sd_container_image_self_build
+
+- block:
+  - name: Ensure gradle is installed for self-building (Debian)
+    apt:
+      name:
+        - gradle
+      state: present
+      update_cache: yes
+    when: (ansible_os_family == 'Debian')
+
+  - name: Ensure gradle is installed for self-building (CentOS)
+    fail:
+      msg: "Installing gradle on CentOS is currently not supported, so self-building ma1sd cannot happen at this time"
+    when: ansible_distribution == 'CentOS'
+
+  - name: Ensure gradle is installed for self-building (Archlinux)
+    pacman:
+      name:
+        - gradle
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == 'Archlinux'
+
+  - name: Ensure ma1sd repository is present on self-build
+    git:
+      repo: https://github.com/ma1uta/ma1sd.git
+      dest: "{{ matrix_ma1sd_docker_src_files_path }}"
+      version: "v{{ matrix_ma1sd_docker_image.split(':')[1] }}"
+      force: "yes"
+
+  - name: Ensure ma1sd Docker image is built
+    shell: "./gradlew dockerBuild"
+    args:
+      chdir: "{{ matrix_ma1sd_docker_src_files_path }}"
+  when: "matrix_ma1sd_enabled|bool and matrix_ma1sd_container_image_self_build"
+
+- name: Ensure ma1sd config installed
+  copy:
+    content: "{{ matrix_ma1sd_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_ma1sd_config_path }}/ma1sd.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  when: matrix_ma1sd_enabled|bool
+
+- name: Ensure custom templates are installed if any
+  copy:
+    content: "{{ item.value }}"
+    dest: "{{ matrix_ma1sd_data_path }}/{{ item.location }}"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  with_items:
+    - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_invite_template }}", location: 'invite-template.eml'}
+    - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_session_validation_template }}", location: 'validate-template.eml'}
+    - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_unbind_fraudulent_template }}", location: 'unbind-fraudulent.eml'}
+    - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_matrixid_template }}", location: 'mxid-template.eml'}
+  when: "matrix_ma1sd_enabled|bool and matrix_ma1sd_threepid_medium_email_custom_templates_enabled|bool and item.value"
+
+- name: Ensure matrix-ma1sd.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-ma1sd.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-ma1sd.service"
+    mode: 0644
+  register: matrix_ma1sd_systemd_service_result
+  when: matrix_ma1sd_enabled|bool
+
+- name: Ensure systemd reloaded after matrix-ma1sd.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_ma1sd_enabled|bool and matrix_ma1sd_systemd_service_result.changed"
+
+#
+# Tasks related to getting rid of ma1sd (if it was previously enabled)
+#
+
+- name: Check existence of matrix-ma1sd service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-ma1sd.service"
+  register: matrix_ma1sd_service_stat
+
+- name: Ensure matrix-ma1sd is stopped
+  service:
+    name: matrix-ma1sd
+    state: stopped
+    daemon_reload: yes
+  register: stopping_result
+  when: "not matrix_ma1sd_enabled|bool and matrix_ma1sd_service_stat.stat.exists"
+
+- name: Ensure matrix-ma1sd.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-ma1sd.service"
+    state: absent
+  when: "not matrix_ma1sd_enabled|bool and matrix_ma1sd_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-ma1sd.service removal
+  service:
+    daemon_reload: yes
+  when: "not matrix_ma1sd_enabled|bool and matrix_ma1sd_service_stat.stat.exists"
+
+- name: Ensure Matrix ma1sd paths don't exist
+  file:
+    path: "{{ matrix_ma1sd_base_path }}"
+    state: absent
+  when: "not matrix_ma1sd_enabled|bool"
+
+- name: Ensure ma1sd Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_ma1sd_docker_image }}"
+    state: absent
+  when: "not matrix_ma1sd_enabled|bool"

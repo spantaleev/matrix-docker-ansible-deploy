@@ -14,6 +14,7 @@ ExecStartPre=-/usr/bin/docker rm matrix-jitsi-jvb
 ExecStart=/usr/bin/docker run --rm --name matrix-jitsi-jvb \
 			--log-driver=none \
 			--network={{ matrix_docker_network }} \
+			--env-file={{ matrix_jitsi_jvb_base_path }}/env \
 			{% if matrix_jitsi_jvb_container_rtp_udp_host_bind_port %}
 			-p {{ matrix_jitsi_jvb_container_rtp_udp_host_bind_port }}:{{ matrix_jitsi_jvb_rtp_udp_port }}/udp \
 			{% endif %}

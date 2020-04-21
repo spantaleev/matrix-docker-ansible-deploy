@@ -33,12 +33,20 @@ matrix_systemd_path: "/etc/systemd/system"
 matrix_cron_path: "/etc/cron.d"
 matrix_local_bin_path: "/usr/local/bin"
 
+matrix_ntpd_package: "ntp"
+matrix_ntpd_service: "{{ 'ntpd' if ansible_os_family == 'RedHat' or ansible_distribution == 'Archlinux' else 'ntp' }}"
+
 matrix_homeserver_url: "https://{{ matrix_server_fqn_matrix }}"
 
 matrix_identity_server_url: ~
 
 matrix_integration_manager_rest_url: ~
 matrix_integration_manager_ui_url: ~
+
+# The domain name where a Jitsi server is self-hosted.
+# If set, `/.well-known/matrix/client` will suggest Riot clients to use that Jitsi server.
+# See: https://github.com/vector-im/riot-web/blob/develop/docs/jitsi.md#configuring-riot-to-use-your-self-hosted-jitsi-server
+matrix_riot_jitsi_preferredDomain: ''
 
 # The Docker network that all services would be put into
 matrix_docker_network: "matrix"

@@ -4,7 +4,7 @@ The playbook can install and configure [matrix-appservice-slack](https://github.
 
 See the project's [documentation](https://github.com/matrix-org/matrix-appservice-slack/blob/master/README.md) to learn what it does and why it might be useful to you.
 
-Setup Instructions:
+## Setup Instructions:
 
 loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Setup)
 
@@ -29,7 +29,9 @@ Note that the bot's domain is your server's domain **without the `matrix.` prefi
 
 5. Create a new Slack App [here](https://api.slack.com/apps).
 
-    Name the app & select the team/workspace this app will belong to.
+    Name the app "matrixbot" (or anything else you'll remember).
+
+    Select the team/workspace this app will belong to.
 
     Click on bot users and add a new bot user. We will use this account to bridge the the rooms.
 
@@ -61,9 +63,9 @@ Note that the bot's domain is your server's domain **without the `matrix.` prefi
 
     * Create a Matrix room in the usual manner for your client. Take a note of its Matrix room ID - it will look something like !aBcDeF:example.com.
 
-    * Invite the bot user to both the Slack and Matrix channels you would like to bridge using `/invite @slackbot` for slack and `/invite @slackbot:MY.DOMAIN` for matrix.
+    * Invite the bot user to both the Slack and Matrix channels you would like to bridge using `/invite @matrixbot` for slack and `/invite @slackbot:MY.DOMAIN` for matrix.
 
-    * Determine the "channel ID" that Slack uses to identify the channel, which can be found in the url https://XXX.slack.com/messages/<channel id>/.
+    * Determine the "channel ID" that Slack uses to identify the channel. You can see it when you open a given Slack channel in a browser. The URL reads like this: `https://app.slack.com/client/XXX/<the channel id>/details/`.
 
     * Issue a link command in the administration control room with these collected values as arguments:
 
@@ -81,3 +83,28 @@ Note that the bot's domain is your server's domain **without the `matrix.` prefi
     ```
 
 Other configuration options are available via the `matrix_appservice_slack_configuration_extension_yaml` variable.
+
+10. Unlinking
+
+    Channels can be unlinked again like this:
+    ```
+       unlink --room !the-matrix:room.id
+    ```
+
+    Unlinking doesn't only disconnect the bridge, but also makes the slackbot leave the bridged matrix room. So in case you want to re-link later, don't forget to re-invite the slackbot into this room again.
+
+## Troubleshooting
+
+* as always, check the logs:
+`journalctl -fu matrix-appservice-slack`
+
+* linking: "Room is now pending-name"
+This typically means that you haven't used the correct slack channel id. Unlink the room and recheck 'Determine the "channel ID"' from above.
+
+* Messages work from M to S, but not the other way around
+Check you logs, if they say something like
+
+`WARN SlackEventHandler Ignoring message from unrecognised slack channel id : %s (%s) <the channel id> <some other id>`
+
+then unlink your room, reinvite the bot and re-link it again. This may particularly hit you, if you tried to unsuccessfully link 
+your room multiple times without unlinking it after each failed attempt.

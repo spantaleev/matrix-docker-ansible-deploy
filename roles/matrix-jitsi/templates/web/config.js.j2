@@ -18,9 +18,11 @@ var config = {
         // XMPP domain.
         domain: '{{ matrix_jitsi_xmpp_domain }}',
 
+        {% if matrix_jitsi_enable_auth %}
         {% if matrix_jitsi_enable_guests %}
         // When using authentication, domain for guest users.
-		anonymousdomain: 'guest.example.com',
+        anonymousdomain: '{{ matrix_jitsi_xmpp_guest_domain }}',
+        {% endif %}
 
         // Domain for authenticated users. Defaults to <domain>.
         authdomain: '{{ matrix_jitsi_xmpp_domain }}',
@@ -54,11 +56,11 @@ var config = {
 
     testing: {
         // Enables experimental simulcast support on Firefox.
-        enableFirefoxSimulcast: false,
+        enableFirefoxSimulcast: {{ matrix_jitsi_web_config_testing_enableFirefoxSimulcast|to_json }},
 
         // P2P test mode disables automatic switching to P2P when there are 2
         // participants in the conference.
-        p2pTestMode: false
+        p2pTestMode: {{ matrix_jitsi_web_config_testing_p2pTestMode|to_json }}
 
         // Enables the test specific features consumed by jitsi-meet-torture
         // testMode: false
@@ -91,6 +93,7 @@ var config = {
     // Start calls with audio muted. Unlike the option above, this one is only
     // applied locally. FIXME: having these 2 options is confusing.
     // startWithAudioMuted: false,
+    startWithAudioMuted: {{ matrix_jitsi_web_config_start_with_audio_muted|to_json }},
 
     // Enabling it (with #params) will disable local audio output of remote
     // participants and to enable it back a reload is needed.
@@ -135,6 +138,7 @@ var config = {
     // Start calls with video muted. Unlike the option above, this one is only
     // applied locally. FIXME: having these 2 options is confusing.
     // startWithVideoMuted: false,
+    startWithVideoMuted: {{ matrix_jitsi_web_config_start_with_video_muted|to_json }},
 
     // If set to true, prefer to use the H.264 video codec (if supported).
     // Note that it's not recommended to do this because simulcast is not
@@ -263,7 +267,7 @@ hiddenDomain: {{ matrix_jitsi_recorder_domain|to_json }},
     // disable1On1Mode: false,
 
     // Default language for the user interface.
-    // defaultLanguage: 'en',
+    defaultLanguage: {{ matrix_jitsi_web_config_defaultLanguage|to_json }},
 
     // If true all users without a token will be considered guests and all users
     // with token will be considered non-guests. Only guests will be allowed to

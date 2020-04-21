@@ -44,7 +44,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Using an external PostgreSQL server](configuring-playbook-external-postgres.md) (optional)
 
-- [Adjusting mxisd Identity Server configuration](configuring-playbook-mxisd.md) (optional)
+- [Adjusting ma1sd Identity Server configuration](configuring-playbook-ma1sd.md) (optional)
 
 - [Adjusting SSL certificate retrieval](configuring-playbook-ssl-certificates.md) (optional, advanced)
 
@@ -96,5 +96,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up Appservice Slack bridging](configuring-playbook-bridge-appservice-slack.md) (optional)
 
 - [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (optional)
+
+- [Setting up MX Puppet Skype bridging](configuring-playbook-bridge-mx-puppet-skype.md) (optional)
 
 - [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (optional)

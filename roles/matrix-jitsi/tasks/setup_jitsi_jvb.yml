@@ -34,6 +34,13 @@
     - logging.properties
   when: matrix_jitsi_enabled|bool
 
+- name: Ensure jitsi-jvb environment variables file created
+  template:
+    src: "{{ role_path }}/templates/jvb/env.j2"
+    dest: "{{ matrix_jitsi_jvb_base_path }}/env"
+    mode: 0640
+  when: matrix_jitsi_enabled|bool
+
 - name: Ensure matrix-jitsi-jvb.service installed
   template:
     src: "{{ role_path }}/templates/jvb/matrix-jitsi-jvb.service.j2"
