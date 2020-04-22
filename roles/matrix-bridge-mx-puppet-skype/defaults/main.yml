@@ -27,14 +27,14 @@ matrix_mx_puppet_skype_provisioning_whitelist:
 # Leave empty to disable blacklist
 # "@user:server.com" disallow a specific user
 # "@.*:yourserver.com" disallow users on a specific homeserver
-matrix_mx_puppet_skype_provisioning_blacklist:
+matrix_mx_puppet_skype_provisioning_blacklist: []
 
 # Same as provisioning
 matrix_mx_puppet_skype_relay_whitelist:
   - "@.*:{{ matrix_domain|regex_escape }}"
 
 # Same as provisioning
-matrix_mx_puppet_skype_relay_blacklist:
+matrix_mx_puppet_skype_relay_blacklist: []
 
 # A list of extra arguments to pass to the container
 matrix_mx_puppet_skype_container_extra_arguments: []
@@ -154,9 +154,7 @@ matrix_mx_puppet_skype_configuration_yaml: |
       #- "@user:server\\.com"
       # Disallow users on a specific homeserver
       #- "@.*:yourserver\\.com"
-    {% if matrix_mx_puppet_skype_provisioning_blacklist %}
     blacklist: {{ matrix_mx_puppet_skype_provisioning_blacklist|to_json }}
-    {% endif %}
 
   presence:
     # Bridge online/offline status
@@ -178,9 +176,7 @@ matrix_mx_puppet_skype_configuration_yaml: |
 
     #blacklist:
       #- "@user:yourserver\\.com"
-    {% if matrix_mx_puppet_skype_relay_blacklist %}
     blacklist: {{ matrix_mx_puppet_skype_relay_blacklist|to_json }}
-    {% endif %}
 
   # Map certain homeserver URLs to the C-S API endpoint
   # Useful for double-puppeting if .well-known is unavailable for some reason
