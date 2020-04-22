@@ -6,14 +6,6 @@
     - "matrix_dimension_access_token"
   when: "matrix_dimension_enabled and vars[item] == ''"
 
-- name: Fail if Matrix Federation is disabled
-  fail:
-    msg: >-
-      You need to enable Matrix Federation to use Dimension. Set `{{ item }}` to 'true'.
-  with_items:
-    - "matrix_synapse_federation_enabled"
-  when: "matrix_dimension_enabled|bool and not matrix_synapse_federation_enabled|bool"
-
 - name: (Deprecation) Catch and report renamed Dimension variables
   fail:
     msg: >-
