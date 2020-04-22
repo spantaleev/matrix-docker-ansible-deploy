@@ -226,11 +226,7 @@ listeners:
     x_forwarded: true
 
     resources:
-      - names:
-        - client
-{% if matrix_dimension_enabled and not matrix_synapse_federation_enabled %}
-        - openid
-{% endif %}
+      - names: {{ matrix_synapse_http_listener_resource_names|to_json }}
         compress: false
 
 {% if matrix_synapse_federation_enabled %}
