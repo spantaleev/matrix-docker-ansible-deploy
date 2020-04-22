@@ -16,8 +16,25 @@ matrix_mx_puppet_skype_docker_src_files_path: "{{ matrix_mx_puppet_skype_base_pa
 matrix_mx_puppet_skype_appservice_port: "8438"
 
 matrix_mx_puppet_skype_homeserver_address: 'http://matrix-synapse:8008'
-matrix_mx_puppet_skype_homeserver_domain: '{{ matrix_domain }}'
 matrix_mx_puppet_skype_appservice_address: 'http://matrix-mx-puppet-skype:{{ matrix_mx_puppet_skype_appservice_port }}'
+
+# "@user:server.com" to allow specific user
+# "@.*:yourserver.com" to allow users on a specific homeserver
+# "@.*" to allow anyone
+matrix_mx_puppet_skype_provisioning_whitelist:
+  - "@.*:{{ matrix_domain|regex_escape }}"
+
+# Leave empty to disable blacklist
+# "@user:server.com" disallow a specific user
+# "@.*:yourserver.com" disallow users on a specific homeserver
+matrix_mx_puppet_skype_provisioning_blacklist:
+
+# Same as provisioning
+matrix_mx_puppet_skype_relay_whitelist:
+  - "@.*:{{ matrix_domain|regex_escape }}"
+
+# Same as provisioning
+matrix_mx_puppet_skype_relay_blacklist:
 
 # A list of extra arguments to pass to the container
 matrix_mx_puppet_skype_container_extra_arguments: []
@@ -48,7 +65,7 @@ matrix_mx_puppet_skype_configuration_yaml: |
     # Port to host the bridge on which your homeserver will connect to
     port: {{ matrix_mx_puppet_skype_appservice_port }}
     # Name of your homeserver
-    domain: {{ matrix_mx_puppet_skype_homeserver_domain }}
+    domain: {{ matrix_domain }}
     # URL where the bridge can connect to your homeserver
     homeserverUrl: {{ matrix_mx_puppet_skype_homeserver_address }}
     # Optionally specify a different media URL used for the media store
@@ -60,7 +77,7 @@ matrix_mx_puppet_skype_configuration_yaml: |
     #  yourserver.com: supersecretsharedsecret
     {% if matrix_mx_puppet_skype_login_shared_secret != '' %}
     loginSharedSecretMap:
-      {{ matrix_mx_puppet_skype_homeserver_domain }}: {{ matrix_mx_puppet_skype_login_shared_secret }}
+      {{ matrix_domain }}: {{ matrix_mx_puppet_skype_login_shared_secret }}
     {% endif %}
     # optionally override the display name of the bridge bot
     #displayname: Protocol Bot
@@ -123,18 +140,23 @@ matrix_mx_puppet_skype_configuration_yaml: |
   provisioning:
     # Regex of Matrix IDs allowed to use the puppet bridge
     whitelist:
+    whitelist: {{ matrix_mx_puppet_skype_provisioning_whitelist|to_json }}
       # Allow a specific user
       #- "@user:server\\.com"
       # Allow users on a specific homeserver
-      - '@.*:{{ matrix_mx_puppet_skype_homeserver_domain | regex_escape }}'
+      #- "@.*:yourserver\\.com"
       # Allow anyone
       #- ".*"
+
     # Regex of Matrix IDs forbidden from using the puppet bridge
     #blacklist:
       # Disallow a specific user
       #- "@user:server\\.com"
       # Disallow users on a specific homeserver
       #- "@.*:yourserver\\.com"
+    {% if matrix_mx_puppet_skype_provisioning_blacklist %}
+    blacklist: {{ matrix_mx_puppet_skype_provisioning_blacklist|to_json }}
+    {% endif %}
 
   presence:
     # Bridge online/offline status
@@ -150,10 +172,15 @@ matrix_mx_puppet_skype_configuration_yaml: |
   relay:
     # Regex of Matrix IDs to allow to use the relay mode
     # Same format as in provisioning
-    whitelist:
-      - '@.*:{{ matrix_mx_puppet_skype_homeserver_domain | regex_escape }}'
+    #whitelist:
+      #- "@.*:yourserver\\.com"
+    whitelist: {{ matrix_mx_puppet_skype_relay_whitelist|to_json }}
+
     #blacklist:
       #- "@user:yourserver\\.com"
+    {% if matrix_mx_puppet_skype_relay_blacklist %}
+    blacklist: {{ matrix_mx_puppet_skype_relay_blacklist|to_json }}
+    {% endif %}
 
   # Map certain homeserver URLs to the C-S API endpoint
   # Useful for double-puppeting if .well-known is unavailable for some reason
@@ -196,11 +223,11 @@ matrix_mx_puppet_skype_registration_yaml: |
   namespaces:
     users:
       - exclusive: true
-        regex: '@_skypepuppet_.*:{{ matrix_mx_puppet_skype_homeserver_domain|regex_escape }}'
+        regex: '@_skypepuppet_.*:{{ matrix_domain|regex_escape }}'
     rooms: []
     aliases:
       - exclusive: true
-        regex: '#_skypepuppet_.*:{{ matrix_mx_puppet_skype_homeserver_domain|regex_escape }}'
+        regex: '#_skypepuppet_.*:{{ matrix_domain|regex_escape }}'
   protocols: []
   rate_limited: false
   sender_localpart: _skypepuppet_bot
