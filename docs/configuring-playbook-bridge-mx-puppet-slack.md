@@ -5,7 +5,7 @@ The playbook can install and configure
 
 See the project page to learn what it does and why it might be useful to you.
 
-To enable the [Slack](https://www.slack.com/) bridge just use the following
+To enable the [Slack](https://slack.com/) bridge just use the following
 playbook configuration:
 
 
