@@ -1,0 +1,105 @@
+- name: Ensure matrix-backup.service is installed
+  template:
+    src: "{{ role_path }}/templates/systemd/{{ item }}.j2"
+    dest: "{{ matrix_systemd_path }}/{{ item }}"
+    mode: 0644
+  with_items:
+    - "matrix-backup.service"
+  register: matrix_backup_service_result
+  when: matrix_postgres_enabled|bool and matrix_backup_enabled|bool
+
+- name: Ensure systemd reloaded after matrix-backup.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_postgres_enabled|bool and matrix_backup_service_result.changed"
+
+- name: Ensure matrix backup paths exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0700
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_backup_base_path }}"
+  when: matrix_postgres_enabled|bool and matrix_backup_enabled|bool
+
+- name: Ensure matrix backup environment variables file created
+  template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_backup_base_path }}/{{ item }}"
+    mode: 0640
+  with_items:
+    - "env-backup"
+  when: matrix_postgres_enabled|bool and matrix_backup_enabled|bool
+
+- name: Creates a matrix synapse backup cron file under /etc/cron.d
+  cron:
+    name: Matrix Backup Service
+    state: present
+    day: "{{ matrix_backup_cron_day }}"
+    minute: "0"
+    hour: "2"
+    user: root
+    job: "systemctl start matrix-backup.service"
+    cron_file: matrix-backup
+
+#
+# Tasks related to removing matrix-backup (if it was previously enabled)
+#
+
+- name: Check existence of matrix-backup service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-backup.service"
+  register: matrix_backup_service_stat
+  when: "not matrix_postgres_enabled|bool or not matrix_backup_enabled|bool"
+
+- name: Ensure matrix-backup is stopped
+  service:
+    name: matrix-backup
+    state: stopped
+    daemon_reload: yes
+  when:
+    - (not matrix_postgres_enabled|bool or not matrix_backup_enabled|bool) 
+    - matrix_backup_service_stat.stat.exists|bool
+
+- name: Ensure matrix-backup.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/{{ item }}"
+    state: absent
+  with_items:
+    - "matrix-backup.service"
+  when:
+    - (not matrix_postgres_enabled|bool or not matrix_backup_enabled|bool)
+    - matrix_backup_service_stat.stat.exists|bool
+
+- name: Ensure matrix-backup cronjob removed
+  cron:
+    name: Matrix Backup Service
+    user: root
+    cron_file: matrix-backup
+    state: absent
+  when:
+    - (not matrix_postgres_enabled|bool or not matrix_backup_enabled|bool)
+    - matrix_backup_service_stat.stat.exists|bool
+
+- name: Ensure matrix backup environment file doesn't exist
+  file:
+    path: "{{ matrix_backup_base_path }}"
+    state: absent
+  when: 
+    - (not matrix_postgres_enabled|bool or not matrix_backup_enabled|bool)
+    - matrix_backup_service_stat.stat.exists|bool
+
+- name: Ensure systemd reloaded after matrix-backup timer
+  service:
+    daemon_reload: yes
+  when:
+    - (not matrix_postgres_enabled|bool or not matrix_backup_enabled|bool)
+    - matrix_backup_service_stat.stat.exists|bool
+
+- name: Ensure awscli Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_backup_awscli_docker_image }}"
+    state: absent
+  when: "not matrix_postgres_enabled|bool or not matrix_backup_enabled|bool"

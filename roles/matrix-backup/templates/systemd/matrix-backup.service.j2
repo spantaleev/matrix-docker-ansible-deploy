@@ -1,0 +1,31 @@
+#jinja2: lstrip_blocks: "True"
+
+[Unit]
+Description=Backup service for Matrix Postgres Server
+
+[Service]
+{% if  matrix_backup_bucket %}
+Environment=AWS_BUCKET={{ matrix_backup_bucket }}
+Environment=TMP_OUTPUT=/tmp/postgres-backup.sql.gz
+{% endif %}
+Type=oneshot
+ExecStartPre=/bin/sh -c '/usr/bin/docker run --rm \
+				--network={{ matrix_docker_network }} \
+				--env-file={{ matrix_postgres_base_path }}/env-postgres-psql \
+				--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+				{{ matrix_postgres_docker_image_to_use }} \
+				pg_dumpall -h matrix-postgres | gzip -c > ${TMP_OUTPUT}'
+{% if  matrix_backup_bucket %}
+# Mounting files host files into amazon/aws-cli
+# The /aws working directory is user controlled. 
+# The image will not write to this directory, unless instructed by the user in running a AWS CLI command.
+ExecStart=/bin/sh -c 'docker run --rm --name matrix-backup \
+				--env-file={{ matrix_backup_base_path }}/env-backup \
+				-v ${TMP_OUTPUT}:/aws/postgres.sql.gz \
+				{{ matrix_backup_awscli_docker_image }} \
+				s3 cp /aws/postgres.sql.gz ${AWS_BUCKET}$$(date +%%m-%%d-%%Y)/ \
+				{% if matrix_backup_bucket_endpoint %}
+ 				--endpoint-url {{ matrix_backup_bucket_endpoint }} \
+				{% endif %} && rm ${TMP_OUTPUT}'
+{% endif %}
+Group=systemd-journal

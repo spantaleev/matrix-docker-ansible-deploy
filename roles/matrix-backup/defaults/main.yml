@@ -1,0 +1,33 @@
+
+
+matrix_backup_enabled: false
+
+# Configure daily values within the cron tab
+matrix_backup_cron_day: "*/7"
+
+matrix_backup_base_path: "{{ matrix_base_data_path }}/matrix-backup"
+
+# Enable Remote AWS s3 backups
+# matrix_backup_bucket value should include the prefix
+# Example value
+# matrix_backup_bucket: s3://example-bucket/matrix-prefix/
+# s3://bucketname/prefix/
+matrix_backup_bucket: ""
+
+# Set this variable for any s3 compatible service
+# "https://nyc3.digitaloceanspaces.com"
+matrix_backup_bucket_endpoint: ""
+# AWS Access credentials
+matrix_backup_bucket_key_id: ""
+matrix_backup_bucket_key_secret: ""
+
+# Official utility from AWS
+# https://hub.docker.com/r/amazon/aws-cli
+
+# This variable is assigned at runtime. Overriding its value has no effect.
+matrix_backup_awscli_docker_image_v2: "amazon/aws-cli:2.0.16"
+matrix_backup_awscli_docker_image_latest: "{{ matrix_backup_awscli_docker_image_v2 }}"
+matrix_backup_awscli_docker_image: '{{ matrix_backup_awscli_docker_image_latest }}'
+
+# Use Rsync instead
+matrix_backup_rsync_target: ""
