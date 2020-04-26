@@ -27,6 +27,12 @@ matrix_jitsi_enabled: true
 # We only need this temporarily - until Jitsi integration in riot-web is finalized.
 # Remove this line in the future, to switch back to a stable riot-web version.
 matrix_riot_web_docker_image: "vectorim/riot-web:develop"
+
+# Put this parameter to make jitsi work on local network
+# This is necessary or the jitsi will send the docker IP address and you won't have either the video or audio working in local network
+matrix_jitsi_jvb_container_extra_arguments:
+  - '--env "DOCKER_HOST_ADDRESS=<Local IP adress of the host>"'
+
 ```
 
 Then re-run the playbook: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
