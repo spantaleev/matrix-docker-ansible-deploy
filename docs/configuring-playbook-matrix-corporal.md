@@ -26,7 +26,8 @@ matrix_corporal_policy_provider_config: |
     "Uri": "https://intranet.example.com/matrix/policy",
     "AuthorizationBearerToken": "SOME_SECRET",
     "CachePath": "/var/cache/matrix-corporal/last-policy.json",
-    "ReloadIntervalSeconds": 1800
+    "ReloadIntervalSeconds": 1800,
+    "TimeoutMilliseconds": 300
   }
 
 # If you also want to enable Matrix Corporal's HTTP API..
