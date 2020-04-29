@@ -4,7 +4,7 @@ The playbook can install the [Jitsi](https://jitsi.org/) video-conferencing plat
 
 Jitsi installation is **not enabled by default**, because it's not a core component of Matrix services.
 
-The setup done by the playbook is very similar to [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet).
+The setup done by the playbook is very similar to [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet). You can refer to the documentation there for many of the options here.
 
 
 ## Prerequisites
@@ -34,13 +34,13 @@ matrix_jitsi_jibri_xmpp_password: ""
 ```
 
 
-## (Optional) configure internal Jitsi authentication and guests mode
+## (Optional) Configure Jitsi authentication and guests mode
 
 By default the Jitsi Meet instance does not require any kind of login and is open to use for anyone without registration.
 
 If you're fine with such an open Jitsi instance, please skip to [Apply changes](#apply-changes).
 
-If you would like to control who is allowed to open meetings on your new Jitsi instance, then please follow this step to enable Jitsi's `internal` authentication and guests mode. With this optional configuration, all meeting rooms have to be opened by at least one registered user, after that guests are free to join. If a registered host is not present yet, guests are put on hold into a waiting room.
+If you would like to control who is allowed to open meetings on your new Jitsi instance, then please follow this step to enable Jitsi's authentication and guests mode. With authentication enabled, all meeting rooms have to be opened by a registered user, after which guests are free to join. If a registered host is not yet present, guests are put on hold in individual waiting rooms.
 
 Add these two lines to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
 
@@ -49,11 +49,28 @@ matrix_jitsi_enable_auth: true
 matrix_jitsi_enable_guests: true
 ```
 
+### (Optional) LDAP authentication
+
+The default authentication mode of Jitsi is `internal`, however LDAP is also supported. An example LDAP configuration could be:
+
+```yaml
+matrix_jitsi_enable_auth: true
+matrix_jitsi_auth_type: ldap
+matrix_jitsi_ldap_url: ldap://ldap.DOMAIN  # or ldaps:// if using tls
+matrix_jitsi_ldap_base: "OU=People,DC=DOMAIN"
+matrix_jitsi_ldap_filter: "(&(uid=%u)(employeeType=active))"
+matrix_jitsi_ldap_use_tls: false
+matrix_jitsi_ldap_start_tls: true
+```
+
+For more information refer to the [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet#authentication-using-ldap) and the [saslauthd `LDAP_SASLAUTHD`](https://github.com/winlibs/cyrus-sasl/blob/master/saslauthd/LDAP_SASLAUTHD) documentation.
+
+
 ## (Optional) Making your Jitsi server work on a LAN
 
 By default the Jitsi Meet instance does not work with a client in LAN (Local Area Network), even if others are connected from WAN. There are no video and audio. In the case of WAN to WAN everything is ok.
 
-The reason is the Jitsi VideoBridge git to LAN client the IP address of the docker image instead of the host. The [documentation](https://github.com/jitsi/docker-jitsi-meet#running-behind-nat-or-on-a-lan-environment) of Jitsi in docker suggest to add DOCKER_HOST_ADDRESS in enviornment variable to make it work.
+The reason is the Jitsi VideoBridge git to LAN client the IP address of the docker image instead of the host. The [documentation](https://github.com/jitsi/docker-jitsi-meet#running-behind-nat-or-on-a-lan-environment) of Jitsi in docker suggest to add `DOCKER_HOST_ADDRESS` in enviornment variable to make it work.
 
 Here is how to do it in the playbook.
 
@@ -68,7 +85,7 @@ matrix_jitsi_jvb_container_extra_arguments:
 
 Then re-run the playbook: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
 
-## Required if configuring Jitsi with its internal authentication: register new users
+## Required if configuring Jitsi with internal authentication: register new users
 
 Until this gets integrated into the playbook, we need to register new users / meeting hosts for Jitsi manually.
 Please SSH into your matrix host machine and execute the following command targeting the `matrix-jitsi-prosody` container:
