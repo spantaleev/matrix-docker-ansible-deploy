@@ -51,6 +51,12 @@ After these variables have been set, please run the following command to re-run 
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
+## Jitsi domain
+
+By default Dimension will use [jitsi.riot.im](https://jitsi.riot.im/) as the `conferenceDomain` of [Jitsi](https://jitsi.org/) audio/video conference widgets. For users running [a self-hosted Jitsi instance](./configuring-playbook-jitsi.md), you will likely want the widget to use your own Jitsi instance. Currently there is no way to configure this via the playbook, see [this issue](https://github.com/turt2live/matrix-dimension/issues/345) for details.
+
+In the interim until the above limitation is resolved, an admin user needs to configure the domain via the admin ui once dimension is running. In riot-web, go to *Manage Integrations* &rightarrow; *Settings* &rightarrow; *Widgets* &rightarrow; *Jitsi Conference Settings* and set *Jitsi Domain* and *Jitsi Script URL* appropriately.
+
 ## Additional features
 
 To use a more custom configuration, you can define a `matrix_dimension_configuration_extension_yaml` string variable and put your configuration in it.
