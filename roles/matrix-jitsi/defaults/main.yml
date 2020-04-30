@@ -7,6 +7,28 @@ matrix_jitsi_enable_guests: false
 matrix_jitsi_enable_recording: true
 matrix_jitsi_enable_transcriptions: true
 
+# Authentication type, must be one of internal, jwt or ldap. Currently only
+# internal and ldap are supported by this playbook.
+matrix_jitsi_auth_type: internal
+
+# Configuration options for LDAP authentication. For details see upstream:
+#   https://github.com/jitsi/docker-jitsi-meet#authentication-using-ldap.
+# Defaults are taken from:
+#   https://github.com/jitsi/docker-jitsi-meet/blob/master/prosody/rootfs/defaults/saslauthd.conf
+matrix_jitsi_ldap_url: ""
+matrix_jitsi_ldap_base: ""
+matrix_jitsi_ldap_binddn: ""
+matrix_jitsi_ldap_bindpw: ""
+matrix_jitsi_ldap_filter: "uid=%u"
+matrix_jitsi_ldap_auth_method: "bind"
+matrix_jitsi_ldap_version: "3"
+matrix_jitsi_ldap_use_tls: false
+matrix_jitsi_ldap_tls_ciphers: ""
+matrix_jitsi_ldap_tls_check_peer: false
+matrix_jitsi_ldap_tls_cacert_file: "/etc/ssl/certs/ca-certificates.crt"
+matrix_jitsi_ldap_tls_cacert_dir: "/etc/ssl/certs"
+matrix_jitsi_ldap_start_tls: false
+
 matrix_jitsi_timezone: UTC
 
 matrix_jitsi_xmpp_domain: matrix-jitsi-web
