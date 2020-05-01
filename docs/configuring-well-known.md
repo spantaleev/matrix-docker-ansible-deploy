@@ -104,11 +104,19 @@ server {
 </VirtualHost>
 ```
 
-**For Caddy**, it would be something like this:
+**For Caddy 2**, it would be something like this:
 
 ```caddy
 reverse_proxy /.well-known/matrix/* https://matrix.DOMAIN {
 	header_up Host {http.reverse_proxy.upstream.hostport}
+}
+```
+
+**For Caddy 1**, it would be something like this:
+
+```caddy
+proxy /.well-known/matrix/ https://matrix.DOMAIN {
+    header_upstream Host {http.reverse_proxy.upstream.hostport}
 }
 ```
 
