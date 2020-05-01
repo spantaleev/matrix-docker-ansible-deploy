@@ -13,7 +13,7 @@
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   with_items:
     - "{{ matrix_appservice_irc_base_path }}"
     - "{{ matrix_appservice_irc_config_path }}"
@@ -50,7 +50,7 @@
     dest: "{{ matrix_appservice_irc_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
 - name: Check if Appservice IRC passkey exists
   stat:
@@ -70,7 +70,7 @@
     path: "{{ matrix_appservice_irc_data_path }}/passkey.pem"
     mode: 0644
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
 # Ideally, we'd like to generate the final registration.yaml file by ourselves.
 #
@@ -134,7 +134,7 @@
     dest: "{{ matrix_appservice_irc_config_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-appservice-irc.service installed
   template:

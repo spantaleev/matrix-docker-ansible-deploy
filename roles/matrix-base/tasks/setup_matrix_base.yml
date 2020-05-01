@@ -2,7 +2,7 @@
 
 - name: Ensure Matrix group is created
   group:
-    name: "{{ matrix_user_username }}"
+    name: "{{ matrix_user_groupname }}"
     gid: "{{ matrix_user_gid }}"
     state: present
 
@@ -11,7 +11,7 @@
     name: "{{ matrix_user_username }}"
     uid: "{{ matrix_user_uid }}"
     state: present
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
 - name: Ensure Matrix base path exists
   file:
@@ -19,7 +19,7 @@
     state: directory
     mode: "{{ matrix_base_data_path_mode }}"
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   with_items:
     - "{{ matrix_base_data_path }}"
 

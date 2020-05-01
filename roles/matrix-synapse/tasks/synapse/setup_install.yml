@@ -15,7 +15,7 @@
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   when: "not local_path_media_store_stat.failed and not local_path_media_store_stat.stat.exists"
 
 - name: Ensure Synapse repository is present on self-build
@@ -79,7 +79,7 @@
     dest: "{{ matrix_synapse_config_dir_path }}/homeserver.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
 - name: Ensure Synapse log config installed
   template:

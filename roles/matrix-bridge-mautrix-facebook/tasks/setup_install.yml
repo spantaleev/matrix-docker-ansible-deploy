@@ -22,7 +22,7 @@
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   with_items:
     - { path: "{{ matrix_mautrix_facebook_base_path }}", when: true }
     - { path: "{{ matrix_mautrix_facebook_config_path }}", when: true }
@@ -73,7 +73,7 @@
     dest: "{{ matrix_mautrix_facebook_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
 - name: Ensure mautrix-facebook registration.yaml installed
   copy:
@@ -81,7 +81,7 @@
     dest: "{{ matrix_mautrix_facebook_config_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-mautrix-facebook.service installed
   template:
