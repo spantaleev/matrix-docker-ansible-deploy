@@ -3,15 +3,23 @@
 - name: Ensure Matrix group is created
   group:
     name: "{{ matrix_user_username }}"
-    gid: "{{ matrix_user_gid }}"
     state: present
+  register: matrix_group
+
+- name: Set Matrix Group GID Variable
+  set_fact:
+    matrix_user_gid: "{{ matrix_group.gid }}"
 
 - name: Ensure Matrix user is created
   user:
     name: "{{ matrix_user_username }}"
-    uid: "{{ matrix_user_uid }}"
     state: present
     group: "{{ matrix_user_username }}"
+  register: matrix_user
+
+- name: Set Matrix Group UID Variable
+  set_fact:
+    matrix_user_uid: "{{ matrix_user.uid }}"
 
 - name: Ensure Matrix base path exists
   file:
@@ -54,4 +62,3 @@
     src: "{{ role_path }}/templates/usr-local-bin/matrix-remove-all.j2"
     dest: "{{ matrix_local_bin_path }}/matrix-remove-all"
     mode: 0750
-
