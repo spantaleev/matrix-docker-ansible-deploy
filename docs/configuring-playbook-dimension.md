@@ -21,7 +21,9 @@ These users can modify the integrations this Dimension supports. Admin interface
 Add this to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
-matrix_dimension_admins: ['@user1:domain.com', '@user2:domain.com']
+matrix_dimension_admins:
+  - "@user1:{{ matrix_domain }}"
+  - "@user2:{{ matrix_domain }}"
 ```
 
 ## Access token
