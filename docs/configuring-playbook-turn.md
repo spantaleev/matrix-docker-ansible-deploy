@@ -31,3 +31,12 @@ matrix_synapse_turn_uris:
 - turn:HOSTNAME_OR_IP?transport=udp
 - turn:HOSTNAME_OR_IP?transport=tcp
 ```
+
+If you have or want to enable [Jitsi](configuring-playbook-jitsi.md), you might want to enable the TURN server there too.
+If you do not do it, Jitsi will fall back to an upstream service.
+
+```yaml
+matrix_jitsi_web_stun_servers:
+- stun:HOSTNAME_OR_IP:PORT
+```
+You can put multiple host/port combinations if you like.
