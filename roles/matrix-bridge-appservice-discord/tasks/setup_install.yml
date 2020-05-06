@@ -13,7 +13,7 @@
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   with_items:
     - "{{ matrix_appservice_discord_base_path }}"
     - "{{ matrix_appservice_discord_config_path }}"
@@ -46,7 +46,7 @@
     dest: "{{ matrix_appservice_discord_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
 - name: Ensure AppService Discord registration.yaml installed
   copy:
@@ -54,7 +54,7 @@
     dest: "{{ matrix_appservice_discord_config_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
 # If `matrix_appservice_discord_client_id` hasn't changed, the same invite link would be generated.
 # We intentionally suppress Ansible changes.

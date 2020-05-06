@@ -10,7 +10,7 @@
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   with_items:
     - { path: "{{ matrix_ma1sd_config_path }}", when: true }
     - { path: "{{ matrix_ma1sd_data_path }}", when: true }
@@ -69,7 +69,7 @@
     dest: "{{ matrix_ma1sd_config_path }}/ma1sd.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   when: matrix_ma1sd_enabled|bool
 
 - name: Ensure custom templates are installed if any
@@ -78,7 +78,7 @@
     dest: "{{ matrix_ma1sd_data_path }}/{{ item.location }}"
     mode: 0644
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   with_items:
     - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_invite_template }}", location: 'invite-template.eml'}
     - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_session_validation_template }}", location: 'validate-template.eml'}
