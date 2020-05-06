@@ -12,6 +12,13 @@
   tags:
     - setup-all
 
+# This needs to always run, because it populates `matrix_user_uid` and `matrix_user_gid`,
+# which are required by many other roles.
+- import_tasks: "{{ role_path }}/tasks/setup_matrix_user.yml"
+  when: run_setup|bool
+  tags:
+    - always
+
 - import_tasks: "{{ role_path }}/tasks/setup_matrix_base.yml"
   when: run_setup|bool
   tags:
