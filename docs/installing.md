@@ -10,6 +10,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all
 
 **Note**: if you don't use SSH keys for authentication, but rather a regular password, you may need to add `--ask-pass` to the above (and all other) Ansible commands.
 
+**Note**: if you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to the above (and all other) Ansible commands.
+
 The above command **doesn't start any services just yet** (another step does this later - below).
 
 Feel free to **re-run this setup command any time** you think something is off with the server configuration.
