@@ -88,7 +88,7 @@ First, set up an SSH tunnel to your matrix server (skip if it is your local mach
 ssh -L 1799:localhost:1799 matrix.DOMAIN
 ```
 
-Then start up an ephemeral [adminer](https://www.adminer.org/) container, connecting it to the matrix-net and linking the postgresql container:
+Then start up an ephemeral [adminer](https://www.adminer.org/) container on the Matrix server, connecting it to the `matrix` network and linking the postgresql container:
 
 ```
 docker run --rm --publish 1799:8080 --link matrix-postgres --net matrix adminer
