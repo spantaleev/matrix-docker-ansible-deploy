@@ -24,6 +24,7 @@ ExecStart=/usr/bin/docker run --rm --name matrix-riot-web \
 			-v {{ matrix_riot_web_data_path }}/nginx.conf:/etc/nginx/nginx.conf:ro \
 			-v /dev/null:/etc/nginx/conf.d/default.conf:ro \
 			-v {{ matrix_riot_web_data_path }}/config.json:/app/config.json:ro \
+			-v {{ matrix_riot_web_data_path }}/config.json:/app/config.{{ matrix_server_fqn_riot }}.json:ro \
 			{% if matrix_riot_web_embedded_pages_home_path is not none %}
 			-v {{ matrix_riot_web_data_path }}/home.html:/app/home.html:ro \
 			{% endif %}
