@@ -34,7 +34,7 @@ matrix_mailer_relay_auth_password: "some-password"
 
 
 ### Configuations for sending emails using Sendgrid
-An easy and free STMP service to set up is [Sendgrid](https://sendgrid.com/), the free tier allows for up to 100 emails per day to be sent. In the settings below you can provide any email for `matrix_mailer_sender_address`.
+An easy and free SMTP service to set up is [Sendgrid](https://sendgrid.com/), the free tier allows for up to 100 emails per day to be sent. In the settings below you can provide any email for `matrix_mailer_sender_address`.
 
 The only other thing you need to change is the `matrix_mailer_relay_auth_password`, which you can generate at https://app.sendgrid.com/settings/api_keys. The API key password looks something like `SG.955oW1mLSfwds7i9Yd6IA5Q.q8GTaB8q9kGDzasegdG6u95fQ-6zkdwrPP8bOeuI`.
 
