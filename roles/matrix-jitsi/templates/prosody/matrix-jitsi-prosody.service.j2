@@ -16,6 +16,7 @@ ExecStart=/usr/bin/docker run --rm --name matrix-jitsi-prosody \
 			--network={{ matrix_docker_network }} \
 			--env-file={{ matrix_jitsi_prosody_base_path }}/env \
 			-v {{ matrix_jitsi_prosody_config_path }}:/config \
+			-v {{ matrix_jitsi_prosody_plugins_path }}:/prosody-plugins-custom \
 			{% for arg in matrix_jitsi_prosody_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
