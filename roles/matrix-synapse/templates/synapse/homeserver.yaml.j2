@@ -20,10 +20,15 @@ server_name: "{{ matrix_domain }}"
 #
 pid_file: /homeserver.pid
 
-# The path to the web client which will be served at /_matrix/client/
-# if 'webclient' is configured under the 'listeners' configuration.
+# The absolute URL to the web client which /_matrix/client will redirect
+# to if 'webclient' is configured under the 'listeners' configuration.
 #
-#web_client_location: "/path/to/web/root"
+# This option can be also set to the filesystem path to the web client
+# which will be served at /_matrix/client/ if 'webclient' is configured
+# under the 'listeners' configuration, however this is a security risk:
+# https://github.com/matrix-org/synapse#security-note
+#
+#web_client_location: https://riot.example.com/
 
 # The public-facing base URL that clients use to access this HS
 # (not including _matrix/...). This is the same URL a user would
@@ -252,6 +257,19 @@ listeners:
 {% endif %}
 
 
+# Forward extremities can build up in a room due to networking delays between
+# homeservers. Once this happens in a large room, calculation of the state of
+# that room can become quite expensive. To mitigate this, once the number of
+# forward extremities reaches a given threshold, Synapse will send an
+# org.matrix.dummy_event event, which will reduce the forward extremities
+# in the room.
+#
+# This setting defines the threshold (i.e. number of forward extremities in the
+# room) at which dummy events are sent. The default value is 10.
+#
+#dummy_events_threshold: 5
+
+
 ## Homeserver blocking ##
 
 # How to reach the server admin, used in ResourceLimitError
@@ -409,6 +427,16 @@ retention:
   #  - shortest_max_lifetime: 3d
   #    longest_max_lifetime: 1y
   #    interval: 1d
+
+# Inhibits the /requestToken endpoints from returning an error that might leak
+# information about whether an e-mail address is in use or not on this
+# homeserver.
+# Note that for some endpoints the error situation is the e-mail already being
+# used, and for others the error is entering the e-mail being unused.
+# If this option is enabled, instead of returning an error, these endpoints will
+# act as if no error happened and return a fake session ID ('sid') to clients.
+#
+#request_token_inhibit_3pid_errors: true
 
 
 ## TLS ##
@@ -706,19 +734,14 @@ media_store_path: "/matrix-media-store-parent/{{ matrix_synapse_media_store_dire
 #
 #media_storage_providers:
 #  - module: file_system
-#    # Whether to write new local files.
+#    # Whether to store newly uploaded local files
 #    store_local: false
-#    # Whether to write new remote media
+#    # Whether to store newly downloaded remote files
 #    store_remote: false
-#    # Whether to block upload requests waiting for write to this
-#    # provider to complete
+#    # Whether to wait for successful storage for local uploads
 #    store_synchronous: false
 #    config:
 #       directory: /mnt/some/other/directory
-
-# Directory where in-progress uploads are stored.
-#
-uploads_path: "/matrix-run/uploads"
 
 # The largest allowed upload size in bytes
 #
@@ -834,6 +857,31 @@ url_preview_ip_range_blacklist:
 #
 max_spider_size: 10M
 
+# A list of values for the Accept-Language HTTP header used when
+# downloading webpages during URL preview generation. This allows
+# Synapse to specify the preferred languages that URL previews should
+# be in when communicating with remote servers.
+#
+# Each value is a IETF language tag; a 2-3 letter identifier for a
+# language, optionally followed by subtags separated by '-', specifying
+# a country or region variant.
+#
+# Multiple values can be provided, and a weight can be added to each by
+# using quality value syntax (;q=). '*' translates to any language.
+#
+# Defaults to "en".
+#
+# Example:
+#
+# url_preview_accept_language:
+#   - en-UK
+#   - en-US;q=0.9
+#   - fr;q=0.8
+#   - *;q=0.7
+#
+url_preview_accept_language:
+#   - en
+
 
 ## Captcha ##
 # See docs/CAPTCHA_SETUP for full details of configuring this.
@@ -851,10 +899,6 @@ max_spider_size: 10M
 # public/private key.
 #
 #enable_registration_captcha: false
-
-# A secret key used to bypass the captcha test entirely.
-#
-#captcha_bypass_secret: "YOUR_SECRET_HERE"
 
 # The API endpoint to use for verifying m.login.recaptcha responses.
 #
@@ -1066,6 +1110,29 @@ account_threepid_delegates:
     email: {{ matrix_synapse_account_threepid_delegates_email|to_json }}
     msisdn: {{ matrix_synapse_account_threepid_delegates_msisdn|to_json }}
 
+# Whether users are allowed to change their displayname after it has
+# been initially set. Useful when provisioning users based on the
+# contents of a third-party directory.
+#
+# Does not apply to server administrators. Defaults to 'true'
+#
+#enable_set_displayname: false
+
+# Whether users are allowed to change their avatar after it has been
+# initially set. Useful when provisioning users based on the contents
+# of a third-party directory.
+#
+# Does not apply to server administrators. Defaults to 'true'
+#
+#enable_set_avatar_url: false
+
+# Whether users can change the 3PIDs associated with their accounts
+# (email address and msisdn).
+#
+# Defaults to 'true'
+#
+#enable_3pid_changes: false
+
 # Users who register on this homeserver will automatically be joined
 # to these rooms
 #
@@ -1108,7 +1175,7 @@ sentry:
 # enabled by default, either for performance reasons or limited use.
 #
 metrics_flags:
-    # Publish synapse_federation_known_servers, a g auge of the number of
+    # Publish synapse_federation_known_servers, a gauge of the number of
     # servers this homeserver knows about, including itself. May cause
     # performance problems on large homeservers.
     #
@@ -1272,32 +1339,32 @@ saml2_config:
   #    remote:
   #      - url: https://our_idp/metadata.xml
   #
-  #    # By default, the user has to go to our login page first. If you'd like
-  #    # to allow IdP-initiated login, set 'allow_unsolicited: true' in a
-  #    # 'service.sp' section:
-  #    #
-  #    #service:
-  #    #  sp:
-  #    #    allow_unsolicited: true
+  #  # By default, the user has to go to our login page first. If you'd like
+  #  # to allow IdP-initiated login, set 'allow_unsolicited: true' in a
+  #  # 'service.sp' section:
+  #  #
+  #  #service:
+  #  #  sp:
+  #  #    allow_unsolicited: true
   #
-  #    # The examples below are just used to generate our metadata xml, and you
-  #    # may well not need them, depending on your setup. Alternatively you
-  #    # may need a whole lot more detail - see the pysaml2 docs!
+  #  # The examples below are just used to generate our metadata xml, and you
+  #  # may well not need them, depending on your setup. Alternatively you
+  #  # may need a whole lot more detail - see the pysaml2 docs!
   #
-  #    description: ["My awesome SP", "en"]
-  #    name: ["Test SP", "en"]
+  #  description: ["My awesome SP", "en"]
+  #  name: ["Test SP", "en"]
   #
-  #    organization:
-  #      name: Example com
-  #      display_name:
-  #        - ["Example co", "en"]
-  #      url: "http://example.com"
+  #  organization:
+  #    name: Example com
+  #    display_name:
+  #      - ["Example co", "en"]
+  #    url: "http://example.com"
   #
-  #    contact_person:
-  #      - given_name: Bob
-  #        sur_name: "the Sysadmin"
-  #        email_address": ["admin@example.com"]
-  #        contact_type": technical
+  #  contact_person:
+  #    - given_name: Bob
+  #      sur_name: "the Sysadmin"
+  #      email_address": ["admin@example.com"]
+  #      contact_type": technical
 
   # Instead of putting the config inline as above, you can specify a
   # separate pysaml2 configuration file:
@@ -1532,8 +1599,19 @@ email:
   #template_dir: "res/templates"
 {% endif %}
 
-
-#password_providers:
+# Password providers allow homeserver administrators to integrate
+# their Synapse installation with existing authentication methods
+# ex. LDAP, external tokens, etc.
+#
+# For more information and known implementations, please see
+# https://github.com/matrix-org/synapse/blob/master/docs/password_auth_providers.md
+#
+# Note: instances wishing to use SAML or CAS authentication should
+# instead use the `saml2_config` or `cas_config` options,
+# respectively.
+#
+# password_providers:
+#    # Example config for an LDAP auth provider
 #    - module: "ldap_auth_provider.LdapAuthProvider"
 #      config:
 #        enabled: true
