@@ -616,7 +616,10 @@ matrix_nginx_proxy_proxy_synapse_metrics: "{{ matrix_synapse_metrics_enabled }}"
 matrix_nginx_proxy_proxy_synapse_metrics_addr_with_container: "matrix-synapse:{{ matrix_synapse_metrics_port }}"
 matrix_nginx_proxy_proxy_synapse_metrics_addr_sans_container: "127.0.0.1:{{ matrix_synapse_metrics_port }}"
 
-matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_ma1sd_enabled }}"
+# Not proxying the user directory search to the identity server by default anymore,
+# because it currently leaks data.
+# See: https://github.com/ma1uta/ma1sd/issues/44
+matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: false
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}"
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container }}"
 
