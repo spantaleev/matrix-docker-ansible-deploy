@@ -1,0 +1,12 @@
+---
+
+- name: Fail if required settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_sms_bridge_appservice_token"
+    - "matrix_sms_bridge_homeserver_token"
+    - "matrix_sms_bridge_database_password"
+    - "matrix_sms_bridge_gammu_modem"
