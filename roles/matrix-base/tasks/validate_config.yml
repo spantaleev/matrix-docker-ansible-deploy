@@ -1,0 +1,11 @@
+---
+
+- name: (Deprecation) Warn about unused user/group variables
+  fail:
+    msg: >
+      The `{{ item }}` variable defined in your configuration is not used by this playbook anymore.
+      User/group creation is now dynamic. You can remove these variables from your configuration, as they have no effect on anything.
+  when: "item in vars"
+  with_items:
+    - 'matrix_user_uid'
+    - 'matrix_user_gid'

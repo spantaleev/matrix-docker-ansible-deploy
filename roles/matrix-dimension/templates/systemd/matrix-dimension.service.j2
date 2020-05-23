@@ -9,6 +9,9 @@ Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-dimension
 ExecStartPre=-/usr/bin/docker rm matrix-dimension
 
+# Fixup database ownership if it got changed somehow (during a server migration, etc.)
+ExecStartPre=-/usr/bin/chown {{ matrix_dimension_user_uid }}:{{ matrix_dimension_user_gid }} {{ matrix_dimension_base_path }}/dimension.db
+
 ExecStart=/usr/bin/docker run --rm --name matrix-dimension \
 			--log-driver=none \
 			--user={{ matrix_dimension_user_uid }}:{{ matrix_dimension_user_gid }} \

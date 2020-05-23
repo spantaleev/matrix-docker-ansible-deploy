@@ -8,10 +8,17 @@ Table of contents:
 
 - [Purging old data with the Purge History API](#purging-old-data-with-the-purge-history-api), for when you wish to delete in-use (but old) data from the Synapse database
 
-- [Compressing state with rust-synapse-compress-state](#compressing-state-with-rust-synapse-compress-state), for when you wish to compress some Synapse state tables using the [rust-synapse-compress-state](https://github.com/matrix-org/rust-synapse-compress-state) tool
+- [Synapse maintenance](#synapse-maintenance)
+	- [Purging unused data with synapse-janitor](#purging-unused-data-with-synapse-janitor)
+		- [Vacuuming Postgres](#vacuuming-postgres)
+	- [Purging old data with the Purge History API](#purging-old-data-with-the-purge-history-api)
+	- [Compressing state with rust-synapse-compress-state](#compressing-state-with-rust-synapse-compress-state)
 
+- [Browse and manipulate the database](#browse-and-manipulate-the-database), for when you really need to take matters into your own hands
 
 ## Purging unused data with synapse-janitor
+
+**NOTE**: There are [reports](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/465) that **synapse-janitor is dangerous to use and causes database corruption**. You may wish to refrain from using it.
 
 When you **leave** and **forget** a room, Synapse can clean up its data, but currently doesn't.
 This **unused and unreachable data** remains in your database forever.
@@ -70,3 +77,23 @@ Don't forget that disk space only ever gets released after a [`FULL` Postgres `V
 Unfortunately, at this time the playbook can't help you run this **experimental tool**.
 
 Since it's also experimental, you may wish to stay away from it, or at least [make Postgres backups](./maintenance-postgres.md#backing-up-postgresql) first.
+
+## Browse and manipulate the database
+
+When the [matrix admin API](https://github.com/matrix-org/synapse/tree/master/docs/admin_api) and the other tools do not provide a more convenient way, having a look at synapse's postgresql database can satisfy a lot of admins' needs.
+First, set up an SSH tunnel to your matrix server (skip if it is your local machine):
+
+```
+# you may replace 1799 with an arbitrary port unbound on both machines
+ssh -L 1799:localhost:1799 matrix.DOMAIN
+```
+
+Then start up an ephemeral [adminer](https://www.adminer.org/) container on the Matrix server, connecting it to the `matrix` network and linking the postgresql container:
+
+```
+docker run --rm --publish 1799:8080 --link matrix-postgres --net matrix adminer
+```
+
+You should then be able to browse the adminer database administration GUI at http://localhost:1799/ after entering your DB credentials (found in the `host_vars` or on the server in `{{matrix_synapse_config_dir_path}}/homeserver.yaml` under `database.args`)
+
+⚠️ Be **very careful** with this, there is **no undo** for impromptu DB operations.

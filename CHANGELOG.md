@@ -1,3 +1,39 @@
+# 2020-05-19
+
+## (Compatibility Break / Security Issue) Disabling User Directory search powered by the ma1sd Identity Server
+
+User Directory search requests used to go to the ma1sd identity server by default, which queried its own stores and the Synapse database.
+
+ma1sd current has [a security issue](https://github.com/ma1uta/ma1sd/issues/44), which made it leak information about all users - including users created by bridges, etc.
+
+Until the issue gets fixed, we're making User Directory search not go to ma1sd by default. You **need to re-run the playbook and restart services to apply this workaround**.
+
+*If you insist on restoring the old behavior* (**which has a security issue!**), you *might* use this configuration: `matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_ma1sd_enabled }}"`
+
+
+# 2020-04-28
+
+## Newer IRC bridge (with potential breaking change)
+
+This upgrades matrix-appservice-irc from 0.14.1 to 0.16.0.  Upstream
+made a change to how you define manual mappings.  If you added a
+`mapping` to your configuration, you will need to update it accoring
+to the [upstream
+instructions](https://github.com/matrix-org/matrix-appservice-irc/blob/master/CHANGELOG.md#0150-2020-02-05).
+If you did not include `mappings` in your configuration for IRC, no
+change is necessary.  `mappings` is not part of the default
+configuration.
+
+
+# 2020-04-23
+
+## Slack bridging support
+
+Thanks to [Rodrigo Belem](https://github.com/rbelem)'s efforts, the playbook now supports bridging to [Slack](https://slack.com) via the [mx-puppet-slack](https://github.com/Sorunome/mx-puppet-slack) bridge.
+
+See our [Setting up MX Puppet Slack bridging](docs/configuring-playbook-bridge-mx-puppet-slack.md) documentation page for getting started.
+
+
 # 2020-04-09
 
 ## Skype bridging support

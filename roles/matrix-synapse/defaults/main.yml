@@ -5,13 +5,12 @@ matrix_synapse_enabled: true
 
 matrix_synapse_container_image_self_build: false
 
-matrix_synapse_docker_image: "matrixdotorg/synapse:v1.12.3"
+matrix_synapse_docker_image: "matrixdotorg/synapse:v1.13.0"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
 matrix_synapse_docker_src_files_path: "{{ matrix_synapse_base_path }}/docker-src"
 matrix_synapse_config_dir_path: "{{ matrix_synapse_base_path }}/config"
-matrix_synapse_run_path: "{{ matrix_synapse_base_path }}/run"
 matrix_synapse_storage_path: "{{ matrix_synapse_base_path }}/storage"
 matrix_synapse_media_store_path: "{{ matrix_synapse_storage_path }}/media-store"
 matrix_synapse_ext_path: "{{ matrix_synapse_base_path }}/ext"
@@ -136,6 +135,11 @@ matrix_synapse_federation_rr_transactions_per_room_per_second: 50
 matrix_synapse_tls_federation_listener_enabled: true
 matrix_synapse_tls_certificate_path: "/data/{{ matrix_server_fqn_matrix }}.tls.crt"
 matrix_synapse_tls_private_key_path: "/data/{{ matrix_server_fqn_matrix }}.tls.key"
+
+# Resource names used by the unsecure HTTP listener. Here only the Client API
+# is defined, see the homeserver config for a full list of valid resource
+# names.
+matrix_synapse_http_listener_resource_names: ["client"]
 
 # Enable this to allow Synapse to report utilization statistics about your server to matrix.org
 # (things like number of users, number of messages sent, uptime, load, etc.)

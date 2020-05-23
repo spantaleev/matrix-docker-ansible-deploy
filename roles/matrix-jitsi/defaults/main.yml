@@ -7,6 +7,28 @@ matrix_jitsi_enable_guests: false
 matrix_jitsi_enable_recording: true
 matrix_jitsi_enable_transcriptions: true
 
+# Authentication type, must be one of internal, jwt or ldap. Currently only
+# internal and ldap are supported by this playbook.
+matrix_jitsi_auth_type: internal
+
+# Configuration options for LDAP authentication. For details see upstream:
+#   https://github.com/jitsi/docker-jitsi-meet#authentication-using-ldap.
+# Defaults are taken from:
+#   https://github.com/jitsi/docker-jitsi-meet/blob/master/prosody/rootfs/defaults/saslauthd.conf
+matrix_jitsi_ldap_url: ""
+matrix_jitsi_ldap_base: ""
+matrix_jitsi_ldap_binddn: ""
+matrix_jitsi_ldap_bindpw: ""
+matrix_jitsi_ldap_filter: "uid=%u"
+matrix_jitsi_ldap_auth_method: "bind"
+matrix_jitsi_ldap_version: "3"
+matrix_jitsi_ldap_use_tls: false
+matrix_jitsi_ldap_tls_ciphers: ""
+matrix_jitsi_ldap_tls_check_peer: false
+matrix_jitsi_ldap_tls_cacert_file: "/etc/ssl/certs/ca-certificates.crt"
+matrix_jitsi_ldap_tls_cacert_dir: "/etc/ssl/certs"
+matrix_jitsi_ldap_start_tls: false
+
 matrix_jitsi_timezone: UTC
 
 matrix_jitsi_xmpp_domain: matrix-jitsi-web
@@ -28,7 +50,7 @@ matrix_jitsi_jibri_recorder_user: recorder
 matrix_jitsi_jibri_recorder_password: ''
 
 
-matrix_jitsi_web_docker_image: "jitsi/web:4384"
+matrix_jitsi_web_docker_image: "jitsi/web:stable-4548-1"
 matrix_jitsi_web_docker_image_force_pull: "{{ matrix_jitsi_web_docker_image.endswith(':latest') }}"
 
 matrix_jitsi_web_base_path: "{{ matrix_base_data_path }}/jitsi/web"
@@ -74,11 +96,12 @@ matrix_jitsi_web_interface_config_show_powered_by: false
 matrix_jitsi_web_interface_config_disable_transcription_subtitles: false
 matrix_jisti_web_interface_config_show_deep_linking_image: false
 
-matrix_jitsi_prosody_docker_image: "jitsi/prosody:4384"
+matrix_jitsi_prosody_docker_image: "jitsi/prosody:stable-4548-1"
 matrix_jitsi_prosody_docker_image_force_pull: "{{ matrix_jitsi_prosody_docker_image.endswith(':latest') }}"
 
 matrix_jitsi_prosody_base_path: "{{ matrix_base_data_path }}/jitsi/prosody"
 matrix_jitsi_prosody_config_path: "{{ matrix_jitsi_prosody_base_path }}/config"
+matrix_jitsi_prosody_plugins_path: "{{ matrix_jitsi_prosody_base_path }}/prosody-plugins-custom"
 
 # A list of extra arguments to pass to the container
 matrix_jitsi_prosody_container_extra_arguments: []
@@ -87,7 +110,7 @@ matrix_jitsi_prosody_container_extra_arguments: []
 matrix_jitsi_prosody_systemd_required_services_list: ['docker.service']
 
 
-matrix_jitsi_jicofo_docker_image: "jitsi/jicofo:4384"
+matrix_jitsi_jicofo_docker_image: "jitsi/jicofo:stable-4548-1"
 matrix_jitsi_jicofo_docker_image_force_pull: "{{ matrix_jitsi_jicofo_docker_image.endswith(':latest') }}"
 
 matrix_jitsi_jicofo_base_path: "{{ matrix_base_data_path }}/jitsi/jicofo"
@@ -104,7 +127,7 @@ matrix_jitsi_jicofo_auth_user: focus
 matrix_jitsi_jicofo_auth_password: ''
 
 
-matrix_jitsi_jvb_docker_image: "jitsi/jvb:4384"
+matrix_jitsi_jvb_docker_image: "jitsi/jvb:stable-4548-1"
 matrix_jitsi_jvb_docker_image_force_pull: "{{ matrix_jitsi_jvb_docker_image.endswith(':latest') }}"
 
 matrix_jitsi_jvb_base_path: "{{ matrix_base_data_path }}/jitsi/jvb"

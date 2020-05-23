@@ -7,6 +7,13 @@
     msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot run synapse-janitor."
   when: "not matrix_postgres_enabled|bool"
 
+- name: Fail if not aware of the risks
+  fail:
+    msg: >-
+      Using Synapse Janitor is considered dangerous and may break your database.
+      See https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/465.
+      If you'd like to run it anyway, add `--extra-vars='i_know_synapse_janitor_is_dangerous=1'` to your command.
+  when: "i_know_synapse_janitor_is_dangerous|default('') == ''"
 
 # Defaults
 
@@ -35,7 +42,7 @@
     force: true
     mode: 0550
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-postgres is started
   service:

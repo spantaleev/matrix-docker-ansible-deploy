@@ -10,7 +10,7 @@
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   with_items:
     - { path: "{{ matrix_riot_web_data_path }}", when: true }
     - { path: "{{ matrix_riot_web_docker_src_files_path }}", when: "{{ matrix_riot_web_container_image_self_build }}" }
@@ -48,7 +48,7 @@
     dest: "{{ matrix_riot_web_data_path }}/config.json"
     mode: 0644
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   when: matrix_riot_web_enabled|bool
 
 - name: Ensure Matrix riot-web config files installed
@@ -57,7 +57,7 @@
     dest: "{{ matrix_riot_web_data_path }}/{{ item.name }}"
     mode: 0644
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   with_items:
     - {src: "{{ role_path }}/templates/nginx.conf.j2", name: "nginx.conf"}
     - {src: "{{ role_path }}/templates/welcome.html.j2", name: "welcome.html"}

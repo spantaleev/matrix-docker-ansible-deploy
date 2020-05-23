@@ -1,0 +1,22 @@
+---
+
+- name: Ensure Matrix group is created
+  group:
+    name: "{{ matrix_user_groupname }}"
+    state: present
+  register: matrix_group
+
+- name: Set Matrix Group GID Variable
+  set_fact:
+    matrix_user_gid: "{{ matrix_group.gid }}"
+
+- name: Ensure Matrix user is created
+  user:
+    name: "{{ matrix_user_username }}"
+    state: present
+    group: "{{ matrix_user_groupname }}"
+  register: matrix_user
+
+- name: Set Matrix Group UID Variable
+  set_fact:
+    matrix_user_uid: "{{ matrix_user.uid }}"

@@ -45,7 +45,6 @@ ExecStart=/usr/bin/docker run --rm --name matrix-synapse \
 			-p {{ matrix_synapse_container_manhole_api_host_bind_port }}:9000 \
 			{% endif %}
 			-v {{ matrix_synapse_config_dir_path }}:/data:ro \
-			-v {{ matrix_synapse_run_path }}:/matrix-run:rw \
 			-v {{ matrix_synapse_storage_path }}:/matrix-media-store-parent:slave \
 			{% for volume in matrix_synapse_container_additional_volumes %}
 			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \

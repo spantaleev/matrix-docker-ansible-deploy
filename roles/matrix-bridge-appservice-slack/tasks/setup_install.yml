@@ -13,7 +13,7 @@
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   with_items:
     - "{{ matrix_appservice_slack_base_path }}"
     - "{{ matrix_appservice_slack_config_path }}"
@@ -25,7 +25,7 @@
     dest: "{{ matrix_appservice_slack_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
 - name: Ensure appservice-slack registration.yaml installed
   copy:
@@ -33,7 +33,7 @@
     dest: "{{ matrix_appservice_slack_config_path }}/slack-registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-appservice-slack.service installed
   template:

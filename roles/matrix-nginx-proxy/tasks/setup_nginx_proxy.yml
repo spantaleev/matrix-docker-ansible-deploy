@@ -16,7 +16,7 @@
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   with_items:
     - "{{ matrix_nginx_proxy_base_path }}"
     - "{{ matrix_nginx_proxy_data_path }}"
@@ -34,7 +34,7 @@
     src: "{{ role_path }}/templates/nginx/matrix-synapse-metrics-htpasswd.j2"
     dest: "{{ matrix_nginx_proxy_data_path }}/matrix-synapse-metrics-htpasswd"
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
     mode: 0400
   when: "matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled|bool and matrix_nginx_proxy_proxy_synapse_metrics|bool"
 
@@ -79,7 +79,7 @@
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   when: matrix_nginx_proxy_base_domain_serving_enabled|bool
 
 - name: Ensure Matrix nginx-proxy homepage for base domain exists
@@ -88,7 +88,7 @@
     dest: "{{ matrix_nginx_proxy_data_path }}/matrix-domain/index.html"
     mode: 0644
     owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   when: matrix_nginx_proxy_base_domain_serving_enabled|bool and matrix_nginx_proxy_base_domain_homepage_enabled|bool
 
 - name: Ensure Matrix nginx-proxy configuration for base domain exists
