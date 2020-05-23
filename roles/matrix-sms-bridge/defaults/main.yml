@@ -117,6 +117,8 @@ matrix_sms_bridge_configuration_extension_yaml: |
 
 matrix_sms_bridge_configuration_extension: "{{ matrix_sms_bridge_configuration_extension_yaml|from_yaml if matrix_sms_bridge_configuration_extension_yaml|from_yaml is mapping else {} }}"
 
+matrix_sms_bridge_configuration: "{{ matrix_sms_bridge_configuration_yaml|from_yaml|combine(matrix_sms_bridge_configuration_extension, recursive=True) }}"
+
 matrix_sms_bridge_gammu_configuration: |
   [gammu]
   Device = /dev/ttyModem
