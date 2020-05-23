@@ -13,20 +13,6 @@ Wants={{ service }}
 Type=simple
 ExecStartPre=-/usr/bin/docker kill matrix-sms-bridge
 ExecStartPre=-/usr/bin/docker rm matrix-sms-bridge
-ExecStartPre=-/usr/bin/docker kill matrix-sms-bridge-database
-ExecStartPre=-/usr/bin/docker rm matrix-sms-bridge-database
-
-ExecStartPre=/usr/bin/docker run --rm --name matrix-sms-bridge-database \
-			--log-driver=none \
-			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
-			--cap-drop=ALL \
-			--network={{ matrix_docker_network }} \
-			{% if matrix_sms_bridge_container_http_host_bind_port %}
-			-p {{ matrix_sms_bridge_container_http_host_bind_port }}:7687 \
-			{% endif %}
-			-v {{ matrix_sms_bridge_database_path }}:/data:z \
-			-e NEO4J_AUTH={{ matrix_sms_bridge_database_username }}/{{ matrix_sms_bridge_database_password }}
-			{{ matrix_sms_bridge_database_docker_image }}
 
 # Intentional delay, so that the homeserver (we likely depend on) can manage to start.
 ExecStartPre=/bin/sleep 5
@@ -41,7 +27,7 @@ ExecStart=/usr/bin/docker run --rm --name matrix-sms-bridge \
 			{% endif %}
 			-v {{ matrix_sms_bridge_config_path }}:/config:z \
 			-v {{ matrix_sms_bridge_data_path }}:/data:z \
-			--device {{ matrix_sms_bridge_gammu_modem }}:/dev/ttyModem
+			--device {{ matrix_sms_bridge_gammu_modem }}:/dev/ttyModem \
 			{% for arg in matrix_sms_bridge_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
@@ -49,8 +35,6 @@ ExecStart=/usr/bin/docker run --rm --name matrix-sms-bridge \
 
 ExecStop=-/usr/bin/docker kill matrix-sms-bridge
 ExecStop=-/usr/bin/docker rm matrix-sms-bridge
-ExecStop=-/usr/bin/docker kill matrix-sms-database
-ExecStop=-/usr/bin/docker rm matrix-sms-database
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-sms-bridge
