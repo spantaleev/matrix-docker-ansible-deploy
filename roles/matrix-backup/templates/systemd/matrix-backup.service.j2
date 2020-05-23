@@ -16,7 +16,7 @@ ExecStartPre=/bin/sh -c '/usr/bin/docker run --rm \
 				{{ matrix_postgres_docker_image_to_use }} \
 				pg_dumpall -h matrix-postgres | gzip -c > ${TMP_OUTPUT}'
 {% if  matrix_backup_bucket %}
-# Mounting files host files into amazon/aws-cli
+# Mounting host files into amazon/aws-cli
 # The /aws working directory is user controlled. 
 # The image will not write to this directory, unless instructed by the user in running a AWS CLI command.
 ExecStart=/bin/sh -c 'docker run --rm --name matrix-backup \
