@@ -11,8 +11,8 @@ Wants={{ service }}
 
 [Service]
 Type=simple
-ExecStartPre=-/usr/bin/docker kill matrix-nginx-proxy
-ExecStartPre=-/usr/bin/docker rm matrix-nginx-proxy
+#ExecStartPre=-/usr/bin/docker kill matrix-nginx-proxy
+#ExecStartPre=-/usr/bin/docker rm matrix-nginx-proxy
 
 ExecStart=/usr/bin/docker run --rm --name matrix-nginx-proxy \
 			--log-driver=none \
@@ -43,11 +43,11 @@ ExecStart=/usr/bin/docker run --rm --name matrix-nginx-proxy \
 			{% endfor %}
 			{{ matrix_nginx_proxy_docker_image }}
 
-ExecStop=-/usr/bin/docker kill matrix-nginx-proxy
-ExecStop=-/usr/bin/docker rm matrix-nginx-proxy
+#ExecStop=-/usr/bin/docker kill matrix-nginx-proxy
+#ExecStop=-/usr/bin/docker rm matrix-nginx-proxy
 ExecReload=/usr/bin/docker exec matrix-nginx-proxy /usr/sbin/nginx -s reload
 Restart=always
-RestartSec=30
+RestartSec=15
 SyslogIdentifier=matrix-nginx-proxy
 
 [Install]
