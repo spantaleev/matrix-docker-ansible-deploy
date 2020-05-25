@@ -73,9 +73,9 @@ matrix_sms_bridge_configuration_yaml: |
             # (optional) default is disabled
             enabled: true
             # (optional) Path to the Gammu-Inbox directory.
-            inboxPath: "{{ matrix_sms_bridge_data_spool_inbox_path }}"
+            inboxPath: /data/spool/inbox
             # (optional) Path to the directory, where to put processed messages.
-            inboxProcessedPath: "{{ matrix_sms_bridge_data_spool_inbox_processed_path }}"
+            inboxProcessedPath: /data/spool/inbox_processed
     bot:
       # The domain-part of matrix-ids. E. g. example.org when your userIds look like @unicorn:example.org
       serverName: {{ matrix_sms_bridge_homserver_domain }}
@@ -111,21 +111,21 @@ matrix_sms_bridge_gammu_configuration: |
 
   [gammu]
   Device = /dev/ttyModem
-  LogFile = {{ matrix_sms_bridge_data_log_path }}/gammu.log
+  LogFile = /data/log/gammu.log
   debugLevel = 1
 
   [smsd]
   Service = files
   LoopSleep = 2
-  InboxPath = {{ matrix_sms_bridge_data_spool_inbox_path }}
-  OutboxPath = {{ matrix_sms_bridge_data_spool_outbox_path }}
-  SentSMSPath = {{ matrix_sms_bridge_data_spool_sent_path }}
-  ErrorSMSPath = {{ matrix_sms_bridge_data_spool_error_path }}
+  InboxPath = /data/spool/inbox
+  OutboxPath = /data/spool/outbox
+  SentSMSPath = /data/spool/sent
+  ErrorSMSPath = /data/spool/error
   InboxFormat = detail
   OutboxFormat = detail
   TransmitFormat = auto
   debugLevel = 1
-  LogFile = {{ matrix_sms_bridge_data_log_path }}/smsd.log
+  LogFile = /data/log/smsd.log
   DeliveryReport = log
   DeliveryReportDelay = 7200
   HangupCalls = 1
