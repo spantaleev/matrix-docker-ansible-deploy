@@ -8,10 +8,10 @@ After={{ service }}
 
 [Service]
 Type=simple
-ExecStartPre=-/usr/bin/docker kill matrix-jitsi-jicofo
-ExecStartPre=-/usr/bin/docker rm matrix-jitsi-jicofo
+ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-jitsi-jicofo
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-jitsi-jicofo
 
-ExecStart=/usr/bin/docker run --rm --name matrix-jitsi-jicofo \
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-jitsi-jicofo \
 			--log-driver=none \
 			--network={{ matrix_docker_network }} \
 			--env-file={{ matrix_jitsi_jicofo_base_path }}/env \
@@ -21,8 +21,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-jitsi-jicofo \
 			{% endfor %}
 			{{ matrix_jitsi_jicofo_docker_image }}
 
-ExecStop=-/usr/bin/docker kill matrix-jitsi-jicofo
-ExecStop=-/usr/bin/docker rm matrix-jitsi-jicofo
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-jitsi-jicofo
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-jitsi-jicofo
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-jitsi-jicofo

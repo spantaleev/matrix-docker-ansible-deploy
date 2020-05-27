@@ -6,10 +6,10 @@ Requires=docker.service
 
 [Service]
 Type=simple
-ExecStartPre=-/usr/bin/docker kill %n
-ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=-{{ matrix_host_command_docker }} kill %n
+ExecStartPre=-{{ matrix_host_command_docker }} rm %n
 
-ExecStart=/usr/bin/docker run --rm --name %n \
+ExecStart={{ matrix_host_command_docker }} run --rm --name %n \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			-v /etc/passwd:/etc/passwd:ro \
@@ -25,10 +25,10 @@ ExecStart=/usr/bin/docker run --rm --name %n \
 			-c 'goofys -f{% if not matrix_s3_media_store_custom_endpoint_enabled %} --storage-class=STANDARD_IA{% endif %}{% if matrix_s3_media_store_custom_endpoint_enabled %} --endpoint={{ matrix_s3_media_store_custom_endpoint }}{% endif %} --region {{ matrix_s3_media_store_region }} --stat-cache-ttl 60m0s --type-cache-ttl 60m0s --dir-mode 0700 --file-mode 0700 {{ matrix_s3_media_store_bucket_name }} /s3'
 
 TimeoutStartSec=5min
-ExecStop=-/usr/bin/docker stop %n
-ExecStop=-/usr/bin/docker kill %n
-ExecStop=-/usr/bin/docker rm %n
-ExecStop=-/bin/fusermount -u {{ matrix_synapse_media_store_path }}
+ExecStop=-{{ matrix_host_command_docker }} stop %n
+ExecStop=-{{ matrix_host_command_docker }} kill %n
+ExecStop=-{{ matrix_host_command_docker }} rm %n
+ExecStop=-{{ matrix_host_command_fusermount }} -u {{ matrix_synapse_media_store_path }}
 Restart=always
 RestartSec=5
 SyslogIdentifier=matrix-goofys
