@@ -66,7 +66,7 @@
 - name: Generate Postgres database synapse-janitor command
   set_fact:
     matrix_postgres_synapse_janitor_command: >-
-      /usr/bin/docker run --rm --name matrix-postgres-synapse-janitor
+      {{ matrix_host_command_docker }} run --rm --name matrix-postgres-synapse-janitor
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
       --network={{ matrix_docker_network }}

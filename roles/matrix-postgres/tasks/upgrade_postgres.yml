@@ -79,7 +79,7 @@
 # we need to remove these from the dump, or we'll get errors saying these already exist.
 - name: Perform Postgres database dump
   command: >-
-    /usr/bin/docker run --rm --name matrix-postgres-dump
+    {{ matrix_host_command_docker }} run --rm --name matrix-postgres-dump
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
     --network={{ matrix_docker_network }}
     --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
@@ -123,7 +123,7 @@
 - name: Generate Postgres database import command
   set_fact:
     matrix_postgres_import_command: >-
-      /usr/bin/docker run --rm --name matrix-postgres-import
+      {{ matrix_host_command_docker }} run --rm --name matrix-postgres-import
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
       --network={{ matrix_docker_network }}

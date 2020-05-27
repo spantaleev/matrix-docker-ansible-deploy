@@ -16,7 +16,7 @@
 # We suppress the error, as we'll try another method below.
 - name: Attempt initial SSL certificate retrieval with standalone authenticator (directly)
   shell: >-
-    /usr/bin/docker run
+    {{ matrix_host_command_docker }} run
     --rm
     --name=matrix-certbot
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
@@ -43,7 +43,7 @@
 # and it's running now, it may be able to proxy requests to `matrix_ssl_lets_encrypt_certbot_standalone_http_port`.
 - name: Attempt initial SSL certificate retrieval with standalone authenticator (via proxy)
   shell: >-
-    /usr/bin/docker run
+    {{ matrix_host_command_docker }} run
     --rm
     --name=matrix-certbot
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
