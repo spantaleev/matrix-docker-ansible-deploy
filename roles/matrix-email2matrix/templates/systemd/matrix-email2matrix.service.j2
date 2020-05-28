@@ -6,10 +6,10 @@ Requires=docker.service
 
 [Service]
 Type=simple
-ExecStartPre=-/usr/bin/docker kill matrix-email2matrix
-ExecStartPre=-/usr/bin/docker rm matrix-email2matrix
+ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-email2matrix
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-email2matrix
 
-ExecStart=/usr/bin/docker run --rm --name matrix-email2matrix \
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-email2matrix \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
@@ -22,8 +22,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-email2matrix \
 			{% endfor %}
 			{{ matrix_email2matrix_docker_image }}
 
-ExecStop=-/usr/bin/docker kill matrix-email2matrix
-ExecStop=-/usr/bin/docker rm matrix-email2matrix
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-email2matrix
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-email2matrix
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-email2matrix

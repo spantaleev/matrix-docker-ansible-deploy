@@ -6,10 +6,10 @@ Requires=docker.service
 
 [Service]
 Type=simple
-ExecStartPre=-/usr/bin/docker kill matrix-mailer
-ExecStartPre=-/usr/bin/docker rm matrix-mailer
+ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-mailer
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-mailer
 
-ExecStart=/usr/bin/docker run --rm --name matrix-mailer \
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mailer \
 			--log-driver=none \
 			--user={{ matrix_mailer_container_user_uid }}:{{ matrix_mailer_container_user_gid }} \
 			--cap-drop=ALL \
@@ -24,8 +24,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-mailer \
 			{% endfor %}
 			{{ matrix_mailer_docker_image }}
 
-ExecStop=-/usr/bin/docker kill matrix-mailer
-ExecStop=-/usr/bin/docker rm matrix-mailer
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-mailer
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-mailer
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-mailer

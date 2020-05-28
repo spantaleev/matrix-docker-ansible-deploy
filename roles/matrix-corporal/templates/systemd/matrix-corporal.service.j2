@@ -8,10 +8,10 @@ After={{ service }}
 
 [Service]
 Type=simple
-ExecStartPre=-/usr/bin/docker kill matrix-corporal
-ExecStartPre=-/usr/bin/docker rm matrix-corporal
+ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-corporal
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-corporal
 
-ExecStart=/usr/bin/docker run --rm --name matrix-corporal \
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-corporal \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
@@ -32,8 +32,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-corporal \
 			{{ matrix_corporal_docker_image }} \
 			/matrix-corporal -config=/etc/matrix-corporal/config.json
 
-ExecStop=-/usr/bin/docker kill matrix-corporal
-ExecStop=-/usr/bin/docker rm matrix-corporal
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-corporal
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-corporal
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-corporal

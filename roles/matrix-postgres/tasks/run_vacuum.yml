@@ -45,7 +45,7 @@
 - name: Generate Postgres database vacuum command
   set_fact:
     matrix_postgres_vacuum_command: >-
-      /usr/bin/docker run --rm --name matrix-postgres-synapse-vacuum
+      {{ matrix_host_command_docker }} run --rm --name matrix-postgres-synapse-vacuum
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
       --network={{ matrix_docker_network }}
