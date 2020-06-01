@@ -3,7 +3,7 @@ As stated in the [Prerequisites](prerequisites.md), currently only x86_64 is sup
 
 To that end add the following variable to your `vars.yaml` file:
 ```
-matrix_architecture = <your-matrix-server-architecture>
+matrix_architecture: <your-matrix-server-architecture>
 ```
 Currently supported architectures are the following:
 - `amd64` (the default)
@@ -12,7 +12,7 @@ Currently supported architectures are the following:
 
 so for the Raspberry Pi the following should be in your `vars.yaml` file:
 ```
-matrix_architecture = "arm32"
+matrix_architecture: "arm32"
 ```
 
 ## Implementation details
