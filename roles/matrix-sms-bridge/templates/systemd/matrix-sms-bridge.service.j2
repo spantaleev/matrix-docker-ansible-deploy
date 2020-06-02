@@ -20,7 +20,7 @@ ExecStartPre=/bin/sleep 5
 ExecStart=/usr/bin/docker run --rm --name matrix-sms-bridge \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
-			--group-add dialout \
+			--group-add {{ matrix_sms_bridge_modem_group }} \
 			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
 			{% if matrix_sms_bridge_container_http_host_bind_port %}

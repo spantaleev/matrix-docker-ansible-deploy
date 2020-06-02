@@ -5,6 +5,8 @@ The playbook can install and configure
 
 See the project page to learn what it does and why it might be useful to you.
 
+First you need to ensure, that the bridge has unix read and write rights to your modem. On debian based distributions there is nothing to do. On others distributions you either add a group `dialout` to your host and assign it to your modem or you give the matrix user or group access to your modem.
+
 To enable the bridge just use the following
 playbook configuration:
 
@@ -16,6 +18,10 @@ matrix_sms_bridge_gammu_modem: "/path/to/modem"
 matrix_sms_bridge_database_password: ""
 # (optional) a room id to a default room
 matrix_sms_bridge_default_room: "" 
+# (optional) gammu reset frequency (see https://wammu.eu/docs/manual/smsd/config.html#option-ResetFrequency)
+matrix_sms_bridge_gammu_reset_frequency: 3600
+# (optional) group with unix read and write rights to modem
+matrix_sms_bridge_modem_group: 'dialout'
 ```
 
 
