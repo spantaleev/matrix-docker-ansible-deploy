@@ -17,9 +17,7 @@ matrix_sms_bridge_gammu_modem: "/path/to/modem"
 # generate a secret passwort e.g. with pwgen -s 64 1
 matrix_sms_bridge_database_password: ""
 # (optional) a room id to a default room
-matrix_sms_bridge_default_room: "" 
-# (optional) gammu reset frequency (see https://wammu.eu/docs/manual/smsd/config.html#option-ResetFrequency)
-matrix_sms_bridge_gammu_reset_frequency: 3600
+matrix_sms_bridge_default_room: ""
 # (optional) group with unix read and write rights to modem
 matrix_sms_bridge_modem_group: 'dialout'
 ```
