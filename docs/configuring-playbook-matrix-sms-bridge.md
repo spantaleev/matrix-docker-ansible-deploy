@@ -13,7 +13,7 @@ playbook configuration:
 
 ```yaml
 matrix_sms_bridge_enabled: true
-matrix_sms_bridge_gammu_modem: "/path/to/modem"
+matrix_sms_bridge_gammu_modem: "/dev/serial/by-id/myDeviceId"
 # generate a secret passwort e.g. with pwgen -s 64 1
 matrix_sms_bridge_database_password: ""
 # (optional) a room id to a default room
@@ -22,6 +22,8 @@ matrix_sms_bridge_default_room: ""
 matrix_sms_bridge_gammu_reset_frequency: 3600
 # (optional) group with unix read and write rights to modem
 matrix_sms_bridge_modem_group: 'dialout'
+# (optional) cgroup major number to allow access to devices, that gets reconnected (e.g. due to reset)
+matrix_sms_bridge_cgroup_major_number: '188'
 ```
 
 

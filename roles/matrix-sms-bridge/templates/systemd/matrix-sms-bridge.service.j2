@@ -29,7 +29,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-sms-bridge \
 			-v {{ matrix_sms_bridge_config_path }}:/config:z \
 			-v {{ matrix_sms_bridge_data_path }}:/data:z \
 			-v {{ matrix_sms_bridge_config_path }}/gammu-smsdrc:/etc/gammu-smsdrc:z \
-			--device {{ matrix_sms_bridge_gammu_modem }}:/dev/ttyModem \
+			--device-cgroup-rule='c {{ matrix_sms_bridge_cgroup_major_number }}:* rmw' \
+			--device {{ matrix_sms_bridge_gammu_modem }}:{{ matrix_sms_bridge_gammu_modem }} \
 			{% for arg in matrix_sms_bridge_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
