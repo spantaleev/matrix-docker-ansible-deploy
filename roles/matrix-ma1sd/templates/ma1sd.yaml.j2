@@ -1,0 +1,69 @@
+#jinja2: lstrip_blocks: True
+matrix:
+  domain: {{ matrix_domain }}
+  v1: {{ matrix_ma1sd_v1_enabled|to_json }}
+  v2: {{ matrix_ma1sd_v2_enabled|to_json }}
+
+server:
+  name: {{ matrix_server_fqn_matrix }}
+
+key:
+  path: /var/ma1sd/sign.key
+
+storage:
+  provider:
+    sqlite:
+      database: /var/ma1sd/ma1sd.db
+
+{% if matrix_ma1sd_dns_overwrite_enabled %}
+dns:
+  overwrite:
+    homeserver:
+      client:
+        - name: {{ matrix_ma1sd_dns_overwrite_homeserver_client_name }}
+          value: {{ matrix_ma1sd_dns_overwrite_homeserver_client_value }}
+{% endif %}
+
+{% if matrix_ma1sd_matrixorg_forwarding_enabled %}
+forward:
+  servers: ['matrix-org']
+{% endif %}
+
+threepid:
+  medium:
+    email:
+      identity:
+        from: {{ matrix_ma1sd_threepid_medium_email_identity_from }}
+      connectors:
+        smtp:
+          host: {{ matrix_ma1sd_threepid_medium_email_connectors_smtp_host }}
+          port: {{ matrix_ma1sd_threepid_medium_email_connectors_smtp_port }}
+          tls: {{ matrix_ma1sd_threepid_medium_email_connectors_smtp_tls }}
+          login: {{ matrix_ma1sd_threepid_medium_email_connectors_smtp_login }}
+          password: {{ matrix_ma1sd_threepid_medium_email_connectors_smtp_password }}
+{% if matrix_ma1sd_threepid_medium_email_custom_templates_enabled %}
+      generators:
+        template:
+          {% if matrix_ma1sd_threepid_medium_email_custom_invite_template %}
+          invite: '/var/ma1sd/invite-template.eml'
+          {% endif %}
+          {% if matrix_ma1sd_threepid_medium_email_custom_session_validation_template or matrix_ma1sd_threepid_medium_email_custom_unbind_fraudulent_template %}
+          session:
+            {% if matrix_ma1sd_threepid_medium_email_custom_session_validation_template %}
+            validation: '/var/ma1sd/validate-template.eml'
+            {% endif %}
+            {% if matrix_ma1sd_threepid_medium_email_custom_unbind_fraudulent_template %}
+            unbind:
+              frandulent: '/var/ma1sd/unbind-fraudulent.eml'
+            {% endif %}
+          {% endif %}
+          {% if matrix_ma1sd_threepid_medium_email_custom_matrixid_template %}
+          generic:
+            matrixId: '/var/ma1sd/mxid-template.eml'
+          {% endif %}
+{% endif %}
+
+synapseSql:
+  enabled: {{ matrix_ma1sd_synapsesql_enabled }}
+  type: {{ matrix_ma1sd_synapsesql_type }}
+  connection: {{ matrix_ma1sd_synapsesql_connection }}

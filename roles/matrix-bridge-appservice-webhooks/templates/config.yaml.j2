@@ -1,0 +1,28 @@
+#jinja2: lstrip_blocks: True
+# Configuration specific to the application service. All fields (unless otherwise marked) are required.
+homeserver:
+  # The domain for the client-server API calls.
+  url: "{{ matrix_appservice_webhooks_homeserver_url }}"
+
+  # The domain part for user IDs on this home server. Usually, but not always, this is the same as the
+  # home server's URL.
+  domain: "{{ matrix_domain }}"
+
+# Configuration specific to the bridge. All fields (unless otherwise marked) are required.
+webhookBot:
+  # The localpart to use for the bot. May require re-registering the application service.
+  localpart: "_webhook"
+
+# Provisioning API options
+provisioning:
+  # Your secret for the API. Required for all provisioning API requests.
+  secret: '{{ matrix_appservice_webhooks_api_secret }}'
+
+# Configuration related to the web portion of the bridge. Handles the inbound webhooks
+web:
+  hookUrlBase:  "{{ matrix_appservice_webhooks_inbound_uri_prefix }}"
+
+logging:
+  console: true
+  consoleLevel: {{ matrix_appservice_webhooks_log_level }}
+  writeFiles: false
