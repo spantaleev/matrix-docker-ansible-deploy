@@ -102,3 +102,5 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up MX Puppet Slack bridging](configuring-playbook-bridge-mx-puppet-slack.md) (optional)
 
 - [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (optional)
+
+- [Setting up Matrix SMS bridging](configuring-playbook-matrix-bridge-sms.md) (optional)
