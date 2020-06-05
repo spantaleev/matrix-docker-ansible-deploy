@@ -103,4 +103,4 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (optional)
 
-- [Setting up Matrix SMS bridging](configuring-playbook-matrix-sms-bridge.md) (optional)
+- [Setting up Matrix SMS bridging](configuring-playbook-matrix-bridge-sms.md) (optional)
