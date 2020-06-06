@@ -17,6 +17,7 @@ ExecStartPre={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-tel
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
+			--network={{ matrix_docker_network }} \
 			-v {{ matrix_mautrix_telegram_config_path }}:/config:z \
 			-v {{ matrix_mautrix_telegram_data_path }}:/data:z \
 			{{ matrix_mautrix_telegram_docker_image }} \
