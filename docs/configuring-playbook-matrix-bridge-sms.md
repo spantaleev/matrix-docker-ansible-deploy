@@ -18,8 +18,9 @@ matrix_sms_bridge_gammu_modem: "/dev/serial/by-id/myDeviceId"
 matrix_sms_bridge_database_password: ""
 # (optional) a room id to a default room
 matrix_sms_bridge_default_room: "" 
-# (optional) gammu reset frequency (see https://wammu.eu/docs/manual/smsd/config.html#option-ResetFrequency)
+# (optional) gammu reset frequencies (see https://wammu.eu/docs/manual/smsd/config.html#option-ResetFrequency)
 matrix_sms_bridge_gammu_reset_frequency: 3600
+matrix_sms_bridge_gammu_hard_reset_frequency: 0
 # (optional) group with unix read and write rights to modem
 matrix_sms_bridge_modem_group: 'dialout'
 ```
