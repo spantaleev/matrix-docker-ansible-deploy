@@ -136,7 +136,7 @@ backend matrix-backend
 	reqirep ^(GET|POST|HEAD)\ /.well-known/matrix/(.*) \1\ /\2
 	# Rewrite redirects as ProxyPassReverse does
 	acl response-is-redirect res.hdr(Location) -m found
-	rsprep ^Location:\ (http|https)://matrix.example.com\/(.*) Location:\ \1://matrix.exapmle.com/.well-known/matrix/\2 if response-is-redirect
+	rsprep ^Location:\ (http|https)://matrix.example.com\/(.*) Location:\ \1://matrix.example.com/.well-known/matrix/\2 if response-is-redirect
 ```
 
 Make sure to:
