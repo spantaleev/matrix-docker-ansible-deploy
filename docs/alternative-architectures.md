@@ -19,6 +19,6 @@ matrix_architecture: "arm32"
 This subsection is used for a reminder, how the different roles implement architecture differenes. This is **not** aimed at the users, so one does not have to do anything based on this subsection.
 
 On most roles [self-building](self-building.md) is used if the architecture is not `amd64`, however there are some special cases:
-- matrix-bridge-mautrix-facebook: there is built docker image for arm64 as well,
-- matrix-bridge-mautrix-hangouts: there is built docker image for arm64 as well,
-- matrix-nginx-proxy: Certbot has docker image for both arm32 and arm64, however tagging is used, which requires special handling.
+- `matrix-bridge-mautrix-facebook`: there is a pre-built Docker image for `arm64` as well
+- `matrix-bridge-mautrix-hangouts`: there is a pre-built Docker image for `arm64` as well
+- `matrix-nginx-proxy`: Certbot has a pre-built Docker image for both `arm32` and `arm64`, however tagging is used, which requires special handling.

@@ -537,10 +537,12 @@ matrix_jitsi_web_stun_servers: |
 #
 ######################################################################
 
-# By default, this playbook sets up a postfix mailer server (running in a container).
+# By default, this playbook sets up an exim mailer server (running in a container).
 # This is so that Synapse can send email reminders for unread messages.
 # Other services (like ma1sd), also use the mailer.
 matrix_mailer_enabled: true
+
+matrix_mailer_container_image_self_build: "{{ matrix_architecture != 'amd64'}}"
 
 ######################################################################
 #
