@@ -638,6 +638,8 @@ matrix_nginx_proxy_proxy_matrix_federation_api_enabled: true
 matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container: "matrix-synapse:8048"
 matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "127.0.0.1:8048"
 
+matrix_nginx_proxy_container_federation_host_bind_port: "{{ matrix_federation_public_port }}"
+
 matrix_nginx_proxy_proxy_synapse_metrics: "{{ matrix_synapse_metrics_enabled }}"
 matrix_nginx_proxy_proxy_synapse_metrics_addr_with_container: "matrix-synapse:{{ matrix_synapse_metrics_port }}"
 matrix_nginx_proxy_proxy_synapse_metrics_addr_sans_container: "127.0.0.1:{{ matrix_synapse_metrics_port }}"
@@ -788,7 +790,7 @@ matrix_synapse_container_client_api_host_bind_port: "{{ '' if matrix_nginx_proxy
 matrix_synapse_container_federation_api_plain_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8048' }}"
 #
 # For exposing the Matrix Federation API's TLS port (HTTPS) to the internet on all network interfaces.
-matrix_synapse_container_federation_api_tls_host_bind_port: "{{ '8448' if (matrix_synapse_federation_enabled and matrix_synapse_tls_federation_listener_enabled) else '' }}"
+matrix_synapse_container_federation_api_tls_host_bind_port: "{{ matrix_federation_public_port if (matrix_synapse_federation_enabled and matrix_synapse_tls_federation_listener_enabled) else '' }}"
 #
 # For exposing the Synapse Metrics API's port (plain HTTP) to the local host.
 matrix_synapse_container_metrics_api_host_bind_port: "{{ '127.0.0.1:9100' if (matrix_synapse_metrics_enabled and not matrix_nginx_proxy_enabled) else '' }}"
