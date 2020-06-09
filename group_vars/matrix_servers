@@ -675,7 +675,13 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     ([matrix_domain] if matrix_nginx_proxy_base_domain_serving_enabled else [])
   }}
 
-matrix_ssl_architecture: "{{ matrix_architecture }}"
+matrix_ssl_architecture: "{{
+	{
+		'amd64': 'amd64',
+		'arm32': 'arm32v6',
+		'arm64': 'arm64v8',
+	}[matrix_architecture]
+}}"
 
 ######################################################################
 #
