@@ -9,6 +9,10 @@ bridge:
   domain: {{ matrix_mx_puppet_slack_homeserver_domain }}
   # Reachable URL of the Matrix homeserver
   homeserverUrl: {{ matrix_mx_puppet_slack_homeserver_address }}
+  {% if matrix_mx_puppet_slack_login_shared_secret != '' %}
+  loginSharedSecretMap:
+    {{ matrix_domain }}: {{ matrix_mx_puppet_slack_login_shared_secret }}
+  {% endif %}
 
 
 # Slack OAuth settings. Create a slack app at https://api.slack.com/apps
