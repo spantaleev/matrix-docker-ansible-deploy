@@ -45,21 +45,7 @@ matrix_appservice_slack_appservice_token: ''
 matrix_appservice_slack_homeserver_token: ''
 matrix_appservice_slack_id_token: ''
 
-matrix_appservice_slack_configuration_yaml: |
-    slack_hook_port: {{ matrix_appservice_slack_slack_port }}
-    inbound_uri_prefix: "{{ matrix_appservice_slack_inbound_uri_prefix }}"
-    bot_username: "{{ matrix_appservice_slack_bot_name }}"
-    username_prefix: {{ matrix_appservice_slack_user_prefix }}
-
-    homeserver:
-        media_url: "{{ matrix_appservice_slack_homeserver_media_url }}"
-        url: "{{ matrix_appservice_slack_homeserver_url }}"
-        server_name: "{{ matrix_domain }}"
-
-    dbdir: "/data"
-
-    matrix_admin_room: "{{ matrix_appservice_slack_control_room_id }}"
-
+matrix_appservice_slack_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
 
 matrix_appservice_slack_configuration_extension_yaml: |
     #slack_hook_port: 9898

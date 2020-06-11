@@ -38,10 +38,15 @@
   become_user: "{{ matrix_user_username }}"
 
 - set_fact:
-    matrix_synapse_spam_checker:
-      module: "synapse_simple_antispam.AntiSpamInvites"
-      config:
-        blocked_homeservers: "{{ matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeservers }}"
+    matrix_synapse_spam_checker: >
+      {{ matrix_synapse_spam_checker }}
+      +
+      [{
+        "module": "synapse_simple_antispam.AntiSpamInvites",
+        "config": {
+          "blocked_homeservers": {{ matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeservers }}
+        }
+      }]
 
     matrix_synapse_container_extra_arguments: >
       {{ matrix_synapse_container_extra_arguments|default([]) }}

@@ -1,0 +1,81 @@
+#jinja2: lstrip_blocks: True
+# The web settings for the service (API and UI).
+# It is best to have this run on localhost and use a reverse proxy to access Dimension.
+web:
+  port: 8184
+  address: '0.0.0.0'
+
+# Homeserver configuration
+homeserver:
+  # The domain name of the homeserver. This is used in many places, such as with go-neb
+  # setups, to identify the homeserver.
+  name: "{{ matrix_domain }}"
+
+  # The URL that Dimension, go-neb, and other services provisioned by Dimension should
+  # use to access the homeserver with.
+  clientServerUrl: "http://matrix-synapse:8008"
+
+  # The URL that Dimension should use when trying to communicate with federated APIs on
+  # the homeserver. If not supplied or left empty Dimension will try to resolve the address
+  # through the normal federation process.
+  federationUrl: "{{ matrix_dimension_homeserver_federationUrl }}"
+
+  # The URL that Dimension will redirect media requests to for downloading media such as
+  # stickers. If not supplied or left empty Dimension will use the clientServerUrl.
+  mediaUrl: "https://{{ matrix_server_fqn_matrix }}"
+
+  # The access token Dimension should use for miscellaneous access to the homeserver. This
+  # should be for a user on the configured homeserver: any user will do, however it is
+  # recommended to use a dedicated user (such as @dimension:t2bot.io). For information on
+  # how to acquire an access token, visit https://t2bot.io/docs/access_tokens
+  accessToken: "{{ matrix_dimension_access_token }}"
+
+# These users can modify the integrations this Dimension supports.
+# To access the admin interface, open Dimension in Riot and click the settings icon.
+admins: {{ matrix_dimension_admins|to_json }}
+
+# IPs and CIDR ranges listed here will be blocked from being widgets.
+# Note: Widgets may still be embedded with restricted content, although not through Dimension directly.
+widgetBlacklist:
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/16
+  - 127.0.0.0/8
+
+# Where the database for Dimension is
+database:
+  file: "dimension.db"
+
+# Display settings that apply to self-hosted go-neb instances
+goneb:
+  # The avatars to set for each bot. Usually these don't need to be changed, however if your homeserver
+  # is not able to reach t2bot.io then you should specify your own here. To not use an avatar for a bot,
+  # make the bot's avatar an empty string.
+  avatars:
+    giphy: "mxc://t2bot.io/c5eaab3ef0133c1a61d3c849026deb27"
+    imgur: "mxc://t2bot.io/6749eaf2b302bb2188ae931b2eeb1513"
+    github: "mxc://t2bot.io/905b64b3cd8e2347f91a60c5eb0832e1"
+    wikipedia: "mxc://t2bot.io/7edfb54e9ad9e13fec0df22636feedf1"
+    travisci: "mxc://t2bot.io/7f4703126906fab8bb27df34a17707a8"
+    rss: "mxc://t2bot.io/aace4fcbd045f30afc1b4e5f0928f2f3"
+    google: "mxc://t2bot.io/636ad10742b66c4729bf89881a505142"
+    guggy: "mxc://t2bot.io/e7ef0ed0ba651aaf907655704f9a7526"
+    echo: "mxc://t2bot.io/3407ff2db96b4e954fcbf2c6c0415a13"
+    circleci: "mxc://t2bot.io/cf7d875845a82a6b21f5f66de78f6bee"
+    jira: "mxc://t2bot.io/f4a38ebcc4280ba5b950163ca3e7c329"
+
+# Settings for how Dimension is represented to the public
+dimension:
+  # This is where Dimension is accessible from clients. Be sure to set this
+  # to your own Dimension instance.
+  publicUrl: "https://{{ matrix_server_fqn_dimension }}"
+
+# Settings for controlling how logging works
+logging:
+  file: /dev/null
+  console: true
+  consoleLevel: verbose
+  fileLevel: info
+  rotate:
+    size: 52428800 # bytes, default is 50mb
+    count: 5

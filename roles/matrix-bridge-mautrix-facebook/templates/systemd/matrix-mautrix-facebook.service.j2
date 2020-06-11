@@ -11,9 +11,9 @@ Wants={{ service }}
 
 [Service]
 Type=simple
-ExecStartPre=-/usr/bin/docker kill matrix-mautrix-facebook
-ExecStartPre=-/usr/bin/docker rm matrix-mautrix-facebook
-ExecStartPre=/usr/bin/docker run --rm --name matrix-mautrix-facebook-db \
+ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-mautrix-facebook
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-mautrix-facebook
+ExecStartPre={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-facebook-db \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
@@ -23,9 +23,9 @@ ExecStartPre=/usr/bin/docker run --rm --name matrix-mautrix-facebook-db \
 			alembic -x config=/config/config.yaml upgrade head
 
 # Intentional delay, so that the homeserver (we likely depend on) can manage to start.
-ExecStartPre=/bin/sleep 5
+ExecStartPre={{ matrix_host_command_sleep }} 5
 
-ExecStart=/usr/bin/docker run --rm --name matrix-mautrix-facebook \
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-facebook \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
@@ -38,8 +38,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-mautrix-facebook \
 			{{ matrix_mautrix_facebook_docker_image }} \
 			python3 -m mautrix_facebook -c /config/config.yaml
 
-ExecStop=-/usr/bin/docker kill matrix-mautrix-facebook
-ExecStop=-/usr/bin/docker rm matrix-mautrix-facebook
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-mautrix-facebook
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-mautrix-facebook
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-mautrix-facebook

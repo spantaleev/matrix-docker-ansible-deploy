@@ -537,10 +537,12 @@ matrix_jitsi_web_stun_servers: |
 #
 ######################################################################
 
-# By default, this playbook sets up a postfix mailer server (running in a container).
+# By default, this playbook sets up an exim mailer server (running in a container).
 # This is so that Synapse can send email reminders for unread messages.
 # Other services (like ma1sd), also use the mailer.
 matrix_mailer_enabled: true
+
+matrix_mailer_container_image_self_build: "{{ matrix_architecture != 'amd64'}}"
 
 ######################################################################
 #
@@ -636,6 +638,8 @@ matrix_nginx_proxy_proxy_matrix_federation_api_enabled: true
 matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container: "matrix-synapse:8048"
 matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "127.0.0.1:8048"
 
+matrix_nginx_proxy_container_federation_host_bind_port: "{{ matrix_federation_public_port }}"
+
 matrix_nginx_proxy_proxy_synapse_metrics: "{{ matrix_synapse_metrics_enabled }}"
 matrix_nginx_proxy_proxy_synapse_metrics_addr_with_container: "matrix-synapse:{{ matrix_synapse_metrics_port }}"
 matrix_nginx_proxy_proxy_synapse_metrics_addr_sans_container: "127.0.0.1:{{ matrix_synapse_metrics_port }}"
@@ -673,7 +677,13 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     ([matrix_domain] if matrix_nginx_proxy_base_domain_serving_enabled else [])
   }}
 
-matrix_ssl_architecture: "{{ matrix_architecture }}"
+matrix_ssl_architecture: "{{
+	{
+		'amd64': 'amd64',
+		'arm32': 'arm32v6',
+		'arm64': 'arm64v8',
+	}[matrix_architecture]
+}}"
 
 ######################################################################
 #
@@ -780,7 +790,7 @@ matrix_synapse_container_client_api_host_bind_port: "{{ '' if matrix_nginx_proxy
 matrix_synapse_container_federation_api_plain_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8048' }}"
 #
 # For exposing the Matrix Federation API's TLS port (HTTPS) to the internet on all network interfaces.
-matrix_synapse_container_federation_api_tls_host_bind_port: "{{ '8448' if (matrix_synapse_federation_enabled and matrix_synapse_tls_federation_listener_enabled) else '' }}"
+matrix_synapse_container_federation_api_tls_host_bind_port: "{{ matrix_federation_public_port if (matrix_synapse_federation_enabled and matrix_synapse_tls_federation_listener_enabled) else '' }}"
 #
 # For exposing the Synapse Metrics API's port (plain HTTP) to the local host.
 matrix_synapse_container_metrics_api_host_bind_port: "{{ '127.0.0.1:9100' if (matrix_synapse_metrics_enabled and not matrix_nginx_proxy_enabled) else '' }}"

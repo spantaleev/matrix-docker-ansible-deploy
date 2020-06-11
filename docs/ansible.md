@@ -49,7 +49,7 @@ docker run -it --rm \
 -v `pwd`:/work \
 -v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro \
 --entrypoint=/bin/sh \
-devture/ansible:2.8.1-r0
+devture/ansible:2.9.9-r0
 ```
 
 The above command tries to mount an SSH key (`$HOME/.ssh/id_rsa`) into the container (at `/root/.ssh/id_rsa`).
@@ -60,7 +60,7 @@ The `/work` directory contains the playbook's code.
 
 You can execute `ansible-playbook` commands as per normal now.
 
-### If you don't use SSH keys for authentication 
+### If you don't use SSH keys for authentication
 
 If you don't use SSH keys for authentication, simply remove that whole line (`-v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro`).
 To authenticate at your server using a password, you need to add a package. So, when you are in the shell of the ansible docker container (the previously used `docker run -it ...` command), run:

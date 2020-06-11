@@ -6,12 +6,15 @@
 
 - name: Ensure mailer base path exists
   file:
-    path: "{{ matrix_mailer_base_path }}"
+    path: "{{ item.path }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: matrix_mailer_enabled|bool
+  with_items:
+    - { path: "{{ matrix_mailer_base_path }}", when: true }
+    - { path: "{{ matrix_mailer_container_image_self_build_src_files_path }}", when: "{{ matrix_mailer_container_image_self_build }}" }
+  when: "matrix_mailer_enabled|bool and item.when"
 
 - name: Ensure mailer environment variables file created
   template:
@@ -20,13 +23,31 @@
     mode: 0640
   when: matrix_mailer_enabled|bool
 
-- name: Ensure mailer image is pulled
+- name: Ensure exim-relay repository is present on self-build
+  git:
+    repo: "{{ matrix_mailer_container_image_self_build_repository_url }}"
+    dest: "{{ matrix_mailer_container_image_self_build_src_files_path }}"
+    version: "{{ matrix_mailer_container_image_self_build_version }}"
+    force: "yes"
+  when: "matrix_mailer_container_image_self_build|bool"
+
+- name: Ensure exim-relay Docker image is built
+  docker_image:
+    name: "{{ matrix_mailer_docker_image }}"
+    source: build
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_mailer_container_image_self_build_src_files_path }}"
+      pull: yes
+  when: "matrix_mailer_enabled|bool and matrix_mailer_container_image_self_build|bool"
+
+- name: Ensure exim-relay image is pulled
   docker_image:
     name: "{{ matrix_mailer_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mailer_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_docker_image_force_pull }}"
-  when: matrix_mailer_enabled|bool
+  when: "matrix_mailer_enabled|bool and not matrix_mailer_container_image_self_build|bool"
 
 - name: Ensure matrix-mailer.service installed
   template:

@@ -1,3 +1,12 @@
+# 2020-06-05
+
+## SMS bridging support
+
+Thanks to [benkuly](https://github.com/benkuly)'s efforts, the playbook now supports bridging to SMS (with one telephone number only) via [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge).
+
+See our [Setting up Matrix SMS bridging](docs/configuring-playbook-matrix-bridge-sms.md) documentation page for getting started.
+
+
 # 2020-05-19
 
 ## (Compatibility Break / Security Issue) Disabling User Directory search powered by the ma1sd Identity Server

@@ -11,10 +11,10 @@ Wants={{ service }}
 
 [Service]
 Type=simple
-ExecStartPre=-/usr/bin/docker kill matrix-nginx-proxy
-ExecStartPre=-/usr/bin/docker rm matrix-nginx-proxy
+ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-nginx-proxy
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-nginx-proxy
 
-ExecStart=/usr/bin/docker run --rm --name matrix-nginx-proxy \
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-nginx-proxy \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
@@ -43,9 +43,9 @@ ExecStart=/usr/bin/docker run --rm --name matrix-nginx-proxy \
 			{% endfor %}
 			{{ matrix_nginx_proxy_docker_image }}
 
-ExecStop=-/usr/bin/docker kill matrix-nginx-proxy
-ExecStop=-/usr/bin/docker rm matrix-nginx-proxy
-ExecReload=/usr/bin/docker exec matrix-nginx-proxy /usr/sbin/nginx -s reload
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-nginx-proxy
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-nginx-proxy
+ExecReload={{ matrix_host_command_docker }} exec matrix-nginx-proxy /usr/sbin/nginx -s reload
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-nginx-proxy

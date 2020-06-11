@@ -2,7 +2,12 @@ matrix_mailer_enabled: true
 
 matrix_mailer_base_path: "{{ matrix_base_data_path }}/mailer"
 
-matrix_mailer_docker_image: "devture/exim-relay:4.92.2-r0-0"
+matrix_mailer_container_image_self_build: false
+matrix_mailer_container_image_self_build_repository_url: "https://github.com/devture/exim-relay"
+matrix_mailer_container_image_self_build_src_files_path: "{{ matrix_mailer_base_path }}/docker-src"
+matrix_mailer_container_image_self_build_version: "{{ matrix_mailer_docker_image.split(':')[1] }}"
+
+matrix_mailer_docker_image: "devture/exim-relay:4.93.1-r0"
 matrix_mailer_docker_image_force_pull: "{{ matrix_mailer_docker_image.endswith(':latest') }}"
 
 # The user/group that the container runs with.

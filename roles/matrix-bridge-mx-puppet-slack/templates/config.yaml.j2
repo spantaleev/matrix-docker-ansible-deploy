@@ -1,0 +1,96 @@
+#jinja2: lstrip_blocks: "True"
+bridge:
+  # Port to host the bridge on
+  # Used for communication between the homeserver and the bridge
+  port: {{ matrix_mx_puppet_slack_appservice_port }}
+  # The host connections to the bridge's webserver are allowed from
+  bindAddress: 0.0.0.0
+  # Public domain of the homeserver
+  domain: {{ matrix_mx_puppet_slack_homeserver_domain }}
+  # Reachable URL of the Matrix homeserver
+  homeserverUrl: {{ matrix_mx_puppet_slack_homeserver_address }}
+  {% if matrix_mx_puppet_slack_login_shared_secret != '' %}
+  loginSharedSecretMap:
+    {{ matrix_domain }}: {{ matrix_mx_puppet_slack_login_shared_secret }}
+  {% endif %}
+
+
+# Slack OAuth settings. Create a slack app at https://api.slack.com/apps
+oauth:
+  enabled: true
+  # Slack app credentials.
+  # N.B. This must be quoted so YAML wouldn't parse it as a float.
+  clientId: "{{ matrix_mx_puppet_slack_client_id }}"
+  clientSecret: {{ matrix_mx_puppet_slack_client_secret }}
+  # Path where to listen for OAuth redirect callbacks.
+  redirectPath: {{ matrix_mx_puppet_slack_redirect_path }}
+  # Set up proxying from https://your.domain/redirect_path to http://bindAddress:port/redirect_path,
+  # then set this field and the Slack app redirect URI field to the former.
+  redirectUri: {{ matrix_mx_puppet_slack_redirect_uri }}
+
+presence:
+  # Bridge Discord online/offline status
+  enabled: true
+  # How often to send status to the homeserver in milliseconds
+  interval: 500
+
+provisioning:
+  # Regex of Matrix IDs allowed to use the puppet bridge
+  whitelist: {{ matrix_mx_puppet_slack_provisioning_whitelist|to_json }}
+    # Allow a specific user
+    #- "@user:server\\.com"
+    # Allow users on a specific homeserver
+    #- "@.*:yourserver\\.com"
+    # Allow anyone
+    #- ".*"
+  # Regex of Matrix IDs forbidden from using the puppet bridge
+  #blacklist:
+    # Disallow a specific user
+    #- "@user:server\\.com"
+    # Disallow users on a specific homeserver
+    #- "@.*:yourserver\\.com"
+  blacklist: {{ matrix_mx_puppet_slack_provisioning_blacklist|to_json }}
+
+  # Shared secret for the provisioning API for use by integration managers.
+  # If this is not set, the provisioning API will not be enabled.
+  #sharedSecret: random string
+  # Path prefix for the provisioning API. /v1 will be appended to the prefix automatically.
+  apiPrefix: /_matrix/provision
+
+database:
+  # Use Postgres as a database backend
+  # If set, will be used instead of SQLite3
+  # Connection string to connect to the Postgres instance
+  # with username "user", password "pass", host "localhost" and database name "dbname".
+  # Modify each value as necessary
+  #connString: "postgres://user:pass@localhost/dbname?sslmode=disable"
+  # Use SQLite3 as a database backend
+  # The name of the database file
+  filename: /data/database.db
+
+logging:
+  # Log level of console output
+  # Allowed values starting with most verbose:
+  # silly, debug, verbose, info, warn, error
+  console: info
+  # Date and time formatting
+  lineDateFormat: MMM-D HH:mm:ss.SSS
+  # Logging files
+  # Log files are rotated daily by default
+  files:
+    # Log file path
+    - file: "/data/bridge.log"
+      # Log level for this file
+      # Allowed values starting with most verbose:
+      # silly, debug, verbose, info, warn, error
+      level: info
+      # Date and time formatting
+      datePattern: YYYY-MM-DD
+      # Maximum number of logs to keep.
+      # This can be a number of files or number of days.
+      # If using days, add 'd' as a suffix
+      maxFiles: 14d
+      # Maximum size of the file after which it will rotate. This can be a
+      # number of bytes, or units of kb, mb, and gb. If using the units, add
+      # 'k', 'm', or 'g' as the suffix
+      maxSize: 50m

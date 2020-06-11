@@ -11,13 +11,13 @@ Wants={{ service }}
 
 [Service]
 Type=simple
-ExecStartPre=-/usr/bin/docker kill matrix-mautrix-whatsapp
-ExecStartPre=-/usr/bin/docker rm matrix-mautrix-whatsapp
+ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-mautrix-whatsapp
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-mautrix-whatsapp
 
 # Intentional delay, so that the homeserver (we likely depend on) can manage to start.
-ExecStartPre=/bin/sleep 5
+ExecStartPre={{ matrix_host_command_sleep }} 5
 
-ExecStart=/usr/bin/docker run --rm --name matrix-mautrix-whatsapp \
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-whatsapp \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
@@ -31,8 +31,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-mautrix-whatsapp \
 			{{ matrix_mautrix_whatsapp_docker_image }} \
 			/usr/bin/mautrix-whatsapp -c /config/config.yaml -r /config/registration.yaml
 
-ExecStop=-/usr/bin/docker kill matrix-mautrix-whatsapp
-ExecStop=-/usr/bin/docker rm matrix-mautrix-whatsapp
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-mautrix-whatsapp
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-mautrix-whatsapp
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-mautrix-whatsapp

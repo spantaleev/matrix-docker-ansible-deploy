@@ -5,7 +5,7 @@ matrix_synapse_enabled: true
 
 matrix_synapse_container_image_self_build: false
 
-matrix_synapse_docker_image: "matrixdotorg/synapse:v1.13.0"
+matrix_synapse_docker_image: "matrixdotorg/synapse:v1.15.0"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
@@ -202,12 +202,12 @@ matrix_synapse_password_config_localdb_enabled: true
 # Controls the number of events that Synapse caches in memory.
 matrix_synapse_event_cache_size: "100K"
 
-# Controls cache sizes for Synapse via the SYNAPSE_CACHE_FACTOR environment variable.
+# Controls cache sizes for Synapse.
 # Raise this to increase cache sizes or lower it to potentially lower memory use.
 # To learn more, see:
 # - https://github.com/matrix-org/synapse#help-synapse-eats-all-my-ram
 # - https://github.com/matrix-org/synapse/issues/3939
-matrix_synapse_cache_factor: 0.5
+matrix_synapse_caches_global_factor: 0.5
 
 # Controls whether Synapse will federate at all.
 # Disable this to completely isolate your server from the rest of the Matrix network.
@@ -299,7 +299,7 @@ matrix_synapse_ext_password_provider_rest_auth_login_profile_name_autofill: fals
 # Enable this to activate the Shared Secret Auth password provider module.
 # See: https://github.com/devture/matrix-synapse-shared-secret-auth
 matrix_synapse_ext_password_provider_shared_secret_auth_enabled: false
-matrix_synapse_ext_password_provider_shared_secret_auth_download_url: "https://raw.githubusercontent.com/devture/matrix-synapse-shared-secret-auth/1.0.1/shared_secret_authenticator.py"
+matrix_synapse_ext_password_provider_shared_secret_auth_download_url: "https://raw.githubusercontent.com/devture/matrix-synapse-shared-secret-auth/1.0.2/shared_secret_authenticator.py"
 matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret: ""
 
 # Enable this to activate LDAP password provider
@@ -357,7 +357,7 @@ matrix_synapse_default_room_version: "5"
 #
 # If a spam-checker extension is enabled, this variable's value is set automatically by the playbook during runtime.
 # If not, you can also control its value manually.
-matrix_synapse_spam_checker: ~
+matrix_synapse_spam_checker: []
 
 matrix_synapse_trusted_key_servers:
   - server_name: "matrix.org"

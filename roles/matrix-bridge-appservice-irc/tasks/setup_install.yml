@@ -58,7 +58,7 @@
   register: irc_passkey_file
 
 - name: Generate Appservice IRC passkey if it doesn't exist
-  shell: /usr/bin/openssl genpkey -out {{ matrix_appservice_irc_data_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048
+  shell: "{{ matrix_host_command_openssl }} genpkey -out {{ matrix_appservice_irc_data_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048"
   become: true
   become_user: "{{ matrix_user_username }}"
   when: "not irc_passkey_file.stat.exists"
@@ -93,7 +93,7 @@
 # to produce a final registration.yaml file, as we desire.
 - name: Generate Appservice IRC registration-template.yaml
   shell: >-
-    /usr/bin/docker run --rm --name matrix-appservice-irc-gen
+    {{ matrix_host_command_docker }} run --rm --name matrix-appservice-irc-gen
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
     --cap-drop=ALL
     -v {{ matrix_appservice_irc_config_path }}:/config:z

@@ -11,17 +11,20 @@ Wants={{ service }}
 
 [Service]
 Type=simple
-ExecStartPre=-/usr/bin/docker kill matrix-mx-puppet-slack
-ExecStartPre=-/usr/bin/docker rm matrix-mx-puppet-slack
+ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-mx-puppet-slack
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-mx-puppet-slack
 
 # Intentional delay, so that the homeserver (we likely depend on) can manage to start.
-ExecStartPre=/bin/sleep 5
+ExecStartPre={{ matrix_host_command_sleep }} 5
 
-ExecStart=/usr/bin/docker run --rm --name matrix-mx-puppet-slack \
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mx-puppet-slack \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
+			{% if matrix_mx_puppet_slack_container_http_host_bind_port %}
+			-p {{ matrix_mx_puppet_slack_container_http_host_bind_port }}:{{ matrix_mx_puppet_slack_appservice_port }} \
+			{% endif %}
 			-e CONFIG_PATH=/config/config.yaml \
 			-e REGISTRATION_PATH=/config/registration.yaml \
 			-v {{ matrix_mx_puppet_slack_config_path }}:/config:z \
@@ -31,8 +34,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-mx-puppet-slack \
 			{% endfor %}
 			{{ matrix_mx_puppet_slack_docker_image }}
 
-ExecStop=-/usr/bin/docker kill matrix-mx-puppet-slack
-ExecStop=-/usr/bin/docker rm matrix-mx-puppet-slack
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-mx-puppet-slack
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-mx-puppet-slack
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-mx-puppet-slack
