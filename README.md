@@ -160,6 +160,8 @@ This playbook sets up your server using the following Docker images:
 
 - [sorunome/mx-puppet-twitter](https://hub.docker.com/r/sorunome/mx-puppet-twitter) - the [mx-puppet-twitter](https://github.com/Sorunome/mx-puppet-twitter) bridge to [Twitter](https://twitter.com) (optional)
 
+- [pneumaticat/mx-puppet-discord](https://hub.docker.com/r/pneumaticat/mx-puppet-discord) - the [mx-puppet-discord](https://github.com/matrix-discord/mx-puppet-discord) bridge to [Disocrd](https:/discordapp.com) (optional)
+
 - [turt2live/matrix-dimension](https://hub.docker.com/r/turt2live/matrix-dimension) - the [Dimension](https://dimension.t2bot.io/) integrations manager (optional)
 
 - [jitsi/web](https://hub.docker.com/r/jitsi/web) - the [Jitsi](https://jitsi.org/) web UI (optional)
