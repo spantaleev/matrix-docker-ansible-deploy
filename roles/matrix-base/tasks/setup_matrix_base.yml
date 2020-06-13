@@ -10,6 +10,14 @@
   with_items:
     - "{{ matrix_base_data_path }}"
 
+- name: Preserve vars.yml on the server for easily restoring if it gets lost later on
+  copy:
+    src: "{{ inventory_dir }}/host_vars/{{ inventory_hostname }}/vars.yml"
+    dest: "{{ matrix_base_data_path }}/vars.yml"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: '0660'
+
 # `docker_network` doesn't work as expected when the given network
 # is a substring of a network that already exists.
 #
