@@ -74,7 +74,7 @@ To learn more about how to do this, refer to the information about `matrix_ma1sd
 
 ## Example: SMS verification
 
-If your use case requires mobile verification, it is quite simple to integrate ma1sd with Twilio, an online telephony services gateway. Their prices are reasonable for low-volume projects and integration can be done with the following configuration:
+If your use case requires mobile verification, it is quite simple to integrate ma1sd with [Twilio](https://www.twilio.com/), an online telephony services gateway. Their prices are reasonable for low-volume projects and integration can be done with the following configuration:
 
 ```matrix_ma1sd_configuration_extension_yaml: |
   threepid:
