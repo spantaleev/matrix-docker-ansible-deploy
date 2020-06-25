@@ -81,7 +81,7 @@ var config = {
     // Audio
 
     // Disable measuring of audio levels.
-    disableAudioLevels: {{ matrix_jitsi_web_config_disable_AudioLevels|to_json }},
+    disableAudioLevels: {{ matrix_jitsi_web_config_disableAudioLevels|to_json }},
 
     // Start the conference in audio only mode (no video is being received nor
     // sent).
@@ -109,14 +109,14 @@ var config = {
     // util#browser#usesNewGumFlow. The constraints are independency from
     // this config's resolution value. Defaults to requesting an ideal aspect
     // ratio of 16:9 with an ideal resolution of 720.
-    {% if matrix_jitsi_web_config_enable_Video_Constraints %}
+    {% if matrix_jitsi_web_config_constraints_enabled %}
     constraints: {
         video: {
-            aspectRatio: {{ matrix_jitsi_web_config_aspectRatio }},
+            aspectRatio: {{ matrix_jitsi_web_config_constraints_video_aspectRatio }},
             height: {
-                ideal: {{ matrix_jitsi_web_config_height_ideal|to_json }},
-                max: {{ matrix_jitsi_web_config_height_max|to_json }},
-                min: {{ matrix_jitsi_web_config_height_min|to_json }}
+                ideal: {{ matrix_jitsi_web_config_constraints_video_height_ideal|to_json }},
+                max: {{ matrix_jitsi_web_config_constraints_video_height_max|to_json }},
+                min: {{ matrix_jitsi_web_config_constraints_video_height_min|to_json }}
             }
         }
     },
@@ -127,7 +127,7 @@ var config = {
     // Enable / disable layer suspension.  If enabled, endpoints whose HD
     // layers are not in use will be suspended (no longer sent) until they
     // are requested again.
-    enableLayerSuspension: {{ matrix_jitsi_web_config_enable_LayerSuspension|to_json }},
+    enableLayerSuspension: {{ matrix_jitsi_web_config_enableLayerSuspension|to_json }},
 
     // Suspend sending video if bandwidth estimation is too low. This may cause
     // problems with audio playback. Disabled until these are fixed.
@@ -489,4 +489,3 @@ hiddenDomain: {{ matrix_jitsi_recorder_domain|to_json }},
 };
 
 /* eslint-enable no-unused-vars, no-var */
-
