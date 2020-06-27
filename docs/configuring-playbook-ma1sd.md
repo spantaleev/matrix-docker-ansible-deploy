@@ -72,6 +72,21 @@ To use a more custom configuration, you can define a `matrix_ma1sd_configuration
 and put your configuration in it.
 To learn more about how to do this, refer to the information about `matrix_ma1sd_configuration_extension_yaml` in the [default variables file](../roles/matrix-ma1sd/defaults/main.yml) of the ma1sd component.
 
+## Example: SMS verification
+
+If your use case requires mobile verification, it is quite simple to integrate ma1sd with [Twilio](https://www.twilio.com/), an online telephony services gateway. Their prices are reasonable for low-volume projects and integration can be done with the following configuration:
+
+```yaml
+matrix_ma1sd_configuration_extension_yaml: |
+  threepid:
+    medium:
+      msisdn:
+        connectors:
+          twilio:
+            account_sid: '<secret-SID>'
+            auth_token: '<secret-token>'
+            number: '+<msisdn-number>'
+```
 
 ## Troubleshooting
 
