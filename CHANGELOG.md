@@ -1,3 +1,15 @@
+# 2020-06-28
+
+## (Post Mortem / fixed Security Issue) Re-enabling User Directory search powered by the ma1sd Identity Server
+
+User Directory search requests used to go to the ma1sd identity server by default, which queried its own stores and the Synapse database.
+
+ma1sd's [security issue](https://github.com/ma1uta/ma1sd/issues/44) has been fixed in version `2.4.0`, with [this commit](ma1uta/ma1sd@2bb5a734d11662b06471113cf3d6b4cee5e33a85). `ma1sd 2.4.0` is now the default version for this playbook. For more information on what happened, please check the mentioned issue.
+
+We are re-enabling user directory search with this update. Those who would like to keep it disabled can use this configuration: `matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: false`
+
+As always, re-running the playbook is enough to get the updated bits.
+
 # 2020-06-11
 
 ## SMS bridging requires db reset
