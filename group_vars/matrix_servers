@@ -232,6 +232,8 @@ matrix_mautrix_hangouts_appservice_token: "{{ matrix_synapse_macaroon_secret_key
 
 matrix_mautrix_hangouts_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'ho.hs.token') | to_uuid }}"
 
+matrix_mautrix_hangouts_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9007' }}"
+
 matrix_mautrix_hangouts_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
 ######################################################################
