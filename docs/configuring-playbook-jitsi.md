@@ -81,6 +81,47 @@ matrix_jitsi_jvb_container_extra_arguments:
   - '--env "DOCKER_HOST_ADDRESS=<Local IP adress of the host>"'
 ```
 
+## (Optional) Fine tune Jitsi
+
+You may want to suspend unused video layers until they are requested again, to save up resources on both server and clients.
+Read more on this feature [here](https://jitsi.org/blog/new-off-stage-layer-suppression-feature/)
+For this add this line to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
+
+```yaml
+matrix_jitsi_web_config_enableLayerSuspension: true
+```
+
+You may wish to disable audio levels to avoid excessive refresh of the client-side page and decrease the CPU consumption involved.
+For this add this line to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
+
+```yaml
+matrix_jitsi_web_config_disableAudioLevels: true
+```
+
+You may want to limit the number of video feeds forwarded to each client, to save up resources on both server and clients. As clients’ bandwidth and CPU may not bear the load, use this setting to avoid lag and crashes.
+This feature is found by default in other webconference applications such as Office 365 Teams (limit is set to 4).
+Read how it works [here](https://github.com/jitsi/jitsi-videobridge/blob/master/doc/last-n.md) and performance evaluation on this [study](https://jitsi.org/wp-content/uploads/2016/12/nossdav2015lastn.pdf)
+For this add this line to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
+
+```yaml
+matrix_jitsi_web_config_channelLastN: 4
+```
+
+To enable the variables that allow you to manage the video configuration you must add the following line to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
+
+```yaml
+matrix_jitsi_web_config_constraints_enabled: true
+```
+
+You may want to limit the maximum video resolution, to save up resources on both server and clients.
+For example, to set resolution to 480.
+For this add this two lines to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
+
+```yaml
+matrix_jitsi_web_config_constraints_video_height_ideal: 480
+matrix_jitsi_web_config_constraints_video_height_max: 480
+```
+
 ## Apply changes
 
 Then re-run the playbook: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
