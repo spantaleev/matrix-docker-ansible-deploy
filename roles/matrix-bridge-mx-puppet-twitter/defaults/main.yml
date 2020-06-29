@@ -82,6 +82,7 @@ matrix_mx_puppet_twitter_configuration: "{{ matrix_mx_puppet_twitter_configurati
 
 # The prefix for user IDs and aliases
 matrix_mx_puppet_twitter_namespace_prefix: _twitterpuppet_
+matrix_mx_puppet_twitter_bot_localpart: _twitterpuppet_bot
 
 matrix_mx_puppet_twitter_registration_yaml: |
   as_token: "{{ matrix_mx_puppet_twitter_appservice_token }}"
@@ -97,7 +98,7 @@ matrix_mx_puppet_twitter_registration_yaml: |
         regex: '#{{ matrix_mx_puppet_twitter_namespace_prefix|regex_escape }}.*:{{ matrix_mx_puppet_twitter_homeserver_domain|regex_escape }}'
   protocols: []
   rate_limited: false
-  sender_localpart: _twitterpuppet_bot
+  sender_localpart: "{{ matrix_mx_puppet_twitter_bot_localpart }}"
   url: {{ matrix_mx_puppet_twitter_appservice_address }}
 
 matrix_mx_puppet_twitter_registration: "{{ matrix_mx_puppet_twitter_registration_yaml|from_yaml }}"
