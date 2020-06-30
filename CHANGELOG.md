@@ -1,3 +1,12 @@
+# 2020-06-30
+
+## Instagram and Twitter bridging support
+
+Thanks to [Johanna Dorothea Reichmann](https://github.com/jdreichmann)'s efforts, the playbook now supports bridging to [Instagram](https://www.instagram.com/) via the [mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) bridge. See our [Setting up MX Puppet Instagram bridging](docs/configuring-playbook-bridge-mx-puppet-instagram.md) documentation page for getting started.
+
+Thanks to [Tulir Asokan](https://github.com/tulir)'s efforts, the playbook now supports bridging to [Twitter](https://twitter.com/) via the [mx-puppet-twitter](https://github.com/Sorunome/mx-puppet-twitter) bridge. See our [Setting up MX Puppet Twitter bridging](docs/configuring-playbook-bridge-mx-puppet-twitter.md) documentation page for getting started.
+
+
 # 2020-06-28
 
 ## (Post Mortem / fixed Security Issue) Re-enabling User Directory search powered by the ma1sd Identity Server
