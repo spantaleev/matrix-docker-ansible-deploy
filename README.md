@@ -52,6 +52,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) bridge for slack compatible webhooks ([ConcourseCI](https://concourse-ci.org/), [Slack](https://slack.com/) etc. pp.)
 
+- (optional) the [mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) bridge for Instagram-DMs ([Instagram](https://www.instagram.com/)) - see [docs/configuring-playbook-bridge-mx-puppet-instagram.md](docs/configuring-playbook-bridge-mx-puppet-instagram.md) for setup documentation
+
 - (optional) the [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) for bridging your Matrix server to SMS
 
 - (optional) [Email2Matrix](https://github.com/devture/email2matrix) for relaying email messages to Matrix rooms
