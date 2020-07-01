@@ -1,5 +1,7 @@
 # Setting up MX Puppet Discord (optional)
 
+**Note**: bridging to [Discord](https://discordapp.com/) can also happen via the [matrix-appservice-discord](configuring-playbook-bridge-appservice-discord.md) bridge supported by the playbook.
+
 The playbook can install and configure
 [mx-puppet-discord](https://github.com/matrix-discord/mx-puppet-discord) for you.
 
