@@ -1,3 +1,10 @@
+# 2020-07-03
+
+## Steam bridging support via mx-puppet-steam
+
+Thanks to [Hugues Morisset](https://github.com/izissise)'s efforts, the playbook now supports bridging to [Steam](https://steamapp.com/) via the [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) bridge. See our [Setting up MX Puppet Steam bridging](docs/configuring-playbook-bridge-mx-puppet-steam.md) documentation page for getting started.
+
+
 # 2020-07-01
 
 ## Discord bridging support via mx-puppet-discord
