@@ -1,0 +1,95 @@
+# Mx Puppet Steam is a Matrix <-> Steam bridge
+# See: https://github.com/matrix-steam/mx-puppet-steam
+
+matrix_mx_puppet_steam_enabled: true
+
+matrix_mx_puppet_steam_container_image_self_build: false
+
+# Controls whether the mx-puppet-steam container exposes its HTTP port (tcp/8432 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8432"), or empty string to not expose.
+matrix_mx_puppet_steam_container_http_host_bind_port: ''
+
+matrix_mx_puppet_steam_docker_image: "icewind1991/mx-puppet-steam:latest"
+matrix_mx_puppet_steam_docker_image_force_pull: "{{ matrix_mx_puppet_steam_docker_image.endswith(':latest') }}"
+
+matrix_mx_puppet_steam_base_path: "{{ matrix_base_data_path }}/mx-puppet-steam"
+matrix_mx_puppet_steam_config_path: "{{ matrix_mx_puppet_steam_base_path }}/config"
+matrix_mx_puppet_steam_data_path: "{{ matrix_mx_puppet_steam_base_path }}/data"
+matrix_mx_puppet_steam_docker_src_files_path: "{{ matrix_mx_puppet_steam_base_path }}/docker-src"
+
+matrix_mx_puppet_steam_appservice_port: "8432"
+
+matrix_mx_puppet_steam_homeserver_address: 'http://matrix-synapse:8008'
+matrix_mx_puppet_steam_homeserver_domain: '{{ matrix_domain }}'
+matrix_mx_puppet_steam_appservice_address: 'http://matrix-mx-puppet-steam:{{ matrix_mx_puppet_steam_appservice_port }}'
+
+matrix_mx_puppet_steam_client_id: ''
+matrix_mx_puppet_steam_client_secret: ''
+
+# "@user:server.com" to allow specific user
+# "@.*:yourserver.com" to allow users on a specific homeserver
+# "@.*" to allow anyone
+matrix_mx_puppet_steam_provisioning_whitelist:
+  - "@.*:{{ matrix_domain|regex_escape }}"
+
+# Leave empty to disable blacklist
+# "@user:server.com" disallow a specific user
+# "@.*:yourserver.com" disallow users on a specific homeserver
+matrix_mx_puppet_steam_provisioning_blacklist: []
+
+# A list of extra arguments to pass to the container
+matrix_mx_puppet_steam_container_extra_arguments: []
+
+# List of systemd services that matrix-puppet-steam.service depends on.
+matrix_mx_puppet_steam_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-puppet-steam.service wants
+matrix_mx_puppet_steam_systemd_wanted_services_list: []
+
+matrix_mx_puppet_steam_appservice_token: ''
+matrix_mx_puppet_steam_homeserver_token: ''
+
+# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
+matrix_mx_puppet_steam_login_shared_secret: ''
+
+# Default configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_mx_puppet_steam_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_mx_puppet_steam_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_mx_puppet_steam_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_mx_puppet_steam_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_mx_puppet_steam_configuration_yaml`.
+
+matrix_mx_puppet_steam_configuration_extension: "{{ matrix_mx_puppet_steam_configuration_extension_yaml|from_yaml if matrix_mx_puppet_steam_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_mx_puppet_steam_configuration_yaml`.
+matrix_mx_puppet_steam_configuration: "{{ matrix_mx_puppet_steam_configuration_yaml|from_yaml|combine(matrix_mx_puppet_steam_configuration_extension, recursive=True) }}"
+
+matrix_mx_puppet_steam_registration_yaml: |
+  as_token: "{{ matrix_mx_puppet_steam_appservice_token }}"
+  hs_token: "{{ matrix_mx_puppet_steam_homeserver_token }}"
+  id: steam-puppet
+  namespaces:
+    users:
+      - exclusive: true
+        regex: '@_steampuppet_.*:{{ matrix_mx_puppet_steam_homeserver_domain|regex_escape }}'
+    rooms: []
+    aliases:
+      - exclusive: true
+        regex: '#_steampuppet_.*:{{ matrix_mx_puppet_steam_homeserver_domain|regex_escape }}'
+  protocols: []
+  rate_limited: false
+  sender_localpart: _steampuppet_bot
+  url: {{ matrix_mx_puppet_steam_appservice_address }}
+
+matrix_mx_puppet_steam_registration: "{{ matrix_mx_puppet_steam_registration_yaml|from_yaml }}"

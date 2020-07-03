@@ -486,6 +486,35 @@ matrix_mx_puppet_discord_login_shared_secret: "{{ matrix_synapse_ext_password_pr
 #
 ######################################################################
 
+######################################################################
+#
+# matrix-bridge-mx-puppet-steam
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_mx_puppet_steam_enabled: false
+
+matrix_mx_puppet_steam_container_image_self_build: "{{ matrix_architecture != 'amd64'}}"
+
+matrix_mx_puppet_steam_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+  }}
+
+matrix_mx_puppet_steam_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mxste.as.tok') | to_uuid }}"
+
+matrix_mx_puppet_steam_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mxste.hs.tok') | to_uuid }}"
+
+matrix_mx_puppet_steam_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
+######################################################################
+#
+# /matrix-bridge-mx-puppet-steam
+#
+######################################################################
 
 ######################################################################
 #
