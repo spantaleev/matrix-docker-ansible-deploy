@@ -8,7 +8,7 @@ The captcha mechanism used is Google's ReCaptcha. This requires API keys from Go
 
 Requires a site/secret key pair from:
 
-<https://developers.google.com/recaptcha/>
+<http://www.google.com/recaptcha/admin>
 
 Must be a reCAPTCHA v2 key using the "I'm not a robot" Checkbox option
 
