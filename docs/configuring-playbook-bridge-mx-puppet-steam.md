@@ -1,7 +1,7 @@
 # Setting up MX Puppet Steam (optional)
 
 The playbook can install and configure
-[mx-puppet-steam](https://github.com/matrix-steam/mx-puppet-steam) for you.
+[mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) for you.
 
 See the project page to learn what it does and why it might be useful to you.
 
@@ -23,7 +23,7 @@ the handle `@_steampuppet_bot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base
 domain, not the `matrix.` domain).
 
 Three authentication methods are available, Legacy Token, OAuth and xoxc token.
-See mx-puppet-steam [documentation](https://github.com/matrix-steam/mx-puppet-steam)
+See mx-puppet-steam [documentation](https://github.com/icewind1991/mx-puppet-steam)
 for more information about how to configure the bridge.
 
 Once logged in, send `list` to the bot user to list the available rooms.
