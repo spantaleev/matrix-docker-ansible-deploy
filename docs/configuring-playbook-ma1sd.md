@@ -31,6 +31,8 @@ To use the [Registration](https://github.com/ma1uta/ma1sd/blob/master/docs/featu
 
 - `matrix_synapse_enable_registration` - to enable user-initiated registration in Synapse
 
+- `matrix_synapse_enable_registration_captcha` - to validate registering users using reCAPTCHA, as described in the [enabling reCAPTCHA](configuring_captcha.md) documentation.
+
 - `matrix_synapse_registrations_require_3pid` - to control the types of 3pid (`'email'`, `'msisdn'`) required by the Synapse server for registering
 
 - variables prefixed with `matrix_nginx_proxy_proxy_matrix_3pid_registration_` (e.g. `matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled`) - to configure the integrated nginx webserver to send registration requests to ma1sd (instead of Synapse), so it can apply its additional functionality
