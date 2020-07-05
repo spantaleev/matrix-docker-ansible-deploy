@@ -5,7 +5,7 @@ The playbook can install and configure
 
 See the project page to learn what it does and why it might be useful to you.
 
-To enable the [Steam](https://steamapp.com/) bridge just use the following
+To enable the [Steam](https://steampowered.com/) bridge just use the following
 playbook configuration:
 
 
