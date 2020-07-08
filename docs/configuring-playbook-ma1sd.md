@@ -31,6 +31,8 @@ To use the [Registration](https://github.com/ma1uta/ma1sd/blob/master/docs/featu
 
 - `matrix_synapse_enable_registration` - to enable user-initiated registration in Synapse
 
+- `matrix_synapse_enable_registration_captcha` - to validate registering users using reCAPTCHA, as described in the [enabling reCAPTCHA](configuring_captcha.md) documentation.
+
 - `matrix_synapse_registrations_require_3pid` - to control the types of 3pid (`'email'`, `'msisdn'`) required by the Synapse server for registering
 
 - variables prefixed with `matrix_nginx_proxy_proxy_matrix_3pid_registration_` (e.g. `matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled`) - to configure the integrated nginx webserver to send registration requests to ma1sd (instead of Synapse), so it can apply its additional functionality
@@ -72,6 +74,21 @@ To use a more custom configuration, you can define a `matrix_ma1sd_configuration
 and put your configuration in it.
 To learn more about how to do this, refer to the information about `matrix_ma1sd_configuration_extension_yaml` in the [default variables file](../roles/matrix-ma1sd/defaults/main.yml) of the ma1sd component.
 
+## Example: SMS verification
+
+If your use case requires mobile verification, it is quite simple to integrate ma1sd with [Twilio](https://www.twilio.com/), an online telephony services gateway. Their prices are reasonable for low-volume projects and integration can be done with the following configuration:
+
+```yaml
+matrix_ma1sd_configuration_extension_yaml: |
+  threepid:
+    medium:
+      msisdn:
+        connectors:
+          twilio:
+            account_sid: '<secret-SID>'
+            auth_token: '<secret-token>'
+            number: '+<msisdn-number>'
+```
 
 ## Troubleshooting
 

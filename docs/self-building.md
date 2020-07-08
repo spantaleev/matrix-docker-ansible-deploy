@@ -2,22 +2,23 @@
 
 **Caution: self-building does not have to be used on its own. See the [Alternative Architectures](alternative-architectures.md) page.**
 
-The playbook supports the self-building of some of its components. This may be useful for architectures besides x86_64, which have no Docker images right now (e g. the armv7 for the Raspberry Pi). Some playbook roles have been updated, so they build the necessary image on the host. It needs more space, as some build tools need to be present (like Java, for ma1sd).
+The playbook supports the self-building of various components, which don't have a container image for your architecture. For `amd64`, self-building is not required.
 
-To use these modification there is a variable that needs to be switched to enable this functionality. Add this to your `vars.yaml` file:
-```yaml
-matrix_container_images_self_build: true
-```
-Setting that variable will self-build every role which supports self-building. Self-building can be set on a per-role basis as well.
+For other architectures (e.g. `arm32`, `arm64`), ready-made container images are used when available. If there's no ready-made image for a specific component and said component supports self-building, an image will be built on the host. Building images like this takes more time and resources (some build tools need to get installed by the playbook to assist building).
 
+To make use of self-building, you don't need to do anything besides change your architecture variable (e.g. `matrix_architecture: arm64`). If a component has an image for the specified architecture, the playbook will use it. If not, it will build the image.
+
+Note that **not all components support self-building yet**.
 List of roles where self-building the Docker image is currently possible:
 - `matrix-synapse`
 - `matrix-riot-web`
 - `matrix-coturn`
 - `matrix-ma1sd`
 - `matrix-mailer`
-- `matrix-mautrix-facebook`
-- `matrix-mautrix-hangouts`
-- `matrix-mx-puppet-skype`
+- `matrix-bridge-mautrix-facebook`
+- `matrix-bridge-mautrix-hangouts`
+- `matrix-bridge-mx-puppet-skype`
 
 Adding self-building support to other roles is welcome. Feel free to contribute!
+
+If you'd like **to force self-building** even if an image is available for your architecture, look into the `matrix_*_self_build` variables provided by individual roles.

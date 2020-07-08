@@ -81,7 +81,7 @@ var config = {
     // Audio
 
     // Disable measuring of audio levels.
-    // disableAudioLevels: false,
+    disableAudioLevels: {{ matrix_jitsi_web_config_disableAudioLevels|to_json }},
 
     // Start the conference in audio only mode (no video is being received nor
     // sent).
@@ -109,24 +109,25 @@ var config = {
     // util#browser#usesNewGumFlow. The constraints are independency from
     // this config's resolution value. Defaults to requesting an ideal aspect
     // ratio of 16:9 with an ideal resolution of 720.
-    // constraints: {
-    //     video: {
-    //         aspectRatio: 16 / 9,
-    //         height: {
-    //             ideal: 720,
-    //             max: 720,
-    //             min: 240
-    //         }
-    //     }
-    // },
-
+    {% if matrix_jitsi_web_config_constraints_enabled %}
+    constraints: {
+        video: {
+            aspectRatio: {{ matrix_jitsi_web_config_constraints_video_aspectRatio }},
+            height: {
+                ideal: {{ matrix_jitsi_web_config_constraints_video_height_ideal|to_json }},
+                max: {{ matrix_jitsi_web_config_constraints_video_height_max|to_json }},
+                min: {{ matrix_jitsi_web_config_constraints_video_height_min|to_json }}
+            }
+        }
+    },
+    {% endif %}
     // Enable / disable simulcast support.
     // disableSimulcast: false,
 
     // Enable / disable layer suspension.  If enabled, endpoints whose HD
     // layers are not in use will be suspended (no longer sent) until they
     // are requested again.
-    // enableLayerSuspension: false,
+    enableLayerSuspension: {{ matrix_jitsi_web_config_enableLayerSuspension|to_json }},
 
     // Suspend sending video if bandwidth estimation is too low. This may cause
     // problems with audio playback. Disabled until these are fixed.
@@ -211,7 +212,7 @@ hiddenDomain: {{ matrix_jitsi_recorder_domain|to_json }},
     // Misc
 
     // Default value for the channel "last N" attribute. -1 for unlimited.
-    channelLastN: -1,
+    channelLastN: {{ matrix_jitsi_web_config_channelLastN|to_json }},
 
     // Disables or enables RTX (RFC 4588) (defaults to false).
     // disableRtx: false,

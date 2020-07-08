@@ -3,6 +3,7 @@
 - name: Ensure Matrix group is created
   group:
     name: "{{ matrix_user_groupname }}"
+    gid: "{{ omit if matrix_user_gid is none else matrix_user_gid }}"
     state: present
   register: matrix_group
 
@@ -13,6 +14,7 @@
 - name: Ensure Matrix user is created
   user:
     name: "{{ matrix_user_username }}"
+    uid: "{{ omit if matrix_user_uid is none else matrix_user_uid }}"
     state: present
     group: "{{ matrix_user_groupname }}"
   register: matrix_user
