@@ -54,7 +54,7 @@ ALTER TABLE public.application_services_state OWNER TO synapse_user;
 
 It can be worked around by changing the username to `synapse`, for example by using `sed`:
 
-```sed
+```Shell
 $ sed -i "s/synapse_user/synapse/g" homeserver.sql"
 ```
 
