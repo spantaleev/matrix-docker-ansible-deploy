@@ -47,5 +47,6 @@ You can use any S3-compatible object store by **additionally** configuring these
 
 ```yaml
 matrix_s3_media_store_custom_endpoint_enabled: true
+# Example: "https://storage.googleapis.com"
 matrix_s3_media_store_custom_endpoint: "your-custom-endpoint"
 ```
