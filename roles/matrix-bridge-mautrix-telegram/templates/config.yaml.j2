@@ -124,8 +124,8 @@ bridge:
     # Whether or not to automatically sync the Matrix room state (mostly unpuppeted displaynames)
     # at startup and when creating a bridge.
     sync_matrix_state: true
-    # Allow logging in within Matrix. If false, the only way to log in is using the out-of-Matrix
-    # login website (see appservice.public config section)
+    # Allow logging in within Matrix. If false, users can only log in using login-qr or the
+    # out-of-Matrix login website (see appservice.public config section)
     allow_matrix_login: true
     # Whether or not to bridge plaintext highlights.
     # Only enable this if your displayname_template has some static part that the bridge can use to
@@ -184,6 +184,28 @@ bridge:
         # Default to encryption, force-enable encryption in all portals the bridge creates
         # This will cause the bridge bot to be in private chats for the encryption to work properly.
         default: false
+        # Database for the encryption data. Currently only supports Postgres and an in-memory
+        # store that's persisted as a pickle.
+        # If set to `default`, will use the appservice postgres database
+        # or a pickle file if the appservice database is sqlite.
+        #
+        # Format examples:
+        #   Pickle:   pickle:///filename.pickle
+        #   Postgres: postgres://username:password@hostname/dbname
+        database: default
+
+    # Whether or not to explicitly set the avatar and room name for private
+    # chat portal rooms. This will be implicitly enabled if encryption.default is true.
+    private_chat_portal_meta: false
+    # Whether or not the bridge should send a read receipt from the bridge bot when a message has
+    # been sent to Telegram.
+    delivery_receipts: false
+    # Whether or not delivery errors should be reported as messages in the Matrix room.
+    delivery_error_reports: false
+    # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
+    # This field will automatically be changed back to false after it,
+    # except if the config file is not writable.
+    resend_bridge_info: false
 
     # Overrides for base power levels.
     initial_power_level_overrides:
