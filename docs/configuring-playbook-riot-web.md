@@ -14,6 +14,8 @@ Riot has since been [renamed to Element](https://element.io/blog/welcome-to-elem
 
 If you have custom `matrix_riot_web_` variables in your `inventory/host_vars/matrix.DOMAIN/vars.yml` file, you'll need to rename them (`matrix_riot_web_` -> `matrix_client_element_`).
 
+Some other playbook variables (but not all) with `riot` in their name are also renamed. The playbook checks and warns if you are using the old name for some commonly used ones.
+
 
 ### Domain migration
 
