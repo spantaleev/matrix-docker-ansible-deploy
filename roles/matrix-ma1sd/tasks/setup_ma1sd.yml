@@ -61,7 +61,6 @@
     shell: "./gradlew dockerBuild"
     args:
       chdir: "{{ matrix_ma1sd_docker_src_files_path }}"
-    when: "matrix_ma1sd_enabled|bool and matrix_ma1sd_container_image_self_build"
 
   - name: Ensure ma1sd Docker image is tagged correctly
     docker_image:
@@ -69,7 +68,7 @@
       repository: "{{ matrix_ma1sd_docker_image }}"
       force_tag: yes
       source: local
-    when: "matrix_ma1sd_enabled|bool and matrix_ma1sd_container_image_self_build"
+  when: "matrix_ma1sd_enabled|bool and matrix_ma1sd_container_image_self_build"
 
 - name: Ensure ma1sd config installed
   copy:
