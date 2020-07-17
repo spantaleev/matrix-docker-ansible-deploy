@@ -1,3 +1,14 @@
+# 2020-07-17
+
+## (Compatibility Break) Riot is now Element
+
+As per the official announcement, [Riot has been rebraned to Element](https://element.io/blog/welcome-to-element/).
+
+The playbook follows suit. Existing installations have a few options for how to handle this.
+
+See our [Migrating to Element](docs/configuring-playbook-riot-web.md#migrating-to-element) documentation page for more details.
+
+
 # 2020-07-03
 
 ## Steam bridging support via mx-puppet-steam

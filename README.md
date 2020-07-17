@@ -16,7 +16,7 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional, default) a [coturn](https://github.com/coturn/coturn) STUN/TURN server for WebRTC audio/video calls
 
-- (optional, default) free [Let's Encrypt](https://letsencrypt.org/) SSL certificate, which secures the connection to the Synapse server and the Riot web UI
+- (optional, default) free [Let's Encrypt](https://letsencrypt.org/) SSL certificate, which secures the connection to the Synapse server and the Element web UI
 
 - (optional, default) an [Element](https://app.element.io/) ([formerly Riot](https://element.io/previously-riot)) web UI, which is configured to connect to your own Synapse server by default
 

@@ -21,7 +21,7 @@ matrix_dimension_enabled: true
 
 ## Define admin users
 
-These users can modify the integrations this Dimension supports. Admin interface is accessible by opening Dimension in Riot and clicking the settings icon.
+These users can modify the integrations this Dimension supports. Admin interface is accessible by opening Dimension in Element and clicking the settings icon.
 Add this to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
@@ -39,7 +39,7 @@ Follow our [Registering users](registering-users.md) guide to learn how to regis
 You are required to specify an access token (belonging to this new user) for Dimension to work.
 To get an access token for the Dimension user, follow these steps:
 
-1. In a private browsing session (incognito window), open Riot.
+1. In a private browsing session (incognito window), open Element.
 2. Log in with the `dimension` user and its password.
 1. Set the display name and avatar, if required.
 2. In the settings page choose "Help & About", scroll down to the bottom and click `Access Token: <click to reveal>`.
@@ -70,7 +70,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 By default Dimension will use [jitsi.riot.im](https://jitsi.riot.im/) as the `conferenceDomain` of [Jitsi](https://jitsi.org/) audio/video conference widgets. For users running [a self-hosted Jitsi instance](./configuring-playbook-jitsi.md), you will likely want the widget to use your own Jitsi instance. Currently there is no way to configure this via the playbook, see [this issue](https://github.com/turt2live/matrix-dimension/issues/345) for details.
 
-In the interim until the above limitation is resolved, an admin user needs to configure the domain via the admin ui once dimension is running. In riot-web, go to *Manage Integrations* &rightarrow; *Settings* &rightarrow; *Widgets* &rightarrow; *Jitsi Conference Settings* and set *Jitsi Domain* and *Jitsi Script URL* appropriately.
+In the interim until the above limitation is resolved, an admin user needs to configure the domain via the admin ui once dimension is running. In Element, go to *Manage Integrations* &rightarrow; *Settings* &rightarrow; *Widgets* &rightarrow; *Jitsi Conference Settings* and set *Jitsi Domain* and *Jitsi Script URL* appropriately.
 
 
 ## Additional features

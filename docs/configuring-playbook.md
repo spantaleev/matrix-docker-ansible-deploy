@@ -38,7 +38,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Configuring Synapse](configuring-playbook-synapse.md) (optional)
 
-- [Configuring Riot-web](configuring-playbook-riot-web.md) (optional)
+- [Configuring Element](configuring-playbook-client-element.md) (optional)
 
 - [Storing Matrix media files on Amazon S3](configuring-playbook-s3.md) (optional)
 
