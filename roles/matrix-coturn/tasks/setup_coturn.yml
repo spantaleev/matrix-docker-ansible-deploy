@@ -13,7 +13,7 @@
     group: "{{ matrix_user_groupname }}"
   with_items:
     - { path: "{{ matrix_coturn_docker_src_files_path }}", when: "{{ matrix_coturn_container_image_self_build }}"}
-  when: matrix_riot_web_enabled|bool and item.when
+  when: matrix_coturn_enabled|bool and item.when
 
 - name: Ensure Coturn image is pulled
   docker_image:
