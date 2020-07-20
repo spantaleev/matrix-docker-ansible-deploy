@@ -27,7 +27,7 @@ If you decide to go with the alternative method ([Server Delegation via a DNS SR
 | SRV   | `_matrix-identity._tcp`      | 10       | 0      | 443  | `matrix.<your-domain>` |
 
 
-DNS records marked with `(*)` above are optional. They refer to services that will not be installed by default (see the section below). If you won't be installing these services, feel free to skip creating these DNS records.
+DNS records marked with `(*)` above are optional. They refer to services that will not be installed by default (see the section below). If you won't be installing these services, feel free to skip creating these DNS records. Also be mindful as to how long it will take for the DNS records to propagate.
 
 
 ## Subdomains setup
