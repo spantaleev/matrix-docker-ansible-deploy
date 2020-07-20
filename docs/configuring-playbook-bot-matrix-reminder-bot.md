@@ -2,7 +2,7 @@
 
 The playbook can install and configure [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot) for you.
 
-It's a bot you can schedule one-off & recurring reminders and alarms with.
+It's a bot you can use to **schedule one-off & recurring reminders and alarms**.
 
 See the project's [documentation](https://github.com/anoadragon453/matrix-reminder-bot#usage) to learn what it does and why it might be useful to you.
 
@@ -11,7 +11,7 @@ See the project's [documentation](https://github.com/anoadragon453/matrix-remind
 
 By default, the playbook will set up the bot with a username like this: `@bot.matrix-reminder-bot:DOMAIN`.
 
-(to a different username, adjust the `matrix_bot_matrix_reminder_bot_matrix_user_id_localpart` variable).
+(to use a different username, adjust the `matrix_bot_matrix_reminder_bot_matrix_user_id_localpart` variable).
 
 You **need to register the bot user manually** before setting up the bot. You can use the playbook to [register a new user](registering-users.md):
 
