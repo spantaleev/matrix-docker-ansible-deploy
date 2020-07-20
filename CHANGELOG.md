@@ -1,3 +1,12 @@
+# 2020-02-20
+
+## matrix-reminder-bot support
+
+The playbook can now help you set up [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot).
+
+See our [Setting up matrix-reminder-bot](docs/configuring-playbook-bot-matrix-reminder-bot.md) documentation to get started.
+
+
 # 2020-07-17
 
 ## (Compatibility Break) Riot is now Element
