@@ -35,3 +35,8 @@ The script `/usr/local/bin/matrix-change-user-admin-status` may be used to chang
 ```
 /usr/local/bin/matrix-change-user-admin-status <username> <0/1>
 ```
+
+
+## Managing users via a Web UI
+
+To manage users more easily (via a web user-interace), you can install [Synapse Admin](configuring-playbook-synapse-admin.md).

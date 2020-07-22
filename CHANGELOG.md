@@ -1,3 +1,12 @@
+# 2020-07-22
+
+## Synapse Admin support
+
+The playbook can now help you set up [synapse-admin](https://github.com/Awesome-Technologies/synapse-admin).
+
+See our [Setting up Synapse Admin](docs/configuring-playbook-synapse-admin.md) documentation to get started.
+
+
 # 2020-07-20
 
 ## matrix-reminder-bot support

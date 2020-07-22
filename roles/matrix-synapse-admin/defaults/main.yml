@@ -1,0 +1,25 @@
+# matrix-synapse-admin is a web UI for mananging the Synapse Matrix server
+# See: https://github.com/Awesome-Technologies/synapse-admin
+
+matrix_synapse_admin_enabled: true
+
+matrix_synapse_admin_docker_image: "awesometechnologies/synapse-admin:0.4.1"
+matrix_synapse_admin_docker_image_force_pull: "{{ matrix_synapse_admin_docker_image.endswith(':latest') }}"
+
+# A list of extra arguments to pass to the container
+matrix_synapse_admin_container_extra_arguments: []
+
+# List of systemd services that matrix-synapse-admin.service depends on
+matrix_synapse_admin_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-synapse-admin.service wants
+matrix_synapse_admin_systemd_wanted_services_list: []
+
+# Controls whether the matrix-synapse-admin container exposes its HTTP port (tcp/80 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8766"), or empty string to not expose.
+matrix_synapse_admin_container_http_host_bind_port: ''
+
+# The path at which Synapse Admin will be exposed on `matrix.DOMAIN`
+# (only applies when matrix-nginx-proxy is used).
+matrix_synapse_admin_public_endpoint: /synapse-admin

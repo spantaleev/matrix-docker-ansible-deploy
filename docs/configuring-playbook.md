@@ -68,6 +68,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Authentication and user-related
 
+- [Setting up Synapse Admin](configuring-playbook-synapse-admin.md) (optional)
+
 - [Setting up the REST authentication password provider module](configuring-playbook-rest-auth.md) (optional, advanced)
 
 - [Setting up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md) (optional, advanced)
