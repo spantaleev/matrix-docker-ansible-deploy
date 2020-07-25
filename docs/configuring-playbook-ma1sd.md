@@ -90,6 +90,22 @@ matrix_ma1sd_configuration_extension_yaml: |
             number: '+<msisdn-number>'
 ```
 
+## Example: Open Registration for every Domain
+
+If you want open all domains, you have to setup the allowed variable under policy, which is the return value if nothing else did match (white- and blacklist). But be aware, you cant block toplevel domains (aka .xy) because the internal architecture of ma1sd didnt allow that.
+
+```yaml
+matrix_ma1sd_configuration_extension_yaml: |
+  register:
+    policy:
+      allowed: true
+      threepid:
+        email:
+          domain:
+            blacklist: ~
+            whitelist: ~
+```
+
 ## Troubleshooting
 
 If email address validation emails sent by ma1sd are not reaching you, you should look into [Adjusting email-sending settings](configuring-playbook-email.md).
