@@ -6,6 +6,7 @@ It's a web UI tool you can use to **administrate users and rooms on your Matrix 
 
 See the project's [documentation](https://github.com/Awesome-Technologies/synapse-admin) to learn what it does and why it might be useful to you.
 
+
 ## Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
@@ -14,6 +15,7 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 matrix_synapse_admin_enabled: true
 ```
 
+
 ## Installing
 
 After configuring the playbook, run the [installation](installing.md) command again:
@@ -21,6 +23,7 @@ After configuring the playbook, run the [installation](installing.md) command ag
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
+
 
 ## Usage
 
@@ -46,7 +49,7 @@ matrix_synapse_admin_container_extra_arguments:
     - '--label "traefik.enable=true"'
 
     # The Synapse Admin container will only receive traffic from this subdomain and path
-    - '--label "traefik.http.routers.matrix-synapse-admin.rule=(Host(`{{ matrix_server_fqn_matrix }}`) && Path(`{matrix_synapse_admin_public_endpoint}`))"'
+    - '--label "traefik.http.routers.matrix-synapse-admin.rule=(Host(`{{ matrix_server_fqn_matrix }}`) && Path(`{{matrix_synapse_admin_public_endpoint}}`))"'
 
     # (Define your entrypoint)
     - '--label "traefik.http.routers.matrix-synapse-admin.entrypoints=web-secure"'
