@@ -57,6 +57,6 @@ matrix_synapse_admin_container_extra_arguments:
     # (The 'default' certificate resolver must be defined in Traefik config)
     - '--label "traefik.http.routers.matrix-synapse-admin.tls.certResolver=default"'
 
-    # The Synapse Admin container uses port 8766 internally
-    - '--label "traefik.http.services.matrix-synapse-admin.loadbalancer.server.port=8766"'
+    # The Synapse Admin container uses port 80 by default
+    - '--label "traefik.http.services.matrix-synapse-admin.loadbalancer.server.port=80"'
 ```
