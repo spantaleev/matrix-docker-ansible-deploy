@@ -92,7 +92,7 @@ matrix_ma1sd_configuration_extension_yaml: |
 
 ## Example: Open Registration for every Domain
 
-If you want open all domains, you have to setup the allowed variable under policy, which is the return value if nothing else did match (white- and blacklist). But be aware, you cant block toplevel domains (aka .xy) because the internal architecture of ma1sd didnt allow that.
+If you want to open registration for any domain, you have to setup the allowed domains with ma1sd's `blacklist` and `whitelist`. The default behavior when neither the `blacklist`, nor the `whitelist` match, is to allow registration. Beware: you can't block toplevel domains (aka `.xy`) because the internal architecture of ma1sd doesn't allow that.
 
 ```yaml
 matrix_ma1sd_configuration_extension_yaml: |
