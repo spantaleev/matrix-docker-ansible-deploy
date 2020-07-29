@@ -8,6 +8,7 @@
 
 # Common tasks, required by almost any method below.
 
+# The recurse option of this task will always return a change, which should be ignored
 - name: Ensure SSL certificate paths exists
   file:
     path: "{{ item }}"
@@ -16,6 +17,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
     recurse: true
+  changed_when: False
   with_items:
     - "{{ matrix_ssl_log_dir_path }}"
     - "{{ matrix_ssl_config_dir_path }}"

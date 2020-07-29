@@ -22,12 +22,15 @@
     group: "{{ matrix_dimension_user_gid }}"
   when: matrix_dimension_enabled|bool
 
+# This task will be always change due to default image :latest
+# to ensure idempotence, this changed_when is set to false
 - name: Ensure Dimension image is pulled
   docker_image:
     name: "{{ matrix_dimension_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_dimension_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_dimension_docker_image_force_pull }}"
+  changed_when: False
   when: matrix_dimension_enabled|bool
 
 - name: Ensure matrix-dimension.service installed
