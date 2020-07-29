@@ -1,21 +1,23 @@
 ---
 
-- name: Ensure systemd reloaded
+- name: Ensure systemd is reloaded
   service:
     daemon_reload: yes
 
-- name: Ensure Matrix services stopped
+- name: Ensure Matrix services are stopped
   service:
     name: "{{ item }}"
     state: stopped
   with_items: "{{ matrix_systemd_services_list }}"
+  when: not ansible_check_mode
 
-- name: Ensure Matrix services started
+- name: Ensure Matrix services are started
   service:
     name: "{{ item }}"
     enabled: yes
     state: started
   with_items: "{{ matrix_systemd_services_list }}"
+  when: not ansible_check_mode
 
 # If we check service state immediately, we may succeed,
 # because it takes some time for the service to attempt to start and actually fail.
