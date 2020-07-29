@@ -63,6 +63,19 @@ threepid:
           {% endif %}
 {% endif %}
 
+{% if matrix_ma1sd_hashing_enabled %}
+hashing:
+  enabled: true # enable or disable the hash lookup MSC2140 (default is false)
+  pepperLength: 20 # length of the pepper value (default is 20)
+  rotationPolicy: per_requests # or `per_seconds` how often the hashes will be updating
+  hashStorageType: sql # or `in_memory` where the hashes will be stored
+  algorithms:
+    - none   # the same as v1 bulk lookup
+    - sha256 # hash the 3PID and pepper.
+  delay: 2m # how often hashes will be updated if rotation policy = per_seconds (default is 10s)
+  requests: 10 
+{% endif %}
+
 synapseSql:
   enabled: {{ matrix_ma1sd_synapsesql_enabled }}
   type: {{ matrix_ma1sd_synapsesql_type }}
