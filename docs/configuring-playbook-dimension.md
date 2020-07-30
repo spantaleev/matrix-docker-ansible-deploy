@@ -54,9 +54,9 @@ curl -X POST --header 'Content-Type: application/json' -d '{
     "identifier": { "type": "m.id.user", "user": "YourDimensionUsername" },
     "password": "YourDimensionPassword",
     "type": "m.login.password"
-}' 'http://localhost:8008/_matrix/client/r0/login'
+}' 'https://matrix.YOURDOMAIN/_matrix/client/r0/login'
 ```
-*Change the "YourDimensionUser/Pass" accordingly*
+*Change the "YourDimensionUser/Pass" URL accordigly*
 
 **Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.**
 
