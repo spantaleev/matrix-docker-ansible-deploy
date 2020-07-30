@@ -37,7 +37,8 @@ We recommend that you create a dedicated Matrix user for Dimension (`dimension` 
 Follow our [Registering users](registering-users.md) guide to learn how to register **a regular (non-admin) user**.
 
 You are required to specify an access token (belonging to this new user) for Dimension to work.
-To get an access token for the Dimension user, follow these steps:
+To get an access token for the Dimension user, you can follow one of two options:
+*Through an interactive login*:
 
 1. In a private browsing session (incognito window), open Element.
 2. Log in with the `dimension` user and its password.
@@ -45,6 +46,17 @@ To get an access token for the Dimension user, follow these steps:
 2. In the settings page choose "Help & About", scroll down to the bottom and click `Access Token: <click to reveal>`.
 3. Copy the highlighted text to your configuration.
 4. Close the private browsing session. **Do not log out**. Logging out will invalidate the token, making it not work.
+
+*With CURL* 
+
+```
+curl -X POST --header 'Content-Type: application/json' -d '{
+    "identifier": { "type": "m.id.user", "user": "YourDimensionUsername" },
+    "password": "YourDimensionPassword",
+    "type": "m.login.password"
+}' 'https://matrix.YOURDOMAIN/_matrix/client/r0/login'
+```
+*Change the "YourDimensionUser/Pass" URL accordigly*
 
 **Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.**
 
