@@ -1,3 +1,32 @@
+# 2020-07-22
+
+## Synapse Admin support
+
+The playbook can now help you set up [synapse-admin](https://github.com/Awesome-Technologies/synapse-admin).
+
+See our [Setting up Synapse Admin](docs/configuring-playbook-synapse-admin.md) documentation to get started.
+
+
+# 2020-07-20
+
+## matrix-reminder-bot support
+
+The playbook can now help you set up [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot).
+
+See our [Setting up matrix-reminder-bot](docs/configuring-playbook-bot-matrix-reminder-bot.md) documentation to get started.
+
+
+# 2020-07-17
+
+## (Compatibility Break) Riot is now Element
+
+As per the official announcement, [Riot has been rebraned to Element](https://element.io/blog/welcome-to-element/).
+
+The playbook follows suit. Existing installations have a few options for how to handle this.
+
+See our [Migrating to Element](docs/configuring-playbook-riot-web.md#migrating-to-element) documentation page for more details.
+
+
 # 2020-07-03
 
 ## Steam bridging support via mx-puppet-steam

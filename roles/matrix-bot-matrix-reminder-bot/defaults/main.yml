@@ -1,0 +1,64 @@
+# matrix-reminder-bot is a bot for one-off and recurring reminders
+# See: https://github.com/anoadragon453/matrix-reminder-bot
+
+matrix_bot_matrix_reminder_bot_enabled: true
+
+matrix_bot_matrix_reminder_bot_docker_image: "anoa/matrix-reminder-bot:release-0.1.0"
+matrix_bot_matrix_reminder_bot_docker_image_force_pull: "{{ matrix_bot_matrix_reminder_bot_docker_image.endswith(':latest') }}"
+
+matrix_bot_matrix_reminder_bot_base_path: "{{ matrix_base_data_path }}/matrix-reminder-bot"
+matrix_bot_matrix_reminder_bot_config_path: "{{ matrix_bot_matrix_reminder_bot_base_path }}/config"
+matrix_bot_matrix_reminder_bot_data_path: "{{ matrix_bot_matrix_reminder_bot_base_path }}/data"
+matrix_bot_matrix_reminder_bot_data_store_path: "{{ matrix_bot_matrix_reminder_bot_data_path }}/store"
+
+# A list of extra arguments to pass to the container
+matrix_bot_matrix_reminder_bot_container_extra_arguments: []
+
+# List of systemd services that matrix-bot-matrix-reminder-bot.service depends on
+matrix_bot_matrix_reminder_bot_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-bot-matrix-reminder-bot.service wants
+matrix_bot_matrix_reminder_bot_systemd_wanted_services_list: []
+
+
+# The bot's username. This user needs to be created manually beforehand.
+# Also see `matrix_bot_matrix_reminder_bot_user_password`.
+matrix_bot_matrix_reminder_bot_matrix_user_id_localpart: "bot.matrix-reminder-bot"
+
+matrix_bot_matrix_reminder_bot_matrix_user_id: '@{{ matrix_bot_matrix_reminder_bot_matrix_user_id_localpart }}:{{ matrix_domain }}'
+
+# The password that the bot uses to authenticate.
+matrix_bot_matrix_reminder_bot_matrix_user_password: ''
+
+matrix_bot_matrix_reminder_bot_matrix_homeserver_url: 'http://matrix-synapse:8008'
+
+# The timezone to use when creating reminders.
+# Examples: 'Europe/London', 'Etc/UTC'
+matrix_bot_matrix_reminder_bot_reminders_timezone: ''
+
+# Default configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_bot_matrix_reminder_bot_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_bot_matrix_reminder_bot_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_bot_matrix_reminder_bot_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_bot_matrix_reminder_bot_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_bot_matrix_reminder_bot_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  # matrix:
+  #   device_name: My-Reminder-Bot
+
+matrix_bot_matrix_reminder_bot_configuration_extension: "{{ matrix_bot_matrix_reminder_bot_configuration_extension_yaml|from_yaml if matrix_bot_matrix_reminder_bot_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_bot_matrix_reminder_bot_configuration_yaml`.
+matrix_bot_matrix_reminder_bot_configuration: "{{ matrix_bot_matrix_reminder_bot_configuration_yaml|from_yaml|combine(matrix_bot_matrix_reminder_bot_configuration_extension, recursive=True) }}"

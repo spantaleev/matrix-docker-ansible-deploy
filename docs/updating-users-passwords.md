@@ -10,7 +10,7 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-usern
 
 **Note**: `<your-username>` is just a plain username (like `john`), not your full `@<username>:<your-domain>` identifier.
 
-**You can then log in with that user** via the riot-web service that this playbook has created for you at a URL like this: `https://riot.<domain>/`.
+**You can then log in with that user** via the Element service that this playbook has created for you at a URL like this: `https://element.<domain>/`.
 
 
 ## Option 2 (if you are using an external Postgres server):
@@ -34,9 +34,9 @@ where `<password-hash>` is the hash returned by the docker command above.
 
 Use the Synapse User Admin API as described here: https://github.com/matrix-org/synapse/blob/master/docs/admin_api/user_admin_api.rst#reset-password
 
-This requires an access token from a server admin account. *This method will also log the user out of all of their clients while the other options do not.* 
+This requires an access token from a server admin account. *This method will also log the user out of all of their clients while the other options do not.*
 
-If you didn't make your account a server admin when you created it, you can use the `/usr/local/bin/matrix-change-user-admin-status` script as described in [registering-users.md](registering-users.md). 
+If you didn't make your account a server admin when you created it, you can use the `/usr/local/bin/matrix-change-user-admin-status` script as described in [registering-users.md](registering-users.md).
 
 ### Example:
 To set @user:domain.com's password to `correct_horse_battery_staple` you could use this curl command:

@@ -25,7 +25,8 @@
     - {'old': 'host_specific_hostname_identity', 'new': 'matrix_domain'}
     - {'old': 'hostname_identity', 'new': 'matrix_domain'}
     - {'old': 'hostname_matrix', 'new': 'matrix_server_fqn_matrix'}
-    - {'old': 'hostname_riot', 'new': 'matrix_server_fqn_riot'}
+    - {'old': 'hostname_riot', 'new': 'matrix_server_fqn_element'}
+    - {'old': 'matrix_server_fqn_riot', 'new': 'matrix_server_fqn_element'}
 
 - name: Fail if required variables are undefined
   fail:
@@ -33,7 +34,7 @@
   with_items:
     - matrix_domain
     - matrix_server_fqn_matrix
-    - matrix_server_fqn_riot
+    - matrix_server_fqn_element
   when: "item not in vars or vars[item] is none"
 
 - name: Fail if uppercase domain used
@@ -42,7 +43,7 @@
   with_items:
     - "{{ matrix_domain }}"
     - "{{ matrix_server_fqn_matrix }}"
-    - "{{ matrix_server_fqn_riot }}"
+    - "{{ matrix_server_fqn_element }}"
   when: "item != item|lower"
 
 - name: Fail if using python2 on Archlinux

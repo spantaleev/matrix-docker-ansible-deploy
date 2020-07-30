@@ -9,6 +9,9 @@
   with_items:
     - {'old': 'matrix_nginx_proxy_matrix_client_api_addr_with_proxy_container', 'new': 'matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container'}
     - {'old': 'matrix_nginx_proxy_matrix_client_api_addr_sans_proxy_container', 'new': 'matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container'}
+    # People who configured this to disable Riot, would now wish to be disabling Element.
+    # We now also have `matrix_nginx_proxy_proxy_riot_compat_redirect_`, but that's something else and is disabled by default.
+    - {'old': 'matrix_nginx_proxy_proxy_riot_enabled', 'new': 'matrix_nginx_proxy_proxy_element_enabled'}
 
 - name: Fail on unknown matrix_ssl_retrieval_method
   fail:

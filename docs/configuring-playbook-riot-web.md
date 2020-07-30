@@ -1,40 +1,39 @@
 # Configuring Riot-web (optional)
 
-By default, this playbook installs the [Riot-web](https://github.com/vector-im/riot-web) Matrix client web application.
-If that's okay, you can skip this document.
+By default, this playbook **used to install** the [Riot-web](https://github.com/vector-im/riot-web) Matrix client web application.
+
+Riot has since been [renamed to Element](https://element.io/blog/welcome-to-element/).
+
+- to learn more about Element and its configuration, see our dedicated [Configuring Element](configuring-playbook-client-element.md) documentation page
+- to learn how to migrate from Riot to Element, see [Migrating to Element](#migrating-to-element) below
 
 
-## Disabling riot-web
+## Migrating to Element
 
-If you'd like for the playbook to not install (or to uninstall the previously installed riot-web), you can disable it in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+### Migrating your custom settings
 
-```yaml
-matrix_riot_web_enabled: false
+If you have custom `matrix_riot_web_` variables in your `inventory/host_vars/matrix.DOMAIN/vars.yml` file, you'll need to rename them (`matrix_riot_web_` -> `matrix_client_element_`).
+
+Some other playbook variables (but not all) with `riot` in their name are also renamed. The playbook checks and warns if you are using the old name for some commonly used ones.
+
+
+### Domain migration
+
+We used to set up Riot at the `riot.DOMAIN` domain. The playbook now sets up Element at `element.DOMAIN` by default.
+
+There are a few options for handling this:
+
+- (**avoiding changes** - using the old `riot.DOMAIN` domain and avoiding DNS changes) -- to keep using `riot.DOMAIN` instead of `element.DOMAIN`, override the domain at which the playbook serves Element: `matrix_server_fqn_element: "riot.{{ matrix_domain }}"`
+
+- (**embracing changes** - using only `element.DOMAIN`) - set up the `element.DOMAIN` DNS record (see [Configuring DNS](configuring-dns.md)). You can drop the `riot.DOMAIN` in this case. If so, you may also wish to remove old SSL certificates (`rm -rf /matrix/ssl/config/live/riot.DOMAIN`) and renewal configuration (`rm -f /matrix/ssl/config/renewal/riot.DOMAIN.conf`), so that `certbot` would stop trying to renew them.
+
+- (**embracing changes and transitioning smoothly** - using both `element.DOMAIN` and `riot.DOMAIN`) - to serve Element at the new domain (`element.DOMAIN`) and to also have `riot.DOMAIN` redirect there - set up the `element.DOMAIN` DNS record (see [Configuring DNS](configuring-dns.md)) and enable Riot to Element redirection (`matrix_nginx_proxy_proxy_riot_compat_redirect_enabled: true`).
+
+
+### Re-running the playbook
+
+As always, after making the necessary DNS and configuration adjustments, re-run the playbook to apply the changes:
+
 ```
-
-## Configuring riot-web settings
-
-The playbook provides some customization variables you could use to change riot-web's settings.
-
-Their defaults are defined in [`roles/matrix-riot-web/defaults/main.yml`](../roles/matrix-riot-web/defaults/main.yml) and they ultimately end up in the generated `/matrix/riot-web/config.json` file (on the server). This file is generated from the [`roles/matrix-riot-web/templates/config.json.j2`](../roles/matrix-riot-web/templates/config.json.j2) template.
-
-**If there's an existing variable** which controls a setting you wish to change, you can simply define that variable in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) and [re-run the playbook](installing.md) to apply the changes.
-
-Alternatively, **if there is no pre-defined variable** for a riot-web setting you wish to change:
-
-- you can either **request a variable to be created** (or you can submit such a contribution yourself). Keep in mind that it's **probably not a good idea** to create variables for each one of riot-web's various settings that rarely get used.
-
-- or, you can **extend and override the default configuration** ([`config.json.j2`](../roles/matrix-riot-web/templates/config.json.j2)) by making use of the `matrix_riot_web_configuration_extension_json_` variable. You can find information about this in [`roles/matrix-riot-web/defaults/main.yml`](../roles/matrix-riot-web/defaults/main.yml).
-
-- or, if extending the configuration is still not powerful enough for your needs, you can **override the configuration completely** using `matrix_riot_web_configuration_default` (or `matrix_riot_web_configuration`). You can find information about this in [`roles/matrix-riot-web/defaults/main.yml`](../roles/matrix-riot-web/defaults/main.yml).
-
-
-## Themes
-
-To change the look of riot-web, you can define your own themes manually by using the `matrix_riot_web_settingDefaults_custom_themes` setting.
-
-Or better yet, you can automatically pull it all themes provided by the [aaronraimist/riot-web-themes](https://github.com/aaronraimist/riot-web-themes) project by simply flipping a flag (`matrix_riot_web_themes_enabled: true`).
-
-If you make your own theme, we encourage you to submit it to the **aaronraimist/riot-web-themes** project, so that the whole community could easily enjoy it.
-
-Note that for a custom theme to work well, all riot-web/riot-desktop instances that you use must have the same theme installed.
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```

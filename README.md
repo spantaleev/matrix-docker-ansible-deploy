@@ -16,9 +16,9 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional, default) a [coturn](https://github.com/coturn/coturn) STUN/TURN server for WebRTC audio/video calls
 
-- (optional, default) free [Let's Encrypt](https://letsencrypt.org/) SSL certificate, which secures the connection to the Synapse server and the Riot web UI
+- (optional, default) free [Let's Encrypt](https://letsencrypt.org/) SSL certificate, which secures the connection to the Synapse server and the Element web UI
 
-- (optional, default) a [Riot](https://riot.im/) web UI, which is configured to connect to your own Synapse server by default
+- (optional, default) an [Element](https://app.element.io/) ([formerly Riot](https://element.io/previously-riot)) web UI, which is configured to connect to your own Synapse server by default
 
 - (optional, default) an [ma1sd](https://github.com/ma1uta/ma1sd) Matrix Identity server
 
@@ -68,6 +68,10 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) [Jitsi](https://jitsi.org/), an open source video-conferencing platform
 
+- (optional) [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot) for scheduling one-off & recurring reminders and alarms
+
+- (optional) [synapse-admin](https://github.com/Awesome-Technologies/synapse-admin), a web UI tool for administrating users and rooms on your Matrix server
+
 Basically, this playbook aims to get you up-and-running with all the basic necessities around Matrix, without you having to do anything else.
 
 **Note**: the list above is exhaustive. It includes optional or even some advanced components that you will most likely not need.
@@ -99,6 +103,8 @@ This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EM
 
 - this one optionally **allows you to use an external PostgreSQL server** for Synapse's database (but defaults to running one in a container)
 
+- helps you **import data from a previous installation** (so you can migrate your manual virtualenv/Docker setup to a more managed one)
+
 
 ## Installation
 
@@ -120,7 +126,7 @@ This playbook sets up your server using the following Docker images:
 
 - [instrumentisto/coturn](https://hub.docker.com/r/instrumentisto/coturn/) - the [Coturn](https://github.com/coturn/coturn) STUN/TURN server (optional)
 
-- [vectorim/riot-web](https://hub.docker.com/r/vectorim/riot-web/) - the [Riot.im](https://about.riot.im/) web client (optional)
+- [vectorim/riot-web](https://hub.docker.com/r/vectorim/riot-web/) - the [Element](https://element.io/) web client (optional)
 
 - [ma1uta/ma1sd](https://hub.docker.com/r/ma1uta/ma1sd/) - the [ma1sd](https://github.com/ma1uta/ma1sd) Matrix Identity server (optional)
 
@@ -177,6 +183,10 @@ This playbook sets up your server using the following Docker images:
 - [jitsi/prosody](https://hub.docker.com/r/jitsi/prosody) - the [Jitsi](https://jitsi.org/) Prosody XMPP server component (optional)
 
 - [jitsi/jvb](https://hub.docker.com/r/jitsi/jvb) - the [Jitsi](https://jitsi.org/) Video Bridge component (optional)
+
+- [anoa/matrix-reminder-bot](https://hub.docker.com/r/anoa/matrix-reminder-bot) - the [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot) bot for one-off & recurring reminders and alarms (optional)
+
+- [awesometechnologies/synapse-admin](https://hub.docker.com/r/awesometechnologies/synapse-admin) - the [synapse-admin](https://github.com/Awesome-Technologies/synapse-admin) web UI tool for administrating users and rooms on your Matrix server (optional)
 
 
 ## Deficiencies

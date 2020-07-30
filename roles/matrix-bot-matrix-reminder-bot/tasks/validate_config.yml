@@ -1,0 +1,10 @@
+---
+
+- name: Fail if required settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_bot_matrix_reminder_bot_matrix_user_password"
+    - "matrix_bot_matrix_reminder_bot_reminders_timezone"

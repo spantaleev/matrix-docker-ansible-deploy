@@ -13,6 +13,7 @@ Table of contents:
 		- [Vacuuming Postgres](#vacuuming-postgres)
 	- [Purging old data with the Purge History API](#purging-old-data-with-the-purge-history-api)
 	- [Compressing state with rust-synapse-compress-state](#compressing-state-with-rust-synapse-compress-state)
+	- [Browse and manipulate the database](#browse-and-manipulate-the-database)
 
 - [Browse and manipulate the database](#browse-and-manipulate-the-database), for when you really need to take matters into your own hands
 
@@ -56,7 +57,7 @@ If [purging unused and unreachable data](#purging-unused-data-with-synapse-janit
 
 Synapse provides a [Purge History API](https://github.com/matrix-org/synapse/blob/master/docs/admin_api/purge_history_api.rst) that you can use to purge on a per-room basis.
 
-To make use of this API, **you'll need an admin access token** first. You can find your access token in the setting of some clients (like riot-web).
+To make use of this API, **you'll need an admin access token** first. You can find your access token in the setting of some clients (like Element).
 Alternatively, you can log in and obtain a new access token like this:
 
 ```

@@ -6,7 +6,7 @@ There are 2 types of well-known service discovery that Matrix makes use of:
 
 - (important) **Federation Server discovery** (`/.well-known/matrix/server`) -- assists other servers in the Matrix network with finding your server. Without a proper configuration, your server will effectively not be part of the Matrix network. Learn more in [Introduction to Federation Server Discovery](#introduction-to-federation-server-discovery)
 
-- (not that important) **Client Server discovery** (`/.well-known/matrix/client`) -- assists programs that you use to connect to your server (e.g. Riot), so that they can make it more convenient for you by automatically configuring the "Homeserver URL" and "Identity Server URL" addresses. Learn more in [Introduction to Client Server Discovery](#introduction-to-client-server-discovery)
+- (not that important) **Client Server discovery** (`/.well-known/matrix/client`) -- assists programs that you use to connect to your server (e.g. Element), so that they can make it more convenient for you by automatically configuring the "Homeserver URL" and "Identity Server URL" addresses. Learn more in [Introduction to Client Server Discovery](#introduction-to-client-server-discovery)
 
 
 ## Introduction to Federation Server Discovery
@@ -59,7 +59,7 @@ All you need to do is:
 
 - copy `/.well-known/matrix/server` and `/.well-known/matrix/client` from the Matrix server (e.g. `matrix.example.com`) to your base domain's server (`example.com`). You can find these files in the `/matrix/static-files/.well-known/matrix` directory on the Matrix server. They are also accessible on URLs like this: `https://matrix.example.com/.well-known/matrix/server` (same for `client`).
 
-- set up the server at your base domain (e.g. `example.com`) so that it adds an extra HTTP header when serving the `/.well-known/matrix/client` file. [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), the `Access-Control-Allow-Origin` header should be set with a value of `*`. If you don't do this step, web-based Matrix clients (like Riot) may fail to work. Setting up headers for the `/.well-known/matrix/server` file is not necessary, as this file is only consumed by non-browsers, which don't care about CORS.
+- set up the server at your base domain (e.g. `example.com`) so that it adds an extra HTTP header when serving the `/.well-known/matrix/client` file. [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), the `Access-Control-Allow-Origin` header should be set with a value of `*`. If you don't do this step, web-based Matrix clients (like Element) may fail to work. Setting up headers for the `/.well-known/matrix/server` file is not necessary, as this file is only consumed by non-browsers, which don't care about CORS.
 
 This is relatively easy to do and possibly your only choice if you can only host static files from the base domain's server.
 It is, however, **a little fragile**, as future updates performed by this playbook may regenerate the well-known files and you may need to notice that and copy them over again.

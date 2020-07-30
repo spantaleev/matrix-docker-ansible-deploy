@@ -1,0 +1,36 @@
+---
+
+- name: Check existence of matrix-riot-web.service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-riot-web.service"
+  register: matrix_client_riot_web_service_stat
+  when: "matrix_client_element_enabled|bool"
+
+- name: Ensure matrix-riot-web is stopped
+  service:
+    name: matrix-riot-web
+    state: stopped
+    daemon_reload: yes
+  register: stopping_result
+  when: "matrix_client_element_enabled|bool and matrix_client_riot_web_service_stat.stat.exists"
+
+- name: Ensure matrix-riot-web.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-riot-web.service"
+    state: absent
+  when: "matrix_client_element_enabled|bool and matrix_client_riot_web_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-riot-web.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_client_element_enabled|bool and matrix_client_riot_web_service_stat.stat.exists"
+
+- name: Check existence of /matrix/riot-web
+  stat:
+    path: "/matrix/riot-web"
+  register: matrix_client_riot_web_dir_stat
+  when: "matrix_client_element_enabled|bool"
+
+- name: Relocate /matrix/riot-web to /matrix/client-element
+  command: "mv /matrix/riot-web /matrix/client-element"
+  when: "matrix_client_element_enabled|bool and matrix_client_riot_web_dir_stat.stat.exists"

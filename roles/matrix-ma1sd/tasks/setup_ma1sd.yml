@@ -54,13 +54,20 @@
     git:
       repo: https://github.com/ma1uta/ma1sd.git
       dest: "{{ matrix_ma1sd_docker_src_files_path }}"
-      version: "v{{ matrix_ma1sd_docker_image.split(':')[1] }}"
+      version: "{{ matrix_ma1sd_docker_image.split(':')[1].split('-')[0] }}"
       force: "yes"
 
   - name: Ensure ma1sd Docker image is built
     shell: "./gradlew dockerBuild"
     args:
       chdir: "{{ matrix_ma1sd_docker_src_files_path }}"
+
+  - name: Ensure ma1sd Docker image is tagged correctly
+    docker_image:
+      name: "{{ matrix_ma1sd_docker_image.split('-')[0] }}"
+      repository: "{{ matrix_ma1sd_docker_image }}"
+      force_tag: yes
+      source: local
   when: "matrix_ma1sd_enabled|bool and matrix_ma1sd_container_image_self_build"
 
 - name: Ensure ma1sd config installed

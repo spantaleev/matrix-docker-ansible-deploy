@@ -52,12 +52,19 @@
     mode: 0644
   when: matrix_nginx_proxy_proxy_matrix_enabled|bool
 
+- name: Ensure Matrix nginx-proxy configuration for Element domain exists
+  template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-client-element.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-element.conf"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_element_enabled|bool
+
 - name: Ensure Matrix nginx-proxy configuration for riot domain exists
   template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-riot-web.conf.j2"
     dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-riot-web.conf"
     mode: 0644
-  when: matrix_nginx_proxy_proxy_riot_enabled|bool
+  when: matrix_nginx_proxy_proxy_riot_compat_redirect_enabled|bool
 
 - name: Ensure Matrix nginx-proxy configuration for dimension domain exists
   template:
@@ -162,7 +169,7 @@
   file:
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-riot-web.conf"
     state: absent
-  when: "not matrix_nginx_proxy_proxy_riot_enabled|bool"
+  when: "not matrix_nginx_proxy_proxy_riot_compat_redirect_enabled|bool"
 
 - name: Ensure Matrix nginx-proxy configuration for dimension domain deleted
   file:

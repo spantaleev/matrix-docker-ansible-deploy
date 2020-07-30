@@ -14,7 +14,7 @@ Usually, there are 2 options:
 
 This documentation page tells you how to do the latter. With some easy changes, we make it possible to serve the base domain from the Matrix server via the integrated webserver (`matrix-nginx-proxy`).
 
-Just **adjust your DNS records**, so that your base domain is pointed to the Matrix server's IP address **and use the following configuration**:
+Just **adjust your DNS records**, so that your base domain is pointed to the Matrix server's IP address (using a DNS `A` record) **and then use the following configuration**:
 
 ```yaml
 matrix_nginx_proxy_base_domain_serving_enabled: true

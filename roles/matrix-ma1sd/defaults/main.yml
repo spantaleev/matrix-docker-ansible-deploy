@@ -11,7 +11,8 @@ matrix_ma1sd_docker_image: "ma1uta/ma1sd:2.4.0-{{ matrix_ma1sd_architecture }}"
 matrix_ma1sd_docker_image_force_pull: "{{ matrix_ma1sd_docker_image.endswith(':latest') }}"
 
 matrix_ma1sd_base_path: "{{ matrix_base_data_path }}/ma1sd"
-matrix_ma1sd_docker_src_files_path: "{{ matrix_ma1sd_base_path }}/docker-src"
+# We need the docker src directory to be named ma1sd. See: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/588
+matrix_ma1sd_docker_src_files_path: "{{ matrix_ma1sd_base_path }}/docker-src/ma1sd"
 matrix_ma1sd_config_path: "{{ matrix_ma1sd_base_path }}/config"
 matrix_ma1sd_data_path: "{{ matrix_ma1sd_base_path }}/data"
 
@@ -81,6 +82,9 @@ matrix_ma1sd_verbose_logging: false
 # Setting up support for API prefixes
 matrix_ma1sd_v1_enabled: true
 matrix_ma1sd_v2_enabled: true
+
+# Fix for missing 3PIDS bug
+matrix_ma1sd_hashing_enabled: true
 
 # Default ma1sd configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.

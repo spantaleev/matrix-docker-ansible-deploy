@@ -1,0 +1,20 @@
+---
+
+- name: Fail if required Element settings not defined
+  fail:
+    msg: >
+      You need to define a required configuration setting (`{{ item }}`) for using Element.
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_client_element_default_hs_url"
+
+- name: (Deprecation) Catch and report riot-web variables
+  fail:
+    msg: >-
+      Riot has been renamed to Element (https://element.io/blog/welcome-to-element/).
+      The playbook will migrate your existing configuration and data automatically, but you need to adjust variable names.
+      Please change your configuration (vars.yml) to rename all riot-web variables (`{{ item.old }}` -> `{{ item.new }}`).
+      Also note that DNS configuration changes may be necessary.
+  when: "vars | dict2items | selectattr('key', 'match', item.old) | list | items2dict"
+  with_items:
+    - {'old': 'matrix_riot_web_.*', 'new': 'matrix_client_element_.*'}

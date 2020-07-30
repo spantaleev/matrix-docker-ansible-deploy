@@ -16,7 +16,7 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-usern
 
 **Note**: `<your-username>` is just a plain username (like `john`), not your full `@<username>:<your-domain>` identifier.
 
-**You can then log in with that user** via the riot-web service that this playbook has created for you at a URL like this: `https://riot.<domain>/`.
+**You can then log in with that user** via the Element service that this playbook has created for you at a URL like this: `https://element.<domain>/`.
 
 -----
 
@@ -25,7 +25,7 @@ If you've just installed Matrix, **to finalize the installation process**, it's 
 -----
 
 
-## Adding/Removing Administrator privileges to an existing user.  
+## Adding/Removing Administrator privileges to an existing user.
 
 The script `/usr/local/bin/matrix-change-user-admin-status` may be used to change a user's admin privileges.
 
@@ -35,3 +35,8 @@ The script `/usr/local/bin/matrix-change-user-admin-status` may be used to chang
 ```
 /usr/local/bin/matrix-change-user-admin-status <username> <0/1>
 ```
+
+
+## Managing users via a Web UI
+
+To manage users more easily (via a web user-interace), you can install [Synapse Admin](configuring-playbook-synapse-admin.md).

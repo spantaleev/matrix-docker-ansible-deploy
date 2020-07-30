@@ -1,0 +1,60 @@
+---
+
+#
+# Tasks related to setting up matrix-synapse-admin
+#
+
+- name: Ensure matrix-synapse-admin image is pulled
+  docker_image:
+    name: "{{ matrix_synapse_admin_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_synapse_admin_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_synapse_admin_docker_image_force_pull }}"
+  when: matrix_synapse_admin_enabled|bool
+
+- name: Ensure matrix-synapse-admin.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-synapse-admin.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-synapse-admin.service"
+    mode: 0644
+  register: matrix_synapse_admin_systemd_service_result
+  when: matrix_synapse_admin_enabled|bool
+
+- name: Ensure systemd reloaded after matrix-synapse-admin.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_synapse_admin_enabled|bool and matrix_synapse_admin_systemd_service_result.changed"
+
+#
+# Tasks related to getting rid of matrix-synapse-admin (if it was previously enabled)
+#
+
+- name: Check existence of matrix-synapse-admin service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-synapse-admin.service"
+  register: matrix_synapse_admin_service_stat
+
+- name: Ensure matrix-synapse-admin is stopped
+  service:
+    name: matrix-synapse-admin
+    state: stopped
+    daemon_reload: yes
+  register: stopping_result
+  when: "not matrix_synapse_admin_enabled|bool and matrix_synapse_admin_service_stat.stat.exists"
+
+- name: Ensure matrix-synapse-admin.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-synapse-admin.service"
+    state: absent
+  when: "not matrix_synapse_admin_enabled|bool and matrix_synapse_admin_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-synapse-admin.service removal
+  service:
+    daemon_reload: yes
+  when: "not matrix_synapse_admin_enabled|bool and matrix_synapse_admin_service_stat.stat.exists"
+
+- name: Ensure matrix-synapse-admin Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_synapse_admin_docker_image }}"
+    state: absent
+  when: "not matrix_synapse_admin_enabled|bool"

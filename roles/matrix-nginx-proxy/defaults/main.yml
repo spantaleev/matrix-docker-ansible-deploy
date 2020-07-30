@@ -3,7 +3,7 @@ matrix_nginx_proxy_enabled: true
 # We use an official nginx image, which we fix-up to run unprivileged.
 # An alternative would be an `nginxinc/nginx-unprivileged` image, but
 # that is frequently out of date.
-matrix_nginx_proxy_docker_image: "nginx:1.19.0-alpine"
+matrix_nginx_proxy_docker_image: "nginx:1.19.1-alpine"
 matrix_nginx_proxy_docker_image_force_pull: "{{ matrix_nginx_proxy_docker_image.endswith(':latest') }}"
 
 matrix_nginx_proxy_base_path: "{{ matrix_base_data_path }}/nginx-proxy"
@@ -94,8 +94,12 @@ matrix_nginx_proxy_base_domain_homepage_template: |-
 
 
 # Controls whether proxying the riot domain should be done.
-matrix_nginx_proxy_proxy_riot_enabled: false
-matrix_nginx_proxy_proxy_riot_hostname: "{{ matrix_server_fqn_riot }}"
+matrix_nginx_proxy_proxy_riot_compat_redirect_enabled: false
+matrix_nginx_proxy_proxy_riot_compat_redirect_hostname: "riot.{{ matrix_domain }}"
+
+# Controls whether proxying the Element domain should be done.
+matrix_nginx_proxy_proxy_element_enabled: false
+matrix_nginx_proxy_proxy_element_hostname: "{{ matrix_server_fqn_element }}"
 
 # Controls whether proxying the matrix domain should be done.
 matrix_nginx_proxy_proxy_matrix_enabled: false
@@ -162,23 +166,26 @@ matrix_nginx_proxy_proxy_http_additional_server_configuration_blocks: []
 # A list of strings containing additional configuration blocks to add to the matrix synapse's server configuration.
 matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: []
 
-# A list of strings containing additional configuration blocks to add to the matrix riot's server configuration.
+# A list of strings containing additional configuration blocks to add to Riot's server configuration.
 matrix_nginx_proxy_proxy_riot_additional_server_configuration_blocks: []
 
-# A list of strings containing additional configuration blocks to add to the matrix dimension's server configuration.
+# A list of strings containing additional configuration blocks to add to Element's server configuration.
+matrix_nginx_proxy_proxy_element_additional_server_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to Dimension's server configuration.
 matrix_nginx_proxy_proxy_dimension_additional_server_configuration_blocks: []
 
-# A list of strings containing additional configuration blocks to add to the jitsi's server configuration.
+# A list of strings containing additional configuration blocks to add to Jitsi's server configuration.
 matrix_nginx_proxy_proxy_jitsi_additional_server_configuration_blocks: []
 
-# A list of strings containing additional configuration blocks to add to the matrix domain server configuration.
+# A list of strings containing additional configuration blocks to add to the base domain server configuration.
 matrix_nginx_proxy_proxy_domain_additional_server_configuration_blocks: []
 
 # Specifies when to reload the matrix-nginx-proxy service so that
 # a new SSL certificate could go into effect.
 matrix_nginx_proxy_reload_cron_time_definition: "20 4 */5 * *"
 
-# Specifies which SSL protocols to use when serving Riot and Synapse
+# Specifies which SSL protocols to use when serving all the various vhosts
 matrix_nginx_proxy_ssl_protocols: "TLSv1.2 TLSv1.3"
 
 # Controls whether the self-check feature should validate SSL certificates.
@@ -204,7 +211,7 @@ matrix_nginx_proxy_self_check_well_known_matrix_client_follow_redirects: none
 # obeying the following hierarchy:
 # - <matrix_ssl_config_dir_path>/live/<domain>/fullchain.pem
 # - <matrix_ssl_config_dir_path>/live/<domain>/privkey.pem
-# where <domain> refers to the domains that you need (usually `matrix_server_fqn_matrix` and `matrix_server_fqn_riot`).
+# where <domain> refers to the domains that you need (usually `matrix_server_fqn_matrix` and `matrix_server_fqn_element`).
 #
 # The "none" type (`matrix_ssl_retrieval_method: none`), simply means that no certificate retrieval will happen.
 # It's useful for when you've disabled the nginx proxy (`matrix_nginx_proxy_enabled: false`)
@@ -220,7 +227,7 @@ matrix_ssl_domains_to_obtain_certificates_for: []
 
 # Controls whether to obtain production or staging certificates from Let's Encrypt.
 matrix_ssl_lets_encrypt_staging: false
-matrix_ssl_lets_encrypt_certbot_docker_image: "certbot/certbot:{{ matrix_ssl_architecture }}-v1.5.0"
+matrix_ssl_lets_encrypt_certbot_docker_image: "certbot/certbot:{{ matrix_ssl_architecture }}-v1.6.0"
 matrix_ssl_lets_encrypt_certbot_docker_image_force_pull: "{{ matrix_ssl_lets_encrypt_certbot_docker_image.endswith(':latest') }}"
 matrix_ssl_lets_encrypt_certbot_standalone_http_port: 2402
 matrix_ssl_lets_encrypt_support_email: ~
