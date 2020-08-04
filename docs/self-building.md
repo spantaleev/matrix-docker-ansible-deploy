@@ -11,6 +11,7 @@ To make use of self-building, you don't need to do anything besides change your 
 Note that **not all components support self-building yet**.
 List of roles where self-building the Docker image is currently possible:
 - `matrix-synapse`
+- `matrix-synapse-admin`
 - `matrix-client-element`
 - `matrix-coturn`
 - `matrix-ma1sd`
