@@ -6,7 +6,7 @@ If that's okay, you can skip this document.
 
 ## Disabling Element
 
-If you'd like for the playbook to not install (or to uninstall the previously installed Element), you can disable it in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+If you'd like for the playbook to not install Element (or to uninstall it if it was previously installed), you can disable it in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
 matrix_client_element_enabled: false
