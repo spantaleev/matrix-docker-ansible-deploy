@@ -60,9 +60,13 @@
       	resolver 127.0.0.11 valid=5s;
       	set $backend "matrix-maubot:{{ matrix_maubot_management_port }}";
       	proxy_pass http://$backend;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
       {% else %}
       	{# Generic configuration for use outside of our container setup #}
       	proxy_pass http://127.0.0.1:{{ matrix_maubot_management_port }};
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
       {% endif %}
       }
   when: matrix_maubot_enabled|bool
