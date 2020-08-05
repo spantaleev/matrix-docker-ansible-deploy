@@ -4,7 +4,7 @@
 
 - `root` access to your server (or a user capable of elevating to `root` via `sudo`).
 
-- [Python](https://www.python.org/) being installed on the server. Most distributions install Python by default, but some don't (e.g. Ubuntu 18.04) and require manual installation (something like `apt-get install python`).
+- [Python](https://www.python.org/) and the [`docker`](https://pypi.org/project/docker/) package (requires [`pip`](https://packaging.python.org/guides/installing-using-linux-tools/)) being installed on the server. Most distributions install Python by default, but some don't (e.g. Ubuntu 18.04) and require manual installation (something like `apt-get install python`).
 
 - A `cron`-like tool installed on the server such as `cron` or `anacron` to automatically schedule the Let's Encrypt SSL certificates's renewal. *This can be ignored if you use your own SSL certificates.*
 
