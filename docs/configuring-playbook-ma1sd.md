@@ -11,7 +11,7 @@ ma1sd is a fork of [mxisd](https://github.com/kamax-io/mxisd) which was pronounc
 
 ma1sd, being an Identity Server, is not strictly needed. It is only used for 3PIDs (3rd party identifiers like E-mail and phone numbers) and some [enhanced features](https://github.com/ma1uta/ma1sd/#features).
 
-If you'd like for the playbook to not install ma1sd (or to uninstall the previously installed ma1sd), you can disable it in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+If you'd like for the playbook to not install ma1sd (or to uninstall it if it was previously installed), you can disable it in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
 matrix_ma1sd_enabled: false
