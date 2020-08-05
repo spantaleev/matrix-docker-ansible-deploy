@@ -28,6 +28,8 @@ If self-signed certificates are alright with you, you can ask the playbook to ge
 matrix_ssl_retrieval_method: self-signed
 ```
 
+If you get a `Cannot reach homeserver` error in Element, you will have to visit `https://matrix.<your-domain>` in your browser and agree to the certificate exception before you can login.
+
 
 ## Using your own SSL certificates
 
