@@ -87,7 +87,7 @@ This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EM
 
 - this one installs and hooks together **a lot more Matrix-related services** for you (see above)
 
-- this one **can be re-ran many times** without causing trouble
+- this one **can be executed more than once** without causing trouble
 
 - works on various distros: **CentOS** (7.0+), Debian-based distributions (**Debian** 9/Stretch+, **Ubuntu** 16.04+), **Archlinux**
 
