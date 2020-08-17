@@ -16,7 +16,7 @@
 #
 ######################################################################
 
-matrix_identity_server_url: "{{ 'https://' + matrix_synapse_trusted_third_party_id_servers[0] if matrix_synapse_trusted_third_party_id_servers|length > 0 else None }}"
+matrix_identity_server_url: "{{ ('https://' + matrix_server_fqn_matrix) if matrix_ma1sd_enabled else None }}"
 
 matrix_riot_jitsi_preferredDomain: "{{ matrix_server_fqn_jitsi if matrix_jitsi_enabled else '' }}"
 
@@ -920,9 +920,6 @@ matrix_client_element_jitsi_preferredDomain: "{{ matrix_server_fqn_jitsi if matr
 ######################################################################
 
 matrix_synapse_container_image_self_build: "{{ matrix_architecture != 'amd64'}}"
-
-# When ma1sd is enabled, we can use it instead of the default public Identity servers.
-matrix_synapse_trusted_third_party_id_servers: "{{ [matrix_server_fqn_matrix] if matrix_ma1sd_enabled else matrix_synapse_id_servers_public }}"
 
 # When ma1sd is enabled, we can use it to validate email addresses and phone numbers.
 # Synapse can validate email addresses by itself as well, but it's probably not what we want by default when we have an identity server.
