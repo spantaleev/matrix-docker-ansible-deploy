@@ -15,9 +15,15 @@ If you decide that you'd like to let this playbook install it for you, you'd nee
 
 
 ## Playbook configuration
+
 You would then need some configuration like this:
 
 ```yaml
+# The Shared Secret Auth password provider module is required for Corporal to work.
+# See configuring-playbook-shared-secret-auth.md
+matrix_synapse_ext_password_provider_shared_secret_auth_enabled: true
+matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret: YOUR_SHARED_SECRET_GOES_HERE
+
 matrix_corporal_enabled: true
 
 matrix_corporal_policy_provider_config: |
