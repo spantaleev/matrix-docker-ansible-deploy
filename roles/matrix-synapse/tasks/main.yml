@@ -43,6 +43,11 @@
   tags:
     - update-user-password
 
+- import_tasks: "{{ role_path }}/tasks/rust-synapse-compress-state/main.yml"
+  when: run_synapse_rust_synapse_compress_state|bool
+  tags:
+    - rust-synapse-compress-state
+
 - name: Mark matrix-synapse role as executed
   set_fact:
     matrix_synapse_role_executed: true

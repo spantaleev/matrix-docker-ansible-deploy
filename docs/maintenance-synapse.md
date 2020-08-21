@@ -9,13 +9,53 @@ Table of contents:
 - [Purging old data with the Purge History API](#purging-old-data-with-the-purge-history-api), for when you wish to delete in-use (but old) data from the Synapse database
 
 - [Synapse maintenance](#synapse-maintenance)
-	- [Purging unused data with synapse-janitor](#purging-unused-data-with-synapse-janitor)
-		- [Vacuuming Postgres](#vacuuming-postgres)
 	- [Purging old data with the Purge History API](#purging-old-data-with-the-purge-history-api)
 	- [Compressing state with rust-synapse-compress-state](#compressing-state-with-rust-synapse-compress-state)
+	- [Purging unused data with synapse-janitor](#purging-unused-data-with-synapse-janitor)
 	- [Browse and manipulate the database](#browse-and-manipulate-the-database)
 
 - [Browse and manipulate the database](#browse-and-manipulate-the-database), for when you really need to take matters into your own hands
+
+
+## Purging old data with the Purge History API
+
+You can use the **Purge History API** to delete in-use (but old) data.
+
+**This is destructive** (especially for non-federated rooms), because it means **people will no longer have access to history past a certain point**.
+
+Synapse's [Purge History API](https://github.com/matrix-org/synapse/blob/master/docs/admin_api/purge_history_api.rst) can be used to purge on a per-room basis.
+
+To make use of this API, **you'll need an admin access token** first. You can find your access token in the setting of some clients (like Element).
+Alternatively, you can log in and obtain a new access token like this:
+
+```
+curl \
+--data '{"identifier": {"type": "m.id.user", "user": "YOUR_MATRIX_USERNAME" }, "password": "YOUR_MATRIX_PASSWORD", "type": "m.login.password", "device_id": "Synapse-Purge-History-API"}' \
+https://matrix.DOMAIN/_matrix/client/r0/login
+```
+
+Follow the [Purge History API](https://github.com/matrix-org/synapse/blob/master/docs/admin_api/purge_history_api.rst) documentation page for the actual purging instructions.
+
+After deleting data, you may wish to run a [`FULL` Postgres `VACUUM`](./maintenance-postgres.md#vacuuming-postgresql).
+
+
+## Compressing state with rust-synapse-compress-state
+
+[rust-synapse-compress-state](https://github.com/matrix-org/rust-synapse-compress-state) can be used to optimize some `_state` tables used by Synapse.
+
+This tool should be safe to use (even when Synapse is running), but it's always a good idea to [make Postgres backups](./maintenance-postgres.md#backing-up-postgresql) first.
+
+To ask the playbook to run rust-synapse-compress-state, execute:
+
+```
+ansible-playbook -i inventory/hosts setup.yml --tags=rust-synapse-compress-state
+```
+
+By default, all rooms with more than `100000` state group rows will be compressed.
+If you need to adjust this, pass: `--extra-vars='matrix_synapse_rust_synapse_compress_state_min_state_groups_required=SOME_NUMBER_HERE'` to the command above.
+
+After state compression, you may wish to run a [`FULL` Postgres `VACUUM`](./maintenance-postgres.md#vacuuming-postgresql).
+
 
 ## Purging unused data with synapse-janitor
 
@@ -34,50 +74,9 @@ ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-synapse-janito
 
 **Note**: this will automatically stop Synapse temporarily and restart it later.
 
-
-### Vacuuming Postgres
-
 Running synapse-janitor potentially deletes a lot of data from the Postgres database.
-However, disk space only ever gets released after a [`FULL` Postgres `VACUUM`](./maintenance-postgres.md#vacuuming-postgresql).
+You may wish to run a [`FULL` Postgres `VACUUM`](./maintenance-postgres.md#vacuuming-postgresql) after that.
 
-It's easiest if you ask the playbook to run both synapse-janitor and a `VACUUM FULL` in one call:
-
-```bash
-ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-synapse-janitor,run-postgres-vacuum,start
-```
-
-**Note**: this will automatically stop Synapse temporarily and restart it later. You'll also need plenty of available disk space in your Postgres data directory (usually `/matrix/postgres/data`).
-
-
-## Purging old data with the Purge History API
-
-If [purging unused and unreachable data](#purging-unused-data-with-synapse-janitor) is not enough for you, you can start deleting in-use (but old) data.
-
-**This is destructive** (especially for non-federated rooms), because it means **people will no longer have access to history past a certain point**.
-
-Synapse provides a [Purge History API](https://github.com/matrix-org/synapse/blob/master/docs/admin_api/purge_history_api.rst) that you can use to purge on a per-room basis.
-
-To make use of this API, **you'll need an admin access token** first. You can find your access token in the setting of some clients (like Element).
-Alternatively, you can log in and obtain a new access token like this:
-
-```
-curl \
---data '{"identifier": {"type": "m.id.user", "user": "YOUR_MATRIX_USERNAME" }, "password": "YOUR_MATRIX_PASSWORD", "type": "m.login.password", "device_id": "Synapse-Purge-History-API"}' \
-https://matrix.DOMAIN/_matrix/client/r0/login
-```
-
-Follow the [Purge History API](https://github.com/matrix-org/synapse/blob/master/docs/admin_api/purge_history_api.rst) documentation page for the actual purging instructions.
-
-Don't forget that disk space only ever gets released after a [`FULL` Postgres `VACUUM`](./maintenance-postgres.md#vacuuming-postgresql) - something the playbook can help you with.
-
-
-## Compressing state with rust-synapse-compress-state
-
-[rust-synapse-compress-state](https://github.com/matrix-org/rust-synapse-compress-state) can be used to optimize some `_state` tables used by Synapse.
-
-Unfortunately, at this time the playbook can't help you run this **experimental tool**.
-
-Since it's also experimental, you may wish to stay away from it, or at least [make Postgres backups](./maintenance-postgres.md#backing-up-postgresql) first.
 
 ## Browse and manipulate the database
 

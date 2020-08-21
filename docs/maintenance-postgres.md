@@ -22,6 +22,8 @@ If you are using an [external Postgres server](configuring-playbook-external-pos
 
 ## Vacuuming PostgreSQL
 
+Deleting lots data from Postgres does not make it release disk space, until you perform a `VACUUM` operation.
+
 To perform a `FULL` Postgres [VACUUM](https://www.postgresql.org/docs/current/sql-vacuum.html), run the playbook with `--tags=run-postgres-vacuum`.
 
 Example:
@@ -42,7 +44,7 @@ docker run \
 --rm \
 --network=matrix \
 --env-file=/matrix/postgres/env-postgres-psql \
-postgres:12.1-alpine \
+postgres:12.4-alpine \
 pg_dumpall -h matrix-postgres \
 | gzip -c \
 > /postgres.sql.gz
