@@ -101,6 +101,7 @@
 	}
 	{% endif %}
 
+	{% if matrix_synapse_workers_enabled %}
 	{% if synchrotron_workers %}
 	{# c.f. https://github.com/matrix-org/synapse/blame/master/docs/workers.md#L134 #}
 	location /_matrix/client/r0/sync {
@@ -208,6 +209,7 @@
 		proxy_set_header X-Forwarded-For $remote_addr;
 	}
 	{% endif %}
+	{% endif %}
 
 	{% for configuration_block in matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks %}
 		{{- configuration_block }}
@@ -282,6 +284,7 @@
 	}
 {% endmacro %}
 
+{% if matrix_synapse_workers_enabled %}
 {% set synchrotron_workers = matrix_synapse_workers_enabled_list|selectattr('worker', 'equalto', 'synchrotron')|list %}
 {% if synchrotron_workers %}
 upstream synchrotron {
@@ -293,6 +296,7 @@ upstream synchrotron {
 	server "matrix-synapse:{{ synchrotron_worker.port }}";
 	{% endfor %}
 }
+{% endif %}
 {% endif %}
 
 server {
@@ -376,6 +380,7 @@ server {
 		ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
 	{% endif %}
 
+	{% if matrix_synapse_workers_enabled }
 	{% set federation_reader_worker = matrix_synapse_workers_enabled_list|selectattr('worker', 'equalto', 'federation_reader')|first %}
 	{% if federation_reader_worker %}
 	{# c.f. https://github.com/matrix-org/synapse/blame/master/docs/workers.md#L160 #}
@@ -387,6 +392,7 @@ server {
 		proxy_set_header Host $host;
 		proxy_set_header X-Forwarded-For $remote_addr;
 	}
+	{% endif %}
 	{% endif %}
 
 	location / {
