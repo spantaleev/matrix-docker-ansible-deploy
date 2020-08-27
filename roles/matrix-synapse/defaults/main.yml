@@ -260,6 +260,43 @@ matrix_synapse_metrics_port: 9100
 # See https://github.com/matrix-org/synapse/blob/master/docs/manhole.md
 matrix_synapse_manhole_enabled: false
 
+# Enable support for Synapse workers
+matrix_synapse_workers_enabled: false
+
+# List of workers to spawn
+matrix_synapse_workers_enabled_list: []
+
+# Default list of workers to spawn
+matrix_synapse_workers_enabled_list:
+  - { worker: synchrotron, port: 18082 }
+  - { worker: synchrotron, port: 18083 }
+  - { worker: synchrotron, port: 18084 }
+  - { worker: appservice, port: 18085 }
+  - { worker: client_reader, port: 18086 }
+  - { worker: event_creator, port: 18087 }
+  - { worker: federation_reader, port: 18088 }
+  - { worker: federation_sender, port: 18089 }
+  - { worker: frontend_proxy, port: 18090 }
+  - { worker: media_repository, port: 18091 }
+  - { worker: pusher, port: 18092 }
+  - { worker: user_dir, port: 18093 }
+
+# The list of available workers (2020-04-14)
+matrix_synapse_workers_avail_list:
+  - appservice
+  - client_reader
+  - event_creator
+  - federation_reader
+  - federation_sender
+  - frontend_proxy
+  - media_repository
+  - pusher
+  - synchrotron
+  - user_dir
+
+# Ports used for communication between main synapse process and workers
+matrix_synapse_replication_tcp_port: 9092
+matrix_synapse_replication_http_port: 9093
 
 # Send ERROR logs to sentry.io for easier tracking
 # To set this up: go to sentry.io, create a python project, and set

@@ -1,0 +1,42 @@
+---
+
+- name: Ensure synapse worker base service file installed
+  template:
+    src: "{{ role_path }}/templates/synapse/systemd/matrix-synapse-worker@.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-synapse-worker@.service"
+    mode: 0644
+  register: matrix_synapse_worker_systemd_service_result
+
+- name: Ensure previous worker service symlinks are cleaned (FIXME)
+  file:
+    path: "{{ item.root + '/' + item.path }}"
+    state: absent
+  when:
+    - matrix_synapse_workers_enabled|bool
+    - item.state == 'link'
+    - item.path is match('matrix-synapse-worker@.*\\.service')
+  with_filetree:
+    - "{{ matrix_systemd_path }}/matrix-synapse.service.wants"
+
+- name: Ensure systemd reloaded the worker service unit
+  service:
+    daemon_reload: yes
+
+- name: Ensure individual worker service symlinks exist
+  service:
+    name: "matrix-synapse-worker@{{ item.worker }}:{{ item.port }}.service"
+    enabled: true
+  with_items: "{{ matrix_synapse_workers_enabled_list }}"
+
+- name: Ensure creation of specific worker configs
+  template:
+    src: "{{ role_path }}/templates/synapse/worker.yaml.j2"
+    dest: "{{ matrix_synapse_config_dir_path }}/worker.{{ item.worker }}:{{ item.port }}.yaml"
+  with_list: "{{ matrix_synapse_workers_enabled_list }}"
+
+- name: Add workers to synapse.wants list
+  set_fact:
+    matrix_synapse_systemd_wanted_services_list: >
+      {{ matrix_synapse_systemd_wanted_services_list +
+      ['matrix-synapse-worker@' + item.worker + ':' + item.port|string + '.service'] }}
+  with_items: "{{ matrix_synapse_workers_enabled_list }}"
