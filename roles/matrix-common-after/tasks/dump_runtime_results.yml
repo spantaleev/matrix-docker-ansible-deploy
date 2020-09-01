@@ -1,0 +1,6 @@
+# Ansible outputs the message in the `item=` field.
+# It's unnecessary to output it again in the actual message, so we don't.
+- debug:
+    msg: ""
+  with_items: "{{ matrix_playbook_runtime_results }}"
+  when: "matrix_playbook_runtime_results is defined and matrix_playbook_runtime_results|length > 0"
