@@ -1,0 +1,103 @@
+---
+
+#
+# Tasks related to setting up matrix-registration
+#
+
+- name: Ensure matrix-registration paths exist
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - { path: "{{ matrix_registration_base_path }}", when: true }
+    - { path: "{{ matrix_registration_config_path }}", when: true }
+    - { path: "{{ matrix_registration_data_path }}", when: true }
+    - { path: "{{ matrix_registration_docker_src_files_path }}", when: "{{ matrix_registration_container_image_self_build }}"}
+  when: matrix_registration_enabled|bool and item.when
+
+- name: Ensure matrix-registration image is pulled
+  docker_image:
+    name: "{{ matrix_registration_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_registration_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_registration_docker_image_force_pull }}"
+  when: "matrix_registration_enabled|bool and not matrix_registration_container_image_self_build|bool"
+
+- name: Ensure matrix-registration repository is present when self-building
+  git:
+    repo: "{{ matrix_registration_docker_repo }}"
+    dest: "{{ matrix_registration_docker_src_files_path }}"
+    version: "{{ matrix_registration_version }}"
+    force: "yes"
+  register: matrix_registration_git_pull_results
+  when: "matrix_registration_enabled|bool and matrix_registration_container_image_self_build|bool"
+
+- name: Ensure matrix-registration Docker image is built
+  docker_image:
+    name: "{{ matrix_registration_docker_image }}"
+    source: build
+    force_source: yes
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_registration_docker_src_files_path }}"
+      pull: yes
+  when: "matrix_registration_enabled|bool and matrix_registration_container_image_self_build|bool and matrix_registration_git_pull_results.changed"
+
+- name: Ensure matrix-registration config installed
+  copy:
+    content: "{{ matrix_registration_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_registration_config_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  when: matrix_registration_enabled|bool
+
+- name: Ensure matrix-registration.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-registration.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-registration.service"
+    mode: 0644
+  register: matrix_registration_systemd_service_result
+  when: matrix_registration_enabled|bool
+
+- name: Ensure systemd reloaded after matrix-registration.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_registration_enabled|bool and matrix_registration_systemd_service_result.changed"
+
+#
+# Tasks related to getting rid of matrix-registration (if it was previously enabled)
+#
+
+- name: Check existence of matrix-registration service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-registration.service"
+  register: matrix_registration_service_stat
+
+- name: Ensure matrix-registration is stopped
+  service:
+    name: matrix-registration
+    state: stopped
+    daemon_reload: yes
+  register: stopping_result
+  when: "not matrix_registration_enabled|bool and matrix_registration_service_stat.stat.exists"
+
+- name: Ensure matrix-registration.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-registration.service"
+    state: absent
+  when: "not matrix_registration_enabled|bool and matrix_registration_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-registration.service removal
+  service:
+    daemon_reload: yes
+  when: "not matrix_registration_enabled|bool and matrix_registration_service_stat.stat.exists"
+
+- name: Ensure matrix-registration Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_registration_docker_image }}"
+    state: absent
+  when: "not matrix_registration_enabled|bool"

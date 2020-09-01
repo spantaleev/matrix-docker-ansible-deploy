@@ -1,3 +1,12 @@
+# 2020-09-01
+
+## matrix-registration support
+
+The playbook can now help you set up [matrix-registration](https://github.com/ZerataX/matrix-registration) - an application that lets you keep your Matrix server's registration private, but still allow certain users (those having a unique registration link) to register by themselves.
+
+See our [Setting up matrix-registration](docs/configuring-playbook-matrix-registration.md) documentation page to get started.
+
+
 # 2020-08-21
 
 ## rust-synapse-compress-state support
