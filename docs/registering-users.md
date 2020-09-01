@@ -55,6 +55,8 @@ matrix_synapse_enable_registration: true
 
 and running the [installation](installing.md) procedure once again.
 
+If you're opening up registrations publicly like this, you might also wish to [configure CAPTCHA protection](configuring-captcha.md).
+
 
 ## Adding/Removing Administrator privileges to an existing user
 
