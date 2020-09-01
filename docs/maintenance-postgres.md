@@ -42,6 +42,7 @@ To make a back up of the current PostgreSQL database, make sure it's running and
 ```bash
 docker run \
 --rm \
+--log-driver=none \
 --network=matrix \
 --env-file=/matrix/postgres/env-postgres-psql \
 postgres:12.4-alpine \

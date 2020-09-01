@@ -80,6 +80,7 @@
 - name: Perform Postgres database dump
   command: >-
     {{ matrix_host_command_docker }} run --rm --name matrix-postgres-dump
+    --log-driver=none
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
     --network={{ matrix_docker_network }}
     --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
@@ -124,6 +125,7 @@
   set_fact:
     matrix_postgres_import_command: >-
       {{ matrix_host_command_docker }} run --rm --name matrix-postgres-import
+      --log-driver=none
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
       --network={{ matrix_docker_network }}
