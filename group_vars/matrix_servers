@@ -737,7 +737,7 @@ matrix_ma1sd_threepid_medium_email_connectors_smtp_host: "matrix-mailer"
 matrix_ma1sd_threepid_medium_email_connectors_smtp_port: 8025
 matrix_ma1sd_threepid_medium_email_connectors_smtp_tls: 0
 
-matrix_ma1sd_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else false }}"
+matrix_ma1sd_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
 
 matrix_ma1sd_systemd_wanted_services_list: |
   {{
@@ -799,7 +799,7 @@ matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_ma1sd_
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}"
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container }}"
 
-matrix_nginx_proxy_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else false }}"
+matrix_nginx_proxy_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
 
 matrix_nginx_proxy_systemd_wanted_services_list: |
   {{
@@ -890,7 +890,7 @@ matrix_client_element_integrations_rest_url: "{{ matrix_dimension_integrations_r
 matrix_client_element_integrations_widgets_urls: "{{ matrix_dimension_integrations_widgets_urls if matrix_dimension_enabled else ['https://scalar.vector.im/api'] }}"
 matrix_client_element_integrations_jitsi_widget_url: "{{ matrix_dimension_integrations_jitsi_widget_url if matrix_dimension_enabled else 'https://scalar.vector.im/api/widgets/jitsi.html' }}"
 
-matrix_client_element_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else false }}"
+matrix_client_element_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
 
 matrix_client_element_registration_enabled: "{{ matrix_synapse_enable_registration }}"
 
@@ -985,7 +985,7 @@ matrix_synapse_turn_uris: |
 
 matrix_synapse_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
 
-matrix_synapse_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else false }}"
+matrix_synapse_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
 
 matrix_synapse_systemd_required_services_list: |
   {{
