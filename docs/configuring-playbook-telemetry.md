@@ -10,7 +10,7 @@ growth of the Matrix community, and helps to make Matrix a success.
 
 ## Enabling Telemetry
 
-If you'd like to **help by enabling submission of anonymized usage statistics** for your homeserver, add this to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+If you'd like to **help by enabling submission of general usage statistics** for your homeserver, add this to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
 matrix_synapse_report_stats: true
