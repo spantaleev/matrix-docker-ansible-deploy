@@ -1,5 +1,6 @@
 #jinja2: lstrip_blocks: "True"
 worker_app: synapse.app.{{ item.worker }}
+worker_name: {{ item.worker ~ '_' ~ item.port }}
 
 worker_replication_host: 127.0.0.1
 worker_replication_http_port: {{ matrix_synapse_replication_http_port }}
@@ -12,6 +13,8 @@ worker_listeners:
       - names:
 {% if item.worker in [ 'generic_worker', 'frontend_proxy', 'user_dir' ] %}
         - client
+{% endif %}
+{% if item.worker in [ 'generic_worker' ] %}
         - federation
 {% elif item.worker in [ 'media_repository' ] %}
         - media
