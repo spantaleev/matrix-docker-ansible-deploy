@@ -866,6 +866,22 @@ matrix_postgres_db_name: "homeserver"
 
 ######################################################################
 #
+# matrix-redis
+#
+######################################################################
+
+matrix_redis_enabled: "{{ matrix_synapse_workers_enabled }}"
+
+######################################################################
+#
+# /matrix-redis
+#
+######################################################################
+
+
+
+######################################################################
+#
 # matrix-client-element
 #
 ######################################################################
@@ -1002,6 +1018,11 @@ matrix_synapse_systemd_wanted_services_list: |
     +
     (['matrix-mailer.service'] if matrix_mailer_enabled else [])
   }}
+
+# Worker support with redis
+matrix_synapse_redis_enabled: "{{ matrix_redis_enabled }}"
+matrix_synapse_redis_host: "{{ 'matrix-redis' if matrix_redis_enabled else '' }}"
+matrix_synapse_redis_password: "{{ matrix_redis_connection_password if matrix_redis_enabled else '' }}"
 
 ######################################################################
 #

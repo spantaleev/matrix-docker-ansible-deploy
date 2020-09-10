@@ -225,11 +225,6 @@ listeners:
 
 {% if matrix_synapse_workers_enabled %}
   # c.f. https://github.com/matrix-org/synapse/tree/master/docs/workers.md
-  # TCP replication: streaming data from the master to the workers
-  - port: {{ matrix_synapse_replication_tcp_port }}
-    bind_addresses: ['0.0.0.0']
-    type: replication
-
   # HTTP replication: for the workers to send data to the main synapse process
   - port: {{ matrix_synapse_replication_http_port }}
     bind_addresses: ['0.0.0.0']
@@ -2464,16 +2459,16 @@ opentracing:
 redis:
   # Uncomment the below to enable Redis support.
   #
-  #enabled: true
+  enabled: {{ matrix_synapse_redis_enabled }}
 
   # Optional host and port to use to connect to redis. Defaults to
   # localhost and 6379
   #
-  #host: localhost
-  #port: 6379
+  host: {{ matrix_synapse_redis_host }}
+  port: {{ matrix_synapse_redis_port }}
 
   # Optional password if configured on the Redis instance
   #
-  #password: <secret_password>
+  password: {{ matrix_synapse_redis_password }}
 
 # vim:ft=yaml
