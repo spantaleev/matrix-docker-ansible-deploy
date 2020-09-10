@@ -1,0 +1,40 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=matrix-registration
+{% for service in matrix_registration_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_registration_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+
+[Service]
+Type=simple
+ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-registration
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-registration
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-registration \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_registration_container_http_host_bind_port %}
+			-p {{ matrix_registration_container_http_host_bind_port }}:5000 \
+			{% endif %}
+			-v {{ matrix_registration_config_path }}:/config:ro \
+			-v {{ matrix_registration_data_path }}:/data \
+			{% for arg in matrix_registration_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_registration_docker_image }} \
+			serve
+
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-registration
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-registration
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-registration
+
+[Install]
+WantedBy=multi-user.target

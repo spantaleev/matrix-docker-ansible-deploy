@@ -55,37 +55,11 @@
     mode: 0750
   when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
 
-- block:
-  - name: Ensure periodic SSL renewal cronjob configured (MAILTO)
-    cron:
-      user: root
-      cron_file: matrix-ssl-lets-encrypt
-      env: yes
-      name: MAILTO
-      value: "{{ matrix_ssl_lets_encrypt_support_email }}"
-
-  - name: Ensure periodic SSL renewal cronjob configured (matrix-ssl-lets-encrypt-certificates-renew)
-    cron:
-      user: root
-      cron_file: matrix-ssl-lets-encrypt
-      name: matrix-ssl-lets-encrypt-certificates-renew
-      state: present
-      hour: "4"
-      minute: "15"
-      day: "*"
-      job: "{{ matrix_local_bin_path }}/matrix-ssl-lets-encrypt-certificates-renew"
-
-  - name: Ensure periodic reloading of matrix-nginx-proxy is configured for SSL renewal (matrix-nginx-proxy-reload)
-    cron:
-      user: root
-      cron_file: matrix-ssl-lets-encrypt
-      name: matrix-nginx-proxy-reload
-      state: present
-      hour: "5"
-      minute: "20"
-      day: "*"
-      job: "{{ matrix_host_command_systemctl }} reload matrix-nginx-proxy.service"
-    when: matrix_nginx_proxy_enabled|bool
+- name: Ensure periodic SSL renewal cronjob configured
+  template:
+    src: "{{ role_path }}/templates/cron.d/matrix-ssl-lets-encrypt.j2"
+    dest: /etc/cron.d/matrix-ssl-lets-encrypt
+    mode: 0644
   when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
 
 
@@ -93,21 +67,9 @@
 # Tasks related to getting rid of Let's Encrypt's management of certificates
 #
 
-# When nginx-proxy is disabled, make sure its reloading cronjob is gone.
-# Other cronjobs can potentially remain there (see below).
-- name: Ensure matrix-nginx-proxy-reload cronjob removed
-  cron:
-    user: root
-    cron_file: matrix-ssl-lets-encrypt
-    name: matrix-nginx-proxy-reload
-    state: absent
-  when: "not matrix_nginx_proxy_enabled|bool"
-
 - name: Ensure matrix-ssl-lets-encrypt-renew cronjob removed
-  cron:
-    user: root
-    cron_file: matrix-ssl-lets-encrypt
-    name: matrix-ssl-lets-encrypt-certificates-renew
+  file:
+    path: /etc/cron.d/matrix-ssl-lets-encrypt
     state: absent
   when: "matrix_ssl_retrieval_method != 'lets-encrypt'"
 

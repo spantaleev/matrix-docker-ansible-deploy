@@ -1,3 +1,12 @@
+# 2020-09-01
+
+## matrix-registration support
+
+The playbook can now help you set up [matrix-registration](https://github.com/ZerataX/matrix-registration) - an application that lets you keep your Matrix server's registration private, but still allow certain users (those having a unique registration link) to register by themselves.
+
+See our [Setting up matrix-registration](docs/configuring-playbook-matrix-registration.md) documentation page to get started.
+
+
 # 2020-08-21
 
 ## rust-synapse-compress-state support
@@ -87,7 +96,7 @@ To reuse your existing rooms, invite `@smsbot:yourServer` to the room or write a
 
 Thanks to [benkuly](https://github.com/benkuly)'s efforts, the playbook now supports bridging to SMS (with one telephone number only) via [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge).
 
-See our [Setting up Matrix SMS bridging](docs/configuring-playbook-matrix-bridge-sms.md) documentation page for getting started.
+See our [Setting up Matrix SMS bridging](docs/configuring-playbook-bridge-matrix-bridge-sms.md) documentation page for getting started.
 
 
 # 2020-05-19

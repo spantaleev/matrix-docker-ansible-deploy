@@ -1,0 +1,11 @@
+---
+
+- name: Fail if required matrix-registration settings not defined
+  fail:
+    msg: >
+      You need to define a required configuration setting (`{{ item }}`) for using matrix-registration.
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_registration_shared_secret"
+    - "matrix_registration_admin_secret"
+    - "matrix_registration_server_location"
