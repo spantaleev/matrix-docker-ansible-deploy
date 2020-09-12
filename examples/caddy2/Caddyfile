@@ -1,0 +1,126 @@
+matrix.DOMAIN.tld {
+
+  tls {$CADDY_TLS}
+
+  @identity {
+        path /_matrix/identity/*
+  }
+
+  @noidentity {
+        not path /_matrix/identity/*
+  }
+
+  @search {
+        path /_matrix/client/r0/user_directory/search/*
+  }
+
+  @nosearch {
+        not path /_matrix/client/r0/user_directory/search/*
+  }
+
+  @static {
+        path /matrix/static-files/*
+  }
+
+  @nostatic {
+        not path /matrix/static-files/*
+  }
+
+  header {
+          Access-Control-Allow-Origin *
+          Strict-Transport-Security "mag=age=31536000;"
+          X-Frame-Options "DENY"
+                                                                                                                                                                                                                      167,9         79%
+          Strict-Transport-Security "mag=age=31536000;"
+          X-Frame-Options "DENY"
+          X-XSS-Protection "1; mode=block"
+  }
+
+  # Cache
+  header @static {
+        # Cache
+    Cache-Control "public, max-age=31536000"
+    defer
+  }
+
+  # identity
+  handle @identity {
+        reverse_proxy localhost:8090/_matrix/identity  {
+               header_up X-Forwarded-Port {http.request.port}
+               header_up X-Forwarded-Proto {http.request.scheme}
+               header_up X-Forwarded-TlsProto {tls_protocol}
+               header_up X-Forwarded-TlsCipher {tls_cipher}
+               header_up X-Forwarded-HttpsProto {proto}
+        }
+  }
+
+  # search
+  handle @search {
+        reverse_proxy localhost:8090/_matrix/client/r0/user_directory/search   {
+               header_up X-Forwarded-Port {http.request.port}
+               header_up X-Forwarded-Proto {http.request.scheme}
+               header_up X-Forwarded-TlsProto {tls_protocol}
+               header_up X-Forwarded-TlsCipher {tls_cipher}
+               header_up X-Forwarded-HttpsProto {proto}
+        }
+  }
+
+  handle {
+        encode zstd gzip
+
+        reverse_proxy localhost:8008  {
+               header_up X-Forwarded-Port {http.request.port}
+               header_up X-Forwarded-Proto {http.request.scheme}
+               header_up X-Forwarded-TlsProto {tls_protocol}
+               header_up X-Forwarded-TlsCipher {tls_cipher}
+               header_up X-Forwarded-HttpsProto {proto}
+        }
+  }
+}
+
+:8448 {
+	handle {
+        	encode zstd gzip
+
+        	reverse_proxy localhost:8448 {
+               		header_up X-Forwarded-Port {http.request.port}
+               		header_up X-Forwarded-Proto {http.request.scheme}
+               		header_up X-Forwarded-TlsProto {tls_protocol}
+               		header_up X-Forwarded-TlsCipher {tls_cipher}
+               		header_up X-Forwarded-HttpsProto {proto}
+        	}
+  	}
+}
+
+dimension.DOMAIN.tld {
+
+        tls {$CADDY_TLS}
+
+    	handle {
+        	encode zstd gzip
+
+        	reverse_proxy localhost:8184  {
+               		header_up X-Forwarded-Port {http.request.port}
+               		header_up X-Forwarded-Proto {http.request.scheme}
+               		header_up X-Forwarded-TlsProto {tls_protocol}
+               		header_up X-Forwarded-TlsCipher {tls_cipher}
+               		header_up X-Forwarded-HttpsProto {proto}
+        	}
+  	}
+}
+
+element.DOMAIN.tld {
+
+        tls {$CADDY_TLS}
+
+        handle {
+              encode zstd gzip
+
+              reverse_proxy localhost:8765 {
+                     header_up X-Forwarded-Port {http.request.port}
+                     header_up X-Forwarded-Proto {http.request.scheme}
+                     header_up X-Forwarded-TlsProto {tls_protocol}
+                     header_up X-Forwarded-TlsCipher {tls_cipher}
+                     header_up X-Forwarded-HttpsProto {proto}
+        }
+}
