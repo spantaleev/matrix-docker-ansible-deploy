@@ -56,11 +56,19 @@ The default authentication mode of Jitsi is `internal`, however LDAP is also sup
 ```yaml
 matrix_jitsi_enable_auth: true
 matrix_jitsi_auth_type: ldap
-matrix_jitsi_ldap_url: ldap://ldap.DOMAIN  # or ldaps:// if using tls
-matrix_jitsi_ldap_base: "OU=People,DC=DOMAIN"
-matrix_jitsi_ldap_filter: "(&(uid=%u)(employeeType=active))"
-matrix_jitsi_ldap_use_tls: false
-matrix_jitsi_ldap_start_tls: true
+matrix_jitsi_ldap_url: "ldap://ldap.DOMAIN"
+matrix_jitsi_ldap_base: "OU=People,DC=DOMAIN
+#matrix_jitsi_ldap_binddn: ""
+#matrix_jitsi_ldap_bindpw: ""
+matrix_jitsi_ldap_filter: "uid=%u"
+matrix_jitsi_ldap_auth_method: "bind"
+matrix_jitsi_ldap_version: "3"
+matrix_jitsi_ldap_use_tls: true
+matrix_jitsi_ldap_tls_ciphers: ""
+matrix_jitsi_ldap_tls_check_peer: true
+matrix_jitsi_ldap_tls_cacert_file: "/etc/ssl/certs/ca-certificates.crt"
+matrix_jitsi_ldap_tls_cacert_dir: "/etc/ssl/certs"
+matrix_jitsi_ldap_start_tls: false
 ```
 
 For more information refer to the [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet#authentication-using-ldap) and the [saslauthd `LDAP_SASLAUTHD`](https://github.com/winlibs/cyrus-sasl/blob/master/saslauthd/LDAP_SASLAUTHD) documentation.
