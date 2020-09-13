@@ -27,13 +27,17 @@ matrix.DOMAIN.tld {
   }
 
   header {
-          Access-Control-Allow-Origin *
-          Strict-Transport-Security "mag=age=31536000;"
-          X-Frame-Options "DENY"
+        # Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        # Enable cross-site filter (XSS) and tell browser to block detected attacks
+        X-XSS-Protection "1; mode=block"
+        # Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
+        X-Content-Type-Options "nosniff"
+        # Disallow the site to be rendered within a frame (clickjacking protection)
+        X-Frame-Options "DENY"
+        # X-Robots-Tag
+        X-Robots-Tag "noindex, noarchive, nofollow"
                                                                                                                                                                                                                       167,9         79%
-          Strict-Transport-Security "mag=age=31536000;"
-          X-Frame-Options "DENY"
-          X-XSS-Protection "1; mode=block"
   }
 
   # Cache
@@ -78,23 +82,36 @@ matrix.DOMAIN.tld {
   }
 }
 
-:8448 {
-	handle {
-        	encode zstd gzip
+matrix.DOMAIN.tld:8448 {
+    handle {
+        encode zstd gzip
 
-        	reverse_proxy localhost:8448 {
-               		header_up X-Forwarded-Port {http.request.port}
-               		header_up X-Forwarded-Proto {http.request.scheme}
-               		header_up X-Forwarded-TlsProto {tls_protocol}
-               		header_up X-Forwarded-TlsCipher {tls_cipher}
-               		header_up X-Forwarded-HttpsProto {proto}
-        	}
-  	}
+        reverse_proxy 127.0.0.1:8048 {
+               header_up X-Forwarded-Port {http.request.port}
+               header_up X-Forwarded-Proto {http.request.scheme}
+               header_up X-Forwarded-TlsProto {tls_protocol}
+               header_up X-Forwarded-TlsCipher {tls_cipher}
+               header_up X-Forwarded-HttpsProto {proto}
+        }
+    }
 }
 
 dimension.DOMAIN.tld {
 
-        tls {$CADDY_TLS}
+      tls {$CADDY_TLS}
+
+      header {
+         	# Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
+        	Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        	# Enable cross-site filter (XSS) and tell browser to block detected attacks
+        	X-XSS-Protection "1; mode=block"
+        	# Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
+        	X-Content-Type-Options "nosniff"
+        	# Disallow the site to be rendered within a frame (clickjacking protection)
+        	X-Frame-Options "DENY"
+        	# X-Robots-Tag
+        	X-Robots-Tag "noindex, noarchive, nofollow"
+  	}
 
     	handle {
         	encode zstd gzip
@@ -111,7 +128,20 @@ dimension.DOMAIN.tld {
 
 element.DOMAIN.tld {
 
-        tls {$CADDY_TLS}
+    tls {$CADDY_TLS}
+
+ 	header {
+         	# Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
+        	Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        	# Enable cross-site filter (XSS) and tell browser to block detected attacks
+        	X-XSS-Protection "1; mode=block"
+        	# Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
+        	X-Content-Type-Options "nosniff"
+        	# Disallow the site to be rendered within a frame (clickjacking protection)
+        	X-Frame-Options "DENY"
+        	# X-Robots-Tag
+        	X-Robots-Tag "noindex, noarchive, nofollow"
+  	}
 
         handle {
               encode zstd gzip
