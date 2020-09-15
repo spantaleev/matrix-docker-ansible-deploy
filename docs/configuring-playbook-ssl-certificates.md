@@ -3,7 +3,7 @@
 By default, this playbook retrieves and auto-renews free SSL certificates from [Let's Encrypt](https://letsencrypt.org/) for the domains it needs (`matrix.<your-domain>` and possibly `element.<your-domain>`)
 
 Those certificates are used when configuring the nginx reverse proxy installed by this playbook.
-They can also be used for configuring [your own webserver](docs/configuring-playbook-own-webserver.md), in case you're not using the integrated nginx server provided by the playbook.
+They can also be used for configuring [your own webserver](configuring-playbook-own-webserver.md), in case you're not using the integrated nginx server provided by the playbook.
 
 If you need to retrieve certificates for other domains (e.g. your base domain) or more control over certificate retrieval, read below.
 
@@ -13,7 +13,7 @@ Things discussed in this document:
 
 - [Using your own SSL certificates](#using-your-own-ssl-certificates), if you don't want to or can't use Let's Encrypt certificates, but are still interested in using the integrated nginx reverse proxy server
 
-- [Not bothering with SSL certificates](#not-bothering-with-ssl-certificates), if you're using [your own webserver](docs/configuring-playbook-own-webserver.md) and would rather this playbook leaves SSL certificate management to you
+- [Not bothering with SSL certificates](#not-bothering-with-ssl-certificates), if you're using [your own webserver](configuring-playbook-own-webserver.md) and would rather this playbook leaves SSL certificate management to you
 
 - [Obtaining SSL certificates for additional domains](#obtaining-ssl-certificates-for-additional-domains), if you'd like to host additional domains on the Matrix server and would like the playbook to help you obtain and renew certificates for those domains automatically
 
