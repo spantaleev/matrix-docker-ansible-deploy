@@ -38,6 +38,7 @@ Follow our [Registering users](registering-users.md) guide to learn how to regis
 
 You are required to specify an access token (belonging to this new user) for Dimension to work.
 To get an access token for the Dimension user, you can follow one of two options:
+
 *Through an interactive login*:
 
 1. In a private browsing session (incognito window), open Element.
