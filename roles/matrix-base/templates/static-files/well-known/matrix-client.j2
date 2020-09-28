@@ -18,12 +18,18 @@
 		]
 	}
 	{% endif %}
-	{% if matrix_riot_jitsi_preferredDomain %},
+	{% if matrix_client_element_jitsi_preferredDomain %},
+	"io.element.jitsi": {
+		"preferredDomain": {{ matrix_client_element_jitsi_preferredDomain|to_json }}
+	},
 	"im.vector.riot.jitsi": {
-		"preferredDomain": {{ matrix_riot_jitsi_preferredDomain|to_json }}
+		"preferredDomain": {{ matrix_client_element_jitsi_preferredDomain|to_json }}
 	}
 	{% endif %}
-	{% if not matrix_riot_e2ee_default %},
+	{% if not matrix_client_element_e2ee_default %},
+	"io.element.e2ee": {
+		"default": false
+	},
 	"im.vector.riot.e2ee": {
 		"default": false
 	}
