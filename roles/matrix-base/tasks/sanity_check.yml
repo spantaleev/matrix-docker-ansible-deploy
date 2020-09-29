@@ -1,11 +1,13 @@
 ---
 
+# We generally support Ansible 2.5.2 and above.
+#
 # Ansible 2.5.0 and 2.5.1 are known to have a bug with `include_tasks` + `with_items`.
 # The bug has been fixed in Ansible 2.5.2.
 - name: Fail if running on Ansible < 2.5 or Ansible 2.5.x (lower than 2.5.2)
   fail:
     msg: "You are running on Ansible {{ ansible_version.string }}, which is not supported. See our guide about Ansible: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/ansible.md"
-  when: "(ansible_version.major <= 2 and ansible_version.minor < 5) or (ansible_version.major == 2 and ansible_version.minor == 5 and ansible_version.revision < 2)"
+  when: "(ansible_version.major < 2) or (ansible_version.major <= 2 and ansible_version.minor < 5) or (ansible_version.major == 2 and ansible_version.minor == 5 and ansible_version.revision < 2)"
 
 - name: (Deprecation) Catch and report renamed settings
   fail:
