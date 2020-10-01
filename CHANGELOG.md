@@ -307,11 +307,11 @@ Additionally, Postgres [upgrading](docs/maintenance-postgres.md#upgrading-postgr
 
 # 2019-10-04
 
-## Postgres 13 support
+## Postgres 12 support
 
-The playbook now installs [Postgres 13](https://www.postgresql.org/about/news/postgresql-13-released-2077/) by default.
+The playbook now installs [Postgres 12](https://www.postgresql.org/about/news/1976/) by default.
 
-If you have have an existing setup, it's likely running on an older Postgres version (9.x, 10.x, 11.x, or 12.x). You can easily upgrade by following the [upgrading PostgreSQL guide](docs/maintenance-postgres.md#upgrading-postgresql).
+If you have have an existing setup, it's likely running on an older Postgres version (9.x, 10.x or 11.x). You can easily upgrade by following the [upgrading PostgreSQL guide](docs/maintenance-postgres.md#upgrading-postgresql).
 
 
 # 2019-10-03
