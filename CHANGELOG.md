@@ -1,3 +1,14 @@
+# 2020-10-02
+
+## Minimum Ansible version raised to v2.7.0
+
+We were claiming to support [Ansible](https://www.ansible.com/) v2.5.2 and higher, but issues like [#662](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/662) demonstrate that we need at least v2.7.0.
+
+If you've been using the playbook without getting any errors until now, you're probably on a version higher than that already (or you're not using the `matrix-ma1sd` and `matrix-client-element` roles).
+
+Our [Ansible docs page](docs/ansible.md) contains information on how to run a more up-to-date version of Ansible.
+
+
 # 2020-10-01
 
 ## Postgres 13 support
