@@ -20,4 +20,7 @@ Run this command (make sure to replace `<server-path-to-homeserver.db>` with a f
 
 	ansible-playbook -i inventory/hosts setup.yml --extra-vars='server_path_homeserver_db=<server-path-to-homeserver.db>' --tags=import-sqlite-db
 
-**Note**: `<server-path-to-homeserver.db>` must be a file path to a `homeserver.db` file on the server (not on your local machine!).
+**Notes**:
+
+- `<server-path-to-homeserver.db>` must be a file path to a `homeserver.db` **file on the server** (not on your local machine!).
+- if the SQLite database is from an older version of Synapse, the **importing procedure may run migrations on it to bring it up to date**. That is, your SQLite database file may get modified and become unusable with your older Synapse version. Keeping a copy of the original is probably wise.
