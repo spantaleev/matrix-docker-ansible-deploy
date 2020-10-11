@@ -1,19 +1,10 @@
 ---
 
-- set_fact:
-    matrix_ansible_outdated_fail_msg: "You are running on Ansible {{ ansible_version.string }}, which is not supported. See our guide about Ansible: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/ansible.md"
-
-- name: Fail if running on Ansible < 2.5
+# We generally support Ansible 2.7.0 and above.
+- name: Fail if running on Ansible < 2.7
   fail:
-    msg: "{{ matrix_ansible_outdated_fail_msg }}"
-  when: "ansible_version.major <= 2 and ansible_version.minor < 5"
-
-# Ansible 2.5.0 and 2.5.1 are known to have a bug with `include_tasks` + `with_items`.
-# The bug has been fixed in Ansible 2.5.2.
-- name: Fail if running on Ansible 2.5.x (lower than 2.5.2)
-  fail:
-    msg: "{{ matrix_ansible_outdated_fail_msg }}"
-  when: "ansible_version.major == 2 and ansible_version.minor == 5 and ansible_version.revision < 2"
+    msg: "You are running on Ansible {{ ansible_version.string }}, which is not supported. See our guide about Ansible: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/ansible.md"
+  when: "(ansible_version.major < 2) or (ansible_version.major <= 2 and ansible_version.minor < 7)"
 
 - name: (Deprecation) Catch and report renamed settings
   fail:

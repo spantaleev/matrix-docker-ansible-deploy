@@ -1,3 +1,22 @@
+# 2020-10-02
+
+## Minimum Ansible version raised to v2.7.0
+
+We were claiming to support [Ansible](https://www.ansible.com/) v2.5.2 and higher, but issues like [#662](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/662) demonstrate that we need at least v2.7.0.
+
+If you've been using the playbook without getting any errors until now, you're probably on a version higher than that already (or you're not using the `matrix-ma1sd` and `matrix-client-element` roles).
+
+Our [Ansible docs page](docs/ansible.md) contains information on how to run a more up-to-date version of Ansible.
+
+
+# 2020-10-01
+
+## Postgres 13 support
+
+The playbook now installs [Postgres 13](https://www.postgresql.org/about/news/postgresql-13-released-2077/) by default.
+
+If you have have an existing setup, it's likely running on an older Postgres version (9.x, 10.x, 11.x or 12.x). You can easily upgrade by following the [upgrading PostgreSQL guide](docs/maintenance-postgres.md#upgrading-postgresql).
+
 # 2020-09-01
 
 ## matrix-registration support

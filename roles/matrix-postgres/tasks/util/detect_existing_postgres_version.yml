@@ -49,3 +49,8 @@
   set_fact:
     matrix_postgres_detected_version_corresponding_docker_image: "{{ matrix_postgres_docker_image_v11 }}"
   when: "matrix_postgres_detected_version == '11' or matrix_postgres_detected_version.startswith('11.')"
+
+- name: Determine corresponding Docker image to detected version (use 12.x, if detected)
+  set_fact:
+    matrix_postgres_detected_version_corresponding_docker_image: "{{ matrix_postgres_docker_image_v12 }}"
+  when: "matrix_postgres_detected_version == '12' or matrix_postgres_detected_version.startswith('12.')"

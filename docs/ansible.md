@@ -9,7 +9,7 @@ If your local computer cannot run Ansible, you can also run Ansible on some serv
 
 ## Supported Ansible versions
 
-Ansible 2.5.2 or newer is required.
+Ansible 2.7.0 or newer is required.
 
 
 ## Checking your Ansible version
@@ -49,7 +49,7 @@ docker run -it --rm \
 -v `pwd`:/work \
 -v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro \
 --entrypoint=/bin/sh \
-devture/ansible:2.9.9-r0
+devture/ansible:2.9.13-r0
 ```
 
 The above command tries to mount an SSH key (`$HOME/.ssh/id_rsa`) into the container (at `/root/.ssh/id_rsa`).
