@@ -275,7 +275,8 @@ matrix_synapse_manhole_enabled: false
 # Enable support for Synapse workers
 matrix_synapse_workers_enabled: false
 
-# List of workers to spawn
+# Default list of workers to spawn
+# (worker with ports ending on 00 are single-instance)
 matrix_synapse_workers_enabled_list:
   - { worker: generic_worker, port: 18101 }
   - { worker: generic_worker, port: 18102 }
@@ -283,22 +284,22 @@ matrix_synapse_workers_enabled_list:
   - { worker: generic_worker, port: 18104 }
   - { worker: generic_worker, port: 18105 }
   - { worker: generic_worker, port: 18106 }
-  - { worker: pusher, port: 18201 }
-  - { worker: appservice, port: 18301 }
-  - { worker: federation_sender, port: 18401 }
+  - { worker: appservice, port: 18200 }
+  - { worker: federation_sender, port: 18301 }
+  - { worker: frontend_proxy, port: 18400 }
   - { worker: media_repository, port: 18501 }
-  - { worker: user_dir, port: 18601 }
-  - { worker: frontend_proxy, port: 18701 }
+  - { worker: pusher, port: 18600 }
+  - { worker: user_dir, port: 18700 }
 
 # The list of available workers (2020-08-28)
 matrix_synapse_workers_avail_list:
   - generic_worker
-  - pusher
   - appservice
   - federation_sender
-  - media_repository
-  - user_dir
   - frontend_proxy
+  - media_repository
+  - pusher
+  - user_dir
 
 # Redis information
 matrix_synapse_redis_enabled: false
