@@ -1,4 +1,6 @@
 #jinja2: lstrip_blocks: "True"
+# Instantiable worker service, running inside the synapse container
+# alongside the homeserver main process.
 # c.f. https://github.com/matrix-org/synapse/pull/4662
 [Unit]
 Description=Synapse Matrix Worker
@@ -12,15 +14,18 @@ Type=simple
 # Intentional delay, so that the homeserver (we likely depend on) can manage to start.
 ExecStartPre=/bin/sleep 5
 
-# systemd ftw 🤦‍♂️
-# https://github.com/systemd/systemd/issues/14895#issuecomment-594123923
+# no sane way of instancing more than one variable (systemd "cant-fix" 🤦)
+# c.f. https://github.com/systemd/systemd/issues/14895#issuecomment-594123923
+# So use good ol' shell parameter expansion to get the worker type..
 ExecStart=/bin/sh -c "WORKER=%i; WORKER=$${WORKER%%:*}; \
 			exec /usr/bin/docker exec \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			matrix-synapse \
 			python -m synapse.app.$${WORKER} -c /data/homeserver.yaml -c /data/worker.%i.yaml"
 
+ExecReload=/bin/kill -HUP $MAINPID
 ExecStop=/usr/bin/docker exec matrix-synapse pkill -f %i
+PIDFile=/matrix-run/{{ item.worker }}.port{{ item.port }}.pid
 KillMode=process
 Restart=always
 RestartSec=10
