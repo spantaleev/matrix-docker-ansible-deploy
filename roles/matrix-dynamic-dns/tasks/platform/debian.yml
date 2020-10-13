@@ -1,0 +1,18 @@
+---
+
+- name: Ensure ddclient is installed
+  apt:
+    name: ddclient
+    state: present
+    update_cache: true
+  become: true
+  when: "run_setup|bool and matrix_dynamic_dns_enabled|bool"
+
+- name: Ensure ddclient is uninstalled
+  apt:
+    name: ddclient
+    state: absent
+    update_cache: true
+  become: true
+  when: "run_setup|bool and not matrix_dynamic_dns_enabled|bool"
+  

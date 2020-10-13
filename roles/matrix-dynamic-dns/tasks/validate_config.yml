@@ -1,0 +1,19 @@
+---
+
+- name: Fail if required settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_dynamic_dns_username"
+    - "matrix_dynamic_dns_password"
+    - "matrix_domain"
+    - "matrix_dynamic_dns_provider"
+    - "matrix_dynamic_dns_mode"
+
+- name: Fail if dynamic dns mode is incorrect
+  fail:
+    msg: >-
+      matrix_dynamic_dns_mode needs to be set to 'daemon' or 'startup'
+  when: "matrix_dynamic_dns_enabled and matrix_dynamic_dns_mode != 'daemon' and matrix_dynamic_dns_mode != 'dhcp'"

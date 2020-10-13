@@ -1,0 +1,24 @@
+---
+
+- name: Ensure ddclient domain config exists
+  template:
+    src: "{{ role_path }}/templates/ddclient.conf.j2"
+    dest: "/etc/ddclient.conf"
+    mode: 0600
+  register: matrix_dynamic_dns_ddclient_domain_config
+
+- name: Ensure ddclient client config directory exists
+  file:
+    path: "/etc/default"
+    state: directory
+    mode: 0700
+    owner: "{{ user_username }}"
+    group: "{{ user_groupname }}"
+
+- name: Ensure ddclient client config exists
+  template:
+    src: "{{ role_path }}/templates/ddclient.j2"
+    dest: "/etc/default/ddclient"
+    mode: 0600
+  register: matrix_dynamic_dns_ddclient_client_config
+  
