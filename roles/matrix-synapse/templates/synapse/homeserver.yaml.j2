@@ -9,10 +9,23 @@
 
 ## Server ##
 
-# The domain name of the server, with optional explicit port.
-# This is used by remote servers to connect to this server,
-# e.g. matrix.org, localhost:8080, etc.
-# This is also the last part of your UserID.
+# The public-facing domain of the server
+#
+# The server_name name will appear at the end of usernames and room addresses
+# created on this server. For example if the server_name was example.com,
+# usernames on this server would be in the format @user:example.com
+#
+# In most cases you should avoid using a matrix specific subdomain such as
+# matrix.example.com or synapse.example.com as the server_name for the same
+# reasons you wouldn't use user@email.example.com as your email address.
+# See https://github.com/matrix-org/synapse/blob/master/docs/delegate.md
+# for information on how to host Synapse on a subdomain while preserving
+# a clean server_name.
+#
+# The server_name cannot be changed later so it is important to
+# configure this correctly before you start Synapse. It should be all
+# lowercase and may contain an explicit port.
+# Examples: matrix.org, localhost:8080
 #
 server_name: "{{ matrix_domain }}"
 
@@ -106,7 +119,6 @@ default_room_version: {{ matrix_synapse_default_room_version|to_json }}
 # will receive errors when searching for messages. Defaults to enabled.
 #
 #enable_search: false
-
 
 # List of ports that Synapse should listen on, their purpose and their
 # configuration.
@@ -389,6 +401,12 @@ retention:
   # 'longest_max_lifetime' of '3d' will handle every room with a retention policy
   # which 'max_lifetime' is lower than or equal to three days.
   #
+  # The rationale for this per-job configuration is that some rooms might have a
+  # retention policy with a low 'max_lifetime', where history needs to be purged
+  # of outdated messages on a more frequent basis than for the rest of the rooms
+  # (e.g. every 12h), but not want that purge to be performed by a job that's
+  # iterating over every room it knows, which could be heavy on the server.
+  #
   # If any purge job is configured, it is strongly recommended to have at least
   # a single job with neither 'shortest_max_lifetime' nor 'longest_max_lifetime'
   # set, or one job without 'shortest_max_lifetime' and one job without
@@ -413,6 +431,24 @@ retention:
 # act as if no error happened and return a fake session ID ('sid') to clients.
 #
 #request_token_inhibit_3pid_errors: true
+
+# A list of domains that the domain portion of 'next_link' parameters
+# must match.
+#
+# This parameter is optionally provided by clients while requesting
+# validation of an email or phone number, and maps to a link that
+# users will be automatically redirected to after validation
+# succeeds. Clients can make use this parameter to aid the validation
+# process.
+#
+# The whitelist is applied whether the homeserver or an
+# identity server is handling validation.
+#
+# The default value is no whitelist functionality; all domains are
+# allowed. Setting this value to an empty list will instead disallow
+# all domains.
+#
+#next_link_domain_whitelist: ["matrix.org"]
 
 
 ## TLS ##
@@ -580,6 +616,7 @@ acme:
 #tls_fingerprints: [{"sha256": "<base64_encoded_sha256_fingerprint>"}]
 
 
+## Federation ##
 
 # Restrict federation to the following whitelist of domains.
 # N.B. we recommend also firewalling your federation listener to limit
@@ -616,6 +653,17 @@ federation_ip_range_blacklist:
   - '::1/128'
   - 'fe80::/64'
   - 'fc00::/7'
+
+# Report prometheus metrics on the age of PDUs being sent to and received from
+# the following domains. This can be used to give an idea of "delay" on inbound
+# and outbound federation, though be aware that any delay can be due to problems
+# at either end or with the intermediate network.
+#
+# By default, no domains are monitored in this way.
+#
+#federation_metrics_domains:
+#  - matrix.org
+#  - example.com
 
 
 ## Caching ##
@@ -661,6 +709,7 @@ caches:
    #
    per_cache_factors:
      #get_users_who_share_room_with_user: 2.0
+
 
 ## Database ##
 
@@ -1074,6 +1123,17 @@ account_validity:
   #
   #invalid_token_html_path: "invalid_token.html"
 
+# Time that a user's session remains valid for, after they log in.
+#
+# Note that this is not currently compatible with guest logins.
+#
+# Note also that this is calculated at login time: changes are not applied
+# retrospectively to users who have already logged in.
+#
+# By default, this is infinite.
+#
+#session_lifetime: 24h
+
 # The user must provide all of the below types of 3PID when registering.
 #
 #registrations_require_3pid:
@@ -1427,10 +1487,13 @@ trusted_key_servers: {{ matrix_synapse_trusted_key_servers|to_json }}
 # At least one of `sp_config` or `config_path` must be set in this section to
 # enable SAML login.
 #
-# (You will probably also want to set the following options to `false` to
+# You will probably also want to set the following options to `false` to
 # disable the regular login/registration flows:
 #   * enable_registration
 #   * password_config.enabled
+#
+# You will also want to investigate the settings under the "sso" configuration
+# section below.
 #
 # Once SAML support is enabled, a metadata file will be exposed at
 # https://<server>:<port>/_matrix/saml2/metadata.xml, which you may be able to
@@ -1653,6 +1716,19 @@ oidc_config:
   #
   #skip_verification: true
 
+  # Whether to fetch the user profile from the userinfo endpoint. Valid
+  # values are: "auto" or "userinfo_endpoint".
+  #
+  # Defaults to "auto", which fetches the userinfo endpoint if "openid" is included
+  # in `scopes`. Uncomment the following to always fetch the userinfo endpoint.
+  #
+  #user_profile_method: "userinfo_endpoint"
+
+  # Uncomment to allow a user logging in via OIDC to match a pre-existing account instead
+  # of failing. This could be used if switching from password logins to OIDC. Defaults to false.
+  #
+  #allow_existing_users: true
+
   # An external module can be provided here as a custom solution to mapping
   # attributes returned from a OIDC provider onto a matrix user.
   #
@@ -1830,6 +1906,24 @@ sso:
     #
     #algorithm: "provided-by-your-issuer"
 
+    # The issuer to validate the "iss" claim against.
+    #
+    # Optional, if provided the "iss" claim will be required and
+    # validated for all JSON web tokens.
+    #
+    #issuer: "provided-by-your-issuer"
+
+    # A list of audiences to validate the "aud" claim against.
+    #
+    # Optional, if provided the "aud" claim will be required and
+    # validated for all JSON web tokens.
+    #
+    # Note that if the "aud" claim is included in a JSON web token then
+    # validation will fail without configuring audiences.
+    #
+    #audiences:
+    #    - "provided-by-your-issuer"
+
 
 password_config:
    # Uncomment to disable password login
@@ -1936,9 +2030,13 @@ email:
   # * The contents of password reset emails sent by the homeserver:
   #   'password_reset.html' and 'password_reset.txt'
   #
-  # * HTML pages for success and failure that a user will see when they follow
-  #   the link in the password reset email: 'password_reset_success.html' and
-  #   'password_reset_failure.html'
+  # * An HTML page that a user will see when they follow the link in the password
+  #   reset email. The user will be asked to confirm the action before their
+  #   password is reset: 'password_reset_confirmation.html'
+  #
+  # * HTML pages for success and failure that a user will see when they confirm
+  #   the password reset flow using the page above: 'password_reset_success.html'
+  #   and 'password_reset_failure.html'
   #
   # * The contents of address verification emails sent during registration:
   #   'registration.html' and 'registration.txt'
@@ -2416,6 +2514,11 @@ opentracing:
 #stream_writers:
 #  events: worker1
 #  typing: worker1
+
+# The worker that is used to run background tasks (e.g. cleaning up expired
+# data). If not provided this defaults to the main process.
+#
+#run_background_tasks_on: worker1
 
 
 # Configuration for Redis when using workers. This *must* be enabled when
