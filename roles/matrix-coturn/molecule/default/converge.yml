@@ -1,6 +1,14 @@
 ---
 - name: Converge
   hosts: all
+  vars:
+    matrix_systemd_services_list: [] # empty init as we only test coturn
+    run_setup: true
+    matrix_base_data_path: "/matrix"
+    # maybe those should be added in role default/main.yml
+    matrix_coturn_enabled: true
+    matrix_coturn_turn_external_ip_address: 127.0.0.1
+    matrix_coturn_turn_static_auth_secret: "VeryFakeSecret"
   tasks:
     - name: "Include matrix-coturn"
       include_role:
