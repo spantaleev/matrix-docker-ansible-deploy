@@ -4,10 +4,24 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: instance
-    image: docker.io/pycontribs/centos:8
-    pre_build_image: true
+  - name: coturn-test
+    image: fanchthesystem/ubuntu18-with-systemd:latest #fanchthesystem/centos7-with-systemd:latest # docker.io/pycontribs/centos:7
+    override_command: false
+    privileged: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    network:
+#      - name: dind-network
+#    env:
+#      DOCKER_HOST: "tcp://dind:2375"
+#    https://blog.alekc.org/testing-ansible-roles-with-molecule-using-dind/
+# https://github.com/ansible/ansible/issues/71528
 provisioner:
   name: ansible
+  log: true
+  config_options:
+    defaults:
+      timeout: 60
 verifier:
   name: ansible
