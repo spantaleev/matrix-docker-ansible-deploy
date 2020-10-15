@@ -11,6 +11,8 @@ If your local computer cannot run Ansible, you can also run Ansible on some serv
 
 Ansible 2.7.0 or newer is required.
 
+Ubuntu (at least 20.04) ships with a buggy version (see this [bug](https://bugs.launchpad.net/ubuntu/+source/ansible/+bug/1880359)), which can't be used in combination with a host running new systemd (more detaisl in [#517](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/517), [#669]([669](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/669))). If this problem affects you, you can: avoid running Ubuntu 20.04 on your host; run Ansible from another machine targeting your host; or try to upgrade to a newer Ansible version (see below).
+
 
 ## Checking your Ansible version
 
