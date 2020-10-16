@@ -27,26 +27,12 @@
 	}
 	{% endif %}
 	,
-        "io.element.e2ee": {
-        	{% if not matrix_client_element_e2ee_default %}
-		   "default": false,
-		{% else %}
-		   "default": true,
-                {% endif %}
-		{% if matrix_client_element_e2ee_backup_required %}
-	           "secure_backup_required": true
-		{% else %}
-	           "secure_backup_required": false
-         	{% endif %}
-		{% if matrix_client_element_e2ee_backup_methods %},
-		   "secure_backup_setup_methods": {{ matrix_client_element_e2ee_backup_methods|to_json }}
-                {% endif %}
+	"io.element.e2ee": {
+		"default": {{ matrix_client_element_e2ee_default|to_json }},
+		"secure_backup_required": {{ matrix_client_element_e2ee_backup_required|to_json }},
+		"secure_backup_setup_methods": {{ matrix_client_element_e2ee_backup_methods|to_json }}
 	},
 	"im.vector.riot.e2ee": {
-        	{% if not matrix_client_element_e2ee_default %}
-		   "default": false
-		{% else %}
-		   "default": true
-                {% endif %}
+		"default": {{ matrix_client_element_e2ee_default|to_json }}
 	}
 }
