@@ -5,19 +5,21 @@
     src: "{{ role_path }}/templates/ddclient.conf.j2"
     dest: "/etc/ddclient.conf"
     mode: 0600
-  register: matrix_dynamic_dns_ddclient_domain_config
 
 - name: Ensure ddclient client config directory exists
   file:
     path: "/etc/default"
     state: directory
     mode: 0700
-    owner: "{{ user_username }}"
-    group: "{{ user_groupname }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
 - name: Ensure ddclient client config exists
-  template:
-    src: "{{ role_path }}/templates/ddclient.j2"
+  copy:
+    content: "run_dhclient=\"true\"\nrun_ipup=\"false\"\nrun_daemon=\"false\""
     dest: "/etc/default/ddclient"
     mode: 0600
-  register: matrix_dynamic_dns_ddclient_client_config
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- import_tasks: "{{ role_path }}/tasks/platform/main.yml"

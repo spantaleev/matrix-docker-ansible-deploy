@@ -1,14 +1,43 @@
 # Whether dynamic dns is enabled
-matrix_dynamic_dns_enabled: true
+matrix_dynamic_dns_enabled: false
 
 # Allowed values: 'daemon', 'dhcp'
-matrix_dynamic_dns_mode: 'dhcp'
-
-# The DNS provider domain
-matrix_dynamic_dns_provider: 'domains.google.com'
-
-# The dynamic dns protocol
-matrix_dynamic_dns_protocol: 'dyndns2'
+matrix_dynamic_dns_mode: 'daemon'
 
 # The dynamic dns daemon interval
 matrix_dynamic_dns_daemon_interval: '300'
+
+# The docker container to use when in daemon mode
+matrix_dynamic_dns_docker_image: 'linuxserver/ddclient'
+
+# The image to force pull
+matrix_dynamic_dns_docker_image_force_pull: "{{ matrix_dynamic_dns_docker_image.endswith(':latest') }}"
+
+# List of extra arguments to pass to the ontainer daemon mode
+matrix_dynamic_dns_container_extra_arguments: []
+
+# List of wanted services when running in daemon mode
+matrix_dynamic_dns_systemd_wanted_services_list: []
+
+# List of required services when running in daemon mode
+matrix_dynamic_dns_systemd_required_services_list: ['docker.service']
+
+# Build the container from source when running in daemon mode
+matrix_dynamic_dns_container_image_self_build: false
+
+# Config paths
+matrix_dynamic_dns_base_path: "{{ matrix_base_data_path }}/dynamic-dns"
+matrix_dynamic_dns_config_path: "{{ matrix_dynamic_dns_base_path }}/config"
+matrix_dynamic_dns_docker_src_files_path: "{{ matrix_dynamic_dns_base_path }}/docker-src"
+
+# Config options
+matrix_dynamic_dns_use: "web"
+matrix_dynamic_dns_static: false
+matrix_dynamic_dns_custom: false
+matrix_dynamic_dns_zone: ""
+matrix_dynamic_dns_ttl: ""
+matrix_dynamic_dns_mx: ""
+matrix_dynamic_dns_wildcard: false
+matrix_dynamic_dns_protocol: 'dyndns2'
+matrix_dynamic_dns_provider: 'domains.google.com'
+matrix_dynamic_dns_domain: '{{ matrix_domain }}'

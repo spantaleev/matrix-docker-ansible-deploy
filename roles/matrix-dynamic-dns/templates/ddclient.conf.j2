@@ -1,7 +1,17 @@
-protocol={{ matrix_dynamic_dns_protocol }}
-use=web
+{% if matrix_dynamic_dns_mode == "daemon" %}}
+daemon={{ matrix_dynamic_dns_daemon_interval }}
+syslog=no
+pid=/var/run/ddclient/ddclient.pid {% endif %}
 ssl=yes
-server={{ matrix_dynamic_dns_provider }}
-login='{{ matrix_dynamic_dns_username }}'
-password='{{ matrix_dynamic_dns_password }}'
-{{ matrix_domain }}
+use={{ matrix_dynamic_dns_use }}
+protocol={{ matrix_dynamic_dns_protocol }}
+server={{ matrix_dynamic_dns_provider }} {% if matrix_dynamic_dns_username %}
+login='{{ matrix_dynamic_dns_username }}' {% endif %} {% if matrix_dynamic_dns_username %}
+password='{{ matrix_dynamic_dns_password }}' {% endif %} {% if matrix_dynamic_dns_static %}
+static=yes {% endif %} {% if matrix_dynamic_dns_custom %}
+custom=yes {% endif %} {% if matrix_dynamic_dns_zone %}
+zone={{ matrix_dynamic_dns_zone }} {% endif %} {% if matrix_dynamic_dns_ttl %}
+ttl={{ matrix_dynamic_dns_ttl }} {% endif %} {% if matrix_dynamic_dns_mx %}
+mx={{ matrix_dynamic_dns_mx }} {% endif %} {% if matrix_dynamic_dns_wildcard %}
+wildcard=yes {% endif %}
+{{ matrix_dynamic_dns_domain }}
