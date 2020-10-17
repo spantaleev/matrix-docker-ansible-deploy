@@ -6,14 +6,6 @@
     dest: "/etc/ddclient.conf"
     mode: 0600
 
-- name: Ensure ddclient client config directory exists
-  file:
-    path: "/etc/default"
-    state: directory
-    mode: 0700
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-
 - name: Ensure ddclient client config exists
   copy:
     content: "run_dhclient=\"true\"\nrun_ipup=\"false\"\nrun_daemon=\"false\""
