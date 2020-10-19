@@ -8,26 +8,14 @@
     - setup-all
     - setup-dynamic-dns
 
-- import_tasks: "{{ role_path }}/tasks/install_dhcp.yml"
-  when: "run_setup|bool and matrix_dynamic_dns_enabled|bool and matrix_dynamic_dns_mode == 'dhcp'"
+- import_tasks: "{{ role_path }}/tasks/install.yml"
+  when: "run_setup|bool and matrix_dynamic_dns_enabled|bool"
   tags:
     - setup-all
     - setup-dynamic-dns
 
-- import_tasks: "{{ role_path }}/tasks/uninstall_dhcp.yml"
-  when: "run_setup|bool and not matrix_dynamic_dns_enabled|bool and matrix_dynamic_dns_mode == 'dhcp'"
-  tags:
-    - setup-all
-    - setup-dynamic-dns
-
-- import_tasks: "{{ role_path }}/tasks/install_daemon.yml"
-  when: "run_setup|bool and matrix_dynamic_dns_enabled|bool and matrix_dynamic_dns_mode == 'daemon'"
-  tags:
-    - setup-all
-    - setup-dynamic-dns
-
-- import_tasks: "{{ role_path }}/tasks/uninstall_daemon.yml"
-  when: "run_setup|bool and not matrix_dynamic_dns_enabled|bool and matrix_dynamic_dns_mode == 'daemon'"
+- import_tasks: "{{ role_path }}/tasks/uninstall.yml"
+  when: "run_setup|bool and not matrix_dynamic_dns_enabled|bool"
   tags:
     - setup-all
     - setup-dynamic-dns
