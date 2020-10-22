@@ -40,3 +40,9 @@
       {{ matrix_synapse_systemd_wanted_services_list +
       ['matrix-synapse-worker@' + item.worker + ':' + item.port|string + '.service'] }}
   with_items: "{{ matrix_synapse_workers_enabled_list }}"
+
+- name: Ensure matrix-synapse-worker-write-pid script is created
+  copy:
+    src: "{{ role_path }}/files/usr-local-bin/matrix-synapse-worker-write-pid"
+    dest: "{{ matrix_local_bin_path }}/matrix-synapse-worker-write-pid"
+    mode: 0750

@@ -1,6 +1,6 @@
 #jinja2: lstrip_blocks: "True"
 worker_app: synapse.app.{{ item.worker }}
-worker_name: {{ item.worker ~ '_' ~ item.port }}
+worker_name: {{ item.worker ~ ':' ~ item.port }}
 
 worker_replication_host: 127.0.0.1
 worker_replication_http_port: {{ matrix_synapse_replication_http_port }}
@@ -26,5 +26,4 @@ worker_main_http_uri: http://127.0.0.1:8008
 {% endif %}
 
 worker_daemonize: false
-worker_pid_file: /matrix-run/{{ item.worker }}.port{{ item.port }}.pid
 worker_log_config: /data/{{ matrix_server_fqn_matrix }}.log.config

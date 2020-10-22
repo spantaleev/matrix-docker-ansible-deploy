@@ -36,3 +36,8 @@
 - name: Ensure systemd noticed removal of worker service units
   service:
     daemon_reload: yes
+
+- name: Ensure matrix-synapse-worker-write-pid script is removed
+  file:
+    path: "{{ matrix_local_bin_path }}/matrix-synapse-worker-write-pid"
+    state: absent
