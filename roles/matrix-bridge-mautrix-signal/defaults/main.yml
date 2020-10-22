@@ -1,0 +1,102 @@
+# mautrix-telegram is a Matrix <-> Telegram bridge
+# See: https://github.com/tulir/mautrix-telegram
+
+matrix_mautrix_signal_enabled: false
+
+# See: https://mau.dev/tulir/mautrix-signal/container_registry
+matrix_mautrix_signal_docker_image: "dock.mau.dev/tulir/mautrix-signal:latest"
+matrix_mautrix_signal_docker_image_force_pull: "{{ matrix_mautrix_signal_docker_image.endswith(':latest') }}"
+
+matrix_mautrix_signal_base_path: "{{ matrix_base_data_path }}/mautrix-signal"
+matrix_mautrix_signal_config_path: "{{ matrix_mautrix_signal_base_path }}/bridge"
+
+matrix_mautrix_signal_daemon_docker_image: "dock.mau.dev/maunium/signald:latest"
+matrix_mautrix_signal_daemon_docker_image_force_pull: "{{ matrix_mautrix_signal_daemon_docker_image.endswith(':latest') }}"
+
+matrix_mautrix_signal_daemon_path: "{{ matrix_mautrix_signal_base_path }}/signald"
+
+# # Get your own API keys at https://my.telegram.org/apps
+# matrix_mautrix_telegram_api_id: ''
+# matrix_mautrix_telegram_api_hash: ''
+# matrix_mautrix_telegram_bot_token: disabled
+
+# # Mautrix telegram public endpoint to log in to telegram
+# # Use an uuid so it's not easily discoverable.
+# # Example: /741a0483-ba17-4682-9900-30bd7269f1cc
+# matrix_mautrix_telegram_public_endpoint: ''
+
+matrix_mautrix_signal_homeserver_address: 'http://matrix-synapse:8008'
+matrix_mautrix_signal_homeserver_domain: '{{ matrix_domain }}'
+matrix_mautrix_signal_appservice_address: 'http://matrix-mautrix-signal:29328'
+# matrix_mautrix_telegram_appservice_public_external: 'https://{{ matrix_server_fqn_matrix }}{{ matrix_mautrix_telegram_public_endpoint }}'
+
+# Controls whether the matrix-mautrix-telegram container exposes its HTTP port (tcp/8080 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9006"), or empty string to not expose.
+matrix_mautrix_signal_container_http_host_bind_port: ''
+
+# A list of extra arguments to pass to the container
+matrix_mautrix_signal_container_extra_arguments: []
+
+# List of systemd services that matrix-mautrix-signal.service depends on.
+matrix_mautrix_signal_systemd_required_services_list: ['docker.service', 'matrix-mautrix-signal-daemon.service', 'matrix-mautrix-signal-db.service']
+
+# List of systemd services that matrix-mautrix-telegram.service wants
+matrix_mautrix_signal_systemd_wanted_services_list: []
+
+matrix_mautrix_signal_appservice_token: ''
+matrix_mautrix_signal_homeserver_token: ''
+
+matrix_mautrix_signal_db_docker_image: "postgres:13.0-alpine"
+matrix_mautrix_signal_db_docker_image_force_pull: "{{ matrix_mautrix_signal_db_docker_image.endswith(':latest') }}"
+matrix_mautrix_signal_db_storage_path: "{{ matrix_mautrix_signal_base_path }}/database"
+
+matrix_mautrix_signal_db_user: ''
+matrix_mautrix_signal_db_password: ''
+matrix_mautrix_signal_db_host: 'matrix-mautrix-signal-db'
+matrix_mautrix_signal_db_port: '5432'
+matrix_mautrix_signal_db_database: ''
+
+matrix_mautrix_signal_db_url: "postgres://{{ matrix_mautrix_signal_db_user }}:{{ matrix_mautrix_signal_db_password }}@{{ matrix_mautrix_signal_db_host }}:{{ matrix_mautrix_signal_db_port }}/{{ matrix_mautrix_signal_db_database }}"
+
+# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
+matrix_mautrix_signal_login_shared_secret: ''
+
+# Default configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_mautrix_telegram_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_mautrix_signal_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_mautrix_signal_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_mautrix_telegram_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_mautrix_telegram_configuration_yaml`.
+
+matrix_mautrix_signal_configuration_extension: "{{ matrix_mautrix_signal_configuration_extension_yaml|from_yaml if matrix_mautrix_signal_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_mautrix_telegram_configuration_yaml`.
+matrix_mautrix_signal_configuration: "{{ matrix_mautrix_signal_configuration_yaml|from_yaml|combine(matrix_mautrix_signal_configuration_extension, recursive=True) }}"
+
+matrix_mautrix_signal_registration_yaml: |
+  id: signal
+  as_token: "{{ matrix_mautrix_signal_appservice_token }}"
+  hs_token: "{{ matrix_mautrix_signal_homeserver_token }}"
+  namespaces:
+      users:
+      - exclusive: true
+        regex: '^@signal_.+:{{ matrix_mautrix_signal_homeserver_domain|regex_escape }}$'
+      aliases:
+      - exclusive: true
+        regex: '^#signal_.+:{{ matrix_mautrix_signal_homeserver_domain|regex_escape }}$'
+  url: {{ matrix_mautrix_signal_appservice_address }}
+  sender_localpart: signalbot
+  rate_limited: false
+
+matrix_mautrix_signal_registration: "{{ matrix_mautrix_signal_registration_yaml|from_yaml }}"

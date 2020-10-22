@@ -1,0 +1,22 @@
+---
+
+- name: Fail if required settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_mautrix_signal_appservice_token"
+    - "matrix_mautrix_signal_homeserver_token"
+    - "matrix_mautrix_signal_db_user"
+    - "matrix_mautrix_signal_db_password"
+    - "matrix_mautrix_signal_db_database"
+
+- name: (Deprecation) Catch and report renamed Signal variables
+  fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_mautrix_signal_container_exposed_port_number', 'new': '<superseded by matrix_mautrix_signal_container_http_host_bind_port>'}

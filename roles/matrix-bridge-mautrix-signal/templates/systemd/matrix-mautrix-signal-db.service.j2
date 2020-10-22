@@ -1,0 +1,32 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Mautrix Signal database server
+
+[Service]
+Type=simple
+
+ExecStartPre=-{{ matrix_host_command_docker }} kill {{ matrix_mautrix_signal_db_host }}
+ExecStartPre=-{{ matrix_host_command_docker }} rm {{ matrix_mautrix_signal_db_host }}
+
+# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
+ExecStartPre={{ matrix_host_command_sleep }} 5
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name {{ matrix_mautrix_signal_db_host }} \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--network={{ matrix_docker_network }} \
+			--env POSTGRES_USER={{ matrix_mautrix_signal_db_user }} \
+			--env POSTGRES_PASSWORD={{ matrix_mautrix_signal_db_password }} \
+			--env POSTGRES_DB={{ matrix_mautrix_signal_db_database }} \
+			-v {{ matrix_mautrix_signal_db_storage_path }}:/var/lib/postgresql/data:z \
+			{{ matrix_mautrix_signal_db_docker_image }}
+
+ExecStop=-{{ matrix_host_command_docker }} kill {{ matrix_mautrix_signal_db_host }}
+ExecStop=-{{ matrix_host_command_docker }} rm {{ matrix_mautrix_signal_db_host }}
+
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-mautrix-signal-db
+
+[Install]
+WantedBy=multi-user.target
