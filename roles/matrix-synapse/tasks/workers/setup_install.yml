@@ -7,12 +7,11 @@
     mode: 0644
   register: matrix_synapse_worker_systemd_service_result
 
-- name: Ensure previous worker service symlinks are cleaned (FIXME)
+- name: Ensure previous worker service symlinks are cleaned
   file:
     path: "{{ item.root + '/' + item.path }}"
     state: absent
   when:
-    - matrix_synapse_workers_enabled|bool
     - item.state == 'link'
     - item.path is match('matrix-synapse-worker@.*\\.service')
   with_filetree:
@@ -27,6 +26,13 @@
     name: "matrix-synapse-worker@{{ item.worker }}:{{ item.port }}.service"
     enabled: true
   with_items: "{{ matrix_synapse_workers_enabled_list }}"
+
+- name: Ensure previous worker configs are cleaned
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_fileglob:
+    - "{{ matrix_synapse_config_dir_path }}/worker.*.yaml"
 
 - name: Ensure creation of specific worker configs
   template:
@@ -46,3 +52,24 @@
     src: "{{ role_path }}/files/usr-local-bin/matrix-synapse-worker-write-pid"
     dest: "{{ matrix_local_bin_path }}/matrix-synapse-worker-write-pid"
     mode: 0750
+
+- name: Ensure jq is installed (Archlinux)
+  pacman:
+    name:
+      - jq
+    state: present
+  when: (ansible_distribution == 'Archlinux')
+
+- name: Ensure jq is installed (CentOS)
+  yum:
+    name:
+      - jq
+    state: present
+  when: (ansible_distribution == 'CentOS')
+
+- name: Ensure jq is installed (Debian)
+  apt:
+    name:
+      - jq
+    state: present
+  when: (ansible_os_family == 'Debian')

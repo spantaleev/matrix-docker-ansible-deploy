@@ -9,14 +9,11 @@
     state: stopped
   with_dict: "{{ ansible_facts.services|default({})|dict2items|selectattr('key', 'match', 'matrix-synapse-worker@.+\\.service')|list|items2dict }}"
 
-# As we cannot know the ports of workers removed from the enabled_list..
-# => .. just kill them all (FIXME?)
-- name: Ensure previous worker service symlinks are cleaned
+- name: Ensure worker service symlinks are cleaned
   file:
     path: "{{ item.root + '/' + item.path }}"
     state: absent
   when:
-    - not matrix_synapse_workers_enabled|bool
     - item.state == 'link'
     - item.path is match('matrix-synapse-worker@.*\\.service')
   with_filetree:
@@ -27,6 +24,13 @@
     path: "{{ matrix_systemd_path }}/matrix-synapse-worker@.service"
     state: absent
   register: matrix_synapse_worker_systemd_service_result
+
+- name: Ensure worker configs are cleaned
+  file:
+    path: "{{ item.root + '/' + item.path }}"
+    state: absent
+  with_fileglob:
+    - "{{ matrix_synapse_config_dir_path }}/worker.*.yaml"
 
 - name: Remove workers from synapse.wants list
   set_fact:

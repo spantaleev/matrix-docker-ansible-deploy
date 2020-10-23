@@ -11,21 +11,21 @@ BindsTo=matrix-synapse.service
 [Service]
 Type=simple
 
-# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
-ExecStartPre=/bin/sleep 5
+# Intentional delay, so that the homeserver can manage to start.
+ExecStartPre={{ matrix_host_command_sleep }} 5
 
 # no sane way of instancing more than one variable (systemd "cant-fix" 🤦)
 # c.f. https://github.com/systemd/systemd/issues/14895#issuecomment-594123923
 # So use good ol' shell parameter expansion to get the worker type..
 ExecStart=/bin/sh -c "WORKER=%i; WORKER=$${WORKER%%:*}; \
-			exec /usr/bin/docker exec \
+			exec {{ matrix_host_command_docker }} exec \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			matrix-synapse \
 			python -m synapse.app.$${WORKER} -c /data/homeserver.yaml -c /data/worker.%i.yaml"
 
 # wait for worker startup & write out PID of actual worker process so systemd can handle it
-ExecStartPost=/bin/sleep 5
-ExecStartPost=/usr/local/bin/matrix-synapse-worker-write-pid %i /run/matrix-synapse-worker.%i.pid
+ExecStartPost={{ matrix_host_command_sleep }} 5
+ExecStartPost={{ matrix_local_bin_path }}/matrix-synapse-worker-write-pid %i /run/matrix-synapse-worker.%i.pid
 
 ExecReload=/bin/kill -HUP $MAINPID
 ExecStop=/bin/kill $MAINPID
