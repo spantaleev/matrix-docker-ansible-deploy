@@ -1,0 +1,14 @@
+#jinja2: lstrip_blocks: "True"
+id: signal
+as_token: "{{ matrix_mautrix_signal_appservice_token }}"
+hs_token: "{{ matrix_mautrix_signal_homeserver_token }}"
+namespaces:
+    users:
+    - exclusive: true
+      regex: '^@signal_.+:{{ matrix_mautrix_signal_homeserver_domain|regex_escape }}$'
+    aliases:
+    - exclusive: true
+      regex: '^#signal_.+:{{ matrix_mautrix_signal_homeserver_domain|regex_escape }}$'
+url: {{ matrix_mautrix_signal_appservice_address }}
+sender_localpart: signalbot
+rate_limited: false
