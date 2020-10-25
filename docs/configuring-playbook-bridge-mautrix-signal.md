@@ -10,6 +10,20 @@ Use the following playbook configuration:
 matrix_mautrix_signal_enabled: true
 ```
 
+To specify which users have access to the bridge, use the variable `matrix_mautrix_signal_configuration_permissions`.
+Refer to the documentation for
+```yaml
+bridge:
+  permissions:
+```
+in [the example config in mautrix-signal](https://github.com/tulir/mautrix-signal/blob/master/mautrix_signal/example-config.yaml).
+For instance, use
+```yaml
+matrix_mautrix_signal_configuration_permissions:
+  "YOUR_DOMAIN": user
+```
+to allow all users registered to `YOUR_DOMAIN` access to the bridge (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+
 
 ## Set up Double Puppeting
 
