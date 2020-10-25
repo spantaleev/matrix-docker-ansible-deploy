@@ -42,23 +42,6 @@
     - "{{ matrix_mautrix_signal_daemon_path }}"
     - "{{ matrix_mautrix_signal_db_storage_path }}"
 
-# - name: Check if an old database file already exists
-#   stat:
-#     path: "{{ matrix_mautrix_telegram_base_path }}/mautrix-telegram.db"
-#   register: matrix_mautrix_telegram_stat_database
-#
-# - name: (Data relocation) Ensure matrix-mautrix-telegram.service is stopped
-#   service:
-#     name: matrix-mautrix-telegram
-#     state: stopped
-#     daemon_reload: yes
-#   failed_when: false
-#   when: "matrix_mautrix_telegram_stat_database.stat.exists"
-#
-# - name: (Data relocation) Move mautrix-telegram database file to ./data directory
-#   command: "mv {{ matrix_mautrix_telegram_base_path }}/mautrix-telegram.db {{ matrix_mautrix_telegram_data_path }}/mautrix-telegram.db"
-#   when: "matrix_mautrix_telegram_stat_database.stat.exists"
-
 - name: Ensure mautrix-signal config.yaml installed
   copy:
     content: "{{ matrix_mautrix_signal_configuration|to_nice_yaml }}"

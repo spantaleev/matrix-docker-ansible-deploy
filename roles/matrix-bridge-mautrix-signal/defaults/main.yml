@@ -1,5 +1,5 @@
-# mautrix-telegram is a Matrix <-> Telegram bridge
-# See: https://github.com/tulir/mautrix-telegram
+# mautrix-signal is a Matrix <-> Signal bridge
+# See: https://github.com/tulir/mautrix-signal
 
 matrix_mautrix_signal_enabled: true
 
@@ -17,9 +17,8 @@ matrix_mautrix_signal_daemon_path: "{{ matrix_mautrix_signal_base_path }}/signal
 matrix_mautrix_signal_homeserver_address: ''
 matrix_mautrix_signal_homeserver_domain: ''
 matrix_mautrix_signal_appservice_address: 'http://matrix-mautrix-signal:29328'
-# matrix_mautrix_telegram_appservice_public_external: 'https://{{ matrix_server_fqn_matrix }}{{ matrix_mautrix_telegram_public_endpoint }}'
 
-# Controls whether the matrix-mautrix-telegram container exposes its HTTP port (tcp/8080 in the container).
+# Controls whether the matrix-mautrix-signal container exposes its port (tcp/29328 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9006"), or empty string to not expose.
 matrix_mautrix_signal_container_http_host_bind_port: ''
@@ -59,23 +58,23 @@ matrix_mautrix_signal_login_shared_secret: ''
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
-# For a more advanced customization, you can extend the default (see `matrix_mautrix_telegram_configuration_extension_yaml`)
+# For a more advanced customization, you can extend the default (see `matrix_mautrix_signal_configuration_extension_yaml`)
 # or completely replace this variable with your own template.
 matrix_mautrix_signal_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
 
 matrix_mautrix_signal_configuration_extension_yaml: |
   # Your custom YAML configuration goes here.
-  # This configuration extends the default starting configuration (`matrix_mautrix_telegram_configuration_yaml`).
+  # This configuration extends the default starting configuration (`matrix_mautrix_signal_configuration_yaml`).
   #
   # You can override individual variables from the default configuration, or introduce new ones.
   #
   # If you need something more special, you can take full control by
-  # completely redefining `matrix_mautrix_telegram_configuration_yaml`.
+  # completely redefining `matrix_mautrix_signal_configuration_yaml`.
 
 matrix_mautrix_signal_configuration_extension: "{{ matrix_mautrix_signal_configuration_extension_yaml|from_yaml if matrix_mautrix_signal_configuration_extension_yaml|from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
-# You most likely don't need to touch this variable. Instead, see `matrix_mautrix_telegram_configuration_yaml`.
+# You most likely don't need to touch this variable. Instead, see `matrix_mautrix_signal_configuration_yaml`.
 matrix_mautrix_signal_configuration: "{{ matrix_mautrix_signal_configuration_yaml|from_yaml|combine(matrix_mautrix_signal_configuration_extension, recursive=True) }}"
 
 matrix_mautrix_signal_registration_yaml: "{{ lookup('template', 'templates/registration.yaml.j2') }}"
