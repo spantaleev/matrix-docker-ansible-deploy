@@ -39,7 +39,12 @@ matrix_mautrix_signal_container_http_host_bind_port: ''
 matrix_mautrix_signal_container_extra_arguments: []
 
 # List of systemd services that matrix-mautrix-signal.service depends on.
-matrix_mautrix_signal_systemd_required_services_list: ['docker.service', 'matrix-mautrix-signal-daemon.service', 'matrix-mautrix-signal-db.service']
+# TODO: unclear whether to put this into group_vars or keep it here
+matrix_mautrix_signal_systemd_required_services_list:
+  - 'docker.service'
+  - "{{ 'matrix-synapse.service' if matrix_synapse_enabled else [] }}"
+  - 'matrix-mautrix-signal-daemon.service'
+  - 'matrix-mautrix-signal-db.service'
 
 # List of systemd services that matrix-mautrix-signal.service wants
 matrix_mautrix_signal_systemd_wanted_services_list: []

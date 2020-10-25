@@ -249,11 +249,14 @@ matrix_mautrix_hangouts_login_shared_secret: "{{ matrix_synapse_ext_password_pro
 
 matrix_mautrix_signal_enabled: false
 
+# TODO: unclear whether to put this into the role or keep it here
 matrix_mautrix_signal_systemd_required_services_list: |
   {{
     ['docker.service']
     +
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    +
+    ['matrix-mautrix-signal-daemon.service', 'matrix-mautrix-signal-db.service']
   }}
 
 matrix_mautrix_signal_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'si.as.token') | to_uuid }}"
