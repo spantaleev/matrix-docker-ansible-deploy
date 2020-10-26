@@ -21,9 +21,11 @@ https://matrix.DOMAIN {
 	}
 
 	# Synapse Client<>Server API
-	proxy / matrix-synapse:8008 {
+	proxy /_matrix matrix-synapse:8008 {
 		transparent
-		except /.well-known/ /_matrix/identity/ /_matrix/client/r0/user_directory/search
+		except /_matrix/identity/ /_matrix/client/r0/user_directory/search
 	}
-
+	proxy /_synapse/client matrix-synapse:8008 {
+		transparent
+	}
 }

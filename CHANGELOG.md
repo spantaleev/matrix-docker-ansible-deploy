@@ -1,3 +1,19 @@
+# 2020-10-26
+
+## (Compatibility Break) /_synapse/admin is no longer publicly exposed by default
+
+We used to expose the Synapse Admin APIs publicly (at `https://matrix.DOMAIN/_synapse/admin`).
+These APIs require authentication with a valid access token, so it's not that big a deal to expose them.
+
+However, following [official Synapse's reverse-proxying recommendations](https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md#synapse-administration-endpoints), we're no longer exposing `/_synapse/admin` by default.
+
+If you'd like to restore restore the old behavior and expose `/_synapse/admin` publicly, you can use the following configuration (in your `vars.yml`):
+
+```yaml
+matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled: true
+```
+
+
 # 2020-10-02
 
 ## Minimum Ansible version raised to v2.7.0
