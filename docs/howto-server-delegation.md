@@ -89,7 +89,7 @@ matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate_key: /matrix/ssl/
 If your files are not in `/matrix/ssl` but in some other location, you would need to mount them into the container:
 
 ```yaml
-matrix_synapse_container_extra_arguments:
+matrix_nginx_proxy_container_extra_arguments:
   - "--mount type=bind,src=/some/path/on/the/host,dst=/some/path/inside/the/container,ro"
 ```
 
