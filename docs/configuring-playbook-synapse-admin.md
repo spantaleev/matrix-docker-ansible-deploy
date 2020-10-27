@@ -15,6 +15,8 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 matrix_synapse_admin_enabled: true
 ```
 
+**Note**: enabling Synapse Admin automatically exposes Synapse's Administration APIs (equivalent to `matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled: true`).
+
 
 ## Installing
 
