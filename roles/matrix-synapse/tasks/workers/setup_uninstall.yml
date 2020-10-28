@@ -27,15 +27,14 @@
 
 - name: Ensure worker configs are cleaned
   file:
-    path: "{{ item.root + '/' + item.path }}"
+    path: "{{ item }}"
     state: absent
   with_fileglob:
     - "{{ matrix_synapse_config_dir_path }}/worker.*.yaml"
 
 - name: Remove workers from synapse.wants list
   set_fact:
-    matrix_synapse_systemd_wanted_services_list: "{{ matrix_synapse_systemd_wanted_services_list | reject('search', item) | list }}"
-  with_items: "{{ matrix_synapse_workers_avail_list }}"
+    matrix_synapse_systemd_wanted_services_list: "{{ matrix_synapse_systemd_wanted_services_list | reject('search', '^matrix-synapse-worker@') | list }}"
 
 - name: Ensure systemd noticed removal of worker service units
   service:
