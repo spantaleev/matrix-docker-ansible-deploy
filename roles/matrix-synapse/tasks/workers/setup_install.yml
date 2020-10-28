@@ -1,5 +1,18 @@
 ---
 
+- name: Download synapse workers doc
+  get_url:
+    url: https://github.com/matrix-org/synapse/raw/master/docs/workers.md
+    dest: "{{ role_path }}/files/workers.upstream-documentation.md"
+
+- name: Download synapse workers doc and convert into YAML
+  shell:
+    cmd: "awk -f {{ role_path }}/files/workers-doc-to-yaml.awk -- {{ role_path }}/files/workers.upstream-documentation.md > {{ role_path }}/vars/workers.yml"
+    creates: "{{ role_path }}/vars/workers.yml"
+
+- name: Load list of available worker apps and endpoints
+  include_vars: "{{ role_path }}/vars/workers.yml"
+
 - name: Ensure synapse worker base service file installed
   template:
     src: "{{ role_path }}/templates/synapse/systemd/matrix-synapse-worker@.service.j2"
@@ -23,7 +36,7 @@
 
 - name: Ensure individual worker service symlinks exist
   service:
-    name: "matrix-synapse-worker@{{ item.worker }}:{{ item.port }}.service"
+    name: "matrix-synapse-worker@{{ item.type }}:{{ item.port }}.service"
     enabled: true
   with_items: "{{ matrix_synapse_workers_enabled_list }}"
 
@@ -37,14 +50,14 @@
 - name: Ensure creation of specific worker configs
   template:
     src: "{{ role_path }}/templates/synapse/worker.yaml.j2"
-    dest: "{{ matrix_synapse_config_dir_path }}/worker.{{ item.worker }}:{{ item.port }}.yaml"
+    dest: "{{ matrix_synapse_config_dir_path }}/worker.{{ item.type }}:{{ item.port }}.yaml"
   with_list: "{{ matrix_synapse_workers_enabled_list }}"
 
 - name: Add workers to synapse.wants list
   set_fact:
     matrix_synapse_systemd_wanted_services_list: >
       {{ matrix_synapse_systemd_wanted_services_list +
-      ['matrix-synapse-worker@' + item.worker + ':' + item.port|string + '.service'] }}
+      ['matrix-synapse-worker@' + item.type + ':' + item.port|string + '.service'] }}
   with_items: "{{ matrix_synapse_workers_enabled_list }}"
 
 - name: Ensure matrix-synapse-worker-write-pid script is created

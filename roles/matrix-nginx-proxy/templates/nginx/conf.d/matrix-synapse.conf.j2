@@ -68,6 +68,7 @@
 	{% endif %}
 
 	{% if matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled %}
+	# FIXME: if this is enabled, user_dir_workers should be disabled
 	location /_matrix/client/r0/user_directory/search {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
@@ -102,10 +103,10 @@
 	{% endif %}
 
 	{% if matrix_nginx_proxy_synapse_workers_enabled %}
-		{# Synapse Workers #}
+		# Workers redirects BEGIN
 
-		{% if generic_worker_workers %}
-			{# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappgeneric_worker #}
+		{% if generic_workers %}
+			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappgeneric_worker
 			{% for location in matrix_nginx_proxy_synapse_generic_worker_locations %}
 			location ~ {{ location }} {
 				proxy_pass http://generic_worker_upstream$request_uri;
@@ -113,11 +114,11 @@
 				proxy_set_header X-Forwarded-For $remote_addr;
 			}
 			{% endfor %}
-			{# ToDo: add GET ^/_matrix/federation/v1/groups/ #}
+			# FIXME: add GET ^/_matrix/federation/v1/groups/
 		{% endif %}
 
 		{% if media_repository_workers %}
-			{# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappmedia_repository #}
+			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappmedia_repository
 			{% for location in matrix_nginx_proxy_synapse_media_repository_locations %}
 			location ~ {{ location }} {
 				proxy_pass http://media_repository_upstream$request_uri;
@@ -128,7 +129,8 @@
 		{% endif %}
 
 		{% if user_dir_workers %}
-			{# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappuser_dir #}
+			# FIXME: obsolete if matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled is set
+			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappuser_dir
 			{% for location in matrix_nginx_proxy_synapse_user_dir_locations %}
 			location ~ {{ location }} {
 				proxy_pass http://user_dir_upstream$request_uri;
@@ -139,13 +141,16 @@
 		{% endif %}
 
 		{% if frontend_proxy_workers %}
-			{# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappfrontend_proxy #}
-			location ~ ^/_matrix/client/(api/v1|r0|unstable)/keys/upload {
+			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappfrontend_proxy
+			{% for location in matrix_nginx_proxy_synapse_frontend_proxy_locations %}
+			location ~ {{ location }} {
 				proxy_pass http://frontend_proxy_upstream$request_uri;
 				proxy_set_header Host $host;
 				proxy_set_header X-Forwarded-For $remote_addr;
 			}
-			{% if not matrix_synapse_use_presence %}
+			{% endfor %}
+			{% if matrix_nginx_proxy_synapse_presence_disabled %}
+			# FIXME: keep in sync with synapse workers documentation manually
 			location ~ ^/_matrix/client/(api/v1|r0|unstable)/presence/[^/]+/status {
 				proxy_pass http://frontend_proxy_upstream$request_uri;
 				proxy_set_header Host $host;
@@ -153,6 +158,7 @@
 			}
 			{% endif %}
 		{% endif %}
+		# Workers redirects END
 	{% endif %}
 
 
@@ -229,20 +235,20 @@
 	}
 {% endmacro %}
 
-{% set generic_worker_workers = matrix_nginx_proxy_synapse_workers_enabled_list|selectattr('worker', 'equalto', 'generic_worker')|list %}
-{% set media_repository_workers = matrix_nginx_proxy_synapse_workers_enabled_list|selectattr('worker', 'equalto', 'media_repository')|list %}
-{% set user_dir_workers = matrix_nginx_proxy_synapse_workers_enabled_list|selectattr('worker', 'equalto', 'user_dir')|list %}
-{% set frontend_proxy_workers = matrix_nginx_proxy_synapse_workers_enabled_list|selectattr('worker', 'equalto', 'frontend_proxy')|list %}
+{% set generic_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'generic_worker')|list %}
+{% set media_repository_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'media_repository')|list %}
+{% set user_dir_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'user_dir')|list %}
+{% set frontend_proxy_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'frontend_proxy')|list %}
 {% if matrix_nginx_proxy_synapse_workers_enabled %}
-	{# Setup upstream for groups of workers #}
+	# Round Robin "upstream" pools for workers
 
-	{% if generic_worker_workers %}
+	{% if generic_workers %}
 	upstream generic_worker_upstream {
 		# ensures that requests from the same client will always be passed
 		# to the same server (except when this server is unavailable)
 		ip_hash;
 
-		{% for worker in generic_worker_workers %}
+		{% for worker in generic_workers %}
 		server "matrix-synapse:{{ worker.port }}";
 		{% endfor %}
 	}
@@ -250,7 +256,6 @@
 
 	{% if frontend_proxy_workers %}
 	upstream frontend_proxy_upstream {
-		# Round Robin
 		{% for worker in frontend_proxy_workers %}
 		server "matrix-synapse:{{ worker.port }}";
 		{% endfor %}
@@ -259,7 +264,6 @@
 
 	{% if media_repository_workers %}
 	upstream media_repository_upstream {
-		# Round Robin
 		{% for worker in media_repository_workers %}
 		server "matrix-synapse:{{ worker.port }}";
 		{% endfor %}
@@ -268,7 +272,6 @@
 
 	{% if user_dir_workers %}
 	upstream user_dir_upstream {
-		# Round Robin
 		{% for worker in user_dir_workers %}
 		server "matrix-synapse:{{ worker.port }}";
 		{% endfor %}
@@ -358,8 +361,8 @@ server {
 	{% endif %}
 
 	{% if matrix_nginx_proxy_synapse_workers_enabled %}
-		{% if generic_worker_workers %}
-			{# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappgeneric_worker #}
+		{% if generic_workers %}
+			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappgeneric_worker
 			{% for location in matrix_nginx_proxy_synapse_generic_worker_locations %}
 			location ~ {{ location }} {
 				proxy_pass http://generic_worker_upstream$request_uri;
@@ -367,7 +370,7 @@ server {
 				proxy_set_header X-Forwarded-For $remote_addr;
 			}
 			{% endfor %}
-			{# ToDo: add GET ^/_matrix/federation/v1/groups/ #}
+			# FIXME: add GET ^/_matrix/federation/v1/groups/
 		{% endif %}
 	{% endif %}
 

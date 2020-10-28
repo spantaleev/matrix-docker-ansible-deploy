@@ -249,79 +249,10 @@ matrix_nginx_proxy_proxy_matrix_nginx_status_enabled: false
 matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses: ['{{ ansible_default_ipv4.address }}']
 
 
-# worker
-matrix_nginx_proxy_synapse_workers_enabled: "{{ matrix_synapse_workers_enabled }}"
-matrix_nginx_proxy_synapse_workers_enabled_list: "{{ matrix_synapse_workers_enabled_list }}"
-matrix_nginx_proxy_synapse_generic_worker_locations: [
-  # Sync requests
-  '^/_matrix/client/(v2_alpha|r0)/sync$',
-  '^/_matrix/client/(api/v1|v2_alpha|r0)/events$',
-  '^/_matrix/client/(api/v1|r0)/initialSync$',
-  '^/_matrix/client/(api/v1|r0)/rooms/[^/]+/initialSync$',
-
-  # Federation requests
-  '^/_matrix/federation/v1/event/',
-  '^/_matrix/federation/v1/state/',
-  '^/_matrix/federation/v1/state_ids/',
-  '^/_matrix/federation/v1/backfill/',
-  '^/_matrix/federation/v1/get_missing_events/',
-  '^/_matrix/federation/v1/publicRooms',
-  '^/_matrix/federation/v1/query/',
-  '^/_matrix/federation/v1/make_join/',
-  '^/_matrix/federation/v1/make_leave/',
-  '^/_matrix/federation/v1/send_join/',
-  '^/_matrix/federation/v2/send_join/',
-  '^/_matrix/federation/v1/send_leave/',
-  '^/_matrix/federation/v2/send_leave/',
-  '^/_matrix/federation/v1/invite/',
-  '^/_matrix/federation/v2/invite/',
-  '^/_matrix/federation/v1/query_auth/',
-  '^/_matrix/federation/v1/event_auth/',
-  '^/_matrix/federation/v1/exchange_third_party_invite/',
-  '^/_matrix/federation/v1/user/devices/',
-  '^/_matrix/federation/v1/get_groups_publicised$',
-  '^/_matrix/key/v2/query',
-
-  # Inbound federation transaction request
-  '^/_matrix/federation/v1/send/',
-
-  # Client API requests
-  '^/_matrix/client/(api/v1|r0|unstable)/publicRooms$',
-  '^/_matrix/client/(api/v1|r0|unstable)/rooms/.*/joined_members$',
-  '^/_matrix/client/(api/v1|r0|unstable)/rooms/.*/context/.*$',
-  '^/_matrix/client/(api/v1|r0|unstable)/rooms/.*/members$',
-  '^/_matrix/client/(api/v1|r0|unstable)/rooms/.*/state$',
-  '^/_matrix/client/(api/v1|r0|unstable)/account/3pid$',
-  '^/_matrix/client/(api/v1|r0|unstable)/keys/query$',
-  '^/_matrix/client/(api/v1|r0|unstable)/keys/changes$',
-  '^/_matrix/client/versions$',
-  '^/_matrix/client/(api/v1|r0|unstable)/voip/turnServer$',
-  '^/_matrix/client/(api/v1|r0|unstable)/joined_groups$',
-  '^/_matrix/client/(api/v1|r0|unstable)/publicised_groups$',
-  '^/_matrix/client/(api/v1|r0|unstable)/publicised_groups/',
-
-  # Registration/login requests
-  '^/_matrix/client/(api/v1|r0|unstable)/login$',
-  '^/_matrix/client/(r0|unstable)/register$',
-  '^/_matrix/client/(r0|unstable)/auth/.*/fallback/web$',
-
-  # Event sending requests
-  '^/_matrix/client/(api/v1|r0|unstable)/rooms/.*/send',
-  '^/_matrix/client/(api/v1|r0|unstable)/rooms/.*/state/',
-  '^/_matrix/client/(api/v1|r0|unstable)/rooms/.*/(join|invite|leave|ban|unban|kick)$',
-  '^/_matrix/client/(api/v1|r0|unstable)/join/',
-  '^/_matrix/client/(api/v1|r0|unstable)/profile/',
-]
-
-matrix_nginx_proxy_synapse_media_repository_locations: [
-  '^/_matrix/media/',
-  '^/_synapse/admin/v1/purge_media_cache$',
-  '^/_synapse/admin/v1/room/.*/media.*$',
-  '^/_synapse/admin/v1/user/.*/media.*$',
-  '^/_synapse/admin/v1/media/.*$',
-  '^/_synapse/admin/v1/quarantine_media/.*$',
-]
-
-matrix_nginx_proxy_synapse_user_dir_locations: [
-  '^/_matrix/client/(api/v1|r0|unstable)/user_directory/search$',
-]
+# synapse worker activation and endpoint mappings
+matrix_nginx_proxy_synapse_workers_enabled: false
+matrix_nginx_proxy_synapse_workers_list: []
+matrix_nginx_proxy_synapse_generic_worker_locations: []
+matrix_nginx_proxy_synapse_media_repository_locations: []
+matrix_nginx_proxy_synapse_user_dir_locations: []
+matrix_nginx_proxy_synapse_frontend_proxy_locations: []

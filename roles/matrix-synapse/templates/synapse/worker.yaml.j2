@@ -1,27 +1,27 @@
 #jinja2: lstrip_blocks: "True"
-worker_app: synapse.app.{{ item.worker }}
-worker_name: {{ item.worker ~ ':' ~ item.port }}
+worker_app: synapse.app.{{ item.type }}
+worker_name: {{ item.type ~ ':' ~ item.port }}
 
 worker_replication_host: 127.0.0.1
 worker_replication_http_port: {{ matrix_synapse_replication_http_port }}
 
-{% if item.worker not in [ 'appservice', 'federation_sender', 'pusher' ] %}
+{% if item.type not in [ 'appservice', 'federation_sender', 'pusher' ] %}
 worker_listeners:
   - type: http
     port: {{ item.port }}
     resources:
       - names:
-{% if item.worker in [ 'generic_worker', 'frontend_proxy', 'user_dir' ] %}
+{% if item.type in [ 'generic_worker', 'frontend_proxy', 'user_dir' ] %}
         - client
 {% endif %}
-{% if item.worker in [ 'generic_worker' ] %}
+{% if item.type in [ 'generic_worker' ] %}
         - federation
-{% elif item.worker in [ 'media_repository' ] %}
+{% elif item.type in [ 'media_repository' ] %}
         - media
 {% endif %}
 {% endif %}
 
-{% if item.worker == 'frontend_proxy' %}
+{% if item.type == 'frontend_proxy' %}
 worker_main_http_uri: http://127.0.0.1:8008
 {% endif %}
 
