@@ -1,3 +1,17 @@
+# 2020-10-28
+
+## (Compatibility Break) https://matrix.DOMAIN/ now redirects to https://element.DOMAIN/
+
+Until now, we used to serve a static page coming from Synapse at `https://matrix.DOMAIN/`. This page was not very useful to anyone.
+
+Since `matrix.DOMAIN` may be accessed by regular users in certain conditions, it's probably better to redirect them to a better place (e.g. to the [Element](docs/configuring-playbook-client-element.md) client).
+
+If Element is installed (`matrix_client_element_enabled: true`, which it is by default), we now redirect people to it, instead of showing them a Synapse static page.
+
+If you'd like to control where the redirect goes, use the `matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain` variable.
+To restore the old behavior of not redirecting anywhere and serving the Synapse static page, set it to an empty value (`matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain: ""`).
+
+
 # 2020-10-26
 
 ## (Compatibility Break) /_synapse/admin is no longer publicly exposed by default

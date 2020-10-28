@@ -151,7 +151,11 @@
 	}
 
 	location / {
-		rewrite ^/$ /_matrix/static/ last;
+		{% if matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain %}
+			return 302 $scheme://{{ matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain }}$request_uri;
+		{% else %}
+			rewrite ^/$ /_matrix/static/ last;
+		{% endif %}
 	}
 {% endmacro %}
 
