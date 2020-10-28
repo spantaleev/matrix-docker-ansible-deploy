@@ -34,7 +34,7 @@
 	{% endif %}
 
 	{% if matrix_nginx_proxy_proxy_matrix_corporal_api_enabled %}
-	location /_matrix/corporal {
+	location ^~ /_matrix/corporal {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver 127.0.0.11 valid=5s;
@@ -51,7 +51,7 @@
 	{% endif %}
 
 	{% if matrix_nginx_proxy_proxy_matrix_identity_api_enabled %}
-	location /_matrix/identity {
+	location ^~ /_matrix/identity {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver 127.0.0.11 valid=5s;
@@ -68,7 +68,7 @@
 	{% endif %}
 
 	{% if matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled %}
-	location /_matrix/client/r0/user_directory/search {
+	location ^~ /_matrix/client/r0/user_directory/search {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver 127.0.0.11 valid=5s;
