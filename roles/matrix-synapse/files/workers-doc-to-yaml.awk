@@ -1,11 +1,11 @@
 #!/usr/bin/awk
-# Hackish approach to get a machine-readable list of current matrix 
+# Hackish approach to get a machine-readable list of current matrix
 # synapse REST API endpoints from the official documentation at
 # https://github.com/matrix-org/synapse/raw/master/docs/workers.md
 #
 # invoke in shell with:
 # URL=https://github.com/matrix-org/synapse/raw/master/docs/workers.md
-# curl -L ${URL} | awk -f parse-workers-docs.awk -
+# curl -L ${URL} | awk -f workers-doc-to-yaml.awk -
 
 function worker_stanza_append(string) {
     worker_stanza = worker_stanza string
