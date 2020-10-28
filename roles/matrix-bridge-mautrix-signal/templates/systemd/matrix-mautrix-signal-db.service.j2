@@ -19,6 +19,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name {{ matrix_mautrix_sig
 			--env POSTGRES_PASSWORD={{ matrix_mautrix_signal_db_password }} \
 			--env POSTGRES_DB={{ matrix_mautrix_signal_db_database }} \
 			-v {{ matrix_mautrix_signal_db_storage_path }}:/var/lib/postgresql/data:z \
+			-v /etc/passwd:/etc/passwd:ro \
 			{{ matrix_mautrix_signal_db_docker_image }}
 
 ExecStop=-{{ matrix_host_command_docker }} kill {{ matrix_mautrix_signal_db_host }}
