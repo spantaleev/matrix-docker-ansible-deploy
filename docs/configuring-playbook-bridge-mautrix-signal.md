@@ -19,10 +19,13 @@ bridge:
 in [the example config in mautrix-signal](https://github.com/tulir/mautrix-signal/blob/master/mautrix_signal/example-config.yaml).
 For instance, use
 ```yaml
-matrix_mautrix_signal_configuration_permissions:
-  "YOUR_DOMAIN": user
+matrix_mautrix_signal_configuration_permissions: |
+  {
+    '{{ matrix_domain }}': 'user'
+  }
 ```
-to allow all users registered to `YOUR_DOMAIN` access to the bridge (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+to allow all users registered to the current host's matrix domain access to the bridge, or hard-code whatever you like.
+(See [this issue](https://github.com/ansible/ansible/issues/17324#issuecomment-449642731) on how to use variable names as dictionary keys.)
 
 
 ## Set up Double Puppeting
