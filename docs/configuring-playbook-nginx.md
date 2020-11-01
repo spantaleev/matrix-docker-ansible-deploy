@@ -26,7 +26,7 @@ matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses:
 
 ## Using Keycloak OIDC SSO
 
-If you want to use Keycloak OpenId Connect as SSO provider - see [synapse doc](https://github.com/matrix-org/synapse/blob/develop/docs/openid.md) - , you need to enable following variable to instruc nginx to proceed location /_synapse/oidc/callback  
+If you want to use Keycloak OpenId Connect as SSO provider - see [synapse doc](https://github.com/matrix-org/synapse/blob/develop/docs/openid.md) - , you need to enable following variable to instruct nginx to proceed location /_synapse/oidc/callback  
 
 ```yaml
 matrix_nginx_proxy_proxy_matrix_synapse_oidc_provider_keycloak: true
