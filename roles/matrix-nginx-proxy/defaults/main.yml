@@ -150,10 +150,13 @@ matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "127.0.0.1:8008"
 matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: 50
 
 
-# Tells wheter `/_synapse/client` is forwarded to the Matrix Client API server.
+# Tells whether `/_synapse/client` is forwarded to the Matrix Client API server.
 matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_client_api_enabled: true
 
-# Tells wheter `/_synapse/admin` is forwarded to the Matrix Client API server.
+# Tells whether `/_synapse/oidc` is forwarded to the Matrix Client API server.
+matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled: false
+
+# Tells whether `/_synapse/admin` is forwarded to the Matrix Client API server.
 # Following these recommendations (https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md), by default, we don't.
 matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled: false
 
@@ -165,6 +168,8 @@ matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_prefix_regexes: |
     (['/_matrix'])
     +
     (['/_synapse/client'] if matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_client_api_enabled else [])
+    +
+    (['/_synapse/oidc'] if matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled else [])
     +
     (['/_synapse/admin'] if matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled else [])
   }}

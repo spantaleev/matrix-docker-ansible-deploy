@@ -21,3 +21,8 @@ Alternatively, **if there is no pre-defined variable** for a Synapse setting you
 ## Synapse Admin
 
 Certain Synapse administration tasks (managing users and rooms, etc.) can be performed via a web user-interace, if you install [Synapse Admin](configuring-playbook-synapse-admin.md).
+
+
+## Synapse + OpenID Connect for Single-Sign-On
+
+If you'd like to use OpenID Connect authentication with Synapse, you'll need some additional reverse-proxy configuration (see [our nginx reverse-proxy doc page](configuring-playbook-nginx.md#synapse-openid-connect-for-single-sign-on)).
