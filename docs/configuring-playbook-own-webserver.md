@@ -212,7 +212,7 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.network=traefik"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web-secure.address=:443"
       - "--entrypoints.synapse.address=:8448"
       - "--certificatesresolvers.default.acme.tlschallenge=true"
       - "--certificatesresolvers.default.acme.email=YOUR EMAIL"
