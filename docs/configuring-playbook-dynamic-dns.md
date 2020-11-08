@@ -1,6 +1,6 @@
-# Tips for deploying Matrix on a Budget
+# Dynamic DNS
 
-## Dynamic DNS
+## Setup
 
 Most cloud providers / ISPs will charge you extra for a static IP address. If you're
 not hosting a highly reliable homeserver you can workaround this via dynamic DNS. To
@@ -9,9 +9,10 @@ google domains, this process is described [here](https://support.google.com/doma
 After you've gotten the proper credentials you can add the following config to your inventory/host_vars/matrix.DOMAIN/vars.yml:
 
 ```
-matrix_dynamic_dns_username: XXXXXXXXXXXXXXXX
-matrix_dynamic_dns_password: XXXXXXXXXXXXXXXX
-matrix_dynamic_dns_provider: 'domains.google.com'
+matrix_dynamic_dns_domain_configurations: |
+  {{
+    [{'provider': 'domains.google.com', 'protocol': 'dyndn2', 'username': 'XXXXXXXXXXXXXXXX', 'password': 'XXXXXXXXXXXXXXXX', 'domain': matrix_domain}]
+  }}
 ```
 
 ## Additional Reading

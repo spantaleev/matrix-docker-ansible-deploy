@@ -12,6 +12,18 @@
 - set_fact:
     domain_name_needs_cert: "{{ not domain_name_certificate_path_stat.stat.exists }}"
 
+- name: Ensure dynamic dns has ran
+  service:
+    name: "dynamic-dns"
+    state: started
+  register: dynamic_dns_service_update
+  when: "domain_name_needs_cert|bool and matrix_dynamic_dns_enabled|bool" 
+
+- name: Sleep for 60 seconds so that DNS records can be updated
+  wait_for:
+    timeout: 60
+  when: dynamic_dns_service_update.changed
+
 # This will fail if there is something running on port 80 (like matrix-nginx-proxy).
 # We suppress the error, as we'll try another method below.
 - name: Attempt initial SSL certificate retrieval with standalone authenticator (directly)

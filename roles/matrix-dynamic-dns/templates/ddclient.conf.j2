@@ -3,14 +3,24 @@ syslog=no
 pid=/var/run/ddclient/ddclient.pid
 ssl=yes
 use={{ matrix_dynamic_dns_use }}
-protocol={{ matrix_dynamic_dns_protocol }}
-server={{ matrix_dynamic_dns_provider }} {% if matrix_dynamic_dns_username %}
-login='{{ matrix_dynamic_dns_username }}' {% endif %} {% if matrix_dynamic_dns_username %}
-password='{{ matrix_dynamic_dns_password }}' {% endif %} {% if matrix_dynamic_dns_static %}
-static=yes {% endif %} {% if matrix_dynamic_dns_custom %}
-custom=yes {% endif %} {% if matrix_dynamic_dns_zone %}
-zone={{ matrix_dynamic_dns_zone }} {% endif %} {% if matrix_dynamic_dns_ttl %}
-ttl={{ matrix_dynamic_dns_ttl }} {% endif %} {% if matrix_dynamic_dns_mx %}
-mx={{ matrix_dynamic_dns_mx }} {% endif %} {% if matrix_dynamic_dns_wildcard %}
+
+{% for dynamic_dns_domain_configuration in matrix_dynamic_dns_domain_configurations %}
+protocol={{ dynamic_dns_domain_configuration.protocol }}
+server={{ dynamic_dns_domain_configuration.provider }} {% if 'username' in dynamic_dns_domain_configuration %}
+login='{{ dynamic_dns_domain_configuration.username }}' {% endif %} {% if 'password' in dynamic_dns_domain_configuration %}
+password='{{ dynamic_dns_domain_configuration.password }}' {% endif %} {% if 'static' in dynamic_dns_domain_configuration %}
+static=yes {% endif %} {% if 'custom' in dynamic_dns_domain_configuration %}
+custom=yes {% endif %} {% if 'zone' in dynamic_dns_domain_configuration %}
+zone={{ dynamic_dns_domain_configuration.zone }} {% endif %} {% if 'ttl' in dynamic_dns_domain_configuration %}
+ttl={{ dynamic_dns_domain_configuration.ttl }} {% endif %} {% if 'mx' in dynamic_dns_domain_configuration %}
+mx={{ dynamic_dns_domain_configuration.mx }} {% endif %} {% if 'wildcard' in dynamic_dns_domain_configuration %}
 wildcard=yes {% endif %}
-{{ matrix_dynamic_dns_domain }}
+{{ dynamic_dns_domain_configuration.domain }}
+
+{% endfor %}
+
+
+{% for matrix_dynamic_dns_additional_configuration in matrix_dynamic_dns_additional_configuration_blocks %}
+{{ matrix_dynamic_dns_additional_configuration }}
+
+{% endfor %}

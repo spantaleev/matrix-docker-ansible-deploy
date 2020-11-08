@@ -1,10 +1,10 @@
 ---
 
-- name: Fail if required settings not defined
+- name: Fail if required settings not defined in configuration blocks
   fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
-  when: "vars[item] == ''"
-  with_items:
-    - "matrix_dynamic_dns_domain"
-    - "matrix_dynamic_dns_provider"
+  when: "'domain' not in configuration == '' or 'provider' not in configuration == '' or 'protocol' not in configuration == ''"
+  with_items: "{{ matrix_dynamic_dns_domain_configurations }}"
+  loop_control:
+    loop_var: configuration

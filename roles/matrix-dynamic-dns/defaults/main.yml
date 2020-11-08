@@ -1,11 +1,11 @@
 # Whether dynamic dns is enabled
-matrix_dynamic_dns_enabled: false
+matrix_dynamic_dns_enabled: "{{ matrix_dynamic_dns_domain_configurations is defined }}"
 
 # The dynamic dns daemon interval
 matrix_dynamic_dns_daemon_interval: '300'
 
 # The docker container to use when in mode
-matrix_dynamic_dns_docker_image: 'linuxserver/ddclient'
+matrix_dynamic_dns_docker_image: 'linuxserver/ddclient:v3.9.1-ls45'
 
 # The image to force pull
 matrix_dynamic_dns_docker_image_force_pull: "{{ matrix_dynamic_dns_docker_image.endswith(':latest') }}"
@@ -28,13 +28,5 @@ matrix_dynamic_dns_config_path: "{{ matrix_dynamic_dns_base_path }}/config"
 matrix_dynamic_dns_docker_src_files_path: "{{ matrix_dynamic_dns_base_path }}/docker-src"
 
 # Config options
+matrix_dynamic_dns_additional_configuration_blocks: []
 matrix_dynamic_dns_use: "web"
-matrix_dynamic_dns_static: false
-matrix_dynamic_dns_custom: false
-matrix_dynamic_dns_zone: ""
-matrix_dynamic_dns_ttl: ""
-matrix_dynamic_dns_mx: ""
-matrix_dynamic_dns_wildcard: false
-matrix_dynamic_dns_protocol: 'dyndns2'
-matrix_dynamic_dns_provider: 'domains.google.com'
-matrix_dynamic_dns_domain: '{{ matrix_domain }}'
