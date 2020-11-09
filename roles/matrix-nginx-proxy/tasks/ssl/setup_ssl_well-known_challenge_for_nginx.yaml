@@ -1,0 +1,19 @@
+- name: Create nginx conf file dedicated to well-known challenge
+  copy:
+    content: ""
+    dest: "{{ matrix_nginx_proxy_confd_path }}/well-known.conf"
+    force: no
+    mode: 0644
+
+- name: Append well-known challenge for domain
+  blockinfile:
+    path: "{{ matrix_nginx_proxy_confd_path }}/well-known.conf"
+    block: "{{ lookup('template', 'nginx/conf.d/nginx-well-known.conf.j2') }}"
+    marker: "# {mark} WELL-KNOWN CHALLENGE CONFIG FOR {{ domain_name }}"
+
+- name: Reload nginx for well-known challenge
+  systemd:
+    name: nginx
+    state: reloaded
+
+

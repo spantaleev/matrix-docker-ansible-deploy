@@ -269,7 +269,28 @@ matrix_ssl_base_path: "{{ matrix_base_data_path }}/ssl"
 matrix_ssl_config_dir_path: "{{ matrix_ssl_base_path }}/config"
 matrix_ssl_log_dir_path: "{{ matrix_ssl_base_path }}/log"
 
+# Define local adress for proxying well-known challenge, if `matrix_nginx_proxy_well_known_serving_for_all_domains_enabled` is true
+matrix_ssl_lets_encrypt_certbot_challenge_addr: "127.0.0.1:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }}"
+
 
 # nginx status page configurations.
 matrix_nginx_proxy_proxy_matrix_nginx_status_enabled: false
 matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses: ['{{ ansible_default_ipv4.address }}']
+
+
+# Controls whether matrix-nginx-proxy should serve well-known challenges for all `{{ matrix_ssl_domains_to_obtain_certificates_for }}`
+# 
+# This is useful when you don't use matrix-nginx-proxy, but instead your own server,
+# but you still want playbooks to retrieve ssl certs for you,
+# but you are annoyed by the need to stop your server while retrieving certs.
+#
+# If enabled, allows matrix-nginx-proxy to generate nginx conf in `/matrix/nginx-proxy/conf.d` (only `well-known`block)
+# for all domains defined in `{{ matrix_ssl_domains_to_obtain_certificates_for }}`,
+# even is matrix_nginx_proxy_enabled is not true.
+#
+# You will need to define which server you use on host with `{{ matrix_host_server }}`.
+# Actually only 'nginx' is implemented.
+matrix_nginx_proxy_well_known_serving_for_all_domains_enabled: false
+matrix_host_server: ""
+
+

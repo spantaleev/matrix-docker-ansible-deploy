@@ -12,6 +12,10 @@
 - set_fact:
     domain_name_needs_cert: "{{ not domain_name_certificate_path_stat.stat.exists }}"
 
+- name: Delegate well-known challenge to nginx on host
+  import_tasks: setup_ssl_well-known_challenge_for_nginx.yaml
+  when: "not matrix_nginx_proxy_enabled|bool and matrix_nginx_proxy_well_known_serving_for_all_domains_enabled|bool and matrix_host_server == 'nginx'"
+
 # This will fail if there is something running on port 80 (like matrix-nginx-proxy).
 # We suppress the error, as we'll try another method below.
 - name: Attempt initial SSL certificate retrieval with standalone authenticator (directly)
