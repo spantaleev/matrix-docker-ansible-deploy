@@ -1,3 +1,12 @@
+# 2020-11-10
+
+## Dynamic DNS support
+
+Thanks to [Scott Crossen](https://github.com/scottcrossen), the playbook can now manage Dynamic DNS for you using [ddclient](https://ddclient.net/).
+
+To learn more, follow our [Dynamic DNS docs page](docs/configuring-playbook-dynamic-dns.md).
+
+
 # 2020-10-28
 
 ## (Compatibility Break) https://matrix.DOMAIN/ now redirects to https://element.DOMAIN/
