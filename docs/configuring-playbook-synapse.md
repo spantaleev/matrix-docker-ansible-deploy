@@ -18,6 +18,21 @@ Alternatively, **if there is no pre-defined variable** for a Synapse setting you
 - or, if extending the configuration is still not powerful enough for your needs, you can **override the configuration completely** using `matrix_synapse_configuration` (or `matrix_synapse_configuration_yaml`). You can find information about this in [`roles/matrix-synapse/defaults/main.yml`](../roles/matrix-synapse/defaults/main.yml).
 
 
+## Load balancing with workers
+To have synapse gracefully handle thousands of users, worker support should be enabled. It factors out some homeserver tasks and spreads the load of incoming client and server-to-server traffic between multiple processes. More information can be found at https://github.com/matrix-org/synapse/blob/master/docs/workers.md (which, coincidentally, also is the file which an awk script extracts the endpoint URLs from when running with tag `setup-synapse`).
+
+To enable synapse worker support, set
+
+```yaml
+matrix_synapse_workers_enabled: true
+```
+
+in your `inventory/host_vars/matrix.DOMAIN/vars.yml` file.
+There, you can also override the default `matrix_synapse_workers_enabled_list` from [`roles/matrix-synapse/defaults/main.yml`](../roles/matrix-synapse/defaults/main.yml).
+
+If you are not using the inbuilt nginx proxy container but an instance managed by yourself, you are currently on your own as the template needs yet to be adapted to better support this use case.
+
+
 ## Synapse Admin
 
 Certain Synapse administration tasks (managing users and rooms, etc.) can be performed via a web user-interace, if you install [Synapse Admin](configuring-playbook-synapse-admin.md).
