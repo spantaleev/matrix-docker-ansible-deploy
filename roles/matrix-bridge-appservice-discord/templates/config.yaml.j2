@@ -26,6 +26,10 @@ bridge:
   disableReadReceipts: false
   # Disable Join Leave echos from matrix
   disableJoinLeaveNotifications: false
+  # Disable Invite echos from matrix
+  disableInviteNotifications: false
+  # Auto-determine the language of code blocks (this can be CPU-intensive)
+  determineCodeLanguage: false
 # Authentication configuration for the discord bot.
 auth:
   clientID: {{ matrix_appservice_discord_client_id|string|to_json }}
@@ -45,8 +49,6 @@ logging:
   #     enable:
   #       - "DiscordBot"
 database:
-  userStorePath: "/data/user-store.db"
-  roomStorePath: "/data/room-store.db"
   # You may either use SQLite or Postgresql for the bridge database, which contains
   # important mappings for events and user puppeting configurations.
   # Use the filename option for SQLite, or connString for Postgresql.
@@ -82,10 +84,12 @@ channel:
 limits:
     # Delay in milliseconds between discord users joining a room.
     roomGhostJoinDelay: 6000
-    # Delay in milliseconds before sending messages to discord to avoid echos.
-    # (Copies of a sent message may arrive from discord before we've
+    # Lock timeout in milliseconds before sending messages to discord to avoid
+    # echos. Default is rather high as the lock will most likely time out
+    # before anyways.
+    # echos = (Copies of a sent message may arrive from discord before we've
     # fininished handling it, causing us to echo it back to the room)
-    discordSendDelay: 750
+    discordSendDelay: 1500
 ghosts:
     # Pattern for the ghosts nick, available is :nick, :username, :tag and :id
     nickPattern: ":nick"

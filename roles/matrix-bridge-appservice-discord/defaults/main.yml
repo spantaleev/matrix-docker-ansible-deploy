@@ -3,7 +3,7 @@
 
 matrix_appservice_discord_enabled: true
 
-matrix_appservice_discord_docker_image: "halfshot/matrix-appservice-discord:latest"
+matrix_appservice_discord_docker_image: "halfshot/matrix-appservice-discord:v1.0.0-rc3"
 matrix_appservice_discord_docker_image_force_pull: "{{ matrix_appservice_discord_docker_image.endswith(':latest') }}"
 
 matrix_appservice_discord_base_path: "{{ matrix_base_data_path }}/appservice-discord"
@@ -16,6 +16,8 @@ matrix_appservice_discord_bot_token: ''
 
 matrix_appservice_discord_appservice_token: ''
 matrix_appservice_discord_homeserver_token: ''
+
+matrix_appservice_discord_homeserver_domain: "{{ matrix_domain }}"
 
 # Controls whether the matrix-appservice-discord container exposes its HTTP port (tcp/9005 in the container).
 #
@@ -62,10 +64,10 @@ matrix_appservice_discord_registration_yaml: |
   namespaces:
     users:
     - exclusive: true
-      regex: '^@_discord_.*'
+      regex: '@_discord_.*:{{ matrix_appservice_discord_homeserver_domain|regex_escape }}'
     aliases:
     - exclusive: true
-      regex: '^#_discord_.*'
+      regex: '#_discord_.*:{{ matrix_appservice_discord_homeserver_domain|regex_escape }}'
   url: {{ matrix_appservice_discord_appservice_url }}
   sender_localpart: _discord_bot
   rate_limited: false
