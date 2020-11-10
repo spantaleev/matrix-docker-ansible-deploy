@@ -84,6 +84,15 @@ enable_parsing {
                     api_endpoint_regex = "^" line
                 }
 
+                # FIXME: https://github.com/matrix-org/synapse/issues/7530
+                # https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/456#issuecomment-719015911
+                if (api_endpoint_regex == "^/_matrix/client/(r0|unstable)/auth/.*/fallback/web$") {
+                    worker_stanza_append("  # FIXME: possible bug with SSO and multiple generic workers\n")
+                    worker_stanza_append("  # see https://github.com/matrix-org/synapse/issues/7530\n")
+                    worker_stanza_append("  # " api_endpoint_regex linefeed)
+                    continue
+                }
+
                 # disable endpoints which specify complications
                 if (endpoints_seem_conditional) {
                     # only add notice if previous line didn't match
