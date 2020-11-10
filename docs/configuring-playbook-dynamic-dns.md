@@ -11,11 +11,6 @@ After you've gotten the proper credentials you can add the following config to y
 ```yaml
 matrix_dynamic_dns_enabled: true
 
-matrix_dynamic_dns_domain_configurations: |
-  {{
-    [{'provider': 'domains.google.com', 'protocol': 'dyndn2', 'username': 'XXXXXXXXXXXXXXXX', 'password': 'XXXXXXXXXXXXXXXX', 'domain': matrix_domain}]
-  }}
-
 matrix_dynamic_dns_domain_configurations:
   - provider: domains.google.com
     protocol: dyndn2
