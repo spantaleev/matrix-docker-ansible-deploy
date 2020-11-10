@@ -32,6 +32,8 @@ There, you can also override the default `matrix_synapse_workers_enabled_list` f
 
 If you are not using the inbuilt nginx proxy container but an instance managed by yourself, you are currently on your own as the template needs yet to be adapted to better support this use case.
 
+In case any problems occur, make sure to have a look at the [list of synapse issues about workers](https://github.com/matrix-org/synapse/issues?q=workers+in%3Atitle) and your `journalctl --unit 'matrix-*'`.
+
 
 ## Synapse Admin
 
