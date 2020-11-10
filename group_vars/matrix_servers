@@ -619,6 +619,23 @@ matrix_dimension_homeserver_federationUrl: "http://matrix-synapse:{{ 8048 if mat
 ######################################################################
 
 
+
+######################################################################
+#
+# matrix-dynamic-dns
+#
+######################################################################
+
+matrix_dynamic_dns_enabled: false
+
+######################################################################
+#
+# /matrix-dynamic-dns
+#
+######################################################################
+
+
+
 ######################################################################
 #
 # matrix-email2matrix
@@ -836,6 +853,8 @@ matrix_ssl_architecture: "{{
 		'arm64': 'arm64v8',
 	}[matrix_architecture]
 }}"
+
+matrix_ssl_pre_obtaining_required_service_name: "{{ 'matrix-dynamic-dns' if matrix_dynamic_dns_enabled else '' }}
 
 ######################################################################
 #
