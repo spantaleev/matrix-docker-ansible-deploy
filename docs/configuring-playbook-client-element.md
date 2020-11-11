@@ -1,6 +1,6 @@
 # Configuring Element (optional)
 
-By default, this playbook installs the [Element](https://github.com/vector-im/riot-web) Matrix client web application.
+By default, this playbook installs the [Element](https://github.com/vector-im/element-web) Matrix client web application.
 If that's okay, you can skip this document.
 
 

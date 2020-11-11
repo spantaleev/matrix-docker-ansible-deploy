@@ -193,3 +193,38 @@ Note that this configuration on its own does **not** redirect traffic on port 80
       scheme = "https"
       permanent = true
 ```
+
+You can use the following `docker-compose.yml` as example to launch Traefik.
+
+```yaml
+version: "3.3"
+
+services:
+
+  traefik:
+    image: "traefik:v2.3"
+    restart: always
+    container_name: "traefik"
+    networks: 
+      - traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.network=traefik"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web-secure.address=:443"
+      - "--entrypoints.synapse.address=:8448"
+      - "--certificatesresolvers.default.acme.tlschallenge=true"
+      - "--certificatesresolvers.default.acme.email=YOUR EMAIL"
+      - "--certificatesresolvers.default.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+networks:
+  traefik:
+    external: true
+```

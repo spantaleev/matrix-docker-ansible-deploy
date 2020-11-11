@@ -619,6 +619,23 @@ matrix_dimension_homeserver_federationUrl: "http://matrix-synapse:{{ 8048 if mat
 ######################################################################
 
 
+
+######################################################################
+#
+# matrix-dynamic-dns
+#
+######################################################################
+
+matrix_dynamic_dns_enabled: false
+
+######################################################################
+#
+# /matrix-dynamic-dns
+#
+######################################################################
+
+
+
 ######################################################################
 #
 # matrix-email2matrix
@@ -769,6 +786,10 @@ matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "{{ 'matrix-corp
 matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "{{ '127.0.0.1:41080' if matrix_corporal_enabled else '127.0.0.1:8008' }}"
 matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: "{{ matrix_synapse_max_upload_size_mb }}"
 
+matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled: "{{ matrix_synapse_admin_enabled }}"
+
+matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain: "{{ matrix_server_fqn_element if matrix_client_element_enabled else '' }}"
+
 matrix_nginx_proxy_proxy_matrix_enabled: true
 matrix_nginx_proxy_proxy_element_enabled: "{{ matrix_client_element_enabled }}"
 matrix_nginx_proxy_proxy_dimension_enabled: "{{ matrix_dimension_enabled }}"
@@ -841,6 +862,8 @@ matrix_ssl_architecture: "{{
 		'arm64': 'arm64v8',
 	}[matrix_architecture]
 }}"
+
+matrix_ssl_pre_obtaining_required_service_name: "{{ 'matrix-dynamic-dns' if matrix_dynamic_dns_enabled else '' }}"
 
 ######################################################################
 #
@@ -942,7 +965,7 @@ matrix_client_element_jitsi_preferredDomain: "{{ matrix_server_fqn_jitsi if matr
 #
 ######################################################################
 
-matrix_synapse_container_image_self_build: "{{ matrix_architecture != 'amd64'}}"
+matrix_synapse_container_image_self_build: "{{ matrix_architecture not in ['arm32', 'arm64', 'amd64'] }}"
 
 # When ma1sd is enabled, we can use it to validate email addresses and phone numbers.
 # Synapse can validate email addresses by itself as well, but it's probably not what we want by default when we have an identity server.
