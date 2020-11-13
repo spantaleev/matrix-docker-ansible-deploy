@@ -1,3 +1,16 @@
+# 2020-11-13
+
+## Breaking change matrix-sms-bridge
+
+The new version of [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) changed its database from neo4j to h2. You need to sync the bridge at the first start. Note that this only will sync rooms where the @smsbot:yourServer is member. For rooms without @smsbot:yourServer you need to kick and invite the telephone number **or** invite @smsbot:yourServer.
+
+1. Add the following to your `vars.yml` file: `matrix_sms_bridge_container_extra_arguments=['--env SPRING_PROFILES_ACTIVE=initialsync']`
+2. Login to your host shell and remove old systemd file from your host: `rm /etc/systemd/system/matrix-sms-bridge-database.service`
+2. Run `ansible-playbook -i inventory/hosts setup.yml --tags=setup-matrix-sms-bridge,start`
+3. Login to your host shell and check the logs with `journalctl -u matrix-sms-bridge` until the sync finished.
+4. Remove the var from the first step.
+5. Run `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`.
+
 # 2020-11-10
 
 ## Dynamic DNS support
