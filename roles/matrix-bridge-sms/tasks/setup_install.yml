@@ -5,14 +5,6 @@
     name: "{{ matrix_sms_bridge_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
 
-- name: Ensure matrix-sms-bridge databse image is pulled
-  docker_image:
-    name: "{{ matrix_sms_bridge_database_docker_image }}"
-    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_sms_bridge_database_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_sms_bridge_database_docker_image_force_pull }}"
-
-
 - name: Ensure matrix-sms-bridge paths exist
   file:
     path: "{{ item }}"
@@ -31,7 +23,6 @@
     - "{{ matrix_sms_bridge_data_spool_outbox_path }}"
     - "{{ matrix_sms_bridge_data_spool_sent_path }}"
     - "{{ matrix_sms_bridge_data_spool_error_path }}"
-    - "{{ matrix_sms_bridge_database_path }}"
 
 - name: Ensure matrix-sms-bridge application.yml installed
   copy:
@@ -64,14 +55,7 @@
     mode: 0644
   register: matrix_sms_bridge_systemd_service_result
 
-- name: Ensure matrix-sms-bridge-database.service installed
-  template:
-    src: "{{ role_path }}/templates/systemd/matrix-sms-bridge-database.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-sms-bridge-database.service"
-    mode: 0644
-  register: matrix_sms_bridge_database_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-sms-bridge.service or matrix-sms-bridge-database.service installation
+- name: Ensure systemd reloaded after matrix-sms-bridge.service installation
   service:
     daemon_reload: yes
-  when: matrix_sms_bridge_systemd_service_result.changed or matrix_sms_bridge_database_systemd_service_result.changed
+  when: matrix_sms_bridge_systemd_service_result.changed
