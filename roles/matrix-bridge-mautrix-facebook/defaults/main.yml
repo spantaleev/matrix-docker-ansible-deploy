@@ -6,7 +6,8 @@ matrix_mautrix_facebook_enabled: true
 matrix_mautrix_facebook_container_image_self_build: false
 
 # See: https://mau.dev/tulir/mautrix-facebook/container_registry
-matrix_mautrix_facebook_docker_image: "dock.mau.dev/tulir/mautrix-facebook:latest"
+matrix_mautrix_facebook_docker_image: "{{ matrix_mautrix_facebook_docker_image_name_prefix }}tulir/mautrix-facebook:latest"
+matrix_mautrix_facebook_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_facebook_container_image_self_build else 'dock.mau.dev/' }}"
 matrix_mautrix_facebook_docker_image_force_pull: "{{ matrix_mautrix_facebook_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_facebook_base_path: "{{ matrix_base_data_path }}/mautrix-facebook"

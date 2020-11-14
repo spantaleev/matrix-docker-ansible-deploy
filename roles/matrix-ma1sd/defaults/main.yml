@@ -7,7 +7,8 @@ matrix_ma1sd_container_image_self_build: false
 
 matrix_ma1sd_architecture: "amd64"
 
-matrix_ma1sd_docker_image: "ma1uta/ma1sd:2.4.0-{{ matrix_ma1sd_architecture }}"
+matrix_ma1sd_docker_image: "{{ matrix_ma1sd_docker_image_name_prefix }}ma1uta/ma1sd:2.4.0-{{ matrix_ma1sd_architecture }}"
+matrix_ma1sd_docker_image_name_prefix: "{{ 'localhost/' if matrix_ma1sd_container_image_self_build else 'docker.io/' }}"
 matrix_ma1sd_docker_image_force_pull: "{{ matrix_ma1sd_docker_image.endswith(':latest') }}"
 
 matrix_ma1sd_base_path: "{{ matrix_base_data_path }}/ma1sd"

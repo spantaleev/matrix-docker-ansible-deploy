@@ -56,6 +56,7 @@
       dest: "{{ matrix_ma1sd_docker_src_files_path }}"
       version: "{{ matrix_ma1sd_docker_image.split(':')[1].split('-')[0] }}"
       force: "yes"
+    register: matrix_ma1sd_git_pull_results
 
   - name: Ensure ma1sd Docker image is built
     shell: "./gradlew dockerBuild"
@@ -64,7 +65,10 @@
 
   - name: Ensure ma1sd Docker image is tagged correctly
     docker_image:
-      name: "{{ matrix_ma1sd_docker_image.split('-')[0] }}"
+      # The build script always tags the image with something like `ma1uta/ma1sd:2.4.0`.
+      # Remove the `-{{ matrix_ma1sd_architecture }}` suffix and our `localhost/` prefix (applied when self-building)
+      # to get to what has actually been built, so we can retag it as `{{ matrix_ma1sd_docker_image }}`.
+      name: "{{ matrix_ma1sd_docker_image.split('-')[0].replace('localhost/', '') }}"
       repository: "{{ matrix_ma1sd_docker_image }}"
       force_tag: yes
       source: local

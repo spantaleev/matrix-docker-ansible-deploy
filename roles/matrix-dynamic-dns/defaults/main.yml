@@ -5,7 +5,9 @@ matrix_dynamic_dns_enabled: true
 matrix_dynamic_dns_daemon_interval: '300'
 
 # The docker container to use when in mode
-matrix_dynamic_dns_docker_image: 'linuxserver/ddclient:v3.9.1-ls45'
+matrix_dynamic_dns_docker_image: '{{ matrix_dynamic_dns_docker_image_name_prefix }}linuxserver/ddclient:v3.9.1-ls45'
+
+matrix_dynamic_dns_docker_image_name_prefix: "{{ 'localhost/' if matrix_dynamic_dns_container_image_self_build else 'docker.io/' }}"
 
 # The image to force pull
 matrix_dynamic_dns_docker_image_force_pull: "{{ matrix_dynamic_dns_docker_image.endswith(':latest') }}"

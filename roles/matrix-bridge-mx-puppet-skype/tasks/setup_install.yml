@@ -36,18 +36,18 @@
     dest: "{{ matrix_mx_puppet_skype_docker_src_files_path }}"
     force: "yes"
   register: matrix_mx_puppet_skype_git_pull_results
-  when: "matrix_mx_puppet_skype_enabled|bool and matrix_mx_puppet_skype_container_image_self_build"
+  when: "matrix_mx_puppet_skype_enabled|bool and matrix_mx_puppet_skype_container_image_self_build|bool"
 
 - name: Ensure MX Puppet Skype Docker image is built
   docker_image:
     name: "{{ matrix_mx_puppet_skype_docker_image }}"
     source: build
-    force_source: yes
+    force_source: "{{ matrix_mx_puppet_skype_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mx_puppet_skype_docker_src_files_path }}"
       pull: yes
-  when: "matrix_mx_puppet_skype_enabled|bool and matrix_mx_puppet_skype_container_image_self_build and matrix_mx_puppet_skype_git_pull_results.changed"
+  when: "matrix_mx_puppet_skype_enabled|bool and matrix_mx_puppet_skype_container_image_self_build|bool"
 
 - name: Check if an old database file already exists
   stat:

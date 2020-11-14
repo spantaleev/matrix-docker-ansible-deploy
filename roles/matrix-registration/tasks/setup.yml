@@ -39,12 +39,12 @@
   docker_image:
     name: "{{ matrix_registration_docker_image }}"
     source: build
-    force_source: yes
+    force_source: "{{ matrix_registration_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_registration_docker_src_files_path }}"
       pull: yes
-  when: "matrix_registration_enabled|bool and matrix_registration_container_image_self_build|bool and matrix_registration_git_pull_results.changed"
+  when: "matrix_registration_enabled|bool and matrix_registration_container_image_self_build|bool"
 
 - name: Ensure matrix-registration config installed
   copy:

@@ -30,17 +30,19 @@
     dest: "{{ matrix_client_element_docker_src_files_path }}"
     version: "{{ matrix_client_element_docker_image.split(':')[1] }}"
     force: "yes"
-  when: "matrix_client_element_enabled|bool and matrix_client_element_container_image_self_build"
+  register: matrix_client_element_git_pull_results
+  when: "matrix_client_element_enabled|bool and matrix_client_element_container_image_self_build|bool"
 
 - name: Ensure Element Docker image is built
   docker_image:
     name: "{{ matrix_client_element_docker_image }}"
     source: build
+    force_source: "{{ matrix_client_element_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_client_element_docker_src_files_path }}"
       pull: yes
-  when: "matrix_client_element_enabled|bool and matrix_client_element_container_image_self_build"
+  when: "matrix_client_element_enabled|bool and matrix_client_element_container_image_self_build|bool"
 
 - name: Ensure Element configuration installed
   copy:

@@ -43,12 +43,12 @@
   docker_image:
     name: "{{ matrix_mautrix_facebook_docker_image }}"
     source: build
-    force_source: yes
+    force_source: "{{ matrix_mautrix_facebook_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_facebook_docker_src_files_path }}"
       pull: yes
-  when: "matrix_mautrix_facebook_enabled|bool and matrix_mautrix_facebook_container_image_self_build and matrix_mautrix_facebook_git_pull_results.changed"
+  when: "matrix_mautrix_facebook_enabled|bool and matrix_mautrix_facebook_container_image_self_build|bool"
 
 - name: Check if an old database file already exists
   stat:

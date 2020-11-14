@@ -35,12 +35,14 @@
     repo: https://github.com/Sorunome/mx-puppet-twitter.git
     dest: "{{ matrix_mx_puppet_twitter_docker_src_files_path }}"
     force: "yes"
+  register: matrix_mx_puppet_twitter_git_pull_results
   when: "matrix_mx_puppet_twitter_enabled|bool and matrix_mx_puppet_twitter_container_image_self_build"
 
 - name: Ensure MX Puppet Twitter Docker image is built
   docker_image:
     name: "{{ matrix_mx_puppet_twitter_docker_image }}"
     source: build
+    force_source: "{{ matrix_mx_puppet_twitter_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mx_puppet_twitter_docker_src_files_path }}"

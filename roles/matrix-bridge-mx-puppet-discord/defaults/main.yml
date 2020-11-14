@@ -10,7 +10,8 @@ matrix_mx_puppet_discord_container_image_self_build: false
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8432"), or empty string to not expose.
 matrix_mx_puppet_discord_container_http_host_bind_port: ''
 
-matrix_mx_puppet_discord_docker_image: "sorunome/mx-puppet-discord:latest"
+matrix_mx_puppet_discord_docker_image: "{{ matrix_mx_puppet_discord_docker_image_name_prefix }}sorunome/mx-puppet-discord:latest"
+matrix_mx_puppet_discord_docker_image_name_prefix: "{{ 'localhost/' if matrix_mx_puppet_discord_container_image_self_build else 'docker.io/' }}"
 matrix_mx_puppet_discord_docker_image_force_pull: "{{ matrix_mx_puppet_discord_docker_image.endswith(':latest') }}"
 
 matrix_mx_puppet_discord_base_path: "{{ matrix_base_data_path }}/mx-puppet-discord"

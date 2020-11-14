@@ -7,7 +7,8 @@ matrix_synapse_admin_container_self_build: false
 matrix_synapse_admin_docker_repo: "https://github.com/Awesome-Technologies/synapse-admin.git"
 matrix_synapse_admin_docker_src_files_path: "{{ matrix_base_data_path }}/synapse-admin/docker-src"
 
-matrix_synapse_admin_docker_image: "awesometechnologies/synapse-admin:0.5.0"
+matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_name_prefix }}awesometechnologies/synapse-admin:0.5.0"
+matrix_synapse_admin_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_self_build else 'docker.io/' }}"
 matrix_synapse_admin_docker_image_force_pull: "{{ matrix_synapse_admin_docker_image.endswith(':latest') }}"
 
 # A list of extra arguments to pass to the container

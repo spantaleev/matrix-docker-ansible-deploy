@@ -12,7 +12,8 @@ matrix_registration_docker_src_files_path: "{{ matrix_registration_base_path }}/
 
 matrix_registration_version: "v0.7.0"
 
-matrix_registration_docker_image: "devture/zeratax-matrix-registration:{{ matrix_registration_version }}"
+matrix_registration_docker_image: "{{ matrix_registration_docker_image_name_prefix }}devture/zeratax-matrix-registration:{{ matrix_registration_version }}"
+matrix_registration_docker_image_name_prefix: "{{ 'localhost/' if matrix_registration_container_image_self_build else 'docker.io/' }}"
 matrix_registration_docker_image_force_pull: "{{ matrix_registration_docker_image.endswith(':latest') }}"
 matrix_registration_docker_repo: "https://github.com/ZerataX/matrix-registration"
 

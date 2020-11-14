@@ -26,17 +26,19 @@
     repo: https://github.com/linuxserver/docker-ddclient.git
     dest: "{{ matrix_dynamic_dns_docker_src_files_path }}"
     force: "yes"
-  when: "matrix_dynamic_dns_enabled|bool and matrix_dynamic_dns_container_image_self_build"
+  register: matrix_dynamic_dns_git_pull_results
+  when: "matrix_dynamic_dns_enabled|bool and matrix_dynamic_dns_container_image_self_build|bool"
 
 - name: Ensure Dynamic DNS Docker image is built
   docker_image:
     name: "{{ matrix_dynamic_dns_docker_image }}"
     source: build
+    force_source: "{{ matrix_dynamic_dns_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_dynamic_dns_docker_src_files_path }}"
       pull: yes
-  when: "matrix_dynamic_dns_enabled|bool and matrix_dynamic_dns_container_image_self_build"
+  when: "matrix_dynamic_dns_enabled|bool and matrix_dynamic_dns_container_image_self_build|bool"
 
 - name: Ensure Dynamic DNS ddclient.conf installed
   template:

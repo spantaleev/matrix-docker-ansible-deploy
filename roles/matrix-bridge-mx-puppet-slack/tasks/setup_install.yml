@@ -35,12 +35,14 @@
     repo: https://github.com/Sorunome/mx-puppet-slack.git
     dest: "{{ matrix_mx_puppet_slack_docker_src_files_path }}"
     force: "yes"
+  register: matrix_mx_puppet_slack_git_pull_results
   when: "matrix_mx_puppet_slack_enabled|bool and matrix_mx_puppet_slack_container_image_self_build"
 
 - name: Ensure MX Puppet Slack Docker image is built
   docker_image:
     name: "{{ matrix_mx_puppet_slack_docker_image }}"
     source: build
+    force_source: "{{ matrix_mx_puppet_slack_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mx_puppet_slack_docker_src_files_path }}"

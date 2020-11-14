@@ -29,17 +29,19 @@
     dest: "{{ matrix_coturn_docker_src_files_path }}"
     version: "{{ matrix_coturn_docker_image.split(':')[1] }}"
     force: "yes"
+  register: matrix_coturn_git_pull_results
   when: "matrix_coturn_enabled|bool and matrix_coturn_container_image_self_build"
 
 - name: Ensure Coturn Docker image is built
   docker_image:
     name: "{{ matrix_coturn_docker_image }}"
     source: build
+    force_source: "{{ matrix_coturn_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_coturn_docker_src_files_path }}"
       pull: yes
-  when: "matrix_coturn_enabled|bool and matrix_coturn_container_image_self_build"
+  when: "matrix_coturn_enabled|bool and matrix_coturn_container_image_self_build|bool"
 
 - name: Ensure Coturn configuration path exists
   file:

@@ -35,17 +35,19 @@
     repo: https://github.com/matrix-discord/mx-puppet-discord.git
     dest: "{{ matrix_mx_puppet_discord_docker_src_files_path }}"
     force: "yes"
+  register: matrix_mx_puppet_discord_git_pull_results
   when: "matrix_mx_puppet_discord_enabled|bool and matrix_mx_puppet_discord_container_image_self_build"
 
 - name: Ensure MX Puppet Discord Docker image is built
   docker_image:
     name: "{{ matrix_mx_puppet_discord_docker_image }}"
     source: build
+    force_source: "{{ matrix_mx_puppet_discord_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mx_puppet_discord_docker_src_files_path }}"
       pull: yes
-  when: "matrix_mx_puppet_discord_enabled|bool and matrix_mx_puppet_discord_container_image_self_build"
+  when: "matrix_mx_puppet_discord_enabled|bool and matrix_mx_puppet_discord_container_image_self_build|bool"
 
 - name: Check if an old database file already exists
   stat:

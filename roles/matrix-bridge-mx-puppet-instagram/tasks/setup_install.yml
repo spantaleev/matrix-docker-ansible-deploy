@@ -35,17 +35,19 @@
     repo: https://github.com/Sorunome/mx-puppet-instagram.git
     dest: "{{ matrix_mx_puppet_instagram_docker_src_files_path }}"
     force: "yes"
-  when: "matrix_mx_puppet_instagram_enabled|bool and matrix_mx_puppet_instagram_container_image_self_build"
+  register: matrix_mx_puppet_instagram_git_pull_results
+  when: "matrix_mx_puppet_instagram_enabled|bool and matrix_mx_puppet_instagram_container_image_self_build|bool"
 
 - name: Ensure mx-puppet-instagram Docker image is built
   docker_image:
     name: "{{ matrix_mx_puppet_instagram_docker_image }}"
     source: build
+    force_source: "{{ matrix_mx_puppet_instagram_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mx_puppet_instagram_docker_src_files_path }}"
       pull: yes
-  when: "matrix_mx_puppet_instagram_enabled|bool and matrix_mx_puppet_instagram_container_image_self_build"
+  when: "matrix_mx_puppet_instagram_enabled|bool and matrix_mx_puppet_instagram_container_image_self_build|bool"
 
 - name: Ensure mx-puppet-instagram config.yaml installed
   copy:

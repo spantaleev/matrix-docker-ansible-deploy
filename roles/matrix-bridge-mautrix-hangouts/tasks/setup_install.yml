@@ -36,18 +36,18 @@
     dest: "{{ matrix_mautrix_hangouts_docker_src_files_path }}"
     force: "yes"
   register: matrix_mautrix_hangouts_git_pull_results
-  when: "matrix_mautrix_hangouts_enabled|bool and matrix_mautrix_hangouts_container_image_self_build"
+  when: "matrix_mautrix_hangouts_enabled|bool and matrix_mautrix_hangouts_container_image_self_build|bool"
 
 - name: Ensure Mautrix Hangouts Docker image is built
   docker_image:
     name: "{{ matrix_mautrix_hangouts_docker_image }}"
     source: build
-    force_source: yes
+    force_source: "{{ matrix_mautrix_hangouts_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_hangouts_docker_src_files_path }}"
       pull: yes
-  when: "matrix_mautrix_hangouts_enabled|bool and matrix_mautrix_hangouts_container_image_self_build and matrix_mautrix_hangouts_git_pull_results.changed"
+  when: "matrix_mautrix_hangouts_enabled|bool and matrix_mautrix_hangouts_container_image_self_build|bool"
 
 - name: Check if an old database file already exists
   stat:

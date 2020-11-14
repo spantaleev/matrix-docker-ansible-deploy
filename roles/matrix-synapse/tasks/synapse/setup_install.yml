@@ -24,17 +24,19 @@
     dest: "{{ matrix_synapse_docker_src_files_path }}"
     version: "{{ matrix_synapse_docker_image.split(':')[1] }}"
     force: "yes"
-  when: "matrix_synapse_container_image_self_build"
+  register: matrix_synapse_git_pull_results
+  when: "matrix_synapse_container_image_self_build|bool"
 
 - name: Ensure Synapse Docker image is built
   docker_image:
     name: "{{ matrix_synapse_docker_image }}"
     source: build
+    force_source: "{{ matrix_synapse_git_pull_results.changed }}"
     build:
       dockerfile: docker/Dockerfile
       path: "{{ matrix_synapse_docker_src_files_path }}"
       pull: yes
-  when: "matrix_synapse_container_image_self_build"
+  when: "matrix_synapse_container_image_self_build|bool"
 
 - name: Ensure Synapse Docker image is pulled
   docker_image:

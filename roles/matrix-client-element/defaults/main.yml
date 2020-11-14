@@ -2,7 +2,8 @@ matrix_client_element_enabled: true
 
 matrix_client_element_container_image_self_build: false
 
-matrix_client_element_docker_image: "vectorim/element-web:v1.7.13"
+matrix_client_element_docker_image: "{{ matrix_client_element_docker_image_name_prefix }}vectorim/element-web:v1.7.13"
+matrix_client_element_docker_image_name_prefix: "{{ 'localhost/' if matrix_client_element_container_image_self_build else 'docker.io/' }}"
 matrix_client_element_docker_image_force_pull: "{{ matrix_client_element_docker_image.endswith(':latest') }}"
 
 matrix_client_element_data_path: "{{ matrix_base_data_path }}/client-element"
