@@ -27,6 +27,7 @@ ExecStart=/usr/bin/docker run --rm --name matrix-sms-bridge \
 			{% endif %}
 			-v {{ matrix_sms_bridge_config_path }}:/config:z \
 			-v {{ matrix_sms_bridge_data_path }}:/data:z \
+			--env SPRING_CONFIG_ADDITIONAL_LOCATION=/config/application.yml
 			{% for arg in matrix_sms_bridge_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
