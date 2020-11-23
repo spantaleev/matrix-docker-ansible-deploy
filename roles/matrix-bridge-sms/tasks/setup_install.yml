@@ -35,12 +35,12 @@
 
 - name: Ensure android-sms-gateway-server cert installed
   copy:
-    src: "{{ matrix_sms_bridge_provider_android_truststore_path }}"
+    src: "{{ matrix_sms_bridge_provider_android_truststore_local_path }}"
     dest: "{{ matrix_sms_bridge_config_path }}/matrix-sms-gateway-server.p12"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: matrix_sms_bridge_provider_android_truststore_path != ""
+  when: matrix_sms_bridge_provider_android_truststore_local_path != ""
 
 - name: Ensure matrix-sms-bridge.service installed
   template:
