@@ -65,7 +65,7 @@
     --name=matrix-config
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
     --cap-drop=ALL
-    -v {{ matrix_synapse_config_dir_path }}:/data
+    --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data
     -e UID={{ matrix_user_uid }}
     -e GID={{ matrix_user_gid }}
     -e SYNAPSE_CONFIG_PATH=/data/homeserver.yaml

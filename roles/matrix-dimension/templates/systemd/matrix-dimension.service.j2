@@ -23,7 +23,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-dimension \
 			{% if matrix_dimension_container_http_host_bind_port %}
 			-p {{ matrix_dimension_container_http_host_bind_port }}:8184 \
 			{% endif %}
-			-v {{ matrix_dimension_base_path }}:/data:rw \
+			--mount type=bind,src={{ matrix_dimension_base_path }},dst=/data \
 			{% for arg in matrix_dimension_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
