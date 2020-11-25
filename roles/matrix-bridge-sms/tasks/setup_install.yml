@@ -16,13 +16,6 @@
     - "{{ matrix_sms_bridge_base_path }}"
     - "{{ matrix_sms_bridge_config_path }}"
     - "{{ matrix_sms_bridge_data_path }}"
-    - "{{ matrix_sms_bridge_data_log_path }}"
-    - "{{ matrix_sms_bridge_data_spool_path }}"
-    - "{{ matrix_sms_bridge_data_spool_inbox_path }}"
-    - "{{ matrix_sms_bridge_data_spool_inbox_processed_path }}"
-    - "{{ matrix_sms_bridge_data_spool_outbox_path }}"
-    - "{{ matrix_sms_bridge_data_spool_sent_path }}"
-    - "{{ matrix_sms_bridge_data_spool_error_path }}"
 
 - name: Ensure matrix-sms-bridge application.yml installed
   copy:
@@ -40,13 +33,14 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure matrix-sms-bridge gammu-smsdrc installed
+- name: Ensure android-sms-gateway-server cert installed
   copy:
-    content: "{{ matrix_sms_bridge_gammu_configuration }}"
-    dest: "{{ matrix_sms_bridge_config_path }}/gammu-smsdrc"
+    src: "{{ matrix_sms_bridge_provider_android_truststore_local_path }}"
+    dest: "{{ matrix_sms_bridge_config_path }}/matrix-sms-gateway-server.p12"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
+  when: matrix_sms_bridge_provider_android_truststore_local_path != ""
 
 - name: Ensure matrix-sms-bridge.service installed
   template:
