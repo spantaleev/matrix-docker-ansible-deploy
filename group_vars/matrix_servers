@@ -578,13 +578,19 @@ matrix_coturn_container_image_self_build: "{{ matrix_architecture != 'amd64'}}"
 
 matrix_coturn_turn_external_ip_address: "{{ ansible_host }}"
 
-matrix_coturn_tls_enabled: true
+matrix_coturn_tls_enabled: "{{ matrix_ssl_retrieval_method != 'none' }}"
 matrix_coturn_tls_cert_path: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_matrix }}/fullchain.pem"
 matrix_coturn_tls_key_path: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_matrix }}/privkey.pem"
-matrix_coturn_container_additional_volumes:
- - src: "{{ matrix_ssl_config_dir_path }}"
-   dst: "{{ matrix_ssl_config_dir_path }}"
-   options: ro
+matrix_coturn_container_additional_volumes: |
+  {{
+    ([] if matrix_ssl_retrieval_method == 'none' else [
+        {
+            'src': matrix_ssl_config_dir_path,
+            'dst': matrix_ssl_config_dir_path,
+            'options': 'ro',
+        }
+    ])
+  }}
 
 ######################################################################
 #
