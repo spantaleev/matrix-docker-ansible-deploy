@@ -19,3 +19,24 @@
     - "matrix_jitsi_jicofo_component_secret"
     - "matrix_jitsi_jicofo_auth_password"
     - "matrix_jitsi_jvb_auth_password"
+
+- name: (Deprecation) Catch and report renamed settings
+  fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_jitsi_web_config_constraints_enabled', 'new': '<Now unnecessary. Constraints are always applied automatically>'}
+    - {'old': 'matrix_jitsi_web_config_constraints_video_aspectRatio', 'new': '<Not applicable anymore>'}
+    - {'old': 'matrix_jitsi_web_config_constraints_video_height_ideal', 'new': 'matrix_jitsi_web_config_resolution_height_ideal_and_max'}
+    - {'old': 'matrix_jitsi_web_config_constraints_video_height_max', 'new': 'matrix_jitsi_web_config_resolution_height_ideal_and_max'}
+    - {'old': 'matrix_jitsi_web_config_constraints_video_height_min', 'new': 'matrix_jitsi_web_config_resolution_height_min'}
+    - {'old': 'matrix_jitsi_web_config_disableAudioLevels', 'new': '<Can be set by using matrix_jitsi_web_custom_config_extension. Example in docs/configuring-playbook-jitsi.md>'}
+    - {'old': 'matrix_jitsi_web_config_enableLayerSuspension', 'new': '<Can be set by using matrix_jitsi_web_custom_config_extension. Example in docs/configuring-playbook-jitsi.md>'}
+    - {'old': 'matrix_jitsi_web_config_channelLastN', 'new': '<Can be set by using matrix_jitsi_web_custom_config_extension. Example in docs/configuring-playbook-jitsi.md>'}
+    - {'old': 'matrix_jitsi_web_config_testing_p2pTestMode', 'new': '<Can be set by using matrix_jitsi_web_custom_config_extension>'}
+    - {'old': 'matrix_jitsi_web_config_start_with_audio_muted', 'new': '<Superseded by matrix_jitsi_web_config_start_audio_muted_after_nth_participant>'}
+    - {'old': 'matrix_jitsi_web_config_start_with_video_muted', 'new': '<Superseded by matrix_jitsi_web_config_start_video_muted_after_nth_participant>'}
+    - {'old': 'matrix_jitsi_web_interface_config_show_watermark_for_guests', 'new': '<Not applicable anymore>'}
+    - {'old': 'matrix_jitsi_web_interface_config_invitation_powered_by', 'new': '<Not applicable anymore>'}
