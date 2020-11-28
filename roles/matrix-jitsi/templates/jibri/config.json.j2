@@ -13,15 +13,15 @@
                 {{ matrix_jitsi_xmpp_server|string|to_json }}
             ],
             "xmpp_domain": {{ matrix_jitsi_xmpp_domain|string|to_json }},
-            // Jibri will login to the xmpp server as a privileged user 
+            // Jibri will login to the xmpp server as a privileged user
             "control_login": {
                 "domain": {{ matrix_jitsi_xmpp_auth_domain|string|to_json }},
                 // The credentials for logging in
                 "username": {{ matrix_jitsi_jibri_xmpp_user|string|to_json }},
                 "password": {{ matrix_jitsi_jibri_xmpp_password|string|to_json }}
             },
-            // Using the control_login information above, Jibri will join 
-            //  a control muc as a means of announcing its availability 
+            // Using the control_login information above, Jibri will join
+            //  a control muc as a means of announcing its availability
             //  to provide services for a given environment
             "control_muc": {
                 "domain": {{ matrix_jitsi_xmpp_internal_muc_domain|string|to_json }},
@@ -47,12 +47,12 @@
             //  has its participants join a muc at conference.xmpp_domain) then
             //  list that prefix here so it can be stripped out to generate
             //  the call url correctly
-            "room_jid_domain_string_to_strip_from_start": {{ matrix_jitsi_jibri_logs_path|string|to_json }},
+            "room_jid_domain_string_to_strip_from_start": {{ matrix_jitsi_jibri_strip_domain_jid|string|to_json }},
             // The amount of time, in minutes, a service is allowed to continue.
             //  Once a service has been running for this long, it will be
             //  stopped (cleanly).  A value of 0 means an indefinite amount
             //  of time is allowed
-            "usage_timeout": "0"
+            "usage_timeout": "0",
             // Whether or not we'll automatically trust any cert on
             // this XMPP domain
             trust-all-xmpp-certs = true
