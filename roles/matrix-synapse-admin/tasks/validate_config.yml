@@ -1,0 +1,10 @@
+---
+
+- name: (Deprecation) Catch and report renamed settings
+  fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_synapse_admin_docker_repo', 'new': 'matrix_synapse_admin_container_self_build_repo'}

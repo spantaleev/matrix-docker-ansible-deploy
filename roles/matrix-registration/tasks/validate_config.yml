@@ -9,3 +9,12 @@
     - "matrix_registration_shared_secret"
     - "matrix_registration_admin_secret"
     - "matrix_registration_server_location"
+
+- name: (Deprecation) Catch and report renamed settings
+  fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_registration_docker_repo', 'new': 'matrix_registration_container_image_self_build_repo'}
