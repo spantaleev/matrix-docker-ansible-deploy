@@ -79,8 +79,8 @@
     --cap-drop=ALL
     --network={{ matrix_docker_network }}
     --entrypoint=python
-    -v {{ matrix_synapse_config_dir_path }}:/data
-    -v {{ matrix_synapse_config_dir_path }}:/matrix-media-store-parent/media-store
-    -v {{ server_path_homeserver_db }}:/{{ server_path_homeserver_db|basename }}
+    --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data
+    --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/matrix-media-store-parent/media-store
+    --mount type=bind,src={{ server_path_homeserver_db }},dst=/{{ server_path_homeserver_db|basename }}
     {{ matrix_synapse_docker_image }}
     /usr/local/bin/synapse_port_db --sqlite-database /{{ server_path_homeserver_db|basename }} --postgres-config /data/homeserver.yaml

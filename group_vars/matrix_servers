@@ -578,13 +578,19 @@ matrix_coturn_container_image_self_build: "{{ matrix_architecture != 'amd64'}}"
 
 matrix_coturn_turn_external_ip_address: "{{ ansible_host }}"
 
-matrix_coturn_tls_enabled: true
+matrix_coturn_tls_enabled: "{{ matrix_ssl_retrieval_method != 'none' }}"
 matrix_coturn_tls_cert_path: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_matrix }}/fullchain.pem"
 matrix_coturn_tls_key_path: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_matrix }}/privkey.pem"
-matrix_coturn_container_additional_volumes:
- - src: "{{ matrix_ssl_config_dir_path }}"
-   dst: "{{ matrix_ssl_config_dir_path }}"
-   options: ro
+matrix_coturn_container_additional_volumes: |
+  {{
+    ([] if matrix_ssl_retrieval_method == 'none' else [
+        {
+            'src': matrix_ssl_config_dir_path,
+            'dst': matrix_ssl_config_dir_path,
+            'options': 'ro',
+        }
+    ])
+  }}
 
 ######################################################################
 #
@@ -619,6 +625,23 @@ matrix_dimension_homeserver_federationUrl: "http://matrix-synapse:{{ 8048 if mat
 ######################################################################
 
 
+
+######################################################################
+#
+# matrix-dynamic-dns
+#
+######################################################################
+
+matrix_dynamic_dns_enabled: false
+
+######################################################################
+#
+# /matrix-dynamic-dns
+#
+######################################################################
+
+
+
 ######################################################################
 #
 # matrix-email2matrix
@@ -647,6 +670,8 @@ matrix_jitsi_enabled: false
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # the Jitsi HTTP port to the local host.
 matrix_jitsi_web_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:12080' }}"
+
+matrix_jitsi_jvb_container_colibri_ws_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:12090' }}"
 
 matrix_jitsi_jibri_xmpp_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'jibri') | to_uuid }}"
 matrix_jitsi_jicofo_auth_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'jicofo') | to_uuid }}"
@@ -769,6 +794,10 @@ matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "{{ 'matrix-corp
 matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "{{ '127.0.0.1:41080' if matrix_corporal_enabled else '127.0.0.1:8008' }}"
 matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: "{{ matrix_synapse_max_upload_size_mb }}"
 
+matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled: "{{ matrix_synapse_admin_enabled }}"
+
+matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain: "{{ matrix_server_fqn_element if matrix_client_element_enabled else '' }}"
+
 matrix_nginx_proxy_proxy_matrix_enabled: true
 matrix_nginx_proxy_proxy_element_enabled: "{{ matrix_client_element_enabled }}"
 matrix_nginx_proxy_proxy_dimension_enabled: "{{ matrix_dimension_enabled }}"
@@ -833,6 +862,8 @@ matrix_ssl_architecture: "{{
 	}[matrix_architecture]
 }}"
 
+matrix_ssl_pre_obtaining_required_service_name: "{{ 'matrix-dynamic-dns' if matrix_dynamic_dns_enabled else '' }}"
+
 ######################################################################
 #
 # /matrix-nginx-proxy
@@ -851,6 +882,7 @@ matrix_postgres_enabled: true
 
 matrix_postgres_connection_hostname: "matrix-postgres"
 matrix_postgres_connection_username: "synapse"
+# Please note that the max length of the password is 99 characters
 matrix_postgres_connection_password: "synapse-password"
 matrix_postgres_db_name: "homeserver"
 
@@ -917,7 +949,7 @@ matrix_client_element_jitsi_preferredDomain: "{{ matrix_server_fqn_jitsi if matr
 #
 ######################################################################
 
-matrix_synapse_container_image_self_build: "{{ matrix_architecture != 'amd64'}}"
+matrix_synapse_container_image_self_build: "{{ matrix_architecture not in ['arm32', 'arm64', 'amd64'] }}"
 
 # When ma1sd is enabled, we can use it to validate email addresses and phone numbers.
 # Synapse can validate email addresses by itself as well, but it's probably not what we want by default when we have an identity server.

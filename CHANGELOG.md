@@ -1,3 +1,63 @@
+# 2020-11-23
+
+## Breaking change matrix-sms-bridge
+
+Because of many problems using gammu as SMS provider, matrix-sms-bridge now uses (https://github.com/RebekkaMa/android-sms-gateway-server) by default. See (the docs)[./docs/configuring-playbook-bridge-matrix-bridge-sms.md] which new vars you need to add.
+
+If you are using this playbook to deploy matrix-sms-bridge and still really want to use gammu as SMS provider, we could possibly add support for both android-sms-gateway-server and gammu.
+
+# 2020-11-13
+
+## Breaking change matrix-sms-bridge
+
+The new version of [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) changed its database from neo4j to h2. You need to sync the bridge at the first start. Note that this only will sync rooms where the @smsbot:yourServer is member. For rooms without @smsbot:yourServer you need to kick and invite the telephone number **or** invite @smsbot:yourServer.
+
+1. Add the following to your `vars.yml` file: `matrix_sms_bridge_container_extra_arguments=['--env SPRING_PROFILES_ACTIVE=initialsync']`
+2. Login to your host shell and remove old systemd file from your host: `rm /etc/systemd/system/matrix-sms-bridge-database.service`
+2. Run `ansible-playbook -i inventory/hosts setup.yml --tags=setup-matrix-sms-bridge,start`
+3. Login to your host shell and check the logs with `journalctl -u matrix-sms-bridge` until the sync finished.
+4. Remove the var from the first step.
+5. Run `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`.
+
+# 2020-11-10
+
+## Dynamic DNS support
+
+Thanks to [Scott Crossen](https://github.com/scottcrossen), the playbook can now manage Dynamic DNS for you using [ddclient](https://ddclient.net/).
+
+To learn more, follow our [Dynamic DNS docs page](docs/configuring-playbook-dynamic-dns.md).
+
+
+# 2020-10-28
+
+## (Compatibility Break) https://matrix.DOMAIN/ now redirects to https://element.DOMAIN/
+
+Until now, we used to serve a static page coming from Synapse at `https://matrix.DOMAIN/`. This page was not very useful to anyone.
+
+Since `matrix.DOMAIN` may be accessed by regular users in certain conditions, it's probably better to redirect them to a better place (e.g. to the [Element](docs/configuring-playbook-client-element.md) client).
+
+If Element is installed (`matrix_client_element_enabled: true`, which it is by default), we now redirect people to it, instead of showing them a Synapse static page.
+
+If you'd like to control where the redirect goes, use the `matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain` variable.
+To restore the old behavior of not redirecting anywhere and serving the Synapse static page, set it to an empty value (`matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain: ""`).
+
+
+# 2020-10-26
+
+## (Compatibility Break) /_synapse/admin is no longer publicly exposed by default
+
+We used to expose the Synapse Admin APIs publicly (at `https://matrix.DOMAIN/_synapse/admin`).
+These APIs require authentication with a valid access token, so it's not that big a deal to expose them.
+
+However, following [official Synapse's reverse-proxying recommendations](https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md#synapse-administration-endpoints), we're no longer exposing `/_synapse/admin` by default.
+
+If you'd like to restore restore the old behavior and expose `/_synapse/admin` publicly, you can use the following configuration (in your `vars.yml`):
+
+```yaml
+matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled: true
+```
+
+
 # 2020-10-02
 
 ## Minimum Ansible version raised to v2.7.0

@@ -3,7 +3,7 @@ matrix_nginx_proxy_enabled: true
 # We use an official nginx image, which we fix-up to run unprivileged.
 # An alternative would be an `nginxinc/nginx-unprivileged` image, but
 # that is frequently out of date.
-matrix_nginx_proxy_docker_image: "nginx:1.19.3-alpine"
+matrix_nginx_proxy_docker_image: "docker.io/nginx:1.19.4-alpine"
 matrix_nginx_proxy_docker_image_force_pull: "{{ matrix_nginx_proxy_docker_image.endswith(':latest') }}"
 
 matrix_nginx_proxy_base_path: "{{ matrix_base_data_path }}/nginx-proxy"
@@ -147,7 +147,39 @@ matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key: ""
 matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "matrix-synapse:8008"
 matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "127.0.0.1:8008"
 # This needs to be equal or higher than the maximum upload size accepted by Synapse.
-matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: 25
+matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: 50
+
+
+# Tells whether `/_synapse/client` is forwarded to the Matrix Client API server.
+matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_client_api_enabled: true
+
+# Tells whether `/_synapse/oidc` is forwarded to the Matrix Client API server.
+# Enable this if you need OpenID Connect authentication support.
+matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled: false
+
+# Tells whether `/_synapse/admin` is forwarded to the Matrix Client API server.
+# Following these recommendations (https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md), by default, we don't.
+matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled: false
+
+# `matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_prefixes` holds
+# the location prefixes that get forwarded to the Matrix Client API server.
+# These locations get combined into a regex like this `^(/_matrix|/_synapse/client)`.
+matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_prefix_regexes: |
+  {{
+    (['/_matrix'])
+    +
+    (['/_synapse/client'] if matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_client_api_enabled else [])
+    +
+    (['/_synapse/oidc'] if matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled else [])
+    +
+    (['/_synapse/admin'] if matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled else [])
+  }}
+
+# Specifies where requests for the root URI (`/`) on the `matrix.` domain should be redirected.
+# If this has an empty value, they're just passed to the homeserver, which serves a static page.
+# If you'd like to make `https://matrix.DOMAIN` redirect to `https://element.DOMAIN` (or something of that sort), specify the domain name here.
+# Example value: `element.DOMAIN` (or `{{ matrix_server_fqn_element }}`).
+matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain: ""
 
 # Controls whether proxying for the Matrix Federation API should be done.
 matrix_nginx_proxy_proxy_matrix_federation_api_enabled: false
@@ -227,7 +259,7 @@ matrix_ssl_domains_to_obtain_certificates_for: []
 
 # Controls whether to obtain production or staging certificates from Let's Encrypt.
 matrix_ssl_lets_encrypt_staging: false
-matrix_ssl_lets_encrypt_certbot_docker_image: "certbot/certbot:{{ matrix_ssl_architecture }}-v1.9.0"
+matrix_ssl_lets_encrypt_certbot_docker_image: "docker.io/certbot/certbot:{{ matrix_ssl_architecture }}-v1.9.0"
 matrix_ssl_lets_encrypt_certbot_docker_image_force_pull: "{{ matrix_ssl_lets_encrypt_certbot_docker_image.endswith(':latest') }}"
 matrix_ssl_lets_encrypt_certbot_standalone_http_port: 2402
 matrix_ssl_lets_encrypt_support_email: ~
@@ -243,6 +275,10 @@ matrix_ssl_base_path: "{{ matrix_base_data_path }}/ssl"
 matrix_ssl_config_dir_path: "{{ matrix_ssl_base_path }}/config"
 matrix_ssl_log_dir_path: "{{ matrix_ssl_base_path }}/log"
 
+# If you'd like to start some service before a certificate is obtained, specify it here.
+# This could be something like `matrix-dynamic-dns`, etc.
+matrix_ssl_pre_obtaining_required_service_name: ~
+matrix_ssl_pre_obtaining_required_service_start_wait_time_seconds: 60
 
 # nginx status page configurations.
 matrix_nginx_proxy_proxy_matrix_nginx_status_enabled: false

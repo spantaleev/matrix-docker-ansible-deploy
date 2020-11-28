@@ -1,11 +1,10 @@
 # Setting up matrix-sms-bridge (optional)
 
-The playbook can install and configure
-[matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) for you.
+The playbook can install and configure [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) for you.
 
 See the project page to learn what it does and why it might be useful to you.
 
-First you need to ensure, that the bridge has unix read and write rights to your modem. On debian based distributions there is nothing to do. On others distributions you either add a group `dialout` to your host and assign it to your modem or you give the matrix user or group access to your modem.
+**The bridge uses [android-sms-gateway-server](https://github.com/RebekkaMa/android-sms-gateway-server). You need to configure it first.**
 
 To enable the bridge just use the following
 playbook configuration:
@@ -13,16 +12,23 @@ playbook configuration:
 
 ```yaml
 matrix_sms_bridge_enabled: true
-matrix_sms_bridge_gammu_modem: "/dev/serial/by-id/myDeviceId"
-# generate a secret passwort e.g. with pwgen -s 64 1
-matrix_sms_bridge_database_password: ""
-# (optional) a room id to a default room
+
+# (optional but recommended) a room id to a default room
 matrix_sms_bridge_default_room: "" 
-# (optional) gammu reset frequencies (see https://wammu.eu/docs/manual/smsd/config.html#option-ResetFrequency)
-matrix_sms_bridge_gammu_reset_frequency: 3600
-matrix_sms_bridge_gammu_hard_reset_frequency: 0
-# (optional) group with unix read and write rights to modem
-matrix_sms_bridge_modem_group: 'dialout'
+
+# (optional but recommended) configure your server location
+matrix_sms_bridge_default_region: DE
+matrix_sms_bridge_default_timezone: Europe/Berlin
+
+# Settings to connect to android-sms-gateway-server
+matrix_sms_bridge_provider_android_baseurl: https://192.168.24.24:9090
+matrix_sms_bridge_provider_android_username: admin
+matrix_sms_bridge_provider_android_password: supeSecretPassword
+
+# (optional) if your android-sms-gateway-server uses a self signed vertificate, the bridge needs a "truststore". This can be the certificate itself.
+matrix_sms_bridge_provider_android_truststore_local_path: android-sms-gateway-server.p12
+matrix_sms_bridge_provider_android_truststore_password: 123
+
 ```
 
 

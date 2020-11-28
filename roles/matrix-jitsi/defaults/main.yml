@@ -4,8 +4,9 @@ matrix_jitsi_base_path: "{{ matrix_base_data_path }}/jitsi"
 
 matrix_jitsi_enable_auth: false
 matrix_jitsi_enable_guests: false
-matrix_jitsi_enable_recording: true
-matrix_jitsi_enable_transcriptions: true
+matrix_jitsi_enable_recording: false
+matrix_jitsi_enable_transcriptions: false
+matrix_jitsi_enable_p2p: true
 
 # Authentication type, must be one of internal, jwt or ldap. Currently only
 # internal and ldap are supported by this playbook.
@@ -51,9 +52,9 @@ matrix_jitsi_jibri_recorder_password: ''
 
 matrix_jitsi_enable_lobby: false
 
-matrix_jitsi_container_image_tag: "stable-4857"
+matrix_jitsi_container_image_tag: "stable-5142"
 
-matrix_jitsi_web_docker_image: "jitsi/web:{{ matrix_jitsi_container_image_tag }}"
+matrix_jitsi_web_docker_image: "docker.io/jitsi/web:{{ matrix_jitsi_container_image_tag }}"
 matrix_jitsi_web_docker_image_force_pull: "{{ matrix_jitsi_web_docker_image.endswith(':latest') }}"
 
 matrix_jitsi_web_base_path: "{{ matrix_base_data_path }}/jitsi/web"
@@ -77,44 +78,88 @@ matrix_jitsi_web_container_extra_arguments: []
 # List of systemd services that matrix-jitsi-web.service depends on
 matrix_jitsi_web_systemd_required_services_list: ['docker.service']
 
-matrix_jitsi_web_config_defaultLanguage: 'en'
-matrix_jitsi_web_config_start_with_audio_muted: false
-matrix_jitsi_web_config_start_with_video_muted: false
-matrix_jitsi_web_config_testing_enableFirefoxSimulcast: false
-matrix_jitsi_web_config_testing_p2pTestMode: false
 
+# Some variables controlling the interface of Jitsi Web.
+# These get applied to `templates/web/interface_config.js.j2`.
+#
+# Besides this, you can also use `matrix_jitsi_web_custom_interface_config_extension`
+# to define any other configuration option.
 matrix_jitsi_web_interface_config_lang_detection: false
 matrix_jitsi_web_interface_config_show_jitsi_watermark: true
 matrix_jitsi_web_interface_config_jitsi_watermark_link: "https://jitsi.org"
 matrix_jitsi_web_interface_config_show_brand_watermark: false
 matrix_jitsi_web_interface_config_brand_watermark_link: ""
-matrix_jitsi_web_interface_config_show_watermark_for_guests: true
 matrix_jitsi_web_interface_config_generate_room_names_on_welcome_page: true
 matrix_jitsi_web_interface_config_display_welcome_page_content: true
 matrix_jitsi_web_interface_config_app_name: "Jitsi Meet"
 matrix_jitsi_web_interface_config_native_app_name: "Jitsi Meet"
 matrix_jitsi_web_interface_config_provider_name: "Jitsi"
-matrix_jitsi_web_interface_config_invitation_powered_by: true
 matrix_jitsi_web_interface_config_show_powered_by: false
 matrix_jitsi_web_interface_config_disable_transcription_subtitles: false
 matrix_jisti_web_interface_config_show_deep_linking_image: false
 
-# Jitsi_web Fine Tune default values.
-# Useful to manage bandwidth and CPU consumption in server and client side
-matrix_jitsi_web_config_disableAudioLevels: false
-matrix_jitsi_web_config_enableLayerSuspension: false
-matrix_jitsi_web_config_channelLastN: -1
-# If 'matrix_jitsi_web_config_constraints_enabled: false'
-# the video constraints will be disabled and will take the default values of jitsi
-matrix_jitsi_web_config_constraints_enabled: false
-# This settings work if matrix_jitsi_web_config_constraints_enabled: true
-# See their definitions in config.js.j2 (templates / web)
-matrix_jitsi_web_config_constraints_video_aspectRatio: 16 / 9
-matrix_jitsi_web_config_constraints_video_height_ideal: 720
-matrix_jitsi_web_config_constraints_video_height_max: 720
-matrix_jitsi_web_config_constraints_video_height_min: 240
+# Custom configuration to be injected into `interface_config.js`, passed to Jitsi Web.
+# This configuration gets appended to the final interface configuration that Jitsi Web uses.
+#
+# Note: not to be confused with `matrix_jitsi_web_custom_config_extension`.
+#
+# For interface configuration, the flow is like this:
+# - the contents of `templates/web/interface_config.js.j2` is generated (based on various `matrix_jitsi_web_interface_config_*` variables you see in this file)
+# - the contents of `matrix_jitsi_web_custom_interface_config_extension` is appended and can define new settings or override defaults.
+#
+# Example:
+# matrix_jitsi_web_custom_interface_config_extension: |
+#   interfaceConfig.CONNECTION_INDICATOR_AUTO_HIDE_ENABLED = false;
+#   interfaceConfig.DISABLE_VIDEO_BACKGROUND = true;
+matrix_jitsi_web_custom_interface_config_extension: ''
 
-matrix_jitsi_prosody_docker_image: "jitsi/prosody:{{ matrix_jitsi_container_image_tag }}"
+
+# Controls after which participant audio will be muted. If not specified, defaults to Jitsi's default value (likely 10)
+matrix_jitsi_web_config_start_audio_muted_after_nth_participant: ~
+# Controls after which participant video will be muted. If not specified, defaults to Jitsi's default value (likely 10)
+matrix_jitsi_web_config_start_video_muted_after_nth_participant: ~
+
+matrix_jitsi_web_config_defaultLanguage: 'en'
+
+# Ideal and also maximum resolution width. If not specified, defaults to Jitsi's default value (likely 1280)
+matrix_jitsi_web_config_resolution_width_ideal_and_max: ~
+# Minimum resolution width. If not specified, defaults to Jitsi's default value (likely 320)
+matrix_jitsi_web_config_resolution_width_min: ~
+# Ideal and also maximum resolution height. If not specified, defaults to Jitsi's default value (likely 720)
+matrix_jitsi_web_config_resolution_height_ideal_and_max: ~
+# Minimum resolution height. If not specified, defaults to Jitsi's default value (likely 180)
+matrix_jitsi_web_config_resolution_height_min: ~
+
+# Custom configuration to be injected into `custom-config.js`, passed to Jitsi Web.
+# This configuration gets appended to the final configuration that Jitsi Web uses.
+#
+# Note: not to be confused with `matrix_jitsi_web_custom_interface_config_extension`.
+#
+# The flow is like this:
+# - some default configuration is automatically generated based on the environment variables passed to the Jitsi Web container
+# - the contents of `custom-config.js` is appended to it (see `templates/web/custom-config.js.j2`)
+# - said `custom-config.js` contains your custom contents specified in `matrix_jitsi_web_custom_config_extension`.
+#
+# Example:
+# matrix_jitsi_web_custom_config_extension: |
+#   if (!config.hasOwnProperty('testing')) config.testing = {};
+#   config.testing.p2pTestMode = true
+matrix_jitsi_web_custom_config_extension: ''
+
+# Additional environment variables to pass to the Jitsi Web container.
+# You can use this to further influence the default configuration generated by the Jitsi Web container on every startup.
+# Besides influencing the final configuration by passing environment variables, you can also inject custom configuration
+# by using `matrix_jitsi_web_custom_config_extension`.
+#
+# Example:
+# matrix_jitsi_web_environment_variables_extension: |
+#   ENABLE_FILE_RECORDING_SERVICE=1
+#   DROPBOX_APPKEY=something
+#   DROPBOX_REDIRECT_URI=something
+matrix_jitsi_web_environment_variables_extension: ''
+
+
+matrix_jitsi_prosody_docker_image: "docker.io/jitsi/prosody:{{ matrix_jitsi_container_image_tag }}"
 matrix_jitsi_prosody_docker_image_force_pull: "{{ matrix_jitsi_prosody_docker_image.endswith(':latest') }}"
 
 matrix_jitsi_prosody_base_path: "{{ matrix_base_data_path }}/jitsi/prosody"
@@ -128,7 +173,7 @@ matrix_jitsi_prosody_container_extra_arguments: []
 matrix_jitsi_prosody_systemd_required_services_list: ['docker.service']
 
 
-matrix_jitsi_jicofo_docker_image: "jitsi/jicofo:{{ matrix_jitsi_container_image_tag }}"
+matrix_jitsi_jicofo_docker_image: "docker.io/jitsi/jicofo:{{ matrix_jitsi_container_image_tag }}"
 matrix_jitsi_jicofo_docker_image_force_pull: "{{ matrix_jitsi_jicofo_docker_image.endswith(':latest') }}"
 
 matrix_jitsi_jicofo_base_path: "{{ matrix_base_data_path }}/jitsi/jicofo"
@@ -145,7 +190,7 @@ matrix_jitsi_jicofo_auth_user: focus
 matrix_jitsi_jicofo_auth_password: ''
 
 
-matrix_jitsi_jvb_docker_image: "jitsi/jvb:{{ matrix_jitsi_container_image_tag }}"
+matrix_jitsi_jvb_docker_image: "docker.io/jitsi/jvb:{{ matrix_jitsi_container_image_tag }}"
 matrix_jitsi_jvb_docker_image_force_pull: "{{ matrix_jitsi_jvb_docker_image.endswith(':latest') }}"
 
 matrix_jitsi_jvb_base_path: "{{ matrix_base_data_path }}/jitsi/jvb"
@@ -168,6 +213,31 @@ matrix_jitsi_jvb_brewery_muc: jvbbrewery
 matrix_jitsi_jvb_rtp_udp_port: 10000
 matrix_jitsi_jvb_rtp_tcp_port: 4443
 
+# Custom configuration to be injected into `custom-sip-communicator.properties`, passed to Jitsi JVB.
+# This configuration gets appended to the final configuration that Jitsi JVB uses.
+#
+# The flow is like this:
+# - some default configuration is automatically generated based on the environment variables passed to the Jitsi JVB container
+# - the contents of `custom-sip-communicator.properties` is appended to it (see `templates/jvb/custom-sip-communicator.properties.j2`)
+# - said `custom-sip-communicator.properties` contains your custom contents specified in `matrix_jitsi_jvb_custom_config_extension`.
+#
+# Example:
+# matrix_jitsi_jvb_custom_config_extension: |
+#   org.jitsi.videobridge.xmpp.user.shard.DISABLE_CERTIFICATE_VERIFICATION=false
+#   org.jitsi.videobridge.ENABLE_STATISTICS=false
+matrix_jitsi_jvb_custom_config_extension: ''
+
+# Additional environment variables to pass to the Jitsi JVB container.
+# You can use this to further influence the default configuration generated by the Jitsi JVB container on every startup.
+# Besides influencing the final configuration by passing environment variables, you can also inject custom configuration
+# by using `matrix_jitsi_jvb_custom_config_extension`.
+#
+# Example:
+# matrix_jitsi_jvb_environment_variables_extension: |
+#   SOME_VARIABLE=1
+#   ANOTHER_VARIABLE=something
+matrix_jitsi_jvb_environment_variables_extension: ''
+
 # Controls whether the matrix-jitsi-jvb container exposes its RTP UDP port (udp/10000 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:10000"), or empty string to not expose.
@@ -177,3 +247,8 @@ matrix_jitsi_jvb_container_rtp_udp_host_bind_port: "{{ matrix_jitsi_jvb_rtp_udp_
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:4443"), or empty string to not expose.
 matrix_jitsi_jvb_container_rtp_tcp_host_bind_port: "{{ matrix_jitsi_jvb_rtp_tcp_port }}"
+
+# Controls whether the matrix-jitsi-jvb container exposes its Colibri WebSocket port (tcp/9090 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:12090"), or empty string to not expose.
+matrix_jitsi_jvb_container_colibri_ws_host_bind_port: ''

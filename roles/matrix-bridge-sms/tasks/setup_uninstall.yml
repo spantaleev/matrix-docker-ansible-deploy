@@ -5,11 +5,6 @@
     path: "{{ matrix_systemd_path }}/matrix-sms-bridge.service"
   register: matrix_sms_bridge_service_stat
 
-- name: Check existence of matrix-sms-bridge-database service
-  stat:
-    path: "{{ matrix_systemd_path }}/matrix-sms-bridge-database.service"
-  register: matrix_sms_bridge_database_service_stat
-
 - name: Ensure matrix-sms-bridge is stopped
   service:
     name: matrix-sms-bridge
@@ -17,26 +12,8 @@
     daemon_reload: yes
   when: "matrix_sms_bridge_service_stat.stat.exists"
 
-- name: Ensure matrix-sms-bridge-database is stopped
-  service:
-    name: matrix-sms-bridge-database
-    state: stopped
-    daemon_reload: yes
-  when: "matrix_sms_bridge_database_service_stat.stat.exists"
-
 - name: Ensure matrix-sms-bridge.service doesn't exist
   file:
     path: "{{ matrix_systemd_path }}/matrix-sms-bridge.service"
     state: absent
   when: "matrix_sms_bridge_service_stat.stat.exists"
-
-- name: Ensure matrix-sms-bridge-database.service doesn't exist
-  file:
-    path: "{{ matrix_systemd_path }}/matrix-sms-bridge-database.service"
-    state: absent
-  when: "matrix_sms_bridge_database_service_stat.stat.exists"
-
-- name: Ensure systemd reloaded after matrix-sms-bridge.service or matrix-sms-bridge-database.service removal
-  service:
-    daemon_reload: yes
-  when: matrix_sms_bridge_service_stat.stat.exists or matrix_sms_bridge_database_service_stat.stat.exists

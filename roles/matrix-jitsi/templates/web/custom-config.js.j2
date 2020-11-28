@@ -1,0 +1,15 @@
+config.defaultLanguage = {{ matrix_jitsi_web_config_defaultLanguage|to_json }};
+
+
+if (!config.hasOwnProperty('p2p')) config.p2p = {% raw %}{}{% endraw %};
+
+{% if matrix_jitsi_web_stun_servers|length > 0 %}
+config.p2p.stunServers = [
+	{% for url in matrix_jitsi_web_stun_servers %}
+		{ urls: {{ url|to_json }} }{% if not loop.last %},{% endif %}
+	{% endfor %}
+];
+{% endif %}
+
+
+{{ matrix_jitsi_web_custom_config_extension }}
