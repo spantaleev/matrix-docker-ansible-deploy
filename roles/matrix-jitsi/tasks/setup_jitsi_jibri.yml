@@ -1,0 +1,65 @@
+---
+
+#
+# Tasks related to setting up jitsi-jibri
+#
+
+- name: Ensure Matrix jitsi-jibri path exists
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0777
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - { path: "{{ matrix_jitsi_jibri_base_path }}", when: true }
+    - { path: "{{ matrix_jitsi_jibri_config_path }}", when: true }
+    - { path: "{{ matrix_jitsi_jibri_logs_path }}" , when: true}
+    - { path: "{{ matrix_jitsi_jibri_recording_path }}" , when: true}
+  when: matrix_jitsi_enabled|bool and matrix_jitsi_jibri_enabled|bool and item.when
+
+- name: Ensure jitsi-jibri Docker image is pulled
+  docker_image:
+    name: "{{ matrix_jitsi_jibri_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_jitsi_jibri_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_jitsi_jibri_docker_image_force_pull }}"
+  when: matrix_jitsi_enabled|bool and matrix_jitsi_jibri_enabled|bool
+
+- name: Ensure jitsi-jibri environment variables file created
+  template:
+    src: "{{ role_path }}/templates/jibri/env.j2"
+    dest: "{{ matrix_jitsi_jibri_base_path }}/env"
+    mode: 0640
+  when: matrix_jitsi_enabled|bool and matrix_jitsi_jibri_enabled|bool
+
+- name: Ensure jitsi-jibri finalize.sh file created
+  template:
+    src: "{{ role_path }}/templates/jibri/finalize.sh.j2"
+    dest: "{{ matrix_jitsi_jibri_config_path }}/finalize.sh"
+    mode: 0740
+  when: matrix_jitsi_enabled|bool and matrix_jitsi_jibri_enabled|bool
+
+
+- name: Ensure jitsi-jibri configuration files created
+  template:
+    src: "{{ role_path }}/templates/jibri/{{ item }}.j2"
+    dest: "{{ matrix_jitsi_jibri_config_path }}/{{ item }}"
+    mode: 0644
+  with_items:
+    - config.json
+    - logging.properties
+  when: matrix_jitsi_enabled|bool and matrix_jitsi_jibri_enabled|bool
+
+- name: Ensure matrix-jitsi-jibri.service installed
+  template:
+    src: "{{ role_path }}/templates/jibri/matrix-jitsi-jibri.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-jitsi-jibri.service"
+    mode: 0644
+  register: matrix_jitsi_jibri_systemd_service_result
+  when: matrix_jitsi_enabled|bool and matrix_jitsi_jibri_enabled|bool
+
+- name: Ensure systemd reloaded after matrix-jitsi-jibri.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_jitsi_enabled and matrix_jitsi_jibri_systemd_service_result.changed"
