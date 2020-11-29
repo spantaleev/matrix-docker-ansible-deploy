@@ -23,7 +23,7 @@ appservice:
         # The database URI.
         #   SQLite: File name is enough. https://github.com/mattn/go-sqlite3#connection-string
         #   Postgres: Connection string. For example, postgres://user:password@host/database
-        uri: mautrix-whatsapp.db
+        uri: postgres://matrix_bridge_whatsapp@{{ matrix_additional_databases | selectattr('name', 'equalto', 'matrix_bridge_whatsapp') | map(attribute='pass') | first }}@{{ matrix_postgres_connection_hostname }}/matrix_bridge_whatsapp
         # Maximum number of connections. Mostly relevant for Postgres.
         max_open_conns: 20
         max_idle_conns: 2

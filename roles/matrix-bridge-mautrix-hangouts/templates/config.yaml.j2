@@ -27,7 +27,7 @@ appservice:
     # Format examples:
     #   SQLite:   sqlite:///filename.db
     #   Postgres: postgres://username:password@hostname/dbname
-    database: sqlite:////data/mautrix-hangouts.db
+    database: postgres://mautrix_bridge_hangouts:{{ matrix_additional_databases | selectattr('name', 'equalto', 'mautrix_bridge_hangouts') | map(attribute='pass') | first }}@{{ matrix_postgres_connection_hostname }}/mautrix_bridge_hangouts
 
     # The unique ID of this appservice.
     id: hangouts

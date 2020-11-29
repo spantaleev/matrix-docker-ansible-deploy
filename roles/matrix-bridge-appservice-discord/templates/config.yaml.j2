@@ -58,8 +58,8 @@ database:
   # If you are migrating, see https://github.com/Half-Shot/matrix-appservice-discord/blob/master/docs/howto.md#migrate-to-postgres-from-sqlite
   # WARNING: You will almost certainly be fine with sqlite unless your bridge
   # is in heavy demand and you suffer from IO slowness.
-  filename: "/data/discord.db"
-  # connString: "postgresql://user:password@localhost/database_name"
+  #filename: "/data/discord.db"
+  connString: "postgresql://matrix_appservice_discord:{{ matrix_additional_databases | selectattr('name', 'equalto', 'matrix_appservice_discord') | map(attribute='pass') | first }}@{{ matrix_postgres_connection_hostname }}/matrix_appservice_discord"
 room:
   # Set the default visibility of alias rooms, defaults to "public".
   # One of: "public", "private"

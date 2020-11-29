@@ -27,7 +27,7 @@ appservice:
     # Format examples:
     #   SQLite:   sqlite:///filename.db
     #   Postgres: postgres://username:password@hostname/dbname
-    database: sqlite:////data/mautrix-telegram.db
+    database: postgres://mautrix_bridge_telegram:{{ matrix_addtional_databases | selectattr('name', 'equalto', 'matrix_bridge_telegram') | map(attribute='pass') | first }}@{{ matrix_postgres_connection_hostname }}/mautrix_bridge_telegram
 
     # Public part of web server for out-of-Matrix interaction with the bridge.
     # Used for things like login if the user wants to make sure the 2FA password isn't stored in

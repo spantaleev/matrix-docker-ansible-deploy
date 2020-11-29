@@ -127,8 +127,8 @@ advanced:
 # Use an external database to store bridge state.
 database:
   # database engine (must be 'postgres' or 'nedb'). Default: nedb
-  engine: "nedb"
+  engine: "postgres"
   # Either a PostgreSQL connection string, or a path to the NeDB storage directory.
   # For postgres, it must start with postgres://
   # For NeDB, it must start with nedb://. The path is relative to the project directory.
-  connectionString: "nedb:///data"
+  connectionString: "postgres://matrix_appservice_irc:{{ matrix_addtional_databases | selectattr('name', 'equalto', 'matrix_appservice_irc') | map(attribute='pass') | first }}@{{ matrix_postgres_connection_hostname }}/matrix_appservice_irc"

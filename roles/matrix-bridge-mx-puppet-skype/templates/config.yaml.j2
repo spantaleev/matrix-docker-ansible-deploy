@@ -73,10 +73,10 @@ database:
   # Connection string to connect to the Postgres instance
   # with username "user", password "pass", host "localhost" and database name "dbname".
   # Modify each value as necessary
-  #connString: "postgres://user:pass@localhost/dbname?sslmode=disable"
+  connString: "postgres://matrix_puppet_skype:{{ matrix_additional_databases | selectattr('name', 'equalto', 'matrix_puppet_skype') | map(attribute='pass') | first }}@{{ matrix_postgres_connection_hostname }}/matrix_puppet_skype?sslmode=disable"
   # Use SQLite3 as a database backend
   # The name of the database file
-  filename: /data/database.db
+  #filename: /data/database.db
 
 provisioning:
   # Regex of Matrix IDs allowed to use the puppet bridge

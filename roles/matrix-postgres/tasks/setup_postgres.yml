@@ -162,3 +162,33 @@
     - matrix-change-user-admin-status
     - matrix-postgres-update-user-password-hash
   when: "not matrix_postgres_enabled|bool"
+
+# Create additional databases
+- name: Retrieve IP of postgres container
+  shell: "docker inspect matrix-postgres | jq -r '.[0].NetworkSettings.Networks.{{ matrix_docker_network }}.IPAddress'"
+  register: matirx_postgres_container_ip
+
+- name: Create additional users in postgres
+  postgresql_user:
+    name: "{{ item.name }}"
+    password: "{{ item.pass }}"
+    login_host: "{{ matrx_postgres_container_ip.stdout }}"
+    login_port: 5432
+    login_user: "{{ matrix_postgres_connection_username }}"
+    login_password: "{{ matrix_postgres_connection_password }}"
+    login_db: "{{ matrix_postgres_db_name }}"
+  loop: matrix_postgres_additional_databases
+  when: matrix_postgres_enabed|bool
+
+- name: Create additional users in postgres
+  postgresql_db:
+    name: "{{ item.name }}"
+    owner: "{{ item.name }}"
+    lc_ctype: 'C'
+    lc_collate: 'C'
+    login_host: "{{ matrx_postgres_container_ip.stdout }}"
+    login_port: 5432
+    login_user: "{{ matrix_postgres_connection_username }}"
+    login_password: "{{ matrix_postgres_connection_password }}"
+  loop: matrix_postgres_additional_databases
+  when: matrix_postgres_enabled|bool
