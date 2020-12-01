@@ -5,8 +5,8 @@ worker_name: {{ item.type ~ ':' ~ item.port }}
 worker_replication_host: 127.0.0.1
 worker_replication_http_port: {{ matrix_synapse_replication_http_port }}
 
-{% if item.type not in [ 'appservice', 'federation_sender', 'pusher' ] %}
 worker_listeners:
+{% if item.type not in [ 'appservice', 'federation_sender', 'pusher' ] %}
   - type: http
     port: {{ item.port }}
     resources:
@@ -19,10 +19,10 @@ worker_listeners:
 {% elif item.type in [ 'media_repository' ] %}
         - media
 {% endif %}
-{% endif %}
 
+{% endif %}
   - type: metrics
-    bind_address: ''
+    bind_address: ['127.0.0.1']
     port: {{ item.metrics_port }}
 
 {% if item.type == 'frontend_proxy' %}
