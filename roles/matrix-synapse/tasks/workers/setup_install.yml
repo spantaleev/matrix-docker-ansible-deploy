@@ -1,14 +1,20 @@
 ---
 
 - name: Download synapse workers doc
-  get_url:
+  local_action:
+    module: get_url
     url: https://github.com/matrix-org/synapse/raw/master/docs/workers.md
     dest: "{{ role_path }}/files/workers.upstream-documentation.md"
+  vars:
+    ansible_become: no
 
 - name: Download synapse workers doc and convert into YAML
-  shell:
+  local_action:
+    module: shell
     cmd: "awk -f '{{ role_path }}/files/workers-doc-to-yaml.awk' -- '{{ role_path }}/files/workers.upstream-documentation.md' > '{{ role_path }}/vars/workers.yml'"
     creates: "{{ role_path }}/vars/workers.yml"
+  vars:
+    ansible_become: no
 
 - name: Load list of available worker apps and endpoints
   include_vars: "{{ role_path }}/vars/workers.yml"
