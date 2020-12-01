@@ -13,7 +13,7 @@ function worker_stanza_append(string) {
 
 function line_is_endpoint_url(line) {
     # probably API endpoint if it starts with white-space and ^ or /
-    return (line ~ /^ +[\^/].*\//)
+    return (line ~ /^ +[\^\/].*\//)
 }
 
 # Put YAML marker at beginning of file.
