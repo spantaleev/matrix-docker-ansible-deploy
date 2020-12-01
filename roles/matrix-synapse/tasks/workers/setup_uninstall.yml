@@ -25,12 +25,18 @@
     state: absent
   register: matrix_synapse_worker_systemd_service_result
 
+- name: Find worker configs to be cleaned
+  find:
+    path: "{{ matrix_synapse_config_dir_path }}"
+    patterns: "worker.*.yaml"
+    use_regex: true
+  register: worker_config_files
+
 - name: Ensure worker configs are cleaned
   file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: absent
-  with_fileglob:
-    - "{{ matrix_synapse_config_dir_path }}/worker.*.yaml"
+  with_items: "{{ worker_config_files.files }}"
 
 - name: Remove workers from synapse.wants list
   set_fact:

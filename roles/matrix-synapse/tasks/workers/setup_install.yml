@@ -46,12 +46,18 @@
     enabled: true
   with_items: "{{ matrix_synapse_workers_enabled_list }}"
 
+- name: Find worker configs to be cleaned
+  find:
+    path: "{{ matrix_synapse_config_dir_path }}"
+    patterns: "worker.*.yaml"
+    use_regex: true
+  register: worker_config_files
+
 - name: Ensure previous worker configs are cleaned
   file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: absent
-  with_fileglob:
-    - "{{ matrix_synapse_config_dir_path }}/worker.*.yaml"
+  with_items: "{{ worker_config_files.files }}"
 
 - name: Ensure creation of specific worker configs
   template:
