@@ -81,23 +81,32 @@ bridge:
     command_prefix: "!fb"
 
     # Number of chats to sync (and create portals for) on startup/login.
-    # Maximum 20, set 0 to disable automatic syncing.
+    # Set 0 to disable automatic syncing.
     initial_chat_sync: 10
     # Whether or not the Facebook users of logged in Matrix users should be
     # invited to private chats when the user sends a message from another client.
     invite_own_puppet_to_pm: false
-    # Whether or not to use /sync to get presence, read receipts and typing notifications when using
-    # your own Matrix account as the Matrix puppet for your Facebook account.
+    # Whether or not to use /sync to get presence, read receipts and typing notifications
+    # when double puppeting is enabled
     sync_with_custom_puppets: true
-    # Shared secret for https://github.com/devture/matrix-synapse-shared-secret-auth
+    # Whether or not to update the m.direct account data event when double puppeting is enabled.
+    # Note that updating the m.direct event is not atomic (except with mautrix-asmux)
+    # and is therefore prone to race conditions.
+    sync_direct_chat_list: false
+    # Servers to always allow double puppeting from
+    double_puppet_server_map: {}
+    #    example.com: https://example.com
+    # Allow using double puppeting from any server with a valid client .well-known file.
+    double_puppet_allow_discovery: false
+    # Shared secrets for https://github.com/devture/matrix-synapse-shared-secret-auth
     #
     # If set, custom puppets will be enabled automatically for local users
     # instead of users having to find an access token and run `login-matrix`
     # manually.
-    login_shared_secret: {{ matrix_mautrix_facebook_login_shared_secret|to_json }}
-    # Whether or not to bridge presence in both directions. Facebook allows users not to broadcast
-    # presence, but then it won't send other users' presence to the client.
-    presence: true
+    # If using this for other servers than the bridge's server,
+    # you must also set the URL in the double_puppet_server_map.
+    login_shared_secret_map: {{ matrix_mautrix_facebook_bridge_login_shared_secret_map|to_json }}
+    presence: {{ matrix_mautrix_facebook_bridge_presence|to_json }}
     # Whether or not to update avatars when syncing all contacts at startup.
     update_avatar_initial_sync: true
     # End-to-bridge encryption support options. These require matrix-nio to be installed with pip
