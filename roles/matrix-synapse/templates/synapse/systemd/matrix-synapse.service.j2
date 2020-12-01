@@ -43,14 +43,18 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-synapse \
 			{% if matrix_synapse_manhole_enabled and matrix_synapse_container_manhole_api_host_bind_port %}
 			-p {{ matrix_synapse_container_manhole_api_host_bind_port }}:9000 \
 			{% endif %}
-			{% if matrix_synapse_workers_enabled and not matrix_nginx_proxy_enabled|default(False) %}
-			{# Expose worker (by default 18xxx range) ports on host if not using internal nginx proxy #}
 			{% for worker in matrix_synapse_workers_enabled_list %}
+			{% if matrix_synapse_workers_enabled and not matrix_nginx_proxy_enabled|default(False) %}
+			{# Expose worker ports (by default 18xxx range) on host if not using internal nginx proxy #}
 			{% if worker.port != 0 %}
 			-p {{ worker.port }}:{{ worker.port }} \
 			{% endif %}
-			{% endfor %}
 			{% endif %}
+			{# Expose worker metrics ports on host if defined #}
+			{% if worker.metrics_port != 0 %}
+			-p {{ worker.metrics_port }}:{{ worker.metrics_port }} \
+			{% endif %}
+			{% endfor %}
 			--mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data,ro \
 			--mount type=bind,src={{ matrix_synapse_storage_path }},dst=/matrix-media-store-parent,bind-propagation=slave \
 			{% for volume in matrix_synapse_container_additional_volumes %}

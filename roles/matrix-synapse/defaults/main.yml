@@ -281,19 +281,19 @@ matrix_synapse_workers_enabled: false
 # - no endpoints / doesn't need port mapping if port ends on 0
 # - single-instance-only if 2nd last digit of port number is 0
 matrix_synapse_workers_enabled_list:
-  - { type: generic_worker, port: 18111 }
-  - { type: generic_worker, port: 18112 }
-  - { type: generic_worker, port: 18113 }
-  - { type: generic_worker, port: 18114 }
-  - { type: generic_worker, port: 18115 }
-  - { type: generic_worker, port: 18116 }
-  - { type: pusher, port: 00 }
-  - { type: appservice, port: 00 }
-  - { type: federation_sender, port: 0 }
-  - { type: media_repository, port: 18221 }
+  - { type: generic_worker, port: 18111, metrics_port: 19111 }
+  - { type: generic_worker, port: 18112, metrics_port: 19112 }
+  - { type: generic_worker, port: 18113, metrics_port: 19113 }
+  - { type: generic_worker, port: 18114, metrics_port: 19114 }
+  - { type: generic_worker, port: 18115, metrics_port: 19115 }
+  - { type: generic_worker, port: 18116, metrics_port: 19116 }
+  - { type: pusher, port: 00, metrics_port: 19200 }
+  - { type: appservice, port: 00, metrics_port: 19300 }
+  - { type: federation_sender, port: 0, metrics_port: 19400 }
+  - { type: media_repository, port: 18551, metrics_port: 19551 }
 # disable until https://github.com/matrix-org/synapse/issues/8787 resolved
-# - { type: user_dir, port: 18331 }
-  - { type: frontend_proxy, port: 18441 }
+# - { type: user_dir, port: 18661, metrics_port: 19661 }
+  - { type: frontend_proxy, port: 18771, metrics_port: 19771 }
 
 # Redis information
 matrix_synapse_redis_enabled: false
