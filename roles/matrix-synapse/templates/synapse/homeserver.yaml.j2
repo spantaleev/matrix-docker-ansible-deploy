@@ -1516,10 +1516,8 @@ trusted_key_servers: {{ matrix_synapse_trusted_key_servers|to_json }}
 
 ## Single sign-on integration ##
 
-# Enable SAML2 for registration and login. Uses pysaml2.
-#
-# At least one of `sp_config` or `config_path` must be set in this section to
-# enable SAML login.
+# The following settings can be used to make Synapse use a single sign-on
+# provider for authentication, instead of its internal password database.
 #
 # You will probably also want to set the following options to `false` to
 # disable the regular login/registration flows:
@@ -1528,6 +1526,11 @@ trusted_key_servers: {{ matrix_synapse_trusted_key_servers|to_json }}
 #
 # You will also want to investigate the settings under the "sso" configuration
 # section below.
+
+# Enable SAML2 for registration and login. Uses pysaml2.
+#
+# At least one of `sp_config` or `config_path` must be set in this section to
+# enable SAML login.
 #
 # Once SAML support is enabled, a metadata file will be exposed at
 # https://<server>:<port>/_matrix/saml2/metadata.xml, which you may be able to
@@ -1543,40 +1546,64 @@ saml2_config:
   # so it is not normally necessary to specify them unless you need to
   # override them.
   #
-  #sp_config:
-  #  # point this to the IdP's metadata. You can use either a local file or
-  #  # (preferably) a URL.
-  #  metadata:
-  #    #local: ["saml2/idp.xml"]
-  #    remote:
-  #      - url: https://our_idp/metadata.xml
-  #
-  #  # By default, the user has to go to our login page first. If you'd like
-  #  # to allow IdP-initiated login, set 'allow_unsolicited: true' in a
-  #  # 'service.sp' section:
-  #  #
-  #  #service:
-  #  #  sp:
-  #  #    allow_unsolicited: true
-  #
-  #  # The examples below are just used to generate our metadata xml, and you
-  #  # may well not need them, depending on your setup. Alternatively you
-  #  # may need a whole lot more detail - see the pysaml2 docs!
-  #
-  #  description: ["My awesome SP", "en"]
-  #  name: ["Test SP", "en"]
-  #
-  #  organization:
-  #    name: Example com
-  #    display_name:
-  #      - ["Example co", "en"]
-  #    url: "http://example.com"
-  #
-  #  contact_person:
-  #    - given_name: Bob
-  #      sur_name: "the Sysadmin"
-  #      email_address": ["admin@example.com"]
-  #      contact_type": technical
+  sp_config:
+    # Point this to the IdP's metadata. You must provide either a local
+    # file via the `local` attribute or (preferably) a URL via the
+    # `remote` attribute.
+    #
+    #metadata:
+    #  local: ["saml2/idp.xml"]
+    #  remote:
+    #    - url: https://our_idp/metadata.xml
+
+    # By default, the user has to go to our login page first. If you'd like
+    # to allow IdP-initiated login, set 'allow_unsolicited: true' in a
+    # 'service.sp' section:
+    #
+    #service:
+    #  sp:
+    #    allow_unsolicited: true
+
+    # The examples below are just used to generate our metadata xml, and you
+    # may well not need them, depending on your setup. Alternatively you
+    # may need a whole lot more detail - see the pysaml2 docs!
+
+    #description: ["My awesome SP", "en"]
+    #name: ["Test SP", "en"]
+
+    #ui_info:
+    #  display_name:
+    #    - lang: en
+    #      text: "Display Name is the descriptive name of your service."
+    #  description:
+    #    - lang: en
+    #      text: "Description should be a short paragraph explaining the purpose of the service."
+    #  information_url:
+    #    - lang: en
+    #      text: "https://example.com/terms-of-service"
+    #  privacy_statement_url:
+    #    - lang: en
+    #      text: "https://example.com/privacy-policy"
+    #  keywords:
+    #    - lang: en
+    #      text: ["Matrix", "Element"]
+    #  logo:
+    #    - lang: en
+    #      text: "https://example.com/logo.svg"
+    #      width: "200"
+    #      height: "80"
+
+    #organization:
+    #  name: Example com
+    #  display_name:
+    #    - ["Example co", "en"]
+    #  url: "http://example.com"
+
+    #contact_person:
+    #  - given_name: Bob
+    #    sur_name: "the Sysadmin"
+    #    email_address": ["admin@example.com"]
+    #    contact_type": technical
 
   # Instead of putting the config inline as above, you can specify a
   # separate pysaml2 configuration file:
@@ -1651,37 +1678,11 @@ saml2_config:
   #  - attribute: department
   #    value: "sales"
 
-  # Directory in which Synapse will try to find the template files below.
-  # If not set, default templates from within the Synapse package will be used.
-  #
-  # DO NOT UNCOMMENT THIS SETTING unless you want to customise the templates.
-  # If you *do* uncomment it, you will need to make sure that all the templates
-  # below are in the directory.
-  #
-  # Synapse will look for the following templates in this directory:
-  #
-  # * HTML page to display to users if something goes wrong during the
-  #   authentication process: 'saml_error.html'.
-  #
-  #   When rendering, this template is given the following variables:
-  #     * code: an HTML error code corresponding to the error that is being
-  #       returned (typically 400 or 500)
-  #
-  #     * msg: a textual message describing the error.
-  #
-  #   The variables will automatically be HTML-escaped.
-  #
-  # You can see the default templates at:
-  # https://github.com/matrix-org/synapse/tree/master/synapse/res/templates
-  #
-  #template_dir: "res/templates"
 
-
-# OpenID Connect integration. The following settings can be used to make Synapse
-# use an OpenID Connect Provider for authentication, instead of its internal
-# password database.
+# Enable OpenID Connect (OIDC) / OAuth 2.0 for registration and login.
 #
-# See https://github.com/matrix-org/synapse/blob/master/docs/openid.md.
+# See https://github.com/matrix-org/synapse/blob/master/docs/openid.md
+# for some example configurations.
 #
 oidc_config:
   # Uncomment the following to enable authorization against an OpenID Connect
@@ -1804,17 +1805,47 @@ oidc_config:
       #
       #display_name_template: "{% raw %}{{ user.given_name }} {{ user.last_name }}{% endraw %}"
 
+      # Jinja2 templates for extra attributes to send back to the client during
+      # login.
+      #
+      # Note that these are non-standard and clients will ignore them without modifications.
+      #
+      #extra_attributes:
+        #birthdate: "{% raw %}{{ user.birthdate }}{% endraw %}"
 
 
-# Enable CAS for registration and login.
+
+# Enable Central Authentication Service (CAS) for registration and login.
 #
-#cas_config:
-#   enabled: true
-#   server_url: "https://cas-server.com"
-#   service_url: "https://homeserver.domain.com:8448"
-#   #displayname_attribute: name
-#   #required_attributes:
-#   #    name: value
+cas_config:
+  # Uncomment the following to enable authorization against a CAS server.
+  # Defaults to false.
+  #
+  #enabled: true
+
+  # The URL of the CAS authorization endpoint.
+  #
+  #server_url: "https://cas-server.com"
+
+  # The public URL of the homeserver.
+  #
+  #service_url: "https://homeserver.domain.com:8448"
+
+  # The attribute of the CAS response to use as the display name.
+  #
+  # If unset, no displayname will be set.
+  #
+  #displayname_attribute: name
+
+  # It is possible to configure Synapse to only allow logins if CAS attributes
+  # match particular values. All of the keys in the mapping below must exist
+  # and the values must match the given value. Alternately if the given value
+  # is None then any value is allowed (the attribute just must exist).
+  # All of the listed attributes must match for the login to be permitted.
+  #
+  #required_attributes:
+  #  userGroup: "staff"
+  #  department: None
 
 
 # Additional settings to use with single-sign on systems such as OpenID Connect,
@@ -1914,7 +1945,7 @@ sso:
 # and issued at ("iat") claims are validated if present.
 #
 # Note that this is a non-standard login type and client support is
-# expected to be non-existant.
+# expected to be non-existent.
 #
 # See https://github.com/matrix-org/synapse/blob/master/docs/jwt.md.
 #
@@ -2445,7 +2476,7 @@ alias_creation_rules: {{ matrix_synapse_alias_creation_rules|to_json }}
 #
 # Options for the rules include:
 #
-#   user_id: Matches agaisnt the creator of the alias
+#   user_id: Matches against the creator of the alias
 #   room_id: Matches against the room ID being published
 #   alias: Matches against any current local or canonical aliases
 #            associated with the room
@@ -2493,7 +2524,7 @@ opentracing:
     # This is a list of regexes which are matched against the server_name of the
     # homeserver.
     #
-    # By defult, it is empty, so no servers are matched.
+    # By default, it is empty, so no servers are matched.
     #
     #homeserver_whitelist:
     #  - ".*"

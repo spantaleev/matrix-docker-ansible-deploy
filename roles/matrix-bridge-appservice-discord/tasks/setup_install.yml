@@ -63,7 +63,7 @@
     {{ matrix_host_command_docker }} run --rm --name matrix-appservice-discord-link-gen
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
     --cap-drop=ALL
-    -v {{ matrix_appservice_discord_config_path }}:/cfg
+    --mount type=bind,src={{ matrix_appservice_discord_config_path }},dst=/cfg
     -w /cfg
     {{ matrix_appservice_discord_docker_image }}
     /bin/sh -c "node /build/tools/addbot.js > /cfg/invite_link"

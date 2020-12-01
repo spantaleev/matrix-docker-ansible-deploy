@@ -24,9 +24,9 @@ else
 	find /etc/cron.d/ -name "matrix-*" -delete
 	echo "Remove matrix scripts"
 	find {{ matrix_local_bin_path }}/ -name "matrix-*" -delete
-	echo "Remove every docker images"
-	docker rmi $(docker images -aq)
-	echo "Remove docker matrix network"
+	echo "Remove unused Docker images and resources"
+	docker system prune -af
+	echo "Remove Docker matrix network (should be gone already, but ..)"
 	docker network rm {{ matrix_docker_network }}
 	echo "Remove {{ matrix_base_data_path }} directory"
 	rm -fr "{{ matrix_base_data_path }}"

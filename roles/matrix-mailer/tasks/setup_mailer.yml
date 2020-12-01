@@ -29,12 +29,14 @@
     dest: "{{ matrix_mailer_container_image_self_build_src_files_path }}"
     version: "{{ matrix_mailer_container_image_self_build_version }}"
     force: "yes"
-  when: "matrix_mailer_container_image_self_build|bool"
+  register: matrix_mailer_git_pull_results
+  when: "matrix_mailer_enabled|bool and matrix_mailer_container_image_self_build|bool"
 
 - name: Ensure exim-relay Docker image is built
   docker_image:
     name: "{{ matrix_mailer_docker_image }}"
     source: build
+    force_source: "{{ matrix_mailer_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mailer_container_image_self_build_src_files_path }}"

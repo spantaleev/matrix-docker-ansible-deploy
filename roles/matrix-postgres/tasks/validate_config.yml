@@ -20,3 +20,8 @@
     - "matrix_postgres_connection_username"
     - "matrix_postgres_connection_password"
     - "matrix_postgres_db_name"
+
+- name: Fail if Postgres password length exceeded
+  fail:
+    msg: "The maximum `matrix_postgres_connection_password` length is 99 characters"
+  when: "matrix_postgres_connection_hostname|length > 99"
