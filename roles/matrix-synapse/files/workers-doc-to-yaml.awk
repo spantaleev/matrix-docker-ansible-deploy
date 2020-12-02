@@ -55,7 +55,7 @@ enable_parsing {
         workers = (workers ? workers "\n" : "") "  - " worker_type
 
         # loop through the lines (2 - number of fields in record)
-        for (i = 1; i < NF + 1; i++) {
+        for (i = 2; i < NF + 1; i++) {
             # copy line for gsub replacements
             line = $i
 
@@ -106,7 +106,7 @@ enable_parsing {
                 }
 
             # white-space only line?
-            } else if (line ~ /^\w*$/) {
+            } else if (line ~ /^ *$/) {
 
                 if (i > 3 && i < NF) {
                     # print white-space lines unless 1st or last line in section
@@ -120,7 +120,7 @@ enable_parsing {
                 worker_stanza_append("  # " line linefeed)
 
                 # and take note of words hinting at additional conditions to be met
-                if (line ~ /\<[Ii]f\>|\<[Ff]or\>/) {
+                if (line ~ /(^| )[Ii]f |(^| )[Ff]or /) {
                     endpoints_seem_conditional = 1
                 }
             }
