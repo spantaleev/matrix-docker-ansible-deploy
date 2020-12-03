@@ -17,13 +17,33 @@
     - "{{ matrix_corporal_var_dir_path }}"
   when: matrix_corporal_enabled|bool
 
+- name: Ensure Matrix Corporal repository is present on self-build
+  git:
+    repo: "{{ matrix_corporal_container_image_self_build_repo }}"
+    dest: "{{ matrix_corporal_container_src_files_path }}"
+    version: "{{ matrix_corporal_docker_image.split(':')[1] }}"
+    force: "yes"
+  register: matrix_corporal_git_pull_results
+  when: "matrix_corporal_enabled|bool and matrix_corporal_container_image_self_build|bool"
+
+- name: Ensure Matrix Corporal Docker image is built
+  docker_image:
+    name: "{{ matrix_corporal_docker_image }}"
+    source: build
+    force_source: "{{ matrix_corporal_git_pull_results.changed }}"
+    build:
+      dockerfile: etc/docker/Dockerfile
+      path: "{{ matrix_corporal_container_src_files_path }}"
+      pull: yes
+  when: "matrix_corporal_enabled|bool and matrix_corporal_container_image_self_build|bool"
+
 - name: Ensure Matrix Corporal Docker image is pulled
   docker_image:
     name: "{{ matrix_corporal_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_corporal_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_corporal_docker_image_force_pull }}"
-  when: matrix_corporal_enabled|bool
+  when: "matrix_corporal_enabled|bool and not matrix_corporal_container_image_self_build|bool"
 
 - name: Ensure Matrix Corporal config installed
   copy:
