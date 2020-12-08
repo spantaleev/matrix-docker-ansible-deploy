@@ -620,8 +620,6 @@ matrix_dimension_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_ena
 matrix_integration_manager_rest_url: "{{ matrix_dimension_integrations_rest_url if matrix_dimension_enabled else None }}"
 matrix_integration_manager_ui_url: "{{ matrix_dimension_integrations_ui_url if matrix_dimension_enabled else None }}"
 
-matrix_dimension_homeserver_federationUrl: "http://matrix-synapse:{{ 8048 if matrix_synapse_federation_enabled|bool else 8008 }}"
-
 ######################################################################
 #
 # /matrix-dimension
@@ -816,7 +814,8 @@ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-ma1sd:
 matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "127.0.0.1:8090"
 
 # By default, we do TLS termination for the Matrix Federation API (port 8448) at matrix-nginx-proxy.
-matrix_nginx_proxy_proxy_matrix_federation_api_enabled: true
+# Unless this is handled there OR Synapse's federation listener port is disabled, we'll reverse-proxy.
+matrix_nginx_proxy_proxy_matrix_federation_api_enabled: "{{ matrix_synapse_federation_port_enabled and not matrix_synapse_tls_federation_listener_enabled }}"
 matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container: "matrix-synapse:8048"
 matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "127.0.0.1:8048"
 
@@ -990,12 +989,7 @@ matrix_synapse_tls_federation_listener_enabled: false
 matrix_synapse_tls_certificate_path: ~
 matrix_synapse_tls_private_key_path: ~
 
-matrix_synapse_http_listener_resource_names: |
-  {{
-    ["client"]
-    +
-    ( ["openid"] if matrix_dimension_enabled and not matrix_synapse_federation_enabled else [] )
-  }}
+matrix_synapse_federation_port_openid_resource_required: "{{ not matrix_synapse_federation_enabled and (matrix_dimension_enabled or matrix_ma1sd_enabled) }}"
 
 matrix_synapse_email_enabled: "{{ matrix_mailer_enabled }}"
 matrix_synapse_email_smtp_host: "matrix-mailer"

@@ -1,3 +1,15 @@
+# 2020-12-08
+
+## openid APIs exposed by default on the federation port when federation disabled
+
+We've changed some defaults. People running with our default configuration (federation enabled), are not affected at all.
+
+If you are running an unfederated server (`matrix_synapse_federation_enabled: false`), this may be of interest to you.
+
+When federation is disabled, but ma1sd or Dimension are enabled, we'll now expose the `openid` APIs on the federation port.
+These APIs are necessary for some ma1sd features to work. If you'd like to prevent this, you can: `matrix_synapse_federation_port_openid_resource_required: false`.
+
+
 # 2020-11-27
 
 ## Recent Jitsi updates may require configuration changes
