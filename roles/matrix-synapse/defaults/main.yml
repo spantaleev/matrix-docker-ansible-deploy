@@ -8,7 +8,10 @@ matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/s
 
 matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else 'docker.io/' }}"
-matrix_synapse_docker_image_tag: "{{ 'v1.24.0' if matrix_architecture == 'amd64' else 'v1.23.0' }}"
+# The if statement below may look silly at times (leading to the same version being returned),
+# but ARM-compatible container images are only released 1-7 hours after a release,
+# so we may often be on different versions for different architectures when new Synapse releases come out.
+matrix_synapse_docker_image_tag: "{{ 'v1.24.0' if matrix_architecture == 'amd64' else 'v1.24.0' }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
