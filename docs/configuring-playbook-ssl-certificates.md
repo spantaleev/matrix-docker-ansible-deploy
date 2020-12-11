@@ -80,6 +80,7 @@ matrix_ssl_domains_to_obtain_certificates_for:
   - '{{ matrix_server_fqn_matrix }}'
   - '{{ matrix_server_fqn_element }}'
   - '{{ matrix_server_fqn_dimension }}'
+  - '{{ matrix_server_fqn_jitsi }}'
   - '{{ matrix_domain }}'
 ```
 
