@@ -4,14 +4,11 @@ This document shows you how to perform various maintenance tasks related to the 
 
 Table of contents:
 
-- [Purging unused data with synapse-janitor](#purging-unused-data-with-synapse-janitor), for when you wish to delete unused data from the Synapse database
-
 - [Purging old data with the Purge History API](#purging-old-data-with-the-purge-history-api), for when you wish to delete in-use (but old) data from the Synapse database
 
 - [Synapse maintenance](#synapse-maintenance)
 	- [Purging old data with the Purge History API](#purging-old-data-with-the-purge-history-api)
 	- [Compressing state with rust-synapse-compress-state](#compressing-state-with-rust-synapse-compress-state)
-	- [Purging unused data with synapse-janitor](#purging-unused-data-with-synapse-janitor)
 	- [Browse and manipulate the database](#browse-and-manipulate-the-database)
 
 - [Browse and manipulate the database](#browse-and-manipulate-the-database), for when you really need to take matters into your own hands
@@ -55,27 +52,6 @@ By default, all rooms with more than `100000` state group rows will be compresse
 If you need to adjust this, pass: `--extra-vars='matrix_synapse_rust_synapse_compress_state_min_state_groups_required=SOME_NUMBER_HERE'` to the command above.
 
 After state compression, you may wish to run a [`FULL` Postgres `VACUUM`](./maintenance-postgres.md#vacuuming-postgresql).
-
-
-## Purging unused data with synapse-janitor
-
-**NOTE**: There are [reports](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/465) that **synapse-janitor is dangerous to use and causes database corruption**. You may wish to refrain from using it.
-
-When you **leave** and **forget** a room, Synapse can clean up its data, but currently doesn't.
-This **unused and unreachable data** remains in your database forever.
-
-There are external tools (like [synapse-janitor](https://github.com/xwiki-labs/synapse_scripts)), which are meant to solve this problem.
-
-To ask the playbook to run synapse-janitor, execute:
-
-```bash
-ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-synapse-janitor,start
-```
-
-**Note**: this will automatically stop Synapse temporarily and restart it later.
-
-Running synapse-janitor potentially deletes a lot of data from the Postgres database.
-You may wish to run a [`FULL` Postgres `VACUUM`](./maintenance-postgres.md#vacuuming-postgresql) after that.
 
 
 ## Browse and manipulate the database

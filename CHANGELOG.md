@@ -1,3 +1,22 @@
+# 2020-12-11
+
+## synapse-janitor support removed
+
+We've removed support for the unmaintained [synapse-janitor](https://github.com/xwiki-labs/synapse_scripts) script. There's been past reports of it corrupting the Synapse database. Since there hasn't been any new development on it and it doesn't seem too useful nowadays, there's no point in including it in the playbook.
+
+If you need to clean up or compact your database, consider using the Synapse Admin APIs directly. See our [Synapse maintenance](docs/maintenance-synapse.md) and [Postgres maintenance](docs/maintenance-postgres.md) documentation pages for more details.
+
+
+## Docker 20.10 is here
+
+(No need to do anything special in relation to this. Just something to keep in mind)
+
+Docker 20.10 got released recently and your server will likely get it the next time you update.
+
+This is the first major Docker update in a long time and it packs a lot of changes.
+Some of them introduced some breakage for us initially (see [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/commit/d08b27784f222effcbce2abf924bf07bbe0893be) and [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/commit/7593d969e316cc0144bce378a5be58c76c2c37ee)), but it should be all good now.
+
+
 # 2020-12-08
 
 ## openid APIs exposed by default on the federation port when federation disabled
