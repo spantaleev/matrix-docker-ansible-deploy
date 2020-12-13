@@ -6,7 +6,7 @@
 
 - name: Create additional users in postgres
   postgresql_user:
-    name: "{{ item.name }}"
+    name: "{{ item.username }}"
     password: "{{ item.pass }}"
     login_host: "{{ matrix_postgres_container_ip.stdout }}"
     login_port: 5432
@@ -18,7 +18,7 @@
 - name: Create additional users in postgres
   postgresql_db:
     name: "{{ item.name }}"
-    owner: "{{ item.name }}"
+    owner: "{{ item.username }}"
     lc_ctype: 'C'
     lc_collate: 'C'
     login_host: "{{ matrix_postgres_container_ip.stdout }}"
