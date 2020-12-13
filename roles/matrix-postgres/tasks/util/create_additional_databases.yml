@@ -1,6 +1,6 @@
 ---
 - name: Retrieve IP of postgres container
-  shell: "{{ matrix_host_command_docker }} inspect matrix-postgres | jq -r '.[0].NetworkSettings.Networks.{{ matrix_docker_network }}.IPAddress'"
+  command: "{{ matrix_host_command_docker }} inspect matrix-postgres --format='{% raw %}{{ .NetworkSettings.Networks.{% endraw %}{{ matrix_docker_network }}{% raw %}.IPAddress }}{% endraw %}'"
   register: matrix_postgres_container_ip
 
 - name: Create additional users in postgres
