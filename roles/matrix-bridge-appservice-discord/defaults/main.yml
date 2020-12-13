@@ -41,6 +41,22 @@ matrix_appservice_discord_bridge_homeserverUrl: "http://matrix-synapse:8008"
 matrix_appservice_discord_bridge_disablePresence: false
 matrix_appservice_discord_bridge_enableSelfServiceBridging: false
 
+# Database-related configuration fields.
+#
+# To use SQLite, stick to these defaults.
+#
+# To use Postgres:
+# - change the engine (`matrix_appservice_discord_database_engine: 'postgres'`)
+# - adjust your database credentials
+matrix_appservice_discord_database_engine: 'sqlite'
+matrix_appservice_discord_database_filename: "/data/discord.db"
+matrix_appservice_discord_database_connString: 'postgresql://{{ matrix_appservice_discord_database_connString_username }}:{{ matrix_appservice_discord_database_connString_password }}@{{ matrix_appservice_discord_database_connString_hostname }}:{{ matrix_appservice_discord_database_connString_port }}/{{ matrix_appservice_discord_database_connString_db_name }}'
+matrix_appservice_discord_database_connString_username: 'matrix_appservice_discord'
+matrix_appservice_discord_database_connString_password: 'some-password'
+matrix_appservice_discord_database_connString_hostname: 'matrix-postgres'
+matrix_appservice_discord_database_connString_port: 5432
+matrix_appservice_discord_database_connString_db_name: 'matrix_appservice_discord'
+
 # Tells whether the bot should make use of "Privileged Gateway Intents".
 #
 # Enabling this means that you need to enable it for the bot (Discord application) as well,
