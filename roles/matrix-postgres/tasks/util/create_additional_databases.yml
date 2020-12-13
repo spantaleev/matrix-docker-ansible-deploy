@@ -1,28 +1,13 @@
 ---
 
-- name: Retrieve IP of postgres container
-  command: "{{ matrix_host_command_docker }} inspect matrix-postgres --format='{% raw %}{{ .NetworkSettings.Networks.{% endraw %}{{ matrix_docker_network }}{% raw %}.IPAddress }}{% endraw %}'"
-  register: matrix_postgres_container_ip
+# TODO - we should ensure matrix-postgres.service is started.
+# .. and that if we had just started it, we've given it ample time to initialize,
+# before we attempt to run queries against it.
 
-- name: Create additional users in postgres
-  postgresql_user:
-    name: "{{ item.username }}"
-    password: "{{ item.pass }}"
-    login_host: "{{ matrix_postgres_container_ip.stdout }}"
-    login_port: 5432
-    login_user: "{{ matrix_postgres_connection_username }}"
-    login_password: "{{ matrix_postgres_connection_password }}"
-    login_db: "{{ matrix_postgres_db_name }}"
-  loop: "{{ matrix_postgres_additional_databases }}"
-
-- name: Create additional users in postgres
-  postgresql_db:
-    name: "{{ item.name }}"
-    owner: "{{ item.username }}"
-    lc_ctype: 'C'
-    lc_collate: 'C'
-    login_host: "{{ matrix_postgres_container_ip.stdout }}"
-    login_port: 5432
-    login_user: "{{ matrix_postgres_connection_username }}"
-    login_password: "{{ matrix_postgres_connection_password }}"
-  loop: "{{ matrix_postgres_additional_databases }}"
+- name: Create additional Postgers user and database
+  include_tasks: "{{ role_path }}/tasks/util/create_additional_database.yml"
+  with_items: "{{ matrix_postgres_additional_databases }}"
+  loop_control:
+    loop_var: additional_db
+  # Suppress logging to avoid dumping the credentials to the shell
+  no_log: true
