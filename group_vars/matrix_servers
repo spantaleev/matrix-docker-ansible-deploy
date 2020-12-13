@@ -70,7 +70,7 @@ matrix_appservice_discord_homeserver_token: "{{ matrix_synapse_macaroon_secret_k
 # We only make this use Postgres if our own Postgres server is enabled.
 # It's only then (for now) that we can automatically create the necessary database and user for this service.
 matrix_appservice_discord_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
-matrix_appservice_discord_database_connString_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.discord.db') }}"
+matrix_appservice_discord_database_connString_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.discord.db') | to_uuid }}"
 
 ######################################################################
 #
@@ -904,72 +904,72 @@ matrix_postgres_additional_databases: |
     + ([{
       'name': 'matrix_appservice_slack',
       'username': 'matrix_appservice_slack',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'app_slack.db.secret') | string,
+      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'app_slack.db.secret') | to_uuid,
     }] if matrix_appservice_slack_enabled else [])
     + ([{
       'name': 'matrix_appservice_irc',
       'username': 'matrix_appservice_irc',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'app_irc.db.secret') | string,
+      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'app_irc.db.secret') | to_uuid,
     }] if matrix_appservice_irc_enabled else [])
     + ([{
       'name': 'mautrix_bridge_facebook',
       'username': 'mautrix_bridge_facebook',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mautrix_facebook.db.secret') | string,
+      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mautrix_facebook.db.secret') | to_uuid,
     }] if matrix_mautrix_facebook_enabled else [])
     + ([{
       'name': 'mautrix_bridge_hangouts',
       'username': 'mautrix_bridge_hangouts',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mautrix_hangouts.db.secret') | string,
+      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mautrix_hangouts.db.secret') | to_uuid,
     }] if matrix_mautrix_hangouts_enabled else [])
     + ([{
       'name': 'mautrix_bridge_telegram',
       'username': 'mautrix_bridge_telegram',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mautrix_telegram.db.secret') | string,
+      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mautrix_telegram.db.secret') | to_uuid,
     }] if matrix_mautrix_telegram_enabled else [])
     + ([{
       'name': 'mautrix_bridge_whatsapp',
       'username': 'mautrix_bridge_whatsapp',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mautrix_whatsapp.db.secret') | string,
+      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mautrix_whatsapp.db.secret') | to_uuid,
     }] if matrix_mautrix_whatsapp_enabled else [])
     + ([{
       'name': 'matrix_bridge_sms',
       'username': 'matrix_bridge_sms',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'bridge_sms.db.secret') | string,
+      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'bridge_sms.db.secret') | to_uuid,
     }] if matrix_sms_bridge_enabled else [])
     + ([{
       'name': 'matrix_puppet_skype',
       'username': 'matrix_puppet_skype',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_skype.db.secret') | string,
+      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_skype.db.secret') | to_uuid,
     }] if matrix_mx_puppet_skype_enabled else [])
     + ([{
       'name': 'matrix_puppet_slack',
       'username': 'matrix_puppet_slack',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_slack.db.secret') | string,
+      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_slack.db.secret') | to_uuid,
     }] if matrix_mx_puppet_slack_enabled else [])
     + ([{
       'name': 'matrix_puppet_twitter',
       'username': 'matrix_puppet_twitter',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_twitter.db.secret') | string,
+      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_twitter.db.secret') | to_uuid,
     }] if matrix_mx_puppet_twitter_enabled else [])
     + ([{
       'name': 'matrix_puppet_instagram',
       'username': 'matrix_puppet_instagram',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_insta.db.secret') | string,
+      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_insta.db.secret') | to_uuid,
     }] if matrix_mx_puppet_instagram_enabled else [])
     + ([{
       'name': 'matrix_puppet_discord',
       'username': 'matrix_puppet_discord',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_puppet.db.secret') | string,
+      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_puppet.db.secret') | to_uuid,
     }] if matrix_mx_puppet_discord_enabled else [])
     + ([{
       'name': 'matrix_puppet_steam',
       'username': 'matrix_puppet_steam',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_steam.db.secret') | string,
+      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_steam.db.secret') | to_uuid,
     }] if matrix_mx_puppet_steam_enabled else [])
     + ([{
       'name': 'matrix_dimension',
       'username': 'matrix_dimension',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'dimension.db.secret') | string,
+      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'dimension.db.secret') | to_uuid,
     }] if matrix_dimension_enabled else [])
   }}
 
