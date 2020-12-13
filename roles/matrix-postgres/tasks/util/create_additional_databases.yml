@@ -1,4 +1,5 @@
 ---
+
 - name: Retrieve IP of postgres container
   command: "{{ matrix_host_command_docker }} inspect matrix-postgres --format='{% raw %}{{ .NetworkSettings.Networks.{% endraw %}{{ matrix_docker_network }}{% raw %}.IPAddress }}{% endraw %}'"
   register: matrix_postgres_container_ip
@@ -12,7 +13,7 @@
     login_user: "{{ matrix_postgres_connection_username }}"
     login_password: "{{ matrix_postgres_connection_password }}"
     login_db: "{{ matrix_postgres_db_name }}"
-  loop: matrix_postgres_additional_databases
+  loop: "{{ matrix_postgres_additional_databases }}"
 
 - name: Create additional users in postgres
   postgresql_db:
@@ -24,4 +25,4 @@
     login_port: 5432
     login_user: "{{ matrix_postgres_connection_username }}"
     login_password: "{{ matrix_postgres_connection_password }}"
-  loop: matrix_postgres_additional_databases
+  loop: "{{ matrix_postgres_additional_databases }}"
