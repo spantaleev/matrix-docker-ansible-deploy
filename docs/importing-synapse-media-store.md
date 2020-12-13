@@ -1,4 +1,4 @@
-# Importing `media_store` data files from an existing installation (optional)
+# Importing `media_store` data files from an existing Synapse installation (optional)
 
 Run this if you'd like to import your `media_store` files from a previous installation of Synapse.
 
@@ -17,6 +17,6 @@ As an alternative, you can perform a manual restore using the [AWS CLI tool](htt
 
 Run this command (make sure to replace `<server-path-to-media_store>` with a path on your server):
 
-	ansible-playbook -i inventory/hosts setup.yml --extra-vars='server_path_media_store=<server-path-to-media_store>' --tags=import-media-store
+	ansible-playbook -i inventory/hosts setup.yml --extra-vars='server_path_media_store=<server-path-to-media_store>' --tags=import-synapse-media-store
 
 **Note**: `<server-path-to-media_store>` must be a file path to a `media_store` directory on the server (not on your local machine!).
