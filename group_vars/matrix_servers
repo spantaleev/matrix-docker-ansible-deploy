@@ -140,6 +140,10 @@ matrix_appservice_slack_systemd_required_services_list: |
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
   }}
 
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_appservice_slack_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_appservice_slack_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.slack.db') | to_uuid }}"
+
 ######################################################################
 #
 # /matrix-bridge-appservice-slack
@@ -175,6 +179,11 @@ matrix_appservice_irc_appservice_token: "{{ matrix_synapse_macaroon_secret_key |
 
 matrix_appservice_irc_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'irc.hs.token') | to_uuid }}"
 
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_appservice_irc_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_appservice_irc_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.irc.db') | to_uuid }}"
+
+
 ######################################################################
 #
 # /matrix-bridge-appservice-irc
@@ -208,6 +217,10 @@ matrix_mautrix_facebook_login_shared_secret: "{{ matrix_synapse_ext_password_pro
 
 matrix_mautrix_facebook_bridge_presence: "{{ matrix_synapse_use_presence if matrix_synapse_enabled else true }}"
 
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_mautrix_facebook_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_mautrix_facebook_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.mautrix_facebook.db') | to_uuid }}"
+
 ######################################################################
 #
 # /matrix-bridge-mautrix-facebook
@@ -240,6 +253,10 @@ matrix_mautrix_hangouts_homeserver_token: "{{ matrix_synapse_macaroon_secret_key
 matrix_mautrix_hangouts_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9007' }}"
 
 matrix_mautrix_hangouts_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_mautrix_hangouts_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_mautrix_hangouts_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.mautrix_hangouts.db') | to_uuid }}"
 
 ######################################################################
 #
@@ -277,6 +294,10 @@ matrix_mautrix_telegram_container_http_host_bind_port: "{{ '' if matrix_nginx_pr
 
 matrix_mautrix_telegram_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_mautrix_telegram_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_mautrix_telegram_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.mautrix_telegram.db') | to_uuid }}"
+
 ######################################################################
 #
 # /matrix-bridge-mautrix-telegram
@@ -304,6 +325,10 @@ matrix_mautrix_whatsapp_appservice_token: "{{ matrix_synapse_macaroon_secret_key
 matrix_mautrix_whatsapp_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'whats.hs.token') | to_uuid }}"
 
 matrix_mautrix_whatsapp_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_mautrix_whatsapp_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_mautrix_whatsapp_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.mautrix_whatsapp.db') | to_uuid }}"
 
 ######################################################################
 #
@@ -361,6 +386,10 @@ matrix_mx_puppet_skype_homeserver_token: "{{ matrix_synapse_macaroon_secret_key 
 
 matrix_mx_puppet_skype_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_mx_puppet_skype_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_mx_puppet_skype_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.mx_puppet_skype.db') | to_uuid }}"
+
 ######################################################################
 #
 # /matrix-bridge-mx-puppet-skype
@@ -391,6 +420,10 @@ matrix_mx_puppet_slack_appservice_token: "{{ matrix_synapse_macaroon_secret_key 
 matrix_mx_puppet_slack_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mxslk.hs.tok') | to_uuid }}"
 
 matrix_mx_puppet_slack_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_mx_puppet_slack_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_mx_puppet_slack_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.mx_puppet_slack.db') | to_uuid }}"
 
 ######################################################################
 #
@@ -424,6 +457,10 @@ matrix_mx_puppet_twitter_login_shared_secret: "{{ matrix_synapse_ext_password_pr
 
 matrix_mx_puppet_twitter_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else ('127.0.0.1:' ~ matrix_mx_puppet_twitter_appservice_port) }}"
 
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_mx_puppet_twitter_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_mx_puppet_twitter_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.mx_puppet_twitter.db') | to_uuid }}"
+
 ######################################################################
 #
 # /matrix-bridge-mx-puppet-twitter
@@ -455,6 +492,10 @@ matrix_mx_puppet_instagram_homeserver_token: "{{ matrix_synapse_macaroon_secret_
 
 matrix_mx_puppet_instagram_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_mx_puppet_instagram_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_mx_puppet_instagram_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.mx_puppet_instagram.db') | to_uuid }}"
+
 ######################################################################
 #
 # /matrix-bridge-mx-puppet-instagram
@@ -485,6 +526,10 @@ matrix_mx_puppet_discord_homeserver_token: "{{ matrix_synapse_macaroon_secret_ke
 
 matrix_mx_puppet_discord_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_mx_puppet_discord_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_mx_puppet_discord_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.mx_puppet_discord.db') | to_uuid }}"
+
 ######################################################################
 #
 # /matrix-bridge-mx-puppet-discord
@@ -514,6 +559,10 @@ matrix_mx_puppet_steam_appservice_token: "{{ matrix_synapse_macaroon_secret_key 
 matrix_mx_puppet_steam_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mxste.hs.tok') | to_uuid }}"
 
 matrix_mx_puppet_steam_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_mx_puppet_stream_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_mx_puppet_steam_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.mx_puppet_steam.db') | to_uuid }}"
 
 ######################################################################
 #
@@ -624,6 +673,10 @@ matrix_dimension_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_ena
 
 matrix_integration_manager_rest_url: "{{ matrix_dimension_integrations_rest_url if matrix_dimension_enabled else None }}"
 matrix_integration_manager_ui_url: "{{ matrix_dimension_integrations_ui_url if matrix_dimension_enabled else None }}"
+
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_dimension_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_dimension_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.dimension.db') | to_uuid }}"
 
 ######################################################################
 #
@@ -902,75 +955,83 @@ matrix_postgres_additional_databases: |
       'password': matrix_appservice_discord_database_connString_password,
     }] if (matrix_appservice_discord_enabled and matrix_appservice_discord_database_engine == 'postgres' and matrix_appservice_discord_database_connString_hostname == 'matrix-postgres') else [])
     + ([{
-      'name': 'matrix_appservice_slack',
-      'username': 'matrix_appservice_slack',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'app_slack.db.secret') | to_uuid,
-    }] if matrix_appservice_slack_enabled else [])
+      'name': matrix_appservice_slack_database_db_name
+      'username': matrix_appservice_slack_database_username
+      'password': matrix_appservice_slack_database_password
+    }] if (matrix_appservice_slack_enabled and matrix_appservice_slack_database_engine == 'postgres' and matrix_appservice_slack_database_hostname == 'matrix-postgres' else [])
     + ([{
-      'name': 'matrix_appservice_irc',
-      'username': 'matrix_appservice_irc',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'app_irc.db.secret') | to_uuid,
-    }] if matrix_appservice_irc_enabled else [])
+      'name': matrix_appservice_irc_database_db_name
+      'username': matrix_appservice_irc_database_username
+      'password': matrix_appservice_irc_database_password
+    }] if (matrix_appservice_irc_enabled and matrix_appservice_irc_database_engine == 'postgres' and matrix_appservice_irc_database_hostname == 'matrix-postgres' else [])
     + ([{
-      'name': 'mautrix_bridge_facebook',
-      'username': 'mautrix_bridge_facebook',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mautrix_facebook.db.secret') | to_uuid,
-    }] if matrix_mautrix_facebook_enabled else [])
+      'name': matrix_mautrix_facebook_database_db_name
+      'username': matrix_mautrix_facebook_database_username
+      'password': matrix_mautrix_facebook_database_password
+    }] if (matrix_mautrix_facebook_enabled and matrix_mautrix_facebook_database_engine == 'postgres' and matrix_mautrix_facebook_database_hostname == 'matrix-postgres' else [])
     + ([{
-      'name': 'mautrix_bridge_hangouts',
-      'username': 'mautrix_bridge_hangouts',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mautrix_hangouts.db.secret') | to_uuid,
-    }] if matrix_mautrix_hangouts_enabled else [])
+      'name': matrix_mautrix_hangouts_database_db_name
+      'username': matrix_mautrix_hangouts_database_username
+      'password': matrix_mautrix_hangouts_database_password
+    }] if (matrix_mautrix_hangouts_enabled and matrix_mautrix_hangouts_database_engine == 'postgres' and matrix_mautrix_hangouts_database_hostname == 'matrix-postgres' else [])
     + ([{
-      'name': 'mautrix_bridge_telegram',
-      'username': 'mautrix_bridge_telegram',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mautrix_telegram.db.secret') | to_uuid,
-    }] if matrix_mautrix_telegram_enabled else [])
+      'name': matrix_mautrix_telegram_database_db_name
+      'username': matrix_mautrix_telegram_database_username
+      'password': matrix_mautrix_telegram_database_password
+    }] if (matrix_mautrix_telegram_enabled and matrix_mautrix_telegram_database_engine == 'postgres' and matrix_telegram_facebook_database_hostname == 'matrix-postgres' else [])
     + ([{
-      'name': 'mautrix_bridge_whatsapp',
-      'username': 'mautrix_bridge_whatsapp',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mautrix_whatsapp.db.secret') | to_uuid,
-    }] if matrix_mautrix_whatsapp_enabled else [])
+      'name': matrix_mautrix_whatsapp_database_db_name
+      'username': matrix_mautrix_whatsapp_database_username
+      'password': matrix_mautrix_whatsapp_database_password
+    }] if (matrix_mautrix_whatsapp_enabled and matrix_mautrix_whatsapp_database_engine == 'postgres' and matrix_mautrix_whatsapp_database_hostname == 'matrix-postgres' else [])
     + ([{
       'name': 'matrix_bridge_sms',
       'username': 'matrix_bridge_sms',
       'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'bridge_sms.db.secret') | to_uuid,
     }] if matrix_sms_bridge_enabled else [])
     + ([{
-      'name': 'matrix_puppet_skype',
-      'username': 'matrix_puppet_skype',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_skype.db.secret') | to_uuid,
-    }] if matrix_mx_puppet_skype_enabled else [])
+      'name': matrix_mx_puppet_skype_database_db_name
+      'username': matrix_mx_puppet_skype_database_username
+      'password': matrix_mx_puppet_skype_database_password
+    }] if (matrix_mx_puppet_skype_enabled and matrix_mx_puppet_skype_database_engine == 'postgres' and matrix_mx_puppet_skype_database_hostname == 'matrix-postgres' else [])
     + ([{
-      'name': 'matrix_puppet_slack',
-      'username': 'matrix_puppet_slack',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_slack.db.secret') | to_uuid,
-    }] if matrix_mx_puppet_slack_enabled else [])
-    + ([{
-      'name': 'matrix_puppet_twitter',
-      'username': 'matrix_puppet_twitter',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_twitter.db.secret') | to_uuid,
-    }] if matrix_mx_puppet_twitter_enabled else [])
-    + ([{
-      'name': 'matrix_puppet_instagram',
-      'username': 'matrix_puppet_instagram',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_insta.db.secret') | to_uuid,
-    }] if matrix_mx_puppet_instagram_enabled else [])
-    + ([{
-      'name': 'matrix_puppet_discord',
-      'username': 'matrix_puppet_discord',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_puppet.db.secret') | to_uuid,
-    }] if matrix_mx_puppet_discord_enabled else [])
-    + ([{
-      'name': 'matrix_puppet_steam',
-      'username': 'matrix_puppet_steam',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx_steam.db.secret') | to_uuid,
-    }] if matrix_mx_puppet_steam_enabled else [])
-    + ([{
-      'name': 'matrix_dimension',
-      'username': 'matrix_dimension',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'dimension.db.secret') | to_uuid,
-    }] if matrix_dimension_enabled else [])
+      'name': matrix_mx_puppet_slack_database_db_name
+      'username': matrix_mx_puppet_slack_database_username
+      'password': matrix_mx_puppet_slack_database_password
+    }] if (matrix_mx_puppet_slack_enabled and matrix_mx_puppet_slack_database_engine == 'postgres' and matrix_mx_puppet_slack_database_hostname == 'matrix-postgres' else [])
+     + ([{
+      'name': matrix_mx_puppet_twitter_database_db_name
+      'username': matrix_mx_puppet_twitter_database_username
+      'password': matrix_mx_puppet_twitter_database_password
+    }] if (matrix_mx_puppet_twitter_enabled and matrix_mx_puppet_twitter_database_engine == 'postgres' and matrix_mx_puppet_twitter_database_hostname == 'matrix-postgres' else [])
+     + ([{
+      'name': matrix_mx_puppet_instagram_database_db_name
+      'username': matrix_mx_puppet_instagram_database_username
+      'password': matrix_mx_puppet_instagram_database_password
+    }] if (matrix_mx_puppet_instagram_enabled
+           and matrix_mx_puppet_instagram_database_engine == 'postgres'
+           and matrix_mx_puppet_instagram_database_hostname == 'matrix-postgres' else [])
+     + ([{
+      'name': matrix_mx_puppet_discord_database_db_name
+      'username': matrix_mx_puppet_discord_database_username
+      'password': matrix_mx_puppet_discord_database_password
+    }] if (matrix_mx_puppet_discord_enabled
+           and matrix_mx_puppet_discord_database_engine == 'postgres'
+           and matrix_mx_puppet_discord_database_hostname == 'matrix-postgres' else [])
+     + ([{
+      'name': matrix_mx_puppet_steam_database_db_name
+      'username': matrix_mx_puppet_steam_database_username
+      'password': matrix_mx_puppet_steam_database_password
+    }] if (matrix_mx_puppet_steam_enabled
+           and matrix_mx_puppet_steam_database_engine == 'postgres'
+           and matrix_mx_puppet_steam_database_hostname == 'matrix-postgres' else [])
+     + ([{
+      'name': matrix_dimension_database_db_name
+      'username': matrix_dimension_database_username
+      'password': matrix_dimension_database_password
+    }] if (matrix_dimension_enabled
+           and matrix_dimension_database_engine == 'postgres'
+           and matrix_dimension_database_hostname == 'matrix-postgres' else [])
   }}
 
 ######################################################################
