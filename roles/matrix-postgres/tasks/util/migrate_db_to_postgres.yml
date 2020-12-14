@@ -34,7 +34,7 @@
 - name: Fail if we cannot migrate on the current architecture ({{ matrix_architecture }})
   fail:
     msg: >-
-      {{ matrix_postgres_db_migration_request.engine_variable_name }} has been set to `postgres` (which is our new default now).
+      {{ matrix_postgres_db_migration_request.engine_variable_name }} (part of {{ matrix_postgres_db_migration_request.caller }}) has been set to `postgres` (which is our new default now).
       However, we've discovered an existing file-based database ({{ matrix_postgres_db_migration_request.engine_old }}) in {{ matrix_postgres_db_migration_request.src }}.
       It appears that you've been using this bridge with a file-based database engine until now.
       To continue using {{ matrix_postgres_db_migration_request.engine_old }}, opt into it explicitly: add `{{ matrix_postgres_db_migration_request.engine_variable_name }}: {{ matrix_postgres_db_migration_request.engine_old }}` to your vars.yml file and re-run this same command.
