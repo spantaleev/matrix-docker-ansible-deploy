@@ -44,15 +44,18 @@ provisioning:
   apiPrefix: /_matrix/provision
 
 database:
+{% if matrix_mx_puppet_instagram_database_engine == 'postgres' %}
   # Use Postgres as a database backend
   # If set, will be used instead of SQLite3
   # Connection string to connect to the Postgres instance
   # with username "user", password "pass", host "localhost" and database name "dbname".
   # Modify each value as necessary
-  connString: "postgres://matrix_puppet_instagram:{{ matrix_additional_databases | selectattr('name', 'equalto', 'matrix_puppet_instagram') | map(attribute='pass') | first }}@{{ matrix_postgres_connection_hostname }}/matrix_puppet_instagram?sslmode=disable"
+  connString: {{ matrix_mx_puppet_instagram_database_connString | to_json }}
+{% else %}
   # Use SQLite3 as a database backend
   # The name of the database file
-  #filename: /data/database.db
+  filename: {{ matrix_mx_puppet_instagram_database_file }}
+{% endif %}
 
 logging:
   # Log level of console output

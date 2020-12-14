@@ -8,3 +8,23 @@
   with_items:
     - "matrix_mx_puppet_discord_appservice_token"
     - "matrix_mx_puppet_discord_homeserver_token"
+
+- block:
+  - name: Check if a SQLite database already exists
+    stat:
+      path: "{{ matrix_mx_puppet_discord_data_path }}/database.db"
+    register: matrix_mx_puppet_discord_sqlite_database_path_local_stat_result
+
+  - name: Fail if an SQLite database already exists when using Postgres
+    fail:
+      msg: >-2
+        matrix_mx_puppet_discord_database_engine has been set to `postgres` (which is our new default now).
+        However, we've discovered an existing SQLite database in {{ matrix_mx_puppet_discord_data_path }}/database.db.
+        It appears that you've been using this bridge with the SQLite engine until now.
+        To continue using SQLite, opt into it explicitly: add `matrix_mx_puppet_discord_database_engine: sqlite` to your vars.yml file and re-run this same command.
+        Alternatively, to migrate your existing SQLite database to Postgres:
+        1. Stop all services (`ansible-playbook -i inventory/hosts setup.yml --tags=stop`)
+        2. Import the SQLite database into Postgres (`ansible-playbook -v -i inventory/hosts setup.yml --tags=import-generic-sqlite-db --extra-vars='sqlite_database_path={{ matrix_mx_puppet_discord_data_path }}/database.db postgres_connection_string_variable_name=matrix_mx_puppet_discord_database_connString'`)
+        3. Re-run the playbook (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`)
+    when: "matrix_mx_puppet_discord_sqlite_database_path_local_stat_result.stat.exists"
+  when: "matrix_mx_puppet_discord_database_engine == 'postgres'"
