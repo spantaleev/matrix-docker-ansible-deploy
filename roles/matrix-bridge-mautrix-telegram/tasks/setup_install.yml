@@ -8,24 +8,30 @@
       The matrix-bridge-mautrix-telegram role needs to execute before the matrix-synapse role.
   when: "matrix_synapse_role_executed|default(False)"
 
-- block:
-  - name: Check if an SQLite database already exists
-    stat:
-      path: "{{ matrix_mautrix_telegram_sqlite_database_path_local }}"
-    register: matrix_mautrix_telegram_sqlite_database_path_local_stat_result
+- set_fact:
+    matrix_mautrix_telegram_requires_restart: false
 
-  - name: Fail if an SQLite database already exists when using Postgres
-    fail:
-      msg: >-
-        matrix_mautrix_telegram_database_engine has been set to `postgres` (which is our new default now).
-        However, we've discovered an existing SQLite database in {{ matrix_mautrix_telegram_sqlite_database_path_local }}.
-        It appears that you've been using this bridge with the SQLite engine until now.
-        To continue using SQLite, opt into it explicitly: add `matrix_mautrix_telegram_database_engine: sqlite` to your vars.yml file and re-run this same command.
-        Alternatively, to migrate your existing SQLite database to Postgres:
-        1. Stop all services (`ansible-playbook -i inventory/hosts setup.yml --tags=stop`)
-        2. Import the SQLite database into Postgres (`ansible-playbook -v -i inventory/hosts setup.yml --tags=import-generic-sqlite-db --extra-vars='sqlite_database_path={{ matrix_mautrix_telegram_sqlite_database_path_local }} postgres_connection_string_variable_name=matrix_mautrix_telegram_database_connection_string'`)
-        3. Re-run the playbook (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`)
-    when: "matrix_mautrix_telegram_sqlite_database_path_local_stat_result.stat.exists"
+- block:
+    - name: Check if an SQLite database already exists
+      stat:
+        path: "{{ matrix_mautrix_telegram_sqlite_database_path_local }}"
+      register: matrix_mautrix_telegram_sqlite_database_path_local_stat_result
+
+    - block:
+        - set_fact:
+            matrix_postgres_db_migration_request:
+              src: "{{ matrix_mautrix_telegram_sqlite_database_path_local }}"
+              dst: "{{ matrix_mautrix_telegram_database_connection_string }}"
+              caller: "{{ role_path|basename }}"
+              engine_variable_name: 'matrix_mautrix_telegram_database_engine'
+              engine_old: 'sqlite'
+              systemd_services_to_stop: ['matrix-mautrix-telegram.service']
+
+        - import_tasks: "roles/matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+
+        - set_fact:
+            matrix_mautrix_telegram_requires_restart: true
+      when: "matrix_mautrix_telegram_sqlite_database_path_local_stat_result.stat.exists|bool"
   when: "matrix_mautrix_telegram_database_engine == 'postgres'"
 
 - name: Ensure Mautrix Telegram image is pulled
@@ -91,3 +97,9 @@
   service:
     daemon_reload: yes
   when: "matrix_mautrix_telegram_systemd_service_result.changed"
+
+- name: Ensure matrix-mautrix-telegram.service restarted, if necessary
+  service:
+    name: "matrix-mautrix-telegram.service"
+    state: restarted
+  when: "matrix_mautrix_telegram_requires_restart|bool"
