@@ -42,11 +42,11 @@ matrix_mautrix_whatsapp_sqlite_database_path_in_container: "/data/mautrix-whatsa
 
 matrix_mautrix_whatsapp_database_username: 'matrix_mautrix_whatsapp'
 matrix_mautrix_whatsapp_database_password: 'some-password'
-matrix_mautrix_whatsapp_postgres_hostname: 'matrix-postgres'
+matrix_mautrix_whatsapp_database_hostname: 'matrix-postgres'
 matrix_mautrix_whatsapp_database_port: 5432
 matrix_mautrix_whatsapp_database_db_name: 'matrix_mautrix_whatsapp'
 
-matrix_mautrix_whatsapp_postgres_connection_string: 'postgresql://{{ matrix_mautrix_whatsapp_database_username }}:{{ matrix_mautrix_whatsapp_database_password }}@{{ matrix_mautrix_whatsapp_postgres_hostname }}:{{ matrix_mautrix_whatsapp_database_port }}/{{ matrix_mautrix_whatsapp_database_db_name }}'
+matrix_mautrix_whatsapp_database_connection_string: 'postgresql://{{ matrix_mautrix_whatsapp_database_username }}:{{ matrix_mautrix_whatsapp_database_password }}@{{ matrix_mautrix_whatsapp_database_hostname }}:{{ matrix_mautrix_whatsapp_database_port }}/{{ matrix_mautrix_whatsapp_database_db_name }}'
 
 matrix_mautrix_whatsapp_appservice_database_type: "{{
 	{
@@ -58,7 +58,7 @@ matrix_mautrix_whatsapp_appservice_database_type: "{{
 matrix_mautrix_whatsapp_appservice_database_uri: "{{
 	{
 		'sqlite': matrix_mautrix_whatsapp_sqlite_database_path_in_container,
-		'postgres': matrix_mautrix_whatsapp_postgres_connection_string,
+		'postgres': matrix_mautrix_whatsapp_database_connection_string,
 	}[matrix_mautrix_whatsapp_database_engine]
 }}"
 
