@@ -1,8 +1,13 @@
 #jinja2: lstrip_blocks: "True"
 [Unit]
 Description=Matrix Dimension
-After=docker.service
-Requires=docker.service
+{% for service in matrix_dimension_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_dimension_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
 DefaultDependencies=no
 
 [Service]
