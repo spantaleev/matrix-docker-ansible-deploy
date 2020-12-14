@@ -1100,6 +1100,20 @@ matrix_postgres_additional_databases: |
     }] if (matrix_dimension_enabled and matrix_dimension_database_engine == 'postgres' and matrix_dimension_database_hostname == 'matrix-postgres') else [])
    }}
 
+matrix_postgres_import_roles_to_ignore: |
+  {{
+    [matrix_postgres_connection_username]
+    +
+    matrix_postgres_additional_databases|map(attribute='username')
+  }}
+
+matrix_postgres_import_databases_to_ignore: |
+  {{
+    [matrix_postgres_db_name]
+    +
+    matrix_postgres_additional_databases|map(attribute='name')
+  }}
+
 ######################################################################
 #
 # /matrix-postgres
