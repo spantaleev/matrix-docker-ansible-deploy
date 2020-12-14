@@ -1011,6 +1011,12 @@ matrix_postgres_additional_databases: |
     }] if (matrix_bot_matrix_reminder_bot_enabled and matrix_bot_matrix_reminder_bot_database_engine == 'postgres' and matrix_bot_matrix_reminder_bot_database_hostname == 'matrix-postgres') else [])
     +
     ([{
+      'name': matrix_registration_database_db_name,
+      'username': matrix_registration_database_username,
+      'password': matrix_registration_database_password,
+    }] if (matrix_registration_enabled and matrix_registration_database_engine == 'postgres' and matrix_registration_database_hostname == 'matrix-postgres') else [])
+    +
+    ([{
       'name': matrix_appservice_discord_database_db_name,
       'username': matrix_appservice_discord_database_username,
       'password': matrix_appservice_discord_database_password,
@@ -1290,6 +1296,18 @@ matrix_registration_server_location: "{{ 'http://matrix-synapse:8008' if matrix_
 matrix_registration_api_validate_certs: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
 
 matrix_registration_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+
+matrix_registration_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+  }}
+
+# We'd like to use 'postgres' if matrix_postgres_enabled, but the container image doesn't seem to support that.
+# Learn more here: https://github.com/ZerataX/matrix-registration/issues/44
+matrix_registration_database_engine: 'sqlite'
+matrix_registration_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mx.registr.db') | to_uuid }}"
 
 ######################################################################
 #
