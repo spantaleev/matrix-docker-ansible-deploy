@@ -1,26 +1,23 @@
 ---
 
 - block:
-  - set_fact:
-      matrix_appservice_discord_sqlite_db_path: "{{ matrix_appservice_discord_data_path }}/{{ matrix_appservice_discord_database_filename_name }}"
-
   - name: Check if an SQLite database already exists
     stat:
-      path: "{{ matrix_appservice_discord_sqlite_db_path }}"
-    register: matrix_appservice_discord_sqlite_db_path_stat_result
+      path: "{{ matrix_appservice_discord_sqlite_database_path_local }}"
+    register: matrix_appservice_discord_sqlite_database_path_local_stat_result
 
   - name: Fail if an SQLite database already exists when using Postgres
     fail:
       msg: >-
         matrix_appservice_discord_database_engine has been set to `postgres` (which is our new default now).
-        However, we've discovered an existing SQLite database in {{ matrix_appservice_discord_data_path }}/{{ matrix_appservice_discord_database_filename_name }}.
+        However, we've discovered an existing SQLite database in {{ matrix_appservice_discord_sqlite_database_path_local }}.
         It appears that you've been using this bridge with the SQLite engine until now.
         To continue using SQLite, opt into it explicitly: add `matrix_appservice_discord_database_engine: sqlite` to your vars.yml file and re-run this same command.
         Alternatively, to migrate your existing SQLite database to Postgres:
         1. Stop all services (`ansible-playbook -i inventory/hosts setup.yml --tags=stop`)
-        2. Import the SQLite database into Postgres (`ansible-playbook -v -i inventory/hosts setup.yml --tags=import-generic-sqlite-db --extra-vars='sqlite_database_path={{ matrix_appservice_discord_sqlite_db_path }} postgres_db_connection_string={{ matrix_appservice_discord_database_connString }}'`)
+        2. Import the SQLite database into Postgres (`ansible-playbook -v -i inventory/hosts setup.yml --tags=import-generic-sqlite-db --extra-vars='sqlite_database_path={{ matrix_appservice_discord_sqlite_database_path_local }} postgres_db_connection_string={{ matrix_appservice_discord_database_connString }}'`)
         3. Re-run the playbook (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`)
-    when: "matrix_appservice_discord_sqlite_db_path_stat_result.stat.exists"
+    when: "matrix_appservice_discord_sqlite_database_path_local_stat_result.stat.exists"
   when: "matrix_appservice_discord_database_engine == 'postgres'"
 
 - name: Ensure Appservice Discord image is pulled

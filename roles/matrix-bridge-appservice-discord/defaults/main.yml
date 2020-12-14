@@ -47,16 +47,23 @@ matrix_appservice_discord_bridge_enableSelfServiceBridging: false
 #
 # To use Postgres:
 # - change the engine (`matrix_appservice_discord_database_engine: 'postgres'`)
-# - adjust your database credentials
+# - adjust your database credentials via the `matrix_appservice_discord_postgres_*` variables
 matrix_appservice_discord_database_engine: 'sqlite'
-matrix_appservice_discord_database_filename: "/data/{{ matrix_appservice_discord_database_filename_name }}"
-matrix_appservice_discord_database_filename_name: "discord.db"
-matrix_appservice_discord_database_connString: 'postgresql://{{ matrix_appservice_discord_database_connString_username }}:{{ matrix_appservice_discord_database_connString_password }}@{{ matrix_appservice_discord_database_connString_hostname }}:{{ matrix_appservice_discord_database_connString_port }}/{{ matrix_appservice_discord_database_connString_db_name }}'
-matrix_appservice_discord_database_connString_username: 'matrix_appservice_discord'
-matrix_appservice_discord_database_connString_password: 'some-password'
-matrix_appservice_discord_database_connString_hostname: 'matrix-postgres'
-matrix_appservice_discord_database_connString_port: 5432
-matrix_appservice_discord_database_connString_db_name: 'matrix_appservice_discord'
+
+matrix_appservice_discord_sqlite_database_path_local: "{{ matrix_appservice_discord_data_path }}/discord.db"
+matrix_appservice_discord_sqlite_database_path_in_container: "/data/discord.db"
+
+matrix_appservice_discord_postgres_username: 'matrix_appservice_discord'
+matrix_appservice_discord_postgres_password: 'some-password'
+matrix_appservice_discord_postgres_hostname: 'matrix-postgres'
+matrix_appservice_discord_postgres_port: 5432
+matrix_appservice_discord_postgres_db_name: 'matrix_appservice_discord'
+
+# These 2 variables are what actually ends up in the bridge configuration.
+# It's best if you don't change them directly, but rather redefine the sub-variables that constitute them.
+matrix_appservice_discord_database_filename: "{{ matrix_appservice_discord_sqlite_database_path_in_container }}"
+matrix_appservice_discord_database_connString: 'postgresql://{{ matrix_appservice_discord_postgres_username }}:{{ matrix_appservice_discord_postgres_password }}@{{ matrix_appservice_discord_postgres_hostname }}:{{ matrix_appservice_discord_postgres_port }}/{{ matrix_appservice_discord_postgres_db_name }}'
+
 
 # Tells whether the bot should make use of "Privileged Gateway Intents".
 #
