@@ -15,7 +15,7 @@
       path: "{{ matrix_mx_puppet_instagram_data_path }}/database.db"
     register: matrix_mx_puppet_instagram_sqlite_database_path_local_stat_result
 
-   - name: Fail if an SQLite database already exists when using Postgres
+  - name: Fail if an SQLite database already exists when using Postgres
     fail:
       msg: >-
         matrix_mx_puppet_instagram_database_engine has been set to `postgres` (which is our new default now).
@@ -28,4 +28,3 @@
         3. Re-run the playbook (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`)
     when: "matrix_mx_puppet_instagram_sqlite_database_path_local_stat_result.stat.exists"
   when: "matrix_mx_puppet_instagram_database_engine == 'postgres'"
-
