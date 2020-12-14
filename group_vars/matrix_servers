@@ -835,6 +835,10 @@ matrix_ma1sd_systemd_wanted_services_list: |
     (['matrix-mailer.service'] if matrix_mailer_enabled else [])
   }}
 
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_ma1sd_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_ma1sd_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'ma1sd.db') | to_uuid }}"
+
 ######################################################################
 #
 # /matrix-ma1sd
@@ -953,6 +957,12 @@ matrix_postgres_db_name: "homeserver"
 
 matrix_postgres_additional_databases: |
   {{
+    ([{
+      'name': matrix_ma1sd_database_db_name,
+      'username': matrix_ma1sd_database_username,
+      'password': matrix_ma1sd_database_password,
+    }] if (matrix_ma1sd_enabled and matrix_ma1sd_database_engine == 'postgres' and matrix_ma1sd_database_hostname == 'matrix-postgres') else [])
+    +
     ([{
       'name': matrix_bot_matrix_reminder_bot_database_db_name,
       'username': matrix_bot_matrix_reminder_bot_database_username,

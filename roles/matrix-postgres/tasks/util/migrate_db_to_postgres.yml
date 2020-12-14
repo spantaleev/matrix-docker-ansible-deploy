@@ -93,7 +93,7 @@
       --entrypoint=/bin/sh
       {{ matrix_postgres_pgloader_docker_image }}
       -c
-      'pgloader /in.db {{ matrix_postgres_db_migration_request.dst }}'
+      'pgloader {{ matrix_postgres_db_migration_request.pgloader_options|default([])|join(' ') }} /in.db {{ matrix_postgres_db_migration_request.dst }}'
 
 - name: Archive {{ matrix_postgres_db_migration_request.engine_old }} database ({{ matrix_postgres_db_migration_request.src }} -> {{ matrix_postgres_db_migration_request.src }}.backup)
   command:
