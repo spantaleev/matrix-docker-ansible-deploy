@@ -35,9 +35,9 @@
   fail:
     msg: >-
       {{ matrix_postgres_db_migration_request.engine_variable_name }} has been set to `postgres` (which is our new default now).
-      However, we've discovered an existing file-based database ({{ matrix_postgres_db_migration_request.engine_old_default }}) in {{ matrix_postgres_db_migration_request.src }}.
+      However, we've discovered an existing file-based database ({{ matrix_postgres_db_migration_request.engine_old }}) in {{ matrix_postgres_db_migration_request.src }}.
       It appears that you've been using this bridge with a file-based database engine until now.
-      To continue using {{ matrix_postgres_db_migration_request.engine_old_default }}, opt into it explicitly: add `{{ matrix_postgres_db_migration_request.engine_variable_name }}: {{ matrix_postgres_db_migration_request.engine_old_default }}` to your vars.yml file and re-run this same command.
+      To continue using {{ matrix_postgres_db_migration_request.engine_old }}, opt into it explicitly: add `{{ matrix_postgres_db_migration_request.engine_variable_name }}: {{ matrix_postgres_db_migration_request.engine_old }}` to your vars.yml file and re-run this same command.
       We'd normally auto-migrate you to Postgres, but we can't do it on the {{ matrix_architecture }} architecture. Our pgloader container image only supports amd64 (for now).
       Learn more here: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/740
   when: "matrix_architecture != 'amd64'"
@@ -75,13 +75,13 @@
 # Since the caller will be starting them, it might make sense to leave stopping to it as well.
 # However, we don't do it, because it's simpler having it here, and it also gets to happen only if we'll be doing an import.
 # If we bailed out (somewhere above), nothing would have gotten stopped. It's nice to leave this running in such cases.
-- name: Ensure systemd services stopped
+- name: Ensure systemd services blocking the database import are stopped
   service:
     name: "{{ item }}"
     state: stopped
   with_items: "{{ matrix_postgres_db_migration_request.systemd_services_to_stop }}"
 
-- name: Import SQLite database from {{ matrix_postgres_db_migration_request.src }} into Postgres
+- name: Import {{ matrix_postgres_db_migration_request.engine_old }} database from {{ matrix_postgres_db_migration_request.src }} into Postgres
   command:
     cmd: >-
       {{ matrix_host_command_docker }} run
@@ -95,7 +95,7 @@
       -c
       'pgloader /in.db {{ matrix_postgres_db_migration_request.dst }}'
 
-- name: Archive SQLite database ({{ matrix_postgres_db_migration_request.src }} -> {{ matrix_postgres_db_migration_request.src }}.backup)
+- name: Archive {{ matrix_postgres_db_migration_request.engine_old }} database ({{ matrix_postgres_db_migration_request.src }} -> {{ matrix_postgres_db_migration_request.src }}.backup)
   command:
     cmd: "mv {{ matrix_postgres_db_migration_request.src }} {{ matrix_postgres_db_migration_request.src }}.backup"
 
@@ -106,6 +106,6 @@
         matrix_playbook_runtime_results|default([])
         +
         [
-          "NOTE: Your {{ matrix_postgres_db_migration_request.engine_variable_name }} database file has been imported into Postgres. The original file has been moved from `{{ matrix_postgres_db_migration_request.src }}` to `{{ matrix_postgres_db_migration_request.src }}.backup`. When you've confirmed that the import went well and everything works, you should be able to safely delete this file."
+          "NOTE: Your {{ matrix_postgres_db_migration_request.engine_old }} database file has been imported into Postgres. The original database file has been moved from `{{ matrix_postgres_db_migration_request.src }}` to `{{ matrix_postgres_db_migration_request.src }}.backup`. When you've confirmed that the import went well and everything works, you should be able to safely delete this file."
         ]
       }}
