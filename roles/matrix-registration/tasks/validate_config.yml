@@ -18,10 +18,3 @@
   when: "item.old in vars"
   with_items:
     - {'old': 'matrix_registration_docker_repo', 'new': 'matrix_registration_container_image_self_build_repo'}
-
-- name: Fail if Postgres usage attempted
-  fail:
-    msg: >
-      matrix-registration doesn't support using Postgres just yet.
-      Learn more here: https://github.com/ZerataX/matrix-registration/issues/44
-  when: "matrix_registration_database_engine == 'postgres'"
