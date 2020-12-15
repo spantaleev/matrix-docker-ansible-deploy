@@ -30,15 +30,12 @@
         {% endif %}
 
           {#
-            Workaround matrix-registration serving static files at /static
-            (see https://github.com/ZerataX/matrix-registration/issues/29)
-
-            Also fixing the form, which goes to /register.
+            Workaround matrix-registration serving the background image at /static
+            (see https://github.com/ZerataX/matrix-registration/issues/47)
           #}
           sub_filter_once off;
-          sub_filter_types text/html text/css;
+          sub_filter_types text/css;
           sub_filter "/static/" "{{ matrix_registration_public_endpoint }}/static/";
-          sub_filter "/register" "{{ matrix_registration_public_endpoint }}/register";
         }
 
   - name: Register matrix-registration proxying configuration with matrix-nginx-proxy
