@@ -12,9 +12,9 @@ matrix_registration_config_path: "{{ matrix_registration_base_path }}/config"
 matrix_registration_data_path: "{{ matrix_registration_base_path }}/data"
 matrix_registration_docker_src_files_path: "{{ matrix_registration_base_path }}/docker-src"
 
-matrix_registration_version: "v0.7.1"
+matrix_registration_version: "v0.7.2"
 
-matrix_registration_docker_image: "{{ matrix_registration_docker_image_name_prefix }}devture/zeratax-matrix-registration:{{ matrix_registration_version }}"
+matrix_registration_docker_image: "{{ matrix_registration_docker_image_name_prefix }}zeratax/matrix-registration:{{ matrix_registration_version }}"
 matrix_registration_docker_image_name_prefix: "{{ 'localhost/' if matrix_registration_container_image_self_build else 'docker.io/' }}"
 matrix_registration_docker_image_force_pull: "{{ matrix_registration_docker_image.endswith(':latest') }}"
 
@@ -65,6 +65,8 @@ matrix_registration_db: "{{
 # The path at which Matrix Registration will be exposed on `matrix.DOMAIN`
 # (only applies when matrix-nginx-proxy is used).
 matrix_registration_public_endpoint: /matrix-registration
+
+matrix_registration_base_url: "{{ matrix_registration_public_endpoint }}"
 
 matrix_registration_api_register_endpoint: "{{ matrix_homeserver_url }}{{ matrix_registration_public_endpoint }}/register"
 matrix_registration_api_token_endpoint: "{{ matrix_homeserver_url }}{{ matrix_registration_public_endpoint }}/token"
