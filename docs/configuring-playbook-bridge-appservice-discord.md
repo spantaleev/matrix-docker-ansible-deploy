@@ -14,20 +14,18 @@ Instructions loosely based on [this](https://github.com/Half-Shot/matrix-appserv
 1. Create a Discord Application [here](https://discordapp.com/developers/applications).
 2. Retrieve Client ID.
 3. Create a bot from the Bot tab and retrieve the Bot token.
-4. From the Bot tab, enable all checkboxes related to Privileged Gateway Intents (you can skip this step if you're not using `matrix_appservice_discord_auth_usePrivilegedIntents: true` below)
-5. Enable the bridge with the following configuration in your `vars.yml` file:
+4. Enable the bridge with the following configuration in your `vars.yml` file:
 
 ```yaml
 matrix_appservice_discord_enabled: true
 matrix_appservice_discord_client_id: "YOUR DISCORD APP CLIENT ID"
 matrix_appservice_discord_bot_token: "YOUR DISCORD APP BOT TOKEN"
-matrix_appservice_discord_auth_usePrivilegedIntents: true
 ```
 
-6. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
-7. Retrieve Discord invite link from the `{{ matrix_appservice_discord_config_path }}/invite_link` file on the server (this defaults to `/matrix/appservice-discord/config/invite_link`). You need to peek at the file on the server via SSH, etc., because it's not available via HTTP(S).
-8. Invite the Bot to Discord servers you wish to bridge. Administrator permission is recommended.
-9. Room addresses follow this syntax: `#_discord_guildid_channelid`. You can easily find the guild and channel ids by logging into Discord in a browser and opening the desired channel. The URL will have this format: `discordapp.com/channels/guild_id/channel_id`. Once you have figured out the appropriate room addrss, you can join by doing `/join #_discord_guildid_channelid` in your Matrix client.
+5. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
+6. Retrieve Discord invite link from the `{{ matrix_appservice_discord_config_path }}/invite_link` file on the server (this defaults to `/matrix/appservice-discord/config/invite_link`). You need to peek at the file on the server via SSH, etc., because it's not available via HTTP(S).
+7. Invite the Bot to Discord servers you wish to bridge. Administrator permission is recommended.
+8. Room addresses follow this syntax: `#_discord_guildid_channelid`. You can easily find the guild and channel ids by logging into Discord in a browser and opening the desired channel. The URL will have this format: `discordapp.com/channels/guild_id/channel_id`. Once you have figured out the appropriate room addrss, you can join by doing `/join #_discord_guildid_channelid` in your Matrix client.
 
 Other configuration options are available via the `matrix_appservice_discord_configuration_extension_yaml` variable.
 
