@@ -1,3 +1,15 @@
+# XXXX-XX-XX
+
+## New SSL Configuration
+
+A new variable `matrix_nginx_proxy_ssl_config`, bringing some breaking changes. The default configuration is set to `"Intermadiate"`.
+This changes `ssl_prefer_server_ciphers` to `off` by default instead of `off`. It also add some more ciphers to the list, this should
+give a little better performance for mobile devices and removes weak ciphers. More information in the [documentation](docs/configuring-playbook-nginx.md).
+To revert to the old behaviour just set `matrix_nginx_proxy_ssl_config` to `"Custom"` and don't change any of the other variables.
+
+If you are setting `matrix_nginx_proxy_ssl_protocols` to a custom value, you will need to `matrix_nginx_proxy_ssl_config` to `"Custom"`,
+otherwise it this variable will be ignored.
+
 # 2020-12-11
 
 ## synapse-janitor support removed
