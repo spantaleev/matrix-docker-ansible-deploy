@@ -29,6 +29,11 @@ matrix_federation_public_port: 8448
 # See docs/alternative-architectures.md
 matrix_architecture: amd64
 
+# The architecture for Debian packages.
+# See: https://wiki.debian.org/SupportedArchitectures
+# We just remap from our `matrix_architecture` values to what Debian and possibly other distros call things.
+matrix_debian_arch: "{{ 'armhf' if matrix_architecture == 'arm32' else matrix_architecture }}"
+
 matrix_user_username: "matrix"
 matrix_user_groupname: "matrix"
 
