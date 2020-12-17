@@ -20,7 +20,7 @@
 
 - name: Ensure Docker repository is enabled
   apt_repository:
-    repo: "deb [arch=armhf] https://download.docker.com/linux/raspbian {{ ansible_distribution_release }} stable"
+    repo: "deb [arch={{ matrix_debian_arch }}] https://download.docker.com/linux/raspbian {{ ansible_distribution_release }} stable"
     state: present
     update_cache: yes
   when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
