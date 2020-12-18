@@ -11,7 +11,7 @@
 
 - name: Ensure Docker's APT key is trusted
   apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
+    url: "https://download.docker.com/linux/{{ ansible_distribution|lower }}/gpg"
     id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
     state: present
   register: add_repository_key
@@ -20,7 +20,7 @@
 
 - name: Ensure Docker repository is enabled
   apt_repository:
-    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable"
+    repo: "deb [arch={{ matrix_debian_arch }}] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable"
     state: present
     update_cache: yes
   when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
