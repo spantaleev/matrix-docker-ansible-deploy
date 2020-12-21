@@ -72,11 +72,32 @@
       --mount type=bind,src={{ server_path_postgres_dump }},dst=/{{ server_path_postgres_dump|basename }},ro
       --entrypoint=/bin/sh
       {{ matrix_postgres_docker_image_latest }}
+      -c "export PGPASSWORD='{{ matrix_postgres_connection_password }}'; cat /{{ server_path_postgres_dump|basename }} |
+      {{ 'gunzip |' if server_path_postgres_dump.endswith('.gz') else '' }}
+      grep -vE '^CREATE ROLE {{ matrix_postgres_connection_username }}' |
+      grep -vE '^CREATE DATABASE {{ matrix_postgres_db_name }}' |
+      psql -v ON_ERROR_STOP=1 -h matrix-postgres"
+  when: (matrix_postgres_connection_password is defined) and (matrix_postgres_connection_password|length > 0)
+
+- name: Generate Postgres database import command
+  set_fact:
+    matrix_postgres_import_command: >-
+      {{ matrix_host_command_docker }} run --rm --name matrix-postgres-import
+      --log-driver=none
+      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+      --cap-drop=ALL
+      --network={{ matrix_docker_network }}
+      --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
+      --mount type=bind,src={{ server_path_postgres_dump }},dst=/{{ server_path_postgres_dump|basename }},ro
+      --entrypoint=/bin/sh
+      {{ matrix_postgres_docker_image_latest }}
       -c "cat /{{ server_path_postgres_dump|basename }} |
       {{ 'gunzip |' if server_path_postgres_dump.endswith('.gz') else '' }}
       grep -vE '^CREATE ROLE {{ matrix_postgres_connection_username }}' |
       grep -vE '^CREATE DATABASE {{ matrix_postgres_db_name }}' |
       psql -v ON_ERROR_STOP=1 -h matrix-postgres"
+  when: matrix_postgres_connection_password is not defined
+
 
 # This is a hack.
 # See: https://ansibledaily.com/print-to-standard-output-without-escaping/
