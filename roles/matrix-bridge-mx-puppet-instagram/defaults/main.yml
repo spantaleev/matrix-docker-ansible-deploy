@@ -47,18 +47,17 @@ matrix_mx_puppet_instagram_homeserver_token: ''
 matrix_mx_puppet_instagram_login_shared_secret: ''
 
 matrix_mx_puppet_instagram_database_engine: sqlite
+
+matrix_mx_puppet_instagram_sqlite_database_path_local: "{{ matrix_mx_puppet_instagram_data_path }}/database.db"
+matrix_mx_puppet_instagram_sqlite_database_path_in_container: "/data/database.db"
+
 matrix_mx_puppet_instagram_database_username: matrix_mx_puppet_instagram
 matrix_mx_puppet_instagram_database_password: ~
 matrix_mx_puppet_instagram_database_hostname: 'matrix-postgres'
 matrix_mx_puppet_instagram_database_port: 5432
-matrix_mx_puppet_instagram_database_name: matrix_mx_puppet_instagram
-matrix_mx_puppet_instagram_database_file: /data/database.db
-matrix_mx_puppet_instagram_database_connString: >-2
-  {%- if matrix_mx_puppet_instagram_database_engine == 'postgres' -%}
-  postgresql://{{ matrix_mx_puppet_instagram_database_username }}:{{ matrix_mx_puppet_instagram_database_password }}@{{ matrix_mx_puppet_instagram_database_hostname }}:{{ matrix_mx_puppet_instagram_database_port }}/{{ matrix_mx_puppet_instagram_database_name }}?sslmode=disable
-  {%- elif matrix_mx_puppet_instagram_database_engine == 'sqlite' -%}
-  {{ matrix_mx_puppet_instagram_database_engine }}://{{ matrix_mx_puppet_instagram_database_file }}
-  {%- endif -%}
+matrix_mx_puppet_instagram_database_db_name: matrix_mx_puppet_instagram
+
+matrix_mx_puppet_instagram_database_connection_string: 'postgresql://{{ matrix_mx_puppet_instagram_database_username }}:{{ matrix_mx_puppet_instagram_database_password }}@{{ matrix_mx_puppet_instagram_database_hostname }}:{{ matrix_mx_puppet_instagram_database_port }}/{{ matrix_mx_puppet_instagram_database_db_name }}?sslmode=disable'
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
