@@ -119,3 +119,9 @@
   service:
     daemon_reload: yes
   when: "matrix_mx_puppet_discord_systemd_service_result.changed"
+
+- name: Ensure matrix-mx-puppet-discord.service restarted, if necessary
+  service:
+    name: "matrix-mx-puppet-discord.service"
+    state: restarted
+  when: "matrix_mx_puppet_discord_requires_restart|bool"
