@@ -11,9 +11,10 @@ homeserver:
 
 {% if matrix_appservice_slack_database_engine == 'nedb' %}
 dbdir: "/data"
-{% endif %}
+{% else %}
 db:
-    engine: "{{ matrix_appservice_slack_database_engine }}"
-    connectionString: {{ matrix_appservice_slack_database_connString | to_json }}
+    engine: {{ matrix_appservice_slack_database_engine|to_json }}
+    connectionString: {{ matrix_appservice_slack_database_connectionString|to_json }}
+{% endif %}
 
 matrix_admin_room: "{{ matrix_appservice_slack_control_room_id }}"
