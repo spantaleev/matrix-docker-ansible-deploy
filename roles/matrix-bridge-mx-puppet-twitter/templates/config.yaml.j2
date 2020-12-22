@@ -60,11 +60,11 @@ database:
   # Connection string to connect to the Postgres instance
   # with username "user", password "pass", host "localhost" and database name "dbname".
   # Modify each value as necessary
-  connString: {{ matrix_mx_puppet_twitter_database_connString | to_json }}
+  connString: {{ matrix_mx_puppet_twitter_database_connection_string|to_json }}
 {% else %}
   # Use SQLite3 as a database backend
   # The name of the database file
-  filename: {{ matrix_mx_puppet_twitter_database_file }}
+  filename: {{ matrix_mx_puppet_twitter_sqlite_database_path_in_container|to_json }}
 {% endif %}
 
 logging:
