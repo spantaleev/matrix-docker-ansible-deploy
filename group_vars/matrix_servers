@@ -181,8 +181,7 @@ matrix_appservice_irc_appservice_token: "{{ matrix_synapse_macaroon_secret_key |
 
 matrix_appservice_irc_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'irc.hs.token') | to_uuid }}"
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_appservice_irc_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_appservice_irc_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'nedb' }}"
 matrix_appservice_irc_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.irc.db') | to_uuid }}"
 
 

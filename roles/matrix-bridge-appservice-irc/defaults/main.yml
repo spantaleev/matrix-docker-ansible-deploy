@@ -23,12 +23,17 @@ matrix_appservice_irc_database_hostname: 'matrix-postgres'
 matrix_appservice_irc_database_port: 5432
 matrix_appservice_irc_database_name: matrix_appservice_irc
 
-matrix_appservice_irc_database_connString: >-2
-  {%- if matrix_appservice_irc_database_engine == 'postgres' -%}
-  postgresql://{{ matrix_appservice_irc_database_username }}:{{ matrix_appservice_irc_database_password }}@{{ matrix_appservice_irc_database_hostname }}:{{ matrix_appservice_irc_database_port }}/{{ matrix_appservice_irc_database_name }}?sslmode=disable
-  {%- elif matrix_appservice_irc_database_engine == 'nedb' -%}
-  {{ matrix_appservice_irc_database_engine }}://{{ matrix_appservice_irc_database_file }}
-  {%- endif -%}
+# This is just the Postgres connection string, if Postgres is used.
+# Naming clashes with `matrix_appservice_irc_database_connectionString` somewhat.
+matrix_appservice_irc_database_connection_string: 'postgresql://{{ matrix_appservice_irc_database_username }}:{{ matrix_appservice_irc_database_password }}@{{ matrix_appservice_irc_database_hostname }}:{{ matrix_appservice_irc_database_port }}/{{ matrix_appservice_irc_database_name }}?sslmode=disable'
+
+# This is what actually goes into `database.connectionString` for the bridge.
+matrix_appservice_irc_database_connectionString: "{{
+	{
+		'nedb': 'nedb:///data',
+		'postgres': matrix_appservice_irc_database_connection_string,
+	}[matrix_appservice_irc_database_engine]
+}}"
 
 matrix_appservice_irc_ircService_servers: []
 

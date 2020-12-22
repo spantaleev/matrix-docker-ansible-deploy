@@ -67,22 +67,6 @@
   become: false
   when: "matrix_postgres_service_start_result.changed|bool"
 
-# See https://github.com/matrix-org/matrix-appservice-irc/wiki/Migrating-from-NEdB-to-PostgreSQL
-- name: Import appservice_irc NeDB database from {{ sqlite_database_path }} into Postgres
-  when: database == 'appservice_irc'
-  command:
-    cmd: >-
-      {{ matrix_host_command_docker }} run
-      --rm
-      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
-      --cap-drop=ALL
-      --network={{ matrix_docker_network }}
-      --mount type=bind,src={{ matrix_appservice_irc_data_path }}:/data:ro
-      --entrypoint=/bin/sh
-      {{ matrix_appservice_irc_docker_image }}
-      -c
-      './scripts/migrate-db-to-pgres.sh -d /data -p passkey.pem -c {{ postgres_db_connection_string }}'
-
 # No migration.sh available, but found this:
 # https://github.com/matrix-org/matrix-appservice-slack/blob/develop/src/scripts/migrateToPostgres.ts
 # Usage should be similar to appservice_irc
@@ -95,15 +79,12 @@
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
       --network={{ matrix_docker_network }}
-      --mount type=bind,src={{ matrix_appservice_irc_data_path }}:/data:ro
+      --mount type=bind,src={{ matrix_appservice_irc_data_path }},dst=/data,ro
       --entrypoint=/bin/sh
       {{ matrix_appservice_slack_docker_image }}
       -c
       'node /lib/scripts/migrate-db-to-pgres.js -d /data -p passkey.pem -c {{ postgres_db_connection_string }}'
 
-- name: Archive NeDB database ({{ sqlite_database_path }} -> {{ sqlite_database_path }}.backup)
-  command:
-    cmd: "mv {{ sqlite_database_path }} {{ sqlite_database_path }}.backup"
 
 - name: Inject result
   set_fact:
