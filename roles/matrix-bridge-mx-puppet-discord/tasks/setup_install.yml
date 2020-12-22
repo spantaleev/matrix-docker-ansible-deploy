@@ -25,6 +25,32 @@
       command: "mv {{ matrix_mx_puppet_discord_base_path }}/database.db {{ matrix_mx_puppet_discord_data_path }}/database.db"
   when: "matrix_mx_puppet_discord_stat_database.stat.exists"
 
+- set_fact:
+    matrix_mx_puppet_discord_requires_restart: false
+
+- block:
+    - name: Check if an SQLite database already exists
+      stat:
+        path: "{{ matrix_mx_puppet_discord_sqlite_database_path_local }}"
+      register: matrix_mx_puppet_discord_sqlite_database_path_local_stat_result
+
+    - block:
+        - set_fact:
+            matrix_postgres_db_migration_request:
+              src: "{{ matrix_mx_puppet_discord_sqlite_database_path_local }}"
+              dst: "{{ matrix_mx_puppet_discord_database_connection_string }}"
+              caller: "{{ role_path|basename }}"
+              engine_variable_name: 'matrix_mx_puppet_discord_database_engine'
+              engine_old: 'sqlite'
+              systemd_services_to_stop: ['matrix-mx-puppet-discord.service']
+
+        - import_tasks: "roles/matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+
+        - set_fact:
+            matrix_mx_puppet_discord_requires_restart: true
+      when: "matrix_mx_puppet_discord_sqlite_database_path_local_stat_result.stat.exists|bool"
+  when: "matrix_mx_puppet_discord_database_engine == 'postgres'"
+
 - name: Ensure MX Puppet Discord image is pulled
   docker_image:
     name: "{{ matrix_mx_puppet_discord_docker_image }}"
