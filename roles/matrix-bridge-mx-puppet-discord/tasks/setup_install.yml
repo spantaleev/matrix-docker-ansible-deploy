@@ -8,6 +8,20 @@
       The matrix-bridge-mx-puppet-discord role needs to execute before the matrix-synapse role.
   when: "matrix_synapse_role_executed|default(False)"
 
+- name: Ensure MX Puppet Discord paths exist
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - { path: "{{ matrix_mx_puppet_discord_base_path }}", when: true }
+    - { path: "{{ matrix_mx_puppet_discord_config_path }}", when: true }
+    - { path: "{{ matrix_mx_puppet_discord_data_path }}", when: true }
+    - { path: "{{ matrix_mx_puppet_discord_docker_src_files_path }}", when: "{{ matrix_mx_puppet_discord_container_image_self_build }}" }
+  when: matrix_mx_puppet_discord_enabled|bool and item.when|bool
+
 - name: Check if an old database file already exists
   stat:
     path: "{{ matrix_mx_puppet_discord_base_path }}/database.db"
@@ -58,20 +72,6 @@
     force_source: "{{ matrix_mx_puppet_discord_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mx_puppet_discord_docker_image_force_pull }}"
   when: matrix_mx_puppet_discord_enabled|bool and not matrix_mx_puppet_discord_container_image_self_build
-
-- name: Ensure MX Puppet Discord paths exist
-  file:
-    path: "{{ item.path }}"
-    state: directory
-    mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-  with_items:
-    - { path: "{{ matrix_mx_puppet_discord_base_path }}", when: true }
-    - { path: "{{ matrix_mx_puppet_discord_config_path }}", when: true }
-    - { path: "{{ matrix_mx_puppet_discord_data_path }}", when: true }
-    - { path: "{{ matrix_mx_puppet_discord_docker_src_files_path }}", when: "{{ matrix_mx_puppet_discord_container_image_self_build }}" }
-  when: matrix_mx_puppet_discord_enabled|bool and item.when|bool
 
 - name: Ensure MX Puppet Discord repository is present on self build
   git:
