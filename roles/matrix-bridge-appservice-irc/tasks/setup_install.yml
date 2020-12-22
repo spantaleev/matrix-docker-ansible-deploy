@@ -36,7 +36,6 @@
       failed_when: false
   when: "matrix_appservice_irc_stat_passkey.stat.exists"
 
-
 - set_fact:
     matrix_appservice_irc_requires_restart: false
 
@@ -164,3 +163,9 @@
   service:
     daemon_reload: yes
   when: "matrix_appservice_irc_systemd_service_result.changed"
+
+- name: Ensure matrix-appservice-irc.service restarted, if necessary
+  service:
+    name: "matrix-appservice-irc.service"
+    state: restarted
+  when: "matrix_appservice_irc_requires_restart|bool"
