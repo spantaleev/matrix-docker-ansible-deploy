@@ -135,7 +135,7 @@
 - block:
     # We can't use `{{ role_path }}` here, neither with `import_tasks`, nor with `include_tasks`,
     # because it refers to the role that included this util, and not to the role this file belongs to.
-    - import_tasks: "roles/matrix-postgres/tasks/util/detect_existing_postgres_version.yml"
+    - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/detect_existing_postgres_version.yml"
 
     - set_fact:
         matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_latest if matrix_postgres_detected_version_corresponding_docker_image == '' else matrix_postgres_detected_version_corresponding_docker_image }}"
