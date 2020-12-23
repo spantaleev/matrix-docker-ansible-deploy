@@ -32,6 +32,36 @@ matrix_registration_systemd_wanted_services_list: []
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8767"), or empty string to not expose.
 matrix_registration_container_http_host_bind_port: ''
 
+# Database-related configuration fields.
+#
+# To use SQLite, stick to these defaults.
+#
+# To use Postgres:
+# - change the engine (`matrix_registration_database_engine: 'postgres'`)
+# - adjust your database credentials via the `matrix_registration_postgres_*` variables
+matrix_registration_database_engine: 'sqlite'
+
+matrix_registration_sqlite_database_path_local: "{{ matrix_registration_data_path }}/db.sqlite3"
+matrix_registration_sqlite_database_path_in_container: "/data/db.sqlite3"
+
+matrix_registration_database_username: 'matrix_registration'
+matrix_registration_database_password: 'some-password'
+matrix_registration_database_hostname: 'matrix-postgres'
+matrix_registration_database_port: 5432
+matrix_registration_database_name: 'matrix_registration'
+
+matrix_registration_database_connection_string: 'postgresql://{{ matrix_registration_database_username }}:{{ matrix_registration_database_password }}@{{ matrix_registration_database_hostname }}:{{ matrix_registration_database_port }}/{{ matrix_registration_database_name }}'
+
+# For some reason, matrix-registraiton expects the `db` field to be like this: `sqlite:////data/db.sqlite3`.
+# (seems like one too many slashes, but..)
+matrix_registration_db: "{{
+	{
+		'sqlite': ('sqlite:///' + matrix_registration_sqlite_database_path_in_container),
+		'postgres': matrix_registration_database_connection_string,
+	}[matrix_registration_database_engine]
+}}"
+
+
 # The path at which Matrix Registration will be exposed on `matrix.DOMAIN`
 # (only applies when matrix-nginx-proxy is used).
 matrix_registration_public_endpoint: /matrix-registration
@@ -57,7 +87,6 @@ matrix_registration_shared_secret: ""
 matrix_registration_admin_secret: ""
 
 matrix_registration_riot_instance: "https://riot.im/app/"
-
 
 # Default matrix-registration configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.

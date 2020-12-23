@@ -1,0 +1,97 @@
+---
+
+# Pre-checks
+
+- name: Fail if Postgres not enabled
+  fail:
+    msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot import."
+  when: "not matrix_postgres_enabled|bool"
+
+- name: Fail if playbook called incorrectly
+  fail:
+    msg: "The `sqlite_database_path` variable needs to be provided to this playbook, via --extra-vars"
+  when: "sqlite_database_path is not defined or sqlite_database_path.startswith('<')"
+
+- name: Check if the provided SQLite database file exists
+  stat:
+    path: "{{ sqlite_database_path }}"
+  register: sqlite_database_path_stat_result
+
+- name: Fail if provided SQLite database file doesn't exist
+  fail:
+    msg: "File cannot be found on the server at {{ sqlite_database_path }}"
+  when: "not sqlite_database_path_stat_result.stat.exists"
+
+# We either expect `postgres_db_connection_string` specifying a full Postgres database connection string,
+# or `postgres_connection_string_variable_name`, specifying a name of a variable, which contains a valid connection string.
+
+- block:
+    - name: Fail if postgres_connection_string_variable_name points to an undefined variable
+      fail: msg="postgres_connection_string_variable_name is defined, but there is no variable with the name `{{ postgres_connection_string_variable_name }}`"
+      when: "postgres_connection_string_variable_name not in vars"
+
+    - name: Get Postgres connection string from variable
+      set_fact:
+        postgres_db_connection_string: "{{ lookup('vars', postgres_connection_string_variable_name) }}"
+  when: 'postgres_connection_string_variable_name is defined'
+
+- name: Fail if playbook called incorrectly
+  fail:
+    msg: >-
+      Either a `postgres_db_connection_string` variable or a `postgres_connection_string_variable_name` needs to be provided to this playbook, via `--extra-vars`.
+      Example: `--extra-vars="postgres_db_connection_string=postgresql://username:password@localhost:<port>/database_name"` or `--extra-vars="postgres_connection_string_variable_name=matrix_appservice_discord_database_connString"`
+  when: "postgres_db_connection_string is not defined or not postgres_db_connection_string.startswith('postgresql://')"
+
+
+# Defaults
+
+- name: Set postgres_start_wait_time, if not provided
+  set_fact:
+    postgres_start_wait_time: 15
+  when: "postgres_start_wait_time|default('') == ''"
+
+
+# Actual import work
+
+- name: Ensure matrix-postgres is started
+  service:
+    name: matrix-postgres
+    state: started
+    daemon_reload: yes
+  register: matrix_postgres_service_start_result
+
+- name: Wait a bit, so that Postgres can start
+  wait_for:
+    timeout: "{{ postgres_start_wait_time }}"
+  delegate_to: 127.0.0.1
+  become: false
+  when: "matrix_postgres_service_start_result.changed|bool"
+
+- name: Import SQLite database from {{ sqlite_database_path }} into Postgres
+  command:
+    cmd: >-
+      {{ matrix_host_command_docker }} run
+      --rm
+      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+      --cap-drop=ALL
+      --network={{ matrix_docker_network }}
+      --mount type=bind,src={{ sqlite_database_path }},dst=/in.db,ro
+      --entrypoint=/bin/sh
+      {{ matrix_postgres_pgloader_docker_image }}
+      -c
+      'pgloader /in.db {{ postgres_db_connection_string }}'
+
+- name: Archive SQLite database ({{ sqlite_database_path }} -> {{ sqlite_database_path }}.backup)
+  command:
+    cmd: "mv {{ sqlite_database_path }} {{ sqlite_database_path }}.backup"
+
+- name: Inject result
+  set_fact:
+    matrix_playbook_runtime_results: |
+      {{
+        matrix_playbook_runtime_results|default([])
+        +
+        [
+          "NOTE: Your SQLite database file has been imported into Postgres. The original file has been moved from `{{ sqlite_database_path }}` to `{{ sqlite_database_path }}.backup`. When you've confirmed that the import went well and everything works, you should be able to safely delete this file."
+        ]
+      }}

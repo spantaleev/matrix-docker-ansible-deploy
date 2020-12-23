@@ -39,6 +39,28 @@ matrix_ma1sd_systemd_wanted_services_list: []
 # Enabling this is discouraged. Learn more here: https://github.com/ma1uta/ma1sd/blob/master/docs/features/identity.md#lookups
 matrix_ma1sd_matrixorg_forwarding_enabled: false
 
+
+# Database-related configuration fields.
+#
+# To use SQLite, stick to these defaults.
+#
+# To use Postgres:
+# - change the engine (`matrix_ma1sd_database_engine: 'postgres'`)
+# - adjust your database credentials via the `matrix_ma1sd_postgres_*` variables
+matrix_ma1sd_database_engine: 'sqlite'
+
+matrix_ma1sd_sqlite_database_path_local: "{{ matrix_ma1sd_data_path }}/ma1sd.db"
+matrix_ma1sd_sqlite_database_path_in_container: "/var/ma1sd/ma1sd.db"
+
+matrix_ma1sd_database_username: 'matrix_ma1sd'
+matrix_ma1sd_database_password: 'some-password'
+matrix_ma1sd_database_hostname: 'matrix-postgres'
+matrix_ma1sd_database_port: 5432
+matrix_ma1sd_database_name: 'matrix_ma1sd'
+
+matrix_ma1sd_database_connection_string: 'postgresql://{{ matrix_ma1sd_database_username }}:{{ matrix_ma1sd_database_password }}@{{ matrix_ma1sd_database_hostname }}:{{ matrix_ma1sd_database_port }}/{{ matrix_ma1sd_database_name }}'
+
+
 # ma1sd has serveral supported identity stores.
 # One of them is storing identities directly in Synapse's database.
 # Learn more here: https://github.com/ma1uta/ma1sd/blob/master/docs/stores/synapse.md

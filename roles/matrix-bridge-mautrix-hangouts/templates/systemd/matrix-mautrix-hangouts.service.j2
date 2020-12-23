@@ -18,6 +18,7 @@ ExecStartPre={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-han
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
+			--network={{ matrix_docker_network }} \
 			-v {{ matrix_mautrix_hangouts_config_path }}:/config:z \
 			-v {{ matrix_mautrix_hangouts_data_path }}:/data:z \
 			{{ matrix_mautrix_hangouts_docker_image }} \

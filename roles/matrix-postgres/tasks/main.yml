@@ -26,6 +26,12 @@
   tags:
     - import-synapse-sqlite-db
 
+# Perhaps we need a new variable here, instead of `run_postgres_import_sqlite_db`.
+- import_tasks: "{{ role_path }}/tasks/import_generic_sqlite_db.yml"
+  when: run_postgres_import_sqlite_db|bool
+  tags:
+    - import-generic-sqlite-db
+
 - import_tasks: "{{ role_path }}/tasks/upgrade_postgres.yml"
   when: run_postgres_upgrade|bool
   tags:

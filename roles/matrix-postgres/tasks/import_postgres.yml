@@ -74,8 +74,8 @@
       {{ matrix_postgres_docker_image_latest }}
       -c "cat /{{ server_path_postgres_dump|basename }} |
       {{ 'gunzip |' if server_path_postgres_dump.endswith('.gz') else '' }}
-      grep -vE '^CREATE ROLE {{ matrix_postgres_connection_username }}' |
-      grep -vE '^CREATE DATABASE {{ matrix_postgres_db_name }}' |
+      grep -vE '{{ matrix_postgres_import_roles_ignore_regex }}' |
+      grep -vE '{{ matrix_postgres_import_databases_ignore_regex }}' |
       psql -v ON_ERROR_STOP=1 -h matrix-postgres"
 
 # This is a hack.
