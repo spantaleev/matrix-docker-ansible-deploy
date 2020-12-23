@@ -10,6 +10,44 @@
       register: matrix_dimension_sqlite_database_path_local_stat_result
 
     - block:
+        # pgloader makes a few columns `smallint`, instead of `boolean`.
+        # We need to fix them up.
+        - set_fact:
+            matrix_dimension_pgloader_additional_psql_statements_list: []
+
+        - set_fact:
+            matrix_dimension_pgloader_additional_psql_statements_list: |
+              {{
+                matrix_dimension_pgloader_additional_psql_statements_list
+                +
+                ([] if item.default == '' else ['ALTER TABLE ' + item.table + ' ALTER COLUMN "' + item.column + '" DROP default;'])
+                +
+                (['ALTER TABLE ' + item.table + ' ALTER COLUMN "' + item.column + '" TYPE BOOLEAN USING("' + item.column + '"::text::boolean);'])
+                +
+                ([] if item.default == '' else ['ALTER TABLE ' + item.table + ' ALTER COLUMN "' + item.column + '" SET default ' + item.default + ';'])
+              }}
+          with_items:
+            - {'table': 'dimension_widgets', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_widgets', 'column': 'isPublic', 'default': ''}
+            - {'table': 'dimension_webhook_bridges', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_user_sticker_packs', 'column': 'isSelected', 'default': ''}
+            - {'table': 'dimension_scalar_tokens', 'column': 'isDimensionToken', 'default': ''}
+            - {'table': 'dimension_users', 'column': 'isSelfBot', 'default': 'false'}
+            - {'table': 'dimension_telegram_bridges', 'column': 'allowTgPuppets', 'default': ''}
+            - {'table': 'dimension_telegram_bridges', 'column': 'allowMxPuppets', 'default': ''}
+            - {'table': 'dimension_telegram_bridges', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_sticker_packs', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_sticker_packs', 'column': 'isPublic', 'default': ''}
+            - {'table': 'dimension_slack_bridges', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_neb_integrations', 'column': 'isPublic', 'default': ''}
+            - {'table': 'dimension_irc_bridges', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_irc_bridge_networks', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_gitter_bridges', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_custom_simple_bots', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_custom_simple_bots', 'column': 'isPublic', 'default': ''}
+            - {'table': 'dimension_bridges', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_bridges', 'column': 'isPublic', 'default': ''}
+
         - set_fact:
             matrix_postgres_db_migration_request:
               src: "{{ matrix_dimension_sqlite_database_path_local }}"
@@ -19,12 +57,8 @@
               engine_old: 'sqlite'
               systemd_services_to_stop: ['matrix-dimension.service']
               pgloader_options: ['--with "quote identifiers"']
-              # pgloader makes `isSelfBot` of type `smallint`, instead of `boolean`.
-              # We need to fix it up
-              additional_psql_statements_list:
-                - 'ALTER TABLE dimension_users ALTER COLUMN "isSelfBot" DROP default;'
-                - 'ALTER TABLE dimension_users ALTER COLUMN "isSelfBot" TYPE BOOLEAN USING("isSelfBot"::text::boolean);'
-                - 'ALTER TABLE dimension_users ALTER COLUMN "isSelfBot" SET default false;'
+              additional_psql_statements_list: "{{ matrix_dimension_pgloader_additional_psql_statements_list }}"
+              additional_psql_statements_db_name: "{{ matrix_dimension_database_name }}"
 
         - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
 
