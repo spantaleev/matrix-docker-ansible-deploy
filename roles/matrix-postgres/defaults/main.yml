@@ -65,4 +65,15 @@ matrix_postgres_import_databases_ignore_regex: "^CREATE DATABASE ({{ matrix_post
 # For most (subsequent) runs, Postgres would already be running, so no waiting will be happening at all.
 matrix_postgres_additional_databases_postgres_start_wait_timeout_seconds: 15
 
-matrix_postgres_pgloader_docker_image: "docker.io/illagrenan/pgloader:3.6.2"
+
+matrix_postgres_pgloader_container_image_self_build: false
+matrix_postgres_pgloader_container_image_self_build_repo: "https://github.com/illagrenan/pgloader-docker.git"
+matrix_postgres_pgloader_container_image_self_build_repo_branch: "v{{ matrix_postgres_pgloader_docker_image_tag }}"
+matrix_postgres_pgloader_container_image_self_build_src_path: "{{ matrix_postgres_base_path }}/pgloader-container-src"
+
+# We use illagrenan/pgloader, instead of the more official dimitri/pgloader image,
+# because the official one only provides a `latest` tag.
+matrix_postgres_pgloader_docker_image: "{{ matrix_postgres_pgloader_docker_image_name_prefix }}illagrenan/pgloader:{{ matrix_postgres_pgloader_docker_image_tag }}"
+matrix_postgres_pgloader_docker_image_name_prefix: "{{ 'localhost/' if matrix_postgres_pgloader_container_image_self_build else 'docker.io/' }}"
+matrix_postgres_pgloader_docker_image_tag: "3.6.2"
+matrix_postgres_pgloader_docker_image_force_pull: "{{ matrix_postgres_pgloader_docker_image.endswith(':latest') }}"

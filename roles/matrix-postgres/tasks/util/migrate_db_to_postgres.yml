@@ -31,17 +31,50 @@
     msg: "File cannot be found on the server at {{ matrix_postgres_db_migration_request.src }}"
   when: "not matrix_postgres_db_migration_request_src_stat_result.stat.exists"
 
-- name: Fail if we cannot migrate on the current architecture ({{ matrix_architecture }})
-  fail:
-    msg: >-
-      {{ matrix_postgres_db_migration_request.engine_variable_name }} (part of {{ matrix_postgres_db_migration_request.caller }}) has been set to `postgres` (which is our new default now).
-      However, we've discovered an existing file-based database ({{ matrix_postgres_db_migration_request.engine_old }}) in {{ matrix_postgres_db_migration_request.src }}.
-      It appears that you've been using this bridge with a file-based database engine until now.
-      To continue using {{ matrix_postgres_db_migration_request.engine_old }}, opt into it explicitly: add `{{ matrix_postgres_db_migration_request.engine_variable_name }}: {{ matrix_postgres_db_migration_request.engine_old }}` to your vars.yml file and re-run this same command.
-      We'd normally auto-migrate you to Postgres, but we can't do it on the {{ matrix_architecture }} architecture. Our pgloader container image only supports amd64 (for now).
-      Learn more here: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/740
-  when: "matrix_architecture != 'amd64'"
+- block:
+    - name: Ensure pgloader repository is present on self-build
+      git:
+        repo: "{{ matrix_postgres_pgloader_container_image_self_build_repo }}"
+        dest: "{{ matrix_postgres_pgloader_container_image_self_build_src_path }}"
+        version: "{{ matrix_postgres_pgloader_container_image_self_build_repo_branch }}"
+        force: "yes"
+      register: matrix_postgres_pgloader_git_pull_results
 
+    # If `stable` is used, we hit an error when processing /opt/src/pgloader/build/quicklisp/dists/quicklisp/software/uax-15-20201220-git/data/CompositionExclusions.txt:
+    # > the octet sequence #(194) cannot be decoded
+    #
+    # The issue is described here and is not getting fixed for months: https://github.com/dimitri/pgloader/pull/1179
+    #
+    # Although we're not using the dimitri/pgloader image, the one we're using suffers from the same problem.
+    - name: Switch pgloader base image from Debian stable (likely 10.x/Buster) to Bullseye
+      lineinfile:
+        path: "{{ matrix_postgres_pgloader_container_image_self_build_src_path }}/Dockerfile"
+        regexp: "{{ item.match }}"
+        line: "{{ item.replace }}"
+      with_items:
+        - match: '^FROM debian:stable-slim as builder$'
+          replace: 'FROM debian:bullseye-slim as builder'
+        - match: '^FROM debian:stable-slim$'
+          replace: 'FROM debian:bullseye-slim'
+
+    - name: Ensure pgloader Docker image is built
+      docker_image:
+        name: "{{ matrix_postgres_pgloader_docker_image }}"
+        source: build
+        force_source: "{{ matrix_postgres_pgloader_git_pull_results.changed }}"
+        build:
+          dockerfile: Dockerfile
+          path: "{{ matrix_postgres_pgloader_container_image_self_build_src_path }}"
+          pull: yes
+  when: "matrix_postgres_pgloader_container_image_self_build|bool"
+
+- name: Ensure pgloader Docker image is pulled
+  docker_image:
+    name: "{{ matrix_postgres_pgloader_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_postgres_pgloader_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_postgres_pgloader_docker_image_force_pull }}"
+  when: "not matrix_postgres_pgloader_container_image_self_build"
 
 # Defaults
 
