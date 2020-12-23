@@ -1,3 +1,31 @@
+# 2020-12-23
+
+## The big move to all-on-Postgres (potentially dangerous)
+
+**TLDR**: all your bridges (and other services) will likely be auto-migrated from SQLite/nedb to Postgres, hopefully without trouble. You can opt-out (see how below), if too worried about breakage.
+
+Until now, we've only used Postgres as a database for Synapse. All other services (bridges, bots, etc.) were kept simple and used a file-based database (SQLite or nedb).
+
+Since [this huge pull request](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/740), **all of our services now use Postgres by default**. Thanks to [Johanna Dorothea Reichmann](https://github.com/jdreichmann) for starting the work on it and for providing great input!
+
+Moving all services to Postgres brings a few **benefits** to us:
+
+- **improved performance**
+- **improved compatibility**. Most bridges are deprecating SQLite/nedb support or offer less features when not on Postgres.
+- **easier backups**. It's still some effort to take a proper backup (Postgres dump + various files, keys), but a Postgres dump now takes you much further.
+- we're now **more prepared to introduce other services** that need a Postgres database - [Dendrite](https://github.com/matrix-org/dendrite), the [mautrix-signal](https://github.com/tulir/mautrix-signal) bridge (existing [pull request](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/686)), etc.
+
+### Key takeway
+
+- existing installations that use an [external Postgres](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-external-postgres.md) server should be unaffected (they remain on SQLite/nedb for all services, except Synapse)
+
+- for existing installations which use our integrated Postgres database server (`matrix-postgres`, which is the default), **we automatically migrate data** from SQLite/nedb to Postgres and **archive the database files** (`something.db` -> `something.db.backup`), so you can restore them if you need to go back (see how below).
+
+- this is a **very large and somewhat untested change** (potentially dangerous), so **if you're not feeling confident/experimental, opt-out** of it for now (see below). Still, it's the new default and what we (and various bridges) will focus on going forward, so don't stick to old ways for too long.
+
+- you can remain on SQLite/nedb (at least for now) by adding a variable like this to your `vars.yml` file for each service you use: `matrix_COMPONENT_database_engine: sqlite` (e.g. `matrix_mautrix_facebook_database_engine: sqlite`). Some services (like `appservice-irc` and `appservice-slack`) don't use SQLite, so use `nedb`, instead of `sqlite` for them. If the playbook had already migrated you to Postgres, you will need to rename back the database files (`something.db.backup` -> `something.db`).
+
+
 # 2020-12-11
 
 ## synapse-janitor support removed
