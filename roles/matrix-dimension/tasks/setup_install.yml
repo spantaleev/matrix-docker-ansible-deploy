@@ -19,6 +19,12 @@
               engine_old: 'sqlite'
               systemd_services_to_stop: ['matrix-dimension.service']
               pgloader_options: ['--with "quote identifiers"']
+              # pgloader makes `isSelfBot` of type `smallint`, instead of `boolean`.
+              # We need to fix it up
+              additional_psql_statements_list:
+                - 'ALTER TABLE dimension_users ALTER COLUMN "isSelfBot" DROP default;'
+                - 'ALTER TABLE dimension_users ALTER COLUMN "isSelfBot" TYPE BOOLEAN USING("isSelfBot"::text::boolean);'
+                - 'ALTER TABLE dimension_users ALTER COLUMN "isSelfBot" SET default false;'
 
         - import_tasks: "roles/matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
 
