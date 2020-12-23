@@ -128,10 +128,6 @@
       -c
       'pgloader {{ matrix_postgres_db_migration_request.pgloader_options|default([])|join(' ') }} /in.db {{ matrix_postgres_db_migration_request.dst }}'
 
-- name: Archive {{ matrix_postgres_db_migration_request.engine_old }} database ({{ matrix_postgres_db_migration_request.src }} -> {{ matrix_postgres_db_migration_request.src }}.backup)
-  command:
-    cmd: "mv {{ matrix_postgres_db_migration_request.src }} {{ matrix_postgres_db_migration_request.src }}.backup"
-
 - block:
     # We can't use `{{ role_path }}` here, neither with `import_tasks`, nor with `include_tasks`,
     # because it refers to the role that included this util, and not to the role this file belongs to.
@@ -154,6 +150,10 @@
       with_items: "{{ matrix_postgres_db_migration_request.additional_psql_statements_list }}"
 
   when: "matrix_postgres_db_migration_request.additional_psql_statements_list|default([])|length > 0"
+
+- name: Archive {{ matrix_postgres_db_migration_request.engine_old }} database ({{ matrix_postgres_db_migration_request.src }} -> {{ matrix_postgres_db_migration_request.src }}.backup)
+  command:
+    cmd: "mv {{ matrix_postgres_db_migration_request.src }} {{ matrix_postgres_db_migration_request.src }}.backup"
 
 - name: Inject result
   set_fact:
