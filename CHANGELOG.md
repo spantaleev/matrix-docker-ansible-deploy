@@ -21,9 +21,23 @@ Moving all services to Postgres brings a few **benefits** to us:
 
 - for existing installations which use our integrated Postgres database server (`matrix-postgres`, which is the default), **we automatically migrate data** from SQLite/nedb to Postgres and **archive the database files** (`something.db` -> `something.db.backup`), so you can restore them if you need to go back (see how below).
 
-- this is a **very large and somewhat untested change** (potentially dangerous), so **if you're not feeling confident/experimental, opt-out** of it for now (see below). Still, it's the new default and what we (and various bridges) will focus on going forward, so don't stick to old ways for too long.
+### Opting-out of the Postgres migration
 
-- you can remain on SQLite/nedb (at least for now) by adding a variable like this to your `vars.yml` file for each service you use: `matrix_COMPONENT_database_engine: sqlite` (e.g. `matrix_mautrix_facebook_database_engine: sqlite`). Some services (like `appservice-irc` and `appservice-slack`) don't use SQLite, so use `nedb`, instead of `sqlite` for them. If the playbook had already migrated you to Postgres, you will need to rename back the database files (`something.db.backup` -> `something.db`).
+This is a **very large and somewhat untested change** (potentially dangerous), so **if you're not feeling confident/experimental, opt-out** of it for now. Still, it's the new default and what we (and various bridges) will focus on going forward, so don't stick to old ways for too long.
+
+You can remain on SQLite/nedb (at least for now) by adding a variable like this to your `vars.yml` file for each service you use: `matrix_COMPONENT_database_engine: sqlite` (e.g. `matrix_mautrix_facebook_database_engine: sqlite`).
+
+Some services (like `appservice-irc` and `appservice-slack`) don't use SQLite, so use `nedb`, instead of `sqlite` for them.
+
+### Going back to SQLite/nedb if things went wrong
+
+If you went with the Postgres migration and it went badly for you (some bridge not working as expected or not working at all), do this:
+
+- stop all services (`ansible-playbook -i inventory/hosts setup.yml --tags=stop`)
+- SSH into the server and rename the old database files (`something.db.backup` -> `something.db`). Example: `mv /matrix/mautrix-facebook/data/mautrix-facebook.db.backup /matrix/mautrix-facebook/data/mautrix-facebook.db`
+- switch the affected service back to SQLite (e.g. `matrix_mautrix_facebook_database_engine: sqlite`). Some services (like `appservice-irc` and `appservice-slack`) don't use SQLite, so use `nedb`, instead of `sqlite` for them.
+- re-run the playbook (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`)
+- [get in touch](README.md#support) with us
 
 
 # 2020-12-11
