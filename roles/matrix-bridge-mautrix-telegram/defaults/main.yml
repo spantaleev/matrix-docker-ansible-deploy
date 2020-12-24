@@ -43,6 +43,35 @@ matrix_mautrix_telegram_systemd_wanted_services_list: []
 matrix_mautrix_telegram_appservice_token: ''
 matrix_mautrix_telegram_homeserver_token: ''
 
+
+# Database-related configuration fields.
+#
+# To use SQLite, stick to these defaults.
+#
+# To use Postgres:
+# - change the engine (`matrix_mautrix_telegram_database_engine: 'postgres'`)
+# - adjust your database credentials via the `matrix_mautrix_telegram_postgres_*` variables
+matrix_mautrix_telegram_database_engine: 'sqlite'
+
+matrix_mautrix_telegram_sqlite_database_path_local: "{{ matrix_mautrix_telegram_data_path }}/mautrix-telegram.db"
+matrix_mautrix_telegram_sqlite_database_path_in_container: "/data/mautrix-telegram.db"
+
+matrix_mautrix_telegram_database_username: 'matrix_mautrix_telegram'
+matrix_mautrix_telegram_database_password: 'some-password'
+matrix_mautrix_telegram_database_hostname: 'matrix-postgres'
+matrix_mautrix_telegram_database_port: 5432
+matrix_mautrix_telegram_database_name: 'matrix_mautrix_telegram'
+
+matrix_mautrix_telegram_database_connection_string: 'postgres://{{ matrix_mautrix_telegram_database_username }}:{{ matrix_mautrix_telegram_database_password }}@{{ matrix_mautrix_telegram_database_hostname }}:{{ matrix_mautrix_telegram_database_port }}/{{ matrix_mautrix_telegram_database_name }}'
+
+matrix_mautrix_telegram_appservice_database: "{{
+	{
+		'sqlite': ('sqlite:///' + matrix_mautrix_telegram_sqlite_database_path_in_container),
+		'postgres': matrix_mautrix_telegram_database_connection_string,
+	}[matrix_mautrix_telegram_database_engine]
+}}"
+
+
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
 matrix_mautrix_telegram_login_shared_secret: ''
 

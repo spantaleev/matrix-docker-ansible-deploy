@@ -21,6 +21,34 @@ matrix_bot_matrix_reminder_bot_systemd_required_services_list: ['docker.service'
 matrix_bot_matrix_reminder_bot_systemd_wanted_services_list: []
 
 
+# Database-related configuration fields.
+#
+# To use SQLite, stick to these defaults.
+#
+# To use Postgres:
+# - change the engine (`matrix_bot_matrix_reminder_bot_database_engine: 'postgres'`)
+# - adjust your database credentials via the `matrix_bot_matrix_reminder_bot_database_*` variables
+matrix_bot_matrix_reminder_bot_database_engine: 'sqlite'
+
+matrix_bot_matrix_reminder_bot_sqlite_database_path_local: "{{ matrix_bot_matrix_reminder_bot_data_path }}/bot.db"
+matrix_bot_matrix_reminder_bot_sqlite_database_path_in_container: "/data/bot.db"
+
+matrix_bot_matrix_reminder_bot_database_username: 'matrix_reminder_bot'
+matrix_bot_matrix_reminder_bot_database_password: 'some-password'
+matrix_bot_matrix_reminder_bot_database_hostname: 'matrix-postgres'
+matrix_bot_matrix_reminder_bot_database_port: 5432
+matrix_bot_matrix_reminder_bot_database_name: 'matrix_reminder_bot'
+
+matrix_bot_matrix_reminder_bot_database_connection_string: 'postgres://{{ matrix_bot_matrix_reminder_bot_database_username }}:{{ matrix_bot_matrix_reminder_bot_database_password }}@{{ matrix_bot_matrix_reminder_bot_database_hostname }}:{{ matrix_bot_matrix_reminder_bot_database_port }}/{{ matrix_bot_matrix_reminder_bot_database_name }}'
+
+matrix_bot_matrix_reminder_bot_storage_database: "{{
+	{
+		'sqlite': ('sqlite://' + matrix_bot_matrix_reminder_bot_sqlite_database_path_in_container),
+		'postgres': matrix_bot_matrix_reminder_bot_database_connection_string,
+	}[matrix_bot_matrix_reminder_bot_database_engine]
+}}"
+
+
 # The bot's username. This user needs to be created manually beforehand.
 # Also see `matrix_bot_matrix_reminder_bot_user_password`.
 matrix_bot_matrix_reminder_bot_matrix_user_id_localpart: "bot.matrix-reminder-bot"

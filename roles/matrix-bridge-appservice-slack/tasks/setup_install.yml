@@ -1,12 +1,5 @@
 ---
 
-- name: Ensure Appservice Slack image is pulled
-  docker_image:
-    name: "{{ matrix_appservice_slack_docker_image }}"
-    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_appservice_slack_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_slack_docker_image_force_pull }}"
-
 - name: Ensure AppService Slack paths exist
   file:
     path: "{{ item }}"
@@ -18,6 +11,30 @@
     - "{{ matrix_appservice_slack_base_path }}"
     - "{{ matrix_appservice_slack_config_path }}"
     - "{{ matrix_appservice_slack_data_path }}"
+
+- set_fact:
+    matrix_appservice_slack_requires_restart: false
+
+- block:
+    - name: Check if a nedb database already exists
+      stat:
+        path: "{{ matrix_appservice_slack_data_path }}/teams.db"
+      register: matrix_appservice_slack_nedb_database_path_local_stat_result
+
+    - block:
+        - import_tasks: "{{ role_path }}/tasks/migrate_nedb_to_postgres.yml"
+
+        - set_fact:
+            matrix_appservice_slack_requires_restart: true
+      when: "matrix_appservice_slack_nedb_database_path_local_stat_result.stat.exists|bool"
+  when: "matrix_appservice_slack_database_engine == 'postgres'"
+
+- name: Ensure Appservice Slack image is pulled
+  docker_image:
+    name: "{{ matrix_appservice_slack_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_appservice_slack_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_slack_docker_image_force_pull }}"
 
 - name: Ensure Matrix Appservice Slack config installed
   copy:
@@ -46,3 +63,9 @@
   service:
     daemon_reload: yes
   when: "matrix_appservice_slack_systemd_service_result.changed"
+
+- name: Ensure matrix-appservice-slack.service restarted, if necessary
+  service:
+    name: "matrix-appservice-slack.service"
+    state: restarted
+  when: "matrix_appservice_slack_requires_restart|bool"

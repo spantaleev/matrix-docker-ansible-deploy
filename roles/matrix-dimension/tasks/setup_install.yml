@@ -1,0 +1,109 @@
+---
+
+- set_fact:
+    matrix_dimension_requires_restart: false
+
+- block:
+    - name: Check if an SQLite database already exists
+      stat:
+        path: "{{ matrix_dimension_sqlite_database_path_local }}"
+      register: matrix_dimension_sqlite_database_path_local_stat_result
+
+    - block:
+        # pgloader makes a few columns `smallint`, instead of `boolean`.
+        # We need to fix them up.
+        - set_fact:
+            matrix_dimension_pgloader_additional_psql_statements_list: []
+
+        - set_fact:
+            matrix_dimension_pgloader_additional_psql_statements_list: |
+              {{
+                matrix_dimension_pgloader_additional_psql_statements_list
+                +
+                ([] if item.default == '' else ['ALTER TABLE ' + item.table + ' ALTER COLUMN "' + item.column + '" DROP default;'])
+                +
+                (['ALTER TABLE ' + item.table + ' ALTER COLUMN "' + item.column + '" TYPE BOOLEAN USING("' + item.column + '"::text::boolean);'])
+                +
+                ([] if item.default == '' else ['ALTER TABLE ' + item.table + ' ALTER COLUMN "' + item.column + '" SET default ' + item.default + ';'])
+              }}
+          with_items:
+            - {'table': 'dimension_widgets', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_widgets', 'column': 'isPublic', 'default': ''}
+            - {'table': 'dimension_webhook_bridges', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_user_sticker_packs', 'column': 'isSelected', 'default': ''}
+            - {'table': 'dimension_scalar_tokens', 'column': 'isDimensionToken', 'default': ''}
+            - {'table': 'dimension_users', 'column': 'isSelfBot', 'default': 'false'}
+            - {'table': 'dimension_telegram_bridges', 'column': 'allowTgPuppets', 'default': ''}
+            - {'table': 'dimension_telegram_bridges', 'column': 'allowMxPuppets', 'default': ''}
+            - {'table': 'dimension_telegram_bridges', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_sticker_packs', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_sticker_packs', 'column': 'isPublic', 'default': ''}
+            - {'table': 'dimension_slack_bridges', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_neb_integrations', 'column': 'isPublic', 'default': ''}
+            - {'table': 'dimension_irc_bridges', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_irc_bridge_networks', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_gitter_bridges', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_custom_simple_bots', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_custom_simple_bots', 'column': 'isPublic', 'default': ''}
+            - {'table': 'dimension_bridges', 'column': 'isEnabled', 'default': ''}
+            - {'table': 'dimension_bridges', 'column': 'isPublic', 'default': ''}
+
+        - set_fact:
+            matrix_postgres_db_migration_request:
+              src: "{{ matrix_dimension_sqlite_database_path_local }}"
+              dst: "{{ matrix_dimension_database_connection_string }}"
+              caller: "{{ role_path|basename }}"
+              engine_variable_name: 'matrix_dimension_database_engine'
+              engine_old: 'sqlite'
+              systemd_services_to_stop: ['matrix-dimension.service']
+              pgloader_options: ['--with "quote identifiers"']
+              additional_psql_statements_list: "{{ matrix_dimension_pgloader_additional_psql_statements_list }}"
+              additional_psql_statements_db_name: "{{ matrix_dimension_database_name }}"
+
+        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+
+        - set_fact:
+            matrix_dimension_requires_restart: true
+      when: "matrix_dimension_sqlite_database_path_local_stat_result.stat.exists|bool"
+  when: "matrix_dimension_database_engine == 'postgres'"
+
+- name: Ensure Dimension base path exists
+  file:
+    path: "{{ matrix_dimension_base_path }}"
+    state: directory
+    mode: 0770
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_dimension_user_gid }}"
+
+- name: Ensure Dimension config installed
+  copy:
+    content: "{{ matrix_dimension_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_dimension_base_path }}/config.yaml"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_dimension_user_gid }}"
+
+- name: Ensure Dimension image is pulled
+  docker_image:
+    name: "{{ matrix_dimension_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_dimension_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_dimension_docker_image_force_pull }}"
+
+- name: Ensure matrix-dimension.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-dimension.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-dimension.service"
+    mode: 0644
+  register: matrix_dimension_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-dimension.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_dimension_systemd_service_result.changed|bool"
+
+- name: Ensure matrix-dimension.service restarted, if necessary
+  service:
+    name: "matrix-dimension.service"
+    state: restarted
+  when: "matrix_dimension_requires_restart|bool"

@@ -1,12 +1,5 @@
 ---
 
-- name: Ensure Appservice IRC image is pulled
-  docker_image:
-    name: "{{ matrix_appservice_irc_docker_image }}"
-    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_appservice_irc_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_irc_docker_image_force_pull }}"
-
 - name: Ensure Appservice IRC paths exist
   file:
     path: "{{ item }}"
@@ -24,25 +17,48 @@
     path: "{{ matrix_appservice_irc_base_path }}/passkey.pem"
   register: matrix_appservice_irc_stat_passkey
 
-- name: (Data relocation) Ensure matrix-appservice-irc.service is stopped
-  service:
-    name: matrix-appservice-irc
-    state: stopped
-    daemon_reload: yes
-  failed_when: false
+- block:
+    - name: (Data relocation) Ensure matrix-appservice-irc.service is stopped
+      service:
+        name: matrix-appservice-irc
+        state: stopped
+        daemon_reload: yes
+      failed_when: false
+
+    - name: (Data relocation) Move AppService IRC passkey.pem file to ./data directory
+      command: "mv {{ matrix_appservice_irc_base_path }}/passkey.pem {{ matrix_appservice_irc_data_path }}/passkey.pem"
+
+    - name: (Data relocation) Move AppService IRC database files to ./data directory
+      command: "mv {{ matrix_appservice_irc_base_path }}/{{ item }} {{ matrix_appservice_irc_data_path }}/{{ item }}"
+      with_items:
+        - rooms.db
+        - users.db
+      failed_when: false
   when: "matrix_appservice_irc_stat_passkey.stat.exists"
 
-- name: (Data relocation) Move AppService IRC passkey.pem file to ./data directory
-  command: "mv {{ matrix_appservice_irc_base_path }}/passkey.pem {{ matrix_appservice_irc_data_path }}/passkey.pem"
-  when: "matrix_appservice_irc_stat_passkey.stat.exists"
+- set_fact:
+    matrix_appservice_irc_requires_restart: false
 
-- name: (Data relocation) Move AppService IRC database files to ./data directory
-  command: "mv {{ matrix_appservice_irc_base_path }}/{{ item }} {{ matrix_appservice_irc_data_path }}/{{ item }}"
-  with_items:
-    - rooms.db
-    - users.db
-  failed_when: false
-  when: "matrix_appservice_irc_stat_passkey.stat.exists"
+- block:
+    - name: Check if a nedb database already exists
+      stat:
+        path: "{{ matrix_appservice_irc_data_path }}/users.db"
+      register: matrix_appservice_irc_nedb_database_path_local_stat_result
+
+    - block:
+        - import_tasks: "{{ role_path }}/tasks/migrate_nedb_to_postgres.yml"
+
+        - set_fact:
+            matrix_appservice_irc_requires_restart: true
+      when: "matrix_appservice_irc_nedb_database_path_local_stat_result.stat.exists|bool"
+  when: "matrix_appservice_irc_database_engine == 'postgres'"
+
+- name: Ensure Appservice IRC image is pulled
+  docker_image:
+    name: "{{ matrix_appservice_irc_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_appservice_irc_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_irc_docker_image_force_pull }}"
 
 - name: Ensure Matrix Appservice IRC config installed
   copy:
@@ -147,3 +163,9 @@
   service:
     daemon_reload: yes
   when: "matrix_appservice_irc_systemd_service_result.changed"
+
+- name: Ensure matrix-appservice-irc.service restarted, if necessary
+  service:
+    name: "matrix-appservice-irc.service"
+    state: restarted
+  when: "matrix_appservice_irc_requires_restart|bool"

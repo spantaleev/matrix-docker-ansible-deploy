@@ -5,6 +5,7 @@
     name:
       - apt-transport-https
       - ca-certificates
+      - gnupg
     state: present
     update_cache: yes
 
@@ -19,7 +20,7 @@
 
 - name: Ensure Docker repository is enabled
   apt_repository:
-    repo: "deb [arch=armhf] https://download.docker.com/linux/raspbian {{ ansible_distribution_release }} stable"
+    repo: "deb [arch={{ matrix_debian_arch }}] https://download.docker.com/linux/raspbian {{ ansible_distribution_release }} stable"
     state: present
     update_cache: yes
   when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
@@ -27,7 +28,6 @@
 - name: Ensure APT packages are installed
   apt:
     name:
-      - python-docker
       - "{{ matrix_ntpd_package }}"
       - fuse
     state: latest
@@ -37,5 +37,6 @@
   apt:
     name:
       - "{{ matrix_docker_package_name }}"
+      - "python{{'3' if ansible_python.version.major == 3 else ''}}-docker"
     state: latest
   when: matrix_docker_installation_enabled|bool

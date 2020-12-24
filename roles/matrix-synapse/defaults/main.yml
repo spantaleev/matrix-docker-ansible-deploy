@@ -6,8 +6,12 @@ matrix_synapse_enabled: true
 matrix_synapse_container_image_self_build: false
 matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/synapse.git"
 
-matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:v1.23.0"
+matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else 'docker.io/' }}"
+# The if statement below may look silly at times (leading to the same version being returned),
+# but ARM-compatible container images are only released 1-7 hours after a release,
+# so we may often be on different versions for different architectures when new Synapse releases come out.
+matrix_synapse_docker_image_tag: "{{ 'v1.24.0' if matrix_architecture == 'amd64' else 'v1.24.0' }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
@@ -136,6 +140,11 @@ matrix_synapse_tls_private_key_path: "/data/{{ matrix_server_fqn_matrix }}.tls.k
 # names.
 matrix_synapse_http_listener_resource_names: ["client"]
 
+# Resources served on Synapse's federation port.
+# When disabling federation, we may wish to serve the `openid` resource here,
+# so that services like Dimension and ma1sd can work.
+matrix_synapse_federation_listener_resource_names: "{{ ['federation'] if matrix_synapse_federation_enabled else (['openid'] if matrix_synapse_federation_port_openid_resource_required else []) }}"
+
 # Enable this to allow Synapse to report utilization statistics about your server to matrix.org
 # (things like number of users, number of messages sent, uptime, load, etc.)
 matrix_synapse_report_stats: false
@@ -211,9 +220,24 @@ matrix_synapse_caches_global_factor: 0.5
 
 # Controls whether Synapse will federate at all.
 # Disable this to completely isolate your server from the rest of the Matrix network.
-# Also see: `matrix_synapse_tls_federation_listener_enabled` if you wish to keep federation enabled,
+#
+# Disabling this still keeps the federation port exposed, because it may be used for other services (`openid`).
+#
+# Also see:
+# - `matrix_synapse_tls_federation_listener_enabled` if you wish to keep federation enabled,
 # but want to stop the TLS listener (port 8448).
+# - `matrix_synapse_federation_port_enabled` to avoid exposing the federation ports
 matrix_synapse_federation_enabled: true
+
+# Controls whether the federation ports are used at all.
+# One may wish to disable federation (`matrix_synapse_federation_enabled: true`),
+# but still run other resources (like `openid`) on the federation port
+# by enabling them in `matrix_synapse_federation_listener_resource_names`.
+matrix_synapse_federation_port_enabled: "{{ matrix_synapse_federation_enabled or matrix_synapse_federation_port_openid_resource_required }}"
+
+# Controls whether an `openid` listener is to be enabled. Useful when disabling federation,
+# but needing the `openid` APIs for Dimension or an identity server like ma1sd.
+matrix_synapse_federation_port_openid_resource_required: false
 
 # A list of domain names that are allowed to federate with the given Synapse server.
 # An empty list value (`[]`) will also effectively stop federation, but if that's the desired

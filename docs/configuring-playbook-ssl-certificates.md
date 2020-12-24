@@ -67,6 +67,7 @@ By default, it obtains certificates for:
 - possibly for `element.<your-domain>`, unless you have disabled the [Element client component](configuring-playbook-client-element.md) using `matrix_client_element_enabled: false`
 - possibly for `riot.<your-domain>`, if you have explicitly enabled Riot to Element redirection (for background compatibility) using `matrix_nginx_proxy_proxy_riot_compat_redirect_enabled: true`
 - possibly for `dimension.<your-domain>`, if you have explicitly [set up Dimension](configuring-playbook-dimension.md).
+- possibly for `jitsi.<your-domain>`, if you have explicitly [set up Jitsi](configuring-playbook-jitsi.md).
 - possibly for your base domain (`<your-domain>`), if you have explicitly configured [Serving the base domain](configuring-playbook-base-domain-serving.md)
 
 If you are hosting other domains on the Matrix machine, you can make the playbook obtain and renew certificates for those other domains too.
@@ -80,6 +81,7 @@ matrix_ssl_domains_to_obtain_certificates_for:
   - '{{ matrix_server_fqn_matrix }}'
   - '{{ matrix_server_fqn_element }}'
   - '{{ matrix_server_fqn_dimension }}'
+  - '{{ matrix_server_fqn_jitsi }}'
   - '{{ matrix_domain }}'
 ```
 

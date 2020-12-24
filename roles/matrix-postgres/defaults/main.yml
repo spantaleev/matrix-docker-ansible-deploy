@@ -31,4 +31,49 @@ matrix_postgres_container_extra_arguments: []
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:5432"), or empty string to not expose.
 matrix_postgres_container_postgres_bind_port: ""
 
-matrix_postgres_tool_synapse_janitor: "https://raw.githubusercontent.com/xwiki-labs/synapse_scripts/a9188ff175ae581610f92d58ea6eac9a114d854b/synapse_janitor.sql"
+# A list of additional (databases and their credentials) to create.
+#
+# Example:
+# matrix_postgres_additional_databases:
+#   - name: matrix_appservice_discord
+#     username: matrix_appservice_discord
+#     password: some_password
+#   - name: matrix_appservice_slack
+#     username: matrix_appservice_slack
+#     password: some_password
+matrix_postgres_additional_databases: []
+
+# A list of roles/users to avoid creating when importing (or upgrading) the database.
+# If a dump file contains the roles and they've also been created beforehand (see `matrix_postgres_additional_databases`),
+# importing would fail.
+# We either need to not create them or to ignore the `CREATE ROLE` statements in the dump.
+matrix_postgres_import_roles_to_ignore: [matrix_postgres_connection_username]
+
+matrix_postgres_import_roles_ignore_regex: "^CREATE ROLE ({{ matrix_postgres_import_roles_to_ignore|join('|') }});"
+
+# A list of databases to avoid creating when importing (or upgrading) the database.
+# If a dump file contains the databases and they've also been created beforehand (see `matrix_postgres_additional_databases`),
+# importing would fail.
+# We either need to not create them or to ignore the `CREATE DATABASE` statements in the dump.
+matrix_postgres_import_databases_to_ignore: [matrix_postgres_db_name]
+
+matrix_postgres_import_databases_ignore_regex: "^CREATE DATABASE ({{ matrix_postgres_import_databases_to_ignore|join('|') }})\\s"
+
+# The number of seconds to wait after starting `matrix-postgres.service`
+# and before trying to run queries for creating additional databases/users against it.
+#
+# For most (subsequent) runs, Postgres would already be running, so no waiting will be happening at all.
+matrix_postgres_additional_databases_postgres_start_wait_timeout_seconds: 15
+
+
+matrix_postgres_pgloader_container_image_self_build: false
+matrix_postgres_pgloader_container_image_self_build_repo: "https://github.com/illagrenan/pgloader-docker.git"
+matrix_postgres_pgloader_container_image_self_build_repo_branch: "v{{ matrix_postgres_pgloader_docker_image_tag }}"
+matrix_postgres_pgloader_container_image_self_build_src_path: "{{ matrix_postgres_base_path }}/pgloader-container-src"
+
+# We use illagrenan/pgloader, instead of the more official dimitri/pgloader image,
+# because the official one only provides a `latest` tag.
+matrix_postgres_pgloader_docker_image: "{{ matrix_postgres_pgloader_docker_image_name_prefix }}illagrenan/pgloader:{{ matrix_postgres_pgloader_docker_image_tag }}"
+matrix_postgres_pgloader_docker_image_name_prefix: "{{ 'localhost/' if matrix_postgres_pgloader_container_image_self_build else 'docker.io/' }}"
+matrix_postgres_pgloader_docker_image_tag: "3.6.2"
+matrix_postgres_pgloader_docker_image_force_pull: "{{ matrix_postgres_pgloader_docker_image.endswith(':latest') }}"

@@ -15,6 +15,12 @@ matrix_dimension_base_path: "{{ matrix_base_data_path }}/dimension"
 matrix_dimension_docker_image: "docker.io/turt2live/matrix-dimension:latest"
 matrix_dimension_docker_image_force_pull: "{{ matrix_dimension_docker_image.endswith(':latest') }}"
 
+# List of systemd services that matrix-dimension.service depends on.
+matrix_dimension_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-dimension.service wants
+matrix_dimension_systemd_wanted_services_list: []
+
 # The user and group id correspond to the node user in the `turt2live/matrix-dimension` image.
 matrix_dimension_user_uid: '1000'
 matrix_dimension_user_gid: '1000'
@@ -33,6 +39,28 @@ matrix_dimension_integrations_widgets_urls: ["https://{{ matrix_server_fqn_dimen
 matrix_dimension_integrations_jitsi_widget_url: "https://{{ matrix_server_fqn_dimension }}/widgets/jitsi"
 
 matrix_dimension_homeserver_federationUrl: "http://matrix-synapse:8048"
+
+
+# Database-related configuration fields.
+#
+# To use SQLite, stick to these defaults.
+#
+# To use Postgres:
+# - change the engine (`matrix_dimension_database_engine: 'postgres'`)
+# - adjust your database credentials via the `matrix_dimension_postgres_*` variables
+matrix_dimension_database_engine: 'sqlite'
+
+matrix_dimension_sqlite_database_path_local: "{{ matrix_dimension_base_path }}/dimension.db"
+matrix_dimension_sqlite_database_path_in_container: "dimension.db"
+
+matrix_dimension_database_username: 'matrix_dimension'
+matrix_dimension_database_password: 'some-password'
+matrix_dimension_database_hostname: 'matrix-postgres'
+matrix_dimension_database_port: 5432
+matrix_dimension_database_name: 'matrix_dimension'
+
+matrix_dimension_database_connection_string: 'postgres://{{ matrix_dimension_database_username }}:{{ matrix_dimension_database_password }}@{{ matrix_dimension_database_hostname }}:{{ matrix_dimension_database_port }}/{{ matrix_dimension_database_name }}'
+
 
 # Default Dimension configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.

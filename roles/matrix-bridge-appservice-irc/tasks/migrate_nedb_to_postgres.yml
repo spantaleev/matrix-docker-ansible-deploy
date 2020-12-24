@@ -1,0 +1,64 @@
+- name: Fail if Postgres not enabled
+  fail:
+    msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot migrate."
+  when: "not matrix_postgres_enabled|bool"
+
+# Defaults
+
+- name: Set postgres_start_wait_time, if not provided
+  set_fact:
+    postgres_start_wait_time: 15
+  when: "postgres_start_wait_time|default('') == ''"
+
+# Actual import work
+
+- name: Ensure matrix-postgres is started
+  service:
+    name: matrix-postgres
+    state: started
+    daemon_reload: yes
+  register: matrix_postgres_service_start_result
+
+- name: Wait a bit, so that Postgres can start
+  wait_for:
+    timeout: "{{ postgres_start_wait_time }}"
+  delegate_to: 127.0.0.1
+  become: false
+  when: "matrix_postgres_service_start_result.changed|bool"
+
+- name: Ensure matrix-appservice-irc is stopped
+  service:
+    name: matrix-appservice-irc
+    state: stopped
+
+- name: Import appservice-irc NeDB database into Postgres
+  command:
+    cmd: >-
+      {{ matrix_host_command_docker }} run
+      --rm
+      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+      --cap-drop=ALL
+      --network={{ matrix_docker_network }}
+      --mount type=bind,src={{ matrix_appservice_irc_data_path }},dst=/data
+      --entrypoint=/bin/sh
+      {{ matrix_appservice_irc_docker_image }}
+      -c
+      '/usr/local/bin/node /app/lib/scripts/migrate-db-to-pgres.js --dbdir /data --privateKey /data/passkey.pem --connectionString {{ matrix_appservice_irc_database_connection_string }}'
+
+- name: Archive NeDB database files
+  command:
+    cmd: "mv {{ matrix_appservice_irc_data_path }}/{{ item }} {{ matrix_appservice_irc_data_path }}/{{ item }}.backup"
+  with_items:
+    - rooms.db
+    - users.db
+
+- name: Inject result
+  set_fact:
+    matrix_playbook_runtime_results: |
+      {{
+        matrix_playbook_runtime_results|default([])
+        +
+        [
+          "NOTE: Your appservice-irc database files have been imported into Postgres. The original database files have been moved from `{{ matrix_appservice_irc_data_path }}/*.db` to `{{ matrix_appservice_irc_data_path }}/*.db.backup`. When you've confirmed that the import went well and everything works, you should be able to safely delete these files."
+        ]
+      }}

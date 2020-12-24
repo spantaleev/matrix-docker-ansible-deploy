@@ -26,7 +26,7 @@ and then connecting to the postgres server and executing:
 ```
 UPDATE users SET password_hash = '<password-hash>' WHERE name = '@someone:server.com'
 ```
-`
+
 where `<password-hash>` is the hash returned by the docker command above.
 
 

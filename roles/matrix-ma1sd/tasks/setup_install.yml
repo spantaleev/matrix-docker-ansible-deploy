@@ -1,9 +1,5 @@
 ---
 
-#
-# Tasks related to setting up ma1sd
-#
-
 - name: Ensure ma1sd paths exist
   file:
     path: "{{ item.path }}"
@@ -15,10 +11,39 @@
     - { path: "{{ matrix_ma1sd_config_path }}", when: true }
     - { path: "{{ matrix_ma1sd_data_path }}", when: true }
     - { path: "{{ matrix_ma1sd_docker_src_files_path }}", when: "{{ matrix_ma1sd_container_image_self_build }}"}
-  when: matrix_ma1sd_enabled|bool and item.when
+  when: "item.when|bool"
 
 - import_tasks: "{{ role_path }}/tasks/migrate_mxisd.yml"
-  when: matrix_ma1sd_enabled|bool
+
+
+# These (SQLite -> Postgres) migration tasks are usually at the top,
+# but we'd like to run them after `migrate_mxisd.yml`, which requires the ma1sd paths to exist.
+- set_fact:
+    matrix_ma1sd_requires_restart: false
+
+- block:
+    - name: Check if an SQLite database already exists
+      stat:
+        path: "{{ matrix_ma1sd_sqlite_database_path_local }}"
+      register: matrix_ma1sd_sqlite_database_path_local_stat_result
+
+    - block:
+        - set_fact:
+            matrix_postgres_db_migration_request:
+              src: "{{ matrix_ma1sd_sqlite_database_path_local }}"
+              dst: "{{ matrix_ma1sd_database_connection_string }}"
+              caller: "{{ role_path|basename }}"
+              engine_variable_name: 'matrix_ma1sd_database_engine'
+              engine_old: 'sqlite'
+              systemd_services_to_stop: ['matrix-ma1sd.service']
+              pgloader_options: ['--with "quote identifiers"']
+
+        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+
+        - set_fact:
+            matrix_ma1sd_requires_restart: true
+      when: "matrix_ma1sd_sqlite_database_path_local_stat_result.stat.exists|bool"
+  when: "matrix_ma1sd_database_engine == 'postgres'"
 
 - name: Ensure ma1sd image is pulled
   docker_image:
@@ -26,7 +51,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_ma1sd_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_ma1sd_docker_image_force_pull }}"
-  when: matrix_ma1sd_enabled|bool and not matrix_ma1sd_container_image_self_build
+  when: "not matrix_ma1sd_container_image_self_build|bool"
 
 - block:
   - name: Ensure gradle is installed for self-building (Debian)
@@ -72,7 +97,7 @@
       repository: "{{ matrix_ma1sd_docker_image }}"
       force_tag: yes
       source: local
-  when: "matrix_ma1sd_enabled|bool and matrix_ma1sd_container_image_self_build"
+  when: "matrix_ma1sd_container_image_self_build|bool"
 
 - name: Ensure ma1sd config installed
   copy:
@@ -81,7 +106,6 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: matrix_ma1sd_enabled|bool
 
 - name: Ensure custom templates are installed if any
   copy:
@@ -95,7 +119,7 @@
     - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_session_validation_template }}", location: 'validate-template.eml'}
     - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_unbind_fraudulent_template }}", location: 'unbind-fraudulent.eml'}
     - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_matrixid_template }}", location: 'mxid-template.eml'}
-  when: "matrix_ma1sd_enabled|bool and matrix_ma1sd_threepid_medium_email_custom_templates_enabled|bool and item.value"
+  when: "matrix_ma1sd_threepid_medium_email_custom_templates_enabled|bool and item.value"
 
 - name: Ensure matrix-ma1sd.service installed
   template:
@@ -103,49 +127,14 @@
     dest: "{{ matrix_systemd_path }}/matrix-ma1sd.service"
     mode: 0644
   register: matrix_ma1sd_systemd_service_result
-  when: matrix_ma1sd_enabled|bool
 
 - name: Ensure systemd reloaded after matrix-ma1sd.service installation
   service:
     daemon_reload: yes
-  when: "matrix_ma1sd_enabled|bool and matrix_ma1sd_systemd_service_result.changed"
+  when: "matrix_ma1sd_systemd_service_result.changed|bool"
 
-#
-# Tasks related to getting rid of ma1sd (if it was previously enabled)
-#
-
-- name: Check existence of matrix-ma1sd service
-  stat:
-    path: "{{ matrix_systemd_path }}/matrix-ma1sd.service"
-  register: matrix_ma1sd_service_stat
-
-- name: Ensure matrix-ma1sd is stopped
+- name: Ensure matrix-ma1sd.service restarted, if necessary
   service:
-    name: matrix-ma1sd
-    state: stopped
-    daemon_reload: yes
-  register: stopping_result
-  when: "not matrix_ma1sd_enabled|bool and matrix_ma1sd_service_stat.stat.exists"
-
-- name: Ensure matrix-ma1sd.service doesn't exist
-  file:
-    path: "{{ matrix_systemd_path }}/matrix-ma1sd.service"
-    state: absent
-  when: "not matrix_ma1sd_enabled|bool and matrix_ma1sd_service_stat.stat.exists"
-
-- name: Ensure systemd reloaded after matrix-ma1sd.service removal
-  service:
-    daemon_reload: yes
-  when: "not matrix_ma1sd_enabled|bool and matrix_ma1sd_service_stat.stat.exists"
-
-- name: Ensure Matrix ma1sd paths don't exist
-  file:
-    path: "{{ matrix_ma1sd_base_path }}"
-    state: absent
-  when: "not matrix_ma1sd_enabled|bool"
-
-- name: Ensure ma1sd Docker image doesn't exist
-  docker_image:
-    name: "{{ matrix_ma1sd_docker_image }}"
-    state: absent
-  when: "not matrix_ma1sd_enabled|bool"
+    name: "matrix-ma1sd.service"
+    state: restarted
+  when: "matrix_ma1sd_requires_restart|bool"

@@ -113,6 +113,13 @@
     daemon_reload: yes
   when: "matrix_postgres_enabled|bool and matrix_postgres_systemd_service_result.changed"
 
+- include_tasks:
+    file: "{{ role_path }}/tasks/util/create_additional_databases.yml"
+    apply:
+      tags:
+        - always
+  when: "matrix_postgres_enabled|bool and matrix_postgres_additional_databases|length > 0"
+
 #
 # Tasks related to getting rid of the internal postgres server (if it was previously enabled)
 #

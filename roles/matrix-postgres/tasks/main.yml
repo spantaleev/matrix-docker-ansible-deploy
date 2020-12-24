@@ -19,20 +19,23 @@
   tags:
     - import-postgres
 
-- import_tasks: "{{ role_path }}/tasks/import_sqlite_db.yml"
+# The `run_postgres_import_sqlite_db` variable had better be renamed to be consistent,
+# but that's a breaking change which may cause trouble for people.
+- import_tasks: "{{ role_path }}/tasks/import_synapse_sqlite_db.yml"
   when: run_postgres_import_sqlite_db|bool
   tags:
-    - import-sqlite-db
+    - import-synapse-sqlite-db
+
+# Perhaps we need a new variable here, instead of `run_postgres_import_sqlite_db`.
+- import_tasks: "{{ role_path }}/tasks/import_generic_sqlite_db.yml"
+  when: run_postgres_import_sqlite_db|bool
+  tags:
+    - import-generic-sqlite-db
 
 - import_tasks: "{{ role_path }}/tasks/upgrade_postgres.yml"
   when: run_postgres_upgrade|bool
   tags:
     - upgrade-postgres
-
-- import_tasks: "{{ role_path }}/tasks/run_synapse_janitor.yml"
-  when: run_postgres_synapse_janitor|bool
-  tags:
-    - run-postgres-synapse-janitor
 
 - import_tasks: "{{ role_path }}/tasks/run_vacuum.yml"
   when: run_postgres_vacuum|bool

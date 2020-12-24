@@ -8,6 +8,33 @@
       The matrix-bridge-mx-puppet-instagram role needs to execute before the matrix-synapse role.
   when: "matrix_synapse_role_executed|default(False)"
 
+
+- set_fact:
+    matrix_mx_puppet_instagram_requires_restart: false
+
+- block:
+    - name: Check if an SQLite database already exists
+      stat:
+        path: "{{ matrix_mx_puppet_instagram_sqlite_database_path_local }}"
+      register: matrix_mx_puppet_instagram_sqlite_database_path_local_stat_result
+
+    - block:
+        - set_fact:
+            matrix_postgres_db_migration_request:
+              src: "{{ matrix_mx_puppet_instagram_sqlite_database_path_local }}"
+              dst: "{{ matrix_mx_puppet_instagram_database_connection_string }}"
+              caller: "{{ role_path|basename }}"
+              engine_variable_name: 'matrix_mx_puppet_instagram_database_engine'
+              engine_old: 'sqlite'
+              systemd_services_to_stop: ['matrix-mx-puppet-instagram.service']
+
+        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+
+        - set_fact:
+            matrix_mx_puppet_instagram_requires_restart: true
+      when: "matrix_mx_puppet_instagram_sqlite_database_path_local_stat_result.stat.exists|bool"
+  when: "matrix_mx_puppet_instagram_database_engine == 'postgres'"
+
 - name: Ensure mx-puppet-instagram image is pulled
   docker_image:
     name: "{{ matrix_mx_puppet_instagram_docker_image }}"
@@ -77,4 +104,8 @@
     daemon_reload: yes
   when: "matrix_mx_puppet_instagram_systemd_service_result.changed"
 
-
+- name: Ensure matrix-mx-puppet-instagram.service restarted, if necessary
+  service:
+    name: "matrix-mx-puppet-instagram.service"
+    state: restarted
+  when: "matrix_mx_puppet_instagram_requires_restart|bool"

@@ -60,6 +60,20 @@ matrix_mx_puppet_twitter_homeserver_token: ''
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
 matrix_mx_puppet_twitter_login_shared_secret: ''
 
+# Database configuration
+matrix_mx_puppet_twitter_database_engine: sqlite
+
+matrix_mx_puppet_twitter_sqlite_database_path_local: "{{ matrix_mx_puppet_twitter_data_path }}/database.db"
+matrix_mx_puppet_twitter_sqlite_database_path_in_container: "/data/database.db"
+
+matrix_mx_puppet_twitter_database_username: mx_puppet_twitter
+matrix_mx_puppet_twitter_database_password: ~
+matrix_mx_puppet_twitter_database_hostname: 'matrix-postgres'
+matrix_mx_puppet_twitter_database_port: 5432
+matrix_mx_puppet_twitter_database_name: matrix_mx_puppet_twitter
+
+matrix_mx_puppet_twitter_database_connection_string: 'postgresql://{{ matrix_mx_puppet_twitter_database_username }}:{{ matrix_mx_puppet_twitter_database_password }}@{{ matrix_mx_puppet_twitter_database_hostname }}:{{ matrix_mx_puppet_twitter_database_port }}/{{ matrix_mx_puppet_twitter_database_name }}?sslmode=disable'
+
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
