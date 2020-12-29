@@ -1,4 +1,8 @@
 matrix.DOMAIN.tld {
+
+  # creates letsencrypt certificate
+  # tls your@email.com
+
   @identity {
         path /_matrix/identity/*
   }
@@ -93,35 +97,12 @@ matrix.DOMAIN.tld:8448 {
     }
 }
 
-dimension.DOMAIN.tld {
-header {
-         	# Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
-        	Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-        	# Enable cross-site filter (XSS) and tell browser to block detected attacks
-        	X-XSS-Protection "1; mode=block"
-        	# Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
-        	X-Content-Type-Options "nosniff"
-        	# Disallow the site to be rendered within a frame (clickjacking protection)
-        	X-Frame-Options "DENY"
-        	# X-Robots-Tag
-        	X-Robots-Tag "noindex, noarchive, nofollow"
-  	}
-
-    	handle {
-        	encode zstd gzip
-
-        	reverse_proxy localhost:8184  {
-               		header_up X-Forwarded-Port {http.request.port}
-               		header_up X-Forwarded-Proto {http.request.scheme}
-               		header_up X-Forwarded-TlsProto {tls_protocol}
-               		header_up X-Forwarded-TlsCipher {tls_cipher}
-               		header_up X-Forwarded-HttpsProto {proto}
-        	}
-  	}
-}
-
 element.DOMAIN.tld {
- 	header {
+
+      # creates letsencrypt certificate
+      # tls your@email.com
+ 	
+      header {
          	# Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
         	Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
         	# Enable cross-site filter (XSS) and tell browser to block detected attacks
@@ -145,3 +126,79 @@ element.DOMAIN.tld {
                      header_up X-Forwarded-HttpsProto {proto}
         }
 }
+
+#dimension.DOMAIN.tld {
+#      
+#      # creates letsencrypt certificate
+#      # tls your@email.com
+#      
+#      header {
+#          # Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
+#          Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+#          # Enable cross-site filter (XSS) and tell browser to block detected attacks
+#          X-XSS-Protection "1; mode=block"
+#          # Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
+#          X-Content-Type-Options "nosniff"
+#          # Disallow the site to be rendered within a frame (clickjacking protection)
+#          X-Frame-Options "DENY"
+#          # X-Robots-Tag
+#          X-Robots-Tag "noindex, noarchive, nofollow"
+#    }
+#
+#      handle {
+#          encode zstd gzip
+#
+#          reverse_proxy localhost:8184  {
+#                  header_up X-Forwarded-Port {http.request.port}
+#                  header_up X-Forwarded-Proto {http.request.scheme}
+#                  header_up X-Forwarded-TlsProto {tls_protocol}
+#                  header_up X-Forwarded-TlsCipher {tls_cipher}
+#                  header_up X-Forwarded-HttpsProto {proto}
+#          }
+#    }
+#}
+
+
+#jitsi.DOMAIN.tld {
+#  
+#  creates letsencrypt certificate
+#  tls your@email.com
+#
+#  header {
+#        # Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
+#        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+#
+#        # Enable cross-site filter (XSS) and tell browser to block detected attacks
+#        X-XSS-Protection "1; mode=block"
+#
+#        # Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
+#        X-Content-Type-Options "nosniff"
+#
+#        # Disallow the site to be rendered within a frame (clickjacking protection)
+#        X-Frame-Options "SAMEORIGIN"
+#
+#        # Disable some features
+#        Feature-Policy "accelerometer 'none';ambient-light-sensor 'none'; autoplay 'none';camera 'none';encrypted-media 'none';focus-without-user-activation 'none'; geolocation 'none';gyroscope #'none';magnetometer 'none';microphone 'none';midi 'none';payment 'none';picture-in-picture 'none'; speaker 'none';sync-xhr 'none';usb 'none';vr 'none'"
+#
+#        # Referer
+#        Referrer-Policy "no-referrer"
+#
+#        # X-Robots-Tag
+#        X-Robots-Tag "none"
+#
+#        # Remove Server header
+#        -Server
+#  }
+#
+#  handle {
+#        encode zstd gzip
+#
+#        reverse_proxy 127.0.0.1:12080 {
+#               header_up X-Forwarded-Port {http.request.port}
+#               header_up X-Forwarded-Proto {http.request.scheme}
+#               header_up X-Forwarded-TlsProto {tls_protocol}
+#               header_up X-Forwarded-TlsCipher {tls_cipher}
+#               header_up X-Forwarded-HttpsProto {proto}
+#        }
+#  }
+#}
