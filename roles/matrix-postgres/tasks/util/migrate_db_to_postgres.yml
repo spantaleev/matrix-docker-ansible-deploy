@@ -112,6 +112,7 @@
   service:
     name: "{{ item }}"
     state: stopped
+  failed_when: false
   with_items: "{{ matrix_postgres_db_migration_request.systemd_services_to_stop }}"
 
 - name: Import {{ matrix_postgres_db_migration_request.engine_old }} database from {{ matrix_postgres_db_migration_request.src }} into Postgres
