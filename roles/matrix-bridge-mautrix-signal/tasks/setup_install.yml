@@ -14,6 +14,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mautrix_signal_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_signal_docker_image_force_pull }}"
+  when: matrix_mautrix_signal_enabled|bool
 
 - name: Ensure Mautrix Signal Daemon image is pulled
   docker_image:
@@ -21,6 +22,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mautrix_signal_daemon_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_signal_docker_image_force_pull }}"
+  when: matrix_mautrix_signal_enabled|bool
 
 - name: Ensure Mautrix Signal paths exist
   file:
