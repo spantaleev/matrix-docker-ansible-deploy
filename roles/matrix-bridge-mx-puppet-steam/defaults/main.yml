@@ -4,13 +4,15 @@
 matrix_mx_puppet_steam_enabled: true
 
 matrix_mx_puppet_steam_container_image_self_build: false
+matrix_mx_puppet_steam_container_image_self_build_repo: "https://github.com/icewind1991/mx-puppet-steam.git"
 
 # Controls whether the mx-puppet-steam container exposes its HTTP port (tcp/8432 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8432"), or empty string to not expose.
 matrix_mx_puppet_steam_container_http_host_bind_port: ''
 
-matrix_mx_puppet_steam_docker_image: "icewind1991/mx-puppet-steam:latest"
+matrix_mx_puppet_steam_docker_image: "{{ matrix_mx_puppet_steam_docker_image_name_prefix }}icewind1991/mx-puppet-steam:latest"
+matrix_mx_puppet_steam_docker_image_name_prefix: "{{ 'localhost/' if matrix_mx_puppet_steam_container_image_self_build else 'docker.io/' }}"
 matrix_mx_puppet_steam_docker_image_force_pull: "{{ matrix_mx_puppet_steam_docker_image.endswith(':latest') }}"
 
 matrix_mx_puppet_steam_base_path: "{{ matrix_base_data_path }}/mx-puppet-steam"
@@ -52,6 +54,19 @@ matrix_mx_puppet_steam_homeserver_token: ''
 
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
 matrix_mx_puppet_steam_login_shared_secret: ''
+
+matrix_mx_puppet_steam_database_engine: sqlite
+
+matrix_mx_puppet_steam_sqlite_database_path_local: "{{ matrix_mx_puppet_steam_data_path }}/database.db"
+matrix_mx_puppet_steam_sqlite_database_path_in_container: "/data/database.db"
+
+matrix_mx_puppet_steam_database_username: matrix_mx_puppet_steam
+matrix_mx_puppet_steam_database_password: ~
+matrix_mx_puppet_steam_database_hostname: 'matrix-postgres'
+matrix_mx_puppet_steam_database_port: 5432
+matrix_mx_puppet_steam_database_name: matrix_mx_puppet_steam
+
+matrix_mx_puppet_steam_database_connection_string: 'postgresql://{{ matrix_mx_puppet_steam_database_username }}:{{ matrix_mx_puppet_steam_database_password }}@{{ matrix_mx_puppet_steam_database_hostname }}:{{ matrix_mx_puppet_steam_database_port }}/{{ matrix_mx_puppet_steam_database_name }}?sslmode=disable'
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.

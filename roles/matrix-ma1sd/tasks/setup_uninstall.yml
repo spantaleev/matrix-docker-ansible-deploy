@@ -1,0 +1,35 @@
+---
+
+- name: Check existence of matrix-ma1sd service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-ma1sd.service"
+  register: matrix_ma1sd_service_stat
+
+- name: Ensure matrix-ma1sd is stopped
+  service:
+    name: matrix-ma1sd
+    state: stopped
+    daemon_reload: yes
+  register: stopping_result
+  when: "matrix_ma1sd_service_stat.stat.exists|bool"
+
+- name: Ensure matrix-ma1sd.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-ma1sd.service"
+    state: absent
+  when: "matrix_ma1sd_service_stat.stat.exists|bool"
+
+- name: Ensure systemd reloaded after matrix-ma1sd.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_ma1sd_service_stat.stat.exists|bool"
+
+- name: Ensure Matrix ma1sd paths don't exist
+  file:
+    path: "{{ matrix_ma1sd_base_path }}"
+    state: absent
+
+- name: Ensure ma1sd Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_ma1sd_docker_image }}"
+    state: absent

@@ -8,6 +8,7 @@ After={{ service }}
 {% for service in matrix_nginx_proxy_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -30,11 +31,13 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-nginx-proxy \
 			{% if matrix_nginx_proxy_proxy_matrix_federation_api_enabled and matrix_nginx_proxy_container_federation_host_bind_port %}
 			-p {{ matrix_nginx_proxy_container_federation_host_bind_port }}:8448 \
 			{% endif %}
-			-v {{ matrix_nginx_proxy_base_path }}/nginx.conf:/etc/nginx/nginx.conf:ro \
-			-v {{ matrix_nginx_proxy_data_path }}:/nginx-data:ro \
-			-v {{ matrix_nginx_proxy_confd_path }}:/etc/nginx/conf.d:ro \
-			-v {{ matrix_ssl_config_dir_path }}:{{ matrix_ssl_config_dir_path }}:ro \
-			-v {{ matrix_static_files_base_path }}:{{ matrix_static_files_base_path }}:ro \
+			--mount type=bind,src={{ matrix_nginx_proxy_base_path }}/nginx.conf,dst=/etc/nginx/nginx.conf,ro \
+			--mount type=bind,src={{ matrix_nginx_proxy_data_path }},dst=/nginx-data,ro \
+			--mount type=bind,src={{ matrix_nginx_proxy_confd_path }},dst=/etc/nginx/conf.d,ro \
+			{% if matrix_ssl_retrieval_method != 'none' %}
+			--mount type=bind,src={{ matrix_ssl_config_dir_path }},dst={{ matrix_ssl_config_dir_path }},ro \
+			{% endif %}
+			--mount type=bind,src={{ matrix_static_files_base_path }},dst={{ matrix_static_files_base_path }},ro \
 			{% for volume in matrix_nginx_proxy_container_additional_volumes %}
 			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
 			{% endfor %}

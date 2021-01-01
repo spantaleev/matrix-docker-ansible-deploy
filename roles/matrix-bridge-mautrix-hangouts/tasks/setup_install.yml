@@ -8,6 +8,32 @@
       The matrix-bridge-mautrix-hangouts role needs to execute before the matrix-synapse role.
   when: "matrix_synapse_role_executed|default(False)"
 
+- set_fact:
+    matrix_mautrix_hangouts_requires_restart: false
+
+- block:
+    - name: Check if an SQLite database already exists
+      stat:
+        path: "{{ matrix_mautrix_hangouts_sqlite_database_path_local }}"
+      register: matrix_mautrix_hangouts_sqlite_database_path_local_stat_result
+
+    - block:
+        - set_fact:
+            matrix_postgres_db_migration_request:
+              src: "{{ matrix_mautrix_hangouts_sqlite_database_path_local }}"
+              dst: "{{ matrix_mautrix_hangouts_database_connection_string }}"
+              caller: "{{ role_path|basename }}"
+              engine_variable_name: 'matrix_mautrix_hangouts_database_engine'
+              engine_old: 'sqlite'
+              systemd_services_to_stop: ['matrix-mautrix-hangouts.service']
+
+        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+
+        - set_fact:
+            matrix_mautrix_hangouts_requires_restart: true
+      when: "matrix_mautrix_hangouts_sqlite_database_path_local_stat_result.stat.exists|bool"
+  when: "matrix_mautrix_hangouts_database_engine == 'postgres'"
+
 - name: Ensure Mautrix Hangouts image is pulled
   docker_image:
     name: "{{ matrix_mautrix_hangouts_docker_image }}"
@@ -32,22 +58,22 @@
 
 - name: Ensure Mautrix Hangots repository is present on self build
   git:
-    repo: https://github.com/tulir/mautrix-hangouts.git
+    repo: "{{ matrix_mautrix_hangouts_container_image_self_build_repo }}"
     dest: "{{ matrix_mautrix_hangouts_docker_src_files_path }}"
     force: "yes"
   register: matrix_mautrix_hangouts_git_pull_results
-  when: "matrix_mautrix_hangouts_enabled|bool and matrix_mautrix_hangouts_container_image_self_build"
+  when: "matrix_mautrix_hangouts_enabled|bool and matrix_mautrix_hangouts_container_image_self_build|bool"
 
 - name: Ensure Mautrix Hangouts Docker image is built
   docker_image:
     name: "{{ matrix_mautrix_hangouts_docker_image }}"
     source: build
-    force_source: yes
+    force_source: "{{ matrix_mautrix_hangouts_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_hangouts_docker_src_files_path }}"
       pull: yes
-  when: "matrix_mautrix_hangouts_enabled|bool and matrix_mautrix_hangouts_container_image_self_build and matrix_mautrix_hangouts_git_pull_results.changed"
+  when: "matrix_mautrix_hangouts_enabled|bool and matrix_mautrix_hangouts_container_image_self_build|bool"
 
 - name: Check if an old database file already exists
   stat:
@@ -93,3 +119,9 @@
   service:
     daemon_reload: yes
   when: "matrix_mautrix_hangouts_systemd_service_result.changed"
+
+- name: Ensure matrix-mautrix-hangouts.service restarted, if necessary
+  service:
+    name: "matrix-mautrix-hangouts.service"
+    state: restarted
+  when: "matrix_mautrix_hangouts_requires_restart|bool"

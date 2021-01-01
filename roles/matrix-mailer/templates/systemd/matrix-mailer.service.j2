@@ -3,6 +3,7 @@
 Description=Matrix mailer
 After=docker.service
 Requires=docker.service
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -18,7 +19,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mailer \
 			--tmpfs=/var/spool/exim:rw,noexec,nosuid,size=100m \
 			--network={{ matrix_docker_network }} \
 			--env-file={{ matrix_mailer_base_path }}/env-mailer \
-			--hostname={{ matrix_server_fqn_matrix }} \
+			--hostname=matrix-mailer \
 			{% for arg in matrix_mailer_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

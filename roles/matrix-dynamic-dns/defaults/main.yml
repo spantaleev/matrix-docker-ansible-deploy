@@ -1,0 +1,46 @@
+# Whether dynamic dns is enabled
+matrix_dynamic_dns_enabled: true
+
+# The dynamic dns daemon interval
+matrix_dynamic_dns_daemon_interval: '300'
+
+# The docker container to use when in mode
+matrix_dynamic_dns_docker_image: '{{ matrix_dynamic_dns_docker_image_name_prefix }}linuxserver/ddclient:v3.9.1-ls45'
+
+matrix_dynamic_dns_docker_image_name_prefix: "{{ 'localhost/' if matrix_dynamic_dns_container_image_self_build else 'docker.io/' }}"
+
+# The image to force pull
+matrix_dynamic_dns_docker_image_force_pull: "{{ matrix_dynamic_dns_docker_image.endswith(':latest') }}"
+
+# List of extra arguments to pass to the ontainer mode
+matrix_dynamic_dns_container_extra_arguments: []
+
+# List of wanted services when running in mode
+matrix_dynamic_dns_systemd_wanted_services_list: []
+
+# List of required services when running in mode
+matrix_dynamic_dns_systemd_required_services_list: ['docker.service']
+
+# Build the container from source when running in mode
+matrix_dynamic_dns_container_image_self_build: false
+matrix_dynamic_dns_container_image_self_build_repo: "https://github.com/linuxserver/docker-ddclient.git"
+
+# Config paths
+matrix_dynamic_dns_base_path: "{{ matrix_base_data_path }}/dynamic-dns"
+matrix_dynamic_dns_config_path: "{{ matrix_dynamic_dns_base_path }}/config"
+matrix_dynamic_dns_docker_src_files_path: "{{ matrix_dynamic_dns_base_path }}/docker-src"
+
+# Holds the configurations (the domains to update DNS for, the providers they use, etc.)
+#
+# Example:
+# matrix_dynamic_dns_domain_configurations:
+#   - provider: domains.google.com
+#     protocol: dyndn2
+#     username: XXXXXXXXXXXXXXXX
+#     password: XXXXXXXXXXXXXXXX
+#     domain: "{{ matrix_domain }}"
+matrix_dynamic_dns_domain_configurations: []
+
+# Config options
+matrix_dynamic_dns_additional_configuration_blocks: []
+matrix_dynamic_dns_use: "web"

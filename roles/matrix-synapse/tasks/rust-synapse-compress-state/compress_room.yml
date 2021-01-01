@@ -8,7 +8,7 @@
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
       --network={{ matrix_docker_network }}
-      -v {{ matrix_synapse_rust_synapse_compress_state_base_path }}:/work
+      --mount type=bind,src={{ matrix_synapse_rust_synapse_compress_state_base_path }},dst=/work
       {{ matrix_synapse_rust_synapse_compress_state_docker_image }}
       /synapse-compress-state -t -o /work/state-compressor.sql
       -p "host={{ matrix_synapse_database_host }} user={{ matrix_synapse_database_user }} password={{ matrix_synapse_database_password }} dbname={{ matrix_synapse_database_database }}"
@@ -30,7 +30,7 @@
       --cap-drop=ALL
       --network={{ matrix_docker_network }}
       --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
-      -v {{ matrix_synapse_rust_synapse_compress_state_base_path }}:/work:ro
+      --mount type=bind,src={{ matrix_synapse_rust_synapse_compress_state_base_path }},dst=/work,ro
       --entrypoint=/bin/sh
       {{ matrix_postgres_docker_image_latest }}
       -c "cat /work/state-compressor.sql |

@@ -85,7 +85,7 @@
     --network={{ matrix_docker_network }}
     --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
     --entrypoint=/bin/sh
-    -v {{ postgres_dump_dir }}:/out
+    --mount type=bind,src={{ postgres_dump_dir }},dst=/out
     {{ matrix_postgres_detected_version_corresponding_docker_image }}
     -c "pg_dumpall -h matrix-postgres
     {{ '| gzip -c ' if postgres_dump_name.endswith('.gz') else '' }}
@@ -131,12 +131,12 @@
       --network={{ matrix_docker_network }}
       --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
       --entrypoint=/bin/sh
-      -v {{ postgres_dump_dir }}:/in:ro
+      --mount type=bind,src={{ postgres_dump_dir }},dst=/in,ro
       {{ matrix_postgres_docker_image_latest }}
       -c "cat /in/{{ postgres_dump_name }} |
       {{ 'gunzip |' if postgres_dump_name.endswith('.gz') else '' }}
-      grep -vE '^CREATE ROLE {{ matrix_postgres_connection_username }}' |
-      grep -vE '^CREATE DATABASE {{ matrix_postgres_db_name }}' |
+      grep -vE '{{ matrix_postgres_import_roles_ignore_regex }}' |
+      grep -vE '{{ matrix_postgres_import_databases_ignore_regex }}' |
       psql -v ON_ERROR_STOP=1 -h matrix-postgres"
 
 # This is a hack.

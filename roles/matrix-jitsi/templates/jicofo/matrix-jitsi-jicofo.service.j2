@@ -5,6 +5,7 @@ Description=Matrix jitsi-jicofo server
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -15,7 +16,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-jitsi-jicofo \
 			--log-driver=none \
 			--network={{ matrix_docker_network }} \
 			--env-file={{ matrix_jitsi_jicofo_base_path }}/env \
-			-v {{ matrix_jitsi_jicofo_config_path }}:/config \
+			--mount type=bind,src={{ matrix_jitsi_jicofo_config_path }},dst=/config \
 			{% for arg in matrix_jitsi_jicofo_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

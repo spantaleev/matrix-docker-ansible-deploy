@@ -2,6 +2,12 @@
   tags:
     - always
 
+- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: run_setup|bool
+  tags:
+    - setup-all
+    - setup-synapse-admin
+
 - import_tasks: "{{ role_path }}/tasks/setup.yml"
   tags:
     - setup-all

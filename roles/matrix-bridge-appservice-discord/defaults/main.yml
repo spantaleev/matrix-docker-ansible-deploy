@@ -3,7 +3,7 @@
 
 matrix_appservice_discord_enabled: true
 
-matrix_appservice_discord_docker_image: "halfshot/matrix-appservice-discord:latest"
+matrix_appservice_discord_docker_image: "docker.io/halfshot/matrix-appservice-discord:v1.0.0"
 matrix_appservice_discord_docker_image_force_pull: "{{ matrix_appservice_discord_docker_image.endswith(':latest') }}"
 
 matrix_appservice_discord_base_path: "{{ matrix_base_data_path }}/appservice-discord"
@@ -16,6 +16,8 @@ matrix_appservice_discord_bot_token: ''
 
 matrix_appservice_discord_appservice_token: ''
 matrix_appservice_discord_homeserver_token: ''
+
+matrix_appservice_discord_homeserver_domain: "{{ matrix_domain }}"
 
 # Controls whether the matrix-appservice-discord container exposes its HTTP port (tcp/9005 in the container).
 #
@@ -38,6 +40,38 @@ matrix_appservice_discord_bridge_domain: "{{ matrix_domain }}"
 matrix_appservice_discord_bridge_homeserverUrl: "{{ matrix_homeserver_url }}"
 matrix_appservice_discord_bridge_disablePresence: false
 matrix_appservice_discord_bridge_enableSelfServiceBridging: false
+
+# Database-related configuration fields.
+#
+# To use SQLite, stick to these defaults.
+#
+# To use Postgres:
+# - change the engine (`matrix_appservice_discord_database_engine: 'postgres'`)
+# - adjust your database credentials via the `matrix_appservice_discord_postgres_*` variables
+matrix_appservice_discord_database_engine: 'sqlite'
+
+matrix_appservice_discord_sqlite_database_path_local: "{{ matrix_appservice_discord_data_path }}/discord.db"
+matrix_appservice_discord_sqlite_database_path_in_container: "/data/discord.db"
+
+matrix_appservice_discord_database_username: 'matrix_appservice_discord'
+matrix_appservice_discord_database_password: 'some-password'
+matrix_appservice_discord_database_hostname: 'matrix-postgres'
+matrix_appservice_discord_database_port: 5432
+matrix_appservice_discord_database_name: 'matrix_appservice_discord'
+
+# These 2 variables are what actually ends up in the bridge configuration.
+# It's best if you don't change them directly, but rather redefine the sub-variables that constitute them.
+matrix_appservice_discord_database_filename: "{{ matrix_appservice_discord_sqlite_database_path_in_container }}"
+matrix_appservice_discord_database_connString: 'postgresql://{{ matrix_appservice_discord_database_username }}:{{ matrix_appservice_discord_database_password }}@{{ matrix_appservice_discord_database_hostname }}:{{ matrix_appservice_discord_database_port }}/{{ matrix_appservice_discord_database_name }}'
+
+
+# Tells whether the bot should make use of "Privileged Gateway Intents".
+#
+# Enabling this means that you need to enable it for the bot (Discord application) as well,
+# by triggering all Intent checkboxes on a page like this: `https://discord.com/developers/applications/694448564151123988/bot`
+#
+# Learn more: https://gist.github.com/advaith1/e69bcc1cdd6d0087322734451f15aa2f
+matrix_appservice_discord_auth_usePrivilegedIntents: false
 
 matrix_appservice_discord_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
 
@@ -62,10 +96,10 @@ matrix_appservice_discord_registration_yaml: |
   namespaces:
     users:
     - exclusive: true
-      regex: '^@_discord_.*'
+      regex: '@_discord_.*:{{ matrix_appservice_discord_homeserver_domain|regex_escape }}'
     aliases:
     - exclusive: true
-      regex: '^#_discord_.*'
+      regex: '#_discord_.*:{{ matrix_appservice_discord_homeserver_domain|regex_escape }}'
   url: {{ matrix_appservice_discord_appservice_url }}
   sender_localpart: _discord_bot
   rate_limited: false

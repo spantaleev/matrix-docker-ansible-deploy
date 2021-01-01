@@ -8,6 +8,7 @@ After={{ service }}
 {% for service in matrix_registration_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -22,8 +23,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-registration \
 			{% if matrix_registration_container_http_host_bind_port %}
 			-p {{ matrix_registration_container_http_host_bind_port }}:5000 \
 			{% endif %}
-			-v {{ matrix_registration_config_path }}:/config:ro \
-			-v {{ matrix_registration_data_path }}:/data \
+			--mount type=bind,src={{ matrix_registration_config_path }},dst=/config,ro \
+			--mount type=bind,src={{ matrix_registration_data_path }},dst=/data \
 			{% for arg in matrix_registration_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

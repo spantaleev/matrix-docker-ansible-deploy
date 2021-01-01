@@ -5,6 +5,7 @@ Description=Matrix jitsi-web server
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -18,8 +19,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-jitsi-web \
 			{% if matrix_jitsi_web_container_http_host_bind_port %}
 			-p {{ matrix_jitsi_web_container_http_host_bind_port }}:80 \
 			{% endif %}
-			-v {{ matrix_jitsi_web_config_path }}:/config \
-			-v {{ matrix_jitsi_web_transcripts_path }}:/usr/share/jitsi-meet/transcripts \
+			--mount type=bind,src={{ matrix_jitsi_web_config_path }},dst=/config \
+			--mount type=bind,src={{ matrix_jitsi_web_transcripts_path }},dst=/usr/share/jitsi-meet/transcripts \
 			{% for arg in matrix_jitsi_web_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

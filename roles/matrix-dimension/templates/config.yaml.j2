@@ -44,7 +44,11 @@ widgetBlacklist:
 
 # Where the database for Dimension is
 database:
-  file: "dimension.db"
+{% if matrix_dimension_database_engine == 'sqlite' %}
+  file: {{ matrix_dimension_sqlite_database_path_in_container|to_json }}
+{% elif matrix_dimension_database_engine == 'postgres' %}
+  uri: {{ matrix_dimension_database_connection_string|to_json }}
+{% endif %}
 
 # Display settings that apply to self-hosted go-neb instances
 goneb:

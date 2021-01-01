@@ -3,6 +3,7 @@
 Description=Matrix Postgres server
 After=docker.service
 Requires=docker.service
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -21,8 +22,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-postgres \
 			-p {{ matrix_postgres_container_postgres_bind_port }}:5432 \
 			{% endif %}
 			--env-file={{ matrix_postgres_base_path }}/env-postgres-server \
-			-v {{ matrix_postgres_data_path }}:/var/lib/postgresql/data:rw \
-			-v /etc/passwd:/etc/passwd:ro \
+			--mount type=bind,src={{ matrix_postgres_data_path }},dst=/var/lib/postgresql/data \
+			--mount type=bind,src=/etc/passwd,dst=/etc/passwd,ro \
 			{% for arg in matrix_postgres_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

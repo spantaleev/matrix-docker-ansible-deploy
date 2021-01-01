@@ -21,11 +21,11 @@ Feel free to **re-run this setup command any time** you think something is off w
 
 After installing, but before starting the services, you may want to do additional things like:
 
-- [Importing an existing SQLite database (from another installation)](importing-sqlite.md) (optional)
+- [Importing an existing SQLite database (from another Synapse installation)](importing-synapse-sqlite.md) (optional)
 
 - [Importing an existing Postgres database (from another installation)](importing-postgres.md) (optional)
 
-- [Importing `media_store` data files from an existing installation](importing-media-store.md) (optional)
+- [Importing `media_store` data files from an existing Synapse installation](importing-synapse-media-store.md) (optional)
 
 
 ## Starting the services

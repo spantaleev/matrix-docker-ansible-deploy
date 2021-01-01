@@ -5,6 +5,7 @@ Description=Matrix jitsi-jvb server
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -21,7 +22,10 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-jitsi-jvb \
 			{% if matrix_jitsi_jvb_container_rtp_tcp_host_bind_port %}
 			-p {{ matrix_jitsi_jvb_container_rtp_tcp_host_bind_port }}:{{ matrix_jitsi_jvb_rtp_tcp_port }} \
 			{% endif %}
-			-v {{ matrix_jitsi_jvb_config_path }}:/config \
+			{% if matrix_jitsi_jvb_container_colibri_ws_host_bind_port %}
+			-p {{ matrix_jitsi_jvb_container_colibri_ws_host_bind_port }}:9090 \
+			{% endif %}
+			--mount type=bind,src={{ matrix_jitsi_jvb_config_path }},dst=/config \
 			{% for arg in matrix_jitsi_jvb_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

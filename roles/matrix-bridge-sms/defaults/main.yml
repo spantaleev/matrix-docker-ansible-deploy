@@ -3,27 +3,14 @@
 
 matrix_sms_bridge_enabled: true
 
-matrix_sms_bridge_docker_image: "folivonet/matrix-sms-bridge:0.3.2.RELEASE"
-matrix_sms_bridge_database_docker_image: "neo4j:latest"
-matrix_sms_bridge_database_docker_image_force_pull: "{{ matrix_sms_bridge_docker_image.endswith(':latest') }}"
+matrix_sms_bridge_docker_image: "docker.io/folivonet/matrix-sms-bridge:0.5.5"
 
 matrix_sms_bridge_base_path: "{{ matrix_base_data_path }}/matrix-sms-bridge"
 matrix_sms_bridge_config_path: "{{ matrix_base_data_path }}/matrix-sms-bridge/config"
 matrix_sms_bridge_data_path: "{{ matrix_base_data_path }}/matrix-sms-bridge/data"
-matrix_sms_bridge_data_log_path: "{{ matrix_base_data_path }}/matrix-sms-bridge/data/log"
-matrix_sms_bridge_data_spool_path: "{{ matrix_base_data_path }}/matrix-sms-bridge/data/spool"
-matrix_sms_bridge_data_spool_inbox_path: "{{ matrix_base_data_path }}/matrix-sms-bridge/data/spool/inbox"
-matrix_sms_bridge_data_spool_inbox_processed_path: "{{ matrix_base_data_path }}/matrix-sms-bridge/data/spool/inbox_processed"
-matrix_sms_bridge_data_spool_outbox_path: "{{ matrix_base_data_path }}/matrix-sms-bridge/data/spool/outbox"
-matrix_sms_bridge_data_spool_sent_path: "{{ matrix_base_data_path }}/matrix-sms-bridge/data/spool/sent"
-matrix_sms_bridge_data_spool_error_path: "{{ matrix_base_data_path }}/matrix-sms-bridge/data/spool/error"
-matrix_sms_bridge_database_path: "{{ matrix_base_data_path }}/matrix-sms-bridge/database"
 
 matrix_sms_bridge_appservice_token: ''
 matrix_sms_bridge_homeserver_token: ''
-
-matrix_sms_bridge_database_username: 'neo4j'
-matrix_sms_bridge_database_password: ''
 
 matrix_sms_bridge_container_http_host_bind_port: ''
 
@@ -31,15 +18,12 @@ matrix_sms_bridge_container_http_host_bind_port: ''
 matrix_sms_bridge_container_extra_arguments: []
 
 # List of systemd services that service depends on.
-matrix_sms_bridge_systemd_required_services_list: ['docker.service','matrix-sms-bridge-database.service']
-matrix_sms_bridge_database_systemd_required_services_list: ['docker.service']
+matrix_sms_bridge_systemd_required_services_list: ['docker.service']
 
 # List of systemd services that service wants
 matrix_sms_bridge_systemd_wanted_services_list: []
-matrix_sms_bridge_database_systemd_wanted_services_list: []
 
 matrix_sms_bridge_appservice_url: 'http://matrix-sms-bridge:8080'
-matrix_sms_bridge_database_url: 'bolt://matrix-sms-bridge-database:7687'
 matrix_sms_bridge_homeserver_hostname: 'matrix-synapse'
 matrix_sms_bridge_homeserver_port: '8008'
 
@@ -47,25 +31,19 @@ matrix_sms_bridge_homserver_domain: "{{ matrix_domain }}"
 matrix_sms_bridge_default_room: ''
 matrix_sms_bridge_default_region: ''
 matrix_sms_bridge_default_timezone: ''
+matrix_sms_bridge_single_mode_enabled: false
 
-matrix_sms_bridge_gammu_modem: ''
-matrix_sms_bridge_modem_group: 'dialout'
-matrix_sms_bridge_gammu_reset_frequency: 0
-matrix_sms_bridge_gammu_hard_reset_frequency: 0
+matrix_sms_bridge_provider_android_baseurl: ''
+matrix_sms_bridge_provider_android_username: ''
+matrix_sms_bridge_provider_android_password: ''
+matrix_sms_bridge_provider_android_truststore_local_path: ''
+matrix_sms_bridge_provider_android_truststore_password: ''
 
 
 matrix_sms_bridge_configuration_yaml: |
   #jinja2: lstrip_blocks: "True"
 
   # Database connection
-  org:
-    neo4j:
-      driver:
-        uri: {{ matrix_sms_bridge_database_url }}
-        authentication:
-          username: {{ matrix_sms_bridge_database_username }}
-          password: {{ matrix_sms_bridge_database_password }}
-
   matrix:
     bridge:
       sms:
@@ -74,17 +52,33 @@ matrix_sms_bridge_configuration_yaml: |
         defaultRoomId: "{{ matrix_sms_bridge_default_room }}"
         defaultRegion: "{{ matrix_sms_bridge_default_region }}"
         defaultTimeZone: "{{ matrix_sms_bridge_default_timezone }}"
+        singleModeEnabled: "{{ matrix_sms_bridge_single_mode_enabled }}"
         provider:
-          gammu:
+          android:
             # (optional) default is disabled
             enabled: true
-            # (optional) Path to the Gammu-Inbox directory.
-            inboxPath: /data/spool/inbox
-            # (optional) Path to the directory, where to put processed messages.
-            inboxProcessedPath: /data/spool/inbox_processed
+            # The url to the android-sms-gateway-server
+            baseUrl: {{ matrix_sms_bridge_provider_android_baseurl }}
+            # The username of the gateway
+            username: {{ matrix_sms_bridge_provider_android_username }}
+            # The password of the gateway
+            password: {{ matrix_sms_bridge_provider_android_password }}
+            # (optional) if you use a self signed certificate, you can add the public key here
+            {% if matrix_sms_bridge_provider_android_truststore_local_path %}
+            trustStore:
+              path: /config/matrix-sms-gateway-server.p12
+              password: {{ matrix_sms_bridge_provider_android_truststore_password }}
+              type: PKCS12
+            {% endif %}
     bot:
       # The domain-part of matrix-ids. E. g. example.org when your userIds look like @unicorn:example.org
       serverName: {{ matrix_sms_bridge_homserver_domain }}
+      migration:
+        url: "jdbc:h2:file:/data/database/db"
+        username: sa
+      database:
+        url: "r2dbc:h2:file:////data/database/db"
+        username: sa
     client:
       homeServer:
         # The hostname of your Homeserver.
@@ -112,31 +106,6 @@ matrix_sms_bridge_configuration_extension: "{{ matrix_sms_bridge_configuration_e
 
 matrix_sms_bridge_configuration: "{{ matrix_sms_bridge_configuration_yaml|from_yaml|combine(matrix_sms_bridge_configuration_extension, recursive=True) }}"
 
-matrix_sms_bridge_gammu_configuration: |
-  [gammu]
-  Device = {{ matrix_sms_bridge_gammu_modem }}
-  LogFile = /data/log/gammu.log
-  debugLevel = 1
-
-  [smsd]
-  Service = files
-  LoopSleep = 2
-  InboxPath = /data/spool/inbox/
-  OutboxPath = /data/spool/outbox/
-  SentSMSPath = /data/spool/sent/
-  ErrorSMSPath = /data/spool/error/
-  InboxFormat = detail
-  OutboxFormat = detail
-  TransmitFormat = auto
-  ResetFrequency = {{ matrix_sms_bridge_gammu_reset_frequency }}
-  HardResetFrequency = {{ matrix_sms_bridge_gammu_hard_reset_frequency }}
-  debugLevel = 1
-  LogFile = /data/log/smsd.log
-  DeliveryReport = no
-  HangupCalls = 1
-  CheckBattery = 0
-
-
 matrix_sms_bridge_registration_yaml: |
   id: sms
   as_token: "{{ matrix_sms_bridge_appservice_token }}"
@@ -145,6 +114,9 @@ matrix_sms_bridge_registration_yaml: |
       users:
       - exclusive: true
         regex: '^@sms_.+:{{ matrix_sms_bridge_homserver_domain|regex_escape }}$'
+      aliases:
+      - exclusive: true
+        regex: '^#sms_.+:{{ matrix_sms_bridge_homserver_domain|regex_escape }}$'
   url: {{ matrix_sms_bridge_appservice_url }}
   sender_localpart: smsbot
   rate_limited: false

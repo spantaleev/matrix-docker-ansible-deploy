@@ -5,6 +5,7 @@ Description=Matrix jitsi-prosody server
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -15,8 +16,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-jitsi-prosody 
 			--log-driver=none \
 			--network={{ matrix_docker_network }} \
 			--env-file={{ matrix_jitsi_prosody_base_path }}/env \
-			-v {{ matrix_jitsi_prosody_config_path }}:/config \
-			-v {{ matrix_jitsi_prosody_plugins_path }}:/prosody-plugins-custom \
+			--mount type=bind,src={{ matrix_jitsi_prosody_config_path }},dst=/config \
+			--mount type=bind,src={{ matrix_jitsi_prosody_plugins_path }},dst=/prosody-plugins-custom \
 			{% for arg in matrix_jitsi_prosody_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

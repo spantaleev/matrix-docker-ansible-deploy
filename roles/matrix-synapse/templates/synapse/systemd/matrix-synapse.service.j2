@@ -8,6 +8,7 @@ After={{ service }}
 {% for service in matrix_synapse_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -43,8 +44,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-synapse \
 			{% if matrix_synapse_manhole_enabled and matrix_synapse_container_manhole_api_host_bind_port %}
 			-p {{ matrix_synapse_container_manhole_api_host_bind_port }}:9000 \
 			{% endif %}
-			-v {{ matrix_synapse_config_dir_path }}:/data:ro \
-			-v {{ matrix_synapse_storage_path }}:/matrix-media-store-parent:slave \
+			--mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data,ro \
+			--mount type=bind,src={{ matrix_synapse_storage_path }},dst=/matrix-media-store-parent,bind-propagation=slave \
 			{% for volume in matrix_synapse_container_additional_volumes %}
 			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
 			{% endfor %}

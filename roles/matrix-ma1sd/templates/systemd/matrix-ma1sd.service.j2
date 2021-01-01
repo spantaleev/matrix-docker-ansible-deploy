@@ -8,6 +8,7 @@ After={{ service }}
 {% for service in matrix_ma1sd_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -29,8 +30,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-ma1sd \
 			{% if matrix_ma1sd_verbose_logging %}
 			-e MA1SD_LOG_LEVEL=debug \
 			{% endif %}
-			-v {{ matrix_ma1sd_config_path }}:/etc/ma1sd:ro \
-			-v {{ matrix_ma1sd_data_path }}:/var/ma1sd:rw \
+			--mount type=bind,src={{ matrix_ma1sd_config_path }},dst=/etc/ma1sd,ro \
+			--mount type=bind,src={{ matrix_ma1sd_data_path }},dst=/var/ma1sd \
 			{% for arg in matrix_ma1sd_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

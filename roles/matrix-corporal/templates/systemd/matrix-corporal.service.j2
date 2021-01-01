@@ -5,6 +5,7 @@ Description=Matrix Corporal
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -23,9 +24,9 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-corporal \
 			{% if matrix_corporal_container_http_api_host_bind_port %}
 			-p {{ matrix_corporal_container_http_api_host_bind_port }}:41081 \
 			{% endif %}
-			-v {{ matrix_corporal_config_dir_path }}:/etc/matrix-corporal:ro \
-			-v {{ matrix_corporal_cache_dir_path }}:/var/cache/matrix-corporal:rw \
-			-v {{ matrix_corporal_var_dir_path }}:/var/matrix-corporal:rw \
+			--mount type=bind,src={{ matrix_corporal_config_dir_path }},dst=/etc/matrix-corporal,ro \
+			--mount type=bind,src={{ matrix_corporal_cache_dir_path }},dst=/var/cache/matrix-corporal \
+			--mount type=bind,src={{ matrix_corporal_var_dir_path }},dst=/var/matrix-corporal \
 			{% for arg in matrix_corporal_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

@@ -1,7 +1,7 @@
 # Importing an existing Postgres database from another installation (optional)
 
-Run this if you'd like to import your database from a previous installation of Synapse.
-(don't forget to import your `media_store` files as well - see [the importing-media-store guide](importing-media-store.md)).
+Run this if you'd like to import your database from a previous installation.
+(don't forget to import your Synapse `media_store` files as well - see [the importing-synape-media-store guide](importing-synapse-media-store.md)).
 
 
 ## Prerequisites

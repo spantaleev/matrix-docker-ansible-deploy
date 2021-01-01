@@ -8,6 +8,7 @@ After={{ service }}
 {% for service in matrix_appservice_discord_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -25,8 +26,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-appservice-dis
 			{% if matrix_appservice_discord_container_http_host_bind_port %}
 			-p {{ matrix_appservice_discord_container_http_host_bind_port }}:9005 \
 			{% endif %}
-			-v {{ matrix_appservice_discord_config_path }}:/cfg \
-			-v {{ matrix_appservice_discord_data_path }}:/data \
+			--mount type=bind,src={{ matrix_appservice_discord_config_path }},dst=/cfg \
+			--mount type=bind,src={{ matrix_appservice_discord_data_path }},dst=/data \
 			{% for arg in matrix_appservice_discord_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

@@ -3,6 +3,7 @@
 Description=Matrix Goofys media store
 After=docker.service
 Requires=docker.service
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -12,13 +13,13 @@ ExecStartPre=-{{ matrix_host_command_docker }} rm %n
 ExecStart={{ matrix_host_command_docker }} run --rm --name %n \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
-			-v /etc/passwd:/etc/passwd:ro \
-			-v /etc/group:/etc/group:ro \
+			--mount type=bind,src=/etc/passwd,dst=/etc/passwd,ro \
+			--mount type=bind,src=/etc/group,dst=/etc/group,ro \
+			--mount type=bind,src={{ matrix_synapse_media_store_path }},dst=/s3,bind-propagation=shared \
 			--security-opt apparmor:unconfined \
 			--cap-add mknod \
 			--cap-add sys_admin \
 			--device=/dev/fuse \
-			-v {{ matrix_synapse_media_store_path }}:/s3:shared \
 			--env-file={{ matrix_synapse_config_dir_path }}/env-goofys \
 			--entrypoint /bin/sh \
 			{{ matrix_s3_goofys_docker_image }} \

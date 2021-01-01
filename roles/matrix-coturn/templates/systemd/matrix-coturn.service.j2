@@ -5,6 +5,7 @@ Description=Matrix Coturn server
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -30,7 +31,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-coturn \
 			{% if matrix_coturn_container_turn_range_listen_interface is not none %}
 			-p {{ matrix_coturn_container_turn_range_listen_interface }}{{ ':' if matrix_coturn_container_turn_range_listen_interface else '' }}{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}:{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}/udp \
 			{% endif %}
-			-v {{ matrix_coturn_config_path }}:/turnserver.conf:ro \
+			--mount type=bind,src={{ matrix_coturn_config_path }},dst=/turnserver.conf,ro \
 			{% for volume in matrix_coturn_container_additional_volumes %}
 			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
 			{% endfor %}

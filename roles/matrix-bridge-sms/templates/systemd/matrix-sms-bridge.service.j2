@@ -8,6 +8,7 @@ After={{ service }}
 {% for service in matrix_sms_bridge_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -20,7 +21,6 @@ ExecStartPre=/bin/sleep 5
 ExecStart=/usr/bin/docker run --rm --name matrix-sms-bridge \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
-			--group-add {{ matrix_sms_bridge_modem_group }} \
 			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
 			{% if matrix_sms_bridge_container_http_host_bind_port %}
@@ -28,9 +28,7 @@ ExecStart=/usr/bin/docker run --rm --name matrix-sms-bridge \
 			{% endif %}
 			-v {{ matrix_sms_bridge_config_path }}:/config:z \
 			-v {{ matrix_sms_bridge_data_path }}:/data:z \
-			-v {{ matrix_sms_bridge_config_path }}/gammu-smsdrc:/etc/gammu-smsdrc:z \
-			--privileged \
-			-v /dev:/dev:slave \
+			--env SPRING_CONFIG_ADDITIONAL_LOCATION=/config/application.yml \
 			{% for arg in matrix_sms_bridge_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

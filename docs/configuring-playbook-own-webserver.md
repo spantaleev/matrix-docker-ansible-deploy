@@ -113,7 +113,7 @@ With this, nginx would still be in use, but it would not bother with anything SS
 All services would be served locally on `127.0.0.1:81` and `127.0.0.1:8449` (as per the example configuration above).
 
 You can then set up another reverse-proxy server on ports 80/443/8448 for all of the expected domains and make traffic go to these local ports.
-The expected domains vary depending on the services you have enabled (`matrix.DOMAIN` for sure; `element.DOMAIN` and `dimension.DOMAIN` are optional).
+The expected domains vary depending on the services you have enabled (`matrix.DOMAIN` for sure; `element.DOMAIN`, `dimension.DOMAIN` and `jitsi.DOMAIN` are optional).
 
 ### Sample configuration for running behind Traefik 2.0
 
@@ -144,7 +144,7 @@ matrix_nginx_proxy_container_extra_arguments:
   - '--label "traefik.enable=true"'
 
   # The Nginx proxy container will receive traffic from these subdomains
-  - '--label "traefik.http.routers.matrix-nginx-proxy.rule=Host(`{{ matrix_server_fqn_matrix }}`,`{{ matrix_server_fqn_element }}`,`{{ matrix_server_fqn_dimension }}`)"'
+  - '--label "traefik.http.routers.matrix-nginx-proxy.rule=Host(`{{ matrix_server_fqn_matrix }}`,`{{ matrix_server_fqn_element }}`,`{{ matrix_server_fqn_dimension }}`,`{{ matrix_server_fqn_jitsi }}`)"'
 
   # (The 'web-secure' entrypoint must bind to port 443 in Traefik config)
   - '--label "traefik.http.routers.matrix-nginx-proxy.entrypoints=web-secure"'
@@ -172,7 +172,7 @@ matrix_synapse_container_extra_arguments:
   - '--label "traefik.http.services.matrix-synapse.loadbalancer.server.port=8048"'
 ```
 
-This method uses labels attached to the Nginx and Synapse containers to provide the Traefik Docker provider with the information it needs to proxy `matrix.DOMAIN`, `element.DOMAIN`, and `dimension.DOMAIN`. Some [static configuration](https://docs.traefik.io/v2.0/reference/static-configuration/file/) is required in Traefik; namely, having endpoints on ports 443 and 8448 and having a certificate resolver.
+This method uses labels attached to the Nginx and Synapse containers to provide the Traefik Docker provider with the information it needs to proxy `matrix.DOMAIN`, `element.DOMAIN`, `dimension.DOMAIN` and `jitsi.DOMAIN`. Some [static configuration](https://docs.traefik.io/v2.0/reference/static-configuration/file/) is required in Traefik; namely, having endpoints on ports 443 and 8448 and having a certificate resolver.
 
 Note that this configuration on its own does **not** redirect traffic on port 80 (plain HTTP) to port 443 for HTTPS, which may cause some issues, since the built-in Nginx proxy usually does this. If you are not already doing this in Traefik, it can be added to Traefik in a [file provider](https://docs.traefik.io/v2.0/providers/file/) as follows:
 
@@ -192,4 +192,39 @@ Note that this configuration on its own does **not** redirect traffic on port 80
     [http.middlewares.https.redirectscheme]
       scheme = "https"
       permanent = true
+```
+
+You can use the following `docker-compose.yml` as example to launch Traefik.
+
+```yaml
+version: "3.3"
+
+services:
+
+  traefik:
+    image: "traefik:v2.3"
+    restart: always
+    container_name: "traefik"
+    networks:
+      - traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.network=traefik"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web-secure.address=:443"
+      - "--entrypoints.synapse.address=:8448"
+      - "--certificatesresolvers.default.acme.tlschallenge=true"
+      - "--certificatesresolvers.default.acme.email=YOUR EMAIL"
+      - "--certificatesresolvers.default.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+networks:
+  traefik:
+    external: true
 ```

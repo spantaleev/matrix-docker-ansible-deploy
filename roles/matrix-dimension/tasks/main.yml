@@ -8,8 +8,14 @@
     - setup-all
     - setup-dimension
 
-- import_tasks: "{{ role_path }}/tasks/setup_dimension.yml"
-  when: run_setup|bool
+- import_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  when: run_setup|bool and matrix_dimension_enabled|bool
+  tags:
+    - setup-all
+    - setup-dimension
+
+- import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+  when: run_setup|bool and not matrix_dimension_enabled|bool
   tags:
     - setup-all
     - setup-dimension

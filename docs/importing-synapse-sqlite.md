@@ -1,7 +1,7 @@
-# Importing an existing SQLite database from another installation (optional)
+# Importing an existing SQLite database from another Synapse installation (optional)
 
 Run this if you'd like to import your database from a previous default installation of Synapse.
-(don't forget to import your `media_store` files as well - see [the importing-media-store guide](importing-media-store.md)).
+(don't forget to import your `media_store` files as well - see [the importing-synapse-media-store guide](importing-synapse-media-store.md)).
 
 While this playbook always sets up PostgreSQL, by default a Synapse installation would run
 using an SQLite database.
@@ -18,7 +18,7 @@ Before doing the actual import, **you need to upload your SQLite database file t
 
 Run this command (make sure to replace `<server-path-to-homeserver.db>` with a file path on your server):
 
-	ansible-playbook -i inventory/hosts setup.yml --extra-vars='server_path_homeserver_db=<server-path-to-homeserver.db>' --tags=import-sqlite-db
+	ansible-playbook -i inventory/hosts setup.yml --extra-vars='server_path_homeserver_db=<server-path-to-homeserver.db>' --tags=import-synapse-sqlite-db
 
 **Notes**:
 

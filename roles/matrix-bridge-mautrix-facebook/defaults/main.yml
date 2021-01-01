@@ -4,9 +4,11 @@
 matrix_mautrix_facebook_enabled: true
 
 matrix_mautrix_facebook_container_image_self_build: false
+matrix_mautrix_facebook_container_image_self_build_repo: "https://github.com/tulir/mautrix-facebook.git"
 
 # See: https://mau.dev/tulir/mautrix-facebook/container_registry
-matrix_mautrix_facebook_docker_image: "dock.mau.dev/tulir/mautrix-facebook:latest"
+matrix_mautrix_facebook_docker_image: "{{ matrix_mautrix_facebook_docker_image_name_prefix }}tulir/mautrix-facebook:latest"
+matrix_mautrix_facebook_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_facebook_container_image_self_build else 'dock.mau.dev/' }}"
 matrix_mautrix_facebook_docker_image_force_pull: "{{ matrix_mautrix_facebook_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_facebook_base_path: "{{ matrix_base_data_path }}/mautrix-facebook"
@@ -30,8 +32,41 @@ matrix_mautrix_facebook_systemd_wanted_services_list: []
 matrix_mautrix_facebook_appservice_token: ''
 matrix_mautrix_facebook_homeserver_token: ''
 
+
+# Database-related configuration fields.
+#
+# To use SQLite, stick to these defaults.
+#
+# To use Postgres:
+# - change the engine (`matrix_mautrix_facebook_database_engine: 'postgres'`)
+# - adjust your database credentials via the `matrix_mautrix_facebook_postgres_*` variables
+matrix_mautrix_facebook_database_engine: 'sqlite'
+
+matrix_mautrix_facebook_sqlite_database_path_local: "{{ matrix_mautrix_facebook_data_path }}/mautrix-facebook.db"
+matrix_mautrix_facebook_sqlite_database_path_in_container: "/data/mautrix-facebook.db"
+
+matrix_mautrix_facebook_database_username: 'matrix_mautrix_facebook'
+matrix_mautrix_facebook_database_password: 'some-password'
+matrix_mautrix_facebook_database_hostname: 'matrix-postgres'
+matrix_mautrix_facebook_database_port: 5432
+matrix_mautrix_facebook_database_name: 'matrix_mautrix_facebook'
+
+matrix_mautrix_facebook_database_connection_string: 'postgres://{{ matrix_mautrix_facebook_database_username }}:{{ matrix_mautrix_facebook_database_password }}@{{ matrix_mautrix_facebook_database_hostname }}:{{ matrix_mautrix_facebook_database_port }}/{{ matrix_mautrix_facebook_database_name }}'
+
+matrix_mautrix_facebook_appservice_database: "{{
+	{
+		'sqlite': ('sqlite:///' + matrix_mautrix_facebook_sqlite_database_path_in_container),
+		'postgres': matrix_mautrix_facebook_database_connection_string,
+	}[matrix_mautrix_facebook_database_engine]
+}}"
+
+
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
 matrix_mautrix_facebook_login_shared_secret: ''
+
+matrix_mautrix_facebook_bridge_login_shared_secret_map: "{{ {matrix_mautrix_facebook_homeserver_domain: matrix_mautrix_facebook_login_shared_secret} if matrix_mautrix_facebook_login_shared_secret else {} }}"
+
+matrix_mautrix_facebook_bridge_presence: true
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.

@@ -5,6 +5,7 @@ Description=Matrix Element server
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -21,13 +22,13 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-client-element
 			-p {{ matrix_client_element_container_http_host_bind_port }}:8080 \
 			{% endif %}
 			--tmpfs=/tmp:rw,noexec,nosuid,size=10m \
-			-v {{ matrix_client_element_data_path }}/nginx.conf:/etc/nginx/nginx.conf:ro \
-			-v {{ matrix_client_element_data_path }}/config.json:/app/config.json:ro \
-			-v {{ matrix_client_element_data_path }}/config.json:/app/config.{{ matrix_server_fqn_element }}.json:ro \
+			--mount type=bind,src={{ matrix_client_element_data_path }}/nginx.conf,dst=/etc/nginx/nginx.conf,ro \
+			--mount type=bind,src={{ matrix_client_element_data_path }}/config.json,dst=/app/config.json,ro \
+			--mount type=bind,src={{ matrix_client_element_data_path }}/config.json,dst=/app/config.{{ matrix_server_fqn_element }}.json,ro \
 			{% if matrix_client_element_embedded_pages_home_path is not none %}
-			-v {{ matrix_client_element_data_path }}/home.html:/app/home.html:ro \
+			--mount type=bind,src={{ matrix_client_element_data_path }}/home.html,dst=/app/home.html,ro \
 			{% endif %}
-			-v {{ matrix_client_element_data_path }}/welcome.html:/app/welcome.html:ro \
+			--mount type=bind,src={{ matrix_client_element_data_path }}/welcome.html,dst=/app/welcome.html,ro \
 			{% for arg in matrix_client_element_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
