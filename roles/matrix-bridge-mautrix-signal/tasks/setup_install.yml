@@ -22,13 +22,6 @@
     force_source: "{{ matrix_mautrix_signal_daemon_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_signal_docker_image_force_pull }}"
 
-- name: Ensure Mautrix Signal database image is pulled
-  docker_image:
-    name: "{{ matrix_mautrix_signal_db_docker_image }}"
-    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_mautrix_signal_db_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_signal_docker_image_force_pull }}"
-
 - name: Ensure Mautrix Signal paths exist
   file:
     path: "{{ item }}"
@@ -40,7 +33,6 @@
     - "{{ matrix_mautrix_signal_base_path }}"
     - "{{ matrix_mautrix_signal_config_path }}"
     - "{{ matrix_mautrix_signal_daemon_path }}"
-    - "{{ matrix_mautrix_signal_db_storage_path }}"
 
 - name: Ensure mautrix-signal config.yaml installed
   copy:
@@ -65,13 +57,6 @@
     mode: 0644
   register: matrix_mautrix_signal_daemon_systemd_service_result
 
-- name: Ensure matrix-mautrix-signal-db.service installed
-  template:
-    src: "{{ role_path }}/templates/systemd/matrix-mautrix-signal-db.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-mautrix-signal-db.service"
-    mode: 0644
-  register: matrix_mautrix_signal_db_systemd_service_result
-
 - name: Ensure matrix-mautrix-signal.service installed
   template:
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-signal.service.j2"
@@ -82,4 +67,4 @@
 - name: Ensure systemd reloaded after matrix-mautrix-signal.service installation
   service:
     daemon_reload: yes
-  when: "matrix_mautrix_signal_systemd_service_result.changed or matrix_mautrix_signal_daemon_systemd_service_result.changed or matrix_mautrix_signal_db_systemd_service_result.changed"
+  when: "matrix_mautrix_signal_systemd_service_result.changed or matrix_mautrix_signal_daemon_systemd_service_result.changed"

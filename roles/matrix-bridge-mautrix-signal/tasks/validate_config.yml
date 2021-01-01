@@ -10,9 +10,6 @@
     - "matrix_mautrix_signal_homeserver_address"
     - "matrix_mautrix_signal_homeserver_token"
     - "matrix_mautrix_signal_appservice_token"
-    - "matrix_mautrix_signal_db_user"
-    - "matrix_mautrix_signal_db_password"
-    - "matrix_mautrix_signal_db_database"
 
 - name: (Deprecation) Catch and report renamed Signal variables
   fail:
@@ -22,3 +19,9 @@
   when: "item.old in vars"
   with_items:
     - {'old': 'matrix_mautrix_signal_container_exposed_port_number', 'new': '<superseded by matrix_mautrix_signal_container_http_host_bind_port>'}
+    - {'old': 'matrix_mautrix_signal_db_user', 'new': 'matrix_mautrix_signal_database_username'}
+    - {'old': 'matrix_mautrix_signal_db_password', 'new': 'matrix_mautrix_signal_database_password'}
+    - {'old': 'matrix_mautrix_signal_db_database', 'new': 'matrix_mautrix_signal_database_name'}
+    - {'old': 'matrix_mautrix_signal_db_host', 'new': 'matrix_mautrix_signal_database_hostname'}
+    - {'old': 'matrix_mautrix_signal_db_port', 'new': 'matrix_mautrix_signal_database_port'}
+    - {'old': 'matrix_mautrix_signal_db_url', 'new': 'matrix_mautrix_signal_database_connection_string'}
