@@ -12,24 +12,6 @@ Use the following playbook configuration:
 matrix_mautrix_signal_enabled: true
 ```
 
-To specify which users have access to the bridge, use the variable `matrix_mautrix_signal_configuration_permissions`.
-Refer to the documentation for
-```yaml
-bridge:
-  permissions:
-```
-in [the example config in mautrix-signal](https://github.com/tulir/mautrix-signal/blob/master/mautrix_signal/example-config.yaml).
-For instance, use
-```yaml
-matrix_mautrix_signal_configuration_permissions: |
-  {
-    '{{ matrix_domain }}': 'user'
-  }
-```
-to allow all users registered to the current host's matrix domain access to the bridge, or hard-code whatever you like.
-(See [this issue](https://github.com/ansible/ansible/issues/17324#issuecomment-449642731) on how to use variable names as dictionary keys.)
-
-
 ## Set up Double Puppeting
 
 If you'd like to use [Double Puppeting](https://github.com/tulir/mautrix-whatsapp/wiki/Authentication#replacing-whatsapp-accounts-matrix-puppet-with-matrix-account) (hint: you most likely do), you have 2 ways of going about it.
