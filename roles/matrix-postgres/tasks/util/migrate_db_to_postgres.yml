@@ -1,0 +1,168 @@
+---
+
+- name: Fail if Postgres not enabled
+  fail:
+    msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot migrate."
+  when: "not matrix_postgres_enabled|bool"
+
+- name: Fail if util called incorrectly (missing matrix_postgres_db_migration_request)
+  fail:
+    msg: "The `matrix_postgres_db_migration_request` variable needs to be provided to this util."
+  when: "matrix_postgres_db_migration_request is not defined"
+
+- name: Fail if util called incorrectly (invalid matrix_postgres_db_migration_request)
+  fail:
+    msg: "The `matrix_postgres_db_migration_request` variable needs to contain `{{ item }}`."
+  with_items:
+    - src
+    - dst
+    - caller
+    - engine_variable_name
+    - systemd_services_to_stop
+  when: "item not in matrix_postgres_db_migration_request"
+
+- name: Check if the provided source database file exists
+  stat:
+    path: "{{ matrix_postgres_db_migration_request.src }}"
+  register: matrix_postgres_db_migration_request_src_stat_result
+
+- name: Fail if provided source database file doesn't exist
+  fail:
+    msg: "File cannot be found on the server at {{ matrix_postgres_db_migration_request.src }}"
+  when: "not matrix_postgres_db_migration_request_src_stat_result.stat.exists"
+
+- block:
+    - name: Ensure pgloader repository is present on self-build
+      git:
+        repo: "{{ matrix_postgres_pgloader_container_image_self_build_repo }}"
+        dest: "{{ matrix_postgres_pgloader_container_image_self_build_src_path }}"
+        version: "{{ matrix_postgres_pgloader_container_image_self_build_repo_branch }}"
+        force: "yes"
+      register: matrix_postgres_pgloader_git_pull_results
+
+    # If `stable` is used, we hit an error when processing /opt/src/pgloader/build/quicklisp/dists/quicklisp/software/uax-15-20201220-git/data/CompositionExclusions.txt:
+    # > the octet sequence #(194) cannot be decoded
+    #
+    # The issue is described here and is not getting fixed for months: https://github.com/dimitri/pgloader/pull/1179
+    #
+    # Although we're not using the dimitri/pgloader image, the one we're using suffers from the same problem.
+    - name: Switch pgloader base image from Debian stable (likely 10.x/Buster) to Bullseye
+      lineinfile:
+        path: "{{ matrix_postgres_pgloader_container_image_self_build_src_path }}/Dockerfile"
+        regexp: "{{ item.match }}"
+        line: "{{ item.replace }}"
+      with_items:
+        - match: '^FROM debian:stable-slim as builder$'
+          replace: 'FROM debian:bullseye-slim as builder'
+        - match: '^FROM debian:stable-slim$'
+          replace: 'FROM debian:bullseye-slim'
+
+    - name: Ensure pgloader Docker image is built
+      docker_image:
+        name: "{{ matrix_postgres_pgloader_docker_image }}"
+        source: build
+        force_source: "{{ matrix_postgres_pgloader_git_pull_results.changed }}"
+        build:
+          dockerfile: Dockerfile
+          path: "{{ matrix_postgres_pgloader_container_image_self_build_src_path }}"
+          pull: yes
+  when: "matrix_postgres_pgloader_container_image_self_build|bool"
+
+- name: Ensure pgloader Docker image is pulled
+  docker_image:
+    name: "{{ matrix_postgres_pgloader_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_postgres_pgloader_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_postgres_pgloader_docker_image_force_pull }}"
+  when: "not matrix_postgres_pgloader_container_image_self_build"
+
+# Defaults
+
+- name: Set postgres_start_wait_time, if not provided
+  set_fact:
+    postgres_start_wait_time: 15
+  when: "postgres_start_wait_time|default('') == ''"
+
+# Actual import work
+
+# matrix-postgres is most likely started already
+- name: Ensure matrix-postgres is started
+  service:
+    name: matrix-postgres
+    state: started
+    daemon_reload: yes
+  register: matrix_postgres_service_start_result
+
+- name: Wait a bit, so that Postgres can start
+  wait_for:
+    timeout: "{{ postgres_start_wait_time }}"
+  delegate_to: 127.0.0.1
+  become: false
+  when: "matrix_postgres_service_start_result.changed|bool"
+
+# We only stop services here, leaving it to the caller to start them later.
+#
+# We can't start them, because they probably need to be reconfigured too (changing the configuration from using SQLite to Postgres, etc.),
+# before starting.
+#
+# Since the caller will be starting them, it might make sense to leave stopping to it as well.
+# However, we don't do it, because it's simpler having it here, and it also gets to happen only if we'll be doing an import.
+# If we bailed out (somewhere above), nothing would have gotten stopped. It's nice to leave this running in such cases.
+- name: Ensure systemd services blocking the database import are stopped
+  service:
+    name: "{{ item }}"
+    state: stopped
+  failed_when: false
+  with_items: "{{ matrix_postgres_db_migration_request.systemd_services_to_stop }}"
+
+- name: Import {{ matrix_postgres_db_migration_request.engine_old }} database from {{ matrix_postgres_db_migration_request.src }} into Postgres
+  command:
+    cmd: >-
+      {{ matrix_host_command_docker }} run
+      --rm
+      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+      --cap-drop=ALL
+      --network={{ matrix_docker_network }}
+      --mount type=bind,src={{ matrix_postgres_db_migration_request.src }},dst=/in.db,ro
+      --entrypoint=/bin/sh
+      {{ matrix_postgres_pgloader_docker_image }}
+      -c
+      'pgloader {{ matrix_postgres_db_migration_request.pgloader_options|default([])|join(' ') }} /in.db {{ matrix_postgres_db_migration_request.dst }}'
+
+- block:
+    # We can't use `{{ role_path }}` here, neither with `import_tasks`, nor with `include_tasks`,
+    # because it refers to the role that included this util, and not to the role this file belongs to.
+    - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/detect_existing_postgres_version.yml"
+
+    - set_fact:
+        matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_latest if matrix_postgres_detected_version_corresponding_docker_image == '' else matrix_postgres_detected_version_corresponding_docker_image }}"
+
+    - name: Execute additional Postgres SQL migration statements
+      command:
+        cmd: >-
+          {{ matrix_host_command_docker }} run
+          --rm
+          --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+          --cap-drop=ALL
+          --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
+          --network={{ matrix_docker_network }}
+          {{ matrix_postgres_docker_image_to_use }}
+          psql --host=matrix-postgres --dbname={{ matrix_postgres_db_migration_request.additional_psql_statements_db_name }} --command='{{ item }}'
+      with_items: "{{ matrix_postgres_db_migration_request.additional_psql_statements_list }}"
+
+  when: "matrix_postgres_db_migration_request.additional_psql_statements_list|default([])|length > 0"
+
+- name: Archive {{ matrix_postgres_db_migration_request.engine_old }} database ({{ matrix_postgres_db_migration_request.src }} -> {{ matrix_postgres_db_migration_request.src }}.backup)
+  command:
+    cmd: "mv {{ matrix_postgres_db_migration_request.src }} {{ matrix_postgres_db_migration_request.src }}.backup"
+
+- name: Inject result
+  set_fact:
+    matrix_playbook_runtime_results: |
+      {{
+        matrix_playbook_runtime_results|default([])
+        +
+        [
+          "NOTE: Your {{ matrix_postgres_db_migration_request.engine_old }} database file has been imported into Postgres. The original database file has been moved from `{{ matrix_postgres_db_migration_request.src }}` to `{{ matrix_postgres_db_migration_request.src }}.backup`. When you've confirmed that the import went well and everything works, you should be able to safely delete this file."
+        ]
+      }}

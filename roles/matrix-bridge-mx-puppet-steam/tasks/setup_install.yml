@@ -8,14 +8,6 @@
       The matrix-bridge-mx-puppet-steam role needs to execute before the matrix-synapse role.
   when: "matrix_synapse_role_executed|default(False)"
 
-- name: Ensure MX Puppet Steam image is pulled
-  docker_image:
-    name: "{{ matrix_mx_puppet_steam_docker_image }}"
-    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_mx_puppet_steam_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mx_puppet_steam_docker_image_force_pull }}"
-  when: matrix_mx_puppet_steam_enabled|bool and not matrix_mx_puppet_steam_container_image_self_build
-
 - name: Ensure MX Puppet Steam paths exist
   file:
     path: "{{ item.path }}"
@@ -29,6 +21,57 @@
     - { path: "{{ matrix_mx_puppet_steam_data_path }}", when: true }
     - { path: "{{ matrix_mx_puppet_steam_docker_src_files_path }}", when: "{{ matrix_mx_puppet_steam_container_image_self_build }}" }
   when: matrix_mx_puppet_steam_enabled|bool and item.when|bool
+
+- name: Check if an old database file already exists
+  stat:
+    path: "{{ matrix_mx_puppet_steam_base_path }}/database.db"
+  register: matrix_mx_puppet_steam_stat_database
+
+- name: (Data relocation) Ensure matrix-mx-puppet-steam.service is stopped
+  service:
+    name: matrix-mx-puppet-steam
+    state: stopped
+    daemon_reload: yes
+  failed_when: false
+  when: "matrix_mx_puppet_steam_stat_database.stat.exists"
+
+- name: (Data relocation) Move mx-puppet-steam database file to ./data directory
+  command: "mv {{ matrix_mx_puppet_steam_base_path }}/database.db {{ matrix_mx_puppet_steam_data_path }}/database.db"
+  when: "matrix_mx_puppet_steam_stat_database.stat.exists"
+
+- set_fact:
+    matrix_mx_puppet_steam_requires_restart: false
+
+- block:
+    - name: Check if an SQLite database already exists
+      stat:
+        path: "{{ matrix_mx_puppet_steam_sqlite_database_path_local }}"
+      register: matrix_mx_puppet_steam_sqlite_database_path_local_stat_result
+
+    - block:
+        - set_fact:
+            matrix_postgres_db_migration_request:
+              src: "{{ matrix_mx_puppet_steam_sqlite_database_path_local }}"
+              dst: "{{ matrix_mx_puppet_steam_database_connection_string }}"
+              caller: "{{ role_path|basename }}"
+              engine_variable_name: 'matrix_mx_puppet_steam_database_engine'
+              engine_old: 'sqlite'
+              systemd_services_to_stop: ['matrix-mx-puppet-steam.service']
+
+        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+
+        - set_fact:
+            matrix_mx_puppet_steam_requires_restart: true
+      when: "matrix_mx_puppet_steam_sqlite_database_path_local_stat_result.stat.exists|bool"
+  when: "matrix_mx_puppet_steam_database_engine == 'postgres'"
+
+- name: Ensure MX Puppet Steam image is pulled
+  docker_image:
+    name: "{{ matrix_mx_puppet_steam_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_mx_puppet_steam_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mx_puppet_steam_docker_image_force_pull }}"
+  when: matrix_mx_puppet_steam_enabled|bool and not matrix_mx_puppet_steam_container_image_self_build
 
 - name: Ensure MX Puppet Steam repository is present on self build
   git:
@@ -48,23 +91,6 @@
       path: "{{ matrix_mx_puppet_steam_docker_src_files_path }}"
       pull: yes
   when: "matrix_mx_puppet_steam_enabled|bool and matrix_mx_puppet_steam_container_image_self_build"
-
-- name: Check if an old database file already exists
-  stat:
-    path: "{{ matrix_mx_puppet_steam_base_path }}/database.db"
-  register: matrix_mx_puppet_steam_stat_database
-
-- name: (Data relocation) Ensure matrix-mx-puppet-steam.service is stopped
-  service:
-    name: matrix-mx-puppet-steam
-    state: stopped
-    daemon_reload: yes
-  failed_when: false
-  when: "matrix_mx_puppet_steam_stat_database.stat.exists"
-
-- name: (Data relocation) Move mx-puppet-steam database file to ./data directory
-  command: "mv {{ matrix_mx_puppet_steam_base_path }}/database.db {{ matrix_mx_puppet_steam_data_path }}/database.db"
-  when: "matrix_mx_puppet_steam_stat_database.stat.exists"
 
 - name: Ensure mx-puppet-steam config.yaml installed
   copy:
@@ -93,3 +119,9 @@
   service:
     daemon_reload: yes
   when: "matrix_mx_puppet_steam_systemd_service_result.changed"
+
+- name: Ensure matrix-mx-puppet-steam.service restarted, if necessary
+  service:
+    name: "matrix-mx-puppet-steam.service"
+    state: restarted
+  when: "matrix_mx_puppet_steam_requires_restart|bool"

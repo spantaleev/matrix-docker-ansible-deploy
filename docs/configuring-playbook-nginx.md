@@ -55,3 +55,11 @@ If you want to use OpenID Connect as an SSO provider (as per the [Synapse OpenID
 ```yaml
 matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled: true
 ```
+
+## Disable Nginx access logs
+
+This will disable the access logging for nginx.
+
+```yaml
+matrix_nginx_proxy_access_log_enabled: false
+```

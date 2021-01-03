@@ -1,8 +1,35 @@
 ---
 
-#
-# Tasks related to setting up matrix-registration
-#
+- set_fact:
+    matrix_registration_requires_restart: false
+
+- block:
+    - name: Check if an SQLite database already exists
+      stat:
+        path: "{{ matrix_registration_sqlite_database_path_local }}"
+      register: matrix_registration_sqlite_database_path_local_stat_result
+
+    - block:
+        - set_fact:
+            matrix_postgres_db_migration_request:
+              src: "{{ matrix_registration_sqlite_database_path_local }}"
+              dst: "{{ matrix_registration_database_connection_string }}"
+              caller: "{{ role_path|basename }}"
+              engine_variable_name: 'matrix_registration_database_engine'
+              engine_old: 'sqlite'
+              systemd_services_to_stop: ['matrix-registration.service']
+              # pgloader makes `ex_date` of type `TIMESTAMP WITH TIMEZONE`,
+              # which makes matrix-registration choke on it later on when comparing dates.
+              additional_psql_statements_list:
+                - ALTER TABLE tokens ALTER COLUMN ex_date TYPE TIMESTAMP WITHOUT TIME ZONE;
+              additional_psql_statements_db_name: "{{ matrix_registration_database_name }}"
+
+        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+
+        - set_fact:
+            matrix_registration_requires_restart: true
+      when: "matrix_registration_sqlite_database_path_local_stat_result.stat.exists|bool"
+  when: "matrix_registration_database_engine == 'postgres'"
 
 - name: Ensure matrix-registration paths exist
   file:
@@ -16,7 +43,7 @@
     - { path: "{{ matrix_registration_config_path }}", when: true }
     - { path: "{{ matrix_registration_data_path }}", when: true }
     - { path: "{{ matrix_registration_docker_src_files_path }}", when: "{{ matrix_registration_container_image_self_build }}"}
-  when: matrix_registration_enabled|bool and item.when
+  when: "item.when|bool"
 
 - name: Ensure matrix-registration image is pulled
   docker_image:
@@ -24,7 +51,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_registration_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_registration_docker_image_force_pull }}"
-  when: "matrix_registration_enabled|bool and not matrix_registration_container_image_self_build|bool"
+  when: "not matrix_registration_container_image_self_build|bool"
 
 - name: Ensure matrix-registration repository is present when self-building
   git:
@@ -33,7 +60,7 @@
     version: "{{ matrix_registration_container_image_self_build_branch }}"
     force: "yes"
   register: matrix_registration_git_pull_results
-  when: "matrix_registration_enabled|bool and matrix_registration_container_image_self_build|bool"
+  when: "matrix_registration_container_image_self_build|bool"
 
 - name: Ensure matrix-registration Docker image is built
   docker_image:
@@ -44,7 +71,7 @@
       dockerfile: Dockerfile
       path: "{{ matrix_registration_docker_src_files_path }}"
       pull: yes
-  when: "matrix_registration_enabled|bool and matrix_registration_container_image_self_build|bool"
+  when: "matrix_registration_container_image_self_build|bool"
 
 - name: Ensure matrix-registration config installed
   copy:
@@ -53,7 +80,6 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: matrix_registration_enabled|bool
 
 - name: Ensure matrix-registration.service installed
   template:
@@ -61,43 +87,14 @@
     dest: "{{ matrix_systemd_path }}/matrix-registration.service"
     mode: 0644
   register: matrix_registration_systemd_service_result
-  when: matrix_registration_enabled|bool
 
 - name: Ensure systemd reloaded after matrix-registration.service installation
   service:
     daemon_reload: yes
-  when: "matrix_registration_enabled|bool and matrix_registration_systemd_service_result.changed"
+  when: "matrix_registration_systemd_service_result.changed|bool"
 
-#
-# Tasks related to getting rid of matrix-registration (if it was previously enabled)
-#
-
-- name: Check existence of matrix-registration service
-  stat:
-    path: "{{ matrix_systemd_path }}/matrix-registration.service"
-  register: matrix_registration_service_stat
-
-- name: Ensure matrix-registration is stopped
+- name: Ensure matrix-registration.service restarted, if necessary
   service:
-    name: matrix-registration
-    state: stopped
-    daemon_reload: yes
-  register: stopping_result
-  when: "not matrix_registration_enabled|bool and matrix_registration_service_stat.stat.exists"
-
-- name: Ensure matrix-registration.service doesn't exist
-  file:
-    path: "{{ matrix_systemd_path }}/matrix-registration.service"
-    state: absent
-  when: "not matrix_registration_enabled|bool and matrix_registration_service_stat.stat.exists"
-
-- name: Ensure systemd reloaded after matrix-registration.service removal
-  service:
-    daemon_reload: yes
-  when: "not matrix_registration_enabled|bool and matrix_registration_service_stat.stat.exists"
-
-- name: Ensure matrix-registration Docker image doesn't exist
-  docker_image:
-    name: "{{ matrix_registration_docker_image }}"
-    state: absent
-  when: "not matrix_registration_enabled|bool"
+    name: "matrix-registration.service"
+    state: restarted
+  when: "matrix_registration_requires_restart|bool"

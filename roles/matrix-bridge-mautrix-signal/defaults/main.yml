@@ -1,0 +1,95 @@
+# mautrix-signal is a Matrix <-> Signal bridge
+# See: https://github.com/tulir/mautrix-signal
+
+matrix_mautrix_signal_enabled: true
+
+# See: https://mau.dev/tulir/mautrix-signal/container_registry
+matrix_mautrix_signal_docker_image: "dock.mau.dev/tulir/mautrix-signal:latest"
+matrix_mautrix_signal_docker_image_force_pull: "{{ matrix_mautrix_signal_docker_image.endswith(':latest') }}"
+
+matrix_mautrix_signal_daemon_docker_image: "dock.mau.dev/maunium/signald:latest"
+matrix_mautrix_signal_daemon_docker_image_force_pull: "{{ matrix_mautrix_signal_daemon_docker_image.endswith(':latest') }}"
+
+matrix_mautrix_signal_base_path: "{{ matrix_base_data_path }}/mautrix-signal"
+matrix_mautrix_signal_config_path: "{{ matrix_mautrix_signal_base_path }}/bridge"
+matrix_mautrix_signal_daemon_path: "{{ matrix_mautrix_signal_base_path }}/signald"
+
+matrix_mautrix_signal_homeserver_address: ''
+matrix_mautrix_signal_homeserver_domain: ''
+matrix_mautrix_signal_appservice_address: 'http://matrix-mautrix-signal:29328'
+
+# Controls whether the matrix-mautrix-signal container exposes its port (tcp/29328 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9006"), or empty string to not expose.
+matrix_mautrix_signal_container_http_host_bind_port: ''
+
+# A list of extra arguments to pass to the container
+matrix_mautrix_signal_container_extra_arguments: []
+
+# List of systemd services that matrix-mautrix-signal.service depends on.
+matrix_mautrix_signal_systemd_required_services_list:
+  - 'docker.service'
+  - 'matrix-mautrix-signal-daemon.service'
+
+# List of systemd services that matrix-mautrix-signal.service wants
+matrix_mautrix_signal_systemd_wanted_services_list: []
+
+# List of systemd services that matrix-mautrix-signal-daemon.service depends on.
+matrix_mautrix_signal_daemon_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-mautrix-signal-daemon.service wants
+matrix_mautrix_signal_daemon_systemd_wanted_services_list: []
+
+matrix_mautrix_signal_appservice_token: ''
+matrix_mautrix_signal_homeserver_token: ''
+
+# Database-related configuration fields
+#
+# This bridge only supports postgres.
+#
+matrix_mautrix_signal_database_engine: 'postgres'
+
+matrix_mautrix_signal_database_username: 'matrix_mautrix_signal'
+matrix_mautrix_signal_database_password: 'some-password'
+matrix_mautrix_signal_database_hostname: 'matrix-postgres'
+matrix_mautrix_signal_database_port: 5432
+matrix_mautrix_signal_database_name: 'matrix_mautrix_signal'
+
+matrix_mautrix_signal_database_connection_string: 'postgres://{{ matrix_mautrix_signal_database_username }}:{{ matrix_mautrix_signal_database_password }}@{{ matrix_mautrix_signal_database_hostname }}:{{ matrix_mautrix_signal_database_port }}/{{ matrix_mautrix_signal_database_name }}'
+
+matrix_mautrix_signal_appservice_database: "{{
+ 	{
+ 		'postgres': matrix_mautrix_facebook_database_connection_string,
+ 	}[matrix_mautrix_signal_database_engine]
+ }}"
+
+# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
+matrix_mautrix_signal_login_shared_secret: ''
+
+# Default configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_mautrix_signal_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_mautrix_signal_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_mautrix_signal_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_mautrix_signal_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_mautrix_signal_configuration_yaml`.
+
+matrix_mautrix_signal_configuration_extension: "{{ matrix_mautrix_signal_configuration_extension_yaml|from_yaml if matrix_mautrix_signal_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_mautrix_signal_configuration_yaml`.
+matrix_mautrix_signal_configuration: "{{ matrix_mautrix_signal_configuration_yaml|from_yaml|combine(matrix_mautrix_signal_configuration_extension, recursive=True) }}"
+
+matrix_mautrix_signal_registration_yaml: "{{ lookup('template', 'templates/registration.yaml.j2') }}"
+
+matrix_mautrix_signal_registration: "{{ matrix_mautrix_signal_registration_yaml|from_yaml }}"
+
+matrix_mautrix_signal_log_level: 'DEBUG'

@@ -1,0 +1,73 @@
+---
+
+- set_fact:
+    matrix_bot_matrix_reminder_bot_requires_restart: false
+
+- block:
+    - name: Check if an SQLite database already exists
+      stat:
+        path: "{{ matrix_bot_matrix_reminder_bot_sqlite_database_path_local }}"
+      register: matrix_bot_matrix_reminder_bot_sqlite_database_path_local_stat_result
+
+    - block:
+        - set_fact:
+            matrix_postgres_db_migration_request:
+              src: "{{ matrix_bot_matrix_reminder_bot_sqlite_database_path_local }}"
+              dst: "{{ matrix_bot_matrix_reminder_bot_database_connection_string }}"
+              caller: "{{ role_path|basename }}"
+              engine_variable_name: 'matrix_bot_matrix_reminder_bot_database_engine'
+              engine_old: 'sqlite'
+              systemd_services_to_stop: ['matrix-bot-matrix-reminder-bot.service']
+
+        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+
+        - set_fact:
+            matrix_bot_matrix_reminder_bot_requires_restart: true
+      when: "matrix_bot_matrix_reminder_bot_sqlite_database_path_local_stat_result.stat.exists|bool"
+  when: "matrix_bot_matrix_reminder_bot_database_engine == 'postgres'"
+
+- name: Ensure matrix-reminder-bot paths exist
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - { path: "{{ matrix_bot_matrix_reminder_bot_config_path }}", when: true }
+    - { path: "{{ matrix_bot_matrix_reminder_bot_data_path }}", when: true }
+    - { path: "{{ matrix_bot_matrix_reminder_bot_data_store_path }}", when: true }
+  when: "item.when|bool"
+
+- name: Ensure matrix-reminder-bot image is pulled
+  docker_image:
+    name: "{{ matrix_bot_matrix_reminder_bot_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_bot_matrix_reminder_bot_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_matrix_reminder_bot_docker_image_force_pull }}"
+
+- name: Ensure matrix-reminder-bot config installed
+  copy:
+    content: "{{ matrix_bot_matrix_reminder_bot_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_bot_matrix_reminder_bot_config_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-bot-matrix-reminder-bot.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-bot-matrix-reminder-bot.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-bot-matrix-reminder-bot.service"
+    mode: 0644
+  register: matrix_bot_matrix_reminder_bot_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-bot-matrix-reminder-bot.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_bot_matrix_reminder_bot_systemd_service_result.changed|bool"
+
+- name: Ensure matrix-bot-matrix-reminder-bot.service restarted, if necessary
+  service:
+    name: "matrix-bot-matrix-reminder-bot.service"
+    state: restarted
+  when: "matrix_bot_matrix_reminder_bot_requires_restart|bool"

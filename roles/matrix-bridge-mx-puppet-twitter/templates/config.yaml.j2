@@ -54,15 +54,18 @@ provisioning:
   apiPrefix: /_matrix/provision
 
 database:
+{% if matrix_mx_puppet_twitter_database_engine == 'postgres' %}
   # Use Postgres as a database backend
   # If set, will be used instead of SQLite3
   # Connection string to connect to the Postgres instance
   # with username "user", password "pass", host "localhost" and database name "dbname".
   # Modify each value as necessary
-  #connString: "postgres://user:pass@localhost/dbname?sslmode=disable"
+  connString: {{ matrix_mx_puppet_twitter_database_connection_string|to_json }}
+{% else %}
   # Use SQLite3 as a database backend
   # The name of the database file
-  filename: /data/database.db
+  filename: {{ matrix_mx_puppet_twitter_sqlite_database_path_in_container|to_json }}
+{% endif %}
 
 logging:
   # Log level of console output

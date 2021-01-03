@@ -1,0 +1,45 @@
+---
+
+# Signal daemon service
+- name: Check existence of matrix-mautrix-signal-daemon service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-mautrix-signal-daemon.service"
+  register: matrix_mautrix_signal_daemon_service_stat
+
+- name: Ensure matrix-mautrix-signal-daemon is stopped
+  service:
+    name: matrix-mautrix-signal-daemon
+    state: stopped
+    daemon_reload: yes
+  when: "matrix_mautrix_signal_daemon_service_stat.stat.exists"
+
+- name: Ensure matrix-mautrix-signal-daemon.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-mautrix-signal-daemon.service"
+    state: absent
+  when: "matrix_mautrix_signal_daemon_service_stat.stat.exists"
+
+# Bridge service
+- name: Check existence of matrix-mautrix-signal service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-mautrix-signal.service"
+  register: matrix_mautrix_signal_service_stat
+
+- name: Ensure matrix-mautrix-signal is stopped
+  service:
+    name: matrix-mautrix-signal
+    state: stopped
+    daemon_reload: yes
+  when: "matrix_mautrix_signal_service_stat.stat.exists"
+
+- name: Ensure matrix-mautrix-signal.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-mautrix-signal.service"
+    state: absent
+  when: "matrix_mautrix_signal_service_stat.stat.exists"
+
+# All services
+- name: Ensure systemd reloaded after matrix-mautrix-signal_X.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_mautrix_signal_service_stat.stat.exists or matrix_mautrix_signal_daemon_service_stat.stat.exists"

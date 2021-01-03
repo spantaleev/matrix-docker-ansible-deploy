@@ -22,20 +22,20 @@ If this is okay with you, feel free to not read ahead.
 
 Server Delegation by means of a `/.well-known/matrix/server` file is the most straightforward, but suffers from the following downsides:
 
-- you need to have a working HTTPS server for the base domain (`<your-domain>`)
+- you need to have a working HTTPS server for the base domain (`<your-domain>`). If you don't have any server for the base domain at all, you can easily solve it by making the playbook [serve the base domain from the Matrix server](configuring-playbook-base-domain-serving.md).
 
 - any downtime on the base domain (`<your-domain>`) or network trouble between the matrix subdomain (`matrix.<your-domain>`) and the base `<domain>` may cause Matrix Federation outages. As the [Server-Server spec says](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery):
 
 > Errors are recommended to be cached for up to an hour, and servers are encouraged to exponentially back off for repeated failures.
 
-If this is not a concern for you, feel free to not read ahead.
+**For most people, this is a reasonable tradeoff** given that it's easy and straightforward to set up. We recommend you stay on this path.
 
-Otherwise, you can decide to go against the default for this playbook, and instead set up [Server Delegation via a DNS SRV record (advanced)](#server-delegation-via-a-dns-srv-record-advanced).
+Otherwise, you can decide to go against the default for this playbook, and instead set up [Server Delegation via a DNS SRV record (advanced)](#server-delegation-via-a-dns-srv-record-advanced) (much more complicated).
 
 
 ## Server Delegation via a DNS SRV record (advanced)
 
-**NOTE**: doing Server Delegation via a DNS SRV record is a more advanced way to do it and is not the default for this playbook.
+**NOTE**: doing Server Delegation via a DNS SRV record is a more **advanced** way to do it and is not the default for this playbook. This is usually **much more complicated** to set up, so **we don't recommend it**. If you're not an experience sysadmin, you'd better stay away from this.
 
 As per the [Server-Server spec](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), it's possible to do Server Delegation using only a SRV record (without a `/.well-known/matrix/server` file).
 
@@ -47,7 +47,7 @@ To use DNS SRV record validation, you need to:
 
 - ensure that you have a `_matrix._tcp` DNS SRV record for your base domain (`<your-domain>`) with a value of `10 0 8448 matrix.<your-domain>`
 
-- ensure that you are serving the Matrix Federation API (tcp/8448) with a certificate for `<your-domain>` (not `matrix.<your-domain>`!). See below.
+- ensure that you are serving the Matrix Federation API (tcp/8448) with a certificate for `<your-domain>` (not `matrix.<your-domain>`!). Getting this certificate to the `matrix.<your-domain>` server may be complicated. The playbook's automatic SSL obtaining/renewal flow will likely not work and you'll need to copy certificates around manually. See below.
 
 
 ### Obtaining certificates

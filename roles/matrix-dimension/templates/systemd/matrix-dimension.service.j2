@@ -1,8 +1,13 @@
 #jinja2: lstrip_blocks: "True"
 [Unit]
 Description=Matrix Dimension
-After=docker.service
-Requires=docker.service
+{% for service in matrix_dimension_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_dimension_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
 DefaultDependencies=no
 
 [Service]
@@ -11,7 +16,9 @@ ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-dimension
 ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-dimension
 
 # Fixup database ownership if it got changed somehow (during a server migration, etc.)
-ExecStartPre=-{{ matrix_host_command_chown }} {{ matrix_dimension_user_uid }}:{{ matrix_dimension_user_gid }} {{ matrix_dimension_base_path }}/dimension.db
+{% if matrix_dimension_database_engine == 'sqlite' %}
+ExecStartPre=-{{ matrix_host_command_chown }} {{ matrix_dimension_user_uid }}:{{ matrix_dimension_user_gid }} {{ matrix_dimension_sqlite_database_path_local }}
+{% endif %}
 
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-dimension \
 			--log-driver=none \

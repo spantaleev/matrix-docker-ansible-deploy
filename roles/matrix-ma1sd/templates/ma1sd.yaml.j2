@@ -11,9 +11,19 @@ key:
   path: /var/ma1sd/sign.key
 
 storage:
-  provider:
-    sqlite:
-      database: /var/ma1sd/ma1sd.db
+  {% if matrix_ma1sd_database_engine == 'sqlite' %}
+    backend: sqlite
+    provider:
+      sqlite:
+        database: {{ matrix_ma1sd_sqlite_database_path_in_container|to_json }}
+  {% elif matrix_ma1sd_database_engine == 'postgres' %}
+    backend: postgresql
+    provider:
+      postgresql:
+        database: //{{ matrix_ma1sd_database_hostname }}:{{ matrix_ma1sd_database_port }}/{{ matrix_ma1sd_database_name }}
+        username: {{ matrix_ma1sd_database_username|to_json }}
+        password: {{ matrix_ma1sd_database_password|to_json }}
+  {% endif %}
 
 {% if matrix_ma1sd_dns_overwrite_enabled %}
 dns:
@@ -45,22 +55,34 @@ threepid:
       generators:
         template:
           {% if matrix_ma1sd_threepid_medium_email_custom_invite_template %}
-          invite: '/var/ma1sd/invite-template.eml'
+          invite: '/etc/ma1sd/invite-template.eml'
           {% endif %}
-          {% if matrix_ma1sd_threepid_medium_email_custom_session_validation_template or matrix_ma1sd_threepid_medium_email_custom_unbind_fraudulent_template %}
+          {% if matrix_ma1sd_threepid_medium_email_custom_session_validation_template or matrix_ma1sd_threepid_medium_email_custom_session_unbind_notification_template %}
           session:
             {% if matrix_ma1sd_threepid_medium_email_custom_session_validation_template %}
-            validation: '/var/ma1sd/validate-template.eml'
+            validation: '/etc/ma1sd/validate-template.eml'
             {% endif %}
-            {% if matrix_ma1sd_threepid_medium_email_custom_unbind_fraudulent_template %}
+            {% if matrix_ma1sd_threepid_medium_email_custom_session_unbind_notification_template %}
             unbind:
-              frandulent: '/var/ma1sd/unbind-fraudulent.eml'
+              notification: '/etc/ma1sd/unbind-notification.eml'
             {% endif %}
           {% endif %}
           {% if matrix_ma1sd_threepid_medium_email_custom_matrixid_template %}
           generic:
-            matrixId: '/var/ma1sd/mxid-template.eml'
+            matrixId: '/etc/ma1sd/mxid-template.eml'
           {% endif %}
+{% endif %}
+
+{% if matrix_ma1sd_view_session_custom_templates_enabled %}
+view:
+  session:
+    onTokenSubmit:
+      {% if matrix_ma1sd_view_session_custom_onTokenSubmit_success_template %}
+      success: '/etc/ma1sd/tokenSubmitSuccess.html'
+      {% endif %}
+      {% if matrix_ma1sd_view_session_custom_onTokenSubmit_failure_template %}
+      failure: '/etc/ma1sd/tokenSubmitFailure.html'
+      {% endif %}
 {% endif %}
 
 {% if matrix_ma1sd_hashing_enabled %}

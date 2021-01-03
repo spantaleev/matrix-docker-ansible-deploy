@@ -8,6 +8,32 @@
       The matrix-bridge-mautrix-facebook role needs to execute before the matrix-synapse role.
   when: "matrix_synapse_role_executed|default(False)"
 
+- set_fact:
+    matrix_mautrix_facebook_requires_restart: false
+
+- block:
+    - name: Check if an SQLite database already exists
+      stat:
+        path: "{{ matrix_mautrix_facebook_sqlite_database_path_local }}"
+      register: matrix_mautrix_facebook_sqlite_database_path_local_stat_result
+
+    - block:
+        - set_fact:
+            matrix_postgres_db_migration_request:
+              src: "{{ matrix_mautrix_facebook_sqlite_database_path_local }}"
+              dst: "{{ matrix_mautrix_facebook_database_connection_string }}"
+              caller: "{{ role_path|basename }}"
+              engine_variable_name: 'matrix_mautrix_facebook_database_engine'
+              engine_old: 'sqlite'
+              systemd_services_to_stop: ['matrix-mautrix-facebook.service']
+
+        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+
+        - set_fact:
+            matrix_mautrix_facebook_requires_restart: true
+      when: "matrix_mautrix_facebook_sqlite_database_path_local_stat_result.stat.exists|bool"
+  when: "matrix_mautrix_facebook_database_engine == 'postgres'"
+
 - name: Ensure Mautrix Facebook image is pulled
   docker_image:
     name: "{{ matrix_mautrix_facebook_docker_image }}"
@@ -94,3 +120,9 @@
   service:
     daemon_reload: yes
   when: "matrix_mautrix_facebook_systemd_service_result.changed"
+
+- name: Ensure matrix-mautrix-facebook.service restarted, if necessary
+  service:
+    name: "matrix-mautrix-facebook.service"
+    state: restarted
+  when: "matrix_mautrix_facebook_requires_restart|bool"

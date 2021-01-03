@@ -1,0 +1,35 @@
+---
+
+- name: Check existence of matrix-matrix-reminder-bot service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-bot-matrix-reminder-bot.service"
+  register: matrix_bot_matrix_reminder_bot_service_stat
+
+- name: Ensure matrix-matrix-reminder-bot is stopped
+  service:
+    name: matrix-matrix-reminder-bot
+    state: stopped
+    daemon_reload: yes
+  register: stopping_result
+  when: "matrix_bot_matrix_reminder_bot_service_stat.stat.exists|bool"
+
+- name: Ensure matrix-bot-matrix-reminder-bot.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-bot-matrix-reminder-bot.service"
+    state: absent
+  when: "matrix_bot_matrix_reminder_bot_service_stat.stat.exists|bool"
+
+- name: Ensure systemd reloaded after matrix-bot-matrix-reminder-bot.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_bot_matrix_reminder_bot_service_stat.stat.exists|bool"
+
+- name: Ensure Matrix matrix-reminder-bot paths don't exist
+  file:
+    path: "{{ matrix_bot_matrix_reminder_bot_base_path }}"
+    state: absent
+
+- name: Ensure matrix-reminder-bot Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_bot_matrix_reminder_bot_docker_image }}"
+    state: absent

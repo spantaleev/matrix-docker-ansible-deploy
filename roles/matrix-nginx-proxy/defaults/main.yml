@@ -3,7 +3,7 @@ matrix_nginx_proxy_enabled: true
 # We use an official nginx image, which we fix-up to run unprivileged.
 # An alternative would be an `nginxinc/nginx-unprivileged` image, but
 # that is frequently out of date.
-matrix_nginx_proxy_docker_image: "docker.io/nginx:1.19.5-alpine"
+matrix_nginx_proxy_docker_image: "docker.io/nginx:1.19.6-alpine"
 matrix_nginx_proxy_docker_image_force_pull: "{{ matrix_nginx_proxy_docker_image.endswith(':latest') }}"
 
 matrix_nginx_proxy_base_path: "{{ matrix_base_data_path }}/nginx-proxy"
@@ -92,6 +92,8 @@ matrix_nginx_proxy_base_domain_homepage_template: |-
     </body>
   </html>
 
+# Option to disable the access log
+matrix_nginx_proxy_access_log_enabled: true
 
 # Controls whether proxying the riot domain should be done.
 matrix_nginx_proxy_proxy_riot_compat_redirect_enabled: false
