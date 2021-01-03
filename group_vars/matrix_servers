@@ -265,7 +265,6 @@ matrix_mautrix_hangouts_database_password: "{{ matrix_synapse_macaroon_secret_ke
 # We don't enable bridges by default.
 matrix_mautrix_signal_enabled: false
 
-# TODO: unclear whether to put this into the role or keep it here
 matrix_mautrix_signal_systemd_required_services_list: |
   {{
     ['docker.service']
@@ -288,8 +287,7 @@ matrix_mautrix_signal_appservice_token: "{{ matrix_synapse_macaroon_secret_key |
 matrix_mautrix_signal_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
 matrix_mautrix_signal_database_engine: 'postgres'
-matrix_mautrix_signal_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mau.signal.db') | to_uuid }}" 
-
+matrix_mautrix_signal_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mau.signal.db') | to_uuid }}"
 
 ######################################################################
 #
@@ -1073,9 +1071,9 @@ matrix_postgres_additional_databases: |
     }] if (matrix_mautrix_hangouts_enabled and matrix_mautrix_hangouts_database_engine == 'postgres' and matrix_mautrix_hangouts_database_hostname == 'matrix-postgres') else [])
     +
     ([{
-      'name': matrix_mautrix_signal_database_name, 
-      'username': matrix_mautrix_signal_database_username, 
-      'password': matrix_mautrix_signal_database_password, 
+      'name': matrix_mautrix_signal_database_name,
+      'username': matrix_mautrix_signal_database_username,
+      'password': matrix_mautrix_signal_database_password,
     }] if (matrix_mautrix_signal_enabled and matrix_mautrix_signal_database_engine == 'postgres' and matrix_mautrix_signal_database_hostname == 'matrix-postgres') else [])
     +
     ([{

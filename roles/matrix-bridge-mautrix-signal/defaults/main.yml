@@ -27,8 +27,7 @@ matrix_mautrix_signal_container_http_host_bind_port: ''
 matrix_mautrix_signal_container_extra_arguments: []
 
 # List of systemd services that matrix-mautrix-signal.service depends on.
-# TODO: unclear whether to put this into group_vars or keep it here
-matrix_mautrix_signal_systemd_required_services_list: 
+matrix_mautrix_signal_systemd_required_services_list:
   - 'docker.service'
   - 'matrix-mautrix-signal-daemon.service'
 
@@ -40,7 +39,7 @@ matrix_mautrix_signal_homeserver_token: ''
 
 # Database-related configuration fields
 #
-# This bridge only supports postgres. 
+# This bridge only supports postgres.
 #
 matrix_mautrix_signal_database_engine: 'postgres'
 
@@ -50,13 +49,13 @@ matrix_mautrix_signal_database_hostname: 'matrix-postgres'
 matrix_mautrix_signal_database_port: 5432
 matrix_mautrix_signal_database_name: 'matrix_mautrix_signal'
 
-matrix_mautrix_signal_database_connection_string: 'postgres://{{ matrix_mautrix_signal_database_username }}:{{ matrix_mautrix_signal_database_password }}@{{ matrix_mautrix_signal_database_hostname }}:{{ matrix_mautrix_signal_database_port }}/{{ matrix_mautrix_signal_database_name }}' 
+matrix_mautrix_signal_database_connection_string: 'postgres://{{ matrix_mautrix_signal_database_username }}:{{ matrix_mautrix_signal_database_password }}@{{ matrix_mautrix_signal_database_hostname }}:{{ matrix_mautrix_signal_database_port }}/{{ matrix_mautrix_signal_database_name }}'
 
-matrix_mautrix_signal_appservice_database: "{{ 
- 	{ 
- 		'postgres': matrix_mautrix_facebook_database_connection_string, 
- 	}[matrix_mautrix_signal_database_engine] 
- }}" 
+matrix_mautrix_signal_appservice_database: "{{
+ 	{
+ 		'postgres': matrix_mautrix_facebook_database_connection_string,
+ 	}[matrix_mautrix_signal_database_engine]
+ }}"
 
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
 matrix_mautrix_signal_login_shared_secret: ''
