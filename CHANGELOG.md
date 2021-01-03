@@ -4,6 +4,8 @@
 
 Thanks to [laszabine](https://github.com/laszabine)'s efforts, the playbook now supports bridging to [Signal](https://www.signal.org/) via the [mautrix-signal](https://github.com/tulir/mautrix-signal) bridge. See our [Setting up Mautrix Signal bridging](docs/configuring-playbook-bridge-mautrix-signal.md) documentation page for getting started.
 
+If you had installed the mautrix-signal bridge while its Pull Request was still work-in-progress, you can migrate your data to the new and final setup by referring to [this comment](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/686#issuecomment-753510789).
+
 
 # 2020-12-23
 
