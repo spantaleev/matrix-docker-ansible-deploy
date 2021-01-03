@@ -107,6 +107,18 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
+- name: Ensure custom view templates are installed, if any
+  copy:
+    content: "{{ item.value }}"
+    dest: "{{ matrix_ma1sd_config_path }}/{{ item.location }}"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {value: "{{ matrix_ma1sd_view_session_custom_onTokenSubmit_success_template }}", location: 'tokenSubmitSuccess.html'}
+    - {value: "{{ matrix_ma1sd_view_session_custom_onTokenSubmit_failure_template }}", location: 'tokenSubmitFailure.html'}
+  when: "matrix_ma1sd_view_session_custom_templates_enabled|bool and item.value"
+
 - name: Ensure custom email templates are installed, if any
   copy:
     content: "{{ item.value }}"

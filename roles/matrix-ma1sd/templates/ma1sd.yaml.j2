@@ -73,6 +73,18 @@ threepid:
           {% endif %}
 {% endif %}
 
+{% if matrix_ma1sd_view_session_custom_templates_enabled %}
+view:
+  session:
+    onTokenSubmit:
+      {% if matrix_ma1sd_view_session_custom_onTokenSubmit_success_template %}
+      success: '/etc/ma1sd/tokenSubmitSuccess.html'
+      {% endif %}
+      {% if matrix_ma1sd_view_session_custom_onTokenSubmit_failure_template %}
+      failure: '/etc/ma1sd/tokenSubmitFailure.html'
+      {% endif %}
+{% endif %}
+
 {% if matrix_ma1sd_hashing_enabled %}
 hashing:
   enabled: true # enable or disable the hash lookup MSC2140 (default is false)
