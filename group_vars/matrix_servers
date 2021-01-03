@@ -1089,12 +1089,6 @@ matrix_postgres_additional_databases: |
     }] if (matrix_mautrix_whatsapp_enabled and matrix_mautrix_whatsapp_database_engine == 'postgres' and matrix_mautrix_whatsapp_database_hostname == 'matrix-postgres') else [])
     +
     ([{
-      'name': 'matrix_bridge_sms',
-      'username': 'matrix_bridge_sms',
-      'password': matrix_synapse_macaroon_secret_key | password_hash('sha512', 'bridge.sms.db') | to_uuid,
-    }] if matrix_sms_bridge_enabled else [])
-    +
-    ([{
       'name': matrix_mx_puppet_skype_database_name,
       'username': matrix_mx_puppet_skype_database_username,
       'password': matrix_mx_puppet_skype_database_password,
