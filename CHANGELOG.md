@@ -1,3 +1,10 @@
+# 2021-01-03
+
+## Signal bridging support via mautrix-signal
+
+Thanks to [laszabine](https://github.com/laszabine)'s efforts, the playbook now supports bridging to [Signal](https://www.signal.org/) via the [mautrix-signal](https://github.com/tulir/mautrix-signal) bridge. See our [Setting up Mautrix Signal bridging](docs/configuring-playbook-bridge-mautrix-signal.md) documentation page for getting started.
+
+
 # 2020-12-23
 
 ## The big move to all-on-Postgres (potentially dangerous)

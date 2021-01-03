@@ -4,6 +4,8 @@ The playbook can install and configure [mautrix-signal](https://github.com/tulir
 
 See the project's [documentation](https://github.com/tulir/mautrix-signal/wiki) to learn what it does and why it might be useful to you.
 
+**Note/Prerequisite**: If you're running with the Postgres database server integrated by the playbook (which is the default), you don't need to do anything special and can easily proceed with installing. However, if you're [using an external Postgres server](configuring-playbook-external-postgres.md), you'd need to manually prepare a Postgres database for this bridge and adjust the variables related to that (`matrix_mautrix_signal_database_*`).
+
 Use the following playbook configuration:
 
 ```yaml
