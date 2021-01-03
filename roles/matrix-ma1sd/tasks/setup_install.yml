@@ -107,13 +107,25 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure custom templates are installed if any
+- name: Ensure custom email templates are installed, if any
   copy:
     content: "{{ item.value }}"
-    dest: "{{ matrix_ma1sd_data_path }}/{{ item.location }}"
+    dest: "{{ matrix_ma1sd_config_path }}/{{ item.location }}"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_invite_template }}", location: 'invite-template.eml'}
+    - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_session_validation_template }}", location: 'validate-template.eml'}
+    - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_session_unbind_notification_template }}", location: 'unbind-notification.eml'}
+    - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_matrixid_template }}", location: 'mxid-template.eml'}
+  when: "matrix_ma1sd_threepid_medium_email_custom_templates_enabled|bool and item.value"
+
+# Only cleaning up for people who define the respective templates
+- name: (Cleanup) Ensure custom email templates are not in data/ anymore (we've put them in config/)
+  file:
+    path: "{{ matrix_ma1sd_data_path }}/{{ item.location }}"
+    state: absent
   with_items:
     - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_invite_template }}", location: 'invite-template.eml'}
     - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_session_validation_template }}", location: 'validate-template.eml'}
