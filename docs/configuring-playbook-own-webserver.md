@@ -219,7 +219,7 @@ services:
       - "--certificatesresolvers.default.acme.storage=/letsencrypt/acme.json"
     ports:
       - "443:443"
-      - "8080:8080"
+      - "8448:8448"
     volumes:
       - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
