@@ -129,7 +129,7 @@ matrix_appservice_slack_systemd_required_services_list: |
   }}
 
 # Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_appservice_slack_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_appservice_slack_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'nedb' }}"
 matrix_appservice_slack_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'as.slack.db') | to_uuid }}"
 
 ######################################################################
