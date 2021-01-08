@@ -232,8 +232,9 @@ matrix_nginx_proxy_reload_cron_time_definition: "20 4 */5 * *"
 # - https://ssl-config.mozilla.org/#server=nginx
 matrix_nginx_proxy_ssl_preset: "intermediate"
 
-# This are the presets as taken from Mozilla's Server Side TLS Recommended configurations
-# DO NOT modify this values and use `matrix_nginx_proxy_ssl_protocols` and `matrix_nginx_proxy_ssl_ciphers`
+# Presets are taken from Mozilla's Server Side TLS Recommended configurations
+# DO NOT modify these values and use `matrix_nginx_proxy_ssl_protocols`, `matrix_nginx_proxy_ssl_ciphers` and `matrix_nginx_proxy_ssl_ciphers`
+# if you wish to use something more custom.
 matrix_nginx_proxy_ssl_presets:
   modern:
     protocols: TLSv1.3
@@ -250,20 +251,12 @@ matrix_nginx_proxy_ssl_presets:
 
 
 # Specifies which *SSL protocols* to use when serving all the various vhosts.
-# By default is set to "" and will use the protocols from the preset. If you set it to something different, it will override
-# the values from the preset
 matrix_nginx_proxy_ssl_protocols: "{{ matrix_nginx_proxy_ssl_presets[matrix_nginx_proxy_ssl_preset]['protocols'] }}"
 
-# Specifies whether to prefer *the client’s choice or the server’s choice* when
-# negociating the chipher to serve all the various vhost.
-#
-# By default is set to "" and will use the protocols from the preset. If you set it to something different, it will override
-# the values from the preset
+# Specifies whether to prefer *the client’s choice or the server’s choice* when negotiating ciphers.
 matrix_nginx_proxy_ssl_prefer_server_ciphers: "{{ matrix_nginx_proxy_ssl_presets[matrix_nginx_proxy_ssl_preset]['prefer_server_ciphers'] }}"
 
 # Specifies which *SSL Cipher suites* to use when serving all the various vhosts.
-# By default is set to "" and will use the ciphers from the preset. If you set it to something different, it will override
-# the values from the preset.
 # To see the full list for suportes ciphers run `openssl ciphers` on your server
 matrix_nginx_proxy_ssl_ciphers: "{{ matrix_nginx_proxy_ssl_presets[matrix_nginx_proxy_ssl_preset]['ciphers'] }}"
 
