@@ -66,25 +66,11 @@ server {
 	ssl_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_dimension_hostname }}/fullchain.pem;
 	ssl_certificate_key {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_dimension_hostname }}/privkey.pem;
 
-	{% if matrix_nginx_proxy_ssl_protocols == "" %}
-	ssl_protocols {{ matrix_nginx_proxy_ssl_presets[matrix_nginx_proxy_ssl_preset]['protocols'] }};
-	{% else %}
 	ssl_protocols {{ matrix_nginx_proxy_ssl_protocols }};
-	{% endif %}
-
-	{% if matrix_nginx_proxy_ssl_prefer_server_ciphers == "" %}
-	ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_presets[matrix_nginx_proxy_ssl_preset]['prefer_server_ciphers'] }};
-	{% else %}
-	ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_prefer_server_ciphers }};
-	{% endif %}
-
-	{% if matrix_nginx_proxy_ssl_ciphers == "" %}
-		{% if matrix_nginx_proxy_ssl_preset == "old" or  matrix_nginx_proxy_ssl_preset == "intermediate" %}
-		ssl_ciphers "{{ matrix_nginx_proxy_ssl_presets[matrix_nginx_proxy_ssl_preset]['ciphers'] }}";
-		{% endif %}
-	{% else %}
+	{% if not matrix_nginx_proxy_ssl_ciphers == "" %}
 	ssl_ciphers "{{ matrix_nginx_proxy_ssl_ciphers }}";
 	{% endif %}
+	ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_prefer_server_ciphers }};
 
 	{{ render_vhost_directives() }}
 }

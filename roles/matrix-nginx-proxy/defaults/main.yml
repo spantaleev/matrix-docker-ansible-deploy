@@ -252,20 +252,20 @@ matrix_nginx_proxy_ssl_presets:
 # Specifies which *SSL protocols* to use when serving all the various vhosts.
 # By default is set to "" and will use the protocols from the preset. If you set it to something different, it will override
 # the values from the preset
-matrix_nginx_proxy_ssl_protocols: ""
+matrix_nginx_proxy_ssl_protocols: "{{ matrix_nginx_proxy_ssl_presets[matrix_nginx_proxy_ssl_preset]['protocols'] }}"
 
 # Specifies whether to prefer *the client’s choice or the server’s choice* when
 # negociating the chipher to serve all the various vhost.
 #
 # By default is set to "" and will use the protocols from the preset. If you set it to something different, it will override
 # the values from the preset
-matrix_nginx_proxy_ssl_prefer_server_ciphers: ""
+matrix_nginx_proxy_ssl_prefer_server_ciphers: "{{ matrix_nginx_proxy_ssl_presets[matrix_nginx_proxy_ssl_preset]['prefer_server_ciphers'] }}"
 
 # Specifies which *SSL Cipher suites* to use when serving all the various vhosts.
 # By default is set to "" and will use the ciphers from the preset. If you set it to something different, it will override
 # the values from the preset.
 # To see the full list for suportes ciphers run `openssl ciphers` on your server
-matrix_nginx_proxy_ssl_ciphers: ""
+matrix_nginx_proxy_ssl_ciphers: "{{ matrix_nginx_proxy_ssl_presets[matrix_nginx_proxy_ssl_preset]['ciphers'] }}"
 
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_nginx_proxy_self_check_validate_certificates: true
