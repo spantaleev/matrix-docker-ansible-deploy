@@ -2,13 +2,15 @@
 
 ## New SSL Configuration
 
-A new variable `matrix_nginx_proxy_ssl_config`, bringing some breaking changes. The default configuration is set to `"Intermadiate"`.
-This changes `ssl_prefer_server_ciphers` to `off` by default instead of `off`. It also add some more ciphers to the list, this should
+A new variable `matrix_nginx_proxy_ssl_preset`, bringing some breaking changes. The default configuration is set to `"intermediate"`.
+This changes `ssl_prefer_server_ciphers` to `off` by default instead of `on`. It also add some more ciphers to the list, this should
 give a little better performance for mobile devices and removes weak ciphers. More information in the [documentation](docs/configuring-playbook-nginx.md).
-To revert to the old behaviour just set `matrix_nginx_proxy_ssl_config` to `"Custom"` and don't change any of the other variables.
+To revert to the old behaviour just set the following variables:
 
-If you are setting `matrix_nginx_proxy_ssl_protocols` to a custom value, you will need to `matrix_nginx_proxy_ssl_config` to `"Custom"`,
-otherwise it this variable will be ignored.
+```yaml
+matrix_nginx_proxy_ssl_ciphers: "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH"
+matrix_nginx_proxy_ssl_prefer_server_ciphers: "on"
+```
 
 # 2021-01-03
 

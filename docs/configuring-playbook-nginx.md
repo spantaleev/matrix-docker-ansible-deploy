@@ -26,21 +26,20 @@ matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses:
 
 ## Adjusting SSL in your server
 
-You can adjust how the SSL is served by the nginx server by setting the `matrix_nginx_proxy_ssl_config`. This is based on the Mozilla Server Side TLS
+You can adjust how the SSL is served by the nginx server by setting the `matrix_nginx_proxy_ssl_preset`. This is based on the Mozilla Server Side TLS
 Recommended configurations. It changes the TLS Protocol, the SSL Cipher Suites and the `ssl_prefer_server_ciphers` variable of nginx.
 The posible values are:
 
-- "Modern" - For Modern clients that support TLS 1.3, with no need for backwards compatibility
-- "Intermediate" - Recommended configuration for a general-purpose server
-- "Old" - Services accessed by very old clients or libraries, such as Internet Explorer 8 (Windows XP), Java 6, or OpenSSL 0.9.8
-- "Custom" - For defining your own protocols an ciphers
+- "modern" - For Modern clients that support TLS 1.3, with no need for backwards compatibility
+- "intermediate" - Recommended configuration for a general-purpose server
+- "old" - Services accessed by very old clients or libraries, such as Internet Explorer 8 (Windows XP), Java 6, or OpenSSL 0.9.8
 
-The default is set to `"Intermediate"`.
+The default is set to `"intermediate"`.
 
-**Be really carefull when setting it to "Modern"**. This could break the comunication with other matrix servers, limiting your feration posibilities and the
+**Be really carefull when setting it to "modern"**. This could break the comunication with other matrix servers, limiting your feration posibilities and the
 [Federarion tester](https://federationtester.matrix.org/) won't work.
 
-If you set `matrix_nginx_proxy_ssl_config` to `"Custom"`, you will get three variables that you will be able to set:
+If you want to override one of the values used by the preset, you can use this three variables:
 
 - `matrix_nginx_proxy_ssl_protocols`: for specifying the supported TLS protocols.
 - `matrix_nginx_proxy_ssl_prefer_server_ciphers`: for specifying if the server or the client choice when negociating the chipher. It can set to "on" or "off".

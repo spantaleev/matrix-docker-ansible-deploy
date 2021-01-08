@@ -48,11 +48,10 @@ Those configuration files are adapted for use with an external web server (one n
 
 You can most likely directly use the config files installed by this playbook at: `/matrix/nginx-proxy/conf.d`. Just include them in your own `nginx.conf` like this: `include /matrix/nginx-proxy/conf.d/*.conf;`
 
-Note that if your nginx version is old, it might not like our default choice of SSL protocols (particularly the fact that the brand new `TLSv1.3` protocol is enabled). You can override the protocol list by setting `matrix_nginx_proxy_ssl_config` to `"Custom"` redefining the `matrix_nginx_proxy_ssl_protocols` variable. Example:
+Note that if your nginx version is old, it might not like our default choice of SSL protocols (particularly the fact that the brand new `TLSv1.3` protocol is enabled). You can override the protocol list by redefining the `matrix_nginx_proxy_ssl_protocols` variable. Example:
 
 ```yaml
 # Custom protocol list (removing `TLSv1.3`) to suit your nginx version.
-matrix_nginx_proxy_ssl_config: "Custom"
 matrix_nginx_proxy_ssl_protocols: "TLSv1.2"
 ```
 
