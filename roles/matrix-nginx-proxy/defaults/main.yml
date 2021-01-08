@@ -219,8 +219,46 @@ matrix_nginx_proxy_proxy_domain_additional_server_configuration_blocks: []
 # a new SSL certificate could go into effect.
 matrix_nginx_proxy_reload_cron_time_definition: "20 4 */5 * *"
 
-# Specifies which SSL protocols to use when serving all the various vhosts
-matrix_nginx_proxy_ssl_protocols: "TLSv1.2 TLSv1.3"
+# Specifies the SSL configuration that should be used for the SSL protocols and ciphers
+# This is based on the Mozilla Server Side TLS Recommended configurations.
+#
+# The posible values are:
+# - "modern" - For Modern clients that support TLS 1.3, with no need for backwards compatibility
+# - "intermediate" - Recommended configuration for a general-purpose server
+# - "old" - Services accessed by very old clients or libraries, such as Internet Explorer 8 (Windows XP), Java 6, or OpenSSL 0.9.8
+#
+# For more information visit:
+# - https://wiki.mozilla.org/Security/Server_Side_TLS#Recommended_configurations
+# - https://ssl-config.mozilla.org/#server=nginx
+matrix_nginx_proxy_ssl_preset: "intermediate"
+
+# Presets are taken from Mozilla's Server Side TLS Recommended configurations
+# DO NOT modify these values and use `matrix_nginx_proxy_ssl_protocols`, `matrix_nginx_proxy_ssl_ciphers` and `matrix_nginx_proxy_ssl_ciphers`
+# if you wish to use something more custom.
+matrix_nginx_proxy_ssl_presets:
+  modern:
+    protocols: TLSv1.3
+    ciphers: ""
+    prefer_server_ciphers: "off"
+  intermediate:
+    protocols: TLSv1.2 TLSv1.3
+    ciphers: ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+    prefer_server_ciphers: "off"
+  old:
+    protocols: TLSv1 TLSv1.1 TLSv1.2 TLSv1.3
+    ciphers: ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA256:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA
+    prefer_server_ciphers: "on"
+
+
+# Specifies which *SSL protocols* to use when serving all the various vhosts.
+matrix_nginx_proxy_ssl_protocols: "{{ matrix_nginx_proxy_ssl_presets[matrix_nginx_proxy_ssl_preset]['protocols'] }}"
+
+# Specifies whether to prefer *the client’s choice or the server’s choice* when negotiating ciphers.
+matrix_nginx_proxy_ssl_prefer_server_ciphers: "{{ matrix_nginx_proxy_ssl_presets[matrix_nginx_proxy_ssl_preset]['prefer_server_ciphers'] }}"
+
+# Specifies which *SSL Cipher suites* to use when serving all the various vhosts.
+# To see the full list for suportes ciphers run `openssl ciphers` on your server
+matrix_nginx_proxy_ssl_ciphers: "{{ matrix_nginx_proxy_ssl_presets[matrix_nginx_proxy_ssl_preset]['ciphers'] }}"
 
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_nginx_proxy_self_check_validate_certificates: true

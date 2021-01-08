@@ -203,9 +203,12 @@ server {
 
 	ssl_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/fullchain.pem;
 	ssl_certificate_key {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/privkey.pem;
+
 	ssl_protocols {{ matrix_nginx_proxy_ssl_protocols }};
-	ssl_prefer_server_ciphers on;
-	ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
+	{% if matrix_nginx_proxy_ssl_ciphers != '' %}
+	ssl_ciphers {{ matrix_nginx_proxy_ssl_ciphers }};
+	{% endif %}
+	ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_prefer_server_ciphers }};
 
 	{{ render_vhost_directives() }}
 }
@@ -235,9 +238,13 @@ server {
 	{% if matrix_nginx_proxy_https_enabled %}
 		ssl_certificate {{ matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate }};
 		ssl_certificate_key {{ matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate_key }};
-		ssl_protocols {{ matrix_nginx_proxy_ssl_protocols }};
-		ssl_prefer_server_ciphers on;
-		ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
+
+	ssl_protocols {{ matrix_nginx_proxy_ssl_protocols }};
+	{% if matrix_nginx_proxy_ssl_ciphers != '' %}
+	ssl_ciphers {{ matrix_nginx_proxy_ssl_ciphers }};
+	{% endif %}
+	ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_prefer_server_ciphers }};
+
 	{% endif %}
 
 	location / {
