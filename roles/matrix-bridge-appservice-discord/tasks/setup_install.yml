@@ -1,5 +1,31 @@
 ---
 
+- set_fact:
+    matrix_appservice_discord_requires_restart: false
+
+- block:
+    - name: Check if an SQLite database already exists
+      stat:
+        path: "{{ matrix_appservice_discord_sqlite_database_path_local }}"
+      register: matrix_appservice_discord_sqlite_database_path_local_stat_result
+
+    - block:
+        - set_fact:
+            matrix_postgres_db_migration_request:
+              src: "{{ matrix_appservice_discord_sqlite_database_path_local }}"
+              dst: "{{ matrix_appservice_discord_database_connString }}"
+              caller: "{{ role_path|basename }}"
+              engine_variable_name: 'matrix_appservice_discord_database_engine'
+              engine_old: 'sqlite'
+              systemd_services_to_stop: ['matrix-appservice-discord.service']
+
+        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+
+        - set_fact:
+            matrix_appservice_discord_requires_restart: true
+      when: "matrix_appservice_discord_sqlite_database_path_local_stat_result.stat.exists|bool"
+  when: "matrix_appservice_discord_database_engine == 'postgres'"
+
 - name: Ensure Appservice Discord image is pulled
   docker_image:
     name: "{{ matrix_appservice_discord_docker_image }}"
@@ -80,3 +106,9 @@
   service:
     daemon_reload: yes
   when: "matrix_appservice_discord_systemd_service_result.changed"
+
+- name: Ensure matrix-appservice-discord.service restarted, if necessary
+  service:
+    name: "matrix-appservice-discord.service"
+    state: restarted
+  when: "matrix_appservice_discord_requires_restart|bool"

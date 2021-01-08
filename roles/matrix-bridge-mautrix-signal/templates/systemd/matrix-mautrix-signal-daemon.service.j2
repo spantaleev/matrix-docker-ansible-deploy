@@ -1,0 +1,38 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Mautrix Signal daemon
+
+{% for service in matrix_mautrix_signal_daemon_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+
+{% for service in matrix_mautrix_signal_daemon_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+
+[Service]
+Type=simple
+
+ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-mautrix-signal-daemon
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-mautrix-signal-daemon
+
+# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
+ExecStartPre={{ matrix_host_command_sleep }} 5
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-signal-daemon \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--network={{ matrix_docker_network }} \
+			-v {{ matrix_mautrix_signal_daemon_path }}:/signald:z \
+			{{ matrix_mautrix_signal_daemon_docker_image }}
+
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-mautrix-signal-daemon
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-mautrix-signal-daemon
+
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-mautrix-signal-daemon
+
+[Install]
+WantedBy=multi-user.target

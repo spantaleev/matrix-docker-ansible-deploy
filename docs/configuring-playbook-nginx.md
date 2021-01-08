@@ -24,11 +24,18 @@ matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses:
 - 1.1.1.1
 ```
 
-
 ## Synapse + OpenID Connect for Single-Sign-On
 
 If you want to use OpenID Connect as an SSO provider (as per the [Synapse OpenID docs](https://github.com/matrix-org/synapse/blob/develop/docs/openid.md)), you need to use the following configuration (in your `vars.yml` file) to instruct nginx to forward `/_synapse/oidc` to Synapse:
 
 ```yaml
 matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled: true
+```
+
+## Disable Nginx access logs
+
+This will disable the access logging for nginx.
+
+```yaml
+matrix_nginx_proxy_access_log_enabled: false
 ```

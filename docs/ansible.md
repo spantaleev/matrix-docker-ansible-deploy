@@ -9,9 +9,9 @@ If your local computer cannot run Ansible, you can also run Ansible on some serv
 
 ## Supported Ansible versions
 
-Ansible 2.7.0 or newer is required.
+Ansible 2.7.1 or newer is required ([last discussion about Ansible versions](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/743)).
 
-Ubuntu (at least 20.04) ships with a buggy version (see this [bug](https://bugs.launchpad.net/ubuntu/+source/ansible/+bug/1880359)), which can't be used in combination with a host running new systemd (more detaisl in [#517](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/517), [#669]([669](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/669))). If this problem affects you, you can: avoid running Ubuntu 20.04 on your host; run Ansible from another machine targeting your host; or try to upgrade to a newer Ansible version (see below).
+Note: Ubuntu 20.04 ships with Ansible 2.9.6 which is a buggy version (see this [bug](https://bugs.launchpad.net/ubuntu/+source/ansible/+bug/1880359)), which can't be used in combination with a host running new systemd (more details in [#517](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/517), [#669](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/669)). If this problem affects you, you can: avoid running Ubuntu 20.04 on your host; run Ansible from another machine targeting your host; or try to upgrade to a newer Ansible version (see below).
 
 
 ## Checking your Ansible version
@@ -51,7 +51,7 @@ docker run -it --rm \
 -v `pwd`:/work \
 -v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro \
 --entrypoint=/bin/sh \
-devture/ansible:2.9.13-r0
+docker.io/devture/ansible:2.9.14-r0
 ```
 
 The above command tries to mount an SSH key (`$HOME/.ssh/id_rsa`) into the container (at `/root/.ssh/id_rsa`).

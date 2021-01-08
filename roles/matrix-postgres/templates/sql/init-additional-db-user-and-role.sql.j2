@@ -1,0 +1,19 @@
+-- `CREATE USER` does not support `IF NOT EXISTS`, so we use this workaround to prevent an error and raise a notice instead.
+-- Seen here: https://stackoverflow.com/a/49858797
+DO $$
+BEGIN
+  CREATE USER {{ additional_db.username }};
+  EXCEPTION WHEN DUPLICATE_OBJECT THEN
+  RAISE NOTICE 'not creating user {{ additional_db.username }}, since it already exists';
+END
+$$;
+
+-- This is useful for initial user creation (since we don't assign a password above) and for handling subsequent password changes
+-- TODO - we should escape quotes in the password.
+ALTER ROLE {{ additional_db.username }} PASSWORD '{{ additional_db.password }}';
+
+-- This will generate an error on subsequent execution
+CREATE DATABASE {{ additional_db.name }} WITH LC_CTYPE 'C' LC_COLLATE 'C' OWNER {{ additional_db.username }};
+
+-- This is useful for changing the database owner subsequently
+ALTER DATABASE {{ additional_db.name }} OWNER TO {{ additional_db.username }};

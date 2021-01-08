@@ -1,10 +1,19 @@
 ---
 
-# We generally support Ansible 2.7.0 and above.
-- name: Fail if running on Ansible < 2.7
+# We generally support Ansible 2.7.1 and above.
+- name: Fail if running on Ansible < 2.7.1
   fail:
     msg: "You are running on Ansible {{ ansible_version.string }}, which is not supported. See our guide about Ansible: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/ansible.md"
-  when: "(ansible_version.major < 2) or (ansible_version.major <= 2 and ansible_version.minor < 7)"
+  when:
+    - "(ansible_version.major < 2) or (ansible_version.major == 2 and ansible_version.minor < 7) or (ansible_version.major == 2 and ansible_version.minor == 7 and ansible_version.revision < 1)"
+
+# Though we do not support Ansible 2.9.6 which is buggy
+- name: Fail if running on Ansible 2.9.6 on Ubuntu
+  fail:
+    msg: "You are running on Ansible {{ ansible_version.string }}, which is not supported. See our guide about Ansible: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/ansible.md"
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - "ansible_version.major == 2 and ansible_version.minor == 9 and ansible_version.revision == 6"
 
 - name: (Deprecation) Catch and report renamed settings
   fail:

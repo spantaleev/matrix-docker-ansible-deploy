@@ -1,0 +1,28 @@
+---
+
+- name: Fail if required settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_mautrix_signal_homeserver_domain"
+    - "matrix_mautrix_signal_homeserver_address"
+    - "matrix_mautrix_signal_homeserver_token"
+    - "matrix_mautrix_signal_appservice_token"
+
+- name: (Deprecation) Catch and report renamed Signal variables
+  fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_mautrix_signal_container_exposed_port_number', 'new': '<superseded by matrix_mautrix_signal_container_http_host_bind_port>'}
+    - {'old': 'matrix_mautrix_signal_db_user', 'new': 'matrix_mautrix_signal_database_username'}
+    - {'old': 'matrix_mautrix_signal_db_password', 'new': 'matrix_mautrix_signal_database_password'}
+    - {'old': 'matrix_mautrix_signal_db_database', 'new': 'matrix_mautrix_signal_database_name'}
+    - {'old': 'matrix_mautrix_signal_db_host', 'new': 'matrix_mautrix_signal_database_hostname'}
+    - {'old': 'matrix_mautrix_signal_db_port', 'new': 'matrix_mautrix_signal_database_port'}
+    - {'old': 'matrix_mautrix_signal_db_url', 'new': 'matrix_mautrix_signal_database_connection_string'}
+    - {'old': 'matrix_mautrix_signal_configuration_permissions', 'new': '<superseded by matrix_mautrix_signal_configuration_extension_yaml>'}

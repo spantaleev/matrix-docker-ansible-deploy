@@ -188,7 +188,7 @@ listeners:
       - '0.0.0.0'
 {% endif %}
 
-{% if matrix_synapse_federation_enabled and matrix_synapse_tls_federation_listener_enabled %}
+{% if matrix_synapse_federation_port_enabled and matrix_synapse_tls_federation_listener_enabled %}
   # TLS-enabled listener: for when matrix traffic is sent directly to synapse.
   - port: 8448
     tls: true
@@ -197,7 +197,7 @@ listeners:
     x_forwarded: false
 
     resources:
-      - names: [federation]
+      - names: {{ matrix_synapse_federation_listener_resource_names|to_json }}
         compress: false
 {% endif %}
 
@@ -213,7 +213,7 @@ listeners:
       - names: {{ matrix_synapse_http_listener_resource_names|to_json }}
         compress: false
 
-{% if matrix_synapse_federation_enabled %}
+{% if matrix_synapse_federation_port_enabled %}
   # Unsecure HTTP listener (Federation API): for when matrix traffic passes through a reverse proxy
   # that unwraps TLS.
   - port: 8048
@@ -223,7 +223,7 @@ listeners:
     x_forwarded: true
 
     resources:
-      - names: [federation]
+      - names: {{ matrix_synapse_federation_listener_resource_names|to_json }}
         compress: false
 {% endif %}
 
@@ -1236,8 +1236,9 @@ allow_guest_access: {{ matrix_synapse_allow_guest_access|to_json }}
 # email will be globally disabled.
 #
 # Additionally, if `msisdn` is not set, registration and password resets via msisdn
-# will be disabled regardless. This is due to Synapse currently not supporting any
-# method of sending SMS messages on its own.
+# will be disabled regardless, and users will not be able to associate an msisdn
+# identifier to their account. This is due to Synapse currently not supporting
+# any method of sending SMS messages on its own.
 #
 # To enable using an identity server for operations regarding a particular third-party
 # identifier type, set the value to the URL of that identity server as shown in the
@@ -1556,6 +1557,12 @@ saml2_config:
     #  remote:
     #    - url: https://our_idp/metadata.xml
 
+    # Allowed clock difference in seconds between the homeserver and IdP.
+    #
+    # Uncomment the below to increase the accepted time difference from 0 to 3 seconds.
+    #
+    #accepted_time_diff: 3
+
     # By default, the user has to go to our login page first. If you'd like
     # to allow IdP-initiated login, set 'allow_unsolicited: true' in a
     # 'service.sp' section:
@@ -1677,6 +1684,14 @@ saml2_config:
   #    value: "staff"
   #  - attribute: department
   #    value: "sales"
+
+  # If the metadata XML contains multiple IdP entities then the `idp_entityid`
+  # option must be set to the entity to redirect users to.
+  #
+  # Most deployments only have a single IdP entity and so should omit this
+  # option.
+  #
+  #idp_entityid: 'https://our_idp/entityid'
 
 
 # Enable OpenID Connect (OIDC) / OAuth 2.0 for registration and login.
@@ -2256,21 +2271,35 @@ password_providers:
 {% endif %}
 
 
+## Push ##
 
-# Clients requesting push notifications can either have the body of
-# the message sent in the notification poke along with other details
-# like the sender, or just the event ID and room ID (`event_id_only`).
-# If clients choose the former, this option controls whether the
-# notification request includes the content of the event (other details
-# like the sender are still included). For `event_id_only` push, it
-# has no effect.
-#
-# For modern android devices the notification content will still appear
-# because it is loaded by the app. iPhone, however will send a
-# notification saying only that a message arrived and who it came from.
-#
 push:
-   include_content: {{ matrix_synapse_push_include_content|to_json }}
+  # Clients requesting push notifications can either have the body of
+  # the message sent in the notification poke along with other details
+  # like the sender, or just the event ID and room ID (`event_id_only`).
+  # If clients choose the former, this option controls whether the
+  # notification request includes the content of the event (other details
+  # like the sender are still included). For `event_id_only` push, it
+  # has no effect.
+  #
+  # For modern android devices the notification content will still appear
+  # because it is loaded by the app. iPhone, however will send a
+  # notification saying only that a message arrived and who it came from.
+  #
+  # The default value is "true" to include message details. Uncomment to only
+  # include the event ID and room ID in push notification payloads.
+  #
+  include_content: {{ matrix_synapse_push_include_content|to_json }}
+
+  # When a push notification is received, an unread count is also sent.
+  # This number can either be calculated as the number of unread messages
+  # for the user, or the number of *rooms* the user has unread messages in.
+  #
+  # The default value is "true", meaning push clients will see the number of
+  # rooms with unread messages in them. Uncomment to instead send the number
+  # of unread messages.
+  #
+  #group_unread_count_by_room: false
 
 
 # Spam checkers are third-party modules that can block specific actions

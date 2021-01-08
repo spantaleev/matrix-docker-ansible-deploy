@@ -1,0 +1,72 @@
+---
+
+# If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
+# We don't want to fail in such cases.
+- name: Fail if matrix-synapse role already executed
+  fail:
+    msg: >-
+      The matrix-bridge-mautrix-signal role needs to execute before the matrix-synapse role.
+  when: "matrix_synapse_role_executed|default(False)"
+
+- name: Ensure Mautrix Signal image is pulled
+  docker_image:
+    name: "{{ matrix_mautrix_signal_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_mautrix_signal_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_signal_docker_image_force_pull }}"
+  when: matrix_mautrix_signal_enabled|bool
+
+- name: Ensure Mautrix Signal Daemon image is pulled
+  docker_image:
+    name: "{{ matrix_mautrix_signal_daemon_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_mautrix_signal_daemon_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_signal_docker_image_force_pull }}"
+  when: matrix_mautrix_signal_enabled|bool
+
+- name: Ensure Mautrix Signal paths exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_mautrix_signal_base_path }}"
+    - "{{ matrix_mautrix_signal_config_path }}"
+    - "{{ matrix_mautrix_signal_daemon_path }}"
+
+- name: Ensure mautrix-signal config.yaml installed
+  copy:
+    content: "{{ matrix_mautrix_signal_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_mautrix_signal_config_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure mautrix-signal registration.yaml installed
+  copy:
+    content: "{{ matrix_mautrix_signal_registration|to_nice_yaml }}"
+    dest: "{{ matrix_mautrix_signal_config_path }}/registration.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-mautrix-signal-daemon.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-mautrix-signal-daemon.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-mautrix-signal-daemon.service"
+    mode: 0644
+  register: matrix_mautrix_signal_daemon_systemd_service_result
+
+- name: Ensure matrix-mautrix-signal.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-mautrix-signal.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-mautrix-signal.service"
+    mode: 0644
+  register: matrix_mautrix_signal_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-mautrix-signal.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_mautrix_signal_systemd_service_result.changed or matrix_mautrix_signal_daemon_systemd_service_result.changed"
