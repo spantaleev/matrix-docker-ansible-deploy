@@ -205,7 +205,7 @@ server {
 	ssl_certificate_key {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/privkey.pem;
 
 	ssl_protocols {{ matrix_nginx_proxy_ssl_protocols }};
-	{% if not matrix_nginx_proxy_ssl_ciphers == "" %}
+	{% if matrix_nginx_proxy_ssl_ciphers != '' %}
 	ssl_ciphers "{{ matrix_nginx_proxy_ssl_ciphers }}";
 	{% endif %}
 	ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_prefer_server_ciphers }};
@@ -240,7 +240,7 @@ server {
 		ssl_certificate_key {{ matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate_key }};
 
 	ssl_protocols {{ matrix_nginx_proxy_ssl_protocols }};
-	{% if not matrix_nginx_proxy_ssl_ciphers == "" %}
+	{% if matrix_nginx_proxy_ssl_ciphers != '' %}
 	ssl_ciphers "{{ matrix_nginx_proxy_ssl_ciphers }}";
 	{% endif %}
 	ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_prefer_server_ciphers }};
