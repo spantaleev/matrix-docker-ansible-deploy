@@ -10,7 +10,7 @@ Use matrix-registration to **create unique registration links**, which people ca
 
 - **an API for creating registration tokens** (unique registration links). This API can be used via `curl` or via the playbook (see [Usage](#usage) below)
 
-- **a user registration page**, where people can use these registration tokens. By default, exposed at `https:///matrix.DOMAIN/matrix-registration`
+- **a user registration page**, where people can use these registration tokens. By default, exposed at `https://matrix.DOMAIN/matrix-registration`
 
 
 ## Installing
