@@ -33,7 +33,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-**matrix-registration** gets exposed at `https:///matrix.DOMAIN/matrix-registration`
+**matrix-registration** gets exposed at `https://matrix.DOMAIN/matrix-registration`
 
 It provides various [APIs](https://github.com/ZerataX/matrix-registration/wiki/api) - for creating registration tokens, listing tokens, disabling tokens, etc. To make use of all of its capabilities, consider using `curl`.
 
