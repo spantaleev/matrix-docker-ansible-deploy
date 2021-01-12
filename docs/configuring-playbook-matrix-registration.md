@@ -10,7 +10,7 @@ Use matrix-registration to **create unique registration links**, which people ca
 
 - **an API for creating registration tokens** (unique registration links). This API can be used via `curl` or via the playbook (see [Usage](#usage) below)
 
-- **a user registration page**, where people can use these registration tokens. By default, exposed at `https:///matrix.DOMAIN/matrix-registration`
+- **a user registration page**, where people can use these registration tokens. By default, exposed at `https://matrix.DOMAIN/matrix-registration`
 
 
 ## Installing
@@ -33,7 +33,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-**matrix-registration** gets exposed at `https:///matrix.DOMAIN/matrix-registration`
+**matrix-registration** gets exposed at `https://matrix.DOMAIN/matrix-registration`
 
 It provides various [APIs](https://github.com/ZerataX/matrix-registration/wiki/api) - for creating registration tokens, listing tokens, disabling tokens, etc. To make use of all of its capabilities, consider using `curl`.
 
