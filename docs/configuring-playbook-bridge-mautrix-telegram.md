@@ -12,6 +12,17 @@ matrix_mautrix_telegram_api_id: YOUR_TELEGRAM_APP_ID
 matrix_mautrix_telegram_api_hash: YOUR_TELEGRAM_API_HASH
 ```
 
+**Note**: For architectures different from `amd64` you need to trigger a local rebuild:
+
+```yaml
+matrix_mautrix_telegram_container_self_build: true
+```
+
+Lastly, to take these changes into effect, re-run the playbook:
+
+```yaml
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
 ## Set up Double Puppeting
 
