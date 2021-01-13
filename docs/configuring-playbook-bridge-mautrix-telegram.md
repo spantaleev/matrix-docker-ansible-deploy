@@ -12,7 +12,6 @@ matrix_mautrix_telegram_api_id: YOUR_TELEGRAM_APP_ID
 matrix_mautrix_telegram_api_hash: YOUR_TELEGRAM_API_HASH
 ```
 
-
 ## Set up Double Puppeting
 
 If you'd like to use [Double Puppeting](https://github.com/tulir/mautrix-telegram/wiki/Authentication#replacing-telegram-accounts-matrix-puppet-with-matrix-account) (hint: you most likely do), you have 2 ways of going about it.
