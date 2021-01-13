@@ -33,3 +33,12 @@
     - {'old': 'matrix_synapse_container_expose_metrics_port', 'new': '<superseded by matrix_synapse_container_metrics_api_host_bind_port>'}
     - {'old': 'matrix_synapse_cache_factor', 'new': 'matrix_synapse_caches_global_factor'}
     - {'old': 'matrix_synapse_trusted_third_party_id_servers', 'new': '<deprecated in Synapse v0.99.4 and removed in Synapse v1.19.0>'}
+
+- name: (Deprecation) Catch and report renamed settings in matrix_synapse_configuration_extension_yaml
+  fail:
+    msg: >-
+      Your matrix_synapse_configuration_extension_yaml configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in matrix_synapse_configuration_extension"
+  with_items:
+    - {'old': 'federation_ip_range_blacklist', 'new': 'ip_range_blacklist'}
