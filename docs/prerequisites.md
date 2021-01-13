@@ -6,7 +6,11 @@
   - **Ubuntu** (16.04+, although [20.04 may be problematic](ansible.md#supported-ansible-versions))
   - **Archlinux**
 
-This playbook doesn't support running on ARM (see [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/299)), however a minimal subset of the tools can be built on the host, which may result in a working configuration, even on a Raspberry pi (see [Alternative Architectures](alternative-architectures.md)). We only strive to support released stable versions of distributions, not betas or pre-releases. This playbook can take over your whole server or co-exist with other services that you have there.
+We only strive to support released stable versions of distributions, not betas or pre-releases. This playbook can take over your whole server or co-exist with other services that you have there.
+
+This playbook somewhat supports running on non-`amd64` architectures like ARM. See [Alternative Architectures](alternative-architectures.md).
+
+If your distro runs within an [LXC container](https://linuxcontainers.org/), you may hit [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/703). It can be worked around, if absolutely necessary, but we suggest that you avoid running from within an LXC container.
 
 - `root` access to your server (or a user capable of elevating to `root` via `sudo`).
 
