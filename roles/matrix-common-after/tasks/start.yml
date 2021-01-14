@@ -46,7 +46,7 @@
         Try running `systemctl status {{ item }}` and `journalctl -fu {{ item }}` on the server to investigate.
     with_items: "{{ matrix_systemd_services_list }}"
     when:
-      - "ansible_facts.services[item + '.service']|default(none) is none or ansible_facts.services[item + '.service'].state != 'running'"
+      - "ansible_facts.services[item]|default(none) is none or ansible_facts.services[item].state != 'running'"
   when: " ansible_distribution != 'Archlinux'"
 
 - block:
