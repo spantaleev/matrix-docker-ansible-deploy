@@ -16,8 +16,6 @@ If your distro runs within an [LXC container](https://linuxcontainers.org/), you
 
 - [Python](https://www.python.org/) being installed on the server. Most distributions install Python by default, but some don't (e.g. Ubuntu 18.04) and require manual installation (something like `apt-get install python3`). On some distros, Ansible may incorrectly [detect the Python version](https://docs.ansible.com/ansible/latest/reference_appendices/interpreter_discovery.html) (2 vs 3) and you may need to explicitly specify the interpreter path in `inventory/hosts` during installation (e.g. `ansible_python_interpreter=/usr/bin/python3`)
 
-- A `cron`-like tool installed on the server such as `cron` or `anacron` to automatically schedule the Let's Encrypt SSL certificates's renewal. *This can be ignored if you use your own SSL certificates.*
-
 - The [Ansible](http://ansible.com/) program being installed on your own computer. It's used to run this playbook and configures your server for you. Take a look at [our guide about Ansible](ansible.md) for more information, as well as [version requirements](ansible.md#supported-ansible-versions) and alternative ways to run Ansible.
 
 - Either the `dig` tool or `python-dns` installed on your own computer. Used later on, by the playbook's [services check](maintenance-checking-services.md) feature.

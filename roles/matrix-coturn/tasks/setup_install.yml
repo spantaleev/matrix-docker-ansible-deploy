@@ -1,5 +1,11 @@
 ---
 
+# This is a cleanup/migration task. It can be removed some time in the future.
+- name: (Migration) Remove deprecated cronjob
+  file:
+    path: "{{ matrix_cron_path }}/matrix-coturn-ssl-reload"
+    state: absent
+
 - name: Ensure Matrix Coturn path exists
   file:
     path: "{{ item.path }}"
@@ -19,24 +25,24 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_coturn_docker_image_force_pull }}"
   when: "not matrix_coturn_container_image_self_build|bool"
 
-- name: Ensure Coturn repository is present on self-build
-  git:
-    repo: "{{ matrix_coturn_container_image_self_build_repo }}"
-    dest: "{{ matrix_coturn_docker_src_files_path }}"
-    version: "{{ matrix_coturn_docker_image.split(':')[1] }}"
-    force: "yes"
-  register: matrix_coturn_git_pull_results
-  when: "matrix_coturn_container_image_self_build|bool"
+- block:
+    - name: Ensure Coturn repository is present on self-build
+      git:
+        repo: "{{ matrix_coturn_container_image_self_build_repo }}"
+        dest: "{{ matrix_coturn_docker_src_files_path }}"
+        version: "{{ matrix_coturn_docker_image.split(':')[1] }}"
+        force: "yes"
+      register: matrix_coturn_git_pull_results
 
-- name: Ensure Coturn Docker image is built
-  docker_image:
-    name: "{{ matrix_coturn_docker_image }}"
-    source: build
-    force_source: "{{ matrix_coturn_git_pull_results.changed }}"
-    build:
-      dockerfile: Dockerfile
-      path: "{{ matrix_coturn_docker_src_files_path }}"
-      pull: yes
+    - name: Ensure Coturn Docker image is built
+      docker_image:
+        name: "{{ matrix_coturn_docker_image }}"
+        source: build
+        force_source: "{{ matrix_coturn_git_pull_results.changed }}"
+        build:
+          dockerfile: Dockerfile
+          path: "{{ matrix_coturn_docker_src_files_path }}"
+          pull: yes
   when: "matrix_coturn_container_image_self_build|bool"
 
 - name: Ensure Coturn configuration path exists
@@ -52,6 +58,8 @@
     src: "{{ role_path }}/templates/turnserver.conf.j2"
     dest: "{{ matrix_coturn_config_path }}"
     mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
 - name: Ensure Coturn network is created in Docker
   docker_network:
@@ -63,26 +71,34 @@
     src: "{{ role_path }}/templates/systemd/matrix-coturn.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-coturn.service"
     mode: 0644
-  register: matrix_coturn_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-coturn.service installation
-  service:
-    daemon_reload: yes
-  when: "matrix_coturn_systemd_service_result.changed"
+  register: matrix_coturn_systemd_service_change_results
 
 # This may be unnecessary when more long-lived certificates are used.
 # We optimize for the common use-case though (short-lived Let's Encrypt certificates).
 # Reloading doesn't hurt anyway, so there's no need to make this more flexible.
-- name: Ensure periodic reloading of matrix-coturn is configured for SSL renewal (matrix-coturn-reload)
+- name: Ensure reloading systemd units installed, if necessary
   template:
-    src: "{{ role_path }}/templates/cron.d/matrix-coturn-ssl-reload.j2"
-    dest: /etc/cron.d/matrix-coturn-ssl-reload
+    src: "{{ role_path }}/templates/systemd/{{ item }}.j2"
+    dest: "{{ matrix_systemd_path }}/{{ item }}"
     mode: 0644
+  register: "matrix_coturn_systemd_service_change_results"
   when: "matrix_coturn_tls_enabled|bool"
+  with_items:
+    - matrix-coturn-reload.service
+    - matrix-coturn-reload.timer
 
 # A similar task exists in `setup_uninstall.yml`
-- name: Ensure matrix-coturn-ssl-reload cronjob removed
+- name: Ensure reloading systemd units uninstalled, if unnecessary
   file:
-    path: /etc/cron.d/matrix-coturn-ssl-reload
+    path: "{{ item }}"
     state: absent
+  register: "matrix_coturn_systemd_service_change_results"
   when: "not matrix_coturn_tls_enabled|bool"
+  with_items:
+    - matrix-coturn-reload.service
+    - matrix-coturn-reload.timer
+
+- name: Ensure systemd reloaded if systemd units changed
+  service:
+    daemon_reload: yes
+  when: "matrix_coturn_systemd_service_change_results.changed"

@@ -1,3 +1,14 @@
+# 2021-01-14
+
+## Moving from cronjobs to systemd timers
+
+We no longer use cronjobs for Let's Encrypt SSL renewal and `matrix-nginx-proxy`/`matrix-coturn` reloading. Instead, we've switched to systemd timers.
+
+The largest benefit of this is that we no longer require you to install a cron daemon, thus simplifying our install procedure.
+
+The playbook will migrate you from cronjobs to systemd timers automatically. This is just a heads up.
+
+
 # 2021-01-08
 
 ## (Breaking Change) New SSL configuration
