@@ -37,6 +37,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_appservice_slack_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_slack_docker_image_force_pull }}"
+  when: "not matrix_appservice_slack_container_self_build|bool"
 
 - name: Ensure matrix-appservice-slack repository is present when self-building
   git:
@@ -46,7 +47,7 @@
   register: matrix_appservice_slack_git_pull_results
   when: "matrix_appservice_slack_container_self_build|bool"
 
-- name: Ensure matrix-appservice-slack Docker image is build
+- name: Ensure matrix-appservice-slack Docker image is built
   docker_image:
     name: "{{ matrix_appservice_slack_docker_image }}"
     source: build
