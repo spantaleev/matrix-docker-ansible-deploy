@@ -26,3 +26,13 @@ Certain Synapse administration tasks (managing users and rooms, etc.) can be per
 ## Synapse + OpenID Connect for Single-Sign-On
 
 If you'd like to use OpenID Connect authentication with Synapse, you'll need some additional reverse-proxy configuration (see [our nginx reverse-proxy doc page](configuring-playbook-nginx.md#synapse-openid-connect-for-single-sign-on)).
+
+## Message Retention Policy
+
+Synapse can be configured to automatically delete old messages, which improves privacy and keeps resource usage under control over longer periods. To enable the default message retention policy (which sets a minimum of 1d and maximum of 1y retention), set the following in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+
+```yaml
+matrix_synapse_retention_enabled: true
+```
+
+For details, refer to the [Synapse documentation](https://github.com/matrix-org/synapse/blob/develop/docs/message_retention_policies.md) and check [`homeserver.yaml.j2`](../roles/matrix-synapse/templates/synapse/homeserver.yaml.j2) for all available options.

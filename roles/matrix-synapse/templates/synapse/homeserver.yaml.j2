@@ -414,23 +414,23 @@ retention:
   # The message retention policies feature is disabled by default. Uncomment the
   # following line to enable it.
   #
-  #enabled: true
+  enabled: {{ matrix_synapse_retention_enabled }}
 
   # Default retention policy. If set, Synapse will apply it to rooms that lack the
   # 'm.room.retention' state event. Currently, the value of 'min_lifetime' doesn't
   # matter much because Synapse doesn't take it into account yet.
   #
-  #default_policy:
-  #  min_lifetime: 1d
-  #  max_lifetime: 1y
+  default_policy:
+   min_lifetime: {{ matrix_synapse_retention_default_policy_min_lifetime }}
+   max_lifetime: {{ matrix_synapse_retention_default_policy_max_lifetime }}
 
   # Retention policy limits. If set, and the state of a room contains a
   # 'm.room.retention' event in its state which contains a 'min_lifetime' or a
   # 'max_lifetime' that's out of these bounds, Synapse will cap the room's policy
   # to these limits when running purge jobs.
   #
-  #allowed_lifetime_min: 1d
-  #allowed_lifetime_max: 1y
+  allowed_lifetime_min: {{ matrix_synapse_retention_allowed_lifetime_min }}
+  allowed_lifetime_max: {{ matrix_synapse_retention_allowed_lifetime_max }}
 
   # Server admins can define the settings of the background jobs purging the
   # events which lifetime has expired under the 'purge_jobs' section.
@@ -462,11 +462,11 @@ retention:
   # Synapse's database (which is done using the range specified in a purge job's
   # configuration).
   #
-  #purge_jobs:
-  #  - longest_max_lifetime: 3d
-  #    interval: 12h
-  #  - shortest_max_lifetime: 3d
-  #    interval: 1d
+  purge_jobs:
+   - longest_max_lifetime: {{ matrix_synapse_retention_purge_jobs_longest_max_lifetime }}
+     interval: {{ matrix_synapse_retention_purge_jobs_longest_max_lifetime_interval }}
+   - shortest_max_lifetime: {{ matrix_synapse_retention_purge_jobs_shortest_max_lifetime }}
+     interval: {{ matrix_synapse_retention_purge_jobs_shortest_max_lifetime_interval }}
 
 # Inhibits the /requestToken endpoints from returning an error that might leak
 # information about whether an e-mail address is in use or not on this

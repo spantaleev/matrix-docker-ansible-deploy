@@ -426,3 +426,17 @@ matrix_synapse_configuration_extension: "{{ matrix_synapse_configuration_extensi
 # Holds the final Synapse configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_synapse_configuration_yaml`.
 matrix_synapse_configuration: "{{ matrix_synapse_configuration_yaml|from_yaml|combine(matrix_synapse_configuration_extension, recursive=True) }}"
+
+# Synapse message retention policy. See homeserver.yaml.j2 for details. The
+# default values are copied from the default config parameters. See
+# https://github.com/matrix-org/synapse/blob/develop/docs/message_retention_policies.md
+# for additional details.
+matrix_synapse_retention_enabled: false
+matrix_synapse_retention_default_policy_min_lifetime: 1d
+matrix_synapse_retention_default_policy_max_lifetime: 1y
+matrix_synapse_retention_allowed_lifetime_min: 1d
+matrix_synapse_retention_allowed_lifetime_max: 1y
+matrix_synapse_retention_purge_jobs_longest_max_lifetime: 3d
+matrix_synapse_retention_purge_jobs_longest_max_lifetime_interval: 12h
+matrix_synapse_retention_purge_jobs_shortest_max_lifetime: 3d
+matrix_synapse_retention_purge_jobs_shortest_max_lifetime_interval: 1d
