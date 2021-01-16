@@ -11,7 +11,9 @@ The playbook can install and configure [matrix-corporal](https://github.com/devt
 In short, it's a sort of automation and firewalling service, which is helpful if you're instaling Matrix services in a controlled corporate environment.
 See that project's documentation to learn what it does and why it might be useful to you.
 
-If you decide that you'd like to let this playbook install it for you, you'd need to also [set up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md).
+If you decide that you'd like to let this playbook install it for you, you'd need to also:
+- (required) [set up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md)
+- (optional, but encouraged) [set up the REST authentication password provider module](configuring-playbook-rest-auth.md)
 
 
 ## Playbook configuration
@@ -23,6 +25,15 @@ You would then need some configuration like this:
 # See configuring-playbook-shared-secret-auth.md
 matrix_synapse_ext_password_provider_shared_secret_auth_enabled: true
 matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret: YOUR_SHARED_SECRET_GOES_HERE
+
+# When matrix-corporal is acting as the primary authentication provider,
+# you need to set up the REST authentication password provider module
+# to make Interactive User Authentication work.
+# This is necessary for certain user actions (like E2EE, device management, etc).
+#
+# See configuring-playbook-rest-auth.md
+matrix_synapse_ext_password_provider_rest_auth_enabled: true
+matrix_synapse_ext_password_provider_rest_auth_endpoint: "http://matrix-corporal:41080/_matrix/corporal"
 
 matrix_corporal_enabled: true
 
@@ -40,9 +51,9 @@ matrix_corporal_policy_provider_config: |
 matrix_corporal_http_api_enabled: true
 matrix_corporal_http_api_auth_token: "AUTH_TOKEN_HERE"
 
-# If you need to change the reconciliator user's id from the default (matrix-corporal)..
+# If you need to change matrix-corporal's user id from the default (matrix-corporal).
 # In any case, you need to make sure this Matrix user is created on your server.
-matrix_corporal_reconciliation_user_id_local_part: "matrix-corporal"
+matrix_corporal_corporal_user_id_local_part: "matrix-corporal"
 
 # Because Corporal peridoically performs lots of user logins from the same IP,
 # you may need raise Synapse's ratelimits.
