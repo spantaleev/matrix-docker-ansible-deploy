@@ -24,7 +24,23 @@ If you plan to rely only on SSO and don't want your users to ever login with pas
 matrix_synapse_password_config_enabled: true
 ```
 
-Refer to [official doc](https://github.com/matrix-org/synapse/blob/develop/docs/openid.md) for examples.
+Add this to allow seamless forwarding to element web app and element android app. Without this setting matrix will ask the user if he trusts the app he tries to login.  
+
+```yaml
+matrix_synapse_sso:
+  client_whitelist:
+  - "https://element.{{ matrix_domain }}/"
+  - element://element
+
+```
+
+If you use `nginx proxy role` then you should add this setting as well to successfully pass redirects: 
+```yaml
+matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled: true
+
+```
+
+Refer to [official Synapse doc](https://github.com/matrix-org/synapse/blob/develop/docs/openid.md) for oidc setup examples.
 
 
 This is the bare minimum config example:
@@ -34,6 +50,7 @@ matrix_synapse_oidc_enabled: true
 matrix_synapse_oidc_issuer: "https://openid.example.com"
 matrix_synapse_oidc_client_id: "your-client-id"
 matrix_synapse_oidc_client_secret: "s0m3v3RyS3cr3tStr!ng"
+
 ```
 
 Depending on oauth provider you may also like to change following settings:
