@@ -1660,6 +1660,7 @@ saml2_config:
   #idp_entityid: 'https://our_idp/entityid'
 
 
+{% if not matrix_synapse_oidc_config.enabled %}
 # Enable OpenID Connect (OIDC) / OAuth 2.0 for registration and login.
 #
 # See https://github.com/matrix-org/synapse/blob/master/docs/openid.md
@@ -1793,8 +1794,10 @@ oidc_config:
       #
       #extra_attributes:
         #birthdate: "{% raw %}{{ user.birthdate }}{% endraw %}"
-
-
+{% endif %}
+{% if matrix_synapse_oidc_config.enabled %}
+oidc_config: {{ matrix_synapse_oidc_config }}
+{% endif %}
 
 # Enable Central Authentication Service (CAS) for registration and login.
 #
@@ -1849,7 +1852,7 @@ sso:
     #
     # By default, this list is empty.
     #
-    #client_whitelist:
+    client_whitelist: {{ matrix_synapse_sso.client_whitelist|to_json }}
     #  - https://riot.im/develop
     #  - https://my.custom.client/
 
@@ -1974,7 +1977,7 @@ sso:
 password_config:
    # Uncomment to disable password login
    #
-   #enabled: false
+   enabled: {{ matrix_synapse_password_config_enabled|to_json }}
 
    # Uncomment to disable authentication against the local password
    # database. This is ignored if `enabled` is false, and is only useful

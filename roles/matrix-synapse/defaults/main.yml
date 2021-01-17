@@ -426,3 +426,43 @@ matrix_synapse_configuration_extension: "{{ matrix_synapse_configuration_extensi
 # Holds the final Synapse configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_synapse_configuration_yaml`.
 matrix_synapse_configuration: "{{ matrix_synapse_configuration_yaml|from_yaml|combine(matrix_synapse_configuration_extension, recursive=True) }}"
+
+
+# oidc / sso
+
+# Set to false if you need only SSO auth
+matrix_synapse_password_config_enabled: true
+
+
+# Configure open id connect
+matrix_synapse_oidc_enabled: false
+matrix_synapse_oidc_issuer: ""
+matrix_synapse_oidc_client_id: ""
+matrix_synapse_oidc_client_secret: ""
+matrix_synapse_oidc_scopes: ["openid"]
+matrix_synapse_oidc_allow_existing_users: false
+matrix_synapse_oidc_client_auth_method: client_secret_basic
+matrix_synapse_oidc_subject_claim: "sub"
+matrix_synapse_oidc_localpart_template: "{% raw %}{{ user.preferred_username }}{% endraw %}"
+matrix_synapse_oidc_display_name_template: "{% raw %}{{ user.name }}{% endraw %}"
+
+
+# see https://github.com/matrix-org/synapse/blob/develop/docs/openid.md
+matrix_synapse_oidc_config:
+  enabled: "{{ matrix_synapse_oidc_enabled }}"
+  issuer: "{{ matrix_synapse_oidc_issuer }}"
+  client_id: "{{ matrix_synapse_oidc_client_id }}"
+  client_secret: "{{ matrix_synapse_oidc_client_secret }}"
+  scopes: "{{ matrix_synapse_oidc_scopes }}"
+  allow_existing_users: "{{ matrix_synapse_oidc_allow_existing_users }}"
+  client_auth_method: "{{ matrix_synapse_oidc_client_auth_method }}"
+  user_mapping_provider:
+    config:
+      subject_claim: "{{ matrix_synapse_oidc_subject_claim }}"
+      localpart_template: "{{ matrix_synapse_oidc_localpart_template }}"
+      display_name_template: "{{ matrix_synapse_oidc_display_name_template }}"
+
+# Set trusted SSO resources, e.g. [ "https://element.matrix.domain" ]
+matrix_synapse_sso:
+  client_whitelist: ["{{https://element.matrix.domain}}"]
+
