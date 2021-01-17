@@ -17,6 +17,35 @@ Alternatively, **if there is no pre-defined variable** for a Synapse setting you
 
 - or, if extending the configuration is still not powerful enough for your needs, you can **override the configuration completely** using `matrix_synapse_configuration` (or `matrix_synapse_configuration_yaml`). You can find information about this in [`roles/matrix-synapse/defaults/main.yml`](../roles/matrix-synapse/defaults/main.yml).
 
+## Synapse OpenID Connect
+
+If you plan to rely only on SSO and don't want your users to ever login with password credentials disable this:
+```yaml
+matrix_synapse_password_config_enabled: true
+```
+
+Refer to [official doc](https://github.com/matrix-org/synapse/blob/develop/docs/openid.md) for examples.
+
+
+This is the bare minimum config example:
+```yaml
+# Configure open id connect
+matrix_synapse_oidc_enabled: true
+matrix_synapse_oidc_issuer: "https://openid.example.com"
+matrix_synapse_oidc_client_id: "your-client-id"
+matrix_synapse_oidc_client_secret: "s0m3v3RyS3cr3tStr!ng"
+```
+
+Depending on oauth provider you may also like to change following settings:
+
+```yaml
+matrix_synapse_oidc_scopes: ["openid"]
+matrix_synapse_oidc_allow_existing_users: false
+matrix_synapse_oidc_client_auth_method: client_secret_basic
+matrix_synapse_oidc_subject_claim: "sub"
+matrix_synapse_oidc_localpart_template: "{% raw %}{{ user.preferred_username }}{% endraw %}"
+matrix_synapse_oidc_display_name_template: "{% raw %}{{ user.name }}{% endraw %}"
+```
 
 ## Synapse Admin
 
