@@ -1,3 +1,14 @@
+# 2021-01-17
+
+## matrix-corporal goes 2.0
+
+[matrix-corporal v2 has been released](https://github.com/devture/matrix-corporal/releases/tag/2.0.0) and the playbook also supports it now.
+
+No manual intervention is required in the common case.
+
+The new [matrix-corporal](https://github.com/devture/matrix-corporal) version is also the first one to support Interactive Authentication. If you wish to enable that (hint: you should), you'll need to set up the [REST auth password provider](docs/configuring-playbook-rest-auth.md). There's more information in [our matrix-corporal docs](docs/configuring-playbook-matrix-corporal.md).
+
+
 # 2021-01-14
 
 ## Moving from cronjobs to systemd timers
