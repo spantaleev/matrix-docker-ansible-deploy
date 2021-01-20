@@ -843,6 +843,13 @@ matrix_jitsi_web_stun_servers: |
     else [ 'stun:meet-jit-si-turnrelay.jitsi.net:443']
   }}
 
+# If the self-hosted Etherpad instance is available, it will also show up in Jitsi conferences,
+# unless explicitly disabled by setting `matrix_jitsi_etherpad_enabled` to false.
+# Falls back to the scalar.vector.im etherpad in case someone sets `matrix_jitsi_etherpad_enabled` to true,
+# while also setting `matrix_etherpad_enabled` to false.
+matrix_jitsi_etherpad_enabled: "{{ matrix_etherpad_enabled }}"
+matrix_jitsi_etherpad_base: "{{ matrix_etherpad_base_url if matrix_etherpad_enabled else 'https://scalar.vector.im/etherpad' }}"
+
 ######################################################################
 #
 # /matrix-jitsi
