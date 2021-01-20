@@ -1,0 +1,7 @@
+- name: Fail if required Etherpad settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) for using Etherpad.
+  with_items:
+    -
+  when: "matrix_etherpad_enabled and vars[item] == ''"

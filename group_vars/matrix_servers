@@ -757,7 +757,30 @@ matrix_dimension_database_password: "{{ matrix_synapse_macaroon_secret_key | pas
 #
 ######################################################################
 
+######################################################################
+#
+# matrix-etherpad
+#
+######################################################################
 
+matrix_etherpad_enabled: false
+
+matrix_etherpad_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+  }}
+
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_etherpad_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_etherpad_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'etherpad.db') | to_uuid }}"
+
+######################################################################
+#
+# /matrix-etherpad
+#
+######################################################################
 
 ######################################################################
 #
@@ -1146,6 +1169,12 @@ matrix_postgres_additional_databases: |
       'username': matrix_dimension_database_username,
       'password': matrix_dimension_database_password,
     }] if (matrix_dimension_enabled and matrix_dimension_database_engine == 'postgres' and matrix_dimension_database_hostname == 'matrix-postgres') else [])
+    +
+    ([{
+      'name': matrix_etherpad_database_name,
+      'username': matrix_etherpad_database_username,
+      'password': matrix_etherpad_database_password,
+    }] if (matrix_etherpad_enabled and matrix_etherpad_database_engine == 'postgres' and matrix_etherpad_database_hostname == 'matrix-postgres') else [])
    }}
 
 matrix_postgres_import_roles_to_ignore: |
