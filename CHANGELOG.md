@@ -14,7 +14,7 @@ As already mentioned above, you most likely don't need to do anything. If you re
 
 ### Upgrade path for people NOT running an external Postgres server (default for the playbook)
 
-If you're **not running an external Postgres server**, then this bridge either already works Postgres for you, or you've intentionally kept it back on SQLite with custom configuration (`matrix_mautrix_facebook_database_engine: 'sqlite'` in your `vars.yml`) .
+If you're **not running an external Postgres server**, then this bridge either already works on Postgres for you, or you've intentionally kept it back on SQLite with custom configuration (`matrix_mautrix_facebook_database_engine: 'sqlite'` in your `vars.yml`) .
 
 Simply remove that custom configuration from your `vars.yml` file (if it's there) and re-run the playbook. It should upgrade you automatically.
 You'll need to send a `login` message to the Facebook bridge bot again.
@@ -33,12 +33,12 @@ If you are using an [external Postgres server](docs/configuring-playbook-externa
 You have 3 ways to proceed:
 
 - contribute to the playbook to make this possible (difficult)
-- or, do the above "steps" manually:
+- or, do the migration "steps" manually:
   - stop the bridge (`systemctl stop matrix-mautrix-facebook`)
   - create a new `matrix_mautrix_facebook` Postgres database for it
-  - run pgloader manually (we run it with default settings for this bridge)
-  - adjust the `matrix_mautrix_facebook_database_*` database variables (credentials, etc.)
-  - switch the bridge to use Postgres (`matrix_mautrix_facebook_database_engine: 'postgres'`)
+  - run [pgloader](https://pgloader.io/) manually (we import this bridge's data using default settings and it works well)
+  - define `matrix_mautrix_facebook_database_*` variables in your `vars.yml` file (credentials, etc.) - you can find their defaults in `roles/matrix-mautrix-facebook/defaults/main.yml`
+  - switch the bridge to Postgres (`matrix_mautrix_facebook_database_engine: 'postgres'` in your `vars.yml` file)
   - re-run the playbook (`--tags=setup-all,start`) and ensure the bridge works (`systemctl status matrix-mautrix-facebook` and `journalctl -fu matrix-mautrix-facebook`)
   - send a `login` message to the Facebook bridge bot again
 - or, [stay on SQLite for a little longer (temporary solution)](#staying-on-sqlite-for-a-little-longer-temporary-solution)
