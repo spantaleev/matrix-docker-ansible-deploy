@@ -8,3 +8,24 @@
   with_items:
     - "matrix_mautrix_facebook_appservice_token"
     - "matrix_mautrix_facebook_homeserver_token"
+
+- block:
+    - name: Fail if on SQLite, unless on the last version supporting SQLite
+      fail:
+        msg: >-
+          You're trying to use the mautrix-facebook bridge with an SQLite database.
+          Going forward, this bridge only supports Postgres.
+          To learn more about this, see our changelog: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#breaking-change-the-mautrix-facebook-bridge-now-requires-a-postgres-database
+      when: "not matrix_mautrix_facebook_docker_image.endswith(':da1b4ec596e334325a1589e70829dea46e73064b')"
+
+    - name: Inject warning if still on SQLite
+      set_fact:
+        matrix_playbook_runtime_results: |
+          {{
+            matrix_playbook_runtime_results|default([])
+            +
+            [
+              "NOTE: Your mautrix-facebook bridge setup is still on SQLite. Your bridge is not getting any updates and will likely stop working at some point. To learn more about this, see our changelog: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#breaking-change-the-mautrix-facebook-bridge-now-requires-a-postgres-database"
+            ]
+          }}
+  when: "matrix_mautrix_facebook_database_engine == 'sqlite'"

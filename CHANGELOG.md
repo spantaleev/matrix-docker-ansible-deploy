@@ -1,3 +1,63 @@
+# 2021-01-20
+
+## (Breaking Change) The mautrix-facebook bridge now requires a Postgres database
+
+A new version of the [mautrix-facebook](https://github.com/tulir/mautrix-facebook) bridge has been released. It's a full rewrite of its backend and the bridge now requires Postgres. New versions of the bridge can no longer run on SQLite.
+
+**TLDR**: if you're NOT using an [external Postgres server](docs/configuring-playbook-external-postgres.md) and have NOT forcefully kept the bridge on SQLite during [The big move to all-on-Postgres (potentially dangerous)](#the-big-move-to-all-on-postgres-potentially-dangerous), you will be automatically upgraded without manual intervention. All you need to do is send a `login` message to the Facebook bridge bot again.
+
+Whether this change requires your intervention depends mostly on:
+- whether you're using an [external Postgres server](docs/configuring-playbook-external-postgres.md). If yes, then [you need to do something](#upgrade-path-for-people-running-an-external-postgres-server).
+- or whether you've force-changed the bridge's database engine to SQLite (`matrix_mautrix_facebook_database_engine: 'sqlite'` in your `vars.yml`) some time in the past (likely during [The big move to all-on-Postgres (potentially dangerous)](#the-big-move-to-all-on-postgres-potentially-dangerous)).
+
+As already mentioned above, you most likely don't need to do anything. If you rerun the playbook and don't get an error, you've been automatically upgraded. Just send a `login` message to the Facebook bridge bot again. Otherwise, read below for a solution.
+
+### Upgrade path for people NOT running an external Postgres server (default for the playbook)
+
+If you're **not running an external Postgres server**, then this bridge either already works Postgres for you, or you've intentionally kept it back on SQLite with custom configuration (`matrix_mautrix_facebook_database_engine: 'sqlite'` in your `vars.yml`) .
+
+Simply remove that custom configuration from your `vars.yml` file (if it's there) and re-run the playbook. It should upgrade you automatically.
+You'll need to send a `login` message to the Facebook bridge bot again.
+
+Alternatively, [you can stay on SQLite for a little longer](#staying-on-sqlite-for-a-little-longer-temporary-solution).
+
+### Upgrade path for people running an external Postgres server
+
+For people using the internal Postgres server (the default for the playbook):
+- we automatically create an additional `matrix_mautrix_facebook` Postgres database and credentials to access it
+- we automatically adjust the bridge's `matrix_mautrix_facebook_database_*` variables to point the bridge to that Postgres database
+- we use [pgloader](https://pgloader.io/) to automatically import the existing SQLite data for the bridge into the `matrix_mautrix_facebook` Postgres database
+
+If you are using an [external Postgres server](docs/configuring-playbook-external-postgres.md), unfortunately we currently can't do any of that for you.
+
+You have 3 ways to proceed:
+
+- contribute to the playbook to make this possible (difficult)
+- or, do the above "steps" manually:
+  - stop the bridge (`systemctl stop matrix-mautrix-facebook`)
+  - create a new `matrix_mautrix_facebook` Postgres database for it
+  - run pgloader manually (we run it with default settings for this bridge)
+  - adjust the `matrix_mautrix_facebook_database_*` database variables (credentials, etc.)
+  - switch the bridge to use Postgres (`matrix_mautrix_facebook_database_engine: 'postgres'`)
+  - re-run the playbook (`--tags=setup-all,start`) and ensure the bridge works (`systemctl status matrix-mautrix-facebook` and `journalctl -fu matrix-mautrix-facebook`)
+  - send a `login` message to the Facebook bridge bot again
+- or, [stay on SQLite for a little longer (temporary solution)](#staying-on-sqlite-for-a-little-longer-temporary-solution)
+
+### Staying on SQLite for a little longer (temporary solution)
+
+To keep using this bridge with SQLite for a little longer (**not recommended**), use the following configuration in your `vars.yml` file:
+
+```yaml
+# Force-change the database engine to SQLite.
+matrix_mautrix_facebook_database_engine: 'sqlite'
+
+# Force-downgrade to the last bridge version which supported SQLite.
+matrix_mautrix_facebook_docker_image: "{{ matrix_mautrix_facebook_docker_image_name_prefix }}tulir/mautrix-facebook:da1b4ec596e334325a1589e70829dea46e73064b"
+```
+
+If you do this, keep in mind that **you can't run this forever**. This SQLite-supporting bridge version is not getting any updates and will break sooner or later. The playbook will also drop support for SQLite at some point in the future.
+
+
 # 2021-01-17
 
 ## matrix-corporal goes 2.0
