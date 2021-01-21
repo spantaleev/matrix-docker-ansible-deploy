@@ -355,3 +355,9 @@ You can later restore these roughly like this:
 - start services (see [Starting the services](installing.md#starting-the-services))
 
 If your server's IP address has changed, you may need to [set up DNS](configuring-dns.md) again.
+
+### What is this `/matrix/postgres/data-auto-upgrade-backup` directory that is taking up so much space?
+
+When you [perform a major Postgres upgrade](maintenance-postgres.md#upgrading-postgresql), we save the the old data files in `/matrix/postgres/data-auto-upgrade-backup`, just so you could easily restore them should something have gone wrong.
+
+After verifying that everything still works after the Postgres upgrade, you can safely delete `/matrix/postgres/data-auto-upgrade-backup`
