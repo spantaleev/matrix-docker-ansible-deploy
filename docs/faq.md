@@ -297,6 +297,36 @@ matrix_docker_installation_enabled: true
 
 By default, we install a webserver for you (nginx), but you can also use [your own webserver](configuring-playbook-own-webserver.md).
 
+### How is the effective configuration determined?
+
+Configuration variables are defined in multiple places in this playbook and are considered in this order:
+
+- there are defaults coming from each role's defaults file (`role/matrix*/defaults/main.yml`). These variable values aim to be good defaults for when the role is used standalone (outside of this collection of roles, also called playbook).
+
+- then, there are overrides in `group_vars/matrix_servers`, which aim to adjust these "standalone role defaults" to something which better fits the playbook in its entirety.
+
+- finally, there's your `inventory/host_vars/matrix.DOMAIN/vars.yml` file, which is the ultimate override
+
+### What configuration variables are available?
+
+You can discover the variables you can override in each role (`role/matrix*/defaults/main.yml`).
+
+As described in [How is the effective configuration determined?](#how-is-the-effective-configuration-determined), these role-defaults may be overriden by values defined in `group_vars/matrix_servers`.
+
+Refer to both of these for inspiration. Still, as mentioned in [Configuring the playbook](configuring-playbook.md), you're only ever supposed to edit your own `inventory/host_vars/matrix.DOMAIN/vars.yml` file and nothing else inside the playbook (unless you're meaning to contribute new features).
+
+### I'd like to adjust some configuration which doesn't have a corresponding variable. How do I do it?
+
+The playbook doesn't aim to expose all configuration settings for all services using variables.
+Doing so would amount is to hundreds of variables that we have to create and maintain.
+
+Instead, we only try to make some important basics configurable using dedicated variables you can see in each role.
+See [What configuration variables are available?](#what-configuration-variables-are-available).
+
+Besides that, each role (component) aims to provide a `matrix_SOME_COMPONENT_configuration_extension_yaml` (or `matrix_SOME_COMPONENT_configuration_extension_json`) variable, which can be used to override the configuration.
+
+Check each role's `role/matrix*/defaults/main.yml` for the corresponding variable and an example for how use it.
+
 
 ## Installation
 
@@ -323,6 +353,46 @@ If you're using the playbook directly on the server, then Ansible doesn't need t
 It can perform a local connection instead. Just set `ansible_connection=local` at the end of the server line in `inventory/hosts` and re-run the playbook.
 
 If you're running Ansible from within a container (one of the possibilities we list on our [dedicated Ansible documentation page](ansible.md)), then using `ansible_connection=local` is not possible.
+
+
+## Troubleshooting
+
+### I get "Error response from daemon: configured logging driver does not support reading" when I do `docker logs matrix-synapse`.
+
+See [How can I see the logs?](#how-can-i-see-the-logs).
+
+### How can I see the logs?
+
+We utilize [systemd/journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html#Description) for logging.
+
+To see logs for Synapse, run `journalctl -fu matrix-synapse.service`. You may wish to see the [manual page for journalctl](https://www.commandlinux.com/man-page/man1/journalctl.1.html).
+
+Available service names can be seen by doing `ls /etc/systemd/system/matrix*.service` on the server.
+
+Some services also log to files in `/matrix/*/data/..`, but we're slowly moving away from that.
+
+We also disable Docker logging, so you can't use `docker logs matrix-*` either. We do this to prevent useless double (or even tripple) logging and to avoid having to rotate log files.
+
+We just simply delegate logging to journald and it takes care of persistenec and expiring old data.
+
+Also see: [How long do systemd/journald logs persist for?](#how-long-do-systemdjournald-logs-persist-for)
+
+### How long do systemd/journald logs persist for?
+
+On some distros, the journald logs are just in-memory and not persisted to disk.
+
+Consult (and feel free to adjust) your distro's journald logging configuration in `/etc/systemd/journald.conf`.
+
+To enable persistence and put some limits on how large the journal log files can become, adjust your configuration like this:
+
+```ini
+[Journal]
+RuntimeMaxUse=200M
+SystemMaxUse=1G
+RateLimitInterval=0
+RateLimitBurst=0
+Storage=persistent
+```
 
 
 ## Maintenance
