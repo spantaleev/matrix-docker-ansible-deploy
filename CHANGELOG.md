@@ -45,7 +45,7 @@ matrix_postgres_connection_password: YOUR_POSTGRES_PASSWORD_HERE
 5. Log in to the server via SSH. The next commands will be performed there.
 6. Start the Postgres database server: `systemctl start matrix-postgres`
 7. Open a Postgres shell: `/usr/local/bin/matrix-postgres-cli`
-8. Execute the following query, while making sure to **change the password inside**:
+8. Execute the following query, while making sure to **change the password inside** (**don't forget the ending `;`**):
 
 ```sql
 CREATE ROLE matrix LOGIN SUPERUSER PASSWORD 'YOUR_POSTGRES_PASSWORD_HERE';
@@ -53,7 +53,7 @@ CREATE ROLE matrix LOGIN SUPERUSER PASSWORD 'YOUR_POSTGRES_PASSWORD_HERE';
 
 .. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #2.
 
-9. Execute the following queries as you see them (no modifications necessary, so you can just **paste them all at once** and **don't forget the sneaky `;`**):
+1. Execute the following queries as you see them (no modifications necessary, so you can just **paste them all at once**):
 
 ```sql
 CREATE DATABASE matrix OWNER matrix;
