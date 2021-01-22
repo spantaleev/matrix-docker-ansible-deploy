@@ -39,7 +39,7 @@ To migrate to the new setup, expect a few minutes of downtime, while you follow 
 matrix_postgres_connection_password: YOUR_POSTGRES_PASSWORD_HERE
 ```
 
-.. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #1.
+.. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #2.
 
 4. Stop all services: `ansible-playbook -i inventory/hosts setup.yml --tags=stop`
 5. Log in to the server via SSH. The next commands will be performed there.
@@ -51,7 +51,7 @@ matrix_postgres_connection_password: YOUR_POSTGRES_PASSWORD_HERE
 CREATE ROLE matrix LOGIN SUPERUSER PASSWORD 'YOUR_POSTGRES_PASSWORD_HERE';
 ```
 
-.. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #1.
+.. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #2.
 
 9. Execute the following queries as you see them (no modifications necessary, so you can just paste them):
 
