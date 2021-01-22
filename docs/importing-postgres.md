@@ -7,8 +7,8 @@ Run this if you'd like to import your database from a previous installation.
 ## Prerequisites
 
 For this to work, **the database name in Postgres must match** what this playbook uses.
-This playbook uses a Postgres database name of `homeserver` by default (controlled by the `matrix_postgres_db_name` variable).
-If your database name differs, be sure to change `matrix_postgres_db_name` to your desired name and to re-run the playbook before proceeding.
+This playbook uses a Postgres database name of `synapse` by default (controlled by the `matrix_synapse_database_database` variable).
+If your database name differs, be sure to change `matrix_synapse_database_database` to your desired name and to re-run the playbook before proceeding.
 
 The playbook supports importing Postgres dump files in **text** (e.g. `pg_dump > dump.sql`) or **gzipped** formats (e.g. `pg_dump | gzip -c > dump.sql.gz`).
 
