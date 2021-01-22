@@ -1,3 +1,85 @@
+# 2021-01-22
+
+## (Breaking Change) Postgres changes that require manual intervention
+
+We've made a lot of changes to our Postgres setup and some manual action is required (described below). Sorry about the hassle.
+
+**TLDR**: people running an [external Postgres server](docs/configuring-playbook-external-postgres.md) don't need to change anything for now. Everyone else (the common/default case) is affected and manual intervention is required.
+
+### Why?
+
+- we had a default Postgres password (`matrix_postgres_connection_password: synapse-password`), which we think is **not ideal for security anymore**. We now ask you to generate/provide a strong password yourself. Postgres is normally not exposed outside the container network, making it relatively secure, but still:
+  - by tweaking the configuration, you may end up intentionally or unintentionally exposing your Postgres server to the local network (or even publicly), while still using the default default credentials (`synapse` + `synapse-password`)
+  - we can't be sure we trust all these services (bridges, etc). Some of them may try to talk to or attack `matrix-postgres` using the default credentials (`synapse` + `synapse-password`)
+  - you may have other containers running on the same Docker network, which may try to talk to or attack `matrix-postgres` using the default credentials (`synapse` + `synapse-password`)
+- our Postgres usage **was overly-focused on Synapse** (default username of `synapse` and default/main database of `homeserver`). Additional homeserver options are likely coming in the future ([Dendrite](https://matrix.org/docs/projects/server/dendrite), [Conduit](https://matrix.org/docs/projects/server/conduit), [The Construct](https://matrix.org/docs/projects/server/construct)), so being too focused on `matrix-synapse` is not great. From now on, Synapse is just another component of this playbook, which happens to have an *additional database* (called `synapse`) on the Postgres server.
+- we try to reorganize things a bit, to make the playbook even friendlier to people running an [external Postgres server](docs/configuring-playbook-external-postgres.md). Work on this will proceed in the future.
+
+So, this is some **effort to improve security** and to **prepare for a brighter future of having more homeserver options** than just Synapse.
+
+### What has really changed?
+
+- the default superuser Postgres username is now `matrix` (used to be `synapse`)
+- the default Postgres database is now `matrix` (used to be `homeserver`)
+- Synapse's database is now `synapse` (used to be `homeserver`). This is now just another "additional database" that the playbook manages for you
+- Synapse's user called `synapse` is just a regular user that can only use the `synapse` database (not a superuser anymore)
+
+### What do I do if I'm using the integrated Postgres server (default)?
+
+By default, the playbook runs an integrated Postgres server for you in a container (`matrix-postgres`). Unless you've explicitly configured an [external Postgres server](docs/configuring-playbook-external-postgres.md), these steps are meant for you.
+
+To migrate to the new setup, expect a few minutes of downtime, while you follow these steps:
+
+1. Generate a strong password to be used for your superuser Postgres user (called `matrix`). You can use `pwgen -s 64 1` to generate it, or some other tool.
+
+2. Update your playbook's `inventory/host_vars/matrix.DOMAIN/vars.yml` file, adding a line like this:
+```yaml
+matrix_postgres_connection_password: YOUR_POSTGRES_PASSWORD_HERE
+```
+
+.. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #1.
+
+3. Stop all services: `ansible-playbook -i inventory/hosts setup.yml --tags=stop`
+4. Log in to the server via SSH. The next commands will be performed there.
+5. Start the Postgres database server: `systemctl start matrix-postgres`
+6. Open a Postgres shell: `/usr/local/bin/matrix-postgres-cli`
+7. Execute the following query, while making sure to **change the password inside**:
+
+```sql
+CREATE ROLE matrix LOGIN SUPERUSER PASSWORD 'YOUR_POSTGRES_PASSWORD_HERE';
+```
+
+.. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #1.
+
+8. Execute the following queries as you see them (no modifications necessary, so you can just paste them):
+
+```sql
+CREATE DATABASE matrix OWNER matrix;
+
+ALTER DATABASE postgres OWNER TO matrix;
+ALTER DATABASE template0 OWNER TO matrix;
+ALTER DATABASE template1 OWNER TO matrix;
+
+\c matrix;
+
+ALTER DATABASE homeserver RENAME TO synapse;
+
+ALTER ROLE synapse NOSUPERUSER NOCREATEDB NOCREATEROLE;
+
+\quit
+```
+
+You may need to press *Enter* after pasting the lines above.
+
+1. Re-run the playbook normally: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
+
+### What do I do if I'm using an external Postgres server?
+
+If you've explicitly configured an [external Postgres server](docs/configuring-playbook-external-postgres.md), there are changes that you need to do at this time.
+
+The fact that we've renamed Synapse's database from `homeserver` to `synapse` (in our defaults) should not affect you, as you're already explicitly defining `matrix_synapse_database_database` (if you've followed our guide, that is). If you're not explicitly defining this variable, you may wish to do so (`matrix_synapse_database_database: homeserver`), to avoid the new `synapse` default and keep things as they were.
+
+
 # 2021-01-20
 
 ## (Breaking Change) The mautrix-facebook bridge now requires a Postgres database

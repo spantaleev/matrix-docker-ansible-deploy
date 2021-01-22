@@ -1021,16 +1021,20 @@ matrix_ssl_pre_obtaining_required_service_name: "{{ 'matrix-dynamic-dns' if matr
 
 matrix_postgres_enabled: true
 
-matrix_postgres_connection_hostname: "matrix-postgres"
-matrix_postgres_connection_username: "synapse"
-# Please note that the max length of the password is 99 characters
-matrix_postgres_connection_password: "synapse-password"
-matrix_postgres_db_name: "homeserver"
+# We unset this if internal Postgres disabled, which will cascade to some other variables
+# and tell users they need to set it (either here or in those variables).
+matrix_postgres_connection_hostname: "{{ 'matrix-postgres' if matrix_postgres_enabled else '' }}"
 
 matrix_postgres_pgloader_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 matrix_postgres_additional_databases: |
   {{
+    ([{
+      'name': matrix_synapse_database_database,
+      'username': matrix_synapse_database_user,
+      'password': matrix_synapse_database_password,
+    }] if (matrix_synapse_enabled and matrix_synapse_database_database != matrix_postgres_db_name and matrix_synapse_database_host == 'matrix-postgres') else [])
+    +
     ([{
       'name': matrix_ma1sd_database_name,
       'username': matrix_ma1sd_database_username,
@@ -1243,10 +1247,7 @@ matrix_synapse_container_metrics_api_host_bind_port: "{{ '127.0.0.1:9100' if (ma
 # For exposing the Synapse Manhole port (plain HTTP) to the local host.
 matrix_synapse_container_manhole_api_host_bind_port: "{{ '127.0.0.1:9000' if matrix_synapse_manhole_enabled else '' }}"
 
-matrix_synapse_database_host: "{{ matrix_postgres_connection_hostname }}"
-matrix_synapse_database_user: "{{ matrix_postgres_connection_username }}"
-matrix_synapse_database_password: "{{ matrix_postgres_connection_password }}"
-matrix_synapse_database_database: "{{ matrix_postgres_db_name }}"
+matrix_synapse_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'synapse.db') | to_uuid }}"
 
 # We do not enable TLS in Synapse by default.
 # TLS is handled by the matrix-nginx-proxy, which proxies the requests to Synapse.
