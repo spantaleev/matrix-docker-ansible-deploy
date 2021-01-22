@@ -7,14 +7,20 @@
 		"TimeoutMilliseconds": {{ matrix_corporal_matrix_timeout_milliseconds }}
 	},
 
+	"Corporal": {
+		"UserID": "@{{ matrix_corporal_corporal_user_id_local_part }}:{{ matrix_domain }}"
+	},
+
 	"Reconciliation": {
-		"UserId": "@{{ matrix_corporal_reconciliation_user_id_local_part }}:{{ matrix_domain }}",
 		"RetryIntervalMilliseconds": {{ matrix_corporal_reconciliation_retry_interval_milliseconds }}
 	},
 
 	"HttpGateway": {
 		"ListenAddress": "0.0.0.0:41080",
-		"TimeoutMilliseconds": {{ matrix_corporal_http_gateway_timeout_milliseconds }}
+		"TimeoutMilliseconds": {{ matrix_corporal_http_gateway_timeout_milliseconds }},
+		"InternalRESTAuth": {
+			"Enabled": {{ matrix_corporal_http_gateway_internal_rest_auth_enabled|to_json }}
+		}
 	},
 
 	"HttpApi": {

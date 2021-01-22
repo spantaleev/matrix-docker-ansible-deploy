@@ -48,7 +48,16 @@ matrix_base_data_path_mode: "750"
 
 matrix_static_files_base_path: "{{ matrix_base_data_path }}/static-files"
 matrix_systemd_path: "/etc/systemd/system"
+
+# Specifies the path to use for the `HOME` environment variable for systemd unit files.
+# Docker 20.10 complains with `WARNING: Error loading config file: .dockercfg: $HOME is not defined`
+# if `$HOME` is not defined, so we define something to make it happy.
+matrix_systemd_unit_home_path: /root
+
+# This is now unused. We keep it so that cleanup tasks can use it.
+# To be removed in the future.
 matrix_cron_path: "/etc/cron.d"
+
 matrix_local_bin_path: "/usr/local/bin"
 
 matrix_host_command_docker: "/usr/bin/env docker"

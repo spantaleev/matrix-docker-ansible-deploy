@@ -12,6 +12,7 @@ DefaultDependencies=no
 
 [Service]
 Type=simple
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
 ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-mautrix-telegram
 ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-mautrix-telegram
 ExecStartPre={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-telegram-db \

@@ -16,7 +16,6 @@
     msg: "The Matrix Corporal HTTP API is enabled (`matrix_corporal_http_api_enabled`), but no auth token has been set in `matrix_corporal_http_api_auth_token`"
   when: "matrix_corporal_http_api_enabled|bool and matrix_corporal_http_api_auth_token == ''"
 
-
 - name: (Deprecation) Catch and report renamed corporal variables
   fail:
     msg: >-
@@ -25,3 +24,4 @@
   when: "item.old in vars"
   with_items:
     - {'old': 'matrix_corporal_container_expose_ports', 'new': '<superseded by matrix_corporal_container_http_gateway_host_bind_port and matrix_corporal_container_http_api_host_bind_port>'}
+    - {'old': 'matrix_corporal_reconciliation_user_id_local_part', 'new': 'matrix_corporal_corporal_user_id_local_part'}

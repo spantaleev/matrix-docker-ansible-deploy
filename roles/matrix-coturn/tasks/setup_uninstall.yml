@@ -1,0 +1,47 @@
+---
+
+- name: Check existence of matrix-coturn service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-coturn.service"
+  register: matrix_coturn_service_stat
+  when: "not matrix_coturn_enabled|bool"
+
+- name: Ensure matrix-coturn is stopped
+  service:
+    name: matrix-coturn
+    state: stopped
+    daemon_reload: yes
+  when: "matrix_coturn_service_stat.stat.exists|bool"
+
+- name: Ensure matrix-coturn-reload.timer is stopped
+  service:
+    name: matrix-coturn
+    state: stopped
+    daemon_reload: yes
+  failed_when: false
+  when: "matrix_coturn_service_stat.stat.exists|bool"
+
+- name: Ensure systemd units don't exist
+  file:
+    path: "{{ matrix_systemd_path }}/{{ item }}"
+    state: absent
+  register: matrix_coturn_systemd_unit_uninstallation_result
+  with_items:
+    - matrix-coturn.service
+    - matrix-coturn-reload.service
+    - matrix-coturn-reload.timer
+
+- name: Ensure systemd reloaded after unit removal
+  service:
+    daemon_reload: yes
+  when: "matrix_coturn_systemd_unit_uninstallation_result.changed|bool"
+
+- name: Ensure Matrix coturn paths don't exist
+  file:
+    path: "{{ matrix_coturn_base_path }}"
+    state: absent
+
+- name: Ensure coturn Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_coturn_docker_image }}"
+    state: absent

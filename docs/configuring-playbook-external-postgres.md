@@ -4,6 +4,7 @@ By default, this playbook would set up a PostgreSQL database server on your mach
 If that's alright, you can skip this.
 
 If you'd like to use an external PostgreSQL server that you manage, you can edit your configuration file  (`inventory/host_vars/matrix.<your-domain>/vars.yml`).
+
 It should be something like this:
 
 ```yaml

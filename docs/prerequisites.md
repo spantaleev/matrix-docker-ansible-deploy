@@ -1,12 +1,14 @@
 # Prerequisites
 
-- An **x86** server running one of these operating systems:
+To install Matrix services using this Ansible playbook, you need:
+
+- (Recommended) An **x86** server running one of these operating systems:
   - **CentOS** (7 only for now; [8 is not yet supported](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/300))
-  - **Debian** (9/Stretch+)
-  - **Ubuntu** (16.04+, although [20.04 may be problematic](ansible.md#supported-ansible-versions))
+  - **Debian** (9/Stretch or newer)
+  - **Ubuntu** (16.04 or newer, although [20.04 may be problematic](ansible.md#supported-ansible-versions))
   - **Archlinux**
 
-We only strive to support released stable versions of distributions, not betas or pre-releases. This playbook can take over your whole server or co-exist with other services that you have there.
+Generally, newer is better. We only strive to support released stable versions of distributions, not betas or pre-releases. This playbook can take over your whole server or co-exist with other services that you have there.
 
 This playbook somewhat supports running on non-`amd64` architectures like ARM. See [Alternative Architectures](alternative-architectures.md).
 
@@ -15,8 +17,6 @@ If your distro runs within an [LXC container](https://linuxcontainers.org/), you
 - `root` access to your server (or a user capable of elevating to `root` via `sudo`).
 
 - [Python](https://www.python.org/) being installed on the server. Most distributions install Python by default, but some don't (e.g. Ubuntu 18.04) and require manual installation (something like `apt-get install python3`). On some distros, Ansible may incorrectly [detect the Python version](https://docs.ansible.com/ansible/latest/reference_appendices/interpreter_discovery.html) (2 vs 3) and you may need to explicitly specify the interpreter path in `inventory/hosts` during installation (e.g. `ansible_python_interpreter=/usr/bin/python3`)
-
-- A `cron`-like tool installed on the server such as `cron` or `anacron` to automatically schedule the Let's Encrypt SSL certificates's renewal. *This can be ignored if you use your own SSL certificates.*
 
 - The [Ansible](http://ansible.com/) program being installed on your own computer. It's used to run this playbook and configures your server for you. Take a look at [our guide about Ansible](ansible.md) for more information, as well as [version requirements](ansible.md#supported-ansible-versions) and alternative ways to run Ansible.
 

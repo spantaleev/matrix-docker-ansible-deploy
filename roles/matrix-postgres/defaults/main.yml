@@ -1,18 +1,27 @@
 matrix_postgres_enabled: true
 
-matrix_postgres_connection_hostname: ""
-matrix_postgres_connection_username: ""
+matrix_postgres_connection_hostname: "matrix-postgres"
+matrix_postgres_connection_port: 5432
+matrix_postgres_connection_username: "matrix"
 matrix_postgres_connection_password: ""
-matrix_postgres_db_name: ""
+matrix_postgres_db_name: "matrix"
 
 matrix_postgres_base_path: "{{ matrix_base_data_path }}/postgres"
 matrix_postgres_data_path: "{{ matrix_postgres_base_path }}/data"
 
-matrix_postgres_docker_image_v9: "docker.io/postgres:9.6.20-alpine"
-matrix_postgres_docker_image_v10: "docker.io/postgres:10.15-alpine"
-matrix_postgres_docker_image_v11: "docker.io/postgres:11.10-alpine"
-matrix_postgres_docker_image_v12: "docker.io/postgres:12.5-alpine"
-matrix_postgres_docker_image_v13: "docker.io/postgres:13.1-alpine"
+matrix_postgres_architecture: amd64
+
+# matrix_postgres_docker_image_suffix controls whether we use Alpine-based images (`-alpine`) or the normal Debian-based images.
+# Alpine-based Postgres images are smaller and we usually prefer them, but they don't work on ARM32 (tested on a Raspberry Pi 3 running Raspbian 10.7).
+# On ARM32, `-alpine` images fail with the following error:
+# > LOG:  startup process (PID 37) was terminated by signal 11: Segmentation fault
+matrix_postgres_docker_image_suffix: "{{ '-alpine' if matrix_postgres_architecture in ['amd64', 'arm64'] else '' }}"
+
+matrix_postgres_docker_image_v9: "docker.io/postgres:9.6.20{{ matrix_postgres_docker_image_suffix }}"
+matrix_postgres_docker_image_v10: "docker.io/postgres:10.15{{ matrix_postgres_docker_image_suffix }}"
+matrix_postgres_docker_image_v11: "docker.io/postgres:11.10{{ matrix_postgres_docker_image_suffix }}"
+matrix_postgres_docker_image_v12: "docker.io/postgres:12.5{{ matrix_postgres_docker_image_suffix }}"
+matrix_postgres_docker_image_v13: "docker.io/postgres:13.1{{ matrix_postgres_docker_image_suffix }}"
 matrix_postgres_docker_image_latest: "{{ matrix_postgres_docker_image_v13 }}"
 
 # This variable is assigned at runtime. Overriding its value has no effect.
@@ -63,7 +72,10 @@ matrix_postgres_import_databases_ignore_regex: "^CREATE DATABASE ({{ matrix_post
 # and before trying to run queries for creating additional databases/users against it.
 #
 # For most (subsequent) runs, Postgres would already be running, so no waiting will be happening at all.
-matrix_postgres_additional_databases_postgres_start_wait_timeout_seconds: 15
+#
+# On ARM, we wait some more. ARM32 devices are especially known for being slow.
+# ARM64 likely don't need such a long delay, but it doesn't hurt too much having it.
+matrix_postgres_additional_databases_postgres_start_wait_timeout_seconds: "{{ 45 if matrix_postgres_architecture in ['arm32', 'arm64'] else 15 }}"
 
 
 matrix_postgres_pgloader_container_image_self_build: false
