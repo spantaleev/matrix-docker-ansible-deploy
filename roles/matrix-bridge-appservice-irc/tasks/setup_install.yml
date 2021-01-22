@@ -2,15 +2,17 @@
 
 - name: Ensure Appservice IRC paths exist
   file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - "{{ matrix_appservice_irc_base_path }}"
-    - "{{ matrix_appservice_irc_config_path }}"
-    - "{{ matrix_appservice_irc_data_path }}"
+    - { path: "{{ matrix_appservice_irc_base_path }}", when: true }
+    - { path: "{{ matrix_appservice_irc_config_path }}", when: true }
+    - { path: "{{ matrix_appservice_irc_data_path }}", when: true }
+    - { path: "{{ matrix_appservice_irc_docker_src_files_path }}", when: "{{ matrix_appservice_irc_container_self_build }}" }
+  when: item.when|bool
 
 - name: Check if an old passkey file already exists
   stat:
