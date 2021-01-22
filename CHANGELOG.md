@@ -77,7 +77,7 @@ You may need to press *Enter* after pasting the lines above.
 
 ### What do I do if I'm using an external Postgres server?
 
-If you've explicitly configured an [external Postgres server](docs/configuring-playbook-external-postgres.md), there are changes that you need to do at this time.
+If you've explicitly configured an [external Postgres server](docs/configuring-playbook-external-postgres.md), there are **no changes** that you need to do at this time.
 
 The fact that we've renamed Synapse's database from `homeserver` to `synapse` (in our defaults) should not affect you, as you're already explicitly defining `matrix_synapse_database_database` (if you've followed our guide, that is). If you're not explicitly defining this variable, you may wish to do so (`matrix_synapse_database_database: homeserver`), to avoid the new `synapse` default and keep things as they were.
 
