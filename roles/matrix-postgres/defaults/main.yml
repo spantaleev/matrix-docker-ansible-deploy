@@ -72,7 +72,10 @@ matrix_postgres_import_databases_ignore_regex: "^CREATE DATABASE ({{ matrix_post
 # and before trying to run queries for creating additional databases/users against it.
 #
 # For most (subsequent) runs, Postgres would already be running, so no waiting will be happening at all.
-matrix_postgres_additional_databases_postgres_start_wait_timeout_seconds: 15
+#
+# On ARM, we wait some more. ARM32 devices are especially known for being slow.
+# ARM64 likely don't need such a long delay, but it doesn't hurt too much having it.
+matrix_postgres_additional_databases_postgres_start_wait_timeout_seconds: "{{ 45 if matrix_postgres_architecture in ['arm32', 'arm64'] else 15 }}"
 
 
 matrix_postgres_pgloader_container_image_self_build: false
