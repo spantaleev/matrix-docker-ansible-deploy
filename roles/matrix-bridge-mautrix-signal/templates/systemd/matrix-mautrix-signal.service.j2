@@ -23,6 +23,7 @@ ExecStartPre={{ matrix_host_command_sleep }} 5
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-signal \
 			--log-driver=none \
 			--network={{ matrix_docker_network }} \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			{% if matrix_mautrix_signal_container_http_host_bind_port %}
 			-p {{ matrix_mautrix_signal_container_http_host_bind_port }}:29328 \
 			{% endif %}
