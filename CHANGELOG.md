@@ -30,20 +30,22 @@ By default, the playbook runs an integrated Postgres server for you in a contain
 
 To migrate to the new setup, expect a few minutes of downtime, while you follow these steps:
 
-1. Generate a strong password to be used for your superuser Postgres user (called `matrix`). You can use `pwgen -s 64 1` to generate it, or some other tool.
+1. We believe the steps below are safe and you won't encounter any data loss, but consider [making a Postgres backup](docs/maintenance-postgres.md#backing-up-postgresql) anyway. If you've never backed up Postgres, now would be a good time to try it.
 
-2. Update your playbook's `inventory/host_vars/matrix.DOMAIN/vars.yml` file, adding a line like this:
+2. Generate a strong password to be used for your superuser Postgres user (called `matrix`). You can use `pwgen -s 64 1` to generate it, or some other tool.
+
+3. Update your playbook's `inventory/host_vars/matrix.DOMAIN/vars.yml` file, adding a line like this:
 ```yaml
 matrix_postgres_connection_password: YOUR_POSTGRES_PASSWORD_HERE
 ```
 
 .. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #1.
 
-3. Stop all services: `ansible-playbook -i inventory/hosts setup.yml --tags=stop`
-4. Log in to the server via SSH. The next commands will be performed there.
-5. Start the Postgres database server: `systemctl start matrix-postgres`
-6. Open a Postgres shell: `/usr/local/bin/matrix-postgres-cli`
-7. Execute the following query, while making sure to **change the password inside**:
+4. Stop all services: `ansible-playbook -i inventory/hosts setup.yml --tags=stop`
+5. Log in to the server via SSH. The next commands will be performed there.
+6. Start the Postgres database server: `systemctl start matrix-postgres`
+7. Open a Postgres shell: `/usr/local/bin/matrix-postgres-cli`
+8. Execute the following query, while making sure to **change the password inside**:
 
 ```sql
 CREATE ROLE matrix LOGIN SUPERUSER PASSWORD 'YOUR_POSTGRES_PASSWORD_HERE';
@@ -51,7 +53,7 @@ CREATE ROLE matrix LOGIN SUPERUSER PASSWORD 'YOUR_POSTGRES_PASSWORD_HERE';
 
 .. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #1.
 
-8. Execute the following queries as you see them (no modifications necessary, so you can just paste them):
+9. Execute the following queries as you see them (no modifications necessary, so you can just paste them):
 
 ```sql
 CREATE DATABASE matrix OWNER matrix;
@@ -71,7 +73,7 @@ ALTER ROLE synapse NOSUPERUSER NOCREATEDB NOCREATEROLE;
 
 You may need to press *Enter* after pasting the lines above.
 
-1. Re-run the playbook normally: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
+10. Re-run the playbook normally: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
 
 ### What do I do if I'm using an external Postgres server?
 
