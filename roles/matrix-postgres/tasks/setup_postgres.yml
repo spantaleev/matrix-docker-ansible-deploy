@@ -155,9 +155,17 @@
   when: "not matrix_postgres_enabled|bool"
 
 # We just want to notify the user. Deleting data is too destructive.
-- name: Notify if matrix-postgres local data remains
-  debug:
-    msg: "Note: You are not using a local PostgreSQL database, but some old data remains from before in `{{ matrix_postgres_data_path }}`. Feel free to delete it."
+
+- name: Inject warning if matrix-postgres local data remains
+  set_fact:
+    matrix_playbook_runtime_results: |
+      {{
+        matrix_playbook_runtime_results|default([])
+        +
+        [
+          "NOTE: You are not using a local PostgreSQL database, but some old data remains from before in `{{ matrix_postgres_data_path }}`. Feel free to delete it."
+        ]
+      }}
   when: "not matrix_postgres_enabled|bool and matrix_postgres_data_path_stat.stat.exists"
 
 - name: Remove Postgres scripts
