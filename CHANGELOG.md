@@ -53,7 +53,7 @@ CREATE ROLE matrix LOGIN SUPERUSER PASSWORD 'YOUR_POSTGRES_PASSWORD_HERE';
 
 .. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #2.
 
-1. Execute the following queries as you see them (no modifications necessary, so you can just **paste them all at once**):
+9. Execute the following queries as you see them (no modifications necessary, so you can just **paste them all at once**):
 
 ```sql
 CREATE DATABASE matrix OWNER matrix;
