@@ -41,7 +41,5 @@
     path: "{{ matrix_coturn_base_path }}"
     state: absent
 
-- name: Ensure coturn Docker image doesn't exist
-  docker_image:
-    name: "{{ matrix_coturn_docker_image }}"
-    state: absent
+# Intentionally not removing the Docker image when uninstalling.
+# We can't be sure it had been pulled by us in the first place.

@@ -90,8 +90,6 @@
     state: absent
   when: "not matrix_jitsi_enabled|bool"
 
-- name: Ensure jitsi-web Docker image doesn't exist
-  docker_image:
-    name: "{{ matrix_jitsi_web_docker_image }}"
-    state: absent
-  when: "not matrix_jitsi_enabled|bool"
+# Intentionally not removing the Docker image when uninstalling.
+# We can't be sure it had been pulled by us in the first place.
+
