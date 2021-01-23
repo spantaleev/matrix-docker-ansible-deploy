@@ -1,0 +1,18 @@
+# We explicitly ask for your server's external IP address, because the same value is used for configuring Coturn.
+# If you'd rather use a local IP here, make sure to set up `matrix_coturn_turn_external_ip_address`.
+#
+# To connect using a non-root user (and elevate to root with sudo later),
+# replace `ansible_ssh_user=root` with something like this: `ansible_ssh_user=username become=true become_user=root`
+#
+# For improved Ansible performance, SSH pipelining is enabled by default in `ansible.cfg`.
+# If this causes SSH connection troubles, disable it by adding `ansible_ssh_pipelining=False`
+# to the host line below or by adding `ansible_ssh_pipelining: False` to your variables file.
+#
+# If you're running this Ansible playbook on the same server as the one you're installing to,
+# consider adding an additional `ansible_connection=local` argument below.
+#
+# Ansible may fail to discover which Python interpreter to use on the host for some distros (like Ubuntu 20.04).
+# You may sometimes need to explicitly add `ansible_python_interpreter=/usr/bin/python3` to lines below.
+
+[matrix_servers]
+matrix.pguerra.pt ansible_host={{ lookup('env', 'EXTERNAL_IP') }} ansible_ssh_user=root ansible_connection=local
