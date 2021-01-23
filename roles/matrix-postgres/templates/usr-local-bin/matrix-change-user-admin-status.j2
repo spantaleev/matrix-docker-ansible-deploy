@@ -16,4 +16,4 @@ docker run \
 	--env-file={{ matrix_postgres_base_path }}/env-postgres-psql \
 	--network {{ matrix_docker_network }} \
 	{{ matrix_postgres_docker_image_to_use }} \
-	psql -h {{ matrix_postgres_connection_hostname }} -c "UPDATE users set admin=$2 WHERE name like '@$1:{{ matrix_domain }}'"
+	psql -h {{ matrix_postgres_connection_hostname }} --dbname={{ matrix_synapse_database_database }} -c "UPDATE users set admin=$2 WHERE name like '@$1:{{ matrix_domain }}'"
