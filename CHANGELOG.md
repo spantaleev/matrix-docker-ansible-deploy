@@ -1,3 +1,191 @@
+# 2021-01-22
+
+## (Breaking Change) Postgres changes that require manual intervention
+
+We've made a lot of changes to our Postgres setup and some manual action is required (described below). Sorry about the hassle.
+
+**TLDR**: people running an [external Postgres server](docs/configuring-playbook-external-postgres.md) don't need to change anything for now. Everyone else (the common/default case) is affected and manual intervention is required.
+
+### Why?
+
+- we had a default Postgres password (`matrix_postgres_connection_password: synapse-password`), which we think is **not ideal for security anymore**. We now ask you to generate/provide a strong password yourself. Postgres is normally not exposed outside the container network, making it relatively secure, but still:
+  - by tweaking the configuration, you may end up intentionally or unintentionally exposing your Postgres server to the local network (or even publicly), while still using the default default credentials (`synapse` + `synapse-password`)
+  - we can't be sure we trust all these services (bridges, etc). Some of them may try to talk to or attack `matrix-postgres` using the default credentials (`synapse` + `synapse-password`)
+  - you may have other containers running on the same Docker network, which may try to talk to or attack `matrix-postgres` using the default credentials (`synapse` + `synapse-password`)
+- our Postgres usage **was overly-focused on Synapse** (default username of `synapse` and default/main database of `homeserver`). Additional homeserver options are likely coming in the future ([Dendrite](https://matrix.org/docs/projects/server/dendrite), [Conduit](https://matrix.org/docs/projects/server/conduit), [The Construct](https://matrix.org/docs/projects/server/construct)), so being too focused on `matrix-synapse` is not great. From now on, Synapse is just another component of this playbook, which happens to have an *additional database* (called `synapse`) on the Postgres server.
+- we try to reorganize things a bit, to make the playbook even friendlier to people running an [external Postgres server](docs/configuring-playbook-external-postgres.md). Work on this will proceed in the future.
+
+So, this is some **effort to improve security** and to **prepare for a brighter future of having more homeserver options** than just Synapse.
+
+### What has really changed?
+
+- the default superuser Postgres username is now `matrix` (used to be `synapse`)
+- the default Postgres database is now `matrix` (used to be `homeserver`)
+- Synapse's database is now `synapse` (used to be `homeserver`). This is now just another "additional database" that the playbook manages for you
+- Synapse's user called `synapse` is just a regular user that can only use the `synapse` database (not a superuser anymore)
+
+### What do I do if I'm using the integrated Postgres server (default)?
+
+By default, the playbook runs an integrated Postgres server for you in a container (`matrix-postgres`). Unless you've explicitly configured an [external Postgres server](docs/configuring-playbook-external-postgres.md), these steps are meant for you.
+
+To migrate to the new setup, expect a few minutes of downtime, while you follow these steps:
+
+1. We believe the steps below are safe and you won't encounter any data loss, but consider [making a Postgres backup](docs/maintenance-postgres.md#backing-up-postgresql) anyway. If you've never backed up Postgres, now would be a good time to try it.
+
+2. Generate a strong password to be used for your superuser Postgres user (called `matrix`). You can use `pwgen -s 64 1` to generate it, or some other tool. The **maximum length** for a Postgres password is 100 bytes (characters). Don't go crazy!
+
+3. Update your playbook's `inventory/host_vars/matrix.DOMAIN/vars.yml` file, adding a line like this:
+```yaml
+matrix_postgres_connection_password: YOUR_POSTGRES_PASSWORD_HERE
+```
+
+.. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #2.
+
+4. Stop all services: `ansible-playbook -i inventory/hosts setup.yml --tags=stop`
+5. Log in to the server via SSH. The next commands will be performed there.
+6. Start the Postgres database server: `systemctl start matrix-postgres`
+7. Open a Postgres shell: `/usr/local/bin/matrix-postgres-cli`
+8. Execute the following query, while making sure to **change the password inside** (**don't forget the ending `;`**):
+
+```sql
+CREATE ROLE matrix LOGIN SUPERUSER PASSWORD 'YOUR_POSTGRES_PASSWORD_HERE';
+```
+
+.. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #2.
+
+9. Execute the following queries as you see them (no modifications necessary, so you can just **paste them all at once**):
+
+```sql
+CREATE DATABASE matrix OWNER matrix;
+
+ALTER DATABASE postgres OWNER TO matrix;
+ALTER DATABASE template0 OWNER TO matrix;
+ALTER DATABASE template1 OWNER TO matrix;
+
+\c matrix;
+
+ALTER DATABASE homeserver RENAME TO synapse;
+
+ALTER ROLE synapse NOSUPERUSER NOCREATEDB NOCREATEROLE;
+
+\quit
+```
+
+You may need to press *Enter* after pasting the lines above.
+
+10. Re-run the playbook normally: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
+
+### What do I do if I'm using an external Postgres server?
+
+If you've explicitly configured an [external Postgres server](docs/configuring-playbook-external-postgres.md), there are **no changes** that you need to do at this time.
+
+The fact that we've renamed Synapse's database from `homeserver` to `synapse` (in our defaults) should not affect you, as you're already explicitly defining `matrix_synapse_database_database` (if you've followed our guide, that is). If you're not explicitly defining this variable, you may wish to do so (`matrix_synapse_database_database: homeserver`), to avoid the new `synapse` default and keep things as they were.
+
+
+# 2021-01-20
+
+## (Breaking Change) The mautrix-facebook bridge now requires a Postgres database
+
+A new version of the [mautrix-facebook](https://github.com/tulir/mautrix-facebook) bridge has been released. It's a full rewrite of its backend and the bridge now requires Postgres. New versions of the bridge can no longer run on SQLite.
+
+**TLDR**: if you're NOT using an [external Postgres server](docs/configuring-playbook-external-postgres.md) and have NOT forcefully kept the bridge on SQLite during [The big move to all-on-Postgres (potentially dangerous)](#the-big-move-to-all-on-postgres-potentially-dangerous), you will be automatically upgraded without manual intervention. All you need to do is send a `login` message to the Facebook bridge bot again.
+
+Whether this change requires your intervention depends mostly on:
+- whether you're using an [external Postgres server](docs/configuring-playbook-external-postgres.md). If yes, then [you need to do something](#upgrade-path-for-people-running-an-external-postgres-server).
+- or whether you've force-changed the bridge's database engine to SQLite (`matrix_mautrix_facebook_database_engine: 'sqlite'` in your `vars.yml`) some time in the past (likely during [The big move to all-on-Postgres (potentially dangerous)](#the-big-move-to-all-on-postgres-potentially-dangerous)).
+
+As already mentioned above, you most likely don't need to do anything. If you rerun the playbook and don't get an error, you've been automatically upgraded. Just send a `login` message to the Facebook bridge bot again. Otherwise, read below for a solution.
+
+### Upgrade path for people NOT running an external Postgres server (default for the playbook)
+
+If you're **not running an external Postgres server**, then this bridge either already works on Postgres for you, or you've intentionally kept it back on SQLite with custom configuration (`matrix_mautrix_facebook_database_engine: 'sqlite'` in your `vars.yml`) .
+
+Simply remove that custom configuration from your `vars.yml` file (if it's there) and re-run the playbook. It should upgrade you automatically.
+You'll need to send a `login` message to the Facebook bridge bot again.
+
+Alternatively, [you can stay on SQLite for a little longer](#staying-on-sqlite-for-a-little-longer-temporary-solution).
+
+### Upgrade path for people running an external Postgres server
+
+For people using the internal Postgres server (the default for the playbook):
+- we automatically create an additional `matrix_mautrix_facebook` Postgres database and credentials to access it
+- we automatically adjust the bridge's `matrix_mautrix_facebook_database_*` variables to point the bridge to that Postgres database
+- we use [pgloader](https://pgloader.io/) to automatically import the existing SQLite data for the bridge into the `matrix_mautrix_facebook` Postgres database
+
+If you are using an [external Postgres server](docs/configuring-playbook-external-postgres.md), unfortunately we currently can't do any of that for you.
+
+You have 3 ways to proceed:
+
+- contribute to the playbook to make this possible (difficult)
+- or, do the migration "steps" manually:
+  - stop the bridge (`systemctl stop matrix-mautrix-facebook`)
+  - create a new `matrix_mautrix_facebook` Postgres database for it
+  - run [pgloader](https://pgloader.io/) manually (we import this bridge's data using default settings and it works well)
+  - define `matrix_mautrix_facebook_database_*` variables in your `vars.yml` file (credentials, etc.) - you can find their defaults in `roles/matrix-mautrix-facebook/defaults/main.yml`
+  - switch the bridge to Postgres (`matrix_mautrix_facebook_database_engine: 'postgres'` in your `vars.yml` file)
+  - re-run the playbook (`--tags=setup-all,start`) and ensure the bridge works (`systemctl status matrix-mautrix-facebook` and `journalctl -fu matrix-mautrix-facebook`)
+  - send a `login` message to the Facebook bridge bot again
+- or, [stay on SQLite for a little longer (temporary solution)](#staying-on-sqlite-for-a-little-longer-temporary-solution)
+
+### Staying on SQLite for a little longer (temporary solution)
+
+To keep using this bridge with SQLite for a little longer (**not recommended**), use the following configuration in your `vars.yml` file:
+
+```yaml
+# Force-change the database engine to SQLite.
+matrix_mautrix_facebook_database_engine: 'sqlite'
+
+# Force-downgrade to the last bridge version which supported SQLite.
+matrix_mautrix_facebook_docker_image: "{{ matrix_mautrix_facebook_docker_image_name_prefix }}tulir/mautrix-facebook:da1b4ec596e334325a1589e70829dea46e73064b"
+```
+
+If you do this, keep in mind that **you can't run this forever**. This SQLite-supporting bridge version is not getting any updates and will break sooner or later. The playbook will also drop support for SQLite at some point in the future.
+
+
+# 2021-01-17
+
+## matrix-corporal goes 2.0
+
+[matrix-corporal v2 has been released](https://github.com/devture/matrix-corporal/releases/tag/2.0.0) and the playbook also supports it now.
+
+No manual intervention is required in the common case.
+
+The new [matrix-corporal](https://github.com/devture/matrix-corporal) version is also the first one to support Interactive Authentication. If you wish to enable that (hint: you should), you'll need to set up the [REST auth password provider](docs/configuring-playbook-rest-auth.md). There's more information in [our matrix-corporal docs](docs/configuring-playbook-matrix-corporal.md).
+
+
+# 2021-01-14
+
+## Moving from cronjobs to systemd timers
+
+We no longer use cronjobs for Let's Encrypt SSL renewal and `matrix-nginx-proxy`/`matrix-coturn` reloading. Instead, we've switched to systemd timers.
+
+The largest benefit of this is that we no longer require you to install a cron daemon, thus simplifying our install procedure.
+
+The playbook will migrate you from cronjobs to systemd timers automatically. This is just a heads up.
+
+
+# 2021-01-08
+
+## (Breaking Change) New SSL configuration
+
+SSL configuration (protocols, ciphers) can now be more easily controlled thanks to us making use of configuration presets.
+
+We define a few presets (old, intermediate, modern), following the [Mozilla SSL Configuration Generator](https://ssl-config.mozilla.org/#server=nginx).
+
+A new variable `matrix_nginx_proxy_ssl_preset` controls which preset is used (defaults to `"intermediate"`).
+
+Compared to before, this changes nginx's `ssl_prefer_server_ciphers` to `off`  (used to default to `on`). It also add some more ciphers to the list, giving better performance on mobile devices, and removes some weak ciphers. More information in the [documentation](docs/configuring-playbook-nginx.md).
+
+To revert to the old behaviour, set the following variables:
+
+```yaml
+matrix_nginx_proxy_ssl_ciphers: "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH"
+matrix_nginx_proxy_ssl_prefer_server_ciphers: "on"
+```
+
+Just like before, you can still use your own custom protocols by specifying them in `matrix_nginx_proxy_ssl_protocols`. Doing so overrides the values coming from the preset.
+
+
 # 2021-01-03
 
 ## Signal bridging support via mautrix-signal
@@ -47,7 +235,6 @@ If you went with the Postgres migration and it went badly for you (some bridge n
 - switch the affected service back to SQLite (e.g. `matrix_mautrix_facebook_database_engine: sqlite`). Some services (like `appservice-irc` and `appservice-slack`) don't use SQLite, so use `nedb`, instead of `sqlite` for them.
 - re-run the playbook (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`)
 - [get in touch](README.md#support) with us
-
 
 # 2020-12-11
 

@@ -11,7 +11,7 @@ matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_cont
 # The if statement below may look silly at times (leading to the same version being returned),
 # but ARM-compatible container images are only released 1-7 hours after a release,
 # so we may often be on different versions for different architectures when new Synapse releases come out.
-matrix_synapse_docker_image_tag: "{{ 'v1.24.0' if matrix_architecture == 'amd64' else 'v1.24.0' }}"
+matrix_synapse_docker_image_tag: "{{ 'v1.25.0' if matrix_architecture == 'amd64' else 'v1.25.0' }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
@@ -335,10 +335,10 @@ matrix_synapse_replication_http_port: 9093
 matrix_synapse_sentry_dsn: ""
 
 # Postgres database information
-matrix_synapse_database_host: ""
-matrix_synapse_database_user: ""
+matrix_synapse_database_host: "matrix-postgres"
+matrix_synapse_database_user: "synapse"
 matrix_synapse_database_password: ""
-matrix_synapse_database_database: ""
+matrix_synapse_database_database: "synapse"
 
 matrix_synapse_turn_uris: []
 matrix_synapse_turn_shared_secret: ""

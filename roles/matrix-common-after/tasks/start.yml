@@ -1,6 +1,6 @@
 ---
 
-- name: Deterimne whether we should make services autostart
+- name: Determine whether we should make services autostart
   set_fact:
     matrix_services_autostart_enabled_bool: "{{ true if matrix_services_autostart_enabled|default('') == '' else matrix_services_autostart_enabled|bool }}"
 
@@ -46,7 +46,7 @@
         Try running `systemctl status {{ item }}` and `journalctl -fu {{ item }}` on the server to investigate.
     with_items: "{{ matrix_systemd_services_list }}"
     when:
-      - "ansible_facts.services[item + '.service']|default(none) is none or ansible_facts.services[item + '.service'].state != 'running'"
+      - "item.endswith('.service') and (ansible_facts.services[item]|default(none) is none or ansible_facts.services[item].state != 'running')"
   when: " ansible_distribution != 'Archlinux'"
 
 - block:

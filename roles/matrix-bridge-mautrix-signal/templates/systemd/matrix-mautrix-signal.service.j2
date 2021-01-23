@@ -13,6 +13,7 @@ Wants={{ service }}
 
 [Service]
 Type=simple
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
 ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-mautrix-signal
 ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-mautrix-signal
 
@@ -22,16 +23,19 @@ ExecStartPre={{ matrix_host_command_sleep }} 5
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-signal \
 			--log-driver=none \
 			--network={{ matrix_docker_network }} \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
 			{% if matrix_mautrix_signal_container_http_host_bind_port %}
 			-p {{ matrix_mautrix_signal_container_http_host_bind_port }}:29328 \
 			{% endif %}
 			-v {{ matrix_mautrix_signal_daemon_path }}:/signald:z \
-			-v {{ matrix_mautrix_signal_config_path }}:/data:z \
+			-v {{ matrix_mautrix_signal_config_path }}:/config:z \
 			{% for arg in matrix_mautrix_signal_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_mautrix_signal_docker_image }} \
-			python3 -m mautrix_signal -c /data/config.yaml
+			python3 -m mautrix_signal -c /config/config.yaml
 
 ExecStop=-{{ matrix_host_command_docker }} kill matrix-mautrix-signal
 ExecStop=-{{ matrix_host_command_docker }} rm matrix-mautrix-signal

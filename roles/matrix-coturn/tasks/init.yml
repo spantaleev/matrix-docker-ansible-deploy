@@ -1,6 +1,10 @@
 - set_fact:
-    matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-coturn'] }}"
+    matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-coturn.service'] }}"
   when: matrix_coturn_enabled|bool
+
+- set_fact:
+    matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-coturn-reload.timer'] }}"
+  when: "matrix_coturn_enabled|bool and matrix_coturn_tls_enabled|bool"
 
 # ansible lower than 2.8, does not support docker_image build parameters
 # for self buildig it is explicitly needed, so we rather fail here

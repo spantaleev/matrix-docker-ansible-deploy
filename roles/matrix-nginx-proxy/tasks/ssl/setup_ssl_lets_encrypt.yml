@@ -10,71 +10,56 @@
     - "{{ matrix_local_bin_path }}/matrix-ssl-certificates-renew"
     - "{{ matrix_cron_path }}/matrix-ssl-certificate-renewal"
     - "{{ matrix_cron_path }}/matrix-nginx-proxy-periodic-restarter"
-
+    - "/etc/cron.d/matrix-ssl-lets-encrypt"
+    - "{{ matrix_local_bin_path }}/matrix-ssl-lets-encrypt-certificates-renew"
 
 #
 # Tasks related to setting up Let's Encrypt's management of certificates
 #
 
-- name: (Deprecation) Catch and report renamed settings
-  fail:
-    msg: >-
-      Your configuration contains a variable, which now has a different name.
-      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
-  with_items:
-    - {'old': 'host_specific_matrix_ssl_support_email', 'new': 'matrix_ssl_lets_encrypt_support_email'}
-    - {'old': 'host_specific_matrix_ssl_lets_encrypt_support_email', 'new': 'matrix_ssl_lets_encrypt_support_email'}
-  when: "matrix_ssl_retrieval_method == 'lets-encrypt' and item.old in vars"
+- block:
+    - name: Ensure certbot Docker image is pulled
+      docker_image:
+        name: "{{ matrix_ssl_lets_encrypt_certbot_docker_image }}"
+        source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+        force_source: "{{ matrix_ssl_lets_encrypt_certbot_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+        force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_ssl_lets_encrypt_certbot_docker_image_force_pull }}"
 
-- name: Fail if required variables are undefined
-  fail:
-    msg: "Detected an undefined required variable"
-  with_items:
-    - "matrix_ssl_lets_encrypt_support_email"
-  when: "matrix_ssl_retrieval_method == 'lets-encrypt' and vars[item] is none"
+    - name: Obtain Let's Encrypt certificates
+      include_tasks: "{{ role_path }}/tasks/ssl/setup_ssl_lets_encrypt_obtain_for_domain.yml"
+      with_items: "{{ matrix_ssl_domains_to_obtain_certificates_for }}"
+      loop_control:
+        loop_var: domain_name
 
-- name: Ensure certbot Docker image is pulled
-  docker_image:
-    name: "{{ matrix_ssl_lets_encrypt_certbot_docker_image }}"
-    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_ssl_lets_encrypt_certbot_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_ssl_lets_encrypt_certbot_docker_image_force_pull }}"
+    - name: Ensure Let's Encrypt SSL renewal script installed
+      template:
+        src: "{{ role_path }}/templates/usr-local-bin/matrix-ssl-lets-encrypt-certificates-renew.j2"
+        dest: "{{ matrix_local_bin_path }}/matrix-ssl-lets-encrypt-certificates-renew"
+        mode: 0750
+
+    - name: Ensure SSL renewal systemd units installed
+      template:
+        src: "{{ role_path }}/templates/systemd/{{ item.name }}.j2"
+        dest: "{{ matrix_systemd_path }}/{{ item.name }}"
+        mode: 0644
+      when: "item.applicable|bool"
+      with_items: "{{ matrix_ssl_renewal_systemd_units_list }}"
   when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
-
-- name: Obtain Let's Encrypt certificates
-  include_tasks: "{{ role_path }}/tasks/ssl/setup_ssl_lets_encrypt_obtain_for_domain.yml"
-  with_items: "{{ matrix_ssl_domains_to_obtain_certificates_for }}"
-  loop_control:
-    loop_var: domain_name
-  when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
-
-- name: Ensure Let's Encrypt SSL renewal script installed
-  template:
-    src: "{{ role_path }}/templates/usr-local-bin/matrix-ssl-lets-encrypt-certificates-renew.j2"
-    dest: "{{ matrix_local_bin_path }}/matrix-ssl-lets-encrypt-certificates-renew"
-    mode: 0750
-  when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
-
-- name: Ensure periodic SSL renewal cronjob configured
-  template:
-    src: "{{ role_path }}/templates/cron.d/matrix-ssl-lets-encrypt.j2"
-    dest: /etc/cron.d/matrix-ssl-lets-encrypt
-    mode: 0644
-  when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
-
 
 #
 # Tasks related to getting rid of Let's Encrypt's management of certificates
 #
 
-- name: Ensure matrix-ssl-lets-encrypt-renew cronjob removed
-  file:
-    path: /etc/cron.d/matrix-ssl-lets-encrypt
-    state: absent
-  when: "matrix_ssl_retrieval_method != 'lets-encrypt'"
+- block:
+    - name: Ensure matrix-ssl-lets-encrypt-renew cronjob removed
+      file:
+        path: "{{ matrix_systemd_path }}/{{ item.name }}"
+        state: absent
+      when: "{{ not item.applicable }}"
+      with_items: "{{ matrix_ssl_renewal_systemd_units_list }}"
 
-- name: Ensure Let's Encrypt SSL renewal script removed
-  file:
-    path: "{{ matrix_local_bin_path }}/matrix-ssl-lets-encrypt-certificates-renew"
-    state: absent
+    - name: Ensure Let's Encrypt SSL renewal script removed
+      file:
+        path: "{{ matrix_local_bin_path }}/matrix-ssl-lets-encrypt-certificates-renew"
+        state: absent
   when: "matrix_ssl_retrieval_method != 'lets-encrypt'"

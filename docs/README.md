@@ -1,6 +1,8 @@
 # Table of Contents
 
-- [Prerequisites](prerequisites.md)
+- [FAQ](faq.md) - lots of questions and answers. Jump to [Prerequisites](prerequisites.md) to avoid reading too much and to just start a guided installation.
+
+- [Prerequisites](prerequisites.md) - go here to a guided installation using this Ansible playbook
 
 - [Configuring your DNS server](configuring-dns.md)
 

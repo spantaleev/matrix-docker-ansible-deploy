@@ -12,9 +12,36 @@
     # People who configured this to disable Riot, would now wish to be disabling Element.
     # We now also have `matrix_nginx_proxy_proxy_riot_compat_redirect_`, but that's something else and is disabled by default.
     - {'old': 'matrix_nginx_proxy_proxy_riot_enabled', 'new': 'matrix_nginx_proxy_proxy_element_enabled'}
+    - {'old': 'matrix_ssl_lets_encrypt_renew_cron_time_definition', 'new': '<not configurable anymore>'}
+    - {'old': 'matrix_nginx_proxy_reload_cron_time_definition', 'new': '<not configurable anymore>'}
 
 - name: Fail on unknown matrix_ssl_retrieval_method
   fail:
     msg: >-
       `matrix_ssl_retrieval_method` needs to be set to a known value.
   when: "matrix_ssl_retrieval_method not in ['lets-encrypt', 'self-signed', 'manually-managed', 'none']"
+
+- name: Fail on unknown matrix_nginx_proxy_ssl_config
+  fail:
+    msg: >-
+      `matrix_nginx_proxy_ssl_preset` needs to be set to a known value.
+  when: "matrix_nginx_proxy_ssl_preset not in ['modern', 'intermediate', 'old']"
+
+- block:
+    - name: (Deprecation) Catch and report renamed settings
+      fail:
+        msg: >-
+          Your configuration contains a variable, which now has a different name.
+          Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+      with_items:
+        - {'old': 'host_specific_matrix_ssl_support_email', 'new': 'matrix_ssl_lets_encrypt_support_email'}
+        - {'old': 'host_specific_matrix_ssl_lets_encrypt_support_email', 'new': 'matrix_ssl_lets_encrypt_support_email'}
+      when: "item.old in vars"
+
+    - name: Fail if required variables are undefined
+      fail:
+        msg: "Detected an undefined required variable"
+      with_items:
+        - "matrix_ssl_lets_encrypt_support_email"
+      when: "vars[item] is none"
+  when: "matrix_ssl_retrieval_method == 'lets-encrypt'"

@@ -5,7 +5,7 @@
 	gzip_types text/plain application/json application/javascript text/css image/x-icon font/ttf image/gif;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 	add_header X-Content-Type-Options nosniff;
-	add_header X-Frame-Options SAMEORIGIN;	
+	add_header X-Frame-Options SAMEORIGIN;
 	{% for configuration_block in matrix_nginx_proxy_proxy_element_additional_server_configuration_blocks %}
 		{{- configuration_block }}
 	{% endfor %}
@@ -67,9 +67,12 @@ server {
 
 	ssl_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_element_hostname }}/fullchain.pem;
 	ssl_certificate_key {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_element_hostname }}/privkey.pem;
+
 	ssl_protocols {{ matrix_nginx_proxy_ssl_protocols }};
-	ssl_prefer_server_ciphers on;
-	ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
+	{% if matrix_nginx_proxy_ssl_ciphers != "" %}
+	ssl_ciphers {{ matrix_nginx_proxy_ssl_ciphers }};
+	{% endif %}
+	ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_prefer_server_ciphers }};
 
 	{{ render_vhost_directives() }}
 }

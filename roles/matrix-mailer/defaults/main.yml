@@ -7,7 +7,7 @@ matrix_mailer_container_image_self_build_repository_url: "https://github.com/dev
 matrix_mailer_container_image_self_build_src_files_path: "{{ matrix_mailer_base_path }}/docker-src"
 matrix_mailer_container_image_self_build_version: "{{ matrix_mailer_docker_image.split(':')[1] }}"
 
-matrix_mailer_docker_image: "{{ matrix_mailer_docker_image_name_prefix }}devture/exim-relay:4.93.1-r0"
+matrix_mailer_docker_image: "{{ matrix_mailer_docker_image_name_prefix }}devture/exim-relay:4.93-r1"
 matrix_mailer_docker_image_name_prefix: "{{ 'localhost/' if matrix_mailer_container_image_self_build else 'docker.io/' }}"
 matrix_mailer_docker_image_force_pull: "{{ matrix_mailer_docker_image.endswith(':latest') }}"
 
@@ -18,6 +18,8 @@ matrix_mailer_container_user_gid: 101
 
 # A list of extra arguments to pass to the container
 matrix_mailer_container_extra_arguments: []
+
+matrix_mailer_hostname: "{{ matrix_server_fqn_matrix }}"
 
 matrix_mailer_sender_address: "matrix@{{ matrix_domain }}"
 matrix_mailer_relay_use: false

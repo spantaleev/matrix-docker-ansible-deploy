@@ -35,12 +35,15 @@ matrix_mautrix_facebook_homeserver_token: ''
 
 # Database-related configuration fields.
 #
-# To use SQLite, stick to these defaults.
+# To use SQLite:
+# - change the engine (`matrix_mautrix_facebook_database_engine: 'sqlite'`)
+# - change to the last bridge version that supported SQLite:
+#   `matrix_mautrix_facebook_docker_image: "{{ matrix_mautrix_facebook_docker_image_name_prefix }}tulir/mautrix-facebook:da1b4ec596e334325a1589e70829dea46e73064b"`
+# - plan your migration to Postgres, as this bridge does not support SQLite anymore (and neither will the playbook in the future).
 #
 # To use Postgres:
-# - change the engine (`matrix_mautrix_facebook_database_engine: 'postgres'`)
 # - adjust your database credentials via the `matrix_mautrix_facebook_postgres_*` variables
-matrix_mautrix_facebook_database_engine: 'sqlite'
+matrix_mautrix_facebook_database_engine: 'postgres'
 
 matrix_mautrix_facebook_sqlite_database_path_local: "{{ matrix_mautrix_facebook_data_path }}/mautrix-facebook.db"
 matrix_mautrix_facebook_sqlite_database_path_in_container: "/data/mautrix-facebook.db"

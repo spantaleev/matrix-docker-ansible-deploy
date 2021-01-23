@@ -89,8 +89,5 @@
     state: absent
   when: "not matrix_jitsi_enabled|bool"
 
-- name: Ensure jitsi-jvb Docker image doesn't exist
-  docker_image:
-    name: "{{ matrix_jitsi_jvb_docker_image }}"
-    state: absent
-  when: "not matrix_jitsi_enabled|bool"
+# Intentionally not removing the Docker image when uninstalling.
+# We can't be sure it had been pulled by us in the first place.

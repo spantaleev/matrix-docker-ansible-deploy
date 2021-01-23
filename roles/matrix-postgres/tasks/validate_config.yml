@@ -6,17 +6,29 @@
       The `matrix_postgres_use_external` variable defined in your configuration is not used by this playbook anymore!
       You'll need to adapt to the new way of using an external Postgres server.
       It's a combination of `matrix_postgres_enabled: false` and specifying Postgres connection
-      details in a few `matrix_synapse_database_` variables.
+      details in a few `matrix_postgres_connection_` variables.
       See the "Using an external PostgreSQL server (optional)" documentation page.
   when: "'matrix_postgres_use_external' in vars"
 
+# This is separate (from the other required variables below),
+# because we'd like to have a friendlier message for our existing users.
+- name: Fail if matrix_postgres_connection_password not defined
+  fail:
+    msg: >-
+      The playbook no longer has a default Postgres password defined in the `matrix_postgres_connection_password` variable, among lots of other Postgres changes.
+      You need to perform multiple manual steps to resolve this.
+      See our changelog for more details:
+      https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#breaking-change-postgres-changes-that-require-manual-intervention
+  when: "matrix_postgres_connection_password == ''"
+
 - name: Fail if required Postgres settings not defined
   fail:
-    msg: >
+    msg: >-
       You need to define a required configuration setting (`{{ item }}`).
   when: "vars[item] == ''"
   with_items:
     - "matrix_postgres_connection_hostname"
+    - "matrix_postgres_connection_port"
     - "matrix_postgres_connection_username"
     - "matrix_postgres_connection_password"
     - "matrix_postgres_db_name"
@@ -24,4 +36,4 @@
 - name: Fail if Postgres password length exceeded
   fail:
     msg: "The maximum `matrix_postgres_connection_password` length is 99 characters"
-  when: "matrix_postgres_connection_hostname|length > 99"
+  when: "matrix_postgres_connection_password|length > 99"

@@ -8,6 +8,10 @@ homeserver:
     # Whether or not to verify the SSL certificate of the homeserver.
     # Only applies if address starts with https://
     verify_ssl: true
+    # Whether or not the homeserver supports asmux-specific endpoints,
+    # such as /_matrix/client/unstable/net.maunium.asmux/dms for atomically
+    # updating m.direct.
+    asmux: false
 
 # Application service host/registration related details
 # Changing these values requires regeneration of the registration.
@@ -22,11 +26,7 @@ appservice:
     # Usually 1 is enough, but on high-traffic bridges you might need to increase this to avoid 413s
     max_body_size: 1
 
-    # The full URI to the database. SQLite and Postgres are fully supported.
-    # Other DBMSes supported by SQLAlchemy may or may not work.
-    # Format examples:
-    #   SQLite:   sqlite:///filename.db
-    #   Postgres: postgres://username:password@hostname/dbname
+    # The full URI to the database. Only Postgres is currently supported.
     database: {{ matrix_mautrix_facebook_appservice_database|to_json }}
 
     # Public part of web server for out-of-Matrix interaction with the bridge.
@@ -38,6 +38,10 @@ appservice:
         # The base URL where the public-facing endpoints are available. The prefix is not added
         # implicitly.
         external: https://example.com/public
+        # Shared secret for integration managers such as mautrix-manager.
+        # If set to "generate", a random string will be generated on the next startup.
+        # If null, integration manager access to the API will not be possible.
+        shared_secret: generate
 
     # The unique ID of this appservice.
     id: facebook
@@ -46,11 +50,16 @@ appservice:
     # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
     # to leave display name/avatar as-is.
     bot_displayname: Facebook bridge bot
-    bot_avatar: mxc://maunium.net/ddtNPZSKMNqaUzqrHuWvUADv
+    bot_avatar: mxc://maunium.net/ygtkteZsXnGJLJHRchUwYWak
 
     # Authentication tokens for AS <-> HS communication.
     as_token: "{{ matrix_mautrix_facebook_appservice_token }}"
     hs_token: "{{ matrix_mautrix_facebook_homeserver_token }}"
+
+# Prometheus telemetry config. Requires prometheus-client to be installed.
+metrics:
+    enabled: false
+    listen_port: 8000
 
 # Bridge config
 bridge:
@@ -76,6 +85,7 @@ bridge:
     # "own_nickname" (user-specific!)
     displayname_preference:
     - name
+    - first_name
 
     # The prefix for commands. Only required in non-management rooms.
     command_prefix: "!fb"
@@ -120,6 +130,18 @@ bridge:
         # Default to encryption, force-enable encryption in all portals the bridge creates
         # This will cause the bridge bot to be in private chats for the encryption to work properly.
         default: false
+        # Options for automatic key sharing.
+        key_sharing:
+            # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
+            # You must use a client that supports requesting keys from other users to use this feature.
+            allow: false
+            # Require the requesting device to have a valid cross-signing signature?
+            # This doesn't require that the bridge has verified the device, only that the user has verified it.
+            # Not yet implemented.
+            require_cross_signing: false
+            # Require devices to be verified by the bridge?
+            # Verification by the bridge is not yet implemented.
+            require_verification: true
     # Whether or not the bridge should send a read receipt from the bridge bot when a message has
     # been sent to Facebook.
     delivery_receipts: false
@@ -161,6 +183,10 @@ bridge:
     # Whether or not the bridge should try to "refresh" the connection if a normal reconnection
     # attempt fails.
     refresh_on_reconnection_fail: false
+    # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
+    # This field will automatically be changed back to false after it,
+    # except if the config file is not writable.
+    resend_bridge_info: false
 
     # Permissions for using the bridge.
     # Permitted values:
@@ -192,9 +218,7 @@ logging:
     loggers:
         mau:
             level: DEBUG
-        fbchat:
-            level: DEBUG
-        hbmqtt:
+        paho:
             level: INFO
         aiohttp:
             level: INFO

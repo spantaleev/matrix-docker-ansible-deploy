@@ -7,9 +7,12 @@ DefaultDependencies=no
 
 [Service]
 Type=simple
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
 ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-mailer
 ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-mailer
 
+# --hostname gives us a friendlier hostname than the default.
+# The real hostname is passed via a `HOSTNAME` environment variable though.
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mailer \
 			--log-driver=none \
 			--user={{ matrix_mailer_container_user_uid }}:{{ matrix_mailer_container_user_gid }} \

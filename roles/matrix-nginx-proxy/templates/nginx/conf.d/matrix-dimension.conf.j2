@@ -65,9 +65,12 @@ server {
 
 	ssl_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_dimension_hostname }}/fullchain.pem;
 	ssl_certificate_key {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_dimension_hostname }}/privkey.pem;
+
 	ssl_protocols {{ matrix_nginx_proxy_ssl_protocols }};
-	ssl_prefer_server_ciphers on;
-	ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
+	{% if matrix_nginx_proxy_ssl_ciphers != '' %}
+	ssl_ciphers {{ matrix_nginx_proxy_ssl_ciphers }};
+	{% endif %}
+	ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_prefer_server_ciphers }};
 
 	{{ render_vhost_directives() }}
 }

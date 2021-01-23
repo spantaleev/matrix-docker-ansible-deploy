@@ -24,7 +24,7 @@ matrix_corporal_systemd_required_services_list: ['docker.service']
 
 matrix_corporal_docker_image: "{{ matrix_corporal_docker_image_name_prefix }}devture/matrix-corporal:{{ matrix_corporal_docker_image_tag }}"
 matrix_corporal_docker_image_name_prefix: "{{ 'localhost/' if matrix_corporal_container_image_self_build else 'docker.io/' }}"
-matrix_corporal_docker_image_tag: "1.11.0"
+matrix_corporal_docker_image_tag: "2.1.0"
 matrix_corporal_docker_image_force_pull: "{{ matrix_corporal_docker_image.endswith(':latest') }}"
 
 matrix_corporal_base_path: "{{ matrix_base_data_path }}/corporal"
@@ -50,9 +50,15 @@ matrix_corporal_matrix_registration_shared_secret: ""
 matrix_corporal_matrix_timeout_milliseconds: 45000
 
 matrix_corporal_reconciliation_retry_interval_milliseconds: 30000
-matrix_corporal_reconciliation_user_id_local_part: "matrix-corporal"
+matrix_corporal_corporal_user_id_local_part: "matrix-corporal"
 
 matrix_corporal_http_gateway_timeout_milliseconds: 60000
+
+# If enabled, matrix-corporal exposes a `POST /_matrix/corporal/_matrix-internal/identity/v1/check_credentials` API
+# on the gateway (Client-Server API) server.
+# This API can then be used together with the REST Auth password provider by pointing it to matrix-corporal (e.g. `http://matrix-corporal:41080/_matrix/corporal`).
+# Doing so allows Interactive Authentication to work.
+matrix_corporal_http_gateway_internal_rest_auth_enabled: false
 
 matrix_corporal_http_api_enabled: false
 matrix_corporal_http_api_auth_token: ""

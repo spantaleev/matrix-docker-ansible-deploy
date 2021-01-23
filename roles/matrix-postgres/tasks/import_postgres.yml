@@ -35,6 +35,13 @@
     postgres_import_wait_time: "{{ 7 * 86400 }}"
   when: "postgres_import_wait_time|default('') == ''"
 
+# By default, we connect and import into the main (`matrix`) database.
+# Single-database dumps for Synapse may wish to import into `synapse` instead.
+- name: Set postgres_default_import_database, if not provided
+  set_fact:
+    postgres_default_import_database: "{{ matrix_postgres_db_name }}"
+  when: "postgres_default_import_database|default('') == ''"
+
 # Actual import work
 
 - name: Ensure matrix-postgres is started
@@ -76,7 +83,7 @@
       {{ 'gunzip |' if server_path_postgres_dump.endswith('.gz') else '' }}
       grep -vE '{{ matrix_postgres_import_roles_ignore_regex }}' |
       grep -vE '{{ matrix_postgres_import_databases_ignore_regex }}' |
-      psql -v ON_ERROR_STOP=1 -h matrix-postgres"
+      psql -v ON_ERROR_STOP=1 -h matrix-postgres --dbname={{ postgres_default_import_database }}"
 
 # This is a hack.
 # See: https://ansibledaily.com/print-to-standard-output-without-escaping/

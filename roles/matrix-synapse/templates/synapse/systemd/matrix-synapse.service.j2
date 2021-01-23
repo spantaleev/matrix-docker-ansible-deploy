@@ -12,6 +12,7 @@ DefaultDependencies=no
 
 [Service]
 Type=simple
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
 ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-synapse
 ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-synapse
 {% if matrix_s3_media_store_enabled %}

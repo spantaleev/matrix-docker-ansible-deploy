@@ -120,6 +120,25 @@
         - always
   when: "matrix_postgres_enabled|bool and matrix_postgres_additional_databases|length > 0"
 
+- name: Check existence of matrix-postgres backup data path
+  stat:
+    path: "{{ matrix_postgres_data_path }}-auto-upgrade-backup"
+  register: matrix_postgres_data_backup_path_stat
+  when: "matrix_postgres_enabled|bool"
+
+- name: Inject warning if backup data remains
+  set_fact:
+    matrix_playbook_runtime_results: |
+      {{
+        matrix_playbook_runtime_results|default([])
+        +
+        [
+          "NOTE: You have some Postgres backup data in `{{ matrix_postgres_data_path }}-auto-upgrade-backup`, which was created during the last major Postgres update you ran. If your setup works well after this upgrade, feel free to delete this whole directory."
+        ]
+      }}
+  when: "matrix_postgres_enabled|bool and matrix_postgres_data_backup_path_stat.stat.exists"
+
+
 #
 # Tasks related to getting rid of the internal postgres server (if it was previously enabled)
 #
@@ -155,9 +174,16 @@
   when: "not matrix_postgres_enabled|bool"
 
 # We just want to notify the user. Deleting data is too destructive.
-- name: Notify if matrix-postgres local data remains
-  debug:
-    msg: "Note: You are not using a local PostgreSQL database, but some old data remains from before in `{{ matrix_postgres_data_path }}`. Feel free to delete it."
+- name: Inject warning if matrix-postgres local data remains
+  set_fact:
+    matrix_playbook_runtime_results: |
+      {{
+        matrix_playbook_runtime_results|default([])
+        +
+        [
+          "NOTE: You are not using a local PostgreSQL database, but some old data remains from before in `{{ matrix_postgres_data_path }}`. Feel free to delete it."
+        ]
+      }}
   when: "not matrix_postgres_enabled|bool and matrix_postgres_data_path_stat.stat.exists"
 
 - name: Remove Postgres scripts

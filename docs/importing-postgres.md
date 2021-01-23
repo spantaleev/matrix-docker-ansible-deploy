@@ -7,8 +7,8 @@ Run this if you'd like to import your database from a previous installation.
 ## Prerequisites
 
 For this to work, **the database name in Postgres must match** what this playbook uses.
-This playbook uses a Postgres database name of `homeserver` by default (controlled by the `matrix_postgres_db_name` variable).
-If your database name differs, be sure to change `matrix_postgres_db_name` to your desired name and to re-run the playbook before proceeding.
+This playbook uses a Postgres database name of `synapse` by default (controlled by the `matrix_synapse_database_database` variable).
+If your database name differs, be sure to change `matrix_synapse_database_database` to your desired name and to re-run the playbook before proceeding.
 
 The playbook supports importing Postgres dump files in **text** (e.g. `pg_dump > dump.sql`) or **gzipped** formats (e.g. `pg_dump | gzip -c > dump.sql.gz`).
 
@@ -21,9 +21,16 @@ Before doing the actual import, **you need to upload your Postgres dump file to 
 
 To import, run this command (make sure to replace `<server-path-to-postgres-dump.sql>` with a file path on your server):
 
-	ansible-playbook -i inventory/hosts setup.yml --extra-vars='server_path_postgres_dump=<server-path-to-postgres-dump.sql>' --tags=import-postgres
+```sh
+ansible-playbook -i inventory/hosts setup.yml \
+--extra-vars='postgres_default_import_database=synapse server_path_postgres_dump=<server-path-to-postgres-dump.sql>' \
+--tags=import-postgres
+```
+
+We specify the `synapse` database as the default import database. If your dump is a single-database dump (`pg_dump`), then we need to tell it where to go to. If you're redefining `matrix_synapse_database_database` to something other than `synapse`, please adjust it here too. For database dumps spanning multiple databases (`pg_dumpall`), you can remove the `postgres_default_import_database` definition (but it doesn't hurt to keep it too).
 
 **Note**: `<server-path-to-postgres-dump.sql>` must be a file path to a Postgres dump file on the server (not on your local machine!).
+
 
 ## Troubleshooting
 
