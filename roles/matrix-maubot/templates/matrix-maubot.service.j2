@@ -22,6 +22,7 @@ ExecStart=/usr/bin/docker run --rm --name matrix-maubot \
                         -e UID={{ matrix_user_uid }} \
                         -e GID={{ matrix_user_gid }} \
 			--network={{ matrix_docker_network }} \
+                        -p 29316:29316 \
 			-v {{ matrix_maubot_host_data_dir }}:{{ matrix_maubot_container_data_dir }}:z \
 			-v {{ matrix_maubot_host_config_dir }}:{{ matrix_maubot_container_config_dir }}:z \
 			{% for arg in matrix_maubot_container_extra_arguments %}
