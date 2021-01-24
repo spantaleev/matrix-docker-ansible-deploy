@@ -109,14 +109,13 @@
 
 		{% if generic_workers %}
 			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappgeneric_worker
-			{% for location in matrix_nginx_proxy_synapse_generic_worker_locations %}
+			{% for location in matrix_nginx_proxy_synapse_generic_worker_client_server_locations %}
 			location ~ {{ location }} {
 				proxy_pass http://generic_worker_upstream$request_uri;
 				proxy_set_header Host $host;
 				proxy_set_header X-Forwarded-For $remote_addr;
 			}
 			{% endfor %}
-			# FIXME: add GET ^/_matrix/federation/v1/groups/
 		{% endif %}
 
 		{% if media_repository_workers %}
@@ -361,7 +360,7 @@ server {
 	{% if matrix_nginx_proxy_synapse_workers_enabled %}
 		{% if generic_workers %}
 			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappgeneric_worker
-			{% for location in matrix_nginx_proxy_synapse_generic_worker_locations %}
+			{% for location in matrix_nginx_proxy_synapse_generic_worker_federation_locations %}
 			location ~ {{ location }} {
 				proxy_pass http://generic_worker_upstream$request_uri;
 				proxy_set_header Host $host;
