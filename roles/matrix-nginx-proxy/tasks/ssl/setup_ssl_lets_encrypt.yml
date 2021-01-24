@@ -55,7 +55,7 @@
       file:
         path: "{{ matrix_systemd_path }}/{{ item.name }}"
         state: absent
-      when: "{{ not item.applicable }}"
+      when: "not item.applicable|bool"
       with_items: "{{ matrix_ssl_renewal_systemd_units_list }}"
 
     - name: Ensure Let's Encrypt SSL renewal script removed
