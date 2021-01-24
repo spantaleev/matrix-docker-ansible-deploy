@@ -47,14 +47,15 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-synapse \
 			{% endif %}
 			{% for worker in matrix_synapse_workers_enabled_list %}
 			{% if matrix_synapse_workers_enabled and not matrix_nginx_proxy_enabled|default(False) %}
-			{# Expose worker ports (by default 18xxx range) on host if not using internal nginx proxy #}
+			{# Expose worker ports (by default in 18xxx range) on localhost, f.e. when using
+			   an external reverse proxy outside the matrix docker network #}
 			{% if worker.port != 0 %}
-			-p {{ worker.port }}:{{ worker.port }} \
+			-p 127.0.0.1:{{ worker.port }}:{{ worker.port }} \
 			{% endif %}
 			{% endif %}
-			{# Expose worker metrics ports on host if defined #}
+			{# Expose worker metrics ports on localhost #}
 			{% if worker.metrics_port != 0 %}
-			-p {{ worker.metrics_port }}:{{ worker.metrics_port }} \
+			-p 127.0.0.1:{{ worker.metrics_port }}:{{ worker.metrics_port }} \
 			{% endif %}
 			{% endfor %}
 			--mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data,ro \
