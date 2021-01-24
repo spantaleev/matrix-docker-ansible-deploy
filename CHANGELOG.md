@@ -36,7 +36,7 @@ To migrate to the new setup, expect a few minutes of downtime, while you follow 
 
 3. Update your playbook's `inventory/host_vars/matrix.DOMAIN/vars.yml` file, adding a line like this:
 ```yaml
-matrix_postgres_connection_password: YOUR_POSTGRES_PASSWORD_HERE
+matrix_postgres_connection_password: 'YOUR_POSTGRES_PASSWORD_HERE'
 ```
 
 .. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #2.
