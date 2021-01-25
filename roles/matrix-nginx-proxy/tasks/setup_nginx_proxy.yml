@@ -45,12 +45,18 @@
     mode: 0644
   when: matrix_nginx_proxy_enabled|bool
 
-- name: Ensure Matrix nginx-proxy configuration for matrix domain exists
+- name: Ensure Matrix nginx-proxy configuration for matrix-synapse exists
   template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-synapse.conf.j2"
     dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-synapse.conf"
     mode: 0644
-  when: matrix_nginx_proxy_proxy_matrix_enabled|bool
+  when: matrix_nginx_proxy_proxy_synapse_enabled|bool
+
+- name: Ensure Matrix nginx-proxy configuration for matrix-synapse deleted
+  file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-synapse.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_synapse_enabled|bool"
 
 - name: Ensure Matrix nginx-proxy configuration for Element domain exists
   template:
@@ -80,6 +86,12 @@
     mode: 0644
   when: matrix_nginx_proxy_proxy_jitsi_enabled|bool
 
+- name: Ensure Matrix nginx-proxy configuration for Matrix domain exists
+  template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-domain.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-domain.conf"
+    mode: 0644
+
 - name: Ensure Matrix nginx-proxy data directory for base domain exists
   file:
     path: "{{ matrix_nginx_proxy_data_path }}/matrix-domain"
@@ -100,8 +112,8 @@
 
 - name: Ensure Matrix nginx-proxy configuration for base domain exists
   template:
-    src: "{{ role_path }}/templates/nginx/conf.d/matrix-domain.conf.j2"
-    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-domain.conf"
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-base-domain.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-base-domain.conf"
     mode: 0644
   when: matrix_nginx_proxy_base_domain_serving_enabled|bool
 
@@ -161,7 +173,7 @@
 
 - name: Ensure Matrix nginx-proxy configuration for matrix domain deleted
   file:
-    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-synapse.conf"
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-domain.conf"
     state: absent
   when: "not matrix_nginx_proxy_proxy_matrix_enabled|bool"
 
@@ -191,7 +203,7 @@
 
 - name: Ensure Matrix nginx-proxy configuration for base domain deleted
   file:
-    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-domain.conf"
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-base-domain.conf"
     state: absent
   when: "not matrix_nginx_proxy_base_domain_serving_enabled|bool"
 
