@@ -301,6 +301,14 @@ matrix_synapse_manhole_enabled: false
 # Enable support for Synapse workers
 matrix_synapse_workers_enabled: false
 
+
+# Controls whether the matrix-synapse container exposes the various worker ports
+# (see `port` and `metrics_port` in `matrix_synapse_workers_enabled_list`) outside of the container.
+#
+# Takes an "<ip>" value (e.g. "127.0.0.1", "0.0.0.0", etc), or empty string to not expose.
+# It takes "*" to signify "bind on all interfaces" ("0.0.0.0" is IPv4-only).
+matrix_synapse_workers_container_host_bind_address: ''
+
 # Default list of workers to spawn (order in accord to docs)
 # - no endpoints / doesn't need port mapping if port ends on 0
 # - single-instance-only if 2nd last digit of port number is 0

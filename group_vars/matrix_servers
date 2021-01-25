@@ -1276,6 +1276,9 @@ matrix_synapse_container_metrics_api_host_bind_port: "{{ '127.0.0.1:9100' if (ma
 #
 # For exposing the Synapse Manhole port (plain HTTP) to the local host.
 matrix_synapse_container_manhole_api_host_bind_port: "{{ '127.0.0.1:9000' if matrix_synapse_manhole_enabled else '' }}"
+#
+# For exposing the Synapse worker (and metrics) ports to the local host.
+matrix_synapse_workers_container_host_bind_address: "{{ '127.0.0.1' if (matrix_synapse_workers_enabled and not matrix_nginx_proxy_enabled) else '' }}"
 
 matrix_synapse_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'synapse.db') | to_uuid }}"
 
