@@ -1,32 +1,32 @@
 #jinja2: lstrip_blocks: "True"
-worker_app: synapse.app.{{ item.type }}
-worker_name: {{ item.type ~ ':' ~ item.port }}
+worker_app: synapse.app.{{ matrix_synapse_worker_details.type }}
+worker_name: {{ matrix_synapse_worker_details.type ~ ':' ~ matrix_synapse_worker_details.port }}
 
-worker_replication_host: 127.0.0.1
+worker_replication_host: matrix-synapse
 worker_replication_http_port: {{ matrix_synapse_replication_http_port }}
 
 worker_listeners:
-{% if item.type not in [ 'appservice', 'federation_sender', 'pusher' ] %}
+{% if matrix_synapse_worker_details.type not in [ 'appservice', 'federation_sender', 'pusher' ] %}
   - type: http
-    port: {{ item.port }}
+    port: {{ matrix_synapse_worker_details.port }}
     resources:
       - names:
-{% if item.type in [ 'generic_worker', 'frontend_proxy', 'user_dir' ] %}
+{% if matrix_synapse_worker_details.type in [ 'generic_worker', 'frontend_proxy', 'user_dir' ] %}
         - client
 {% endif %}
-{% if item.type in [ 'generic_worker' ] %}
+{% if matrix_synapse_worker_details.type in [ 'generic_worker' ] %}
         - federation
-{% elif item.type in [ 'media_repository' ] %}
+{% elif matrix_synapse_worker_details.type in [ 'media_repository' ] %}
         - media
 {% endif %}
 
 {% endif %}
   - type: metrics
     bind_address: ['127.0.0.1']
-    port: {{ item.metrics_port }}
+    port: {{ matrix_synapse_worker_details.metrics_port }}
 
-{% if item.type == 'frontend_proxy' %}
-worker_main_http_uri: http://127.0.0.1:8008
+{% if matrix_synapse_worker_details.type == 'frontend_proxy' %}
+worker_main_http_uri: http://matrix-synapse:8008
 {% endif %}
 
 worker_daemonize: false

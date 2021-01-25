@@ -1,81 +1,33 @@
 ---
 
-- name: Ensure synapse worker base service file installed
-  template:
-    src: "{{ role_path }}/templates/synapse/systemd/matrix-synapse-worker@.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-synapse-worker@.service"
-    mode: 0644
-  register: matrix_synapse_worker_systemd_service_result
-
-- name: Ensure previous worker service symlinks are cleaned
-  file:
-    path: "{{ item.root + '/' + item.path }}"
-    state: absent
-  when:
-    - item.state == 'link'
-    - item.path is match('matrix-synapse-worker@.*\\.service')
-  with_filetree:
-    - "{{ matrix_systemd_path }}/matrix-synapse.service.wants"
-
-- name: Ensure systemd reloaded the worker service unit
-  service:
-    daemon_reload: yes
-
-- name: Ensure individual worker service symlinks exist
-  service:
-    name: "matrix-synapse-worker@{{ item.type }}:{{ item.port }}.service"
-    enabled: true
-  with_items: "{{ matrix_synapse_workers_enabled_list }}"
-
 - name: Find worker configs to be cleaned
   find:
     path: "{{ matrix_synapse_config_dir_path }}"
     patterns: "worker.*.yaml"
     use_regex: true
-  register: worker_config_files
+  register: matrix_synapse_workers_current_config_files
 
 - name: Ensure previous worker configs are cleaned
   file:
     path: "{{ item.path }}"
     state: absent
-  with_items: "{{ worker_config_files.files }}"
+  with_items: "{{ matrix_synapse_workers_current_config_files.files }}"
 
-- name: Ensure creation of specific worker configs
-  template:
-    src: "{{ role_path }}/templates/synapse/worker.yaml.j2"
-    dest: "{{ matrix_synapse_config_dir_path }}/worker.{{ item.type }}:{{ item.port }}.yaml"
-  with_list: "{{ matrix_synapse_workers_enabled_list }}"
+- name: Find worker systemd services to be cleaned
+  find:
+    path: "{{ matrix_systemd_path }}"
+    patterns: "matrix-synapse-worker.*.service"
+    use_regex: true
+  register: matrix_synapse_workers_current_systemd_services
 
-- name: Add workers to synapse.wants list
-  set_fact:
-    matrix_synapse_systemd_wanted_services_list: >
-      {{ matrix_synapse_systemd_wanted_services_list +
-      ['matrix-synapse-worker@' + item.type + ':' + item.port|string + '.service'] }}
+- name: Ensure previous worker systemd services are cleaned
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ matrix_synapse_workers_current_systemd_services.files }}"
+
+- name: Ensure creation of worker systemd service files and configuration files
+  include_tasks: "{{ role_path }}/tasks/workers/util/setup_files_for_worker.yml"
   with_items: "{{ matrix_synapse_workers_enabled_list }}"
-
-- name: Ensure matrix-synapse-worker-write-pid script is created
-  copy:
-    src: "{{ role_path }}/files/usr-local-bin/matrix-synapse-worker-write-pid"
-    dest: "{{ matrix_local_bin_path }}/matrix-synapse-worker-write-pid"
-    mode: 0750
-
-- name: Ensure jq is installed (Archlinux)
-  pacman:
-    name:
-      - jq
-    state: present
-  when: (ansible_distribution == 'Archlinux')
-
-- name: Ensure jq is installed (CentOS)
-  yum:
-    name:
-      - jq
-    state: present
-  when: (ansible_distribution == 'CentOS')
-
-- name: Ensure jq is installed (Debian)
-  apt:
-    name:
-      - jq
-    state: present
-  when: (ansible_os_family == 'Debian')
+  loop_control:
+    loop_var: matrix_synapse_worker_details
