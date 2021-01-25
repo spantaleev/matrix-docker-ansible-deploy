@@ -16,20 +16,8 @@ if [ "$sure" != "Yes, I really want to remove everything!" ]; then
 else
 	echo "Stop and remove matrix services"
 
-	# Look for and stop services, avoiding things like
-	# 'matrix-synapse-worker@.service' (just a template for instantiated services; can't stop it directly).
-	# We use '-xtype f' and not '-type f', because we wish to match symlinks like this:
-	# '/etc/systemd/system/matrix-synapse.service.wants/matrix-synapse-worker@generic_worker:18111.service'
-	# and stop these instantiated services as well.
-	for s in $(find {{ matrix_systemd_path }}/ -xtype f -name "matrix-*" -printf "%f\n" | grep -v '@.service' | uniq); do
+	for s in $(find {{ matrix_systemd_path }}/ -type f -name "matrix-*" -printf "%f\n"); do
 		systemctl disable --now $s
-	done
-
-	# Get rid of regular service files, as well as symlinks like
-	# '/etc/systemd/system/matrix-synapse.service.wants/matrix-synapse-worker@generic_worker:18111.service'
-	# and even
-	# '/etc/systemd/system/multi-user.target.wants/matrix-synapse.service'.
-	for s in $(find {{ matrix_systemd_path }}/ -xtype f -name "matrix-*" -printf "%p\n"); do
 		rm -f {{ matrix_systemd_path }}/$s
 	done
 
