@@ -31,5 +31,5 @@ matrix_synapse_workers_generic_worker_client_server_endpoints: "{{ matrix_synaps
 # We wish to split these, as we normally serve federation separately and don't want them mixed up.
 #
 # This is some ugly Ansible/Jinja2 hack (seen here: https://stackoverflow.com/a/47831492),
-# which takes a list of various strings and removes the ones NOT containing `/_matrix/federation` anywhere in them.
-matrix_synapse_workers_generic_worker_federation_endpoints: "{{ matrix_synapse_workers_generic_worker_endpoints|default([]) | map('regex_search', '.*/_matrix/federation.*')| list | difference([none]) }}"
+# which takes a list of various strings and removes the ones NOT containing `/_matrix/federation` or `/_matrix/key` anywhere in them.
+matrix_synapse_workers_generic_worker_federation_endpoints: "{{ matrix_synapse_workers_generic_worker_endpoints|default([]) | map('regex_search', '.*(/_matrix/federation|/_matrix/key).*')| list | difference([none]) }}"
