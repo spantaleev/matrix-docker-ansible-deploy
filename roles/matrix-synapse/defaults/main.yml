@@ -333,7 +333,16 @@ matrix_synapse_redis_host: ""
 matrix_synapse_redis_port: 6379
 matrix_synapse_redis_password: ""
 
-# Port used for communication between main synapse process and workers
+# Controls whether Synapse starts a replication listener necessary for workers.
+#
+# If Redis is available, we prefer to use that, instead of talking over Synapse's custom replication protocol.
+#
+# matrix_synapse_replication_listener_enabled: "{{ matrix_synapse_workers_enabled and not matrix_redis_enabled }}"
+# We force-enable this listener for now until we debug why communication via Redis fails.
+matrix_synapse_replication_listener_enabled: true
+
+# Port used for communication between main synapse process and workers.
+# Only gets used if `matrix_synapse_replication_listener_enabled: true`
 matrix_synapse_replication_http_port: 9093
 
 # Send ERROR logs to sentry.io for easier tracking

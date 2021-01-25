@@ -277,6 +277,8 @@ listeners:
 {% endif %}
 
 {% if matrix_synapse_workers_enabled %}
+
+{% if matrix_synapse_replication_listener_enabled %}
   # c.f. https://github.com/matrix-org/synapse/tree/master/docs/workers.md
   # HTTP replication: for the workers to send data to the main synapse process
   - port: {{ matrix_synapse_replication_http_port }}
@@ -284,6 +286,7 @@ listeners:
     type: http
     resources:
       - names: [replication]
+{% endif %}
 
 # c.f. https://github.com/matrix-org/synapse/tree/master/contrib/systemd-with-workers/README.md
 worker_app: synapse.app.homeserver
