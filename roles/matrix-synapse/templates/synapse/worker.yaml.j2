@@ -19,11 +19,12 @@ worker_listeners:
 {% elif matrix_synapse_worker_details.type in [ 'media_repository' ] %}
         - media
 {% endif %}
-
 {% endif %}
+{% if matrix_synapse_metrics_enabled %}
   - type: metrics
     bind_address: ['127.0.0.1']
     port: {{ matrix_synapse_worker_details.metrics_port }}
+{% endif %}
 
 {% if matrix_synapse_worker_details.type == 'frontend_proxy' %}
 worker_main_http_uri: http://matrix-synapse:8008
