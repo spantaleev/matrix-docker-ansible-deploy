@@ -111,6 +111,33 @@ Besides Synapse, you'd need other things - a Postgres database, likely the [Elem
 
 Using the playbook, you get all these components in a way that works well together out of the box.
 
+### What's different about this Ansible playbook compared to [EMnify/matrix-synapse-auto-deploy](https://github.com/EMnify/matrix-synapse-auto-deploy)?
+
+This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EMnify/matrix-synapse-auto-deploy) Ansible deployment, but:
+
+- this one is a complete Ansible playbook (instead of just a role), so it's **easier to run** - especially for folks not familiar with Ansible
+
+- this one installs and hooks together **a lot more Matrix-related services** for you (see above)
+
+- this one **can be executed more than once** without causing trouble
+
+- works on various distros: **CentOS** (7.0+), Debian-based distributions (**Debian** 9/Stretch+, **Ubuntu** 16.04+), **Archlinux**
+
+- this one installs everything in a single directory (`/matrix` by default) and **doesn't "contaminate" your server** with files all over the place
+
+- this one **doesn't necessarily take over** ports 80 and 443. By default, it sets up nginx for you there, but you can also [use your own webserver](configuring-playbook-own-webserver.md)
+
+- this one **runs everything in Docker containers**, so it's likely more predictable and less fragile (see [Docker images used by this playbook](container-images.md))
+
+- this one retrieves and automatically renews free [Let's Encrypt](https://letsencrypt.org/) **SSL certificates** for you
+
+- this one optionally can store the `media_store` content repository files on [Amazon S3](https://aws.amazon.com/s3/) (but defaults to storing files on the server's filesystem)
+
+- this one optionally **allows you to use an external PostgreSQL server** for Synapse's database (but defaults to running one in a container)
+
+- helps you **import data from a previous installation** (so you can migrate your manual virtualenv/Docker setup to a more managed one)
+
+- this one is actually **maintained**
 
 ## Server-related
 

@@ -21,6 +21,6 @@ matrix_architecture: "arm32"
 
 ## Implementation details
 
-For `amd64`, prebuilt images are used everywhere (because all images are available for this architecture).
+For `amd64`, prebuilt container images (see the [container images we use](container-images.md)) are used everywhere, because all images are available for this architecture.
 
 For other architectures, components which have a prebuilt image make use of it. If the component is not available for the specific architecture, [self-building](self-building.md) will be used. Not all components support self-building though, so your mileage may vary.
