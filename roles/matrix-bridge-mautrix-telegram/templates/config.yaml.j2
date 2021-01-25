@@ -13,7 +13,7 @@ homeserver:
 # Changing these values requires regeneration of the registration.
 appservice:
     # The address that the homeserver can use to connect to this appservice.
-    address: {{ matrix_mautrix_telegram_appservice_address }}
+    address: {{ matrix_mautrix_telegram_appservice_address|to_json }}
 
     # The hostname and port where this appservice should listen.
     hostname: 0.0.0.0
@@ -36,10 +36,10 @@ appservice:
         # Whether or not the public-facing endpoints should be enabled.
         enabled: true
         # The prefix to use in the public-facing endpoints.
-        prefix: {{ matrix_mautrix_telegram_public_endpoint }}
+        prefix: {{ matrix_mautrix_telegram_public_endpoint|to_json }}
         # The base URL where the public-facing endpoints are available. The prefix is not added
         # implicitly.
-        external: {{ matrix_mautrix_telegram_appservice_public_external }}
+        external: {{ matrix_mautrix_telegram_appservice_public_external|to_json }}
 
     # Provisioning API part of the web server for automated portal creation and fetching information.
     # Used by things like Dimension (https://dimension.t2bot.io/).
@@ -62,8 +62,8 @@ appservice:
     bot_avatar: mxc://maunium.net/tJCRmUyJDsgRNgqhOgoiHWbX
 
     # Authentication tokens for AS <-> HS communication.
-    as_token: "{{ matrix_mautrix_telegram_appservice_token }}"
-    hs_token: "{{ matrix_mautrix_telegram_homeserver_token }}"
+    as_token: {{ matrix_mautrix_telegram_appservice_token|to_json }}
+    hs_token: {{ matrix_mautrix_telegram_homeserver_token|to_json }}
 
 # Bridge config
 bridge:
@@ -330,10 +330,10 @@ bridge:
 # Telegram config
 telegram:
     # Get your own API keys at https://my.telegram.org/apps
-    api_id: {{ matrix_mautrix_telegram_api_id }}
-    api_hash: {{ matrix_mautrix_telegram_api_hash }}
+    api_id: {{ matrix_mautrix_telegram_api_id|to_json }}
+    api_hash: {{ matrix_mautrix_telegram_api_hash|to_json }}
     # (Optional) Create your own bot at https://t.me/BotFather
-    bot_token: {{ matrix_mautrix_telegram_bot_token }}
+    bot_token: {{ matrix_mautrix_telegram_bot_token|to_json }}
 
     # Telethon connection options.
     connection:
