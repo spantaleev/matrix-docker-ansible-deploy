@@ -22,7 +22,7 @@ else
 	# '/etc/systemd/system/matrix-synapse.service.wants/matrix-synapse-worker@generic_worker:18111.service'
 	# and stop these instantiated services as well.
 	for s in $(find {{ matrix_systemd_path }}/ -xtype f -name "matrix-*" -printf "%f\n" | grep -v '@.service' | uniq); do
-		systemctl stop $s
+		systemctl disable --now $s
 	done
 
 	# Get rid of regular service files, as well as symlinks like
