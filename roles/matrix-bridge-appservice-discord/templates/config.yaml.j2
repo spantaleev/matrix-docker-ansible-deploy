@@ -1,10 +1,10 @@
 #jinja2: lstrip_blocks: "True"
 bridge:
   # Domain part of the bridge, e.g. matrix.org
-  domain: {{ matrix_appservice_discord_bridge_domain }}
+  domain: {{ matrix_appservice_discord_bridge_domain|to_json }}
   # This should be your publically facing URL because Discord may use it to
   # fetch media from the media store.
-  homeserverUrl: {{ matrix_appservice_discord_bridge_homeserverUrl }}
+  homeserverUrl: {{ matrix_appservice_discord_bridge_homeserverUrl|to_json }}
   # Interval at which to process users in the 'presence queue'. If you have
   # 5 users, one user will be processed every 500 milliseconds according to the
   # value below. This has a minimum value of 250.
@@ -33,7 +33,7 @@ bridge:
 # Authentication configuration for the discord bot.
 auth:
   clientID: {{ matrix_appservice_discord_client_id|string|to_json }}
-  botToken: {{ matrix_appservice_discord_bot_token }}
+  botToken: {{ matrix_appservice_discord_bot_token|to_json }}
   # You must enable "Privileged Gateway Intents" in your bot settings on discord.com (e.g. https://discord.com/developers/applications/12345/bot)
   # for this to work
   usePrivilegedIntents: {{ matrix_appservice_discord_auth_usePrivilegedIntents|to_json }}
