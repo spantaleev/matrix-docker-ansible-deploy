@@ -13,8 +13,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-appservice-irc
-ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-appservice-irc
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-appservice-irc 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-appservice-irc 2>/dev/null'
 
 # Intentional delay, so that the homeserver (we likely depend on) can manage to start.
 ExecStartPre={{ matrix_host_command_sleep }} 5
@@ -36,8 +36,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-appservice-irc
 			{{ matrix_appservice_irc_docker_image }} \
 			-c 'node app.js -c /config/config.yaml -f /config/registration.yaml -p 9999'
 
-ExecStop=-{{ matrix_host_command_docker }} kill matrix-appservice-irc
-ExecStop=-{{ matrix_host_command_docker }} rm matrix-appservice-irc
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-appservice-irc 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-appservice-irc 2>/dev/null'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-appservice-irc

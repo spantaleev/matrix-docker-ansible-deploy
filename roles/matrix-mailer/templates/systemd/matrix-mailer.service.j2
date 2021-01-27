@@ -8,8 +8,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-mailer
-ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-mailer
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-mailer 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-mailer 2>/dev/null'
 
 # --hostname gives us a friendlier hostname than the default.
 # The real hostname is passed via a `HOSTNAME` environment variable though.
@@ -28,8 +28,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mailer \
 			{% endfor %}
 			{{ matrix_mailer_docker_image }}
 
-ExecStop=-{{ matrix_host_command_docker }} kill matrix-mailer
-ExecStop=-{{ matrix_host_command_docker }} rm matrix-mailer
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-mailer 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-mailer 2>/dev/null'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-mailer

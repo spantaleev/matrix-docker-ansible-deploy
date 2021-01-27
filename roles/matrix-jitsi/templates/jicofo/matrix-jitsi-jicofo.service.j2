@@ -10,8 +10,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-jitsi-jicofo
-ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-jitsi-jicofo
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-jitsi-jicofo 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-jitsi-jicofo 2>/dev/null'
 
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-jitsi-jicofo \
 			--log-driver=none \
@@ -23,8 +23,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-jitsi-jicofo \
 			{% endfor %}
 			{{ matrix_jitsi_jicofo_docker_image }}
 
-ExecStop=-{{ matrix_host_command_docker }} kill matrix-jitsi-jicofo
-ExecStop=-{{ matrix_host_command_docker }} rm matrix-jitsi-jicofo
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-jitsi-jicofo 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-jitsi-jicofo 2>/dev/null'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-jitsi-jicofo

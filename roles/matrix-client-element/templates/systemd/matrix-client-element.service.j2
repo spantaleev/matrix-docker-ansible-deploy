@@ -10,8 +10,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-client-element
-ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-client-element
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-client-element 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-client-element 2>/dev/null'
 
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-client-element \
 			--log-driver=none \
@@ -35,8 +35,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-client-element
 			{% endfor %}
 			{{ matrix_client_element_docker_image }}
 
-ExecStop=-{{ matrix_host_command_docker }} kill matrix-client-element
-ExecStop=-{{ matrix_host_command_docker }} rm matrix-client-element
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-client-element 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-client-element 2>/dev/null'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-client-element
