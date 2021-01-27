@@ -38,8 +38,9 @@ To [adjust room access privileges](#adjusting-room-access-privileges) or do vari
 
 There's the Discord bridge's guide for [setting privileges on bridge managed rooms](https://github.com/Half-Shot/matrix-appservice-discord/blob/master/docs/howto.md#set-privileges-on-bridge-managed-rooms). To do the same with our container setup, run the following command on the server:
 
-```
-docker exec -it matrix-appservice-discord /bin/sh -c 'cp /build/tools/adminme.js /tmp/adminme.js && cp /cfg/registration.yaml /tmp/discord-registration.yaml && cd /tmp && node /tmp/adminme.js -c /cfg/config.yaml -r "!ROOM_ID:SERVER" -u "@USER:SERVER" -p 100'
+```sh
+docker exec -it matrix-appservice-discord \
+/bin/sh -c 'cp /cfg/registration.yaml /tmp/discord-registration.yaml && cd /tmp && node /build/tools/adminme.js -c /cfg/config.yaml -m "!ROOM_ID:SERVER" -u "@USER:SERVER" -p 100'
 ```
 
 
