@@ -13,8 +13,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-dynamic-dns
-ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-dynamic-dns
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-dynamic-dns 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-dynamic-dns 2>/dev/null'
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-dynamic-dns \
 			--log-driver=none \
 			--network={{ matrix_docker_network }} \
@@ -26,8 +26,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-dynamic-dns \
 			{% endfor %}
 			{{ matrix_dynamic_dns_docker_image }}
 
-ExecStop=-{{ matrix_host_command_docker }} kill matrix-dynamic-dns
-ExecStop=-{{ matrix_host_command_docker }} rm matrix-dynamic-dns
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-dynamic-dns 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-dynamic-dns 2>/dev/null'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-dynamic-dns

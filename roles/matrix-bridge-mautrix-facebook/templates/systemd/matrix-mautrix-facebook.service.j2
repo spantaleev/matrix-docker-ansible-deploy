@@ -13,8 +13,13 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-mautrix-facebook
-ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-mautrix-facebook
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-mautrix-facebook 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-mautrix-facebook 2>/dev/null'
+
+# This bridge uses another mechanism for migrations now (migrations happen automatically during regular startup),
+# so going forward, running this alembic stuff will not necessary.
+# People who are upgrading from an older version of the bridge should go through this migration
+# first though, so we're keeping it around for now.
 ExecStartPre={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-facebook-db \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
@@ -41,8 +46,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-facebo
 			{{ matrix_mautrix_facebook_docker_image }} \
 			python3 -m mautrix_facebook -c /config/config.yaml
 
-ExecStop=-{{ matrix_host_command_docker }} kill matrix-mautrix-facebook
-ExecStop=-{{ matrix_host_command_docker }} rm matrix-mautrix-facebook
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-mautrix-facebook 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-mautrix-facebook 2>/dev/null'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-mautrix-facebook

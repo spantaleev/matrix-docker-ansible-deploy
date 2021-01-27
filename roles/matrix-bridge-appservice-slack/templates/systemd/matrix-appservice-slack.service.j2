@@ -13,8 +13,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-appservice-slack
-ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-appservice-slack
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-appservice-slack 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-appservice-slack 2>/dev/null'
 
 # Intentional delay, so that the homeserver (we likely depend on) can manage to start.
 ExecStartPre={{ matrix_host_command_sleep }} 5
@@ -35,8 +35,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-appservice-sla
 			{{ matrix_appservice_slack_docker_image }} \
 			node app.js -p {{matrix_appservice_slack_matrix_port}} -c /config/config.yaml -f /config/slack-registration.yaml
 
-ExecStop=-{{ matrix_host_command_docker }} kill matrix-appservice-slack
-ExecStop=-{{ matrix_host_command_docker }} rm matrix-appservice-slack
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-appservice-slack 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-appservice-slack 2>/dev/null'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-appservice-slack

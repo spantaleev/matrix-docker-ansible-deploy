@@ -10,8 +10,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-jitsi-web
-ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-jitsi-web
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-jitsi-web 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-jitsi-web 2>/dev/null'
 
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-jitsi-web \
 			--log-driver=none \
@@ -27,8 +27,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-jitsi-web \
 			{% endfor %}
 			{{ matrix_jitsi_web_docker_image }}
 
-ExecStop=-{{ matrix_host_command_docker }} kill matrix-jitsi-web
-ExecStop=-{{ matrix_host_command_docker }} rm matrix-jitsi-web
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-jitsi-web 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-jitsi-web 2>/dev/null'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-jitsi-web

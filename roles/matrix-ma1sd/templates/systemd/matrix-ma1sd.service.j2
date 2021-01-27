@@ -13,8 +13,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-ma1sd
-ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-ma1sd
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-ma1sd 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-ma1sd 2>/dev/null'
 
 # ma1sd writes an SQLite shared library (libsqlitejdbc.so) to /tmp and executes it from there,
 # so /tmp needs to be mounted with an exec option.
@@ -38,8 +38,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-ma1sd \
 			{% endfor %}
 			{{ matrix_ma1sd_docker_image }}
 
-ExecStop=-{{ matrix_host_command_docker }} kill matrix-ma1sd
-ExecStop=-{{ matrix_host_command_docker }} rm matrix-ma1sd
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-ma1sd 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-ma1sd 2>/dev/null'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-ma1sd

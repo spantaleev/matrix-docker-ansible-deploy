@@ -13,8 +13,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-registration
-ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-registration
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-registration 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-registration 2>/dev/null'
 
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-registration \
 			--log-driver=none \
@@ -32,8 +32,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-registration \
 			{{ matrix_registration_docker_image }} \
 			serve
 
-ExecStop=-{{ matrix_host_command_docker }} kill matrix-registration
-ExecStop=-{{ matrix_host_command_docker }} rm matrix-registration
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-registration 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-registration 2>/dev/null'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-registration

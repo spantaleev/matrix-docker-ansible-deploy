@@ -13,8 +13,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-synapse-admin
-ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-synapse-admin
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-synapse-admin 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-synapse-admin 2>/dev/null'
 
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-synapse-admin \
 			--log-driver=none \
@@ -32,8 +32,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-synapse-admin 
 			{% endfor %}
 			{{ matrix_synapse_admin_docker_image }}
 
-ExecStop=-{{ matrix_host_command_docker }} kill matrix-synapse-admin
-ExecStop=-{{ matrix_host_command_docker }} rm matrix-synapse-admin
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-synapse-admin 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-synapse-admin 2>/dev/null'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-synapse-admin

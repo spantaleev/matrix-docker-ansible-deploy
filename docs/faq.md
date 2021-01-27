@@ -21,11 +21,11 @@ For a lot more generic questions and answers, see the [matrix.org FAQ](https://m
 
 [Matrix](https://matrix.org/) is a new type of realtime communication (chat) network, the closest analogy to which is probably "email".
 
-You don't just use the "email" protocols (SMTP, POP3, IMAP) directly though. There's a some *server* somewhere which stores your data (`@gmail.com`, `@yahoo.com`, `@hotmail.com`, `@your-company.com`) and you access using these "email" protocol using use some *client* program (Outlook, Thunderbird, some website, etc).
+You don't just use the "email" protocols (SMTP, POP3, IMAP) directly though. There's a *server* somewhere which stores your data (`@gmail.com`, `@yahoo.com`, `@hotmail.com`, `@your-company.com`) and you access it by using these "email" protocols via some *client* program (Outlook, Thunderbird, some website, etc).
 
 In the world of the Matrix chat protocol, there are various client programs. The first and currently most full-featured one is called [Element](https://element.io/) (used to be called Riot.im and Vector.im in the past). There are [many other clients](https://matrix.org/clients/). You can switch clients as much as you want until you find the one that is right for you on a given platform (you may use Element on your desktop, but Fluffychat on your phone, etc).
 
-Matrix is also like email due to the fact that are many servers around the world which can all talk to each other (you can send email from `@gmail.com` addresses to `@yahoo.com` and `@hotmail.com` addresses). It's the same with Matrix (`@bob:his-domain.com` can talk to `@alice:her-domain.org`).
+Matrix is also like email due to the fact that there are many servers around the world which can all talk to each other (you can send email from `@gmail.com` addresses to `@yahoo.com` and `@hotmail.com` addresses). It's the same with Matrix (`@bob:his-domain.com` can talk to `@alice:her-domain.org`).
 
 If someone else is hosting your Matrix server (you being `@user:matrix.org` or some other public server like this), all you need is a Matrix client program, like Element.
 
@@ -37,11 +37,11 @@ In short:
 - Element is a client program you can use to participate on the Matrix chat network via some server (yours or someone else's). There are also [many other client programs](https://matrix.org/clients/).
 - Synapse is a server program you can use to host your very own Matrix server.
 
-This FAQ here mostly focuses on installing Matrix services using the Ansible automation tool. You can learn much more about Matrix in the [matrix.org FAQ](https://matrix.org/faq/).
+This FAQ here mostly focuses on installing various Matrix services using the Ansible automation tool. You can learn much more about Matrix in the [matrix.org FAQ](https://matrix.org/faq/).
 
 ## People I wish to talk to are not on Matrix. Can I talk to them?
 
-You most likely can. Besides Matrix-native chats, Matrix also supports this concept of "bridging", which allows you to plug other networks into it.
+You most likely can. Besides Matrix-native chats, Matrix also supports the concept of "bridging", which allows you to plug other networks into it.
 
 This Ansible playbook can help you install [tens of bridges for various networks](configuring-playbook.md#bridging-other-networks).
 
@@ -82,9 +82,9 @@ To learn more, see our [dedicated Ansible documentation page](ansible.md).
 
 ### Why use this playbook and not install Synapse and other things manually?
 
-There's various guides telling you how easy it is to install [Synapse](https://github.com/matrix-org/synapse).
+There are various guides telling you how easy it is to install [Synapse](https://github.com/matrix-org/synapse).
 
-Reading this Ansible playbook's documentation, you may also be thinking:
+Reading the documentation of this Ansible playbook, you may also be thinking:
 
 > I don't know what [Ansible](https://www.ansible.com/) is. I don't know what [Docker](https://www.docker.com/) is. This looks more complicated.
 
@@ -173,7 +173,7 @@ It also lets us have a unified setup which runs the same across various supporte
 
 ### Is Docker a hard requirement?
 
-Yes. See [Why don't you use Podman instead of Docker?](#is-docker-a-hard-requirement) for why we're not using another container runtime.
+Yes. See [Why don't you use Podman instead of Docker?](#why-dont-you-use-podman-instead-of-docker) for why we're not using another container runtime.
 
 All of our services run in containers. It's how we achieve predictability and also how we support tens of different services across lots of distros.
 
@@ -203,7 +203,7 @@ This largely depends on your use case. It's not so much the number of users that
 
 Federated rooms with lots of history and containing hundreds of other servers are very heavy CPU-wise and memory-wise.
 
-You can probably use a 1 CPU + 1GB memory server to host hundreds of local users just fine, but as soon as of them joins a federated room like `#matrix:matrix.org` (Matrix HQ) or some IRC-bridged room (say `##linux`), your server will get the need for a lot more power (at least 2GB RAM, etc).
+You can probably use a 1 CPU + 1GB memory server to host hundreds of local users just fine, but as soon as one of them joins a federated room like `#matrix:matrix.org` (Matrix HQ) or some IRC-bridged room (say `##linux`), your server will get the need for a lot more power (at least 2GB RAM, etc).
 
 Running Matrix on a server with 1GB of memory is possible (especially if you disable some not-so-important services). See [How do I optimize this setup for a low-power server?](#how-do-i-optimize-this-setup-for-a-low-power-server).
 
@@ -220,7 +220,7 @@ If your distro runs within an [LXC container](https://linuxcontainers.org/), you
 
 ### Why install my server at matrix.DOMAIN and not at the base DOMAIN?
 
-It's the same with email servers. Your email address is likely `name@company.com`, not `name@mail.company.com`, even though it's really `mail.company.com` that is really handling your data for `@company.com` email to work.
+It's the same with email servers. Your email address is likely `name@company.com`, not `name@mail.company.com`, even though it's `mail.company.com` that is really handling your data for `@company.com` email to work.
 
 Using a separate domain name is easier to manage (although it's a little hard to get right at first) and keeps your Matrix server isolated from your website (if you have one), from your email server (if you have one), etc.
 
@@ -230,7 +230,7 @@ If you'd really like to install Matrix services directly on the base domain, see
 
 ### I don't control anything on the base domain and can't set up delegation to matrix.DOMAIN. What do I do?
 
-If you're not in control of your base domain (or server handling it) at all, you can take a look at [How do I install on matrix.DOMAIN without involving the base DOMAIN?](#how-do-i-install-on-matrixdomain-without-involving-the-base-domain)
+If you're not in control of your base domain (or the server handling it) at all, you can take a look at [How do I install on matrix.DOMAIN without involving the base DOMAIN?](#how-do-i-install-on-matrixdomain-without-involving-the-base-domain)
 
 ### I can't set up HTTPS on the base domain. How will I get Matrix federating?
 
@@ -345,7 +345,7 @@ Refer to both of these for inspiration. Still, as mentioned in [Configuring the 
 ### I'd like to adjust some configuration which doesn't have a corresponding variable. How do I do it?
 
 The playbook doesn't aim to expose all configuration settings for all services using variables.
-Doing so would amount is to hundreds of variables that we have to create and maintain.
+Doing so would amount to hundreds of variables that we have to create and maintain.
 
 Instead, we only try to make some important basics configurable using dedicated variables you can see in each role.
 See [What configuration variables are available?](#what-configuration-variables-are-available).
@@ -398,9 +398,9 @@ Available service names can be seen by doing `ls /etc/systemd/system/matrix*.ser
 
 Some services also log to files in `/matrix/*/data/..`, but we're slowly moving away from that.
 
-We also disable Docker logging, so you can't use `docker logs matrix-*` either. We do this to prevent useless double (or even tripple) logging and to avoid having to rotate log files.
+We also disable Docker logging, so you can't use `docker logs matrix-*` either. We do this to prevent useless double (or even triple) logging and to avoid having to rotate log files.
 
-We just simply delegate logging to journald and it takes care of persistenec and expiring old data.
+We just simply delegate logging to journald and it takes care of persistence and expiring old data.
 
 Also see: [How long do systemd/journald logs persist for?](#how-long-do-systemdjournald-logs-persist-for)
 
@@ -438,7 +438,7 @@ If your previous installation is done in some other way (not using this Ansible 
 
 ### How do I back up the data on my server?
 
-We haven't document this properly yet, but the general advice is to:
+We haven't documented this properly yet, but the general advice is to:
 
 - back up Postgres by making a database dump. See [Backing up PostgreSQL](maintenance-postgres.md#backing-up-postgresql)
 

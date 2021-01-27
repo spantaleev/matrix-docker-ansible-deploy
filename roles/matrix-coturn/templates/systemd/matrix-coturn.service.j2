@@ -10,8 +10,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-coturn
-ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-coturn
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-coturn 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-coturn 2>/dev/null'
 
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-coturn \
 			--log-driver=none \
@@ -42,8 +42,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-coturn \
 			{{ matrix_coturn_docker_image }} \
 			-c /turnserver.conf
 
-ExecStop=-{{ matrix_host_command_docker }} kill matrix-coturn
-ExecStop=-{{ matrix_host_command_docker }} rm matrix-coturn
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-coturn 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-coturn 2>/dev/null'
 
 # This only reloads certificates (not other configuration).
 # See: https://github.com/coturn/coturn/pull/236
