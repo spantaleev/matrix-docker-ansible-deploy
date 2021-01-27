@@ -27,6 +27,8 @@ matrix_mautrix_whatsapp_systemd_wanted_services_list: []
 matrix_mautrix_whatsapp_appservice_token: ''
 matrix_mautrix_whatsapp_homeserver_token: ''
 
+matrix_mautrix_whatsapp_appservice_bot_username: whatsappbot
+
 
 # Database-related configuration fields.
 #
@@ -93,11 +95,14 @@ matrix_mautrix_whatsapp_registration_yaml: |
   url: {{ matrix_mautrix_whatsapp_appservice_address }}
   as_token: "{{ matrix_mautrix_whatsapp_appservice_token }}"
   hs_token: "{{ matrix_mautrix_whatsapp_homeserver_token }}"
-  sender_localpart: whatsappbot
+  # See https://github.com/tulir/mautrix-signal/issues/43
+  sender_localpart: _bot_{{ matrix_mautrix_whatsapp_appservice_bot_username|to_json }}
   rate_limited: false
   namespaces:
       users:
       - regex: '^@whatsapp_[0-9]+:{{ matrix_mautrix_whatsapp_homeserver_domain|regex_escape }}$'
         exclusive: true
+      - exclusive: true
+        regex: '^@{{ matrix_mautrix_whatsapp_appservice_bot_username|regex_escape }}:{{ matrix_mautrix_whatsapp_homeserver_domain|regex_escape }}$'
 
 matrix_mautrix_whatsapp_registration: "{{ matrix_mautrix_whatsapp_registration_yaml|from_yaml }}"

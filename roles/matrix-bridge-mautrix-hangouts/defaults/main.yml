@@ -71,6 +71,8 @@ matrix_mautrix_hangouts_appservice_database: "{{
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
 matrix_mautrix_hangouts_login_shared_secret: ''
 
+matrix_mautrix_hangouts_appservice_bot_username: hangoutsbot
+
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
@@ -101,8 +103,11 @@ matrix_mautrix_hangouts_registration_yaml: |
     users:
     - exclusive: true
       regex: '^@hangouts_.+:{{ matrix_mautrix_hangouts_homeserver_domain|regex_escape }}$'
+    - exclusive: true
+      regex: '^@{{ matrix_mautrix_hangouts_appservice_bot_username|regex_escape }}:{{ matrix_mautrix_hangouts_homeserver_domain|regex_escape }}$'
   url: {{ matrix_mautrix_hangouts_appservice_address }}
-  sender_localpart: hangoutsbot
+  # See https://github.com/tulir/mautrix-signal/issues/43
+  sender_localpart: _bot_{{ matrix_mautrix_hangouts_appservice_bot_username }}
   rate_limited: false
 
 matrix_mautrix_hangouts_registration: "{{ matrix_mautrix_hangouts_registration_yaml|from_yaml }}"
