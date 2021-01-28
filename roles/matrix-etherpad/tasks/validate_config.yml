@@ -1,7 +1,5 @@
-- name: Fail if required Etherpad settings not defined
+- name: Fail if Etherpad is enabled without the Dimension integrations manager
   fail:
     msg: >-
-      You need to define a required configuration setting (`{{ item }}`) for using Etherpad.
-  with_items:
-    -
-  when: "matrix_etherpad_enabled and vars[item] == ''"
+      To integrate Etherpad notes with Matrix rooms you need to set "matrix_dimension_enabled" to true
+  when: "not matrix_dimension_enabled|bool"
