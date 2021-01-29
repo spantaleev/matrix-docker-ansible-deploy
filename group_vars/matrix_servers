@@ -1412,6 +1412,27 @@ matrix_prometheus_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_en
 
 ######################################################################
 #
+# matrix-grafana
+#
+######################################################################
+
+matrix_grafana_enabled: false
+
+# Normally, matrix-nginx-proxy is enabled and nginx can reach Grafana over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# Grafana's HTTP port to the local host.
+matrix_grafana_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:3000' }}"
+
+######################################################################
+#
+# /matrix-grafana
+#
+######################################################################
+
+
+
+######################################################################
+#
 # matrix-registration
 #
 ######################################################################
