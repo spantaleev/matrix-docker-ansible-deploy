@@ -24,6 +24,7 @@ If you decide to go with the alternative method ([Server Delegation via a DNS SR
 | CNAME | `element`                    | -        | -      | -    | `matrix.<your-domain>` |
 | CNAME | `dimension` (*)              | -        | -      | -    | `matrix.<your-domain>` |
 | CNAME | `jitsi` (*)                  | -        | -      | -    | `matrix.<your-domain>` |
+| CNAME | `stats` (*)                  | -        | -      | -    | `matrix.<your-domain>` |
 | SRV   | `_matrix-identity._tcp`      | 10       | 0      | 443  | `matrix.<your-domain>` |
 
 
@@ -41,6 +42,8 @@ If you'd rather instruct the playbook not to install Element (`matrix_client_ele
 The `dimension.<your-domain>` subdomain may be necessary, because this playbook could install the [Dimension integrations manager](http://dimension.t2bot.io/) for you. Dimension installation is disabled by default, because it's only possible to install it after the other Matrix services are working (see [Setting up Dimension](configuring-playbook-dimension.md) later). If you do not wish to set up Dimension, feel free to skip the `dimension.<your-domain>` DNS record.
 
 The `jitsi.<your-domain>` subdomain may be necessary, because this playbook could install the [Jitsi video-conferencing platform](https://jitsi.org/) for you. Jitsi installation is disabled by default, because it may be heavy and is not a core required component. To learn how to install it, see our [Jitsi](configuring-playbook-jitsi.md) guide. If you do not wish to set up Jitsi, feel free to skip the `jitsi.<your-domain>` DNS record.
+
+The `stats.<your-domain>` subdomain may be necessary, because this playbook could install [Grafana](https://grafana.com/) and setup performance metrics for you. Grafana installation is disabled by default, it is not a core required component. To learn how to install it, see our [metrics and graphs guide](configuring-playbook-prometheus-grafana.md). If you do not wish to set up Grafana, feel free to skip the `stats.<your-domain>` DNS record. It is possible to install Prometheus without installing Grafana, this would also not require the `stats.<your-domain>` subdomain.
 
 
 ## `_matrix-identity._tcp` SRV record setup

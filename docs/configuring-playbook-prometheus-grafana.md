@@ -16,6 +16,8 @@ matrix_grafana_default_admin_user: yourname
 matrix_grafana_default_admin_password: securelongpassword
 ```
 
+The dashboards will by default be available on the `stats.<your-domain>` subdomain, proxied via Nginx.
+
 ## What does it do?
 
 Name | Description
