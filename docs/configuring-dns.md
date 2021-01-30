@@ -15,22 +15,25 @@ As we discuss in [Server Delegation](howto-server-delegation.md), there are 2 di
 This playbook mostly discusses the well-known file method, because it's easier to manage with regard to certificates.
 If you decide to go with the alternative method ([Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)), please be aware that the general flow that this playbook guides you through may not match what you need to do.
 
-
-## General outline of DNS settings you need to do
+## Required DNS settings for services enabled by default
 
 | Type  | Host                         | Priority | Weight | Port | Target                 |
 | ----- | ---------------------------- | -------- | ------ | ---- | ---------------------- |
 | A     | `matrix`                     | -        | -      | -    | `matrix-server-IP`     |
 | CNAME | `element`                    | -        | -      | -    | `matrix.<your-domain>` |
+| SRV   | `_matrix-identity._tcp`      | 10       | 0      | 443  | `matrix.<your-domain>` |
+
+Be mindful as to how long it will take for the DNS records to propagate.
+
+If you are using Cloudflare DNS, make sure to disable the proxy and set all records to `DNS only`. Otherwise, fetching certificates will fail.
+
+## Required DNS settings for optional services
+
+| Type  | Host                         | Priority | Weight | Port | Target                 |
+| ----- | ---------------------------- | -------- | ------ | ---- | ---------------------- |
 | CNAME | `dimension` (*)              | -        | -      | -    | `matrix.<your-domain>` |
 | CNAME | `jitsi` (*)                  | -        | -      | -    | `matrix.<your-domain>` |
 | CNAME | `stats` (*)                  | -        | -      | -    | `matrix.<your-domain>` |
-| SRV   | `_matrix-identity._tcp`      | 10       | 0      | 443  | `matrix.<your-domain>` |
-
-
-DNS records marked with `(*)` above are optional. They refer to services that will not be installed by default (see the section below). If you won't be installing these services, feel free to skip creating these DNS records. Also be mindful as to how long it will take for the DNS records to propagate.
-
->  If you are using Cloudflare DNS, make sure to disable the proxy and set all records to `DNS only`. Otherwise, fetching certificates will fail.
 
 ## Subdomains setup
 
