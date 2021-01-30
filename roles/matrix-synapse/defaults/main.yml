@@ -463,6 +463,10 @@ matrix_synapse_oidc_config:
       display_name_template: "{{ matrix_synapse_oidc_display_name_template }}"
 
 # Set trusted SSO resources, e.g. [ "https://element.matrix.domain" ]
-matrix_synapse_sso:
-  client_whitelist: []
+matrix_synapse_sso_client_whitelist: |
+  {{
+    []
+    +
+    ([matrix_server_fqn_element, "element://element"] if matrix_client_element_enabled else [])
+  }}
 

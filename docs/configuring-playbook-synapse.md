@@ -27,8 +27,7 @@ matrix_synapse_password_config_enabled: true
 Add this to allow seamless forwarding to element web app and element android app. Without this setting matrix will ask the user if he trusts the app he tries to login.  
 
 ```yaml
-matrix_synapse_sso:
-  client_whitelist:
+matrix_synapse_sso_client_whitelist:
   - "https://element.{{ matrix_domain }}/"
   - element://element
 
