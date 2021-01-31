@@ -1,6 +1,6 @@
 # Enabling metrics and graphs for your Matrix server (optional)
 
-It can be useful to have some (visual) insight in the performance of your homeserver.
+It can be useful to have some (visual) insight into the performance of your homeserver.
 
 You can enable this with the following settings in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
@@ -11,8 +11,13 @@ matrix_synapse_metrics_enabled: true
 matrix_prometheus_node_exporter_enabled: true
 
 matrix_grafana_enabled: true
-matrix_grafana_anonymous_access: true
+
+matrix_grafana_anonymous_access: false
+
 matrix_grafana_default_admin_user: yourname
+
+# Passwords containing special characters may be troublesome.
+# Changing the password subsequently won't work.
 matrix_grafana_default_admin_password: securelongpassword
 ```
 
@@ -26,7 +31,7 @@ Name | Description
 `matrix_synapse_metrics_enabled`|Enables metrics specific to Synapse
 `matrix_prometheus_node_exporter_enabled`|Node Exporter is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures
 `matrix_grafana_enabled`|Grafana is the visual component. It shows the dashboards with the graphs that we're interested in
-`matrix_grafana_anonymous_access`|By default you need to login to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
+`matrix_grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
 `matrix_grafana_default_admin_user`<br>`matrix_grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. If you feel this is insecure and you want to change it beforehand, you can do that here
 
 ## Security and privacy
