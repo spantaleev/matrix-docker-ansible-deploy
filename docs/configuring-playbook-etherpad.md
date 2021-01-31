@@ -2,13 +2,13 @@
 
 [Etherpad](https://etherpad.org) is is an open source collaborative text editor that can be embedded in a Matrix chat room using the [Dimension integrations manager](https://dimension.t2bot.io)
 
-When enabled together with Jitsi, it will be made available as an option during the conferences.
+When enabled together with the Jitsi audio/video conferencing system (see [our docs on Jitsi](configuring-playbook-jitsi.md)), it will be made available as an option during the conferences.
 
 ## Prerequisites
 
 For the self-hosted Etherpad instance to be available to your users, you must first enable and configure the **Dimension integrations manager** as described in [the playbook documentation](configuring-playbook-dimension.md)
 
-## Enable
+## Installing
 
 [Etherpad](https://etherpad.org) installation is disabled by default. You can enable it in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 

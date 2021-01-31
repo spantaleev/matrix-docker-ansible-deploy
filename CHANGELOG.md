@@ -1,3 +1,12 @@
+# 2021-01-31
+
+## Etherpad support
+
+Thanks to [@pushytoxin](https://github.com/pushytoxin), the playbook can now install the [Etherpad](https://etherpad.org) realtime collaborative text editor. It can be used in a [Jitsi](https://jitsi.org/) audio/video call or integrated as a widget into Matrix chat rooms via the [Dimension](https://dimension.t2bot.io) integration manager.
+
+To get it installed, follow [our Etherpad docs page](docs/configuring-playbook-etherpad.md).
+
+
 # 2021-01-22
 
 ## (Breaking Change) Postgres changes that require manual intervention

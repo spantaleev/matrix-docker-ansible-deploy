@@ -32,6 +32,8 @@ These services are not part of our default installation, but can be enabled by [
 
 - [ewoutp/goofys](https://hub.docker.com/r/ewoutp/goofys/) - the [Goofys](https://github.com/kahing/goofys) Amazon [S3](https://aws.amazon.com/s3/) file-system-mounting program (optional)
 
+- [etherpad/etherpad](https://hub.docker.com/r/etherpad/etherpad/) - the [Etherpad](https://etherpad.org) realtime collaborative text editor that can be used in a Jitsi audio/video call or integrated as a widget into Matrix chat rooms via the Dimension integration manager (optional)
+
 - [devture/email2matrix](https://hub.docker.com/r/devture/email2matrix/) - the [Email2Matrix](https://github.com/devture/email2matrix) email server, which can relay email messages to Matrix rooms (optional)
 
 - [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal/) - [Matrix Corporal](https://github.com/devture/matrix-corporal): reconciliator and gateway for a managed Matrix server (optional)
