@@ -76,6 +76,8 @@ matrix_host_command_fusermount: "/usr/bin/env fusermount"
 matrix_host_command_openssl: "/usr/bin/env openssl"
 matrix_host_command_systemctl: "/usr/bin/env systemctl"
 matrix_host_command_sh: "/usr/bin/env sh"
+matrix_host_command_iptables: "/usr/bin/env iptables"
+matrix_host_command_ip6tables: "/usr/bin/env ip6tables"
 
 matrix_ntpd_package: "ntp"
 matrix_ntpd_service: "{{ 'ntpd' if ansible_os_family == 'RedHat' or ansible_distribution == 'Archlinux' else 'ntp' }}"
@@ -114,6 +116,9 @@ matrix_client_element_e2ee_secure_backup_setup_methods: []
 
 # The Docker network that all services would be put into
 matrix_docker_network: "matrix"
+
+# Controls whether we'll enable IPv6 in docker
+matrix_docker_ipv6_enabled: true
 
 # Controls whether we'll preserve the vars.yml file on the Matrix server.
 # If you have a differently organized inventory, you may wish to disable this feature,

@@ -1,0 +1,16 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix ip6tables rule to enable IPv6 internet access from containers
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
+
+ExecStart={{ matrix_host_command_ip6tables }} -t nat -A POSTROUTING -s fd00::/80 ! -o docker0 -j MASQUERADE
+ExecStart={{ matrix_host_command_ip6tables }} -P FORWARD ACCEPT
+
+SyslogIdentifier=matrix-ip6tables
+
+[Install]
+WantedBy=multi-user.target
