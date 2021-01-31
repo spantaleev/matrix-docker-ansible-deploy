@@ -45,6 +45,11 @@ http {
 	keepalive_timeout 65;
 
 	#gzip on;
+	{# Map directive needed for proxied WebSocket upgrades #}
+	map $http_upgrade $connection_upgrade {
+		default upgrade;
+		''      close;
+	}
 
 	include /etc/nginx/conf.d/*.conf;
 }

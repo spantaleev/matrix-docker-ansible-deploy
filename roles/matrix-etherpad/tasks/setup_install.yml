@@ -1,0 +1,36 @@
+---
+
+- name: Ensure Etherpad base path exists
+  file:
+    path: "{{ matrix_etherpad_base_path }}"
+    state: directory
+    mode: 0770
+    owner: "{{ matrix_etherpad_user_uid }}"
+    group: "{{ matrix_etherpad_user_gid }}"
+
+- name: Ensure Etherpad config installed
+  copy:
+    content: "{{ matrix_etherpad_configuration|to_nice_json }}"
+    dest: "{{ matrix_etherpad_base_path }}/settings.json"
+    mode: 0640
+    owner: "{{ matrix_etherpad_user_uid }}"
+    group: "{{ matrix_etherpad_user_gid }}"
+
+- name: Ensure Etherpad image is pulled
+  docker_image:
+    name: "{{ matrix_etherpad_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_etherpad_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_etherpad_docker_image_force_pull }}"
+
+- name: Ensure matrix-etherpad.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-etherpad.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-etherpad.service"
+    mode: 0644
+  register: matrix_etherpad_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-etherpad.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_etherpad_systemd_service_result.changed|bool"

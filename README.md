@@ -81,6 +81,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) [Dimension](https://github.com/turt2live/matrix-dimension), an open source integrations manager for matrix clients - see [docs/configuring-playbook-dimension.md](docs/configuring-playbook-dimension.md) for setup documentation
 
+- (optional) [Etherpad](https://etherpad.org), an open source collaborative text editor - see [docs/configuring-playbook-etherpad.md](docs/configuring-playbook-etherpad.md) for setup documentation
+
 - (optional) [Jitsi](https://jitsi.org/), an open source video-conferencing platform - see [docs/configuring-playbook-jitsi.md](docs/configuring-playbook-jitsi.md) for setup documentation
 
 - (optional) [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot) for scheduling one-off & recurring reminders and alarms - see [docs/configuring-playbook-bot-matrix-reminder-bot.md](docs/configuring-playbook-bot-matrix-reminder-bot.md) for setup documentation
