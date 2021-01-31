@@ -27,9 +27,9 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-prometheus-nod
 			{% for arg in matrix_prometheus_node_exporter_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			--net="host" \
-			--pid="host" \
-			-v "/:/host:ro,rslave" \
+			--net=host \
+			--pid=host \
+			--mount type=bind,src=/,dst=/host,ro,bind-propagation=rslave \
 			{{ matrix_prometheus_node_exporter_docker_image }} \
 			--path.rootfs=/host
 
