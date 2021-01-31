@@ -34,20 +34,22 @@
         matrix_prometheus_scraper_node_targets: ["{{ matrix_docker_network_info.network.IPAM.Config[0].Gateway }}:9100"]
   when: "matrix_prometheus_scraper_node_enabled|bool and matrix_prometheus_scraper_node_targets|length == 0"
 
+
+- name: Download synapse-v2.rules
+  get_url:
+    url: "{{ matrix_prometheus_scraper_synapse_rules_download_url }}"
+    dest: "{{ matrix_prometheus_config_path }}/synapse-v2.rules"
+    force: true
+    mode: 0440
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  when: "matrix_prometheus_scraper_synapse_rules_enabled|bool"
+
 - name: Ensure prometheus.yml installed
   copy:
     content: "{{ matrix_prometheus_configuration|to_nice_yaml }}"
     dest: "{{ matrix_prometheus_config_path }}/prometheus.yml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-
-- name: Download synapse-v2.rules
-  get_url:
-    url: "{{ matrix_synapse_prometheus_rules_download_url }}"
-    dest: "{{ matrix_prometheus_config_path }}/synapse-v2.rules"
-    force: true
-    mode: 0440
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 

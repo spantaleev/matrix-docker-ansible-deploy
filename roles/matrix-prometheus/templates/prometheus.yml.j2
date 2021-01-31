@@ -6,7 +6,7 @@ global:
 
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
 rule_files:
-    {% if matrix_synapse_metrics_enabled %}
+    {% if matrix_prometheus_scraper_synapse_rules_enabled %}
     - 'synapse-v2.rules'
     {% endif %}
 
@@ -26,11 +26,11 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  {% if matrix_synapse_metrics_enabled %}
+  {% if matrix_prometheus_scraper_synapse_enabled %}
   - job_name: 'synapse'
     metrics_path: '/_synapse/metrics'
     static_configs:
-    - targets: ['matrix-synapse:{{ matrix_synapse_metrics_port }}']
+    - targets: {{ matrix_prometheus_scraper_synapse_targets|to_json }}
   {% endif %}
 
   {% if matrix_prometheus_scraper_node_enabled %}
