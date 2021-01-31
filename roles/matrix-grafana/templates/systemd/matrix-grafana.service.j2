@@ -21,6 +21,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-grafana \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
+			--read-only \
 			--network={{ matrix_docker_network }} \
 			{% if matrix_grafana_container_http_host_bind_port %}
 			-p {{ matrix_grafana_container_http_host_bind_port }}:3000 \
