@@ -36,5 +36,5 @@ scrape_configs:
   {% if matrix_prometheus_node_exporter_enabled %}
   - job_name: node
     static_configs:
-      - targets: ['172.18.0.1:9100']
+      - targets: ['{{ matrix_docker_network_info.network.IPAM.Config[0].Gateway }}:9100']
   {% endif %}
