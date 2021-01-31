@@ -37,8 +37,8 @@
       register: matrix_docker_network_info
 
     - set_fact:
-        matrix_prometheus_endpoint_node_targets: ["{{ matrix_docker_network_info.network.IPAM.Config[0].Gateway }}:9100"]
-  when: "matrix_prometheus_enabled|bool and matrix_prometheus_node_exporter_enabled|bool and matrix_prometheus_endpoint_node_targets|length == 0"
+        matrix_prometheus_scraper_node_targets: ["{{ matrix_docker_network_info.network.IPAM.Config[0].Gateway }}:9100"]
+  when: "matrix_prometheus_enabled|bool and matrix_prometheus_scraper_node_enabled|bool and matrix_prometheus_scraper_node_targets|length == 0"
 
 - name: Ensure prometheus.yml installed
   copy:

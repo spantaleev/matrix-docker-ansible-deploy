@@ -33,8 +33,8 @@ scrape_configs:
     - targets: ['matrix-synapse:{{ matrix_synapse_metrics_port }}']
   {% endif %}
 
-  {% if matrix_prometheus_node_exporter_enabled %}
+  {% if matrix_prometheus_scraper_node_enabled %}
   - job_name: node
     static_configs:
-      - targets: {{ matrix_prometheus_endpoint_node_targets|to_json }}
+      - targets: {{ matrix_prometheus_scraper_node_targets|to_json }}
   {% endif %}
