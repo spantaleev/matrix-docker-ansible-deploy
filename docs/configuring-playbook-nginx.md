@@ -34,8 +34,7 @@ Possible values are:
 - `"intermediate"` (**default**) - Recommended configuration for a general-purpose server
 - `"old"` - Services accessed by very old clients or libraries, such as Internet Explorer 8 (Windows XP), Java 6, or OpenSSL 0.9.8
 
-**Be really carefull when setting it to `"modern"`**. This could break comunication with other Matrix servers, limiting your federation posibilities. The
-[Federarion tester](https://federationtester.matrix.org/) also won't work.
+**Be really carefull when setting it to `"modern"`**. This could break comunication with other Matrix servers, limiting your federation posibilities.
 
 Besides changing the preset (`matrix_nginx_proxy_ssl_preset`), you can also directly override these 3 variables:
 
