@@ -14,7 +14,7 @@ matrix_mautrix_signal_enabled: true
 
 ## Set up Double Puppeting
 
-If you'd like to use [Double Puppeting](https://github.com/tulir/mautrix-whatsapp/wiki/Authentication#replacing-whatsapp-accounts-matrix-puppet-with-matrix-account) (hint: you most likely do), you have 2 ways of going about it.
+If you'd like to use [Double Puppeting](https://github.com/tulir/mautrix-signal/wiki/Authentication#double-puppeting) (hint: you most likely do), you have 2 ways of going about it.
 
 ### Method 1: automatically, by enabling Shared Secret Auth
 
