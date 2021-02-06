@@ -59,3 +59,17 @@ This will disable the access logging for nginx.
 ```yaml
 matrix_nginx_proxy_access_log_enabled: false
 ```
+
+## Additional configuration
+
+<!-- TODO: Introductory blurb -->
+
+<!-- TODO: Add section for including config files, however that's done -->
+
+Make sure that you have set the DNS configuration for the domains you want to include to point at your server.
+
+```yaml
+matrix_ssl_additional_domains_to_obtain_certificates_for:
+  - domain.one.example
+  - domain.two.example
+```
