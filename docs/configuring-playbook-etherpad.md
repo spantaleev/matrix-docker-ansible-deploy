@@ -24,3 +24,8 @@ The Dimension administrator users can configure the default URL template. The Di
 
 If you wish to disable the Etherpad chat button, you can do it by appending `?showChat=false` to the end of the pad URL, or the template.
 Example: `https://dimension.<your-domain>/etherpad/p/$roomId_$padName?showChat=false`
+
+## Known issues
+
+If your Etherpad widget fails to load, this might be due to Dimension generating a Pad name so long, the Etherpad app rejects it.
+`$roomId_$padName` can end up being longer than 50 characters. You can avoid having this problem by altering the template so it only contains the three word random identifier `$padName`.
