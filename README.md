@@ -67,7 +67,7 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [mx-puppet-skype](https://hub.docker.com/r/sorunome/mx-puppet-skype) for bridging your Matrix server to [Skype](https://www.skype.com) - see [docs/configuring-playbook-bridge-mx-puppet-skype.md](docs/configuring-playbook-bridge-mx-puppet-skype.md) for setup documentation
 
-- (optional) the [mx-puppet-slack](https://hub.docker.com/r/sorunome/mx-puppet-skype) for bridging your Matrix server to [Slack](https://slack.com) - see [docs/configuring-playbook-bridge-mx-puppet-slack.md](docs/configuring-playbook-bridge-mx-puppet-slack.md) for setup documentation
+- (optional) the [mx-puppet-slack](https://hub.docker.com/r/sorunome/mx-puppet-slack) for bridging your Matrix server to [Slack](https://slack.com) - see [docs/configuring-playbook-bridge-mx-puppet-slack.md](docs/configuring-playbook-bridge-mx-puppet-slack.md) for setup documentation
 
 - (optional) the [mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) bridge for Instagram-DMs ([Instagram](https://www.instagram.com/)) - see [docs/configuring-playbook-bridge-mx-puppet-instagram.md](docs/configuring-playbook-bridge-mx-puppet-instagram.md) for setup documentation
 
