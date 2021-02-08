@@ -29,6 +29,7 @@ If you decide to go with the alternative method ([Server Delegation via a DNS SR
 
 DNS records marked with `(*)` above are optional. They refer to services that will not be installed by default (see the section below). If you won't be installing these services, feel free to skip creating these DNS records. Also be mindful as to how long it will take for the DNS records to propagate.
 
+>  If you are using Cloudflare DNS, make sure to disable the proxy and set all records to `DNS only`. Otherwise, fetching certificates will fail.
 
 ## Subdomains setup
 
