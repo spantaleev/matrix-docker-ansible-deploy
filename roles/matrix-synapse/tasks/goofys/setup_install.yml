@@ -8,18 +8,18 @@
 # This will throw a Permission Denied error if already mounted
 - name: Check Matrix Goofys external storage mountpoint path
   stat:
-    path: "{{ matrix_synapse_media_store_path }}"
-  register: local_path_matrix_synapse_media_store_path_stat
+    path: "{{ matrix_s3_media_store_path }}"
+  register: local_path_matrix_s3_media_store_path_stat
   ignore_errors: yes
 
 - name: Ensure Matrix Goofys external storage mountpoint exists
   file:
-    path: "{{ matrix_synapse_media_store_path }}"
+    path: "{{ matrix_s3_media_store_path }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: "not local_path_matrix_synapse_media_store_path_stat.failed and not local_path_matrix_synapse_media_store_path_stat.stat.exists"
+  when: "not local_path_matrix_s3_media_store_path_stat.failed and not local_path_matrix_s3_media_store_path_stat.stat.exists"
 
 - name: Ensure goofys environment variables file created
   template:

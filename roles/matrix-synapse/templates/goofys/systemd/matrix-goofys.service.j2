@@ -16,7 +16,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name %n \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--mount type=bind,src=/etc/passwd,dst=/etc/passwd,ro \
 			--mount type=bind,src=/etc/group,dst=/etc/group,ro \
-			--mount type=bind,src={{ matrix_synapse_media_store_path }},dst=/s3,bind-propagation=shared \
+			--mount type=bind,src={{ matrix_s3_media_store_path }},dst=/s3,bind-propagation=shared \
 			--security-opt apparmor:unconfined \
 			--cap-add mknod \
 			--cap-add sys_admin \
@@ -30,7 +30,7 @@ TimeoutStartSec=5min
 ExecStop=-{{ matrix_host_command_docker }} stop %n
 ExecStop=-{{ matrix_host_command_docker }} kill %n
 ExecStop=-{{ matrix_host_command_docker }} rm %n
-ExecStop=-{{ matrix_host_command_fusermount }} -u {{ matrix_synapse_media_store_path }}
+ExecStop=-{{ matrix_host_command_fusermount }} -u {{ matrix_s3_media_store_path }}
 Restart=always
 RestartSec=5
 SyslogIdentifier=matrix-goofys
