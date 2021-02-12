@@ -1,0 +1,80 @@
+---
+
+# If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
+# We don't want to fail in such cases.
+- name: Fail if matrix-synapse role already executed
+  fail:
+    msg: >-
+      The matrix-bridge-mautrix-amp role needs to execute before the matrix-synapse role.
+  when: "matrix_synapse_role_executed|default(False)"
+
+- name: Ensure Mautrix Amp image is pulled
+  docker_image:
+    name: "{{ matrix_mautrix_amp_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_mautrix_amp_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_amp_docker_image_force_pull }}"
+  when: matrix_mautrix_amp_enabled|bool
+
+- name: Ensure Mautrix Amp Puppeteer image is pulled
+  docker_image:
+    name: "{{ matrix_mautrix_amp_puppeteer_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_mautrix_amp_puppeteer_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_amp_puppeteer_docker_image_force_pull }}"
+  when: matrix_mautrix_amp_enabled|bool
+
+- name: Ensure Mautrix Amp paths exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_mautrix_amp_base_path }}"
+    - "{{ matrix_mautrix_amp_config_path }}"
+    - "{{ matrix_mautrix_amp_puppeteer_path }}"
+
+- name: Ensure mautrix-amp-puppeteer config.json installed
+  copy:
+    content: "{{ matrix_mautrix_amp_puppeteer_config|to_nice_json }}"
+    dest: "{{ matrix_mautrix_amp_puppeteer_path }}/config.json"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure mautrix-amp config.yaml installed
+  copy:
+    content: "{{ matrix_mautrix_amp_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_mautrix_amp_config_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure mautrix-amp registration.yaml installed
+  copy:
+    content: "{{ matrix_mautrix_amp_registration|to_nice_yaml }}"
+    dest: "{{ matrix_mautrix_amp_config_path }}/registration.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-mautrix-amp-puppeteer.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-mautrix-amp-puppeteer.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-mautrix-amp-puppeteer.service"
+    mode: 0644
+  register: matrix_mautrix_amp_puppeteer_systemd_service_result
+
+- name: Ensure matrix-mautrix-amp.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-mautrix-amp.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-mautrix-amp.service"
+    mode: 0644
+  register: matrix_mautrix_amp_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-mautrix-amp.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_mautrix_amp_systemd_service_result.changed or matrix_mautrix_amp_puppeteer_systemd_service_result.changed"

@@ -1,0 +1,45 @@
+---
+
+# Amp puppeteer service
+- name: Check existence of matrix-mautrix-amp-puppeteer service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-mautrix-amp-puppeteer.service"
+  register: matrix_mautrix_amp_puppeteer_service_stat
+
+- name: Ensure matrix-mautrix-amp-puppeteer is stopped
+  service:
+    name: matrix-mautrix-amp-puppeteer
+    state: stopped
+    daemon_reload: yes
+  when: "matrix_mautrix_amp_puppeteer_service_stat.stat.exists"
+
+- name: Ensure matrix-mautrix-amp-puppeteer.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-mautrix-amp-puppeteer.service"
+    state: absent
+  when: "matrix_mautrix_amp_puppeteer_service_stat.stat.exists"
+
+# Bridge service
+- name: Check existence of matrix-mautrix-amp service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-mautrix-amp.service"
+  register: matrix_mautrix_amp_service_stat
+
+- name: Ensure matrix-mautrix-amp is stopped
+  service:
+    name: matrix-mautrix-amp
+    state: stopped
+    daemon_reload: yes
+  when: "matrix_mautrix_amp_service_stat.stat.exists"
+
+- name: Ensure matrix-mautrix-amp.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-mautrix-amp.service"
+    state: absent
+  when: "matrix_mautrix_samp_service_stat.stat.exists"
+
+# All services
+- name: Ensure systemd reloaded after matrix-mautrix-amp.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_mautrix_amp_service_stat.stat.exists or matrix_mautrix_amp_puppeteer_service_stat.stat.exists"
