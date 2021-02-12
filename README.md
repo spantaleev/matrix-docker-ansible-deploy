@@ -71,11 +71,11 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) bridge for Instagram-DMs ([Instagram](https://www.instagram.com/)) - see [docs/configuring-playbook-bridge-mx-puppet-instagram.md](docs/configuring-playbook-bridge-mx-puppet-instagram.md) for setup documentation
 
-- (optional) the [mx-puppet-twitter](https://github.com/Sorunome/mx-puppet-twitter) bridge for Twitter-DMs ([Twitter](https://twitter.com/) - see [docs/configuring-playbook-bridge-mx-puppet-twitter.md](docs/configuring-playbook-bridge-mx-puppet-twitter.md) for setup documentation
+- (optional) the [mx-puppet-twitter](https://github.com/Sorunome/mx-puppet-twitter) bridge for Twitter-DMs ([Twitter](https://twitter.com/)) - see [docs/configuring-playbook-bridge-mx-puppet-twitter.md](docs/configuring-playbook-bridge-mx-puppet-twitter.md) for setup documentation
 
-- (optional) the [mx-puppet-discord](https://github.com/matrix-discord/mx-puppet-discord) bridge for [Discord](https://discordapp.com/)) - see [docs/configuring-playbook-bridge-mx-puppet-discord.md](docs/configuring-playbook-bridge-mx-puppet-discord.md) for setup documentation
+- (optional) the [mx-puppet-discord](https://github.com/matrix-discord/mx-puppet-discord) bridge for [Discord](https://discordapp.com/) - see [docs/configuring-playbook-bridge-mx-puppet-discord.md](docs/configuring-playbook-bridge-mx-puppet-discord.md) for setup documentation
 
-- (optional) the [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) bridge for [Steam](https://steamapp.com/)) - see [docs/configuring-playbook-bridge-mx-puppet-steam.md](docs/configuring-playbook-bridge-mx-puppet-steam.md) for setup documentation
+- (optional) the [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) bridge for [Steam](https://steamapp.com/) - see [docs/configuring-playbook-bridge-mx-puppet-steam.md](docs/configuring-playbook-bridge-mx-puppet-steam.md) for setup documentation
 
 - (optional) [Email2Matrix](https://github.com/devture/email2matrix) for relaying email messages to Matrix rooms - see [docs/configuring-playbook-email2matrix.md](docs/configuring-playbook-email2matrix.md) for setup documentation
 
@@ -90,6 +90,8 @@ Using this playbook, you can get the following services configured on your serve
 - (optional) [synapse-admin](https://github.com/Awesome-Technologies/synapse-admin), a web UI tool for administrating users and rooms on your Matrix server - see [docs/configuring-playbook-synapse-admin.md](docs/configuring-playbook-synapse-admin.md) for setup documentation
 
 - (optional) [matrix-registration](https://github.com/ZerataX/matrix-registration), a simple python application to have a token based matrix registration - see [docs/configuring-playbook-matrix-registration.md](docs/configuring-playbook-matrix-registration.md) for setup documentation
+
+- (optional) the [Prometheus](https://prometheus.io) time-series database server, the Prometheus [node-exporter](https://prometheus.io/docs/guides/node-exporter/) host metrics exporter, and the [Grafana](https://grafana.com/) web UI - see [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](docs/configuring-playbook-prometheus-grafana.md) for setup documentation
 
 Basically, this playbook aims to get you up-and-running with all the basic necessities around Matrix, without you having to do anything else.
 

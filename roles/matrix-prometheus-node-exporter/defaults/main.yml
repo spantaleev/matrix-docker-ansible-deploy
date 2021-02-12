@@ -1,0 +1,21 @@
+# matrix-prometheus-node-exporter is an Prometheus exporter for machine metrics
+# See: https://prometheus.io/docs/guides/node-exporter/
+
+matrix_prometheus_node_exporter_enabled: false
+
+matrix_prometheus_node_exporter_docker_image: "docker.io/prom/node-exporter:v1.1.0"
+matrix_prometheus_node_exporter_docker_image_force_pull: "{{ matrix_prometheus_node_exporter_docker_image.endswith(':latest') }}"
+
+# A list of extra arguments to pass to the container
+matrix_prometheus_node_exporter_container_extra_arguments: []
+
+# List of systemd services that matrix-prometheus.service depends on
+matrix_prometheus_node_exporter_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-prometheus.service wants
+matrix_prometheus_node_exporter_systemd_wanted_services_list: []
+
+# Controls whether the matrix-prometheus container exposes its HTTP port (tcp/9100 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9100"), or empty string to not expose.
+matrix_prometheus_node_exporter_container_http_host_bind_port: ''

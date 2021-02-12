@@ -1,0 +1,40 @@
+#jinja2: lstrip_blocks: "True"
+global:
+  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+    {% if matrix_prometheus_scraper_synapse_rules_enabled %}
+    - 'synapse-v2.rules'
+    {% endif %}
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+
+    # Override the global default and scrape targets from this job every 5 seconds.
+    scrape_interval: 5s
+    scrape_timeout: 5s
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ['localhost:9090']
+
+  {% if matrix_prometheus_scraper_synapse_enabled %}
+  - job_name: 'synapse'
+    metrics_path: '/_synapse/metrics'
+    static_configs:
+    - targets: {{ matrix_prometheus_scraper_synapse_targets|to_json }}
+  {% endif %}
+
+  {% if matrix_prometheus_scraper_node_enabled %}
+  - job_name: node
+    static_configs:
+      - targets: {{ matrix_prometheus_scraper_node_targets|to_json }}
+  {% endif %}

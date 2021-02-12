@@ -1,3 +1,14 @@
+# 2021-02-12
+
+## (Potential Breaking Change) Monitoring/metrics support using Prometheus and Grafana
+
+Thanks to [@Peetz0r](https://github.com/Peetz0r), the playbook can now install a bunch of tools for monitoring your Matrix server: the [Prometheus](https://prometheus.io) time-series database server, the Prometheus [node-exporter](https://prometheus.io/docs/guides/node-exporter/) host metrics exporter, and the [Grafana](https://grafana.com/) web UI.
+
+To get get these installed, follow our [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](docs/configuring-playbook-prometheus-grafana.md) docs page.
+
+This update comes with a **potential breaking change** for people who were already exposing Synapse metrics (for consumption via another Prometheus installation). From now on, `matrix_synapse_metrics_enabled: true` no longer exposes metrics publicly via matrix-nginx-proxy (at `https://matrix.DOMAIN/_synapse/metrics`). To do so, you'd need to explicitly set `matrix_nginx_proxy_proxy_synapse_metrics: true`.
+
+
 # 2021-01-31
 
 ## Etherpad support

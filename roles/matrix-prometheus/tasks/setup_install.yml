@@ -1,0 +1,66 @@
+---
+
+- name: Ensure matrix-prometheus image is pulled
+  docker_image:
+    name: "{{ matrix_prometheus_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_prometheus_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_prometheus_docker_image_force_pull }}"
+
+- name: Ensure Prometheus paths exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_prometheus_base_path }}"
+    - "{{ matrix_prometheus_config_path }}"
+    - "{{ matrix_prometheus_data_path }}"
+
+- block:
+    # Well, this actually creates the network if it doesn't exist, but..
+    # The network should have been created by `matrix-base` already.
+    # We don't rely on that other call and its result, because it runs
+    # on `--tags=setup-all`, but will get skipped during `--tags=setup-prometheus`.
+    - name: Fetch Matrix Docker network details
+      docker_network:
+        name: "{{ matrix_docker_network }}"
+        driver: bridge
+      register: matrix_docker_network_info
+
+    - set_fact:
+        matrix_prometheus_scraper_node_targets: ["{{ matrix_docker_network_info.network.IPAM.Config[0].Gateway }}:9100"]
+  when: "matrix_prometheus_scraper_node_enabled|bool and matrix_prometheus_scraper_node_targets|length == 0"
+
+
+- name: Download synapse-v2.rules
+  get_url:
+    url: "{{ matrix_prometheus_scraper_synapse_rules_download_url }}"
+    dest: "{{ matrix_prometheus_config_path }}/synapse-v2.rules"
+    force: true
+    mode: 0440
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  when: "matrix_prometheus_scraper_synapse_rules_enabled|bool"
+
+- name: Ensure prometheus.yml installed
+  copy:
+    content: "{{ matrix_prometheus_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_prometheus_config_path }}/prometheus.yml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-prometheus.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-prometheus.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-prometheus.service"
+    mode: 0644
+  register: matrix_prometheus_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-prometheus.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_prometheus_systemd_service_result.changed|bool"

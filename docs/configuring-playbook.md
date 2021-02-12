@@ -35,6 +35,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Dynamic DNS](configuring-playbook-dynamic-dns.md) (optional)
 
+- [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md) (optional)
+
 ### Core service adjustments
 
 - [Configuring Synapse](configuring-playbook-synapse.md) (optional)

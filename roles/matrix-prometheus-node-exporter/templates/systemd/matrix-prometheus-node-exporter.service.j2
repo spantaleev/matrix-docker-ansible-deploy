@@ -1,0 +1,44 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=matrix-prometheus-node-exporter
+{% for service in matrix_prometheus_node_exporter_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_prometheus_node_exporter_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-prometheus-node-exporter 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-prometheus-node-exporter 2>/dev/null'
+
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-prometheus-node-exporter \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			{% if matrix_prometheus_node_exporter_container_http_host_bind_port %}
+			-p {{ matrix_prometheus_node_exporter_container_http_host_bind_port }}:9100 \
+			{% endif %}
+			{% for arg in matrix_prometheus_node_exporter_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			--net=host \
+			--pid=host \
+			--mount type=bind,src=/,dst=/host,ro,bind-propagation=rslave \
+			{{ matrix_prometheus_node_exporter_docker_image }} \
+			--path.rootfs=/host
+
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-prometheus-node-exporter 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-prometheus-node-exporter 2>/dev/null'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-prometheus-node-exporter
+
+[Install]
+WantedBy=multi-user.target
