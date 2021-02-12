@@ -7,8 +7,6 @@ You can enable this with the following settings in your configuration file (`inv
 ```yaml
 matrix_prometheus_enabled: true
 
-matrix_synapse_metrics_enabled: true
-
 matrix_prometheus_node_exporter_enabled: true
 
 matrix_grafana_enabled: true
@@ -25,22 +23,39 @@ matrix_grafana_default_admin_password: some_strong_password_chosen_by_you
 
 The dashboards will by default be available on the `stats.<your-domain>` subdomain, proxied via Nginx.
 
+
 ## What does it do?
 
 Name | Description
 -----|----------
 `matrix_prometheus_enabled`|Prometheus is a time series database. It holds all the data we're going to talk about.
-`matrix_synapse_metrics_enabled`|Tell the Synapse server to expose metrics. This also cascades to other variables, which makes Prometheus collect said metrics
 `matrix_prometheus_node_exporter_enabled`|Node Exporter is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures
-`matrix_grafana_enabled`|Grafana is the visual component. It shows the dashboards with the graphs that we're interested in
+`matrix_grafana_enabled`|Grafana is the visual component. It shows (on the `stats.<your-domain>` subdomain) the dashboards with the graphs that we're interested in
 `matrix_grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
 `matrix_grafana_default_admin_user`<br>`matrix_grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. If you feel this is insecure and you want to change it beforehand, you can do that here
+
 
 ## Security and privacy
 
 Metrics and resulting graphs can contain a lot of information. This includes system specs but also usage patterns. This applies especially to small personal/family scale homeservers. Someone might be able to figure out when you wake up and go to sleep by looking at the graphs over time. Think about this before enabling anonymous access. And you should really not forget to change your Grafana password.
 
 Most of our docker containers run with limited system access, but the `prometheus-node-exporter` has access to the host network stack and (readonly) root filesystem. This is required to report on them. If you don't like that, you can set `matrix_prometheus_node_exporter_enabled: false` (which is actually the default). You will still get Synapse metrics with this container disabled. Both of the dashboards will always be enabled, so you can still look at historical data after disabling either source.
+
+
+## Collecting metrics to an external Prometheus server
+
+If you wish, you could expose homeserver metrics without enabling (installing) Prometheus and Grafana via the playbook.
+
+To do this, you may be interested in the following variables:
+ `matrix_synapse_metrics_enabled` to `true`
+
+Name | Description
+-----|----------
+`matrix_synapse_metrics_enabled`|Set this to `true` to make Synapse expose metrics (locally, on the container network)
+`matrix_nginx_proxy_proxy_synapse_metrics`|Set this to `true` to make matrix-nginx-proxy expose the Synapse metrics at `https://matrix.DOMAIN/_synapse/metrics`
+`matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled`|Set this to `true` to password-protect (using HTTP Basic Auth) `https://matrix.DOMAIN/_synapse/metrics` (the username is always `prometheus`, the password is defined in `matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key`)
+`matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key`|Set this to a password to use for HTTP Basic Auth for protecting `https://matrix.DOMAIN/_synapse/metrics` (the username is always `prometheus` - it's not configurable)
+
 
 ## More inforation
 

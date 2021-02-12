@@ -992,7 +992,10 @@ matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "127.0.0.1:8
 
 matrix_nginx_proxy_container_federation_host_bind_port: "{{ matrix_federation_public_port }}"
 
-matrix_nginx_proxy_proxy_synapse_metrics: "{{ matrix_synapse_metrics_enabled }}"
+# This used to be hooked to `matrix_synapse_metrics_enabled`, but we don't do it anymore.
+# The fact that someone wishes to enable Synapse metrics does not necessarily mean they want to make them public.
+# A local Prometheus can consume them over the container network.
+matrix_nginx_proxy_proxy_synapse_metrics: false
 matrix_nginx_proxy_proxy_synapse_metrics_addr_with_container: "matrix-synapse:{{ matrix_synapse_metrics_port }}"
 matrix_nginx_proxy_proxy_synapse_metrics_addr_sans_container: "127.0.0.1:{{ matrix_synapse_metrics_port }}"
 
@@ -1299,6 +1302,9 @@ matrix_synapse_tls_certificate_path: ~
 matrix_synapse_tls_private_key_path: ~
 
 matrix_synapse_federation_port_openid_resource_required: "{{ not matrix_synapse_federation_enabled and (matrix_dimension_enabled or matrix_ma1sd_enabled) }}"
+
+# If someone instals Prometheus via the playbook, they most likely wish to monitor Synapse.
+matrix_synapse_metrics_enabled: "{{ matrix_prometheus_enabled }}"
 
 matrix_synapse_email_enabled: "{{ matrix_mailer_enabled }}"
 matrix_synapse_email_smtp_host: "matrix-mailer"
