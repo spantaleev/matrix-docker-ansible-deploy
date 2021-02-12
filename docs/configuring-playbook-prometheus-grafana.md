@@ -14,6 +14,7 @@ matrix_grafana_enabled: true
 matrix_grafana_anonymous_access: false
 
 # This has no relation to your Matrix user id. It can be any username you'd like.
+# Changing the username subsequently won't work.
 matrix_grafana_default_admin_user: some_username_chosen_by_you
 
 # Passwords containing special characters may be troublesome.
@@ -21,16 +22,16 @@ matrix_grafana_default_admin_user: some_username_chosen_by_you
 matrix_grafana_default_admin_password: some_strong_password_chosen_by_you
 ```
 
-The dashboards will by default be available on the `stats.<your-domain>` subdomain, proxied via Nginx.
+By default, a [Grafana](https://grafana.com/) web user-interface will be available at `https://stats.<your-domain>`.
 
 
 ## What does it do?
 
 Name | Description
 -----|----------
-`matrix_prometheus_enabled`|Prometheus is a time series database. It holds all the data we're going to talk about.
-`matrix_prometheus_node_exporter_enabled`|Node Exporter is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures
-`matrix_grafana_enabled`|Grafana is the visual component. It shows (on the `stats.<your-domain>` subdomain) the dashboards with the graphs that we're interested in
+`matrix_prometheus_enabled`|[Prometheus](https://prometheus.io) is a time series database. It holds all the data we're going to talk about.
+`matrix_prometheus_node_exporter_enabled`|[Node Exporter](https://prometheus.io/docs/guides/node-exporter/) is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures
+`matrix_grafana_enabled`|[Grafana](https://grafana.com/) is the visual component. It shows (on the `stats.<your-domain>` subdomain) the dashboards with the graphs that we're interested in
 `matrix_grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
 `matrix_grafana_default_admin_user`<br>`matrix_grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. If you feel this is insecure and you want to change it beforehand, you can do that here
 
@@ -44,10 +45,9 @@ Most of our docker containers run with limited system access, but the `prometheu
 
 ## Collecting metrics to an external Prometheus server
 
-If you wish, you could expose homeserver metrics without enabling (installing) Prometheus and Grafana via the playbook.
+If you wish, you could expose homeserver metrics without enabling (installing) Prometheus and Grafana via the playbook. This may be useful for hooking Matrix services to an external Prometheus/Grafana installation.
 
 To do this, you may be interested in the following variables:
- `matrix_synapse_metrics_enabled` to `true`
 
 Name | Description
 -----|----------
