@@ -974,6 +974,7 @@ matrix_nginx_proxy_proxy_matrix_enabled: true
 matrix_nginx_proxy_proxy_element_enabled: "{{ matrix_client_element_enabled }}"
 matrix_nginx_proxy_proxy_dimension_enabled: "{{ matrix_dimension_enabled }}"
 matrix_nginx_proxy_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
+matrix_nginx_proxy_proxy_grafana_enabled: "{{ matrix_grafana_enabled }}"
 
 matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: "{{ matrix_corporal_enabled and matrix_corporal_http_api_enabled }}"
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
@@ -991,7 +992,10 @@ matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "127.0.0.1:8
 
 matrix_nginx_proxy_container_federation_host_bind_port: "{{ matrix_federation_public_port }}"
 
-matrix_nginx_proxy_proxy_synapse_metrics: "{{ matrix_synapse_metrics_enabled }}"
+# This used to be hooked to `matrix_synapse_metrics_enabled`, but we don't do it anymore.
+# The fact that someone wishes to enable Synapse metrics does not necessarily mean they want to make them public.
+# A local Prometheus can consume them over the container network.
+matrix_nginx_proxy_proxy_synapse_metrics: false
 matrix_nginx_proxy_proxy_synapse_metrics_addr_with_container: "matrix-synapse:{{ matrix_synapse_metrics_port }}"
 matrix_nginx_proxy_proxy_synapse_metrics_addr_sans_container: "127.0.0.1:{{ matrix_synapse_metrics_port }}"
 
@@ -1023,6 +1027,8 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     ([matrix_server_fqn_dimension] if matrix_dimension_enabled else [])
     +
     ([matrix_server_fqn_jitsi] if matrix_jitsi_enabled else [])
+    +
+    ([matrix_server_fqn_grafana] if matrix_grafana_enabled else [])
     +
     ([matrix_domain] if matrix_nginx_proxy_base_domain_serving_enabled else [])
   }}
@@ -1297,6 +1303,9 @@ matrix_synapse_tls_private_key_path: ~
 
 matrix_synapse_federation_port_openid_resource_required: "{{ not matrix_synapse_federation_enabled and (matrix_dimension_enabled or matrix_ma1sd_enabled) }}"
 
+# If someone instals Prometheus via the playbook, they most likely wish to monitor Synapse.
+matrix_synapse_metrics_enabled: "{{ matrix_prometheus_enabled }}"
+
 matrix_synapse_email_enabled: "{{ matrix_mailer_enabled }}"
 matrix_synapse_email_smtp_host: "matrix-mailer"
 matrix_synapse_email_smtp_port: 8025
@@ -1363,6 +1372,75 @@ matrix_synapse_admin_container_self_build: "{{ matrix_architecture != 'amd64' }}
 ######################################################################
 #
 # /matrix-synapse-admin
+#
+######################################################################
+
+
+
+######################################################################
+#
+# matrix-prometheus-node-exporter
+#
+######################################################################
+
+matrix_prometheus_node_exporter_enabled: false
+
+# Normally, matrix-nginx-proxy is enabled and nginx can reach Prometheus Node Exporter over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# Prometheus' HTTP port to the local host.
+matrix_prometheus_node_exporter_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9100' }}"
+
+######################################################################
+#
+# /matrix-prometheus-node-exporter
+#
+######################################################################
+
+
+
+######################################################################
+#
+# matrix-prometheus
+#
+######################################################################
+
+matrix_prometheus_enabled: false
+
+# Normally, matrix-nginx-proxy is enabled and nginx can reach Prometheus over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# Prometheus' HTTP port to the local host.
+matrix_prometheus_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9090' }}"
+
+matrix_prometheus_scraper_synapse_enabled: "{{ matrix_synapse_enabled and matrix_synapse_metrics_enabled }}"
+matrix_prometheus_scraper_synapse_targets: ['matrix-synapse:{{ matrix_synapse_metrics_port }}']
+matrix_prometheus_scraper_synapse_rules_synapse_tag: "{{ matrix_synapse_docker_image_tag }}"
+
+matrix_prometheus_scraper_node_enabled: "{{ matrix_prometheus_node_exporter_enabled }}"
+
+######################################################################
+#
+# /matrix-prometheus
+#
+######################################################################
+
+
+
+######################################################################
+#
+# matrix-grafana
+#
+######################################################################
+
+matrix_grafana_enabled: false
+
+# Normally, matrix-nginx-proxy is enabled and nginx can reach Grafana over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# Grafana's HTTP port to the local host.
+matrix_grafana_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:3000' }}"
+
+######################################################################
+#
+# /matrix-grafana
 #
 ######################################################################
 

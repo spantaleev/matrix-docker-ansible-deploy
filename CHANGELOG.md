@@ -1,3 +1,12 @@
+# 2021-02-12
+
+## Monitoring/metrics support using Prometheus and Grafana
+
+Thanks to [@Peetz0r](https://github.com/Peetz0r), the playbook can now install a bunch of tools for monitoring your Matrix server: the [Prometheus](https://prometheus.io) time-series database server, the Prometheus [node-exporter](https://prometheus.io/docs/guides/node-exporter/) host metrics exporter, and the [Grafana](https://grafana.com/) web UI.
+
+To get get these installed, follow our [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](docs/configuring-playbook-prometheus-grafana.md) docs page.
+
+
 # 2021-01-31
 
 ## Etherpad support

@@ -85,3 +85,9 @@ These services are not part of our default installation, but can be enabled by [
 - [anoa/matrix-reminder-bot](https://hub.docker.com/r/anoa/matrix-reminder-bot) - the [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot) bot for one-off & recurring reminders and alarms (optional)
 
 - [awesometechnologies/synapse-admin](https://hub.docker.com/r/awesometechnologies/synapse-admin) - the [synapse-admin](https://github.com/Awesome-Technologies/synapse-admin) web UI tool for administrating users and rooms on your Matrix server (optional)
+
+- [prom/prometheus](https://hub.docker.com/r/prom/prometheus/) - [Prometheus](https://github.com/prometheus/prometheus/) is a systems and service monitoring system
+
+- [prom/node-exporter](https://hub.docker.com/r/prom/node-exporter/) - [Prometheus Node Exporter](https://github.com/prometheus/node_exporter/) is an addon for Prometheus that gathers standard system metrics
+
+- [grafana/grafana](https://hub.docker.com/r/grafana/grafana/) - [Grafana](https://github.com/grafana/grafana/) is a graphing tool that works well with the above two images. Our playbook also adds two dashboards for [Synapse](https://github.com/matrix-org/synapse/tree/master/contrib/grafana) and  [Node Exporter](https://github.com/rfrail3/grafana-dashboards)

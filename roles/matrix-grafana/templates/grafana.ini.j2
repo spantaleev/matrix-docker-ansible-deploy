@@ -1,0 +1,20 @@
+[security]
+# default admin user, created on startup
+admin_user = {{ matrix_grafana_default_admin_user }}
+
+# default admin password, can be changed before first start of grafana,  or in profile settings
+admin_password = {{ matrix_grafana_default_admin_password }}
+
+[auth.anonymous]
+# enable anonymous access
+enabled = {{ matrix_grafana_anonymous_access }}
+
+# specify organization name that should be used for unauthenticated users
+org_name = {{ matrix_grafana_anonymous_access_org_name }}
+
+[dashboards]
+{% if matrix_synapse_metrics_enabled %}
+default_home_dashboard_path = /etc/grafana/dashboards/synapse.json
+{% else %}
+default_home_dashboard_path = /etc/grafana/dashboards/node-exporter-full.json
+{% endif %}

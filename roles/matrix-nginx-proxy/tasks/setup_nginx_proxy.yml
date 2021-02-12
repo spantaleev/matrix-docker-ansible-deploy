@@ -80,6 +80,13 @@
     mode: 0644
   when: matrix_nginx_proxy_proxy_jitsi_enabled|bool
 
+- name: Ensure Matrix nginx-proxy configuration for grafana domain exists
+  template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-grafana.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-grafana.conf"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_grafana_enabled|bool
+
 - name: Ensure Matrix nginx-proxy data directory for base domain exists
   file:
     path: "{{ matrix_nginx_proxy_data_path }}/matrix-domain"
@@ -182,6 +189,12 @@
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-jitsi.conf"
     state: absent
   when: "not matrix_nginx_proxy_proxy_jitsi_enabled|bool"
+
+- name: Ensure Matrix nginx-proxy configuration for grafana domain deleted
+  file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-grafana.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_grafana_enabled|bool"
 
 - name: Ensure Matrix nginx-proxy homepage for base domain deleted
   file:
