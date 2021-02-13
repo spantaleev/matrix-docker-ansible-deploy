@@ -30,7 +30,7 @@ To link your GroupMe account, go to [dev.groupme.com](https://dev.groupme.com/),
 link <access token>
 ```
 
-Once logged in, send `list` to the bot user to list the available rooms.
+Once logged in, send `listrooms` to the bot user to list the available rooms.
 
 Clicking rooms in the list will result in you receiving an invitation to the
 bridged room.
