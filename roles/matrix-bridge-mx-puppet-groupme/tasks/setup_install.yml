@@ -1,0 +1,127 @@
+---
+
+# If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
+# We don't want to fail in such cases.
+- name: Fail if matrix-synapse role already executed
+  fail:
+    msg: >-
+      The matrix-bridge-mx-puppet-groupme role needs to execute before the matrix-synapse role.
+  when: "matrix_synapse_role_executed|default(False)"
+
+- name: Ensure MX Puppet Groupme paths exist
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - { path: "{{ matrix_mx_puppet_groupme_base_path }}", when: true }
+    - { path: "{{ matrix_mx_puppet_groupme_config_path }}", when: true }
+    - { path: "{{ matrix_mx_puppet_groupme_data_path }}", when: true }
+    - { path: "{{ matrix_mx_puppet_groupme_docker_src_files_path }}", when: "{{ matrix_mx_puppet_groupme_container_image_self_build }}" }
+  when: matrix_mx_puppet_groupme_enabled|bool and item.when|bool
+
+- name: Check if an old database file already exists
+  stat:
+    path: "{{ matrix_mx_puppet_groupme_base_path }}/database.db"
+  register: matrix_mx_puppet_groupme_stat_database
+
+- name: (Data relocation) Ensure matrix-mx-puppet-groupme.service is stopped
+  service:
+    name: matrix-mx-puppet-groupme
+    state: stopped
+    daemon_reload: yes
+  failed_when: false
+  when: "matrix_mx_puppet_groupme_stat_database.stat.exists"
+
+- name: (Data relocation) Move mx-puppet-groupme database file to ./data directory
+  command: "mv {{ matrix_mx_puppet_groupme_base_path }}/database.db {{ matrix_mx_puppet_groupme_data_path }}/database.db"
+  when: "matrix_mx_puppet_groupme_stat_database.stat.exists"
+
+- set_fact:
+    matrix_mx_puppet_groupme_requires_restart: false
+
+- block:
+    - name: Check if an SQLite database already exists
+      stat:
+        path: "{{ matrix_mx_puppet_groupme_sqlite_database_path_local }}"
+      register: matrix_mx_puppet_groupme_sqlite_database_path_local_stat_result
+
+    - block:
+        - set_fact:
+            matrix_postgres_db_migration_request:
+              src: "{{ matrix_mx_puppet_groupme_sqlite_database_path_local }}"
+              dst: "{{ matrix_mx_puppet_groupme_database_connection_string }}"
+              caller: "{{ role_path|basename }}"
+              engine_variable_name: 'matrix_mx_puppet_groupme_database_engine'
+              engine_old: 'sqlite'
+              systemd_services_to_stop: ['matrix-mx-puppet-groupme.service']
+
+        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+
+        - set_fact:
+            matrix_mx_puppet_groupme_requires_restart: true
+      when: "matrix_mx_puppet_groupme_sqlite_database_path_local_stat_result.stat.exists|bool"
+  when: "matrix_mx_puppet_groupme_database_engine == 'postgres'"
+
+- name: Ensure MX Puppet Groupme image is pulled
+  docker_image:
+    name: "{{ matrix_mx_puppet_groupme_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_mx_puppet_groupme_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mx_puppet_groupme_docker_image_force_pull }}"
+  when: matrix_mx_puppet_groupme_enabled|bool and not matrix_mx_puppet_groupme_container_image_self_build
+
+- name: Ensure MX Puppet Groupme repository is present on self build
+  git:
+    repo: "{{ matrix_mx_puppet_groupme_container_image_self_build_repo }}"
+    dest: "{{ matrix_mx_puppet_groupme_docker_src_files_path }}"
+    force: "yes"
+  register: matrix_mx_puppet_groupme_git_pull_results
+  when: "matrix_mx_puppet_groupme_enabled|bool and matrix_mx_puppet_groupme_container_image_self_build"
+
+- name: Ensure MX Puppet Groupme Docker image is built
+  docker_image:
+    name: "{{ matrix_mx_puppet_groupme_docker_image }}"
+    source: build
+    force_source: "{{ matrix_mx_puppet_groupme_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_mx_puppet_groupme_docker_src_files_path }}"
+      pull: yes
+  when: "matrix_mx_puppet_groupme_enabled|bool and matrix_mx_puppet_groupme_container_image_self_build"
+
+- name: Ensure mx-puppet-groupme config.yaml installed
+  copy:
+    content: "{{ matrix_mx_puppet_groupme_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_mx_puppet_groupme_config_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure mx-puppet-groupme groupme-registration.yaml installed
+  copy:
+    content: "{{ matrix_mx_puppet_groupme_registration|to_nice_yaml }}"
+    dest: "{{ matrix_mx_puppet_groupme_config_path }}/registration.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-mx-puppet-groupme.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-mx-puppet-groupme.service.j2"
+    dest: "/etc/systemd/system/matrix-mx-puppet-groupme.service"
+    mode: 0644
+  register: matrix_mx_puppet_groupme_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-mx-puppet-groupme.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_mx_puppet_groupme_systemd_service_result.changed"
+
+- name: Ensure matrix-mx-puppet-groupme.service restarted, if necessary
+  service:
+    name: "matrix-mx-puppet-groupme.service"
+    state: restarted
+  when: "matrix_mx_puppet_groupme_requires_restart|bool"
