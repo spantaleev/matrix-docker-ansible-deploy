@@ -34,7 +34,7 @@
       --entrypoint=/bin/sh
       {{ matrix_postgres_docker_image_latest }}
       -c "cat /work/state-compressor.sql |
-      psql -v ON_ERROR_STOP=1 -h matrix-postgres"
+      psql -v ON_ERROR_STOP=1 -h matrix-postgres -d {{ matrix_synapse_database_database }}"
 
 - name: Import compression SQL into Postgres
   command: "{{ matrix_synapse_rust_synapse_compress_state_psql_import_command }}"

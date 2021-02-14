@@ -34,8 +34,7 @@ Possible values are:
 - `"intermediate"` (**default**) - Recommended configuration for a general-purpose server
 - `"old"` - Services accessed by very old clients or libraries, such as Internet Explorer 8 (Windows XP), Java 6, or OpenSSL 0.9.8
 
-**Be really carefull when setting it to `"modern"`**. This could break comunication with other Matrix servers, limiting your federation posibilities. The
-[Federarion tester](https://federationtester.matrix.org/) also won't work.
+**Be really carefull when setting it to `"modern"`**. This could break comunication with other Matrix servers, limiting your federation posibilities.
 
 Besides changing the preset (`matrix_nginx_proxy_ssl_preset`), you can also directly override these 3 variables:
 
@@ -59,4 +58,27 @@ This will disable the access logging for nginx.
 
 ```yaml
 matrix_nginx_proxy_access_log_enabled: false
+```
+
+## Additional configuration
+
+This playbook also allows for additional configuration to be applied to the nginx server.
+
+If you want this playbook to obtain and renew certificates for other domains, then you can set the `matrix_ssl_additional_domains_to_obtain_certificates_for` variable (as mentioned in the [Obtaining SSL certificates for additional domains](configuring-playbook-ssl-certificates.md#obtaining-ssl-certificates-for-additional-domains) documentation as well). Make sure that you have set the DNS configuration for the domains you want to include to point at your server.
+
+```yaml
+matrix_ssl_additional_domains_to_obtain_certificates_for:
+  - domain.one.example
+  - domain.two.example
+```
+
+You can include additional nginx configuration by setting the `matrix_nginx_proxy_proxy_http_additional_server_configuration_blocks` variable.
+
+```yaml
+matrix_nginx_proxy_proxy_http_additional_server_configuration_blocks:
+  - |
+    # These lines will be included in the nginx configuration.
+    # This is at the top level of the file, so you will need to define all of the `server { ... }` blocks.
+  - |
+    # For advanced use, have a look at the template files in `roles/matrix-nginx-proxy/templates/nginx/conf.d`
 ```

@@ -1,0 +1,47 @@
+# matrix-grafana is open source visualization and analytics software
+# See: https://github.com/matrix-org/synapse/blob/master/docs/metrics-howto.md
+
+matrix_grafana_enabled: false
+
+matrix_grafana_docker_image: "docker.io/grafana/grafana:7.4.0"
+matrix_grafana_docker_image_force_pull: "{{ matrix_grafana_docker_image.endswith(':latest') }}"
+
+# Not conditional, because when someone disables metrics
+# they might still want to look at the old existing data.
+# So it would be silly to delete the dashboard in such case.
+matrix_grafana_dashboard_download_urls:
+- "https://raw.githubusercontent.com/matrix-org/synapse/master/contrib/grafana/synapse.json"
+- "https://raw.githubusercontent.com/rfrail3/grafana-dashboards/master/prometheus/node-exporter-full.json"
+
+matrix_grafana_base_path: "{{ matrix_base_data_path }}/grafana"
+matrix_grafana_config_path: "{{ matrix_grafana_base_path }}/config"
+matrix_grafana_data_path: "{{ matrix_grafana_base_path }}/data"
+
+# Allow viewing Grafana without logging in
+matrix_grafana_anonymous_access: false
+
+# specify organization name that should be used for unauthenticated users
+# if you change this in the Grafana admin panel, this needs to be updated
+# to match to keep anonymous logins working
+matrix_grafana_anonymous_access_org_name: 'Main Org.'
+
+
+# default admin credentials, you are asked to change these on first login
+matrix_grafana_default_admin_user: admin
+matrix_grafana_default_admin_password: admin
+
+# A list of extra arguments to pass to the container
+matrix_grafana_container_extra_arguments: []
+
+# List of systemd services that matrix-grafana.service depends on
+matrix_grafana_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-grafana.service wants
+matrix_grafana_systemd_wanted_services_list: []
+
+# Controls whether the matrix-grafana container exposes its HTTP port (tcp/3000 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:3000"), or empty string to not expose.
+matrix_grafana_container_http_host_bind_port: ''
+
+

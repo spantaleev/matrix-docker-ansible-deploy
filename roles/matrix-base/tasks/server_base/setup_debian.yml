@@ -23,7 +23,14 @@
     repo: "deb [arch={{ matrix_debian_arch }}] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable"
     state: present
     update_cache: yes
-  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
+  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce' and not ansible_distribution_release == 'bullseye'
+
+- name: Ensure Docker repository is enabled (using Debian Buster on Debian Bullseye, for which there is no Docker yet)
+  apt_repository:
+    repo: "deb [arch={{ matrix_debian_arch }}] https://download.docker.com/linux/{{ ansible_distribution|lower }} buster stable"
+    state: present
+    update_cache: yes
+  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce' and ansible_distribution_release == 'bullseye'
 
 - name: Ensure APT packages are installed
   apt:

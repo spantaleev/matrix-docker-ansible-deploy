@@ -74,15 +74,12 @@ If you are hosting other domains on the Matrix machine, you can make the playboo
 To do that, simply define your own custom configuration like this:
 
 ```yaml
-# Note: we need to explicitly list the aforementioned Matrix domains that you use (Matrix, Element, Dimension).
-# In this example, we retrieve an extra certificate - one for the base domain (in the `matrix_domain` variable).
+# In this example, we retrieve 2 extra certificates,
+# one for the base domain (in the `matrix_domain` variable) and one for a hardcoded domain.
 # Adding any other additional domains (hosted on the same machine) is possible.
-matrix_ssl_domains_to_obtain_certificates_for:
-  - '{{ matrix_server_fqn_matrix }}'
-  - '{{ matrix_server_fqn_element }}'
-  - '{{ matrix_server_fqn_dimension }}'
-  - '{{ matrix_server_fqn_jitsi }}'
+matrix_ssl_additional_domains_to_obtain_certificates_for:
   - '{{ matrix_domain }}'
+  - 'another.domain.example.com'
 ```
 
 After redefining `matrix_ssl_domains_to_obtain_certificates_for`, to actually obtain certificates you should:
@@ -91,9 +88,9 @@ After redefining `matrix_ssl_domains_to_obtain_certificates_for`, to actually ob
 
 - re-run the SSL part of the playbook and restart all services: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-ssl,start`
 
-The certificate files would be available in `/matrix/ssl/config/live/<your-other-domain>/...`.
+The certificate files would be made available in `/matrix/ssl/config/live/<your-other-domain>/...`.
 
 For automated certificate renewal to work, each port `80` vhost for each domain you are obtaining certificates for needs to forward requests for `/.well-known/acme-challenge` to the certbot container we use for renewal.
 
 See how this is configured for the `matrix.` subdomain in `/matrix/nginx-proxy/conf.d/matrix-synapse.conf`
-Don't be alarmed if the above configuraiton file says port `8080`, instead of port `80`. It's due to port mapping due to our use of containers.
+Don't be alarmed if the above configuration file says port `8080`, instead of port `80`. It's due to port mapping due to our use of containers.
