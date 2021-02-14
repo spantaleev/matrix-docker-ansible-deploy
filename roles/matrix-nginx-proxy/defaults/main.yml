@@ -290,8 +290,12 @@ matrix_ssl_retrieval_method: "lets-encrypt"
 
 matrix_ssl_architecture: "amd64"
 
-# The list of domains that this role will obtain certificates for.
-matrix_ssl_domains_to_obtain_certificates_for: []
+# The full list of domains that this role will obtain certificates for.
+# This variable is likely redefined outside of the role, to include the domains that are necessary (depending on the services that are enabled).
+# To add additional domain names, consider using `matrix_ssl_additional_domains_to_obtain_certificates_for` instead.
+matrix_ssl_domains_to_obtain_certificates_for: "{{ matrix_ssl_additional_domains_to_obtain_certificates_for }}"
+
+# A list of additional domain names to obtain certificates for.
 matrix_ssl_additional_domains_to_obtain_certificates_for: []
 
 # Controls whether to obtain production or staging certificates from Let's Encrypt.

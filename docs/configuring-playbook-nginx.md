@@ -64,7 +64,7 @@ matrix_nginx_proxy_access_log_enabled: false
 
 This playbook also allows for additional configuration to be applied to the nginx server.
 
-If you want this playbook to obtain and renew certificates for other domains, then you can set the `matrix_ssl_additional_domains_to_obtain_certificates_for` variable. Make sure that you have set the DNS configuration for the domains you want to include to point at your server.
+If you want this playbook to obtain and renew certificates for other domains, then you can set the `matrix_ssl_additional_domains_to_obtain_certificates_for` variable (as mentioned in the [Obtaining SSL certificates for additional domains](configuring-playbook-ssl-certificates.md#obtaining-ssl-certificates-for-additional-domains) documentation as well). Make sure that you have set the DNS configuration for the domains you want to include to point at your server.
 
 ```yaml
 matrix_ssl_additional_domains_to_obtain_certificates_for:
@@ -72,7 +72,7 @@ matrix_ssl_additional_domains_to_obtain_certificates_for:
   - domain.two.example
 ```
 
-You can include additional nginx configuration by setting the `matrix_nginx_proxy_proxy_http_additional_server_configuration_blocks` variable. 
+You can include additional nginx configuration by setting the `matrix_nginx_proxy_proxy_http_additional_server_configuration_blocks` variable.
 
 ```yaml
 matrix_nginx_proxy_proxy_http_additional_server_configuration_blocks:
