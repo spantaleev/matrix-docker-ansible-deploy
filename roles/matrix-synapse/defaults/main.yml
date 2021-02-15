@@ -301,7 +301,6 @@ matrix_synapse_manhole_enabled: false
 # Enable support for Synapse workers
 matrix_synapse_workers_enabled: false
 
-
 # Controls whether the matrix-synapse container exposes the various worker ports
 # (see `port` and `metrics_port` in `matrix_synapse_workers_enabled_list`) outside of the container.
 #
@@ -309,23 +308,59 @@ matrix_synapse_workers_enabled: false
 # It takes "*" to signify "bind on all interfaces" ("0.0.0.0" is IPv4-only).
 matrix_synapse_workers_container_host_bind_address: ''
 
-# Default list of workers to spawn (order in accord to docs)
-# - no endpoints / doesn't need port mapping if port ends on 0
-# - single-instance-only if 2nd last digit of port number is 0
-matrix_synapse_workers_enabled_list:
-  - { type: generic_worker, port: 18111, metrics_port: 19111 }
-  - { type: generic_worker, port: 18112, metrics_port: 19112 }
-  - { type: generic_worker, port: 18113, metrics_port: 19113 }
-  - { type: generic_worker, port: 18114, metrics_port: 19114 }
-  - { type: generic_worker, port: 18115, metrics_port: 19115 }
-  - { type: generic_worker, port: 18116, metrics_port: 19116 }
-  - { type: pusher, port: 00, metrics_port: 19200 }
-  - { type: appservice, port: 00, metrics_port: 19300 }
-  - { type: federation_sender, port: 0, metrics_port: 19400 }
-  - { type: media_repository, port: 18551, metrics_port: 19551 }
-# disable until https://github.com/matrix-org/synapse/issues/8787 resolved
-# - { type: user_dir, port: 18661, metrics_port: 19661 }
-  - { type: frontend_proxy, port: 18771, metrics_port: 19771 }
+matrix_synapse_workers_generic_workers_count: 3
+matrix_synapse_workers_generic_workers_port_range_start: 18111
+matrix_synapse_workers_generic_workers_metrics_range_start: 19111
+
+# matrix_synapse_workers_pusher_workers_count can only be 0 or 1. More instances are not supported.
+matrix_synapse_workers_pusher_workers_count: 1
+matrix_synapse_workers_pusher_workers_metrics_range_start: 19200
+
+# matrix_synapse_workers_appservice_workers_count can only be 0 or 1. More instances are not supported.
+matrix_synapse_workers_appservice_workers_count: 1
+matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
+
+matrix_synapse_workers_federation_sender_workers_count: 1
+matrix_synapse_workers_federation_sender_workers_metrics_range_start: 19400
+
+matrix_synapse_workers_media_repository_workers_count: 1
+matrix_synapse_workers_media_repository_workers_port_range_start: 18551
+matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
+
+# Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
+matrix_synapse_workers_user_dir_workers_count: 0
+matrix_synapse_workers_user_dir_workers_port_range_start: 18661
+matrix_synapse_workers_user_dir_workers_metrics_range_start: 19661
+
+matrix_synapse_workers_frontend_proxy_workers_count: 1
+matrix_synapse_workers_frontend_proxy_workers_port_range_start: 18771
+matrix_synapse_workers_frontend_proxy_workers_metrics_range_start: 19771
+
+# Default list of workers to spawn.
+#
+# Unless you populate this manually, this list is dynamically generated
+# based on other variables above:
+# - `matrix_synapse_workers_*_workers_count`
+# - `matrix_synapse_workers_*_workers_port_range_start`
+# - `matrix_synapse_workers_*_workers_port_metrics_range_start`
+#
+# We advise that you use those variables and let this list be populated dynamically.
+# Doing that is simpler and also protects you from shooting yourself in the foot,
+# as certain workers can only be spawned just once.
+#
+# Example of what this needs to look like:
+# matrix_synapse_workers_enabled_list:
+#   - { type: generic_worker, port: 18111, metrics_port: 19111 }
+#   - { type: generic_worker, port: 18112, metrics_port: 19112 }
+#   - { type: generic_worker, port: 18113, metrics_port: 19113 }
+#   - { type: generic_worker, port: 18114, metrics_port: 19114 }
+#   - { type: generic_worker, port: 18115, metrics_port: 19115 }
+#   - { type: generic_worker, port: 18116, metrics_port: 19116 }
+#   - { type: pusher, port: 0, metrics_port: 19200 }
+#   - { type: appservice, port: 0, metrics_port: 19300 }
+#   - { type: federation_sender, port: 0, metrics_port: 19400 }
+#   - { type: media_repository, port: 18551, metrics_port: 19551 }
+matrix_synapse_workers_enabled_list: []
 
 # Redis information
 matrix_synapse_redis_enabled: false
