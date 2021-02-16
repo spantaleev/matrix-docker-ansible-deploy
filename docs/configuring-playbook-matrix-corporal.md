@@ -89,4 +89,4 @@ The following local filesystem paths are mounted in the `matrix-corporal` contai
 
 - `/matrix/corporal/cache` is mounted at `/var/cache/matrix-corporal` (read and write)
 
-As an example: you can create your own configuration files in `/matrix/corporal/config` and they will appear in `/etc/matrix-corporal` in the Docker container. Your configuration (stuff in `matrix_corporal_policy_provider_config`) needs to refer to these files via the local container path `/etc/matrix-corporal`
+As an example: you can create your own configuration files in `/matrix/corporal/config` and they will appear in `/etc/matrix-corporal` in the Docker container. Your configuration (stuff in `matrix_corporal_policy_provider_config`) needs to refer to these files via the local container paths - `/etc/matrix-corporal` (read-only), `/var/matrix-corporal` (read and write), `/var/cache/matrix-corporal` (read and write).
