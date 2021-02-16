@@ -19,10 +19,15 @@ matrix_etherpad_user_gid: '5001'
 # Controls whether the matrix-etherpad container exposes its HTTP port (tcp/9001 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9001"), or empty string to not expose.
-matrix_etherpad_container_http_host_bind_port: '9001'
+matrix_etherpad_container_http_host_bind_port: ''
 
 # A list of extra arguments to pass to the container
-matrix_etherpad_container_extra_arguments: []
+#
+# We assume that a reverse proxy is used and tell the container to trust it
+#   Details: https://github.com/ether/etherpad-lite/blob/develop/doc/docker.md
+matrix_etherpad_container_extra_arguments: [
+  '--env TRUST_PROXY=true'
+]
 
 matrix_etherpad_public_endpoint: '/etherpad'
 
