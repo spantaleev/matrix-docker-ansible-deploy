@@ -27,7 +27,7 @@ matrix_appservice_slack_control_room_id: "Your matrix admin room id"
 
 Note that the bot's domain is your server's domain **without the `matrix.` prefix.**
 
-5. Create a new Slack App [here](https://api.slack.com/apps).
+5. Create a Classic Slack App [here](https://api.slack.com/apps?new_classic_app=1).
 
     Name the app "matrixbot" (or anything else you'll remember).
 
