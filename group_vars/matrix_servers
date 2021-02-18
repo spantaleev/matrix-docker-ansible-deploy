@@ -774,8 +774,6 @@ matrix_etherpad_systemd_required_services_list: |
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
   }}
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_etherpad_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
 matrix_etherpad_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'etherpad.db') | to_uuid }}"
 
 ######################################################################
