@@ -7,6 +7,7 @@
   set_fact:
     worker:
       type: 'generic_worker'
+      instanceId: "{{ matrix_synapse_workers_generic_workers_port_range_start + item }}"
       port: "{{ matrix_synapse_workers_generic_workers_port_range_start + item }}"
       metrics_port: "{{ matrix_synapse_workers_generic_workers_metrics_range_start + item }}"
   register: "matrix_synapse_workers_list_results_generic_workers"
@@ -16,6 +17,7 @@
   set_fact:
     worker:
       type: 'federation_sender'
+      instanceId: "{{ item }}"
       port: 0
       metrics_port: "{{ matrix_synapse_workers_federation_sender_workers_metrics_range_start + item }}"
   register: "matrix_synapse_workers_list_results_federation_sender_workers"
@@ -26,6 +28,7 @@
   set_fact:
     worker:
       type: 'pusher'
+      instanceId: "{{ item }}"
       port: 0
       metrics_port: "{{ matrix_synapse_workers_pusher_workers_metrics_range_start + item }}"
   register: "matrix_synapse_workers_list_results_pusher_workers"
@@ -36,6 +39,7 @@
   set_fact:
     worker:
       type: 'appservice'
+      instanceId: "{{ item }}"
       port: 0
       metrics_port: "{{ matrix_synapse_workers_appservice_workers_metrics_range_start + item }}"
   register: "matrix_synapse_workers_list_results_appservice_workers"
@@ -45,6 +49,7 @@
   set_fact:
     worker:
       type: 'media_repository'
+      instanceId: "{{ matrix_synapse_workers_media_repository_workers_port_range_start + item }}"
       port: "{{ matrix_synapse_workers_media_repository_workers_port_range_start + item }}"
       metrics_port: "{{ matrix_synapse_workers_media_repository_workers_metrics_range_start + item }}"
   register: "matrix_synapse_workers_list_results_media_repository_workers"
@@ -54,6 +59,7 @@
   set_fact:
     worker:
       type: 'frontend_proxy'
+      instanceId: "{{ matrix_synapse_workers_frontend_proxy_workers_port_range_start + item }}"
       port: "{{ matrix_synapse_workers_frontend_proxy_workers_port_range_start + item }}"
       metrics_port: "{{ matrix_synapse_workers_frontend_proxy_workers_metrics_range_start + item }}"
   register: "matrix_synapse_workers_list_results_frontend_proxy_workers"
