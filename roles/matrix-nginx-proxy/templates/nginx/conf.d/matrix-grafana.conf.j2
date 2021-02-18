@@ -18,7 +18,11 @@
 			proxy_pass http://$backend;
 		{% else %}
 			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://127.0.0.1:3000;
+			{% if matrix_grafana_container_http_host_bind_port|length > 5 %}
+				proxy_pass http://{{matrix_grafana_container_http_host_bind_port}};
+			{% else %}
+				proxy_pass http://127.0.0.1:{{matrix_grafana_container_http_host_bind_port}};
+			{% endif %}
 		{% endif %}
 
 		proxy_set_header Host $host;
