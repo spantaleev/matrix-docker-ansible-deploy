@@ -45,7 +45,7 @@ matrix_appservice_webhooks_log_level: '<log_level>'
     "text": "Hello world!",
     "format": "plain",
     "displayName": "My Cool Webhook",
-    "avatarUrl": "http://i.imgur.com/IDOBtEJ.png"
+    "avatar_url": "http://i.imgur.com/IDOBtEJ.png"
 }
 ```
 
@@ -57,7 +57,7 @@ curl --header "Content-Type: application/json" \
 "text": "Hello world!",
 "format": "plain",
 "displayName": "My Cool Webhook",
-"avatarUrl": "http://i.imgur.com/IDOBtEJ.png"
+"avatar_url": "http://i.imgur.com/IDOBtEJ.png"
 }' \
 <the link you've gotten in 5.>
 ```
