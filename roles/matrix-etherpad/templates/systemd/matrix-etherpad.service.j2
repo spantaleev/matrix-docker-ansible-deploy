@@ -16,11 +16,6 @@ Environment="HOME={{ matrix_systemd_unit_home_path }}"
 ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-etherpad
 ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-etherpad
 
-# Fixup database ownership if it got changed somehow (during a server migration, etc.)
-{% if matrix_etherpad_database_engine == 'sqlite' %}
-ExecStartPre=-{{ matrix_host_command_chown }} {{ matrix_etherpad_user_uid }} {{ matrix_etherpad_sqlite_database_path_local }}
-{% endif %}
-
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-etherpad \
 			--log-driver=none \
 			--user={{ matrix_etherpad_user_uid }}:{{ matrix_etherpad_user_gid }} \

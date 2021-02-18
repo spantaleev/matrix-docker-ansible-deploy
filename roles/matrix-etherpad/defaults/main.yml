@@ -36,15 +36,8 @@ matrix_etherpad_base_url: "https://{{ matrix_server_fqn_dimension }}{{ matrix_et
 
 # Database-related configuration fields.
 #
-# Etherpad recommends using a dedicated database, and supports Sqlite only for development
-#
-# To use Postgres:
-# - change the engine (`matrix_etherpad_database_engine: 'postgres'`)
-# - adjust your database credentials via the `matrix_etherpad_postgres_*` variables
-matrix_etherpad_database_engine: 'sqlite'
-
-matrix_etherpad_sqlite_database_path_local: "{{ matrix_etherpad_base_path }}/etherpad.db"
-matrix_etherpad_sqlite_database_path_in_container: "/data/etherpad.db"
+# Etherpad requires a dedicated database
+matrix_etherpad_database_engine: 'postgres'
 
 matrix_etherpad_database_username: 'matrix_etherpad'
 matrix_etherpad_database_password: 'some-password'
