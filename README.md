@@ -53,6 +53,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [mautrix-hangouts](https://github.com/tulir/mautrix-hangouts) bridge for bridging your Matrix server to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts)
 
+- (optional) the [mautrix-instagram](https://github.com/tulir/mautrix-instagram) bridge for bridging your Matrix server to [Instagram](https://instagram.com/)
+
 - (optional) the [mautrix-signal](https://github.com/tulir/mautrix-signal) bridge for bridging your Matrix server to [Signal](https://www.signal.org/)
 
 - (optional) the [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) bridge for bridging your Matrix server to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat)

@@ -1,0 +1,234 @@
+#jinja2: lstrip_blocks: "True"
+# Homeserver details
+homeserver:
+  # The address that this appservice can use to connect to the homeserver.
+  address: {{ matrix_mautrix_instagram_homeserver_address }}
+  # The domain of the homeserver (for MXIDs, etc).
+  domain: {{ matrix_mautrix_instagram_homeserver_domain }}
+  # Whether or not to verify the SSL certificate of the homeserver.
+  # Only applies if address starts with https://
+  verify_ssl: true
+  # Whether or not the homeserver supports asmux-specific endpoints,
+  # such as /_matrix/client/unstable/net.maunium.asmux/dms for atomically
+  # updating m.direct.
+  asmux: false
+
+# Application service host/registration related details
+# Changing these values requires regeneration of the registration.
+appservice:
+  # The address that the homeserver can use to connect to this appservice.
+  address: {{ matrix_mautrix_instagram_appservice_address }}
+  # When using https:// the TLS certificate and key files for the address.
+  tls_cert: false
+  tls_key: false
+
+  # The hostname and port where this appservice should listen.
+  hostname: 0.0.0.0
+  port: 29330
+  # The maximum body size of appservice API requests (from the homeserver) in mebibytes
+  # Usually 1 is enough, but on high-traffic bridges you might need to increase this to avoid 413s
+  max_body_size: 1
+
+  # The full URI to the database. Only Postgres is currently supported.
+  database: {{ matrix_mautrix_instagram_appservice_database|to_json }}
+  # Additional arguments for asyncpg.create_pool()
+  # https://magicstack.github.io/asyncpg/current/api/index.html#asyncpg.pool.create_pool
+  database_opts:
+    min_size: 5
+    max_size: 10
+
+  # The unique ID of this appservice.
+  id: instagram
+  # Username of the appservice bot.
+  bot_username: {{ matrix_mautrix_instagram_appservice_bot_username|to_json }}
+  # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
+  # to leave display name/avatar as-is.
+  bot_displayname: instagram bridge bot
+  bot_avatar: mxc://maunium.net/JxjlbZUlCPULEeHZSwleUXQv
+
+  # Community ID for bridged users (changes registration file) and rooms.
+  # Must be created manually.
+  #
+  # Example: "+instagram:example.com". Set to false to disable.
+  community_id: false
+
+  # Whether or not to receive ephemeral events via appservice transactions.
+  # Requires MSC2409 support (i.e. Synapse 1.22+).
+  # You should disable bridge -> sync_with_custom_puppets when this is enabled.
+  ephemeral_events: false
+
+  # Authentication tokens for AS <-> HS communication.
+  as_token: "{{ matrix_mautrix_instagram_appservice_token }}"
+  hs_token: "{{ matrix_mautrix_instagram_homeserver_token }}"
+
+# Prometheus telemetry config. Requires prometheus-client to be installed.
+metrics:
+  enabled: false
+  listen_port: 8000
+
+instagram:
+  # Seed for generating devices. This is secret because the seed is used to generate
+  # device IDs, which can apparently be used to bypass two-factor authentication after
+  # logging out, because Instagram is insecure.
+  device_seed: generate
+
+# Bridge config
+bridge:
+  # Localpart template of MXIDs for Instagram users.
+  # {userid} is replaced with the user ID of the Instagram user.
+  username_template: "instagram_{userid}"
+  # Displayname template for Instagram users.
+  # {displayname} is replaced with the display name of the Instagram user.
+  # {username} is replaced with the username of the Instagram user.
+  displayname_template: "{username} (Instagram)"
+
+  # Maximum length of displayname
+  displayname_max_length: 100
+
+  # Maximum number of seconds since the last activity in a chat to automatically create portals.
+  portal_create_max_age: 86400
+  # Maximum number of chats to fetch for startup sync
+  chat_sync_limit: 100
+  # Whether or not to use /sync to get read receipts and typing notifications
+  # when double puppeting is enabled
+  sync_with_custom_puppets: true
+  # Whether or not to update the m.direct account data event when double puppeting is enabled.
+  # Note that updating the m.direct event is not atomic (except with mautrix-asmux)
+  # and is therefore prone to race conditions.
+  sync_direct_chat_list: false
+  # Allow using double puppeting from any server with a valid client .well-known file.
+  double_puppet_allow_discovery: false
+  # Servers to allow double puppeting from, even if double_puppet_allow_discovery is false.
+  double_puppet_server_map: {}
+  #    example.com: https://example.com
+  # Allow using double puppeting from any server with a valid client .well-known file.
+  double_puppet_allow_discovery: false
+  # Shared secrets for https://github.com/devture/matrix-synapse-shared-secret-auth
+  #
+  # If set, custom puppets will be enabled automatically for local users
+  # instead of users having to find an access token and run `login-matrix`
+  # manually.
+  # If using this for other servers than the bridge's server,
+  # you must also set the URL in the double_puppet_server_map.
+  login_shared_secret_map:
+    {{ matrix_mautrix_instagram_bridge_login_shared_secret_map|to_json }}
+  # Whether or not to update avatars when syncing all contacts at startup.
+  update_avatar_initial_sync: true
+  # Whether or not created rooms should have federation enabled.
+  # If false, created portal rooms will never be federated.
+  federate_rooms: true
+  # Settings for backfilling messages from Instagram.
+  backfill:
+    # Whether or not the Instagram users of logged in Matrix users should be
+    # invited to private chats when backfilling history from Instagram. This is
+    # usually needed to prevent rate limits and to allow timestamp massaging.
+    invite_own_puppet: true
+    # Maximum number of messages to backfill initially.
+    # Set to 0 to disable backfilling when creating portal.
+    initial_limit: 0
+    # Maximum number of messages to backfill if messages were missed while
+    # the bridge was disconnected.
+    # Set to 0 to disable backfilling missed messages.
+    missed_limit: 1000
+    # If using double puppeting, should notifications be disabled
+    # while the initial backfill is in progress?
+    disable_notifications: false
+  periodic_reconnect:
+    # Interval in seconds in which to automatically reconnect all users.
+    # This can be used to automatically mitigate the bug where Instagram stops sending messages.
+    # Set to -1 to disable periodic reconnections entirely.
+    interval: -1
+    # Whether or not the bridge should backfill chats when reconnecting.
+    resync: true
+    # Should even disconnected users be reconnected?
+    always: false  
+  # End-to-bridge encryption support options. These require matrix-nio to be installed with pip
+  # and login_shared_secret to be configured in order to get a device for the bridge bot.
+  #
+  # Additionally, https://github.com/matrix-org/synapse/pull/5758 is required if using a normal
+  # application service.
+  encryption:
+    # Allow encryption, work in group chat rooms with e2ee enabled
+    allow: false
+    # Default to encryption, force-enable encryption in all portals the bridge creates
+    # This will cause the bridge bot to be in private chats for the encryption to work properly.
+    default: false
+    # Options for automatic key sharing.
+    key_sharing:
+      # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
+      # You must use a client that supports requesting keys from other users to use this feature.
+      allow: false
+      # Require the requesting device to have a valid cross-signing signature?
+      # This doesn't require that the bridge has verified the device, only that the user has verified it.
+      # Not yet implemented.
+      require_cross_signing: false
+      # Require devices to be verified by the bridge?
+      # Verification by the bridge is not yet implemented.
+      require_verification: true
+  # Whether or not to explicitly set the avatar and room name for private
+  # chat portal rooms. This will be implicitly enabled if encryption.default is true.
+  private_chat_portal_meta: false
+  # Whether or not the bridge should send a read receipt from the bridge bot when a message has
+  # been sent to Instagram.
+  delivery_receipts: false
+  # Whether or not delivery errors should be reported as messages in the Matrix room.
+  delivery_error_reports: false
+  # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
+  # This field will automatically be changed back to false after it,
+  # except if the config file is not writable.
+  resend_bridge_info: false
+  # Whether or not unimportant bridge notices should be sent to the user.
+  # (e.g. connected, disconnected but will retry)
+  unimportant_bridge_notices: true
+
+  # The prefix for commands. Only required in non-management rooms.
+  command_prefix: "!ig"
+  # Permissions for using the bridge.
+  # Permitted values:
+  #       user - Use the bridge with puppeting.
+  #      admin - Use and administrate the bridge.
+  # Permitted keys:
+  #        * - All Matrix users
+  #   domain - All users on that homeserver
+  #     mxid - Specific user
+  permissions:
+    "{{ matrix_mautrix_instagram_homeserver_domain }}": user
+  # Provisioning API part of the web server for automated portal creation and fetching information.
+  # Used by things like mautrix-manager (https://github.com/tulir/mautrix-manager).
+  provisioning:
+    # Whether or not the provisioning API should be enabled.
+    enabled: true
+    # The prefix to use in the provisioning API endpoints.
+    prefix: /_matrix/provision/v1
+    # The shared secret to authorize users of the API.
+    # Set to "generate" to generate and save a new token.
+    shared_secret: generate
+
+# Python logging configuration.
+#
+# See section 16.7.2 of the Python documentation for more info:
+# https://docs.python.org/3.6/library/logging.config.html#configuration-dictionary-schema
+logging:
+  version: 1
+  formatters:
+    colored:
+      (): mautrix_instagram.util.ColorFormatter
+      format: "[%(asctime)s] [%(levelname)s@%(name)s] %(message)s"
+    normal:
+      format: "[%(asctime)s] [%(levelname)s@%(name)s] %(message)s"
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: colored
+  loggers:
+    mau:
+      level: DEBUG
+    mauigpapi:
+      level: DEBUG
+    paho:
+      level: INFO
+    aiohttp:
+      level: INFO
+  root:
+    level: DEBUG
+    handlers: [console]

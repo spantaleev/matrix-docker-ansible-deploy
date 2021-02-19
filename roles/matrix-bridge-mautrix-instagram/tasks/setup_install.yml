@@ -1,0 +1,80 @@
+---
+# If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
+# We don't want to fail in such cases.
+- name: Fail if matrix-synapse role already executed
+  fail:
+    msg: >-
+      The matrix-bridge-mautrix-instagram role needs to execute before the matrix-synapse role.
+  when: "matrix_synapse_role_executed|default(False)"
+
+- name: Ensure Mautrix instagram image is pulled
+  docker_image:
+    name: "{{ matrix_mautrix_instagram_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_mautrix_instagram_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_instagram_docker_image_force_pull }}"
+  when: matrix_mautrix_instagram_enabled|bool and not matrix_mautrix_instagram_container_image_self_build
+
+- name: Ensure Mautrix instagram paths exist
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - { path: "{{ matrix_mautrix_instagram_base_path }}", when: true }
+    - { path: "{{ matrix_mautrix_instagram_config_path }}", when: true }
+    - { path: "{{ matrix_mautrix_instagram_data_path }}", when: true }
+    - {
+        path: "{{ matrix_mautrix_instagram_docker_src_files_path }}",
+        when: "{{ matrix_mautrix_instagram_container_image_self_build }}",
+      }
+  when: item.when|bool
+
+- name: Ensure Mautrix instagram repository is present on self-build
+  git:
+    repo: "{{ matrix_mautrix_instagram_container_image_self_build_repo }}"
+    dest: "{{ matrix_mautrix_instagram_docker_src_files_path }}"
+    force: "yes"
+  register: matrix_mautrix_instagram_git_pull_results
+  when: "matrix_mautrix_instagram_enabled|bool and matrix_mautrix_instagram_container_image_self_build"
+
+- name: Ensure Mautrix instagram Docker image is built
+  docker_image:
+    name: "{{ matrix_mautrix_instagram_docker_image }}"
+    source: build
+    force_source: "{{ matrix_mautrix_instagram_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_mautrix_instagram_docker_src_files_path }}"
+      pull: yes
+  when: "matrix_mautrix_instagram_enabled|bool and matrix_mautrix_instagram_container_image_self_build|bool"
+
+- name: Ensure mautrix-instagram config.yaml installed
+  copy:
+    content: "{{ matrix_mautrix_instagram_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_mautrix_instagram_config_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure mautrix-instagram registration.yaml installed
+  copy:
+    content: "{{ matrix_mautrix_instagram_registration|to_nice_yaml }}"
+    dest: "{{ matrix_mautrix_instagram_config_path }}/registration.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-mautrix-instagram.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-mautrix-instagram.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-mautrix-instagram.service"
+    mode: 0644
+  register: matrix_mautrix_instagram_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-mautrix-instagram.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_mautrix_instagram_systemd_service_result.changed"
