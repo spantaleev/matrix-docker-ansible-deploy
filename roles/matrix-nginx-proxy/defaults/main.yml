@@ -99,6 +99,10 @@ matrix_nginx_proxy_access_log_enabled: true
 matrix_nginx_proxy_proxy_riot_compat_redirect_enabled: false
 matrix_nginx_proxy_proxy_riot_compat_redirect_hostname: "riot.{{ matrix_domain }}"
 
+# Controls whether proxying the Synapse domain should be done.
+matrix_nginx_proxy_proxy_synapse_enabled: false
+matrix_nginx_proxy_proxy_synapse_hostname: "matrix-nginx-proxy"
+
 # Controls whether proxying the Element domain should be done.
 matrix_nginx_proxy_proxy_element_enabled: false
 matrix_nginx_proxy_proxy_element_hostname: "{{ matrix_server_fqn_element }}"
@@ -150,8 +154,13 @@ matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key: ""
 
 # The addresses where the Matrix Client API is.
 # Certain extensions (like matrix-corporal) may override this in order to capture all traffic.
-matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "matrix-synapse:8008"
-matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "127.0.0.1:8008"
+matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "matrix-nginx-proxy:12080"
+matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "127.0.0.1:12080"
+
+# The addresses where the Matrix Client API is, when using Synapse.
+matrix_nginx_proxy_proxy_synapse_client_api_addr_with_container: "matrix-synapse:8008"
+matrix_nginx_proxy_proxy_synapse_client_api_addr_sans_container: "127.0.0.1:8008"
+
 # This needs to be equal or higher than the maximum upload size accepted by Synapse.
 matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: 50
 
@@ -189,37 +198,44 @@ matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain: ""
 
 # Controls whether proxying for the Matrix Federation API should be done.
 matrix_nginx_proxy_proxy_matrix_federation_api_enabled: false
-matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container: "matrix-synapse:8048"
-matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "localhost:8048"
+matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container: "matrix-nginx-proxy:12088"
+matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "localhost:12088"
 matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb: "{{ (matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb | int) * 3 }}"
 matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/fullchain.pem"
 matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate_key: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/privkey.pem"
 
+# The addresses where the Federation API is, when using Synapse.
+matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container: "matrix-synapse:8048"
+matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container: "localhost:8048"
+
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_nginx_proxy_tmp_directory_size_mb: "{{ (matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb | int) * 50 }}"
 
-# A list of strings containing additional configuration blocks to add to the nginx http's server configuration.
+# A list of strings containing additional configuration blocks to add to the nginx http's server configuration (nginx-http.conf).
 matrix_nginx_proxy_proxy_http_additional_server_configuration_blocks: []
 
-# A list of strings containing additional configuration blocks to add to the matrix synapse's server configuration.
+# A list of strings containing additional configuration blocks to add to the base matrix server configuration (matrix-domain.conf).
 matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: []
 
-# A list of strings containing additional configuration blocks to add to Riot's server configuration.
+# A list of strings containing additional configuration blocks to add to the synapse's server configuration (matrix-synapse.conf).
+matrix_nginx_proxy_proxy_synapse_additional_server_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to Riot's server configuration (matrix-riot-web.conf).
 matrix_nginx_proxy_proxy_riot_additional_server_configuration_blocks: []
 
-# A list of strings containing additional configuration blocks to add to Element's server configuration.
+# A list of strings containing additional configuration blocks to add to Element's server configuration (matrix-client-element.conf).
 matrix_nginx_proxy_proxy_element_additional_server_configuration_blocks: []
 
-# A list of strings containing additional configuration blocks to add to Dimension's server configuration.
+# A list of strings containing additional configuration blocks to add to Dimension's server configuration (matrix-dimension.conf).
 matrix_nginx_proxy_proxy_dimension_additional_server_configuration_blocks: []
 
-# A list of strings containing additional configuration blocks to add to Jitsi's server configuration.
+# A list of strings containing additional configuration blocks to add to Jitsi's server configuration (matrix-jitsi.conf).
 matrix_nginx_proxy_proxy_jitsi_additional_server_configuration_blocks: []
 
-# A list of strings containing additional configuration blocks to add to Grafana's server configuration.
+# A list of strings containing additional configuration blocks to add to Grafana's server configuration (matrix-grafana.conf).
 matrix_nginx_proxy_proxy_grafana_additional_server_configuration_blocks: []
 
-# A list of strings containing additional configuration blocks to add to the base domain server configuration.
+# A list of strings containing additional configuration blocks to add to the base domain server configuration (matrix-base-domain.conf).
 matrix_nginx_proxy_proxy_domain_additional_server_configuration_blocks: []
 
 # Specifies the SSL configuration that should be used for the SSL protocols and ciphers
@@ -331,3 +347,13 @@ matrix_ssl_pre_obtaining_required_service_start_wait_time_seconds: 60
 # nginx status page configurations.
 matrix_nginx_proxy_proxy_matrix_nginx_status_enabled: false
 matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses: ['{{ ansible_default_ipv4.address }}']
+
+
+# synapse worker activation and endpoint mappings
+matrix_nginx_proxy_synapse_workers_enabled: false
+matrix_nginx_proxy_synapse_workers_list: []
+matrix_nginx_proxy_synapse_generic_worker_client_server_locations: []
+matrix_nginx_proxy_synapse_generic_worker_federation_locations: []
+matrix_nginx_proxy_synapse_media_repository_locations: []
+matrix_nginx_proxy_synapse_user_dir_locations: []
+matrix_nginx_proxy_synapse_frontend_proxy_locations: []

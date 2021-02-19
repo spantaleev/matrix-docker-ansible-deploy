@@ -1,0 +1,36 @@
+---
+
+- name: Populate service facts
+  service_facts:
+
+- name: Ensure any worker services are stopped
+  service:
+    name: "{{ item.key }}"
+    state: stopped
+  with_dict: "{{ ansible_facts.services|default({})|dict2items|selectattr('key', 'match', 'matrix-synapse-worker-.+\\.service')|list|items2dict }}"
+
+- name: Find worker configs to be cleaned
+  find:
+    path: "{{ matrix_synapse_config_dir_path }}"
+    patterns: "worker.*.yaml"
+    use_regex: true
+  register: matrix_synapse_workers_current_config_files
+
+- name: Ensure previous worker configs are cleaned
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ matrix_synapse_workers_current_config_files.files }}"
+
+- name: Find worker systemd services to be cleaned
+  find:
+    path: "{{ matrix_systemd_path }}"
+    patterns: "matrix-synapse-worker.*.service"
+    use_regex: true
+  register: matrix_synapse_workers_current_systemd_services
+
+- name: Ensure previous worker systemd services are cleaned
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ matrix_synapse_workers_current_systemd_services.files }}"

@@ -1,6 +1,18 @@
+# Unless `matrix_synapse_workers_enabled_list` is explicitly defined,
+# we'll generate it dynamically.
+- import_tasks: "{{ role_path }}/tasks/synapse/workers/init.yml"
+  when: "matrix_synapse_enabled and matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list|length == 0"
+
 - set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-synapse.service'] }}"
   when: matrix_synapse_enabled|bool
+
+- name: Ensure systemd services for workers are injected
+  include_tasks: "{{ role_path }}/tasks/synapse/workers/util/inject_systemd_services_for_worker.yml"
+  with_items: "{{ matrix_synapse_workers_enabled_list }}"
+  loop_control:
+    loop_var: matrix_synapse_worker_details
+  when: matrix_synapse_enabled|bool and matrix_synapse_workers_enabled|bool
 
 - set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-goofys.service'] }}"

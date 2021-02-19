@@ -1,0 +1,70 @@
+#jinja2: lstrip_blocks: "True"
+
+{% macro render_vhost_directives() %}
+	root /nginx-data/matrix-domain;
+
+	gzip on;
+	gzip_types text/plain application/json;
+	{% for configuration_block in matrix_nginx_proxy_proxy_domain_additional_server_configuration_blocks %}
+		{{- configuration_block }}
+	{% endfor %}
+
+	location /.well-known/matrix {
+		root {{ matrix_static_files_base_path }};
+		{#
+			A somewhat long expires value is used to prevent outages
+			in case this is unreachable due to network failure.
+		#}
+		expires 4h;
+		default_type application/json;
+		add_header Access-Control-Allow-Origin *;
+	}
+{% endmacro %}
+
+server {
+	listen {{ 8080 if matrix_nginx_proxy_enabled else 80 }};
+
+	server_name {{ matrix_nginx_proxy_base_domain_hostname }};
+	server_tokens off;
+
+	{% if matrix_nginx_proxy_https_enabled %}
+		location /.well-known/acme-challenge {
+			{% if matrix_nginx_proxy_enabled %}
+				{# Use the embedded DNS resolver in Docker containers to discover the service #}
+				resolver 127.0.0.11 valid=5s;
+				set $backend "matrix-certbot:8080";
+				proxy_pass http://$backend;
+			{% else %}
+				{# Generic configuration for use outside of our container setup #}
+				proxy_pass http://127.0.0.1:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }};
+			{% endif %}
+		}
+
+		location / {
+			return 301 https://$http_host$request_uri;
+		}
+	{% else %}
+		{{ render_vhost_directives() }}
+	{% endif %}
+}
+
+{% if matrix_nginx_proxy_https_enabled %}
+server {
+	listen {{ 8443 if matrix_nginx_proxy_enabled else 443 }} ssl http2;
+	listen [::]:{{ 8443 if matrix_nginx_proxy_enabled else 443 }} ssl http2;
+
+	server_name {{ matrix_nginx_proxy_base_domain_hostname }};
+	server_tokens off;
+
+	ssl_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_base_domain_hostname }}/fullchain.pem;
+	ssl_certificate_key {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_base_domain_hostname }}/privkey.pem;
+
+	ssl_protocols {{ matrix_nginx_proxy_ssl_protocols }};
+	{% if matrix_nginx_proxy_ssl_ciphers != '' %}
+	ssl_ciphers {{ matrix_nginx_proxy_ssl_ciphers }};
+	{% endif %}
+	ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_prefer_server_ciphers }};
+
+	{{ render_vhost_directives() }}
+}
+{% endif %}

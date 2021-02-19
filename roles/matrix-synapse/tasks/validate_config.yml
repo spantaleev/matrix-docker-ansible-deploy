@@ -12,6 +12,16 @@
     - "matrix_synapse_database_password"
     - "matrix_synapse_database_database"
 
+- name: Fail if asking for more than 1 instance of single-instance workers
+  fail:
+    msg: >-
+      `{{ item }}` cannot be more than 1. This is a single-instance worker.
+  when: "vars[item]|int > 1"
+  with_items:
+    - "matrix_synapse_workers_appservice_workers_count"
+    - "matrix_synapse_workers_pusher_workers_count"
+    - "matrix_synapse_workers_federation_sender_workers_count"
+
 - name: (Deprecation) Catch and report renamed settings
   fail:
     msg: >-
