@@ -1,0 +1,10 @@
+---
+
+- name: Fail if required settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_mx_puppet_groupme_appservice_token"
+    - "matrix_mx_puppet_groupme_homeserver_token"
