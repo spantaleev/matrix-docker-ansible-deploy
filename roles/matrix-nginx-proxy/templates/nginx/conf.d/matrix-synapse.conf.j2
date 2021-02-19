@@ -14,7 +14,11 @@
 		ip_hash;
 
 		{% for worker in generic_workers %}
-		server "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.port }}";
+			{% if matrix_nginx_proxy_enabled %}
+				server "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.port }}";
+			{% else %}
+				server "127.0.0.1:{{ worker.port }}";
+			{% endif %}
 		{% endfor %}
 	}
 	{% endif %}
@@ -22,7 +26,11 @@
 	{% if frontend_proxy_workers %}
 	upstream frontend_proxy_upstream {
 		{% for worker in frontend_proxy_workers %}
-		server "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.port }}";
+			{% if matrix_nginx_proxy_enabled %}
+				server "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.port }}";
+			{% else %}
+				server "127.0.0.1:{{ worker.port }}";
+			{% endif %}
 		{% endfor %}
 	}
 	{% endif %}
@@ -30,7 +38,11 @@
 	{% if media_repository_workers %}
 	upstream media_repository_upstream {
 		{% for worker in media_repository_workers %}
-		server "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.port }}";
+			{% if matrix_nginx_proxy_enabled %}
+				server "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.port }}";
+			{% else %}
+				server "127.0.0.1:{{ worker.port }}";
+			{% endif %}
 		{% endfor %}
 	}
 	{% endif %}
@@ -38,7 +50,11 @@
 	{% if user_dir_workers %}
 	upstream user_dir_upstream {
 		{% for worker in user_dir_workers %}
-		server "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.port }}";
+			{% if matrix_nginx_proxy_enabled %}
+				server "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.port }}";
+			{% else %}
+				server "127.0.0.1:{{ worker.port }}";
+			{% endif %}
 		{% endfor %}
 	}
 	{% endif %}
