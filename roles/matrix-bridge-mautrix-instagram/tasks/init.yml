@@ -1,0 +1,23 @@
+- set_fact:
+    matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-mautrix-instagram.service'] }}"
+  when: matrix_mautrix_instagram_enabled|bool
+
+# If the matrix-synapse role is not used, these variables may not exist.
+- set_fact:
+    matrix_synapse_container_extra_arguments: >
+      {{ matrix_synapse_container_extra_arguments|default([]) }}
+      +
+      ["--mount type=bind,src={{ matrix_mautrix_instagram_config_path }}/registration.yaml,dst=/matrix-mautrix-instagram-registration.yaml,ro"]
+
+    matrix_synapse_app_service_config_files: >
+      {{ matrix_synapse_app_service_config_files|default([]) }}
+      +
+      {{ ["/matrix-mautrix-instagram-registration.yaml"] }}
+  when: matrix_mautrix_instagram_enabled|bool
+
+# ansible lower than 2.8, does not support docker_image build parameters
+# for self buildig it is explicitly needed, so we rather fail here
+- name: Fail if running on Ansible lower than 2.8 and trying self building
+  fail:
+    msg: "To self build Mautrix instagram image, you should usa ansible 2.8 or higher. E.g. pip contains such packages."
+  when: "ansible_version.major == 2 and ansible_version.minor < 8 and matrix_mautrix_instagram_container_image_self_build"
