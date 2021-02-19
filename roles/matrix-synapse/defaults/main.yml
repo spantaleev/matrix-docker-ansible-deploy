@@ -301,6 +301,35 @@ matrix_synapse_manhole_enabled: false
 # Enable support for Synapse workers
 matrix_synapse_workers_enabled: false
 
+# Specifies worker configuration that should be used when workers are enabled.
+#
+# The posible values (as seen in `matrix_synapse_workers_presets`) are:
+# - "little-federation-helper" - a very minimal worker configuration to improve federation performance
+# - "one-of-each" - one worker of each supported type
+#
+# You can override `matrix_synapse_workers_presets` to define your own presets, which is ill-advised, because it's fragile.
+# To use a more custom configuration, start with one of these presets as a base and configure `matrix_synapse_workers_*_count` variables manually, to suit your liking.
+matrix_synapse_workers_preset: one-of-each
+
+matrix_synapse_workers_presets:
+  little-federation-helper:
+    generic_workers_count: 0
+    pusher_workers_count: 0
+    appservice_workers_count: 0
+    federation_sender_workers_count: 1
+    media_repository_workers_count: 0
+    user_dir_workers_count: 0
+    frontend_proxy_workers_count: 0
+  one-of-each:
+    generic_workers_count: 1
+    pusher_workers_count: 1
+    appservice_workers_count: 1
+    federation_sender_workers_count: 1
+    media_repository_workers_count: 1
+    # Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
+    user_dir_workers_count: 0
+    frontend_proxy_workers_count: 1
+
 # Controls whether the matrix-synapse container exposes the various worker ports
 # (see `port` and `metrics_port` in `matrix_synapse_workers_enabled_list`) outside of the container.
 #
@@ -308,36 +337,36 @@ matrix_synapse_workers_enabled: false
 # It takes "*" to signify "bind on all interfaces" ("0.0.0.0" is IPv4-only).
 matrix_synapse_workers_container_host_bind_address: ''
 
-matrix_synapse_workers_generic_workers_count: 3
+matrix_synapse_workers_generic_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['generic_workers_count'] }}"
 matrix_synapse_workers_generic_workers_port_range_start: 18111
 matrix_synapse_workers_generic_workers_metrics_range_start: 19111
 
 # matrix_synapse_workers_pusher_workers_count can only be 0 or 1 for now.
 # More instances are not supported due to a playbook limitation having to do with keeping `pusher_instances` in `homeserver.yaml` updated.
 # See https://github.com/matrix-org/synapse/commit/ddfdf945064925eba761ae3748e38f3a1c73c328
-matrix_synapse_workers_pusher_workers_count: 1
+matrix_synapse_workers_pusher_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['pusher_workers_count'] }}"
 matrix_synapse_workers_pusher_workers_metrics_range_start: 19200
 
 # matrix_synapse_workers_appservice_workers_count can only be 0 or 1. More instances are not supported.
-matrix_synapse_workers_appservice_workers_count: 1
+matrix_synapse_workers_appservice_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['appservice_workers_count'] }}"
 matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
 
 # matrix_synapse_workers_federation_sender_workers_count can only be 0 or 1 for now.
 # More instances are not supported due to a playbook limitation having to do with keeping `federation_sender_instances` in `homeserver.yaml` updated.
 # See https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappfederation_sender
-matrix_synapse_workers_federation_sender_workers_count: 1
+matrix_synapse_workers_federation_sender_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['federation_sender_workers_count'] }}"
 matrix_synapse_workers_federation_sender_workers_metrics_range_start: 19400
 
-matrix_synapse_workers_media_repository_workers_count: 1
+matrix_synapse_workers_media_repository_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['media_repository_workers_count'] }}"
 matrix_synapse_workers_media_repository_workers_port_range_start: 18551
 matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
 
 # Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
-matrix_synapse_workers_user_dir_workers_count: 0
+matrix_synapse_workers_user_dir_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['user_dir_workers_count'] }}"
 matrix_synapse_workers_user_dir_workers_port_range_start: 18661
 matrix_synapse_workers_user_dir_workers_metrics_range_start: 19661
 
-matrix_synapse_workers_frontend_proxy_workers_count: 1
+matrix_synapse_workers_frontend_proxy_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['frontend_proxy_workers_count'] }}"
 matrix_synapse_workers_frontend_proxy_workers_port_range_start: 18771
 matrix_synapse_workers_frontend_proxy_workers_metrics_range_start: 19771
 
