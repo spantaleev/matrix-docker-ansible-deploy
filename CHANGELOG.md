@@ -1,5 +1,14 @@
 # 2021-02-19
 
+## GroupMe bridging support via mx-puppet-groupme
+
+Thanks to [Cody Neiman](https://github.com/xangelix), the playbook can now install the [mx-puppet-groupme](https://gitlab.com/robintown/mx-puppet-groupme) bridge for bridging to [GroupMe](https://groupme.com).
+
+This brings the total number of bridges supported by the playbook up to 18. See all supported bridges [here](docs/configuring-playbook.md#bridging-other-networks).
+
+To get started, follow our [Setting up MX Puppet GroupMe](docs/configuring-playbook-bridge-mx-puppet-groupme.md) docs.
+
+
 ## Synapse workers support
 
 After [lots and lots of work](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/456) (done over many months by [Marcel Partap](https://github.com/eMPee584), [Max Klenk](https://github.com/maxklenk), a few others from the [Technical University of Dresden, Germany](https://tu-dresden.de/) and various other contributors), support for Synapse workers has finally landed.
