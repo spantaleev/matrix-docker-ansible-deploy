@@ -48,6 +48,8 @@ These services are not part of our default installation, but can be enabled by [
 
 - [tulir/mautrix-hangouts](https://mau.dev/tulir/mautrix-hangouts/container_registry) - the [mautrix-hangouts](https://github.com/tulir/mautrix-hangouts) bridge to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts) (optional)
 
+- [tulir/mautrix-instagram](https://mau.dev/tulir/mautrix-instagram/container_registry) - the [mautrix-instagram](https://github.com/tulir/mautrix-instagram) bridge to [Instagram](https://instagram.com/) (optional)
+
 - [tulir/mautrix-signal](https://mau.dev/tulir/mautrix-signal/container_registry) - the [mautrix-signal](https://github.com/tulir/mautrix-signal) bridge to [Signal](https://www.signal.org/) (optional)
 
 - [matrixdotorg/matrix-appservice-irc](https://hub.docker.com/r/matrixdotorg/matrix-appservice-irc) - the [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) (optional)

@@ -8,6 +8,11 @@ This brings the total number of bridges supported by the playbook up to 18. See 
 
 To get started, follow our [Setting up MX Puppet GroupMe](docs/configuring-playbook-bridge-mx-puppet-groupme.md) docs.
 
+## Mautrix Instagram bridging support
+
+The playbook now supports bridging with [Instagram](https://www.instagram.com/) by installing the [mautrix-instagram](https://github.com/tulir/mautrix-instagram) bridge. This playbook functionality is available thanks to [@MarcProe](https://github.com/MarcProe).
+
+Additional details are available in [Setting up Mautrix Instagram bridging](docs/configuring-playbook-bridge-mautrix-instagram.md).
 
 ## Synapse workers support
 
