@@ -15,11 +15,14 @@ if [ "$sure" != "Yes, I really want to remove everything!" ]; then
 	exit 0
 else
 	echo "Stop and remove matrix services"
-	for s in $(find {{ matrix_systemd_path }}/ -name "matrix-*" -printf "%f\n"); do
-		systemctl stop $s
+
+	for s in $(find {{ matrix_systemd_path }}/ -type f -name "matrix-*" -printf "%f\n"); do
+		systemctl disable --now $s
 		rm -f {{ matrix_systemd_path }}/$s
 	done
+
 	systemctl daemon-reload
+
 	echo "Remove matrix scripts"
 	find {{ matrix_local_bin_path }}/ -name "matrix-*" -delete
 	echo "Remove unused Docker images and resources"

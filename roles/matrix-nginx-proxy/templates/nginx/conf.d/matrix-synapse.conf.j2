@@ -1,107 +1,139 @@
 #jinja2: lstrip_blocks: "True"
-{% macro render_nginx_status_location_block(addresses) %}
-	{# Empty first line to make indentation prettier. #}
 
-	location /nginx_status {
-		stub_status on;
-		access_log off;
-		{% for address in addresses %}
-		allow {{ address }};
+{% set generic_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'generic_worker')|list %}
+{% set media_repository_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'media_repository')|list %}
+{% set user_dir_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'user_dir')|list %}
+{% set frontend_proxy_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'frontend_proxy')|list %}
+{% if matrix_nginx_proxy_synapse_workers_enabled %}
+	# Round Robin "upstream" pools for workers
+
+	{% if generic_workers %}
+	upstream generic_worker_upstream {
+		# ensures that requests from the same client will always be passed
+		# to the same server (except when this server is unavailable)
+		ip_hash;
+
+		{% for worker in generic_workers %}
+			{% if matrix_nginx_proxy_enabled %}
+				server "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.port }}";
+			{% else %}
+				server "127.0.0.1:{{ worker.port }}";
+			{% endif %}
 		{% endfor %}
-		deny all;
 	}
-{% endmacro %}
+	{% endif %}
 
+	{% if frontend_proxy_workers %}
+	upstream frontend_proxy_upstream {
+		{% for worker in frontend_proxy_workers %}
+			{% if matrix_nginx_proxy_enabled %}
+				server "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.port }}";
+			{% else %}
+				server "127.0.0.1:{{ worker.port }}";
+			{% endif %}
+		{% endfor %}
+	}
+	{% endif %}
 
-{% macro render_vhost_directives() %}
+	{% if media_repository_workers %}
+	upstream media_repository_upstream {
+		{% for worker in media_repository_workers %}
+			{% if matrix_nginx_proxy_enabled %}
+				server "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.port }}";
+			{% else %}
+				server "127.0.0.1:{{ worker.port }}";
+			{% endif %}
+		{% endfor %}
+	}
+	{% endif %}
+
+	{% if user_dir_workers %}
+	upstream user_dir_upstream {
+		{% for worker in user_dir_workers %}
+			{% if matrix_nginx_proxy_enabled %}
+				server "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.port }}";
+			{% else %}
+				server "127.0.0.1:{{ worker.port }}";
+			{% endif %}
+		{% endfor %}
+	}
+	{% endif %}
+{% endif %}
+
+server {
+	listen 12080;
+	server_name {{ matrix_nginx_proxy_proxy_synapse_hostname }};
+
+	server_tokens off;
+	root /dev/null;
+
 	gzip on;
 	gzip_types text/plain application/json;
 
-	location /.well-known/matrix {
-		root {{ matrix_static_files_base_path }};
-		{#
-			A somewhat long expires value is used to prevent outages
-			in case this is unreachable due to network failure or
-			due to the base domain's server completely dying.
-		#}
-		expires 4h;
-		default_type application/json;
-		add_header Access-Control-Allow-Origin *;
-	}
+	{% if matrix_nginx_proxy_synapse_workers_enabled %}
+		{# Workers redirects BEGIN #}
 
-	{% if matrix_nginx_proxy_proxy_matrix_nginx_status_enabled %}
-		{{ render_nginx_status_location_block(matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses) }}
-	{% endif %}
-
-	{% if matrix_nginx_proxy_proxy_matrix_corporal_api_enabled %}
-	location ^~ /_matrix/corporal {
-		{% if matrix_nginx_proxy_enabled %}
-			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
-			set $backend "{{ matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container }}";
-			proxy_pass http://$backend;
-		{% else %}
-			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_corporal_api_addr_sans_container }};
+		{% if generic_workers %}
+			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappgeneric_worker
+			{% for location in matrix_nginx_proxy_synapse_generic_worker_client_server_locations %}
+			location ~ {{ location }} {
+				proxy_pass http://generic_worker_upstream$request_uri;
+				proxy_set_header Host $host;
+				proxy_set_header X-Forwarded-For $remote_addr;
+			}
+			{% endfor %}
 		{% endif %}
 
-		proxy_set_header Host $host;
-		proxy_set_header X-Forwarded-For $remote_addr;
-	}
-	{% endif %}
+		{% if media_repository_workers %}
+			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappmedia_repository
+			{% for location in matrix_nginx_proxy_synapse_media_repository_locations %}
+			location ~ {{ location }} {
+				proxy_pass http://media_repository_upstream$request_uri;
+				proxy_set_header Host $host;
+				proxy_set_header X-Forwarded-For $remote_addr;
 
-	{% if matrix_nginx_proxy_proxy_matrix_identity_api_enabled %}
-	location ^~ /_matrix/identity {
-		{% if matrix_nginx_proxy_enabled %}
-			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
-			set $backend "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}";
-			proxy_pass http://$backend;
-		{% else %}
-			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container }};
+				client_body_buffer_size 25M;
+				client_max_body_size {{ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb }}M;
+				proxy_max_temp_file_size 0;
+			}
+			{% endfor %}
 		{% endif %}
 
-		proxy_set_header Host $host;
-		proxy_set_header X-Forwarded-For $remote_addr;
-	}
-	{% endif %}
-
-	{% if matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled %}
-	location ^~ /_matrix/client/r0/user_directory/search {
-		{% if matrix_nginx_proxy_enabled %}
-			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
-			set $backend "{{ matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container }}";
-			proxy_pass http://$backend;
-		{% else %}
-			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container }};
+		{% if user_dir_workers %}
+			# FIXME: obsolete if matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled is set
+			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappuser_dir
+			{% for location in matrix_nginx_proxy_synapse_user_dir_locations %}
+			location ~ {{ location }} {
+				proxy_pass http://user_dir_upstream$request_uri;
+				proxy_set_header Host $host;
+				proxy_set_header X-Forwarded-For $remote_addr;
+			}
+			{% endfor %}
 		{% endif %}
 
-		proxy_set_header Host $host;
-		proxy_set_header X-Forwarded-For $remote_addr;
-	}
-	{% endif %}
-
-	{% if matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled %}
-	location ~ ^/_matrix/client/r0/register/(email|msisdn)/requestToken$ {
-		{% if matrix_nginx_proxy_enabled %}
-			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
-			set $backend "{{ matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_with_container }}";
-			proxy_pass http://$backend;
-		{% else %}
-			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_sans_container }};
+		{% if frontend_proxy_workers %}
+			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappfrontend_proxy
+			{% for location in matrix_nginx_proxy_synapse_frontend_proxy_locations %}
+			location ~ {{ location }} {
+				proxy_pass http://frontend_proxy_upstream$request_uri;
+				proxy_set_header Host $host;
+				proxy_set_header X-Forwarded-For $remote_addr;
+			}
+			{% endfor %}
+			{% if matrix_nginx_proxy_synapse_presence_disabled %}
+			# FIXME: keep in sync with synapse workers documentation manually
+			location ~ ^/_matrix/client/(api/v1|r0|unstable)/presence/[^/]+/status {
+				proxy_pass http://frontend_proxy_upstream$request_uri;
+				proxy_set_header Host $host;
+				proxy_set_header X-Forwarded-For $remote_addr;
+			}
+			{% endif %}
 		{% endif %}
-
-		proxy_set_header Host $host;
-		proxy_set_header X-Forwarded-For $remote_addr;
-	}
+		{# Workers redirects END #}
 	{% endif %}
 
-	{% for configuration_block in matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks %}
+
+	{% for configuration_block in matrix_nginx_proxy_proxy_synapse_additional_server_configuration_blocks %}
 		{{- configuration_block }}
 	{% endfor %}
 
@@ -127,19 +159,16 @@
 	}
 	{% endif %}
 
-	{#
-		This handles the Matrix Client API only.
-		The Matrix Federation API is handled by a separate vhost.
-	#}
-	location ~* ^({{ matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_prefix_regexes|join('|') }}) {
+	{# Everything else just goes to the API server ##}
+	location / {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver 127.0.0.11 valid=5s;
-			set $backend "{{ matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container }}";
+			set $backend "{{ matrix_nginx_proxy_proxy_synapse_client_api_addr_with_container }}";
 			proxy_pass http://$backend;
 		{% else %}
 			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container }};
+			proxy_pass http://{{ matrix_nginx_proxy_proxy_synapse_client_api_addr_sans_container }};
 		{% endif %}
 
 		proxy_set_header Host $host;
@@ -149,85 +178,13 @@
 		client_max_body_size {{ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb }}M;
 		proxy_max_temp_file_size 0;
 	}
-
-	location / {
-		{% if matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain %}
-			return 302 $scheme://{{ matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain }}$request_uri;
-		{% else %}
-			rewrite ^/$ /_matrix/static/ last;
-		{% endif %}
-	}
-{% endmacro %}
-
-server {
-	listen {{ 8080 if matrix_nginx_proxy_enabled else 80 }};
-	server_name {{ matrix_nginx_proxy_proxy_matrix_hostname }};
-
-	server_tokens off;
-	root /dev/null;
-
-	{% if matrix_nginx_proxy_https_enabled %}
-		location /.well-known/acme-challenge {
-			{% if matrix_nginx_proxy_enabled %}
-				{# Use the embedded DNS resolver in Docker containers to discover the service #}
-				resolver 127.0.0.11 valid=5s;
-				set $backend "matrix-certbot:8080";
-				proxy_pass http://$backend;
-			{% else %}
-				{# Generic configuration for use outside of our container setup #}
-				proxy_pass http://127.0.0.1:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }};
-			{% endif %}
-		}
-
-		{% if matrix_nginx_proxy_proxy_matrix_nginx_status_enabled %}
-			{{ render_nginx_status_location_block(matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses) }}
-		{% endif %}
-
-		location / {
-			return 301 https://$http_host$request_uri;
-		}
-	{% else %}
-		{{ render_vhost_directives() }}
-	{% endif %}
 }
 
-{% if matrix_nginx_proxy_https_enabled %}
+{% if matrix_nginx_proxy_proxy_synapse_federation_api_enabled %}
 server {
-	listen {{ 8443 if matrix_nginx_proxy_enabled else 443 }} ssl http2;
-	listen [::]:{{ 8443 if matrix_nginx_proxy_enabled else 443 }} ssl http2;
+	listen 12088;
 
-	server_name {{ matrix_nginx_proxy_proxy_matrix_hostname }};
-
-	server_tokens off;
-	root /dev/null;
-
-	ssl_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/fullchain.pem;
-	ssl_certificate_key {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/privkey.pem;
-
-	ssl_protocols {{ matrix_nginx_proxy_ssl_protocols }};
-	{% if matrix_nginx_proxy_ssl_ciphers != '' %}
-	ssl_ciphers {{ matrix_nginx_proxy_ssl_ciphers }};
-	{% endif %}
-	ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_prefer_server_ciphers }};
-
-	{{ render_vhost_directives() }}
-}
-{% endif %}
-
-{% if matrix_nginx_proxy_proxy_matrix_federation_api_enabled %}
-{#
-	This federation vhost is a little special.
-	It serves federation over HTTP or HTTPS, depending on `matrix_nginx_proxy_https_enabled`.
-#}
-server {
-	{% if matrix_nginx_proxy_https_enabled %}
-		listen 8448 ssl http2;
-		listen [::]:8448 ssl http2;
-	{% else %}
-		listen 8448;
-	{% endif %}
-
-	server_name {{ matrix_nginx_proxy_proxy_matrix_hostname }};
+	server_name {{ matrix_nginx_proxy_proxy_synapse_hostname }};
 	server_tokens off;
 
 	root /dev/null;
@@ -235,27 +192,42 @@ server {
 	gzip on;
 	gzip_types text/plain application/json;
 
-	{% if matrix_nginx_proxy_https_enabled %}
-		ssl_certificate {{ matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate }};
-		ssl_certificate_key {{ matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate_key }};
+	{% if matrix_nginx_proxy_synapse_workers_enabled %}
+		{% if generic_workers %}
+			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappgeneric_worker
+			{% for location in matrix_nginx_proxy_synapse_generic_worker_federation_locations %}
+			location ~ {{ location }} {
+				proxy_pass http://generic_worker_upstream$request_uri;
+				proxy_set_header Host $host;
+				proxy_set_header X-Forwarded-For $remote_addr;
+			}
+			{% endfor %}
+		{% endif %}
+		{% if media_repository_workers %}
+			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappmedia_repository
+			{% for location in matrix_nginx_proxy_synapse_media_repository_locations %}
+			location ~ {{ location }} {
+				proxy_pass http://media_repository_upstream$request_uri;
+				proxy_set_header Host $host;
+				proxy_set_header X-Forwarded-For $remote_addr;
 
-	ssl_protocols {{ matrix_nginx_proxy_ssl_protocols }};
-	{% if matrix_nginx_proxy_ssl_ciphers != '' %}
-	ssl_ciphers {{ matrix_nginx_proxy_ssl_ciphers }};
-	{% endif %}
-	ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_prefer_server_ciphers }};
-
+				client_body_buffer_size 25M;
+				client_max_body_size {{ matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb }}M;
+				proxy_max_temp_file_size 0;
+			}
+			{% endfor %}
+		{% endif %}
 	{% endif %}
 
 	location / {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver 127.0.0.11 valid=5s;
-			set $backend "{{ matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container }}";
+			set $backend "{{ matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container }}";
 			proxy_pass http://$backend;
 		{% else %}
 			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container }};
+			proxy_pass http://{{ matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container }};
 		{% endif %}
 
 		proxy_set_header Host $host;

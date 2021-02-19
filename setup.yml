@@ -3,11 +3,15 @@
   hosts: "{{ target if target is defined else 'matrix_servers' }}"
   become: true
 
+  vars_files:
+    - roles/matrix-synapse/vars/workers.yml
+
   roles:
     - matrix-base
     - matrix-dynamic-dns
     - matrix-mailer
     - matrix-postgres
+    - matrix-redis
     - matrix-corporal
     - matrix-bridge-appservice-discord
     - matrix-bridge-appservice-slack

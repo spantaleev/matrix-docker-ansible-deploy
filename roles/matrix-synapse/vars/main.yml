@@ -8,3 +8,28 @@ matrix_synapse_role_executed: false
 
 matrix_synapse_media_store_parent_path: "{{ matrix_synapse_media_store_path|dirname }}"
 matrix_synapse_media_store_directory_name: "{{ matrix_synapse_media_store_path|basename }}"
+
+# A Synapse generic worker can handle both federation and client-server API endpoints.
+# We wish to split these, as we normally serve federation separately and don't want them mixed up.
+#
+# This is some ugly Ansible/Jinja2 hack (seen here: https://stackoverflow.com/a/47831492),
+# which takes a list of various strings and removes the ones NOT containing `/_matrix/client` anywhere in them.
+#
+# We intentionally don't do a diff between everything possible (`matrix_synapse_workers_generic_worker_endpoints`) and `matrix_synapse_workers_generic_worker_federation_endpoints`,
+# because `matrix_synapse_workers_generic_worker_endpoints` also contains things like `/_synapse/client/`, etc.
+# While /_synapse/client/ endpoints are somewhat client-server API-related, they're:
+# - neither part of the client-server API spec (and are thus, different)
+# - nor always OK to forward to a worker (we're supposed to obey `matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_client_api_enabled`)
+#
+# It's also not too many of these APIs (only `^/_synapse/client/password_reset/email/submit_token$` at the time of this writing / 2021-01-24),
+# so it's not that important whether we forward them or not.
+#
+# Basically, we aim to cover most things. Skipping `/_synapse/client` or a few other minor things doesn't matter too much.
+matrix_synapse_workers_generic_worker_client_server_endpoints: "{{ matrix_synapse_workers_generic_worker_endpoints|default([]) | map('regex_search', '.*/_matrix/client.*')| list | difference([none]) }}"
+
+# A Synapse generic worker can handle both federation and client-server API endpoints.
+# We wish to split these, as we normally serve federation separately and don't want them mixed up.
+#
+# This is some ugly Ansible/Jinja2 hack (seen here: https://stackoverflow.com/a/47831492),
+# which takes a list of various strings and removes the ones NOT containing `/_matrix/federation` or `/_matrix/key` anywhere in them.
+matrix_synapse_workers_generic_worker_federation_endpoints: "{{ matrix_synapse_workers_generic_worker_endpoints|default([]) | map('regex_search', '.*(/_matrix/federation|/_matrix/key).*')| list | difference([none]) }}"

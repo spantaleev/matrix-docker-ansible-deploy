@@ -1,0 +1,21 @@
+---
+
+# A previous version of the worker setup used this.
+# This is a temporary cleanup for people who ran that version.
+- name: Ensure old matrix-synapse.service.wants directory is gone
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-synapse.service.wants"
+    state: absent
+
+# Same. This was part of a previous version of the worker setup.
+# No longer necessary.
+- name: Ensure matrix-synapse-worker-write-pid script is removed
+  file:
+    path: "{{ matrix_local_bin_path }}/matrix-synapse-worker-write-pid"
+    state: absent
+
+- include_tasks: "{{ role_path }}/tasks/synapse/workers/setup_install.yml"
+  when: "matrix_synapse_enabled|bool and matrix_synapse_workers_enabled|bool"
+
+- include_tasks: "{{ role_path }}/tasks/synapse/workers/setup_uninstall.yml"
+  when: "not matrix_synapse_workers_enabled|bool"

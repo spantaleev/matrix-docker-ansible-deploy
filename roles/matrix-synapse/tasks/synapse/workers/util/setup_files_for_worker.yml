@@ -1,0 +1,19 @@
+- set_fact:
+    matrix_synapse_worker_systemd_service_name: "matrix-synapse-worker-{{ matrix_synapse_worker_details.type }}-{{ matrix_synapse_worker_details.instanceId }}"
+
+- set_fact:
+    matrix_synapse_worker_container_name: "{{ matrix_synapse_worker_systemd_service_name }}"
+
+- set_fact:
+    matrix_synapse_worker_config_file_name: "worker.{{ matrix_synapse_worker_details.type }}_{{ matrix_synapse_worker_details.instanceId }}.yaml"
+
+- name: Ensure configuration exists for {{ matrix_synapse_worker_systemd_service_name }}
+  template:
+    src: "{{ role_path }}/templates/synapse/worker.yaml.j2"
+    dest: "{{ matrix_synapse_config_dir_path }}/{{ matrix_synapse_worker_config_file_name }}"
+
+- name: Ensure systemd service exists for {{ matrix_synapse_worker_systemd_service_name }}
+  template:
+    src: "{{ role_path }}/templates/synapse/systemd/matrix-synapse-worker.service.j2"
+    dest: "{{ matrix_systemd_path }}/{{ matrix_synapse_worker_systemd_service_name }}.service"
+    mode: 0644

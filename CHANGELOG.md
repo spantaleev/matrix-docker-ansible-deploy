@@ -1,3 +1,18 @@
+# 2021-02-19
+
+## Synapse workers support
+
+After [lots and lots of work](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/456) (done over many months by [Marcel Partap](https://github.com/eMPee584), [Max Klenk](https://github.com/maxklenk), a few others from the [Technical University of Dresden, Germany](https://tu-dresden.de/) and various other contributors), support for Synapse workers has finally landed.
+
+Having support for workers makes the playbook suitable for larger homeserver deployments.
+
+Our setup is not yet perfect (we don't support all types of workers; scaling some of them (like `pusher`, `federation_sender`) beyond a single instance is not yet supported). Still, it's a great start and can already power homeservers with thousands of users, like the [Matrix deployment at TU Dresden](https://doc.matrix.tu-dresden.de/en/) discussed in [Matrix Live S06E09 - TU Dresden on their Matrix deployment](https://www.youtube.com/watch?v=UHJX2pmT2gk).
+
+By default, workers are disabled and Synapse runs as a single process (homeservers don't necessarily need the complexity and increased memory requirements of running a worker-based setup).
+
+To enable Synapse workers, follow our [Load balancing with workers](docs/configuring-playbook-synapse.md#load-balancing-with-workers) documentation.
+
+
 # 2021-02-12
 
 ## (Potential Breaking Change) Monitoring/metrics support using Prometheus and Grafana
