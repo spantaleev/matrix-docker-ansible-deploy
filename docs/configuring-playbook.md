@@ -113,6 +113,10 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 -   [Setting up MX Puppet Discord bridging](configuring-playbook-bridge-mx-puppet-discord.md) (optional)
 
+-   [Setting up MX Puppet GroupMe bridging](configuring-playbook-bridge-mx-puppet-groupme.md) (optional)
+
+-   [Setting up MX Puppet Steam bridging](configuring-playbook-bridge-mx-puppet-steam.md) (optional)
+
 -   [Setting up MX Puppet Steam bridging](configuring-playbook-bridge-mx-puppet-steam.md) (optional)
 
 -   [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (optional)

@@ -4,10 +4,18 @@ Description=Synapse server
 {% for service in matrix_synapse_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
+
 {% endfor %}
 {% for service in matrix_synapse_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
+
+{% if matrix_synapse_workers_enabled %}
+{% for matrix_synapse_worker_details in matrix_synapse_workers_enabled_list %}
+Wants=matrix-synapse-worker-{{ matrix_synapse_worker_details.type }}-{{ matrix_synapse_worker_details.port }}.service
+{% endfor %}
+{% endif %}
+
 DefaultDependencies=no
 
 [Service]
@@ -58,7 +66,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-synapse \
 
 ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-synapse 2>/dev/null'
 ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-synapse 2>/dev/null'
-ExecReload={{ matrix_host_command_docker }} exec matrix-synapse kill -HUP 1
+ExecReload={{ matrix_host_command_docker }} exec matrix-synapse /bin/sh -c 'kill -HUP 1'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-synapse

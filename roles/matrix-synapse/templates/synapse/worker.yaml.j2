@@ -1,0 +1,45 @@
+#jinja2: lstrip_blocks: "True"
+worker_app: synapse.app.{{ matrix_synapse_worker_details.type }}
+worker_name: {{ matrix_synapse_worker_details.type ~ ':' ~ matrix_synapse_worker_details.port }}
+
+{% if matrix_synapse_replication_listener_enabled %}
+worker_replication_host: matrix-synapse
+worker_replication_http_port: {{ matrix_synapse_replication_http_port }}
+{% endif %}
+
+{% set has_listeners = (matrix_synapse_worker_details.type not in [ 'appservice', 'federation_sender', 'pusher' ] or matrix_synapse_metrics_enabled) %}
+
+{% set http_resources = [] %}
+
+{% if matrix_synapse_worker_details.type in ['generic_worker', 'frontend_proxy', 'user_dir'] %}
+  {% set http_resources = http_resources + ['client'] %}
+{% endif %}
+{% if matrix_synapse_worker_details.type in ['generic_worker'] %}
+  {% set http_resources = http_resources+ ['federation'] %}
+{% endif %}
+{% if matrix_synapse_worker_details.type in ['media_repository'] %}
+  {% set http_resources = http_resources + ['media'] %}
+{% endif %}
+
+{% if http_resources|length > 0 or matrix_synapse_metrics_enabled %}
+worker_listeners:
+{% if http_resources|length > 0 %}
+  - type: http
+    bind_addresses: ['::']
+    port: {{ matrix_synapse_worker_details.port }}
+    resources:
+      - names: {{ http_resources|to_json }}
+{% endif %}
+{% if matrix_synapse_metrics_enabled %}
+  - type: metrics
+    bind_addresses: ['0.0.0.0']
+    port: {{ matrix_synapse_worker_details.metrics_port }}
+{% endif %}
+{% endif %}
+
+{% if matrix_synapse_worker_details.type == 'frontend_proxy' %}
+worker_main_http_uri: http://matrix-synapse:8008
+{% endif %}
+
+worker_daemonize: false
+worker_log_config: /data/{{ matrix_server_fqn_matrix }}.log.config

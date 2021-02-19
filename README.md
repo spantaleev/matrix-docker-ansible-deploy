@@ -78,6 +78,10 @@ Using this playbook, you can get the following services configured on your serve
 
 -   (optional) the [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) bridge for [Steam](https://steamapp.com/) - see [docs/configuring-playbook-bridge-mx-puppet-steam.md](docs/configuring-playbook-bridge-mx-puppet-steam.md) for setup documentation
 
+-   (optional) the [mx-puppet-groupme](https://gitlab.com/robintown/mx-puppet-groupme) bridge for [GroupMe](https://groupme.com/) - see [docs/configuring-playbook-bridge-mx-puppet-groupme.md](docs/configuring-playbook-bridge-mx-puppet-groupme.md) for setup documentation
+
+-   (optional) the [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) bridge for [Steam](https://steamapp.com/) - see [docs/configuring-playbook-bridge-mx-puppet-steam.md](docs/configuring-playbook-bridge-mx-puppet-steam.md) for setup documentation
+
 -   (optional) [Email2Matrix](https://github.com/devture/email2matrix) for relaying email messages to Matrix rooms - see [docs/configuring-playbook-email2matrix.md](docs/configuring-playbook-email2matrix.md) for setup documentation
 
 -   (optional) [Dimension](https://github.com/turt2live/matrix-dimension), an open source integrations manager for matrix clients - see [docs/configuring-playbook-dimension.md](docs/configuring-playbook-dimension.md) for setup documentation

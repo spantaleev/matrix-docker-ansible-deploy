@@ -1,0 +1,18 @@
+# The tasks below run before `validate_config.yml`.
+# To avoid failing with a cryptic error message, we'll do validation here.
+#
+# This check is mostly relevant to people who explicitly define `matrix_synapse_workers_enabled_list`
+# (Synapse Workers users from the earlier days of this PR - https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/456).
+#
+# In the future, it should be possible to remove this check.
+# Our own code which dynamically builds `matrix_synapse_workers_enabled_list` does things right.
+- name: Fail if instanceId not defined for worker
+  fail:
+    msg: "Synapse workers (like {{ matrix_synapse_worker_details|to_json }}) need to define an instanceId property (type + instanceId must be unique)"
+  when: "'instanceId' not in matrix_synapse_worker_details"
+
+- set_fact:
+    matrix_synapse_worker_systemd_service_name: "matrix-synapse-worker-{{ matrix_synapse_worker_details.type }}-{{ matrix_synapse_worker_details.instanceId }}.service"
+
+- set_fact:
+    matrix_systemd_services_list: "{{ matrix_systemd_services_list + [matrix_synapse_worker_systemd_service_name] }}"

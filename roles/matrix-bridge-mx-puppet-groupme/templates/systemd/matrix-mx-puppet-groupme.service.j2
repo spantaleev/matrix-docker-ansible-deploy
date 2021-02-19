@@ -1,0 +1,43 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Mx Puppet Groupme bridge
+{% for service in matrix_mx_puppet_groupme_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_mx_puppet_groupme_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-mx-puppet-groupme 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-mx-puppet-groupme 2>/dev/null'
+
+# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
+ExecStartPre={{ matrix_host_command_sleep }} 5
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mx-puppet-groupme \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_docker_network }} \
+			-e CONFIG_PATH=/config/config.yaml \
+			-e REGISTRATION_PATH=/config/registration.yaml \
+			-v {{ matrix_mx_puppet_groupme_config_path }}:/config:z \
+			-v {{ matrix_mx_puppet_groupme_data_path }}:/data:z \
+			{% for arg in matrix_mx_puppet_groupme_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_mx_puppet_groupme_docker_image }}
+
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-mx-puppet-groupme 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-mx-puppet-groupme 2>/dev/null'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-mx-puppet-groupme
+
+[Install]
+WantedBy=multi-user.target

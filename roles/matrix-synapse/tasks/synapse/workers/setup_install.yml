@@ -1,0 +1,42 @@
+---
+
+- name: Determine current worker configs
+  find:
+    path: "{{ matrix_synapse_config_dir_path }}"
+    patterns: "worker.*.yaml"
+    use_regex: true
+  register: matrix_synapse_workers_current_config_files
+
+# This also deletes some things which we need. They will be recreated below.
+- name: Ensure previous worker configs are cleaned
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ matrix_synapse_workers_current_config_files.files }}"
+
+- name: Determine current worker systemd services
+  find:
+    path: "{{ matrix_systemd_path }}"
+    patterns: "matrix-synapse-worker.*.service"
+    use_regex: true
+  register: matrix_synapse_workers_current_systemd_services
+
+- name: Ensure unnecessary worker systemd services are stopped and disabled
+  service:
+    name: "{{ item.path|basename }}"
+    state: stopped
+    enabled: false
+  with_items: "{{ matrix_synapse_workers_current_systemd_services.files }}"
+  when: "not ansible_check_mode and item.path|basename not in matrix_systemd_services_list"
+
+- name: Ensure unnecessary worker systemd services are cleaned
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ matrix_synapse_workers_current_systemd_services.files }}"
+
+- name: Ensure creation of worker systemd service files and configuration files
+  include_tasks: "{{ role_path }}/tasks/synapse/workers/util/setup_files_for_worker.yml"
+  with_items: "{{ matrix_synapse_workers_enabled_list }}"
+  loop_control:
+    loop_var: matrix_synapse_worker_details

@@ -277,6 +277,41 @@ listeners:
     type: manhole
 {% endif %}
 
+{% if matrix_synapse_workers_enabled %}
+
+{% if matrix_synapse_replication_listener_enabled %}
+  # c.f. https://github.com/matrix-org/synapse/tree/master/docs/workers.md
+  # HTTP replication: for the workers to send data to the main synapse process
+  - port: {{ matrix_synapse_replication_http_port }}
+    bind_addresses: ['0.0.0.0']
+    type: http
+    resources:
+      - names: [replication]
+{% endif %}
+
+# c.f. https://github.com/matrix-org/synapse/tree/master/contrib/systemd-with-workers/README.md
+worker_app: synapse.app.homeserver
+
+# thx https://oznetnerd.com/2017/04/18/jinja2-selectattr-filter/
+# reduce the main worker's offerings to core homeserver business
+{% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'appservice')|list  %}
+notify_appservices: false
+{% endif %}
+{% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'federation_sender')|list  %}
+send_federation: false
+{% endif %}
+{% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'media_repository')|list  %}
+enable_media_repo: false
+{% endif %}
+{% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'pusher')|list  %}
+start_pushers: false
+{% endif %}
+{% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'user_dir')|list  %}
+update_user_directory: false
+{% endif %}
+
+daemonize: false
+{% endif %}
 
 # Forward extremities can build up in a room due to networking delays between
 # homeservers. Once this happens in a large room, calculation of the state of
@@ -812,6 +847,7 @@ rc_login: {{ matrix_synapse_rc_login|to_json }}
 #rc_admin_redaction:
 #  per_second: 1
 #  burst_count: 50
+rc_admin_redaction: {{ matrix_synapse_rc_admin_redaction|to_json }}
 #
 #rc_joins:
 #  local:
@@ -820,6 +856,7 @@ rc_login: {{ matrix_synapse_rc_login|to_json }}
 #  remote:
 #    per_second: 0.01
 #    burst_count: 3
+rc_joins: {{ matrix_synapse_rc_joins|to_json }}
 #
 #rc_3pid_validation:
 #  per_second: 0.003
@@ -2810,16 +2847,16 @@ opentracing:
 redis:
   # Uncomment the below to enable Redis support.
   #
-  #enabled: true
+  enabled: {{ matrix_synapse_redis_enabled }}
 
   # Optional host and port to use to connect to redis. Defaults to
   # localhost and 6379
   #
-  #host: localhost
-  #port: 6379
+  host: {{ matrix_synapse_redis_host }}
+  port: {{ matrix_synapse_redis_port }}
 
   # Optional password if configured on the Redis instance
   #
-  #password: <secret_password>
+  password: {{ matrix_synapse_redis_password }}
 
 # vim:ft=yaml
