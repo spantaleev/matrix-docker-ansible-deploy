@@ -1,9 +1,10 @@
 matrix_nginx_proxy_enabled: true
+matrix_nginx_proxy_version: 1.19.6-alpine
 
 # We use an official nginx image, which we fix-up to run unprivileged.
 # An alternative would be an `nginxinc/nginx-unprivileged` image, but
 # that is frequently out of date.
-matrix_nginx_proxy_docker_image: "docker.io/nginx:1.19.6-alpine"
+matrix_nginx_proxy_docker_image: "docker.io/nginx:{{ matrix_nginx_proxy_version }}"
 matrix_nginx_proxy_docker_image_force_pull: "{{ matrix_nginx_proxy_docker_image.endswith(':latest') }}"
 
 matrix_nginx_proxy_base_path: "{{ matrix_base_data_path }}/nginx-proxy"
