@@ -1,0 +1,159 @@
+
+
+- name: Enable index.html creation if user doesn't wish to customise base domain
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertafter: '# Base Domain Settings'
+  with_dict:
+    'matrix_nginx_proxy_base_domain_homepage_enabled': 'true'
+  when: customise_base_domain_website|bool == false
+
+- name: Disable index.html creation to allow multi-file site if user does wish to customise base domain
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertafter: '# Base Domain Settings'
+  with_dict:
+    'matrix_nginx_proxy_base_domain_homepage_enabled': 'false'
+  when: customise_base_domain_website|bool == true
+
+- name: Record 'Customise Website + Access Backup' variables locally on AWX
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertafter: '# AWX Settings'
+  with_dict:
+    'customise_base_domain_website': '{{ customise_base_domain_website }}'
+
+- name: Copy new 'matrix_vars.yml' to target machine
+  copy:
+    src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    dest: '/matrix/awx/matrix_vars.yml'
+    mode: '0660'
+
+- name: Reload vars in matrix_vars.yml
+  include_vars:
+    file: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+
+- name: Save new 'Customise Website + Access Backup' survey.json to the AWX tower, template
+  delegate_to: 127.0.0.1
+  template:
+    src: './roles/matrix-awx/surveys/configure_website_access_backup.json.j2'
+    dest: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_website_access_backup.json'
+
+- name: Copy new 'Customise Website + Access Backup' survey.json to target machine
+  copy:
+    src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_website_access_backup.json'
+    dest:  '/matrix/awx/configure_website_access_backup.json'
+    mode: '0660'
+
+- name: Collect AWX admin token the hard way!
+  delegate_to: 127.0.0.1
+  shell: |
+      curl -sku {{ tower_username }}:{{ tower_password }} -H "Content-Type: application/json" -X POST -d '{"description":"Tower CLI", "application":null, "scope":"write"}' https://{{ tower_host }}/api/v2/users/1/personal_tokens/ | jq '.token' | sed -r 's/\"//g'
+  register: tower_token
+  no_log: True
+
+- name: Recreate 'Customise Base Domain Website' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_job_template:
+    name: "{{ matrix_domain }} - 1 - Configure Website + Access Backup"
+    description: "Configure base domain website settings and access the services backup."
+    extra_vars: "{{ lookup('file', '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/extra_vars.json') }}"
+    job_type: run
+    job_tags: "start,setup-nginx-proxy"
+    inventory: "{{ member_id }}"
+    project: "{{ member_id }} - Matrix Docker Ansible Deploy"
+    playbook: setup.yml
+    credential: "{{ member_id }} - AWX SSH Key"
+    survey_enabled: true
+    survey_spec: "{{ lookup('file', '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_website_access_backup.json') }}"
+    become_enabled: yes
+    state: present
+    verbosity: 1
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+
+# Copied over from provision stage
+
+- name: Copy ssh_sftp.service file
+  copy:
+    src: './roles/matrix-awx/templates/sftp/ssh_sftp.service'
+    dest: '/lib/systemd/system/ssh_sftp.service'
+    mode: 0644
+
+- name: Copy sshd config file
+  copy:
+    src: './roles/matrix-awx/templates/sftp/sshd_sftp_config'
+    dest: '/etc/ssh/sshd_sftp_config'
+    mode: 0644
+
+- name: Ensure group "sftp" exists
+  group:
+    name: sftp
+    state: present
+
+- name: If user defines sftp_password, enable account / set password on 'stfp' account.
+  user:
+    name: sftp
+    comment: SFTP user to set custom web files
+    shell: /bin/false
+    home: /home/sftp/
+    group: sftp
+    password: "{{ sftp_password | password_hash('sha512') }}"
+    update_password: always
+  when: (sftp_password is defined) and (sftp_password|length > 0)
+
+# would be safer if it generated the password for you!
+
+- name: Setup SFTP users default root path
+  shell: sudo usermod -d / sftp
+
+- name: adding existing user 'sftp' to group matrix
+  user:
+    name: sftp
+    groups: matrix
+    append: yes
+
+- name: Create the ro /chroot directory with sticky bit if it doesn't exist. (/chroot/website has matrix:matrix permissions and is mounted to nginx container)
+  file:
+    path: /chroot
+    state: directory
+    owner: root
+    group: root
+    mode: '1755'
+
+- name: Create the rw /chroot/website directory if it doesn't exist.
+  file:
+    path: /chroot/website
+    state: directory
+    owner: matrix
+    group: matrix
+    mode: '0574'
+
+- name: Ensure /chroot/backup/ location exists
+  file:
+    path: /chroot/backup
+    state: directory
+    owner: sftp
+    group: sftp
+    mode: '0700'
+
+- name: Enable service ssh_sftp.service
+  service:
+    name: ssh_sftp.service
+    enabled: yes
+
+- name: Start service ssh_sftp.service
+  service:
+    name: ssh_sftp.service
+    state: started
+
