@@ -289,7 +289,7 @@ matrix_mailer_enabled: false
 
 # You can also disable this to save more RAM,
 # at the expense of audio/video calls being unreliable.
-matrix_coturn_enabled: true
+matrix_coturn_enabled: false
 
 # This makes Synapse not keep track of who is online/offline.
 #
