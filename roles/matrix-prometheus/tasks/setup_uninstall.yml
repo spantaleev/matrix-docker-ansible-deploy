@@ -23,9 +23,3 @@
   service:
     daemon_reload: yes
   when: "matrix_prometheus_service_stat.stat.exists|bool"
-
-- name: Ensure matrix-prometheus Docker image doesn't exist
-  docker_image:
-    name: "{{ matrix_prometheus_docker_image }}"
-    state: absent
-  when: "not matrix_prometheus_enabled|bool"
