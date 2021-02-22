@@ -59,9 +59,7 @@ matrix-postgres \
 > /matrix/postgres.sql.gz
 ```
 
-If you are using an [external Postgres server](configuring-playbook-external-postgres.md), the above command will not work, because the credentials file (`/matrix/postgres/env-postgres-psql`) is not available.
-
-If your server is on the ARM32 [architecture](alternative-architectures.md), you may need to remove the `-alpine` suffix from the image name in the command above.
+If you are using an [external Postgres server](configuring-playbook-external-postgres.md), the above command will not work, because neither the credentials file (`/matrix/postgres/env-postgres-psql`), nor the `matrix-postgres` container is available.
 
 Restoring a backup made this way can be done by [importing it](importing-postgres.md).
 
