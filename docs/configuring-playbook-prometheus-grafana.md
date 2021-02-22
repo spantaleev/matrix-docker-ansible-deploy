@@ -4,6 +4,8 @@ It can be useful to have some (visual) insight into the performance of your home
 
 You can enable this with the following settings in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
+Remember to add `stats.<your-domain>` to DNS as described in [Configuring DNS](configuring-dns.md) before running the playbook.
+
 ```yaml
 matrix_prometheus_enabled: true
 
