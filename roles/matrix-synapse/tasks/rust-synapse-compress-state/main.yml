@@ -100,7 +100,7 @@
           The following rooms contain more than {{ matrix_synapse_rust_synapse_compress_state_min_state_groups_required }} state group rows
           (configurable via `matrix_synapse_rust_synapse_compress_state_min_state_groups_required`)
           and will be compressed:
-          {{ matrix_synapse_rust_synapse_compress_state_eligible_rooms }}
+          {{ matrix_synapse_rust_synapse_compress_state_eligible_rooms | to_nice_json(indent=2) }}
 
     - name: Compress room state
       include_tasks: "{{ role_path }}/tasks/rust-synapse-compress-state/compress_room.yml"
