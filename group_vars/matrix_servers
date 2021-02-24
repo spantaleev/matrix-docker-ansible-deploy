@@ -1074,6 +1074,9 @@ matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "127.0.0.1:1
 matrix_nginx_proxy_proxy_synapse_enabled: "{{ matrix_synapse_enabled }}"
 matrix_nginx_proxy_proxy_synapse_federation_api_enabled: "{{ matrix_nginx_proxy_proxy_matrix_federation_api_enabled }}"
 
+# When matrix-nginx-proxy is disabled, the actual port number that the vhost uses may begin to matter.
+matrix_nginx_proxy_proxy_matrix_federation_port: "{{ matrix_federation_public_port }}"
+
 matrix_nginx_proxy_container_federation_host_bind_port: "{{ matrix_federation_public_port }}"
 
 # This used to be hooked to `matrix_synapse_metrics_enabled`, but we don't do it anymore.
@@ -1224,7 +1227,7 @@ matrix_postgres_additional_databases: |
       'username': matrix_mautrix_instagram_database_username,
       'password': matrix_mautrix_instagram_database_password,
     }] if (matrix_mautrix_instagram_enabled and matrix_mautrix_instagram_database_engine == 'postgres' and matrix_mautrix_instagram_database_hostname == 'matrix-postgres') else [])
-    +    
+    +
     ([{
       'name': matrix_mautrix_signal_database_name,
       'username': matrix_mautrix_signal_database_username,

@@ -199,10 +199,10 @@ server {
 #}
 server {
 	{% if matrix_nginx_proxy_https_enabled %}
-		listen 8448 ssl http2;
-		listen [::]:8448 ssl http2;
+		listen {{ matrix_nginx_proxy_proxy_matrix_federation_port }} ssl http2;
+		listen [::]:{{ matrix_nginx_proxy_proxy_matrix_federation_port }} ssl http2;
 	{% else %}
-		listen 8448;
+		listen {{ matrix_nginx_proxy_proxy_matrix_federation_port }};
 	{% endif %}
 
 	server_name {{ matrix_nginx_proxy_proxy_matrix_hostname }};
