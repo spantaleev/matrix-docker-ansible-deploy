@@ -6,8 +6,9 @@ matrix_mautrix_instagram_enabled: true
 matrix_mautrix_instagram_container_image_self_build: false
 matrix_mautrix_instagram_container_image_self_build_repo: "https://github.com/tulir/mautrix-instagram.git"
 
+matrix_mautrix_instagram_version: latest
 # See: https://mau.dev/tulir/mautrix-instagram/container_registry
-matrix_mautrix_instagram_docker_image: "{{ matrix_mautrix_instagram_docker_image_name_prefix }}tulir/mautrix-instagram:latest"
+matrix_mautrix_instagram_docker_image: "{{ matrix_mautrix_instagram_docker_image_name_prefix }}tulir/mautrix-instagram:{{ matrix_mautrix_instagram_version }}"
 matrix_mautrix_instagram_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_instagram_container_image_self_build else 'dock.mau.dev/' }}"
 matrix_mautrix_instagram_docker_image_force_pull: "{{ matrix_mautrix_instagram_docker_image.endswith(':latest') }}"
 
@@ -16,7 +17,7 @@ matrix_mautrix_instagram_config_path: "{{ matrix_mautrix_instagram_base_path }}/
 matrix_mautrix_instagram_data_path: "{{ matrix_mautrix_instagram_base_path }}/data"
 matrix_mautrix_instagram_docker_src_files_path: "{{ matrix_mautrix_instagram_base_path }}/docker-src"
 
-matrix_mautrix_instagram_homeserver_address: 'http://matrix-synapse:8008'
+matrix_mautrix_instagram_homeserver_address: "{{ matrix_homeserver_container_url }}"
 matrix_mautrix_instagram_homeserver_domain: '{{ matrix_domain }}'
 matrix_mautrix_instagram_appservice_address: 'http://matrix-mautrix-instagram:29330'
 
@@ -34,7 +35,7 @@ matrix_mautrix_instagram_homeserver_token: ''
 
 
 # Database-related configuration fields.
-# 
+#
 # To use Postgres:
 # - adjust your database credentials via the `matrix_mautrix_instagram_postgres_*` variables
 matrix_mautrix_instagram_database_engine: 'postgres'

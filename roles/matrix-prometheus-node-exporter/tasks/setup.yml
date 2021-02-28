@@ -52,9 +52,3 @@
   service:
     daemon_reload: yes
   when: "not matrix_prometheus_node_exporter_enabled|bool and matrix_prometheus_node_exporter_service_stat.stat.exists"
-
-- name: Ensure matrix-prometheus-node-exporter Docker image doesn't exist
-  docker_image:
-    name: "{{ matrix_prometheus_node_exporter_docker_image }}"
-    state: absent
-  when: "not matrix_prometheus_node_exporter_enabled|bool"

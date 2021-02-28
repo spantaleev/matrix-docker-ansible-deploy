@@ -2,7 +2,8 @@ matrix_etherpad_enabled: false
 
 matrix_etherpad_base_path: "{{ matrix_base_data_path }}/etherpad"
 
-matrix_etherpad_docker_image: "docker.io/etherpad/etherpad:1.8.7"
+matrix_etherpad_version: 1.8.7
+matrix_etherpad_docker_image: "docker.io/etherpad/etherpad:{{ matrix_etherpad_version }}"
 matrix_etherpad_docker_image_force_pull: "{{ matrix_etherpad_docker_image.endswith(':latest') }}"
 
 # List of systemd services that matrix-etherpad.service depends on.
@@ -22,12 +23,7 @@ matrix_etherpad_user_gid: '5001'
 matrix_etherpad_container_http_host_bind_port: ''
 
 # A list of extra arguments to pass to the container
-#
-# We assume that a reverse proxy is used and tell the container to trust it
-#   Details: https://github.com/ether/etherpad-lite/blob/develop/doc/docker.md
-matrix_etherpad_container_extra_arguments: [
-  '--env TRUST_PROXY=true'
-]
+matrix_etherpad_container_extra_arguments: []
 
 matrix_etherpad_public_endpoint: '/etherpad'
 

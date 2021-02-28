@@ -28,7 +28,7 @@
     - "{{ matrix_grafana_config_path }}/dashboards"
     - "{{ matrix_grafana_data_path }}"
   when: matrix_grafana_enabled|bool
-  
+
 - name: Ensure grafana.ini present
   template:
     src: "{{ role_path }}/templates/grafana.ini.j2"
@@ -37,7 +37,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   when: matrix_grafana_enabled|bool
-  
+
 - name: Ensure provisioning/datasources/default.yaml present
   template:
     src: "{{ role_path }}/templates/datasources.yaml.j2"
@@ -46,7 +46,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   when: matrix_grafana_enabled|bool
-  
+
 - name: Ensure provisioning/dashboards/default.yaml present
   template:
     src: "{{ role_path }}/templates/dashboards.yaml.j2"
@@ -55,7 +55,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   when: matrix_grafana_enabled|bool
-  
+
 - name: Ensure dashboard(s) downloaded
   get_url:
     url: "{{ item }}"
@@ -108,8 +108,3 @@
     daemon_reload: yes
   when: "not matrix_grafana_enabled|bool and matrix_grafana_service_stat.stat.exists"
 
-- name: Ensure matrix-grafana Docker image doesn't exist
-  docker_image:
-    name: "{{ matrix_grafana_docker_image }}"
-    state: absent
-  when: "not matrix_grafana_enabled|bool"

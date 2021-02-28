@@ -4,7 +4,7 @@ The playbook can install and configure [mautrix-telegram](https://github.com/tul
 
 See the project's [documentation](https://github.com/tulir/mautrix-telegram/wiki#usage) to learn what it does and why it might be useful to you.
 
-You'll need to obtain API keys from `https://my.telegram.org/apps` and then use the following playbook configuration:
+You'll need to obtain API keys from [https://my.telegram.org/apps](https://my.telegram.org/apps) and then use the following playbook configuration:
 
 ```yaml
 matrix_mautrix_telegram_enabled: true

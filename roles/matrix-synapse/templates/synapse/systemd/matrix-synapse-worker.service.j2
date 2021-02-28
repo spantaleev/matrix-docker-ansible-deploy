@@ -22,6 +22,11 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name {{ matrix_synapse_wor
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_synapse_tmp_directory_size_mb }}m \
 			--network={{ matrix_docker_network }} \
+			{% if matrix_synapse_worker_details.port != 0 %}
+			--health-cmd 'curl -fSs http://localhost:{{ matrix_synapse_worker_details.port }}/health || exit 1' \
+			{% else %}
+			--no-healthcheck \
+			{% endif %}
 			{% if matrix_synapse_workers_enabled and matrix_synapse_workers_container_host_bind_address %}
 			{% if matrix_synapse_worker_details.port != 0 %}
 			-p {{ '' if matrix_synapse_workers_container_host_bind_address == '*' else (matrix_synapse_workers_container_host_bind_address + ':') }}{{ matrix_synapse_worker_details.port }}:{{ matrix_synapse_worker_details.port }} \

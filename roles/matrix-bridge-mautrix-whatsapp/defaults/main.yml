@@ -3,15 +3,16 @@
 
 matrix_mautrix_whatsapp_enabled: true
 
+matrix_mautrix_whatsapp_version: latest
 # See: https://mau.dev/tulir/mautrix-whatsapp/container_registry
-matrix_mautrix_whatsapp_docker_image: "dock.mau.dev/tulir/mautrix-whatsapp:latest"
+matrix_mautrix_whatsapp_docker_image: "dock.mau.dev/tulir/mautrix-whatsapp:{{ matrix_mautrix_whatsapp_version }}"
 matrix_mautrix_whatsapp_docker_image_force_pull: "{{ matrix_mautrix_whatsapp_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_whatsapp_base_path: "{{ matrix_base_data_path }}/mautrix-whatsapp"
 matrix_mautrix_whatsapp_config_path: "{{ matrix_mautrix_whatsapp_base_path }}/config"
 matrix_mautrix_whatsapp_data_path: "{{ matrix_mautrix_whatsapp_base_path }}/data"
 
-matrix_mautrix_whatsapp_homeserver_address: "http://matrix-synapse:8008"
+matrix_mautrix_whatsapp_homeserver_address: "{{ matrix_homeserver_container_url }}"
 matrix_mautrix_whatsapp_homeserver_domain: "{{ matrix_domain }}"
 matrix_mautrix_whatsapp_appservice_address: "http://matrix-mautrix-whatsapp:8080"
 

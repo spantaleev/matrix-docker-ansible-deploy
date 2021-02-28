@@ -51,20 +51,15 @@ ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-vacuum,start
 To make a back up of the current PostgreSQL database, make sure it's running and then execute a command like this on the server:
 
 ```bash
-docker run \
---rm \
---log-driver=none \
---network=matrix \
+/usr/bin/docker exec \
 --env-file=/matrix/postgres/env-postgres-psql \
-docker.io/postgres:13.1-alpine \
-pg_dumpall -h matrix-postgres \
+matrix-postgres \
+/usr/local/bin/pg_dumpall -h matrix-postgres \
 | gzip -c \
-> /postgres.sql.gz
+> /matrix/postgres.sql.gz
 ```
 
-If you are using an [external Postgres server](configuring-playbook-external-postgres.md), the above command will not work, because the credentials file (`/matrix/postgres/env-postgres-psql`) is not available.
-
-If your server is on the ARM32 [architecture](alternative-architectures.md), you may need to remove the `-alpine` suffix from the image name in the command above.
+If you are using an [external Postgres server](configuring-playbook-external-postgres.md), the above command will not work, because neither the credentials file (`/matrix/postgres/env-postgres-psql`), nor the `matrix-postgres` container is available.
 
 Restoring a backup made this way can be done by [importing it](importing-postgres.md).
 

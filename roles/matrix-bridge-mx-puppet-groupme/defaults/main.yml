@@ -11,7 +11,8 @@ matrix_mx_puppet_groupme_container_image_self_build_repo: "https://gitlab.com/ro
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8437"), or empty string to not expose.
 matrix_mx_puppet_groupme_container_http_host_bind_port: ''
 
-matrix_mx_puppet_groupme_docker_image: "{{ matrix_mx_puppet_groupme_docker_image_name_prefix }}xangelix/mx-puppet-groupme:latest"
+matrix_mx_puppet_groupme_version: latest
+matrix_mx_puppet_groupme_docker_image: "{{ matrix_mx_puppet_groupme_docker_image_name_prefix }}xangelix/mx-puppet-groupme:{{ matrix_mx_puppet_groupme_version }}"
 matrix_mx_puppet_groupme_docker_image_name_prefix: "{{ 'localhost/' if matrix_mx_puppet_groupme_container_image_self_build else 'docker.io/' }}"
 matrix_mx_puppet_groupme_docker_image_force_pull: "{{ matrix_mx_puppet_groupme_docker_image.endswith(':latest') }}"
 
@@ -22,7 +23,7 @@ matrix_mx_puppet_groupme_docker_src_files_path: "{{ matrix_mx_puppet_groupme_bas
 
 matrix_mx_puppet_groupme_appservice_port: "8437"
 
-matrix_mx_puppet_groupme_homeserver_address: 'http://matrix-synapse:8008'
+matrix_mx_puppet_groupme_homeserver_address: "{{ matrix_homeserver_container_url }}"
 matrix_mx_puppet_groupme_homeserver_domain: '{{ matrix_domain }}'
 matrix_mx_puppet_groupme_appservice_address: 'http://matrix-mx-puppet-groupme:{{ matrix_mx_puppet_groupme_appservice_port }}'
 

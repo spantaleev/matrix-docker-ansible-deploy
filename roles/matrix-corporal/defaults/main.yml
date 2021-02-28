@@ -22,9 +22,10 @@ matrix_corporal_container_extra_arguments: []
 # List of systemd services that matrix-corporal.service depends on
 matrix_corporal_systemd_required_services_list: ['docker.service']
 
+matrix_corporal_version: 2.1.0
 matrix_corporal_docker_image: "{{ matrix_corporal_docker_image_name_prefix }}devture/matrix-corporal:{{ matrix_corporal_docker_image_tag }}"
 matrix_corporal_docker_image_name_prefix: "{{ 'localhost/' if matrix_corporal_container_image_self_build else 'docker.io/' }}"
-matrix_corporal_docker_image_tag: "2.1.0"
+matrix_corporal_docker_image_tag: "{{ matrix_corporal_version }}" # for backward-compatibility
 matrix_corporal_docker_image_force_pull: "{{ matrix_corporal_docker_image.endswith(':latest') }}"
 
 matrix_corporal_base_path: "{{ matrix_base_data_path }}/corporal"

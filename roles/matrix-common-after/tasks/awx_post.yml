@@ -2,7 +2,7 @@
 
 - name: Create user account
   command: |
-    /usr/local/bin/matrix-synapse-register-user janitor '{{ matrix_awx_janitor_user_password }}' 1
+    /usr/local/bin/matrix-synapse-register-user janitor {{ matrix_awx_janitor_user_password | quote }} 1
   register: cmd
   when: not matrix_awx_janitor_user_created|bool
   no_log: True
