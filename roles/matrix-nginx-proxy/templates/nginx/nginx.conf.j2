@@ -8,14 +8,13 @@
 # - various temp paths are changed to `/tmp`, so that a non-root user can write to them
 # - the `user` directive was removed, as we don't want nginx to switch users
 
-worker_processes 1;
-
+worker_processes {{ matrix_nginx_proxy_worker_processes }};
 error_log /var/log/nginx/error.log warn;
 pid /tmp/nginx.pid;
 
 
 events {
-	worker_connections 1024;
+	worker_connections {{ matrix_nginx_proxy_worker_connections }};
 }
 
 
