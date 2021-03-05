@@ -6,7 +6,7 @@ To configure the playbook, you need to have done the following things:
 - [configured your DNS records](configuring-dns.md)
 - [retrieved the playbook's source code](getting-the-playbook.md) to your computer
 
-You can then initialize the the configuration files `vars.yml` and `hosts` by running `./initialize.sh`. If you need to change the variables, you can opt to run the script again.
+You can then initialize the configuration files `vars.yml` and `hosts` by running `./initialize.sh`. If you need to change the variables, you can opt to run the script again.
 
 For a basic Matrix installation, that's all you need.
 For a more custom setup, see the [Other configuration options](#other-configuration-options) below.
