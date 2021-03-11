@@ -1,0 +1,50 @@
+---
+
+- set_fact:
+    matrix_bot_go_neb_requires_restart: false
+
+- name: Ensure go-neb paths exist
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - { path: "{{ matrix_bot_go_neb_config_path }}", when: true }
+    - { path: "{{ matrix_bot_go_neb_data_path }}", when: true }
+    - { path: "{{ matrix_bot_go_neb_data_store_path }}", when: true }
+  when: "item.when|bool"
+
+- name: Ensure go-neb image is pulled
+  docker_image:
+    name: "{{ matrix_bot_go_neb_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_bot_go_neb_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_go_neb_docker_image_force_pull }}"
+
+- name: Ensure go-neb config installed
+  copy:
+    content: "{{ matrix_bot_go_neb_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_bot_go_neb_config_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-bot-go-neb.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-bot-go-neb.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-bot-go-neb.service"
+    mode: 0644
+  register: matrix_bot_go_neb_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-bot-go-neb.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_bot_go_neb_systemd_service_result.changed|bool"
+
+- name: Ensure matrix-bot-go-neb.service restarted, if necessary
+  service:
+    name: "matrix-bot-go-neb.service"
+    state: restarted
+  when: "matrix_bot_go_neb_requires_restart|bool"
