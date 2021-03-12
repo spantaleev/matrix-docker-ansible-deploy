@@ -22,6 +22,9 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-bot-go-neb \
 			--cap-drop=ALL \
 			--read-only \
 			--network={{ matrix_docker_network }} \
+                        {% if matrix_bot_go_neb_container_http_host_bind_port %}
+                        -p {{ matrix_bot_go_neb_container_http_host_bind_port }}:4050 \
+                        {% endif %}
 			-e 'BIND_ADDRESS=:4050' \
 			-e 'DATABASE_TYPE={{ matrix_bot_go_neb_database_engine }}' \
 			-e 'BASE_URL=https://{{ matrix_server_fqn_bot_go_neb }}' \
