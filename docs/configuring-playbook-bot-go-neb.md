@@ -42,23 +42,23 @@ matrix_bot_go_neb_enabled: true
 
 # You need at least 1 client.
 matrix_bot_go_neb_clients:
-  - UserID: "@goneb:localhost"
+  - UserID: "@goneb:{{ matrix_domain }}"
     AccessToken: "MDASDASJDIASDJASDAFGFRGER"
     DeviceID: "DEVICE1"
     HomeserverURL: "{{ matrix_homeserver_container_url }}"
     Sync: true
     AutoJoinRooms: true
     DisplayName: "Go-NEB!"
-    AcceptVerificationFromUsers: [":localhost:8008"]
+    AcceptVerificationFromUsers: [":{{ matrix_domain }}"]
 
-  - UserID: "@another_goneb:localhost"
+  - UserID: "@another_goneb:{{ matrix_domain }}"
     AccessToken: "MDASDASJDIASDJASDAFGFRGER"
     DeviceID: "DEVICE2"
     HomeserverURL: "{{ matrix_homeserver_container_url }}"
     Sync: false
     AutoJoinRooms: false
     DisplayName: "Go-NEB!"
-    AcceptVerificationFromUsers: ["^@admin:localhost:8008$"]
+    AcceptVerificationFromUsers: ["^@admin:{{ matrix_domain }}"]
 
 # Optional, for use with the github_cmd, github_webhooks or jira services
 matrix_bot_go_neb_realms:
@@ -70,7 +70,7 @@ matrix_bot_go_neb_realms:
 matrix_bot_go_neb_sessions:
   - SessionID: "your_github_session"
     RealmID: "github_realm"
-    UserID: "@YOUR_USER_ID:localhost" # This needs to be the username of the person that's allowed to use the !github commands
+    UserID: "@YOUR_USER_ID:{{ matrix_domain }}" # This needs to be the username of the person that's allowed to use the !github commands
     Config:
       # Populate these fields by generating a "Personal Access Token" on github.com
       AccessToken: "YOUR_GITHUB_ACCESS_TOKEN"
@@ -84,13 +84,13 @@ matrix_bot_go_neb_sessions:
 matrix_bot_go_neb_services:
   - ID: "echo_service"
     Type: "echo"
-    UserID: "@goneb:localhost"
+    UserID: "@goneb:{{ matrix_domain }}"
     Config: {}
 
 # Can be obtained from https://developers.giphy.com/dashboard/
   - ID: "giphy_service"
     Type: "giphy"
-    UserID: "@goneb:localhost" # requires a Syncing client
+    UserID: "@goneb:{{ matrix_domain }}" # requires a Syncing client
     Config:
       api_key: "qwg4672vsuyfsfe"
       use_downsized: false
@@ -98,7 +98,7 @@ matrix_bot_go_neb_services:
 # This service has been dead for over a year :/
   - ID: "guggy_service"
     Type: "guggy"
-    UserID: "@goneb:localhost" # requires a Syncing client
+    UserID: "@goneb:{{ matrix_domain }}" # requires a Syncing client
     Config:
       api_key: "2356saaqfhgfe"
 
@@ -108,31 +108,32 @@ matrix_bot_go_neb_services:
 # 'Search the entire web' and 'Image search' enabled for best results
   - ID: "google_service"
     Type: "google"
-    UserID: "@goneb:localhost" # requires a Syncing client
+    UserID: "@goneb:{{ matrix_domain }}" # requires a Syncing client
     Config:
       api_key: "AIzaSyA4FD39m9"
       cx: "AIASDFWSRRtrtr"
 
 # Get a key via https://api.imgur.com/oauth2/addclient
-# Select "oauth2 without callback url" and use the clientid as api_key value
+# Select "oauth2 without callback url"
   - ID: "imgur_service"
     Type: "imgur"
-    UserID: "@imgur:localhost" # requires a Syncing client
+    UserID: "@imgur:{{ matrix_domain }}" # requires a Syncing client
     Config:
-      api_key: "AIzaSyA4FD39m9"
+      client_id: "AIzaSyA4FD39m9"
+      client_secret: "AIzaSyA4FD39m9"
 
   - ID: "wikipedia_service"
     Type: "wikipedia"
-    UserID: "@goneb:localhost" # requires a Syncing client
+    UserID: "@goneb:{{ matrix_domain }}" # requires a Syncing client
     Config:
 
   - ID: "rss_service"
     Type: "rssbot"
-    UserID: "@another_goneb:localhost"
+    UserID: "@another_goneb:{{ matrix_domain }}"
     Config:
       feeds:
         "http://lorem-rss.herokuapp.com/feed?unit=second&interval=60":
-          rooms: ["!qmElAGdFYCHoCJuaNt:localhost"]
+          rooms: ["!qmElAGdFYCHoCJuaNt:{{ matrix_domain }}"]
           must_include:
             author:
               - author1
@@ -146,17 +147,17 @@ matrix_bot_go_neb_services:
 
   - ID: "github_cmd_service"
     Type: "github"
-    UserID: "@goneb:localhost" # requires a Syncing client
+    UserID: "@goneb:{{ matrix_domain }}" # requires a Syncing client
     Config:
       RealmID: "github_realm"
 
     # Make sure your BASE_URL can be accessed by Github!
   - ID: "github_webhook_service"
     Type: "github-webhook"
-    UserID: "@another_goneb:localhost"
+    UserID: "@another_goneb:{{ matrix_domain }}"
     Config:
       RealmID: "github_realm"
-      ClientUserID: "@YOUR_USER_ID:localhost" # needs to be an authenticated user so Go-NEB can create webhooks. Check the UserID field in the github_realm in matrix_bot_go_neb_sessions.
+      ClientUserID: "@YOUR_USER_ID:{{ matrix_domain }}" # needs to be an authenticated user so Go-NEB can create webhooks. Check the UserID field in the github_realm in matrix_bot_go_neb_sessions.
       Rooms:
         "!someroom:id":
           Repos:
@@ -173,7 +174,7 @@ matrix_bot_go_neb_services:
 
   - ID: "slackapi_service"
     Type: "slackapi"
-    UserID: "@slackapi:localhost"
+    UserID: "@slackapi:{{ matrix_domain }}"
     Config:
       Hooks:
         "hook1":
@@ -182,7 +183,7 @@ matrix_bot_go_neb_services:
 
   - ID: "alertmanager_service"
     Type: "alertmanager"
-    UserID: "@alertmanager:localhost"
+    UserID: "@alertmanager:{{ matrix_domain }}"
     Config:
       # This is for information purposes only. It should point to Go-NEB path as follows:
       # `/services/hooks/<base64 encoded service ID>`
