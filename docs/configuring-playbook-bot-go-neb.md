@@ -120,7 +120,7 @@ matrix_bot_go_neb_services:
     UserID: "@imgur:{{ matrix_domain }}" # requires a Syncing client
     Config:
       client_id: "AIzaSyA4FD39m9"
-      client_secret: "AIzaSyA4FD39m9"
+      client_secret: "somesecret"
 
   - ID: "wikipedia_service"
     Type: "wikipedia"
