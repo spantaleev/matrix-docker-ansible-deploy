@@ -1,3 +1,12 @@
+# 2021-03-16
+
+## Go-NEB support
+
+Thanks to [Zir0h](https://github.com/Zir0h), the playbook can now install and configure the [Go-NEB](https://github.com/matrix-org/go-neb) bot.
+
+Additional details are available in [Setting up Go-NEB](docs/configuring-playbook-bot-go-neb.md).
+
+
 # 2021-02-19
 
 ## GroupMe bridging support via mx-puppet-groupme
