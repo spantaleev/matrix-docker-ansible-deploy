@@ -1,0 +1,44 @@
+# Go-NEB Configuration File
+#
+# This file provides an alternative way to configure Go-NEB which does not involve HTTP APIs.
+#
+# This file can be supplied to go-neb by the environment variable `CONFIG_FILE=config.yaml`.
+# It will force Go-NEB to operate in "config" mode. This means:
+#   - Go-NEB will ONLY use the data contained inside this file.
+#   - All of Go-NEB's /admin HTTP listeners will be disabled. You will be unable to add new services at runtime.
+#   - The environment variable `DATABASE_URL` will be ignored and an in-memory database will be used instead.
+#
+# This file is broken down into 4 sections which matches the following HTTP APIs:
+#   - /configureClient
+#   - /configureAuthRealm
+#   - /configureService
+#   - /requestAuthSession (redirects not supported)
+
+# The list of clients which Go-NEB is aware of.
+# Delete or modify this list as appropriate.
+# See the docs for /configureClient for the full list of options:
+# https://matrix-org.github.io/go-neb/pkg/github.com/matrix-org/go-neb/api/index.html#ClientConfig
+clients:
+  {{ matrix_bot_go_neb_clients|to_json }}
+
+# The list of realms which Go-NEB is aware of.
+# Delete or modify this list as appropriate.
+# See the docs for /configureAuthRealm for the full list of options:
+# https://matrix-org.github.io/go-neb/pkg/github.com/matrix-org/go-neb/api/index.html#ConfigureAuthRealmRequest
+realms:
+  {{ matrix_bot_go_neb_realms|to_json }}
+
+# The list of *authenticated* sessions which Go-NEB is aware of.
+# Delete or modify this list as appropriate.
+# The full list of options are shown below: there is no single HTTP endpoint
+# which maps to this section.
+# https://matrix-org.github.io/go-neb/pkg/github.com/matrix-org/go-neb/api/index.html#Session
+sessions:
+  {{ matrix_bot_go_neb_sessions|to_json }}
+
+# The list of services which Go-NEB is aware of.
+# Delete or modify this list as appropriate.
+# See the docs for /configureService for the full list of options:
+# https://matrix-org.github.io/go-neb/pkg/github.com/matrix-org/go-neb/api/index.html#ConfigureServiceRequest
+services:
+  {{ matrix_bot_go_neb_services|to_json }}
