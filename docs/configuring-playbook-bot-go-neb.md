@@ -7,7 +7,7 @@ Go-NEB is a Matrix bot written in Go. It is the successor to Matrix-NEB, the ori
 See the project's [documentation](https://github.com/matrix-org/go-neb) to learn what it does and why it might be useful to you.
 
 
-## Registering the bot users
+## Registering the bot user
 
 The playbook does not automatically create users for you. The bot requires at least 1 access token to be able to connect to your homeserver.
 
@@ -15,7 +15,16 @@ You **need to register the bot user manually** before setting up the bot.
 
 Choose a strong password for the bot. You can generate a good password with a command like this: `pwgen -s 64 1`.
 
-If you use curl, you can immediatly copy/paste the access token into the configuration file.
+You can use the playbook to [register a new user](registering-users.md):
+
+```
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.go-neb password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
+```
+
+
+## Getting an access token
+
+If you use curl, you can get an access token like this:
 
 ```
 curl -X POST --header 'Content-Type: application/json' -d '{
@@ -25,13 +34,8 @@ curl -X POST --header 'Content-Type: application/json' -d '{
 }' 'https://matrix.YOURDOMAIN/_matrix/client/r0/login'
 ```
 
-You can use also use the playbook to [register a new user](registering-users.md):
+Alternatively, you can use a full-featured client (such as Element) to log in and get the access token from there (note: don't log out from the client as that will invalidate the token), but doing so might lead to decryption problems. That warning comes from [here](https://github.com/matrix-org/go-neb#quick-start).
 
-```
-ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.go-neb password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
-```
-
-And then log in via element, but doing so might lead to decryption problems. That warning comes from [here](https://github.com/matrix-org/go-neb#quick-start)
 
 ## Adjusting the playbook configuration
 
@@ -41,6 +45,7 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 matrix_bot_go_neb_enabled: true
 
 # You need at least 1 client.
+# Use the access token you obtained in the step above.
 matrix_bot_go_neb_clients:
   - UserID: "@goneb:{{ matrix_domain }}"
     AccessToken: "MDASDASJDIASDJASDAFGFRGER"
