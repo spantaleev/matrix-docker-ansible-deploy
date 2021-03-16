@@ -6,7 +6,7 @@ The playbook can install and configure [docker-postgres-backup-local](https://gi
 
 | Name                              | Default value                | Description                                                      |
 | :-------------------------------- | :--------------------------- | :--------------------------------------------------------------- |
-|matrix_postgres_backaup_enabled|false|Set to true to use [docker-postgres-backup-local](https://github.com/prodrigestivill/docker-postgres-backup-local) to create automatic database backups|
+|matrix_postgres_backup_enabled|false|Set to true to use [docker-postgres-backup-local](https://github.com/prodrigestivill/docker-postgres-backup-local) to create automatic database backups|
 |matrix_postgres_backup_schedule| '@daily' |Cron-schedule specifying the interval between postgres backups.|
 |matrix_postgres_backup_keep_days|"7"|Number of daily backups to keep|
 |matrix_postgres_backup_keep_weeks|"4"|Number of weekly backups to keep|
