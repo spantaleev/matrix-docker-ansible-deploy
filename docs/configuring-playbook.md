@@ -8,15 +8,15 @@ To configure the playbook, you need to have done the following things:
 
 You can then follow these steps inside the playbook directory:
 
-- create a directory to hold your configuration (`mkdir inventory/host_vars/matrix.<your-domain>`)
+1. create a directory to hold your configuration (`mkdir inventory/host_vars/matrix.<your-domain>`)
 
-- copy the sample configuration file (`cp examples/vars.yml inventory/host_vars/matrix.<your-domain>/vars.yml`)
+1. copy the sample configuration file (`cp examples/vars.yml inventory/host_vars/matrix.<your-domain>/vars.yml`)
 
-- edit the configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) to your liking. You may also take a look at the various `roles/ROLE_NAME_HERE/defaults/main.yml` files and see if there's something you'd like to copy over and override in your `vars.yml` configuration file.
+1. edit the configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) to your liking. You may also take a look at the various `roles/ROLE_NAME_HERE/defaults/main.yml` files and see if there's something you'd like to copy over and override in your `vars.yml` configuration file.
 
-- copy the sample inventory hosts file (`cp examples/hosts inventory/hosts`)
+1. copy the sample inventory hosts file (`cp examples/hosts inventory/hosts`)
 
-- edit the inventory hosts file (`inventory/hosts`) to your liking
+1. edit the inventory hosts file (`inventory/hosts`) to your liking
 
 
 For a basic Matrix installation, that's all you need.
@@ -130,3 +130,5 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 ### Bots
 
 - [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) (optional)
+
+- [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) (optional)

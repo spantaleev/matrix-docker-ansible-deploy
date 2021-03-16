@@ -747,6 +747,29 @@ matrix_bot_matrix_reminder_bot_database_password: "{{ matrix_synapse_macaroon_se
 
 ######################################################################
 #
+# matrix-bot-go-neb
+#
+######################################################################
+
+# We don't enable bots by default.
+matrix_bot_go_neb_enabled: false
+
+matrix_bot_go_neb_systemd_required_services_list: |
+  {{
+    ['docker.service']
+  }}
+
+matrix_bot_go_neb_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:4050' }}"
+
+######################################################################
+#
+# /matrix-bot-go-neb
+#
+######################################################################
+
+
+######################################################################
+#
 # matrix-corporal
 #
 ######################################################################
@@ -921,9 +944,9 @@ matrix_jitsi_enabled: false
 # Normally, matrix-nginx-proxy is enabled and nginx can reach jitsi/web over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # the Jitsi HTTP port to the local host.
-matrix_jitsi_web_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:12080' }}"
+matrix_jitsi_web_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:13080' }}"
 
-matrix_jitsi_jvb_container_colibri_ws_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:12090' }}"
+matrix_jitsi_jvb_container_colibri_ws_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:13090' }}"
 
 matrix_jitsi_jibri_xmpp_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'jibri') | to_uuid }}"
 matrix_jitsi_jicofo_auth_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'jicofo') | to_uuid }}"
@@ -1069,6 +1092,7 @@ matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain: "{{ matrix_s
 matrix_nginx_proxy_proxy_matrix_enabled: true
 matrix_nginx_proxy_proxy_element_enabled: "{{ matrix_client_element_enabled }}"
 matrix_nginx_proxy_proxy_dimension_enabled: "{{ matrix_dimension_enabled }}"
+matrix_nginx_proxy_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled }}"
 matrix_nginx_proxy_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
 matrix_nginx_proxy_proxy_grafana_enabled: "{{ matrix_grafana_enabled }}"
 
@@ -1138,6 +1162,8 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     ([matrix_nginx_proxy_proxy_riot_compat_redirect_hostname] if matrix_nginx_proxy_proxy_riot_compat_redirect_enabled else [])
     +
     ([matrix_server_fqn_dimension] if matrix_dimension_enabled else [])
+    +
+    ([matrix_server_fqn_bot_go_neb] if matrix_bot_go_neb_enabled else [])
     +
     ([matrix_server_fqn_jitsi] if matrix_jitsi_enabled else [])
     +

@@ -33,7 +33,7 @@
       curl -sku {{ tower_username }}:{{ tower_password }} -H "Content-Type: application/json" -X POST -d '{"description":"Tower CLI", "application":null, "scope":"write"}' https://{{ tower_host }}/api/v2/users/1/personal_tokens/ | jq '.token' | sed -r 's/\"//g'
   register: tower_token
   no_log: True
-  
+
 - name: Recreate 'Backup Server' job template
   delegate_to: 127.0.0.1
   awx.awx.tower_job_template:
@@ -62,8 +62,7 @@
 - name: Set boolean value to exit playbook
   set_fact:
     end_playbook: true
-  
+
 - name: End playbook if this task list is called.
   meta: end_play
   when: end_playbook is defined and end_playbook|bool
-

@@ -1,0 +1,13 @@
+---
+
+- name: Fail if there's not at least 1 client
+  fail:
+    msg: >-
+      You need at least 1 client in the matrix_bot_go_neb_clients block.
+  when: matrix_bot_go_neb_clients is not defined or matrix_bot_go_neb_clients[0] is not defined
+
+- name: Fail if there's not at least 1 service
+  fail:
+    msg: >-
+      You need at least 1 service in the matrix_bot_go_neb_services block.
+  when: matrix_bot_go_neb_services is not defined or matrix_bot_go_neb_services[0] is not defined

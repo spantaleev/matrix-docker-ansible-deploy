@@ -15,7 +15,7 @@
     'matrix_synapse_max_upload_size_mb': '{{ matrix_synapse_max_upload_size_mb }}'
     'matrix_synapse_url_preview_enabled': '{{ matrix_synapse_url_preview_enabled }}'
     'matrix_synapse_allow_guest_access': '{{ matrix_synapse_allow_guest_access }}'
-  
+
 - name: Empty Synapse variable 'matrix_synapse_auto_join_rooms' locally on AWX, if raw inputs empty
   delegate_to: 127.0.0.1
   replace:
@@ -143,7 +143,7 @@
     line: "    - {{ item }}"
   with_items: "{{ ext_federation_whitelist_raw.splitlines() }}"
   when: ext_federation_whitelist_raw|length > 0
-  
+
 - name: Record Synapse Custom variables locally on AWX
   delegate_to: 127.0.0.1
   lineinfile:
@@ -220,4 +220,3 @@
     tower_host: "https://{{ tower_host }}"
     tower_oauthtoken: "{{ tower_token.stdout }}"
     validate_certs: yes
-

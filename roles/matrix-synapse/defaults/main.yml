@@ -15,8 +15,8 @@ matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_cont
 # amd64 gets released first.
 # arm32 relies on self-building, so the same version can be built immediately.
 # arm64 users need to wait for a prebuilt image to become available.
-matrix_synapse_version: v1.28.0
-matrix_synapse_version_arm64: v1.28.0
+matrix_synapse_version: v1.29.0
+matrix_synapse_version_arm64: v1.29.0
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version if matrix_architecture in ['arm32', 'amd64'] else matrix_synapse_version_arm64 }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -180,6 +180,26 @@ matrix_synapse_allow_public_rooms_without_auth: false
 # Controls whether remote servers can fetch this server's public rooms directory via federation.
 # For private servers, you most likely wish to forbid it.
 matrix_synapse_allow_public_rooms_over_federation: false
+
+# Whether to require authentication to retrieve profile data (avatars,
+# display names) of other users through the client API. Defaults to
+# 'false'. Note that profile data is also available via the federation
+# API, so this setting is of limited value if federation is enabled on
+# the server.
+matrix_synapse_require_auth_for_profile_requests: false
+
+# Set to true to require a user to share a room with another user in order
+# to retrieve their profile information. Only checked on Client-Server
+# requests. Profile requests from other servers should be checked by the
+# requesting server. Defaults to 'false'.
+matrix_synapse_limit_profile_requests_to_users_who_share_rooms: false
+
+# Set to false to prevent a user's profile data from being retrieved and
+# displayed in a room until they have joined it. By default, a user's
+# profile data is included in an invite event, regardless of the values
+# of the above two settings, and whether or not the users share a server.
+# Defaults to 'true'.
+matrix_synapse_include_profile_data_on_invite: true
 
 # Controls whether people with access to the homeserver can register by themselves.
 matrix_synapse_enable_registration: false

@@ -79,7 +79,6 @@ server {
 			location ~ {{ location }} {
 				proxy_pass http://generic_worker_upstream$request_uri;
 				proxy_set_header Host $host;
-				proxy_set_header X-Forwarded-For $remote_addr;
 			}
 			{% endfor %}
 		{% endif %}
@@ -90,7 +89,6 @@ server {
 			location ~ {{ location }} {
 				proxy_pass http://media_repository_upstream$request_uri;
 				proxy_set_header Host $host;
-				proxy_set_header X-Forwarded-For $remote_addr;
 
 				client_body_buffer_size 25M;
 				client_max_body_size {{ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb }}M;
@@ -106,7 +104,6 @@ server {
 			location ~ {{ location }} {
 				proxy_pass http://user_dir_upstream$request_uri;
 				proxy_set_header Host $host;
-				proxy_set_header X-Forwarded-For $remote_addr;
 			}
 			{% endfor %}
 		{% endif %}
@@ -117,7 +114,6 @@ server {
 			location ~ {{ location }} {
 				proxy_pass http://frontend_proxy_upstream$request_uri;
 				proxy_set_header Host $host;
-				proxy_set_header X-Forwarded-For $remote_addr;
 			}
 			{% endfor %}
 			{% if matrix_nginx_proxy_synapse_presence_disabled %}
@@ -125,7 +121,6 @@ server {
 			location ~ ^/_matrix/client/(api/v1|r0|unstable)/presence/[^/]+/status {
 				proxy_pass http://frontend_proxy_upstream$request_uri;
 				proxy_set_header Host $host;
-				proxy_set_header X-Forwarded-For $remote_addr;
 			}
 			{% endif %}
 		{% endif %}
@@ -150,7 +145,6 @@ server {
 		{% endif %}
 
 		proxy_set_header Host $host;
-		proxy_set_header X-Forwarded-For $remote_addr;
 
 		{% if matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled %}
 			auth_basic "protected";
@@ -172,7 +166,6 @@ server {
 		{% endif %}
 
 		proxy_set_header Host $host;
-		proxy_set_header X-Forwarded-For $remote_addr;
 
 		client_body_buffer_size 25M;
 		client_max_body_size {{ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb }}M;
@@ -199,7 +192,6 @@ server {
 			location ~ {{ location }} {
 				proxy_pass http://generic_worker_upstream$request_uri;
 				proxy_set_header Host $host;
-				proxy_set_header X-Forwarded-For $remote_addr;
 			}
 			{% endfor %}
 		{% endif %}
@@ -209,7 +201,6 @@ server {
 			location ~ {{ location }} {
 				proxy_pass http://media_repository_upstream$request_uri;
 				proxy_set_header Host $host;
-				proxy_set_header X-Forwarded-For $remote_addr;
 
 				client_body_buffer_size 25M;
 				client_max_body_size {{ matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb }}M;
@@ -231,7 +222,6 @@ server {
 		{% endif %}
 
 		proxy_set_header Host $host;
-		proxy_set_header X-Forwarded-For $remote_addr;
 
 		client_body_buffer_size 25M;
 		client_max_body_size {{ matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb }}M;

@@ -44,14 +44,14 @@
     regexp: '^.*\n'
     after: '# Start ma1sd Extension'
     before: '# End ma1sd Extension'
-    
+
 - name: Replace conjoined ma1sd configuration extension limiters
   delegate_to: 127.0.0.1
   replace:
     path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
     regexp: '^# Start ma1sd Extension# End ma1sd Extension'
     replace: '# Start ma1sd Extension\n# End ma1sd Extension'
-  
+
 - name: Insert ma1sd configuration extension header if using external LDAP/AD with ma1sd
   delegate_to: 127.0.0.1
   lineinfile:
@@ -125,6 +125,5 @@
     tower_host: "https://{{ tower_host }}"
     tower_oauthtoken: "{{ tower_token.stdout }}"
     validate_certs: yes
-    
-# ^ This playbook isn't executing so the survey isn't being updated! :P
 
+# ^ This playbook isn't executing so the survey isn't being updated! :P
