@@ -201,6 +201,8 @@ matrix_bot_go_neb_services:
 
 ## Installing
 
+Don't forget to add `goneb.<your-domain>` to DNS as described in [Configuring DNS](configuring-dns.md) before running the playbook.
+
 After configuring the playbook, run the [installation](installing.md) command again:
 
 ```
