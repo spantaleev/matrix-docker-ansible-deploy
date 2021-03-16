@@ -3,7 +3,6 @@
 #
 # Tasks related to setting up an internal postgres server
 #
-
 - import_tasks: "{{ role_path }}/tasks/util/detect_existing_postgres_version.yml"
   when: matrix_postgres_enabled|bool
 
@@ -32,10 +31,6 @@
     group: "{{ matrix_user_groupname }}"
   with_items:
     - "{{ matrix_postgres_backup_path }}"
-  when: matrix_postgres_backup_enabled|bool
-
-#Build database list to backup 
-- import_tasks: "{{ role_path }}/tasks/build_database_list.yml"
   when: matrix_postgres_backup_enabled|bool
 
 - name: Ensure Postgres environment variables file created
