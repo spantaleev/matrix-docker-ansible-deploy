@@ -1,0 +1,88 @@
+{
+  "name": "Configure Matrix Corporal",
+  "description": "",
+  "spec": [
+    {
+      "question_name": "Enable Corporal",
+      "question_description": "Controls if Matrix Corporal is enabled at all. If you're unsure if you need Matrix Corporal or not, you most likely don't.",
+      "required": true,
+      "min": null,
+      "max": null,
+      "default": "{{ matrix_corporal_enabled|string|lower }}",
+      "choices": "true\nfalse",
+      "new_question": true,
+      "variable": "matrix_corporal_enabled",
+      "type": "multiplechoice"
+    },
+    {
+      "question_name": "Corporal Policy Provider",
+      "question_description": "Controls what provider policy is used with Matrix Corporal.",
+      "required": true,
+      "min": null,
+      "max": null,
+      "default": "{{ matrix_corporal_policy_provider_mode }}",
+      "choices": "Simple Static File\nHTTP Pull Mode (API Enabled)\nHTTP Push Mode (API Enabled)",
+      "new_question": true,
+      "variable": "matrix_corporal_policy_provider_mode",
+      "type": "multiplechoice"
+    },
+    {
+      "question_name": "Simple Static File Configuration",
+      "question_description": "The configuration file for Matrix Corporal, only needed if 'Simple Static File' provider is selected, any configuration entered here will be saved and applied.",
+      "required": false,
+      "min": 0,
+      "max": 65536,
+      "default": "",
+      "new_question": true,
+      "variable": "matrix_corporal_simple_static_config",
+      "type": "textarea"
+    },
+    {
+      "question_name": "HTTP Pull Mode URI",
+      "question_description": "The network address to remotely fetch the configuration from. Only needed if 'HTTP Pull Mode (API Enabled)' provider is selected.",
+      "required": false,
+      "min": 0,
+      "max": 4096,
+      "default": "{{ matrix_corporal_pull_mode_uri }}",
+      "new_question": true,
+      "variable": "matrix_corporal_pull_mode_uri",
+      "type": "text"
+    },
+    {
+      "question_name": "HTTP Pull Mode Authentication Token",
+      "question_description": "An authentication token for pulling the Corporal configuration from a network location. Only needed if 'HTTP Pull Mode (API Enabled)' provider is selected. WARNING: You must set a strong and unique password here.",
+      "required": false,
+      "min": 0,
+      "max": 256,
+      "default": "{{ matrix_corporal_pull_mode_token }}",
+      "choices": "",
+      "new_question": true,
+      "variable": "matrix_corporal_pull_mode_token",
+      "type": "password"
+    },
+    {
+      "question_name": "Corporal API Authentication Token",
+      "question_description": "An authentication token for interfacing with Corporals API. Only needed to be set if 'HTTP Pull Mode (API Enabled)' or 'HTTP Push Mode (API Enabled)' provider is selected. WARNING: You must set a strong and unique password here.",
+      "required": false,
+      "min": 0,
+      "max": 256,
+      "default": "{{ matrix_corporal_http_api_auth_token }}",
+      "choices": "",
+      "new_question": true,
+      "variable": "matrix_corporal_http_api_auth_token",
+      "type": "password"
+    },
+    {
+      "question_name": "Raise Synapse Ratelimits",
+      "question_description": "For Matrix Corporal to work you will need to temporarily raise the rate limits for logins, please return this value to 'Normal' after you're done using Corporal.",
+      "required": false,
+      "min": null,
+      "max": null,
+      "default": "{{ matrix_corporal_raise_ratelimits }}",
+      "choices": "Normal\nRaised",
+      "new_question": true,
+      "variable": "matrix_corporal_raise_ratelimits",
+      "type": "multiplechoice"
+    }
+  ]
+}

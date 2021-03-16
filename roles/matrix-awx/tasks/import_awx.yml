@@ -1,0 +1,23 @@
+
+- name: Ensure /matrix/awx is empty
+  shell: rm -r /matrix/awx/*
+  ignore_errors: yes
+
+- name: Ensure /matrix/synapse is empty
+  shell: rm -r /matrix/synapse/*
+  ignore_errors: yes
+
+- name: Extract from /chroot/export
+  shell: tar -xvzf /chroot/export/matrix.tar.gz -C /matrix/
+
+- name: Ensure correct ownership of /matrix/awx
+  shell: chown -R matrix:matrix /matrix/awx
+
+- name: Ensure correct ownership of /matrix/synapse
+  shell: chown -R matrix:matrix /matrix/synapse
+
+- name: Fetch matrix_vars.yml file to AWX
+  fetch:
+    src: /matrix/awx/matrix_vars.yml
+    dest: /var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/
+    flat: yes

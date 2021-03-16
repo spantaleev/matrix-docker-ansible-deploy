@@ -1,0 +1,20 @@
+---
+
+- name: Create user account
+  command: |
+    /usr/local/bin/matrix-synapse-register-user janitor {{ matrix_awx_janitor_user_password | quote }} 1
+  register: cmd
+  when: not matrix_awx_janitor_user_created|bool
+  no_log: True
+    
+- name: Update AWX janitor user created variable
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertafter: 'AWX Settings'
+  with_dict:
+    'matrix_awx_janitor_user_created': 'true'
+  when: not matrix_awx_janitor_user_created|bool
+

@@ -33,7 +33,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-nginx-proxy \
 			-p {{ matrix_nginx_proxy_container_federation_host_bind_port }}:{{ matrix_nginx_proxy_proxy_matrix_federation_port }} \
 			{% endif %}
 			--mount type=bind,src={{ matrix_nginx_proxy_base_path }}/nginx.conf,dst=/etc/nginx/nginx.conf,ro \
-			--mount type=bind,src={{ matrix_nginx_proxy_data_path }},dst=/nginx-data,ro \
+			--mount type=bind,src={{ matrix_nginx_proxy_data_path }},dst={{ matrix_nginx_proxy_data_path_in_container }},ro \
 			--mount type=bind,src={{ matrix_nginx_proxy_confd_path }},dst=/etc/nginx/conf.d,ro \
 			{% if matrix_ssl_retrieval_method != 'none' %}
 			--mount type=bind,src={{ matrix_ssl_config_dir_path }},dst={{ matrix_ssl_config_dir_path }},ro \
