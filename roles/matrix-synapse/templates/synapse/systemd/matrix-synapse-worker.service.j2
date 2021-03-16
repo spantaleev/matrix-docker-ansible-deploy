@@ -39,6 +39,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name {{ matrix_synapse_wor
 			--mount type=bind,src={{ matrix_synapse_storage_path }},dst=/matrix-media-store-parent,bind-propagation=slave \
 			{% for volume in matrix_synapse_container_additional_volumes %}
 			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
+			-e "LD_PRELOAD=/usr/lib/{{ ansible_machine }}-linux-gnu/libjemalloc.so.2" \
 			{% endfor %}
 			{% for arg in matrix_synapse_container_extra_arguments %}
 			{{ arg }} \
