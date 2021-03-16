@@ -16,7 +16,7 @@
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - create-user
-    
+
 # Perform extra self-check functions
 - import_tasks: "{{ role_path }}/tasks/self_check.yml"
   when: run_setup|bool and matrix_awx_enabled|bool
@@ -58,12 +58,12 @@
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - setup-ma1sd
-    
+
 # Additional playbook to set the variable file during Corporal configuration
 - import_tasks: "{{ role_path }}/tasks/set_variables_corporal.yml"
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
-    - setup-corporal  
+    - setup-corporal
 
 # Additional playbook to set the variable file during Synapse Admin configuration
 - import_tasks: "{{ role_path }}/tasks/set_variables_synapse_admin.yml"
@@ -76,4 +76,3 @@
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - always
-

@@ -8,7 +8,7 @@
     insertafter: '# Corporal Settings'
   with_dict:
     'matrix_corporal_enabled': '{{ matrix_corporal_enabled }}'
-    
+
 - name: Enable Shared Secret Auth if Corporal enabled
   delegate_to: 127.0.0.1
   lineinfile:
@@ -19,7 +19,7 @@
   with_dict:
     'matrix_synapse_ext_password_provider_shared_secret_auth_enabled': 'true'
   when: matrix_corporal_enabled|bool
-  
+
 - name: Disable Shared Secret Auth if Corporal disabled
   delegate_to: 127.0.0.1
   lineinfile:
@@ -30,7 +30,7 @@
   with_dict:
     'matrix_synapse_ext_password_provider_shared_secret_auth_enabled': 'false'
   when: not matrix_corporal_enabled|bool
-  
+
 - name: Enable Rest Auth Endpoint if Corporal enabled
   delegate_to: 127.0.0.1
   lineinfile:
@@ -97,7 +97,7 @@
           "Type": "static_file",
           "Path": "/etc/matrix-corporal/corporal-policy.json"
         }
-  when: matrix_corporal_policy_provider_mode == "Simple Static File" 
+  when: matrix_corporal_policy_provider_mode == "Simple Static File"
 
 - name: Touch the /matrix/corporal/ directory
   file:
@@ -130,7 +130,7 @@
     owner: matrix
     group: matrix
     mode: '660'
-    
+
 - name: Touch the last-policy.json file to ensure it exists
   file:
     path: "/matrix/corporal/config/last-policy.json"
@@ -138,7 +138,7 @@
     owner: matrix
     group: matrix
     mode: '660'
-  
+
 - name: Record 'Simple Static File' configuration content in corporal-policy.json
   copy:
     content: "{{ matrix_corporal_simple_static_config | string  }}"
@@ -211,16 +211,16 @@
     src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_corporal.json'
     dest: '/matrix/awx/configure_corporal.json'
     mode: '0660'
-    
+
 - debug:
     msg: "matrix_corporal_matrix_homeserver_api_endpoint: {{ matrix_corporal_matrix_homeserver_api_endpoint }}"
-    
+
 - debug:
     msg: "matrix_corporal_matrix_auth_shared_secret: {{ matrix_corporal_matrix_auth_shared_secret }}"
 
 - debug:
     msg: "matrix_corporal_http_gateway_internal_rest_auth_enabled: {{ matrix_corporal_http_gateway_internal_rest_auth_enabled }}"
-   
+
 - debug:
     msg: "matrix_corporal_matrix_registration_shared_secret: {{ matrix_corporal_matrix_registration_shared_secret }}"
 
@@ -251,4 +251,3 @@
     tower_host: "https://{{ tower_host }}"
     tower_oauthtoken: "{{ tower_token.stdout }}"
     validate_certs: yes
-    

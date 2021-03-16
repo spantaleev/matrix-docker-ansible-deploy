@@ -1,21 +1,21 @@
 
 - name: Install prerequisite apt packages on target
   apt:
-    name: 
+    name:
       - sysstat
     state: present
-    
+
 - name: Install prerequisite yum packages on AWX
   delegate_to: 127.0.0.1
   yum:
-    name: 
+    name:
       - bind-utils
     state: present
-    
+
 - name: Install prerequisite pip packages on AWX
   delegate_to: 127.0.0.1
   pip:
-    name: 
+    name:
       - dnspython
     state: present
 
@@ -23,7 +23,7 @@
   shell: iostat -c
   register: cpu_usage_stat
   no_log: True
-    
+
 - name: Print CPU usage statistics
   debug:
     msg: "{{ cpu_usage_stat.stdout.split('\n') }}"
@@ -91,4 +91,3 @@
   debug:
     msg: "{{ docker_stats.stdout.split('\n') }}"
   when: docker_stats is defined
-

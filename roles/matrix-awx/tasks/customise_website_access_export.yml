@@ -21,7 +21,7 @@
   with_dict:
     'matrix_nginx_proxy_base_domain_homepage_enabled': 'false'
   when: customise_base_domain_website|bool == true
-    
+
 - name: Record custom 'Customise Website + Access Export' variables locally on AWX
   delegate_to: 127.0.0.1
   lineinfile:
@@ -34,7 +34,7 @@
     'sftp_auth_method': '"{{ sftp_auth_method }}"'
     'sftp_password': '"{{ sftp_password }}"'
     'sftp_public_key': '"{{ sftp_public_key }}"'
-    
+
 - name: Copy new 'matrix_vars.yml' to target machine
   copy:
     src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
@@ -170,7 +170,7 @@
     group: sftp
     mode: '0644'
   when: (sftp_public_key | length > 0) and (sftp_auth_method == "SSH Key")
-  
+
 - name: Alter SSH Subsystem State 1
   lineinfile:
     path: /etc/ssh/sshd_config
@@ -227,4 +227,3 @@
   service:
     name: ssh.service
     state: restarted
-

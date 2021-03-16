@@ -53,7 +53,7 @@
       curl -sku {{ tower_username }}:{{ tower_password }} -H "Content-Type: application/json" -X POST -d '{"description":"Tower CLI", "application":null, "scope":"write"}' https://{{ tower_host }}/api/v2/users/1/personal_tokens/ | jq '.token' | sed -r 's/\"//g'
   register: tower_token
   no_log: True
-  
+
 - name: Recreate 'Configure Element' job template
   delegate_to: 127.0.0.1
   awx.awx.tower_job_template:
@@ -74,4 +74,3 @@
     tower_host: "https://{{ tower_host }}"
     tower_oauthtoken: "{{ tower_token.stdout }}"
     validate_certs: yes
-
