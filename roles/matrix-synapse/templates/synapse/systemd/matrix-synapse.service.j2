@@ -33,6 +33,8 @@ ExecStartPre={{ matrix_host_command_sleep }} 3
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-synapse \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--env=UID={{ matrix_user_uid }} \
+			--env=GID={{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_synapse_tmp_directory_size_mb }}m \
