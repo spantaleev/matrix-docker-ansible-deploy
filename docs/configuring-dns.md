@@ -35,6 +35,7 @@ If you are using Cloudflare DNS, make sure to disable the proxy and set all reco
 | CNAME | `jitsi` (*)                  | -        | -      | -    | `matrix.<your-domain>` |
 | CNAME | `stats` (*)                  | -        | -      | -    | `matrix.<your-domain>` |
 | CNAME | `goneb` (*)                  | -        | -      | -    | `matrix.<your-domain>` |
+| CNAME | `sygnal` (*)                 | -        | -      | -    | `matrix.<your-domain>` |
 
 ## Subdomains setup
 
@@ -50,6 +51,8 @@ The `jitsi.<your-domain>` subdomain may be necessary, because this playbook coul
 The `stats.<your-domain>` subdomain may be necessary, because this playbook could install [Grafana](https://grafana.com/) and setup performance metrics for you. Grafana installation is disabled by default, it is not a core required component. To learn how to install it, see our [metrics and graphs guide](configuring-playbook-prometheus-grafana.md). If you do not wish to set up Grafana, feel free to skip the `stats.<your-domain>` DNS record. It is possible to install Prometheus without installing Grafana, this would also not require the `stats.<your-domain>` subdomain.
 
 The `goneb.<your-domain>` subdomain may be necessary, because this playbook could install the [Go-NEB](https://github.com/matrix-org/go-neb) bot. The installation of Go-NEB is disabled by default, it is not a core required component. To learn how to install it, see our [configuring Go-NEB guide](configuring-playbook-bot-go-neb.md). If you do not wish to set up Go-NEB, feel free to skip the `goneb.<your-domain>` DNS record.
+
+The `sygnal.<your-domain>` subdomain may be necessary, because this playbook could install the [Sygnal](https://github.com/matrix-org/sygnal) push gateway. The installation of Sygnal is disabled by default, it is not a core required component. To learn how to install it, see our [configuring Sygnal guide](configuring-playbook-sygnal.md). If you do not wish to set up Sygnal (you probably don't, unless you're also developing/building your own Matrix apps), feel free to skip the `sygnal.<your-domain>` DNS record.
 
 
 ## `_matrix-identity._tcp` SRV record setup

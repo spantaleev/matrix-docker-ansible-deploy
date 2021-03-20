@@ -1,0 +1,79 @@
+#jinja2: lstrip_blocks: "True"
+
+{% macro render_vhost_directives() %}
+	gzip on;
+	gzip_types text/plain application/json application/javascript text/css image/x-icon font/ttf image/gif;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header X-Content-Type-Options nosniff;
+	add_header X-Frame-Options DENY;
+{% for configuration_block in matrix_nginx_proxy_proxy_sygnal_additional_server_configuration_blocks %}
+	{{- configuration_block }}
+{% endfor %}
+
+	location / {
+		{% if matrix_nginx_proxy_enabled %}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver 127.0.0.11 valid=5s;
+			set $backend "matrix-sygnal:6000";
+			proxy_pass http://$backend;
+		{% else %}
+			{# Generic configuration for use outside of our container setup #}
+			proxy_pass http://127.0.0.1:6000;
+		{% endif %}
+
+		proxy_set_header Host $host;
+		proxy_set_header X-Forwarded-For $remote_addr;
+		proxy_set_header X-Forwarded-Proto $scheme;
+	}
+{% endmacro %}
+
+server {
+	listen {{ 8080 if matrix_nginx_proxy_enabled else 80 }};
+	server_name {{ matrix_nginx_proxy_proxy_sygnal_hostname }};
+
+	server_tokens off;
+	root /dev/null;
+
+	{% if matrix_nginx_proxy_https_enabled %}
+		location /.well-known/acme-challenge {
+			{% if matrix_nginx_proxy_enabled %}
+				{# Use the embedded DNS resolver in Docker containers to discover the service #}
+				resolver 127.0.0.11 valid=5s;
+				set $backend "matrix-certbot:8080";
+				proxy_pass http://$backend;
+			{% else %}
+				{# Generic configuration for use outside of our container setup #}
+				proxy_pass http://127.0.0.1:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }};
+			{% endif %}
+		}
+
+		location / {
+			return 301 https://$http_host$request_uri;
+		}
+	{% else %}
+		{{ render_vhost_directives() }}
+	{% endif %}
+}
+
+{% if matrix_nginx_proxy_https_enabled %}
+server {
+	listen {{ 8443 if matrix_nginx_proxy_enabled else 443 }} ssl http2;
+	listen [::]:{{ 8443 if matrix_nginx_proxy_enabled else 443 }} ssl http2;
+
+	server_name {{ matrix_nginx_proxy_proxy_sygnal_hostname }};
+
+	server_tokens off;
+	root /dev/null;
+
+	ssl_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_sygnal_hostname }}/fullchain.pem;
+	ssl_certificate_key {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_sygnal_hostname }}/privkey.pem;
+
+	ssl_protocols {{ matrix_nginx_proxy_ssl_protocols }};
+	{% if matrix_nginx_proxy_ssl_ciphers != '' %}
+	ssl_ciphers {{ matrix_nginx_proxy_ssl_ciphers }};
+	{% endif %}
+	ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_prefer_server_ciphers }};
+
+	{{ render_vhost_directives() }}
+}
+{% endif %}

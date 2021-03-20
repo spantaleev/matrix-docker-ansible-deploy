@@ -1,0 +1,35 @@
+---
+
+- name: Check existence of matrix-sygnal service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-sygnal.service"
+  register: matrix_sygnal_service_stat
+
+- name: Ensure matrix-sygnal is stopped
+  service:
+    name: matrix-sygnal
+    state: stopped
+    daemon_reload: yes
+  register: stopping_result
+  when: "matrix_sygnal_service_stat.stat.exists|bool"
+
+- name: Ensure matrix-sygnal.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-sygnal.service"
+    state: absent
+  when: "matrix_sygnal_service_stat.stat.exists|bool"
+
+- name: Ensure systemd reloaded after matrix-sygnal.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_sygnal_service_stat.stat.exists|bool"
+
+- name: Ensure Sygnal base directory doesn't exist
+  file:
+    path: "{{ matrix_sygnal_base_path }}"
+    state: absent
+
+- name: Ensure Sygnal Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_sygnal_docker_image }}"
+    state: absent

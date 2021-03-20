@@ -1,0 +1,95 @@
+# Sygnal is a reference Push Gateway for Matrix.
+# To make use of it for delivering push notificatins, you'll need to develop/build your own Matrix app.
+# Learn more here: https://github.com/matrix-org/sygnal
+matrix_sygnal_enabled: false
+
+matrix_sygnal_base_path: "{{ matrix_base_data_path }}/sygnal"
+matrix_sygnal_config_path: "{{ matrix_sygnal_base_path }}/config"
+matrix_sygnal_data_path: "{{ matrix_sygnal_base_path }}/data"
+
+matrix_sygnal_version: v0.9.0
+matrix_sygnal_docker_image: "docker.io/matrixdotorg/sygnal:{{ matrix_sygnal_version }}"
+matrix_sygnal_docker_image_force_pull: "{{ matrix_sygnal_docker_image.endswith(':latest') }}"
+
+# List of systemd services that matrix-sygnal.service depends on.
+matrix_sygnal_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-sygnal.service wants
+matrix_sygnal_systemd_wanted_services_list: []
+
+# Controls whether the matrix-sygnal container exposes its HTTP port (tcp/6000 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:6000"), or empty string to not expose.
+matrix_sygnal_container_http_host_bind_port: ''
+
+# A list of extra arguments to pass to the container
+matrix_sygnal_container_extra_arguments: []
+
+# Database-related configuration fields.
+#
+# To use SQLite, stick to these defaults.
+#
+# To use Postgres:
+# - change the engine (`matrix_sygnal_database_engine: 'postgres'`)
+# - adjust your database credentials via the `matrix_sygnal_postgres_*` variables
+matrix_sygnal_database_engine: 'sqlite'
+
+matrix_sygnal_sqlite_database_path_local: "{{ matrix_sygnal_data_path }}/sygnal.db"
+matrix_sygnal_sqlite_database_path_in_container: "/data/sygnal.db"
+
+matrix_sygnal_database_username: 'matrix_sygnal'
+matrix_sygnal_database_password: 'some-password'
+matrix_sygnal_database_hostname: 'matrix-postgres'
+matrix_sygnal_database_port: 5432
+matrix_sygnal_database_name: 'matrix_sygnal'
+
+matrix_sygnal_database_connection_string: 'postgres://{{ matrix_sygnal_database_username }}:{{ matrix_sygnal_database_password }}@{{ matrix_sygnal_database_hostname }}:{{ matrix_sygnal_database_port }}/{{ matrix_sygnal_database_name }}'
+
+# A map (dictionary) of apps instances that this server works with.
+#
+# Example configuration:
+#
+# matrix_sygnal_apps:
+#   com.example.myapp.ios:
+#     type: apns
+#     # .. more configuration ..
+#   com.example.myapp.android:
+#     type: gcm
+#     api_key: your_api_key_for_gcm
+#     # .. more configuration ..
+#
+# The APNS configuration needs to reference some certificate files.
+# One can put these in the `matrix_sygnal_data_path` directory (`/matrix/sygnal/data`), mounted to `/data` in the container.
+# The `matrix_sygnal_apps` paths need to use the in-container path (`/data`).
+# To install these files via the playbook, one can use the `matrix-aux` role.
+# Examples and more details are available in `docs/configuring-playbook-sygnal.md`.
+matrix_sygnal_apps: []
+
+matrix_sygnal_metrics_prometheus_enabled: false
+
+# Default Sygnal configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_sygnal_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_sygnal_configuration_yaml: "{{ lookup('template', 'templates/sygnal.yaml.j2') }}"
+
+matrix_sygnal_configuration_extension_yaml: |
+  # Your custom YAML configuration for Sygnal goes here.
+  # This configuration extends the default starting configuration (`matrix_sygnal_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_sygnal_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  # metrics:
+  #   opentracing:
+  #     enabled: true
+
+matrix_sygnal_configuration_extension: "{{ matrix_sygnal_configuration_extension_yaml|from_yaml if matrix_sygnal_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final sygnal configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_sygnal_configuration_yaml`.
+matrix_sygnal_configuration: "{{ matrix_sygnal_configuration_yaml|from_yaml|combine(matrix_sygnal_configuration_extension, recursive=True) }}"

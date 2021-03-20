@@ -1,3 +1,15 @@
+
+# 2021-03-20
+
+## Sygnal push gateway support
+
+The playbook can now install the [Sygnal](https://github.com/matrix-org/sygnal) push gateway for you.
+
+This is only useful to people who develop/build their own Matrix client applications.
+
+Additional details are available in our [Setting up Sygnal](docs/configuring-playbook-sygnal.md) docs.
+
+
 # 2021-03-16
 
 ## Go-NEB support
