@@ -1,78 +1,117 @@
 
 # Load initial hosting and organisation variables from AWX volume
-- include_tasks: "{{ role_path }}/tasks/load_hosting_and_org_variables.yml"
+- include_tasks: 
+    file: "load_hosting_and_org_variables.yml"
+    apply:
+      tags: always
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - always
 
 # Perform a backup of the server
-- include_tasks: "{{ role_path }}/tasks/backup_server.yml"
+- include_tasks: 
+    file: "backup_server.yml"
+    apply:
+      tags: backup-server
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - backup-server
 
 # Create a user account if called
-- include_tasks: "{{ role_path }}/tasks/create_user.yml"
+- include_tasks: 
+    file: "create_user.yml"
+    apply:
+      tags: create-user
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - create-user
 
 # Perform extra self-check functions
-- include_tasks: "{{ role_path }}/tasks/self_check.yml"
+- include_tasks: 
+    file: "self_check.yml"
+    apply:
+      tags: self-check
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - self-check
 
 # Import configs, media repo from /chroot/backup import
-- include_tasks: "{{ role_path }}/tasks/import_awx.yml"
+- include_tasks: 
+    file: "import_awx.yml"
+    apply:
+      tags: import-awx
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - import-awx
 
 # Configure SFTP so user can upload a static website or access the servers export
-- include_tasks: "{{ role_path }}/tasks/customise_website_access_export.yml"
+- include_tasks: 
+    file: "customise_website_access_export.yml"
+    apply:
+      tags: setup-nginx-proxy
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - setup-nginx-proxy
 
 # Additional playbook to set the variable file during Element configuration
-- include_tasks: "{{ role_path }}/tasks/set_variables_element.yml"
+- include_tasks: 
+    file: "set_variables_element.yml"
+    apply:
+      tags: setup-client-element
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - setup-client-element
 
 # Additional playbook to set the variable file during Synapse configuration
-- include_tasks: "{{ role_path }}/tasks/set_variables_synapse.yml"
+- include_tasks: 
+    file: "set_variables_synapse.yml"
+    apply:
+      tags: setup-synapse
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - setup-synapse
 
 # Additional playbook to set the variable file during Jitsi configuration
-- include_tasks: "{{ role_path }}/tasks/set_variables_jitsi.yml"
+- include_tasks: 
+    file: "set_variables_jitsi.yml"
+    apply:
+      tags: setup-jitsi
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - setup-jitsi
 
 # Additional playbook to set the variable file during Ma1sd configuration
-- include_tasks: "{{ role_path }}/tasks/set_variables_ma1sd.yml"
+- include_tasks: 
+    file: "set_variables_ma1sd.yml"
+    apply:
+      tags: setup-ma1sd
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - setup-ma1sd
 
 # Additional playbook to set the variable file during Corporal configuration
-- include_tasks: "{{ role_path }}/tasks/set_variables_corporal.yml"
+- include_tasks: 
+    file: "set_variables_corporal.yml"
+    apply:
+      tags: setup-corporal
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - setup-corporal
 
 # Additional playbook to set the variable file during Synapse Admin configuration
-- include_tasks: "{{ role_path }}/tasks/set_variables_synapse_admin.yml"
+- include_tasks: 
+    file: "set_variables_synapse_admin.yml"
+    apply:
+      tags: setup-synapse-admin
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - setup-synapse-admin
 
 # Load newly formed matrix variables from tower volume
-- include_tasks: "{{ role_path }}/tasks/load_matrix_variables.yml"
+- include_tasks: 
+    file: "load_matrix_variables.yml"
+    apply:
+      tags: always
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - always
