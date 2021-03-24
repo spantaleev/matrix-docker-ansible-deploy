@@ -90,6 +90,8 @@ These services are not part of our default installation, but can be enabled by [
 
 - [matrixdotorg/go-neb](https://hub.docker.com/r/matrixdotorg/go-neb) - the [Go-NEB](https://github.com/matrix-org/go-neb) bot (optional)
 
+- [matrixdotorg/mjolnir](https://hub.docker.com/r/matrixdotorg/mjolnir) - the [mjolnir](https://github.com/matrix-org/mjolnir) moderation bot (optional)
+
 - [awesometechnologies/synapse-admin](https://hub.docker.com/r/awesometechnologies/synapse-admin) - the [synapse-admin](https://github.com/Awesome-Technologies/synapse-admin) web UI tool for administrating users and rooms on your Matrix server (optional)
 
 - [prom/prometheus](https://hub.docker.com/r/prom/prometheus/) - [Prometheus](https://github.com/prometheus/prometheus/) is a systems and service monitoring system

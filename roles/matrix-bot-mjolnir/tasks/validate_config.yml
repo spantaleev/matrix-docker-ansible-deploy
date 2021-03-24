@@ -1,0 +1,9 @@
+---
+
+- name: Fail if required variables are undefined
+  fail:
+    msg: "The `{{ item }}` variable must be defined and have a non-null value."
+  with_items:
+    - "matrix_bot_mjolnir_access_token"
+    - "matrix_bot_mjolnir_management_room"
+  when: "vars[item] == '' or vars[item] is none"
