@@ -1191,7 +1191,7 @@ matrix_nginx_proxy_synapse_frontend_proxy_locations: "{{ matrix_synapse_workers
 
 matrix_nginx_proxy_systemd_wanted_services_list: |
   {{
-    (['matrix-synapse.service'])
+    (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-corporal.service'] if matrix_corporal_enabled else [])
     +
