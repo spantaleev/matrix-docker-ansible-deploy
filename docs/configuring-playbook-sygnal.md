@@ -23,7 +23,7 @@ matrix_sygnal_enabled: true
 matrix_sygnal_apps:
   com.example.myapp.ios:
     type: apns
-	keyfile: /data/my_key.p8
+    keyfile: /data/my_key.p8
     # .. more configuration ..
   com.example.myapp.android:
     type: gcm
