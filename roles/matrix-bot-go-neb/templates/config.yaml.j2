@@ -25,16 +25,20 @@ clients:
 # Delete or modify this list as appropriate.
 # See the docs for /configureAuthRealm for the full list of options:
 # https://matrix-org.github.io/go-neb/pkg/github.com/matrix-org/go-neb/api/index.html#ConfigureAuthRealmRequest
+{% if matrix_bot_go_neb_realms is defined %}
 realms:
   {{ matrix_bot_go_neb_realms|to_json }}
+{% endif %}
 
 # The list of *authenticated* sessions which Go-NEB is aware of.
 # Delete or modify this list as appropriate.
 # The full list of options are shown below: there is no single HTTP endpoint
 # which maps to this section.
 # https://matrix-org.github.io/go-neb/pkg/github.com/matrix-org/go-neb/api/index.html#Session
+{% if matrix_bot_go_neb_sessions is defined %}
 sessions:
   {{ matrix_bot_go_neb_sessions|to_json }}
+{% endif %}
 
 # The list of services which Go-NEB is aware of.
 # Delete or modify this list as appropriate.
