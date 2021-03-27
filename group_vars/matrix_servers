@@ -35,6 +35,9 @@ matrix_homeserver_container_url: "{{ 'http://matrix-nginx-proxy:12080' if matrix
 #
 ######################################################################
 
+# We don't enable AWX support by default.
+matrix_awx_enabled: false
+
 matrix_nginx_proxy_data_path: "{{ '/chroot/website' if (matrix_awx_enabled and not matrix_nginx_proxy_base_domain_homepage_enabled) else (matrix_nginx_proxy_base_path + '/data') }}"
 matrix_nginx_proxy_data_path_in_container: "{{ '/nginx-data/matrix-domain' if (matrix_awx_enabled and not matrix_nginx_proxy_base_domain_homepage_enabled) else '/nginx-data' }}"
 
@@ -69,6 +72,8 @@ matrix_appservice_discord_systemd_required_services_list: |
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_appservice_discord_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'discord.as.token') | to_uuid }}"
@@ -112,6 +117,8 @@ matrix_appservice_webhooks_systemd_required_services_list: |
     ['docker.service']
     +
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 ######################################################################
@@ -148,6 +155,8 @@ matrix_appservice_slack_systemd_required_services_list: |
     ['docker.service']
     +
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 # Postgres is the default, except if not using `matrix_postgres` (internal postgres)
@@ -185,6 +194,8 @@ matrix_appservice_irc_systemd_required_services_list: |
     ['docker.service']
     +
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_appservice_irc_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'irc.as.token') | to_uuid }}"
@@ -220,6 +231,8 @@ matrix_mautrix_facebook_systemd_required_services_list: |
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_mautrix_facebook_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'fb.as.token') | to_uuid }}"
@@ -260,6 +273,8 @@ matrix_mautrix_hangouts_systemd_required_services_list: |
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_mautrix_hangouts_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'ho.as.token') | to_uuid }}"
@@ -299,6 +314,8 @@ matrix_mautrix_instagram_systemd_required_services_list: |
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_mautrix_instagram_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'ig.as.token') | to_uuid }}"
@@ -337,6 +354,8 @@ matrix_mautrix_signal_systemd_required_services_list: |
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
     +
     ['matrix-mautrix-signal-daemon.service']
   }}
@@ -380,6 +399,8 @@ matrix_mautrix_telegram_systemd_required_services_list: |
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_mautrix_telegram_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'telegr.as.token') | to_uuid }}"
@@ -418,6 +439,8 @@ matrix_mautrix_whatsapp_systemd_required_services_list: |
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_mautrix_whatsapp_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'whats.as.token') | to_uuid }}"
@@ -450,6 +473,8 @@ matrix_sms_bridge_systemd_required_services_list: |
     ['docker.service']
     +
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_sms_bridge_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'sms.as.token') | to_uuid }}"
@@ -480,6 +505,8 @@ matrix_mx_puppet_skype_systemd_required_services_list: |
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_mx_puppet_skype_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'skype.as.tok') | to_uuid }}"
@@ -517,6 +544,8 @@ matrix_mx_puppet_slack_systemd_required_services_list: |
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_mx_puppet_slack_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mxslk.as.tok') | to_uuid }}"
@@ -553,6 +582,8 @@ matrix_mx_puppet_twitter_systemd_required_services_list: |
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_mx_puppet_twitter_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mxtwt.as.tok') | to_uuid }}"
@@ -592,6 +623,8 @@ matrix_mx_puppet_instagram_systemd_required_services_list: |
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_mx_puppet_instagram_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mxig.as.tok') | to_uuid }}"
@@ -628,6 +661,8 @@ matrix_mx_puppet_discord_systemd_required_services_list: |
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_mx_puppet_discord_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mxdsc.as.tok') | to_uuid }}"
@@ -664,6 +699,8 @@ matrix_mx_puppet_steam_systemd_required_services_list: |
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_mx_puppet_steam_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mxste.as.tok') | to_uuid }}"
@@ -700,6 +737,8 @@ matrix_mx_puppet_groupme_systemd_required_services_list: |
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_mx_puppet_groupme_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mxgro.as.tok') | to_uuid }}"
@@ -732,6 +771,10 @@ matrix_bot_matrix_reminder_bot_systemd_required_services_list: |
     ['docker.service']
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 # Postgres is the default, except if not using `matrix_postgres` (internal postgres)
@@ -757,6 +800,10 @@ matrix_bot_go_neb_enabled: false
 matrix_bot_go_neb_systemd_required_services_list: |
   {{
     ['docker.service']
+    +
+    (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_bot_go_neb_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:4050' }}"
@@ -864,6 +911,8 @@ matrix_dimension_systemd_required_services_list: |
     ['docker.service']
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 # Postgres is the default, except if not using `matrix_postgres` (internal postgres)
@@ -1095,6 +1144,7 @@ matrix_nginx_proxy_proxy_dimension_enabled: "{{ matrix_dimension_enabled }}"
 matrix_nginx_proxy_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled }}"
 matrix_nginx_proxy_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
 matrix_nginx_proxy_proxy_grafana_enabled: "{{ matrix_grafana_enabled }}"
+matrix_nginx_proxy_proxy_sygnal_enabled: "{{ matrix_sygnal_enabled }}"
 
 matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: "{{ matrix_corporal_enabled and matrix_corporal_http_api_enabled }}"
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
@@ -1112,7 +1162,6 @@ matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "127.0.0.1:1
 
 # Settings controlling matrix-synapse-proxy.conf
 matrix_nginx_proxy_proxy_synapse_enabled: "{{ matrix_synapse_enabled }}"
-matrix_nginx_proxy_proxy_synapse_federation_api_enabled: "{{ matrix_nginx_proxy_proxy_matrix_federation_api_enabled }}"
 
 # When matrix-nginx-proxy is disabled, the actual port number that the vhost uses may begin to matter.
 matrix_nginx_proxy_proxy_matrix_federation_port: "{{ matrix_federation_public_port }}"
@@ -1144,7 +1193,7 @@ matrix_nginx_proxy_synapse_frontend_proxy_locations: "{{ matrix_synapse_workers
 
 matrix_nginx_proxy_systemd_wanted_services_list: |
   {{
-    (['matrix-synapse.service'])
+    (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-corporal.service'] if matrix_corporal_enabled else [])
     +
@@ -1168,6 +1217,8 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     ([matrix_server_fqn_jitsi] if matrix_jitsi_enabled else [])
     +
     ([matrix_server_fqn_grafana] if matrix_grafana_enabled else [])
+    +
+    ([matrix_server_fqn_sygnal] if matrix_sygnal_enabled else [])
     +
     ([matrix_domain] if matrix_nginx_proxy_base_domain_serving_enabled else [])
     +
@@ -1341,6 +1392,12 @@ matrix_postgres_additional_databases: |
       'username': matrix_etherpad_database_username,
       'password': matrix_etherpad_database_password,
     }] if (matrix_etherpad_enabled and matrix_etherpad_database_engine == 'postgres' and matrix_etherpad_database_hostname == 'matrix-postgres') else [])
+    +
+    ([{
+      'name': matrix_sygnal_database_name,
+      'username': matrix_sygnal_database_username,
+      'password': matrix_sygnal_database_password,
+    }] if (matrix_sygnal_enabled and matrix_sygnal_database_engine == 'postgres' and matrix_sygnal_database_hostname == 'matrix-postgres') else [])
    }}
 
 matrix_postgres_import_roles_to_ignore: |
@@ -1360,6 +1417,32 @@ matrix_postgres_import_databases_to_ignore: |
 ######################################################################
 #
 # /matrix-postgres
+#
+######################################################################
+
+
+
+######################################################################
+#
+# matrix-sygnal
+#
+######################################################################
+
+# Most people don't need their own push-server, because they also need their own app to utilize it from.
+matrix_sygnal_enabled: false
+
+# If someone instals Prometheus via the playbook, they most likely wish to monitor Sygnal.
+matrix_sygnal_metrics_prometheus_enabled: "{{ matrix_prometheus_enabled }}"
+
+matrix_sygnal_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:6000' }}"
+
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_sygnal_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_sygnal_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'sygnal') | to_uuid }}"
+
+######################################################################
+#
+# /matrix-sygnal
 #
 ######################################################################
 

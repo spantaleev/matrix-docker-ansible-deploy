@@ -40,8 +40,8 @@
 
     - name: Fail if required variables are undefined
       fail:
-        msg: "Detected an undefined required variable"
+        msg: "The `{{ item }}` variable must be defined and have a non-null value"
       with_items:
         - "matrix_ssl_lets_encrypt_support_email"
-      when: "vars[item] is none"
+      when: "vars[item] == '' or vars[item] is none"
   when: "matrix_ssl_retrieval_method == 'lets-encrypt'"

@@ -1,0 +1,288 @@
+##
+# This is a configuration for Sygnal, the reference Push Gateway for Matrix
+# See: matrix.org
+##
+
+# The 'database' setting defines the database that sygnal uses to store all of
+# its data.
+#
+# 'name' gives the database engine to use: either 'sqlite3' (for SQLite) or
+# 'psycopg2' (for PostgreSQL).
+#
+# 'args' gives options which are passed through to the database engine,
+# except for options starting 'cp_', which are used to configure the Twisted
+# connection pool. For a reference to valid arguments, see:
+#   * for sqlite: https://docs.python.org/3/library/sqlite3.html#sqlite3.connect
+#   * for postgres: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+#   * for the connection pool: https://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#__init__
+#
+#
+# Example SQLite configuration:
+#
+#database:
+#  name: sqlite3
+#  args:
+#    dbfile: /path/to/database.db
+#
+#
+# Example Postgres configuration:
+#
+#database:
+#  name: psycopg2
+#  args:
+#    host: localhost
+#    database: sygnal
+#    user: sygnal
+#    password: pass
+#    cp_min: 1
+#    cp_max: 5
+#
+{% if matrix_sygnal_database_engine == 'sqlite' %}
+database:
+  name: sqlite3
+  args:
+    dbfile: {{ matrix_sygnal_sqlite_database_path_in_container|to_json }}
+{% else %}
+database:
+  name: psycopg2
+  args:
+    host: {{ matrix_sygnal_database_hostname|to_json }}
+    database: {{ matrix_sygnal_database_name|to_json }}
+    user: {{ matrix_sygnal_database_username|to_json }}
+    password: {{ matrix_sygnal_database_password|to_json }}
+    cp_min: 1
+    cp_max: 5
+{% endif %}
+
+## Logging #
+#
+log:
+  # Specify a Python logging 'dictConfig', as described at:
+  #   https://docs.python.org/3.7/library/logging.config.html#logging.config.dictConfig
+  #
+  setup:
+    version: 1
+    formatters:
+      normal:
+        format: "%(asctime)s [%(process)d] %(levelname)-5s %(name)s %(message)s"
+    handlers:
+      # This handler prints to Standard Error
+      #
+      stderr:
+        class: "logging.StreamHandler"
+        formatter: "normal"
+        stream: "ext://sys.stderr"
+
+      # This handler prints to Standard Output.
+      #
+      stdout:
+        class: "logging.StreamHandler"
+        formatter: "normal"
+        stream: "ext://sys.stdout"
+
+      # This handler demonstrates logging to a text file on the filesystem.
+      # You can use logrotate(8) to perform log rotation.
+      #
+      #file:
+      #  class: "logging.handlers.WatchedFileHandler"
+      #  formatter: "normal"
+      #  filename: "./sygnal.log"
+    loggers:
+      # sygnal.access contains the access logging lines.
+      # Comment out this section if you don't want to give access logging
+      # any special treatment.
+      #
+      sygnal.access:
+        propagate: false
+        handlers: ["stdout"]
+        level: "INFO"
+
+      # sygnal contains log lines from Sygnal itself.
+      # You can comment out this section to fall back to the root logger.
+      #
+      sygnal:
+        propagate: false
+        handlers: ["stderr"]
+
+    root:
+      # Specify the handler(s) to send log messages to.
+      handlers: ["stderr"]
+      level: "INFO"
+
+    disable_existing_loggers: false
+
+
+  access:
+    # Specify whether or not to trust the IP address in the `X-Forwarded-For`
+    # header. In general, you want to enable this if and only if you are using a
+    # reverse proxy which is configured to emit it.
+    #
+    x_forwarded_for: true
+
+## HTTP Server (Matrix Push Gateway API) #
+#
+http:
+  # Specify a list of interface addresses to bind to.
+  #
+  # This example listens on the IPv4 loopback device:
+  #bind_addresses: ['127.0.0.1']
+  # This example listens on all IPv4 interfaces:
+  #bind_addresses: ['0.0.0.0']
+  # This example listens on all IPv4 and IPv6 interfaces:
+  #bind_addresses: ['0.0.0.0', '::']
+  bind_addresses: ['::']
+
+  # Specify the port number to listen on.
+  #
+  port: 6000
+
+## Proxying for outgoing connections #
+#
+# Specify the URL of a proxy to use for outgoing traffic
+# (e.g. to Apple & Google) if desired.
+# Currently only HTTP proxies with CONNECT capability are supported.
+#
+# If you do not specify a value, the `HTTPS_PROXY` environment variable will
+# be used if present. Otherwise, no proxy will be used.
+#
+# Default is unspecified.
+#
+#proxy: 'http://user:secret@prox:8080'
+
+## Metrics #
+#
+metrics:
+  ## Prometheus #
+  #
+  prometheus:
+    # Specify whether or not to enable Prometheus.
+    #
+    enabled: false
+
+    # Specify an address for the Prometheus HTTP Server to listen on.
+    #
+    address: '0.0.0.0'
+
+    # Specify a port for the Prometheus HTTP Server to listen on.
+    #
+    port: 8000
+
+  ## OpenTracing #
+  #
+  opentracing:
+    # Specify whether or not to enable OpenTracing.
+    #
+    enabled: false
+
+    # Specify an implementation of OpenTracing to use. Currently only 'jaeger'
+    # is supported.
+    #
+    implementation: jaeger
+
+    # Specify the service name to be reported to the tracer.
+    #
+    service_name: sygnal
+
+    # Specify configuration values to pass to jaeger_client.
+    #
+    jaeger:
+      sampler:
+        type: 'const'
+        param: 1
+#        local_agent:
+#          reporting_host: '127.0.0.1'
+#          reporting_port:
+      logging: true
+
+  ## Sentry #
+  #
+  sentry:
+    # Specify whether or not to enable Sentry.
+    #
+    enabled: false
+
+    # Specify your Sentry DSN if you enable Sentry
+    #
+    #dsn: "https://<key>@sentry.example.org/<project>"
+
+## Pushkins/Apps #
+#
+# Add a section for every push application here.
+# Specify the pushkey for the application and also the type.
+# For the type, you may specify a fully-qualified Python classname if desired.
+#
+#apps:
+  # This is an example APNs push configuration
+  #
+  #com.example.myapp.ios:
+  #  type: apns
+  #
+  #  # Authentication
+  #  #
+  #  # Two methods of authentication to APNs are currently supported.
+  #  #
+  #  # You can authenticate using a key:
+  #  keyfile: my_key.p8
+  #  key_id: MY_KEY_ID
+  #  team_id: MY_TEAM_ID
+  #  topic: MY_TOPIC
+  #
+  #  # Or, a certificate can be used instead:
+  #  certfile: com.example.myApp_prod_APNS.pem
+  #
+  #  # This is the maximum number of in-flight requests *for this pushkin*
+  #  # before additional notifications will be failed.
+  #  # (This is a robustness measure to prevent one pushkin stacking up with
+  #  #  queued requests and saturating the inbound connection queue of a load
+  #  #  balancer or reverse proxy).
+  #  # Defaults to 512 if unset.
+  #  #
+  #  #inflight_request_limit: 512
+  #
+  #  # Specifies whether to use the production or sandbox APNs server. Note that
+  #  # sandbox tokens should only be used with the sandbox server and vice versa.
+  #  #
+  #  # Valid options are:
+  #  #   * production
+  #  #   * sandbox
+  #  #
+  #  # The default is 'production'. Uncomment to use the sandbox instance.
+  #  #platform: sandbox
+
+  # This is an example GCM/FCM push configuration.
+  #
+  #com.example.myapp.android:
+  #  type: gcm
+  #  api_key: your_api_key_for_gcm
+  #
+  #  # This is the maximum number of connections to GCM servers at any one time
+  #  # the default is 20.
+  #  #max_connections: 20
+  #
+  #  # This is the maximum number of in-flight requests *for this pushkin*
+  #  # before additional notifications will be failed.
+  #  # (This is a robustness measure to prevent one pushkin stacking up with
+  #  #  queued requests and saturating the inbound connection queue of a load
+  #  #  balancer or reverse proxy).
+  #  # Defaults to 512 if unset.
+  #  #
+  #  #inflight_request_limit: 512
+  #
+  #  # This allows you to specify additional options to send to Firebase.
+  #  #
+  #  # Of particular interest, admins who wish to support iOS apps using Firebase
+  #  # probably wish to set content_available, and may need to set mutable_content.
+  #  # (content_available allows your iOS app to be woken up by data messages,
+  #  # and mutable_content allows your notification to be modified by a
+  #  # Notification Service app extension).
+  #  #
+  #  # See https://firebase.google.com/docs/cloud-messaging/http-server-ref
+  #  # for the exhaustive list of valid options.
+  #  #
+  #  # Do not specify `data`, `priority`, `to` or `registration_ids` as they may
+  #  # be overwritten or lead to an invalid request.
+  #  #
+  #  #fcm_options:
+  #  #  content_available: true
+  #  #  mutable_content: true
+apps: {{ matrix_sygnal_apps|to_json }}

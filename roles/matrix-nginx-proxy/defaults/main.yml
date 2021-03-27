@@ -1,5 +1,5 @@
 matrix_nginx_proxy_enabled: true
-matrix_nginx_proxy_version: 1.19.6-alpine
+matrix_nginx_proxy_version: 1.19.8-alpine
 
 # We use an official nginx image, which we fix-up to run unprivileged.
 # An alternative would be an `nginxinc/nginx-unprivileged` image, but
@@ -104,6 +104,10 @@ matrix_nginx_proxy_proxy_riot_compat_redirect_hostname: "riot.{{ matrix_domain }
 # Controls whether proxying the Synapse domain should be done.
 matrix_nginx_proxy_proxy_synapse_enabled: false
 matrix_nginx_proxy_proxy_synapse_hostname: "matrix-nginx-proxy"
+matrix_nginx_proxy_proxy_synapse_federation_api_enabled: "{{ matrix_nginx_proxy_proxy_matrix_federation_api_enabled }}"
+# The addresses where the Federation API is, when using Synapse.
+matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container: "matrix-synapse:8048"
+matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container: "localhost:8048"
 
 # Controls whether proxying the Element domain should be done.
 matrix_nginx_proxy_proxy_element_enabled: false
@@ -132,6 +136,10 @@ matrix_nginx_proxy_proxy_jitsi_hostname: "{{ matrix_server_fqn_jitsi }}"
 # Controls whether proxying the grafana domain should be done.
 matrix_nginx_proxy_proxy_grafana_enabled: false
 matrix_nginx_proxy_proxy_grafana_hostname: "{{ matrix_server_fqn_grafana }}"
+
+# Controls whether proxying the sygnal domain should be done.
+matrix_nginx_proxy_proxy_sygnal_enabled: false
+matrix_nginx_proxy_proxy_sygnal_hostname: "{{ matrix_server_fqn_sygnal }}"
 
 # Controls whether proxying for the matrix-corporal API (`/_matrix/corporal`) should be done (on the matrix domain)
 matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: false
@@ -216,10 +224,6 @@ matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb: "{{ (mat
 matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/fullchain.pem"
 matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate_key: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/privkey.pem"
 
-# The addresses where the Federation API is, when using Synapse.
-matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container: "matrix-synapse:8048"
-matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container: "localhost:8048"
-
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_nginx_proxy_tmp_directory_size_mb: "{{ (matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb | int) * 50 }}"
 
@@ -249,6 +253,9 @@ matrix_nginx_proxy_proxy_jitsi_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to Grafana's server configuration (matrix-grafana.conf).
 matrix_nginx_proxy_proxy_grafana_additional_server_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to Sygnal's server configuration (matrix-sygnal.conf).
+matrix_nginx_proxy_proxy_sygnal_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to the base domain server configuration (matrix-base-domain.conf).
 matrix_nginx_proxy_proxy_domain_additional_server_configuration_blocks: []
