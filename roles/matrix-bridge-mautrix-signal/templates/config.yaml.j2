@@ -28,6 +28,11 @@ appservice:
 
     # The full URI to the database. Only Postgres is currently supported.
     database: {{ matrix_mautrix_signal_database_connection_string }}
+    # Additional arguments for asyncpg.create_pool()
+    # https://magicstack.github.io/asyncpg/current/api/index.html#asyncpg.pool.create_pool
+    database_opts:
+        min_size: 5
+        max_size: 10
 
     # Provisioning API part of the web server for automated portal creation and fetching information.
     # Used by things like mautrix-manager (https://github.com/tulir/mautrix-manager).
@@ -88,9 +93,11 @@ bridge:
     # available variable in displayname_preference. The variables in displayname_preference
     # can also be used here directly.
     displayname_template: "{displayname} (Signal)"
-    # Whether or not contact list displaynames should be used.
-    # Using this isn't recommended on multi-user instances.
-    allow_contact_list_name_updates: false
+    # Possible values: disallow, allow, prefer
+    #
+    # Multi-user instances are recommended to disallow contact list names, as otherwise there can
+    # be conflicts between names from different users' contact lists.
+    contact_list_names: disallow
     # Available variables: full_name, first_name, last_name, phone, uuid
     displayname_preference:
     - full_name
@@ -123,11 +130,8 @@ bridge:
     # Whether or not created rooms should have federation enabled.
     # If false, created portal rooms will never be federated.
     federate_rooms: true
-    # End-to-bridge encryption support options. These require matrix-nio to be installed with pip
-    # and login_shared_secret to be configured in order to get a device for the bridge bot.
-    #
-    # Additionally, https://github.com/matrix-org/synapse/pull/5758 is required if using a normal
-    # application service.
+    # End-to-bridge encryption support options. You must install the e2be optional dependency for
+    # this to work. See https://github.com/tulir/mautrix-telegram/wiki/End‐to‐bridge-encryption
     encryption:
         # Allow encryption, work in group chat rooms with e2ee enabled
         allow: false
