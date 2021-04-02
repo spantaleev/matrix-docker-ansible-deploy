@@ -4,7 +4,7 @@ The playbook can install and configure the [Mjolnir](https://github.com/matrix-o
 
 See the project's [documentation](https://github.com/matrix-org/mjolnir) to learn what it does and why it might be useful to you.
 
-Note: the playbook does not currently support the Mjolnir Synapse module. The playbook does support another antispam module, see [Setting up Synapse Simple Antispam](docs/configuring-playbook-synapse-simple-antispam.md).
+Note: the playbook does not currently support the Mjolnir Synapse module. The playbook does support another antispam module, see [Setting up Synapse Simple Antispam](configuring-playbook-synapse-simple-antispam.md).
 
 
 ## 1. Registering the bot user
@@ -48,7 +48,7 @@ You will need to prevent Synapse from rate limiting the bot's account is not rat
 
 1. Change the username (`@bot.mjolnir:DOMAIN`) to the username you used when you registered the bot's account. You must change `DOMAIN` to your server's domain.
 
-1. Get a database terminal by following these steps: [docs/maintenance-postgres.md#getting-a-database-terminal](docs/maintenance-postgres.md#getting-a-database-terminal)
+1. Get a database terminal by following these steps: [maintenance-postgres.md#getting-a-database-terminal](maintenance-postgres.md#getting-a-database-terminal)
 
 1. Connect to Synapse's database by typing `\connect synapse` into the database terminal
 
