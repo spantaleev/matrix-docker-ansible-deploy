@@ -38,7 +38,7 @@ Alternatively, you can use a full-featured client (such as Element) to log in an
 
 ## 3. Make sure the account is free from rate limiting
 
-You will need to prevent Synapse from rate limiting the bot's account is not rate limited by Synapse. This is not an optional step. If you do not do this step mjolnir will crash. [Currently there is no Synapse config option for this](https://github.com/matrix-org/synapse/issues/6286) so you have to manually edit the Synapse database. Manually editing the Synapse database is rarely a good idea but in this case it is required. Please ask for help if you are uncomfortable with these steps.
+You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step mjolnir will crash. [Currently there is no Synapse config option for this](https://github.com/matrix-org/synapse/issues/6286) so you have to manually edit the Synapse database. Manually editing the Synapse database is rarely a good idea but in this case it is required. Please ask for help if you are uncomfortable with these steps.
 
 1. Copy the statement below into a text editor. 
 
