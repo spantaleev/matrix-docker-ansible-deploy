@@ -21,6 +21,7 @@ You can use the playbook to [register a new user](registering-users.md):
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.mjolnir password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
 ```
 
+
 ## 2. Get an access token
 
 If you use curl, you can get an access token like this:
@@ -30,7 +31,7 @@ curl -X POST --header 'Content-Type: application/json' -d '{
     "identifier": { "type": "m.id.user", "user": "bot.mjolnir" },
     "password": "PASSWORD_FOR_THE_BOT",
     "type": "m.login.password"
-}' 'https://matrix.YOURDOMAIN/_matrix/client/r0/login'
+}' 'https://matrix.DOMAIN/_matrix/client/r0/login'
 ```
 
 Alternatively, you can use a full-featured client (such as Element) to log in and get the access token from there (note: don't log out from the client as that will invalidate the token).
@@ -38,7 +39,7 @@ Alternatively, you can use a full-featured client (such as Element) to log in an
 
 ## 3. Make sure the account is free from rate limiting
 
-You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step mjolnir will crash. [Currently there is no Synapse config option for this](https://github.com/matrix-org/synapse/issues/6286) so you have to manually edit the Synapse database. Manually editing the Synapse database is rarely a good idea but in this case it is required. Please ask for help if you are uncomfortable with these steps.
+You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step Mjolnir will crash. [Currently there is no Synapse config option for this](https://github.com/matrix-org/synapse/issues/6286) so you have to manually edit the Synapse database. Manually editing the Synapse database is rarely a good idea but in this case it is required. Please ask for help if you are uncomfortable with these steps.
 
 1. Copy the statement below into a text editor. 
 
@@ -63,11 +64,13 @@ You can run `SELECT * FROM ratelimit_override;` to see if it worked. If the outp
 ```
 then you did it correctly.
 
+
 ## 5. Create a management room
 
 Using your own account, create a new room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room.
 
 Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element you can do this by going to the room's settings, clicking Advanced, and then coping the internal room ID. The room ID will look something like `!QvgVuKq0ha8glOLGMG:DOMAIN`.
+
 
 ## 4. Adjusting the playbook configuration
 
