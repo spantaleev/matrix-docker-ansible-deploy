@@ -131,9 +131,11 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Bots
 
-- [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) (optional)
+- [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) - a bot to remind you about stuff (optional)
 
-- [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) (optional)
+- [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) - an extensible multifunctional bot (optional)
+
+- [Setting up Mjolnir](configuring-playbook-bot-mjolnir.md) - a moderation tool/bot (optional)
 
 
 ### Other specialized services

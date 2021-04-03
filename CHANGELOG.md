@@ -1,3 +1,11 @@
+# 2021-04-03
+
+## Mjolnir moderation tool (bot) support
+
+Thanks to [Aaron Raimist](https://github.com/aaronraimist), the playbook can now install and configure the [Mjolnir](https://github.com/matrix-org/mjolnir) moderation tool (bot).
+
+Additional details are available in [Setting up Mjolnir](docs/configuring-playbook-bot-mjolnir.md).
+
 
 # 2021-03-20
 
