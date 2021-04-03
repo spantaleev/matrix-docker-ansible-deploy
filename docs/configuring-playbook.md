@@ -85,7 +85,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (optional, advanced)
 
-- [Setting up Mjolnir](configuring-playbook-bot-mjolnir) (optional, advanced)
+- [Setting up Mjolnir](configuring-playbook-bot-mjolnir.md) (optional, advanced)
 
 
 ### Bridging other networks
