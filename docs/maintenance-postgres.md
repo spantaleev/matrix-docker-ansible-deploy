@@ -12,6 +12,7 @@ Table of contents:
 
 - [Upgrading PostgreSQL](#upgrading-postgresql), for upgrading to new major versions of PostgreSQL. Such **manual upgrades are sometimes required**.
 
+- [Tuning PostgreSQL](#tuning-postgresql) to make it run faster
 
 ## Getting a database terminal
 
@@ -90,3 +91,43 @@ If you have plenty of space in `/tmp` and would rather avoid gzipping, you can e
 Example: `--extra-vars="postgres_dump_name=matrix-postgres-dump.sql"`
 
 **All databases, roles, etc. on the Postgres server are migrated**.
+
+
+## Tuning PostgreSQL
+
+PostgreSQL can be tuned to make it run faster. This is done by passing extra arguments to Postgres with the `matrix_postgres_process_extra_arguments` variable. You should use a website like https://pgtune.leopard.in.ua/ or information from https://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server to determine what Postgres settings you should change.
+
+### Here are some examples:
+
+These are not recommended values and they may not work well for you. This is just to give you an idea of some of the options that can be set. If you are an experienced PostgreSQL admin feel free to update this documentation with better examples.
+
+Here is an example config for a small 2 core server with 4GB of RAM and SSD storage:
+```
+matrix_postgres_process_extra_arguments: [
+  "-c 'shared_buffers=128MB'",
+  "-c 'effective_cache_size=2304MB'",
+  "-c 'effective_io_concurrency=100'",
+  "-c 'random_page_cost=2.0'",
+  "-c 'min_wal_size=500MB'",
+]
+```
+
+Here is an example config for a large 6 core server with 24GB of RAM:
+```
+matrix_postgres_process_extra_arguments: [
+  "-c max_connections=40",
+  "-c shared_buffers=1536MB",
+  "-c checkpoint_completion_target=0.7",
+  "-c wal_buffers=16MB",
+  "-c default_statistics_target=100",
+  "-c random_page_cost=1.1",
+  "-c effective_io_concurrency=100",
+  "-c work_mem=2621kB",
+  "-c min_wal_size=1GB",
+  "-c max_wal_size=4GB",
+  "-c max_worker_processes=6",
+  "-c max_parallel_workers_per_gather=3",
+  "-c max_parallel_workers=6",
+  "-c max_parallel_maintenance_workers=3",
+]
+```

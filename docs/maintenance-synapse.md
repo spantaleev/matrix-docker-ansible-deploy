@@ -6,13 +6,11 @@ Table of contents:
 
 - [Purging old data with the Purge History API](#purging-old-data-with-the-purge-history-api), for when you wish to delete in-use (but old) data from the Synapse database
 
-- [Synapse maintenance](#synapse-maintenance)
-	- [Purging old data with the Purge History API](#purging-old-data-with-the-purge-history-api)
-	- [Compressing state with rust-synapse-compress-state](#compressing-state-with-rust-synapse-compress-state)
-	- [Browse and manipulate the database](#browse-and-manipulate-the-database)
+- [Compressing state with rust-synapse-compress-state](#compressing-state-with-rust-synapse-compress-state)
 
 - [Browse and manipulate the database](#browse-and-manipulate-the-database), for when you really need to take matters into your own hands
 
+- [Make Synapse faster](#make-synapse-faster)
 
 ## Purging old data with the Purge History API
 
@@ -73,3 +71,13 @@ docker run --rm --publish 1799:8080 --link matrix-postgres --net matrix adminer
 You should then be able to browse the adminer database administration GUI at http://localhost:1799/ after entering your DB credentials (found in the `host_vars` or on the server in `{{matrix_synapse_config_dir_path}}/homeserver.yaml` under `database.args`)
 
 ⚠️ Be **very careful** with this, there is **no undo** for impromptu DB operations.
+
+## Make Synapse faster
+
+Synapse's presence feature which tracks which users are online and which are offline can use a lot of processing power. You can disable presence by adding `matrix_synapse_use_presence: false` to your `vars.yml` file.
+
+Tuning Synapse's cache factor can help reduce RAM usage. [See the upstream documentation](https://github.com/matrix-org/synapse#help-synapse-is-slow-and-eats-all-my-ram-cpu) for more information on what value to set the cache factor to. Use the variable `matrix_synapse_caches_global_factor` to set the cache factor.
+
+Tuning your PostgreSQL database will also make Synapse run significantly faster. See [maintenance-postgres.md##tuning-postgresql](maintenance-postgres.md##tuning-postgresql).
+
+See also [How do I optimize this setup for a low-power server?](faq.md#how-do-i-optimize-this-setup-for-a-low-power-server).
