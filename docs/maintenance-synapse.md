@@ -76,7 +76,7 @@ You should then be able to browse the adminer database administration GUI at htt
 
 Synapse's presence feature which tracks which users are online and which are offline can use a lot of processing power. You can disable presence by adding `matrix_synapse_use_presence: false` to your `vars.yml` file.
 
-Tuning Synapse's cache factor can help reduce RAM usage. See the upstream documentation for more information on what value to set this to https://github.com/matrix-org/synapse#help-synapse-is-slow-and-eats-all-my-ram-cpu. Use the variable `matrix_synapse_caches_global_factor` to set the cache factor.
+Tuning Synapse's cache factor can help reduce RAM usage. [See the upstream documentation](https://github.com/matrix-org/synapse#help-synapse-is-slow-and-eats-all-my-ram-cpu) for more information on what value to set the cache factor to. Use the variable `matrix_synapse_caches_global_factor` to set the cache factor.
 
 Tuning your PostgreSQL database will also make Synapse run significantly faster. See [maintenance-postgres.md##tuning-postgresql](maintenance-postgres.md##tuning-postgresql).
 
