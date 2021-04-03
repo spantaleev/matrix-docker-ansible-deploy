@@ -7,7 +7,7 @@ See the project's [documentation](https://github.com/matrix-org/mjolnir) to lear
 Note: the playbook does not currently support the Mjolnir Synapse module. The playbook does support another antispam module, see [Setting up Synapse Simple Antispam](configuring-playbook-synapse-simple-antispam.md).
 
 
-## 1. Registering the bot user
+## 1. Register the bot account
 
 The playbook does not automatically create users for you. The bot requires an access token to be able to connect to your homeserver.
 
@@ -67,29 +67,31 @@ You can run `SELECT * FROM ratelimit_override;` to see if it worked. If the outp
 then you did it correctly.
 
 
-## 5. Create a management room
+## 4. Create a management room
 
-Using your own account, create a new room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room.
+Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room. Anyone in this room can control the bot so it is important that you only invite trusted users to this room. The room must be unencrypted since the playbook does not support installing Pantalaimon yet.
 
 Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element you can do this by going to the room's settings, clicking Advanced, and then coping the internal room ID. The room ID will look something like `!QvgVuKq0ha8glOLGMG:DOMAIN`.
 
+Finally invite the `@bot.mjolnir:DOMAIN` account you created earlier into the room.
 
-## 4. Adjusting the playbook configuration
+
+## 5. Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
 
-You must replace `ACCESS_TOKEN_FROM_STEP_2_GOES_HERE` and `ROOM_ID_FROM_STEP_5_GOES_HERE` with the your own values.
+You must replace `ACCESS_TOKEN_FROM_STEP_2_GOES_HERE` and `ROOM_ID_FROM_STEP_4_GOES_HERE` with the your own values.
 
 ```yaml
 matrix_bot_mjolnir_enabled: true
 
 matrix_bot_mjolnir_access_token: "ACCESS_TOKEN_FROM_STEP_2_GOES_HERE"
 
-matrix_bot_mjolnir_management_room: "ROOM_ID_FROM_STEP_5_GOES_HERE"
+matrix_bot_mjolnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 ```
 
 
-## 5. Installing
+## 6. Installing
 
 After configuring the playbook, run the [installation](installing.md) command:
 
