@@ -1,0 +1,21 @@
+- import_tasks: "{{ role_path }}/tasks/init.yml"
+  tags:
+    - always
+
+- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: "run_setup|bool and matrix_bot_mjolnir_enabled|bool"
+  tags:
+    - setup-all
+    - setup-bot-mjolnir
+
+- import_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  when: "run_setup|bool and matrix_bot_mjolnir_enabled|bool"
+  tags:
+    - setup-all
+    - setup-bot-mjolnir
+
+- import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+  when: "run_setup|bool and not matrix_bot_mjolnir_enabled|bool"
+  tags:
+    - setup-all
+    - setup-bot-mjolnir

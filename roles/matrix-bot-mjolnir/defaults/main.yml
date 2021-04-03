@@ -1,0 +1,52 @@
+# A moderation tool for Matrix
+# See: https://github.com/matrix-org/mjolnir
+
+matrix_bot_mjolnir_enabled: true
+matrix_bot_mjolnir_version: "v0.1.17"
+matrix_bot_mjolnir_docker_image: "docker.io/matrixdotorg/mjolnir:{{ matrix_bot_mjolnir_version }}"
+matrix_bot_mjolnir_docker_image_force_pull: "{{ matrix_bot_mjolnir_docker_image.endswith(':latest') }}"
+
+matrix_bot_mjolnir_base_path: "{{ matrix_base_data_path }}/mjolnir"
+matrix_bot_mjolnir_config_path: "{{ matrix_bot_mjolnir_base_path }}/config"
+matrix_bot_mjolnir_data_path: "{{ matrix_bot_mjolnir_base_path }}/data"
+
+# A list of extra arguments to pass to the container
+matrix_bot_mjolnir_container_extra_arguments: []
+
+# List of systemd services that matrix-bot-mjolnir.service depends on
+matrix_bot_mjolnir_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-bot-mjolnir.service wants
+matrix_bot_mjolnir_systemd_wanted_services_list: []
+
+# The access token for the bot user
+matrix_bot_mjolnir_access_token: ""
+
+# The room ID where people can use the bot. The bot has no access controls, so
+# anyone in this room can use the bot - secure your room!
+# This should be a room alias or room ID - not a matrix.to URL.
+# Note: Mjolnir is fairly verbose - expect a lot of messages from it.
+matrix_bot_mjolnir_management_room: ""
+
+# Default configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_bot_mjolnir_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_bot_mjolnir_configuration_yaml: "{{ lookup('template', 'templates/production.yaml.j2') }}"
+
+matrix_bot_mjolnir_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_bot_mjolnir_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_bot_mjolnir_configuration_yaml`.
+
+matrix_bot_mjolnir_configuration_extension: "{{ matrix_bot_mjolnir_configuration_extension_yaml|from_yaml if matrix_bot_mjolnir_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_bot_mjolnir_configuration_yaml`.
+matrix_bot_mjolnir_configuration: "{{ matrix_bot_mjolnir_configuration_yaml|from_yaml|combine(matrix_bot_mjolnir_configuration_extension, recursive=True) }}"
+
