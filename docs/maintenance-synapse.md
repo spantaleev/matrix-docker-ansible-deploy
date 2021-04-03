@@ -78,4 +78,6 @@ Synapse's presence feature which tracks which users are online and which are off
 
 Tuning Synapse's cache factor can help reduce RAM usage. See the upstream documentation for more information on what value to set this to https://github.com/matrix-org/synapse#help-synapse-is-slow-and-eats-all-my-ram-cpu. Use the variable `matrix_synapse_caches_global_factor` to set the cache factor.
 
+Tuning your PostgreSQL database will also make Synapse run significantly faster. See [maintenance-postgres.md##tuning-postgresql](maintenance-postgres.md##tuning-postgresql).
+
 See also [How do I optimize this setup for a low-power server?](faq.md#how-do-i-optimize-this-setup-for-a-low-power-server).
