@@ -3,6 +3,7 @@
   apt:
     name:
       - sysstat
+      - curl
     state: present
 
 - name: Install prerequisite yum packages on AWX
@@ -18,6 +19,17 @@
     name:
       - dnspython
     state: present
+
+- name: Calculate MAU value
+  shell: |
+    curl -s localhost:9000 | grep "^synapse_admin_mau_current "
+  register: mau_stat
+  no_log: True
+
+- name: Print MAU value
+  debug:
+    msg: "{{ mau_stat.stdout.split('\n') }}"
+  when: mau_stat is defined
 
 - name: Calculate CPU usage statistics
   shell: iostat -c

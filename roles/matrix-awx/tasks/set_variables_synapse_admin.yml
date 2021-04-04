@@ -2,18 +2,12 @@
 - name: Record Synapse Admin variables locally on AWX
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertafter: '# Synapse Admin Settings'
+    insertafter: '# Synapse Admin Settings Start'
   with_dict:
     'matrix_synapse_admin_enabled': '{{ matrix_synapse_admin_enabled }}'
-
-- name: Copy new 'matrix_vars.yml' to target machine
-  copy:
-    src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
-    dest: '/matrix/awx/matrix_vars.yml'
-    mode: '0660'
 
 - name: Save new 'Configure Synapse Admin' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1

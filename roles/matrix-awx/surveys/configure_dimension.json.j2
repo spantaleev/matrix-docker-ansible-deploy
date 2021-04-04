@@ -1,0 +1,30 @@
+{
+  "name": "Configure Dimension",
+  "description": "",
+  "spec": [
+    {
+      "question_name": "Enable Dimension",
+      "question_description": "Enables the Dimension integration server, before doing this you need to create a CNAME record for 'dimension.{{ matrix_domain }}' that points to 'matrix.{{ matrix_domain }}'.",
+      "required": false,
+      "min": null,
+      "max": null,
+      "default": "{{ matrix_dimension_enabled | string | lower }}",
+      "choices": "true\nfalse",
+      "new_question": true,
+      "variable": "matrix_dimension_enabled",
+      "type": "multiplechoice"
+    },
+    {
+      "question_name": "Dimension Users",
+      "question_description": "Here you can list the user accounts that will be able to configure Dimension. Entries must be seperated with newlines and must be a complete Matrix ID. For example: '@dimension:{{ matrix_domain }}'",
+      "required": false,
+      "min": 0,
+      "max": 65536,
+      "default": {{ ext_dimension_users_raw_final | to_json }},
+      "choices": "",
+      "new_question": true,
+      "variable": "ext_dimension_users_raw",
+      "type": "textarea"
+    }
+  ]
+}

@@ -2,10 +2,10 @@
 - name: Record Element-Web variables locally on AWX
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertafter: '# Element Settings'
+    insertafter: '# Element Settings Start'
   with_dict:
     'matrix_client_element_enabled': '{{ matrix_client_element_enabled }}'
     'matrix_client_element_jitsi_preferredDomain': '{{ matrix_client_element_jitsi_preferredDomain }}'
@@ -16,24 +16,18 @@
 
 - name: Set fact for 'https' string
   set_fact:
-    https_string: "https"
+    awx_https_string: "https"
 
 - name: Record Element-Web Background variable locally on AWX
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertafter: '# Element Settings'
+    insertafter: '# Element Settings Start'
   with_dict:
     'matrix_client_element_branding_welcomeBackgroundUrl': '{{ matrix_client_element_branding_welcomeBackgroundUrl }}'
-  when: (https_string in matrix_client_element_branding_welcomeBackgroundUrl) and ( matrix_client_element_branding_welcomeBackgroundUrl|length > 0 )
-
-- name: Copy new 'matrix_vars.yml' to target machine
-  copy:
-    src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
-    dest: '/matrix/awx/matrix_vars.yml'
-    mode: '0660'
+  when: (awx_https_string in matrix_client_element_branding_welcomeBackgroundUrl) and ( matrix_client_element_branding_welcomeBackgroundUrl|length > 0 )
 
 - name: Save new 'Configure Element' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1

@@ -1,0 +1,109 @@
+
+- name: Include vars in matrix_vars.yml
+  include_vars:
+    file: '{{ awx_cached_matrix_vars }}'
+  no_log: True
+
+- name: Install jq on remote machine
+  apt:
+    name: jq
+    state: present
+
+- name: Collect access token of Dimension user
+  shell: |
+    curl -X POST --header 'Content-Type: application/json' -d '{ "identifier": { "type": "m.id.user","user": "dimension" }, "password": "{{ matrix_awx_dimension_user_password }}", "type": "m.login.password"}' 'https://matrix.{{ matrix_domain }}/_matrix/client/r0/login' | jq -c '. | {access_token}' | sed 's/.*\":\"//' | sed 's/\"}//'
+  register: dimension_user_access_token
+
+- name: Record Synapse variables locally on AWX
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertafter: '# Dimension Settings Start'
+  with_dict:
+    'matrix_dimension_enabled': '{{ matrix_dimension_enabled }}'
+    'matrix_dimension_access_token': '"{{ dimension_user_access_token.stdout }}"'
+  
+- name: Set final users list if users are defined
+  set_fact:
+    ext_dimension_users_raw_final: "{{ ext_dimension_users_raw }}"
+  when: ext_dimension_users_raw|length > 0
+
+- name: Set final users list if no users are defined
+  set_fact:
+    ext_dimension_users_raw_final: '@dimension:{{ matrix_domain }}'
+  when: ext_dimension_users_raw|length == 0
+
+- name: Remove Dimension Users
+  delegate_to: 127.0.0.1
+  replace:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: '^  - .*\n'
+    after: 'matrix_dimension_admins:'
+    before: '# Dimension Settings End'
+
+- name: Set Dimension Users Header
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    insertbefore: '# Dimension Settings End'
+    line: "matrix_dimension_admins:"
+
+- name: Set Dimension Users
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    insertafter: '^matrix_dimension_admins:'
+    line: '  - "{{ item }}"'
+  with_items: "{{ ext_dimension_users_raw_final.splitlines() }}"
+
+- name: Record Dimension Custom variables locally on AWX
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertafter: '# Custom Settings Start'
+  with_dict:
+    'ext_dimension_users_raw': '{{ ext_dimension_users_raw.splitlines() | to_json }}'
+
+- name: Save new 'Configure Dimension' survey.json to the AWX tower, template
+  delegate_to: 127.0.0.1
+  template:
+    src: 'roles/matrix-awx/surveys/configure_dimension.json.j2'
+    dest: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}//configure_dimension.json'
+
+- name: Copy new 'Configure Dimension' survey.json to target machine
+  copy:
+    src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_dimension.json'
+    dest:  '/matrix/awx/configure_dimension.json'
+    mode: '0660'
+
+- name: Collect AWX admin token the hard way!
+  delegate_to: 127.0.0.1
+  shell: |
+      curl -sku {{ tower_username }}:{{ tower_password }} -H "Content-Type: application/json" -X POST -d '{"description":"Tower CLI", "application":null, "scope":"write"}' https://{{ tower_host }}/api/v2/users/1/personal_tokens/ | jq '.token' | sed -r 's/\"//g'
+  register: tower_token
+  no_log: True
+
+- name: Recreate 'Configure Dimension' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_job_template:
+    name: "{{ matrix_domain }} - 1 - Configure Dimension"
+    description: "Configure Dimension, the self-hosted integrations server."
+    extra_vars: "{{ lookup('file', '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/extra_vars.json') }}"
+    job_type: run
+    job_tags: "start,setup-all,setup-dimension"
+    inventory: "{{ member_id }}"
+    project: "{{ member_id }} - Matrix Docker Ansible Deploy"
+    playbook: setup.yml
+    credential: "{{ member_id }} - AWX SSH Key"
+    survey_enabled: true
+    survey_spec: "{{ lookup('file', '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_dimension.json') }}"
+    become_enabled: yes
+    state: present
+    verbosity: 1
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes

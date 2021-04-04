@@ -12,10 +12,10 @@
 - name: Record Synapse variables locally on AWX
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertafter: '# Synapse Settings'
+    insertafter: '# Synapse Settings Start'
   with_dict:
     'matrix_synapse_allow_public_rooms_over_federation': '{{ matrix_synapse_allow_public_rooms_over_federation }}'
     'matrix_synapse_enable_registration': '{{ matrix_synapse_enable_registration }}'
@@ -29,7 +29,7 @@
 - name: Empty Synapse variable 'matrix_synapse_auto_join_rooms' locally on AWX, if raw inputs empty
   delegate_to: 127.0.0.1
   replace:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^matrix_synapse_auto_join_rooms: .*$"
     replace: "matrix_synapse_auto_join_rooms: []"
   when: matrix_synapse_auto_join_rooms_raw|length == 0
@@ -43,10 +43,10 @@
 - name: Record Synapse variable 'matrix_synapse_auto_join_rooms' locally on AWX, if it's not blank
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertafter: '# Synapse Settings'
+    insertafter: '# Synapse Settings Start'
   with_dict:
     "matrix_synapse_auto_join_rooms": "{{ matrix_synapse_auto_join_rooms_array }}"
   when: matrix_synapse_auto_join_rooms_raw|length > 0
@@ -54,10 +54,10 @@
 - name: Record Synapse Shared Secret if it's defined
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertafter: '# Synapse Settings'
+    insertafter: '# Synapse Settings Start'
   with_dict:
     'matrix_synapse_registration_shared_secret': '{{ matrix_synapse_registration_shared_secret }}'
   when: matrix_synapse_registration_shared_secret|length > 0
@@ -65,10 +65,10 @@
 - name: Record registations_require_3pid extra variable if true
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "{{ item }}:"
     line: "{{ item }}"
-    insertbefore: '# End Synapse Extension'
+    insertbefore: '# Synapse Extension End'
   with_items:
     - "  registrations_require_3pid:"
     - "    - email"
@@ -77,10 +77,10 @@
 - name: Remove registrations_require_3pid extra variable if false
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "{{ item }}:"
     line: "{{ item }}"
-    insertbefore: '# End Synapse Extension'
+    insertbefore: '# Synapse Extension End'
     state: absent
   with_items:
     - "  registrations_require_3pid:"
@@ -90,10 +90,10 @@
 - name: Remove URL Languages
   delegate_to: 127.0.0.1
   replace:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: '^(?!.*\bemail\b)    - [a-zA-Z\-]{2,5}\n'
     after: '  url_preview_accept_language:'
-    before: '# End Synapse Extension'
+    before: '# Synapse Extension End'
 
 - name: Set URL languages default if raw inputs empty
   set_fact:
@@ -108,7 +108,7 @@
 - name: Set URL languages if raw inputs empty
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     insertafter: '^  url_preview_accept_language:'
     line: "    - {{ ext_url_preview_accept_language_default }}"
   when: ext_url_preview_accept_language_raw|length == 0
@@ -116,7 +116,7 @@
 - name: Set URL languages if raw inputs not empty
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     insertafter: '^  url_preview_accept_language:'
     line: "    - {{ item }}"
   with_items: "{{ ext_url_preview_accept_language_raw.splitlines() }}"
@@ -125,22 +125,22 @@
 - name: Remove Federation Whitelisting 1
   delegate_to: 127.0.0.1
   replace:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: '^    - [a-z0-9]+\.[a-z0-9.]+\n'
     after: '  federation_domain_whitelist:'
-    before: '# End Synapse Extension'
+    before: '# Synapse Extension End'
 
 - name: Remove Federation Whitelisting 2
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     line: "  federation_domain_whitelist:"
     state: absent
 
 - name: Set Federation Whitelisting 1
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     insertafter: '^matrix_synapse_configuration_extension_yaml: \|'
     line: "  federation_domain_whitelist:"
   when: ext_federation_whitelist_raw|length > 0
@@ -148,7 +148,7 @@
 - name: Set Federation Whitelisting 2
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     insertafter: '^  federation_domain_whitelist:'
     line: "    - {{ item }}"
   with_items: "{{ ext_federation_whitelist_raw.splitlines() }}"
@@ -157,10 +157,10 @@
 - name: Record Synapse Custom variables locally on AWX
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertbefore: '# Custom Settings'
+    insertafter: '# Custom Settings Start'
   with_dict:
     'ext_federation_whitelist_raw': '{{ ext_federation_whitelist_raw.splitlines() | to_json }}'
     'ext_url_preview_accept_language_default': '{{ ext_url_preview_accept_language_default.splitlines() | to_json }}'
@@ -176,20 +176,14 @@
 - name: Record Synapse Extension variables locally on AWX
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertbefore: '# End Synapse Extension'
+    insertbefore: '# Synapse Extension End'
   with_dict:
     '  enable_registration_captcha': '{{ ext_enable_registration_captcha }}'
     '  recaptcha_public_key': '{{ ext_recaptcha_public_key }}'
     '  recaptcha_private_key': '{{ ext_recaptcha_private_key }}'
-
-- name: Copy new 'matrix_vars.yml' to target machine
-  copy:
-    src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
-    dest: '/matrix/awx/matrix_vars.yml'
-    mode: '0660'
 
 - name: Save new 'Configure Synapse' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1

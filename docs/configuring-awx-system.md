@@ -19,7 +19,7 @@ The following repositories allow you to copy and use this setup:
 
 [Create AWX System](https://gitlab.com/GoMatrixHosting/create-awx-system) - Creates and configures the AWX system for you.
 
-[Ansible Create Delete Subscription Membership](https://gitlab.com/GoMatrixHosting/ansible-create-delete-subscription-membership) - Used by the AWX system to create memberships and subscriptions.
+[Ansible Create Delete Subscription Membership](https://gitlab.com/GoMatrixHosting/ansible-create-delete-subscription-membership) - Used by the AWX system to create memberships and subscriptions. Also includes other administrative playbooks for updates, backups and restoring servers.
 
 [Ansible Provision Server](https://gitlab.com/GoMatrixHosting/ansible-provision-server) - Used by AWX members to perform initial configuration of their DigitalOcean or On-Premises server.
 
