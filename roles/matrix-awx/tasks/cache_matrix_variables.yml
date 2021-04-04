@@ -1,0 +1,12 @@
+
+- name: Collect current datetime
+  set_fact:
+    awx_datetime: "{{ lookup('pipe', 'date +%Y-%m-%d_%H:%M') }}"
+
+- name: Create cached matrix_vars.yml file location
+  set_fact:
+    awx_cached_matrix_vars: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars_{{ awx_datetime }}.yml'
+
+- name: Create cached matrix_vars.yml
+  delegate_to: 127.0.0.1
+  shell: "cp /var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml {{ awx_cached_matrix_vars }}"

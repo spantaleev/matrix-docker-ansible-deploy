@@ -26,6 +26,15 @@
   tags:
     - create-user
 
+# Import configs, media repo from /chroot/backup import
+- include_tasks: 
+    file: "import_awx.yml"
+    apply:
+      tags: import-awx
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags:
+    - import-awx
+    
 # Perform extra self-check functions
 - include_tasks: 
     file: "self_check.yml"
@@ -35,14 +44,14 @@
   tags:
     - self-check
 
-# Import configs, media repo from /chroot/backup import
+# Create cached matrix_vars.yml file
 - include_tasks: 
-    file: "import_awx.yml"
+    file: "cache_matrix_variables.yml"
     apply:
-      tags: import-awx
+      tags: always
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
-    - import-awx
+    - always
 
 # Configure SFTP so user can upload a static website or access the servers export
 - include_tasks: 
@@ -98,6 +107,15 @@
   tags:
     - setup-corporal
 
+# Additional playbook to set the variable file during Dimension configuration
+- include_tasks: 
+    file: "set_variables_dimension.yml"
+    apply:
+      tags: setup-dimension
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags:
+    - setup-dimension
+
 # Additional playbook to set the variable file during Synapse Admin configuration
 - include_tasks: 
     file: "set_variables_synapse_admin.yml"
@@ -107,7 +125,7 @@
   tags:
     - setup-synapse-admin
 
-# Load newly formed matrix variables from tower volume
+# Load newly formed matrix variables from AWX volume
 - include_tasks: 
     file: "load_matrix_variables.yml"
     apply:

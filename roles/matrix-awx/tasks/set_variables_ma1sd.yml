@@ -2,20 +2,20 @@
 - name: Record ma1sd variables locally on AWX
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertafter: '# ma1sd Settings'
+    insertafter: '# ma1sd Settings Start'
   with_dict:
     'matrix_ma1sd_enabled': '{{ matrix_ma1sd_enabled }}'
 
 - name: Disable REST auth (matrix-corporal/ma1sd) if using internal auth
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertafter: '# Synapse Extension'
+    insertafter: '# Synapse Extension Start'
   with_dict:
     'matrix_synapse_ext_password_provider_rest_auth_enabled': 'false'
   when: ext_matrix_ma1sd_auth_store == 'Synapse Internal'
@@ -23,10 +23,10 @@
 - name: Enable REST auth if using external LDAP/AD with ma1sd
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertafter: '# Synapse Extension'
+    insertafter: '# Synapse Extension Start'
   with_dict:
     'matrix_synapse_ext_password_provider_rest_auth_enabled': 'true'
     'matrix_synapse_ext_password_provider_rest_auth_endpoint': 'http://matrix-ma1sd:8090'
@@ -40,7 +40,7 @@
 - name: Remove entire ma1sd configuration extension
   delegate_to: 127.0.0.1
   replace:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: '^.*\n'
     after: '# Start ma1sd Extension'
     before: '# End ma1sd Extension'
@@ -48,14 +48,14 @@
 - name: Replace conjoined ma1sd configuration extension limiters
   delegate_to: 127.0.0.1
   replace:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: '^# Start ma1sd Extension# End ma1sd Extension'
     replace: '# Start ma1sd Extension\n# End ma1sd Extension'
 
 - name: Insert ma1sd configuration extension header if using external LDAP/AD with ma1sd
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     line: "matrix_ma1sd_configuration_extension_yaml: |"
     insertafter: '# Start ma1sd Extension'
   when: ext_matrix_ma1sd_auth_store == 'LDAP/AD'
@@ -63,7 +63,7 @@
 - name: Set ma1sd configuration extension if using external LDAP/AD with ma1sd
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     insertbefore: '# End ma1sd Extension'
     line: '{{ item }}'
   with_items: "{{ ext_matrix_ma1sd_configuration_extension_yaml_parsed }}"
@@ -72,19 +72,13 @@
 - name: Record ma1sd Custom variables locally on AWX
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertbefore: '# Custom Settings'
+    insertbefore: '# Custom Settings Start'
   with_dict:
     'ext_matrix_ma1sd_auth_store': '{{ ext_matrix_ma1sd_auth_store }}'
     'ext_matrix_ma1sd_configuration_extension_yaml': '{{ ext_matrix_ma1sd_configuration_extension_yaml.splitlines() | to_json }}'
-
-- name: Copy new 'matrix_vars.yml' to target machine
-  copy:
-    src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
-    dest: '/matrix/awx/matrix_vars.yml'
-    mode: '0660'
 
 - name: Save new 'Configure ma1sd' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1
@@ -126,4 +120,3 @@
     tower_oauthtoken: "{{ tower_token.stdout }}"
     validate_certs: yes
 
-# ^ This playbook isn't executing so the survey isn't being updated! :P

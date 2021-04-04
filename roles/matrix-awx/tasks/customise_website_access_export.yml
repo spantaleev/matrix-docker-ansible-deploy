@@ -1,12 +1,11 @@
 
-
 - name: Enable index.html creation if user doesn't wish to customise base domain
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertafter: '# Base Domain Settings'
+    insertafter: '# Base Domain Settings Start'
   with_dict:
     'matrix_nginx_proxy_base_domain_homepage_enabled': 'true'
   when: customise_base_domain_website|bool == false
@@ -14,10 +13,10 @@
 - name: Disable index.html creation to allow multi-file site if user does wish to customise base domain
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertafter: '# Base Domain Settings'
+    insertafter: '# Base Domain Settings Start'
   with_dict:
     'matrix_nginx_proxy_base_domain_homepage_enabled': 'false'
   when: customise_base_domain_website|bool == true
@@ -25,26 +24,22 @@
 - name: Record custom 'Customise Website + Access Export' variables locally on AWX
   delegate_to: 127.0.0.1
   lineinfile:
-    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertafter: '# Custom Settings'
+    insertafter: '# Custom Settings Start'
   with_dict:
     'customise_base_domain_website': '{{ customise_base_domain_website }}'
     'sftp_auth_method': '"{{ sftp_auth_method }}"'
     'sftp_password': '"{{ sftp_password }}"'
     'sftp_public_key': '"{{ sftp_public_key }}"'
 
-- name: Copy new 'matrix_vars.yml' to target machine
-  copy:
-    src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
-    dest: '/matrix/awx/matrix_vars.yml'
-    mode: '0660'
-
 - name: Reload vars in matrix_vars.yml
   include_vars:
-    file: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    file: '{{ awx_cached_matrix_vars }}'
   no_log: True
+
+# ^ Is this even needed?
 
 - name: Save new 'Customise Website + Access Export' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1
