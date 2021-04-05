@@ -49,7 +49,9 @@ ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-vacuum,start
 
 ## Backing up PostgreSQL
 
-To make a back up of the current PostgreSQL database, make sure it's running and then execute a command like this on the server:
+To automatically make Postgres database backups on a fixed schedule, see [Setting up postgres backup](configuring-playbook-postgres-backup.md).
+
+To make a one off back up of the current PostgreSQL database, make sure it's running and then execute a command like this on the server:
 
 ```bash
 /usr/bin/docker exec \
