@@ -14,8 +14,10 @@ matrix_postgres_backup_healthcheck_port: "8080"
 matrix_postgres_backup_databases: []
 matrix_postgres_backup_path: "{{ matrix_base_data_path }}/postgres-backup"
 
-matrix_postgres_base_path: "{{ matrix_base_data_path }}/postgres"
-matrix_postgres_data_path: "{{ matrix_postgres_base_path }}/data"
+# Specifies where the Postgres data is.
+# We use this to autodetect the Postgres version during playbook runtime (by parsing the `PG_VERSION` file contained there).
+# You can leave this empty to prevent auto-detection.
+matrix_postgres_backup_postgres_data_path: ""
 
 matrix_postgres_backup_architecture: amd64
 

@@ -4,14 +4,14 @@
 # Tasks related to setting up an internal postgres server
 #
 - import_tasks: "{{ role_path }}/tasks/util/detect_existing_postgres_version.yml"
-  when: matrix_postgres_enabled|bool
+  when: 'matrix_postgres_backup_enabled|bool and matrix_postgres_backup_postgres_data_path != ""'
 
 # If we have found an existing version (installed from before), we use its corresponding Docker image.
 # If not, we install using the latest Postgres.
 #
 # Upgrading is supposed to be performed separately and explicitly (see `upgrade_postgres.yml`).
 - set_fact:
-    matrix_postgres_backup_docker_image_to_use: "{{ matrix_postgres_backup_docker_image_latest if matrix_postgres_backup_detected_version_corresponding_docker_image == '' else matrix_postgres_backup_detected_version_corresponding_docker_image }}"
+    matrix_postgres_backup_docker_image_to_use: "{{ matrix_postgres_backup_docker_image_latest if matrix_postgres_backup_detected_version_corresponding_docker_image|default('') == '' else matrix_postgres_backup_detected_version_corresponding_docker_image }}"
   when: matrix_postgres_backup_enabled|bool
 
 - name: Ensure postgres backup Docker image is pulled
