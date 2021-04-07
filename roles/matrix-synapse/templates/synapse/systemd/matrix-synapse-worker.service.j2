@@ -3,12 +3,13 @@
 Description=Synapse worker ({{ matrix_synapse_worker_container_name }})
 AssertPathExists={{ matrix_synapse_config_dir_path }}/{{ matrix_synapse_worker_config_file_name }}
 After=matrix-synapse.service
+PartOf=matrix.target
 
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
 
-ExecStartPre=-{{ matrix_host_command_docker }} kill {{ matrix_synapse_worker_container_name }}
+ExecStartPre=-{{ matrix_host_command_docker }} stop {{ matrix_synapse_worker_container_name }}
 ExecStartPre=-{{ matrix_host_command_docker }} rm {{ matrix_synapse_worker_container_name }}
 
 # Intentional delay, so that the homeserver can manage to start.
@@ -48,7 +49,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name {{ matrix_synapse_wor
 			run -m synapse.app.{{ matrix_synapse_worker_details.type }} -c /data/homeserver.yaml -c /data/{{ matrix_synapse_worker_config_file_name }}
 
 
-ExecStop=-{{ matrix_host_command_docker }} kill {{ matrix_synapse_worker_container_name }}
+ExecStop=-{{ matrix_host_command_docker }} stop {{ matrix_synapse_worker_container_name }}
 ExecStop=-{{ matrix_host_command_docker }} rm {{ matrix_synapse_worker_container_name }}
 
 ExecReload={{ matrix_host_command_docker }} exec {{ matrix_synapse_worker_container_name }} /bin/sh -c 'kill -HUP 1'
@@ -60,5 +61,7 @@ SyslogIdentifier={{ matrix_synapse_worker_container_name }}
 # as matrix.synapse.service already has `Wants=` lines.
 # Also, WantedBy will trigger the creation of some `matrix-synapse.service.wants/` directory,
 # which we'd have to clean, etc. Better not.
+
 [Install]
-WantedBy=multi-user.target
+WantedBy=matrix.target
+

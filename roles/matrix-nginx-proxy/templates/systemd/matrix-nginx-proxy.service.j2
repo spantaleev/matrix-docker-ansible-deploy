@@ -8,12 +8,14 @@ After={{ service }}
 {% for service in matrix_nginx_proxy_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
+After=network-online.target
 DefaultDependencies=no
+PartOf=matrix.target
 
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-nginx-proxy 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} stop matrix-nginx-proxy 2>/dev/null'
 ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-nginx-proxy 2>/dev/null'
 
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-nginx-proxy \
@@ -47,7 +49,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-nginx-proxy \
 			{% endfor %}
 			{{ matrix_nginx_proxy_docker_image }}
 
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-nginx-proxy 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} stop matrix-nginx-proxy 2>/dev/null'
 ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-nginx-proxy 2>/dev/null'
 ExecReload={{ matrix_host_command_docker }} exec matrix-nginx-proxy /usr/sbin/nginx -s reload
 Restart=always
@@ -55,4 +57,5 @@ RestartSec=30
 SyslogIdentifier=matrix-nginx-proxy
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=matrix.target
+
