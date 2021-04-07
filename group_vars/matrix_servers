@@ -348,6 +348,8 @@ matrix_mautrix_instagram_database_password: "{{ matrix_synapse_macaroon_secret_k
 # We don't enable bridges by default.
 matrix_mautrix_signal_enabled: false
 
+matrix_mautrix_signal_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
+
 matrix_mautrix_signal_systemd_required_services_list: |
   {{
     ['docker.service']
@@ -432,6 +434,8 @@ matrix_mautrix_telegram_database_password: "{{ matrix_synapse_macaroon_secret_ke
 
 # We don't enable bridges by default.
 matrix_mautrix_whatsapp_enabled: false
+
+matrix_mautrix_whatsapp_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 matrix_mautrix_whatsapp_systemd_required_services_list: |
   {{
@@ -1013,6 +1017,7 @@ matrix_etherpad_database_password: "{{ matrix_synapse_macaroon_secret_key | pass
 ######################################################################
 
 matrix_dynamic_dns_enabled: false
+matrix_dynamic_dns_container_image_self_build: "{{ matrix_architecture != 'amd64'}}"
 
 ######################################################################
 #
@@ -1325,7 +1330,7 @@ matrix_postgres_architecture: "{{ matrix_architecture }}"
 # and tell users they need to set it (either here or in those variables).
 matrix_postgres_connection_hostname: "{{ 'matrix-postgres' if matrix_postgres_enabled else '' }}"
 
-matrix_postgres_pgloader_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+matrix_postgres_pgloader_container_image_self_build: false
 
 matrix_postgres_additional_databases: |
   {{
