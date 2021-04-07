@@ -21,7 +21,18 @@ ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} 
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-nginx-proxy \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
-			--cap-drop=ALL \
+			--cap-drop=AUDIT_WRITE \
+			--cap-drop=CHOWN \
+			--cap-drop=DAC_OVERRIDE \
+			--cap-drop=FOWNER \
+			--cap-drop=FSETID \
+			--cap-drop=KILL \
+			--cap-drop=MKNOD \
+			--cap-drop=SETFCAP \
+			--cap-drop=SETGID \
+			--cap-drop=SETPCAP \
+			--cap-drop=SETUID \
+			--cap-drop=SYS_CHROOT \
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_nginx_proxy_tmp_directory_size_mb }}m \
 			--network={{ matrix_docker_network }} \
