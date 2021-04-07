@@ -41,6 +41,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mautrix_whatsapp_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_whatsapp_docker_image_force_pull }}"
+  when: "matrix_mautrix_whatsapp_enabled|bool and not matrix_mautrix_whatsapp_container_image_self_build"
 
 - name: Ensure Mautrix Whatsapp paths exists
   file:
@@ -53,6 +54,25 @@
     - "{{ matrix_mautrix_whatsapp_base_path }}"
     - "{{ matrix_mautrix_whatsapp_config_path }}"
     - "{{ matrix_mautrix_whatsapp_data_path }}"
+
+- name: Ensure Mautrix whatsapp repository is present on self-build
+  git:
+    repo: "{{ matrix_mautrix_whatsapp_container_image_self_build_repo }}"
+    dest: "{{ matrix_mautrix_whatsapp_docker_src_files_path }}"
+    force: "yes"
+  register: matrix_mautrix_whatsapp_git_pull_results
+  when: "matrix_mautrix_whatsapp_enabled|bool and matrix_mautrix_whatsapp_container_image_self_build"
+
+- name: Ensure Mautrix whatsapp Docker image is built
+  docker_image:
+    name: "{{ matrix_mautrix_whatsapp_docker_image }}"
+    source: build
+    force_source: "{{ matrix_mautrix_whatsapp_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_mautrix_whatsapp_docker_src_files_path }}"
+      pull: yes
+  when: "matrix_mautrix_whatsapp_enabled|bool and matrix_mautrix_whatsapp_container_image_self_build|bool"
 
 - name: Check if an old database file exists
   stat:
