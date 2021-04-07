@@ -3,6 +3,9 @@
 - include_tasks: "{{ role_path }}/tasks/server_base/setup_centos.yml"
   when: ansible_distribution == 'CentOS'
 
+- include_tasks: "{{ role_path }}/tasks/server_base/setup_fedora.yml"
+  when: ansible_distribution == 'Fedora'
+
 - block:
   # ansible_lsb is only available if lsb-release is installed.
   - name: Ensure lsb-release installed
@@ -26,6 +29,18 @@
 
 - include_tasks: "{{ role_path }}/tasks/server_base/setup_archlinux.yml"
   when: ansible_distribution == 'Archlinux'
+
+- name: Ensure Docker.service is available
+  template:
+    src: "{{ role_path }}/templates/systemd/docker.service"
+    dest: "{{ matrix_systemd_path }}/docker.service"
+    mode: 0644
+  register: matrix_docker_systemd_service_result
+
+- name: Ensure systemd reloaded after docker.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_docker_systemd_service_result.changed|bool"
 
 - name: Ensure Docker is started and autoruns
   service:
