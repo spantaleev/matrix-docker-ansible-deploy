@@ -10,24 +10,34 @@
 
 - name: Ensure Matrix services are stopped
   service:
-    name: "{{ item }}"
+    name: matrix.target
     state: stopped
+  when: not ansible_check_mode
+
+- name: Ensure Matrix services are enabled
+  service:
+    name: "{{ item }}"
+    enabled: true
   with_items: "{{ matrix_systemd_services_list }}"
   when: not ansible_check_mode
 
 - name: Ensure Matrix services are started
   service:
-    name: "{{ item }}"
+    name: "matrix.target"
     enabled: "{{ matrix_services_autostart_enabled_bool }}"
     state: started
-  with_items: "{{ matrix_systemd_services_list }}"
   when: not ansible_check_mode
 
-# If we check service state immediately, we may succeed,
+# If we check service state immediately, we may not succeed,
 # because it takes some time for the service to attempt to start and actually fail.
 #
 # Waiting too long (30s) may not work for a similar reason,
 # as we may run into systemd's automatic restart logic retrying the service.
+#
+# Obviously this is a terrible way of doing things
+# Ideally, we would use Podman's PIDFiles, but then we lose support for most OSes. 
+# Alternatively, we could use systemd-docker, but it hasn't been updated since 2015 and is incompatible with Podman.
+
 - name: Wait a bit, so that services can start (or fail)
   wait_for:
     timeout: "{{ matrix_common_after_systemd_service_start_wait_for_timeout_seconds }}"

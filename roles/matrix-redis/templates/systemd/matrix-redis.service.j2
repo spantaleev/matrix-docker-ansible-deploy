@@ -3,13 +3,14 @@
 Description=Matrix Redis server
 After=docker.service
 Requires=docker.service
+PartOf=matrix.target
 
 [Service]
 Type=simple
-ExecStartPre=-/usr/bin/docker stop matrix-redis
-ExecStartPre=-/usr/bin/docker rm matrix-redis
+ExecStartPre=-{{ matrix_host_command_docker }} stop matrix-redis
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-redis
 
-ExecStart=/usr/bin/docker run --rm --name matrix-redis \
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-redis \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
@@ -26,11 +27,12 @@ ExecStart=/usr/bin/docker run --rm --name matrix-redis \
 			{{ matrix_redis_docker_image_to_use }} \
 			redis-server /usr/local/etc/redis/redis.conf
 
-ExecStop=-/usr/bin/docker stop matrix-redis
-ExecStop=-/usr/bin/docker rm matrix-redis
+ExecStop=-{{ matrix_host_command_docker }} stop matrix-redis
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-redis
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-redis
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=matrix.target
+

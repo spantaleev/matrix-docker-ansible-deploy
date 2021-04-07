@@ -9,17 +9,15 @@ After={{ service }}
 Wants={{ service }}
 {% endfor %}
 DefaultDependencies=no
+PartOf=matrix.target
 
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-/usr/bin/docker kill matrix-sms-bridge
-ExecStartPre=-/usr/bin/docker rm matrix-sms-bridge
+ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-sms-bridge
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-sms-bridge
 
-# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
-ExecStartPre=/bin/sleep 5
-
-ExecStart=/usr/bin/docker run --rm --name matrix-sms-bridge \
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-sms-bridge \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
@@ -35,11 +33,12 @@ ExecStart=/usr/bin/docker run --rm --name matrix-sms-bridge \
 			{% endfor %}
 			{{ matrix_sms_bridge_docker_image }}
 
-ExecStop=-/usr/bin/docker kill matrix-sms-bridge
-ExecStop=-/usr/bin/docker rm matrix-sms-bridge
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-sms-bridge
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-sms-bridge
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-sms-bridge
 
- [Install]
-WantedBy=multi-user.target
+[Install]
+WantedBy=matrix.target
+

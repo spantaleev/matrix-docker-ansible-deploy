@@ -38,3 +38,9 @@
     name: "{{ matrix_ntpd_service }}"
     state: started
     enabled: yes
+
+- name: Ensure matrix.target is installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix.target"
+    dest: "{{ matrix_systemd_path }}/matrix.target"
+    mode: 0644
