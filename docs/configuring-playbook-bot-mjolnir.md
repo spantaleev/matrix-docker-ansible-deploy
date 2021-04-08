@@ -46,7 +46,7 @@ You will need to prevent Synapse from rate limiting the bot's account. This is n
 1. Copy the statement below into a text editor. 
 
 	```
-	INSERT INTO ratelimit_override VALUES ("@bot.mjolnir:DOMAIN", 0, 0);
+	INSERT INTO ratelimit_override VALUES ('@bot.mjolnir:DOMAIN', 0, 0);
 	```
 
 1. Change the username (`@bot.mjolnir:DOMAIN`) to the username you used when you registered the bot's account. You must change `DOMAIN` to your server's domain.
