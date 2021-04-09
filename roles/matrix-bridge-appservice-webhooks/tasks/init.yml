@@ -44,16 +44,19 @@
   - name: Generate Matrix Appservice webhooks proxying configuration for matrix-nginx-proxy
     set_fact:
       matrix_appservice_webhooks_matrix_nginx_proxy_configuration: |
-        location {{ matrix_appservice_webhooks_public_endpoint }}/ {
         {% if matrix_nginx_proxy_enabled|default(False) %}
         {# Use the embedded DNS resolver in Docker containers to discover the service #}
+        location ~ ^{{ matrix_appservice_webhooks_public_endpoint }}/(.*)$ {
           resolver 127.0.0.11 valid=5s;
-          proxy_pass {{ matrix_appservice_webhooks_appservice_url }}:{{ matrix_appservice_webhooks_matrix_port }}/;
-        {% else %}
-          {# Generic configuration for use outside of our container setup #}
-          proxy_pass http://127.0.0.1:{{ matrix_appservice_webhooks_matrix_port }}/;
-        {% endif %}
+          set $backend "matrix-appservice-webhooks:{{ matrix_appservice_webhooks_matrix_port }}";
+          proxy_pass http://$backend/$1;
         }
+        {% else %}
+        {# Generic configuration for use outside of our container setup #}
+        location {{ matrix_appservice_webhooks_public_endpoint }}/ {
+          proxy_pass http://127.0.0.1:{{ matrix_appservice_webhooks_matrix_port }}/;
+        }
+        {% endif %}
 
   - name: Register webhooks Appservice proxying configuration with matrix-nginx-proxy
     set_fact:
