@@ -46,6 +46,8 @@ These services are not part of our default installation, but can be enabled by [
 
 - [tulir/mautrix-facebook](https://mau.dev/tulir/mautrix-facebook/container_registry) - the [mautrix-facebook](https://github.com/tulir/mautrix-facebook) bridge to [Facebook](https://facebook.com/) (optional)
 
+- [tulir/mautrix-twitter](https://mau.dev/tulir/mautrix-twitter/container_registry) - the [mautrix-twitter](https://github.com/tulir/mautrix-twitter) bridge to [Twitter](https://twitter.com/) (optional)
+
 - [tulir/mautrix-hangouts](https://mau.dev/tulir/mautrix-hangouts/container_registry) - the [mautrix-hangouts](https://github.com/tulir/mautrix-hangouts) bridge to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts) (optional)
 
 - [tulir/mautrix-instagram](https://mau.dev/tulir/mautrix-instagram/container_registry) - the [mautrix-instagram](https://github.com/tulir/mautrix-instagram) bridge to [Instagram](https://instagram.com/) (optional)
