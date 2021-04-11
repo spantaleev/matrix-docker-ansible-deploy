@@ -2,9 +2,9 @@
 # Homeserver details
 homeserver:
     # The address that this appservice can use to connect to the homeserver.
-    address: {{ matrix_mautrix_facebook_homeserver_address }}
+    address: {{ matrix_mautrix_twitter_homeserver_address }}
     # The domain of the homeserver (for MXIDs, etc).
-    domain: {{ matrix_mautrix_facebook_homeserver_domain }}
+    domain: {{ matrix_mautrix_twitter_homeserver_domain }}
     # Whether or not to verify the SSL certificate of the homeserver.
     # Only applies if address starts with https://
     verify_ssl: true
@@ -17,7 +17,7 @@ homeserver:
 # Changing these values requires regeneration of the registration.
 appservice:
     # The address that the homeserver can use to connect to this appservice.
-    address: {{ matrix_mautrix_facebook_appservice_address }}
+    address: {{ matrix_mautrix_twitter_appservice_address }}
 
     # The hostname and port where this appservice should listen.
     hostname: 0.0.0.0
@@ -27,7 +27,7 @@ appservice:
     max_body_size: 1
 
     # The full URI to the database. Only Postgres is currently supported.
-    database: {{ matrix_mautrix_facebook_appservice_database|to_json }}
+    database: {{ matrix_mautrix_twitter_appservice_database|to_json }}
 
     # Public part of web server for out-of-Matrix interaction with the bridge.
     public:
@@ -44,17 +44,17 @@ appservice:
         shared_secret: generate
 
     # The unique ID of this appservice.
-    id: facebook
+    id: twitter
     # Username of the appservice bot.
-    bot_username: {{ matrix_mautrix_facebook_appservice_bot_username|to_json }}
+    bot_username: {{ matrix_mautrix_twitter_appservice_bot_username|to_json }}
     # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
     # to leave display name/avatar as-is.
-    bot_displayname: Facebook bridge bot
+    bot_displayname: Twitter bridge bot
     bot_avatar: mxc://maunium.net/ygtkteZsXnGJLJHRchUwYWak
 
     # Authentication tokens for AS <-> HS communication.
-    as_token: "{{ matrix_mautrix_facebook_appservice_token }}"
-    hs_token: "{{ matrix_mautrix_facebook_homeserver_token }}"
+    as_token: "{{ matrix_mautrix_twitter_appservice_token }}"
+    hs_token: "{{ matrix_mautrix_twitter_homeserver_token }}"
 
 # Prometheus telemetry config. Requires prometheus-client to be installed.
 metrics:
@@ -63,20 +63,20 @@ metrics:
 
 # Bridge config
 bridge:
-    # Localpart template of MXIDs for Facebook users.
-    # {userid} is replaced with the user ID of the Facebook user.
-    username_template: "facebook_{userid}"
+    # Localpart template of MXIDs for Twitter users.
+    # {userid} is replaced with the user ID of the Twitter user.
+    username_template: "twitter_{userid}"
     # Localpart template for per-user room grouping community IDs.
     # The bridge will create these communities and add all of the specific user's portals to the community.
     # {localpart} is the MXID localpart and {server} is the MXID server part of the user.
     #
-    # `facebook_{localpart}={server}` is a good value.
+    # `twitter_{localpart}={server}` is a good value.
     community_template: null
-    # Displayname template for Facebook users.
-    # {displayname} is replaced with the display name of the Facebook user
+    # Displayname template for Twitter users.
+    # {displayname} is replaced with the display name of the Twitter user
     #               as defined below in displayname_preference.
     # Keys available for displayname_preference are also available here.
-    displayname_template: '{displayname} (FB)'
+    displayname_template: '{displayname} (Twitter)'
     # Available keys:
     # "name" (full name)
     # "first_name"
@@ -88,12 +88,12 @@ bridge:
     - first_name
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!fb"
+    command_prefix: "!twitter"
 
     # Number of chats to sync (and create portals for) on startup/login.
     # Set 0 to disable automatic syncing.
     initial_chat_sync: 10
-    # Whether or not the Facebook users of logged in Matrix users should be
+    # Whether or not the Twitter users of logged in Matrix users should be
     # invited to private chats when the user sends a message from another client.
     invite_own_puppet_to_pm: false
     # Whether or not to use /sync to get presence, read receipts and typing notifications
@@ -115,8 +115,8 @@ bridge:
     # manually.
     # If using this for other servers than the bridge's server,
     # you must also set the URL in the double_puppet_server_map.
-    login_shared_secret_map: {{ matrix_mautrix_facebook_bridge_login_shared_secret_map|to_json }}
-    presence: {{ matrix_mautrix_facebook_bridge_presence|to_json }}
+    login_shared_secret_map: {{ matrix_mautrix_twitter_bridge_login_shared_secret_map|to_json }}
+    presence: {{ matrix_mautrix_twitter_bridge_presence|to_json }}
     # Whether or not to update avatars when syncing all contacts at startup.
     update_avatar_initial_sync: true
     # End-to-bridge encryption support options. These require matrix-nio to be installed with pip
@@ -143,14 +143,14 @@ bridge:
             # Verification by the bridge is not yet implemented.
             require_verification: true
     # Whether or not the bridge should send a read receipt from the bridge bot when a message has
-    # been sent to Facebook.
+    # been sent to Twitter.
     delivery_receipts: false
     # Whether to allow inviting arbitrary mxids to portal rooms
     allow_invites: false
-    # Settings for backfilling messages from Facebook.
+    # Settings for backfilling messages from Twitter.
     backfill:
-        # Whether or not the Facebook users of logged in Matrix users should be
-        # invited to private chats when backfilling history from Facebook. This is
+        # Whether or not the Twitter users of logged in Matrix users should be
+        # invited to private chats when backfilling history from Twitter. This is
         # usually needed to prevent rate limits and to allow timestamp massaging.
         invite_own_puppet: true
         # Maximum number of messages to backfill initially.
@@ -165,7 +165,7 @@ bridge:
         disable_notifications: false
     periodic_reconnect:
         # Interval in seconds in which to automatically reconnect all users.
-        # This can be used to automatically mitigate the bug where Facebook stops sending messages.
+        # This can be used to automatically mitigate the bug where Twitter stops sending messages.
         # Set to -1 to disable periodic reconnections entirely.
         interval: -1
         # What to do in periodic reconnects. Either "refresh" or "reconnect"
@@ -197,7 +197,7 @@ bridge:
     #   domain - All users on that homeserver
     #     mxid - Specific user
     permissions:
-      '{{ matrix_mautrix_facebook_homeserver_domain }}': user
+      '{{ matrix_mautrix_twitter_homeserver_domain }}': user
 
 # Python logging configuration.
 #
@@ -207,7 +207,7 @@ logging:
     version: 1
     formatters:
         colored:
-            (): mautrix_facebook.util.ColorFormatter
+            (): mautrix_twitter.util.ColorFormatter
             format: "[%(asctime)s] [%(levelname)s@%(name)s] %(message)s"
         normal:
             format: "[%(asctime)s] [%(levelname)s@%(name)s] %(message)s"
