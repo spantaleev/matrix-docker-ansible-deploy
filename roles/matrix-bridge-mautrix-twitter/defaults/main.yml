@@ -36,18 +36,9 @@ matrix_mautrix_twitter_homeserver_token: ''
 
 # Database-related configuration fields.
 #
-# To use SQLite:
-# - change the engine (`matrix_mautrix_twitter_database_engine: 'sqlite'`)
-# - change to the last bridge version that supported SQLite:
-#   `matrix_mautrix_twitter_docker_image: "{{ matrix_mautrix_twitter_docker_image_name_prefix }}tulir/mautrix-twitter:da1b4ec596e334325a1589e70829dea46e73064b"`
-# - plan your migration to Postgres, as this bridge does not support SQLite anymore (and neither will the playbook in the future).
-#
 # To use Postgres:
 # - adjust your database credentials via the `matrix_mautrix_twitter_postgres_*` variables
 matrix_mautrix_twitter_database_engine: 'postgres'
-
-matrix_mautrix_twitter_sqlite_database_path_local: "{{ matrix_mautrix_twitter_data_path }}/mautrix-twitter.db"
-matrix_mautrix_twitter_sqlite_database_path_in_container: "/data/mautrix-twitter.db"
 
 matrix_mautrix_twitter_database_username: 'matrix_mautrix_twitter'
 matrix_mautrix_twitter_database_password: 'some-password'
@@ -59,7 +50,6 @@ matrix_mautrix_twitter_database_connection_string: 'postgres://{{ matrix_mautrix
 
 matrix_mautrix_twitter_appservice_database: "{{
 	{
-		'sqlite': ('sqlite:///' + matrix_mautrix_twitter_sqlite_database_path_in_container),
 		'postgres': matrix_mautrix_twitter_database_connection_string,
 	}[matrix_mautrix_twitter_database_engine]
 }}"
