@@ -7,7 +7,7 @@ matrix_synapse_container_image_self_build: false
 matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/synapse.git"
 
 matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}"
-matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else 'docker.io/' }}"
+matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_container_global_registry_prefix }}"
 # The if statement below may look silly at times (leading to the same version being returned),
 # but ARM-compatible container images are only released 1-7 hours after a release,
 # so we may often be on different versions for different architectures when new Synapse releases come out.
