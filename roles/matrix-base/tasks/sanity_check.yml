@@ -52,3 +52,10 @@
   when:
     - ansible_distribution == 'Archlinux'
     - ansible_python.version.major != 3
+
+- name: Fail if architecture is set incorrectly
+  fail:
+    msg: "Detected that variable matrix_architecture {{ matrix_architecture }} appears to be set incorrectly. See docs/alternative-architectures.md. Server appears to be {{ ansible_architecture }}."
+  when: (ansible_architecture == "x86_64" and matrix_architecture != "amd64") or
+        (ansible_architecture == "aarch64" and matrix_architecture != "arm64") or
+        (ansible_architecture.startswith("armv") and matrix_architecture != "arm32")
