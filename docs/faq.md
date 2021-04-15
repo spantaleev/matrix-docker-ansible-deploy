@@ -458,3 +458,18 @@ If your server's IP address has changed, you may need to [set up DNS](configurin
 When you [perform a major Postgres upgrade](maintenance-postgres.md#upgrading-postgresql), we save the the old data files in `/matrix/postgres/data-auto-upgrade-backup`, just so you could easily restore them should something have gone wrong.
 
 After verifying that everything still works after the Postgres upgrade, you can safely delete `/matrix/postgres/data-auto-upgrade-backup`
+
+### How do I debug or force SSL certificate renewal?
+
+SSL certificate renewal normally happens automatically via [systemd timers](https://wiki.archlinux.org/index.php/Systemd/Timers).
+
+If you're having trouble with SSL certificate renewal, you can inspect the renewal logs using:
+
+- `journalctl -fu matrix-ssl-lets-encrypt-certificates-renew.service`
+- *or* by looking at the log files in `/matrix/ssl/log/`
+
+To trigger renewal, run: `systemctl start matrix-ssl-lets-encrypt-certificates-renew.service`. You can then take a look at the logs again.
+
+If you're using the integrated webserver (`matrix-nginx-proxy`), you can reload it manually like this: `systemctl reload matrix-nginx-proxy`. Reloading also happens periodically via a systemd timer.
+
+If you're [using your own webserver](configuring-playbook-own-webserver.md) instead of the integrated one (`matrix-nginx-proxy`) you may also need to reload/restart it, to make it pick up the renewed SSL certificate files.

@@ -9,6 +9,7 @@
 # You can also override ANY variable (seen here or in any given role),
 # by re-defining it in your own configuration file (`inventory/host_vars/matrix.<your-domain>`).
 
+matrix_container_global_registry_prefix: "docker.io/"
 
 ######################################################################
 #
@@ -1677,7 +1678,7 @@ matrix_prometheus_node_exporter_enabled: false
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Prometheus Node Exporter over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # Prometheus' HTTP port to the local host.
-matrix_prometheus_node_exporter_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9100' }}"
+matrix_prometheus_node_exporter_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9200' }}"
 
 ######################################################################
 #
@@ -1772,5 +1773,34 @@ matrix_registration_database_password: "{{ matrix_synapse_macaroon_secret_key | 
 ######################################################################
 #
 # /matrix-registration
+#
+######################################################################
+
+######################################################################
+#
+# matrix-postgres-backup
+#
+######################################################################
+
+matrix_postgres_backup_connection_hostname: "{{ matrix_postgres_connection_hostname }}"
+matrix_postgres_backup_connection_port: "{{ matrix_postgres_connection_port }}"
+matrix_postgres_backup_connection_username: "{{ matrix_postgres_connection_username }}"
+matrix_postgres_backup_connection_password: "{{ matrix_postgres_connection_password }}"
+
+matrix_postgres_backup_postgres_data_path: "{{ matrix_postgres_data_path if matrix_postgres_enabled else '' }}"
+
+# the default matrix synapse databse is not always part of the matrix_postgres_additional_databases variable thus we have to add it if the default database is used
+matrix_postgres_backup_databases: |
+  {{
+    (([{
+        'name': matrix_synapse_database_database
+    }] if (matrix_synapse_enabled and matrix_synapse_database_database == matrix_postgres_db_name and matrix_synapse_database_host == 'matrix-postgres') else [])
+    +
+    matrix_postgres_additional_databases)|map(attribute='name')|list
+  }}
+
+######################################################################
+#
+# /matrix-postgres-backup
 #
 ######################################################################

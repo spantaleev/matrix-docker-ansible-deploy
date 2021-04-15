@@ -1,0 +1,103 @@
+---
+
+#
+# Tasks related to setting up an internal postgres server
+#
+- import_tasks: "{{ role_path }}/tasks/util/detect_existing_postgres_version.yml"
+  when: 'matrix_postgres_backup_enabled|bool and matrix_postgres_backup_postgres_data_path != ""'
+
+# If we have found an existing version (installed from before), we use its corresponding Docker image.
+# If not, we install using the latest Postgres.
+#
+# Upgrading is supposed to be performed separately and explicitly (see `upgrade_postgres.yml`).
+- set_fact:
+    matrix_postgres_backup_docker_image_to_use: "{{ matrix_postgres_backup_docker_image_latest if matrix_postgres_backup_detected_version_corresponding_docker_image|default('') == '' else matrix_postgres_backup_detected_version_corresponding_docker_image }}"
+  when: matrix_postgres_backup_enabled|bool
+
+- name: Ensure postgres backup Docker image is pulled
+  docker_image:
+    name: "{{ matrix_postgres_backup_docker_image_to_use }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_postgres_backup_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_postgres_backup_docker_image_force_pull }}"
+  when: matrix_postgres_backup_enabled|bool
+
+- name: Ensure Postgres backup paths exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0700
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_postgres_backup_path }}"
+  when: matrix_postgres_backup_enabled|bool
+
+- name: Ensure Postgres environment variables file created
+  template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_postgres_backup_path }}/{{ item }}"
+    mode: 0640
+  with_items:
+    - "env-postgres-backup"
+  when: matrix_postgres_backup_enabled|bool
+
+- name: Ensure matrix-postgres-backup.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-postgres-backup.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-postgres-backup.service"
+    mode: 0644
+  register: matrix_postgres_backup_systemd_service_result
+  when: matrix_postgres_backup_enabled|bool
+
+- name: Ensure systemd reloaded after matrix-postgres-backup.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_postgres_backup_enabled|bool and matrix_postgres_backup_systemd_service_result.changed"
+
+#
+# Tasks related to getting rid of the internal postgres backup server (if it was previously enabled)
+#
+
+- name: Check existence of matrix-postgres-backup service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-postgres-backup.service"
+  register: matrix_postgres_backup_service_stat
+  when: "not matrix_postgres_backup_enabled|bool"
+
+- name: Ensure matrix-postgres-backup is stopped
+  service:
+    name: matrix-postgres-backup
+    state: stopped
+    daemon_reload: yes
+  when: "not matrix_postgres_backup_enabled|bool and matrix_postgres_backup_service_stat.stat.exists"
+
+- name: Ensure matrix-postgres-backup.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-postgres-backup.service"
+    state: absent
+  when: "not matrix_postgres_backup_enabled|bool and matrix_postgres_backup_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-postgres-backup.service removal
+  service:
+    daemon_reload: yes
+  when: "not matrix_postgres_backup_enabled|bool and matrix_postgres_backup_service_stat.stat.exists"
+
+- name: Check existence of matrix-postgres-backup backup path
+  stat:
+    path: "{{ matrix_postgres_backup_path }}"
+  register: matrix_postgres_backup_path_stat
+  when: "not matrix_postgres_backup_enabled|bool"
+
+# We just want to notify the user. Deleting data is too destructive.
+- name: Inject warning if matrix-postgres backup data remains
+  set_fact:
+    matrix_playbook_runtime_results: |
+      {{
+        matrix_playbook_runtime_results|default([])
+        +
+        [
+          "NOTE: You are not using the local backup service to backup the PostgreSQL database, but some old data remains from before in `{{ matrix_postgres_backup_path }}`. Feel free to delete it."
+        ]
+      }}
+  when: "not matrix_postgres_backup_enabled|bool and matrix_postgres_backup_path_stat.stat.exists"

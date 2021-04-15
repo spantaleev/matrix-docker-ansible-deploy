@@ -1,3 +1,13 @@
+# 2021-04-05
+
+## Automated local Postgres backup support
+
+Thanks to [foxcris](https://github.com/foxcris), the playbook can now make automated local Postgres backups on a fixed schedule using [docker-postgres-backup-local](https://github.com/prodrigestivill/docker-postgres-backup-local).
+
+Additional details are available in [Setting up postgres backup](docs/configuring-playbook-postgres-backup.md).
+
+
+
 # 2021-04-03
 
 ## Mjolnir moderation tool (bot) support

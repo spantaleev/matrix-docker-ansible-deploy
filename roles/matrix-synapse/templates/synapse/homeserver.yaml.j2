@@ -869,10 +869,10 @@ rc_admin_redaction: {{ matrix_synapse_rc_admin_redaction|to_json }}
 #rc_joins:
 #  local:
 #    per_second: 0.1
-#    burst_count: 3
+#    burst_count: 10
 #  remote:
 #    per_second: 0.01
-#    burst_count: 3
+#    burst_count: 10
 rc_joins: {{ matrix_synapse_rc_joins|to_json }}
 #
 #rc_3pid_validation:
@@ -1772,6 +1772,9 @@ saml2_config:
 #       Note that, if this is changed, users authenticating via that provider
 #       will no longer be recognised as the same user!
 #
+#       (Use "oidc" here if you are migrating from an old "oidc_config"
+#       configuration.)
+#
 #   idp_name: A user-facing name for this identity provider, which is used to
 #       offer the user a choice of login mechanisms.
 #
@@ -1887,6 +1890,24 @@ saml2_config:
 #           which is set to the claims returned by the UserInfo Endpoint and/or
 #           in the ID Token.
 #
+#   It is possible to configure Synapse to only allow logins if certain attributes
+#   match particular values in the OIDC userinfo. The requirements can be listed under
+#   `attribute_requirements` as shown below. All of the listed attributes must
+#   match for the login to be permitted. Additional attributes can be added to
+#   userinfo by expanding the `scopes` section of the OIDC config to retrieve
+#   additional information from the OIDC provider.
+#
+#   If the OIDC claim is a list, then the attribute must match any value in the list.
+#   Otherwise, it must exactly match the value of the claim. Using the example
+#   below, the `family_name` claim MUST be "Stephensson", but the `groups`
+#   claim MUST contain "admin".
+#
+#   attribute_requirements:
+#     - attribute: family_name
+#       value: "Stephensson"
+#     - attribute: groups
+#       value: "admin"
+#
 # See https://github.com/matrix-org/synapse/blob/master/docs/openid.md
 # for information on how to configure these options.
 #
@@ -1918,34 +1939,9 @@ oidc_providers:
   #      localpart_template: "{% raw %}{{ user.login }}{% endraw %}"
   #      display_name_template: "{% raw %}{{ user.name }}{% endraw %}"
   #      email_template: "{% raw %}{{ user.email }}{% endraw %}"
-
-  # For use with Keycloak
-  #
-  #- idp_id: keycloak
-  #  idp_name: Keycloak
-  #  issuer: "https://127.0.0.1:8443/auth/realms/my_realm_name"
-  #  client_id: "synapse"
-  #  client_secret: "copy secret generated in Keycloak UI"
-  #  scopes: ["openid", "profile"]
-
-  # For use with Github
-  #
-  #- idp_id: github
-  #  idp_name: Github
-  #  idp_brand: github
-  #  discover: false
-  #  issuer: "https://github.com/"
-  #  client_id: "your-client-id" # TO BE FILLED
-  #  client_secret: "your-client-secret" # TO BE FILLED
-  #  authorization_endpoint: "https://github.com/login/oauth/authorize"
-  #  token_endpoint: "https://github.com/login/oauth/access_token"
-  #  userinfo_endpoint: "https://api.github.com/user"
-  #  scopes: ["read:user"]
-  #  user_mapping_provider:
-  #    config:
-  #      subject_claim: "id"
-  #      localpart_template: "{% raw %}{{ user.login }}{% endraw %}"
-  #      display_name_template: "{% raw %}{{ user.name }}{% endraw %}"
+  #  attribute_requirements:
+  #    - attribute: userGroup
+  #      value: "synapseUsers"
 
 
 # Enable Central Authentication Service (CAS) for registration and login.

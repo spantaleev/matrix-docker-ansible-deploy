@@ -1,0 +1,31 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Automatic Backup of  Matrix Postgres server
+After=docker.service
+Requires=docker.service
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
+ExecStartPre=-{{ matrix_host_command_docker }} stop matrix-postgres-backup
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-postgres-backup 2>/dev/null'
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-postgres-backup \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--network={{ matrix_docker_network }} \
+			--env-file={{ matrix_postgres_backup_path }}/env-postgres-backup \
+			--mount type=bind,src={{ matrix_postgres_backup_path }},dst=/backups \
+			{{ matrix_postgres_backup_docker_image_to_use }}
+
+ExecStop=-{{ matrix_host_command_docker }} stop matrix-postgres-backup
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-postgres-backup 2>/dev/null'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-postgres-backup
+
+[Install]
+WantedBy=multi-user.target
