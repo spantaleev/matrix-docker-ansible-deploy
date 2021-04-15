@@ -1,0 +1,13 @@
+
+- name: Collect epoche time from date
+  shell: |
+    date -d '{{ item }}' +"%s"
+  register: epoche_time
+
+- name: Purge local media to specific date
+  shell: |
+    curl -X POST --header "Authorization: Bearer {{ janitors_token.stdout }}" 'https://matrix.{{ matrix_domain }}/_synapse/admin/v1/purge_media_cache?before_ts={{ epoche_time.stdout }}'
+
+- name: Pause for 5 seconds to let Synapse breathe
+  pause:
+    seconds: 5
