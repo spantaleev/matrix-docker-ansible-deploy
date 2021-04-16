@@ -3,7 +3,7 @@
 
 matrix_prometheus_enabled: false
 
-matrix_prometheus_version: v2.24.1
+matrix_prometheus_version: v2.26.0
 matrix_prometheus_docker_image: "{{ matrix_container_global_registry_prefix }}prom/prometheus:{{ matrix_prometheus_version }}"
 matrix_prometheus_docker_image_force_pull: "{{ matrix_prometheus_docker_image.endswith(':latest') }}"
 
@@ -64,4 +64,3 @@ matrix_prometheus_configuration_extension: "{{ matrix_prometheus_configuration_e
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_prometheus_configuration_yaml`.
 matrix_prometheus_configuration: "{{ matrix_prometheus_configuration_yaml|from_yaml|combine(matrix_prometheus_configuration_extension, recursive=True) }}"
-
