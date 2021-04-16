@@ -1,3 +1,17 @@
+# 2021-04-16
+
+## Disabling TLSv1 and TLSv1.1 for Coturn
+
+To improve security, we've [removed TLSv1 and TLSv1.1 support](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/999) from our default [Coturn](https://github.com/coturn/coturn) configuration.
+
+If you need to support old clients, you can re-enable both (or whichever one you need) with the following configuration:
+
+```yaml
+matrix_coturn_tls_v1_enabled: true
+matrix_coturn_tls_v1_1_enabled: true
+```
+
+
 # 2021-04-05
 
 ## Automated local Postgres backup support
