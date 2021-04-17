@@ -30,8 +30,10 @@
         driver: bridge
       register: matrix_docker_network_info
 
+    # The `matrix_docker_network_info.ansible_facts.docker_network` workaroudn is for Ansible <= 2.8.
+    # See: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/907
     - set_fact:
-        matrix_prometheus_scraper_node_targets: ["{{ matrix_docker_network_info.network.IPAM.Config[0].Gateway }}:9100"]
+        matrix_prometheus_scraper_node_targets: ["{{ matrix_docker_network_info.network|default(matrix_docker_network_info.ansible_facts.docker_network).IPAM.Config[0].Gateway }}:9100"]
   when: "matrix_prometheus_scraper_node_enabled|bool and matrix_prometheus_scraper_node_targets|length == 0"
 
 
