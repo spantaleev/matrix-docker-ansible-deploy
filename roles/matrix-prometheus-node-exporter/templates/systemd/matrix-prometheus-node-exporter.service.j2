@@ -25,15 +25,13 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-prometheus-nod
 			{% for arg in matrix_prometheus_node_exporter_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			--net=host \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_prometheus_node_exporter_container_http_host_bind_port %}
+			-p {{ matrix_prometheus_node_exporter_container_http_host_bind_port }}:9100 \
+			{% endif %}
 			--pid=host \
 			--mount type=bind,src=/,dst=/host,ro,bind-propagation=rslave \
 			{{ matrix_prometheus_node_exporter_docker_image }} \
-			{% if matrix_prometheus_node_exporter_container_http_host_bind_port %}
-			--web.listen-address={{ matrix_prometheus_node_exporter_container_http_host_bind_port }} \
-			{% else %}
-			--web.listen-address=localhost:9100 \
-			{% endif %}
 			--path.rootfs=/host
 
 ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-prometheus-node-exporter 2>/dev/null'
