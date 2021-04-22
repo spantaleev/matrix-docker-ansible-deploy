@@ -22,13 +22,13 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-prometheus-nod
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--read-only \
-			{% if matrix_prometheus_node_exporter_container_http_host_bind_port %}
-			-p {{ matrix_prometheus_node_exporter_container_http_host_bind_port }}:9100 \
-			{% endif %}
 			{% for arg in matrix_prometheus_node_exporter_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			--net=host \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_prometheus_node_exporter_container_http_host_bind_port %}
+			-p {{ matrix_prometheus_node_exporter_container_http_host_bind_port }}:9100 \
+			{% endif %}
 			--pid=host \
 			--mount type=bind,src=/,dst=/host,ro,bind-propagation=rslave \
 			{{ matrix_prometheus_node_exporter_docker_image }} \

@@ -16,6 +16,12 @@ no-cli
 {% if matrix_coturn_tls_enabled %}
 cert={{ matrix_coturn_tls_cert_path }}
 pkey={{ matrix_coturn_tls_key_path }}
+{% if not matrix_coturn_tls_v1_enabled %}
+no-tlsv1
+{% endif %}
+{% if not matrix_coturn_tls_v1_1_enabled %}
+no-tlsv1_1
+{% endif %}
 {% else %}
 no-tls
 no-dtls

@@ -3,7 +3,7 @@
 
 matrix_grafana_enabled: false
 
-matrix_grafana_version: 7.5.2
+matrix_grafana_version: 7.5.4
 matrix_grafana_docker_image: "{{ matrix_container_global_registry_prefix }}grafana/grafana:{{ matrix_grafana_version }}"
 matrix_grafana_docker_image_force_pull: "{{ matrix_grafana_docker_image.endswith(':latest') }}"
 
@@ -30,6 +30,12 @@ matrix_grafana_anonymous_access_org_name: 'Main Org.'
 # default admin credentials, you are asked to change these on first login
 matrix_grafana_default_admin_user: admin
 matrix_grafana_default_admin_password: admin
+
+# Set to true to add the Content-Security-Policy header to your requests.
+# CSP allows to control resources that the user agent can load and helps 
+# prevent XSS attacks.
+# [Content Security Policy](https://grafana.com/docs/grafana/latest/administration/configuration/#content_security_policy)
+matrix_grafana_content_security_policy: true
 
 # A list of extra arguments to pass to the container
 matrix_grafana_container_extra_arguments: []

@@ -1675,11 +1675,6 @@ matrix_synapse_admin_container_self_build: "{{ matrix_architecture != 'amd64' }}
 
 matrix_prometheus_node_exporter_enabled: false
 
-# Normally, matrix-nginx-proxy is enabled and nginx can reach Prometheus Node Exporter over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# Prometheus' HTTP port to the local host.
-matrix_prometheus_node_exporter_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9200' }}"
-
 ######################################################################
 #
 # /matrix-prometheus-node-exporter
@@ -1706,6 +1701,7 @@ matrix_prometheus_scraper_synapse_targets: ['matrix-synapse:{{ matrix_synapse_me
 matrix_prometheus_scraper_synapse_rules_synapse_tag: "{{ matrix_synapse_docker_image_tag }}"
 
 matrix_prometheus_scraper_node_enabled: "{{ matrix_prometheus_node_exporter_enabled }}"
+matrix_prometheus_scraper_node_targets: "{{ ['matrix-prometheus-node-exporter:9100'] if matrix_prometheus_node_exporter_enabled else [] }}"
 
 ######################################################################
 #

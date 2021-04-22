@@ -3,7 +3,7 @@
 
 matrix_prometheus_node_exporter_enabled: false
 
-matrix_prometheus_node_exporter_version: v1.1.0
+matrix_prometheus_node_exporter_version: v1.1.2
 matrix_prometheus_node_exporter_docker_image: "{{ matrix_container_global_registry_prefix }}prom/node-exporter:{{ matrix_prometheus_node_exporter_version }}"
 matrix_prometheus_node_exporter_docker_image_force_pull: "{{ matrix_prometheus_node_exporter_docker_image.endswith(':latest') }}"
 
@@ -18,5 +18,17 @@ matrix_prometheus_node_exporter_systemd_wanted_services_list: []
 
 # Controls whether the matrix-prometheus container exposes its HTTP port (tcp/9100 in the container).
 #
-# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9100"), or empty string to not expose.
+# Takes an "<ip>:<port>" value (e.g. "127.0.0.1:9100"), or empty string to not expose.
+#
+# Official recommendations are to run this container with `--net=host`,
+# but we don't do that, since it:
+# - likely exposes the metrics web server way too publicly (before applying https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1008)
+# - or listens on a loopback interface only (--net=host and 127.0.0.1:9100), which is not reachable from another container (like `matrix-prometheus`)
+#
+# Using `--net=host` and binding to Docker's `matrix` bridge network may be a solution to both,
+# but that's trickier to accomplish and won't necessarily work (hasn't been tested).
+#
+# Not using `--net=host` means that our network statistic reports are likely broken (inaccurate),
+# because node-exporter can't see all interfaces, etc.
+# For now, we'll live with that, until someone develops a better solution.
 matrix_prometheus_node_exporter_container_http_host_bind_port: ''
