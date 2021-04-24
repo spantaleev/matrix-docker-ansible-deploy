@@ -6,6 +6,8 @@ It's a web UI tool you can use to **administrate users and rooms on your Matrix 
 
 See the project's [documentation](https://github.com/Awesome-Technologies/synapse-admin) to learn what it does and why it might be useful to you.
 
+**Warning**: Synapse Admin will likely not work with Synapse v1.32 for now. See [this issue](https://github.com/Awesome-Technologies/synapse-admin/issues/132). If you insist on using Synapse Admin before there's a solution to this issue, you may wish to downgrade Synapse (adding `matrix_synapse_version: v1.31.0` or `matrix_synapse_version_arm64: v1.31.0` to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file).
+
 
 ## Adjusting the playbook configuration
 

@@ -11,7 +11,7 @@ These services are enabled and used by default, but you can turn them off, if yo
 
 - [matrixdotorg/synapse](https://hub.docker.com/r/matrixdotorg/synapse/) - the official [Synapse](https://github.com/matrix-org/synapse) Matrix homeserver (optional)
 
-- [instrumentisto/coturn](https://hub.docker.com/r/instrumentisto/coturn/) - the [Coturn](https://github.com/coturn/coturn) STUN/TURN server (optional)
+- [coturn/coturn](https://hub.docker.com/r/coturn/coturn/) - the [Coturn](https://github.com/coturn/coturn) STUN/TURN server (optional)
 
 - [vectorim/element-web](https://hub.docker.com/r/vectorim/element-web/) - the [Element](https://element.io/) web client (optional)
 

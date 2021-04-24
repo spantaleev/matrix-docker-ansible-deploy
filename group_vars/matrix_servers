@@ -64,7 +64,7 @@ matrix_appservice_discord_enabled: false
 matrix_appservice_discord_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9005' }}"
 
 # If the homeserver disables presence, it's likely better (less wasteful) to also disable presence on the bridge side.
-matrix_appservice_discord_bridge_disablePresence: "{{ matrix_synapse_use_presence }}"
+matrix_appservice_discord_bridge_disablePresence: "{{ not matrix_synapse_presence_enabled }}"
 
 matrix_appservice_discord_systemd_required_services_list: |
   {{
@@ -188,7 +188,7 @@ matrix_appservice_irc_container_http_host_bind_port: "{{ '' if matrix_nginx_prox
 
 # The IRC bridge docs say that if homeserver presence is disabled, it's better to also disable
 # IRC bridge presence, for performance reasons.
-matrix_appservice_irc_homeserver_enablePresence: "{{ matrix_synapse_use_presence }}"
+matrix_appservice_irc_homeserver_enablePresence: "{{ matrix_synapse_presence_enabled }}"
 
 matrix_appservice_irc_systemd_required_services_list: |
   {{
@@ -242,7 +242,7 @@ matrix_mautrix_facebook_homeserver_token: "{{ matrix_synapse_macaroon_secret_key
 
 matrix_mautrix_facebook_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_mautrix_facebook_bridge_presence: "{{ matrix_synapse_use_presence if matrix_synapse_enabled else true }}"
+matrix_mautrix_facebook_bridge_presence: "{{ matrix_synapse_presence_enabled if matrix_synapse_enabled else true }}"
 
 # We'd like to force-set people with external Postgres to SQLite, so the bridge role can complain
 # and point them to a migration path.
@@ -325,7 +325,7 @@ matrix_mautrix_instagram_homeserver_token: "{{ matrix_synapse_macaroon_secret_ke
 
 matrix_mautrix_instagram_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_mautrix_instagram_bridge_presence: "{{ matrix_synapse_use_presence if matrix_synapse_enabled else true }}"
+matrix_mautrix_instagram_bridge_presence: "{{ matrix_synapse_presence_enabled if matrix_synapse_enabled else true }}"
 
 # We'd like to force-set people with external Postgres to SQLite, so the bridge role can complain
 # and point them to a migration path.
@@ -1211,7 +1211,7 @@ matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "{{ m
 
 matrix_nginx_proxy_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
 
-matrix_nginx_proxy_synapse_presence_disabled: "{{ not matrix_synapse_use_presence }}"
+matrix_nginx_proxy_synapse_presence_disabled: "{{ not matrix_synapse_presence_enabled }}"
 
 matrix_nginx_proxy_synapse_workers_enabled: "{{ matrix_synapse_workers_enabled }}"
 matrix_nginx_proxy_synapse_workers_list: "{{ matrix_synapse_workers_enabled_list }}"
@@ -1527,7 +1527,7 @@ matrix_client_element_registration_enabled: "{{ matrix_synapse_enable_registrati
 matrix_client_element_enable_presence_by_hs_url: |
   {{
     none
-    if matrix_synapse_use_presence
+    if matrix_synapse_presence_enabled
     else {matrix_client_element_default_hs_url: false}
   }}
 
@@ -1675,11 +1675,6 @@ matrix_synapse_admin_container_self_build: "{{ matrix_architecture != 'amd64' }}
 
 matrix_prometheus_node_exporter_enabled: false
 
-# Normally, matrix-nginx-proxy is enabled and nginx can reach Prometheus Node Exporter over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# Prometheus' HTTP port to the local host.
-matrix_prometheus_node_exporter_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9200' }}"
-
 ######################################################################
 #
 # /matrix-prometheus-node-exporter
@@ -1706,6 +1701,7 @@ matrix_prometheus_scraper_synapse_targets: ['matrix-synapse:{{ matrix_synapse_me
 matrix_prometheus_scraper_synapse_rules_synapse_tag: "{{ matrix_synapse_docker_image_tag }}"
 
 matrix_prometheus_scraper_node_enabled: "{{ matrix_prometheus_node_exporter_enabled }}"
+matrix_prometheus_scraper_node_targets: "{{ ['matrix-prometheus-node-exporter:9100'] if matrix_prometheus_node_exporter_enabled else [] }}"
 
 ######################################################################
 #

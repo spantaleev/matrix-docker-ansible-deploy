@@ -1,6 +1,10 @@
 #jinja2: lstrip_blocks: "True"
 
 {% macro render_vhost_directives() %}
+	{% if matrix_nginx_proxy_floc_optout_enabled %}
+		add_header Permissions-Policy interest-cohort=() always;
+	{% endif %}
+
 	{% for configuration_block in matrix_nginx_proxy_proxy_riot_additional_server_configuration_blocks %}
 		{{- configuration_block }}
 	{% endfor %}
