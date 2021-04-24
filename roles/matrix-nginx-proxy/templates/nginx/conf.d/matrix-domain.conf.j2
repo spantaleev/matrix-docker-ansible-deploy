@@ -17,6 +17,10 @@
 	gzip on;
 	gzip_types text/plain application/json;
 
+	{% if matrix_nginx_proxy_floc_optout_enabled %}
+		add_header Permissions-Policy interest-cohort=() always;
+	{% endif %}
+
 	location /.well-known/matrix {
 		root {{ matrix_static_files_base_path }};
 		{#

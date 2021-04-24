@@ -13,8 +13,8 @@ Before installing Jitsi, make sure you've created the `jitsi.DOMAIN` DNS record.
 
 You may also need to open the following ports to your server:
 
-- `10000/udp` - RTP media over UDP
 - `4443/tcp` - RTP media fallback over TCP
+- `10000/udp` - RTP media over UDP. Depending on your firewall/NAT setup, incoming RTP packets on port `10000` may have the external IP of your firewall as destination address, due to the usage of STUN in JVB (see [`matrix_jitsi_jvb_stun_servers`](../roles/matrix-jitsi/defaults/main.yml)).
 
 
 ## Installation

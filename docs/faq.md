@@ -297,7 +297,7 @@ matrix_coturn_enabled: false
 # hundreds of servers inside is insanely heavy (https://github.com/matrix-org/synapse/issues/3971).
 #
 # If your server does not federate with hundreds of others, enabling this doesn't hurt much.
-matrix_synapse_use_presence: false
+matrix_synapse_presence_enabled: false
 ```
 
 You can also consider implementing a restriction on room complexity, in order to prevent users from joining very heavy rooms:

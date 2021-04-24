@@ -6,6 +6,10 @@
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Content-Type-Options nosniff;
+	{% if matrix_nginx_proxy_floc_optout_enabled %}
+		add_header Permissions-Policy interest-cohort=() always;
+	{% endif %}
+
 {% for configuration_block in matrix_nginx_proxy_proxy_jitsi_additional_server_configuration_blocks %}
 	{{- configuration_block }}
 {% endfor %}
