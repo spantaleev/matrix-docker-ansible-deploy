@@ -8,7 +8,7 @@
     insertafter: '# Base Domain Settings Start'
   with_dict:
     'matrix_nginx_proxy_base_domain_homepage_enabled': 'true'
-  when: customise_base_domain_website|bool == false
+  when: (customise_base_domain_website is defined) and not customise_base_domain_website|bool
 
 - name: Disable index.html creation to allow multi-file site if user does wish to customise base domain
   delegate_to: 127.0.0.1
@@ -19,7 +19,19 @@
     insertafter: '# Base Domain Settings Start'
   with_dict:
     'matrix_nginx_proxy_base_domain_homepage_enabled': 'false'
-  when: customise_base_domain_website|bool == true
+  when: (customise_base_domain_website is defined) and customise_base_domain_website|bool
+
+- name: Record custom 'Customise Website + Access Export' variables locally on AWX
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertafter: '# Custom Settings Start'
+  with_dict:
+    'sftp_auth_method': '"{{ sftp_auth_method }}"'
+    'sftp_password': '"{{ sftp_password }}"'
+    'sftp_public_key': '"{{ sftp_public_key }}"'
 
 - name: Record custom 'Customise Website + Access Export' variables locally on AWX
   delegate_to: 127.0.0.1
@@ -30,28 +42,40 @@
     insertafter: '# Custom Settings Start'
   with_dict:
     'customise_base_domain_website': '{{ customise_base_domain_website }}'
-    'sftp_auth_method': '"{{ sftp_auth_method }}"'
-    'sftp_password': '"{{ sftp_password }}"'
-    'sftp_public_key': '"{{ sftp_public_key }}"'
+  when: customise_base_domain_website is defined
 
 - name: Reload vars in matrix_vars.yml
   include_vars:
     file: '{{ awx_cached_matrix_vars }}'
   no_log: True
 
-# ^ Is this even needed?
-
 - name: Save new 'Customise Website + Access Export' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1
   template:
     src: './roles/matrix-awx/surveys/configure_website_access_export.json.j2'
     dest: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_website_access_export.json'
+  when: customise_base_domain_website is defined
 
 - name: Copy new 'Customise Website + Access Export' survey.json to target machine
   copy:
     src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_website_access_export.json'
     dest:  '/matrix/awx/configure_website_access_export.json'
     mode: '0660'
+  when: customise_base_domain_website is defined
+
+- name: Save new 'Customise Website + Access Export' survey.json to the AWX tower, template
+  delegate_to: 127.0.0.1
+  template:
+    src: './roles/matrix-awx/surveys/access_export.json.j2'
+    dest: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/access_export.json'
+  when: customise_base_domain_website is undefined
+
+- name: Copy new 'Customise Website + Access Export' survey.json to target machine
+  copy:
+    src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/access_export.json'
+    dest:  '/matrix/awx/access_export.json'
+    mode: '0660'
+  when: customise_base_domain_website is undefined
 
 - name: Collect AWX admin token the hard way!
   delegate_to: 127.0.0.1
@@ -60,7 +84,7 @@
   register: tower_token
   no_log: True
 
-- name: Recreate 'Customise Base Domain Export' job template
+- name: Recreate 'Configure Website + Access Export' job template
   delegate_to: 127.0.0.1
   awx.awx.tower_job_template:
     name: "{{ matrix_domain }} - 1 - Configure Website + Access Export"
@@ -80,6 +104,29 @@
     tower_host: "https://{{ tower_host }}"
     tower_oauthtoken: "{{ tower_token.stdout }}"
     validate_certs: yes
+  when: customise_base_domain_website is defined
+
+- name: Recreate 'Access Export' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_job_template:
+    name: "{{ matrix_domain }} - 1 - Access Export"
+    description: "Access the services export."
+    extra_vars: "{{ lookup('file', '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/extra_vars.json') }}"
+    job_type: run
+    job_tags: "start,setup-nginx-proxy"
+    inventory: "{{ member_id }}"
+    project: "{{ member_id }} - Matrix Docker Ansible Deploy"
+    playbook: setup.yml
+    credential: "{{ member_id }} - AWX SSH Key"
+    survey_enabled: true
+    survey_spec: "{{ lookup('file', '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/access_export.json') }}"
+    become_enabled: yes
+    state: present
+    verbosity: 1
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: customise_base_domain_website is undefined
 
 - name: Ensure group "sftp" exists
   group:
@@ -113,6 +160,7 @@
     name: sftp
     groups: matrix
     append: yes
+  when: customise_base_domain_website is defined
 
 - name: Create the ro /chroot directory with sticky bit if it doesn't exist. (/chroot/website has matrix:matrix permissions and is mounted to nginx container)
   file:
@@ -129,6 +177,7 @@
     owner: matrix
     group: matrix
     mode: '0574'
+  when: customise_base_domain_website is defined
 
 - name: Ensure /chroot/export location exists
   file:
