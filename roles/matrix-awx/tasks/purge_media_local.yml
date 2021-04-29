@@ -6,7 +6,12 @@
 
 - name: Purge local media to specific date
   shell: |
-    curl -X POST --header "Authorization: Bearer {{ janitors_token.stdout }}" 'https://matrix.{{ matrix_domain }}/_synapse/admin/v1/media/matrix.{{ matrix_domain }}/delete?before_ts={{ epoche_time.stdout }}'
+    curl -X POST --header "Authorization: Bearer {{ janitors_token.stdout[1:-1] }}" '{{ synapse_container_ip.stdout }}:8008/_synapse/admin/v1/media/matrix.{{ matrix_domain }}/delete?before_ts={{ epoche_time.stdout }}'
+  register: purge_command
+  
+- name: Print output of purge command
+  debug: 
+    msg: "{{ purge_command.stdout }}"
 
 - name: Pause for 5 seconds to let Synapse breathe
   pause:

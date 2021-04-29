@@ -21,6 +21,10 @@
   shell: |
     curl -XPOST -d '{"type":"m.login.password", "user":"janitor", "password":"{{ matrix_awx_janitor_user_password }}"}' "https://matrix.{{ matrix_domain }}/_matrix/client/r0/login" | jq '.access_token'
   register: janitors_token
+  
+- name: Collect the internal IP of the matrix-synapse container
+  shell: "/usr/bin/docker inspect --format '{''{range.NetworkSettings.Networks}''}{''{.IPAddress}''}{''{end}''}' matrix-synapse"
+  register: synapse_container_ip
     
 - name: Generate list of dates to purge to
   delegate_to: 127.0.0.1
