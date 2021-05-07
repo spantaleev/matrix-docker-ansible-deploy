@@ -11,7 +11,7 @@
 	upstream generic_worker_upstream {
 		# ensures that requests from the same client will always be passed
 		# to the same server (except when this server is unavailable)
-		ip_hash;
+		hash $http_x_forwarded_for;
 
 		{% for worker in generic_workers %}
 			{% if matrix_nginx_proxy_enabled %}

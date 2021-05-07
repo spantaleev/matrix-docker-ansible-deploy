@@ -30,7 +30,7 @@
       git:
         repo: "{{ matrix_coturn_container_image_self_build_repo }}"
         dest: "{{ matrix_coturn_docker_src_files_path }}"
-        version: "{{ matrix_coturn_docker_image.split(':')[1] }}"
+        version: "{{ matrix_coturn_container_image_self_build_repo_version }}"
         force: "yes"
       register: matrix_coturn_git_pull_results
 
@@ -40,7 +40,7 @@
         source: build
         force_source: "{{ matrix_coturn_git_pull_results.changed }}"
         build:
-          dockerfile: Dockerfile
+          dockerfile: "{{ matrix_coturn_container_image_self_build_repo_dockerfile_path }}"
           path: "{{ matrix_coturn_docker_src_files_path }}"
           pull: yes
   when: "matrix_coturn_container_image_self_build|bool"
