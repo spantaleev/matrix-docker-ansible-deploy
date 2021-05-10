@@ -55,6 +55,8 @@ Note that if your nginx version is old, it might not like our default choice of 
 matrix_nginx_proxy_ssl_protocols: "TLSv1.2"
 ```
 
+If you are experiencing issues, try updating to a newer version of Nginx. As a data point in May 2021 a user reported that Nginx 1.14.2 was not working for them. They were getting errors about socket leaks. Updating to Nginx 1.19 fixed their issue.
+
 
 ### Using your own external Apache webserver
 
