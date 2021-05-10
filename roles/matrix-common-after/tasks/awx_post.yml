@@ -35,7 +35,25 @@
   with_dict:
     'matrix_awx_dimension_user_created': 'true'
   when: not matrix_awx_dimension_user_created|bool
+
+- name: Create user account @mjolnir-bot
+  command: |
+    /usr/local/bin/matrix-synapse-register-user mjolnir-bot {{ matrix_awx_mjolnir-bot_user_password | quote }} 0
+  register: cmd
+  when: not matrix_awx_dimension_user_created|bool
+  no_log: True
   
+- name: Update AWX dimension user created variable
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertafter: 'AWX Settings'
+  with_dict:
+    'matrix_awx_mjolnir-bot_user_created': 'true'
+  when: not matrix_awx_dimension_user_created|bool
+
 - name: Ensure /chroot/website location has correct permissions
   file:
     path: /chroot/website

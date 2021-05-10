@@ -44,6 +44,15 @@
   tags:
     - purge-media
 
+# Purge Synapse database if called
+- include_tasks: 
+    file: "purge_database_main.yml"
+    apply:
+      tags: purge-database
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags:
+    - purge-database
+
 # Import configs, media repo from /chroot/backup import
 - include_tasks: 
     file: "import_awx.yml"

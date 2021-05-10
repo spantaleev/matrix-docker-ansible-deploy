@@ -1,0 +1,234 @@
+
+- name: Ensure dateutils and curl is installed in AWX
+  delegate_to: 127.0.0.1
+  yum:
+    name: dateutils
+    state: latest
+
+- name: Ensure dateutils, curl and jq intalled on target machine
+  apt:
+    pkg:
+    - curl
+    - jq
+    state: present
+
+- name: Include vars in matrix_vars.yml
+  include_vars:
+    file: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+  no_log: True
+
+- name: Collect size of Synapse database
+  shell: du -sh /matrix/postgres/data
+  register: db_size_before_stat
+  no_log: True
+
+- name: Print before size of Synapse database
+  debug:
+    msg: "{{ db_size_before_stat.stdout.split('\n') }}"
+  when: db_size_before_stat is defined
+
+- name: Collect the internal IP of the matrix-synapse container
+  shell: "/usr/bin/docker inspect --format '{''{range.NetworkSettings.Networks}''}{''{.IPAddress}''}{''{end}''}' matrix-synapse"
+  register: synapse_container_ip
+
+- name: Collect access token for janitor user
+  shell: |
+    curl -X POST -d '{"type":"m.login.password", "user":"janitor", "password":"{{ matrix_awx_janitor_user_password }}"}' "{{ synapse_container_ip.stdout }}:8008/_matrix/client/r0/login" | jq '.access_token'
+  register: janitors_token
+  no_log: True
+
+- name: Collect total number of rooms
+  shell: |
+    curl -X GET --header "Authorization: Bearer {{ janitors_token.stdout[1:-1] }}" '{{ synapse_container_ip.stdout }}:8008/_synapse/admin/v1/rooms' | jq '.total_rooms'
+  when: purge_rooms|bool
+  register: rooms_total
+
+- name: Print total number of rooms
+  debug:
+    msg: '{{ rooms_total.stdout }}'
+  when: purge_rooms|bool
+
+- name: Calculate every 100 values for total number of rooms
+  delegate_to: 127.0.0.1
+  shell: |
+    seq 0 100 {{ rooms_total.stdout }}
+  when: purge_rooms|bool
+  register: every_100_rooms
+
+- name: Ensure room_list_complete.json file exists
+  delegate_to: 127.0.0.1
+  file:
+    path: /tmp/{{ subscription_id }}_room_list_complete.json
+    state: touch
+  when: purge_rooms|bool
+
+- name: Build file with total room list
+  include_tasks: purge_database_build_list.yml 
+  loop: "{{ every_100_rooms.stdout_lines | flatten(levels=1) }}"
+  when: purge_rooms|bool
+
+- name: Generate list of rooms with no local users
+  delegate_to: 127.0.0.1
+  shell: |
+    jq 'try .rooms[] | select(.joined_local_members == 0) | .room_id' < /tmp/{{ subscription_id }}_room_list_complete.json > /tmp/{{ subscription_id }}_room_list_no_local_users.txt
+  when: purge_rooms|bool
+  
+- name: Count number of rooms with no local users
+  delegate_to: 127.0.0.1
+  shell: |
+    wc -l /tmp/{{ subscription_id }}_room_list_no_local_users.txt | awk '{ print $1 }'
+  register: rooms_no_local_total
+  when: purge_rooms|bool
+
+- name: Setting host fact room_list_no_local_users
+  set_fact:
+    room_list_no_local_users: "{{ lookup('file', '/tmp/{{ subscription_id }}_room_list_no_local_users.txt') }}"
+  no_log: True
+  when: purge_rooms|bool
+
+- name: Purge all rooms with no local users
+  include_tasks: purge_database_no_local.yml 
+  loop: "{{ room_list_no_local_users.splitlines() | flatten(levels=1) }}"
+  when: purge_rooms|bool
+
+- name: Collect epoche time from date
+  delegate_to: 127.0.0.1
+  shell: |
+    date -d '{{ purge_date }}' +"%s"
+  when: purge_rooms|bool
+  register: purge_epoche_time
+
+- name: Generate list of rooms with more then N users
+  delegate_to: 127.0.0.1
+  shell: |
+    jq 'try .rooms[] | select(.joined_members > {{ purge_metric_value }}) | .room_id' < /tmp/{{ subscription_id }}_room_list_complete.json > /tmp/{{ subscription_id }}_room_list_joined_members.txt
+  when: (purge_metric.find("Number of users") != -1) and (purge_rooms|bool)
+
+- name: Count number of rooms with more then N users
+  delegate_to: 127.0.0.1
+  shell: |
+    wc -l /tmp/{{ subscription_id }}_room_list_joined_members.txt | awk '{ print $1 }'
+  register: rooms_join_members_total
+  when: (purge_metric.find("Number of users") != -1) and (purge_rooms|bool)
+
+- name: Setting host fact room_list_joined_members
+  delegate_to: 127.0.0.1
+  set_fact:
+    room_list_joined_members: "{{ lookup('file', '/tmp/{{ subscription_id }}_room_list_joined_members.txt') }}"
+  when: (purge_metric.find("Number of users") != -1) and (purge_rooms|bool)
+  no_log: True
+
+- name: Purge all rooms with more then N users
+  include_tasks: purge_database_users.yml 
+  loop: "{{ room_list_joined_members.splitlines() | flatten(levels=1) }}"
+  when: (purge_metric.find("Number of users") != -1) and (purge_rooms|bool)
+
+- name: Generate list of rooms with more then N events
+  delegate_to: 127.0.0.1
+  shell: |
+    jq 'try .rooms[] | select(.state_events > {{ purge_metric_value }}) | .room_id' < /tmp/{{ subscription_id }}_room_list_complete.json > /tmp/{{ subscription_id }}_room_list_state_events.txt
+  when: (purge_metric.find("Number of events") != -1) and (purge_rooms|bool)
+
+- name: Count number of rooms with more then N users
+  delegate_to: 127.0.0.1
+  shell: |
+    wc -l /tmp/{{ subscription_id }}_room_list_state_events.txt | awk '{ print $1 }'
+  register: rooms_state_events_total
+  when: (purge_metric.find("Number of events") != -1) and (purge_rooms|bool)
+
+- name: Setting host fact room_list_state_events
+  delegate_to: 127.0.0.1
+  set_fact:
+    room_list_state_events: "{{ lookup('file', '/tmp/{{ subscription_id }}_room_list_state_events.txt') }}"
+  when: (purge_metric.find("Number of events") != -1) and (purge_rooms|bool)
+  no_log: True
+
+- name: Purge all rooms with more then N events
+  include_tasks: purge_database_events.yml 
+  loop: "{{ room_list_state_events.splitlines() | flatten(levels=1) }}"
+  when: (purge_metric.find("Number of events") != -1) and (purge_rooms|bool)
+
+- name: Collect AWX admin token the hard way!
+  delegate_to: 127.0.0.1
+  shell: |
+      curl -sku {{ tower_username }}:{{ tower_password }} -H "Content-Type: application/json" -X POST -d '{"description":"Tower CLI", "application":null, "scope":"write"}' https://{{ tower_host }}/api/v2/users/1/personal_tokens/ | jq '.token' | sed -r 's/\"//g'
+  register: tower_token
+  no_log: True
+
+- name: Execute rust-synapse-compress-state job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_job_launch:
+    job_template: "{{ matrix_domain }} - 0 - Deploy/Update a Server"
+    tags: "rust-synapse-compress-state"
+    wait: yes
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes 
+  register: job
+
+- name: Stop Synapse service
+  shell: systemctl stop matrix-synapse.service
+
+- name: Re-index Synapse database
+  shell: docker exec -i matrix-postgres psql "host=127.0.0.1 port=5432 dbname=synapse user=synapse password={{ matrix_synapse_connection_password }}" -c 'REINDEX (VERBOSE) DATABASE synapse'
+
+- name: Execute run-postgres-vacuum job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_job_launch:
+    job_template: "{{ matrix_domain }} - 0 - Deploy/Update a Server"
+    tags: "run-postgres-vacuum,start"
+    wait: yes
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes 
+  register: job
+
+- name: Cleanup room_list files
+  delegate_to: 127.0.0.1
+  shell: |
+    rm /tmp/{{ subscription_id }}_room_list*
+  when: purge_rooms|bool
+  ignore_errors: yes
+
+- name: Collect size of Synapse database
+  shell: du -sh /matrix/postgres/data
+  register: db_size_after_stat
+  no_log: True
+
+- name: Print total number of rooms processed 
+  debug:
+    msg: '{{ rooms_total.stdout }}'
+  when: purge_rooms|bool
+
+- name: Print the number of rooms purged with no local users
+  debug:
+    msg: '{{ rooms_no_local_total.stdout }}'
+  when: purge_rooms|bool
+
+- name: Print the number of rooms purged with more then N users
+  debug:
+    msg: '{{ rooms_join_members_total.stdout }}'
+  when: (purge_metric.find("Number of users") != -1) and (purge_rooms|bool)
+
+- name: Print the number of rooms purged with more then N events
+  debug:
+    msg: '{{ rooms_state_events_total.stdout }}'
+  when: (purge_metric.find("Number of events") != -1) and (purge_rooms|bool)
+
+- name: Print before purge size of Synapse database
+  debug:
+    msg: "{{ db_size_before_stat.stdout.split('\n') }}"
+  when: db_size_before_stat is defined
+
+- name: Print after purge size of Synapse database
+  debug:
+    msg: "{{ db_size_after_stat.stdout.split('\n') }}"
+  when: db_size_after_stat is defined
+
+- name: Set boolean value to exit playbook
+  set_fact:
+    end_playbook: true
+
+- name: End playbook early if this task is called.
+  meta: end_play
+  when: end_playbook is defined and end_playbook|bool
