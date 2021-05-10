@@ -8,6 +8,11 @@ admin_password = """{{ matrix_grafana_default_admin_password }}"""
 # specify content_security_policy to add the Content-Security-Policy header to your requests
 content_security_policy = "{{ matrix_grafana_content_security_policy }}"
 
+# specify content security policy template to customized template
+{% if matrix_grafana_content_security_policy_customized %}
+content_security_policy_template = """script-src http: https: 'unsafe-inline' 'unsafe-eval' 'strict-dynamic' $NONCE;object-src 'none';font-src 'self';style-src 'self' 'unsafe-inline';img-src 'self' data:;base-uri 'self';connect-src 'self' grafana.com;manifest-src 'self';media-src 'none';form-action 'self';"""
+{% endif %}
+
 [auth.anonymous]
 # enable anonymous access
 enabled = {{ matrix_grafana_anonymous_access }}
