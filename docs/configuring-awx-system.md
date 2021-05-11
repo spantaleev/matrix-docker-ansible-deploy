@@ -32,9 +32,9 @@ Updates to this section are trailed here:
 
 ## Does I need an AWX setup to use this? How do I configure it? 
 
-Yes, you'll need to configure an AWX instance, the [Create AWX System](https://gitlab.com/GoMatrixHosting/create-awx-system) repository makes it easy to do. Just follow the steps listed in '/docs/Installation.md' of that repository.
+Yes, you'll need to configure an AWX instance, the [Create AWX System](https://gitlab.com/GoMatrixHosting/create-awx-system) repository makes it easy to do. Just follow the steps listed in ['/docs/Installation.md' of that repository](https://gitlab.com/GoMatrixHosting/create-awx-system/-/blob/master/docs/Installation.md). 
 
-For simpler installation steps you can use to get started with this system, check out our minimal installation guide at '/doc/Installation_Minimal.md'.
+For simpler installation steps you can use to get started with this system, check out our minimal installation guide at ['/doc/Installation_Minimal.md of that repository'](https://gitlab.com/GoMatrixHosting/create-awx-system/-/blob/master/docs/Installation_Minimal.md).
 
 
 ## Does I need a front-end WordPress site? And a DigitalOcean account? 
