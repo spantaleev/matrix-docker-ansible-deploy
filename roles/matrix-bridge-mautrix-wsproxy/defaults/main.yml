@@ -1,0 +1,113 @@
+# mautrix-wsproxy is a Matrix <-> websocket bridge
+# See: https://github.com/tulir/mautrix-wsproxy
+
+matrix_mautrix_wsproxy_enabled: true
+
+matrix_mautrix_wsproxy_version: latest
+# See: https://mau.dev/tulir/mautrix-wsproxy/container_registry
+matrix_mautrix_wsproxy_docker_image: "dock.mau.dev/tulir/mautrix-wsproxy:{{ matrix_mautrix_wsproxy_version }}"
+matrix_mautrix_wsproxy_docker_image_force_pull: "{{ matrix_mautrix_wsproxy_docker_image.endswith(':latest') }}"
+
+matrix_mautrix_wsproxy_base_path: "{{ matrix_base_data_path }}/mautrix-wsproxy"
+matrix_mautrix_wsproxy_config_path: "{{ matrix_mautrix_wsproxy_base_path }}/config"
+
+matrix_mautrix_wsproxy_homeserver_address: "{{ matrix_homeserver_container_url }}"
+matrix_mautrix_wsproxy_homeserver_domain: "{{ matrix_domain }}"
+matrix_mautrix_wsproxy_appservice_address: "http://matrix-mautrix-wsproxy:8080"
+
+# A list of extra arguments to pass to the container
+matrix_mautrix_wsproxy_container_extra_arguments: []
+
+# List of systemd services that matrix-mautrix-wsproxy.service depends on.
+matrix_mautrix_wsproxy_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-mautrix-wsproxy.service wants
+matrix_mautrix_wsproxy_systemd_wanted_services_list: []
+
+matrix_mautrix_wsproxy_appservice_token: ''
+matrix_mautrix_wsproxy_homeserver_token: ''
+
+matrix_mautrix_wsproxy_appservice_bot_username: wsproxy
+
+
+# Database-related configuration fields.
+#
+# To use SQLite, stick to these defaults.
+#
+# To use Postgres:
+# - change the engine (`matrix_mautrix_wsproxy_database_engine: 'postgres'`)
+# - adjust your database credentials via the `matrix_mautrix_wsproxy_postgres_*` variables
+matrix_mautrix_wsproxy_database_engine: 'sqlite'
+
+matrix_mautrix_wsproxy_sqlite_database_path_local: "{{ matrix_mautrix_wsproxy_data_path }}/mautrix-wsproxy.db"
+matrix_mautrix_wsproxy_sqlite_database_path_in_container: "/data/mautrix-wsproxy.db"
+
+matrix_mautrix_wsproxy_database_username: 'matrix_mautrix_wsproxy'
+matrix_mautrix_wsproxy_database_password: 'some-password'
+matrix_mautrix_wsproxy_database_hostname: 'matrix-postgres'
+matrix_mautrix_wsproxy_database_port: 5432
+matrix_mautrix_wsproxy_database_name: 'matrix_mautrix_wsproxy'
+
+matrix_mautrix_wsproxy_database_connection_string: 'postgresql://{{ matrix_mautrix_wsproxy_database_username }}:{{ matrix_mautrix_wsproxy_database_password }}@{{ matrix_mautrix_wsproxy_database_hostname }}:{{ matrix_mautrix_wsproxy_database_port }}/{{ matrix_mautrix_wsproxy_database_name }}?sslmode=disable'
+
+matrix_mautrix_wsproxy_appservice_database_type: "{{
+	{
+		'sqlite': 'sqlite3',
+		'postgres':'postgres',
+	}[matrix_mautrix_wsproxy_database_engine]
+}}"
+
+matrix_mautrix_wsproxy_appservice_database_uri: "{{
+	{
+		'sqlite': matrix_mautrix_wsproxy_sqlite_database_path_in_container,
+		'postgres': matrix_mautrix_wsproxy_database_connection_string,
+	}[matrix_mautrix_wsproxy_database_engine]
+}}"
+
+
+# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
+matrix_mautrix_wsproxy_login_shared_secret: ''
+
+# Default mautrix-wsproxy configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_mautrix_wsproxy_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_mautrix_wsproxy_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_mautrix_wsproxy_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_mautrix_wsproxy_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_mautrix_wsproxy_configuration_yaml`.
+
+matrix_mautrix_wsproxy_configuration_extension: "{{ matrix_mautrix_wsproxy_configuration_extension_yaml|from_yaml if matrix_mautrix_wsproxy_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_mautrix_wsproxy_configuration_yaml`.
+matrix_mautrix_wsproxy_configuration: "{{ matrix_mautrix_wsproxy_configuration_yaml|from_yaml|combine(matrix_mautrix_wsproxy_configuration_extension, recursive=True) }}"
+
+matrix_mautrix_wsproxy_registration_yaml: |
+  # appservice -> id from the config
+  id: wsproxy
+  # appservice -> as_token and hs_token from the config
+  as_token: random string
+  hs_token: random string
+  namespaces:
+    users:
+      # The localpart here is username_template from the config, but .+ instead of {{.}}
+      - regex: '@imessage_.+:{{ matrix_mautrix_telegram_homeserver_domain|regex_escape }}$'
+        exclusive: true
+      # Localpart here is appservice -> bot -> username from the config
+      - regex: '@imessagebot:{{ matrix_mautrix_telegram_homeserver_domain|regex_escape }}$'
+        exclusive: true
+  # Address that Synapse uses to contact mautrix-wsproxy
+  url: {{ matrix_mautrix_wsproxy_appservice_address }}
+  # Put a new random string here, it doesn't affect anything else
+  sender_localpart: random string
+  rate_limited: false
+
+matrix_mautrix_wsproxy_registration: "{{ matrix_mautrix_wsproxy_registration_yaml|from_yaml }}"
