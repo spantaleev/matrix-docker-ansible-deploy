@@ -40,7 +40,7 @@
   command: |
     /usr/local/bin/matrix-synapse-register-user mjolnir {{ matrix_awx_mjolnir-bot_user_password | quote }} 0
   register: cmd
-  when: not matrix_awx_dimension_user_created|bool
+  when: not matrix_awx_mjolnir_user_created|bool
   no_log: True
   
 - name: Update AWX dimension user created variable
@@ -52,7 +52,7 @@
     insertafter: 'AWX Settings'
   with_dict:
     'matrix_awx_mjolnir_user_created': 'true'
-  when: not matrix_awx_dimension_user_created|bool
+  when: not matrix_awx_mjolnir_user_created|bool
 
 - name: Ensure /chroot/website location has correct permissions
   file:
