@@ -24,9 +24,6 @@ appservice:
     # Usually 1 is enough, but on high-traffic bridges you might need to increase this to avoid 413s
     max_body_size: 1
 
-    # The full URI to the database. Only Postgres is currently supported.
-    database: {{ matrix_mautrix_wsproxy_database_connection_string }}
-
     # Provisioning API part of the web server for automated portal creation and fetching information.
     # Used by things like mautrix-manager (https://github.com/tulir/mautrix-manager).
     provisioning:
@@ -44,7 +41,7 @@ appservice:
     bot_username: {{ matrix_mautrix_wsproxy_appservice_bot_username|to_json }}
     # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
     # to leave display name/avatar as-is.
-    bot_displayname: Android Messages bridge bot
+    bot_displayname: iMessage bridge bot
     bot_avatar: mxc://maunium.net/VuvevQiMRlOxuBVMBNEZZrxi
 
     # Community ID for bridged users (changes registration file) and rooms.
@@ -130,9 +127,6 @@ bridge:
 
     # The prefix for commands. Only required in non-management rooms.
     command_prefix: "!im"
-
-    # This bridge only supports a single user
-    user: "{{ matrix_mautrix_wsproxy_bridge_user }}"
 
 logging:
     # The directory for log files. Will be created if not found.

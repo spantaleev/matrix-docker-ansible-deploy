@@ -28,20 +28,11 @@
   with_items:
     - "{{ matrix_mautrix_wsproxy_base_path }}"
     - "{{ matrix_mautrix_wsproxy_config_path }}"
-    - "{{ matrix_mautrix_wsproxy_data_path }}"
 
 - name: Check if an old matrix state file exists
   stat:
     path: "{{ matrix_mautrix_wsproxy_base_path }}/mx-state.json"
   register: matrix_mautrix_wsproxy_stat_mx_state
-
-- name: (Data relocation) Move mautrix-wsproxy database file to ./data directory
-  command: "mv {{ matrix_mautrix_wsproxy_base_path }}/mautrix-wsproxy.db {{ matrix_mautrix_wsproxy_data_path }}/mautrix-wsproxy.db"
-  when: "matrix_mautrix_wsproxy_stat_database.stat.exists"
-
-- name: (Data relocation) Move mautrix-wsproxy mx-state file to ./data directory
-  command: "mv {{ matrix_mautrix_wsproxy_base_path }}/mx-state.json {{ matrix_mautrix_wsproxy_data_path }}/mx-state.json"
-  when: "matrix_mautrix_wsproxy_stat_mx_state.stat.exists"
 
 - name: Ensure mautrix-wsproxy config.yaml installed
   copy:

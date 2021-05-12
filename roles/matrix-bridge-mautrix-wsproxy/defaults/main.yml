@@ -52,23 +52,19 @@ matrix_mautrix_wsproxy_configuration_extension: "{{ matrix_mautrix_wsproxy_confi
 matrix_mautrix_wsproxy_configuration: "{{ matrix_mautrix_wsproxy_configuration_yaml|from_yaml|combine(matrix_mautrix_wsproxy_configuration_extension, recursive=True) }}"
 
 matrix_mautrix_wsproxy_registration_yaml: |
-  # appservice -> id from the config
   id: wsproxy
-  # appservice -> as_token and hs_token from the config
-  as_token: random string
-  hs_token: random string
-  namespaces:
-    users:
-      # The localpart here is username_template from the config, but .+ instead of {{.}}
-      - regex: '@imessage_.+:{{ matrix_mautrix_telegram_homeserver_domain|regex_escape }}$'
-        exclusive: true
-      # Localpart here is appservice -> bot -> username from the config
-      - regex: '@imessagebot:{{ matrix_mautrix_telegram_homeserver_domain|regex_escape }}$'
-        exclusive: true
-  # Address that Synapse uses to contact mautrix-wsproxy
   url: {{ matrix_mautrix_wsproxy_appservice_address }}
-  # Put a new random string here, it doesn't affect anything else
-  sender_localpart: random string
+  as_token: "{{ matrix_mautrix_wsproxy_appservice_token }}"
+  hs_token: "{{ matrix_mautrix_wsproxy_homeserver_token }}"
+  # See https://github.com/tulir/mautrix-signal/issues/43
+  sender_localpart: _bot_{{ matrix_mautrix_wsproxy_appservice_bot_username }}
   rate_limited: false
+  namespaces:
+      users:
+      - regex: '^@wsproxy_[0-9]+:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
+        exclusive: true
+      - exclusive: true
+        regex: '^@{{ matrix_mautrix_wsproxy_appservice_bot_username|regex_escape }}:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
+  de.sorunome.msc2409.push_ephemeral: true
 
 matrix_mautrix_wsproxy_registration: "{{ matrix_mautrix_wsproxy_registration_yaml|from_yaml }}"
