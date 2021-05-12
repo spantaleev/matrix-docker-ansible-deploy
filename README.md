@@ -129,3 +129,8 @@ When updating the playbook, refer to [the changelog](CHANGELOG.md) to catch up w
 - IRC channel: `#matrix-docker-ansible-deploy` on the [Freenode](https://freenode.net/) IRC network (irc.freenode.net)
 
 - Github issues: [spantaleev/matrix-docker-ansible-deploy/issues](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues)
+
+## Services by the community
+
+- [etke.cc](https://etke.cc) - matrix-docker-ansible-deploy and system stuff "as a service". That service will create your matrix homeserver on your domain and server (doesn't matter if it's cloud provider or on old laptop in the corner of your room), (optional) maintains it (server's system updates, cleanup, security adjustments, tuning, etc.; matrix homeserver updates & maintainance) and (optional) provide full-featured email service for your domain
+- [GoMatrixHosting](https://gomatrixhosting.com) - matrix-docker-ansible-deploy "as a service" with [Ansible AWX](https://github.com/ansible/awx). Members can be assigned a server from Digitalocean, or they can connect their own on-premises server. This AWX system can manage the updates, configuration, import and export, backups and monitoring on its own. For more information [see our GitLab group](https://gitlab.com/GoMatrixHosting) or come [visit us on Matrix](https://matrix.to/#/#general:gomatrixhosting.com).
