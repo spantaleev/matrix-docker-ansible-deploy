@@ -11,30 +11,6 @@
 - set_fact:
     matrix_mautrix_wsproxy_requires_restart: false
 
-- block:
-    - name: Check if an SQLite database already exists
-      stat:
-        path: "{{ matrix_mautrix_wsproxy_sqlite_database_path_local }}"
-      register: matrix_mautrix_wsproxy_sqlite_database_path_local_stat_result
-
-    - block:
-        - set_fact:
-            matrix_postgres_db_migration_request:
-              src: "{{ matrix_mautrix_wsproxy_sqlite_database_path_local }}"
-              dst: "{{ matrix_mautrix_wsproxy_database_connection_string }}"
-              caller: "{{ role_path|basename }}"
-              engine_variable_name: 'matrix_mautrix_wsproxy_database_engine'
-              engine_old: 'sqlite'
-              systemd_services_to_stop: ['matrix-mautrix-wsproxy.service']
-              pgloader_options: ['--with "quote identifiers"']
-
-        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
-
-        - set_fact:
-            matrix_mautrix_wsproxy_requires_restart: true
-      when: "matrix_mautrix_wsproxy_sqlite_database_path_local_stat_result.stat.exists|bool"
-  when: "matrix_mautrix_wsproxy_database_engine == 'postgres'"
-
 - name: Ensure Mautrix wsproxy image is pulled
   docker_image:
     name: "{{ matrix_mautrix_wsproxy_docker_image }}"
@@ -54,23 +30,10 @@
     - "{{ matrix_mautrix_wsproxy_config_path }}"
     - "{{ matrix_mautrix_wsproxy_data_path }}"
 
-- name: Check if an old database file exists
-  stat:
-    path: "{{ matrix_mautrix_wsproxy_base_path }}/mautrix-wsproxy.db"
-  register: matrix_mautrix_wsproxy_stat_database
-
 - name: Check if an old matrix state file exists
   stat:
     path: "{{ matrix_mautrix_wsproxy_base_path }}/mx-state.json"
   register: matrix_mautrix_wsproxy_stat_mx_state
-
-- name: (Data relocation) Ensure matrix-mautrix-wsproxy.service is stopped
-  service:
-    name: matrix-mautrix-wsproxy
-    state: stopped
-    daemon_reload: yes
-  failed_when: false
-  when: "matrix_mautrix_wsproxy_stat_database.stat.exists"
 
 - name: (Data relocation) Move mautrix-wsproxy database file to ./data directory
   command: "mv {{ matrix_mautrix_wsproxy_base_path }}/mautrix-wsproxy.db {{ matrix_mautrix_wsproxy_data_path }}/mautrix-wsproxy.db"

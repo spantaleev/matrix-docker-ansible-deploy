@@ -29,45 +29,6 @@ matrix_mautrix_wsproxy_homeserver_token: ''
 
 matrix_mautrix_wsproxy_appservice_bot_username: wsproxy
 
-
-# Database-related configuration fields.
-#
-# To use SQLite, stick to these defaults.
-#
-# To use Postgres:
-# - change the engine (`matrix_mautrix_wsproxy_database_engine: 'postgres'`)
-# - adjust your database credentials via the `matrix_mautrix_wsproxy_postgres_*` variables
-matrix_mautrix_wsproxy_database_engine: 'sqlite'
-
-matrix_mautrix_wsproxy_sqlite_database_path_local: "{{ matrix_mautrix_wsproxy_data_path }}/mautrix-wsproxy.db"
-matrix_mautrix_wsproxy_sqlite_database_path_in_container: "/data/mautrix-wsproxy.db"
-
-matrix_mautrix_wsproxy_database_username: 'matrix_mautrix_wsproxy'
-matrix_mautrix_wsproxy_database_password: 'some-password'
-matrix_mautrix_wsproxy_database_hostname: 'matrix-postgres'
-matrix_mautrix_wsproxy_database_port: 5432
-matrix_mautrix_wsproxy_database_name: 'matrix_mautrix_wsproxy'
-
-matrix_mautrix_wsproxy_database_connection_string: 'postgresql://{{ matrix_mautrix_wsproxy_database_username }}:{{ matrix_mautrix_wsproxy_database_password }}@{{ matrix_mautrix_wsproxy_database_hostname }}:{{ matrix_mautrix_wsproxy_database_port }}/{{ matrix_mautrix_wsproxy_database_name }}?sslmode=disable'
-
-matrix_mautrix_wsproxy_appservice_database_type: "{{
-	{
-		'sqlite': 'sqlite3',
-		'postgres':'postgres',
-	}[matrix_mautrix_wsproxy_database_engine]
-}}"
-
-matrix_mautrix_wsproxy_appservice_database_uri: "{{
-	{
-		'sqlite': matrix_mautrix_wsproxy_sqlite_database_path_in_container,
-		'postgres': matrix_mautrix_wsproxy_database_connection_string,
-	}[matrix_mautrix_wsproxy_database_engine]
-}}"
-
-
-# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
-matrix_mautrix_wsproxy_login_shared_secret: ''
-
 # Default mautrix-wsproxy configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
