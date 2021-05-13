@@ -28,7 +28,7 @@
   with_items:
     - "{{ matrix_mautrix_wsproxy_base_path }}"
     - "{{ matrix_mautrix_wsproxy_config_path }}"
-    - "{{ matrix_mautrix_wsproxy_data_path }}"   
+    - "{{ matrix_mautrix_wsproxy_data_path }}"
 
 - name: Check if an old matrix state file exists
   stat:
@@ -39,6 +39,14 @@
   copy:
     content: "{{ matrix_mautrix_wsproxy_configuration|to_nice_yaml }}"
     dest: "{{ matrix_mautrix_wsproxy_config_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure mautrix-imessage config-ios.yaml installed
+  copy:
+    content: "{{ matrix_mautrix_imessage_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_mautrix_wsproxy_config_path }}/config-ios.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"

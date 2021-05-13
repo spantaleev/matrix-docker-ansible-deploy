@@ -14,7 +14,7 @@ matrix_mautrix_wsproxy_data_path: "{{ matrix_mautrix_wsproxy_base_path }}/data"
 
 matrix_mautrix_wsproxy_homeserver_address: "{{ matrix_homeserver_container_url }}"
 matrix_mautrix_wsproxy_homeserver_domain: "{{ matrix_domain }}"
-matrix_mautrix_wsproxy_appservice_address: "http://matrix-mautrix-wsproxy:8080"
+matrix_mautrix_wsproxy_appservice_address: "http://matrix-mautrix-wsproxy:29331"
 
 # A list of extra arguments to pass to the container
 matrix_mautrix_wsproxy_container_extra_arguments: []
@@ -28,7 +28,7 @@ matrix_mautrix_wsproxy_systemd_wanted_services_list: []
 matrix_mautrix_wsproxy_appservice_token: ''
 matrix_mautrix_wsproxy_homeserver_token: ''
 
-matrix_mautrix_wsproxy_appservice_bot_username: wsproxy
+matrix_mautrix_wsproxy_appservice_bot_username: imessagebot
 
 # Default mautrix-wsproxy configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
@@ -52,20 +52,42 @@ matrix_mautrix_wsproxy_configuration_extension: "{{ matrix_mautrix_wsproxy_confi
 # You most likely don't need to touch this variable. Instead, see `matrix_mautrix_wsproxy_configuration_yaml`.
 matrix_mautrix_wsproxy_configuration: "{{ matrix_mautrix_wsproxy_configuration_yaml|from_yaml|combine(matrix_mautrix_wsproxy_configuration_extension, recursive=True) }}"
 
+# Default mautrix-wsproxy configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_mautrix_wsproxy_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_mautrix_imessage_configuration_yaml: "{{ lookup('template', 'templates/config-ios.yaml.j2') }}"
+
+matrix_mautrix_imessage_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_mautrix_wsproxy_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_mautrix_imessage_configuration_yaml`.
+
+matrix_mautrix_imessage_configuration_extension: "{{ matrix_mautrix_imessage_configuration_extension_yaml|from_yaml if matrix_mautrix_imessage_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_mautrix_imessage_configuration_yaml`.
+matrix_mautrix_imessage_configuration: "{{ matrix_mautrix_imessage_configuration_yaml|from_yaml|combine(matrix_mautrix_imessage_configuration_extension, recursive=True) }}"
+
+matrix_mautrix_imessage_user: ''
+
 matrix_mautrix_wsproxy_registration_yaml: |
-  id: wsproxy
+  id: imessage
   url: {{ matrix_mautrix_wsproxy_appservice_address }}
   as_token: "{{ matrix_mautrix_wsproxy_appservice_token }}"
   hs_token: "{{ matrix_mautrix_wsproxy_homeserver_token }}"
-  # See https://github.com/tulir/mautrix-signal/issues/43
   sender_localpart: _bot_{{ matrix_mautrix_wsproxy_appservice_bot_username }}
   rate_limited: false
   namespaces:
       users:
-      - regex: '^@wsproxy_[0-9]+:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
+      - regex: '@imessage_.+:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
         exclusive: true
       - exclusive: true
         regex: '^@{{ matrix_mautrix_wsproxy_appservice_bot_username|regex_escape }}:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
-  de.sorunome.msc2409.push_ephemeral: true
 
 matrix_mautrix_wsproxy_registration: "{{ matrix_mautrix_wsproxy_registration_yaml|from_yaml }}"
