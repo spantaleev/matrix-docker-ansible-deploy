@@ -1113,7 +1113,9 @@ matrix_ma1sd_synapsesql_connection: //{{ matrix_synapse_database_host }}/{{ matr
 
 matrix_ma1sd_dns_overwrite_enabled: true
 matrix_ma1sd_dns_overwrite_homeserver_client_name: "{{ matrix_server_fqn_matrix }}"
-matrix_ma1sd_dns_overwrite_homeserver_client_value: "http://{{ matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container }}"
+# The `matrix_ma1sd_dns_overwrite_homeserver_client_value` value when matrix_nginx_proxy_enabled is false covers the general case,
+# but may be inaccurate if matrix-corporal is enabled.
+matrix_ma1sd_dns_overwrite_homeserver_client_value: "{{ ('http://' + matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container) if matrix_nginx_proxy_enabled else matrix_homeserver_container_url }}"
 
 # By default, we send mail through the `matrix-mailer` service.
 matrix_ma1sd_threepid_medium_email_identity_from: "{{ matrix_mailer_sender_address }}"
