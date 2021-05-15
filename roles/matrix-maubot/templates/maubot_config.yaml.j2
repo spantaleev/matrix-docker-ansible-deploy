@@ -5,6 +5,19 @@
 #   Postgres: postgres://username:password@hostname/dbname
 database: {{ matrix_maubot_storage_database|to_json }}
 
+# Database for encryption data.
+crypto_database:
+    # Type of database. Either "default", "pickle" or "postgres".
+    # When set to default, using SQLite as the main database will use pickle as the crypto database
+    # and using Postgres as the main database will use the same one as the crypto database.
+    #
+    # When using pickle, individual crypto databases are stored in the pickle_dir directory.
+    # When using non-default postgres, postgres_uri is used to connect to postgres.
+    #
+    # WARNING: The pickle database is dangerous and should not be used in production.
+    type: default
+    postgres_uri: {{ matrix_maubot_storage_database|to_json }}
+    pickle_dir: {{ matrix_maubot_container_data_dir }}/crypto
 
 plugin_directories:
     # The directory where uploaded new plugins should be stored.
@@ -36,7 +49,7 @@ server:
     # Set to "generate" to generate and save a new token at startup.
     unshared_secret: generate
 
-{% if maubot_shared_secret %}
+{% if matrix_maubot_shared_secret %}
 # Shared registration secrets to allow registering new users from the management UI
 registration_secrets:
     {{ matrix_domain }}:
