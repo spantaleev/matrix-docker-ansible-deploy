@@ -9,7 +9,26 @@ matrix_maubot_systemd_required_services_list: ['docker.service']
 matrix_maubot_systemd_wanted_services_list: []
 matrix_maubot_container_extra_arguments: []
 
-matrix_maubot_database_url: "sqlite:///{{ matrix_maubot_container_data_dir }}/maubot.db"
+matrix_maubot_database_engine: "sqlite"
+
+matrix_maubot_sqlite_database_path_local: "maubot.db"
+matrix_maubot_sqlite_database_path_in_container: "/{{ matrix_maubot_container_data_dir }}/{{ matrix_maubot_sqlite_database_path_local }}"
+
+matrix_maubot_database_username: 'matrix_bot_maubot'
+matrix_maubot_database_password: 'some-password'
+matrix_maubot_database_hostname: 'matrix-postgres'
+matrix_maubot_database_port: 5432
+matrix_maubot_database_name: 'matrix_bot_maubot'
+
+matrix_maubot_database_connection_string: 'postgres://{{ matrix_maubot_database_username }}:{{ matrix_maubot_database_password }}@{{ matrix_maubot_database_hostname }}:{{ matrix_maubot_database_port }}/{{ matrix_maubot_database_name }}'
+
+matrix_maubot_storage_database: "{{
+	{
+		'sqlite': ('sqlite://' + matrix_maubot_sqlite_database_path_in_container),
+		'postgres': matrix_maubot_database_connection_string,
+	}[matrix_maubot_database_engine]
+}}"
+
 matrix_maubot_management_port: 29316
 matrix_maubot_management_hostname: "0.0.0.0"
 

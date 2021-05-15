@@ -1195,6 +1195,9 @@ matrix_maubot_systemd_required_services_list: |
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
+matrix_maubot_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_maubot_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'maubot.db') | to_uuid }}"
+
 ######################################################################
 #
 # /matrix-bot-maubot
@@ -1746,6 +1749,12 @@ matrix_postgres_additional_databases: |
       'username': matrix_ma1sd_database_username,
       'password': matrix_ma1sd_database_password,
     }] if (matrix_ma1sd_enabled and matrix_ma1sd_database_engine == 'postgres' and matrix_ma1sd_database_hostname == 'matrix-postgres') else [])
+    +
+    ([{
+      'name': matrix_maubot_database_name,
+      'username': matrix_maubot_database_username,
+      'password': matrix_maubot_database_password,
+    }] if (matrix_maubot_enabled and matrix_maubot_database_engine == 'postgres' and matrix_maubot_database_hostname == 'matrix-postgres') else [])
     +
     ([{
       'name': matrix_bot_matrix_reminder_bot_database_name,
