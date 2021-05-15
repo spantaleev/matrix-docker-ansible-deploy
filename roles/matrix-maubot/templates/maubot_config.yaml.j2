@@ -61,13 +61,7 @@ registration_secrets:
 
 # List of administrator users. Plaintext passwords will be bcrypted on startup. Set empty password
 # to prevent normal login. Root is a special user that can't have a password and will always exist.
-admins:
-    root: ""
-{% if matrix_maubot_admins %}
-{% for user, password in matrix_maubot_admins %}
-    {{ user }}: '{{ password }}'
-{% endfor %}
-{% endif %}
+admins: {{ matrix_maubot_admins | combine( {"root": ""} ) }}
 
 # API feature switches.
 api_features:
