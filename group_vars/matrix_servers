@@ -1182,9 +1182,9 @@ matrix_backup_borg_systemd_required_services_list: |
 #
 ######################################################################
 
-matrix_maubot_enabled: false
+matrix_bot_maubot_enabled: false
 
-matrix_maubot_systemd_required_services_list: |
+matrix_bot_maubot_systemd_required_services_list: |
   {{
     ['docker.service']
     +
@@ -1195,11 +1195,11 @@ matrix_maubot_systemd_required_services_list: |
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
-matrix_maubot_registration_shared_secret: "{{ matrix_synapse_registration_shared_secret }}"
-matrix_maubot_shared_secret: true
+matrix_bot_maubot_registration_shared_secret: "{{ matrix_synapse_registration_shared_secret }}"
+matrix_bot_maubot_shared_secret: true
 
-matrix_maubot_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
-matrix_maubot_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'maubot.db') | to_uuid }}"
+matrix_bot_maubot_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_bot_maubot_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'maubot.db') | to_uuid }}"
 
 ######################################################################
 #
@@ -1754,10 +1754,10 @@ matrix_postgres_additional_databases: |
     }] if (matrix_ma1sd_enabled and matrix_ma1sd_database_engine == 'postgres' and matrix_ma1sd_database_hostname == 'matrix-postgres') else [])
     +
     ([{
-      'name': matrix_maubot_database_name,
-      'username': matrix_maubot_database_username,
-      'password': matrix_maubot_database_password,
-    }] if (matrix_maubot_enabled and matrix_maubot_database_engine == 'postgres' and matrix_maubot_database_hostname == 'matrix-postgres') else [])
+      'name': matrix_bot_maubot_database_name,
+      'username': matrix_bot_maubot_database_username,
+      'password': matrix_bot_maubot_database_password,
+    }] if (matrix_bot_maubot_enabled and matrix_bot_maubot_database_engine == 'postgres' and matrix_bot_maubot_database_hostname == 'matrix-postgres') else [])
     +
     ([{
       'name': matrix_bot_matrix_reminder_bot_database_name,
