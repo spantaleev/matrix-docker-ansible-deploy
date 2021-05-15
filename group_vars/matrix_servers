@@ -1242,6 +1242,8 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     +
     ([matrix_nginx_proxy_proxy_riot_compat_redirect_hostname] if matrix_nginx_proxy_proxy_riot_compat_redirect_enabled else [])
     +
+    ([matrix_server_fqn_hydrogen] if matrix_client_hydrogen_enabled else [])
+    +
     ([matrix_server_fqn_dimension] if matrix_dimension_enabled else [])
     +
     ([matrix_server_fqn_bot_go_neb] if matrix_bot_go_neb_enabled else [])
@@ -1540,6 +1542,31 @@ matrix_client_element_jitsi_preferredDomain: "{{ matrix_server_fqn_jitsi if matr
 ######################################################################
 #
 # /matrix-client-element
+#
+######################################################################
+
+
+
+######################################################################
+#
+# matrix-client-hydrogen
+#
+######################################################################
+
+matrix_client_hydrogen_enabled: false
+
+# Normally, matrix-nginx-proxy is enabled and nginx can reach Hydrogen over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# the HTTP port to the local host.
+matrix_client_hydrogen_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8768' }}"
+
+matrix_client_hydrogen_default_hs_url: "{{ matrix_homeserver_url }}"
+
+matrix_client_hydrogen_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
+
+######################################################################
+#
+# /matrix-client-hydrogen
 #
 ######################################################################
 
