@@ -7,6 +7,12 @@
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 	add_header X-Content-Type-Options nosniff;
 
+	{% if matrix_nginx_proxy_ocsp_stapling_enabled and matrix_ssl_retrieval_method in ["lets-encrypt", "manually-managed"] %}
+		ssl_stapling on;
+		ssl_stapling_verify on;
+		ssl_trusted_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_base_domain_hostname }}/chain.pem;
+	{% endif %}
+
 {% for configuration_block in matrix_nginx_proxy_proxy_bot_go_neb_additional_server_configuration_blocks %}
 	{{- configuration_block }}
 {% endfor %}

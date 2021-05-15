@@ -20,6 +20,12 @@
 	{% if matrix_nginx_proxy_floc_optout_enabled %}
 		add_header Permissions-Policy interest-cohort=() always;
 	{% endif %}
+	
+	{% if matrix_nginx_proxy_ocsp_stapling_enabled and matrix_ssl_retrieval_method in ["lets-encrypt", "manually-managed"] %}
+		ssl_stapling on;
+		ssl_stapling_verify on;
+		ssl_trusted_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_base_domain_hostname }}/chain.pem;
+	{% endif %}
 
 	location /.well-known/matrix {
 		root {{ matrix_static_files_base_path }};

@@ -10,6 +10,13 @@
 	# add_header X-Content-Type-Options nosniff;
 	# add_header X-Frame-Options SAMEORIGIN;
 	add_header Referrer-Policy "strict-origin-when-cross-origin";
+	
+	{% if matrix_nginx_proxy_ocsp_stapling_enabled and matrix_ssl_retrieval_method in ["lets-encrypt", "manually-managed"] %}
+		ssl_stapling on;
+		ssl_stapling_verify on;
+		ssl_trusted_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_base_domain_hostname }}/chain.pem;
+	{% endif %}
+	
 	{% if matrix_nginx_proxy_floc_optout_enabled %}
 		add_header Permissions-Policy interest-cohort=() always;
 	{% endif %}
