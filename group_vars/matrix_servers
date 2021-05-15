@@ -1184,6 +1184,17 @@ matrix_backup_borg_systemd_required_services_list: |
 
 matrix_maubot_enabled: false
 
+matrix_maubot_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    +
+    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+  }}
+
 ######################################################################
 #
 # /matrix-bot-maubot
