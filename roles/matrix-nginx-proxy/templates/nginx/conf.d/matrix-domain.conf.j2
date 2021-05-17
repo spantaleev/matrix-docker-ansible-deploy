@@ -136,7 +136,13 @@
 		proxy_max_temp_file_size 0;
 	}
 
-	location / {
+	{#
+		We only handle the root URI for this redirect or homepage serving.
+		Unhandled URIs (mostly by `matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_prefix_regexes` above) should result in a 404,
+		instead of causing a redirect.
+		See: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1058
+	#}
+	location ~* ^/$ {
 		{% if matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain %}
 			return 302 $scheme://{{ matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain }}$request_uri;
 		{% else %}
