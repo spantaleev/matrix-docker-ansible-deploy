@@ -33,7 +33,7 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional, default) an [Exim](https://www.exim.org/) mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server)
 
-- (optional, default) a [nginx](http://nginx.org/) web server, listening on ports 80 and 443 - standing in front of all the other services. Using your own webserver [is possible](docs/configuring-playbook-own-webserver.md)
+- (optional, default) an [nginx](http://nginx.org/) web server, listening on ports 80 and 443 - standing in front of all the other services. Using your own webserver [is possible](docs/configuring-playbook-own-webserver.md)
 
 - (optional, advanced) the [matrix-synapse-rest-auth](https://github.com/ma1uta/matrix-synapse-rest-password-provider) REST authentication password provider module
 
