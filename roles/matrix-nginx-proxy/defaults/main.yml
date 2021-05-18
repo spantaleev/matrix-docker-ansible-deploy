@@ -385,6 +385,19 @@ matrix_ssl_log_dir_path: "{{ matrix_ssl_base_path }}/log"
 matrix_ssl_pre_obtaining_required_service_name: ~
 matrix_ssl_pre_obtaining_required_service_start_wait_time_seconds: 60
 
+# OCSP Stapling eliminating the need for clients to contact the CA, with the aim of improving both security and performance.
+# OCSP stapling can provide a performance boost of up to 30%
+# nginx web server supports OCSP stapling since version 1.3.7.
+#
+# *warning* Nginx is lazy loading OCSP responses, which means that for the first few web requests it is unable to add the OCSP response.
+# set matrix_nginx_proxy_ocsp_stapling_enabled false to disable OCSP Stapling
+#  
+# Learn more about what it is here:
+# - https://en.wikipedia.org/wiki/OCSP_stapling
+# - https://blog.cloudflare.com/high-reliability-ocsp-stapling/
+# - https://blog.mozilla.org/security/2013/07/29/ocsp-stapling-in-firefox/
+matrix_nginx_proxy_ocsp_stapling_enabled: true
+
 # nginx status page configurations.
 matrix_nginx_proxy_proxy_matrix_nginx_status_enabled: false
 matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses: ['{{ ansible_default_ipv4.address }}']
