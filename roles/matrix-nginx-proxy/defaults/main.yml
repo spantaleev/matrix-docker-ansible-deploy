@@ -223,6 +223,7 @@ matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "localhost:1
 matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb: "{{ (matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb | int) * 3 }}"
 matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/fullchain.pem"
 matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate_key: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/privkey.pem"
+matrix_nginx_proxy_proxy_matrix_federation_api_ssl_trusted_certificate: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/chain.pem"
 
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_nginx_proxy_tmp_directory_size_mb: "{{ (matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb | int) * 50 }}"
@@ -391,7 +392,7 @@ matrix_ssl_pre_obtaining_required_service_start_wait_time_seconds: 60
 #
 # *warning* Nginx is lazy loading OCSP responses, which means that for the first few web requests it is unable to add the OCSP response.
 # set matrix_nginx_proxy_ocsp_stapling_enabled false to disable OCSP Stapling
-#  
+#
 # Learn more about what it is here:
 # - https://en.wikipedia.org/wiki/OCSP_stapling
 # - https://blog.cloudflare.com/high-reliability-ocsp-stapling/
