@@ -1,6 +1,8 @@
 # Setting up Heisenbridge (optional)
 
-The playbook can install and configure [Heisenbridge](https://github.com/hifi/heisenbridge) - the bouncer-style IRC bridge for you.
+**Note**: bridging to [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) can also happen via the [matrix-appservice-irc](configuring-playbook-bridge-appservice-irc.md) bridge supported by the playbook.
+
+The playbook can install and configure [Heisenbridge](https://github.com/hifi/heisenbridge) - the bouncer-style [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) bridge for you.
 
 See the project's [README](https://github.com/hifi/heisenbridge/blob/master/README.md) to learn what it does and why it might be useful to you.
 
