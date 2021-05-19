@@ -126,6 +126,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Matrix SMS bridging](configuring-playbook-bridge-matrix-bridge-sms.md) (optional)
 
+- [Setting up Heisenbridge bouncer-style IRC bridging](configuring-playbook-bridge-heisenbridge.md) (optional)
+
 
 ### Bots
 
