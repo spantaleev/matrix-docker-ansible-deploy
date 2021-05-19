@@ -207,6 +207,12 @@ server {
 		ssl_stapling_verify on;
 		ssl_trusted_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/chain.pem;
 	{% endif %}
+	
+	{% if matrix_nginx_proxy_ssl_session_tickets_off %}
+		ssl_session_tickets off;
+	{% endif %}
+	ssl_session_cache {{ matrix_nginx_proxy_ssl_session_cache }};
+	ssl_session_timeout {{ matrix_nginx_proxy_ssl_session_timeout }};	
 
 	{{ render_vhost_directives() }}
 }
@@ -248,6 +254,12 @@ server {
 			ssl_stapling_verify on;
 			ssl_trusted_certificate {{ matrix_nginx_proxy_proxy_matrix_federation_api_ssl_trusted_certificate }};
 		{% endif %}
+		
+		{% if matrix_nginx_proxy_ssl_session_tickets_off %}
+			ssl_session_tickets off;
+		{% endif %}
+		ssl_session_cache {{ matrix_nginx_proxy_ssl_session_cache }};
+		ssl_session_timeout {{ matrix_nginx_proxy_ssl_session_timeout }};
 	{% endif %}
 
 	location / {
