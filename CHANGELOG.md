@@ -6,7 +6,7 @@ Thanks to [Aaron Raimist](https://github.com/aaronraimist), the playbook now sup
 
 By default, we still install Element, as Hydrogen is still not fully-featured. Still, people who'd like to try Hydrogen out can now install it via the playbook.
 
-Additional details are available in [Setting up Heisenbridge bouncer-style IRC bridging](docs/configuring-playbook-client-hydrogen.md).
+Additional details are available in [Setting up Hydrogen](docs/configuring-playbook-client-hydrogen.md).
 
 
 # 2021-05-19
