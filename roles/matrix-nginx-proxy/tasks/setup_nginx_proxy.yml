@@ -211,6 +211,12 @@
     state: absent
   when: "not matrix_nginx_proxy_proxy_riot_compat_redirect_enabled|bool"
 
+- name: Ensure Matrix nginx-proxy configuration for Hydrogen domain deleted
+  file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-hydrogen.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_hydrogen_enabled|bool"
+
 - name: Ensure Matrix nginx-proxy configuration for dimension domain deleted
   file:
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-dimension.conf"
