@@ -1,3 +1,23 @@
+# 2021-05-21
+
+## Hydrogen support
+
+Thanks to [Aaron Raimist](https://github.com/aaronraimist), the playbook now supports [Hydrogen](https://github.com/vector-im/hydrogen-web) - a new lightweight matrix client with legacy and mobile browser support.
+
+By default, we still install Element, as Hydrogen is still not fully-featured. Still, people who'd like to try Hydrogen out can now install it via the playbook.
+
+Additional details are available in [Setting up Hydrogen](docs/configuring-playbook-client-hydrogen.md).
+
+
+# 2021-05-19
+
+## Heisenbridge support
+
+Thanks to [Toni Spets (hifi)](https://github.com/hifi), the playbook now supports bridging to [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) using yet another bridge (besides matrix-appservice-irc), called [Heisenbridge](https://github.com/hifi/heisenbridge).
+
+Additional details are available in [Setting up Heisenbridge bouncer-style IRC bridging](docs/configuring-playbook-bridge-heisenbridge.md).
+
+
 # 2021-04-16
 
 ## Disabling TLSv1 and TLSv1.1 for Coturn
