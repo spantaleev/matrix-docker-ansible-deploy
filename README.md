@@ -105,6 +105,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [Sygnal](https://github.com/matrix-org/sygnal) push gateway - see [Setting up the Sygnal push gateway](docs/configuring-playbook-sygnal.md) for setup documentation
 
+- (optional) the [Hydrogen](https://github.com/vector-im/hydrogen-web) web client - see [docs/configuring-playbook-client-hydrogen.md](docs/configuring-playbook-client-hydrogen.md) for setup documentation
+
 Basically, this playbook aims to get you up-and-running with all the necessities around Matrix, without you having to do anything else.
 
 **Note**: the list above is exhaustive. It includes optional or even some advanced components that you will most likely not need.
