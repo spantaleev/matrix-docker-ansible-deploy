@@ -68,6 +68,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Adjusting email-sending settings](configuring-playbook-email.md) (optional)
 
+- [Setting up Hydrogen](configuring-playbook-client-hydrogen.md) - a new lightweight matrix client with legacy and mobile browser support (optional)
+
 
 ### Authentication and user-related
 
