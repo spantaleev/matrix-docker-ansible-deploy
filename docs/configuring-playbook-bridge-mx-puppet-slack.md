@@ -1,5 +1,7 @@
 # Setting up MX Puppet Slack (optional)
 
+**Note**: bridging to [Slack](https://slack.com) can also happen via the [matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md) bridge supported by the playbook.
+
 The playbook can install and configure
 [mx-puppet-slack](https://github.com/Sorunome/mx-puppet-slack) for you.
 

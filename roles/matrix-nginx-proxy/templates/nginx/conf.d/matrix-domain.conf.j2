@@ -136,7 +136,13 @@
 		proxy_max_temp_file_size 0;
 	}
 
-	location / {
+	{#
+		We only handle the root URI for this redirect or homepage serving.
+		Unhandled URIs (mostly by `matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_prefix_regexes` above) should result in a 404,
+		instead of causing a redirect.
+		See: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1058
+	#}
+	location ~* ^/$ {
 		{% if matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain %}
 			return 302 $scheme://{{ matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain }}$request_uri;
 		{% else %}
@@ -196,6 +202,18 @@ server {
 	{% endif %}
 	ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_prefer_server_ciphers }};
 
+	{% if matrix_nginx_proxy_ocsp_stapling_enabled %}
+		ssl_stapling on;
+		ssl_stapling_verify on;
+		ssl_trusted_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/chain.pem;
+	{% endif %}
+	
+	{% if matrix_nginx_proxy_ssl_session_tickets_off %}
+		ssl_session_tickets off;
+	{% endif %}
+	ssl_session_cache {{ matrix_nginx_proxy_ssl_session_cache }};
+	ssl_session_timeout {{ matrix_nginx_proxy_ssl_session_timeout }};	
+
 	{{ render_vhost_directives() }}
 }
 {% endif %}
@@ -230,6 +248,18 @@ server {
 			ssl_ciphers {{ matrix_nginx_proxy_ssl_ciphers }};
 		{% endif %}
 		ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_prefer_server_ciphers }};
+
+		{% if matrix_nginx_proxy_ocsp_stapling_enabled %}
+			ssl_stapling on;
+			ssl_stapling_verify on;
+			ssl_trusted_certificate {{ matrix_nginx_proxy_proxy_matrix_federation_api_ssl_trusted_certificate }};
+		{% endif %}
+		
+		{% if matrix_nginx_proxy_ssl_session_tickets_off %}
+			ssl_session_tickets off;
+		{% endif %}
+		ssl_session_cache {{ matrix_nginx_proxy_ssl_session_cache }};
+		ssl_session_timeout {{ matrix_nginx_proxy_ssl_session_timeout }};
 	{% endif %}
 
 	location / {

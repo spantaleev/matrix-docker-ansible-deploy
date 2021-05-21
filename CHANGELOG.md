@@ -1,3 +1,12 @@
+# 2021-05-19
+
+## Heisenbridge support
+
+Thanks to [Toni Spets (hifi)](https://github.com/hifi), the playbook now supports bridging to [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) using yet another bridge (besides matrix-appservice-irc), called [Heisenbridge](https://github.com/hifi/heisenbridge).
+
+Additional details are available in [Setting up Heisenbridge bouncer-style IRC bridging](docs/configuring-playbook-bridge-heisenbridge.md).
+
+
 # 2021-04-16
 
 ## Disabling TLSv1 and TLSv1.1 for Coturn
