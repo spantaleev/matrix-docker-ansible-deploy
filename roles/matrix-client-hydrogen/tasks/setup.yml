@@ -40,7 +40,7 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: matrix_client_hydrogen_enabled|bool
+  when: "matrix_client_hydrogen_enabled|bool and matrix_client_hydrogen_container_image_self_build|bool"
 
 - name: Ensure Hydrogen Docker image is built
   docker_image:
