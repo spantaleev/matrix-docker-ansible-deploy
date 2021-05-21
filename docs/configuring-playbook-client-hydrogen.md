@@ -12,7 +12,7 @@ matrix_client_hydrogen_enabled: true
 
 You will also need to add a DNS record so that Hydrogen can be accessed. 
 By default Hydrogen will use https://hydrogen.DOMAIN so you will need to create an CNAME record
-for `hydrogen`. See [docs/configuring-dns.md](docs/configuring-dns.md).
+for `hydrogen`. See [Configuring DNS](configuring-dns.md).
 
 If you would like to use a different domain, add the following to your configuration file (changing it to use your preferred domain):
 
