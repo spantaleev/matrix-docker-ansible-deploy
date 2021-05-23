@@ -16,7 +16,7 @@ ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} 
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-jitsi-prosody \
 			--log-driver=none \
 			--network={{ matrix_docker_network }} \
-			{% if matrix_nginx_proxy_enabled == false %}
+			{% if matrix_jitsi_prosody_container_http_host_bind_port %}
 			-p {{ matrix_jitsi_prosody_container_http_host_bind_port }}:5280 \
 			{% endif %}
 			--env-file={{ matrix_jitsi_prosody_base_path }}/env \
