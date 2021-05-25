@@ -2596,6 +2596,12 @@ password_providers:
       uri: {{ matrix_synapse_ext_password_provider_ldap_uri|string|to_json }}
       start_tls: {{ matrix_synapse_ext_password_provider_ldap_start_tls|to_json }}
       base: {{ matrix_synapse_ext_password_provider_ldap_base|string|to_json }}
+  {% if matrix_synapse_ext_password_provider_ldap_is_active_directory %}
+      active_directory: true
+  {% endif %}
+  {% if matrix_synapse_ext_password_provider_ldap_default_domain != '' %}
+      default_domain: {{ matrix_synapse_ext_password_provider_ldap_default_domain|string|to_json }}
+  {% endif %}
       attributes:
         uid: {{ matrix_synapse_ext_password_provider_ldap_attributes_uid|string|to_json }}
         mail: {{ matrix_synapse_ext_password_provider_ldap_attributes_mail|string|to_json }}
