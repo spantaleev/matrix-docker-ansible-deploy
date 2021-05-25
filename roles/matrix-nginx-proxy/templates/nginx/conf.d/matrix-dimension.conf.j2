@@ -3,8 +3,12 @@
 {% macro render_vhost_directives() %}
 	gzip on;
 	gzip_types text/plain application/json application/javascript text/css image/x-icon font/ttf image/gif;
-
-	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	{% if matrix_nginx_proxy_hsts_preload_enabled %}
+		add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+	{% else %}
+		add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	{% endif %}
+	add_header X-XSS-Protection "{{ matrix_nginx_proxy_xss_protection }}";
 	add_header X-Content-Type-Options nosniff;
 	{% if matrix_nginx_proxy_floc_optout_enabled %}
 		add_header Permissions-Policy interest-cohort=() always;
