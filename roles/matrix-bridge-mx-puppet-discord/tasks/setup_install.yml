@@ -85,7 +85,8 @@
   docker_image:
     name: "{{ matrix_mx_puppet_discord_docker_image }}"
     source: build
-    force_source: "{{ matrix_mx_puppet_discord_git_pull_results.changed }}"
+    force_source: "{{ matrix_mx_puppet_discord_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mx_puppet_discord_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mx_puppet_discord_docker_src_files_path }}"

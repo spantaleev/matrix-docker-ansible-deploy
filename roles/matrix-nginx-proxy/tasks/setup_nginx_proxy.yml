@@ -72,6 +72,13 @@
     mode: 0644
   when: matrix_nginx_proxy_proxy_riot_compat_redirect_enabled|bool
 
+- name: Ensure Matrix nginx-proxy configuration for Hydrogen domain exists
+  template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-client-hydrogen.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-hydrogen.conf"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_hydrogen_enabled|bool
+
 - name: Ensure Matrix nginx-proxy configuration for dimension domain exists
   template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-dimension.conf.j2"
@@ -203,6 +210,12 @@
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-riot-web.conf"
     state: absent
   when: "not matrix_nginx_proxy_proxy_riot_compat_redirect_enabled|bool"
+
+- name: Ensure Matrix nginx-proxy configuration for Hydrogen domain deleted
+  file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-hydrogen.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_hydrogen_enabled|bool"
 
 - name: Ensure Matrix nginx-proxy configuration for dimension domain deleted
   file:

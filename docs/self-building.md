@@ -14,6 +14,7 @@ List of roles where self-building the Docker image is currently possible:
 - `matrix-synapse`
 - `matrix-synapse-admin`
 - `matrix-client-element`
+- `matrix-client-hydrogen`
 - `matrix-registration`
 - `matrix-coturn`
 - `matrix-corporal`
