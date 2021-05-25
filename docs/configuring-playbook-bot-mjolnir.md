@@ -90,8 +90,21 @@ matrix_bot_mjolnir_access_token: "ACCESS_TOKEN_FROM_STEP_2_GOES_HERE"
 matrix_bot_mjolnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 ```
 
+## 6. Adding mjolnir synapse antispam module (optional)
 
-## 6. Installing
+Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+
+
+```yaml
+matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled: true
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites: true
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_messages: false
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_usernames: false
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
+```
+
+
+## 7. Installing
 
 After configuring the playbook, run the [installation](installing.md) command:
 
