@@ -15,8 +15,8 @@ matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_cont
 # amd64 gets released first.
 # arm32 relies on self-building, so the same version can be built immediately.
 # arm64 users need to wait for a prebuilt image to become available.
-matrix_synapse_version: v1.33.1
-matrix_synapse_version_arm64: v1.33.1
+matrix_synapse_version: v1.34.0
+matrix_synapse_version_arm64: v1.34.0
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version if matrix_architecture in ['arm32', 'amd64'] else matrix_synapse_version_arm64 }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -454,6 +454,7 @@ matrix_synapse_sentry_dsn: ""
 
 # Postgres database information
 matrix_synapse_database_host: "matrix-postgres"
+matrix_synapse_database_port: 5432
 matrix_synapse_database_user: "synapse"
 matrix_synapse_database_password: ""
 matrix_synapse_database_database: "synapse"
@@ -586,3 +587,4 @@ matrix_synapse_configuration_extension: "{{ matrix_synapse_configuration_extensi
 # Holds the final Synapse configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_synapse_configuration_yaml`.
 matrix_synapse_configuration: "{{ matrix_synapse_configuration_yaml|from_yaml|combine(matrix_synapse_configuration_extension, recursive=True) }}"
+

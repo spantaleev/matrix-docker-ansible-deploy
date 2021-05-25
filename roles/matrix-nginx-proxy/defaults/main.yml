@@ -113,6 +113,10 @@ matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container: "localhost:
 matrix_nginx_proxy_proxy_element_enabled: false
 matrix_nginx_proxy_proxy_element_hostname: "{{ matrix_server_fqn_element }}"
 
+# Controls whether proxying the Hydrogen domain should be done.
+matrix_nginx_proxy_proxy_hydrogen_enabled: false
+matrix_nginx_proxy_proxy_hydrogen_hostname: "{{ matrix_server_fqn_hydrogen }}"
+
 # Controls whether proxying the matrix domain should be done.
 matrix_nginx_proxy_proxy_matrix_enabled: false
 matrix_nginx_proxy_proxy_matrix_hostname: "{{ matrix_server_fqn_matrix }}"
@@ -223,6 +227,7 @@ matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "localhost:1
 matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb: "{{ (matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb | int) * 3 }}"
 matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/fullchain.pem"
 matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate_key: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/privkey.pem"
+matrix_nginx_proxy_proxy_matrix_federation_api_ssl_trusted_certificate: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/chain.pem"
 
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_nginx_proxy_tmp_directory_size_mb: "{{ (matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb | int) * 50 }}"
@@ -250,6 +255,9 @@ matrix_nginx_proxy_proxy_riot_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to Element's server configuration (matrix-client-element.conf).
 matrix_nginx_proxy_proxy_element_additional_server_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to Element's server configuration (matrix-client-element.conf).
+matrix_nginx_proxy_proxy_hydrogen_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to Dimension's server configuration (matrix-dimension.conf).
 matrix_nginx_proxy_proxy_dimension_additional_server_configuration_blocks: []
@@ -384,6 +392,47 @@ matrix_ssl_log_dir_path: "{{ matrix_ssl_base_path }}/log"
 # This could be something like `matrix-dynamic-dns`, etc.
 matrix_ssl_pre_obtaining_required_service_name: ~
 matrix_ssl_pre_obtaining_required_service_start_wait_time_seconds: 60
+
+# Nginx Optimize SSL Session
+#
+# ssl_session_cache:
+# - Creating a cache of TLS connection parameters reduces the number of handshakes 
+#   and thus can improve the performance of application.
+# - Default session cache is not optimal as it can be used by only one worker process
+#   and can cause memory fragmentation. It is much better to use shared cache.
+# - Learn More: https://nginx.org/en/docs/http/ngx_http_ssl_module.html
+#
+# ssl_session_timeout:
+# - Nginx by default it is set to 5 minutes which is very low.
+#   should be like 4h or 1d but will require you to increase the size of cache.
+# - Learn More: 
+#     https://github.com/certbot/certbot/issues/6903
+#     https://github.com/mozilla/server-side-tls/issues/198
+#
+# ssl_session_tickets:
+# - In case of session tickets, information about session is given to the client.
+#   Enabling this improve performance also make Perfect Forward Secrecy useless.
+# - If you would instead like to use ssl_session_tickets by yourself, you can set
+#   matrix_nginx_proxy_ssl_session_tickets_off false.
+# - Learn More: https://github.com/mozilla/server-side-tls/issues/135
+#
+# Presets are taken from Mozilla's Server Side TLS Recommended configurations
+matrix_nginx_proxy_ssl_session_cache: "shared:MozSSL:10m"
+matrix_nginx_proxy_ssl_session_timeout: "1d"
+matrix_nginx_proxy_ssl_session_tickets_off: true
+
+# OCSP Stapling eliminating the need for clients to contact the CA, with the aim of improving both security and performance.
+# OCSP stapling can provide a performance boost of up to 30%
+# nginx web server supports OCSP stapling since version 1.3.7.
+#
+# *warning* Nginx is lazy loading OCSP responses, which means that for the first few web requests it is unable to add the OCSP response.
+# set matrix_nginx_proxy_ocsp_stapling_enabled false to disable OCSP Stapling
+#
+# Learn more about what it is here:
+# - https://en.wikipedia.org/wiki/OCSP_stapling
+# - https://blog.cloudflare.com/high-reliability-ocsp-stapling/
+# - https://blog.mozilla.org/security/2013/07/29/ocsp-stapling-in-firefox/
+matrix_nginx_proxy_ocsp_stapling_enabled: true
 
 # nginx status page configurations.
 matrix_nginx_proxy_proxy_matrix_nginx_status_enabled: false

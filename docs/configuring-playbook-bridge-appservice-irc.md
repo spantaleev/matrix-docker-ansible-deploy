@@ -1,6 +1,8 @@
 # Setting up Appservice IRC (optional)
 
-The playbook can install and configure [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) for you.
+**Note**: bridging to [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) can also happen via the [Heisenbridge](configuring-playbook-bridge-heisenbridge.md) bridge supported by the playbook.
+
+The playbook can install and configure the [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) bridge for you.
 
 See the project's [documentation](https://github.com/matrix-org/matrix-appservice-irc/blob/master/HOWTO.md) to learn what it does and why it might be useful to you.
 

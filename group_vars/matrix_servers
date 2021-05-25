@@ -490,6 +490,32 @@ matrix_sms_bridge_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | pas
 
 ######################################################################
 #
+# matrix-bridge-heisenbridge
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_heisenbridge_enabled: false
+
+matrix_heisenbridge_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'heisen.as.tok') | to_uuid }}"
+
+matrix_heisenbridge_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'heisen.hs.tok') | to_uuid }}"
+
+matrix_heisenbridge_systemd_wanted_services_list: |
+  {{
+    (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+  }}
+
+######################################################################
+#
+# /matrix-bridge-heisenbridge
+#
+######################################################################
+
+######################################################################
+#
 # matrix-bridge-mx-puppet-skype
 #
 ######################################################################
@@ -1027,6 +1053,8 @@ matrix_jitsi_web_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_ena
 
 matrix_jitsi_jvb_container_colibri_ws_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:13090' }}"
 
+matrix_jitsi_prosody_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:5280' }}"
+
 matrix_jitsi_jibri_xmpp_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'jibri') | to_uuid }}"
 matrix_jitsi_jicofo_auth_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'jicofo') | to_uuid }}"
 matrix_jitsi_jvb_auth_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'jvb') | to_uuid }}"
@@ -1113,7 +1141,9 @@ matrix_ma1sd_synapsesql_connection: //{{ matrix_synapse_database_host }}/{{ matr
 
 matrix_ma1sd_dns_overwrite_enabled: true
 matrix_ma1sd_dns_overwrite_homeserver_client_name: "{{ matrix_server_fqn_matrix }}"
-matrix_ma1sd_dns_overwrite_homeserver_client_value: "http://{{ matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container }}"
+# The `matrix_ma1sd_dns_overwrite_homeserver_client_value` value when matrix_nginx_proxy_enabled is false covers the general case,
+# but may be inaccurate if matrix-corporal is enabled.
+matrix_ma1sd_dns_overwrite_homeserver_client_value: "{{ ('http://' + matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container) if matrix_nginx_proxy_enabled else matrix_homeserver_container_url }}"
 
 # By default, we send mail through the `matrix-mailer` service.
 matrix_ma1sd_threepid_medium_email_identity_from: "{{ matrix_mailer_sender_address }}"
@@ -1170,6 +1200,7 @@ matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain: "{{ matrix_s
 
 matrix_nginx_proxy_proxy_matrix_enabled: true
 matrix_nginx_proxy_proxy_element_enabled: "{{ matrix_client_element_enabled }}"
+matrix_nginx_proxy_proxy_hydrogen_enabled: "{{ matrix_client_hydrogen_enabled }}"
 matrix_nginx_proxy_proxy_dimension_enabled: "{{ matrix_dimension_enabled }}"
 matrix_nginx_proxy_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled }}"
 matrix_nginx_proxy_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
@@ -1211,6 +1242,11 @@ matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "{{ m
 
 matrix_nginx_proxy_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
 
+# OCSP stapling does not make sense when self-signed certificates are used.
+# See https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1073
+# and https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1074
+matrix_nginx_proxy_ocsp_stapling_enabled: "{{ matrix_ssl_retrieval_method != 'self-signed' }}"
+
 matrix_nginx_proxy_synapse_presence_disabled: "{{ not matrix_synapse_presence_enabled }}"
 
 matrix_nginx_proxy_synapse_workers_enabled: "{{ matrix_synapse_workers_enabled }}"
@@ -1239,6 +1275,8 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     ([matrix_server_fqn_element] if matrix_client_element_enabled else [])
     +
     ([matrix_nginx_proxy_proxy_riot_compat_redirect_hostname] if matrix_nginx_proxy_proxy_riot_compat_redirect_enabled else [])
+    +
+    ([matrix_server_fqn_hydrogen] if matrix_client_hydrogen_enabled else [])
     +
     ([matrix_server_fqn_dimension] if matrix_dimension_enabled else [])
     +
@@ -1538,6 +1576,31 @@ matrix_client_element_jitsi_preferredDomain: "{{ matrix_server_fqn_jitsi if matr
 ######################################################################
 #
 # /matrix-client-element
+#
+######################################################################
+
+
+
+######################################################################
+#
+# matrix-client-hydrogen
+#
+######################################################################
+
+matrix_client_hydrogen_enabled: false
+
+# Normally, matrix-nginx-proxy is enabled and nginx can reach Hydrogen over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
+# the HTTP port to the local host.
+matrix_client_hydrogen_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8768' }}"
+
+matrix_client_hydrogen_default_hs_url: "{{ matrix_homeserver_url }}"
+
+matrix_client_hydrogen_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
+
+######################################################################
+#
+# /matrix-client-hydrogen
 #
 ######################################################################
 

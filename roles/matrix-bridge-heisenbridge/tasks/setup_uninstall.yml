@@ -1,0 +1,24 @@
+---
+
+- name: Check existence of matrix-heisenbridge service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-heisenbridge.service"
+  register: matrix_heisenbridge_service_stat
+
+- name: Ensure matrix-heisenbridge is stopped
+  service:
+    name: heisenbridge
+    state: stopped
+    daemon_reload: yes
+  when: "matrix_heisenbridge_service_stat.stat.exists"
+
+- name: Ensure matrix-heisenbridge.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-heisenbridge.service"
+    state: absent
+  when: "matrix_heisenbridge_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-heisenbridge.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_heisenbridge_service_stat.stat.exists"

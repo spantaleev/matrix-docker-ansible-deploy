@@ -69,6 +69,18 @@ server {
 	ssl_ciphers {{ matrix_nginx_proxy_ssl_ciphers }};
 	{% endif %}
 	ssl_prefer_server_ciphers {{ matrix_nginx_proxy_ssl_prefer_server_ciphers }};
+	
+	{% if matrix_nginx_proxy_ocsp_stapling_enabled %}
+		ssl_stapling on;
+		ssl_stapling_verify on;
+		ssl_trusted_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_base_domain_hostname }}/chain.pem;
+	{% endif %}
+	
+	{% if matrix_nginx_proxy_ssl_session_tickets_off %}
+		ssl_session_tickets off;
+	{% endif %}
+	ssl_session_cache {{ matrix_nginx_proxy_ssl_session_cache }};
+	ssl_session_timeout {{ matrix_nginx_proxy_ssl_session_timeout }};
 
 	{{ render_vhost_directives() }}
 }

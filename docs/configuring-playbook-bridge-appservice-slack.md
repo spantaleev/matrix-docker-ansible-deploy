@@ -1,5 +1,7 @@
 # Setting up Appservice Slack (optional)
 
+**Note**: bridging to [Slack](https://slack.com) can also happen via the [mx-puppet-slack](configuring-playbook-bridge-mx-puppet-slack.md) bridge supported by the playbook.
+
 The playbook can install and configure [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) for you.
 
 See the project's [documentation](https://github.com/matrix-org/matrix-appservice-slack/blob/master/README.md) to learn what it does and why it might be useful to you.
@@ -106,5 +108,5 @@ Check you logs, if they say something like
 
 `WARN SlackEventHandler Ignoring message from unrecognised slack channel id : %s (%s) <the channel id> <some other id>`
 
-then unlink your room, reinvite the bot and re-link it again. This may particularly hit you, if you tried to unsuccessfully link 
+then unlink your room, reinvite the bot and re-link it again. This may particularly hit you, if you tried to unsuccessfully link
 your room multiple times without unlinking it after each failed attempt.
