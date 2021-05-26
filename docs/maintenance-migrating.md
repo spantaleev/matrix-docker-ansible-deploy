@@ -1,4 +1,4 @@
-> **Note**: This migration guide is applicable if you migrate from server to another that are of the same architecture, i.e. e.g. the servers both are amd64. 
+> **Note**: This migration guide is applicable if you migrate from server to another that are of the same cpu architecture, e.g. the servers both are amd64. 
 > 
 > In case that you migrate between two different architectures (e.g. amd64 --> arm64), simply copying the complete folder is not possible as it would move the raw PostgreSQL data between different architectures. In this specific case, you would need to dump the database on your current server and import it properly on the new server.
 > 
