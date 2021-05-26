@@ -1,7 +1,6 @@
-> **Note**: This migration guide is applicable if you migrate from server to another that are of the same cpu architecture, e.g. the servers both are amd64. 
+> **Note**: This migration guide is applicable if you migrate from one server to another server having the same CPU architecture (e.g. both servers being `amd64`). 
 > 
-> In case that you migrate between two different architectures (e.g. amd64 --> arm64), simply copying the complete folder is not possible as it would move the raw PostgreSQL data between different architectures. In this specific case, you would need to dump the database on your current server and import it properly on the new server.
-> 
+> If you're trying to migrate between different architectures (e.g. `amd64` --> `arm64`), simply copying the complete `/matrix` directory is not possible as it would move the raw PostgreSQL data between different architectures. In this specific case, you can use the guide below as a reference, but you would also need to dump the database on your current server and import it properly on the new server. See our [Backing up PostgreSQL](maintenance-postgres.md#backing-up-postgresql) docs for help with PostgreSQL backup/restore.
 
 # Migrating to new server
 
