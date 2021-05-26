@@ -4,8 +4,6 @@ The playbook can install and configure the [Mjolnir](https://github.com/matrix-o
 
 See the project's [documentation](https://github.com/matrix-org/mjolnir) to learn what it does and why it might be useful to you.
 
-Note: the playbook does not currently support the Mjolnir Synapse module. The playbook does support another antispam module, see [Setting up Synapse Simple Antispam](configuring-playbook-synapse-simple-antispam.md).
-
 
 ## 1. Register the bot account
 
