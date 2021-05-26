@@ -99,6 +99,8 @@ Example: `--extra-vars="postgres_dump_name=matrix-postgres-dump.sql"`
 
 PostgreSQL can be tuned to make it run faster. This is done by passing extra arguments to Postgres with the `matrix_postgres_process_extra_arguments` variable. You should use a website like https://pgtune.leopard.in.ua/ or information from https://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server to determine what Postgres settings you should change.
 
+**Note**: the configuration generator at https://pgtune.leopard.in.ua/ adds spaces around the `=` sign, which is invalid. You'll need to remove it manually (`max_connections = 300` -> `max_connections=300`)
+
 ### Here are some examples:
 
 These are not recommended values and they may not work well for you. This is just to give you an idea of some of the options that can be set. If you are an experienced PostgreSQL admin feel free to update this documentation with better examples.
