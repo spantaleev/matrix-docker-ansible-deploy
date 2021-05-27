@@ -26,10 +26,16 @@
   become: false
   when: "matrix_postgres_service_start_result.changed|bool"
 
+- name: Check existence of matrix-appservice-irc service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-appservice-irc.service"
+  register: matrix_appservice_irc_service_stat
+
 - name: Ensure matrix-appservice-irc is stopped
   service:
     name: matrix-appservice-irc
     state: stopped
+  when: "matrix_appservice_irc_service_stat.stat.exists"
 
 - name: Import appservice-irc NeDB database into Postgres
   command:
