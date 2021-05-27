@@ -38,3 +38,9 @@ scrape_configs:
     static_configs:
       - targets: {{ matrix_prometheus_scraper_node_targets|to_json }}
   {% endif %}
+
+  {% if matrix_prometheus_scraper_postgres_enabled %}
+  - job_name: postgres
+    static_configs:
+      - targets: {{ matrix_prometheus_scraper_postgres_targets|to_json }}
+  {% endif %}
