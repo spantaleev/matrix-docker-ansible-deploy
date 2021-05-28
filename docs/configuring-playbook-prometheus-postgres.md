@@ -1,6 +1,6 @@
 # Enabling metrics and graphs for Postgres (optional)
 
-Expanding on the metrics exposed by the [syapse exporter and the node exporter](configuring-playbook-prometheus-grafana.md), the playbook enables the [postgres exporter](https://github.com/prometheus-community/postgres_exporter) that exposes more detailed information about what's happening on your postgres database.
+Expanding on the metrics exposed by the [synapse exporter and the node exporter](configuring-playbook-prometheus-grafana.md), the playbook enables the [postgres exporter](https://github.com/prometheus-community/postgres_exporter) that exposes more detailed information about what's happening on your postgres database.
 
 You can enable this with the following settings in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
@@ -20,7 +20,7 @@ Name | Description
 -----|----------
 `matrix_prometheus_postgres_exporter_enabled`|Enable the postgres prometheus exporter. This sets up the docker container, connects it to the database and adds a 'job' to the prometheus config which tells prometheus about this new exporter. The default is 'false'
 `matrix_prometheus_postgres_exporter_database_username`| The 'username' for the user that the exporter uses to connect to the database. The default is 'matrix_prometheus_postgres_exporter'
-`matrix_prometheus_postgres_exporter_database_password`| The 'username' for the user that the exporter uses to connect to the database.
+`matrix_prometheus_postgres_exporter_database_password`| The 'password' for the user that the exporter uses to connect to the database.
 
 
 ## More information
