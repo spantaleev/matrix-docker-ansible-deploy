@@ -4,6 +4,11 @@
 #
 # Thus, we ensure a larger bucket size value is used.
 server_names_hash_bucket_size 64;
+
+{% if matrix_nginx_proxy_http_level_resolver %}
+	resolver {{ matrix_nginx_proxy_http_level_resolver }};
+{% endif %}
+
 {% for configuration_block in matrix_nginx_proxy_proxy_http_additional_server_configuration_blocks %}
 	{{- configuration_block }}
 {% endfor %}
