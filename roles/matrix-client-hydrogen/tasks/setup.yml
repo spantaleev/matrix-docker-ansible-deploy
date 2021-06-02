@@ -42,6 +42,17 @@
     group: "{{ matrix_user_groupname }}"
   when: "matrix_client_hydrogen_enabled|bool and matrix_client_hydrogen_container_image_self_build|bool"
 
+- name: Ensure Hydrogen additional config files installed
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ matrix_client_hydrogen_data_path }}/{{ item.name }}"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {src: "{{ role_path }}/templates/nginx.conf.j2", name: "nginx.conf"}
+  when: "matrix_client_hydrogen_enabled|bool and item.src is not none"
+
 - name: Ensure Hydrogen Docker image is built
   docker_image:
     name: "{{ matrix_client_hydrogen_docker_image }}"

@@ -98,6 +98,15 @@
   tags:
     - setup-client-element
 
+# Additional playbook to set the variable file during Element configuration
+- include_tasks: 
+    file: "set_variables_element_subdomain.yml"
+    apply:
+      tags: setup-client-element-subdomain
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags:
+    - setup-client-element-subdomain
+
 # Additional playbook to set the variable file during Synapse configuration
 - include_tasks: 
     file: "set_variables_synapse.yml"

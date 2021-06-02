@@ -22,7 +22,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-heisenbridge \
           --cap-drop=ALL \
           --network={{ matrix_docker_network }} \
           {% if matrix_heisenbridge_identd_enabled %}
-          -p 113:113 \
+          -p 113:13113 \
           {% endif %}
           -v {{ matrix_heisenbridge_base_path }}:/config:z \
           {% for arg in matrix_heisenbridge_container_extra_arguments %}
@@ -31,6 +31,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-heisenbridge \
           {{ matrix_heisenbridge_docker_image }} \
           {% if matrix_heisenbridge_identd_enabled %}
           --identd \
+          --identd-port 13113 \
           {% endif %}
           {% if matrix_heisenbridge_owner %}
           -o {{ matrix_heisenbridge_owner }} \

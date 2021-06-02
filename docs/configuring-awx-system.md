@@ -8,9 +8,7 @@ Members can be assigned a server from Digitalocean, or they can connect their ow
 
 The AWX system is arranged into 'members' each with their own 'subscriptions'. After creating a subscription the user enters the 'provision stage' where they defined the URLs they will use, the servers location and whether or not there's already a website at the base domain. They then proceed onto the 'deploy stage' where they can configure their Matrix server.
 
-Ideally this system can manage the updates, configuration, backups and monitoring on it's own. It is an extension of the popular deploy script [spantaleev/matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy).
-
-Warning: This project is currently alpha quality and should only be run by the brave.
+This system can manage the updates, configuration, import and export, backups and monitoring on its own. It is an extension of the popular deploy script [spantaleev/matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy).
 
 
 ## Other Required Playbooks
@@ -22,6 +20,7 @@ The following repositories allow you to copy and use this setup:
 [Ansible Create Delete Subscription Membership](https://gitlab.com/GoMatrixHosting/ansible-create-delete-subscription-membership) - Used by the AWX system to create memberships and subscriptions. Also includes other administrative playbooks for updates, backups and restoring servers.
 
 [Ansible Provision Server](https://gitlab.com/GoMatrixHosting/ansible-provision-server) - Used by AWX members to perform initial configuration of their DigitalOcean or On-Premises server.
+
 
 ## Testing Fork For This Playbook
 

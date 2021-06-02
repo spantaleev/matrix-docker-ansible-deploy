@@ -43,6 +43,7 @@ With such a configuration, the playbook would expect you to drop the SSL certifi
 
 - `<matrix_ssl_config_dir_path>/live/<domain>/fullchain.pem`
 - `<matrix_ssl_config_dir_path>/live/<domain>/privkey.pem`
+- `<matrix_ssl_config_dir_path>/live/<domain>/chain.pem`
 
 where `<domain>` refers to the domains that you need (usually `matrix.<your-domain>` and `element.<your-domain>`).
 

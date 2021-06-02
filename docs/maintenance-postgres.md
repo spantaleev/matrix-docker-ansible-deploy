@@ -99,6 +99,8 @@ Example: `--extra-vars="postgres_dump_name=matrix-postgres-dump.sql"`
 
 PostgreSQL can be tuned to make it run faster. This is done by passing extra arguments to Postgres with the `matrix_postgres_process_extra_arguments` variable. You should use a website like https://pgtune.leopard.in.ua/ or information from https://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server to determine what Postgres settings you should change.
 
+**Note**: the configuration generator at https://pgtune.leopard.in.ua/ adds spaces around the `=` sign, which is invalid. You'll need to remove it manually (`max_connections = 300` -> `max_connections=300`)
+
 ### Here are some examples:
 
 These are not recommended values and they may not work well for you. This is just to give you an idea of some of the options that can be set. If you are an experienced PostgreSQL admin feel free to update this documentation with better examples.
@@ -106,11 +108,33 @@ These are not recommended values and they may not work well for you. This is jus
 Here is an example config for a small 2 core server with 4GB of RAM and SSD storage:
 ```
 matrix_postgres_process_extra_arguments: [
-  "-c 'shared_buffers=128MB'",
-  "-c 'effective_cache_size=2304MB'",
-  "-c 'effective_io_concurrency=100'",
-  "-c 'random_page_cost=2.0'",
-  "-c 'min_wal_size=500MB'",
+  "-c shared_buffers=128MB",
+  "-c effective_cache_size=2304MB",
+  "-c effective_io_concurrency=100",
+  "-c random_page_cost=2.0",
+  "-c min_wal_size=500MB",
+]
+```
+
+Here is an example config for a 4 core server with 8GB of RAM on a Virtual Private Server (VPS); the paramters have been configured using https://pgtune.leopard.in.ua with the following setup: PostgreSQL version 12, OS Type: Linux, DB Type: Mixed type of application, Data Storage: SSD storage:
+```
+matrix_postgres_process_extra_arguments: [
+  "-c max_connections=100",
+  "-c shared_buffers=2GB",
+  "-c effective_cache_size=6GB",
+  "-c maintenance_work_mem=512MB",
+  "-c checkpoint_completion_target=0.9",
+  "-c wal_buffers=16MB",
+  "-c default_statistics_target=100",
+  "-c random_page_cost=1.1",
+  "-c effective_io_concurrency=200",
+  "-c work_mem=5242kB",
+  "-c min_wal_size=1GB",
+  "-c max_wal_size=4GB",
+  "-c max_worker_processes=4",
+  "-c max_parallel_workers_per_gather=2",
+  "-c max_parallel_workers=4",
+  "-c max_parallel_maintenance_workers=2",
 ]
 ```
 
