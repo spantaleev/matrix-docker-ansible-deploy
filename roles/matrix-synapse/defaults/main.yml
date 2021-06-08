@@ -15,8 +15,8 @@ matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_cont
 # amd64 gets released first.
 # arm32 relies on self-building, so the same version can be built immediately.
 # arm64 users need to wait for a prebuilt image to become available.
-matrix_synapse_version: v1.34.0
-matrix_synapse_version_arm64: v1.34.0
+matrix_synapse_version: v1.35.1
+matrix_synapse_version_arm64: v1.35.1
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version if matrix_architecture in ['arm32', 'amd64'] else matrix_synapse_version_arm64 }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -497,6 +497,8 @@ matrix_synapse_ext_password_provider_ldap_attributes_name: "cn"
 matrix_synapse_ext_password_provider_ldap_bind_dn: ""
 matrix_synapse_ext_password_provider_ldap_bind_password: ""
 matrix_synapse_ext_password_provider_ldap_filter: ""
+matrix_synapse_ext_password_provider_ldap_active_directory: false
+matrix_synapse_ext_password_provider_ldap_default_domain: ""
 
 # Enable this to activate the Synapse Antispam spam-checker module.
 # See: https://github.com/t2bot/synapse-simple-antispam
@@ -504,6 +506,27 @@ matrix_synapse_ext_spam_checker_synapse_simple_antispam_enabled: false
 matrix_synapse_ext_spam_checker_synapse_simple_antispam_git_repository_url: "https://github.com/t2bot/synapse-simple-antispam"
 matrix_synapse_ext_spam_checker_synapse_simple_antispam_git_version: "923ca5c85b08f157181721abbae50dd89c31e4b5"
 matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeservers: []
+
+# Enable this to activate the Mjolnir Antispam spam-checker module.
+# See: https://github.com/matrix-org/mjolnir#synapse-module
+matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled: false
+matrix_synapse_ext_spam_checker_mjolnir_antispam_git_repository_url: "https://github.com/matrix-org/mjolnir"
+matrix_synapse_ext_spam_checker_mjolnir_antispam_git_version: "70f353fbbad0af469b1001080dea194d512b2815"
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites: true
+# Flag messages sent by servers/users in the ban lists as spam. Currently
+# this means that spammy messages will appear as empty to users. Default
+# false.
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_messages: false
+# Remove users from the user directory search by filtering matrix IDs and
+# display names by the entries in the user ban list. Default false.
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_usernames: false
+# The room IDs of the ban lists to honour. Unlike other parts of Mjolnir,
+# this list cannot be room aliases or permalinks. This server is expected
+# to already be joined to the room - Mjolnir will not automatically join
+# these rooms.
+# ["!roomid:example.org"]
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
+
 
 matrix_s3_media_store_enabled: false
 matrix_s3_media_store_custom_endpoint_enabled: false

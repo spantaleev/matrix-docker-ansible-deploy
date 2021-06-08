@@ -8,9 +8,7 @@ Members can be assigned a server from Digitalocean, or they can connect their ow
 
 The AWX system is arranged into 'members' each with their own 'subscriptions'. After creating a subscription the user enters the 'provision stage' where they defined the URLs they will use, the servers location and whether or not there's already a website at the base domain. They then proceed onto the 'deploy stage' where they can configure their Matrix server.
 
-Ideally this system can manage the updates, configuration, backups and monitoring on it's own. It is an extension of the popular deploy script [spantaleev/matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy).
-
-Warning: This project is currently alpha quality and should only be run by the brave.
+This system can manage the updates, configuration, import and export, backups and monitoring on its own. It is an extension of the popular deploy script [spantaleev/matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy).
 
 
 ## Other Required Playbooks
@@ -23,6 +21,7 @@ The following repositories allow you to copy and use this setup:
 
 [Ansible Provision Server](https://gitlab.com/GoMatrixHosting/ansible-provision-server) - Used by AWX members to perform initial configuration of their DigitalOcean or On-Premises server.
 
+
 ## Testing Fork For This Playbook
 
 Updates to this section are trailed here:
@@ -32,9 +31,9 @@ Updates to this section are trailed here:
 
 ## Does I need an AWX setup to use this? How do I configure it? 
 
-Yes, you'll need to configure an AWX instance, the [Create AWX System](https://gitlab.com/GoMatrixHosting/create-awx-system) repository makes it easy to do. Just follow the steps listed in ['/docs/Installation.md' of that repository](https://gitlab.com/GoMatrixHosting/create-awx-system/-/blob/master/docs/Installation.md). 
+Yes, you'll need to configure an AWX instance, the [Create AWX System](https://gitlab.com/GoMatrixHosting/create-awx-system) repository makes it easy to do. Just follow the steps listed in ['/docs/Installation_AWX.md' of that repository](https://gitlab.com/GoMatrixHosting/create-awx-system/-/blob/master/docs/Installation_AWX.md). 
 
-For simpler installation steps you can use to get started with this system, check out our minimal installation guide at ['/doc/Installation_Minimal.md of that repository'](https://gitlab.com/GoMatrixHosting/create-awx-system/-/blob/master/docs/Installation_Minimal.md).
+For simpler installation steps you can use to get started with this system, check out our minimal installation guide at ['/doc/Installation_Minimal_AWX.md of that repository'](https://gitlab.com/GoMatrixHosting/create-awx-system/-/blob/master/docs/Installation_Minimal_AWX.md).
 
 
 ## Does I need a front-end WordPress site? And a DigitalOcean account? 

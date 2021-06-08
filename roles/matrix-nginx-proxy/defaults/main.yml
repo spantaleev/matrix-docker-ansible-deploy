@@ -1,5 +1,5 @@
 matrix_nginx_proxy_enabled: true
-matrix_nginx_proxy_version: 1.20.0-alpine
+matrix_nginx_proxy_version: 1.21.0-alpine
 
 # We use an official nginx image, which we fix-up to run unprivileged.
 # An alternative would be an `nginxinc/nginx-unprivileged` image, but
@@ -112,6 +112,10 @@ matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container: "localhost:
 # Controls whether proxying the Element domain should be done.
 matrix_nginx_proxy_proxy_element_enabled: false
 matrix_nginx_proxy_proxy_element_hostname: "{{ matrix_server_fqn_element }}"
+
+# Controls whether proxying the Hydrogen domain should be done.
+matrix_nginx_proxy_proxy_hydrogen_enabled: false
+matrix_nginx_proxy_proxy_hydrogen_hostname: "{{ matrix_server_fqn_hydrogen }}"
 
 # Controls whether proxying the matrix domain should be done.
 matrix_nginx_proxy_proxy_matrix_enabled: false
@@ -252,6 +256,9 @@ matrix_nginx_proxy_proxy_riot_additional_server_configuration_blocks: []
 # A list of strings containing additional configuration blocks to add to Element's server configuration (matrix-client-element.conf).
 matrix_nginx_proxy_proxy_element_additional_server_configuration_blocks: []
 
+# A list of strings containing additional configuration blocks to add to Element's server configuration (matrix-client-element.conf).
+matrix_nginx_proxy_proxy_hydrogen_additional_server_configuration_blocks: []
+
 # A list of strings containing additional configuration blocks to add to Dimension's server configuration (matrix-dimension.conf).
 matrix_nginx_proxy_proxy_dimension_additional_server_configuration_blocks: []
 
@@ -279,6 +286,26 @@ matrix_nginx_proxy_proxy_domain_additional_server_configuration_blocks: []
 #
 # Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
 matrix_nginx_proxy_floc_optout_enabled: true
+
+# HSTS Preloading Enable
+#
+# In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
+# indicates a willingness to be “preloaded” into browsers:
+# `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+# For more information visit:
+# - https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+# - https://hstspreload.org/#opt-in
+matrix_nginx_proxy_hsts_preload_enabled: false
+
+# X-XSS-Protection Enable
+# Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
+# Note: Not applicable for grafana
+#
+# Learn more about it is here:
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+# - https://portswigger.net/web-security/cross-site-scripting/reflected
+matrix_nginx_proxy_xss_protection: "1; mode=block"
 
 # Specifies the SSL configuration that should be used for the SSL protocols and ciphers
 # This is based on the Mozilla Server Side TLS Recommended configurations.
@@ -329,6 +356,18 @@ matrix_nginx_proxy_self_check_validate_certificates: true
 # As per the spec (https://matrix.org/docs/spec/client_server/r0.6.0#well-known-uri), it shouldn't be,
 # so we default to not following redirects as well.
 matrix_nginx_proxy_self_check_well_known_matrix_client_follow_redirects: none
+
+# For OCSP purposes, we need to define a resolver at the `server{}` level or `http{}` level (we do the latter).
+#
+# Otherwise, we get warnings like this:
+# > [warn] 22#22: no resolver defined to resolve r3.o.lencr.org while requesting certificate status, responder: r3.o.lencr.org, certificate: "/matrix/ssl/config/live/.../fullchain.pem"
+#
+# We point it to the internal Docker resolver, which likely delegates to nameservers defined in `/etc/resolv.conf`.
+#
+# When nginx proxy is disabled, our configuration is likely used by non-containerized nginx, so can't use the internal Docker resolver.
+# Pointing `resolver` to some public DNS server might be an option, but for now we impose DNS servers on people.
+# It might also be that no such warnings occur when not running in a container.
+matrix_nginx_proxy_http_level_resolver: "{{ '127.0.0.11' if matrix_nginx_proxy_enabled else '' }}"
 
 # By default, this playbook automatically retrieves and auto-renews
 # free SSL certificates from Let's Encrypt.
@@ -389,7 +428,7 @@ matrix_ssl_pre_obtaining_required_service_start_wait_time_seconds: 60
 # Nginx Optimize SSL Session
 #
 # ssl_session_cache:
-# - Creating a cache of TLS connection parameters reduces the number of handshakes 
+# - Creating a cache of TLS connection parameters reduces the number of handshakes
 #   and thus can improve the performance of application.
 # - Default session cache is not optimal as it can be used by only one worker process
 #   and can cause memory fragmentation. It is much better to use shared cache.
@@ -398,7 +437,7 @@ matrix_ssl_pre_obtaining_required_service_start_wait_time_seconds: 60
 # ssl_session_timeout:
 # - Nginx by default it is set to 5 minutes which is very low.
 #   should be like 4h or 1d but will require you to increase the size of cache.
-# - Learn More: 
+# - Learn More:
 #     https://github.com/certbot/certbot/issues/6903
 #     https://github.com/mozilla/server-side-tls/issues/198
 #

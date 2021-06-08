@@ -4,8 +4,6 @@ The playbook can install and configure the [Mjolnir](https://github.com/matrix-o
 
 See the project's [documentation](https://github.com/matrix-org/mjolnir) to learn what it does and why it might be useful to you.
 
-Note: the playbook does not currently support the Mjolnir Synapse module. The playbook does support another antispam module, see [Setting up Synapse Simple Antispam](configuring-playbook-synapse-simple-antispam.md).
-
 
 ## 1. Register the bot account
 
@@ -90,8 +88,21 @@ matrix_bot_mjolnir_access_token: "ACCESS_TOKEN_FROM_STEP_2_GOES_HERE"
 matrix_bot_mjolnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 ```
 
+## 6. Adding mjolnir synapse antispam module (optional)
 
-## 6. Installing
+Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+
+
+```yaml
+matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled: true
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites: true
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_messages: false
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_usernames: false
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
+```
+
+
+## 7. Installing
 
 After configuring the playbook, run the [installation](installing.md) command:
 

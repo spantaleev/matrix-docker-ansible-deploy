@@ -20,6 +20,14 @@
 	{% if matrix_nginx_proxy_floc_optout_enabled %}
 		add_header Permissions-Policy interest-cohort=() always;
 	{% endif %}
+	
+	{% if matrix_nginx_proxy_hsts_preload_enabled %}
+		add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+	{% else %}
+		add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	{% endif %}
+	
+	add_header X-XSS-Protection "{{ matrix_nginx_proxy_xss_protection }}";
 
 	location /.well-known/matrix {
 		root {{ matrix_static_files_base_path }};

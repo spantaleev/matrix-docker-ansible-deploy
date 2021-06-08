@@ -5,6 +5,14 @@
 		add_header Permissions-Policy interest-cohort=() always;
 	{% endif %}
 
+	{% if matrix_nginx_proxy_hsts_preload_enabled %}
+		add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+	{% else %}
+		add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	{% endif %}
+
+	add_header X-XSS-Protection "{{ matrix_nginx_proxy_xss_protection }}";
+
 	{% for configuration_block in matrix_nginx_proxy_proxy_riot_additional_server_configuration_blocks %}
 		{{- configuration_block }}
 	{% endfor %}
@@ -67,7 +75,7 @@ server {
 		ssl_stapling_verify on;
 		ssl_trusted_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_riot_compat_redirect_hostname }}/chain.pem;
 	{% endif %}
-	
+
 	{% if matrix_nginx_proxy_ssl_session_tickets_off %}
 		ssl_session_tickets off;
 	{% endif %}
