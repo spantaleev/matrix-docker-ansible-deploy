@@ -1,0 +1,33 @@
+
+- name: Run export of /matrix/ and snapshot the database simultaneously 
+  command: "{{ item }}" 
+  with_items:
+    - /bin/sh /usr/local/bin/awx-export-service.sh 1 0
+    - /bin/sh /usr/local/bin/awx-export-service.sh 0 1
+  register: _create_instances
+  async: 3600  # Maximum runtime in seconds.
+  poll: 0  # Fire and continue (never poll)
+
+- name: Wait for both of these jobs to finish
+  async_status:
+    jid: "{{ item.ansible_job_id }}"
+  register: _jobs
+  until: _jobs.finished
+  delay: 5  # Check every 5 seconds.
+  retries: 720  # Retry for a full hour.
+  with_items: "{{ _create_instances.results }}"
+
+- name: Schedule deletion of the export in 24 hours
+  at:
+    command: rm /chroot/export/matrix*
+    count: 1
+    units: days
+    unique: yes
+
+- name: Set boolean value to exit playbook
+  set_fact:
+    end_playbook: true
+
+- name: End playbook if this task list is called.
+  meta: end_play
+  when: end_playbook is defined and end_playbook|bool
