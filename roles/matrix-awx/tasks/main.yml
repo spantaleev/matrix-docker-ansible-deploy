@@ -25,6 +25,15 @@
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - backup-server
+    
+# Perform a export of the server
+- include_tasks: 
+    file: "export_server.yml"
+    apply:
+      tags: export-server
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags:
+    - export-server
 
 # Create a user account if called
 - include_tasks: 
