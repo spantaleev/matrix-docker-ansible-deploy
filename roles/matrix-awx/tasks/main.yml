@@ -25,6 +25,15 @@
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - backup-server
+    
+# Perform a export of the server
+- include_tasks: 
+    file: "export_server.yml"
+    apply:
+      tags: export-server
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags:
+    - export-server
 
 # Create a user account if called
 - include_tasks: 
@@ -97,6 +106,15 @@
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - setup-client-element
+
+# Additional playbook to set the variable file during Mailer configuration
+- include_tasks: 
+    file: "set_variables_mailer.yml"
+    apply:
+      tags: setup-mailer
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags:
+    - setup-mailer
 
 # Additional playbook to set the variable file during Element configuration
 - include_tasks: 

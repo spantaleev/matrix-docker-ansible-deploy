@@ -4,7 +4,7 @@
 
 The playbook can install and configure [Heisenbridge](https://github.com/hifi/heisenbridge) - the bouncer-style [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) bridge for you.
 
-See the project's [README](https://github.com/hifi/heisenbridge/blob/master/README.md) to learn what it does and why it might be useful to you.
+See the project's [README](https://github.com/hifi/heisenbridge/blob/master/README.md) to learn what it does and why it might be useful to you. You can also take a look at [this demonstration video](https://www.youtube.com/watch?v=nQk1Bp4tk4I).
 
 ## Configuration
 
@@ -32,5 +32,7 @@ If you are not using a local user you must set it as otherwise you can't DM it a
 After the bridge is successfully running just DM `@heisenbridge:your-homeserver` to start setting it up.
 Help is available for all commands with the `-h` switch.
 If the bridge ignores you and a DM is not accepted then the owner setting may be wrong.
+
+You can also learn the basics by watching [this demonstration video](https://www.youtube.com/watch?v=nQk1Bp4tk4I).
 
 If you encounter issues or feel lost you can join the project room at [#heisenbridge:vi.fi](https://matrix.to/#/#heisenbridge:vi.fi) for help.

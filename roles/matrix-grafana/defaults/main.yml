@@ -3,7 +3,7 @@
 
 matrix_grafana_enabled: false
 
-matrix_grafana_version: 7.5.7
+matrix_grafana_version: 8.0.2
 matrix_grafana_docker_image: "{{ matrix_container_global_registry_prefix }}grafana/grafana:{{ matrix_grafana_version }}"
 matrix_grafana_docker_image_force_pull: "{{ matrix_grafana_docker_image.endswith(':latest') }}"
 
@@ -38,11 +38,11 @@ matrix_grafana_default_admin_password: admin
 matrix_grafana_content_security_policy: true
 
 # specify content security policy template to customized template
-# added 'unsafe-inline' (ignored by browsers supporting nonces/hashes) to be backward compatible with older browsers.
 # added https: and http: url schemes (ignored by browsers supporting 'strict-dynamic') to be backward compatible with older browsers.
 # [Content Security Policy Browser Test] (https://content-security-policy.com/browser-test/)
 # [Content Security Policy Reference](https://content-security-policy.com/script-src/)
-matrix_grafana_content_security_policy_customized: true
+matrix_grafana_content_security_policy_customized: false
+matrix_grafana_content_security_policy_template: "script-src 'self' 'unsafe-eval' 'unsafe-inline' http: https: 'strict-dynamic' $NONCE;object-src 'none';font-src 'self';style-src 'self' 'unsafe-inline' blob:;img-src * data:;base-uri 'self';connect-src 'self' grafana.com ws://$ROOT_PATH wss://$ROOT_PATH;manifest-src 'self';media-src 'none';form-action 'self';"
 
 # A list of extra arguments to pass to the container
 matrix_grafana_container_extra_arguments: []
