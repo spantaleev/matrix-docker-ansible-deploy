@@ -13,8 +13,6 @@ playbook configuration:
 
 ```yaml
 matrix_mx_puppet_discord_enabled: true
-matrix_mx_puppet_discord_client_id: ""
-matrix_mx_puppet_discord_client_secret: ""
 ```
 
 
