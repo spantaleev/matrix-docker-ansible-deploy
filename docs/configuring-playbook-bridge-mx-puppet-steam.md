@@ -11,8 +11,6 @@ playbook configuration:
 
 ```yaml
 matrix_mx_puppet_steam_enabled: true
-matrix_mx_puppet_steam_client_id: ""
-matrix_mx_puppet_steam_client_secret: ""
 ```
 
 
