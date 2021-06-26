@@ -31,12 +31,12 @@ If you are using Cloudflare DNS, make sure to disable the proxy and set all reco
 | Type  | Host                         | Priority | Weight | Port | Target                 |
 | ----- | ---------------------------- | -------- | ------ | ---- | ---------------------- |
 | SRV   | `_matrix-identity._tcp`      | 10       | 0      | 443  | `matrix.<your-domain>` |
-| CNAME | `dimension` (*)              | -        | -      | -    | `matrix.<your-domain>` |
-| CNAME | `jitsi` (*)                  | -        | -      | -    | `matrix.<your-domain>` |
-| CNAME | `stats` (*)                  | -        | -      | -    | `matrix.<your-domain>` |
-| CNAME | `goneb` (*)                  | -        | -      | -    | `matrix.<your-domain>` |
-| CNAME | `sygnal` (*)                 | -        | -      | -    | `matrix.<your-domain>` |
-| CNAME | `hydrogen` (*)               | -        | -      | -    | `matrix.<your-domain>` |
+| CNAME | `dimension`                  | -        | -      | -    | `matrix.<your-domain>` |
+| CNAME | `jitsi`                      | -        | -      | -    | `matrix.<your-domain>` |
+| CNAME | `stats`                      | -        | -      | -    | `matrix.<your-domain>` |
+| CNAME | `goneb`                      | -        | -      | -    | `matrix.<your-domain>` |
+| CNAME | `sygnal`                     | -        | -      | -    | `matrix.<your-domain>` |
+| CNAME | `hydrogen`                   | -        | -      | -    | `matrix.<your-domain>` |
 
 ## Subdomains setup
 
