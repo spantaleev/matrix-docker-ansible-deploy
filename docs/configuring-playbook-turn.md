@@ -40,3 +40,14 @@ matrix_jitsi_web_stun_servers:
 - stun:HOSTNAME_OR_IP:PORT
 ```
 You can put multiple host/port combinations if you like.
+
+## Disabling TLS support
+
+The Element Android and iOS clients are known not to support _Let's Encrypt_ certificates, leading to increased delays when making calls. ([Android issue](https://github.com/vector-im/element-android/issues/1533), [iOS issue](https://github.com/vector-im/element-ios/issues/2712))
+If you serve users with these clients you may want to disable `turns` URIs by adding the following snipplet to your configuration:
+
+```yaml
+matrix_synapse_turn_uris:
+- 'turn:{{ matrix_server_fqn_matrix }}?transport=udp'
+- 'turn:{{ matrix_server_fqn_matrix }}?transport=tcp'
+```
