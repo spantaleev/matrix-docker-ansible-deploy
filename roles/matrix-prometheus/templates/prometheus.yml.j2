@@ -30,7 +30,15 @@ scrape_configs:
   - job_name: 'synapse'
     metrics_path: '/_synapse/metrics'
     static_configs:
-    - targets: {{ matrix_prometheus_scraper_synapse_targets|to_json }}
+    - targets:
+    {% for target in matrix_prometheus_scraper_synapse_targets %}
+      - {{ target }}
+    {% endfor %}
+    {% for worker in matrix_synapse_workers_enabled_list|d([]) %}
+    {% if worker.metrics_port != 0 %}
+      - 'matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.metrics_port }}'
+    {% endif %}
+    {% endfor %}
   {% endif %}
 
   {% if matrix_prometheus_scraper_node_enabled %}
