@@ -1,13 +1,13 @@
 
-- name: Limit max upload size to 100MB part 1
+- name: Limit max upload size to 200MB part 1
   set_fact:
-    matrix_synapse_max_upload_size_mb: "100"
-  when: matrix_synapse_max_upload_size_mb_raw|int >= 100
+    matrix_synapse_max_upload_size_mb: "200"
+  when: matrix_synapse_max_upload_size_mb_raw|int >= 200
 
-- name: Limit max upload size to 100MB part 2
+- name: Limit max upload size to 200MB part 2
   set_fact:
     matrix_synapse_max_upload_size_mb: "{{ matrix_synapse_max_upload_size_mb_raw }}"
-  when: matrix_synapse_max_upload_size_mb_raw|int < 100
+  when: matrix_synapse_max_upload_size_mb_raw|int < 200
 
 - name: Record Synapse variables locally on AWX
   delegate_to: 127.0.0.1
