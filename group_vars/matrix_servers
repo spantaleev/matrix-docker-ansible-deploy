@@ -1201,6 +1201,9 @@ matrix_bot_maubot_shared_secret: true
 matrix_bot_maubot_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
 matrix_bot_maubot_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'maubot.db') | to_uuid }}"
 
+matrix_bot_maubot_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:'+matrix_bot_maubot_management_port|string }}"
+
+
 ######################################################################
 #
 # /matrix-bot-maubot
