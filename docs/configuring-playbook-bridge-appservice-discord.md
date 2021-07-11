@@ -40,7 +40,7 @@ There's the Discord bridge's guide for [setting privileges on bridge managed roo
 
 ```sh
 docker exec -it matrix-appservice-discord \
-/bin/sh -c 'cp /cfg/registration.yaml /tmp/discord-registration.yaml && cd /tmp && node /build/tools/adminme.js -c /cfg/config.yaml -m "!ROOM_ID:SERVER" -u "@USER:SERVER" -p 100'
+node /build/tools/adminme.js -c /cfg/config.yaml -r /cfg/registration.yaml -m '!ROOM_ID:SERVER' -u '@USER:SERVER' -p 100
 ```
 
 
