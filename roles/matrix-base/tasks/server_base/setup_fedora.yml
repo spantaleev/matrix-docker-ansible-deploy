@@ -1,20 +1,21 @@
 ---
 
-- name: Install host dependencies
-  pacman:
+- name: Ensure dnf packages are installed
+  yum:
     name:
-      - python-docker
       - "{{ matrix_ntpd_package }}"
-      # TODO This needs to be verified. Which version do we need?
-      - fuse3
-      - python-dnspython
+      - fuse
       - git
     state: latest
     update_cache: yes
 
 - name: Ensure Docker is installed
-  pacman:
+  yum:
     name:
-      - docker
+      - "{{ matrix_docker_package_name }}"
     state: latest
   when: matrix_docker_installation_enabled|bool
+
+- name: Ensure Docker python library is installed
+  pip:
+    name: docker

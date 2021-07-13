@@ -17,20 +17,15 @@
 
 - name: Ensure Mautrix instagram paths exist
   file:
-    path: "{{ item.path }}"
+    path: "{{ item }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_mautrix_instagram_base_path }}", when: true }
-    - { path: "{{ matrix_mautrix_instagram_config_path }}", when: true }
-    - { path: "{{ matrix_mautrix_instagram_data_path }}", when: true }
-    - {
-        path: "{{ matrix_mautrix_instagram_docker_src_files_path }}",
-        when: "{{ matrix_mautrix_instagram_container_image_self_build }}",
-      }
-  when: item.when|bool
+    - "{{ matrix_mautrix_instagram_base_path }}"
+    - "{{ matrix_mautrix_instagram_config_path }}"
+    - "{{ matrix_mautrix_instagram_data_path }}"
 
 - name: Ensure Mautrix instagram repository is present on self-build
   git:
@@ -50,6 +45,8 @@
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_instagram_docker_src_files_path }}"
       pull: yes
+      args:
+        TARGETARCH: "{{ matrix_architecture }}"
   when: "matrix_mautrix_instagram_enabled|bool and matrix_mautrix_instagram_container_image_self_build|bool"
 
 - name: Ensure mautrix-instagram config.yaml installed

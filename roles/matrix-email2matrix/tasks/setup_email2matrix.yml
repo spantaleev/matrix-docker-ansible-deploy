@@ -79,10 +79,10 @@
   file:
     path: "{{ matrix_email2matrix_base_path }}"
     state: absent
-  when: "not matrix_email2matrix_enabled|bool"
+  when: "not matrix_email2matrix_enabled|bool and matrix_email2matrix_service_stat.stat.exists"
 
 - name: Ensure Email2Matrix Docker image doesn't exist
   docker_image:
     name: "{{ matrix_email2matrix_docker_image }}"
     state: absent
-  when: "not matrix_email2matrix_enabled|bool"
+  when: "not matrix_email2matrix_enabled|bool and matrix_email2matrix_service_stat.stat.exists"

@@ -5,8 +5,9 @@
 # Thus, we ensure a larger bucket size value is used.
 server_names_hash_bucket_size 64;
 
-{% if matrix_nginx_proxy_http_level_resolver %}
-	resolver {{ matrix_nginx_proxy_http_level_resolver }};
+{% if matrix_nginx_proxy_enabled|default(False) %}
+	{# Use the embedded DNS resolver in Docker containers to discover the service #}
+	resolver {{ matrix_docker_dns_resolver_ip }} valid=5s;
 {% endif %}
 
 {% for configuration_block in matrix_nginx_proxy_proxy_http_additional_server_configuration_blocks %}

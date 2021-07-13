@@ -15,13 +15,13 @@ Wants={{ service }}
 Wants=matrix-synapse-worker-{{ matrix_synapse_worker_details.type }}-{{ matrix_synapse_worker_details.port }}.service
 {% endfor %}
 {% endif %}
-
 DefaultDependencies=no
+PartOf=matrix.target
 
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-synapse 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} stop matrix-synapse 2>/dev/null'
 ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-synapse 2>/dev/null'
 {% if matrix_s3_media_store_enabled %}
 # Allow for some time before starting, so that media store can mount.
@@ -65,7 +65,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-synapse \
 			{{ matrix_synapse_docker_image }} \
 			run -m synapse.app.homeserver -c /data/homeserver.yaml
 
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-synapse 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} stop matrix-synapse 2>/dev/null'
 ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-synapse 2>/dev/null'
 ExecReload={{ matrix_host_command_docker }} exec matrix-synapse /bin/sh -c 'kill -HUP 1'
 Restart=always
@@ -73,4 +73,5 @@ RestartSec=30
 SyslogIdentifier=matrix-synapse
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=matrix.target
+

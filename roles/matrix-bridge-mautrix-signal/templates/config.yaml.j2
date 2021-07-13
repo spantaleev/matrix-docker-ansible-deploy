@@ -178,6 +178,9 @@ bridge:
     #     mxid - Specific user
     permissions:
       '{{ matrix_mautrix_signal_homeserver_domain }}': user
+      {% for user, role in matrix_mautrix_signal_admins.items() %}
+      '{{ user }}': {{ role }}
+      {% endfor %}
 
 
 # Python logging configuration.

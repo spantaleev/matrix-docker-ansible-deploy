@@ -10,16 +10,14 @@ After={{ service }}
 {% for service in matrix_mautrix_signal_daemon_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
+PartOf=matrix.target
 
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
 
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-mautrix-signal-daemon 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} stop matrix-mautrix-signal-daemon 2>/dev/null'
 ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-mautrix-signal-daemon 2>/dev/null'
-
-# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
-ExecStartPre={{ matrix_host_command_sleep }} 5
 
 # We can't use `--read-only` for this bridge.
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-signal-daemon \
@@ -30,7 +28,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-signal
 			-v {{ matrix_mautrix_signal_daemon_path }}:/signald:z \
 			{{ matrix_mautrix_signal_daemon_docker_image }}
 
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-mautrix-signal-daemon 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} stop matrix-mautrix-signal-daemon 2>/dev/null'
 ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-mautrix-signal-daemon 2>/dev/null'
 
 Restart=always
@@ -38,4 +36,5 @@ RestartSec=30
 SyslogIdentifier=matrix-mautrix-signal-daemon
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=matrix.target
+

@@ -47,7 +47,7 @@
         {% if matrix_nginx_proxy_enabled|default(False) %}
         {# Use the embedded DNS resolver in Docker containers to discover the service #}
         location ~ ^{{ matrix_appservice_webhooks_public_endpoint }}/(.*)$ {
-          resolver 127.0.0.11 valid=5s;
+          resolver {{ matrix_docker_dns_resolver_ip }} valid=5s;
           set $backend "matrix-appservice-webhooks:{{ matrix_appservice_webhooks_matrix_port }}";
           proxy_pass http://$backend/$1;
         }

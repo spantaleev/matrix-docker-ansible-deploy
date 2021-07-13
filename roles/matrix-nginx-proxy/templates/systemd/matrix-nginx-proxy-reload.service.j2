@@ -1,0 +1,13 @@
+[Unit]
+Description=Reloads matrix-nginx-proxy so that new IP addresses can kick in
+After=matrix.target
+
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStartPre={{ matrix_host_command_sleep }} 30
+ExecStart={{ matrix_host_command_systemctl }} reload matrix-nginx-proxy.service
+
+[Install]
+WantedBy=matrix.target

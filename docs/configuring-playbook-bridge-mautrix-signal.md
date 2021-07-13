@@ -10,6 +10,7 @@ Use the following playbook configuration:
 
 ```yaml
 matrix_mautrix_signal_enabled: true
+matrix_mautrix_signal_admins: {"@YOUR_USER:YOUR_DOMAIN": "admin"}
 ```
 
 ## Set up Double Puppeting
