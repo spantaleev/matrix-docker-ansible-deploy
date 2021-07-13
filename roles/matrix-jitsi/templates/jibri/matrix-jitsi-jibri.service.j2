@@ -1,0 +1,32 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix jitsi-jibri server
+{% for service in matrix_jitsi_jibri_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+
+[Service]
+Type=simple
+ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-jitsi-jibri
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-jitsi-jibri
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-jitsi-jibri \
+			--log-driver=none \
+			--network={{ matrix_docker_network }} \
+			--env-file={{ matrix_jitsi_jibri_base_path }}/env \
+            --device=/dev/snd:/dev/snd \
+			--mount type=bind,src={{ matrix_jitsi_jibri_config_path }},dst=/config \
+			{% for arg in matrix_jitsi_jibri_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_jitsi_jibri_docker_image }}
+
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-jitsi-jibri
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-jitsi-jibri
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-jitsi-jibri
+
+[Install]
+WantedBy=multi-user.target
