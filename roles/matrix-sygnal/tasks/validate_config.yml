@@ -1,0 +1,13 @@
+- name: Fail if no Sygnal apps defined
+  fail:
+    msg: >-
+      Enabling Sygnal requires that you specify at least one app in `matrix_sygnal_apps`
+  when: "matrix_sygnal_enabled and matrix_sygnal_apps|length == 0"
+
+- name: Fail if running on a non-supported architecture
+  fail:
+    msg: >-
+      Sygnal can only be used on the amd64 architecture for now.
+      Only amd64 container images are pushed for the `docker.io/matrixdotorg/sygnal` container image.
+      Either use a different image (by redefining `matrix_sygnal_docker_image`) or consider contributing self-building support to this role.
+  when: "matrix_sygnal_enabled and matrix_architecture != 'amd64' and matrix_sygnal_docker_image.startswith('docker.io/matrixdotorg/sygnal')"

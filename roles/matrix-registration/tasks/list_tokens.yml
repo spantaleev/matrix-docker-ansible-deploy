@@ -1,0 +1,29 @@
+- name: Call matrix-registration list all tokens API
+  uri:
+    url: "{{ matrix_registration_api_token_endpoint }}"
+    follow_redirects: none
+    validate_certs: "{{ matrix_registration_api_validate_certs }}"
+    headers:
+      Content-Type: application/json
+      Authorization: "SharedSecret {{ matrix_registration_admin_secret }}"
+    method: GET
+    body_format: json
+  check_mode: no
+  register: matrix_registration_api_result
+
+- set_fact:
+    matrix_registration_api_result_message: >-
+      matrix-registration result:
+
+      {{ matrix_registration_api_result.json | to_nice_json }}
+  check_mode: no
+
+- name: Inject result message into matrix_playbook_runtime_results
+  set_fact:
+    matrix_playbook_runtime_results: |
+      {{
+        matrix_playbook_runtime_results|default([])
+        +
+        [matrix_registration_api_result_message]
+      }}
+  check_mode: no

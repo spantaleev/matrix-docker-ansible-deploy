@@ -1,0 +1,36 @@
+#jinja2: lstrip_blocks: "True"
+
+version: 1
+
+formatters:
+    precise:
+        format: '%(asctime)s - %(name)s - %(lineno)d - %(levelname)s - %(request)s - %(message)s'
+
+filters:
+    context:
+        (): synapse.util.logcontext.LoggingContextFilter
+        request: ""
+
+handlers:
+    console:
+        class: logging.StreamHandler
+        formatter: precise
+        filters: [context]
+
+loggers:
+    synapse:
+        level: {{ matrix_synapse_log_level }}
+
+    synapse.storage.SQL:
+        # beware: increasing this to DEBUG will make synapse log sensitive
+        # information such as access tokens.
+        level: {{ matrix_synapse_storage_sql_log_level }}
+
+{% for logger in matrix_synapse_additional_loggers %}
+    {{ logger.name }}:
+        level: {{ logger.level }}
+{% endfor %}
+
+root:
+    level: {{ matrix_synapse_root_log_level }}
+    handlers: [console]

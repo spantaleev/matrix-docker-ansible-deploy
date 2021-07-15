@@ -1,0 +1,35 @@
+---
+
+- name: Check existence of matrix-go-neb service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-bot-go-neb.service"
+  register: matrix_bot_go_neb_service_stat
+
+- name: Ensure matrix-go-neb is stopped
+  service:
+    name: matrix-bot-go-neb
+    state: stopped
+    daemon_reload: yes
+  register: stopping_result
+  when: "matrix_bot_go_neb_service_stat.stat.exists|bool"
+
+- name: Ensure matrix-bot-go-neb.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-bot-go-neb.service"
+    state: absent
+  when: "matrix_bot_go_neb_service_stat.stat.exists|bool"
+
+- name: Ensure systemd reloaded after matrix-bot-go-neb.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_bot_go_neb_service_stat.stat.exists|bool"
+
+- name: Ensure Matrix go-neb paths don't exist
+  file:
+    path: "{{ matrix_bot_go_neb_base_path }}"
+    state: absent
+
+- name: Ensure go-neb Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_bot_go_neb_docker_image }}"
+    state: absent

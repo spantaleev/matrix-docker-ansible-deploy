@@ -1,0 +1,73 @@
+---
+
+- set_fact:
+    matrix_sygnal_requires_restart: false
+
+- block:
+    - name: Check if an SQLite database already exists
+      stat:
+        path: "{{ matrix_sygnal_sqlite_database_path_local }}"
+      register: matrix_sygnal_sqlite_database_path_local_stat_result
+
+    - block:
+        - set_fact:
+            matrix_postgres_db_migration_request:
+              src: "{{ matrix_sygnal_sqlite_database_path_local }}"
+              dst: "{{ matrix_sygnal_database_connection_string }}"
+              caller: "{{ role_path|basename }}"
+              engine_variable_name: 'matrix_sygnal_database_engine'
+              engine_old: 'sqlite'
+              systemd_services_to_stop: ['matrix-sygnal.service']
+              pgloader_options: ['--with "quote identifiers"']
+
+        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+
+        - set_fact:
+            matrix_sygnal_requires_restart: true
+      when: "matrix_sygnal_sqlite_database_path_local_stat_result.stat.exists|bool"
+  when: "matrix_sygnal_database_engine == 'postgres'"
+
+- name: Ensure Sygnal image is pulled
+  docker_image:
+    name: "{{ matrix_sygnal_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_sygnal_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_sygnal_docker_image_force_pull }}"
+
+- name: Ensure Sygnal paths exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_sygnal_base_path }}"
+    - "{{ matrix_sygnal_config_path }}"
+    - "{{ matrix_sygnal_data_path }}"
+
+- name: Ensure Sygnal config installed
+  copy:
+    content: "{{ matrix_sygnal_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_sygnal_config_path }}/sygnal.yaml"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-sygnal.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-sygnal.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-sygnal.service"
+    mode: 0644
+  register: matrix_sygnal_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-sygnal.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_sygnal_systemd_service_result.changed|bool"
+
+- name: Ensure matrix-sygnal.service restarted, if necessary
+  service:
+    name: "matrix-sygnal.service"
+    state: restarted
+  when: "matrix_sygnal_requires_restart|bool"

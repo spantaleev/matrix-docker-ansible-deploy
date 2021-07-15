@@ -1,0 +1,31 @@
+---
+
+- name: Fail if using unsupported SSL certificate retrieval method
+  fail:
+    msg: "The `matrix_ssl_retrieval_method` variable contains an unsupported value"
+  when: "matrix_ssl_retrieval_method not in ['lets-encrypt', 'self-signed', 'manually-managed', 'none']"
+
+
+# Common tasks, required by almost any method below.
+
+- name: Ensure SSL certificate paths exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0770
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    recurse: true
+  with_items:
+    - "{{ matrix_ssl_log_dir_path }}"
+    - "{{ matrix_ssl_config_dir_path }}"
+  when: "matrix_ssl_retrieval_method != 'none'"
+
+
+# Method specific tasks follow
+
+- import_tasks: tasks/ssl/setup_ssl_lets_encrypt.yml
+
+- import_tasks: tasks/ssl/setup_ssl_self_signed.yml
+
+- import_tasks: tasks/ssl/setup_ssl_manually_managed.yml

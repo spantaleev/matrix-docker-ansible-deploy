@@ -1,0 +1,23 @@
+---
+
+- name: Ensure matrix-postgres is started
+  service:
+    name: matrix-postgres
+    state: started
+    daemon_reload: yes
+  register: matrix_postgres_service_start_result
+
+- name: Wait a bit, so that Postgres can start
+  wait_for:
+    timeout: "{{ matrix_postgres_additional_databases_postgres_start_wait_timeout_seconds }}"
+  delegate_to: 127.0.0.1
+  become: false
+  when: "matrix_postgres_service_start_result.changed|bool"
+
+- name: Create additional Postgres user and database
+  include_tasks: "{{ role_path }}/tasks/util/create_additional_database.yml"
+  with_items: "{{ matrix_postgres_additional_databases }}"
+  loop_control:
+    loop_var: additional_db
+  # Suppress logging to avoid dumping the credentials to the shell
+  no_log: true

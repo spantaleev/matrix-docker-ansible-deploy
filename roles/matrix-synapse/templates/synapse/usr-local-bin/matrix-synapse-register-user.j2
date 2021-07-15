@@ -1,0 +1,17 @@
+#jinja2: lstrip_blocks: "True"
+#!/bin/bash
+
+if [ $# -ne 3 ]; then
+	echo "Usage: "$0" <username> <password> <admin access: 0 or 1>"
+	exit 1
+fi
+
+user=$1
+password=$2
+admin=$3
+
+if [ "$admin" -eq "1" ]; then
+	docker exec matrix-synapse register_new_matrix_user -u "$user" -p "$password" -c /data/homeserver.yaml --admin http://localhost:8008
+else
+	docker exec matrix-synapse register_new_matrix_user -u "$user" -p "$password" -c /data/homeserver.yaml --no-admin http://localhost:8008
+fi

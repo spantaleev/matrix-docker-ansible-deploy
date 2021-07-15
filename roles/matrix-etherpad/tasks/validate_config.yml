@@ -1,0 +1,11 @@
+- name: Fail if Etherpad is enabled without the Dimension integrations manager
+  fail:
+    msg: >-
+      To integrate Etherpad notes with Matrix rooms you need to set "matrix_dimension_enabled" to true
+  when: "not matrix_dimension_enabled|bool"
+
+- name: Fail if no database is configured for Etherpad
+  fail:
+    msg: >-
+      Etherpad requires a dedicated Postgres database. Please enable the built in one, or configure an external DB by redefining "matrix_etherpad_database_hostname"
+  when: matrix_etherpad_database_hostname == "matrix-postgres" and not matrix_postgres_enabled

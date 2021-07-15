@@ -1,0 +1,44 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Etherpad
+{% for service in matrix_etherpad_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_etherpad_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
+ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-etherpad
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-etherpad
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-etherpad \
+			--log-driver=none \
+			--user={{ matrix_etherpad_user_uid }}:{{ matrix_etherpad_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_etherpad_container_http_host_bind_port %}
+			-p {{ matrix_etherpad_container_http_host_bind_port }}:9001 \
+			{% endif %}
+			--mount type=bind,src={{ matrix_etherpad_base_path }},dst=/data \
+			{% for arg in matrix_etherpad_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_etherpad_docker_image }} \
+			node --experimental-worker src/node/server.js \
+				--settings /data/settings.json --credentials /data/credentials.json \
+				--sessionkey /data/sessionkey.json --apikey /data/apijey.json
+				
+
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-etherpad
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-etherpad
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-etherpad
+
+[Install]
+WantedBy=multi-user.target

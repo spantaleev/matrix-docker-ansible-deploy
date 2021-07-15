@@ -1,0 +1,612 @@
+# Synapse is a Matrix homeserver
+# See: https://github.com/matrix-org/synapse
+
+matrix_synapse_enabled: true
+
+matrix_synapse_container_image_self_build: false
+matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/synapse.git"
+
+matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}"
+matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_container_global_registry_prefix }}"
+# The if statement below may look silly at times (leading to the same version being returned),
+# but ARM-compatible container images are only released 1-7 hours after a release,
+# so we may often be on different versions for different architectures when new Synapse releases come out.
+#
+# amd64 gets released first.
+# arm32 relies on self-building, so the same version can be built immediately.
+# arm64 users need to wait for a prebuilt image to become available.
+matrix_synapse_version: v1.38.0
+matrix_synapse_version_arm64: v1.38.0
+matrix_synapse_docker_image_tag: "{{ matrix_synapse_version if matrix_architecture in ['arm32', 'amd64'] else matrix_synapse_version_arm64 }}"
+matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
+
+matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
+matrix_synapse_docker_src_files_path: "{{ matrix_synapse_base_path }}/docker-src"
+matrix_synapse_config_dir_path: "{{ matrix_synapse_base_path }}/config"
+matrix_synapse_storage_path: "{{ matrix_synapse_base_path }}/storage"
+matrix_synapse_media_store_path: "{{ matrix_synapse_storage_path }}/media-store"
+matrix_synapse_ext_path: "{{ matrix_synapse_base_path }}/ext"
+
+# Controls whether the matrix-synapse container exposes the Client/Server API port (tcp/8008 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8008"), or empty string to not expose.
+matrix_synapse_container_client_api_host_bind_port: ''
+
+# Controls whether the matrix-synapse container exposes the plain (unencrypted) Server/Server (Federation) API port (tcp/8048 in the container).
+#
+# Takes effect only if federation is enabled (matrix_synapse_federation_enabled).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8048"), or empty string to not expose.
+matrix_synapse_container_federation_api_plain_host_bind_port: ''
+
+# Controls whether the matrix-synapse container exposes the tls (encrypted) Server/Server (Federation) API port (tcp/8448 in the container).
+#
+# Takes effect only if federation is enabled (matrix_synapse_federation_enabled)
+# and TLS support is enabled (matrix_synapse_tls_federation_listener_enabled).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "8448"), or empty string to not expose.
+matrix_synapse_container_federation_api_tls_host_bind_port: ''
+
+# Controls whether the matrix-synapse container exposes the metrics port (tcp/9100 in the container).
+#
+# Takes effect only if metrics are enabled (matrix_synapse_metrics_enabled).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9100"), or empty string to not expose.
+matrix_synapse_container_metrics_api_host_bind_port: ''
+
+# Controls whether the matrix-synapse container exposes the manhole port (tcp/9000 in the container).
+#
+# Takes effect only if the manhole is enabled (matrix_synapse_manhole_enabled).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9100"), or empty string to not expose.
+matrix_synapse_container_manhole_api_host_bind_port: ''
+
+# A list of extra arguments to pass to the container
+matrix_synapse_container_extra_arguments: []
+
+# List of systemd services that matrix-synapse.service depends on
+matrix_synapse_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-synapse.service wants
+matrix_synapse_systemd_wanted_services_list: []
+
+matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.8/site-packages"
+
+# Specifies which template files to use when configuring Synapse.
+# If you'd like to have your own different configuration, feel free to copy and paste
+# the original files into your inventory (e.g. in `inventory/host_vars/<host>/`)
+# and then change the specific host's `vars.yaml` file like this:
+# matrix_synapse_template_synapse_homeserver: "{{ playbook_dir }}/inventory/host_vars/<host>/homeserver.yaml.j2"
+matrix_synapse_template_synapse_homeserver: "{{ role_path }}/templates/synapse/homeserver.yaml.j2"
+matrix_synapse_template_synapse_log: "{{ role_path }}/templates/synapse/synapse.log.config.j2"
+
+matrix_synapse_macaroon_secret_key: ""
+matrix_synapse_registration_shared_secret: "{{ matrix_synapse_macaroon_secret_key }}"
+matrix_synapse_allow_guest_access: false
+matrix_synapse_form_secret: "{{ matrix_synapse_macaroon_secret_key }}"
+
+matrix_synapse_max_upload_size_mb: 50
+
+# The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
+matrix_synapse_tmp_directory_size_mb: "{{ matrix_synapse_max_upload_size_mb * 50 }}"
+
+# Log levels
+# Possible options are defined here https://docs.python.org/3/library/logging.html#logging-levels
+# warning: setting log level to DEBUG will make synapse log sensitive information such
+# as access tokens.
+#
+# Increasing verbosity may lead to an excessive amount of log messages being generated,
+# some of which may get dropped by systemd-journald on certain distributions (like CentOS 7).
+# You can work around it by adding `RateLimitInterval=0` and `RateLimitBurst=0` under `[Storage]` in
+# `/etc/systemd/journald.conf` and restarting the logging service (`systemctl restart systemd-journald`).
+matrix_synapse_log_level: "WARNING"
+matrix_synapse_storage_sql_log_level: "WARNING"
+matrix_synapse_root_log_level: "WARNING"
+
+# Rate limits
+matrix_synapse_rc_message:
+  per_second: 0.2
+  burst_count: 10
+
+matrix_synapse_rc_registration:
+  per_second: 0.17
+  burst_count: 3
+
+matrix_synapse_rc_login:
+  address:
+    per_second: 0.17
+    burst_count: 3
+  account:
+    per_second: 0.17
+    burst_count: 3
+  failed_attempts:
+    per_second: 0.17
+    burst_count: 3
+
+matrix_synapse_rc_admin_redaction:
+  per_second: 1
+  burst_count: 50
+
+matrix_synapse_rc_joins:
+  local:
+    per_second: 0.1
+    burst_count: 3
+  remote:
+    per_second: 0.01
+    burst_count: 3
+
+matrix_synapse_rc_federation:
+  window_size: 1000
+  sleep_limit: 10
+  sleep_delay: 500
+  reject_limit: 50
+  concurrent: 3
+
+matrix_synapse_federation_rr_transactions_per_room_per_second: 50
+
+# Controls whether the TLS federation listener is enabled (tcp/8448).
+# Only makes sense if federation is enabled (`matrix_synapse_federation_enabled`).
+# Note that federation may potentially be enabled as non-TLS on tcp/8048 as well.
+# If you're serving Synapse behind an HTTPS-capable reverse-proxy,
+# you can disable the TLS listener (`matrix_synapse_tls_federation_listener_enabled: false`).
+matrix_synapse_tls_federation_listener_enabled: true
+matrix_synapse_tls_certificate_path: "/data/{{ matrix_server_fqn_matrix }}.tls.crt"
+matrix_synapse_tls_private_key_path: "/data/{{ matrix_server_fqn_matrix }}.tls.key"
+
+# Resource names used by the unsecure HTTP listener. Here only the Client API
+# is defined, see the homeserver config for a full list of valid resource
+# names.
+matrix_synapse_http_listener_resource_names: ["client"]
+
+# Resources served on Synapse's federation port.
+# When disabling federation, we may wish to serve the `openid` resource here,
+# so that services like Dimension and ma1sd can work.
+matrix_synapse_federation_listener_resource_names: "{{ ['federation'] if matrix_synapse_federation_enabled else (['openid'] if matrix_synapse_federation_port_openid_resource_required else []) }}"
+
+# Enable this to allow Synapse to report utilization statistics about your server to matrix.org
+# (things like number of users, number of messages sent, uptime, load, etc.)
+matrix_synapse_report_stats: false
+
+# Controls whether the Matrix server will track presence status (online, offline, unavailable) for users.
+# If users participate in large rooms with many other servers,
+# disabling this will decrease server load significantly.
+matrix_synapse_presence_enabled: true
+
+# Controls whether accessing the server's public rooms directory can be done without authentication.
+# For private servers, you most likely wish to require authentication,
+# unless you know what list of rooms you're publishing to the world and explicitly want to do it.
+matrix_synapse_allow_public_rooms_without_auth: false
+
+# Controls whether remote servers can fetch this server's public rooms directory via federation.
+# For private servers, you most likely wish to forbid it.
+matrix_synapse_allow_public_rooms_over_federation: false
+
+# Whether to require authentication to retrieve profile data (avatars,
+# display names) of other users through the client API. Defaults to
+# 'false'. Note that profile data is also available via the federation
+# API, so this setting is of limited value if federation is enabled on
+# the server.
+matrix_synapse_require_auth_for_profile_requests: false
+
+# Set to true to require a user to share a room with another user in order
+# to retrieve their profile information. Only checked on Client-Server
+# requests. Profile requests from other servers should be checked by the
+# requesting server. Defaults to 'false'.
+matrix_synapse_limit_profile_requests_to_users_who_share_rooms: false
+
+# Set to false to prevent a user's profile data from being retrieved and
+# displayed in a room until they have joined it. By default, a user's
+# profile data is included in an invite event, regardless of the values
+# of the above two settings, and whether or not the users share a server.
+# Defaults to 'true'.
+matrix_synapse_include_profile_data_on_invite: true
+
+# Controls whether people with access to the homeserver can register by themselves.
+matrix_synapse_enable_registration: false
+
+# reCAPTCHA API for validating registration attempts
+matrix_synapse_enable_registration_captcha: false
+matrix_synapse_recaptcha_public_key: ''
+matrix_synapse_recaptcha_private_key: ''
+
+# Allows non-server-admin users to create groups on this server
+matrix_synapse_enable_group_creation: false
+
+# A list of 3PID types which users must supply when registering (possible values: email, msisdn).
+matrix_synapse_registrations_require_3pid: []
+
+# A list of patterns 3pids must match in order to permit registration, e.g.:
+#  - medium: email
+#    pattern: '.*@example\.com'
+#  - medium: msisdn
+#    pattern: '\+44'
+matrix_synapse_allowed_local_3pids: []
+
+# The server to use for email threepid validation. When empty, Synapse does it by itself.
+# Otherwise, this should be pointed to an identity server.
+matrix_synapse_account_threepid_delegates_email: ''
+
+# The server to use for phone number threepid validation. When empty, validation cannot happen, as Synapse doesn't support it.
+# To make it work, this should be pointed to an identity server.
+matrix_synapse_account_threepid_delegates_msisdn: ''
+
+# Users who register on this homeserver will automatically be joined to these rooms.
+# Rooms are to be specified using addresses (e.g. `#address:example.com`)
+matrix_synapse_auto_join_rooms: []
+
+# Controls whether auto-join rooms (`matrix_synapse_auto_join_rooms`) are to be created
+# automatically if they don't already exist.
+matrix_synapse_autocreate_auto_join_rooms: true
+
+# Controls password-peppering for Synapse. Not to be changed after initial setup.
+matrix_synapse_password_config_pepper: ""
+
+# Controls if Synapse allows people to authenticate against its local database.
+# It may be useful to disable this if you've configured additional password providers
+# and only wish authentication to happen through them.
+matrix_synapse_password_config_localdb_enabled: true
+
+# Controls the number of events that Synapse caches in memory.
+matrix_synapse_event_cache_size: "100K"
+
+# Controls cache sizes for Synapse.
+# Raise this to increase cache sizes or lower it to potentially lower memory use.
+# To learn more, see:
+# - https://github.com/matrix-org/synapse#help-synapse-eats-all-my-ram
+# - https://github.com/matrix-org/synapse/issues/3939
+matrix_synapse_caches_global_factor: 0.5
+
+# Controls whether Synapse will federate at all.
+# Disable this to completely isolate your server from the rest of the Matrix network.
+#
+# Disabling this still keeps the federation port exposed, because it may be used for other services (`openid`).
+#
+# Also see:
+# - `matrix_synapse_tls_federation_listener_enabled` if you wish to keep federation enabled,
+# but want to stop the TLS listener (port 8448).
+# - `matrix_synapse_federation_port_enabled` to avoid exposing the federation ports
+matrix_synapse_federation_enabled: true
+
+# Controls whether the federation ports are used at all.
+# One may wish to disable federation (`matrix_synapse_federation_enabled: true`),
+# but still run other resources (like `openid`) on the federation port
+# by enabling them in `matrix_synapse_federation_listener_resource_names`.
+matrix_synapse_federation_port_enabled: "{{ matrix_synapse_federation_enabled or matrix_synapse_federation_port_openid_resource_required }}"
+
+# Controls whether an `openid` listener is to be enabled. Useful when disabling federation,
+# but needing the `openid` APIs for Dimension or an identity server like ma1sd.
+matrix_synapse_federation_port_openid_resource_required: false
+
+# A list of domain names that are allowed to federate with the given Synapse server.
+# An empty list value (`[]`) will also effectively stop federation, but if that's the desired
+# result, it's better to accomplish it by changing `matrix_synapse_federation_enabled`.
+matrix_synapse_federation_domain_whitelist: ~
+
+# A list of additional "volumes" to mount in the container.
+# This list gets populated dynamically based on Synapse extensions that have been enabled.
+# Contains definition objects like this: `{"src": "/outside", "dst": "/inside", "options": "rw|ro|slave|.."}
+#
+# Note: internally, this uses the `-v` flag for mounting the specified volumes.
+# It's better (safer) to use the `--mount` flag for mounting volumes.
+# To use `--mount`, specify it in `matrix_synapse_container_extra_arguments`.
+# Example: `matrix_synapse_container_extra_arguments: ['--mount type=bind,src=/outside,dst=/inside,ro']
+matrix_synapse_container_additional_volumes: []
+
+# A list of additional loggers to register in synapse.log.config.
+# This list gets populated dynamically based on Synapse extensions that have been enabled.
+# Contains definition objects like this: `{"name": "..", "level": "DEBUG"}
+matrix_synapse_additional_loggers: []
+
+# A list of appservice config files (in-container filesystem paths).
+# This list gets populated dynamically based on Synapse extensions that have been enabled.
+# You may wish to use this together with `matrix_synapse_container_additional_volumes` or `matrix_synapse_container_extra_arguments`.
+matrix_synapse_app_service_config_files: []
+
+# This is set dynamically during execution depending on whether
+# any password providers have been enabled or not.
+matrix_synapse_password_providers_enabled: false
+
+# Whether clients can request to include message content in push notifications
+# sent through third party servers. Setting this to false requires mobile clients
+# to load message content directly from the homeserver.
+matrix_synapse_push_include_content: true
+
+# If url previews should be generated. This will cause a request from Synapse to
+# URLs shared by users.
+matrix_synapse_url_preview_enabled: true
+
+# Enable exposure of metrics to Prometheus
+# See https://github.com/matrix-org/synapse/blob/master/docs/metrics-howto.md
+matrix_synapse_metrics_enabled: false
+matrix_synapse_metrics_port: 9100
+
+# Enable the Synapse manhole
+# See https://github.com/matrix-org/synapse/blob/master/docs/manhole.md
+matrix_synapse_manhole_enabled: false
+
+# Enable support for Synapse workers
+matrix_synapse_workers_enabled: false
+
+# Specifies worker configuration that should be used when workers are enabled.
+#
+# The posible values (as seen in `matrix_synapse_workers_presets`) are:
+# - "little-federation-helper" - a very minimal worker configuration to improve federation performance
+# - "one-of-each" - one worker of each supported type
+#
+# You can override `matrix_synapse_workers_presets` to define your own presets, which is ill-advised, because it's fragile.
+# To use a more custom configuration, start with one of these presets as a base and configure `matrix_synapse_workers_*_count` variables manually, to suit your liking.
+matrix_synapse_workers_preset: one-of-each
+
+matrix_synapse_workers_presets:
+  little-federation-helper:
+    generic_workers_count: 0
+    pusher_workers_count: 0
+    appservice_workers_count: 0
+    federation_sender_workers_count: 1
+    media_repository_workers_count: 0
+    user_dir_workers_count: 0
+    frontend_proxy_workers_count: 0
+  one-of-each:
+    generic_workers_count: 1
+    pusher_workers_count: 1
+    appservice_workers_count: 1
+    federation_sender_workers_count: 1
+    media_repository_workers_count: 1
+    # Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
+    user_dir_workers_count: 0
+    frontend_proxy_workers_count: 1
+
+# Controls whether the matrix-synapse container exposes the various worker ports
+# (see `port` and `metrics_port` in `matrix_synapse_workers_enabled_list`) outside of the container.
+#
+# Takes an "<ip>" value (e.g. "127.0.0.1", "0.0.0.0", etc), or empty string to not expose.
+# It takes "*" to signify "bind on all interfaces" ("0.0.0.0" is IPv4-only).
+matrix_synapse_workers_container_host_bind_address: ''
+
+matrix_synapse_workers_generic_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['generic_workers_count'] }}"
+matrix_synapse_workers_generic_workers_port_range_start: 18111
+matrix_synapse_workers_generic_workers_metrics_range_start: 19111
+
+# matrix_synapse_workers_pusher_workers_count can only be 0 or 1 for now.
+# More instances are not supported due to a playbook limitation having to do with keeping `pusher_instances` in `homeserver.yaml` updated.
+# See https://github.com/matrix-org/synapse/commit/ddfdf945064925eba761ae3748e38f3a1c73c328
+matrix_synapse_workers_pusher_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['pusher_workers_count'] }}"
+matrix_synapse_workers_pusher_workers_metrics_range_start: 19200
+
+# matrix_synapse_workers_appservice_workers_count can only be 0 or 1. More instances are not supported.
+matrix_synapse_workers_appservice_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['appservice_workers_count'] }}"
+matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
+
+# matrix_synapse_workers_federation_sender_workers_count can only be 0 or 1 for now.
+# More instances are not supported due to a playbook limitation having to do with keeping `federation_sender_instances` in `homeserver.yaml` updated.
+# See https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappfederation_sender
+matrix_synapse_workers_federation_sender_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['federation_sender_workers_count'] }}"
+matrix_synapse_workers_federation_sender_workers_metrics_range_start: 19400
+
+matrix_synapse_workers_media_repository_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['media_repository_workers_count'] }}"
+matrix_synapse_workers_media_repository_workers_port_range_start: 18551
+matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
+
+# Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
+matrix_synapse_workers_user_dir_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['user_dir_workers_count'] }}"
+matrix_synapse_workers_user_dir_workers_port_range_start: 18661
+matrix_synapse_workers_user_dir_workers_metrics_range_start: 19661
+
+matrix_synapse_workers_frontend_proxy_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['frontend_proxy_workers_count'] }}"
+matrix_synapse_workers_frontend_proxy_workers_port_range_start: 18771
+matrix_synapse_workers_frontend_proxy_workers_metrics_range_start: 19771
+
+# Default list of workers to spawn.
+#
+# Unless you populate this manually, this list is dynamically generated
+# based on other variables above:
+# - `matrix_synapse_workers_*_workers_count`
+# - `matrix_synapse_workers_*_workers_port_range_start`
+# - `matrix_synapse_workers_*_workers_port_metrics_range_start`
+#
+# We advise that you use those variables and let this list be populated dynamically.
+# Doing that is simpler and also protects you from shooting yourself in the foot,
+# as certain workers can only be spawned just once.
+#
+# Each worker instance in the list defines the following fields:
+# - `type` - the type of worker (`generic_worker`, etc.)
+# - `instanceId` - a string that identifies the worker. The combination of (`type` + `instanceId`) represents the name of the worker and must be unique.
+# - `port` - an HTTP port where the worker listens for requests (can be `0` for workers that don't do HTTP request processing)
+# - `metrics_port` - an HTTP port where the worker exports Prometheus metrics
+#
+# Example of what this needs to look like, if you're defining it manually:
+# matrix_synapse_workers_enabled_list:
+#   - { type: generic_worker, instanceId: '18111', port: 18111, metrics_port: 19111 }
+#   - { type: generic_worker, instanceId: '18112', port: 18112, metrics_port: 19112 }
+#   - { type: generic_worker, instanceId: '18113', port: 18113, metrics_port: 19113 }
+#   - { type: generic_worker, instanceId: '18114', port: 18114, metrics_port: 19114 }
+#   - { type: generic_worker, instanceId: '18115', port: 18115, metrics_port: 19115 }
+#   - { type: generic_worker, instanceId: '18116', port: 18116, metrics_port: 19116 }
+#   - { type: pusher, instanceId: '0', port: 0, metrics_port: 19200 }
+#   - { type: appservice, instanceId: '0', port: 0, metrics_port: 19300 }
+#   - { type: federation_sender, instanceId: '0', port: 0, metrics_port: 19400 }
+#   - { type: media_repository, instanceId: '18551', port: 18551, metrics_port: 19551 }
+matrix_synapse_workers_enabled_list: []
+
+# Redis information
+matrix_synapse_redis_enabled: false
+matrix_synapse_redis_host: ""
+matrix_synapse_redis_port: 6379
+matrix_synapse_redis_password: ""
+
+# Controls whether Synapse starts a replication listener necessary for workers.
+#
+# If Redis is available, we prefer to use that, instead of talking over Synapse's custom replication protocol.
+#
+# matrix_synapse_replication_listener_enabled: "{{ matrix_synapse_workers_enabled and not matrix_redis_enabled }}"
+# We force-enable this listener for now until we debug why communication via Redis fails.
+matrix_synapse_replication_listener_enabled: true
+
+# Port used for communication between main synapse process and workers.
+# Only gets used if `matrix_synapse_replication_listener_enabled: true`
+matrix_synapse_replication_http_port: 9093
+
+# Send ERROR logs to sentry.io for easier tracking
+# To set this up: go to sentry.io, create a python project, and set
+# matrix_synapse_sentry_dsn to the URL it gives you.
+# See https://github.com/matrix-org/synapse/issues/4632 for important privacy concerns
+matrix_synapse_sentry_dsn: ""
+
+# Postgres database information
+matrix_synapse_database_host: "matrix-postgres"
+matrix_synapse_database_port: 5432
+matrix_synapse_database_user: "synapse"
+matrix_synapse_database_password: ""
+matrix_synapse_database_database: "synapse"
+
+matrix_synapse_turn_uris: []
+matrix_synapse_turn_shared_secret: ""
+matrix_synapse_turn_allow_guests: False
+
+matrix_synapse_email_enabled: false
+matrix_synapse_email_smtp_host: ""
+matrix_synapse_email_smtp_port: 587
+matrix_synapse_email_smtp_require_transport_security: false
+matrix_synapse_email_notif_from: "Matrix <matrix@{{ matrix_domain }}>"
+matrix_synapse_email_client_base_url: "https://{{ matrix_server_fqn_element }}"
+
+
+# Enable this to activate the REST auth password provider module.
+# See: https://github.com/ma1uta/matrix-synapse-rest-password-provider
+matrix_synapse_ext_password_provider_rest_auth_enabled: false
+matrix_synapse_ext_password_provider_rest_auth_download_url: "https://raw.githubusercontent.com/ma1uta/matrix-synapse-rest-password-provider/ed377fb70513c2e51b42055eb364195af1ccaf33/rest_auth_provider.py"
+matrix_synapse_ext_password_provider_rest_auth_endpoint: ""
+matrix_synapse_ext_password_provider_rest_auth_registration_enforce_lowercase: false
+matrix_synapse_ext_password_provider_rest_auth_registration_profile_name_autofill: true
+matrix_synapse_ext_password_provider_rest_auth_login_profile_name_autofill: false
+
+# Enable this to activate the Shared Secret Auth password provider module.
+# See: https://github.com/devture/matrix-synapse-shared-secret-auth
+matrix_synapse_ext_password_provider_shared_secret_auth_enabled: false
+matrix_synapse_ext_password_provider_shared_secret_auth_download_url: "https://raw.githubusercontent.com/devture/matrix-synapse-shared-secret-auth/1.0.2/shared_secret_authenticator.py"
+matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret: ""
+
+# Enable this to activate LDAP password provider
+matrix_synapse_ext_password_provider_ldap_enabled: false
+matrix_synapse_ext_password_provider_ldap_uri: "ldap://ldap.mydomain.tld:389"
+matrix_synapse_ext_password_provider_ldap_start_tls: true
+matrix_synapse_ext_password_provider_ldap_base: ""
+matrix_synapse_ext_password_provider_ldap_attributes_uid: "uid"
+matrix_synapse_ext_password_provider_ldap_attributes_mail: "mail"
+matrix_synapse_ext_password_provider_ldap_attributes_name: "cn"
+matrix_synapse_ext_password_provider_ldap_bind_dn: ""
+matrix_synapse_ext_password_provider_ldap_bind_password: ""
+matrix_synapse_ext_password_provider_ldap_filter: ""
+matrix_synapse_ext_password_provider_ldap_active_directory: false
+matrix_synapse_ext_password_provider_ldap_default_domain: ""
+
+# Enable this to activate the Synapse Antispam spam-checker module.
+# See: https://github.com/t2bot/synapse-simple-antispam
+matrix_synapse_ext_spam_checker_synapse_simple_antispam_enabled: false
+matrix_synapse_ext_spam_checker_synapse_simple_antispam_git_repository_url: "https://github.com/t2bot/synapse-simple-antispam"
+matrix_synapse_ext_spam_checker_synapse_simple_antispam_git_version: "923ca5c85b08f157181721abbae50dd89c31e4b5"
+matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeservers: []
+
+# Enable this to activate the Mjolnir Antispam spam-checker module.
+# See: https://github.com/matrix-org/mjolnir#synapse-module
+matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled: false
+matrix_synapse_ext_spam_checker_mjolnir_antispam_git_repository_url: "https://github.com/matrix-org/mjolnir"
+matrix_synapse_ext_spam_checker_mjolnir_antispam_git_version: "70f353fbbad0af469b1001080dea194d512b2815"
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites: true
+# Flag messages sent by servers/users in the ban lists as spam. Currently
+# this means that spammy messages will appear as empty to users. Default
+# false.
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_messages: false
+# Remove users from the user directory search by filtering matrix IDs and
+# display names by the entries in the user ban list. Default false.
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_usernames: false
+# The room IDs of the ban lists to honour. Unlike other parts of Mjolnir,
+# this list cannot be room aliases or permalinks. This server is expected
+# to already be joined to the room - Mjolnir will not automatically join
+# these rooms.
+# ["!roomid:example.org"]
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
+
+
+matrix_s3_media_store_enabled: false
+matrix_s3_media_store_custom_endpoint_enabled: false
+matrix_s3_goofys_docker_image: "ewoutp/goofys:latest"
+matrix_s3_goofys_docker_image_force_pull: "{{ matrix_s3_goofys_docker_image.endswith(':latest') }}"
+matrix_s3_media_store_custom_endpoint: "your-custom-endpoint"
+matrix_s3_media_store_bucket_name: "your-bucket-name"
+matrix_s3_media_store_aws_access_key: "your-aws-access-key"
+matrix_s3_media_store_aws_secret_key: "your-aws-secret-key"
+matrix_s3_media_store_region: "eu-central-1"
+matrix_s3_media_store_path: "{{ matrix_synapse_media_store_path }}"
+
+# Controls whether the self-check feature should validate SSL certificates.
+matrix_synapse_self_check_validate_certificates: true
+
+# Controls whether searching the public room list is enabled.
+matrix_synapse_enable_room_list_search: true
+
+# Controls who's allowed to create aliases on this server.
+matrix_synapse_alias_creation_rules:
+  - user_id: "*"
+    alias: "*"
+    room_id: "*"
+    action: allow
+
+# Controls who can publish and which rooms can be published in the public room list.
+matrix_synapse_room_list_publication_rules:
+  - user_id: "*"
+    alias: "*"
+    room_id: "*"
+    action: allow
+
+matrix_synapse_default_room_version: "6"
+
+# Controls the Synapse `spam_checker` setting.
+#
+# If a spam-checker extension is enabled, this variable's value is set automatically by the playbook during runtime.
+# If not, you can also control its value manually.
+matrix_synapse_spam_checker: []
+
+matrix_synapse_trusted_key_servers:
+  - server_name: "matrix.org"
+
+matrix_synapse_redaction_retention_period: 7d
+
+matrix_synapse_user_ips_max_age: 28d
+
+
+matrix_synapse_rust_synapse_compress_state_docker_image: "devture/rust-synapse-compress-state:v0.1.0"
+matrix_synapse_rust_synapse_compress_state_docker_image_force_pull: "{{ matrix_synapse_rust_synapse_compress_state_docker_image.endswith(':latest') }}"
+
+matrix_synapse_rust_synapse_compress_state_base_path: "{{ matrix_base_data_path }}/rust-synapse-compress-state"
+
+
+# Default Synapse configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_synapse_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_synapse_configuration_yaml: "{{ lookup('template', 'templates/synapse/homeserver.yaml.j2') }}"
+
+matrix_synapse_configuration_extension_yaml: |
+  # Your custom YAML configuration for Synapse goes here.
+  # This configuration extends the default starting configuration (`matrix_synapse_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_synapse_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  # server_notices:
+  #   system_mxid_localpart: notices
+  #   system_mxid_display_name: "Server Notices"
+  #   system_mxid_avatar_url: "mxc://server.com/oumMVlgDnLYFaPVkExemNVVZ"
+  #   room_name: "Server Notices"
+
+matrix_synapse_configuration_extension: "{{ matrix_synapse_configuration_extension_yaml|from_yaml if matrix_synapse_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final Synapse configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_synapse_configuration_yaml`.
+matrix_synapse_configuration: "{{ matrix_synapse_configuration_yaml|from_yaml|combine(matrix_synapse_configuration_extension, recursive=True) }}"
