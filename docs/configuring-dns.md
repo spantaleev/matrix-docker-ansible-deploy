@@ -68,4 +68,4 @@ This is an optional feature. See [ma1sd's documentation](https://github.com/ma1u
 
 Note: This `_matrix-identity._tcp` SRV record for the identity server is different from the `_matrix._tcp` that can be used for Synapse delegation. See [howto-server-delegation.md](howto-server-delegation.md) for more information about delegation.
 
-When you're done with the DNS configuration and ready to proceed, continue with [Configuring this Ansible playbook](configuring-playbook.md).
+When you're done with the DNS configuration and ready to proceed, continue with [Getting the playbook](getting-the-playbook.md).
