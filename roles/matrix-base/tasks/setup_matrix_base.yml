@@ -23,6 +23,10 @@
   docker_network:
     name: "{{ matrix_docker_network }}"
     driver: bridge
+    enable_ipv6: " {{ matrix_docker_ipv6_enabled|bool }}"
+    ipam_config:
+      - subnet: "fd00::/80"
+  register: matrix_docker_network_info
 
 - name: Ensure matrix-remove-all script created
   template:
