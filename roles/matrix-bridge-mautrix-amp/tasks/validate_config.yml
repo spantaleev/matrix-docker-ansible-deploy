@@ -1,0 +1,13 @@
+---
+
+- name: Fail if required settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_mautrix_amp_bridge_user"
+    - "matrix_mautrix_amp_homeserver_domain"
+    - "matrix_mautrix_amp_homeserver_address"
+    - "matrix_mautrix_amp_homeserver_token"
+    - "matrix_mautrix_amp_appservice_token"
