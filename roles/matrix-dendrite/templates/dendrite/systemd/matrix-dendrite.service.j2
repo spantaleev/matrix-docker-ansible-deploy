@@ -1,0 +1,58 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Dendrite server
+{% for service in matrix_dendrite_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_dendrite_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
+ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-dendrite
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-dendrite
+{% if matrix_s3_media_store_enabled %}
+# Allow for some time before starting, so that media store can mount.
+# Mounting can happen later too, but if we start writing,
+# we'd write files to the local filesystem and fusermount will complain.
+ExecStartPre={{ matrix_host_command_sleep }} 3
+{% endif %}
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-dendrite \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_dendrite_tmp_directory_size_mb }}m \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_dendrite_container_client_api_host_bind_port %}
+			-p {{ matrix_dendrite_container_client_api_host_bind_port }}:8008 \
+			{% endif %}
+			{% if matrix_dendrite_container_federation_api_tls_host_bind_port %}
+			-p {{ matrix_dendrite_container_federation_api_tls_host_bind_port }}:8448 \
+			{% endif %}
+			--mount type=bind,src={{ matrix_dendrite_config_dir_path }},dst=/data,ro \
+			--mount type=bind,src={{ matrix_dendrite_storage_path }},dst=/matrix-media-store-parent,bind-propagation=slave \
+			--mount type=bind,src={{ matrix_dendrite_log_path }},dst=/var/log/dendrite,bind-propagation=slave \
+			{% for volume in matrix_dendrite_container_additional_volumes %}
+			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
+			{% endfor %}
+			{% for arg in matrix_dendrite_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_dendrite_docker_image }} \
+			--config /data/dendrite.yaml
+
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-dendrite
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-dendrite
+ExecReload={{ matrix_host_command_docker }} exec matrix-dendrite kill -HUP 1
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-dendrite
+
+[Install]
+WantedBy=multi-user.target

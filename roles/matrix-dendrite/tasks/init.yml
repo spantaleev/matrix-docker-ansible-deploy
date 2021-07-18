@@ -1,0 +1,12 @@
+- set_fact:
+    matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-dendrite.service'] }}"
+  when: matrix_dendrite_enabled|bool
+
+- set_fact:
+    matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-goofys.service'] }}"
+  when: matrix_s3_media_store_enabled|bool
+
+- name: Fail when using also using Synapse
+  fail:
+    msg: "To use Dendrite as your matrix server, you should disable Synapse."
+  when: "matrix_dendrite_enabled and matrix_synapse_enabled"
