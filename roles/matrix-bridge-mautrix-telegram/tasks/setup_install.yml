@@ -56,6 +56,26 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_telegram_docker_image_force_pull }}"
   when: "not matrix_mautrix_telegram_container_self_build|bool"
 
+- name: Ensure lottieconverter is present when self-building
+  git:
+    repo: "{{ matrix_telegram_lottieconverter_docker_repo }}"
+    dest: "{{ matrix_telegram_lottieconverter_docker_src_files_path }}"
+    force: "yes"
+  register: matrix_telegram_lottieconverter_git_pull_results
+  when: "matrix_telegram_lottieconverter_container_self_build|bool and matrix_mautrix_telegram_container_self_build|bool"
+
+- name: Ensure lottieconverter Docker image is built
+  docker_image:
+    name: "{{ matrix_telegram_lottieconverter_docker_image }}"
+    source: build
+    force_source: "{{ matrix_telegram_lottieconverter_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_telegram_lottieconverter_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_telegram_lottieconverter_docker_src_files_path }}"
+      pull: yes
+  when: "matrix_telegram_lottieconverter_container_self_build|bool and matrix_telegram_lottieconverter_git_pull_results.changed and matrix_mautrix_telegram_container_self_build|bool"
+
 - name: Ensure matrix-mautrix-telegram repository is present when self-building
   git:
     repo: "{{ matrix_mautrix_telegram_docker_repo }}"
@@ -73,7 +93,9 @@
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_telegram_docker_src_files_path }}"
-      pull: yes
+      pull: "{{ not matrix_telegram_lottieconverter_container_self_build_mask_arch|bool }}"
+      args:
+        TARGETARCH: ""
   when: "matrix_mautrix_telegram_container_self_build|bool and matrix_mautrix_telegram_git_pull_results.changed"
 
 - name: Check if an old database file already exists
