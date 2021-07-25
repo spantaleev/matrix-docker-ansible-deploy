@@ -129,7 +129,7 @@ Until this gets integrated into the playbook, we need to register new users / me
 Please SSH into your matrix host machine and execute the following command targeting the `matrix-jitsi-prosody` container:
 
 ```bash
-docker exec matrix-jitsi-prosody prosodyctl --config /config/prosody.cfg.lua register <USERNAME> matrix-jitsi-web <PASSWORD>
+docker exec matrix-jitsi-prosody prosodyctl --config /config/prosody.cfg.lua register <USERNAME> meet.jitsi <PASSWORD>
 ```
 
 Run this command for each user you would like to create, replacing `<USERNAME>` and `<PASSWORD>` accordingly. After you've finished, please exit the host.
