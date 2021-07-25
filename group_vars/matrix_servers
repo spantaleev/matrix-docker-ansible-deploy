@@ -811,6 +811,7 @@ matrix_bot_matrix_reminder_bot_systemd_required_services_list: |
 # Postgres is the default, except if not using `matrix_postgres` (internal postgres)
 matrix_bot_matrix_reminder_bot_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
 matrix_bot_matrix_reminder_bot_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'reminder.bot.db') | to_uuid }}"
+matrix_bot_matrix_reminder_bot_container_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 ######################################################################
 #
