@@ -154,17 +154,6 @@
   with_items: "{{ ext_federation_whitelist_raw.splitlines() }}"
   when: ext_federation_whitelist_raw|length > 0
 
-- name: Record Synapse Custom variables locally on AWX
-  delegate_to: 127.0.0.1
-  lineinfile:
-    path: '{{ awx_cached_matrix_vars }}'
-    regexp: "^#? *{{ item.key | regex_escape() }}:"
-    line: "{{ item.key }}: {{ item.value }}"
-    insertafter: '# Custom Settings Start'
-  with_dict:
-    'ext_federation_whitelist_raw': '{{ ext_federation_whitelist_raw.splitlines() | to_json }}'
-    'ext_url_preview_accept_language_default': '{{ ext_url_preview_accept_language_default.splitlines() | to_json }}'
-
 - name: Set ext_recaptcha_public_key to a 'public-key' if undefined
   set_fact: ext_recaptcha_public_key="public-key"
   when: (ext_recaptcha_public_key is not defined) or (ext_recaptcha_public_key|length == 0)
@@ -184,6 +173,20 @@
     '  enable_registration_captcha': '{{ ext_enable_registration_captcha }}'
     '  recaptcha_public_key': '{{ ext_recaptcha_public_key }}'
     '  recaptcha_private_key': '{{ ext_recaptcha_private_key }}'
+
+- name: Record Synapse Custom variables locally on AWX
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertafter: '# Custom Settings Start'
+  with_dict:
+    'ext_federation_whitelist_raw': '{{ ext_federation_whitelist_raw.splitlines() | to_json }}'
+    'ext_url_preview_accept_language_default': '{{ ext_url_preview_accept_language_default.splitlines() | to_json }}'
+    'ext_enable_registration_captcha': '{{ ext_enable_registration_captcha }}'
+    'ext_recaptcha_public_key': '"{{ ext_recaptcha_public_key }}"'
+    'ext_recaptcha_private_key': '"{{ ext_recaptcha_private_key }}"'
 
 - name: Save new 'Configure Synapse' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1
