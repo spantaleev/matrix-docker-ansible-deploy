@@ -1117,17 +1117,7 @@ matrix_mailer_container_image_self_build: "{{ matrix_architecture != 'amd64'}}"
 # If you wish to use the public identity servers (matrix.org, vector.im) instead of your own you may wish to disable this.
 matrix_ma1sd_enabled: true
 
-# There's no prebuilt ma1sd image for the `arm32` architecture.
-# We're relying on self-building there.
-matrix_ma1sd_architecture: "{{
-	{
-		'amd64': 'amd64',
-		'arm32': 'arm32',
-		'arm64': 'arm64',
-	}[matrix_architecture]
-}}"
-
-matrix_ma1sd_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+matrix_ma1sd_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach ma1sd over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
