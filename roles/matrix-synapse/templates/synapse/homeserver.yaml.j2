@@ -1118,8 +1118,11 @@ enable_registration: {{ matrix_synapse_enable_registration|to_json }}
 # retrospectively to users who have already logged in.
 #
 # By default, this is infinite.
+# Example: 24h
 #
-#session_lifetime: 24h
+{% if matrix_synapse_session_lifetime|length > 0 %}
+session_lifetime: {{ matrix_synapse_session_lifetime }}
+{% endif %}
 
 # The user must provide all of the below types of 3PID when registering.
 #
