@@ -14,7 +14,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mautrix_signal_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_signal_docker_image_force_pull }}"
-  when: "matrix_mautrix_signal_enabled|bool and not matrix_mautrix_signal_container_self_build|bool"
+  when: "not matrix_mautrix_signal_container_self_build|bool"
 
 
 - name: Ensure Mautrix Signal repository is present on self-build
@@ -23,7 +23,7 @@
     dest: "{{ matrix_mautrix_signal_docker_src_files_path }}"
     force: "yes"
   register: matrix_mautrix_signal_git_pull_results
-  when: "matrix_mautrix_signal_enabled|bool and matrix_mautrix_signal_container_self_build|bool"
+  when: "matrix_mautrix_signal_container_self_build|bool"
 
 - name: Ensure Mautrix Signal image is built
   docker_image:
@@ -35,8 +35,8 @@
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_signal_docker_src_files_path }}"
       pull: yes
-  when: "matrix_mautrix_signal_enabled|bool and matrix_mautrix_signal_container_self_build|bool"
-  
+  when: "matrix_mautrix_signal_container_self_build|bool"
+
 
 - name: Ensure Mautrix Signal Daemon image is pulled
   docker_image:
@@ -53,7 +53,7 @@
     dest: "{{ matrix_mautrix_signal_daemon_docker_src_files_path }}"
     force: "yes"
   register: matrix_mautrix_signal_daemon_git_pull_results
-  when: "matrix_mautrix_signal_enabled|bool and matrix_mautrix_signal_daemon_container_self_build|bool"
+  when: "matrix_mautrix_signal_daemon_container_self_build|bool"
 
 - name: Ensure Mautrix Signal Daemon image is built
   docker_image:
@@ -65,7 +65,7 @@
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_signal_daemon_docker_src_files_path }}"
       pull: yes
-  when: "matrix_mautrix_signal_enabled|bool and matrix_mautrix_signal_daemon_container_self_build|bool"
+  when: "matrix_mautrix_signal_daemon_container_self_build|bool"
 
 - name: Ensure Mautrix Signal paths exist
   file:
