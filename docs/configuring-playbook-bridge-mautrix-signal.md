@@ -12,6 +12,27 @@ Use the following playbook configuration:
 matrix_mautrix_signal_enabled: true
 ```
 
+There are some additional things you may wish to configure about the bridge before you continue.
+
+The relay bot functionality is off by default. If you would like to enable the relay bot, add the following to your `vars.yml` file:
+```yaml
+matrix_mautrix_signal_relaybot_enabled: true
+```
+
+Additionally the permissions for the bridge grant user rights to all base domain users in case the relay bot is disabled, or relay rights in case the relay bot is enabled.
+
+If you would like to have a more specific setting of the permissions you can set the permissions as follows (example). For more details see also [mautrix-bridge documentation](https://docs.mau.fi/bridges/python/signal/relay-mode.html)
+```yaml
+matrix_mautrix_signal_configuration_extension_yaml: |
+  bridge:
+    permissions:
+      '@YOUR_USERNAME:YOUR_DOMAIN': admin
+      '*': user
+      YOUR_DOMAIN: relay
+```
+
+You may wish to look at `roles/matrix-bridge-mautrix-signal/templates/config.yaml.j2` to find more information on the permissions settings and other options you would like to configure.
+
 ## Set up Double Puppeting
 
 If you'd like to use [Double Puppeting](https://github.com/tulir/mautrix-signal/wiki/Authentication#double-puppeting) (hint: you most likely do), you have 2 ways of going about it.
