@@ -1,0 +1,51 @@
+
+- name: Record Jitsi variables locally on AWX
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertafter: '# Jitsi Settings Start'
+  with_dict:
+    'matrix_jitsi_enabled': '{{ matrix_jitsi_enabled }}'
+    'matrix_jitsi_web_config_defaultLanguage': '{{ matrix_jitsi_web_config_defaultLanguage }}'
+
+- name: Save new 'Configure Jitsi' survey.json to the AWX tower, template
+  delegate_to: 127.0.0.1
+  template:
+    src: 'roles/matrix-awx/surveys/configure_jitsi.json.j2'
+    dest: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_jitsi.json'
+
+- name: Copy new 'Configure Jitsi' survey.json to target machine
+  copy:
+    src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_jitsi.json'
+    dest:  '/matrix/awx/configure_jitsi.json'
+    mode: '0660'
+
+- name: Collect AWX admin token the hard way!
+  delegate_to: 127.0.0.1
+  shell: |
+      curl -sku {{ tower_username }}:{{ tower_password }} -H "Content-Type: application/json" -X POST -d '{"description":"Tower CLI", "application":null, "scope":"write"}' https://{{ tower_host }}/api/v2/users/1/personal_tokens/ | jq '.token' | sed -r 's/\"//g'
+  register: tower_token
+  no_log: True
+
+- name: Recreate 'Configure Jitsi' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_job_template:
+    name: "{{ matrix_domain }} - 1 - Configure Jitsi"
+    description: "Configure Jitsi conferencing settings."
+    extra_vars: "{{ lookup('file', '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/extra_vars.json') }}"
+    job_type: run
+    job_tags: "start,setup-jitsi"
+    inventory: "{{ member_id }}"
+    project: "{{ member_id }} - Matrix Docker Ansible Deploy"
+    playbook: setup.yml
+    credential: "{{ member_id }} - AWX SSH Key"
+    survey_enabled: true
+    survey_spec: "{{ lookup('file', '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_jitsi.json') }}"
+    become_enabled: yes
+    state: present
+    verbosity: 1
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes

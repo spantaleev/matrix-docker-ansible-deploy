@@ -1,0 +1,7 @@
+---
+
+- name: Fail if Synapse metrics or Prometheus Node Exporter not enabled
+  fail:
+    msg: >
+      You need to enable `matrix_prometheus_scraper_synapse_enabled` and/or `matrix_prometheus_scraper_node_enabled` for Prometheus grab metrics.
+  when: "not matrix_prometheus_scraper_synapse_enabled and not matrix_prometheus_scraper_node_enabled"

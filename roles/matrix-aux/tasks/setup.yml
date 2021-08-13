@@ -1,0 +1,19 @@
+---
+
+- name: Ensure AUX directories are created
+  file:
+    dest: "{{ item.dest }}"
+    state: directory
+    owner: "{{ item.owner|default(matrix_user_username) }}"
+    group: "{{ item.group|default(matrix_user_groupname) }}"
+    mode: "{{ item.mode|default(matrix_aux_directory_default_mode) }}"
+  with_items: "{{ matrix_aux_directory_definitions }}"
+
+- name: Ensure AUX files are created
+  copy:
+    dest: "{{ item.dest }}"
+    content: "{{ item.content }}"
+    owner: "{{ item.owner|default(matrix_user_username) }}"
+    group: "{{ item.group|default(matrix_user_groupname) }}"
+    mode: "{{ item.mode|default(matrix_aux_file_default_mode) }}"
+  with_items: "{{ matrix_aux_file_definitions }}"

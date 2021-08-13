@@ -1,0 +1,34 @@
+---
+
+- name: Ensure Docker repository is enabled
+  template:
+    src: "{{ role_path }}/files/yum.repos.d/{{ item }}"
+    dest: "/etc/yum.repos.d/{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  with_items:
+    - docker-ce.repo
+  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
+
+- name: Ensure Docker's RPM key is trusted
+  rpm_key:
+    state: present
+    key: https://download.docker.com/linux/centos/gpg
+  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
+
+- name: Ensure yum packages are installed
+  yum:
+    name:
+      - "{{ matrix_ntpd_package }}"
+      - fuse
+    state: latest
+    update_cache: yes
+
+- name: Ensure Docker is installed
+  yum:
+    name:
+      - "{{ matrix_docker_package_name }}"
+      - docker-python
+    state: latest
+  when: matrix_docker_installation_enabled|bool

@@ -1,0 +1,35 @@
+---
+
+- name: Check existence of matrix-etherpad service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-etherpad.service"
+  register: matrix_etherpad_service_stat
+
+- name: Ensure matrix-etherpad is stopped
+  service:
+    name: matrix-etherpad
+    state: stopped
+    daemon_reload: yes
+  register: stopping_result
+  when: "matrix_etherpad_service_stat.stat.exists|bool"
+
+- name: Ensure matrix-etherpad.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-etherpad.service"
+    state: absent
+  when: "matrix_etherpad_service_stat.stat.exists|bool"
+
+- name: Ensure systemd reloaded after matrix-etherpad.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_etherpad_service_stat.stat.exists|bool"
+
+- name: Ensure Etherpad base directory doesn't exist
+  file:
+    path: "{{ matrix_etherpad_base_path }}"
+    state: absent
+
+- name: Ensure Etherpad Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_etherpad_docker_image }}"
+    state: absent

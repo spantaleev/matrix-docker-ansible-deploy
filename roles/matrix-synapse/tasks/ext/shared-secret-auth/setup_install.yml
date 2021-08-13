@@ -1,0 +1,28 @@
+---
+
+- name: Fail if Shared Secret Auth secret not set
+  fail:
+    msg: "Shared Secret Auth is enabled, but no secret has been set in matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret"
+  when: "matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret == ''"
+
+- name: Download matrix-synapse-shared-secret-auth
+  get_url:
+    url: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_download_url }}"
+    dest: "{{ matrix_synapse_ext_path }}/shared_secret_authenticator.py"
+    force: true
+    mode: 0440
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- set_fact:
+    matrix_synapse_password_providers_enabled: true
+
+    matrix_synapse_container_extra_arguments: >
+      {{ matrix_synapse_container_extra_arguments|default([]) }}
+      +
+      ["--mount type=bind,src={{ matrix_synapse_ext_path }}/shared_secret_authenticator.py,dst={{ matrix_synapse_in_container_python_packages_path }}/shared_secret_authenticator.py,ro"]
+
+    matrix_synapse_additional_loggers: >
+      {{ matrix_synapse_additional_loggers }}
+      +
+      {{ [{'name': 'shared_secret_authenticator', 'level': 'INFO'}] }}

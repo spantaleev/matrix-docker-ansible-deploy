@@ -1,0 +1,16 @@
+- name: Fail if required Dimension settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) for using Dimension.
+  with_items:
+    - "matrix_dimension_access_token"
+  when: "matrix_dimension_enabled and vars[item] == ''"
+
+- name: (Deprecation) Catch and report renamed Dimension variables
+  fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_dimension_container_expose_port', 'new': '<superseded by matrix_dimension_container_http_host_bind_port>'}

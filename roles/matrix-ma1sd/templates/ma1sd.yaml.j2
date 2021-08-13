@@ -1,0 +1,104 @@
+#jinja2: lstrip_blocks: True
+matrix:
+  domain: {{ matrix_domain }}
+  v1: {{ matrix_ma1sd_v1_enabled|to_json }}
+  v2: {{ matrix_ma1sd_v2_enabled|to_json }}
+
+server:
+  name: {{ matrix_server_fqn_matrix }}
+
+key:
+  path: /var/ma1sd/sign.key
+
+storage:
+  {% if matrix_ma1sd_database_engine == 'sqlite' %}
+    backend: sqlite
+    provider:
+      sqlite:
+        database: {{ matrix_ma1sd_sqlite_database_path_in_container|to_json }}
+  {% elif matrix_ma1sd_database_engine == 'postgres' %}
+    backend: postgresql
+    provider:
+      postgresql:
+        database: //{{ matrix_ma1sd_database_hostname }}:{{ matrix_ma1sd_database_port }}/{{ matrix_ma1sd_database_name }}
+        username: {{ matrix_ma1sd_database_username|to_json }}
+        password: {{ matrix_ma1sd_database_password|to_json }}
+  {% endif %}
+
+{% if matrix_ma1sd_dns_overwrite_enabled %}
+dns:
+  overwrite:
+    homeserver:
+      client:
+        - name: {{ matrix_ma1sd_dns_overwrite_homeserver_client_name }}
+          value: {{ matrix_ma1sd_dns_overwrite_homeserver_client_value }}
+{% endif %}
+
+{% if matrix_ma1sd_matrixorg_forwarding_enabled %}
+forward:
+  servers: ['matrix-org']
+{% endif %}
+
+threepid:
+  medium:
+    email:
+      identity:
+        from: {{ matrix_ma1sd_threepid_medium_email_identity_from }}
+      connectors:
+        smtp:
+          host: {{ matrix_ma1sd_threepid_medium_email_connectors_smtp_host }}
+          port: {{ matrix_ma1sd_threepid_medium_email_connectors_smtp_port }}
+          tls: {{ matrix_ma1sd_threepid_medium_email_connectors_smtp_tls }}
+          login: {{ matrix_ma1sd_threepid_medium_email_connectors_smtp_login }}
+          password: {{ matrix_ma1sd_threepid_medium_email_connectors_smtp_password }}
+{% if matrix_ma1sd_threepid_medium_email_custom_templates_enabled %}
+      generators:
+        template:
+          {% if matrix_ma1sd_threepid_medium_email_custom_invite_template %}
+          invite: '/etc/ma1sd/invite-template.eml'
+          {% endif %}
+          {% if matrix_ma1sd_threepid_medium_email_custom_session_validation_template or matrix_ma1sd_threepid_medium_email_custom_session_unbind_notification_template %}
+          session:
+            {% if matrix_ma1sd_threepid_medium_email_custom_session_validation_template %}
+            validation: '/etc/ma1sd/validate-template.eml'
+            {% endif %}
+            {% if matrix_ma1sd_threepid_medium_email_custom_session_unbind_notification_template %}
+            unbind:
+              notification: '/etc/ma1sd/unbind-notification.eml'
+            {% endif %}
+          {% endif %}
+          {% if matrix_ma1sd_threepid_medium_email_custom_matrixid_template %}
+          generic:
+            matrixId: '/etc/ma1sd/mxid-template.eml'
+          {% endif %}
+{% endif %}
+
+{% if matrix_ma1sd_view_session_custom_templates_enabled %}
+view:
+  session:
+    onTokenSubmit:
+      {% if matrix_ma1sd_view_session_custom_onTokenSubmit_success_template %}
+      success: '/etc/ma1sd/tokenSubmitSuccess.html'
+      {% endif %}
+      {% if matrix_ma1sd_view_session_custom_onTokenSubmit_failure_template %}
+      failure: '/etc/ma1sd/tokenSubmitFailure.html'
+      {% endif %}
+{% endif %}
+
+{% if matrix_ma1sd_hashing_enabled %}
+hashing:
+  enabled: true # enable or disable the hash lookup MSC2140 (default is false)
+  pepperLength: 20 # length of the pepper value (default is 20)
+  rotationPolicy: per_requests # or `per_seconds` how often the hashes will be updating
+  hashStorageType: sql # or `in_memory` where the hashes will be stored
+  algorithms:
+    - none   # the same as v1 bulk lookup
+    - sha256 # hash the 3PID and pepper.
+  delay: 2m # how often hashes will be updated if rotation policy = per_seconds (default is 10s)
+  requests: 10
+{% endif %}
+
+synapseSql:
+  enabled: {{ matrix_ma1sd_synapsesql_enabled|to_json }}
+  type: {{ matrix_ma1sd_synapsesql_type|to_json }}
+  connection: {{ matrix_ma1sd_synapsesql_connection|to_json }}

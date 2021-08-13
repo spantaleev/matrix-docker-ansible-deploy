@@ -1,0 +1,231 @@
+# Go-NEB is a Matrix bot written in Go. It is the successor to Matrix-NEB, the original Matrix bot written in Python.
+# See: https://github.com/matrix-org/go-neb
+
+matrix_bot_go_neb_enabled: true
+matrix_bot_go_neb_version: latest
+matrix_bot_go_neb_docker_image: "matrixdotorg/go-neb:{{ matrix_bot_go_neb_version }}"
+matrix_bot_go_neb_docker_image_force_pull: "{{ matrix_bot_go_neb_docker_image.endswith(':latest') }}"
+
+matrix_bot_go_neb_base_path: "{{ matrix_base_data_path }}/go-neb"
+matrix_bot_go_neb_config_path: "{{ matrix_bot_go_neb_base_path }}/config"
+matrix_bot_go_neb_config_path_in_container: "/config/config.yaml"
+matrix_bot_go_neb_data_path: "{{ matrix_bot_go_neb_base_path }}/data"
+matrix_bot_go_neb_data_store_path: "{{ matrix_bot_go_neb_data_path }}/store"
+
+# Controls whether the matrix-bot-go-neb container exposes its HTTP port (tcp/4050 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:4050"), or empty string to not expose.
+matrix_bot_go_neb_container_http_host_bind_port: ''
+
+# A list of extra arguments to pass to the container
+matrix_bot_go_neb_container_extra_arguments: []
+
+# List of systemd services that matrix-bot-go-neb.service depends on
+matrix_bot_go_neb_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-bot-go-neb.service wants
+matrix_bot_go_neb_systemd_wanted_services_list: []
+
+# Database-related configuration fields.
+#
+# MUST be "sqlite3". No other type is supported.
+matrix_bot_go_neb_database_engine: 'sqlite3'
+
+matrix_bot_go_neb_sqlite_database_path_local: "{{ matrix_bot_go_neb_data_path }}/bot.db"
+matrix_bot_go_neb_sqlite_database_path_in_container: "/data/bot.db"
+
+matrix_bot_go_neb_storage_database: "{{
+	{
+		'sqlite3': (matrix_bot_go_neb_sqlite_database_path_in_container + '?_busy_timeout=5000'),
+	}[matrix_bot_go_neb_database_engine]
+}}"
+
+# The bot's username(s). These users need to be created manually beforehand.
+# The access tokens that the bot uses to authenticate.
+# Generate one as described in
+# https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-dimension.md#access-token
+# via curl. With the element method, you might run into decryption problems (see https://github.com/matrix-org/go-neb#quick-start)
+matrix_bot_go_neb_clients: []
+#  - UserID: "@goneb:{{ matrix_domain }}"
+#    AccessToken: "MDASDASJDIASDJASDAFGFRGER"
+#    DeviceID: "DEVICE1"
+#    HomeserverURL: "{{ matrix_homeserver_container_url }}"
+#    Sync: true
+#    AutoJoinRooms: true
+#    DisplayName: "Go-NEB!"
+#    AcceptVerificationFromUsers: [":{{ matrix_domain }}"]
+#
+#  - UserID: "@another_goneb:{{ matrix_domain }}"
+#    AccessToken: "MDASDASJDIASDJASDAFGFRGER"
+#    DeviceID: "DEVICE2"
+#    HomeserverURL: "{{ matrix_homeserver_container_url }}"
+#    Sync: false
+#    AutoJoinRooms: false
+#    DisplayName: "Go-NEB!"
+#    AcceptVerificationFromUsers: ["^@admin:{{ matrix_domain }}"]
+
+# The list of realms which Go-NEB is aware of.
+# Delete or modify this list as appropriate.
+# See the docs for /configureAuthRealm for the full list of options:
+# https://matrix-org.github.io/go-neb/pkg/github.com/matrix-org/go-neb/api/index.html#ConfigureAuthRealmRequest
+matrix_bot_go_neb_realms: []
+#  - ID: "github_realm"
+#    Type: "github"
+#    Config: {} # No need for client ID or Secret as Go-NEB isn't generating OAuth URLs
+
+# The list of *authenticated* sessions which Go-NEB is aware of.
+# Delete or modify this list as appropriate.
+# The full list of options are shown below: there is no single HTTP endpoint
+# which maps to this section.
+# https://matrix-org.github.io/go-neb/pkg/github.com/matrix-org/go-neb/api/index.html#Session
+matrix_bot_go_neb_sessions: []
+#  - SessionID: "your_github_session"
+#    RealmID: "github_realm"
+#    UserID: "@YOUR_USER_ID:{{ matrix_domain }}" # This needs to be the username of the person that's allowed to use the !github commands
+#    Config:
+#      # Populate these fields by generating a "Personal Access Token" on github.com
+#      AccessToken: "YOUR_GITHUB_ACCESS_TOKEN"
+#      Scopes: "admin:org_hook,admin:repo_hook,repo,user"
+
+# The list of services which Go-NEB is aware of.
+# Delete or modify this list as appropriate.
+# See the docs for /configureService for the full list of options:
+# https://matrix-org.github.io/go-neb/pkg/github.com/matrix-org/go-neb/api/index.html#ConfigureServiceRequest
+matrix_bot_go_neb_services: []
+#  - ID: "echo_service"
+#    Type: "echo"
+#    UserID: "@goneb:{{ matrix_domain }}"
+#    Config: {}
+
+## Can be obtained from https://developers.giphy.com/dashboard/
+#  - ID: "giphy_service"
+#    Type: "giphy"
+#    UserID: "@goneb:{{ matrix_domain }}" # requires a Syncing client
+#    Config:
+#      api_key: "qwg4672vsuyfsfe"
+#      use_downsized: false
+#
+## This service has been dead for over a year :/
+#  - ID: "guggy_service"
+#    Type: "guggy"
+#    UserID: "@goneb:{{ matrix_domain }}" # requires a Syncing client
+#    Config:
+#      api_key: "2356saaqfhgfe"
+#
+## API Key via https://developers.google.com/custom-search/v1/introduction
+## CX via http://www.google.com/cse/manage/all
+## https://stackoverflow.com/questions/6562125/getting-a-cx-id-for-custom-search-google-api-python
+## 'Search the entire web' and 'Image search' enabled for best results
+#  - ID: "google_service"
+#    Type: "google"
+#    UserID: "@goneb:{{ matrix_domain }}" # requires a Syncing client
+#    Config:
+#      api_key: "AIzaSyA4FD39m9"
+#      cx: "AIASDFWSRRtrtr"
+#
+## Get a key via https://api.imgur.com/oauth2/addclient
+## Select "oauth2 without callback url"
+#  - ID: "imgur_service"
+#    Type: "imgur"
+#    UserID: "@imgur:{{ matrix_domain }}" # requires a Syncing client
+#    Config:
+#      client_id: "AIzaSyA4FD39m9"
+#      client_secret: "somesecret"
+#
+#  - ID: "wikipedia_service"
+#    Type: "wikipedia"
+#    UserID: "@goneb:{{ matrix_domain }}" # requires a Syncing client
+#    Config:
+#
+#  - ID: "rss_service"
+#    Type: "rssbot"
+#    UserID: "@another_goneb:{{ matrix_domain }}"
+#    Config:
+#      feeds:
+#        "http://lorem-rss.herokuapp.com/feed?unit=second&interval=60":
+#          rooms: ["!qmElAGdFYCHoCJuaNt:localhost"]
+#          must_include:
+#            author:
+#              - author1
+#            description:
+#              - lorem
+#              - ipsum
+#          must_not_include:
+#            title:
+#              - Lorem
+#              - Ipsum
+#
+#  - ID: "github_cmd_service"
+#    Type: "github"
+#    UserID: "@goneb:{{ matrix_domain }}" # requires a Syncing client
+#    Config:
+#      RealmID: "github_realm"
+#
+#    # Make sure your BASE_URL can be accessed by Github!
+#  - ID: "github_webhook_service"
+#    Type: "github-webhook"
+#    UserID: "@another_goneb:{{ matrix_domain }}"
+#    Config:
+#      RealmID: "github_realm"
+#      ClientUserID: "@YOUR_USER_ID:{{ matrix_domain }}" # needs to be an authenticated user so Go-NEB can create webhooks. Check the UserID field in the github_realm in matrix_bot_go_neb_sessions.
+#      Rooms:
+#        "!someroom:id":
+#          Repos:
+#            "matrix-org/synapse":
+#              Events: ["push", "issues"]
+#            "matrix-org/dendron":
+#              Events: ["pull_request"]
+#        "!anotherroom:id":
+#          Repos:
+#            "matrix-org/synapse":
+#              Events: ["push", "issues"]
+#            "matrix-org/dendron":
+#              Events: ["pull_request"]
+#
+#  - ID: "slackapi_service"
+#    Type: "slackapi"
+#    UserID: "@slackapi:{{ matrix_domain }}"
+#    Config:
+#      Hooks:
+#        "hook1":
+#          RoomID: "!someroom:id"
+#          MessageType: "m.text" # default is m.text
+#
+#  - ID: "alertmanager_service"
+#    Type: "alertmanager"
+#    UserID: "@alertmanager:{{ matrix_domain }}"
+#    Config:
+#      # This is for information purposes only. It should point to Go-NEB path as follows:
+#      # `/services/hooks/<base64 encoded service ID>`
+#      # Where in this case "service ID" is "alertmanager_service"
+#      # Make sure your BASE_URL can be accessed by the Alertmanager instance!
+#      webhook_url: "http://localhost/services/hooks/YWxlcnRtYW5hZ2VyX3NlcnZpY2U"
+#      # Each room will get the notification with the alert rendered with the given template
+#      rooms:
+#        "!someroomid:domain.tld":
+#          text_template: "{{range .Alerts -}} [{{ .Status }}] {{index .Labels \"alertname\" }}: {{index .Annotations \"description\"}} {{ end -}}"
+#          html_template: "{{range .Alerts -}}  {{ $severity := index .Labels \"severity\" }}    {{ if eq .Status \"firing\" }}      {{ if eq $severity \"critical\"}}        <font color='red'><b>[FIRING - CRITICAL]</b></font>      {{ else if eq $severity \"warning\"}}        <font color='orange'><b>[FIRING - WARNING]</b></font>      {{ else }}        <b>[FIRING - {{ $severity }}]</b>      {{ end }}    {{ else }}      <font color='green'><b>[RESOLVED]</b></font>    {{ end }}  {{ index .Labels \"alertname\"}} : {{ index .Annotations \"description\"}}   <a href=\"{{ .GeneratorURL }}\">source</a><br/>{{end -}}"
+#          msg_type: "m.text"  # Must be either `m.text` or `m.notice`
+
+# Default configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_bot_go_neb_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_bot_go_neb_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_bot_go_neb_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_bot_go_neb_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_bot_go_neb_configuration_yaml`.
+
+matrix_bot_go_neb_configuration_extension: "{{ matrix_bot_go_neb_configuration_extension_yaml|from_yaml if matrix_bot_go_neb_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_bot_go_neb_configuration_yaml`.
+matrix_bot_go_neb_configuration: "{{ matrix_bot_go_neb_configuration_yaml|from_yaml|combine(matrix_bot_go_neb_configuration_extension, recursive=True) }}"
+

@@ -1,0 +1,18 @@
+---
+
+- name: Fail if required Postgres settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_postgres_backup_connection_hostname"
+    - "matrix_postgres_backup_connection_username"
+    - "matrix_postgres_backup_connection_password"
+    - "matrix_postgres_backup_connection_port"
+    - "matrix_postgres_backup_schedule"
+    - "matrix_postgres_backup_keep_days"
+    - "matrix_postgres_backup_keep_weeks"
+    - "matrix_postgres_backup_keep_months"
+    - "matrix_postgres_backup_path"
+    - "matrix_postgres_backup_databases"

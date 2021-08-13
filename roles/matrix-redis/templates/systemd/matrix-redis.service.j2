@@ -1,0 +1,37 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Redis server
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/docker stop matrix-redis
+ExecStartPre=-/usr/bin/docker rm matrix-redis
+
+ExecStart=/usr/bin/docker run --rm --name matrix-redis \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--tmpfs=/tmp:rw,noexec,nosuid,size=100m \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_redis_container_redis_bind_port %}
+			-p {{ matrix_redis_container_redis_bind_port }}:6379 \
+			{% endif %}
+			--mount type=bind,src={{ matrix_redis_base_path }}/redis.conf,dst=/usr/local/etc/redis/redis.conf,ro \
+			--mount type=bind,src={{ matrix_redis_data_path }},dst=/data \
+			{% for arg in matrix_redis_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_redis_docker_image_to_use }} \
+			redis-server /usr/local/etc/redis/redis.conf
+
+ExecStop=-/usr/bin/docker stop matrix-redis
+ExecStop=-/usr/bin/docker rm matrix-redis
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-redis
+
+[Install]
+WantedBy=multi-user.target

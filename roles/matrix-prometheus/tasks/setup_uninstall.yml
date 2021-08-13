@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-prometheus service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-prometheus.service"
+  register: matrix_prometheus_service_stat
+
+- name: Ensure matrix-prometheus is stopped
+  service:
+    name: matrix-prometheus
+    state: stopped
+    daemon_reload: yes
+  register: stopping_result
+  when: "matrix_prometheus_service_stat.stat.exists|bool"
+
+- name: Ensure matrix-prometheus.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-prometheus.service"
+    state: absent
+  when: "matrix_prometheus_service_stat.stat.exists|bool"
+
+- name: Ensure systemd reloaded after matrix-prometheus.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_prometheus_service_stat.stat.exists|bool"

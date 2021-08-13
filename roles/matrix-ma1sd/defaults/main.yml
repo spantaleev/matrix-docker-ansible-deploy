@@ -1,0 +1,161 @@
+# ma1sd is a Federated Matrix Identity Server
+# See: https://github.com/ma1uta/ma1sd
+
+matrix_ma1sd_enabled: true
+
+matrix_ma1sd_container_image_self_build: false
+matrix_ma1sd_container_image_self_build_repo: "https://github.com/ma1uta/ma1sd.git"
+matrix_ma1sd_container_image_self_build_branch: "{{ matrix_ma1sd_version }}"
+
+matrix_ma1sd_version: "2.5.0"
+
+matrix_ma1sd_docker_image: "{{ matrix_ma1sd_docker_image_name_prefix }}ma1uta/ma1sd:{{ matrix_ma1sd_version }}"
+matrix_ma1sd_docker_image_name_prefix: "{{ 'localhost/' if matrix_ma1sd_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_ma1sd_docker_image_force_pull: "{{ matrix_ma1sd_docker_image.endswith(':latest') }}"
+
+matrix_ma1sd_base_path: "{{ matrix_base_data_path }}/ma1sd"
+# We need the docker src directory to be named ma1sd. See: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/588
+matrix_ma1sd_docker_src_files_path: "{{ matrix_ma1sd_base_path }}/docker-src/ma1sd"
+matrix_ma1sd_config_path: "{{ matrix_ma1sd_base_path }}/config"
+matrix_ma1sd_data_path: "{{ matrix_ma1sd_base_path }}/data"
+
+# Controls whether the matrix-ma1sd container exposes its HTTP port (tcp/8090 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8090"), or empty string to not expose.
+matrix_ma1sd_container_http_host_bind_port: ''
+
+# A list of extra arguments to pass to the container
+matrix_ma1sd_container_extra_arguments: []
+
+# List of systemd services that matrix-ma1sd.service depends on
+matrix_ma1sd_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-ma1sd.service wants
+matrix_ma1sd_systemd_wanted_services_list: []
+
+# Your identity server is private by default.
+# To ensure maximum discovery, you can make your identity server
+# also forward lookups to the central matrix.org Identity server
+# (at the cost of potentially leaking all your contacts information).
+# Enabling this is discouraged. Learn more here: https://github.com/ma1uta/ma1sd/blob/master/docs/features/identity.md#lookups
+matrix_ma1sd_matrixorg_forwarding_enabled: false
+
+
+# Database-related configuration fields.
+#
+# To use SQLite, stick to these defaults.
+#
+# To use Postgres:
+# - change the engine (`matrix_ma1sd_database_engine: 'postgres'`)
+# - adjust your database credentials via the `matrix_ma1sd_postgres_*` variables
+matrix_ma1sd_database_engine: 'sqlite'
+
+matrix_ma1sd_sqlite_database_path_local: "{{ matrix_ma1sd_data_path }}/ma1sd.db"
+matrix_ma1sd_sqlite_database_path_in_container: "/var/ma1sd/ma1sd.db"
+
+matrix_ma1sd_database_username: 'matrix_ma1sd'
+matrix_ma1sd_database_password: 'some-password'
+matrix_ma1sd_database_hostname: 'matrix-postgres'
+matrix_ma1sd_database_port: 5432
+matrix_ma1sd_database_name: 'matrix_ma1sd'
+
+matrix_ma1sd_database_connection_string: 'postgresql://{{ matrix_ma1sd_database_username }}:{{ matrix_ma1sd_database_password }}@{{ matrix_ma1sd_database_hostname }}:{{ matrix_ma1sd_database_port }}/{{ matrix_ma1sd_database_name }}'
+
+
+# ma1sd has serveral supported identity stores.
+# One of them is storing identities directly in Synapse's database.
+# Learn more here: https://github.com/ma1uta/ma1sd/blob/master/docs/stores/synapse.md
+matrix_ma1sd_synapsesql_enabled: false
+matrix_ma1sd_synapsesql_type: ""
+matrix_ma1sd_synapsesql_connection: ""
+
+# Setting up email-sending settings is required for using ma1sd.
+matrix_ma1sd_threepid_medium_email_identity_from: "matrix@{{ matrix_domain }}"
+matrix_ma1sd_threepid_medium_email_connectors_smtp_host: ""
+matrix_ma1sd_threepid_medium_email_connectors_smtp_port: 587
+matrix_ma1sd_threepid_medium_email_connectors_smtp_tls: 1
+matrix_ma1sd_threepid_medium_email_connectors_smtp_login: ""
+matrix_ma1sd_threepid_medium_email_connectors_smtp_password: ""
+
+# DNS overwrites are useful for telling ma1sd how it can reach the homeserver directly.
+# Useful when reverse-proxying certain URLs (e.g. `/_matrix/client/r0/user_directory/search`) to ma1sd,
+# so that ma1sd can rewrite the original URL to one that would reach the homeserver.
+matrix_ma1sd_dns_overwrite_enabled: false
+matrix_ma1sd_dns_overwrite_homeserver_client_name: "{{ matrix_server_fqn_matrix }}"
+matrix_ma1sd_dns_overwrite_homeserver_client_value: "http://matrix-synapse:8008"
+
+# Override the default session templates
+# To use this, fill in the template variables with the full desired template as a multi-line YAML variable
+#
+# More info:
+# https://github.com/ma1uta/ma1sd/blob/master/docs/threepids/session/session-views.md
+matrix_ma1sd_view_session_custom_templates_enabled: false
+# Defaults to: https://github.com/ma1uta/ma1sd/blob/master/src/main/resources/templates/session/tokenSubmitSuccess.html
+matrix_ma1sd_view_session_custom_onTokenSubmit_success_template: ""
+# Defaults to: https://github.com/ma1uta/ma1sd/blob/master/src/main/resources/templates/session/tokenSubmitFailure.html
+matrix_ma1sd_view_session_custom_onTokenSubmit_failure_template: ""
+
+# Override the default email templates
+# To use this, fill in the template variables with the full desired template as a multi-line YAML variable
+#
+# More info:
+# https://github.com/ma1uta/ma1sd/blob/master/docs/threepids/notification/template-generator.md
+# https://github.com/ma1uta/ma1sd/tree/master/src/main/resources/threepids/email
+matrix_ma1sd_threepid_medium_email_custom_templates_enabled: false
+# Defaults to: https://github.com/ma1uta/ma1sd/blob/master/src/main/resources/threepids/email/invite-template.eml
+matrix_ma1sd_threepid_medium_email_custom_invite_template: ""
+# Defaults to: https://github.com/ma1uta/ma1sd/blob/master/src/main/resources/threepids/email/validate-template.eml
+matrix_ma1sd_threepid_medium_email_custom_session_validation_template: ""
+# Defaults to: https://github.com/ma1uta/ma1sd/blob/master/src/main/resources/threepids/email/unbind-notification.eml
+matrix_ma1sd_threepid_medium_email_custom_session_unbind_notification_template: ""
+# Defaults to: https://github.com/ma1uta/ma1sd/blob/master/src/main/resources/threepids/email/mxid-template.eml
+matrix_ma1sd_threepid_medium_email_custom_matrixid_template: ""
+
+# Controls whether the self-check feature should validate SSL certificates.
+matrix_ma1sd_self_check_validate_certificates: true
+
+# Controls ma1sd logging verbosity for troubleshooting.
+#
+# According to: https://github.com/ma1uta/ma1sd/blob/master/docs/troubleshooting.md#increase-verbosity
+matrix_ma1sd_verbose_logging: false
+
+# Setting up support for API prefixes
+matrix_ma1sd_v1_enabled: true
+matrix_ma1sd_v2_enabled: true
+
+# Fix for missing 3PIDS bug
+matrix_ma1sd_hashing_enabled: true
+
+# Default ma1sd configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_ma1sd_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_ma1sd_configuration_yaml: "{{ lookup('template', 'templates/ma1sd.yaml.j2') }}"
+
+matrix_ma1sd_configuration_extension_yaml: |
+  # Your custom YAML configuration for ma1sd goes here.
+  # This configuration extends the default starting configuration (`matrix_ma1sd_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_ma1sd_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  # ldap:
+  #   enabled: true
+  #   connection:
+  #     host: ldapHostnameOrIp
+  #     tls: false
+  #     port: 389
+  #     baseDNs: ['OU=Users,DC=example,DC=org']
+  #     bindDn: CN=My Ma1sd User,OU=Users,DC=example,DC=org
+  #     bindPassword: TheUserPassword
+
+matrix_ma1sd_configuration_extension: "{{ matrix_ma1sd_configuration_extension_yaml|from_yaml if matrix_ma1sd_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final ma1sd configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_ma1sd_configuration_yaml`.
+matrix_ma1sd_configuration: "{{ matrix_ma1sd_configuration_yaml|from_yaml|combine(matrix_ma1sd_configuration_extension, recursive=True) }}"

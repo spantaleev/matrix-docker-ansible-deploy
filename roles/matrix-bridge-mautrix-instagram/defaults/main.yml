@@ -1,0 +1,105 @@
+# mautrix-instagram is a Matrix <-> Instagram bridge
+# See: https://github.com/tulir/mautrix-instagram
+
+matrix_mautrix_instagram_enabled: true
+
+matrix_mautrix_instagram_container_image_self_build: false
+matrix_mautrix_instagram_container_image_self_build_repo: "https://github.com/tulir/mautrix-instagram.git"
+
+matrix_mautrix_instagram_version: latest
+# See: https://mau.dev/tulir/mautrix-instagram/container_registry
+matrix_mautrix_instagram_docker_image: "{{ matrix_mautrix_instagram_docker_image_name_prefix }}tulir/mautrix-instagram:{{ matrix_mautrix_instagram_version }}"
+matrix_mautrix_instagram_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_instagram_container_image_self_build else 'dock.mau.dev/' }}"
+matrix_mautrix_instagram_docker_image_force_pull: "{{ matrix_mautrix_instagram_docker_image.endswith(':latest') }}"
+
+matrix_mautrix_instagram_base_path: "{{ matrix_base_data_path }}/mautrix-instagram"
+matrix_mautrix_instagram_config_path: "{{ matrix_mautrix_instagram_base_path }}/config"
+matrix_mautrix_instagram_data_path: "{{ matrix_mautrix_instagram_base_path }}/data"
+matrix_mautrix_instagram_docker_src_files_path: "{{ matrix_mautrix_instagram_base_path }}/docker-src"
+
+matrix_mautrix_instagram_homeserver_address: "{{ matrix_homeserver_container_url }}"
+matrix_mautrix_instagram_homeserver_domain: '{{ matrix_domain }}'
+matrix_mautrix_instagram_appservice_address: 'http://matrix-mautrix-instagram:29330'
+
+# A list of extra arguments to pass to the container
+matrix_mautrix_instagram_container_extra_arguments: []
+
+# List of systemd services that matrix-mautrix-instagram.service depends on.
+matrix_mautrix_instagram_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-mautrix-instagram.service wants
+matrix_mautrix_instagram_systemd_wanted_services_list: []
+
+matrix_mautrix_instagram_appservice_token: ''
+matrix_mautrix_instagram_homeserver_token: ''
+
+
+# Database-related configuration fields.
+#
+# To use Postgres:
+# - adjust your database credentials via the `matrix_mautrix_instagram_postgres_*` variables
+matrix_mautrix_instagram_database_engine: 'postgres'
+
+matrix_mautrix_instagram_database_username: 'matrix_mautrix_instagram'
+matrix_mautrix_instagram_database_password: 'some-password'
+matrix_mautrix_instagram_database_hostname: 'matrix-postgres'
+matrix_mautrix_instagram_database_port: 5432
+matrix_mautrix_instagram_database_name: 'matrix_mautrix_instagram'
+
+matrix_mautrix_instagram_database_connection_string: 'postgres://{{ matrix_mautrix_instagram_database_username }}:{{ matrix_mautrix_instagram_database_password }}@{{ matrix_mautrix_instagram_database_hostname }}:{{ matrix_mautrix_instagram_database_port }}/{{ matrix_mautrix_instagram_database_name }}'
+
+matrix_mautrix_instagram_appservice_database: "{{
+	{
+		'postgres': matrix_mautrix_instagram_database_connection_string,
+	}[matrix_mautrix_instagram_database_engine]
+}}"
+
+
+# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
+matrix_mautrix_instagram_login_shared_secret: ''
+
+matrix_mautrix_instagram_bridge_login_shared_secret_map: "{{ {matrix_mautrix_instagram_homeserver_domain: matrix_mautrix_instagram_login_shared_secret} if matrix_mautrix_instagram_login_shared_secret else {} }}"
+
+matrix_mautrix_instagram_appservice_bot_username: instagrambot
+
+matrix_mautrix_instagram_bridge_presence: true
+
+# Default configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_mautrix_instagram_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_mautrix_instagram_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_mautrix_instagram_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_mautrix_instagram_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_mautrix_instagram_configuration_yaml`.
+
+matrix_mautrix_instagram_configuration_extension: "{{ matrix_mautrix_instagram_configuration_extension_yaml|from_yaml if matrix_mautrix_instagram_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_mautrix_instagram_configuration_yaml`.
+matrix_mautrix_instagram_configuration: "{{ matrix_mautrix_instagram_configuration_yaml|from_yaml|combine(matrix_mautrix_instagram_configuration_extension, recursive=True) }}"
+
+matrix_mautrix_instagram_registration_yaml: |
+  id: instagram
+  as_token: "{{ matrix_mautrix_instagram_appservice_token }}"
+  hs_token: "{{ matrix_mautrix_instagram_homeserver_token }}"
+  namespaces:
+    users:
+    - exclusive: true
+      regex: '^@instagram_.+:{{ matrix_mautrix_instagram_homeserver_domain|regex_escape }}$'
+    - exclusive: true
+      regex: '^@{{ matrix_mautrix_instagram_appservice_bot_username|regex_escape }}:{{ matrix_mautrix_instagram_homeserver_domain|regex_escape }}$'
+  url: {{ matrix_mautrix_instagram_appservice_address }}
+  # See https://github.com/tulir/mautrix-signal/issues/43
+  sender_localpart: _bot_{{ matrix_mautrix_instagram_appservice_bot_username }}
+  rate_limited: false
+  de.sorunome.msc2409.push_ephemeral: true
+
+matrix_mautrix_instagram_registration: "{{ matrix_mautrix_instagram_registration_yaml|from_yaml }}"

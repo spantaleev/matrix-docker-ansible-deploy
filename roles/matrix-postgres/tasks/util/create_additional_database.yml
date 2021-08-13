@@ -1,0 +1,40 @@
+---
+
+# It'd be better if this is belonged to `validate_config.yml`, but it would have to be some loop-within-a-loop there,
+# and that's ugly. We also don't expect this to catch errors often. It's more of a defensive last-minute check.
+- name: Fail if additional database data appears invalid
+  fail:
+    msg: "Additional database definition ({{ additional_db }} lacks a required key: {{ item }}"
+  when: "item not in additional_db"
+  with_items: "{{ ['name', 'username', 'password'] }}"
+
+# The SQL statements that we'll run against Postgres are stored in a file that others can't read.
+# This file will be mounted into the container and fed to Postgres.
+# This way, we avoid passing sensitive data around in CLI commands that other users on the system can see.
+- name: Create additional database initialization SQL file for {{ additional_db.name }}
+  template:
+    src: "{{ role_path }}/templates/sql/init-additional-db-user-and-role.sql.j2"
+    dest: "/tmp/matrix-postgres-init-additional-db-user-and-role.sql"
+    mode: 0600
+    owner: "{{ matrix_user_uid }}"
+    group: "{{ matrix_user_gid }}"
+
+- name: Execute Postgres additional database initialization SQL file for {{ additional_db.name }}
+  command:
+    cmd: >-
+      {{ matrix_host_command_docker }} run
+      --rm
+      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+      --cap-drop=ALL
+      --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
+      --network {{ matrix_docker_network }}
+      --mount type=bind,src=/tmp/matrix-postgres-init-additional-db-user-and-role.sql,dst=/matrix-postgres-init-additional-db-user-and-role.sql,ro
+      --entrypoint=/bin/sh
+      {{ matrix_postgres_docker_image_to_use }}
+      -c
+      'psql -h {{ matrix_postgres_connection_hostname }} --file=/matrix-postgres-init-additional-db-user-and-role.sql'
+
+- name: Delete additional database initialization SQL file for {{ additional_db.name }}
+  file:
+    path: /tmp/matrix-postgres-init-additional-db-user-and-role.sql
+    state: absent

@@ -1,0 +1,35 @@
+---
+
+- name: Check existence of matrix-bot-mjolnir service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-bot-mjolnir.service"
+  register: matrix_bot_mjolnir_service_stat
+
+- name: Ensure matrix-bot-mjolnir is stopped
+  service:
+    name: matrix-bot-mjolnir
+    state: stopped
+    daemon_reload: yes
+  register: stopping_result
+  when: "matrix_bot_mjolnir_service_stat.stat.exists|bool"
+
+- name: Ensure matrix-bot-mjolnir.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-bot-mjolnir.service"
+    state: absent
+  when: "matrix_bot_mjolnir_service_stat.stat.exists|bool"
+
+- name: Ensure systemd reloaded after matrix-bot-mjolnir.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_bot_mjolnir_service_stat.stat.exists|bool"
+
+- name: Ensure matrix-bot-mjolnir paths don't exist
+  file:
+    path: "{{ matrix_bot_mjolnir_base_path }}"
+    state: absent
+
+- name: Ensure mjolnir Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_bot_mjolnir_docker_image }}"
+    state: absent

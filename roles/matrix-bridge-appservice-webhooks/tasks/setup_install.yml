@@ -1,0 +1,64 @@
+---
+
+- name: Ensure Appservice webhooks image is pulled
+  docker_image:
+    name: "{{ matrix_appservice_webhooks_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_appservice_webhooks_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_webhooks_docker_image_force_pull }}"
+
+- name: Ensure AppService webhooks paths exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_appservice_webhooks_base_path }}"
+    - "{{ matrix_appservice_webhooks_config_path }}"
+    - "{{ matrix_appservice_webhooks_data_path }}"
+
+- name: Ensure Matrix Appservice webhooks config is installed
+  copy:
+    content: "{{ matrix_appservice_webhooks_configuration|to_nice_yaml }}"
+    dest: "{{ matrix_appservice_webhooks_config_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Matrix Appservice webhooks schema.yml template exists
+  template:
+    src: "{{ role_path }}/templates/schema.yml.j2"
+    dest: "{{ matrix_appservice_webhooks_config_path }}/schema.yml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Matrix Appservice webhooks database.json template exists
+  template:
+    src: "{{ role_path }}/templates/database.json.j2"
+    dest: "{{ matrix_appservice_webhooks_data_path }}/database.json"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure appservice-webhooks registration.yaml installed
+  copy:
+    content: "{{ matrix_appservice_webhooks_registration|to_nice_yaml }}"
+    dest: "{{ matrix_appservice_webhooks_config_path }}/webhooks-registration.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-appservice-webhooks.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-appservice-webhooks.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-appservice-webhooks.service"
+    mode: 0644
+  register: matrix_appservice_webhooks_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-appservice-webhooks.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_appservice_webhooks_systemd_service_result.changed"

@@ -1,0 +1,19 @@
+---
+
+- name: Install host dependencies
+  pacman:
+    name:
+      - python-docker
+      - "{{ matrix_ntpd_package }}"
+      # TODO This needs to be verified. Which version do we need?
+      - fuse3
+      - python-dnspython
+    state: latest
+    update_cache: yes
+
+- name: Ensure Docker is installed
+  pacman:
+    name:
+      - docker
+    state: latest
+  when: matrix_docker_installation_enabled|bool

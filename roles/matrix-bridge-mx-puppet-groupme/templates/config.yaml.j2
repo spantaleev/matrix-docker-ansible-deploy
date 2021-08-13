@@ -1,0 +1,86 @@
+#jinja2: lstrip_blocks: "True"
+bridge:
+  # Port to host the bridge on
+  # Used for communication between the homeserver and the bridge
+  port: {{ matrix_mx_puppet_groupme_appservice_port }}
+  # The host connections to the bridge's webserver are allowed from
+  bindAddress: 0.0.0.0
+  # Public domain of the homeserver
+  domain: {{ matrix_mx_puppet_groupme_homeserver_domain }}
+  # Reachable URL of the Matrix homeserver
+  homeserverUrl: {{ matrix_mx_puppet_groupme_homeserver_address }}
+  {% if matrix_mx_puppet_groupme_login_shared_secret != '' %}
+  loginSharedSecretMap:
+    {{ matrix_domain }}: {{ matrix_mx_puppet_groupme_login_shared_secret }}
+  {% endif %}
+  # Display name of the bridge bot
+  displayname: GroupMe Puppet Bridge
+  # Optionally specify a different media URL used for the media store
+  #
+  # This is where GroupMe will download user profile pictures and media
+  # from
+  #mediaUrl: https://external-url.org
+
+presence:
+  # Bridge GroupMe online/offline status
+  enabled: true
+  # How often to send status to the homeserver in milliseconds
+  interval: 5000
+
+provisioning:
+  # Regex of Matrix IDs allowed to use the puppet bridge
+  whitelist: {{ matrix_mx_puppet_groupme_provisioning_whitelist|to_json }}
+    # Allow a specific user
+    #- "@user:server\\.com"
+    # Allow users on a specific homeserver
+    #- "@.*:yourserver\\.com"
+    # Allow anyone
+    #- ".*"
+  # Regex of Matrix IDs forbidden from using the puppet bridge
+  #blacklist:
+    # Disallow a specific user
+    #- "@user:server\\.com"
+    # Disallow users on a specific homeserver
+    #- "@.*:yourserver\\.com"
+  blacklist: {{ matrix_mx_puppet_groupme_provisioning_blacklist|to_json }}
+
+relay:
+  # Regex of Matrix IDs who are allowed to use the bridge in relay mode.
+  # Relay mode is when a single GroupMe bot account relays messages of
+  # multiple Matrix users
+  #
+  # Same format as in provisioning
+  whitelist: {{ matrix_mx_puppet_groupme_provisioning_whitelist|to_json }}
+  blacklist: {{ matrix_mx_puppet_groupme_provisioning_blacklist|to_json }}
+
+selfService:
+  # Regex of Matrix IDs who are allowed to use bridge self-servicing (plumbed rooms)
+  #
+  # Same format as in provisioning
+  whitelist: {{ matrix_mx_puppet_groupme_provisioning_whitelist|to_json }}
+  blacklist: {{ matrix_mx_puppet_groupme_provisioning_blacklist|to_json }}
+
+database:
+{% if matrix_mx_puppet_groupme_database_engine == 'postgres' %}
+  # Use Postgres as a database backend
+  # If set, will be used instead of SQLite3
+  # Connection string to connect to the Postgres instance
+  # with username "user", password "pass", host "localhost" and database name "dbname".
+  # Modify each value as necessary
+  connString: {{ matrix_mx_puppet_groupme_database_connection_string|to_json }}
+{% else %}
+  # Use SQLite3 as a database backend
+  # The name of the database file
+  filename: {{ matrix_mx_puppet_groupme_sqlite_database_path_in_container|to_json }}
+{% endif %}
+
+logging:
+  # Log level of console output
+  # Allowed values starting with most verbose:
+  # silly, debug, verbose, info, warn, error
+  console: info
+  # Date and time formatting
+  lineDateFormat: MMM-D HH:mm:ss.SSS
+  # Logging files
+  # Log files are rotated daily by default
+  files: []

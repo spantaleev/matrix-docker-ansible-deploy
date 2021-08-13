@@ -1,0 +1,38 @@
+#jinja2: lstrip_blocks: "True"
+{
+	"m.homeserver": {
+		"base_url": "{{ matrix_homeserver_url }}"
+	}
+	{% if matrix_identity_server_url %},
+	"m.identity_server": {
+		"base_url": "{{ matrix_identity_server_url }}"
+	}
+	{% endif %}
+	{% if matrix_integration_manager_rest_url and matrix_integration_manager_ui_url %},
+	"m.integrations": {
+		"managers": [
+			{
+				"api_url": "{{ matrix_integration_manager_rest_url }}",
+				"ui_url": "{{ matrix_integration_manager_ui_url }}"
+			}
+		]
+	}
+	{% endif %}
+	{% if matrix_client_element_jitsi_preferredDomain %},
+	"io.element.jitsi": {
+		"preferredDomain": {{ matrix_client_element_jitsi_preferredDomain|to_json }}
+	},
+	"im.vector.riot.jitsi": {
+		"preferredDomain": {{ matrix_client_element_jitsi_preferredDomain|to_json }}
+	}
+	{% endif %}
+	,
+	"io.element.e2ee": {
+		"default": {{ matrix_client_element_e2ee_default|to_json }},
+		"secure_backup_required": {{ matrix_client_element_e2ee_secure_backup_required|to_json }},
+		"secure_backup_setup_methods": {{ matrix_client_element_e2ee_secure_backup_setup_methods|to_json }}
+	},
+	"im.vector.riot.e2ee": {
+		"default": {{ matrix_client_element_e2ee_default|to_json }}
+	}
+}

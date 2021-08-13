@@ -1,0 +1,43 @@
+---
+
+- include_tasks: "{{ role_path }}/tasks/server_base/setup_centos.yml"
+  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version < '8'
+
+- include_tasks: "{{ role_path }}/tasks/server_base/setup_centos8.yml"
+  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version > '7'
+
+- block:
+  # ansible_lsb is only available if lsb-release is installed.
+  - name: Ensure lsb-release installed
+    apt:
+      name:
+        - lsb-release
+      state: present
+      update_cache: yes
+    register: lsb_release_installation_result
+
+  - name: Reread ansible_lsb facts if lsb-release got installed
+    setup: filter=ansible_lsb*
+    when: lsb_release_installation_result.changed
+
+  - include_tasks: "{{ role_path }}/tasks/server_base/setup_debian.yml"
+    when: (ansible_os_family == 'Debian') and (ansible_lsb.id != 'Raspbian')
+
+  - include_tasks: "{{ role_path }}/tasks/server_base/setup_raspbian.yml"
+    when: (ansible_os_family == 'Debian') and (ansible_lsb.id == 'Raspbian')
+  when: ansible_os_family == 'Debian'
+
+- include_tasks: "{{ role_path }}/tasks/server_base/setup_archlinux.yml"
+  when: ansible_distribution == 'Archlinux'
+
+- name: Ensure Docker is started and autoruns
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: "Ensure {{ matrix_ntpd_service }} is started and autoruns"
+  service:
+    name: "{{ matrix_ntpd_service }}"
+    state: started
+    enabled: yes

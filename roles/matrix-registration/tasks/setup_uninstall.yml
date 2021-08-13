@@ -1,0 +1,30 @@
+---
+
+- name: Check existence of matrix-registration service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-registration.service"
+  register: matrix_registration_service_stat
+
+- name: Ensure matrix-registration is stopped
+  service:
+    name: matrix-registration
+    state: stopped
+    daemon_reload: yes
+  register: stopping_result
+  when: "matrix_registration_service_stat.stat.exists|bool"
+
+- name: Ensure matrix-registration.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-registration.service"
+    state: absent
+  when: "matrix_registration_service_stat.stat.exists|bool"
+
+- name: Ensure systemd reloaded after matrix-registration.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_registration_service_stat.stat.exists|bool"
+
+- name: Ensure matrix-registration Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_registration_docker_image }}"
+    state: absent

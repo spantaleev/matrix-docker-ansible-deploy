@@ -1,0 +1,45 @@
+#jinja2: lstrip_blocks: "True"
+use-auth-secret
+static-auth-secret={{ matrix_coturn_turn_static_auth_secret }}
+realm=turn.{{ matrix_server_fqn_matrix }}
+
+min-port={{ matrix_coturn_turn_udp_min_port }}
+max-port={{ matrix_coturn_turn_udp_max_port }}
+external-ip={{ matrix_coturn_turn_external_ip_address }}
+
+log-file=stdout
+pidfile=/var/tmp/turnserver.pid
+userdb=/var/tmp/turnserver.db
+
+no-cli
+
+{% if matrix_coturn_tls_enabled %}
+cert={{ matrix_coturn_tls_cert_path }}
+pkey={{ matrix_coturn_tls_key_path }}
+{% if not matrix_coturn_tls_v1_enabled %}
+no-tlsv1
+{% endif %}
+{% if not matrix_coturn_tls_v1_1_enabled %}
+no-tlsv1_1
+{% endif %}
+{% else %}
+no-tls
+no-dtls
+{% endif %}
+
+prod
+no-tcp-relay
+
+{% if matrix_coturn_user_quota != None %}
+user-quota={{ matrix_coturn_user_quota }}
+{% endif %}
+{% if matrix_coturn_total_quota != None %}
+total-quota={{ matrix_coturn_total_quota }}
+{% endif %}
+
+{% for ip_range in matrix_coturn_denied_peer_ips %}
+denied-peer-ip={{ ip_range }}
+{% endfor %}
+{% for ip_range in matrix_coturn_allowed_peer_ips %}
+allowed-peer-ip={{ ip_range }}
+{% endfor %}

@@ -1,0 +1,158 @@
+# The bare domain name which represents your Matrix identity.
+# Matrix user ids for your server will be of the form (`@user:<matrix-domain>`).
+#
+# Note: this playbook does not touch the server referenced here.
+# Installation happens on another server ("matrix.<matrix-domain>", see `matrix_server_fqn_matrix`).
+#
+# Example value: example.com
+matrix_domain: ~
+
+# This is where your data lives and what we set up.
+# This and the Element FQN (see below) are expected to be on the same server.
+matrix_server_fqn_matrix: "matrix.{{ matrix_domain }}"
+
+# This is where you access federation API.
+matrix_server_fqn_matrix_federation: '{{ matrix_server_fqn_matrix }}'
+
+# This is where you access the Element web UI from (if enabled via matrix_client_element_enabled; enabled by default).
+# This and the Matrix FQN (see above) are expected to be on the same server.
+matrix_server_fqn_element: "element.{{ matrix_domain }}"
+
+# This is where you access the Hydrogen web client from (if enabled via matrix_client_hydrogen_enabled; disabled by default).
+matrix_server_fqn_hydrogen: "hydrogen.{{ matrix_domain }}"
+
+# This is where you access the Dimension.
+matrix_server_fqn_dimension: "dimension.{{ matrix_domain }}"
+
+# For use with Go-NEB! (github callback url for example)
+matrix_server_fqn_bot_go_neb: "goneb.{{ matrix_domain }}"
+
+# This is where you access Jitsi.
+matrix_server_fqn_jitsi: "jitsi.{{ matrix_domain }}"
+
+# This is where you access Grafana.
+matrix_server_fqn_grafana: "stats.{{ matrix_domain }}"
+
+# This is where you access the Sygnal push gateway.
+matrix_server_fqn_sygnal: "sygnal.{{ matrix_domain }}"
+
+matrix_federation_public_port: 8448
+
+# The architecture that your server runs.
+# Recognized values by us are 'amd64', 'arm32' and 'arm64'.
+# Not all architectures support all services, so your experience (on non-amd64) may vary.
+# See docs/alternative-architectures.md
+matrix_architecture: amd64
+
+# The architecture for Debian packages.
+# See: https://wiki.debian.org/SupportedArchitectures
+# We just remap from our `matrix_architecture` values to what Debian and possibly other distros call things.
+matrix_debian_arch: "{{ 'armhf' if matrix_architecture == 'arm32' else matrix_architecture }}"
+
+matrix_user_username: "matrix"
+matrix_user_groupname: "matrix"
+
+# By default, the playbook creates the user (`matrix_user_username`)
+# and group (`matrix_user_groupname`) with a random id.
+# To use a specific user/group id, override these variables.
+matrix_user_uid: ~
+matrix_user_gid: ~
+
+matrix_base_data_path: "/matrix"
+matrix_base_data_path_mode: "750"
+
+matrix_static_files_base_path: "{{ matrix_base_data_path }}/static-files"
+matrix_systemd_path: "/etc/systemd/system"
+
+# Specifies the path to use for the `HOME` environment variable for systemd unit files.
+# Docker 20.10 complains with `WARNING: Error loading config file: .dockercfg: $HOME is not defined`
+# if `$HOME` is not defined, so we define something to make it happy.
+matrix_systemd_unit_home_path: /root
+
+# This is now unused. We keep it so that cleanup tasks can use it.
+# To be removed in the future.
+matrix_cron_path: "/etc/cron.d"
+
+matrix_local_bin_path: "/usr/local/bin"
+
+matrix_host_command_docker: "/usr/bin/env docker"
+matrix_host_command_sleep: "/usr/bin/env sleep"
+matrix_host_command_chown: "/usr/bin/env chown"
+matrix_host_command_fusermount: "/usr/bin/env fusermount"
+matrix_host_command_openssl: "/usr/bin/env openssl"
+matrix_host_command_systemctl: "/usr/bin/env systemctl"
+matrix_host_command_sh: "/usr/bin/env sh"
+
+matrix_ntpd_package: "{{ 'systemd-timesyncd' if ansible_distribution == 'CentOS' and ansible_distribution_major_version > '7' else 'ntp' }}"
+matrix_ntpd_service: "{{ 'systemd-timesyncd' if ansible_distribution == 'CentOS' and ansible_distribution_major_version > '7' else ('ntpd' if ansible_os_family == 'RedHat' or ansible_distribution == 'Archlinux' else 'ntp') }}"
+
+matrix_homeserver_url: "https://{{ matrix_server_fqn_matrix }}"
+
+# Specifies where the homeserver is on the container network.
+# Where this is depends on whether there's a reverse-proxy in front of it, etc.
+# This likely gets overriden elsewhere.
+matrix_homeserver_container_url: "http://matrix-synapse:8008"
+
+matrix_identity_server_url: ~
+
+matrix_integration_manager_rest_url: ~
+matrix_integration_manager_ui_url: ~
+
+# The domain name where a Jitsi server is self-hosted.
+# If set, `/.well-known/matrix/client` will suggest Element clients to use that Jitsi server.
+# See: https://github.com/vector-im/element-web/blob/develop/docs/jitsi.md#configuring-element-to-use-your-self-hosted-jitsi-server
+matrix_client_element_jitsi_preferredDomain: ''
+
+# Controls whether Element should use End-to-End Encryption by default.
+# Setting this to false will update `/.well-known/matrix/client` and tell Element clients to avoid E2EE.
+# See: https://github.com/vector-im/element-web/blob/develop/docs/e2ee.md
+matrix_client_element_e2ee_default: true
+
+# Controls whether Element should require a secure backup set up before Element can be used.
+# Setting this to true will update `/.well-known/matrix/client` and tell Element require a secure backup.
+# See: https://github.com/vector-im/element-web/blob/develop/docs/e2ee.md
+matrix_client_element_e2ee_secure_backup_required: false
+
+# Controls which backup methods from ["key", "passphrase"] should be used, both is the default.
+# Setting this to other then empty will update `/.well-known/matrix/client` and tell Element which method to use
+# See: https://github.com/vector-im/element-web/blob/develop/docs/e2ee.md
+matrix_client_element_e2ee_secure_backup_setup_methods: []
+
+# The Docker network that all services would be put into
+matrix_docker_network: "matrix"
+
+# Controls whether we'll preserve the vars.yml file on the Matrix server.
+# If you have a differently organized inventory, you may wish to disable this feature,
+# or to repoint `matrix_vars_yml_snapshotting_src` to the file you'd like to preserve.
+matrix_vars_yml_snapshotting_enabled: true
+matrix_vars_yml_snapshotting_src: "{{ inventory_dir }}/host_vars/{{ inventory_hostname }}/vars.yml"
+
+# Controls whether a `/.well-known/matrix/server` file is generated and used at all.
+#
+# If you wish to rely on DNS SRV records only, you can disable this.
+# Using DNS SRV records implies that you'll be handling Matrix Federation API traffic (tcp/8448)
+# using certificates for the base domain (`matrix_domain`) and not for the
+# matrix domain (`matrix_server_fqn_matrix`).
+matrix_well_known_matrix_server_enabled: true
+
+# Controls whether Docker is automatically installed.
+# If you change this to false you must install and update Docker manually. You also need to install the docker (https://pypi.org/project/docker/) Python package.
+matrix_docker_installation_enabled: true
+
+# Controls the Docker package that is installed.
+# Possible values are "docker-ce" (default) and "docker.io" (Debian).
+matrix_docker_package_name: docker-ce
+
+# Variables to Control which parts of our roles run.
+run_postgres_import: true
+run_postgres_upgrade: true
+run_postgres_import_sqlite_db: true
+run_postgres_vacuum: true
+run_synapse_register_user: true
+run_synapse_update_user_password: true
+run_synapse_import_media_store: true
+run_synapse_rust_synapse_compress_state: true
+run_setup: true
+run_self_check: true
+run_start: true
+run_stop: true

@@ -1,0 +1,9 @@
+---
+- name: Fail if required settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_mautrix_instagram_appservice_token"
+    - "matrix_mautrix_instagram_homeserver_token"

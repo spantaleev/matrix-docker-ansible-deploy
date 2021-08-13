@@ -1,0 +1,54 @@
+---
+
+#
+# Tasks related to setting up matrix-prometheus-node-exporter
+#
+
+- name: Ensure matrix-prometheus-node-exporter image is pulled
+  docker_image:
+    name: "{{ matrix_prometheus_node_exporter_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_prometheus_node_exporter_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_prometheus_node_exporter_docker_image_force_pull }}"
+  when: "matrix_prometheus_node_exporter_enabled|bool"
+
+- name: Ensure matrix-prometheus-node-exporter.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-prometheus-node-exporter.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-prometheus-node-exporter.service"
+    mode: 0644
+  register: matrix_prometheus_node_exporter_systemd_service_result
+  when: matrix_prometheus_node_exporter_enabled|bool
+
+- name: Ensure systemd reloaded after matrix-prometheus.service installation
+  service:
+    daemon_reload: yes
+  when: "matrix_prometheus_node_exporter_enabled|bool and matrix_prometheus_node_exporter_systemd_service_result.changed"
+
+#
+# Tasks related to getting rid of matrix-prometheus-node-exporter (if it was previously enabled)
+#
+
+- name: Check existence of matrix-prometheus-node-exporter service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-prometheus-node-exporter.service"
+  register: matrix_prometheus_node_exporter_service_stat
+
+- name: Ensure matrix-prometheus-node-exporter is stopped
+  service:
+    name: matrix-prometheus-node-exporter
+    state: stopped
+    daemon_reload: yes
+  register: stopping_result
+  when: "not matrix_prometheus_node_exporter_enabled|bool and matrix_prometheus_node_exporter_service_stat.stat.exists"
+
+- name: Ensure matrix-prometheus-node-exporter.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-prometheus-node-exporter.service"
+    state: absent
+  when: "not matrix_prometheus_node_exporter_enabled|bool and matrix_prometheus_node_exporter_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-prometheus-node-exporter.service removal
+  service:
+    daemon_reload: yes
+  when: "not matrix_prometheus_node_exporter_enabled|bool and matrix_prometheus_node_exporter_service_stat.stat.exists"

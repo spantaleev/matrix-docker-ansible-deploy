@@ -1,0 +1,49 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Go-NEB bot
+{% for service in matrix_bot_go_neb_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_bot_go_neb_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-bot-go-neb 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-bot-go-neb 2>/dev/null'
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-bot-go-neb \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_bot_go_neb_container_http_host_bind_port %}
+			-p {{ matrix_bot_go_neb_container_http_host_bind_port }}:4050 \
+			{% endif %}
+			-e 'BIND_ADDRESS=:4050' \
+			-e 'DATABASE_TYPE={{ matrix_bot_go_neb_database_engine }}' \
+			-e 'BASE_URL=https://{{ matrix_server_fqn_bot_go_neb }}' \
+			-e 'CONFIG_FILE={{ matrix_bot_go_neb_config_path_in_container }}' \
+			-e 'DATABASE_URL={{ matrix_bot_go_neb_storage_database }}' \
+			--mount type=bind,src={{ matrix_bot_go_neb_config_path }},dst=/config,ro \
+			--mount type=bind,src={{ matrix_bot_go_neb_data_path }},dst=/data \
+			--entrypoint=/bin/sh \
+			{% for arg in matrix_bot_go_neb_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_bot_go_neb_docker_image }} \
+			-c "go-neb /config/config.yaml"
+
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-bot-go-neb 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-bot-go-neb 2>/dev/null'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-bot-go-neb
+
+[Install]
+WantedBy=multi-user.target

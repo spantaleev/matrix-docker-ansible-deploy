@@ -1,0 +1,49 @@
+---
+
+- name: Ensure APT usage dependencies are installed
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - gnupg
+    state: present
+    update_cache: yes
+
+- name: Ensure Docker's APT key is trusted
+  apt_key:
+    url: "https://download.docker.com/linux/{{ ansible_distribution|lower }}/gpg"
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    state: present
+  register: add_repository_key
+  ignore_errors: true
+  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
+
+- name: Ensure Docker repository is enabled
+  apt_repository:
+    repo: "deb [arch={{ matrix_debian_arch }}] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable"
+    state: present
+    update_cache: yes
+  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce' and not ansible_distribution_release == 'bullseye'
+
+- name: Ensure Docker repository is enabled (using Debian Buster on Debian Bullseye, for which there is no Docker yet)
+  apt_repository:
+    repo: "deb [arch={{ matrix_debian_arch }}] https://download.docker.com/linux/{{ ansible_distribution|lower }} buster stable"
+    state: present
+    update_cache: yes
+  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce' and ansible_distribution_release == 'bullseye'
+
+- name: Ensure APT packages are installed
+  apt:
+    name:
+      - "{{ matrix_ntpd_package }}"
+      - fuse
+    state: latest
+    update_cache: yes
+
+- name: Ensure Docker is installed
+  apt:
+    name:
+      - "{{ matrix_docker_package_name }}"
+      - "python{{'3' if ansible_python.version.major == 3 else ''}}-docker"
+    state: latest
+  when: matrix_docker_installation_enabled|bool

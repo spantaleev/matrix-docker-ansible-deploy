@@ -1,0 +1,16 @@
+- set_fact:
+    matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-mautrix-signal.service', 'matrix-mautrix-signal-daemon.service'] }}"
+  when: matrix_mautrix_signal_enabled|bool
+
+# If the matrix-synapse role is not used, these variables may not exist.
+- set_fact:
+    matrix_synapse_container_extra_arguments: >
+      {{ matrix_synapse_container_extra_arguments|default([]) }}
+      +
+      ["--mount type=bind,src={{ matrix_mautrix_signal_config_path }}/registration.yaml,dst=/matrix-mautrix-signal-registration.yaml,ro"]
+
+    matrix_synapse_app_service_config_files: >
+      {{ matrix_synapse_app_service_config_files|default([]) }}
+      +
+      {{ ["/matrix-mautrix-signal-registration.yaml"] }}
+  when: matrix_mautrix_signal_enabled|bool

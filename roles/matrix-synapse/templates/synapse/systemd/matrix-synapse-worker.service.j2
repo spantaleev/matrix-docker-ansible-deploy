@@ -1,0 +1,64 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Synapse worker ({{ matrix_synapse_worker_container_name }})
+AssertPathExists={{ matrix_synapse_config_dir_path }}/{{ matrix_synapse_worker_config_file_name }}
+After=matrix-synapse.service
+
+[Service]
+Type=simple
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
+
+ExecStartPre=-{{ matrix_host_command_docker }} kill {{ matrix_synapse_worker_container_name }}
+ExecStartPre=-{{ matrix_host_command_docker }} rm {{ matrix_synapse_worker_container_name }}
+
+# Intentional delay, so that the homeserver can manage to start.
+ExecStartPre={{ matrix_host_command_sleep }} 5
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name {{ matrix_synapse_worker_container_name }} \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			-e UID={{ matrix_user_uid }} \
+			-e GID={{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_synapse_tmp_directory_size_mb }}m \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_synapse_worker_details.port != 0 %}
+			--health-cmd 'curl -fSs http://localhost:{{ matrix_synapse_worker_details.port }}/health || exit 1' \
+			{% else %}
+			--no-healthcheck \
+			{% endif %}
+			{% if matrix_synapse_workers_enabled and matrix_synapse_workers_container_host_bind_address %}
+			{% if matrix_synapse_worker_details.port != 0 %}
+			-p {{ '' if matrix_synapse_workers_container_host_bind_address == '*' else (matrix_synapse_workers_container_host_bind_address + ':') }}{{ matrix_synapse_worker_details.port }}:{{ matrix_synapse_worker_details.port }} \
+			{% endif %}
+			{% if matrix_synapse_worker_details.metrics_port != 0 %}
+			-p {{ '' if matrix_synapse_workers_container_host_bind_address == '*' else (matrix_synapse_workers_container_host_bind_address + ':') }}{{ matrix_synapse_worker_details.metrics_port }}:{{ matrix_synapse_worker_details.metrics_port }} \
+			{% endif %}
+			{% endif %}
+			--mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data,ro \
+			--mount type=bind,src={{ matrix_synapse_storage_path }},dst=/matrix-media-store-parent,bind-propagation=slave \
+			{% for volume in matrix_synapse_container_additional_volumes %}
+			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
+			{% endfor %}
+			{% for arg in matrix_synapse_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_synapse_docker_image }} \
+			run -m synapse.app.{{ matrix_synapse_worker_details.type }} -c /data/homeserver.yaml -c /data/{{ matrix_synapse_worker_config_file_name }}
+
+
+ExecStop=-{{ matrix_host_command_docker }} kill {{ matrix_synapse_worker_container_name }}
+ExecStop=-{{ matrix_host_command_docker }} rm {{ matrix_synapse_worker_container_name }}
+
+ExecReload={{ matrix_host_command_docker }} exec {{ matrix_synapse_worker_container_name }} /bin/sh -c 'kill -HUP 1'
+Restart=always
+RestartSec=30
+SyslogIdentifier={{ matrix_synapse_worker_container_name }}
+
+# Intentionally not making this WantedBy=matrix-synapse.service,
+# as matrix.synapse.service already has `Wants=` lines.
+# Also, WantedBy will trigger the creation of some `matrix-synapse.service.wants/` directory,
+# which we'd have to clean, etc. Better not.
+[Install]
+WantedBy=multi-user.target

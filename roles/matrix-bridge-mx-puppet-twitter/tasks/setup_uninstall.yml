@@ -1,0 +1,24 @@
+---
+
+- name: Check existence of matrix-mx-puppet-twitter service
+  stat:
+    path: "/etc/systemd/system/matrix-mx-puppet-twitter.service"
+  register: matrix_mx_puppet_twitter_service_stat
+
+- name: Ensure matrix-mx-puppet-twitter is stopped
+  service:
+    name: matrix-mx-puppet-twitter
+    state: stopped
+    daemon_reload: yes
+  when: "matrix_mx_puppet_twitter_service_stat.stat.exists"
+
+- name: Ensure matrix-mx-puppet-twitter.service doesn't exist
+  file:
+    path: "/etc/systemd/system/matrix-mx-puppet-twitter.service"
+    state: absent
+  when: "matrix_mx_puppet_twitter_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-mx-puppet-twitter.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_mx_puppet_twitter_service_stat.stat.exists"

@@ -1,0 +1,91 @@
+matrix_dimension_enabled: false
+
+# You are required to specify an access token for Dimension to work.
+# For information on how to acquire an access token, visit https://t2bot.io/docs/access_tokens
+matrix_dimension_access_token: ""
+
+# Users in form: ['@user1:domain.com', '@user2:domain.com']
+matrix_dimension_admins: []
+
+# Whether to allow Dimension widgets serve websites with invalid or self signed SSL certificates
+matrix_dimension_widgets_allow_self_signed_ssl_certificates: false
+
+matrix_dimension_base_path: "{{ matrix_base_data_path }}/dimension"
+
+matrix_dimension_version: latest
+matrix_dimension_docker_image: "{{ matrix_container_global_registry_prefix }}turt2live/matrix-dimension:{{ matrix_dimension_version }}"
+matrix_dimension_docker_image_force_pull: "{{ matrix_dimension_docker_image.endswith(':latest') }}"
+
+# List of systemd services that matrix-dimension.service depends on.
+matrix_dimension_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-dimension.service wants
+matrix_dimension_systemd_wanted_services_list: []
+
+# The user and group id correspond to the node user in the `turt2live/matrix-dimension` image.
+matrix_dimension_user_uid: '1000'
+matrix_dimension_user_gid: '1000'
+
+# Controls whether the matrix-dimension container exposes its HTTP port (tcp/8184 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8184"), or empty string to not expose.
+matrix_dimension_container_http_host_bind_port: ''
+
+# A list of extra arguments to pass to the container
+matrix_dimension_container_extra_arguments: []
+
+matrix_dimension_integrations_ui_url: "https://{{ matrix_server_fqn_dimension }}/element"
+matrix_dimension_integrations_rest_url: "https://{{ matrix_server_fqn_dimension }}/api/v1/scalar"
+matrix_dimension_integrations_widgets_urls: ["https://{{ matrix_server_fqn_dimension }}/widgets"]
+matrix_dimension_integrations_jitsi_widget_url: "https://{{ matrix_server_fqn_dimension }}/widgets/jitsi"
+
+matrix_dimension_homeserver_federationUrl: "http://matrix-synapse:8048"
+
+
+# Database-related configuration fields.
+#
+# To use SQLite, stick to these defaults.
+#
+# To use Postgres:
+# - change the engine (`matrix_dimension_database_engine: 'postgres'`)
+# - adjust your database credentials via the `matrix_dimension_postgres_*` variables
+matrix_dimension_database_engine: 'sqlite'
+
+matrix_dimension_sqlite_database_path_local: "{{ matrix_dimension_base_path }}/dimension.db"
+matrix_dimension_sqlite_database_path_in_container: "dimension.db"
+
+matrix_dimension_database_username: 'matrix_dimension'
+matrix_dimension_database_password: 'some-password'
+matrix_dimension_database_hostname: 'matrix-postgres'
+matrix_dimension_database_port: 5432
+matrix_dimension_database_name: 'matrix_dimension'
+
+matrix_dimension_database_connection_string: 'postgres://{{ matrix_dimension_database_username }}:{{ matrix_dimension_database_password }}@{{ matrix_dimension_database_hostname }}:{{ matrix_dimension_database_port }}/{{ matrix_dimension_database_name }}'
+
+
+# Default Dimension configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_dimension_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_dimension_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_dimension_configuration_extension_yaml: |
+  # Your custom YAML configuration for Dimension goes here.
+  # This configuration extends the default starting configuration (`matrix_dimension_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_dimension_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  # telegram:
+  #   botToken: "YourTokenHere"
+  #
+
+matrix_dimension_configuration_extension: "{{ matrix_dimension_configuration_extension_yaml|from_yaml if matrix_dimension_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final Dimension configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_dimension_configuration_yaml`.
+matrix_dimension_configuration: "{{ matrix_dimension_configuration_yaml|from_yaml|combine(matrix_dimension_configuration_extension, recursive=True) }}"

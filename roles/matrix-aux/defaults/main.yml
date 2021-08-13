@@ -1,0 +1,72 @@
+---
+
+# matrix-aux is a role that manages auxiliary files and directories on your Matrix server.
+#
+# Certain components (like matrix-synapse, etc.) may sometimes require additional templates (email templates, privacy policies, etc.).
+# This role allows such files to be managed by the playbook.
+#
+# Note that files and directories created via this role are not automatically made available for containers to use.
+# If you use this role to put files in a directory that's already mounted into a container,
+# you can access the files without additional work.
+# Otherwise, you'd need to mount the file/directory to the container that needs it.
+# Roles usually provide a `matrix_*_additional_volumes` or `matrix_*_container_extra_arguments` variable
+# that you can use to mount an additional volume.
+
+# The default permission mode when creating directories using `matrix_aux_directory_definitions`
+matrix_aux_directory_default_mode: '0750'
+
+# Holds a list of directories to create on the server.
+#
+# By default, directories are:
+# - created with permissions as specified in `matrix_aux_directory_default_mode`
+# - owned by the `matrix_user_username` user and `matrix_user_groupname` group (usually `matrix:matrix`)
+#
+# Example:
+#
+# matrix_aux_directory_definitions:
+#   - dest: /matrix/aux
+#
+#   - dest: /matrix/another
+#     mode: '0700'
+#     owner: 'some-user'
+#     group: 'some-group'
+matrix_aux_directory_definitions: []
+
+# The default permission mode when creating directories using `matrix_aux_directory_definitions`
+matrix_aux_file_default_mode: '0640'
+
+# Holds a list of files to create on the server.
+#
+# By default, files are:
+# - created with permissions as specified in `matrix_aux_file_default_mode`
+# - owned by the `matrix_user_username` user and `matrix_user_groupname` group (usually `matrix:matrix`)
+#
+# You can define the file content inline (in your `vars.yml` file) or as an external file (see the example below).
+# Defining the content inline in `vars.yml` has the benefit of not splitting your configuration into multiple files,
+# but rather keeping everything inside `vars.yml` (which also gets backed up on the server in `/matrix/vars.yml`).
+#
+# Note: parent paths for files must exist.
+# If you've defined a file with a destination of `/matrix/some/path/file.txt`,
+# then you likely need to add `/matrix/some/path` to `matrix_aux_directory_definitions` as well.
+# You don't need to do this for directories that the playbook already creates for you.
+#
+# Example:
+#
+# matrix_aux_file_definitions:
+#   - dest: "{{ matrix_synapse_config_dir_path }}/something.html"
+#     content: |
+#       <!doctype html>
+#       <html><body>Something</body></html>
+#
+#   - dest: /matrix/aux/some-other-file.txt
+#     content: "Something"
+#     mode: '0600'
+#     owner: 'some-user'
+#     group: 'some-group'
+#
+#   - dest: /matrix/aux/yet-another-file.txt
+#     content: "{{ lookup('template', '/path/to/file.txt.j2') }}"
+#     mode: '0600'
+#     owner: 'some-user'
+#     group: 'some-group'
+matrix_aux_file_definitions: []

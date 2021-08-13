@@ -1,0 +1,105 @@
+
+- name: Install prerequisite apt packages on target
+  apt:
+    name:
+      - sysstat
+      - curl
+    state: present
+
+- name: Install prerequisite yum packages on AWX
+  delegate_to: 127.0.0.1
+  yum:
+    name:
+      - bind-utils
+    state: present
+
+- name: Install prerequisite pip packages on AWX
+  delegate_to: 127.0.0.1
+  pip:
+    name:
+      - dnspython
+    state: present
+
+- name: Calculate MAU value
+  shell: |
+    curl -s localhost:9000 | grep "^synapse_admin_mau_current "
+  register: mau_stat
+  no_log: True
+
+- name: Print MAU value
+  debug:
+    msg: "{{ mau_stat.stdout.split('\n') }}"
+  when: mau_stat is defined
+
+- name: Calculate CPU usage statistics
+  shell: iostat -c
+  register: cpu_usage_stat
+  no_log: True
+
+- name: Print CPU usage statistics
+  debug:
+    msg: "{{ cpu_usage_stat.stdout.split('\n') }}"
+  when: cpu_usage_stat is defined
+
+- name: Calculate RAM usage statistics
+  shell: free -mh
+  register: ram_usage_stat
+  no_log: True
+
+- name: Print RAM usage statistics
+  debug:
+    msg: "{{ ram_usage_stat.stdout.split('\n') }}"
+  when: ram_usage_stat is defined
+
+- name: Calculate free disk space
+  shell: df -h
+  register: disk_space_stat
+  no_log: True
+
+- name: Print free disk space
+  debug:
+    msg: "{{ disk_space_stat.stdout.split('\n') }}"
+  when: disk_space_stat is defined
+
+- name: Calculate size of Synapse database
+  shell: du -sh /matrix/postgres/data
+  register: db_size_stat
+  no_log: True
+
+- name: Print size of Synapse database
+  debug:
+    msg: "{{ db_size_stat.stdout.split('\n') }}"
+  when: db_size_stat is defined
+
+- name: Calculate size of local media repository
+  shell: du -sh /matrix/synapse/storage/media-store/local*
+  register: local_media_size_stat
+  ignore_errors: yes
+  no_log: True
+
+- name: Print size of local media repository
+  debug:
+    msg: "{{ local_media_size_stat.stdout.split('\n') }}"
+  when: local_media_size_stat is defined
+
+- name: Calculate size of remote media repository
+  shell: du -sh /matrix/synapse/storage/media-store/remote*
+  register: remote_media_size_stat
+  ignore_errors: yes
+  no_log: True
+
+- name: Print size of remote media repository
+  debug:
+    msg: "{{ remote_media_size_stat.stdout.split('\n') }}"
+  when: remote_media_size_stat is defined
+
+- name: Calculate docker container statistics
+  shell: docker stats --all --no-stream
+  register: docker_stats
+  ignore_errors: yes
+  no_log: True
+
+- name: Print docker container statistics
+  debug:
+    msg: "{{ docker_stats.stdout.split('\n') }}"
+  when: docker_stats is defined

@@ -1,0 +1,24 @@
+---
+
+- name: Check existence of matrix-mautrix-whatsapp service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-mautrix-whatsapp.service"
+  register: matrix_mautrix_whatsapp_service_stat
+
+- name: Ensure matrix-mautrix-whatsapp is stopped
+  service:
+    name: matrix-mautrix-whatsapp
+    state: stopped
+    daemon_reload: yes
+  when: "matrix_mautrix_whatsapp_service_stat.stat.exists"
+
+- name: Ensure matrix-mautrix-whatsapp.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-mautrix-whatsapp.service"
+    state: absent
+  when: "matrix_mautrix_whatsapp_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-mautrix-whatsapp.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_mautrix_whatsapp_service_stat.stat.exists"

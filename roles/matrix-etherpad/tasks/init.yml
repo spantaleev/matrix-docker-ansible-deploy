@@ -1,0 +1,62 @@
+- set_fact:
+    matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-etherpad.service'] }}"
+  when: matrix_etherpad_enabled|bool
+
+- block:
+  - name: Fail if matrix-nginx-proxy role already executed
+    fail:
+      msg: >-
+        Trying to append Etherpad's reverse-proxying configuration to matrix-nginx-proxy,
+        but it's pointless since the matrix-nginx-proxy role had already executed.
+        To fix this, please change the order of roles in your plabook,
+        so that the matrix-nginx-proxy role would run after the matrix-etherpad role.
+    when: matrix_nginx_proxy_role_executed|default(False)|bool
+
+  - name: Generate Etherpad proxying configuration for matrix-nginx-proxy
+    set_fact:
+      matrix_etherpad_matrix_nginx_proxy_configuration: |
+        rewrite ^{{ matrix_etherpad_public_endpoint }}$ $scheme://$server_name{{ matrix_etherpad_public_endpoint }}/ permanent;
+
+        location {{ matrix_etherpad_public_endpoint }}/ {
+        {% if matrix_nginx_proxy_enabled|default(False) %}
+          {# Use the embedded DNS resolver in Docker containers to discover the service #}
+          resolver 127.0.0.11 valid=5s;
+          proxy_pass http://matrix-etherpad:9001/;
+          {# These are proxy directives needed specifically by Etherpad #}
+          proxy_buffering off;
+          proxy_http_version 1.1;  # recommended with keepalive connections
+          proxy_pass_header Server;
+          proxy_set_header Host $host;
+          proxy_set_header X-Forwarded-Proto $scheme; # for EP to set secure cookie flag when https is used
+          # WebSocket proxying - from http://nginx.org/en/docs/http/websocket.html
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection $connection_upgrade;
+        {% else %}
+          {# Generic configuration for use outside of our container setup #}
+          # A good guide for setting up your Etherpad behind nginx:
+          # https://docs.gandi.net/en/cloud/tutorials/etherpad_lite.html
+          proxy_pass http://127.0.0.1:9001/;
+        {% endif %}
+        }
+
+  - name: Register Etherpad proxying configuration with matrix-nginx-proxy
+    set_fact:
+      matrix_nginx_proxy_proxy_dimension_additional_server_configuration_blocks: |
+        {{
+          matrix_nginx_proxy_proxy_dimension_additional_server_configuration_blocks|default([])
+          +
+          [matrix_etherpad_matrix_nginx_proxy_configuration]
+        }}
+  tags:
+    - always
+  when: matrix_etherpad_enabled|bool
+
+- name: Warn about reverse-proxying if matrix-nginx-proxy not used
+  debug:
+    msg: >-
+      NOTE: You've enabled the Etherpad tool but are not using the matrix-nginx-proxy
+      reverse proxy.
+      Please make sure that you're proxying the `{{ matrix_etherpad_public_endpoint }}`
+      URL endpoint to the matrix-etherpad container.
+      You can expose the container's port using the `matrix_etherpad_container_http_host_bind_port` variable.
+  when: "matrix_etherpad_enabled|bool and matrix_nginx_proxy_enabled is not defined"

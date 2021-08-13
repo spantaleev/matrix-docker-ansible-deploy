@@ -1,0 +1,15 @@
+---
+
+- name: Fail if required settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_sms_bridge_appservice_token"
+    - "matrix_sms_bridge_homeserver_token"
+    - "matrix_sms_bridge_default_region"
+    - "matrix_sms_bridge_default_timezone"
+    - "matrix_sms_bridge_provider_android_baseurl"
+    - "matrix_sms_bridge_provider_android_username"
+    - "matrix_sms_bridge_provider_android_password"

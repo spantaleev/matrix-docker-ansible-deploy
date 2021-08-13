@@ -1,0 +1,50 @@
+# The string to prefix bot commands with
+command_prefix: "!"
+
+# Options for connecting to the bot's Matrix account
+matrix:
+  # The Matrix User ID of the bot account
+  user_id: {{ matrix_bot_matrix_reminder_bot_matrix_user_id|to_json }}
+  # Matrix account password
+  user_password: {{ matrix_bot_matrix_reminder_bot_matrix_user_password|to_json }}
+  # The public URL at which the homeserver's Client-Server API can be accessed
+  homeserver_url: {{ matrix_bot_matrix_reminder_bot_matrix_homeserver_url }}
+  # The device ID that is a **non pre-existing** device
+  # If this device ID already exists, messages will be dropped silently in
+  # encrypted rooms
+  device_id: REMINDER
+  # What to name the logged in device
+  device_name: Reminder Bot
+
+storage:
+  # The database connection string
+  # For SQLite3, this would look like:
+  #     database: "sqlite://bot.db"
+  # For Postgres, this would look like:
+  #     database: "postgres://username:password@localhost/dbname?sslmode=disable"
+  #database: "postgres://matrix-reminder-bot:remindme@localhost/matrix-reminder-bot?sslmode=disable"
+  database: {{ matrix_bot_matrix_reminder_bot_storage_database|to_json }}
+  # The path to a directory for internal bot storage
+  # containing encryption keys, sync tokens, etc.
+  store_path: "/data/store"
+
+reminders:
+  # Uncomment to set a default timezone that will be used when creating reminders.
+  # If not set, UTC will be used
+  timezone: {{ matrix_bot_matrix_reminder_bot_reminders_timezone }}
+
+# Logging setup
+logging:
+  # Logging level
+  # Allowed levels are 'INFO', 'WARNING', 'ERROR', 'DEBUG' where DEBUG is most verbose
+  level: INFO
+  # Configure logging to a file
+  file_logging:
+    # Whether logging to a file is enabled
+    enabled: false
+    # The path to the file to log to. May be relative or absolute
+    filepath: /data/bot.log
+  # Configure logging to the console (stdout/stderr)
+  console_logging:
+    # Whether console logging is enabled
+    enabled: true

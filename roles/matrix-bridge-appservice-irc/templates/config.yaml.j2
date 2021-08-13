@@ -1,0 +1,134 @@
+#jinja2: lstrip_blocks: True
+homeserver:
+  # The URL to the home server for client-server API calls, also used to form the
+  # media URLs as displayed in bridged IRC channels:
+  url: {{ matrix_appservice_irc_homeserver_url }}
+  #
+  # The URL of the homeserver hosting media files. This is only used to transform
+  # mxc URIs to http URIs when bridging m.room.[file|image] events. Optional. By
+  # default, this is the homeserver URL, specified above.
+  #
+  media_url: {{ matrix_appservice_irc_homeserver_media_url }}
+
+  # Drop Matrix messages which are older than this number of seconds, according to
+  # the event's origin_server_ts.
+  # If the bridge is down for a while, the homeserver will attempt to send all missed
+  # events on reconnection. These events may be hours old, which can be confusing to
+  # IRC users if they are then bridged. This option allows these old messages to be
+  # dropped.
+  # CAUTION: This is a very coarse heuristic. Federated homeservers may have different
+  # clock times and hence produce different origin_server_ts values, which may be old
+  # enough to cause *all* events from the homeserver to be dropped.
+  # Default: 0 (don't ever drop)
+  # dropMatrixMessagesAfterSecs: 300 # 5 minutes
+
+  # The 'domain' part for user IDs on this home server. Usually (but not always)
+  # is the "domain name" part of the HS URL.
+  domain: {{ matrix_appservice_irc_homeserver_domain }}
+
+  # Should presence be enabled for matrix clients on this bridge. If disabled on the
+  # homeserver then it should also be disabled here to avoid excess traffic.
+  # Default: true
+  enablePresence: {{ matrix_appservice_irc_homeserver_enablePresence|to_json }}
+
+ircService:
+  # WARNING: The bridge needs to send plaintext passwords to the IRC server, it cannot
+  # send a password hash. As a result, passwords (NOT hashes) are stored encrypted in
+  # the database.
+  #
+  # To generate a .pem file:
+  # $ openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048
+  #
+  # The path to the RSA PEM-formatted private key to use when encrypting IRC passwords
+  # for storage in the database. Passwords are stored by using the admin room command
+  # `!storepass server.name passw0rd. When a connection is made to IRC on behalf of
+  # the Matrix user, this password will be sent as the server password (PASS command).
+  passwordEncryptionKeyPath: "/data/passkey.pem" # does not typically need modification
+
+  # Config for Matrix -> IRC bridging
+  matrixHandler:
+    # Cache this many matrix events in memory to be used for m.relates_to messages (usually replies).
+    eventCacheSize: 4096
+
+  servers: {{ matrix_appservice_irc_ircService_servers|to_json }}
+
+  # Configuration for an ident server. If you are running a public bridge it is
+  # advised you setup an ident server so IRC mods can ban specific matrix users
+  # rather than the application service itself.
+  ident:
+    # True to listen for Ident requests and respond with the
+    # matrix user's user_id (converted to ASCII, respecting RFC 1413).
+    # Default: false.
+    enabled: false
+    # The port to listen on for incoming ident requests.
+    # Ports below 1024 require root to listen on, and you may not want this to
+    # run as root. Instead, you can get something like an Apache to yank up
+    # incoming requests to 113 to a high numbered port. Set the port to listen
+    # on instead of 113 here.
+    # Default: 113.
+    port: 1113
+    # The address to listen on for incoming ident requests.
+    # Default: 0.0.0.0
+    address: "::"
+
+  # Configuration for logging. Optional. Default: console debug level logging
+  # only.
+  logging:
+    # Level to log on console/logfile. One of error|warn|info|debug
+    level: "debug"
+    # The file location to log to. This is relative to the project directory.
+    #logfile: "debug.log"
+    # The file location to log errors to. This is relative to the project
+    # directory.
+    #errfile: "errors.log"
+    # Whether to log to the console or not.
+    toConsole: true
+    # The max number of files to keep. Files will be overwritten eventually due
+    # to rotations.
+    maxFiles: 5
+
+  # Optional. Enable Prometheus metrics. If this is enabled, you MUST install `prom-client`:
+  #   $ npm install prom-client@6.3.0
+  # Metrics will then be available via GET /metrics on the bridge listening port (-p).
+  metrics:
+    # Whether to actually enable the metric endpoint. Default: false
+    enabled: true
+    # When collecting remote user active times, which "buckets" should be used. Defaults are given below.
+    # The bucket name is formed of a duration and a period. (h=hours,d=days,w=weeks).
+    remoteUserAgeBuckets:
+      - "1h"
+      - "1d"
+      - "1w"
+
+  # Configuration for the provisioning API.
+  #
+  # GET /_matrix/provision/link
+  # GET /_matrix/provision/unlink
+  # GET /_matrix/provision/listlinks
+  #
+  provisioning:
+    # True to enable the provisioning HTTP endpoint. Default: false.
+    enabled: false
+    # The number of seconds to wait before giving up on getting a response from
+    # an IRC channel operator. If the channel operator does not respond within the
+    # allotted time period, the provisioning request will fail.
+    # Default: 300 seconds (5 mins)
+    requestTimeoutSeconds: 300
+
+# Options here are generally only applicable to large-scale bridges and may have
+# consequences greater than other options in this configuration file.
+advanced:
+  # The maximum number of HTTP(S) sockets to maintain. Usually this is unlimited
+  # however for large bridges it is important to rate limit the bridge to avoid
+  # accidentally overloading the homeserver. Defaults to 1000, which should be
+  # enough for the vast majority of use cases.
+  maxHttpSockets: 1000
+
+# Use an external database to store bridge state.
+database:
+  # database engine (must be 'postgres' or 'nedb'). Default: nedb
+  engine: {{ matrix_appservice_irc_database_engine|to_json }}
+  # Either a PostgreSQL connection string, or a path to the NeDB storage directory.
+  # For postgres, it must start with postgres://
+  # For NeDB, it must start with nedb://. The path is relative to the project directory.
+  connectionString: {{ matrix_appservice_irc_database_connectionString|to_json }}

@@ -1,0 +1,38 @@
+{
+	"Matrix": {
+		"HomeserverDomainName": "{{ matrix_corporal_matrix_homeserver_domain_name }}",
+		"HomeserverApiEndpoint": "{{ matrix_corporal_matrix_homeserver_api_endpoint }}",
+		"AuthSharedSecret": "{{ matrix_corporal_matrix_auth_shared_secret }}",
+		"RegistrationSharedSecret": "{{ matrix_corporal_matrix_registration_shared_secret }}",
+		"TimeoutMilliseconds": {{ matrix_corporal_matrix_timeout_milliseconds }}
+	},
+
+	"Corporal": {
+		"UserID": "@{{ matrix_corporal_corporal_user_id_local_part }}:{{ matrix_domain }}"
+	},
+
+	"Reconciliation": {
+		"RetryIntervalMilliseconds": {{ matrix_corporal_reconciliation_retry_interval_milliseconds }}
+	},
+
+	"HttpGateway": {
+		"ListenAddress": "0.0.0.0:41080",
+		"TimeoutMilliseconds": {{ matrix_corporal_http_gateway_timeout_milliseconds }},
+		"InternalRESTAuth": {
+			"Enabled": {{ matrix_corporal_http_gateway_internal_rest_auth_enabled|to_json }}
+		}
+	},
+
+	"HttpApi": {
+		"Enabled": {{ matrix_corporal_http_api_enabled|to_json }},
+		"ListenAddress": "0.0.0.0:41081",
+		"AuthorizationBearerToken": "{{ matrix_corporal_http_api_auth_token }}",
+		"TimeoutMilliseconds": {{ matrix_corporal_http_api_timeout_milliseconds }}
+	},
+
+	"PolicyProvider": {{ matrix_corporal_policy_provider_config }},
+
+	"Misc": {
+		"Debug": {{ matrix_corporal_debug|to_json }}
+	}
+}

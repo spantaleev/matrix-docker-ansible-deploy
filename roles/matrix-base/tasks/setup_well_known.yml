@@ -1,0 +1,36 @@
+# We need others to be able to read these directories too,
+# so that matrix-nginx-proxy's nginx user can access the files.
+#
+# For running with another webserver, we recommend being part of the `matrix` group.
+- name: Ensure Matrix static-files path exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_static_files_base_path }}/.well-known/matrix"
+
+- name: Ensure Matrix /.well-known/matrix/client file configured
+  template:
+    src: "{{ role_path }}/templates/static-files/well-known/matrix-client.j2"
+    dest: "{{ matrix_static_files_base_path }}/.well-known/matrix/client"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Matrix /.well-known/matrix/server file configured
+  template:
+    src: "{{ role_path }}/templates/static-files/well-known/matrix-server.j2"
+    dest: "{{ matrix_static_files_base_path }}/.well-known/matrix/server"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  when: matrix_well_known_matrix_server_enabled|bool
+
+- name: Ensure Matrix /.well-known/matrix/server file deleted
+  file:
+    path: "{{ matrix_static_files_base_path }}/.well-known/matrix/server"
+    state: absent
+  when: "not matrix_well_known_matrix_server_enabled|bool"

@@ -1,0 +1,24 @@
+---
+
+- name: Check existence of matrix-mx-puppet-groupme service
+  stat:
+    path: "/etc/systemd/system/matrix-mx-puppet-groupme.service"
+  register: matrix_mx_puppet_groupme_service_stat
+
+- name: Ensure matrix-mx-puppet-groupme is stopped
+  service:
+    name: matrix-mx-puppet-groupme
+    state: stopped
+    daemon_reload: yes
+  when: "matrix_mx_puppet_groupme_service_stat.stat.exists"
+
+- name: Ensure matrix-mx-puppet-groupme.service doesn't exist
+  file:
+    path: "/etc/systemd/system/matrix-mx-puppet-groupme.service"
+    state: absent
+  when: "matrix_mx_puppet_groupme_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-mx-puppet-groupme.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_mx_puppet_groupme_service_stat.stat.exists"
