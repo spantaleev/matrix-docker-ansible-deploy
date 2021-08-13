@@ -78,6 +78,9 @@ matrix_mautrix_signal_appservice_database: "{{
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
 matrix_mautrix_signal_login_shared_secret: ''
 
+# Enable bridge relay bot functionality
+matrix_mautrix_signal_relaybot_enabled: false
+
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
@@ -93,6 +96,21 @@ matrix_mautrix_signal_configuration_extension_yaml: |
   #
   # If you need something more special, you can take full control by
   # completely redefining `matrix_mautrix_signal_configuration_yaml`.
+  #
+  # Permissions for using the bridge.
+  # Permitted values:
+  #      relay - Allowed to be relayed through the bridge, no access to commands.
+  #       user - Use the bridge with puppeting.
+  #      admin - Use and administrate the bridge.
+  # Permitted keys:
+  #        * - All Matrix users
+  #   domain - All users on that homeserver
+  #     mxid - Specific user
+  #
+  bridge:
+    permissions:
+      {{ matrix_mautrix_signal_homeserver_domain }}: "{{ "relay" if matrix_mautrix_signal_relaybot_enabled else "user" }}"
+
 
 matrix_mautrix_signal_configuration_extension: "{{ matrix_mautrix_signal_configuration_extension_yaml|from_yaml if matrix_mautrix_signal_configuration_extension_yaml|from_yaml is mapping else {} }}"
 
