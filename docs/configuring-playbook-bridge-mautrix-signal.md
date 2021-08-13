@@ -27,8 +27,8 @@ matrix_mautrix_signal_configuration_extension_yaml: |
   bridge:
     permissions:
       '@YOUR_USERNAME:YOUR_DOMAIN': admin
-      '*': user
-      YOUR_DOMAIN: relay
+      YOUR_DOMAIN: user
+      '*': relay
 ```
 
 You may wish to look at `roles/matrix-bridge-mautrix-signal/templates/config.yaml.j2` to find more information on the permissions settings and other options you would like to configure.
