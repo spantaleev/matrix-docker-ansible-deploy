@@ -18,7 +18,8 @@ The relay bot functionality is off by default. If you would like to enable the r
 ```yaml
 matrix_mautrix_signal_relaybot_enabled: true
 ```
-
+If you want to activate the relay bot in a room, use `!signal set-relay`.
+Use `!signal unset-relay` to deactivate.
 Additionally the permissions for the bridge grant user rights to all base domain users in case the relay bot is disabled, or relay rights in case the relay bot is enabled.
 
 If you would like to have a more specific setting of the permissions you can set the permissions as follows (example). For more details see also [mautrix-bridge documentation](https://docs.mau.fi/bridges/python/signal/relay-mode.html)
