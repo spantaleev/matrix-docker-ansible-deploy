@@ -127,7 +127,7 @@
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: matrix_nginx_proxy_base_domain_serving_enabled|bool
+  when: matrix_nginx_proxy_base_domain_serving_enabled|bool and matrix_nginx_proxy_base_domain_create_directory|bool
 
 - name: Ensure Matrix nginx-proxy homepage for base domain exists
   copy:
@@ -136,7 +136,7 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: matrix_nginx_proxy_base_domain_serving_enabled|bool and matrix_nginx_proxy_base_domain_homepage_enabled|bool
+  when: matrix_nginx_proxy_base_domain_serving_enabled|bool and matrix_nginx_proxy_base_domain_homepage_enabled|bool and matrix_nginx_proxy_base_domain_create_directory|bool
 
 - name: Ensure Matrix nginx-proxy configuration for base domain exists
   template:

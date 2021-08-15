@@ -10,6 +10,7 @@ matrix_nginx_proxy_docker_image_force_pull: "{{ matrix_nginx_proxy_docker_image.
 matrix_nginx_proxy_base_path: "{{ matrix_base_data_path }}/nginx-proxy"
 matrix_nginx_proxy_data_path: "{{ matrix_nginx_proxy_base_path }}/data"
 matrix_nginx_proxy_data_path_in_container: "/nginx-data"
+matrix_nginx_proxy_data_path_extension: "/matrix_domain"
 matrix_nginx_proxy_confd_path: "{{ matrix_nginx_proxy_base_path }}/conf.d"
 
 # List of systemd services that matrix-nginx-proxy.service depends on
@@ -74,6 +75,9 @@ matrix_nginx_proxy_container_federation_host_bind_port: '8448'
 # You can also put additional files to use for this webpage
 # in the `{{ matrix_nginx_proxy_data_path }}/matrix-domain` (`/matrix/nginx-proxy/data/matrix-domain`) directory.
 matrix_nginx_proxy_base_domain_serving_enabled: false
+
+# Controls whether the base domain directory and default index.html file are created.
+matrix_nginx_proxy_base_domain_create_directory: true
 
 matrix_nginx_proxy_base_domain_hostname: "{{ matrix_domain }}"
 
