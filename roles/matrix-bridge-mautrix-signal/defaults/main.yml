@@ -81,6 +81,19 @@ matrix_mautrix_signal_login_shared_secret: ''
 # Enable bridge relay bot functionality
 matrix_mautrix_signal_relaybot_enabled: false
 
+# Permissions for using the bridge.
+# Permitted values:
+#      relay - Allowed to be relayed through the bridge, no access to commands.
+#       user - Use the bridge with puppeting.
+#      admin - Use and administrate the bridge.
+# Permitted keys:
+#        * - All Matrix users
+#   domain - All users on that homeserver
+#     mxid - Specific user
+matrix_mautrix_signal_bridge_permissions: |
+  '*': relay
+  '{{ matrix_mautrix_signal_homeserver_domain }}': user
+
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
