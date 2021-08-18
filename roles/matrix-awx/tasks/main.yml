@@ -25,7 +25,43 @@
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - backup-server
-    
+
+# Delete DigitalOcean Droplet/Space
+- include_tasks: 
+    file: "delete_server.yml"
+    apply:
+      tags: delete-subscription
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags: 
+    - delete-subscription
+
+# Delete MailGun SMTP Account
+- include_tasks: 
+    file: "delete_mailgun.yml"
+    apply:
+      tags: delete-subscription
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags:
+    - delete-subscription
+
+# Delete AWX Job Templates for Server
+- include_tasks: 
+    file: "delete_awx_templates.yml"
+    apply:
+      tags: delete-subscription
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags:
+    - delete-subscription
+
+# Delete Organisation Directories
+- include_tasks: 
+    file: "delete_server_directory.yml"
+    apply:
+      tags: delete-subscription
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags:
+    - delete-subscription
+
 # Perform a export of the server
 - include_tasks: 
     file: "export_server.yml"

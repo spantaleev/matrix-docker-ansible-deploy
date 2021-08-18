@@ -1,0 +1,42 @@
+
+
+- name: Include hosting vars of digital_ocean.yml
+  include_vars:
+    file: /var/lib/awx/projects/hosting/hosting_vars.yml
+  no_log: True
+
+- name: Load vars from organisation.yml
+  include_vars:
+    file: '/var/lib/awx/projects/clients/{{ member_id }}/organisation.yml'
+
+- name: Load vars from server_vars.yml
+  include_vars:
+    file: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/server_vars.yml'
+  ignore_errors: yes
+
+- name: Remove existing Digital Ocean Droplet
+  community.digitalocean.digital_ocean_droplet:
+    # needs ansible 2.8+ (AWX uses 2.9.10 at ) 
+    state: absent
+    id: '{{ do_droplet_id }}'
+    name: '{{ matrix_domain }}'
+    oauth_token: '{{ do_api_token }}'
+    size: '{{ slug_size }}'
+    region: '{{ do_droplet_region }}'
+    image: '{{ do_image }}'
+    wait: yes
+    unique_name: yes
+  register: deleted_server_info
+  when: do_droplet_id is defined
+
+- debug:
+    msg: "{{ deleted_server_info }}"
+  when: do_droplet_id is defined
+
+#- name: Delete fake DNS record for faster testing
+#  delegate_to: 127.0.0.1
+#  shell: |
+#    sed -i -c '/{{ matrix_domain }}/d' /etc/hosts
+
+# Doesn't allow letsencrypt to generate certs :S
+

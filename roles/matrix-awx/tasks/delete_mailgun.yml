@@ -1,0 +1,14 @@
+
+- name: Include matrix server variables from matrix_vars.yml
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - /var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml
+      skip: true
+  no_log: True
+  
+- name: Delete MailGun SMTP login
+  shell: |
+    curl -s --user 'api:{{ mg_private_api_key }}' -X DELETE https://{{ mg_api_url }}/v3/domains/{{ mg_sender_domain }}/credentials/{{ matrix_domain }}
+  when: matrix_domain is defined
+  no_log: True
