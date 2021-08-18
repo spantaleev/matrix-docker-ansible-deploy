@@ -2,7 +2,7 @@
 
 The playbook can install and configure [mautrix-hangouts](https://github.com/mautrix/hangouts) for you.
 
-See the project's [documentation](https://github.com/mautrix/hangouts/wiki#usage) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://docs.mau.fi/bridges/python/hangouts/index.html) to learn what it does and why it might be useful to you.
 
 To enable the [Google Hangouts](https://hangouts.google.com/) bridge just use the following playbook configuration:
 
@@ -14,7 +14,7 @@ matrix_mautrix_hangouts_enabled: true
 
 ## Set up Double Puppeting
 
-If you'd like to use [Double Puppeting](https://github.com/mautrix/hangouts/wiki/Authentication#double-puppeting) (hint: you most likely do), you have 2 ways of going about it.
+If you'd like to use [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do), you have 2 ways of going about it.
 
 ### Method 1: automatically, by enabling Shared Secret Auth
 
