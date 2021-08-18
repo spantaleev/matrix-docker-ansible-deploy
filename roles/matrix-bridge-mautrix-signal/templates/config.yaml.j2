@@ -188,14 +188,13 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions:
-      '{{ matrix_mautrix_signal_homeserver_domain }}': relay
-      '{{ matrix_mautrix_signal_homeserver_domain }}': user
+    permissions: 
+        {{ matrix_mautrix_signal_bridge_permissions|from_yaml }}
 
     relay:
         # Whether or not relay mode should be allowed. If allowed, `!signal set-relay` can be used to turn any
         # authenticated user into a relaybot for that chat.
-        enabled: true
+        enabled: {{ matrix_mautrix_signal_relaybot_enabled }}
         # The formats to use when sending messages to Signal via a relay user.
         #
         # Available variables:
