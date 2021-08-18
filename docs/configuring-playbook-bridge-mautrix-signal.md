@@ -1,8 +1,8 @@
 # Setting up Mautrix Signal (optional)
 
-The playbook can install and configure [mautrix-signal](https://github.com/tulir/mautrix-signal) for you.
+The playbook can install and configure [mautrix-signal](https://github.com/mautrix/signal) for you.
 
-See the project's [documentation](https://github.com/tulir/mautrix-signal/wiki) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://docs.mau.fi/bridges/python/signal/index.html) to learn what it does and why it might be useful to you.
 
 **Note/Prerequisite**: If you're running with the Postgres database server integrated by the playbook (which is the default), you don't need to do anything special and can easily proceed with installing. However, if you're [using an external Postgres server](configuring-playbook-external-postgres.md), you'd need to manually prepare a Postgres database for this bridge and adjust the variables related to that (`matrix_mautrix_signal_database_*`).
 
@@ -59,7 +59,7 @@ You may wish to look at `roles/matrix-bridge-mautrix-signal/templates/config.yam
 
 ## Set up Double Puppeting
 
-If you'd like to use [Double Puppeting](https://github.com/tulir/mautrix-signal/wiki/Authentication#double-puppeting) (hint: you most likely do), you have 2 ways of going about it.
+If you'd like to use [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do), you have 2 ways of going about it.
 
 ### Method 1: automatically, by enabling Shared Secret Auth
 
