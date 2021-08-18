@@ -1,6 +1,6 @@
 # Setting up Mautrix Instagram (optional)
 
-The playbook can install and configure [mautrix-instagram](https://github.com/tulir/mautrix-instagram) for you.
+The playbook can install and configure [mautrix-instagram](https://github.com/mautrix/instagram) for you.
 
 See the project's [documentation](https://docs.mau.fi/bridges/python/instagram/index.html) to learn what it does and why it might be useful to you.
 
