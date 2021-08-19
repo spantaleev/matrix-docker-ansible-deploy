@@ -272,9 +272,9 @@
     validate_certs: yes
   when: matrix_domain is defined
 
-- name: Remove 'Purge Database (Advanced)' job template
+- name: Remove '<< SUBSCRIPTION DELETION IN PROGRESS >>' job template
   awx.awx.tower_job_template:
-    name: "{{ matrix_domain }} - 2 - Purge Database (Advanced)"
+    name: "0 - {{ subscription_id }} - << SUBSCRIPTION DELETION IN PROGRESS >>"
     job_type: run
     project: "{{ member_id }} - Matrix Docker Ansible Deploy"
     playbook: setup.yml
@@ -282,8 +282,7 @@
     tower_host: "https://{{ tower_host }}"
     tower_oauthtoken: "{{ tower_token.stdout }}"
     validate_certs: yes
-  when: matrix_domain is defined
-  
+
 - name: Remove Matrix server from organisations inventory
   awx.awx.tower_host:
     name: "matrix.{{ matrix_domain }}"
