@@ -1,8 +1,8 @@
 # Setting up Mautrix Telegram (optional)
 
-The playbook can install and configure [mautrix-telegram](https://github.com/tulir/mautrix-telegram) for you.
+The playbook can install and configure [mautrix-telegram](https://github.com/mautrix/telegram) for you.
 
-See the project's [documentation](https://github.com/tulir/mautrix-telegram/wiki#usage) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://docs.mau.fi/bridges/python/telegram/index.html) to learn what it does and why it might be useful to you.
 
 You'll need to obtain API keys from [https://my.telegram.org/apps](https://my.telegram.org/apps) and then use the following playbook configuration:
 
@@ -14,7 +14,7 @@ matrix_mautrix_telegram_api_hash: YOUR_TELEGRAM_API_HASH
 
 ## Set up Double Puppeting
 
-If you'd like to use [Double Puppeting](https://github.com/tulir/mautrix-telegram/wiki/Authentication#replacing-telegram-accounts-matrix-puppet-with-matrix-account) (hint: you most likely do), you have 2 ways of going about it.
+If you'd like to use [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do), you have 2 ways of going about it.
 
 ### Method 1: automatically, by enabling Shared Secret Auth
 
@@ -45,7 +45,7 @@ https://matrix.DOMAIN/_matrix/client/r0/login
 
 You then need to start a chat with `@telegrambot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
 
-If you want to use the relay-bot feature ([relay bot documentation](https://github.com/tulir/mautrix-telegram/wiki/Relay-bot)), which allows anonymous user to chat with telegram users, use the following additional playbook configuration:
+If you want to use the relay-bot feature ([relay bot documentation](https://docs.mau.fi/bridges/python/telegram/relay-bot.html)), which allows anonymous user to chat with telegram users, use the following additional playbook configuration:
 
 ```yaml
 matrix_mautrix_telegram_bot_token: YOUR_TELEGRAM_BOT_TOKEN
