@@ -1,20 +1,24 @@
 
 
 - name: Include hosting vars of digital_ocean.yml
+  delegate_to: 127.0.0.1
   include_vars:
     file: /var/lib/awx/projects/hosting/hosting_vars.yml
   no_log: True
 
 - name: Load vars from organisation.yml
+  delegate_to: 127.0.0.1
   include_vars:
     file: '/var/lib/awx/projects/clients/{{ member_id }}/organisation.yml'
 
 - name: Load vars from server_vars.yml
+  delegate_to: 127.0.0.1
   include_vars:
     file: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/server_vars.yml'
   ignore_errors: yes
 
 - name: Remove existing Digital Ocean Droplet
+  delegate_to: 127.0.0.1
   community.digitalocean.digital_ocean_droplet:
     # needs ansible 2.8+ (AWX uses 2.9.10 at ) 
     state: absent
