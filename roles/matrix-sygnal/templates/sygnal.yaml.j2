@@ -3,57 +3,6 @@
 # See: matrix.org
 ##
 
-# The 'database' setting defines the database that sygnal uses to store all of
-# its data.
-#
-# 'name' gives the database engine to use: either 'sqlite3' (for SQLite) or
-# 'psycopg2' (for PostgreSQL).
-#
-# 'args' gives options which are passed through to the database engine,
-# except for options starting 'cp_', which are used to configure the Twisted
-# connection pool. For a reference to valid arguments, see:
-#   * for sqlite: https://docs.python.org/3/library/sqlite3.html#sqlite3.connect
-#   * for postgres: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
-#   * for the connection pool: https://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#__init__
-#
-#
-# Example SQLite configuration:
-#
-#database:
-#  name: sqlite3
-#  args:
-#    dbfile: /path/to/database.db
-#
-#
-# Example Postgres configuration:
-#
-#database:
-#  name: psycopg2
-#  args:
-#    host: localhost
-#    database: sygnal
-#    user: sygnal
-#    password: pass
-#    cp_min: 1
-#    cp_max: 5
-#
-{% if matrix_sygnal_database_engine == 'sqlite' %}
-database:
-  name: sqlite3
-  args:
-    dbfile: {{ matrix_sygnal_sqlite_database_path_in_container|to_json }}
-{% else %}
-database:
-  name: psycopg2
-  args:
-    host: {{ matrix_sygnal_database_hostname|to_json }}
-    database: {{ matrix_sygnal_database_name|to_json }}
-    user: {{ matrix_sygnal_database_username|to_json }}
-    password: {{ matrix_sygnal_database_password|to_json }}
-    cp_min: 1
-    cp_max: 5
-{% endif %}
-
 ## Logging #
 #
 log:

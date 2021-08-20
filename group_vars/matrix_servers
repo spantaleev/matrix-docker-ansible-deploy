@@ -1463,12 +1463,6 @@ matrix_postgres_additional_databases: |
     }] if (matrix_etherpad_enabled and matrix_etherpad_database_engine == 'postgres' and matrix_etherpad_database_hostname == 'matrix-postgres') else [])
     +
     ([{
-      'name': matrix_sygnal_database_name,
-      'username': matrix_sygnal_database_username,
-      'password': matrix_sygnal_database_password,
-    }] if (matrix_sygnal_enabled and matrix_sygnal_database_engine == 'postgres' and matrix_sygnal_database_hostname == 'matrix-postgres') else [])
-     +
-    ([{
       'name': matrix_prometheus_postgres_exporter_database_name,
       'username': matrix_prometheus_postgres_exporter_database_username,
       'password': matrix_prometheus_postgres_exporter_database_password,
@@ -1511,10 +1505,6 @@ matrix_sygnal_enabled: false
 matrix_sygnal_metrics_prometheus_enabled: "{{ matrix_prometheus_enabled }}"
 
 matrix_sygnal_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:6000' }}"
-
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_sygnal_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
-matrix_sygnal_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'sygnal') | to_uuid }}"
 
 ######################################################################
 #
