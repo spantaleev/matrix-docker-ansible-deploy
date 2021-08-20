@@ -26,6 +26,15 @@
   tags:
     - backup-server
 
+# Abort Subscription Deletion
+- include_tasks: 
+    file: "abort_deletion.yml"
+    apply:
+      tags: delete-subscription
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags: 
+    - delete-subscription
+
 # Delete DigitalOcean Droplet/Space
 - include_tasks: 
     file: "delete_server.yml"
@@ -55,7 +64,7 @@
 
 # Delete Organisation Directories
 - include_tasks: 
-    file: "delete_server_directory.yml"
+    file: "delete_subscription_directory.yml"
     apply:
       tags: delete-subscription
   when: run_setup|bool and matrix_awx_enabled|bool

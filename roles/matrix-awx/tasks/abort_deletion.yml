@@ -1,0 +1,283 @@
+
+# abort deletion
+
+- name: Include hosting vars
+  include_vars:
+    file: /var/lib/awx/projects/hosting/hosting_vars.yml
+  when: cancel_deletion|bool
+  no_log: True
+
+- name: Install jq in AWX
+  delegate_to: 127.0.0.1
+  yum:
+    name: jq
+    state: latest
+  when: cancel_deletion|bool
+    
+- name: Collect AWX admin token the hard way!
+  delegate_to: 127.0.0.1
+  shell: |
+      curl -sku {{ tower_username }}:{{ tower_password }} -H "Content-Type: application/json" -X POST -d '{"description":"Tower CLI", "application":null, "scope":"write"}' https://{{ tower_host }}/api/v2/users/1/personal_tokens/ | jq '.token' | sed -r 's/\"//g'
+  when: cancel_deletion|bool
+  register: tower_token
+  no_log: True
+
+- name: Remove schedule for '<< SUBSCRIPTION DELETION IN PROGRESS >>' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_schedule:
+    name: "{{ subscription_id }} - << SUBSCRIPTION DELETION IN PROGRESS >>"
+    enabled: yes
+    state: absent
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: cancel_deletion|bool
+
+# restore use of templates
+
+- name: Grant execute permission on 'Deploy/Update a Server' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 0 - Deploy/Update a Server"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+  
+- name: Grant execute permission on 'Backup Server' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 0 - Backup Server"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool) 
+
+- name: Grant execute permission on 'Self-Check' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 0 - Self-Check"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+
+- name: Grant execute permission on 'Start/Restart all Services' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 0 - Start/Restart all Services"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+
+- name: Grant execute permission on 'Stop all Services' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 0 - Stop all Services"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+
+- name: Grant execute permission on 'Configure Corporal (Advanced)' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 1 - Configure Corporal (Advanced)"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+
+- name: Grant execute permission on 'Configure Dimension' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 1 - Configure Dimension"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+
+- name: Grant execute permission on 'Configure Element' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 1 - Configure Element"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+
+- name: Grant execute permission on 'Configure Element Subdomain' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 1 - Configure Element Subdomain"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+
+- name: Grant execute permission on 'Configure Email Relay' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 1 - Configure Email Relay"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+
+- name: Grant execute permission on 'Configure Jitsi' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 1 - Configure Jitsi"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+
+- name: Grant execute permission on 'Configure ma1sd (Advanced)' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 1 - Configure ma1sd (Advanced)"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+
+- name: Grant execute permission on 'Configure Synapse' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 1 - Configure Synapse"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+
+- name: Grant execute permission on 'Configure Synapse Admin' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 1 - Configure Synapse Admin"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+
+- name: Grant execute permission on 'Create User' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 2 - Create User"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+
+- name: Grant execute permission on 'Purge Media (Advanced)' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 2 - Purge Media (Advanced)"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+
+- name: Grant execute permission on 'Purge Database (Advanced)' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_role:
+    team: "{{ member_id }}"
+    job_template: "{{ matrix_domain }} - 2 - Purge Database (Advanced)"
+    role: execute
+    state: present
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: (matrix_domain is defined) and (cancel_deletion|bool)
+
+# trigger cleanup
+
+- name: Save new 'Delete Job Template' survey.json to the AWX tower, template
+  delegate_to: 127.0.0.1
+  template:
+    src: '{{ role_path }}/templates/delete_job_template.json.j2'
+    dest: '/var/lib/awx/projects/hosting/delete_job_template.json'
+  when: cancel_deletion|bool
+
+- name: Re-create '00 - Cleanup Deletion Template' job template
+  awx.awx.tower_job_template:
+    name: "00 - Cleanup Deletion Template"
+    description: "Deletes the remaining '<< SUBSCRIPTION DELETION IN PROGRESS >>' job template."
+    job_type: run
+    inventory: "{{ org_name }} [Admin]"
+    project: "Ansible Create Delete Subscription Membership"
+    playbook: cleanup_deletion_job_template.yml
+    extra_vars: "{{ lookup('file', '/var/lib/awx/projects/hosting/delete_job_template.json') }}"
+    ask_extra_vars: yes
+    state: present
+    verbosity: 1
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes
+  when: cancel_deletion|bool
+
+- name: Launch '00 - Cleanup Deletion Template' job template before ending
+  awx.awx.tower_job_launch:
+    job_template: "00 - Cleanup Deletion Template"
+    tower_host: "https://{{ tower_host }}"
+    tower_oauthtoken: "{{ tower_token.stdout }}"
+    validate_certs: yes 
+  when: cancel_deletion|bool
+
+- name: Set boolean value to exit playbook
+  set_fact:
+    end_playbook: true
+  when: cancel_deletion|bool
+
+- name: End playbook if this task list is called.
+  meta: end_play
+  when: (end_playbook is defined) and end_playbook|bool and cancel_deletion|bool

@@ -1,5 +1,4 @@
 
-
 - name: Include hosting vars of digital_ocean.yml
   delegate_to: 127.0.0.1
   include_vars:
@@ -36,11 +35,3 @@
 - debug:
     msg: "{{ deleted_server_info }}"
   when: do_droplet_id is defined
-
-#- name: Delete fake DNS record for faster testing
-#  delegate_to: 127.0.0.1
-#  shell: |
-#    sed -i -c '/{{ matrix_domain }}/d' /etc/hosts
-
-# Doesn't allow letsencrypt to generate certs :S
-
