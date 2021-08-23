@@ -1,3 +1,14 @@
+# 2021-08-23
+
+## LinkedIn bridging support via beeper-linkedin
+
+Thanks to [Alexandar Mechev](https://github.com/apmechev), the playbook can now install the [beeper-linkedin](https://gitlab.com/beeper/linkedin) bridge for bridging to [LinkedIn](https://www.linkedin.com/) Messaging.
+
+This brings the total number of bridges supported by the playbook up to 20. See all supported bridges [here](docs/configuring-playbook.md#bridging-other-networks).
+
+To get started with bridging to LinkedIn, see [Setting up Beeper LinkedIn bridging](docs/configuring-playbook-bridge-beeper-linkedin.md).
+
+
 # 2021-08-20
 
 # Sygnal upgraded - ARM support and no longer requires a database

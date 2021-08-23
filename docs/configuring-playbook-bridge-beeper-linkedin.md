@@ -1,6 +1,6 @@
 # Setting up Beeper Linkedin (optional)
 
-The playbook can install and configure [beeper-linkedin](https://gitlab.com/beeper/linkedin) for you. This bridge is based on the mautrix-python framework and can be configured in a similar way to the other mautrix bridges
+The playbook can install and configure [beeper-linkedin](https://gitlab.com/beeper/linkedin) for you, for bridging to [LinkedIn](https://www.linkedin.com/) Messaging. This bridge is based on the mautrix-python framework and can be configured in a similar way to the other mautrix bridges
 
 See the project's [documentation](https://gitlab.com/beeper/linkedin/-/blob/master/README.md) to learn what it does and why it might be useful to you.
 
@@ -45,7 +45,7 @@ This is the recommended way of setting up Double Puppeting, as it's easier to ac
 
 You then need to start a chat with `@linkedinbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
 
-Send `login YOUR_LINKEDIN_EMAIL_ADDRESS` to the bridge bot to enable bridging for your LinkedIn account. 
+Send `login YOUR_LINKEDIN_EMAIL_ADDRESS` to the bridge bot to enable bridging for your LinkedIn account.
 
 If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
 
@@ -56,4 +56,4 @@ After successfully enabling bridging, you may wish to [set up Double Puppeting](
 
 ### Bridge asking for 2FA even if you don't have 2FA enabled
 
-If you don't have 2FA enabled and are logging in from a strange IP for the first time, LinkedIn will send an email with a one-time code. You can use this code to authorize the bridge session. In my experience, once the IP is authorized, you will not be asked again. 
+If you don't have 2FA enabled and are logging in from a strange IP for the first time, LinkedIn will send an email with a one-time code. You can use this code to authorize the bridge session. In my experience, once the IP is authorized, you will not be asked again.
