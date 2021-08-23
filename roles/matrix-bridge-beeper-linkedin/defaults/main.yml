@@ -31,14 +31,9 @@ matrix_beeper_linkedin_homeserver_token: ""
 matrix_beeper_linkedin_appservice_bot_username: linkedinbot
 
 
-# Database-related configuration fields. (only works with postgres for now!)
-# To use Postgres:
-# - change the engine (`matrix_beeper_linkedin_database_engine: 'postgres'`)
-# - adjust your database credentials via the `matrix_beeper_linkedin_postgres_*` variables
-matrix_beeper_linkedin_database_engine: "sqlite"
-
-matrix_beeper_linkedin_sqlite_database_path_local: "{{ matrix_beeper_linkedin_data_path }}/beeper-linkedin.db"
-matrix_beeper_linkedin_sqlite_database_path_in_container: "/data/beeper-linkedin.db"
+# Database-related configuration fields.
+# Only Postgres is supported.
+matrix_beeper_linkedin_database_engine: "postgres"
 
 matrix_beeper_linkedin_database_username: 'matrix_beeper_linkedin'
 matrix_beeper_linkedin_database_password: ""
@@ -50,14 +45,12 @@ matrix_beeper_linkedin_database_connection_string: 'postgresql://{{ matrix_beepe
 
 matrix_beeper_linkedin_appservice_database_type: "{{
 	{
-		'sqlite': 'sqlite3',
 		'postgres':'postgres',
 	}[matrix_beeper_linkedin_database_engine]
 }}"
 
 matrix_beeper_linkedin_appservice_database_uri: "{{
 	{
-		'sqlite': matrix_beeper_linkedin_sqlite_database_path_in_container,
 		'postgres': matrix_beeper_linkedin_database_connection_string,
 	}[matrix_beeper_linkedin_database_engine]
 }}"

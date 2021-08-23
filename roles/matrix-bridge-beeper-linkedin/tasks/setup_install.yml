@@ -8,33 +8,6 @@
       The matrix-bridge-beeper-linkedin role needs to execute before the matrix-synapse role.
   when: "matrix_synapse_role_executed|default(False)"
 
-- set_fact:
-    matrix_beeper_linkedin_requires_restart: false
-
-- block:
-    - name: Check if an SQLite database already exists
-      stat:
-        path: "{{ matrix_beeper_linkedin_sqlite_database_path_local }}"
-      register: matrix_beeper_linkedin_sqlite_database_path_local_stat_result
-
-    - block:
-        - set_fact:
-            matrix_postgres_db_migration_request:
-              src: "{{ matrix_beeper_linkedin_sqlite_database_path_local }}"
-              dst: "{{ matrix_beeper_linkedin_database_connection_string }}"
-              caller: "{{ role_path|basename }}"
-              engine_variable_name: 'matrix_beeper_linkedin_database_engine'
-              engine_old: 'sqlite'
-              systemd_services_to_stop: ['matrix-beeper-linkedin.service']
-              pgloader_options: ['--with "quote identifiers"']
-
-        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
-
-        - set_fact:
-            matrix_beeper_linkedin_requires_restart: true
-      when: "matrix_beeper_linkedin_sqlite_database_path_local_stat_result.stat.exists|bool"
-  when: "matrix_beeper_linkedin_database_engine == 'postgres'"
-
 - name: Ensure Beeper LinkedIn image is pulled
   docker_image:
     name: "{{ matrix_beeper_linkedin_docker_image }}"
@@ -53,32 +26,6 @@
     - "{{ matrix_beeper_linkedin_base_path }}"
     - "{{ matrix_beeper_linkedin_config_path }}"
     - "{{ matrix_beeper_linkedin_data_path }}"
-
-- name: Check if an old database file exists
-  stat:
-    path: "{{ matrix_beeper_linkedin_base_path }}/beeper-linkedin.db"
-  register: matrix_beeper_linkedin_stat_database
-
-- name: Check if an old matrix state file exists
-  stat:
-    path: "{{ matrix_beeper_linkedin_base_path }}/mx-state.json"
-  register: matrix_beeper_linkedin_stat_mx_state
-
-- name: (Data relocation) Ensure matrix-beeper-linkedin.service is stopped
-  service:
-    name: matrix-beeper-linkedin
-    state: stopped
-    daemon_reload: yes
-  failed_when: false
-  when: "matrix_beeper_linkedin_stat_database.stat.exists"
-
-- name: (Data relocation) Move beeper-linkedin database file to ./data directory
-  command: "mv {{ matrix_beeper_linkedin_base_path }}/beeper-linkedin.db {{ matrix_beeper_linkedin_data_path }}/beeper-linkedin.db"
-  when: "matrix_beeper_linkedin_stat_database.stat.exists"
-
-- name: (Data relocation) Move beeper-linkedin mx-state file to ./data directory
-  command: "mv {{ matrix_beeper_linkedin_base_path }}/mx-state.json {{ matrix_beeper_linkedin_data_path }}/mx-state.json"
-  when: "matrix_beeper_linkedin_stat_mx_state.stat.exists"
 
 - name: Ensure beeper-linkedin config.yaml installed
   copy:
@@ -107,9 +54,3 @@
   service:
     daemon_reload: yes
   when: "matrix_beeper_linkedin_systemd_service_result.changed"
-
-- name: Ensure matrix-beeper-linkedin.service restarted, if necessary
-  service:
-    name: "matrix-beeper-linkedin.service"
-    state: restarted
-  when: "matrix_beeper_linkedin_requires_restart|bool"
