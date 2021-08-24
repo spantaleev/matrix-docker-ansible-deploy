@@ -1,12 +1,4 @@
 
-# abort deletion
-
-- name: Include hosting vars
-  include_vars:
-    file: /var/lib/awx/projects/hosting/hosting_vars.yml
-  when: cancel_deletion|bool
-  no_log: True
-
 - name: Install jq in AWX
   delegate_to: 127.0.0.1
   yum:
@@ -32,8 +24,6 @@
     tower_oauthtoken: "{{ tower_token.stdout }}"
     validate_certs: yes
   when: cancel_deletion|bool
-
-# restore use of templates
 
 - name: Grant execute permission on 'Deploy/Update a Server' job template
   delegate_to: 127.0.0.1
@@ -238,8 +228,6 @@
     tower_oauthtoken: "{{ tower_token.stdout }}"
     validate_certs: yes
   when: (matrix_domain is defined) and (cancel_deletion|bool)
-
-# trigger cleanup
 
 - name: Save new 'Delete Job Template' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1

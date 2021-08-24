@@ -293,27 +293,3 @@
     tower_oauthtoken: "{{ tower_token.stdout }}"
     validate_certs: yes
   when: matrix_domain is defined
-
-- name: Remove Matrix server from organisations inventory
-  delegate_to: 127.0.0.1
-  awx.awx.tower_host:
-    name: "matrix.{{ matrix_domain }}"
-    description: "{{ matrix_domain }} Matrix Server"
-    inventory: "{{ member_id }}"
-    state: absent
-    tower_host: "https://{{ tower_host }}"
-    tower_oauthtoken: "{{ tower_token.stdout }}"
-    validate_certs: yes
-  when: matrix_domain is defined
-  
-- name: Remove Wireguard Server from organisations inventory
-  delegate_to: 127.0.0.1
-  awx.awx.tower_host:
-    name: "wireguard.{{ matrix_domain }}"
-    description: "{{ matrix_domain }} Wireguard Proxy"
-    inventory: "{{ member_id }}"
-    state: absent
-    tower_host: "https://{{ tower_host }}"
-    tower_oauthtoken: "{{ tower_token.stdout }}"
-    validate_certs: yes
-  when: matrix_domain is defined
