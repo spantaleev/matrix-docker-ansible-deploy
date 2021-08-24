@@ -45,17 +45,19 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional, advanced) the [Matrix Corporal](https://github.com/devture/matrix-corporal) reconciliator and gateway for a managed Matrix server
 
-- (optional) the [mautrix-telegram](https://github.com/tulir/mautrix-telegram) bridge for bridging your Matrix server to [Telegram](https://telegram.org/)
+- (optional) the [mautrix-telegram](https://github.com/mautrix/telegram) bridge for bridging your Matrix server to [Telegram](https://telegram.org/)
 
-- (optional) the [mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp) bridge for bridging your Matrix server to [WhatsApp](https://www.whatsapp.com/)
+- (optional) the [mautrix-whatsapp](https://github.com/mautrix/whatsapp) bridge for bridging your Matrix server to [WhatsApp](https://www.whatsapp.com/)
 
-- (optional) the [mautrix-facebook](https://github.com/tulir/mautrix-facebook) bridge for bridging your Matrix server to [Facebook](https://facebook.com/)
+- (optional) the [mautrix-facebook](https://github.com/mautrix/facebook) bridge for bridging your Matrix server to [Facebook](https://facebook.com/)
 
-- (optional) the [mautrix-hangouts](https://github.com/tulir/mautrix-hangouts) bridge for bridging your Matrix server to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts)
+- (optional) the [mautrix-hangouts](https://github.com/mautrix/hangouts) bridge for bridging your Matrix server to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts)
 
-- (optional) the [mautrix-instagram](https://github.com/tulir/mautrix-instagram) bridge for bridging your Matrix server to [Instagram](https://instagram.com/)
+- (optional) the [mautrix-instagram](https://github.com/mautrix/instagram) bridge for bridging your Matrix server to [Instagram](https://instagram.com/)
 
-- (optional) the [mautrix-signal](https://github.com/tulir/mautrix-signal) bridge for bridging your Matrix server to [Signal](https://www.signal.org/)
+- (optional) the [mautrix-signal](https://github.com/mautrix/signal) bridge for bridging your Matrix server to [Signal](https://www.signal.org/)
+
+- (optional) the [beeper-linkedin](https://gitlab.com/beeper/linkedin) bridge for bridging your Matrix server to [LinkedIn](https://www.linkedin.com/)
 
 - (optional) the [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) bridge for bridging your Matrix server to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat)
 

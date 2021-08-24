@@ -29,12 +29,7 @@
     insertafter: '# Synapse Extension Start'
   with_dict:
     'matrix_synapse_ext_password_provider_rest_auth_enabled': 'true'
-    'matrix_synapse_ext_password_provider_rest_auth_endpoint': 'http://matrix-ma1sd:8090'
-  when: ext_matrix_ma1sd_auth_store == 'LDAP/AD'
-
-- name: Strip header from ma1sd configuration extension if using internal auth
-  set_fact:
-    ext_matrix_ma1sd_configuration_extension_yaml_parsed: "{{ ext_matrix_ma1sd_configuration_extension_yaml.splitlines() | reject('search', '^matrix_client_element_configuration_extension_json:') | list }}"
+    'matrix_synapse_ext_password_provider_rest_auth_endpoint': '"http://matrix-ma1sd:8090"'
   when: ext_matrix_ma1sd_auth_store == 'LDAP/AD'
 
 - name: Remove entire ma1sd configuration extension
@@ -52,22 +47,13 @@
     regexp: '^# Start ma1sd Extension# End ma1sd Extension'
     replace: '# Start ma1sd Extension\n# End ma1sd Extension'
 
-- name: Insert ma1sd configuration extension header if using external LDAP/AD with ma1sd
+- name: Insert/Update ma1sd configuration extension variables
   delegate_to: 127.0.0.1
-  lineinfile:
+  blockinfile:
     path: '{{ awx_cached_matrix_vars }}'
-    line: "matrix_ma1sd_configuration_extension_yaml: |"
+    marker: "# {mark} ma1sd ANSIBLE MANAGED BLOCK"
     insertafter: '# Start ma1sd Extension'
-  when: ext_matrix_ma1sd_auth_store == 'LDAP/AD'
-
-- name: Set ma1sd configuration extension if using external LDAP/AD with ma1sd
-  delegate_to: 127.0.0.1
-  lineinfile:
-    path: '{{ awx_cached_matrix_vars }}'
-    insertbefore: '# End ma1sd Extension'
-    line: '{{ item }}'
-  with_items: "{{ ext_matrix_ma1sd_configuration_extension_yaml_parsed }}"
-  when: ext_matrix_ma1sd_auth_store == 'LDAP/AD'
+    block: '{{ ext_matrix_ma1sd_configuration_extension_yaml }}'
 
 - name: Record ma1sd Custom variables locally on AWX
   delegate_to: 127.0.0.1
@@ -79,6 +65,7 @@
   with_dict:
     'ext_matrix_ma1sd_auth_store': '{{ ext_matrix_ma1sd_auth_store }}'
     'ext_matrix_ma1sd_configuration_extension_yaml': '{{ ext_matrix_ma1sd_configuration_extension_yaml.splitlines() | to_json }}'
+  no_log: True
 
 - name: Save new 'Configure ma1sd' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1

@@ -1,16 +1,16 @@
 # mautrix-signal is a Matrix <-> Signal bridge
-# See: https://github.com/tulir/mautrix-signal
+# See: https://github.com/mautrix/signal
 
 matrix_mautrix_signal_enabled: true
 
 matrix_mautrix_signal_container_self_build: false
-matrix_mautrix_signal_docker_repo: "https://mau.dev/tulir/mautrix-signal.git"
+matrix_mautrix_signal_docker_repo: "https://mau.dev/mautrix/signal.git"
 matrix_mautrix_signal_docker_src_files_path: "{{ matrix_base_data_path }}/mautrix-signal/docker-src"
 
 matrix_mautrix_signal_version: latest
 matrix_mautrix_signal_daemon_version: latest
-# See: https://mau.dev/tulir/mautrix-signal/container_registry
-matrix_mautrix_signal_docker_image: "dock.mau.dev/tulir/mautrix-signal:{{ matrix_mautrix_signal_version }}"
+# See: https://mau.dev/mautrix/signal/container_registry
+matrix_mautrix_signal_docker_image: "dock.mau.dev/mautrix/signal:{{ matrix_mautrix_signal_version }}"
 matrix_mautrix_signal_docker_image_force_pull: "{{ matrix_mautrix_signal_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_signal_daemon_container_self_build: false
@@ -70,13 +70,29 @@ matrix_mautrix_signal_database_name: 'matrix_mautrix_signal'
 matrix_mautrix_signal_database_connection_string: 'postgres://{{ matrix_mautrix_signal_database_username }}:{{ matrix_mautrix_signal_database_password }}@{{ matrix_mautrix_signal_database_hostname }}:{{ matrix_mautrix_signal_database_port }}/{{ matrix_mautrix_signal_database_name }}'
 
 matrix_mautrix_signal_appservice_database: "{{
- 	{
- 		'postgres': matrix_mautrix_signal_database_connection_string,
- 	}[matrix_mautrix_signal_database_engine]
+  {
+    'postgres': matrix_mautrix_signal_database_connection_string,
+  }[matrix_mautrix_signal_database_engine]
  }}"
 
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
 matrix_mautrix_signal_login_shared_secret: ''
+
+# Enable bridge relay bot functionality
+matrix_mautrix_signal_relaybot_enabled: false
+
+# Permissions for using the bridge.
+# Permitted values:
+#      relay - Allowed to be relayed through the bridge, no access to commands.
+#       user - Use the bridge with puppeting.
+#      admin - Use and administrate the bridge.
+# Permitted keys:
+#        * - All Matrix users
+#   domain - All users on that homeserver
+#     mxid - Specific user
+matrix_mautrix_signal_bridge_permissions: |
+  '*': relay
+  '{{ matrix_mautrix_signal_homeserver_domain }}': user
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.

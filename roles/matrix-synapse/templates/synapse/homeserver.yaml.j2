@@ -732,9 +732,52 @@ caches:
 
 ## Database ##
 
+# The 'database' setting defines the database that synapse uses to store all of
+# its data.
+#
+# 'name' gives the database engine to use: either 'sqlite3' (for SQLite) or
+# 'psycopg2' (for PostgreSQL).
+#
+# 'txn_limit' gives the maximum number of transactions to run per connection
+# before reconnecting. Defaults to 0, which means no limit.
+#
+# 'args' gives options which are passed through to the database engine,
+# except for options starting 'cp_', which are used to configure the Twisted
+# connection pool. For a reference to valid arguments, see:
+#   * for sqlite: https://docs.python.org/3/library/sqlite3.html#sqlite3.connect
+#   * for postgres: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+#   * for the connection pool: https://twistedmatrix.com/documents/current/api/twisted.enterprise.adbapi.ConnectionPool.html#__init__
+#
+#
+# Example SQLite configuration:
+#
+#database:
+#  name: sqlite3
+#  args:
+#    database: /path/to/homeserver.db
+#
+#
+# Example Postgres configuration:
+#
+#database:
+#  name: psycopg2
+#  txn_limit: 10000
+#  args:
+#    user: synapse_user
+#    password: secretpassword
+#    database: synapse
+#    host: localhost
+#    port: 5432
+#    cp_min: 5
+#    cp_max: 10
+#
+# For more information on using Synapse with Postgres,
+# see https://matrix-org.github.io/synapse/latest/postgres.html.
+#
 database:
   # The database engine name
   name: "psycopg2"
+  txn_limit: {{ matrix_synapse_database_txn_limit }}
   args:
     user: {{ matrix_synapse_database_user|string|to_json }}
     password: {{ matrix_synapse_database_password|string|to_json }}
@@ -1312,91 +1355,6 @@ autocreate_auto_join_rooms: {{ matrix_synapse_autocreate_auto_join_rooms|to_json
 # Defaults to true.
 #
 #auto_join_rooms_for_guests: false
-
-
-## Account Validity ##
-
-# Optional account validity configuration. This allows for accounts to be denied
-# any request after a given period.
-#
-# Once this feature is enabled, Synapse will look for registered users without an
-# expiration date at startup and will add one to every account it found using the
-# current settings at that time.
-# This means that, if a validity period is set, and Synapse is restarted (it will
-# then derive an expiration date from the current validity period), and some time
-# after that the validity period changes and Synapse is restarted, the users'
-# expiration dates won't be updated unless their account is manually renewed. This
-# date will be randomly selected within a range [now + period - d ; now + period],
-# where d is equal to 10% of the validity period.
-#
-account_validity:
-  # The account validity feature is disabled by default. Uncomment the
-  # following line to enable it.
-  #
-  #enabled: true
-
-  # The period after which an account is valid after its registration. When
-  # renewing the account, its validity period will be extended by this amount
-  # of time. This parameter is required when using the account validity
-  # feature.
-  #
-  #period: 6w
-
-  # The amount of time before an account's expiry date at which Synapse will
-  # send an email to the account's email address with a renewal link. By
-  # default, no such emails are sent.
-  #
-  # If you enable this setting, you will also need to fill out the 'email' and
-  # 'public_baseurl' configuration sections.
-  #
-  #renew_at: 1w
-
-  # The subject of the email sent out with the renewal link. '%(app)s' can be
-  # used as a placeholder for the 'app_name' parameter from the 'email'
-  # section.
-  #
-  # Note that the placeholder must be written '%(app)s', including the
-  # trailing 's'.
-  #
-  # If this is not set, a default value is used.
-  #
-  #renew_email_subject: "Renew your %(app)s account"
-
-  # Directory in which Synapse will try to find templates for the HTML files to
-  # serve to the user when trying to renew an account. If not set, default
-  # templates from within the Synapse package will be used.
-  #
-  # The currently available templates are:
-  #
-  # * account_renewed.html: Displayed to the user after they have successfully
-  #       renewed their account.
-  #
-  # * account_previously_renewed.html: Displayed to the user if they attempt to
-  #       renew their account with a token that is valid, but that has already
-  #       been used. In this case the account is not renewed again.
-  #
-  # * invalid_token.html: Displayed to the user when they try to renew an account
-  #       with an unknown or invalid renewal token.
-  #
-  # See https://github.com/matrix-org/synapse/tree/master/synapse/res/templates for
-  # default template contents.
-  #
-  # The file name of some of these templates can be configured below for legacy
-  # reasons.
-  #
-  #template_dir: "res/templates"
-
-  # A custom file name for the 'account_renewed.html' template.
-  #
-  # If not set, the file is assumed to be named "account_renewed.html".
-  #
-  #account_renewed_html_path: "account_renewed.html"
-
-  # A custom file name for the 'invalid_token.html' template.
-  #
-  # If not set, the file is assumed to be named "invalid_token.html".
-  #
-  #invalid_token_html_path: "invalid_token.html"
 
 
 ## Metrics ###
@@ -2710,11 +2668,6 @@ stats:
   #
   #enabled: false
 
-  # The size of each timeslice in the room_stats_historical and
-  # user_stats_historical tables, as a time period. Defaults to "1d".
-  #
-  #bucket_size: 1h
-
 
 # Server Notices room configuration
 #
@@ -2805,19 +2758,6 @@ alias_creation_rules: {{ matrix_synapse_alias_creation_rules|to_json }}
 #    action: allow
 
 room_list_publication_rules: {{ matrix_synapse_room_list_publication_rules|to_json }}
-
-
-# Server admins can define a Python module that implements extra rules for
-# allowing or denying incoming events. In order to work, this module needs to
-# override the methods defined in synapse/events/third_party_rules.py.
-#
-# This feature is designed to be used in closed federations only, where each
-# participating server enforces the same rules.
-#
-#third_party_event_rules:
-#  module: "my_custom_project.SuperRulesSet"
-#  config:
-#    example_option: 'things'
 
 
 ## Opentracing ##

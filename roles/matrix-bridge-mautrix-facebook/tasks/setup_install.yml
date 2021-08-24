@@ -40,7 +40,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mautrix_facebook_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_facebook_docker_image_force_pull }}"
-  when: matrix_mautrix_facebook_enabled|bool and not matrix_mautrix_facebook_container_image_self_build
+  when: not matrix_mautrix_facebook_container_image_self_build
 
 - name: Ensure Mautrix Facebook paths exist
   file:
@@ -63,7 +63,7 @@
 #    version: "{{ matrix_coturn_docker_image.split(':')[1] }}"
     force: "yes"
   register: matrix_mautrix_facebook_git_pull_results
-  when: "matrix_mautrix_facebook_enabled|bool and matrix_mautrix_facebook_container_image_self_build"
+  when: "matrix_mautrix_facebook_container_image_self_build|bool"
 
 - name: Ensure Mautrix Facebook Docker image is built
   docker_image:
@@ -75,7 +75,7 @@
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_facebook_docker_src_files_path }}"
       pull: yes
-  when: "matrix_mautrix_facebook_enabled|bool and matrix_mautrix_facebook_container_image_self_build|bool"
+  when: "matrix_mautrix_facebook_container_image_self_build|bool"
 
 - name: Check if an old database file already exists
   stat:

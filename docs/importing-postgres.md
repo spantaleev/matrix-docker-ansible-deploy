@@ -23,7 +23,7 @@ To import, run this command (make sure to replace `<server-path-to-postgres-dump
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml \
---extra-vars='postgres_default_import_database=synapse server_path_postgres_dump=<server-path-to-postgres-dump.sql>' \
+--extra-vars='server_path_postgres_dump=<server-path-to-postgres-dump.sql>' \
 --tags=import-postgres
 ```
 

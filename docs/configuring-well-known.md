@@ -69,7 +69,7 @@ It is, however, **a little fragile**, as future updates performed by this playbo
 
 If you don't need the base domain (e.g. `example.com`) for anything else (hosting a website, etc.), you can point it to the Matrix server's IP address and tell the playbook to configure it.
 
-This is the easiest way to set up well-known serving -- letting the playbook handle the whole base domain for you (including SSL certificates, etc.). However, if you need to use the base domain for other things (such as hosting some website, etc.), going with Option 1 or Option 2 might be more suitable.
+This is the easiest way to set up well-known serving -- letting the playbook handle the whole base domain for you (including SSL certificates, etc.). However, if you need to use the base domain for other things (such as hosting some website, etc.), going with Option 1 or Option 3 might be more suitable.
 
 See [Serving the base domain](configuring-playbook-base-domain-serving.md) to learn how the playbook can help you set it up.
 
