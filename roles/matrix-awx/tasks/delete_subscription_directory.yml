@@ -8,8 +8,8 @@
 - name: Save new 'Delete Job Template' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1
   template:
-    src: '{{ role_path }}/templates/delete_job_template.json.j2'
-    dest: '/var/lib/awx/projects/hosting/delete_job_template.json'
+    src: '{{ role_path }}/templates/cleanup_deletion_template.json.j2'
+    dest: '/var/lib/awx/projects/hosting/cleanup_deletion_template.json'
 
 - name: Re-create '00 - Cleanup Deletion Template' job template
   delegate_to: 127.0.0.1
@@ -20,7 +20,7 @@
     inventory: "{{ org_name }} [Admin]"
     project: "Ansible Create Delete Subscription Membership"
     playbook: cleanup_deletion_job_template.yml
-    extra_vars: "{{ lookup('file', '/var/lib/awx/projects/hosting/delete_job_template.json') }}"
+    extra_vars: "{{ lookup('file', '/var/lib/awx/projects/hosting/cleanup_deletion_template.json') }}"
     ask_extra_vars: yes
     state: present
     verbosity: 1
