@@ -12,6 +12,7 @@
     dest: '/var/lib/awx/projects/hosting/delete_job_template.json'
 
 - name: Re-create '00 - Cleanup Deletion Template' job template
+  delegate_to: 127.0.0.1
   awx.awx.tower_job_template:
     name: "00 - Cleanup Deletion Template"
     description: "Deletes the remaining '<< SUBSCRIPTION DELETION IN PROGRESS >>' job template."
@@ -28,6 +29,7 @@
     validate_certs: yes
 
 - name: Launch '00 - Cleanup Deletion Template' job template before ending
+  delegate_to: 127.0.0.1
   awx.awx.tower_job_launch:
     job_template: "00 - Cleanup Deletion Template"
     tower_host: "https://{{ tower_host }}"
