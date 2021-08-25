@@ -185,6 +185,8 @@ default_room_version: {{ matrix_synapse_default_room_version|to_json }}
 #
 # This option replaces federation_ip_range_blacklist in Synapse v1.25.0.
 #
+# Note: The value is ignored when an HTTP proxy is in use
+#
 #ip_range_blacklist:
 #  - '127.0.0.0/8'
 #  - '10.0.0.0/8'
@@ -583,6 +585,19 @@ retention:
 #
 #next_link_domain_whitelist: ["matrix.org"]
 
+# Templates to use when generating email or HTML page contents.
+#
+templates:
+  # Directory in which Synapse will try to find template files to use to generate
+  # email or HTML page contents.
+  # If not set, or a file is not found within the template directory, a default
+  # template from within the Synapse package will be used.
+  #
+  # See https://matrix-org.github.io/synapse/latest/templates.html for more
+  # information about using custom templates.
+  #
+  #custom_template_directory: /path/to/custom/templates/
+
 
 ## TLS ##
 
@@ -728,6 +743,21 @@ caches:
    #
    per_cache_factors:
      #get_users_who_share_room_with_user: 2.0
+
+  # Controls how long an entry can be in a cache without having been
+  # accessed before being evicted. Defaults to None, which means
+  # entries are never evicted based on time.
+  #
+  #expiry_time: 30m
+
+  # Controls how long the results of a /sync request are cached for after
+  # a successful response is returned. A higher duration can help clients with
+  # intermittent connections, at the cost of higher memory usage.
+  #
+  # By default, this is zero, which means that sync responses are not cached
+  # at all.
+  #
+  #sync_response_cache_duration: 2m
 
 
 ## Database ##
@@ -995,6 +1025,8 @@ url_preview_enabled: {{ matrix_synapse_url_preview_enabled|to_json }}
 #
 # This must be specified if url_preview_enabled is set. It is recommended that
 # you uncomment the following list as a starting point.
+#
+# Note: The value is ignored when an HTTP proxy is in use
 #
 url_preview_ip_range_blacklist:
   - '127.0.0.0/8'
@@ -1924,6 +1956,9 @@ cas_config:
 # Additional settings to use with single-sign on systems such as OpenID Connect,
 # SAML2 and CAS.
 #
+# Server admins can configure custom templates for pages related to SSO. See
+# https://matrix-org.github.io/synapse/latest/templates.html for more information.
+#
 sso:
     # A list of client URLs which are whitelisted so that the user does not
     # have to confirm giving access to their account to the URL. Any client
@@ -2250,6 +2285,9 @@ ui_auth:
 {% if matrix_synapse_email_enabled %}
 # Configuration for sending emails from Synapse.
 #
+# Server admins can configure custom templates for email content. See
+# https://matrix-org.github.io/synapse/latest/templates.html for more information.
+#
 email:
   # The hostname of the outgoing SMTP server to use. Defaults to 'localhost'.
   #
@@ -2275,10 +2313,13 @@ email:
   #require_transport_security: true
   require_transport_security: {{ matrix_synapse_email_smtp_require_transport_security|to_json }}
 
-  # Enable sending emails for messages that the user has missed
+  # Uncomment the following to disable TLS for SMTP.
   #
-  #enable_notifs: false
-  enable_notifs: true
+  # By default, if the server supports TLS, it will be used, and the server
+  # must present a certificate that is valid for 'smtp_host'. If this option
+  # is set to false, TLS will not be used.
+  #
+  #enable_tls: false
 
   # notif_from defines the "From" address to use when sending emails.
   # It must be set if email sending is enabled.
@@ -2298,6 +2339,11 @@ email:
   #
   #app_name: my_branded_matrix_server
   app_name: Matrix
+
+  # Enable sending emails for messages that the user has missed
+  #
+  #enable_notifs: false
+  enable_notifs: true
 
   # Uncomment the following to disable automatic subscription to email
   # notifications for new users. Enabled by default.
@@ -2319,48 +2365,11 @@ email:
   #
   #validation_token_lifetime: 15m
 
-  # Directory in which Synapse will try to find the template files below.
-  # If not set, or the files named below are not found within the template
-  # directory, default templates from within the Synapse package will be used.
+  # The web client location to direct users to during an invite. This is passed
+  # to the identity server as the org.matrix.web_client_location key. Defaults
+  # to unset, giving no guidance to the identity server.
   #
-  # Synapse will look for the following templates in this directory:
-  #
-  # * The contents of email notifications of missed events: 'notif_mail.html' and
-  #   'notif_mail.txt'.
-  #
-  # * The contents of account expiry notice emails: 'notice_expiry.html' and
-  #   'notice_expiry.txt'.
-  #
-  # * The contents of password reset emails sent by the homeserver:
-  #   'password_reset.html' and 'password_reset.txt'
-  #
-  # * An HTML page that a user will see when they follow the link in the password
-  #   reset email. The user will be asked to confirm the action before their
-  #   password is reset: 'password_reset_confirmation.html'
-  #
-  # * HTML pages for success and failure that a user will see when they confirm
-  #   the password reset flow using the page above: 'password_reset_success.html'
-  #   and 'password_reset_failure.html'
-  #
-  # * The contents of address verification emails sent during registration:
-  #   'registration.html' and 'registration.txt'
-  #
-  # * HTML pages for success and failure that a user will see when they follow
-  #   the link in an address verification email sent during registration:
-  #   'registration_success.html' and 'registration_failure.html'
-  #
-  # * The contents of address verification emails sent when an address is added
-  #   to a Matrix account: 'add_threepid.html' and 'add_threepid.txt'
-  #
-  # * HTML pages for success and failure that a user will see when they follow
-  #   the link in an address verification email sent when an address is added
-  #   to a Matrix account: 'add_threepid_success.html' and
-  #   'add_threepid_failure.html'
-  #
-  # You can see the default templates at:
-  # https://github.com/matrix-org/synapse/tree/master/synapse/res/templates
-  #
-  #template_dir: "res/templates"
+  invite_client_location: {{ matrix_synapse_email_invite_client_location|string|to_json }}
 
   # Subjects to use when sending emails from Synapse.
   #
