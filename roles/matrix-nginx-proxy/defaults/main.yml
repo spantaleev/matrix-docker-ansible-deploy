@@ -282,6 +282,23 @@ matrix_nginx_proxy_proxy_sygnal_additional_server_configuration_blocks: []
 # A list of strings containing additional configuration blocks to add to the base domain server configuration (matrix-base-domain.conf).
 matrix_nginx_proxy_proxy_domain_additional_server_configuration_blocks: []
 
+# To increase request timeout in NGINX using proxy_read_timeout, proxy_connect_timeout, proxy_send_timeout, send_timeout directives
+# Nginx Default: proxy_connect_timeout 60s;   #Defines a timeout for establishing a connection with a proxied server
+# Nginx Default: proxy_send_timeout 60s;      #Sets a timeout for transmitting a request to the proxied server.
+# Nginx Default: proxy_read_timeout 60s;      #Defines a timeout for reading a response from the proxied server.
+# Nginx Default: send_timeout 60s;            #Sets a timeout for transmitting a response to the client.
+#
+# For more information visit:
+# http://nginx.org/en/docs/http/ngx_http_proxy_module.html
+# http://nginx.org/en/docs/http/ngx_http_core_module.html#send_timeout
+# https://www.nginx.com/resources/wiki/start/topics/examples/fullexample2/
+#
+# Here we are sticking with nginx default values change this value carefully.
+matrix_nginx_proxy_connect_timeout: 60
+matrix_nginx_proxy_send_timeout: 60
+matrix_nginx_proxy_read_timeout: 60
+matrix_nginx_send_timeout: 60
+
 # Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses for all vhosts meant to be accessed by users.
 #
 # Learn more about what it is here:
@@ -409,7 +426,7 @@ matrix_ssl_additional_domains_to_obtain_certificates_for: []
 
 # Controls whether to obtain production or staging certificates from Let's Encrypt.
 matrix_ssl_lets_encrypt_staging: false
-matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v1.17.0"
+matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v1.18.0"
 matrix_ssl_lets_encrypt_certbot_docker_image_force_pull: "{{ matrix_ssl_lets_encrypt_certbot_docker_image.endswith(':latest') }}"
 matrix_ssl_lets_encrypt_certbot_standalone_http_port: 2402
 matrix_ssl_lets_encrypt_support_email: ~
