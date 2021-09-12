@@ -33,17 +33,6 @@
   register: matrix_client_hydrogen_git_pull_results
   when: "matrix_client_hydrogen_enabled|bool and matrix_client_hydrogen_container_image_self_build|bool"
 
-- name: Ensure Hydrogen Docker image is built
-  docker_image:
-    name: "{{ matrix_client_hydrogen_docker_image }}"
-    source: build
-    force_source: "{{ matrix_client_hydrogen_git_pull_results.changed }}"
-    build:
-      dockerfile: Dockerfile
-      path: "{{ matrix_client_hydrogen_docker_src_files_path }}"
-      pull: yes
-  when: "matrix_client_hydrogen_enabled|bool and matrix_client_hydrogen_container_image_self_build|bool"
-
 - name: Ensure Hydrogen configuration installed
   copy:
     content: "{{ matrix_client_hydrogen_configuration|to_nice_json }}"
@@ -63,6 +52,19 @@
   with_items:
     - {src: "{{ role_path }}/templates/nginx.conf.j2", name: "nginx.conf"}
   when: "matrix_client_hydrogen_enabled|bool and item.src is not none"
+
+# This step MUST come after the steps to install the configuration files because the config files
+# are currently only read at build time, not at run time like most other components in the playbook
+- name: Ensure Hydrogen Docker image is built
+  docker_image:
+    name: "{{ matrix_client_hydrogen_docker_image }}"
+    source: build
+    force_source: "{{ matrix_client_hydrogen_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_client_hydrogen_docker_src_files_path }}"
+      pull: yes
+  when: "matrix_client_hydrogen_enabled|bool and matrix_client_hydrogen_container_image_self_build|bool"
 
 - name: Ensure matrix-client-hydrogen.service installed
   template:
