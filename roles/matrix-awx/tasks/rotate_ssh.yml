@@ -1,0 +1,23 @@
+
+#- name: Update authorized_keys with new client public key
+#  #delegate_to: "matrix.{{ id_array.0 }}"
+#  delegate_to: "{{ id_array.0 }}"
+#  shell: |
+#    cp /root/.ssh/authorized_keys /root/.ssh/authorized_keys.backup \
+#    && truncate -s 0 /root/.ssh/authorized_keys \
+#    && echo "{{ new_ssh_public_key }}" >> /root/.ssh/authorized_keys
+    
+- name: Set the new authorized key taken from file
+  authorized_key:
+    user: root
+    state: present
+    exclusive: yes
+    key: "{{ lookup('file', '/var/lib/awx/projects/hosting/client_public.key') }}"
+
+- name: Set boolean value to exit playbook
+  set_fact:
+    end_playbook: true
+
+- name: End playbook if this task list is called.
+  meta: end_play
+  when: end_playbook is defined and end_playbook|bool
