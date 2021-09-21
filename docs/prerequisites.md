@@ -4,7 +4,7 @@ To install Matrix services using this Ansible playbook, you need:
 
 - (Recommended) An **x86** server ([What kind of server specs do I need?](faq.md#what-kind-of-server-specs-do-i-need)) running one of these operating systems:
   - **CentOS** (7 only for now; [8 is not yet supported](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/300))
-  - **Debian** (9/Stretch or newer)
+  - **Debian** (10/Buster or newer)
   - **Ubuntu** (18.04 or newer, although [20.04 may be problematic](ansible.md#supported-ansible-versions))
   - **Archlinux**
 
