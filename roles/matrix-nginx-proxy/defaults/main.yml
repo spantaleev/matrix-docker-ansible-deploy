@@ -40,6 +40,12 @@ matrix_nginx_proxy_container_extra_arguments: []
 # - services are served directly from the HTTP vhost
 matrix_nginx_proxy_https_enabled: true
 
+# Controls whether matrix-nginx-proxy trusts an upstream server's X-Forwarded-Proto header
+#
+# Required if you disable HTTPS for the container (see `matrix_nginx_proxy_https_enabled`) and have an upstream server handle it instead.
+matrix_nginx_proxy_trust_forwarded_proto: false
+matrix_nginx_proxy_x_forwarded_header_value: "{{ '$http_x_forwarded_proto' if matrix_nginx_proxy_trust_forwarded_proto else '$scheme' }}"
+
 # Controls whether the matrix-nginx-proxy container exposes its HTTP port (tcp/8080 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:80"), or empty string to not expose.
