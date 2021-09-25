@@ -60,7 +60,7 @@ ALTER TABLE public.application_services_state OWNER TO synapse_user;
 It can be worked around by changing the username to `synapse`, for example by using `sed`:
 
 ```Shell
-$ sed -i "s/synapse_user/synapse/g" homeserver.sql"
+$ sed -i "s/synapse_user/synapse/g" homeserver.sql
 ```
 
 This uses sed to perform an 'in-place' (`-i`) replacement globally (`/g`), searching for `synapse user` and replacing with `synapse` (`s/synapse_user/synapse`). If your database username was different, change `synapse_user` to that username instead.
