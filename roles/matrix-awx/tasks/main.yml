@@ -25,7 +25,7 @@
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - backup-server
-    
+
 # Perform a export of the server
 - include_tasks: 
     file: "export_server.yml"
@@ -61,6 +61,15 @@
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - purge-database
+
+# Rotate SSH key if called
+- include_tasks: 
+    file: "rotate_ssh.yml"
+    apply:
+      tags: rotate-ssh
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags:
+    - rotate-ssh
 
 # Import configs, media repo from /chroot/backup import
 - include_tasks: 

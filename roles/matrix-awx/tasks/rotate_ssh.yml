@@ -1,0 +1,15 @@
+
+- name: Set the new authorized key taken from file
+  authorized_key:
+    user: root
+    state: present
+    exclusive: yes
+    key: "{{ lookup('file', '/var/lib/awx/projects/hosting/client_public.key') }}"
+
+- name: Set boolean value to exit playbook
+  set_fact:
+    end_playbook: true
+
+- name: End playbook if this task list is called.
+  meta: end_play
+  when: end_playbook is defined and end_playbook|bool
