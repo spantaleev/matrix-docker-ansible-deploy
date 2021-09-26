@@ -56,6 +56,20 @@ matrix_s3_media_store_custom_endpoint_enabled: true
 matrix_s3_media_store_custom_endpoint: "your-custom-endpoint"
 ```
 
+## Using AWS Server-Side-Encryption
+
+You can enable automatic server side encryption using a custom key (with AWS SSE-C) by generating and providing a key for goofys:
+
+Generate a base64 encoded key:
+```bash
+$ head -c 32 /dev/random | base64
+```
+
+And store the key in:
+```yaml
+matrix_s3_media_store_sse_key: "your-base64-encoded-key-here"
+```
+
 ### Backblaze B2
 
 To use [Backblaze B2](https://www.backblaze.com/b2/cloud-storage.html):
