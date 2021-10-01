@@ -24,14 +24,6 @@
     mode: '0660'
   tags: use-survey
 
-- name: Collect AWX admin token the hard way!
-  delegate_to: 127.0.0.1
-  shell: |
-      curl -sku {{ tower_username }}:{{ tower_password }} -H "Content-Type: application/json" -X POST -d '{"description":"Tower CLI", "application":null, "scope":"write"}' https://{{ tower_host }}/api/v2/users/1/personal_tokens/ | jq '.token' | sed -r 's/\"//g'
-  register: tower_token
-  no_log: True
-  tags: use-survey
-
 - name: Recreate 'Backup Server' job template
   delegate_to: 127.0.0.1
   awx.awx.tower_job_template:
@@ -49,8 +41,8 @@
     become_enabled: yes
     state: present
     verbosity: 1
-    tower_host: "https://{{ tower_host }}"
-    tower_oauthtoken: "{{ tower_token.stdout }}"
+    tower_host: "https://{{ awx_host }}"
+    tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
     validate_certs: yes
   tags: use-survey
 
@@ -89,6 +81,15 @@
 - name: Perform borg backup of postgres dump
   command: borgmatic -c /root/.config/borgmatic/config_2.yaml
   when: matrix_awx_backup_enabled|bool
+
+- name: Delete the AWX session token for executing modules
+  awx.awx.tower_token:
+    description: 'AWX Session Token'
+    scope: "write"
+    state: absent
+    existing_token_id: "{{ awx_session_token.ansible_facts.tower_token.id }}"
+    tower_host: "https://{{ awx_host }}"
+    tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
 
 - name: Set boolean value to exit playbook
   set_fact:

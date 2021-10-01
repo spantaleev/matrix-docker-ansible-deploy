@@ -23,6 +23,15 @@
     /usr/local/bin/matrix-synapse-register-user {{ new_username | quote }} {{ new_password | quote }} {{ admin_bool }}
   register: cmd
 
+- name: Delete the AWX session token for executing modules
+  awx.awx.tower_token:
+    description: 'AWX Session Token'
+    scope: "write"
+    state: absent
+    existing_token_id: "{{ awx_session_token.ansible_facts.tower_token.id }}"
+    tower_host: "https://{{ awx_host }}"
+    tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
+
 - name: Result
   debug: msg="{{ cmd.stdout }}"
 

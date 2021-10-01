@@ -1,5 +1,5 @@
 
-- name: Ensure dateutils and curl is installed in AWX
+- name: Ensure dateutils is installed in AWX
   delegate_to: 127.0.0.1
   yum:
     name: dateutils
@@ -89,6 +89,15 @@
   debug:
     msg: "{{ remote_media_size_after.stdout.split('\n') }}"
   when: matrix_purge_media_type == "Remote Media"
+
+- name: Delete the AWX session token for executing modules
+  awx.awx.tower_token:
+    description: 'AWX Session Token'
+    scope: "write"
+    state: absent
+    existing_token_id: "{{ awx_session_token.ansible_facts.tower_token.id }}"
+    tower_host: "https://{{ awx_host }}"
+    tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
 
 - name: Set boolean value to exit playbook
   set_fact:

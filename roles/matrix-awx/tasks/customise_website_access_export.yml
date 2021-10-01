@@ -77,13 +77,6 @@
     mode: '0660'
   when: customise_base_domain_website is undefined
 
-- name: Collect AWX admin token the hard way!
-  delegate_to: 127.0.0.1
-  shell: |
-      curl -sku {{ tower_username }}:{{ tower_password }} -H "Content-Type: application/json" -X POST -d '{"description":"Tower CLI", "application":null, "scope":"write"}' https://{{ tower_host }}/api/v2/users/1/personal_tokens/ | jq '.token' | sed -r 's/\"//g'
-  register: tower_token
-  no_log: True
-
 - name: Recreate 'Configure Website + Access Export' job template
   delegate_to: 127.0.0.1
   awx.awx.tower_job_template:
@@ -101,8 +94,8 @@
     become_enabled: yes
     state: present
     verbosity: 1
-    tower_host: "https://{{ tower_host }}"
-    tower_oauthtoken: "{{ tower_token.stdout }}"
+    tower_host: "https://{{ awx_host }}"
+    tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
     validate_certs: yes
   when: customise_base_domain_website is defined
 
@@ -123,8 +116,8 @@
     become_enabled: yes
     state: present
     verbosity: 1
-    tower_host: "https://{{ tower_host }}"
-    tower_oauthtoken: "{{ tower_token.stdout }}"
+    tower_host: "https://{{ awx_host }}"
+    tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
     validate_certs: yes
   when: customise_base_domain_website is undefined
 
