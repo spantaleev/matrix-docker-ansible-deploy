@@ -58,7 +58,13 @@ Name | Description
 `matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key`|Set this to a password to use for HTTP Basic Auth for protecting `https://matrix.DOMAIN/_synapse/metrics` (the username is always `prometheus` - it's not configurable)
 `matrix_server_fqn_grafana`|Use this variable to override the domain at which the Grafana web user-interface is at (defaults to `stats.DOMAIN`)
 
-It is further possible to also run and export metrics from node-exporter and postgres-exporter without installing Prometheus and Grafana. It is possible to use `matrix_prometheus_node_exporter_container_http_host_bind_port` etc., but not always the best choice, for example because your server is on a public network. Use the following variables additionally to the ones mentioned above:
+### Collecting system and Postgres metrics to an external Prometheus server (advanced)
+
+When you normally enable the Prometheus and Grafana via the playbook, it will also show general system (via node-exporter) and Postgres (via postgres-exporter) stats. If you are instead collecting your metrics to an external Prometheus server, you can follow this advanced configuration example to also export these stats.
+
+It would be possible to use `matrix_prometheus_node_exporter_container_http_host_bind_port` etc., but that is not always the best choice, for example because your server is on a public network.
+
+Use the following variables in addition to the ones mentioned above:
 
 Name | Description
 -----|----------
