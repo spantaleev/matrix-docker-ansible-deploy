@@ -15,7 +15,7 @@
   - name: Generate Etherpad proxying configuration for matrix-nginx-proxy
     set_fact:
       matrix_etherpad_matrix_nginx_proxy_configuration: |
-        rewrite ^{{ matrix_etherpad_public_endpoint }}$ $scheme://$server_name{{ matrix_etherpad_public_endpoint }}/ permanent;
+        rewrite ^{{ matrix_etherpad_public_endpoint }}$ {{ matrix_nginx_proxy_x_forwarded_proto_value }}://$server_name{{ matrix_etherpad_public_endpoint }}/ permanent;
 
         location {{ matrix_etherpad_public_endpoint }}/ {
         {% if matrix_nginx_proxy_enabled|default(False) %}
@@ -27,7 +27,7 @@
           proxy_http_version 1.1;  # recommended with keepalive connections
           proxy_pass_header Server;
           proxy_set_header Host $host;
-          proxy_set_header X-Forwarded-Proto $scheme; # for EP to set secure cookie flag when https is used
+          proxy_set_header X-Forwarded-Proto {{ matrix_nginx_proxy_x_forwarded_proto_value }}; # for EP to set secure cookie flag when https is used
           # WebSocket proxying - from http://nginx.org/en/docs/http/websocket.html
           proxy_set_header Upgrade $http_upgrade;
           proxy_set_header Connection $connection_upgrade;

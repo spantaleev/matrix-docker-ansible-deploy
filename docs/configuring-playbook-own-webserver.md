@@ -108,6 +108,9 @@ matrix_nginx_proxy_container_federation_host_bind_port: '127.0.0.1:8449'
 # Since we don't obtain any certificates (`matrix_ssl_retrieval_method: none` above), it won't work by default.
 # An alternative is to tweak some of: `matrix_coturn_tls_enabled`, `matrix_coturn_tls_cert_path` and `matrix_coturn_tls_key_path`.
 matrix_coturn_enabled: false
+
+# Trust the reverse proxy to send the correct `X-Forwarded-Proto` header as it is handling the SSL connection.
+matrix_nginx_proxy_trust_forwarded_proto: true
 ```
 
 With this, nginx would still be in use, but it would not bother with anything SSL related or with taking up public ports.
