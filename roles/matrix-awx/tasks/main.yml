@@ -17,6 +17,15 @@
   tags:
     - always
 
+# Create AWX session token
+- include_tasks: 
+    file: "create_session_token.yml"
+    apply:
+      tags: always
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags:
+    - always
+
 # Perform a backup of the server
 - include_tasks: 
     file: "backup_server.yml"
@@ -187,6 +196,15 @@
   when: run_setup|bool and matrix_awx_enabled|bool
   tags:
     - setup-synapse-admin
+
+# Delete AWX session token
+- include_tasks: 
+    file: "delete_session_token.yml"
+    apply:
+      tags: always
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags:
+    - always
 
 # Load newly formed matrix variables from AWX volume
 - include_tasks: 

@@ -5,17 +5,17 @@
     name: dateutils
     state: latest
 
-- name: Ensure dateutils, curl and jq intalled on target machine
+- name: Include vars in matrix_vars.yml
+  include_vars:
+    file: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
+  no_log: True
+
+- name: Ensure curl and jq intalled on target machine
   apt:
     pkg:
     - curl
     - jq
     state: present
-
-- name: Include vars in matrix_vars.yml
-  include_vars:
-    file: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
-  no_log: True
 
 - name: Collect before shrink size of Synapse database
   shell: du -sh /matrix/postgres/data
@@ -144,13 +144,6 @@
   loop: "{{ room_list_state_events.splitlines() | flatten(levels=1) }}"
   when: purge_mode.find("Number of events [slower]") != -1
 
-- name: Collect AWX admin token the hard way!
-  delegate_to: 127.0.0.1
-  shell: |
-      curl -sku {{ tower_username }}:{{ tower_password }} -H "Content-Type: application/json" -X POST -d '{"description":"Tower CLI", "application":null, "scope":"write"}' https://{{ tower_host }}/api/v2/users/1/personal_tokens/ | jq '.token' | sed -r 's/\"//g'
-  register: tower_token
-  no_log: True
-
 - name: Adjust 'Deploy/Update a Server' job template
   delegate_to: 127.0.0.1
   awx.awx.tower_job_template:
@@ -165,8 +158,8 @@
     credential: "{{ member_id }} - AWX SSH Key"
     state: present
     verbosity: 1
-    tower_host: "https://{{ tower_host }}"
-    tower_oauthtoken: "{{ tower_token.stdout }}"
+    tower_host: "https://{{ awx_host }}"
+    tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
     validate_certs: yes
   when: (purge_mode.find("No local users [recommended]") != -1) or (purge_mode.find("Number of users [slower]") != -1) or (purge_mode.find("Number of events [slower]") != -1) or (purge_mode.find("Skip purging rooms [faster]") != -1)
 
@@ -175,8 +168,8 @@
   awx.awx.tower_job_launch:
     job_template: "{{ matrix_domain }} - 0 - Deploy/Update a Server"
     wait: yes
-    tower_host: "https://{{ tower_host }}"
-    tower_oauthtoken: "{{ tower_token.stdout }}"
+    tower_host: "https://{{ awx_host }}"
+    tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
     validate_certs: yes 
   when: (purge_mode.find("No local users [recommended]") != -1) or (purge_mode.find("Number of users [slower]") != -1) or (purge_mode.find("Number of events [slower]") != -1) or (purge_mode.find("Skip purging rooms [faster]") != -1)
 
@@ -194,8 +187,8 @@
     credential: "{{ member_id }} - AWX SSH Key"
     state: present
     verbosity: 1
-    tower_host: "https://{{ tower_host }}"
-    tower_oauthtoken: "{{ tower_token.stdout }}"
+    tower_host: "https://{{ awx_host }}"
+    tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
     validate_certs: yes
   when: (purge_mode.find("No local users [recommended]") != -1) or (purge_mode.find("Number of users [slower]") != -1) or (purge_mode.find("Number of events [slower]") != -1) or (purge_mode.find("Skip purging rooms [faster]") != -1)
 
@@ -231,8 +224,8 @@
     credential: "{{ member_id }} - AWX SSH Key"
     state: present
     verbosity: 1
-    tower_host: "https://{{ tower_host }}"
-    tower_oauthtoken: "{{ tower_token.stdout }}"
+    tower_host: "https://{{ awx_host }}"
+    tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
     validate_certs: yes
   when: (purge_mode.find("Perform final shrink") != -1)
 
@@ -241,8 +234,8 @@
   awx.awx.tower_job_launch:
     job_template: "{{ matrix_domain }} - 0 - Deploy/Update a Server"
     wait: yes
-    tower_host: "https://{{ tower_host }}"
-    tower_oauthtoken: "{{ tower_token.stdout }}"
+    tower_host: "https://{{ awx_host }}"
+    tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
     validate_certs: yes 
   when: (purge_mode.find("Perform final shrink") != -1)
 
@@ -260,8 +253,8 @@
     credential: "{{ member_id }} - AWX SSH Key"
     state: present
     verbosity: 1
-    tower_host: "https://{{ tower_host }}"
-    tower_oauthtoken: "{{ tower_token.stdout }}"
+    tower_host: "https://{{ awx_host }}"
+    tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
     validate_certs: yes
   when: (purge_mode.find("Perform final shrink") != -1)
 
@@ -307,6 +300,15 @@
   debug:
     msg: "{{ db_size_after_stat.stdout.split('\n') }}"
   when: (db_size_after_stat is defined) and (purge_mode.find("Perform final shrink") != -1)
+
+- name: Delete the AWX session token for executing modules
+  awx.awx.tower_token:
+    description: 'AWX Session Token'
+    scope: "write"
+    state: absent
+    existing_token_id: "{{ awx_session_token.ansible_facts.tower_token.id }}"
+    tower_host: "https://{{ awx_host }}"
+    tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
 
 - name: Set boolean value to exit playbook
   set_fact:
