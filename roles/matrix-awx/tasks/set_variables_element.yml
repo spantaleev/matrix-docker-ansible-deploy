@@ -23,6 +23,10 @@
   with_dict:
     'ext_matrix_client_element_welcome_logo_raw': '{{ ext_matrix_client_element_welcome_logo_raw }}'
 
+- name: Set fact for 'https' string
+  set_fact:
+    awx_https_string: "https"
+
 - name: Set custom logo URL locally on AWX if defined
   delegate_to: 127.0.0.1
   lineinfile:
@@ -32,7 +36,7 @@
     insertafter: '# Element Settings Start'
   with_dict:
     'matrix_client_element_welcome_logo': '{{ ext_matrix_client_element_welcome_logo_raw }}'
-  when: ext_matrix_client_element_welcome_logo_raw|trim|length > 0
+  when: ( awx_https_string in ext_matrix_client_element_welcome_logo_raw ) and ( ext_matrix_client_element_welcome_logo_raw|trim|length > 0 )
 
 - name: Remove custom logo URL locally on AWX if not defined
   delegate_to: 127.0.0.1
@@ -41,10 +45,6 @@
     regexp: "^matrix_client_element_welcome_logo: "
     state: absent
   when: ext_matrix_client_element_welcome_logo_raw|trim|length == 0
-
-- name: Set fact for 'https' string
-  set_fact:
-    awx_https_string: "https"
 
 - name: Record Element-Web Background variable locally on AWX
   delegate_to: 127.0.0.1
@@ -55,7 +55,7 @@
     insertafter: '# Element Settings Start'
   with_dict:
     'matrix_client_element_branding_welcomeBackgroundUrl': '{{ matrix_client_element_branding_welcomeBackgroundUrl }}'
-  when: (awx_https_string in matrix_client_element_branding_welcomeBackgroundUrl) and ( matrix_client_element_branding_welcomeBackgroundUrl|length > 0 )
+  when: ( awx_https_string in matrix_client_element_branding_welcomeBackgroundUrl ) and ( matrix_client_element_branding_welcomeBackgroundUrl|length > 0 )
 
 - name: Save new 'Configure Element' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1
