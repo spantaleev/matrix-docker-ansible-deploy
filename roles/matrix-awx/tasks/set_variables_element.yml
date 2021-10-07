@@ -13,6 +13,35 @@
     'matrix_client_element_default_theme': '{{ matrix_client_element_default_theme }}'
     'matrix_client_element_registration_enabled': '{{ matrix_client_element_registration_enabled }}'
 
+- name: Record Element-Web custom variables locally on AWX
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertbefore: '# Custom Settings Start'
+  with_dict:
+    'ext_matrix_client_element_welcome_logo_raw': '{{ ext_matrix_client_element_welcome_logo_raw }}'
+
+- name: Set custom logo URL locally on AWX if defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertafter: '# Element Settings Start'
+  with_dict:
+    'matrix_client_element_welcome_logo': '{{ ext_matrix_client_element_welcome_logo_raw }}'
+  when: ext_matrix_client_element_welcome_logo_raw|trim|length > 0
+
+- name: Remove custom logo URL locally on AWX if not defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^matrix_client_element_welcome_logo: "
+    state: absent
+  when: ext_matrix_client_element_welcome_logo_raw|trim|length == 0
+
 - name: Set fact for 'https' string
   set_fact:
     awx_https_string: "https"
