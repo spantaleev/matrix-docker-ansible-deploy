@@ -21,13 +21,15 @@
     line: "{{ item.key }}: {{ item.value }}"
     insertbefore: '# Custom Settings Start'
   with_dict:
-    'ext_matrix_client_element_welcome_logo_raw': '{{ ext_matrix_client_element_welcome_logo_raw }}'
+    'ext_matrix_client_element_welcome_logo': '{{ ext_matrix_client_element_welcome_logo }}'
+    'ext_matrix_client_element_welcome_logo_link': '{{ ext_matrix_client_element_welcome_logo_link }}'
+    'ext_matrix_client_element_welcome_headline': '{{ ext_matrix_client_element_welcome_headline }}'
 
 - name: Set fact for 'https' string
   set_fact:
     awx_https_string: "https"
 
-- name: Set custom logo URL locally on AWX if defined
+- name: Set custom logo locally on AWX if defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -35,16 +37,62 @@
     line: "{{ item.key }}: {{ item.value }}"
     insertafter: '# Element Settings Start'
   with_dict:
-    'matrix_client_element_welcome_logo': '{{ ext_matrix_client_element_welcome_logo_raw }}'
-  when: ( awx_https_string in ext_matrix_client_element_welcome_logo_raw ) and ( ext_matrix_client_element_welcome_logo_raw|trim|length > 0 )
+    'matrix_client_element_welcome_logo': '{{ ext_matrix_client_element_welcome_logo }}'
+  when: ( awx_https_string in ext_matrix_client_element_welcome_logo ) and ( ext_matrix_client_element_welcome_logo_raw|trim|length > 0 )
 
-- name: Remove custom logo URL locally on AWX if not defined
+- name: Remove custom logo locally on AWX if not defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
     regexp: "^matrix_client_element_welcome_logo: "
     state: absent
-  when: ext_matrix_client_element_welcome_logo_raw|trim|length == 0
+  when: ext_matrix_client_element_welcome_logo|trim|length == 0
+
+- name: Set custom logo link locally on AWX if defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertafter: '# Element Settings Start'
+  with_dict:
+    'matrix_client_element_welcome_logo_link': '{{ ext_matrix_client_element_welcome_logo_link }}'
+  when: ( awx_https_string in ext_matrix_client_element_welcome_logo_link ) and ( ext_matrix_client_element_welcome_logo_link|trim|length > 0 )
+
+- name: Remove custom logo link locally on AWX if not defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^matrix_client_element_welcome_logo_link: "
+    state: absent
+  when: ext_matrix_client_element_welcome_logo_link|trim|length == 0
+
+- name: Set custom headline locally on AWX if defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertafter: '# Element Settings Start'
+  with_dict:
+    'matrix_client_element_welcome_headline': '{{ ext_matrix_client_element_welcome_headline }}'
+  when: ( awx_https_string in ext_matrix_client_element_welcome_headline ) and ( ext_matrix_client_element_welcome_headline|trim|length > 0 )
+
+- name: Remove custom headline locally on AWX if not defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^matrix_client_element_welcome_headline: "
+    state: absent
+  when: ext_matrix_client_element_welcome_headline|trim|length == 0
+
+- name: Remove custom headline locally on AWX if not defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^matrix_client_element_welcome_headline: "
+    state: absent
+  when: ext_matrix_client_element_welcome_headline|trim|length == 0
 
 - name: Record Element-Web Background variable locally on AWX
   delegate_to: 127.0.0.1
