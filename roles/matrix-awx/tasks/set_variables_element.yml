@@ -24,6 +24,7 @@
     'ext_matrix_client_element_welcome_logo': '{{ ext_matrix_client_element_welcome_logo }}'
     'ext_matrix_client_element_welcome_logo_link': '{{ ext_matrix_client_element_welcome_logo_link }}'
     'ext_matrix_client_element_welcome_headline': '{{ ext_matrix_client_element_welcome_headline }}'
+    'ext_matrix_client_element_welcome_text': '{{ ext_matrix_client_element_welcome_text }}'
 
 - name: Set fact for 'https' string
   set_fact:
@@ -38,7 +39,7 @@
     insertafter: '# Element Settings Start'
   with_dict:
     'matrix_client_element_welcome_logo': '{{ ext_matrix_client_element_welcome_logo }}'
-  when: ( awx_https_string in ext_matrix_client_element_welcome_logo ) and ( ext_matrix_client_element_welcome_logo_raw|trim|length > 0 )
+  when: ( awx_https_string in ext_matrix_client_element_welcome_logo ) and ( ext_matrix_client_element_welcome_logo|trim|length > 0 )
 
 - name: Remove custom logo locally on AWX if not defined
   delegate_to: 127.0.0.1
@@ -86,13 +87,24 @@
     state: absent
   when: ext_matrix_client_element_welcome_headline|trim|length == 0
 
-- name: Remove custom headline locally on AWX if not defined
+- name: Set custom text locally on AWX if defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
-    regexp: "^matrix_client_element_welcome_headline: "
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertafter: '# Element Settings Start'
+  with_dict:
+    'matrix_client_element_welcome_text': '{{ ext_matrix_client_element_welcome_text }}'
+  when: ( awx_https_string in ext_matrix_client_element_welcome_text ) and ( ext_matrix_client_element_welcome_text|trim|length > 0 )
+
+- name: Remove custom text locally on AWX if not defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^matrix_client_element_welcome_text: "
     state: absent
-  when: ext_matrix_client_element_welcome_headline|trim|length == 0
+  when: ext_matrix_client_element_welcome_text|trim|length == 0
 
 - name: Record Element-Web Background variable locally on AWX
   delegate_to: 127.0.0.1
