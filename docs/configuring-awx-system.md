@@ -26,7 +26,7 @@ The following repositories allow you to copy and use this setup:
 
 Updates to this section are trailed here:
 
-[GoMatrixHosting Matrix Docker Ansible Deploy](https://gitlab.com/GoMatrixHosting/gomatrixhosting-matrix-docker-ansible-deploy)
+[GoMatrixHosting Matrix Docker Ansible Deploy](https://gitlab.com/GoMatrixHosting/matrix-docker-ansible-deploy)
 
 
 ## Does I need an AWX setup to use this? How do I configure it? 

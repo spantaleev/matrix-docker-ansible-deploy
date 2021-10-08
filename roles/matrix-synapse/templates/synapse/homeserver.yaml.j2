@@ -357,6 +357,24 @@ update_user_directory: false
 daemonize: false
 {% endif %}
 
+# Connection settings for the manhole
+#
+manhole_settings:
+  # The username for the manhole. This defaults to 'matrix'.
+  #
+  #username: manhole
+
+  # The password for the manhole. This defaults to 'rabbithole'.
+  #
+  #password: mypassword
+
+  # The private and public SSH key pair used to encrypt the manhole traffic.
+  # If these are left unset, then hardcoded and non-secret keys are used,
+  # which could allow traffic to be intercepted if sent over a public network.
+  #
+  #ssh_priv_key_path: /data/id_rsa
+  #ssh_pub_key_path: /data/id_rsa.pub
+
 # Forward extremities can build up in a room due to networking delays between
 # homeservers. Once this happens in a large room, calculation of the state of
 # that room can become quite expensive. To mitigate this, once the number of
@@ -2258,7 +2276,7 @@ password_config:
       #
       #require_lowercase: true
 
-      # Whether a password must contain at least one lowercase letter.
+      # Whether a password must contain at least one uppercase letter.
       # Defaults to 'false'.
       #
       #require_uppercase: true
@@ -2594,12 +2612,16 @@ user_directory:
     #enabled: false
 
     # Defines whether to search all users visible to your HS when searching
-    # the user directory, rather than limiting to users visible in public
-    # rooms. Defaults to false.
+    # the user directory. If false, search results will only contain users
+    # visible in public rooms and users sharing a room with the requester.
+    # Defaults to false.
     #
-    # If you set it true, you'll have to rebuild the user_directory search
-    # indexes, see:
-    # https://github.com/matrix-org/synapse/blob/master/docs/user_directory.md
+    # NB. If you set this to true, and the last time the user_directory search
+    # indexes were (re)built was before Synapse 1.44, you'll have to
+    # rebuild the indexes in order to search through all known users.
+    # These indexes are built the first time Synapse starts; admins can
+    # manually trigger a rebuild following the instructions at
+    #     https://matrix-org.github.io/synapse/latest/user_directory.html
     #
     # Uncomment to return search results containing all known users, even if that
     # user does not share a room with the requester.
