@@ -183,6 +183,10 @@ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "127.0.0.1:809
 # Controls whether proxying for metrics (`/_synapse/metrics`) should be done (on the matrix domain)
 matrix_nginx_proxy_proxy_synapse_metrics: false
 matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled: false
+# The following value will be written verbatim to the htpasswd file that stores the password for nginx to check against and needs to be encoded appropriately.
+# Read the manpage at `man 1 htpasswd` to learn more, then encrypt your password, and paste the encrypted value here.
+# e.g. `htpasswd -c mypass.htpasswd prometheus` and enter `mysecurepw` when prompted yields `prometheus:$apr1$wZhqsn.U$7LC3kMmjUbjNAZjyMyvYv/`
+# The part after `prometheus:` is needed here. matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key: "$apr1$wZhqsn.U$7LC3kMmjUbjNAZjyMyvYv/"
 matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key: ""
 
 # The addresses where the Matrix Client API is.
@@ -432,7 +436,7 @@ matrix_ssl_additional_domains_to_obtain_certificates_for: []
 
 # Controls whether to obtain production or staging certificates from Let's Encrypt.
 matrix_ssl_lets_encrypt_staging: false
-matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v1.19.0"
+matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v1.20.0"
 matrix_ssl_lets_encrypt_certbot_docker_image_force_pull: "{{ matrix_ssl_lets_encrypt_certbot_docker_image.endswith(':latest') }}"
 matrix_ssl_lets_encrypt_certbot_standalone_http_port: 2402
 matrix_ssl_lets_encrypt_support_email: ~
