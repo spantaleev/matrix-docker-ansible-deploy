@@ -26,21 +26,21 @@
     'matrix_synapse_url_preview_enabled': '{{ matrix_synapse_url_preview_enabled }}'
     'matrix_synapse_allow_guest_access': '{{ matrix_synapse_allow_guest_access }}'
 
-- name: Empty Synapse variable 'matrix_synapse_auto_join_rooms' locally on AWX, if raw inputs empty
+- name: Empty Synapse variable 'awx_matrix_synapse_auto_join_rooms' locally on AWX, if raw inputs empty
   delegate_to: 127.0.0.1
   replace:
     path: '{{ awx_cached_matrix_vars }}'
-    regexp: "^matrix_synapse_auto_join_rooms: .*$"
-    replace: "matrix_synapse_auto_join_rooms: []"
-  when: matrix_synapse_auto_join_rooms_raw|length == 0
+    regexp: "^awx_matrix_synapse_auto_join_rooms: .*$"
+    replace: "awx_matrix_synapse_auto_join_rooms: []"
+  when: awx_matrix_synapse_auto_join_rooms_raw|length == 0
 
 - name: If the raw inputs is not empty start constructing parsed auto_join_rooms list
   set_fact:
-    matrix_synapse_auto_join_rooms_array: |-
-      {{ matrix_synapse_auto_join_rooms_raw.splitlines() | to_json }}
-  when: matrix_synapse_auto_join_rooms_raw|length > 0
+    awx_matrix_synapse_auto_join_rooms_array: |-
+      {{ awx_matrix_synapse_auto_join_rooms_raw.splitlines() | to_json }}
+  when: awx_matrix_synapse_auto_join_rooms_raw|length > 0
 
-- name: Record Synapse variable 'matrix_synapse_auto_join_rooms' locally on AWX, if it's not blank
+- name: Record Synapse variable 'awx_matrix_synapse_auto_join_rooms' locally on AWX, if it's not blank
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -48,8 +48,8 @@
     line: "{{ item.key }}: {{ item.value }}"
     insertafter: '# Synapse Settings Start'
   with_dict:
-    "matrix_synapse_auto_join_rooms": "{{ matrix_synapse_auto_join_rooms_array }}"
-  when: matrix_synapse_auto_join_rooms_raw|length > 0
+    "awx_matrix_synapse_auto_join_rooms": "{{ awx_matrix_synapse_auto_join_rooms_array }}"
+  when: awx_matrix_synapse_auto_join_rooms_raw|length > 0
 
 - name: Record Synapse Shared Secret if it's defined
   delegate_to: 127.0.0.1
@@ -59,8 +59,8 @@
     line: "{{ item.key }}: {{ item.value }}"
     insertafter: '# Synapse Settings Start'
   with_dict:
-    'matrix_synapse_registration_shared_secret': '{{ ext_matrix_synapse_registration_shared_secret }}'
-  when: ext_matrix_synapse_registration_shared_secret|length > 0
+    'matrix_synapse_registration_shared_secret': '{{ awx_matrix_synapse_registration_shared_secret }}'
+  when: awx_matrix_synapse_registration_shared_secret|length > 0
 
 - name: Record registations_require_3pid extra variable if true
   delegate_to: 127.0.0.1
@@ -72,7 +72,7 @@
   with_items:
     - "  registrations_require_3pid:"
     - "    - email"
-  when: ext_registrations_require_3pid|bool
+  when: awx_registrations_require_3pid|bool
 
 - name: Remove registrations_require_3pid extra variable if false
   delegate_to: 127.0.0.1
@@ -85,7 +85,7 @@
   with_items:
     - "  registrations_require_3pid:"
     - "    - email"
-  when: not ext_registrations_require_3pid|bool
+  when: not awx_registrations_require_3pid|bool
 
 - name: Remove URL Languages
   delegate_to: 127.0.0.1
@@ -97,21 +97,21 @@
 
 - name: Set URL languages default if raw inputs empty
   set_fact:
-    ext_url_preview_accept_language_default: 'en'
-  when: ext_url_preview_accept_language_raw|length == 0
+    awx_url_preview_accept_language_default: 'en'
+  when: awx_url_preview_accept_language_raw|length == 0
 
 - name: Set URL languages default if raw inputs not empty
   set_fact:
-    ext_url_preview_accept_language_default: "{{ ext_url_preview_accept_language_raw }}"
-  when: ext_url_preview_accept_language_raw|length > 0
+    awx_url_preview_accept_language_default: "{{ awx_url_preview_accept_language_raw }}"
+  when: awx_url_preview_accept_language_raw|length > 0
 
 - name: Set URL languages if raw inputs empty
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
     insertafter: '^  url_preview_accept_language:'
-    line: "    - {{ ext_url_preview_accept_language_default }}"
-  when: ext_url_preview_accept_language_raw|length == 0
+    line: "    - {{ awx_url_preview_accept_language_default }}"
+  when: awx_url_preview_accept_language_raw|length == 0
 
 - name: Set URL languages if raw inputs not empty
   delegate_to: 127.0.0.1
@@ -119,8 +119,8 @@
     path: '{{ awx_cached_matrix_vars }}'
     insertafter: '^  url_preview_accept_language:'
     line: "    - {{ item }}"
-  with_items: "{{ ext_url_preview_accept_language_raw.splitlines() }}"
-  when: ext_url_preview_accept_language_raw|length > 0
+  with_items: "{{ awx_url_preview_accept_language_raw.splitlines() }}"
+  when: awx_url_preview_accept_language_raw|length > 0
 
 - name: Remove Federation Whitelisting 1
   delegate_to: 127.0.0.1
@@ -143,7 +143,7 @@
     path: '{{ awx_cached_matrix_vars }}'
     insertafter: '^matrix_synapse_configuration_extension_yaml: \|'
     line: "  federation_domain_whitelist:"
-  when: ext_federation_whitelist_raw|length > 0
+  when: awx_federation_whitelist_raw|length > 0
 
 - name: Set Federation Whitelisting 2
   delegate_to: 127.0.0.1
@@ -151,16 +151,16 @@
     path: '{{ awx_cached_matrix_vars }}'
     insertafter: '^  federation_domain_whitelist:'
     line: "    - {{ item }}"
-  with_items: "{{ ext_federation_whitelist_raw.splitlines() }}"
-  when: ext_federation_whitelist_raw|length > 0
+  with_items: "{{ awx_federation_whitelist_raw.splitlines() }}"
+  when: awx_federation_whitelist_raw|length > 0
 
-- name: Set ext_recaptcha_public_key to a 'public-key' if undefined
-  set_fact: ext_recaptcha_public_key="public-key"
-  when: (ext_recaptcha_public_key is not defined) or (ext_recaptcha_public_key|length == 0)
+- name: Set awx_recaptcha_public_key to a 'public-key' if undefined
+  set_fact: awx_recaptcha_public_key="public-key"
+  when: (awx_recaptcha_public_key is not defined) or (awx_recaptcha_public_key|length == 0)
 
-- name: Set ext_recaptcha_private_key to a 'private-key' if undefined
-  set_fact: ext_recaptcha_private_key="private-key"
-  when: (ext_recaptcha_private_key is not defined) or (ext_recaptcha_private_key|length == 0)
+- name: Set awx_recaptcha_private_key to a 'private-key' if undefined
+  set_fact: awx_recaptcha_private_key="private-key"
+  when: (awx_recaptcha_private_key is not defined) or (awx_recaptcha_private_key|length == 0)
 
 - name: Record Synapse Extension variables locally on AWX
   delegate_to: 127.0.0.1
@@ -170,9 +170,9 @@
     line: "{{ item.key }}: {{ item.value }}"
     insertbefore: '# Synapse Extension End'
   with_dict:
-    '  enable_registration_captcha': '{{ ext_enable_registration_captcha }}'
-    '  recaptcha_public_key': '{{ ext_recaptcha_public_key }}'
-    '  recaptcha_private_key': '{{ ext_recaptcha_private_key }}'
+    '  enable_registration_captcha': '{{ awx_enable_registration_captcha }}'
+    '  recaptcha_public_key': '{{ awx_recaptcha_public_key }}'
+    '  recaptcha_private_key': '{{ awx_recaptcha_private_key }}'
 
 - name: Record Synapse Custom variables locally on AWX
   delegate_to: 127.0.0.1
@@ -182,11 +182,11 @@
     line: "{{ item.key }}: {{ item.value }}"
     insertafter: '# Custom Settings Start'
   with_dict:
-    'ext_federation_whitelist_raw': '{{ ext_federation_whitelist_raw.splitlines() | to_json }}'
-    'ext_url_preview_accept_language_default': '{{ ext_url_preview_accept_language_default.splitlines() | to_json }}'
-    'ext_enable_registration_captcha': '{{ ext_enable_registration_captcha }}'
-    'ext_recaptcha_public_key': '"{{ ext_recaptcha_public_key }}"'
-    'ext_recaptcha_private_key': '"{{ ext_recaptcha_private_key }}"'
+    'awx_federation_whitelist_raw': '{{ awx_federation_whitelist_raw.splitlines() | to_json }}'
+    'awx_url_preview_accept_language_default': '{{ awx_url_preview_accept_language_default.splitlines() | to_json }}'
+    'awx_enable_registration_captcha': '{{ awx_enable_registration_captcha }}'
+    'awx_recaptcha_public_key': '"{{ awx_recaptcha_public_key }}"'
+    'awx_recaptcha_private_key': '"{{ awx_recaptcha_private_key }}"'
 
 - name: Save new 'Configure Synapse' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1
