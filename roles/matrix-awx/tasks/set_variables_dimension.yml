@@ -30,13 +30,13 @@
   
 - name: Set final users list if users are defined
   set_fact:
-    awx_dimension_users_raw_final: "{{ awx_dimension_users_raw }}"
-  when: awx_dimension_users_raw|length > 0
+    awx_dimension_users_final: "{{ awx_dimension_users }}"
+  when: awx_dimension_users|length > 0
 
 - name: Set final users list if no users are defined
   set_fact:
-    awx_dimension_users_raw_final: '@dimension:{{ matrix_domain }}'
-  when: awx_dimension_users_raw|length == 0
+    awx_dimension_users_final: '@dimension:{{ matrix_domain }}'
+  when: awx_dimension_users|length == 0
 
 - name: Remove Dimension Users
   delegate_to: 127.0.0.1
@@ -59,7 +59,7 @@
     path: '{{ awx_cached_matrix_vars }}'
     insertafter: '^matrix_dimension_admins:'
     line: '  - "{{ item }}"'
-  with_items: "{{ awx_dimension_users_raw_final.splitlines() }}"
+  with_items: "{{ awx_dimension_users_final.splitlines() }}"
 
 - name: Record Dimension Custom variables locally on AWX
   delegate_to: 127.0.0.1
@@ -67,9 +67,9 @@
     path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertafter: '# Custom Settings Start'
+    insertbefore: '# Dimension Settings End'
   with_dict:
-    'awx_dimension_users_raw': '{{ awx_dimension_users_raw.splitlines() | to_json }}'
+    'awx_dimension_users': '{{ awx_dimension_users.splitlines() | to_json }}'
 
 - name: Save new 'Configure Dimension' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1
