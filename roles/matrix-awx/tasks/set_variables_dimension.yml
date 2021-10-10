@@ -31,12 +31,12 @@
 - name: Set final users list if users are defined
   set_fact:
     awx_dimension_users_final: "{{ awx_dimension_users }}"
-  when: awx_dimension_users|length > 0
+  when: awx_dimension_users | length > 0
 
 - name: Set final users list if no users are defined
   set_fact:
     awx_dimension_users_final: '@dimension:{{ matrix_domain }}'
-  when: awx_dimension_users|length == 0
+  when: awx_dimension_users | length == 0
 
 - name: Remove Dimension Users
   delegate_to: 127.0.0.1
