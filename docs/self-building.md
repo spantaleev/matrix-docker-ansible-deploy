@@ -24,7 +24,7 @@ List of roles where self-building the Docker image is currently possible:
 - `matrix-bridge-appservice-slack`
 - `matrix-bridge-appservice-webhooks`
 - `matrix-bridge-mautrix-facebook`
-- `matrix-bridge-mautrix-hangouts`
+- `matrix-bridge-mautrix-googlechat`
 - `matrix-bridge-mautrix-telegram`
 - `matrix-bridge-mautrix-signal`
 - `matrix-bridge-mx-puppet-skype`

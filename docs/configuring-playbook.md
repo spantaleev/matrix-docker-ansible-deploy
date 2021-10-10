@@ -96,7 +96,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Mautrix Facebook bridging](configuring-playbook-bridge-mautrix-facebook.md) (optional)
 
-- [Setting up Mautrix Hangouts bridging](configuring-playbook-bridge-mautrix-hangouts.md) (optional)
+- [Setting up Mautrix Googlechat bridging](configuring-playbook-bridge-mautrix-googlechat.md) (optional)
 
 - [Setting up Mautrix Instagram bridging](configuring-playbook-bridge-mautrix-instagram.md) (optional)
 
