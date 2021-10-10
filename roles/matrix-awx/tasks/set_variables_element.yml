@@ -14,19 +14,6 @@
     'matrix_client_element_default_theme': '{{ matrix_client_element_default_theme }}'
     'matrix_client_element_registration_enabled': '{{ matrix_client_element_registration_enabled }}'
 
-- name: Record Element-Web custom variables locally on AWX
-  delegate_to: 127.0.0.1
-  lineinfile:
-    path: '{{ awx_cached_matrix_vars }}'
-    regexp: "^#? *{{ item.key | regex_escape() }}:"
-    line: "{{ item.key }}: {{ item.value }}"
-    insertbefore: '# Element Settings Start'
-  with_dict:
-    'awx_matrix_client_element_welcome_logo': '{{ awx_matrix_client_element_welcome_logo }}'
-    'awx_matrix_client_element_welcome_logo_link': '{{ awx_matrix_client_element_welcome_logo_link }}'
-    'awx_matrix_client_element_welcome_headline': '{{ awx_matrix_client_element_welcome_headline }}'
-    'awx_matrix_client_element_welcome_text': '{{ awx_matrix_client_element_welcome_text }}'
-
 - name: Set fact for 'https' string
   set_fact:
     awx_https_string: "https"
