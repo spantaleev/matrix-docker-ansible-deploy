@@ -19,76 +19,76 @@
 
 - name: Collect the internal IP of the matrix-synapse container
   shell: "/usr/bin/docker inspect --format '{''{range.NetworkSettings.Networks}''}{''{.IPAddress}''}{''{end}''}' matrix-synapse"
-  register: synapse_container_ip
+  register: awx_synapse_container_ip
 
 - name: Collect access token for janitor user
   shell: |
-    curl -XPOST -d '{"type":"m.login.password", "user":"janitor", "password":"{{ matrix_awx_janitor_user_password }}"}' "{{ synapse_container_ip.stdout }}:8008/_matrix/client/r0/login" | jq '.access_token'
-  register: janitors_token
+    curl -XPOST -d '{"type":"m.login.password", "user":"janitor", "password":"{{ awx_janitor_user_password }}"}' "{{ awx_synapse_container_ip.stdout }}:8008/_matrix/client/r0/login" | jq '.access_token'
+  register: awx_janitors_token
   no_log: True
 
 - name: Generate list of dates to purge to
   delegate_to: 127.0.0.1
   shell: "dateseq {{ matrix_purge_from_date }} {{ matrix_purge_to_date }}"
-  register: purge_dates
+  register: awx_purge_dates
     
 - name: Calculate initial size of local media repository
   shell: du -sh /matrix/synapse/storage/media-store/local*
-  register: local_media_size_before
-  when: matrix_purge_media_type == "Local Media"
+  register: awx_local_media_size_before
+  when: awx_purge_media_type == "Local Media"
   ignore_errors: yes
   no_log: True
 
 - name: Calculate initial size of remote media repository
   shell: du -sh /matrix/synapse/storage/media-store/remote*
-  register: remote_media_size_before
-  when: matrix_purge_media_type == "Remote Media"
+  register: awx_remote_media_size_before
+  when: awx_purge_media_type == "Remote Media"
   ignore_errors: yes
   no_log: True
 
 - name: Purge local media with loop
   include_tasks: purge_media_local.yml 
-  loop: "{{ purge_dates.stdout_lines | flatten(levels=1) }}"
-  when: matrix_purge_media_type == "Local Media"
+  loop: "{{ awx_purge_dates.stdout_lines | flatten(levels=1) }}"
+  when: awx_purge_media_type == "Local Media"
 
 - name: Purge remote media with loop
   include_tasks: purge_media_remote.yml 
-  loop: "{{ purge_dates.stdout_lines | flatten(levels=1) }}"
-  when: matrix_purge_media_type == "Remote Media"
+  loop: "{{ awx_purge_dates.stdout_lines | flatten(levels=1) }}"
+  when: awx_purge_media_type == "Remote Media"
 
 - name: Calculate final size of local media repository
   shell: du -sh /matrix/synapse/storage/media-store/local*
-  register: local_media_size_after
-  when: matrix_purge_media_type == "Local Media"
+  register: awx_local_media_size_after
+  when: awx_purge_media_type == "Local Media"
   ignore_errors: yes
   no_log: True
 
 - name: Calculate final size of remote media repository
   shell: du -sh /matrix/synapse/storage/media-store/remote*
-  register: remote_media_size_after
-  when: matrix_purge_media_type == "Remote Media"
+  register: awx_remote_media_size_after
+  when: awx_purge_media_type == "Remote Media"
   ignore_errors: yes
   no_log: True
 
 - name: Print size of local media repository before purge
   debug:
-    msg: "{{ local_media_size_before.stdout.split('\n') }}"
-  when: matrix_purge_media_type == "Local Media"
+    msg: "{{ awx_local_media_size_before.stdout.split('\n') }}"
+  when: awx_purge_media_type == "Local Media"
 
 - name: Print size of local media repository after purge
   debug:
-    msg: "{{ local_media_size_after.stdout.split('\n') }}"
-  when: matrix_purge_media_type == "Local Media"
+    msg: "{{ awx_local_media_size_after.stdout.split('\n') }}"
+  when: awx_purge_media_type == "Local Media"
 
 - name: Print size of remote media repository before purge
   debug:
-    msg: "{{ remote_media_size_before.stdout.split('\n') }}"
-  when: matrix_purge_media_type == "Remote Media"
+    msg: "{{ awx_remote_media_size_before.stdout.split('\n') }}"
+  when: awx_purge_media_type == "Remote Media"
 
 - name: Print size of remote media repository after purge
   debug:
-    msg: "{{ remote_media_size_after.stdout.split('\n') }}"
-  when: matrix_purge_media_type == "Remote Media"
+    msg: "{{ awx_remote_media_size_after.stdout.split('\n') }}"
+  when: awx_purge_media_type == "Remote Media"
 
 - name: Delete the AWX session token for executing modules
   awx.awx.tower_token:
@@ -101,8 +101,8 @@
 
 - name: Set boolean value to exit playbook
   set_fact:
-    end_playbook: true
+    awx_end_playbook: true
 
 - name: End playbook early if this task is called.
   meta: end_play
-  when: end_playbook is defined and end_playbook|bool
+  when: awx_end_playbook is defined and awx_end_playbook|bool

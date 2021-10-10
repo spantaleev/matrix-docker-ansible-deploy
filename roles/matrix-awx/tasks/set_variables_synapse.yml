@@ -26,21 +26,21 @@
     'matrix_synapse_url_preview_enabled': '{{ matrix_synapse_url_preview_enabled }}'
     'matrix_synapse_allow_guest_access': '{{ matrix_synapse_allow_guest_access }}'
 
-- name: Empty Synapse variable 'awx_matrix_synapse_auto_join_rooms' locally on AWX, if raw inputs empty
+- name: Empty Synapse variable 'matrix_synapse_auto_join_rooms' locally on AWX, if raw inputs empty
   delegate_to: 127.0.0.1
   replace:
     path: '{{ awx_cached_matrix_vars }}'
-    regexp: "^awx_matrix_synapse_auto_join_rooms: .*$"
-    replace: "awx_matrix_synapse_auto_join_rooms: []"
-  when: awx_matrix_synapse_auto_join_rooms_raw|length == 0
+    regexp: "^matrix_synapse_auto_join_rooms: .*$"
+    replace: "matrix_synapse_auto_join_rooms: []"
+  when: matrix_synapse_auto_join_rooms_raw|length == 0
 
 - name: If the raw inputs is not empty start constructing parsed auto_join_rooms list
   set_fact:
-    awx_matrix_synapse_auto_join_rooms_array: |-
-      {{ awx_matrix_synapse_auto_join_rooms_raw.splitlines() | to_json }}
-  when: awx_matrix_synapse_auto_join_rooms_raw|length > 0
+    matrix_synapse_auto_join_rooms_array: |-
+      {{ matrix_synapse_auto_join_rooms_raw.splitlines() | to_json }}
+  when: matrix_synapse_auto_join_rooms_raw|length > 0
 
-- name: Record Synapse variable 'awx_matrix_synapse_auto_join_rooms' locally on AWX, if it's not blank
+- name: Record Synapse variable 'matrix_synapse_auto_join_rooms' locally on AWX, if it's not blank
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -48,8 +48,8 @@
     line: "{{ item.key }}: {{ item.value }}"
     insertafter: '# Synapse Settings Start'
   with_dict:
-    "awx_matrix_synapse_auto_join_rooms": "{{ awx_matrix_synapse_auto_join_rooms_array }}"
-  when: awx_matrix_synapse_auto_join_rooms_raw|length > 0
+    "matrix_synapse_auto_join_rooms": "{{ matrix_synapse_auto_join_rooms_array }}"
+  when: matrix_synapse_auto_join_rooms_raw|length > 0
 
 - name: Record Synapse Shared Secret if it's defined
   delegate_to: 127.0.0.1
