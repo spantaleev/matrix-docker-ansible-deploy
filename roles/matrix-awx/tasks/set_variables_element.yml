@@ -94,7 +94,7 @@
     state: absent
   when: awx_matrix_client_element_welcome_text | trim | length == 0
 
-- name: Record Element-Web Background variable locally on AWX
+- name: Set element-web background locally on AWX if defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -103,7 +103,15 @@
     insertafter: '# Element Settings Start'
   with_dict:
     'matrix_client_element_branding_welcomeBackgroundUrl': '{{ matrix_client_element_branding_welcomeBackgroundUrl }}'
-  when: ( awx_https_string in matrix_client_element_branding_welcomeBackgroundUrl ) and ( matrix_client_element_branding_welcomeBackgroundUrl | trim | length > 0 )
+  when: matrix_client_element_branding_welcomeBackgroundUrl | trim | length > 0
+
+- name: Remove element-web background locally on AWX if not defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^matrix_client_element_branding_welcomeBackgroundUrl: "
+    state: absent
+  when: matrix_client_element_branding_welcomeBackgroundUrl | trim | length == 0
 
 - name: Save new 'Configure Element' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1
