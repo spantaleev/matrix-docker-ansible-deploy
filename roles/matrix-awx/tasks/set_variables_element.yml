@@ -13,7 +13,7 @@
     'matrix_client_element_default_theme': '{{ matrix_client_element_default_theme }}'
     'matrix_client_element_registration_enabled': '{{ matrix_client_element_registration_enabled }}'
 
-- name: Record Synapse Custom variables locally on AWX
+- name: Record Element-Web custom variables locally on AWX
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -28,7 +28,7 @@
     'awx_matrix_client_element_welcome_headline': '{{ awx_matrix_client_element_welcome_headline }}'
     'awx_matrix_client_element_welcome_text': '{{ awx_matrix_client_element_welcome_text }}'
 
-- name: Set custom branding locally on AWX
+- name: Set Element-Web custom branding locally on AWX
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -38,7 +38,7 @@
   with_dict:
     'matrix_client_element_brand': "{{ awx_matrix_client_element_brand }}"
 
-- name: Remove custom branding locally on AWX if not defined
+- name: Remove Element-Web custom branding locally on AWX if not defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -50,7 +50,7 @@
   set_fact:
     awx_https_string: "https"
 
-- name: Set custom logo locally on AWX if defined
+- name: Set Element-Web custom logo locally on AWX if defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -61,7 +61,7 @@
     'matrix_client_element_welcome_logo': '{{ awx_matrix_client_element_welcome_logo }}'
   when: ( awx_https_string in awx_matrix_client_element_welcome_logo ) and ( awx_matrix_client_element_welcome_logo | trim | length > 0 )
 
-- name: Remove custom logo locally on AWX if not defined
+- name: Remove Element-Web custom logo locally on AWX if not defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -69,7 +69,7 @@
     state: absent
   when: awx_matrix_client_element_welcome_logo | trim | length == 0
 
-- name: Set custom logo link locally on AWX if defined
+- name: Set Element-Web custom logo link locally on AWX if defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -80,7 +80,7 @@
     'matrix_client_element_welcome_logo_link': '{{ matrix_client_element_welcome_logo_link }}'
   when: ( awx_https_string in awx_matrix_client_element_welcome_logo_link ) and ( awx_matrix_client_element_welcome_logo_link | trim | length > 0 )
 
-- name: Remove custom logo link locally on AWX if not defined
+- name: Remove Element-Web custom logo link locally on AWX if not defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -88,7 +88,7 @@
     state: absent
   when: awx_matrix_client_element_welcome_logo_link | trim | length == 0
 
-- name: Set custom headline locally on AWX if defined
+- name: Set Element-Web custom headline locally on AWX if defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -99,7 +99,7 @@
     'matrix_client_element_welcome_headline': '{{ awx_matrix_client_element_welcome_headline }}'
   when: awx_matrix_client_element_welcome_headline | trim | length > 0
 
-- name: Remove custom headline locally on AWX if not defined
+- name: Remove Element-Web custom headline locally on AWX if not defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -107,7 +107,7 @@
     state: absent
   when: awx_matrix_client_element_welcome_headline | trim | length == 0
 
-- name: Set custom text locally on AWX if defined
+- name: Set Element-Web custom text locally on AWX if defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -118,7 +118,7 @@
     'matrix_client_element_welcome_text': '{{ awx_matrix_client_element_welcome_text }}'
   when: awx_matrix_client_element_welcome_text | trim | length > 0
 
-- name: Remove custom text locally on AWX if not defined
+- name: Remove Element-Web custom text locally on AWX if not defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -126,7 +126,7 @@
     state: absent
   when: awx_matrix_client_element_welcome_text | trim | length == 0
 
-- name: Set element-web background locally on AWX if defined
+- name: Set Element-Web background locally on AWX if defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
@@ -137,7 +137,7 @@
     'matrix_client_element_branding_welcomeBackgroundUrl': '{{ awx_matrix_client_element_branding_welcomeBackgroundUrl }}'
   when: awx_matrix_client_element_branding_welcomeBackgroundUrl | trim | length > 0
 
-- name: Remove element-web background locally on AWX if not defined
+- name: Remove Element-Web background locally on AWX if not defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
