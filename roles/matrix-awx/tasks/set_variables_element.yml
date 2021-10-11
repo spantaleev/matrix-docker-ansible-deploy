@@ -21,7 +21,7 @@
     line: "{{ item.key }}: '{{ item.value }}'"
     insertafter: '# Element Settings Start'
   with_dict:
-    'matrix_client_element_brand': "{{ matrix_client_element_brand }}"
+    'matrix_client_element_brand': "{{ awx_matrix_client_element_brand }}"
 
 - name: Remove custom branding locally on AWX if not defined
   delegate_to: 127.0.0.1
@@ -29,7 +29,7 @@
     path: '{{ awx_cached_matrix_vars }}'
     regexp: "^matrix_client_element_brand: "
     state: absent
-  when: matrix_client_element_brand | trim | length == 0
+  when: awx_matrix_client_element_brand | trim | length == 0
 
 - name: Set fact for 'https' string
   set_fact:
