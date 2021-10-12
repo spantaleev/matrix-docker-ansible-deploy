@@ -3,14 +3,12 @@
 **[Dimension](https://dimension.t2bot.io) can only be installed after Matrix services are installed and running.**
 If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) flow and come back here later.
 
-**Note**: enabling Dimension, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. It's something to be aware of, especially in terms of firewall whitelisting (make sure port `8448` is accessible).
+**Note**: This playbook now supports running [Dimension](https://dimension.t2bot.io) in both a federated and [unfederated](https://github.com/turt2live/matrix-dimension/blob/master/docs/unfederated.md) environments. This is handled automatically based on the value of `matrix_synapse_federation_enabled`. Enabling Dimension, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. It's something to be aware of, especially in terms of firewall whitelisting (make sure port `8448` is accessible).
 
 
 ## Prerequisites
 
-This playbook now supports running [Dimension](https://dimension.t2bot.io) in both a federated and an [unfederated](https://github.com/turt2live/matrix-dimension/blob/master/docs/unfederated.md) environment. This is handled automatically based on the value of `matrix_synapse_federation_enabled`.
-
-Other important prerequisite is the `dimension.<your-domain>` DNS record being set up correctly. See [Configuring your DNS server](configuring-dns.md) on how to set up DNS record correctly.
+The `dimension.<your-domain>` DNS record must be created. See [Configuring your DNS server](configuring-dns.md) on how to set up DNS record correctly.
 
 
 ## Enable
@@ -45,11 +43,11 @@ To get an access token for the Dimension user, you can follow one of two options
 *Through an interactive login*:
 
 1. In a private browsing session (incognito window), open Element.
-2. Log in with the `dimension` user and its password.
+1. Log in with the `dimension` user and its password.
 1. Set the display name and avatar, if required.
-2. In the settings page choose "Help & About", scroll down to the bottom and click `Access Token: <click to reveal>`.
-3. Copy the highlighted text to your configuration.
-4. Close the private browsing session. **Do not log out**. Logging out will invalidate the token, making it not work.
+1. In the settings page choose "Help & About", scroll down to the bottom and expand the `Access Token` section.
+1. Copy the access token to your configuration.
+1. Close the private browsing session. **Do not log out**. Logging out will invalidate the token, making it not work.
 
 *With CURL*
 
@@ -80,6 +78,8 @@ After these variables have been set, please run the following command to re-run 
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
+
+After Dimension has been installed you may need to log out and log back in for it to pick up the new integrations manager. Then you can access integrations in Element by opening a room, clicking the Room info button (`i`) button in the top right corner of the screen, and then clicking Add widgets, bridges & bots.
 
 
 ## Jitsi domain

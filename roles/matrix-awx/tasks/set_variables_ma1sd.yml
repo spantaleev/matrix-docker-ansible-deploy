@@ -1,3 +1,4 @@
+---
 
 - name: Record ma1sd variables locally on AWX
   delegate_to: 127.0.0.1
@@ -17,8 +18,8 @@
     line: "{{ item.key }}: {{ item.value }}"
     insertafter: '# Synapse Extension Start'
   with_dict:
-    'matrix_synapse_ext_password_provider_rest_auth_enabled': 'false'
-  when: ext_matrix_ma1sd_auth_store == 'Synapse Internal'
+    'matrix_synapse_awx_password_provider_rest_auth_enabled': 'false'
+  when: awx_matrix_ma1sd_auth_store == 'Synapse Internal'
 
 - name: Enable REST auth if using external LDAP/AD with ma1sd
   delegate_to: 127.0.0.1
@@ -28,9 +29,9 @@
     line: "{{ item.key }}: {{ item.value }}"
     insertafter: '# Synapse Extension Start'
   with_dict:
-    'matrix_synapse_ext_password_provider_rest_auth_enabled': 'true'
-    'matrix_synapse_ext_password_provider_rest_auth_endpoint': '"http://matrix-ma1sd:8090"'
-  when: ext_matrix_ma1sd_auth_store == 'LDAP/AD'
+    'matrix_synapse_awx_password_provider_rest_auth_enabled': 'true'
+    'matrix_synapse_awx_password_provider_rest_auth_endpoint': '"http://matrix-ma1sd:8090"'
+  when: awx_matrix_ma1sd_auth_store == 'LDAP/AD'
 
 - name: Remove entire ma1sd configuration extension
   delegate_to: 127.0.0.1
@@ -53,7 +54,7 @@
     path: '{{ awx_cached_matrix_vars }}'
     marker: "# {mark} ma1sd ANSIBLE MANAGED BLOCK"
     insertafter: '# Start ma1sd Extension'
-    block: '{{ ext_matrix_ma1sd_configuration_extension_yaml }}'
+    block: '{{ awx_matrix_ma1sd_configuration_extension_yaml }}'
 
 - name: Record ma1sd Custom variables locally on AWX
   delegate_to: 127.0.0.1
@@ -61,10 +62,10 @@
     path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertbefore: '# Custom Settings Start'
+    insertbefore: '# ma1sd Settings End'
   with_dict:
-    'ext_matrix_ma1sd_auth_store': '{{ ext_matrix_ma1sd_auth_store }}'
-    'ext_matrix_ma1sd_configuration_extension_yaml': '{{ ext_matrix_ma1sd_configuration_extension_yaml.splitlines() | to_json }}'
+    'awx_matrix_ma1sd_auth_store': '{{ awx_matrix_ma1sd_auth_store }}'
+    'awx_matrix_ma1sd_configuration_extension_yaml': '{{ awx_matrix_ma1sd_configuration_extension_yaml.splitlines() | to_json }}'
   no_log: True
 
 - name: Save new 'Configure ma1sd' survey.json to the AWX tower, template

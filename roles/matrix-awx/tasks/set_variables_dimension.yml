@@ -1,3 +1,4 @@
+---
 
 - name: Include vars in matrix_vars.yml
   include_vars:
@@ -13,8 +14,8 @@
 
 - name: Collect access token of Dimension user
   shell: |
-    curl -X POST --header 'Content-Type: application/json' -d '{ "identifier": { "type": "m.id.user","user": "dimension" }, "password": "{{ matrix_awx_dimension_user_password }}", "type": "m.login.password"}' 'https://matrix.{{ matrix_domain }}/_matrix/client/r0/login' | jq -c '. | {access_token}' | sed 's/.*\":\"//' | sed 's/\"}//'
-  register: dimension_user_access_token
+    curl -X POST --header 'Content-Type: application/json' -d '{ "identifier": { "type": "m.id.user","user": "dimension" }, "password": "{{ awx_dimension_user_password }}", "type": "m.login.password"}' 'https://matrix.{{ matrix_domain }}/_matrix/client/r0/login' | jq -c '. | {access_token}' | sed 's/.*\":\"//' | sed 's/\"}//'
+  register: awx_dimension_user_access_token
 
 - name: Record Synapse variables locally on AWX
   delegate_to: 127.0.0.1
@@ -25,17 +26,17 @@
     insertafter: '# Dimension Settings Start'
   with_dict:
     'matrix_dimension_enabled': '{{ matrix_dimension_enabled }}'
-    'matrix_dimension_access_token': '"{{ dimension_user_access_token.stdout }}"'
+    'matrix_dimension_access_token': '"{{ awx_dimension_user_access_token.stdout }}"'
   
 - name: Set final users list if users are defined
   set_fact:
-    ext_dimension_users_raw_final: "{{ ext_dimension_users_raw }}"
-  when: ext_dimension_users_raw|length > 0
+    awx_dimension_users_final: "{{ awx_dimension_users }}"
+  when: awx_dimension_users | length > 0
 
 - name: Set final users list if no users are defined
   set_fact:
-    ext_dimension_users_raw_final: '@dimension:{{ matrix_domain }}'
-  when: ext_dimension_users_raw|length == 0
+    awx_dimension_users_final: '@dimension:{{ matrix_domain }}'
+  when: awx_dimension_users | length == 0
 
 - name: Remove Dimension Users
   delegate_to: 127.0.0.1
@@ -58,7 +59,7 @@
     path: '{{ awx_cached_matrix_vars }}'
     insertafter: '^matrix_dimension_admins:'
     line: '  - "{{ item }}"'
-  with_items: "{{ ext_dimension_users_raw_final.splitlines() }}"
+  with_items: "{{ awx_dimension_users_final.splitlines() }}"
 
 - name: Record Dimension Custom variables locally on AWX
   delegate_to: 127.0.0.1
@@ -66,9 +67,9 @@
     path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
     line: "{{ item.key }}: {{ item.value }}"
-    insertafter: '# Custom Settings Start'
+    insertbefore: '# Dimension Settings End'
   with_dict:
-    'ext_dimension_users_raw': '{{ ext_dimension_users_raw.splitlines() | to_json }}'
+    'awx_dimension_users': '{{ awx_dimension_users.splitlines() | to_json }}'
 
 - name: Save new 'Configure Dimension' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1

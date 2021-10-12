@@ -1,3 +1,4 @@
+---
 
 - name: Record Corporal Enabled/Disabled variable
   delegate_to: 127.0.0.1
@@ -62,7 +63,7 @@
     insertafter: '# Corporal Settings Start'
   with_dict:
     'matrix_corporal_http_api_enabled': 'false'
-  when: (matrix_corporal_policy_provider_mode == "Simple Static File") or (not matrix_corporal_enabled|bool)
+  when: (awx_corporal_policy_provider_mode == "Simple Static File") or (not matrix_corporal_enabled|bool)
 
 - name: Enable Corporal API if Push/Pull mode delected
   delegate_to: 127.0.0.1
@@ -73,7 +74,7 @@
     insertafter: '# Corporal Settings Start'
   with_dict:
     'matrix_corporal_http_api_enabled': 'true'
-  when: (matrix_corporal_policy_provider_mode != "Simple Static File") and (matrix_corporal_enabled|bool)
+  when: (awx_corporal_policy_provider_mode != "Simple Static File") and (matrix_corporal_enabled|bool)
 
 - name: Record Corporal API Access Token if it's defined
   delegate_to: 127.0.0.1
@@ -83,8 +84,8 @@
     line: "{{ item.key }}: {{ item.value }}"
     insertafter: '# Corporal Settings Start'
   with_dict:
-    'matrix_corporal_http_api_auth_token': '{{ matrix_corporal_http_api_auth_token }}'
-  when: matrix_corporal_http_api_auth_token|length > 0
+    'awx_corporal_http_api_auth_token': '{{ awx_corporal_http_api_auth_token }}'
+  when: awx_corporal_http_api_auth_token|length > 0
 
 - name: Record 'Simple Static File' configuration variables in matrix_vars.yml
   delegate_to: 127.0.0.1
@@ -97,7 +98,7 @@
           "Type": "static_file",
           "Path": "/etc/matrix-corporal/corporal-policy.json"
         }
-  when: matrix_corporal_policy_provider_mode == "Simple Static File"
+  when: awx_corporal_policy_provider_mode == "Simple Static File"
 
 - name: Touch the /matrix/corporal/ directory
   file:
@@ -141,12 +142,12 @@
 
 - name: Record 'Simple Static File' configuration content in corporal-policy.json
   copy:
-    content: "{{ matrix_corporal_simple_static_config | string  }}"
+    content: "{{ awx_corporal_simple_static_config | string  }}"
     dest: "/matrix/corporal/config/corporal-policy.json"
     owner: matrix
     group: matrix
     mode: '660'
-  when: (matrix_corporal_policy_provider_mode == "Simple Static File") and (matrix_corporal_simple_static_config|length > 0)
+  when: (awx_corporal_policy_provider_mode == "Simple Static File") and (awx_corporal_simple_static_config|length > 0)
 
 - name: Record 'HTTP Pull Mode' configuration variables in matrix_vars.yml
   delegate_to: 127.0.0.1
@@ -157,13 +158,13 @@
       matrix_corporal_policy_provider_config: |
         {
           "Type": "http",
-          "Uri": "{{ matrix_corporal_pull_mode_uri }}",
-          "AuthorizationBearerToken": "{{ matrix_corporal_pull_mode_token }}",
+          "Uri": "{{ awx_corporal_pull_mode_uri }}",
+          "AuthorizationBearerToken": "{{ awx_corporal_pull_mode_token }}",
           "CachePath": "/var/cache/matrix-corporal/last-policy.json",
           "ReloadIntervalSeconds": 1800,
           "TimeoutMilliseconds": 30000
         }
-  when: (matrix_corporal_policy_provider_mode == "HTTP Pull Mode (API Enabled)") and (matrix_corporal_pull_mode_uri|length > 0) and (matrix_corporal_pull_mode_token|length > 0)
+  when: (awx_corporal_policy_provider_mode == "HTTP Pull Mode (API Enabled)") and (matrix_corporal_pull_mode_uri|length > 0) and (awx_corporal_pull_mode_token|length > 0)
 
 - name: Record 'HTTP Push Mode' configuration variables in matrix_vars.yml
   delegate_to: 127.0.0.1
@@ -176,7 +177,7 @@
           "Type": "last_seen_store_policy",
           "CachePath": "/var/cache/matrix-corporal/last-policy.json"
         }
-  when: (matrix_corporal_policy_provider_mode == "HTTP Push Mode (API Enabled)")
+  when: (awx_corporal_policy_provider_mode == "HTTP Push Mode (API Enabled)")
 
 - name: Lower RateLimit if set to 'Normal'
   delegate_to: 127.0.0.1
@@ -184,7 +185,7 @@
     path: '{{ awx_cached_matrix_vars }}'
     regexp: '    address:\n        per_second: 50\n        burst_count: 300\n    account:\n        per_second: 0.17\n        burst_count: 300'
     replace: '    address:\n        per_second: 0.17\n        burst_count: 3\n    account:\n        per_second: 0.17\n        burst_count: 3'
-  when: matrix_corporal_raise_ratelimits == "Normal"
+  when: awx_corporal_raise_ratelimits == "Normal"
 
 - name: Raise RateLimit if set to 'Raised'
   delegate_to: 127.0.0.1
@@ -192,7 +193,7 @@
     path: '{{ awx_cached_matrix_vars }}'
     regexp: '    address:\n        per_second: 0.17\n        burst_count: 3\n    account:\n        per_second: 0.17\n        burst_count: 3'
     replace: '    address:\n        per_second: 50\n        burst_count: 300\n    account:\n        per_second: 0.17\n        burst_count: 300'
-  when: matrix_corporal_raise_ratelimits == "Raised"
+  when: awx_corporal_raise_ratelimits == "Raised"
 
 - name: Save new 'Configure Corporal' survey.json to the AWX tower
   delegate_to: 127.0.0.1

@@ -6,22 +6,18 @@
 
 - name: Set admin bool to zero
   set_fact:
-    admin_bool: 0
-  when: admin_access == 'false'
+    awx_admin_bool: 0
+  when: awx_admin_access == 'false'
 
 - name: Examine if server admin set
   set_fact:
-    admin_bool: 1
-  when: admin_access == 'true'
-
-- name: Set boolean value to exit playbook
-  set_fact:
-    end_playbook: true
+    awx_admin_bool: 1
+  when: awx_admin_access == 'true'
 
 - name: Create user account
   command: |
-    /usr/local/bin/matrix-synapse-register-user {{ new_username | quote }} {{ new_password | quote }} {{ admin_bool }}
-  register: cmd
+    /usr/local/bin/matrix-synapse-register-user {{ awx_new_username | quote }} {{ awx_new_password | quote }} {{ awx_admin_bool }}
+  register: awx_cmd_output
 
 - name: Delete the AWX session token for executing modules
   awx.awx.tower_token:
@@ -32,9 +28,13 @@
     tower_host: "https://{{ awx_host }}"
     tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
 
+- name: Set boolean value to exit playbook
+  set_fact:
+    awx_end_playbook: true
+
 - name: Result
-  debug: msg="{{ cmd.stdout }}"
+  debug: msg="{{ awx_cmd_output.stdout }}"
 
 - name: End playbook if this task list is called.
   meta: end_play
-  when: end_playbook is defined and end_playbook|bool
+  when: awx_end_playbook is defined and awx_end_playbook|bool
