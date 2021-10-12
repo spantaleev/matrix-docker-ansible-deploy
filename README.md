@@ -53,6 +53,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [mautrix-hangouts](https://github.com/mautrix/hangouts) bridge for bridging your Matrix server to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts)
 
+- (optional) the [mautrix-googlechat](https://github.com/mautrix/googlechat) bridge for bridging your Matrix server to [Google Chat](https://en.wikipedia.org/wiki/Google_Chat)
+
 - (optional) the [mautrix-instagram](https://github.com/mautrix/instagram) bridge for bridging your Matrix server to [Instagram](https://instagram.com/)
 
 - (optional) the [mautrix-signal](https://github.com/mautrix/signal) bridge for bridging your Matrix server to [Signal](https://www.signal.org/)
