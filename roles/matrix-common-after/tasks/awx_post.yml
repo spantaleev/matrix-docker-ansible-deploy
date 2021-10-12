@@ -2,9 +2,9 @@
 
 - name: Create user account @janitor
   command: |
-    /usr/local/bin/matrix-synapse-register-user janitor {{ matrix_awx_janitor_user_password | quote }} 1
+    /usr/local/bin/matrix-synapse-register-user janitor {{ awx_janitor_user_password | quote }} 1
   register: cmd
-  when: not matrix_awx_janitor_user_created|bool
+  when: not awx_janitor_user_created|bool
   no_log: True
     
 - name: Update AWX janitor user created variable
@@ -15,14 +15,14 @@
     line: "{{ item.key }}: {{ item.value }}"
     insertafter: 'AWX Settings'
   with_dict:
-    'matrix_awx_janitor_user_created': 'true'
-  when: not matrix_awx_janitor_user_created|bool
+    'awx_janitor_user_created': 'true'
+  when: not awx_janitor_user_created|bool
 
 - name: Create user account @dimension
   command: |
-    /usr/local/bin/matrix-synapse-register-user dimension {{ matrix_awx_dimension_user_password | quote }} 0
+    /usr/local/bin/matrix-synapse-register-user dimension {{ awx_dimension_user_password | quote }} 0
   register: cmd
-  when: not matrix_awx_dimension_user_created|bool
+  when: not awx_dimension_user_created|bool
   no_log: True
   
 - name: Update AWX dimension user created variable
@@ -33,14 +33,14 @@
     line: "{{ item.key }}: {{ item.value }}"
     insertafter: 'AWX Settings'
   with_dict:
-    'matrix_awx_dimension_user_created': 'true'
-  when: not matrix_awx_dimension_user_created|bool
+    'awx_dimension_user_created': 'true'
+  when: not awx_dimension_user_created|bool
 
 - name: Create user account @mjolnir
   command: |
-    /usr/local/bin/matrix-synapse-register-user mjolnir {{ matrix_awx_mjolnir_user_password | quote }} 0
+    /usr/local/bin/matrix-synapse-register-user mjolnir {{ awx_mjolnir_user_password | quote }} 0
   register: cmd
-  when: not matrix_awx_mjolnir_user_created|bool
+  when: not awx_mjolnir_user_created|bool
   no_log: True
   
 - name: Update AWX dimension user created variable
@@ -51,8 +51,8 @@
     line: "{{ item.key }}: {{ item.value }}"
     insertafter: 'AWX Settings'
   with_dict:
-    'matrix_awx_mjolnir_user_created': 'true'
-  when: not matrix_awx_mjolnir_user_created|bool
+    'awx_mjolnir_user_created': 'true'
+  when: not awx_mjolnir_user_created|bool
 
 - name: Ensure /chroot/website location has correct permissions
   file:
@@ -61,4 +61,4 @@
     owner: matrix
     group: matrix
     mode: '0770'
-  when: customise_base_domain_website is defined
+  when: awx_customise_base_domain_website is defined

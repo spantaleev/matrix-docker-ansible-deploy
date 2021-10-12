@@ -7,7 +7,7 @@
     line: "{{ item.key }}: {{ item.value }}"
     insertafter: '# AWX Settings Start'
   with_dict:
-    'matrix_awx_backup_enabled': '{{ matrix_awx_backup_enabled }}'
+    'awx_backup_enabled': '{{ awx_backup_enabled }}'
   tags: use-survey
 
 - name: Save new 'Backup Server' survey.json to the AWX tower, template
@@ -66,7 +66,7 @@
   register: _create_instances
   async: 3600  # Maximum runtime in seconds.
   poll: 0  # Fire and continue (never poll)
-  when: matrix_awx_backup_enabled|bool
+  when: awx_backup_enabled|bool
 
 - name: Wait for both of these jobs to finish
   async_status:
@@ -76,11 +76,11 @@
   delay: 5  # Check every 5 seconds.
   retries: 720  # Retry for a full hour.
   with_items: "{{ _create_instances.results }}"
-  when: matrix_awx_backup_enabled|bool
+  when: awx_backup_enabled|bool
 
 - name: Perform borg backup of postgres dump
   command: borgmatic -c /root/.config/borgmatic/config_2.yaml
-  when: matrix_awx_backup_enabled|bool
+  when: awx_backup_enabled|bool
 
 - name: Delete the AWX session token for executing modules
   awx.awx.tower_token:
@@ -93,8 +93,8 @@
 
 - name: Set boolean value to exit playbook
   set_fact:
-    end_playbook: true
+    awx_end_playbook: true
 
 - name: End playbook if this task list is called.
   meta: end_play
-  when: end_playbook is defined and end_playbook|bool
+  when: awx_end_playbook is defined and awx_end_playbook|bool

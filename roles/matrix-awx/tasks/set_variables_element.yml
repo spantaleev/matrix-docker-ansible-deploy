@@ -1,3 +1,4 @@
+---
 
 - name: Record Element-Web variables locally on AWX
   delegate_to: 127.0.0.1
@@ -8,25 +9,142 @@
     insertafter: '# Element Settings Start'
   with_dict:
     'matrix_client_element_enabled': '{{ matrix_client_element_enabled }}'
-    'matrix_client_element_jitsi_preferredDomain': '{{ matrix_client_element_jitsi_preferredDomain }}'
-    'matrix_client_element_brand': '{{ matrix_client_element_brand }}'
+    'matrix_client_element_jitsi_preferredDomain': 'jitsi.{{ matrix_domain }}'
     'matrix_client_element_default_theme': '{{ matrix_client_element_default_theme }}'
     'matrix_client_element_registration_enabled': '{{ matrix_client_element_registration_enabled }}'
+    'matrix_client_element_brand': '{{ matrix_client_element_brand | trim }}'
+    'matrix_client_element_branding_welcomeBackgroundUrl': '{{ matrix_client_element_branding_welcomeBackgroundUrl | trim }}'
+    'matrix_client_element_welcome_logo': '{{ matrix_client_element_welcome_logo | trim }}'
+    'matrix_client_element_welcome_logo_link': '{{ matrix_client_element_welcome_logo_link | trim }}'
+
+- name: Record Element-Web custom variables locally on AWX
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: '{{ item.value }}'"
+    insertbefore: '# Element Settings End'
+  with_dict:
+    'awx_matrix_client_element_welcome_headline': '{{ awx_matrix_client_element_welcome_headline | trim }}'
+    'awx_matrix_client_element_welcome_text': '{{ awx_matrix_client_element_welcome_text | trim }}'
+
+- name: Set Element-Web custom branding locally on AWX
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: '{{ item.value }}'"
+    insertafter: '# Element Settings Start'
+  with_dict:
+    'matrix_client_element_brand': "{{ matrix_client_element_brand }}"
+  when: matrix_client_element_brand | trim | length > 0
+
+- name: Remove Element-Web custom branding locally on AWX if not defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^matrix_client_element_brand: "
+    state: absent
+  when: matrix_client_element_brand | trim | length == 0
 
 - name: Set fact for 'https' string
   set_fact:
     awx_https_string: "https"
 
-- name: Record Element-Web Background variable locally on AWX
+- name: Set Element-Web custom logo locally on AWX if defined
   delegate_to: 127.0.0.1
   lineinfile:
     path: '{{ awx_cached_matrix_vars }}'
     regexp: "^#? *{{ item.key | regex_escape() }}:"
-    line: "{{ item.key }}: {{ item.value }}"
+    line: "{{ item.key }}: '{{ item.value }}'"
+    insertafter: '# Element Settings Start'
+  with_dict:
+    'matrix_client_element_welcome_logo': '{{ matrix_client_element_welcome_logo }}'
+  when: ( awx_https_string in matrix_client_element_welcome_logo ) and ( matrix_client_element_welcome_logo | trim | length > 0 )
+
+- name: Remove Element-Web custom logo locally on AWX if not defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^matrix_client_element_welcome_logo: "
+    state: absent
+  when: matrix_client_element_welcome_logo | trim | length == 0
+
+- name: Set Element-Web custom logo link locally on AWX if defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: '{{ item.value }}'"
+    insertafter: '# Element Settings Start'
+  with_dict:
+    'matrix_client_element_welcome_logo_link': '{{ matrix_client_element_welcome_logo_link }}'
+  when: ( awx_https_string in matrix_client_element_welcome_logo_link ) and ( matrix_client_element_welcome_logo_link | trim | length > 0 )
+
+- name: Remove Element-Web custom logo link locally on AWX if not defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^matrix_client_element_welcome_logo_link: "
+    state: absent
+  when: matrix_client_element_welcome_logo_link | trim | length == 0
+
+- name: Set Element-Web custom headline locally on AWX if defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: '{{ item.value }}'"
+    insertafter: '# Element Settings Start'
+  with_dict:
+    'matrix_client_element_welcome_headline': '{{ awx_matrix_client_element_welcome_headline }}'
+  when: awx_matrix_client_element_welcome_headline | trim | length > 0
+
+- name: Remove Element-Web custom headline locally on AWX if not defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^matrix_client_element_welcome_headline: "
+    state: absent
+  when: awx_matrix_client_element_welcome_headline | trim | length == 0
+
+- name: Set Element-Web custom text locally on AWX if defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: '{{ item.value }}'"
+    insertafter: '# Element Settings Start'
+  with_dict:
+    'matrix_client_element_welcome_text': '{{ awx_matrix_client_element_welcome_text }}'
+  when: awx_matrix_client_element_welcome_text | trim | length > 0
+
+- name: Remove Element-Web custom text locally on AWX if not defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^matrix_client_element_welcome_text: "
+    state: absent
+  when: awx_matrix_client_element_welcome_text | trim | length == 0
+
+- name: Set Element-Web background locally on AWX if defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: '{{ item.value }}'"
     insertafter: '# Element Settings Start'
   with_dict:
     'matrix_client_element_branding_welcomeBackgroundUrl': '{{ matrix_client_element_branding_welcomeBackgroundUrl }}'
-  when: (awx_https_string in matrix_client_element_branding_welcomeBackgroundUrl) and ( matrix_client_element_branding_welcomeBackgroundUrl|length > 0 )
+  when: matrix_client_element_branding_welcomeBackgroundUrl | trim | length > 0
+
+- name: Remove Element-Web background locally on AWX if not defined
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^matrix_client_element_branding_welcomeBackgroundUrl: "
+    state: absent
+  when: matrix_client_element_branding_welcomeBackgroundUrl | trim | length == 0
 
 - name: Save new 'Configure Element' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1
