@@ -84,7 +84,7 @@
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1)
 
 - name: Purge all rooms with no local users
-  include_tasks: awx_purge_database_no_local.yml 
+  include_tasks: purge_database_no_local.yml 
   loop: "{{ awx_room_list_no_local_users.splitlines() | flatten(levels=1) }}"
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1)
 
@@ -116,7 +116,7 @@
   no_log: True
 
 - name: Purge all rooms with more then N users
-  include_tasks: awx_purge_database_users.yml 
+  include_tasks: purge_database_users.yml 
   loop: "{{ awx_room_list_joined_members.splitlines() | flatten(levels=1) }}"
   when: awx_purge_mode.find("Number of users [slower]") != -1
 
@@ -141,7 +141,7 @@
   no_log: True
 
 - name: Purge all rooms with more then N events
-  include_tasks: awx_purge_database_events.yml 
+  include_tasks: purge_database_events.yml 
   loop: "{{ awx_room_list_state_events.splitlines() | flatten(levels=1) }}"
   when: awx_purge_mode.find("Number of events [slower]") != -1
 
