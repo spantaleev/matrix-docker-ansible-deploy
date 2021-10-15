@@ -7,6 +7,7 @@ To install Matrix services using this Ansible playbook, you need:
   - **Debian** (10/Buster or newer)
   - **Ubuntu** (18.04 or newer, although [20.04 may be problematic](ansible.md#supported-ansible-versions))
   - **Archlinux**
+  - **Suse** (Leap 15.2 and Tumbleweed)
 
 Generally, newer is better. We only strive to support released stable versions of distributions, not betas or pre-releases. This playbook can take over your whole server or co-exist with other services that you have there.
 
