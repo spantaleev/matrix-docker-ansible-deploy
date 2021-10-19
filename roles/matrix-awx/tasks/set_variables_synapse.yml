@@ -38,7 +38,7 @@
   set_fact:
     awx_synapse_auto_join_rooms_array: |-
       {{ awx_synapse_auto_join_rooms.splitlines() | to_json }}
-  when: awx_synapse_auto_join_rooms|length > 0
+  when: awx_synapse_auto_join_rooms | length > 0
 
 - name: Record Synapse variable 'matrix_synapse_auto_join_rooms' locally on AWX, if it's not blank
   delegate_to: 127.0.0.1
@@ -49,7 +49,7 @@
     insertafter: '# Synapse Settings Start'
   with_dict:
     "matrix_synapse_auto_join_rooms": "{{ awx_synapse_auto_join_rooms_array }}"
-  when: awx_synapse_auto_join_rooms|length > 0
+  when: awx_synapse_auto_join_rooms | length > 0
 
 - name: Record Synapse Shared Secret if it's defined
   delegate_to: 127.0.0.1

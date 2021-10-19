@@ -197,6 +197,15 @@
   tags:
     - setup-synapse-admin
 
+# Additional playbook to set the variable file during Discord Appservice Bridge configuration
+- include_tasks: 
+    file: "bridge_discord_appservice.yml"
+    apply:
+      tags: bridge-discord-appservice
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags:
+    - bridge-discord-appservice
+
 # Delete AWX session token
 - include_tasks: 
     file: "delete_session_token.yml"

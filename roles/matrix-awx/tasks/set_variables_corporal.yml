@@ -84,14 +84,16 @@
     line: "{{ item.key }}: {{ item.value }}"
     insertafter: '# Corporal Settings Start'
   with_dict:
-    'awx_corporal_http_api_auth_token': '{{ awx_corporal_http_api_auth_token }}'
-  when: awx_corporal_http_api_auth_token|length > 0
+    'matrix_corporal_http_api_auth_token': '{{ matrix_corporal_http_api_auth_token }}'
+  when: ( matrix_corporal_http_api_auth_token|length > 0 ) and ( awx_corporal_policy_provider_mode != "Simple Static File" )
 
 - name: Record 'Simple Static File' configuration variables in matrix_vars.yml
   delegate_to: 127.0.0.1
   blockinfile:
     path: '{{ awx_cached_matrix_vars }}'
-    insertafter: "# Corporal Policy Provider Settings Start"
+    insertbefore: "# Corporal Policy Provider Settings End"
+    marker_begin: "Corporal"
+    marker_end: "Corporal"
     block: |
       matrix_corporal_policy_provider_config: |
         {
