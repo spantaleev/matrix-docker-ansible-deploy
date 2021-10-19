@@ -22,7 +22,7 @@
       {{ awx_appservice_discord_admin_rooms.splitlines() | to_json }}
   when: awx_appservice_discord_admin_rooms | trim | length > 0
 
-- name: Add user to room? and promote them to administer (PL100)
+- name: Promote user to administer (PL100) of each room
   command: |
     docker exec -i matrix-appservice-discord /bin/sh -c 'cp /cfg/registration.yaml /tmp/discord-registration.yaml && cd /tmp && node /build/tools/adminme.js -c /cfg/config.yaml -m "{{ item.1 }}" -u "@{{ awx_appservice_discord_admin_user }}:{{ matrix_domain }}" -p 100'
   with_indexed_items:
