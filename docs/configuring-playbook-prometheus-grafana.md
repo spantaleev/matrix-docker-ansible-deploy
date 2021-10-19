@@ -58,6 +58,10 @@ Name | Description
 `matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key`|Set this to a password to use for HTTP Basic Auth for protecting `https://matrix.DOMAIN/_synapse/metrics` (the username is always `prometheus` - it's not configurable)
 `matrix_server_fqn_grafana`|Use this variable to override the domain at which the Grafana web user-interface is at (defaults to `stats.DOMAIN`)
 
+### Collecting worker metrics to an external Prometheus server
+
+If you are using workers (`matrix_synapse_workers_enabled`) and have enabled `matrix_nginx_proxy_proxy_synapse_metrics` as described above, the playbook will also automatically proxy the all worker threads's metrics to `https://matrix.DOMAIN/_synapse-worker-TYPE-ID/metrics`, where `TYPE` corresponds to the type and `ID` to the instanceId of a worker as exemplified in `matrix_synapse_workers_enabled_list`.
+
 ### Collecting system and Postgres metrics to an external Prometheus server (advanced)
 
 When you normally enable the Prometheus and Grafana via the playbook, it will also show general system (via node-exporter) and Postgres (via postgres-exporter) stats. If you are instead collecting your metrics to an external Prometheus server, you can follow this advanced configuration example to also export these stats.
