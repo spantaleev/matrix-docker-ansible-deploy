@@ -339,6 +339,47 @@ matrix_mautrix_hangouts_database_password: "{{ matrix_synapse_macaroon_secret_ke
 
 ######################################################################
 #
+# matrix-bridge-mautrix-googlechat
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_mautrix_googlechat_enabled: false
+
+matrix_mautrix_googlechat_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
+
+matrix_mautrix_googlechat_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    +
+    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+  }}
+
+matrix_mautrix_googlechat_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'gc.as.token') | to_uuid }}"
+
+matrix_mautrix_googlechat_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'gc.hs.token') | to_uuid }}"
+
+matrix_mautrix_googlechat_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9007' }}"
+
+matrix_mautrix_googlechat_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_mautrix_googlechat_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_mautrix_googlechat_database_password: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'mau.gc.db') | to_uuid }}"
+
+######################################################################
+#
+# /matrix-bridge-mautrix-googlechat
+#
+######################################################################
+
+
+######################################################################
+#
 # matrix-bridge-mautrix-instagram
 #
 ######################################################################
@@ -476,6 +517,8 @@ matrix_mautrix_telegram_database_password: "{{ matrix_synapse_macaroon_secret_ke
 
 # We don't enable bridges by default.
 matrix_mautrix_whatsapp_enabled: false
+
+matrix_mautrix_whatsapp_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
 matrix_mautrix_whatsapp_systemd_required_services_list: |
   {{
@@ -1427,6 +1470,12 @@ matrix_postgres_additional_databases: |
       'username': matrix_mautrix_hangouts_database_username,
       'password': matrix_mautrix_hangouts_database_password,
     }] if (matrix_mautrix_hangouts_enabled and matrix_mautrix_hangouts_database_engine == 'postgres' and matrix_mautrix_hangouts_database_hostname == 'matrix-postgres') else [])
+    +
+    ([{
+      'name': matrix_mautrix_googlechat_database_name,
+      'username': matrix_mautrix_googlechat_database_username,
+      'password': matrix_mautrix_googlechat_database_password,
+    }] if (matrix_mautrix_googlechat_enabled and matrix_mautrix_googlechat_database_engine == 'postgres' and matrix_mautrix_googlechat_database_hostname == 'matrix-postgres') else [])
     +
     ([{
       'name': matrix_mautrix_instagram_database_name,

@@ -1,16 +1,14 @@
-# The [Mautrix Hangouts Bridge](https://mau.dev/mautrix/hangouts) is no longer maintained.  It has changed to a [Google Chat Bridge](https://github.com/mautrix/googlechat). Setup instructions for the Google Chat Bridge can be [found here](configuring-playbook-bridge-mautrix-googlechat.md). 
+# Setting up Mautrix Google Chat (optional)
 
-# Setting up Mautrix Hangouts (optional)
+The playbook can install and configure [mautrix-googlechat](https://github.com/mautrix/googlechat) for you.
 
-The playbook can install and configure [mautrix-hangouts](https://github.com/mautrix/hangouts) for you.
+See the project's [documentation](https://docs.mau.fi/bridges/python/googlechat/index.html) to learn what it does and why it might be useful to you.
 
-See the project's [documentation](https://docs.mau.fi/bridges/python/hangouts/index.html) to learn what it does and why it might be useful to you.
-
-To enable the [Google Hangouts](https://hangouts.google.com/) bridge just use the following playbook configuration:
+To enable the [Google Chat](https://chat.google.com/) bridge just use the following playbook configuration:
 
 
 ```yaml
-matrix_mautrix_hangouts_enabled: true
+matrix_mautrix_googlechat_enabled: true
 ```
 
 
@@ -35,18 +33,18 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 ```
 curl \
---data '{"identifier": {"type": "m.id.user", "user": "YOUR_MATRIX_USERNAME" }, "password": "YOUR_MATRIX_PASSWORD", "type": "m.login.password", "device_id": "Mautrix-Hangouts", "initial_device_display_name": "Mautrix-Hangouts"}' \
+--data '{"identifier": {"type": "m.id.user", "user": "YOUR_MATRIX_USERNAME" }, "password": "YOUR_MATRIX_PASSWORD", "type": "m.login.password", "device_id": "Mautrix-googlechat", "initial_device_display_name": "Mautrix-googlechat"}' \
 https://matrix.DOMAIN/_matrix/client/r0/login
 ```
 
 - send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
 
-- make sure you don't log out the `Mautrix-Hangouts` device some time in the future, as that would break the Double Puppeting feature
+- make sure you don't log out the `Mautrix-googlechat` device some time in the future, as that would break the Double Puppeting feature
 
 
 ## Usage
 
-Once the bot is enabled you need to start a chat with `Hangouts bridge bot` with handle `@hangoutsbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+Once the bot is enabled you need to start a chat with `googlechat bridge bot` with handle `@googlechatbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
 
 Send `login` to the bridge bot to receive a link to the portal from which you can enable the bridging. Open the link sent by the bot and follow the instructions.
 
@@ -54,7 +52,7 @@ Automatic login may not work. If it does not, reload the page and select the "Ma
 
 Once logged in, recent chats should show up as new conversations automatically. Other chats will get portals as you receive messages.
 
-You can learn more about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/hangouts/authentication.html).
+You can learn more about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/googlechat/authentication.html).
 
 After successfully enabling bridging, you may wish to [set up Double Puppeting](#set-up-double-puppeting), if you haven't already done so.
 

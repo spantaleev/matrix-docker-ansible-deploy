@@ -1,3 +1,14 @@
+# 2021-10-23
+
+## Hangouts bridge no longer updated, superseded by a Googlechat bridge
+
+The mautrix-hangouts bridge is no longer receiving updates upstream and is likely to stop working in the future.
+We still retain support for this bridge in the playbook, but you're encouraged to switch away from it.
+
+There's a new [mautrix-googlechat](https://github.com/mautrix/googlechat) bridge that you can [install using the playbook](docs/configuring-playbook-bridge-mautrix-googlechat.md).
+Your **Hangouts bridge data will not be migrated**, however. You need to start fresh with the new bridge.
+
+
 # 2021-08-23
 
 ## LinkedIn bridging support via beeper-linkedin

@@ -48,6 +48,8 @@ These services are not part of our default installation, but can be enabled by [
 
 - [mautrix/hangouts](https://mau.dev/mautrix/hangouts/container_registry) - the [mautrix-hangouts](https://github.com/mautrix/hangouts) bridge to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts) (optional)
 
+- [mautrix/googlechat](https://mau.dev/mautrix/googlechat/container_registry) - the [mautrix-googlechat](https://github.com/mautrix/googlechat) bridge to [Google Chat](https://en.wikipedia.org/wiki/Google_Chat) (optional)
+
 - [mautrix/instagram](https://mau.dev/mautrix/instagram/container_registry) - the [mautrix-instagram](https://github.com/mautrix/instagram) bridge to [Instagram](https://instagram.com/) (optional)
 
 - [mautrix/signal](https://mau.dev/mautrix/signal/container_registry) - the [mautrix-signal](https://github.com/mautrix/signal) bridge to [Signal](https://www.signal.org/) (optional)
