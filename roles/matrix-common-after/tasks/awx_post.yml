@@ -63,7 +63,19 @@
     mode: '0770'
   when: awx_customise_base_domain_website is defined
 
-- name: Print Discord AppService Bot Link for user
+- name: Check if Discord AppService invite file exists
+  stat: 
+    path: /matrix/appservice-discord/config/invite_link
+  register: awx_discord_appservice_link_file
+  when: ( awx_appservice_discord_admin_user is defined )
+
+- name: Collect Discord AppService bot invite link if file exists
+  command:
+    cat /matrix/appservice-discord/config/invite_link
+  register: awx_discord_appservice_link
+  when: ( awx_discord_appservice_link_file.stat.exists == true ) and ( awx_appservice_discord_admin_user is defined )
+
+- name: Print Discord AppService bot link for user
   debug:
     msg: "{{ awx_discord_appservice_link.stdout }}"
   when: awx_discord_appservice_link is defined
