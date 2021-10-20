@@ -71,7 +71,7 @@ After following  the [Preparation](#preparation) guide above, you can take a loo
 
 ### Using another external webserver
 
-Feel free to look at the [examples/apache](../examples/apache) directory, or the [template files in the matrix-nginx-proxy role](../roles/matrix-nginx-proxy/templates/conf.d/).
+Feel free to look at the [examples/apache](../examples/apache) directory, or the [template files in the matrix-nginx-proxy role](../roles/matrix-nginx-proxy/templates/nginx/conf.d/).
 
 
 ## Method 2: Fronting the integrated nginx reverse-proxy webserver with another reverse-proxy
