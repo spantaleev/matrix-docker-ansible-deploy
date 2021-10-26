@@ -14,14 +14,36 @@
     - { path: "{{ matrix_bot_mjolnir_base_path }}", when: true }
     - { path: "{{ matrix_bot_mjolnir_config_path }}", when: true }
     - { path: "{{ matrix_bot_mjolnir_data_path }}", when: true }
+    - { path: "{{ matrix_bot_mjolnir_docker_src_files_path }}", when: "{{ matrix_bot_mjolnir_container_image_self_build }}" }
   when: "item.when|bool"
 
-- name: Ensure mjolnir image is pulled
+- name: Ensure mjolnir Docker image is pulled
   docker_image:
     name: "{{ matrix_bot_mjolnir_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_bot_mjolnir_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_mjolnir_docker_image_force_pull }}"
+  when: "not matrix_bot_mjolnir_container_image_self_build|bool"
+
+- name: Ensure mjolnir repository is present on self-build
+  git:
+    repo: "{{ matrix_bot_mjolnir_container_image_self_build_repo }}"
+    dest: "{{ matrix_bot_mjolnir_docker_src_files_path }}"
+    version: "{{ matrix_bot_mjolnir_docker_image.split(':')[1] }}"
+    force: "yes"
+  register: matrix_bot_mjolnir_git_pull_results
+  when: "matrix_bot_mjolnir_container_image_self_build|bool"
+
+- name: Ensure mjolnir Docker image is built
+  docker_image:
+    name: "{{ matrix_bot_mjolnir_docker_image }}"
+    source: build
+    force_source: "{{ matrix_bot_mjolnir_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_bot_mjolnir_docker_src_files_path }}"
+      pull: yes
+  when: "matrix_bot_mjolnir_container_image_self_build|bool"
 
 - name: Ensure matrix-bot-mjolnir config installed
   copy:

@@ -68,10 +68,3 @@
       URL endpoint to the matrix-mx-puppet-twitter container.
       You can expose the container's port using the `matrix_mx_puppet_twitter_container_http_host_bind_port` variable.
   when: "matrix_mx_puppet_twitter_enabled|bool and matrix_nginx_proxy_enabled is not defined"
-
-# ansible lower than 2.8, does not support docker_image build parameters
-# for self building it is explicitly needed, so we rather fail here
-- name: Fail if running on Ansible lower than 2.8 and trying self building
-  fail:
-    msg: "To self build Puppet Twitter image, you should usa ansible 2.8 or higher. E.g. pip contains such packages."
-  when: "ansible_version.major == 2 and ansible_version.minor < 8 and matrix_mx_puppet_twitter_container_image_self_build"

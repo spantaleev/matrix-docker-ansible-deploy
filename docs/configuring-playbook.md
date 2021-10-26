@@ -98,11 +98,15 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Mautrix Hangouts bridging](configuring-playbook-bridge-mautrix-hangouts.md) (optional)
 
+- [Setting up Mautrix Google Chat bridging](configuring-playbook-bridge-mautrix-googlechat.md) (optional)
+
 - [Setting up Mautrix Instagram bridging](configuring-playbook-bridge-mautrix-instagram.md) (optional)
 
 - [Setting up Mautrix Signal bridging](configuring-playbook-bridge-mautrix-signal.md) (optional)
 
 - [Setting up Appservice IRC bridging](configuring-playbook-bridge-appservice-irc.md) (optional)
+
+- [Setting up Beeper LinkedIn bridging](configuring-playbook-bridge-beeper-linkedin.md) (optional)
 
 - [Setting up Appservice Discord bridging](configuring-playbook-bridge-appservice-discord.md) (optional)
 

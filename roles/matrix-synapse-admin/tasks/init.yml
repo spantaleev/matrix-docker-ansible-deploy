@@ -22,7 +22,7 @@
   - name: Generate Synapse Admin proxying configuration for matrix-nginx-proxy
     set_fact:
       matrix_synapse_admin_matrix_nginx_proxy_configuration: |
-        rewrite ^{{ matrix_synapse_admin_public_endpoint }}$ $scheme://$server_name{{ matrix_synapse_admin_public_endpoint }}/ permanent;
+        rewrite ^{{ matrix_synapse_admin_public_endpoint }}$ {{ matrix_nginx_proxy_x_forwarded_proto_value }}://$server_name{{ matrix_synapse_admin_public_endpoint }}/ permanent;
 
         location ~ ^{{ matrix_synapse_admin_public_endpoint }}/(.*) {
         {% if matrix_nginx_proxy_enabled|default(False) %}

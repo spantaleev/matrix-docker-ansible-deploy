@@ -2,13 +2,21 @@
 # See: https://github.com/matrix-org/mjolnir
 
 matrix_bot_mjolnir_enabled: true
-matrix_bot_mjolnir_version: "v0.1.17"
-matrix_bot_mjolnir_docker_image: "{{ matrix_container_global_registry_prefix }}matrixdotorg/mjolnir:{{ matrix_bot_mjolnir_version }}"
+
+matrix_bot_mjolnir_version: "v1.1.20"
+
+matrix_bot_mjolnir_container_image_self_build: false
+matrix_bot_mjolnir_container_image_self_build_repo: "https://github.com/matrix-org/mjolnir.git"
+
+matrix_bot_mjolnir_docker_image: "{{ matrix_bot_mjolnir_docker_image_name_prefix }}matrixdotorg/mjolnir:{{ matrix_bot_mjolnir_version }}"
+matrix_bot_mjolnir_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_mjolnir_container_image_self_build else matrix_container_global_registry_prefix }}"
+
 matrix_bot_mjolnir_docker_image_force_pull: "{{ matrix_bot_mjolnir_docker_image.endswith(':latest') }}"
 
 matrix_bot_mjolnir_base_path: "{{ matrix_base_data_path }}/mjolnir"
 matrix_bot_mjolnir_config_path: "{{ matrix_bot_mjolnir_base_path }}/config"
 matrix_bot_mjolnir_data_path: "{{ matrix_bot_mjolnir_base_path }}/data"
+matrix_bot_mjolnir_docker_src_files_path: "{{ matrix_bot_mjolnir_base_path }}/docker-src"
 
 # A list of extra arguments to pass to the container
 matrix_bot_mjolnir_container_extra_arguments: []

@@ -9,6 +9,12 @@ homeserver:
     # Only applies if address starts with https://
     verify_ssl: true
     asmux: false
+    # Number of retries for all HTTP requests if the homeserver isn't reachable.
+    http_retry_count: 4
+    # The URL to push real-time bridge status to.
+    # If set, the bridge will make POST requests to this URL whenever a user's Signal connection state changes.
+    # The bridge will use the appservice as_token to authorize requests.
+    status_endpoint: null
 
 # Application service host/registration related details
 # Changing these values requires regeneration of the registration.
@@ -80,6 +86,9 @@ signal:
     avatar_dir: /signald/avatars
     # Directory where signald stores auth data. Used to delete data when logging out.
     data_dir: /signald/data
+    # Whether or not unknown signald accounts should be deleted when the bridge is started.
+    # When this is enabled, any UserInUse errors should be resolved by restarting the bridge.
+    delete_unknown_accounts_on_start: false
     # Whether or not message attachments should be removed from disk after they're bridged.
     remove_file_after_handling: true
 
@@ -131,7 +140,7 @@ bridge:
     # If false, created portal rooms will never be federated.
     federate_rooms: true
     # End-to-bridge encryption support options. You must install the e2be optional dependency for
-    # this to work. See https://github.com/tulir/mautrix-telegram/wiki/End‐to‐bridge-encryption
+    # this to work. See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html
     encryption:
         # Allow encryption, work in group chat rooms with e2ee enabled
         allow: false
@@ -164,20 +173,44 @@ bridge:
     # This field will automatically be changed back to false after it,
     # except if the config file is not writable.
     resend_bridge_info: false
+    # Interval at which to resync contacts.
+    periodic_sync: 0
 
     # The prefix for commands. Only required in non-management rooms.
     command_prefix: "!signal"
 
     # Permissions for using the bridge.
     # Permitted values:
+    #      relay - Allowed to be relayed through the bridge, no access to commands.
     #       user - Use the bridge with puppeting.
     #      admin - Use and administrate the bridge.
     # Permitted keys:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions:
-      '{{ matrix_mautrix_signal_homeserver_domain }}': user
+    permissions: 
+        {{ matrix_mautrix_signal_bridge_permissions|from_yaml }}
+
+    relay:
+        # Whether or not relay mode should be allowed. If allowed, `!signal set-relay` can be used to turn any
+        # authenticated user into a relaybot for that chat.
+        enabled: {{ matrix_mautrix_signal_relaybot_enabled }}
+        # The formats to use when sending messages to Signal via a relay user.
+        #
+        # Available variables:
+        #   $sender_displayname - The display name of the sender (e.g. Example User)
+        #   $sender_username    - The username (Matrix ID localpart) of the sender (e.g. exampleuser)
+        #   $sender_mxid        - The Matrix ID of the sender (e.g. @exampleuser:example.com)
+        #   $message            - The message content
+        message_formats:
+            m.text: '$sender_displayname: $message'
+            m.notice: '$sender_displayname: $message'
+            m.emote: '* $sender_displayname $message'
+            m.file: '$sender_displayname sent a file'
+            m.image: '$sender_displayname  sent an image'
+            m.audio: '$sender_displayname  sent an audio file'
+            m.video: '$sender_displayname  sent a video'
+            m.location: '$sender_displayname  sent a location'
 
 
 # Python logging configuration.

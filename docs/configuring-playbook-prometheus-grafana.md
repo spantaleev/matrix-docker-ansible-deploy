@@ -56,8 +56,72 @@ Name | Description
 `matrix_nginx_proxy_proxy_synapse_metrics`|Set this to `true` to make matrix-nginx-proxy expose the Synapse metrics at `https://matrix.DOMAIN/_synapse/metrics`
 `matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled`|Set this to `true` to password-protect (using HTTP Basic Auth) `https://matrix.DOMAIN/_synapse/metrics` (the username is always `prometheus`, the password is defined in `matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key`)
 `matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key`|Set this to a password to use for HTTP Basic Auth for protecting `https://matrix.DOMAIN/_synapse/metrics` (the username is always `prometheus` - it's not configurable)
-`matrix_server_fqn_grafana`|Use this variable to override the domain at which the Grafana web user-interface is at (defaults to `stats.DOMAIN`).
+`matrix_server_fqn_grafana`|Use this variable to override the domain at which the Grafana web user-interface is at (defaults to `stats.DOMAIN`)
 
+### Collecting worker metrics to an external Prometheus server
+
+If you are using workers (`matrix_synapse_workers_enabled`) and have enabled `matrix_nginx_proxy_proxy_synapse_metrics` as described above, the playbook will also automatically proxy the all worker threads's metrics to `https://matrix.DOMAIN/_synapse-worker-TYPE-ID/metrics`, where `TYPE` corresponds to the type and `ID` to the instanceId of a worker as exemplified in `matrix_synapse_workers_enabled_list`.
+
+The playbook also generates an exemplary prometheus.yml config file (`matrix_base_data_path/external_prometheus.yml.template`) with all the correct paths which you can copy to your Prometheus server and adapt to your needs, especially edit the specified `password_file` path and contents and path to your `synapse-v2.rules`.
+It will look a bit like this:
+```yaml
+scrape_configs:
+  - job_name: 'synapse'
+    metrics_path: /_synapse/metrics
+    scheme: https
+    basic_auth:
+      username: prometheus
+      password_file: /etc/prometheus/password.pwd
+    static_configs:
+      - targets: ['matrix.DOMAIN:443']
+        labels:
+          job: "master"
+          index: 1
+  - job_name: 'synapse-generic_worker-1'
+    metrics_path: /_synapse-worker-generic_worker-18111/metrics
+    scheme: https
+    basic_auth:
+      username: prometheus
+      password_file: /etc/prometheus/password.pwd
+    static_configs:
+      - targets: ['matrix.DOMAIN:443']
+        labels:
+          job: "generic_worker"
+          index: 18111
+```
+
+### Collecting system and Postgres metrics to an external Prometheus server (advanced)
+
+When you normally enable the Prometheus and Grafana via the playbook, it will also show general system (via node-exporter) and Postgres (via postgres-exporter) stats. If you are instead collecting your metrics to an external Prometheus server, you can follow this advanced configuration example to also export these stats.
+
+It would be possible to use `matrix_prometheus_node_exporter_container_http_host_bind_port` etc., but that is not always the best choice, for example because your server is on a public network.
+
+Use the following variables in addition to the ones mentioned above:
+
+Name | Description
+-----|----------
+`matrix_nginx_proxy_proxy_grafana_enabled`|Set this to `true` to make the stats subdomain (`matrix_server_fqn_grafana`) available via the Nginx proxy
+`matrix_ssl_additional_domains_to_obtain_certificates_for`|Add `"{{ matrix_server_fqn_grafana }}"` to this list to have letsencrypt fetch a certificate for the stats subdomain
+`matrix_prometheus_node_exporter_enabled`|Set this to `true` to enable the node (general system stats) exporter
+`matrix_prometheus_postgres_exporter_enabled`|Set this to `true` to enable the Postgres exporter
+`matrix_nginx_proxy_proxy_grafana_additional_server_configuration_blocks`|Add locations to this list depending on which of the above exporters you enabled (see below)
+
+```nginx
+matrix_nginx_proxy_proxy_grafana_additional_server_configuration_blocks:
+  - 'location /node-exporter/ {
+  resolver 127.0.0.11 valid=5s;
+  proxy_pass http://matrix-prometheus-node-exporter:9100/;
+  auth_basic "protected";
+  auth_basic_user_file /nginx-data/matrix-synapse-metrics-htpasswd;
+  }'
+  - 'location /postgres-exporter/ {
+  resolver 127.0.0.11 valid=5s;
+  proxy_pass http://matrix-prometheus-postgres-exporter:9187/;
+  auth_basic "protected";
+  auth_basic_user_file /nginx-data/matrix-synapse-metrics-htpasswd;
+  }'
+```
+You can customize the `location`s to your liking, just point your Prometheus to there later (e.g. `stats.DOMAIN/node-exporter/metrics`). Nginx is very picky about the `proxy_pass`syntax: take care to follow the example closely and note the trailing slash as well as absent use of variables. postgres-exporter uses the nonstandard port 9187.
 
 ## More information
 
