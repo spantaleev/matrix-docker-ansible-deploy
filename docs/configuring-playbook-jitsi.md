@@ -26,7 +26,6 @@ matrix_jitsi_enabled: true
 
 # Run `bash inventory/scripts/jitsi-generate-passwords.sh` to generate these passwords,
 # or define your own strong passwords manually.
-matrix_jitsi_jicofo_component_secret: ""
 matrix_jitsi_jicofo_auth_password: ""
 matrix_jitsi_jvb_auth_password: ""
 matrix_jitsi_jibri_recorder_password: ""
@@ -129,7 +128,7 @@ Until this gets integrated into the playbook, we need to register new users / me
 Please SSH into your matrix host machine and execute the following command targeting the `matrix-jitsi-prosody` container:
 
 ```bash
-docker exec matrix-jitsi-prosody prosodyctl --config /config/prosody.cfg.lua register <USERNAME> matrix-jitsi-web <PASSWORD>
+docker exec matrix-jitsi-prosody prosodyctl --config /config/prosody.cfg.lua register <USERNAME> meet.jitsi <PASSWORD>
 ```
 
 Run this command for each user you would like to create, replacing `<USERNAME>` and `<PASSWORD>` accordingly. After you've finished, please exit the host.

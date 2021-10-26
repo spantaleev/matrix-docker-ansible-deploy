@@ -42,6 +42,11 @@ http {
 	{% else %}
 	access_log off;
 	{% endif %}
+	
+	proxy_connect_timeout       {{ matrix_nginx_proxy_connect_timeout }};
+	proxy_send_timeout          {{  matrix_nginx_proxy_send_timeout }};
+	proxy_read_timeout          {{ matrix_nginx_proxy_read_timeout }};
+	send_timeout                {{ matrix_nginx_send_timeout }};
 
 	sendfile on;
 	#tcp_nopush on;

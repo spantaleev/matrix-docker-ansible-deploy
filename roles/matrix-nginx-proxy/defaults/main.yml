@@ -1,5 +1,5 @@
 matrix_nginx_proxy_enabled: true
-matrix_nginx_proxy_version: 1.21.0-alpine
+matrix_nginx_proxy_version: 1.21.3-alpine
 
 # We use an official nginx image, which we fix-up to run unprivileged.
 # An alternative would be an `nginxinc/nginx-unprivileged` image, but
@@ -10,6 +10,7 @@ matrix_nginx_proxy_docker_image_force_pull: "{{ matrix_nginx_proxy_docker_image.
 matrix_nginx_proxy_base_path: "{{ matrix_base_data_path }}/nginx-proxy"
 matrix_nginx_proxy_data_path: "{{ matrix_nginx_proxy_base_path }}/data"
 matrix_nginx_proxy_data_path_in_container: "/nginx-data"
+matrix_nginx_proxy_data_path_extension: "/matrix_domain"
 matrix_nginx_proxy_confd_path: "{{ matrix_nginx_proxy_base_path }}/conf.d"
 
 # List of systemd services that matrix-nginx-proxy.service depends on
@@ -38,6 +39,12 @@ matrix_nginx_proxy_container_extra_arguments: []
 # - naturally, there's no HTTPS vhost
 # - services are served directly from the HTTP vhost
 matrix_nginx_proxy_https_enabled: true
+
+# Controls whether matrix-nginx-proxy trusts an upstream server's X-Forwarded-Proto header
+#
+# Required if you disable HTTPS for the container (see `matrix_nginx_proxy_https_enabled`) and have an upstream server handle it instead.
+matrix_nginx_proxy_trust_forwarded_proto: false
+matrix_nginx_proxy_x_forwarded_proto_value: "{{ '$http_x_forwarded_proto' if matrix_nginx_proxy_trust_forwarded_proto else '$scheme' }}"
 
 # Controls whether the matrix-nginx-proxy container exposes its HTTP port (tcp/8080 in the container).
 #
@@ -74,6 +81,9 @@ matrix_nginx_proxy_container_federation_host_bind_port: '8448'
 # You can also put additional files to use for this webpage
 # in the `{{ matrix_nginx_proxy_data_path }}/matrix-domain` (`/matrix/nginx-proxy/data/matrix-domain`) directory.
 matrix_nginx_proxy_base_domain_serving_enabled: false
+
+# Controls whether the base domain directory and default index.html file are created.
+matrix_nginx_proxy_base_domain_create_directory: true
 
 matrix_nginx_proxy_base_domain_hostname: "{{ matrix_domain }}"
 
@@ -120,6 +130,7 @@ matrix_nginx_proxy_proxy_hydrogen_hostname: "{{ matrix_server_fqn_hydrogen }}"
 # Controls whether proxying the matrix domain should be done.
 matrix_nginx_proxy_proxy_matrix_enabled: false
 matrix_nginx_proxy_proxy_matrix_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_nginx_proxy_proxy_matrix_federation_hostname: "{{ matrix_nginx_proxy_proxy_matrix_hostname }}"
 # The port name used for federation in the nginx configuration.
 # This is not necessarily the port that it's actually on,
 # as port-mapping happens (`-p ..`) for the `matrix-nginx-proxy` container.
@@ -175,7 +186,12 @@ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "127.0.0.1:809
 
 # Controls whether proxying for metrics (`/_synapse/metrics`) should be done (on the matrix domain)
 matrix_nginx_proxy_proxy_synapse_metrics: false
+matrix_nginx_proxy_synapse_workers_enabled_list: []
 matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled: false
+# The following value will be written verbatim to the htpasswd file that stores the password for nginx to check against and needs to be encoded appropriately.
+# Read the manpage at `man 1 htpasswd` to learn more, then encrypt your password, and paste the encrypted value here.
+# e.g. `htpasswd -c mypass.htpasswd prometheus` and enter `mysecurepw` when prompted yields `prometheus:$apr1$wZhqsn.U$7LC3kMmjUbjNAZjyMyvYv/`
+# The part after `prometheus:` is needed here. matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key: "$apr1$wZhqsn.U$7LC3kMmjUbjNAZjyMyvYv/"
 matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key: ""
 
 # The addresses where the Matrix Client API is.
@@ -215,7 +231,7 @@ matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_prefix_regexes: |
     +
     (['/_synapse/admin'] if matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled else [])
     +
-    (['/_synapse/metrics'] if matrix_nginx_proxy_proxy_synapse_metrics else [])
+    (['/_synapse.*/metrics'] if matrix_nginx_proxy_proxy_synapse_metrics else [])
   }}
 
 # Specifies where requests for the root URI (`/`) on the `matrix.` domain should be redirected.
@@ -283,6 +299,23 @@ matrix_nginx_proxy_proxy_mautrix_wsproxy_additional_server_configuration_blocks:
 
 # A list of strings containing additional configuration blocks to add to the base domain server configuration (matrix-base-domain.conf).
 matrix_nginx_proxy_proxy_domain_additional_server_configuration_blocks: []
+
+# To increase request timeout in NGINX using proxy_read_timeout, proxy_connect_timeout, proxy_send_timeout, send_timeout directives
+# Nginx Default: proxy_connect_timeout 60s;   #Defines a timeout for establishing a connection with a proxied server
+# Nginx Default: proxy_send_timeout 60s;      #Sets a timeout for transmitting a request to the proxied server.
+# Nginx Default: proxy_read_timeout 60s;      #Defines a timeout for reading a response from the proxied server.
+# Nginx Default: send_timeout 60s;            #Sets a timeout for transmitting a response to the client.
+#
+# For more information visit:
+# http://nginx.org/en/docs/http/ngx_http_proxy_module.html
+# http://nginx.org/en/docs/http/ngx_http_core_module.html#send_timeout
+# https://www.nginx.com/resources/wiki/start/topics/examples/fullexample2/
+#
+# Here we are sticking with nginx default values change this value carefully.
+matrix_nginx_proxy_connect_timeout: 60
+matrix_nginx_proxy_send_timeout: 60
+matrix_nginx_proxy_read_timeout: 60
+matrix_nginx_send_timeout: 60
 
 # Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses for all vhosts meant to be accessed by users.
 #
@@ -411,7 +444,7 @@ matrix_ssl_additional_domains_to_obtain_certificates_for: []
 
 # Controls whether to obtain production or staging certificates from Let's Encrypt.
 matrix_ssl_lets_encrypt_staging: false
-matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v1.14.0"
+matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v1.20.0"
 matrix_ssl_lets_encrypt_certbot_docker_image_force_pull: "{{ matrix_ssl_lets_encrypt_certbot_docker_image.endswith(':latest') }}"
 matrix_ssl_lets_encrypt_certbot_standalone_http_port: 2402
 matrix_ssl_lets_encrypt_support_email: ~

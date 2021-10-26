@@ -3,7 +3,7 @@
 - name: Fail if trying to self-build on Ansible < 2.8
   fail:
     msg: "To self-build the Element image, you should use Ansible 2.8 or higher. See docs/ansible.md"
-  when: "ansible_version.major == 2 and ansible_version.minor < 8 and matrix_synapse_admin_container_self_build"
+  when: "ansible_version.major == 2 and ansible_version.minor < 8 and matrix_synapse_admin_container_self_build and matrix_synapse_admin_enabled"
 
 - set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-synapse-admin.service'] }}"
@@ -22,7 +22,7 @@
   - name: Generate Synapse Admin proxying configuration for matrix-nginx-proxy
     set_fact:
       matrix_synapse_admin_matrix_nginx_proxy_configuration: |
-        rewrite ^{{ matrix_synapse_admin_public_endpoint }}$ $scheme://$server_name{{ matrix_synapse_admin_public_endpoint }}/ permanent;
+        rewrite ^{{ matrix_synapse_admin_public_endpoint }}$ {{ matrix_nginx_proxy_x_forwarded_proto_value }}://$server_name{{ matrix_synapse_admin_public_endpoint }}/ permanent;
 
         location ~ ^{{ matrix_synapse_admin_public_endpoint }}/(.*) {
         {% if matrix_nginx_proxy_enabled|default(False) %}

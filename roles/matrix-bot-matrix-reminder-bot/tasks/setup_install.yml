@@ -37,6 +37,7 @@
     - { path: "{{ matrix_bot_matrix_reminder_bot_config_path }}", when: true }
     - { path: "{{ matrix_bot_matrix_reminder_bot_data_path }}", when: true }
     - { path: "{{ matrix_bot_matrix_reminder_bot_data_store_path }}", when: true }
+    - { path: "{{ matrix_bot_matrix_reminder_bot_docker_src_files_path }}", when: true}
   when: "item.when|bool"
 
 - name: Ensure matrix-reminder-bot image is pulled
@@ -45,6 +46,27 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_bot_matrix_reminder_bot_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_matrix_reminder_bot_docker_image_force_pull }}"
+  when: "not matrix_bot_matrix_reminder_bot_container_self_build|bool"
+
+- name: Ensure matrix-reminder-bot repository is present on self-build
+  git:
+    repo: "{{ matrix_bot_matrix_reminder_bot_docker_repo }}"
+    dest: "{{ matrix_bot_matrix_reminder_bot_docker_src_files_path }}"
+    force: "yes"
+  register: matrix_bot_matrix_reminder_bot_git_pull_results
+  when: "matrix_bot_matrix_reminder_bot_container_self_build|bool"
+
+- name: Ensure matrix-reminder-bot image is built
+  docker_image:
+    name: "{{ matrix_bot_matrix_reminder_bot_docker_image }}"
+    source: build
+    force_source: "{{ matrix_bot_matrix_reminder_bot_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_git_pull_results.changed }}"
+    build:
+      dockerfile: docker/Dockerfile
+      path: "{{ matrix_bot_matrix_reminder_bot_docker_src_files_path }}"
+      pull: yes
+  when: "matrix_bot_matrix_reminder_bot_container_self_build|bool"
 
 - name: Ensure matrix-reminder-bot config installed
   copy:

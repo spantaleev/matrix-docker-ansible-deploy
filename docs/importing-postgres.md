@@ -23,11 +23,9 @@ To import, run this command (make sure to replace `<server-path-to-postgres-dump
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml \
---extra-vars='postgres_default_import_database=synapse server_path_postgres_dump=<server-path-to-postgres-dump.sql>' \
+--extra-vars='server_path_postgres_dump=<server-path-to-postgres-dump.sql>' \
 --tags=import-postgres
 ```
-
-We specify the `synapse` database as the default import database. If your dump is a single-database dump (`pg_dump`), then we need to tell it where to go to. If you're redefining `matrix_synapse_database_database` to something other than `synapse`, please adjust it here too. For database dumps spanning multiple databases (`pg_dumpall`), you can remove the `postgres_default_import_database` definition (but it doesn't hurt to keep it too).
 
 **Note**: `<server-path-to-postgres-dump.sql>` must be a file path to a Postgres dump file on the server (not on your local machine!).
 
@@ -62,7 +60,7 @@ ALTER TABLE public.application_services_state OWNER TO synapse_user;
 It can be worked around by changing the username to `synapse`, for example by using `sed`:
 
 ```Shell
-$ sed -i "s/synapse_user/synapse/g" homeserver.sql"
+$ sed -i "s/synapse_user/synapse/g" homeserver.sql
 ```
 
 This uses sed to perform an 'in-place' (`-i`) replacement globally (`/g`), searching for `synapse user` and replacing with `synapse` (`s/synapse_user/synapse`). If your database username was different, change `synapse_user` to that username instead.

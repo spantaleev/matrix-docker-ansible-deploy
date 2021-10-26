@@ -7,6 +7,7 @@ matrix_jitsi_enable_guests: false
 matrix_jitsi_enable_recording: false
 matrix_jitsi_enable_transcriptions: false
 matrix_jitsi_enable_p2p: true
+matrix_jitsi_enable_av_moderation: true
 
 # Authentication type, must be one of internal, jwt or ldap. Currently only
 # internal and ldap are supported by this playbook.
@@ -32,13 +33,14 @@ matrix_jitsi_ldap_start_tls: false
 
 matrix_jitsi_timezone: UTC
 
-matrix_jitsi_xmpp_domain: matrix-jitsi-web
-matrix_jitsi_xmpp_server: matrix-jitsi-prosody
+matrix_jitsi_xmpp_domain: meet.jitsi
+matrix_jitsi_xmpp_server: xmpp.meet.jitsi
 matrix_jitsi_xmpp_auth_domain: auth.meet.jitsi
 matrix_jitsi_xmpp_bosh_url_base: http://{{ matrix_jitsi_xmpp_server }}:5280
 matrix_jitsi_xmpp_guest_domain: guest.meet.jitsi
 matrix_jitsi_xmpp_muc_domain: muc.meet.jitsi
 matrix_jitsi_xmpp_internal_muc_domain: internal-muc.meet.jitsi
+matrix_jitsi_xmpp_modules: ''
 
 matrix_jitsi_recorder_domain: recorder.meet.jitsi
 
@@ -52,7 +54,7 @@ matrix_jitsi_jibri_recorder_password: ''
 
 matrix_jitsi_enable_lobby: false
 
-matrix_jitsi_version: stable-5765-1
+matrix_jitsi_version: stable-6173
 matrix_jitsi_container_image_tag: "{{ matrix_jitsi_version }}" # for backward-compatibility
 
 matrix_jitsi_web_docker_image: "{{ matrix_container_global_registry_prefix }}jitsi/web:{{ matrix_jitsi_container_image_tag }}"
@@ -67,6 +69,14 @@ matrix_jitsi_web_public_url: "https://{{ matrix_server_fqn_jitsi }}"
 # STUN servers used in the web UI. Feel free to point them to your own STUN server.
 # Addresses need to be prefixed with one of `stun:`, `turn:` or `turns:`.
 matrix_jitsi_web_stun_servers: ['stun:meet-jit-si-turnrelay.jitsi.net:443']
+
+# Setting up TURN
+# Default set with Coturn container
+matrix_jitsi_turn_credentials: "{{ matrix_coturn_turn_static_auth_secret }}"
+matrix_jitsi_turn_host: "turn.{{ matrix_server_fqn_matrix }}"
+matrix_jitsi_turns_host: "turn.{{ matrix_server_fqn_matrix }}"
+matrix_jitsi_turn_port: "{{ matrix_coturn_container_stun_plain_host_bind_port }}"
+matrix_jitsi_turns_port: "{{ matrix_coturn_container_stun_tls_host_bind_port }}"
 
 # Controls whether Etherpad will be available within Jitsi
 matrix_jitsi_etherpad_enabled: false

@@ -1,25 +1,25 @@
 # Installing
 
+## 1. Installing the Matrix services
+
 If you've [configured your DNS](configuring-dns.md) and have [configured the playbook](configuring-playbook.md), you can start the installation procedure.
 
-Run this as-is to set up a server:
+Run this command to install the Matrix services:
 
 ```bash
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all
 ```
 
-**Note**: if you don't use SSH keys for authentication, but rather a regular password, you may need to add `--ask-pass` to the above (and all other) Ansible commands.
+The above command **doesn't start any services just yet** (another step does this later - below). Feel free to **re-run this setup command any time** you think something is off with the server configuration.
 
-**Note**: if you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to the above (and all other) Ansible commands.
-
-The above command **doesn't start any services just yet** (another step does this later - below).
-
-Feel free to **re-run this setup command any time** you think something is off with the server configuration.
+**Notes**:
+- if you **don't** use SSH keys for authentication, but rather a regular password, you may need to add `--ask-pass` to the above (and all other) Ansible commands.
+- if you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to the above (and all other) Ansible commands.
 
 
-## Things you might want to do after installing
+## 2. Things you might want to do after installing
 
-After installing, but before starting the services, you may want to do additional things like:
+**Before starting the services**, you may want to do additional things like:
 
 - [Importing an existing SQLite database (from another Synapse installation)](importing-synapse-sqlite.md) (optional)
 
@@ -28,20 +28,22 @@ After installing, but before starting the services, you may want to do additiona
 - [Importing `media_store` data files from an existing Synapse installation](importing-synapse-media-store.md) (optional)
 
 
-## Starting the services
+## 3. Starting the services
 
-When you're ready to start the Matrix services (and set them up to auto-start in the future):
+When you're ready to start the Matrix services (and set them up to auto-start in the future), run this command:
 
 ```bash
 ansible-playbook -i inventory/hosts setup.yml --tags=start
 ```
 
-Now that services are running, you need to **finalize the installation process** (required for federation to work!) by [Configuring Service Discovery via .well-known](configuring-well-known.md)
+## 4. Finalize the installation
+
+Now that services are running, you need to **finalize the installation process** (required for federation to work!) by [Configuring Service Discovery via .well-known](configuring-well-known.md).
 
 
-## Things to do next
+## 5. Things to do next
 
-If you have started services and **finalized the installation process** (required for federation to work!) by [Configuring Service Discovery via .well-known](configuring-well-known.md), you can:
+After you have started the services and **finalized the installation process** (required for federation to work!) by [Configuring Service Discovery via .well-known](configuring-well-known.md), you can:
 
 - [check if services work](maintenance-checking-services.md)
 - or [create your first Matrix user account](registering-users.md)

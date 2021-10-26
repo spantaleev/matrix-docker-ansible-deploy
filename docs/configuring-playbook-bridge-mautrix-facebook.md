@@ -1,8 +1,8 @@
 # Setting up Mautrix Facebook (optional)
 
-The playbook can install and configure [mautrix-facebook](https://github.com/tulir/mautrix-facebook) for you.
+The playbook can install and configure [mautrix-facebook](https://github.com/mautrix/facebook) for you.
 
-See the project's [documentation](https://github.com/tulir/mautrix-facebook/blob/master/ROADMAP.md) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/mautrix/facebook/blob/master/ROADMAP.md) to learn what it does and why it might be useful to you.
 
 ```yaml
 matrix_mautrix_facebook_enabled: true

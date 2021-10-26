@@ -19,7 +19,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-redis \
 			{% if matrix_redis_container_redis_bind_port %}
 			-p {{ matrix_redis_container_redis_bind_port }}:6379 \
 			{% endif %}
-			-v {{ matrix_redis_base_path }}/redis.conf:/usr/local/etc/redis/redis.conf \
+			--mount type=bind,src={{ matrix_redis_base_path }}/redis.conf,dst=/usr/local/etc/redis/redis.conf,ro \
+			--mount type=bind,src={{ matrix_redis_data_path }},dst=/data \
 			{% for arg in matrix_redis_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
