@@ -56,7 +56,7 @@ Certain Synapse administration tasks (managing users and rooms, etc.) can be per
 
 If you'd like to use OpenID Connect authentication with Synapse, you'll need some additional reverse-proxy configuration (see [our nginx reverse-proxy doc page](configuring-playbook-nginx.md#synapse-openid-connect-for-single-sign-on)).
 
-In case you encounter errors regarding the parsing of the variables, you can try to add `{%raw}` and `{% endraw %}` blocks around them. For example ;
+In case you encounter errors regarding the parsing of the variables, you can try to add `{% raw %}` and `{% endraw %}` blocks around them. For example ;
 
 ```
  - idp_id: keycloak
@@ -70,7 +70,7 @@ In case you encounter errors regarding the parsing of the variables, you can try
         userinfo_endpoint: "https://url.ix/auth/realms/x/protocol/openid-connect/userinfo"
         user_mapping_provider:
           config:
-            display_name_template: "{%raw}{{ user.given_name }}{% endraw %} {%raw}{{ user.family_name }}{% endraw %}"
-            email_template: "{%raw}{{ user.email }}{% endraw %}"
+            display_name_template: "{% raw %}{{ user.given_name }}{% endraw %} {% raw %}{{ user.family_name }}{% endraw %}"
+            email_template: "{% raw %}{{ user.email }}{% endraw %}"
 ```
 

@@ -121,7 +121,7 @@ This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EM
 
 - this one **can be executed more than once** without causing trouble
 
-- works on various distros: **CentOS** (7.0+), Debian-based distributions (**Debian** 9/Stretch+, **Ubuntu** 16.04+), **Archlinux**
+- works on various distros: **CentOS** (7.0+), Debian-based distributions (**Debian** 10/Buster+, **Ubuntu** 18.04+), **Archlinux**
 
 - this one installs everything in a single directory (`/matrix` by default) and **doesn't "contaminate" your server** with files all over the place
 

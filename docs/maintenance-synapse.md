@@ -14,7 +14,7 @@ Table of contents:
 
 ## Purging old data with the Purge History API
 
-You can use the **[Purge History API](https://github.com/matrix-org/synapse/blob/master/docs/admin_api/purge_history_api.rst)** to delete old messages on a per-room basis. **This is destructive** (especially for non-federated rooms), because it means **people will no longer have access to history past a certain point**.
+You can use the **[Purge History API](https://github.com/matrix-org/synapse/blob/master/docs/admin_api/purge_history_api.md)** to delete old messages on a per-room basis. **This is destructive** (especially for non-federated rooms), because it means **people will no longer have access to history past a certain point**.
 
 To make use of this API, **you'll need an admin access token** first. You can find your access token in the setting of some clients (like Element).
 Alternatively, you can log in and obtain a new access token like this:
@@ -27,7 +27,7 @@ https://matrix.DOMAIN/_matrix/client/r0/login
 
 Synapse's Admin API is not exposed to the internet by default. To expose it you will need to add `matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled: true` to your `vars.yml` file.
 
-Follow the [Purge History API](https://github.com/matrix-org/synapse/blob/master/docs/admin_api/purge_history_api.rst) documentation page for the actual purging instructions.
+Follow the [Purge History API](https://github.com/matrix-org/synapse/blob/master/docs/admin_api/purge_history_api.md) documentation page for the actual purging instructions.
 
 After deleting data, you may wish to run a [`FULL` Postgres `VACUUM`](./maintenance-postgres.md#vacuuming-postgresql).
 

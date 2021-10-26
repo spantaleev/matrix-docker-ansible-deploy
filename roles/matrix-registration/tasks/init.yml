@@ -22,8 +22,8 @@
   - name: Generate matrix-registration proxying configuration for matrix-nginx-proxy
     set_fact:
       matrix_registration_matrix_nginx_proxy_configuration: |
-        rewrite ^{{ matrix_registration_public_endpoint }}$ $scheme://$server_name{{ matrix_registration_public_endpoint }}/ permanent;
-        rewrite ^{{ matrix_registration_public_endpoint }}/$ $scheme://$server_name{{ matrix_registration_public_endpoint }}/register redirect;
+        rewrite ^{{ matrix_registration_public_endpoint }}$ {{ matrix_nginx_proxy_x_forwarded_proto_value }}://$server_name{{ matrix_registration_public_endpoint }}/ permanent;
+        rewrite ^{{ matrix_registration_public_endpoint }}/$ {{ matrix_nginx_proxy_x_forwarded_proto_value }}://$server_name{{ matrix_registration_public_endpoint }}/register redirect;
 
         location ~ ^{{ matrix_registration_public_endpoint }}/(.*) {
         {% if matrix_nginx_proxy_enabled|default(False) %}
