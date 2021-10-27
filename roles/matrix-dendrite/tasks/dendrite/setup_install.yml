@@ -17,14 +17,6 @@
     group: "{{ matrix_user_groupname }}"
   when: "not local_path_media_store_stat.failed and not local_path_media_store_stat.stat.exists"
 
-- name: Ensure Dendrite log path exists
-  file:
-    path: "{{ matrix_dendrite_log_path }}"
-    state: directory
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-
 - name: Ensure Dendrite Docker image is pulled
   docker_image:
     name: "{{ matrix_dendrite_docker_image }}"
