@@ -6,7 +6,7 @@
 #
 # At a minimum, to get started, you will need to update the settings in the
 # "global" section for your deployment, and you will need to check that the
-# database "connection_string" line in each component section is correct. 
+# database "connection_string" line in each component section is correct.
 #
 # Each component with a "database" section can accept the following formats
 # for "connection_string":
@@ -21,13 +21,13 @@
 # small number of users and likely will perform worse still with a higher volume
 # of users.
 #
-# The "max_open_conns" and "max_idle_conns" settings configure the maximum 
+# The "max_open_conns" and "max_idle_conns" settings configure the maximum
 # number of open/idle database connections. The value 0 will use the database
 # engine default, and a negative value will use unlimited connections. The
 # "conn_max_lifetime" option controls the maximum length of time a database
 # connection can be idle in seconds - a negative value is unlimited.
 
-# The version of the configuration file. 
+# The version of the configuration file.
 version: 1
 
 # Global Matrix configuration. This configuration applies to all components.
@@ -133,13 +133,13 @@ client_api:
   # Whether to require reCAPTCHA for registration.
   enable_registration_captcha: {{ matrix_dendrite_enable_registration_captcha|to_json }}
 
-  # Settings for ReCAPTCHA. 
+  # Settings for ReCAPTCHA.
   recaptcha_public_key: {{ matrix_dendrite_recaptcha_public_key|to_json }}
   recaptcha_private_key: {{ matrix_dendrite_recaptcha_private_key|to_json }}
   recaptcha_bypass_secret: ""
   recaptcha_siteverify_api: ""
 
-  # TURN server information that this homeserver should send to clients. 
+  # TURN server information that this homeserver should send to clients.
   turn:
     turn_user_lifetime: ""
     turn_uris: {{ matrix_dendrite_turn_uris|to_json }}
@@ -148,7 +148,7 @@ client_api:
     turn_password: ""
 
   # Settings for rate-limited endpoints. Rate limiting will kick in after the
-  # threshold number of "slots" have been taken by requests from a specific 
+  # threshold number of "slots" have been taken by requests from a specific
   # host. Each "slot" will be released after the cooloff time in milliseconds.
   rate_limiting:
     enabled: {{ matrix_dendrite_rate_limiting_enabled|to_json }}
@@ -192,7 +192,7 @@ federation_sender:
 
   # Disable the validation of TLS certificates of remote federated homeservers. Do not
   # enable this option in production as it presents a security risk!
-  disable_tls_validation: {{ matrix_dendrite_disable_tls_validation }} 
+  disable_tls_validation: {{ matrix_dendrite_disable_tls_validation }}
 
   # Use the following proxy server for outbound federation traffic.
   proxy_outbound:
@@ -282,7 +282,7 @@ signing_key_server:
       public_key: Noi6WqcDj0QmPxCNQqgezwTlBKrfqehY1u2FyWP9uYw
     - key_id: ed25519:a_RXGa
       public_key: l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ
-      
+
   # This option will control whether Dendrite will prefer to look up keys directly
   # or whether it should try perspective servers first, using direct fetches as a
   # last resort.
@@ -335,8 +335,4 @@ tracing:
 
 # Logging configuration, in addition to the standard logging that is sent to
 # stdout by Dendrite.
-logging:
-- type: file
-  level: {{ matrix_dendrite_log_level }}
-  params:
-    path: /var/log/dendrite
+logging: []
