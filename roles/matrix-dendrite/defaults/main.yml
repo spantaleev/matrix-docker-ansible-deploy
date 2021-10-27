@@ -5,7 +5,7 @@ matrix_dendrite_enabled: false
 
 matrix_dendrite_docker_image: "{{ matrix_dendrite_docker_image_name_prefix }}matrixdotorg/dendrite-monolith:{{ matrix_dendrite_docker_image_tag }}"
 matrix_dendrite_docker_image_name_prefix: "docker.io/"
-matrix_dendrite_docker_image_tag: "v0.3.11"
+matrix_dendrite_docker_image_tag: "v0.5.0"
 matrix_dendrite_docker_image_force_pull: "{{ matrix_dendrite_docker_image.endswith(':latest') }}"
 
 matrix_dendrite_base_path: "{{ matrix_base_data_path }}/dendrite"
@@ -43,10 +43,10 @@ matrix_dendrite_systemd_wanted_services_list: []
 # matrix_dendrite_template_dendrite_config: "{{ playbook_dir }}/inventory/host_vars/<host>/dendrite.yaml.j2"
 matrix_dendrite_template_dendrite_config: "{{ role_path }}/templates/dendrite/dendrite.yaml.j2"
 
-matrix_dendrite_macaroon_secret_key: ""
-matrix_dendrite_registration_shared_secret: "{{ matrix_dendrite_macaroon_secret_key }}"
+# A secret used to derive various other secrets
+matrix_dendrite_generic_secret_key: ''
+matrix_dendrite_registration_shared_secret: ''
 matrix_dendrite_allow_guest_access: false
-matrix_dendrite_form_secret: "{{ matrix_dendrite_macaroon_secret_key }}"
 
 matrix_dendrite_max_file_size_bytes: 10485760
 
@@ -101,6 +101,7 @@ matrix_dendrite_singingkeyserver_database: "dendrite_sigingkeyserver"
 matrix_dendrite_syncapi_database: "dendrite_syncapi"
 matrix_dendrite_account_database: "dendrite_account"
 matrix_dendrite_device_database: "dendrite_device"
+matrix_dendrite_mscs_database: "dendrite_mscs"
 
 matrix_dendrite_turn_uris: []
 matrix_dendrite_turn_shared_secret: ""
