@@ -33,9 +33,11 @@ version: 1
 # Global Matrix configuration. This configuration applies to all components.
 global:
   # The domain name of this homeserver.
-  server_name: {{ matrix_domain }}
+  server_name: {{ matrix_domain|to_json }}
 
   # The path to the signing private key file, used to sign requests and events.
+  # Note that this is NOT the same private key as used for TLS! To generate a
+  # signing key, use "./bin/generate-keys --private-key matrix_key.pem".
   private_key: "/data/{{ matrix_server_fqn_matrix }}.signing.pem"
 
   # The paths and expiry timestamps (as a UNIX timestamp in millisecond precision)
@@ -52,16 +54,23 @@ global:
   # considered valid by other homeservers.
   key_validity_period: 168h0m0s
 
+  # The server name to delegate server-server communications to, with optional port
+  # e.g. localhost:443
+  well_known_server_name: ""
+
   # Lists of domains that the server will trust as identity servers to verify third
   # party identifiers such as phone numbers and email addresses.
   trusted_third_party_id_servers: {{ matrix_dendrite_trusted_id_servers|to_json }}
+
+  # Disables federation. Dendrite will not be able to make any outbound HTTP requests
+  # to other servers and the federation API will not be exposed.
+  disable_federation: false
 
   # Configuration for Kafka/Naffka.
   kafka:
     # List of Kafka broker addresses to connect to. This is not needed if using
     # Naffka in monolith mode.
-    addresses:
-      - kafka:9092
+    addresses: []
 
     # The prefix to use for Kafka topic names for this homeserver. Change this only if
     # you are running more than one Dendrite homeserver on the same Kafka deployment.
@@ -71,6 +80,12 @@ global:
     # mode, but means that you can run a single-process server without requiring
     # Kafka.
     use_naffka: true
+
+    # The max size a Kafka message is allowed to use.
+    # You only need to change this value, if you encounter issues with too large messages.
+    # Must be less than/equal to "max.message.bytes" configured in Kafka.
+    # Defaults to 8388608 bytes.
+    # max_message_bytes: 8388608
 
     # Naffka database options. Not required when using Kafka.
     naffka_database:
@@ -82,12 +97,12 @@ global:
   # Configuration for Prometheus metric collection.
   metrics:
     # Whether or not Prometheus metrics are enabled.
-    enabled: {{ matrix_dendrite_metrics_enabled }}
+    enabled: {{ matrix_dendrite_metrics_enabled|to_json }}
 
     # HTTP basic authentication to protect access to monitoring.
     basic_auth:
-      username: {{ matrix_dendrite_metrics_username }}
-      password: {{ matrix_dendrite_metrics_password }}
+      username: {{ matrix_dendrite_metrics_username|to_json }}
+      password: {{ matrix_dendrite_metrics_password|to_json }}
 
   # DNS cache options. The DNS cache may reduce the load on DNS servers
   # if there is no local caching resolver available for use.
@@ -98,7 +113,7 @@ global:
     # Maximum number of entries to hold in the DNS cache, and
     # for how long those items should be considered valid in seconds.
     cache_size: 256
-    cache_lifetime: 300
+    cache_lifetime: "5m" # 5minutes; see https://pkg.go.dev/time@master#ParseDuration for more
 
 # Configuration for the Appservice API.
 app_service_api:
@@ -110,6 +125,11 @@ app_service_api:
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
+
+  # Disable the validation of TLS certificates of appservices. This is
+  # not recommended in production since it may allow appservice traffic
+  # to be sent to an unverified endpoint.
+  disable_tls_validation: false
 
   # Appservice configuration files to load into this homeserver.
   config_files: {{ matrix_dendrite_app_service_config_files|to_json }}
@@ -192,7 +212,7 @@ federation_sender:
 
   # Disable the validation of TLS certificates of remote federated homeservers. Do not
   # enable this option in production as it presents a security risk!
-  disable_tls_validation: {{ matrix_dendrite_disable_tls_validation }}
+  disable_tls_validation: {{ matrix_dendrite_disable_tls_validation|to_json }}
 
   # Use the following proxy server for outbound federation traffic.
   proxy_outbound:
@@ -229,8 +249,9 @@ media_api:
   base_path: "/matrix-media-store-parent/{{ matrix_dendrite_media_store_directory_name }}"
 
   # The maximum allowed file size (in bytes) for media uploads to this homeserver
-  # (0 = unlimited).
-  max_file_size_bytes: {{ matrix_dendrite_max_file_size_bytes }}
+  # (0 = unlimited). If using a reverse proxy, ensure it allows requests at
+  # least this large (e.g. client_max_body_size in nginx.)
+  max_file_size_bytes: {{ matrix_dendrite_max_file_size_bytes|to_json }}
 
   # Whether to dynamically generate thumbnails if needed.
   dynamic_thumbnails: false
@@ -250,6 +271,19 @@ media_api:
     height: 480
     method: scale
 
+# Configuration for experimental MSC's
+mscs:
+  # A list of enabled MSC's
+  # Currently valid values are:
+  # - msc2836    (Threading, see https://github.com/matrix-org/matrix-doc/pull/2836)
+  # - msc2946    (Spaces Summary, see https://github.com/matrix-org/matrix-doc/pull/2946)
+  mscs: []
+  database:
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_mscs_database }}?sslmode=disable
+    max_open_conns: 5
+    max_idle_conns: 2
+    conn_max_lifetime: -1
+
 # Configuration for the Room Server.
 room_server:
   internal_api:
@@ -261,7 +295,7 @@ room_server:
     max_idle_conns: 2
     conn_max_lifetime: -1
 
-# Configuration for the Server Key API (for server signing keys).
+# Configuration for the Signing Key Server (for server signing keys).
 signing_key_server:
   internal_api:
     listen: http://0.0.0.0:7780
@@ -301,8 +335,20 @@ sync_api:
     max_idle_conns: 2
     conn_max_lifetime: -1
 
+  # This option controls which HTTP header to inspect to find the real remote IP
+  # address of the client. This is likely required if Dendrite is running behind
+  # a reverse proxy server.
+  # real_ip_header: X-Real-IP
+
 # Configuration for the User API.
 user_api:
+  # The cost when hashing passwords on registration/login. Default: 10. Min: 4, Max: 31
+  # See https://pkg.go.dev/golang.org/x/crypto/bcrypt for more information.
+  # Setting this lower makes registration/login consume less CPU resources at the cost of security
+  # should the database be compromised. Setting this higher makes registration/login consume more
+  # CPU resources but makes it harder to brute force password hashes.
+  # This value can be low if performing tests or on embedded Dendrite instances (e.g WASM builds)
+  # bcrypt_cost: 10
   internal_api:
     listen: http://0.0.0.0:7781
     connect: http://user_api:7781
@@ -316,6 +362,11 @@ user_api:
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
+  # The length of time that a token issued for a relying party from
+  # /_matrix/client/r0/user/{userId}/openid/request_token endpoint
+  # is considered to be valid in milliseconds.
+  # The default lifetime is 3600000ms (60 minutes).
+  # openid_token_lifetime_ms: 3600000
 
 # Configuration for Opentracing.
 # See https://github.com/matrix-org/dendrite/tree/master/docs/tracing for information on

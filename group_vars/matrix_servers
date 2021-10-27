@@ -1548,6 +1548,10 @@ matrix_postgres_additional_databases: |
       'name': matrix_dendrite_device_database,
       'username': matrix_dendrite_database_user,
       'password': matrix_dendrite_database_password,
+    },{
+      'name': matrix_dendrite_mscs_database,
+      'username': matrix_dendrite_database_user,
+      'password': matrix_dendrite_database_password,
     }] if (matrix_dendrite_enabled and matrix_dendrite_database_hostname == 'matrix-postgres') else [])
     +
     ([{
@@ -2184,7 +2188,9 @@ matrix_dendrite_container_client_api_host_bind_port: "{{ '' if matrix_nginx_prox
 # For exposing the Matrix Federation API's TLS port (HTTPS) to the internet on all network interfaces.
 matrix_dendrite_container_federation_api_tls_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else matrix_federation_public_port }}"
 
-matrix_dendrite_database_password: "{{ matrix_dendrite_macaroon_secret_key | password_hash('sha512', 'dendrite.db') | to_uuid }}"
+matrix_dendrite_registration_shared_secret: "{{ matrix_dendrite_generic_secret_key | password_hash('sha512', 'dendrite.rss') | to_uuid }}"
+
+matrix_dendrite_database_password: "{{ matrix_dendrite_generic_secret_key | password_hash('sha512', 'dendrite.db') | to_uuid }}"
 
 # Even if TURN doesn't support TLS (it does by default),
 # it doesn't hurt to try a secure connection anyway.
