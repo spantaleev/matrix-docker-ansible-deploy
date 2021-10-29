@@ -1,9 +1,5 @@
 ---
 
-#
-# Tasks related to setting up Element
-#
-
 - name: Ensure Element paths exists
   file:
     path: "{{ item.path }}"
@@ -87,44 +83,3 @@
   service:
     daemon_reload: yes
   when: "matrix_client_element_enabled and matrix_client_element_systemd_service_result.changed"
-
-#
-# Tasks related to getting rid of Element (if it was previously enabled)
-#
-
-- name: Check existence of matrix-client-element.service
-  stat:
-    path: "{{ matrix_systemd_path }}/matrix-client-element.service"
-  register: matrix_client_element_service_stat
-  when: "not matrix_client_element_enabled|bool"
-
-- name: Ensure matrix-client-element is stopped
-  service:
-    name: matrix-client-element
-    state: stopped
-    daemon_reload: yes
-  register: stopping_result
-  when: "not matrix_client_element_enabled|bool and matrix_client_element_service_stat.stat.exists"
-
-- name: Ensure matrix-client-element.service doesn't exist
-  file:
-    path: "{{ matrix_systemd_path }}/matrix-client-element.service"
-    state: absent
-  when: "not matrix_client_element_enabled|bool and matrix_client_element_service_stat.stat.exists"
-
-- name: Ensure systemd reloaded after matrix-client-element.service removal
-  service:
-    daemon_reload: yes
-  when: "not matrix_client_element_enabled|bool and matrix_client_element_service_stat.stat.exists"
-
-- name: Ensure Element paths doesn't exist
-  file:
-    path: "{{ matrix_client_element_data_path }}"
-    state: absent
-  when: "not matrix_client_element_enabled|bool"
-
-- name: Ensure Element Docker image doesn't exist
-  docker_image:
-    name: "{{ matrix_client_element_docker_image }}"
-    state: absent
-  when: "not matrix_client_element_enabled|bool"
