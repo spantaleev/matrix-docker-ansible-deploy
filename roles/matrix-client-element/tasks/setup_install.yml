@@ -29,6 +29,20 @@
   register: matrix_client_element_git_pull_results
   when: "matrix_client_element_container_image_self_build|bool"
 
+# See:
+# - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1357
+# - https://github.com/vector-im/element-web/issues/19544
+- name: Patch webpack.config.js to support building on low-memory (<4G RAM) devices
+  lineinfile:
+    path: "{{ matrix_client_element_docker_src_files_path }}/webpack.config.js"
+    regexp: '(\s+)splitChunks: \{'
+    line: '\1splitChunks: { maxSize: 100000,'
+    backrefs: yes
+    owner: root
+    group: root
+    mode: '0644'
+  when: "matrix_client_element_container_image_self_build|bool and ansible_memtotal_mb < 4096"
+
 - name: Ensure Element Docker image is built
   docker_image:
     name: "{{ matrix_client_element_docker_image }}"
