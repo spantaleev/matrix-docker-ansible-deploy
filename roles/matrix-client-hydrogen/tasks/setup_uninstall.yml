@@ -4,7 +4,6 @@
   stat:
     path: "{{ matrix_systemd_path }}/matrix-client-hydrogen.service"
   register: matrix_client_hydrogen_service_stat
-  when: "not matrix_client_hydrogen_enabled|bool"
 
 - name: Ensure matrix-client-hydrogen is stopped
   service:
@@ -12,27 +11,25 @@
     state: stopped
     daemon_reload: yes
   register: stopping_result
-  when: "not matrix_client_hydrogen_enabled|bool and matrix_client_hydrogen_service_stat.stat.exists"
+  when: "matrix_client_hydrogen_service_stat.stat.exists|bool"
 
 - name: Ensure matrix-client-hydrogen.service doesn't exist
   file:
     path: "{{ matrix_systemd_path }}/matrix-client-hydrogen.service"
     state: absent
-  when: "not matrix_client_hydrogen_enabled|bool and matrix_client_hydrogen_service_stat.stat.exists"
+  when: "matrix_client_hydrogen_service_stat.stat.exists|bool"
 
 - name: Ensure systemd reloaded after matrix-client-hydrogen.service removal
   service:
     daemon_reload: yes
-  when: "not matrix_client_hydrogen_enabled|bool and matrix_client_hydrogen_service_stat.stat.exists"
+  when: "matrix_client_hydrogen_service_stat.stat.exists|bool"
 
 - name: Ensure Hydrogen paths doesn't exist
   file:
     path: "{{ matrix_client_hydrogen_data_path }}"
     state: absent
-  when: "not matrix_client_hydrogen_enabled|bool"
 
 - name: Ensure Hydrogen Docker image doesn't exist
   docker_image:
     name: "{{ matrix_client_hydrogen_docker_image }}"
     state: absent
-  when: "not matrix_client_hydrogen_enabled|bool"
