@@ -1709,8 +1709,8 @@ matrix_synapse_container_image_self_build: "{{ matrix_architecture not in ['arm6
 
 # When ma1sd is enabled, we can use it to validate email addresses and phone numbers.
 # Synapse can validate email addresses by itself as well, but it's probably not what we want by default when we have an identity server.
-matrix_synapse_account_threepid_delegates_email: "{{ 'http://matrix-ma1sd:{{ matrix_ma1sd_default_port }}' if matrix_ma1sd_enabled else '' }}"
-matrix_synapse_account_threepid_delegates_msisdn: "{{ 'http://matrix-ma1sd:{{ matrix_ma1sd_default_port }}' if matrix_ma1sd_enabled else '' }}"
+matrix_synapse_account_threepid_delegates_email: "{{ 'http://matrix-ma1sd:' + matrix_ma1sd_default_port|string if matrix_ma1sd_enabled else '' }}"
+matrix_synapse_account_threepid_delegates_msisdn: "{{ 'http://matrix-ma1sd:' + matrix_ma1sd_default_port|string if matrix_ma1sd_enabled else '' }}"
 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Synapse over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it,
