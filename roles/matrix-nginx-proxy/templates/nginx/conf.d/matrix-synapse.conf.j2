@@ -62,7 +62,9 @@
 
 server {
 	listen 12080;
-	server_name {{ matrix_nginx_proxy_proxy_synapse_hostname }};
+	{% if matrix_nginx_proxy_enabled %}
+		server_name {{ matrix_nginx_proxy_proxy_synapse_hostname }};
+	{% endif %}
 
 	server_tokens off;
 	root /dev/null;
@@ -194,8 +196,10 @@ server {
 {% if matrix_nginx_proxy_proxy_synapse_federation_api_enabled %}
 server {
 	listen 12088;
+	{% if matrix_nginx_proxy_enabled %}
+		server_name {{ matrix_nginx_proxy_proxy_synapse_hostname }};
+	{% endif %}
 
-	server_name {{ matrix_nginx_proxy_proxy_synapse_hostname }};
 	server_tokens off;
 
 	root /dev/null;
