@@ -35,6 +35,7 @@
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
     --cap-drop=ALL
     -p {{ matrix_ssl_lets_encrypt_container_standalone_http_host_bind_port }}:8080
+    --network={{ matrix_docker_network }}
     --mount type=bind,src={{ matrix_ssl_config_dir_path }},dst=/etc/letsencrypt
     --mount type=bind,src={{ matrix_ssl_log_dir_path }},dst=/var/log/letsencrypt
     {{ matrix_ssl_lets_encrypt_certbot_docker_image }}

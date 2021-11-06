@@ -1,0 +1,47 @@
+---
+
+- block:
+  - name: Ensure matrix-ip6tables.service exists
+    template:
+      src: "{{ role_path }}/templates/{{ item }}.j2"
+      dest: "{{ matrix_systemd_path }}/{{ item }}"
+      owner: "root"
+      group: "root"
+      mode: 0644
+    with_items:
+      - matrix-ip6tables.service
+    register: matrix_ip6tables_systemd_service_result
+
+  - name: Ensure systemd reloaded after matrix-ip6tables.service installation
+    service:
+      daemon_reload: yes
+    when: "matrix_ip6tables_systemd_service_result.changed"
+  
+  - name: Ensure matrix-ip6tables.service is started and autoruns
+    service:
+      name: matrix-ip6tables
+      state: started
+      enabled: yes
+
+  when: "matrix_docker_ipv6_enabled|bool"
+
+
+- block:
+  - name: Check existence of matrix-ip6tables service
+    stat:
+      path: "{{ matrix_systemd_path }}/matrix-ip6tables.service"
+    register: matrix_ip6tables_service_stat
+  
+  - name: Ensure matrix-ip6tables.service doesn't exist
+    file:
+      path: "{{ matrix_systemd_path }}/matrix-ip6tables.service"
+      state: absent
+    when: "matrix_ip6tables_service_stat.stat.exists"
+  
+  - name: Ensure systemd reloaded after matrix-ip6tables.service removal
+    service:
+      daemon_reload: yes
+    when: "matrix_ip6tables_service_stat.stat.exists"
+    
+  when: "not matrix_docker_ipv6_enabled|bool"
+
