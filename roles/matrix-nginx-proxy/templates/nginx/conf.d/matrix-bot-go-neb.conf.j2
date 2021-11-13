@@ -33,6 +33,8 @@
 
 server {
 	listen {{ 8080 if matrix_nginx_proxy_enabled else 80 }};
+	listen [::]:{{ 8080 if matrix_nginx_proxy_enabled else 80 }};
+
 	server_name {{ matrix_nginx_proxy_proxy_bot_go_neb_hostname }};
 
 	server_tokens off;
@@ -83,7 +85,7 @@ server {
 		ssl_stapling_verify on;
 		ssl_trusted_certificate {{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_bot_go_neb_hostname }}/chain.pem;
 	{% endif %}
-	
+
 	{% if matrix_nginx_proxy_ssl_session_tickets_off %}
 		ssl_session_tickets off;
 	{% endif %}
