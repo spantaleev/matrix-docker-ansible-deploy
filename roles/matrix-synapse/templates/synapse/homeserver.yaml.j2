@@ -276,7 +276,7 @@ listeners:
 
 {% if matrix_synapse_federation_port_enabled and matrix_synapse_tls_federation_listener_enabled %}
   # TLS-enabled listener: for when matrix traffic is sent directly to synapse.
-  - port: {{ matrix_synapse_container_federation_api_port|to_json }}
+  - port: {{ matrix_synapse_container_federation_api_tls_port|to_json }}
     tls: true
     bind_addresses: ['::']
     type: http
@@ -302,7 +302,7 @@ listeners:
 {% if matrix_synapse_federation_port_enabled %}
   # Unsecure HTTP listener (Federation API): for when matrix traffic passes through a reverse proxy
   # that unwraps TLS.
-  - port: {{ matrix_synapse_container_federation_port|to_json }}
+  - port: {{ matrix_synapse_container_federation_api_plain_port|to_json }}
     tls: false
     bind_addresses: ['::']
     type: http

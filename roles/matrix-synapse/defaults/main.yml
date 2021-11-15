@@ -27,9 +27,9 @@ matrix_synapse_storage_path: "{{ matrix_synapse_base_path }}/storage"
 matrix_synapse_media_store_path: "{{ matrix_synapse_storage_path }}/media-store"
 matrix_synapse_ext_path: "{{ matrix_synapse_base_path }}/ext"
 
-matrix_synapse_container_federation_api_port: 8448
+matrix_synapse_container_federation_api_tls_port: 8448
 
-matrix_synapse_container_federation_port: 8048
+matrix_synapse_container_federation_api_plain_port: 8048
 
 # Controls whether the matrix-synapse container exposes the Client/Server API port (tcp/8008 in the container).
 #
@@ -150,7 +150,7 @@ matrix_synapse_federation_rr_transactions_per_room_per_second: 50
 
 # Controls whether the TLS federation listener is enabled (tcp/8448).
 # Only makes sense if federation is enabled (`matrix_synapse_federation_enabled`).
-# Note that federation may potentially be enabled as non-TLS on `matrix_synapse_container_federation_port` as well.
+# Note that federation may potentially be enabled as non-TLS on `matrix_synapse_container_federation_api_plain_port` as well.
 # If you're serving Synapse behind an HTTPS-capable reverse-proxy,
 # you can disable the TLS listener (`matrix_synapse_tls_federation_listener_enabled: false`).
 matrix_synapse_tls_federation_listener_enabled: true
