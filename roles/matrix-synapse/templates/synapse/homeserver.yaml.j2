@@ -269,14 +269,14 @@ default_room_version: {{ matrix_synapse_default_room_version|to_json }}
 listeners:
 {% if matrix_synapse_metrics_enabled %}
   - type: metrics
-    port: {{ matrix_synapse_metrics_port }}
+    port: {{ matrix_synapse_metrics_port|to_json }}
     bind_addresses:
       - '0.0.0.0'
 {% endif %}
 
 {% if matrix_synapse_federation_port_enabled and matrix_synapse_tls_federation_listener_enabled %}
   # TLS-enabled listener: for when matrix traffic is sent directly to synapse.
-  - port: 8448
+  - port: {{ matrix_synapse_container_federation_api_port|to_json }}
     tls: true
     bind_addresses: ['::']
     type: http
