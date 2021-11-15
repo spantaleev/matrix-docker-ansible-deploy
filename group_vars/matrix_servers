@@ -19,9 +19,9 @@ matrix_container_global_registry_prefix: "docker.io/"
 
 matrix_identity_server_url: "{{ ('https://' + matrix_server_fqn_matrix) if matrix_ma1sd_enabled else None }}"
 
-# If Synapse workers are enabled and matrix-nginx-proxy is disabled, certain APIs may not work over 'http://matrix-synapse:8008'.
+# If Synapse workers are enabled and matrix-nginx-proxy is disabled, certain APIs may not work over 'http://matrix-synapse:{{ matrix_synapse_container_client_api_port }}'.
 # This is because we explicitly disable them for the main Synapse process.
-matrix_homeserver_container_url: "{{ 'http://matrix-nginx-proxy:12080' if matrix_nginx_proxy_enabled else 'http://matrix-synapse:8008' }}"
+matrix_homeserver_container_url: "{{ 'http://matrix-nginx-proxy:12080' if matrix_nginx_proxy_enabled else 'http://matrix-synapse:'+ matrix_synapse_container_client_api_port|string }}"
 
 ######################################################################
 #
@@ -1722,7 +1722,7 @@ matrix_synapse_account_threepid_delegates_msisdn: "{{ 'http://matrix-ma1sd:' + m
 # you can expose Synapse's ports to the host.
 #
 # For exposing the Matrix Client API's port (plain HTTP) to the local host.
-matrix_synapse_container_client_api_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8008' }}"
+matrix_synapse_container_client_api_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:' + matrix_synapse_container_client_api_port|string }}"
 #
 # For exposing the Matrix Federation API's plain port (plain HTTP) to the local host.
 matrix_synapse_container_federation_api_plain_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:' + matrix_synapse_container_federation_api_plain_port|string }}"
