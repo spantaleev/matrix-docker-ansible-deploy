@@ -1047,6 +1047,8 @@ matrix_dimension_enabled: false
 # the Dimension HTTP port to the local host.
 matrix_dimension_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8184' }}"
 
+matrix_dimension_homeserver_federationUrl: "http://matrix-synapse:{{matrix_synapse_container_federation_port|string}}"
+
 matrix_integration_manager_rest_url: "{{ matrix_dimension_integrations_rest_url if matrix_dimension_enabled else None }}"
 matrix_integration_manager_ui_url: "{{ matrix_dimension_integrations_ui_url if matrix_dimension_enabled else None }}"
 
@@ -1305,6 +1307,9 @@ matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "127.0.0.1:1
 
 # Settings controlling matrix-synapse-proxy.conf
 matrix_nginx_proxy_proxy_synapse_enabled: "{{ matrix_synapse_enabled }}"
+
+matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container: "matrix-synapse:{{matrix_synapse_container_federation_port|string}}"
+matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container: "localhost:{{matrix_synapse_container_federation_port|string}}"
 
 # When matrix-nginx-proxy is disabled, the actual port number that the vhost uses may begin to matter.
 matrix_nginx_proxy_proxy_matrix_federation_port: "{{ matrix_federation_public_port }}"
@@ -1720,7 +1725,7 @@ matrix_synapse_account_threepid_delegates_msisdn: "{{ 'http://matrix-ma1sd:' + m
 matrix_synapse_container_client_api_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8008' }}"
 #
 # For exposing the Matrix Federation API's plain port (plain HTTP) to the local host.
-matrix_synapse_container_federation_api_plain_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8048' }}"
+matrix_synapse_container_federation_api_plain_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:' + matrix_synapse_container_federation_port|string }}"
 #
 # For exposing the Matrix Federation API's TLS port (HTTPS) to the internet on all network interfaces.
 matrix_synapse_container_federation_api_tls_host_bind_port: "{{ matrix_federation_public_port if (matrix_synapse_federation_enabled and matrix_synapse_tls_federation_listener_enabled) else '' }}"
