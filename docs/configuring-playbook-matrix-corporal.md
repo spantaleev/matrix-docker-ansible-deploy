@@ -37,6 +37,7 @@ matrix_synapse_ext_password_provider_rest_auth_endpoint: "http://matrix-corporal
 
 matrix_corporal_enabled: true
 
+# See below for an example of how to use a locally-stored static policy
 matrix_corporal_policy_provider_config: |
   {
     "Type": "http",
@@ -74,9 +75,47 @@ Matrix Corporal operates with a specific Matrix user on your server.
 By default, it's `matrix-corporal` (controllable by the `matrix_corporal_reconciliation_user_id_local_part` setting, see above).
 No matter what Matrix user id you configure to run it with, make sure that:
 
-- the Matrix Corporal user is created by [registering it](registering-users.md). Use a password you remember, as you'll need to log in from time to time to create or join rooms
+- the Matrix Corporal user is created by [registering it](registering-users.md) **with administrator privileges**. Use a password you remember, as you'll need to log in from time to time to create or join rooms
 
 - the Matrix Corporal user is joined and has Admin/Moderator-level access to any rooms you want it to manage
+
+### Using a locally-stored static policy
+
+If you'd like to use a [static policy file](https://github.com/devture/matrix-corporal/blob/master/docs/policy-providers.md#static-file-pull-style-policy-provider), you can use a configuration like this:
+
+```yaml
+matrix_corporal_policy_provider_config: |
+  {
+    "Type": "static_file",
+    "Path": "/etc/matrix-corporal/policy.json"
+  }
+
+# Modify the policy below as you see fit
+matrix_aux_file_definitions:
+  - dest: "{{ matrix_corporal_config_dir_path }}/policy.json"
+    content: |
+      {
+        "schemaVersion": 1,
+        "identificationStamp": "stamp-1",
+        "flags": {
+          "allowCustomUserDisplayNames": false,
+          "allowCustomUserAvatars": false,
+          "forbidRoomCreation": false,
+          "forbidEncryptedRoomCreation": true,
+          "forbidUnencryptedRoomCreation": false,
+          "allowCustomPassthroughUserPasswords": true,
+          "allowUnauthenticatedPasswordResets": false,
+          "allow3pidLogin": false
+        },
+        "managedCommunityIds": [],
+        "managedRoomIds": [],
+        "users": []
+      }
+```
+
+To learn more about what the policy configuration, see the matrix-corporal documentation on [policy](https://github.com/devture/matrix-corporal/blob/master/docs/policy.md).
+
+Each time you update the policy in your `vars.yml` file, you'd need to re-run the playbook and restart matrix-corporal (`--tags=setup-all,start` or `--tags=setup-aux-files,setup-corporal,start`).
 
 
 ## Matrix Corporal files
