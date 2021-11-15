@@ -33,7 +33,7 @@ appservice:
         max_idle_conns: 2
 
     # The unique ID of this appservice.
-    id: whatsapp
+    id: whatsappbot
     # Appservice bot details.
     bot:
         # Username of the appservice bot.
@@ -77,12 +77,13 @@ bridge:
         # This requires a server with MSC2716 support, which is currently an experimental feature in synapse.
         # It can be enabled by setting experimental_features -> msc2716_enabled to true in homeserver.yaml.
         # Note that as of Synapse 1.46, there are still some bugs with the implementation, especially if using event persistence workers.
-        backfill: {{ matrix_bridges_backfill_enabled }}
+        backfill: false
         # Use double puppets for backfilling?
         # In order to use this, the double puppets must be in the appservice's user ID namespace
         # (because the bridge can't use the double puppet access token with batch sending).
         # This only affects double puppets on the local server, double puppets on other servers will never be used.
-        double_puppet_backfill: {{ matrix_bridges_backfill_enabled }}
+        # Doesn't work out of box with this playbook
+        double_puppet_backfill: false
         # Should the bridge request a full sync from the phone when logging in?
         # This bumps the size of history syncs from 3 months to 1 year.
         request_full_sync: false
@@ -137,6 +138,9 @@ bridge:
     # Should WhatsApp status messages be bridged into a Matrix room?
     # Disabling this won't affect already created status broadcast rooms.
     enable_status_broadcast: true
+    # Should the status broadcast room be muted and moved into low priority by default?
+    # This is only applied when creating the room, the user can unmute/untag it later.
+    mute_status_broadcast: true
     # Should the bridge use thumbnails from WhatsApp?
     # They're disabled by default due to very low resolution.
     whatsapp_thumbnail: false
