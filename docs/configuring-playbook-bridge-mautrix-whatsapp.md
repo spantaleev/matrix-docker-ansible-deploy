@@ -8,7 +8,8 @@ Use the following playbook configuration:
 
 ```yaml
 matrix_mautrix_whatsapp_enabled: true
-```
+``` 
+Whatsapp multidevice beta is required, now it is enough if Whatsapp is connected to the Internet every 2 weeks.
 
 ## Enable backfilling history
 This requires a server with MSC2716 support, which is currently an experimental feature in synapse.
