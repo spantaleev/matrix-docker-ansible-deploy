@@ -11,7 +11,7 @@ password=$2
 admin=$3
 
 if [ "$admin" -eq "1" ]; then
-	docker exec matrix-synapse register_new_matrix_user -u "$user" -p "$password" -c /data/homeserver.yaml --admin http://localhost:8008
+	docker exec matrix-synapse register_new_matrix_user -u "$user" -p "$password" -c /data/homeserver.yaml --admin http://localhost:{{ matrix_synapse_container_client_api_port }}
 else
-	docker exec matrix-synapse register_new_matrix_user -u "$user" -p "$password" -c /data/homeserver.yaml --no-admin http://localhost:8008
+	docker exec matrix-synapse register_new_matrix_user -u "$user" -p "$password" -c /data/homeserver.yaml --no-admin http://localhost:{{ matrix_synapse_container_client_api_port }}
 fi
