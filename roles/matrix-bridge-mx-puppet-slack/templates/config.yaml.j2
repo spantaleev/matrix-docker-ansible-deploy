@@ -13,7 +13,12 @@ bridge:
   loginSharedSecretMap:
     {{ matrix_domain }}: {{ matrix_mx_puppet_slack_login_shared_secret }}
   {% endif %}
-
+  {% if matrix_mx_puppet_slack_stripHomeservers != '' %}
+  stripHomeservers:
+    {% for stripHomeserver in matrix_mx_puppet_slack_stripHomeservers %}
+    - {{ stripHomeserver }};
+    {% endfor %}
+  {% endif %}
 
 # Slack OAuth settings. Create a slack app at https://api.slack.com/apps
 oauth:
