@@ -139,6 +139,12 @@ matrix_nginx_proxy_https_enabled: false
 matrix_nginx_proxy_container_http_host_bind_port: ''
 matrix_nginx_proxy_container_federation_host_bind_port: ''
 
+# Trust the reverse proxy to send the correct `X-Forwarded-Proto` header as it is handling the SSL connection.
+matrix_nginx_proxy_trust_forwarded_proto: true
+
+# Trust and use the other reverse proxy's `X-Forwarded-For` header.
+matrix_nginx_proxy_x_forwarded_for: '$proxy_add_x_forwarded_for'
+
 # Disable Coturn because it needs SSL certs
 # (Clients can, though exposing IP address, use Matrix.org TURN)
 matrix_coturn_enabled: false
