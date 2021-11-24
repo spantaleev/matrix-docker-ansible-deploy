@@ -111,6 +111,9 @@ matrix_coturn_enabled: false
 
 # Trust the reverse proxy to send the correct `X-Forwarded-Proto` header as it is handling the SSL connection.
 matrix_nginx_proxy_trust_forwarded_proto: true
+
+# Trust and use the other reverse proxy's `X-Forwarded-For` header.
+matrix_nginx_proxy_x_forwarded_for: '$proxy_add_x_forwarded_for'
 ```
 
 With this, nginx would still be in use, but it would not bother with anything SSL related or with taking up public ports.

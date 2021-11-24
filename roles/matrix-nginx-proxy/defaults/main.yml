@@ -382,6 +382,11 @@ matrix_nginx_proxy_ssl_prefer_server_ciphers: "{{ matrix_nginx_proxy_ssl_presets
 # To see the full list for suportes ciphers run `openssl ciphers` on your server
 matrix_nginx_proxy_ssl_ciphers: "{{ matrix_nginx_proxy_ssl_presets[matrix_nginx_proxy_ssl_preset]['ciphers'] }}"
 
+# Specifies what to use for the X-Forwarded-For variable.
+# If you're fronting the nginx reverse-proxy with additional reverse-proxy servers,
+# you may wish to set this to '$proxy_add_x_forwarded_for' instead.
+matrix_nginx_proxy_x_forwarded_for: '$remote_addr'
+
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_nginx_proxy_self_check_validate_certificates: true
 
