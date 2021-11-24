@@ -2,9 +2,9 @@
 
 - name: Collect entire room list into stdout
   shell: |
-    curl -X GET --header "Authorization: Bearer {{ janitors_token.stdout[1:-1] }}" '{{ synapse_container_ip.stdout }}:8008/_synapse/admin/v1/rooms?from={{ item }}'
+    curl -X GET --header "Authorization: Bearer {{ janitors_token.stdout[1:-1] }}" '{{ synapse_container_ip.stdout }}:{{ matrix_synapse_container_client_api_port }}/_synapse/admin/v1/rooms?from={{ item }}'
   register: awx_rooms_output
-  
+
 - name: Print stdout to file
   delegate_to: 127.0.0.1
   shell: |

@@ -18,6 +18,11 @@
     matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_latest if matrix_postgres_detected_version_corresponding_docker_image == '' else matrix_postgres_detected_version_corresponding_docker_image }}"
   when: matrix_postgres_enabled|bool
 
+- name: Abort if on an unsupported Postgres version
+  fail:
+    msg: "You're on Postgres {{ matrix_postgres_detected_version }}, which is no longer supported. To upgrade, see docs/maintenance-postgres.md"
+  when: "matrix_postgres_enabled|bool and matrix_postgres_detected_version.startswith('9.')"
+
 - name: Inject warning if on an old version of Postgres
   set_fact:
     matrix_playbook_runtime_results: |

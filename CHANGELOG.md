@@ -1,3 +1,12 @@
+# 2021-11-11
+
+## Dropped support for Postgres v9.6
+
+Postgres v9.6 reached its end of life today, so the playbook will refuse to run for you if you're still on that version.
+
+Synapse still supports v9.6 (for now), but we're retiring support for it early, to avoid having to maintain support for so many Postgres versions. Users that are still on Postgres v9.6 can easily [upgrade Postgres](docs/maintenance-postgres.md#upgrading-postgresql) via the playbook.
+
+
 # 2021-10-23
 
 ## Hangouts bridge no longer updated, superseded by a Googlechat bridge
@@ -243,6 +252,8 @@ The fact that we've renamed Synapse's database from `homeserver` to `synapse` (i
 # 2021-01-20
 
 ## (Breaking Change) The mautrix-facebook bridge now requires a Postgres database
+
+**Update from 2021-11-15**: SQLite support has been re-added to the mautrix-facebook bridge in [v0.3.2](https://github.com/mautrix/facebook/releases/tag/v0.3.2). You can ignore this changelog entry.
 
 A new version of the [mautrix-facebook](https://github.com/tulir/mautrix-facebook) bridge has been released. It's a full rewrite of its backend and the bridge now requires Postgres. New versions of the bridge can no longer run on SQLite.
 

@@ -9,7 +9,7 @@
   include_vars:
     file: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
   no_log: True
-  
+
 - name: Ensure curl and jq intalled on target machine
   apt:
     pkg:
@@ -23,7 +23,7 @@
 
 - name: Collect access token for janitor user
   shell: |
-    curl -XPOST -d '{"type":"m.login.password", "user":"janitor", "password":"{{ awx_janitor_user_password }}"}' "{{ awx_synapse_container_ip.stdout }}:8008/_matrix/client/r0/login" | jq '.access_token'
+    curl -XPOST -d '{"type":"m.login.password", "user":"janitor", "password":"{{ awx_janitor_user_password }}"}' "{{ awx_synapse_container_ip.stdout }}:{{ matrix_synapse_container_client_api_port }}/_matrix/client/r0/login" | jq '.access_token'
   register: awx_janitors_token
   no_log: True
 
@@ -31,7 +31,7 @@
   delegate_to: 127.0.0.1
   shell: "dateseq {{ matrix_purge_from_date }} {{ matrix_purge_to_date }}"
   register: awx_purge_dates
-    
+
 - name: Calculate initial size of local media repository
   shell: du -sh /matrix/synapse/storage/media-store/local*
   register: awx_local_media_size_before
@@ -47,12 +47,12 @@
   no_log: True
 
 - name: Purge local media with loop
-  include_tasks: purge_media_local.yml 
+  include_tasks: purge_media_local.yml
   loop: "{{ awx_purge_dates.stdout_lines | flatten(levels=1) }}"
   when: awx_purge_media_type == "Local Media"
 
 - name: Purge remote media with loop
-  include_tasks: purge_media_remote.yml 
+  include_tasks: purge_media_remote.yml
   loop: "{{ awx_purge_dates.stdout_lines | flatten(levels=1) }}"
   when: awx_purge_media_type == "Remote Media"
 

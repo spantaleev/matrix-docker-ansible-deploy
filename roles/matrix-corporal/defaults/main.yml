@@ -22,7 +22,7 @@ matrix_corporal_container_extra_arguments: []
 # List of systemd services that matrix-corporal.service depends on
 matrix_corporal_systemd_required_services_list: ['docker.service']
 
-matrix_corporal_version: 2.1.2
+matrix_corporal_version: 2.2.1
 matrix_corporal_docker_image: "{{ matrix_corporal_docker_image_name_prefix }}devture/matrix-corporal:{{ matrix_corporal_docker_image_tag }}"
 matrix_corporal_docker_image_name_prefix: "{{ 'localhost/' if matrix_corporal_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_corporal_docker_image_tag: "{{ matrix_corporal_version }}" # for backward-compatibility
@@ -36,7 +36,7 @@ matrix_corporal_var_dir_path: "{{ matrix_corporal_base_path }}/var"
 
 matrix_corporal_matrix_homeserver_domain_name: "{{ matrix_domain }}"
 
-# Controls where matrix-corporal can reach your Synapse server (e.g. "http://matrix-synapse:8008").
+# Controls where matrix-corporal can reach your Synapse server (e.g. "http://matrix-synapse:{{ matrix_synapse_container_client_api_port }}").
 # If Synapse runs on the same machine, you may need to add its service to `matrix_corporal_systemd_required_services_list`.
 matrix_corporal_matrix_homeserver_api_endpoint: ""
 
