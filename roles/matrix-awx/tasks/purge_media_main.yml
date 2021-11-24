@@ -21,21 +21,22 @@
   shell: "/usr/bin/docker inspect --format '{''{range.NetworkSettings.Networks}''}{''{.IPAddress}''}{''{end}''}' matrix-synapse"
   register: awx_synapse_container_ip
 
-- name: Collect access token for janitor user
+- name: Collect access token for @_janitor user
   shell: |
-    curl -XPOST -d '{"type":"m.login.password", "user":"janitor", "password":"{{ awx_janitor_user_password }}"}' "{{ awx_synapse_container_ip.stdout }}:{{ matrix_synapse_container_client_api_port }}/_matrix/client/r0/login" | jq '.access_token'
+    curl -XPOST -d '{"type":"m.login.password", "user":"_janitor", "password":"{{ awx_janitor_user_password }}"}' "{{ awx_synapse_container_ip.stdout }}:{{ matrix_synapse_container_client_api_port }}/_matrix/client/r0/login" | jq '.access_token'
   register: awx_janitors_token
   no_log: True
 
 - name: Generate list of dates to purge to
   delegate_to: 127.0.0.1
-  shell: "dateseq {{ matrix_purge_from_date }} {{ matrix_purge_to_date }}"
+  shell: "dateseq {{ awx_purge_from_date }} {{ awx_purge_to_date }}"
   register: awx_purge_dates
 
 - name: Calculate initial size of local media repository
   shell: du -sh /matrix/synapse/storage/media-store/local*
   register: awx_local_media_size_before
   when: awx_purge_media_type == "Local Media"
+  async: 600
   ignore_errors: yes
   no_log: True
 
@@ -43,6 +44,7 @@
   shell: du -sh /matrix/synapse/storage/media-store/remote*
   register: awx_remote_media_size_before
   when: awx_purge_media_type == "Remote Media"
+  async: 600 
   ignore_errors: yes
   no_log: True
 
