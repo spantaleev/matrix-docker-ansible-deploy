@@ -118,6 +118,72 @@ matrix_client_element_e2ee_secure_backup_required: false
 # See: https://github.com/vector-im/element-web/blob/develop/docs/e2ee.md
 matrix_client_element_e2ee_secure_backup_setup_methods: []
 
+# Default `/.well-known/matrix/client` configuration - it covers the generic use case.
+# You can customize it by controlling the various variables inside the template file that it references.
+#
+# For a more advanced customization, you can extend the default (see `matrix_well_known_matrix_client_configuration_extension_json`)
+# or completely replace this variable with your own template.
+#
+# The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
+# This is unlike what it does when looking up YAML template files (no automatic parsing there).
+matrix_well_known_matrix_client_configuration_default: "{{ lookup('template', 'templates/static-files/well-known/matrix-client.j2') }}"
+
+# Your custom JSON configuration for `/.well-known/matrix/client` should go to `matrix_well_known_matrix_client_configuration_extension_json`.
+# This configuration extends the default starting configuration (`matrix_well_known_matrix_client_configuration_default`).
+#
+# You can override individual variables from the default configuration, or introduce new ones.
+#
+# If you need something more special, you can take full control by
+# completely redefining `matrix_well_known_matrix_client_configuration`.
+#
+# Example configuration extension follows:
+#
+# matrix_well_known_matrix_client_configuration_extension_json: |
+#   {
+#     "io.element.call_behaviour": {
+#       "widget_build_url": "https://dimension.example.com/api/v1/dimension/bigbluebutton/widget_state"
+#     }
+#   }
+matrix_well_known_matrix_client_configuration_extension_json: '{}'
+
+matrix_well_known_matrix_client_configuration_extension: "{{ matrix_well_known_matrix_client_configuration_extension_json|from_json if matrix_well_known_matrix_client_configuration_extension_json|from_json is mapping else {} }}"
+
+# Holds the final `/.well-known/matrix/client` configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_well_known_matrix_client_configuration_default` and `matrix_well_known_matrix_client_configuration_extension_json`.
+matrix_well_known_matrix_client_configuration: "{{ matrix_well_known_matrix_client_configuration_default|combine(matrix_well_known_matrix_client_configuration_extension, recursive=True) }}"
+
+# Default `/.well-known/matrix/server` configuration - it covers the generic use case.
+# You can customize it by controlling the various variables inside the template file that it references.
+#
+# For a more advanced customization, you can extend the default (see `matrix_well_known_matrix_server_configuration_extension_json`)
+# or completely replace this variable with your own template.
+#
+# The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
+# This is unlike what it does when looking up YAML template files (no automatic parsing there).
+matrix_well_known_matrix_server_configuration_default: "{{ lookup('template', 'templates/static-files/well-known/matrix-server.j2') }}"
+
+# Your custom JSON configuration for `/.well-known/matrix/server` should go to `matrix_well_known_matrix_server_configuration_extension_json`.
+# This configuration extends the default starting configuration (`matrix_well_known_matrix_server_configuration_default`).
+#
+# You can override individual variables from the default configuration, or introduce new ones.
+#
+# If you need something more special, you can take full control by
+# completely redefining `matrix_well_known_matrix_server_configuration`.
+#
+# Example configuration extension follows:
+#
+# matrix_well_known_matrix_server_configuration_extension_json: |
+#   {
+#     "something": "another"
+#   }
+matrix_well_known_matrix_server_configuration_extension_json: '{}'
+
+matrix_well_known_matrix_server_configuration_extension: "{{ matrix_well_known_matrix_server_configuration_extension_json|from_json if matrix_well_known_matrix_server_configuration_extension_json|from_json is mapping else {} }}"
+
+# Holds the final `/.well-known/matrix/server` configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_well_known_matrix_server_configuration_default` and `matrix_well_known_matrix_server_configuration_extension_json`.
+matrix_well_known_matrix_server_configuration: "{{ matrix_well_known_matrix_server_configuration_default|combine(matrix_well_known_matrix_server_configuration_extension, recursive=True) }}"
+
 # The Docker network that all services would be put into
 matrix_docker_network: "matrix"
 
