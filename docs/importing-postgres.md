@@ -48,7 +48,7 @@ where `synapse_user` is the database username from the previous Synapse installa
 This can be verified by examining the dump for ALTER TABLE statements which set OWNER TO that username:
 
 ```Shell
-$ grep "ALTER TABLE" homeserver.sql"
+$ grep "ALTER TABLE" homeserver.sql
 ALTER TABLE public.access_tokens OWNER TO synapse_user;
 ALTER TABLE public.account_data OWNER TO synapse_user;
 ALTER TABLE public.account_data_max_stream_id OWNER TO synapse_user;
@@ -60,10 +60,10 @@ ALTER TABLE public.application_services_state OWNER TO synapse_user;
 It can be worked around by changing the username to `synapse`, for example by using `sed`:
 
 ```Shell
-$ sed -i "s/synapse_user/synapse/g" homeserver.sql
+$ sed -i "s/OWNER TO synapse_user;/OWNER TO synapse;/g" homeserver.sql
 ```
 
-This uses sed to perform an 'in-place' (`-i`) replacement globally (`/g`), searching for `synapse user` and replacing with `synapse` (`s/synapse_user/synapse`). If your database username was different, change `synapse_user` to that username instead.
+This uses sed to perform an 'in-place' (`-i`) replacement globally (`/g`), searching for `synapse_user` and replacing with `synapse` (`s/synapse_user/synapse`). If your database username was different, change `synapse_user` to that username instead. Expand search/replace statement as shown in example above, in case of old user name like `matrix` - replacing `matrix` only would... well - you can imagine.
 
 Note that if the previous import failed with an error it may have made changes which are incompatible with re-running the import task right away; if you do so it may fail with an error such as:
 
