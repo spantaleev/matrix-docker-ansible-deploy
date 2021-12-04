@@ -83,7 +83,7 @@ In this case you can use the command suggested in the import task to clear the d
 # systemctl start matrix-postgres
 ```
 
-Now on your local machine run `ansible-playbook -i inventory/hosts setup.yml -K --tags=setup-postgres` to prepare the database roles etc.
+Now on your local machine run `ansible-playbook -i inventory/hosts setup.yml --tags=setup-postgres` to prepare the database roles etc.
 
 If not, you probably get this error. `synapse` is the correct table owner, but the role is missing in database.
 ```
