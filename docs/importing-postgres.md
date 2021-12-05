@@ -99,4 +99,4 @@ Check, if `--dbname` is set to `synapse` (not `matrix`) and replace paths (or ev
 
 ### Hints
 
-To open psql terminal run `usr/local/bin/matrix-postgres-cli`
+To open psql terminal run `/usr/local/bin/matrix-postgres-cli`
