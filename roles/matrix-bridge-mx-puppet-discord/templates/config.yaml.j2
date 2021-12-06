@@ -9,17 +9,17 @@ bridge:
   domain: {{ matrix_mx_puppet_discord_homeserver_domain }}
   # Reachable URL of the Matrix homeserver
   homeserverUrl: {{ matrix_mx_puppet_discord_homeserver_address }}
+  # Optionally specify a different media URL used for the media store
+  #
+  # This is where Discord will download user profile pictures and media
+  # from
+  mediaUrl: {{ matrix_mx_puppet_discord_bridge_mediaUrl }}
   {% if matrix_mx_puppet_discord_login_shared_secret != '' %}
   loginSharedSecretMap:
     {{ matrix_domain }}: {{ matrix_mx_puppet_discord_login_shared_secret }}
   {% endif %}
   # Display name of the bridge bot
   displayname: Discord Puppet Bridge
-  # Optionally specify a different media URL used for the media store
-  #
-  # This is where Discord will download user profile pictures and media
-  # from
-  #mediaUrl: https://external-url.org
 
 presence:
   # Bridge Discord online/offline status
