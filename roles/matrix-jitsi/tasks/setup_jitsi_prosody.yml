@@ -4,7 +4,7 @@
 # Tasks related to setting up jitsi-prosody
 #
 
-- name: Ensure Matrix jitsi-prosody path exists
+- name: Ensure Matrix jitsi-prosody environment exists
   file:
     path: "{{ item.path }}"
     state: directory
@@ -32,7 +32,7 @@
     mode: 0640
   when: matrix_jitsi_enabled|bool
 
-- name: Ensure matrix-jitsi-prosody.service is installed
+- name: Ensure matrix-jitsi-prosody.service file is installed
   template:
     src: "{{ role_path }}/templates/prosody/matrix-jitsi-prosody.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-jitsi-prosody.service"
@@ -58,7 +58,7 @@
 # Tasks related to getting rid of jitsi-prosody (if it was previously enabled)
 #
 
-- name: Ensure matrix-jitsi-prosody service file exists
+- name: Ensure matrix-jitsi-prosody.service file exists
   stat:
     path: "{{ matrix_systemd_path }}/matrix-jitsi-prosody.service"
   register: matrix_jitsi_prosody_service_stat
@@ -73,7 +73,7 @@
   register: stopping_result
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_prosody_service_stat.stat.exists"
 
-- name: Ensure matrix-jitsi-prosody service file doesn't exist
+- name: Ensure matrix-jitsi-prosody.service file doesn't exist
   file:
     path: "{{ matrix_systemd_path }}/matrix-jitsi-prosody.service"
     state: absent
