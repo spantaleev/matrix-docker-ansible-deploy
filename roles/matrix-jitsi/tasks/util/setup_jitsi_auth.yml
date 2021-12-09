@@ -1,30 +1,43 @@
 ---
-
 #
-# Tasks related to setting up Jitsi authentication mechanisms
+# Start Necessary Services
 #
 
 - name: Ensure matrix-jitsi-prosody container is running
   systemd:
     state: started
     name: matrix-jitsi-prosody
+  register: matrix_jitsi_prosody_start_result
 
-- name: Ensire Jitsi internal authentication users are created
+
+#
+# Tasks related to configuring Jitsi internal authentication
+#
+
+- name: Ensure Jitsi internal authentication users are configured
   shell: "docker exec matrix-jitsi-prosody prosodyctl --config /config/prosody.cfg.lua register {{ item.username | quote }} meet.jitsi {{ item.password | quote }}"
   with_items: "{{ matrix_jitsi_prosody_auth_internal_accounts }}"
   when:
     - matrix_jitsi_auth_type == "internal"
+    - matrix_jitsi_prosody_auth_internal_accounts|length > 0
 
 
 #
-# Configure other authentication mechanisms below
+# Tasks related to configuring other Jitsi authentication mechanisms
+#
+
+
+
+#
+# Tasks related to cleaning after Jitsi authentication configuration
 #
 
 
 #
-# End
+# Stop Necessary Services
 #
-- name: Ensure matrix-jitsi-prosody container is stopped
+- name: Ensure matrix-jitsi-prosody container is stopped if necessary
   systemd:
     state: stopped
     name: matrix-jitsi-prosody
+  when: matrix_jitsi_prosody_start_result.changed|bool
