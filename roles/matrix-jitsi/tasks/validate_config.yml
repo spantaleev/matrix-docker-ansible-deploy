@@ -34,10 +34,10 @@
       it means that your installation is most likely using default passwords previously defined by the playbook.
       These defaults are insecure. Jitsi should be rebuilt with secure values.
       Refer to the "Rebuilding your Jitsi installation" section in our setup instructions (docs/configuring-playbook-jitsi.md).
-  when: 
-    - matrix_jitsi_auth_type == "internal"
-    - item.username == ''
-    - item.password == ''
+  when:
+    - matrix_jitsi_enable_auth|bool
+    - matrix_jitsi_auth_type == 'internal'
+    - matrix_jitsi_prosody_auth_internal_accounts|length == '0'
   with_items: "{{ matrix_jitsi_prosody_auth_internal_accounts }}"
 
 
