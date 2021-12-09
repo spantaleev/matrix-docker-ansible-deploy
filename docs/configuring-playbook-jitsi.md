@@ -48,10 +48,12 @@ matrix_jitsi_enable_auth: true
 matrix_jitsi_enable_guests: true
 matrix_jitsi_prosody_auth_internal_accounts:
   - username: "jitsi-moderator"
-    password: "some-password"
-  - username: "other-user"
-    password: "some-other-password"
+    password: "secret-password"
+  - username: "another-user"
+    password: "another-password"
 ```
+
+**Caution:** Accounts added here and subsquently removed will not be automatically removed from the Prosody server until user account cleaning is integrated into the playbook.
 
 **If you get an error** like this: "Error: Account creation/modification not supported.", it's likely that you had previously installed Jitsi without auth/guest support. In such a case, you should look into [Rebuilding your Jitsi installation](#rebuilding-your-jitsi-installation).
 
