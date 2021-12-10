@@ -113,7 +113,7 @@ matrix_appservice_webhooks_container_http_host_bind_port: "{{ '' if matrix_nginx
 
 matrix_appservice_webhooks_appservice_token: "{{ '%s' | format(matrix_synapse_macaroon_secret_key) | password_hash('sha512', 'webhook.as.token') | to_uuid }}"
 
-matrix_appservice_webhooks_homeserver_url: "http://matrix-synapse:{{ matrix_synapse_container_client_api_port }}"
+matrix_appservice_webhooks_homeserver_url: "{{ matrix_homeserver_container_url }}"
 matrix_appservice_webhooks_homeserver_token: "{{ '%s' | format(matrix_synapse_macaroon_secret_key) | password_hash('sha512', 'webhook.hs.token') | to_uuid }}"
 
 matrix_appservice_webhooks_id_token: "{{ '%s' | format(matrix_synapse_macaroon_secret_key) | password_hash('sha512', 'webhook.id.token') | to_uuid }}"
@@ -152,7 +152,7 @@ matrix_appservice_slack_container_http_host_bind_port: "{{ '' if matrix_nginx_pr
 
 matrix_appservice_slack_appservice_token: "{{ '%s' | format(matrix_synapse_macaroon_secret_key) | password_hash('sha512', 'slack.as.token') | to_uuid }}"
 
-matrix_appservice_slack_homeserver_url: "http://matrix-synapse:{{ matrix_synapse_container_client_api_port }}"
+matrix_appservice_slack_homeserver_url: "{{ matrix_homeserver_container_url }}"
 matrix_appservice_slack_homeserver_token: "{{ '%s' | format(matrix_synapse_macaroon_secret_key) | password_hash('sha512', 'slack.hs.token') | to_uuid }}"
 
 matrix_appservice_slack_id_token: "{{ '%s' | format(matrix_synapse_macaroon_secret_key) | password_hash('sha512', 'slack.id.token') | to_uuid }}"
