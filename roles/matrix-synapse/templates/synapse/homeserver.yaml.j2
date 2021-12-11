@@ -2344,8 +2344,10 @@ email:
 
   # Username/password for authentication to the SMTP server. By default, no
   # authentication is attempted.
+  {% if matrix_synapse_email_smtp_user %}
   smtp_user: {{ matrix_synapse_email_smtp_user|string|to_json }}
   smtp_pass: {{ matrix_synapse_email_smtp_pass|string|to_json }}
+  {% endif %}
 
   # Uncomment the following to require TLS transport security for SMTP.
   # By default, Synapse will connect over plain text, and will then switch to
