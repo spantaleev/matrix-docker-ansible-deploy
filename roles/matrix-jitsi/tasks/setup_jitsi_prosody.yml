@@ -4,7 +4,7 @@
 # Tasks related to setting up jitsi-prosody
 #
 
-- name: Ensure Matrix jitsi-prosody path exists
+- name: Ensure Matrix jitsi-prosody environment exists
   file:
     path: "{{ item.path }}"
     state: directory
@@ -25,14 +25,14 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_jitsi_prosody_docker_image_force_pull }}"
   when: matrix_jitsi_enabled|bool
 
-- name: Ensure jitsi-prosody environment variables file created
+- name: Ensure jitsi-prosody environment variables file is created
   template:
     src: "{{ role_path }}/templates/prosody/env.j2"
     dest: "{{ matrix_jitsi_prosody_base_path }}/env"
     mode: 0640
   when: matrix_jitsi_enabled|bool
 
-- name: Ensure matrix-jitsi-prosody.service installed
+- name: Ensure matrix-jitsi-prosody.service file is installed
   template:
     src: "{{ role_path }}/templates/prosody/matrix-jitsi-prosody.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-jitsi-prosody.service"
@@ -40,16 +40,24 @@
   register: matrix_jitsi_prosody_systemd_service_result
   when: matrix_jitsi_enabled|bool
 
-- name: Ensure systemd reloaded after matrix-jitsi-prosody.service installation
+- name: Ensure systemd service is reloaded after matrix-jitsi-prosody.service installation
   service:
     daemon_reload: yes
   when: "matrix_jitsi_enabled and matrix_jitsi_prosody_systemd_service_result.changed"
+
+- name: Ensure authentication is properly configured
+  include_tasks:
+    file: "{{ role_path }}/tasks/util/setup_jitsi_auth.yml"
+  when:
+    - matrix_jitsi_enabled|bool
+    - matrix_jitsi_enable_auth|bool
+
 
 #
 # Tasks related to getting rid of jitsi-prosody (if it was previously enabled)
 #
 
-- name: Check existence of matrix-jitsi-prosody service
+- name: Ensure matrix-jitsi-prosody.service file exists
   stat:
     path: "{{ matrix_systemd_path }}/matrix-jitsi-prosody.service"
   register: matrix_jitsi_prosody_service_stat
@@ -64,13 +72,13 @@
   register: stopping_result
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_prosody_service_stat.stat.exists"
 
-- name: Ensure matrix-jitsi-prosody.service doesn't exist
+- name: Ensure matrix-jitsi-prosody.service file doesn't exist
   file:
     path: "{{ matrix_systemd_path }}/matrix-jitsi-prosody.service"
     state: absent
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_prosody_service_stat.stat.exists"
 
-- name: Ensure systemd reloaded after matrix-jitsi-prosody.service removal
+- name: Ensure systemd is reloaded after matrix-jitsi-prosody.service removal
   service:
     daemon_reload: yes
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_prosody_service_stat.stat.exists"

@@ -3,14 +3,14 @@
 - name: Fail if required Jitsi settings not defined
   fail:
     msg: >-
-      You need to define a required configuration setting (`{{ item }}`) for using Jitsi.
+      You need to define a required configuration setting (`{{ item }}`) to properly configure Jitsi.
 
       If you're setting up Jitsi for the first time, you may have missed a step.
       Refer to our setup instructions (docs/configuring-playbook-jitsi.md).
 
-      If you had setup Jitsi successfully before and it's just now that you're observing this failure,
-      it means that your installation may be using some default passwords that the playbook used to define until now.
-      This is not secure and we urge you to rebuild your Jitsi setup.
+      If you had previously setup Jitsi successfully and are only now facing this error,
+      it means that your installation is most likely using default passwords previously defined by the playbook.
+      These defaults are insecure. Jitsi should be rebuilt with secure values.
       Refer to the "Rebuilding your Jitsi installation" section in our setup instructions (docs/configuring-playbook-jitsi.md).
   when: "vars[item] == ''"
   with_items:
@@ -18,6 +18,20 @@
     - "matrix_jitsi_jibri_recorder_password"
     - "matrix_jitsi_jicofo_auth_password"
     - "matrix_jitsi_jvb_auth_password"
+
+
+- name: Fail if a Jitsi internal authentication account is not defined
+  fail:
+    msg: >-
+      At least one Jitsi user needs to be defined in `matrix_jitsi_prosody_auth_internal_accounts` when using internal authentication.
+      
+      If you're setting up Jitsi for the first time, you may have missed a step.
+      Refer to our setup instructions (docs/configuring-playbook-jitsi.md).
+  when:
+    - matrix_jitsi_enable_auth|bool
+    - matrix_jitsi_auth_type == 'internal'
+    - matrix_jitsi_prosody_auth_internal_accounts|length == 0
+
 
 - name: (Deprecation) Catch and report renamed settings
   fail:
