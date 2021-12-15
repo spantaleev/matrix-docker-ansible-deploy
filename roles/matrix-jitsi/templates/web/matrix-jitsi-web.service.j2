@@ -23,6 +23,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-jitsi-web \
 			{% endif %}
 			--mount type=bind,src={{ matrix_jitsi_web_config_path }},dst=/config \
 			--mount type=bind,src={{ matrix_jitsi_web_transcripts_path }},dst=/usr/share/jitsi-meet/transcripts \
+			--mount type=bind,src={{ matrix_jitsi_web_crontabs_path }},dst=/var/spool/cron/crontabs \
 			{% for arg in matrix_jitsi_web_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
