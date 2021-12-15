@@ -1,3 +1,12 @@
+# 2021-12-14
+
+## (Security) Users of the Signal bridge may wish to upgrade it to work around log4j vulnerability
+
+Recently, a security vulnerability affecting the Java logging package `log4j` [has been discovered](https://www.huntress.com/blog/rapid-response-critical-rce-vulnerability-is-affecting-java). Software that uses this Java package is potentially vulnerable.
+
+One such piece of software that is part of the playbook is the [mautrix-signal bridge](./docs/configuring-playbook-bridge-mautrix-signal.md), which [has been patched already](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1452). If you're running this bridge, you may wish to [upgrade](./docs/maintenance-upgrading-services.md).
+
+
 # 2021-11-11
 
 ## Dropped support for Postgres v9.6

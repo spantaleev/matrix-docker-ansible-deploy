@@ -90,6 +90,29 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_dimension_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_dimension_docker_image_force_pull }}"
+  when: "not matrix_dimension_container_image_self_build|bool"
+  register: matrix_dimension_pull_results
+
+- name: Ensure dimension repository is present on self-build
+  git:
+    repo: "{{ matrix_dimension_container_image_self_build_repo }}"
+    dest: "{{ matrix_dimension_docker_src_files_path }}"
+    version: "{{ matrix_dimension_container_image_self_build_branch }}"
+    force: "yes"
+  when: "matrix_dimension_container_image_self_build|bool"
+  register: matrix_dimension_git_pull_results
+
+- name: Ensure Dimension Docker image is built
+  docker_image:
+    name: "{{ matrix_dimension_docker_image }}"
+    source: build
+    force_source: "{{ matrix_dimension_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_dimension_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_dimension_docker_src_files_path }}"
+      pull: yes
+  when: "matrix_dimension_container_image_self_build|bool"
 
 - name: Ensure matrix-dimension.service installed
   template:

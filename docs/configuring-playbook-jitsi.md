@@ -41,12 +41,22 @@ If you're fine with such an open Jitsi instance, please skip to [Apply changes](
 
 If you would like to control who is allowed to open meetings on your new Jitsi instance, then please follow this step to enable Jitsi's authentication and guests mode. With authentication enabled, all meeting rooms have to be opened by a registered user, after which guests are free to join. If a registered host is not yet present, guests are put on hold in individual waiting rooms.
 
-Add these two lines to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
+Add these lines to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
 
 ```yaml
 matrix_jitsi_enable_auth: true
 matrix_jitsi_enable_guests: true
+matrix_jitsi_prosody_auth_internal_accounts:
+  - username: "jitsi-moderator"
+    password: "secret-password"
+  - username: "another-user"
+    password: "another-password"
 ```
+
+**Caution:** Accounts added here and subsquently removed will not be automatically removed from the Prosody server until user account cleaning is integrated into the playbook.
+
+**If you get an error** like this: "Error: Account creation/modification not supported.", it's likely that you had previously installed Jitsi without auth/guest support. In such a case, you should look into [Rebuilding your Jitsi installation](#rebuilding-your-jitsi-installation).
+
 
 ### (Optional) LDAP authentication
 
@@ -121,19 +131,6 @@ You may want to **limit the maximum video resolution**, to save up resources on 
 ## Apply changes
 
 Then re-run the playbook: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
-
-## Required if configuring Jitsi with internal authentication: register new users
-
-Until this gets integrated into the playbook, we need to register new users / meeting hosts for Jitsi manually.
-Please SSH into your matrix host machine and execute the following command targeting the `matrix-jitsi-prosody` container:
-
-```bash
-docker exec matrix-jitsi-prosody prosodyctl --config /config/prosody.cfg.lua register <USERNAME> meet.jitsi <PASSWORD>
-```
-
-Run this command for each user you would like to create, replacing `<USERNAME>` and `<PASSWORD>` accordingly. After you've finished, please exit the host.
-
-**If you get an error** like this: "Error: Account creation/modification not supported.", it's likely that you had previously installed Jitsi without auth/guest support. In such a case, you should look into [Rebuilding your Jitsi installation](#rebuilding-your-jitsi-installation).
 
 
 ## Usage
