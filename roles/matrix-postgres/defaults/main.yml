@@ -18,11 +18,11 @@ matrix_postgres_architecture: amd64
 matrix_postgres_docker_image_suffix: "{{ '-alpine' if matrix_postgres_architecture in ['amd64', 'arm64'] else '' }}"
 
 matrix_postgres_docker_image_v9: "{{ matrix_container_global_registry_prefix }}postgres:9.6.23{{ matrix_postgres_docker_image_suffix }}"
-matrix_postgres_docker_image_v10: "{{ matrix_container_global_registry_prefix }}postgres:10.18{{ matrix_postgres_docker_image_suffix }}"
-matrix_postgres_docker_image_v11: "{{ matrix_container_global_registry_prefix }}postgres:11.13{{ matrix_postgres_docker_image_suffix }}"
-matrix_postgres_docker_image_v12: "{{ matrix_container_global_registry_prefix }}postgres:12.8{{ matrix_postgres_docker_image_suffix }}"
-matrix_postgres_docker_image_v13: "{{ matrix_container_global_registry_prefix }}postgres:13.4{{ matrix_postgres_docker_image_suffix }}"
-matrix_postgres_docker_image_v14: "{{ matrix_container_global_registry_prefix }}postgres:14.0{{ matrix_postgres_docker_image_suffix }}"
+matrix_postgres_docker_image_v10: "{{ matrix_container_global_registry_prefix }}postgres:10.19{{ matrix_postgres_docker_image_suffix }}"
+matrix_postgres_docker_image_v11: "{{ matrix_container_global_registry_prefix }}postgres:11.14{{ matrix_postgres_docker_image_suffix }}"
+matrix_postgres_docker_image_v12: "{{ matrix_container_global_registry_prefix }}postgres:12.9{{ matrix_postgres_docker_image_suffix }}"
+matrix_postgres_docker_image_v13: "{{ matrix_container_global_registry_prefix }}postgres:13.5{{ matrix_postgres_docker_image_suffix }}"
+matrix_postgres_docker_image_v14: "{{ matrix_container_global_registry_prefix }}postgres:14.1{{ matrix_postgres_docker_image_suffix }}"
 matrix_postgres_docker_image_latest: "{{ matrix_postgres_docker_image_v14 }}"
 
 # This variable is assigned at runtime. Overriding its value has no effect.
@@ -63,7 +63,16 @@ matrix_postgres_additional_databases: []
 # We either need to not create them or to ignore the `CREATE ROLE` statements in the dump.
 matrix_postgres_import_roles_to_ignore: [matrix_postgres_connection_username]
 
-matrix_postgres_import_roles_ignore_regex: "^CREATE ROLE ({{ matrix_postgres_import_roles_to_ignore|join('|') }});"
+# When importing an existing Postgres database (when restoring a backup) or when doing a Postgres upgrade (which dumps & restores), we'd like to avoid:
+# - creating users (`CREATE ROLE ..`)
+# - updating passwords for users (`ALTER ROLE matrix WITH SUPERUSER INHERIT NOCREATEROLE NOCREATEDB LOGIN NOREPLICATION NOBYPASSRLS PASSWORD 'md5...`)
+#
+# Both of these operations are done by the playbook anyway.
+# Updating passwords is especially undesirable, because older versions hash passwords using md5 and export them as md5 hashes in the dump file,
+# which is unsupported by default by newer Postgres versions (v14+).
+# When users are created and passwords are set by the playbook, they end up hashed as `scram-sha-256` on Postgres v14+.
+# If an md5-hashed password is restored on top, Postgres v14+ will refuse to authenticate users with it by default.
+matrix_postgres_import_roles_ignore_regex: "^(CREATE|ALTER) ROLE ({{ matrix_postgres_import_roles_to_ignore|join('|') }})(;| WITH)"
 
 # A list of databases to avoid creating when importing (or upgrading) the database.
 # If a dump file contains the databases and they've also been created beforehand (see `matrix_postgres_additional_databases`),

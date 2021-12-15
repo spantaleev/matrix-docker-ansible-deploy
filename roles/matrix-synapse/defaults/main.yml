@@ -15,8 +15,8 @@ matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_cont
 # amd64 gets released first.
 # arm32 relies on self-building, so the same version can be built immediately.
 # arm64 users need to wait for a prebuilt image to become available.
-matrix_synapse_version: v1.44.0
-matrix_synapse_version_arm64: v1.44.0
+matrix_synapse_version: v1.49.0
+matrix_synapse_version_arm64: v1.49.0
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version if matrix_architecture in ['arm32', 'amd64'] else matrix_synapse_version_arm64 }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -27,7 +27,13 @@ matrix_synapse_storage_path: "{{ matrix_synapse_base_path }}/storage"
 matrix_synapse_media_store_path: "{{ matrix_synapse_storage_path }}/media-store"
 matrix_synapse_ext_path: "{{ matrix_synapse_base_path }}/ext"
 
-# Controls whether the matrix-synapse container exposes the Client/Server API port (tcp/8008 in the container).
+matrix_synapse_container_client_api_port: 8008
+
+matrix_synapse_container_federation_api_tls_port: 8448
+
+matrix_synapse_container_federation_api_plain_port: 8048
+
+# Controls whether the matrix-synapse container exposes the Client/Server API port (tcp/{{ matrix_synapse_container_client_api_port }} in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8008"), or empty string to not expose.
 matrix_synapse_container_client_api_host_bind_port: ''
@@ -146,7 +152,7 @@ matrix_synapse_federation_rr_transactions_per_room_per_second: 50
 
 # Controls whether the TLS federation listener is enabled (tcp/8448).
 # Only makes sense if federation is enabled (`matrix_synapse_federation_enabled`).
-# Note that federation may potentially be enabled as non-TLS on tcp/8048 as well.
+# Note that federation may potentially be enabled as non-TLS on `matrix_synapse_container_federation_api_plain_port` as well.
 # If you're serving Synapse behind an HTTPS-capable reverse-proxy,
 # you can disable the TLS listener (`matrix_synapse_tls_federation_listener_enabled: false`).
 matrix_synapse_tls_federation_listener_enabled: true
@@ -467,6 +473,8 @@ matrix_synapse_turn_allow_guests: False
 matrix_synapse_email_enabled: false
 matrix_synapse_email_smtp_host: ""
 matrix_synapse_email_smtp_port: 587
+matrix_synapse_email_smtp_user: ""
+matrix_synapse_email_smtp_pass: ""
 matrix_synapse_email_smtp_require_transport_security: false
 matrix_synapse_email_notif_from: "Matrix <matrix@{{ matrix_domain }}>"
 matrix_synapse_email_client_base_url: "https://{{ matrix_server_fqn_element }}"

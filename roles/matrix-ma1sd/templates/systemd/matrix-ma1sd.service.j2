@@ -26,7 +26,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-ma1sd \
 			--tmpfs=/tmp:rw,exec,nosuid,size=10m \
 			--network={{ matrix_docker_network }} \
 			{% if matrix_ma1sd_container_http_host_bind_port %}
-			-p {{ matrix_ma1sd_container_http_host_bind_port }}:8090 \
+			-p {{ matrix_ma1sd_container_http_host_bind_port }}:{{ matrix_ma1sd_container_port }} \
 			{% endif %}
 			{% if matrix_ma1sd_verbose_logging %}
 			-e MA1SD_LOG_LEVEL=debug \

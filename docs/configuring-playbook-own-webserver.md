@@ -71,7 +71,7 @@ After following  the [Preparation](#preparation) guide above, you can take a loo
 
 ### Using another external webserver
 
-Feel free to look at the [examples/apache](../examples/apache) directory, or the [template files in the matrix-nginx-proxy role](../roles/matrix-nginx-proxy/templates/conf.d/).
+Feel free to look at the [examples/apache](../examples/apache) directory, or the [template files in the matrix-nginx-proxy role](../roles/matrix-nginx-proxy/templates/nginx/conf.d/).
 
 
 ## Method 2: Fronting the integrated nginx reverse-proxy webserver with another reverse-proxy
@@ -111,6 +111,9 @@ matrix_coturn_enabled: false
 
 # Trust the reverse proxy to send the correct `X-Forwarded-Proto` header as it is handling the SSL connection.
 matrix_nginx_proxy_trust_forwarded_proto: true
+
+# Trust and use the other reverse proxy's `X-Forwarded-For` header.
+matrix_nginx_proxy_x_forwarded_for: '$proxy_add_x_forwarded_for'
 ```
 
 With this, nginx would still be in use, but it would not bother with anything SSL related or with taking up public ports.
@@ -135,6 +138,12 @@ matrix_nginx_proxy_https_enabled: false
 # (Traefik will proxy directly into the containers)
 matrix_nginx_proxy_container_http_host_bind_port: ''
 matrix_nginx_proxy_container_federation_host_bind_port: ''
+
+# Trust the reverse proxy to send the correct `X-Forwarded-Proto` header as it is handling the SSL connection.
+matrix_nginx_proxy_trust_forwarded_proto: true
+
+# Trust and use the other reverse proxy's `X-Forwarded-For` header.
+matrix_nginx_proxy_x_forwarded_for: '$proxy_add_x_forwarded_for'
 
 # Disable Coturn because it needs SSL certs
 # (Clients can, though exposing IP address, use Matrix.org TURN)

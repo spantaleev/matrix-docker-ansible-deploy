@@ -1,5 +1,5 @@
 matrix_nginx_proxy_enabled: true
-matrix_nginx_proxy_version: 1.21.3-alpine
+matrix_nginx_proxy_version: 1.21.4-alpine
 
 # We use an official nginx image, which we fix-up to run unprivileged.
 # An alternative would be an `nginxinc/nginx-unprivileged` image, but
@@ -115,9 +115,10 @@ matrix_nginx_proxy_proxy_riot_compat_redirect_hostname: "riot.{{ matrix_domain }
 matrix_nginx_proxy_proxy_synapse_enabled: false
 matrix_nginx_proxy_proxy_synapse_hostname: "matrix-nginx-proxy"
 matrix_nginx_proxy_proxy_synapse_federation_api_enabled: "{{ matrix_nginx_proxy_proxy_matrix_federation_api_enabled }}"
+
 # The addresses where the Federation API is, when using Synapse.
-matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container: "matrix-synapse:8048"
-matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container: "localhost:8048"
+matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container: ""
+matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container: ""
 
 # Controls whether proxying the Element domain should be done.
 matrix_nginx_proxy_proxy_element_enabled: false
@@ -165,23 +166,24 @@ matrix_nginx_proxy_proxy_matrix_corporal_api_addr_sans_container: "127.0.0.1:410
 # This can be used to forward the API endpoint to another service, augmenting the functionality of Synapse's own User Directory Search.
 # To learn more, see: https://github.com/ma1uta/ma1sd/blob/master/docs/features/directory.md
 matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: false
-matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "matrix-ma1sd:8090"
-matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "127.0.0.1:8090"
+matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "matrix-ma1sd:{{ matrix_ma1sd_container_port }}"
+matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "127.0.0.1:{{ matrix_ma1sd_container_port }}"
 
 # Controls whether proxying for 3PID-based registration (`/_matrix/client/r0/register/(email|msisdn)/requestToken`) should be done (on the matrix domain).
 # This allows another service to control registrations involving 3PIDs.
 # To learn more, see: https://github.com/ma1uta/ma1sd/blob/master/docs/features/registration.md
 matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled: false
-matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_with_container: "matrix-ma1sd:8090"
-matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_sans_container: "127.0.0.1:8090"
+matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_with_container: "matrix-ma1sd:{{ matrix_ma1sd_container_port }}"
+matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_sans_container: "127.0.0.1:{{ matrix_ma1sd_container_port }}"
 
 # Controls whether proxying for the Identity API (`/_matrix/identity`) should be done (on the matrix domain)
 matrix_nginx_proxy_proxy_matrix_identity_api_enabled: false
-matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-ma1sd:8090"
-matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "127.0.0.1:8090"
+matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-ma1sd:{{ matrix_ma1sd_container_port }}"
+matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "127.0.0.1:{{ matrix_ma1sd_container_port }}"
 
 # Controls whether proxying for metrics (`/_synapse/metrics`) should be done (on the matrix domain)
 matrix_nginx_proxy_proxy_synapse_metrics: false
+matrix_nginx_proxy_synapse_workers_enabled_list: []
 matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled: false
 # The following value will be written verbatim to the htpasswd file that stores the password for nginx to check against and needs to be encoded appropriately.
 # Read the manpage at `man 1 htpasswd` to learn more, then encrypt your password, and paste the encrypted value here.
@@ -195,8 +197,8 @@ matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "matrix-nginx-pr
 matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "127.0.0.1:12080"
 
 # The addresses where the Matrix Client API is, when using Synapse.
-matrix_nginx_proxy_proxy_synapse_client_api_addr_with_container: "matrix-synapse:8008"
-matrix_nginx_proxy_proxy_synapse_client_api_addr_sans_container: "127.0.0.1:8008"
+matrix_nginx_proxy_proxy_synapse_client_api_addr_with_container: ""
+matrix_nginx_proxy_proxy_synapse_client_api_addr_sans_container: ""
 
 # This needs to be equal or higher than the maximum upload size accepted by Synapse.
 matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: 50
@@ -226,7 +228,7 @@ matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_prefix_regexes: |
     +
     (['/_synapse/admin'] if matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled else [])
     +
-    (['/_synapse/metrics'] if matrix_nginx_proxy_proxy_synapse_metrics else [])
+    (['/_synapse.*/metrics'] if matrix_nginx_proxy_proxy_synapse_metrics else [])
   }}
 
 # Specifies where requests for the root URI (`/`) on the `matrix.` domain should be redirected.
@@ -380,6 +382,11 @@ matrix_nginx_proxy_ssl_prefer_server_ciphers: "{{ matrix_nginx_proxy_ssl_presets
 # To see the full list for suportes ciphers run `openssl ciphers` on your server
 matrix_nginx_proxy_ssl_ciphers: "{{ matrix_nginx_proxy_ssl_presets[matrix_nginx_proxy_ssl_preset]['ciphers'] }}"
 
+# Specifies what to use for the X-Forwarded-For variable.
+# If you're fronting the nginx reverse-proxy with additional reverse-proxy servers,
+# you may wish to set this to '$proxy_add_x_forwarded_for' instead.
+matrix_nginx_proxy_x_forwarded_for: '$remote_addr'
+
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_nginx_proxy_self_check_validate_certificates: true
 
@@ -436,7 +443,7 @@ matrix_ssl_additional_domains_to_obtain_certificates_for: []
 
 # Controls whether to obtain production or staging certificates from Let's Encrypt.
 matrix_ssl_lets_encrypt_staging: false
-matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v1.20.0"
+matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v1.21.0"
 matrix_ssl_lets_encrypt_certbot_docker_image_force_pull: "{{ matrix_ssl_lets_encrypt_certbot_docker_image.endswith(':latest') }}"
 matrix_ssl_lets_encrypt_certbot_standalone_http_port: 2402
 matrix_ssl_lets_encrypt_support_email: ~

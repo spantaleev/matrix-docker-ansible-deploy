@@ -38,6 +38,15 @@
     mode: 0400
   when: "matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled|bool and matrix_nginx_proxy_proxy_synapse_metrics|bool"
 
+- name: Generate sample prometheus.yml for external scraping
+  template:
+    src: "{{ role_path }}/templates/prometheus/external_prometheus.yml.example.j2"
+    dest: "{{ matrix_base_data_path }}/external_prometheus.yml.example"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_synapse_metrics|bool
+
 - name: Ensure Matrix nginx-proxy configured (generic)
   template:
     src: "{{ role_path }}/templates/nginx/conf.d/nginx-http.conf.j2"
@@ -184,6 +193,7 @@
   service:
     name: matrix-nginx-proxy
     state: stopped
+    enabled: no
     daemon_reload: yes
   register: stopping_result
   when: "not matrix_nginx_proxy_enabled|bool and matrix_nginx_proxy_service_stat.stat.exists"
@@ -270,3 +280,9 @@
     path: "{{ matrix_nginx_proxy_data_path }}/matrix-synapse-metrics-htpasswd"
     state: absent
   when: "not matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled|bool or not matrix_nginx_proxy_proxy_synapse_metrics|bool"
+
+- name: Ensure sample prometheus.yml for external scraping is deleted
+  file:
+    path: "{{ matrix_base_data_path }}/external_prometheus.yml.example"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_synapse_metrics|bool"

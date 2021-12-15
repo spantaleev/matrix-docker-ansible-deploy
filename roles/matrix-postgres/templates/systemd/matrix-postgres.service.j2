@@ -11,6 +11,10 @@ Environment="HOME={{ matrix_systemd_unit_home_path }}"
 ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-postgres 2>/dev/null'
 ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-postgres 2>/dev/null'
 
+# We need /dev/shm to be larger than the default to allow VACUUM to work.
+# See:
+# - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1362
+# - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1268
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-postgres \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
@@ -18,6 +22,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-postgres \
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size=100m \
 			--tmpfs=/run/postgresql:rw,noexec,nosuid,size=100m \
+			--shm-size=256m \
 			--network={{ matrix_docker_network }} \
 			{% if matrix_postgres_container_postgres_bind_port %}
 			-p {{ matrix_postgres_container_postgres_bind_port }}:5432 \

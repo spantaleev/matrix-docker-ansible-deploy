@@ -46,6 +46,7 @@
   when: "vars[item] == ''"
   with_items:
     - "matrix_ma1sd_threepid_medium_email_connectors_smtp_host"
+    - "matrix_ma1sd_dns_overwrite_homeserver_client_value"
 
 - name: (Deprecation) Catch and report renamed ma1sd variables
   fail:
@@ -56,6 +57,7 @@
   with_items:
     - {'old': 'matrix_ma1sd_container_expose_port', 'new': '<superseded by matrix_ma1sd_container_http_host_bind_port>'}
     - {'old': 'matrix_ma1sd_threepid_medium_email_custom_unbind_fraudulent_template', 'new': 'matrix_ma1sd_threepid_medium_email_custom_session_unbind_notification_template'}
+    - {'old': 'matrix_ma1sd_default_port', 'new': 'matrix_ma1sd_container_port'}
 
 - name: (Deprecation) Catch and report mxisd variables
   fail:

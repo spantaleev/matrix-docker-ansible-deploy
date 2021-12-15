@@ -55,8 +55,40 @@ Name | Description
 `matrix_synapse_metrics_enabled`|Set this to `true` to make Synapse expose metrics (locally, on the container network)
 `matrix_nginx_proxy_proxy_synapse_metrics`|Set this to `true` to make matrix-nginx-proxy expose the Synapse metrics at `https://matrix.DOMAIN/_synapse/metrics`
 `matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled`|Set this to `true` to password-protect (using HTTP Basic Auth) `https://matrix.DOMAIN/_synapse/metrics` (the username is always `prometheus`, the password is defined in `matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key`)
-`matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key`|Set this to a password to use for HTTP Basic Auth for protecting `https://matrix.DOMAIN/_synapse/metrics` (the username is always `prometheus` - it's not configurable)
+`matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key`|Set this to a password to use for HTTP Basic Auth for protecting `https://matrix.DOMAIN/_synapse/metrics` (the username is always `prometheus` - it's not configurable). Do not write the password in plain text. See `man 1 htpasswd` or use `htpasswd -c mypass.htpasswd prometheus` to generate the expected hash for nginx. 
 `matrix_server_fqn_grafana`|Use this variable to override the domain at which the Grafana web user-interface is at (defaults to `stats.DOMAIN`)
+
+### Collecting worker metrics to an external Prometheus server
+
+If you are using workers (`matrix_synapse_workers_enabled`) and have enabled `matrix_nginx_proxy_proxy_synapse_metrics` as described above, the playbook will also automatically proxy the all worker threads's metrics to `https://matrix.DOMAIN/_synapse-worker-TYPE-ID/metrics`, where `TYPE` corresponds to the type and `ID` to the instanceId of a worker as exemplified in `matrix_synapse_workers_enabled_list`.
+
+The playbook also generates an exemplary prometheus.yml config file (`matrix_base_data_path/external_prometheus.yml.template`) with all the correct paths which you can copy to your Prometheus server and adapt to your needs, especially edit the specified `password_file` path and contents and path to your `synapse-v2.rules`.
+It will look a bit like this:
+```yaml
+scrape_configs:
+  - job_name: 'synapse'
+    metrics_path: /_synapse/metrics
+    scheme: https
+    basic_auth:
+      username: prometheus
+      password_file: /etc/prometheus/password.pwd
+    static_configs:
+      - targets: ['matrix.DOMAIN:443']
+        labels:
+          job: "master"
+          index: 1
+  - job_name: 'synapse-generic_worker-1'
+    metrics_path: /_synapse-worker-generic_worker-18111/metrics
+    scheme: https
+    basic_auth:
+      username: prometheus
+      password_file: /etc/prometheus/password.pwd
+    static_configs:
+      - targets: ['matrix.DOMAIN:443']
+        labels:
+          job: "generic_worker"
+          index: 18111
+```
 
 ### Collecting system and Postgres metrics to an external Prometheus server (advanced)
 

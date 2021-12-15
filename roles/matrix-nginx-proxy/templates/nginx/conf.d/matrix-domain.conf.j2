@@ -58,7 +58,7 @@
 		{% endif %}
 
 		proxy_set_header Host $host;
-		proxy_set_header X-Forwarded-For $remote_addr;
+		proxy_set_header X-Forwarded-For {{ matrix_nginx_proxy_x_forwarded_for }};
 		proxy_set_header X-Forwarded-Proto {{ matrix_nginx_proxy_x_forwarded_proto_value }};
 	}
 	{% endif %}
@@ -76,7 +76,7 @@
 		{% endif %}
 
 		proxy_set_header Host $host;
-		proxy_set_header X-Forwarded-For $remote_addr;
+		proxy_set_header X-Forwarded-For {{ matrix_nginx_proxy_x_forwarded_for }};
 		proxy_set_header X-Forwarded-Proto {{ matrix_nginx_proxy_x_forwarded_proto_value }};
 	}
 	{% endif %}
@@ -94,7 +94,7 @@
 		{% endif %}
 
 		proxy_set_header Host $host;
-		proxy_set_header X-Forwarded-For $remote_addr;
+		proxy_set_header X-Forwarded-For {{ matrix_nginx_proxy_x_forwarded_for }};
 	}
 	{% endif %}
 
@@ -111,7 +111,7 @@
 		{% endif %}
 
 		proxy_set_header Host $host;
-		proxy_set_header X-Forwarded-For $remote_addr;
+		proxy_set_header X-Forwarded-For {{ matrix_nginx_proxy_x_forwarded_for }};
 		proxy_set_header X-Forwarded-Proto {{ matrix_nginx_proxy_x_forwarded_proto_value }};
 	}
 	{% endif %}
@@ -136,7 +136,7 @@
 		{% endif %}
 
 		proxy_set_header Host $host;
-		proxy_set_header X-Forwarded-For $remote_addr;
+		proxy_set_header X-Forwarded-For {{ matrix_nginx_proxy_x_forwarded_for }};
 		proxy_set_header X-Forwarded-Proto {{ matrix_nginx_proxy_x_forwarded_proto_value }};
 
 		client_body_buffer_size 25M;
@@ -161,6 +161,8 @@
 
 server {
 	listen {{ 8080 if matrix_nginx_proxy_enabled else 80 }};
+	listen [::]:{{ 8080 if matrix_nginx_proxy_enabled else 80 }};
+
 	server_name {{ matrix_nginx_proxy_proxy_matrix_hostname }};
 
 	server_tokens off;
@@ -282,7 +284,7 @@ server {
 		{% endif %}
 
 		proxy_set_header Host $host;
-		proxy_set_header X-Forwarded-For $remote_addr;
+		proxy_set_header X-Forwarded-For {{ matrix_nginx_proxy_x_forwarded_for }};
 		proxy_set_header X-Forwarded-Proto {{ matrix_nginx_proxy_x_forwarded_proto_value }};
 
 		client_body_buffer_size 25M;

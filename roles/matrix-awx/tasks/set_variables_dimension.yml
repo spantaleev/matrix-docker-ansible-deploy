@@ -12,9 +12,9 @@
       - curl
     state: present
 
-- name: Collect access token of Dimension user
+- name: Collect access token of @_dimension user
   shell: |
-    curl -X POST --header 'Content-Type: application/json' -d '{ "identifier": { "type": "m.id.user","user": "dimension" }, "password": "{{ awx_dimension_user_password }}", "type": "m.login.password"}' 'https://matrix.{{ matrix_domain }}/_matrix/client/r0/login' | jq -c '. | {access_token}' | sed 's/.*\":\"//' | sed 's/\"}//'
+    curl -X POST --header 'Content-Type: application/json' -d '{ "identifier": { "type": "m.id.user","user": "_dimension" }, "password": "{{ awx_dimension_user_password }}", "type": "m.login.password"}' 'https://matrix.{{ matrix_domain }}/_matrix/client/r0/login' | jq -c '. | {access_token}' | sed 's/.*\":\"//' | sed 's/\"}//'
   register: awx_dimension_user_access_token
 
 - name: Record Synapse variables locally on AWX
