@@ -1,0 +1,19 @@
+name: Ansible Lint
+
+on: [push, pull_request]
+
+jobs:
+  build:
+  
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Lint Ansible Playbook
+      uses: ansible/ansible-lint-action@master
+      with:
+        # Paths to ansible files (i.e., playbooks, tasks, handlers etc..)
+        targets: "./"
+
+        args: "-x metadata, formatting"
