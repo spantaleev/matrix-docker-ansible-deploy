@@ -442,7 +442,14 @@ matrix_ssl_domains_to_obtain_certificates_for: "{{ matrix_ssl_additional_domains
 matrix_ssl_additional_domains_to_obtain_certificates_for: []
 
 # Controls whether to obtain production or staging certificates from Let's Encrypt.
+# If you'd like to use another ACME Certificate Authority server (not Let's Encrypt), use `matrix_ssl_lets_encrypt_server`
 matrix_ssl_lets_encrypt_staging: false
+
+# Controls from which Certificate Authority server to retrieve the SSL certificates (passed as a `--server` flag to Certbot).
+# By default, we use the Let's Encrypt production environment (use `matrix_ssl_lets_encrypt_staging` for using the staging environment).
+# Learn more here: https://eff-certbot.readthedocs.io/en/stable/using.html#changing-the-acme-server
+matrix_ssl_lets_encrypt_server: ''
+
 matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v1.21.0"
 matrix_ssl_lets_encrypt_certbot_docker_image_force_pull: "{{ matrix_ssl_lets_encrypt_certbot_docker_image.endswith(':latest') }}"
 matrix_ssl_lets_encrypt_certbot_standalone_http_port: 2402
