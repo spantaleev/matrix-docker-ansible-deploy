@@ -1,9 +1,5 @@
 ---
 
-#
-# Tasks related to setting up Hydrogen
-#
-
 - name: Ensure Hydrogen paths exists
   file:
     path: "{{ item.path }}"
@@ -14,7 +10,7 @@
   with_items:
     - { path: "{{ matrix_client_hydrogen_data_path }}", when: true }
     - { path: "{{ matrix_client_hydrogen_docker_src_files_path }}", when: "{{ matrix_client_hydrogen_container_image_self_build }}" }
-  when: matrix_client_hydrogen_enabled|bool and item.when
+  when: "item.when|bool"
 
 - name: Ensure Hydrogen Docker image is pulled
   docker_image:
@@ -22,7 +18,7 @@
    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
    force_source: "{{ matrix_client_hydrogen_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_hydrogen_docker_image_force_pull }}"
-  when: matrix_client_hydrogen_enabled|bool and not matrix_client_hydrogen_container_image_self_build
+  when: "not matrix_client_hydrogen_container_image_self_build|bool"
 
 - name: Ensure Hydrogen repository is present on self-build
   git:
@@ -31,7 +27,7 @@
     version: "{{ matrix_client_hydrogen_docker_image.split(':')[1] }}"
     force: "yes"
   register: matrix_client_hydrogen_git_pull_results
-  when: "matrix_client_hydrogen_enabled|bool and matrix_client_hydrogen_container_image_self_build|bool"
+  when: "matrix_client_hydrogen_container_image_self_build|bool"
 
 - name: Ensure Hydrogen configuration installed
   copy:
@@ -40,7 +36,7 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: "matrix_client_hydrogen_enabled|bool and matrix_client_hydrogen_container_image_self_build|bool"
+  when: "matrix_client_hydrogen_container_image_self_build|bool"
 
 - name: Ensure Hydrogen additional config files installed
   template:
@@ -51,7 +47,7 @@
     group: "{{ matrix_user_groupname }}"
   with_items:
     - {src: "{{ role_path }}/templates/nginx.conf.j2", name: "nginx.conf"}
-  when: "matrix_client_hydrogen_enabled|bool and item.src is not none"
+  when: "item.src is not none"
 
 # This step MUST come after the steps to install the configuration files because the config files
 # are currently only read at build time, not at run time like most other components in the playbook
@@ -64,7 +60,7 @@
       dockerfile: Dockerfile
       path: "{{ matrix_client_hydrogen_docker_src_files_path }}"
       pull: yes
-  when: "matrix_client_hydrogen_enabled|bool and matrix_client_hydrogen_container_image_self_build|bool"
+  when: "matrix_client_hydrogen_container_image_self_build|bool"
 
 - name: Ensure matrix-client-hydrogen.service installed
   template:
@@ -72,50 +68,8 @@
     dest: "{{ matrix_systemd_path }}/matrix-client-hydrogen.service"
     mode: 0644
   register: matrix_client_hydrogen_systemd_service_result
-  when: matrix_client_hydrogen_enabled|bool
 
 - name: Ensure systemd reloaded after matrix-client-hydrogen.service installation
   service:
     daemon_reload: yes
-  when: "matrix_client_hydrogen_enabled and matrix_client_hydrogen_systemd_service_result.changed"
-
-#
-# Tasks related to getting rid of Hydrogen (if it was previously enabled)
-#
-
-- name: Check existence of matrix-client-hydrogen.service
-  stat:
-    path: "{{ matrix_systemd_path }}/matrix-client-hydrogen.service"
-  register: matrix_client_hydrogen_service_stat
-  when: "not matrix_client_hydrogen_enabled|bool"
-
-- name: Ensure matrix-client-hydrogen is stopped
-  service:
-    name: matrix-client-hydrogen
-    state: stopped
-    daemon_reload: yes
-  register: stopping_result
-  when: "not matrix_client_hydrogen_enabled|bool and matrix_client_hydrogen_service_stat.stat.exists"
-
-- name: Ensure matrix-client-hydrogen.service doesn't exist
-  file:
-    path: "{{ matrix_systemd_path }}/matrix-client-hydrogen.service"
-    state: absent
-  when: "not matrix_client_hydrogen_enabled|bool and matrix_client_hydrogen_service_stat.stat.exists"
-
-- name: Ensure systemd reloaded after matrix-client-hydrogen.service removal
-  service:
-    daemon_reload: yes
-  when: "not matrix_client_hydrogen_enabled|bool and matrix_client_hydrogen_service_stat.stat.exists"
-
-- name: Ensure Hydrogen paths doesn't exist
-  file:
-    path: "{{ matrix_client_hydrogen_data_path }}"
-    state: absent
-  when: "not matrix_client_hydrogen_enabled|bool"
-
-- name: Ensure Hydrogen Docker image doesn't exist
-  docker_image:
-    name: "{{ matrix_client_hydrogen_docker_image }}"
-    state: absent
-  when: "not matrix_client_hydrogen_enabled|bool"
+  when: "matrix_client_hydrogen_systemd_service_result.changed|bool"

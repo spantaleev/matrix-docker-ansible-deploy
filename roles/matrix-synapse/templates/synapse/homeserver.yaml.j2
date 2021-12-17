@@ -66,7 +66,27 @@ pid_file: /homeserver.pid
 # Otherwise, it should be the URL to reach Synapse's client HTTP listener (see
 # 'listeners' below).
 #
+# Defaults to 'https://<server_name>/'.
+#
 public_baseurl: https://{{ matrix_server_fqn_matrix }}/
+
+# Uncomment the following to tell other servers to send federation traffic on
+# port 443.
+#
+# By default, other servers will try to reach our server on port 8448, which can
+# be inconvenient in some environments.
+#
+# Provided 'https://<server_name>/' on port 443 is routed to Synapse, this
+# option configures Synapse to serve a file at
+# 'https://<server_name>/.well-known/matrix/server'. This will tell other
+# servers to send traffic to port 443 instead.
+#
+# See https://matrix-org.github.io/synapse/latest/delegate.html for more
+# information.
+#
+# Defaults to 'false'.
+#
+#serve_server_wellknown: true
 
 # Set the soft limit on the number of file descriptors synapse can use
 # Zero is used to indicate synapse should set the soft limit to the
@@ -269,14 +289,14 @@ default_room_version: {{ matrix_synapse_default_room_version|to_json }}
 listeners:
 {% if matrix_synapse_metrics_enabled %}
   - type: metrics
-    port: {{ matrix_synapse_metrics_port }}
+    port: {{ matrix_synapse_metrics_port|to_json }}
     bind_addresses:
       - '0.0.0.0'
 {% endif %}
 
 {% if matrix_synapse_federation_port_enabled and matrix_synapse_tls_federation_listener_enabled %}
   # TLS-enabled listener: for when matrix traffic is sent directly to synapse.
-  - port: 8448
+  - port: {{ matrix_synapse_container_federation_api_tls_port|to_json }}
     tls: true
     bind_addresses: ['::']
     type: http
@@ -289,7 +309,7 @@ listeners:
 
   # Unsecure HTTP listener (Client API): for when matrix traffic passes through a reverse proxy
   # that unwraps TLS.
-  - port: 8008
+  - port: {{ matrix_synapse_container_client_api_port|to_json }}
     tls: false
     bind_addresses: ['::']
     type: http
@@ -302,7 +322,7 @@ listeners:
 {% if matrix_synapse_federation_port_enabled %}
   # Unsecure HTTP listener (Federation API): for when matrix traffic passes through a reverse proxy
   # that unwraps TLS.
-  - port: 8048
+  - port: {{ matrix_synapse_container_federation_api_plain_port|to_json }}
     tls: false
     bind_addresses: ['::']
     type: http
@@ -492,6 +512,48 @@ redaction_retention_period: {{ matrix_synapse_redaction_retention_period }}
 
 user_ips_max_age: {{ matrix_synapse_user_ips_max_age }}
 
+# Inhibits the /requestToken endpoints from returning an error that might leak
+# information about whether an e-mail address is in use or not on this
+# homeserver.
+# Note that for some endpoints the error situation is the e-mail already being
+# used, and for others the error is entering the e-mail being unused.
+# If this option is enabled, instead of returning an error, these endpoints will
+# act as if no error happened and return a fake session ID ('sid') to clients.
+#
+#request_token_inhibit_3pid_errors: true
+
+# A list of domains that the domain portion of 'next_link' parameters
+# must match.
+#
+# This parameter is optionally provided by clients while requesting
+# validation of an email or phone number, and maps to a link that
+# users will be automatically redirected to after validation
+# succeeds. Clients can make use this parameter to aid the validation
+# process.
+#
+# The whitelist is applied whether the homeserver or an
+# identity server is handling validation.
+#
+# The default value is no whitelist functionality; all domains are
+# allowed. Setting this value to an empty list will instead disallow
+# all domains.
+#
+#next_link_domain_whitelist: ["matrix.org"]
+
+# Templates to use when generating email or HTML page contents.
+#
+templates:
+  # Directory in which Synapse will try to find template files to use to generate
+  # email or HTML page contents.
+  # If not set, or a file is not found within the template directory, a default
+  # template from within the Synapse package will be used.
+  #
+  # See https://matrix-org.github.io/synapse/latest/templates.html for more
+  # information about using custom templates.
+  #
+  #custom_template_directory: /path/to/custom/templates/
+
+
 # Message retention policy at the server level.
 #
 # Room admins and mods can define a retention period for their rooms using the
@@ -561,47 +623,6 @@ retention:
   #  - shortest_max_lifetime: 3d
   #    interval: 1d
 
-# Inhibits the /requestToken endpoints from returning an error that might leak
-# information about whether an e-mail address is in use or not on this
-# homeserver.
-# Note that for some endpoints the error situation is the e-mail already being
-# used, and for others the error is entering the e-mail being unused.
-# If this option is enabled, instead of returning an error, these endpoints will
-# act as if no error happened and return a fake session ID ('sid') to clients.
-#
-#request_token_inhibit_3pid_errors: true
-
-# A list of domains that the domain portion of 'next_link' parameters
-# must match.
-#
-# This parameter is optionally provided by clients while requesting
-# validation of an email or phone number, and maps to a link that
-# users will be automatically redirected to after validation
-# succeeds. Clients can make use this parameter to aid the validation
-# process.
-#
-# The whitelist is applied whether the homeserver or an
-# identity server is handling validation.
-#
-# The default value is no whitelist functionality; all domains are
-# allowed. Setting this value to an empty list will instead disallow
-# all domains.
-#
-#next_link_domain_whitelist: ["matrix.org"]
-
-# Templates to use when generating email or HTML page contents.
-#
-templates:
-  # Directory in which Synapse will try to find template files to use to generate
-  # email or HTML page contents.
-  # If not set, or a file is not found within the template directory, a default
-  # template from within the Synapse package will be used.
-  #
-  # See https://matrix-org.github.io/synapse/latest/templates.html for more
-  # information about using custom templates.
-  #
-  #custom_template_directory: /path/to/custom/templates/
-
 
 ## TLS ##
 
@@ -646,8 +667,8 @@ tls_private_key_path: {{ matrix_synapse_tls_private_key_path|to_json }}
 #
 #federation_certificate_verification_whitelist:
 #  - lon.example.com
-#  - *.domain.com
-#  - *.onion
+#  - "*.domain.com"
+#  - "*.onion"
 
 # List of custom certificate authorities for federation traffic.
 #
@@ -1206,6 +1227,46 @@ enable_registration: {{ matrix_synapse_enable_registration|to_json }}
 #
 #session_lifetime: 24h
 
+# Time that an access token remains valid for, if the session is
+# using refresh tokens.
+# For more information about refresh tokens, please see the manual.
+# Note that this only applies to clients which advertise support for
+# refresh tokens.
+#
+# Note also that this is calculated at login time and refresh time:
+# changes are not applied to existing sessions until they are refreshed.
+#
+# By default, this is 5 minutes.
+#
+#refreshable_access_token_lifetime: 5m
+
+# Time that a refresh token remains valid for (provided that it is not
+# exchanged for another one first).
+# This option can be used to automatically log-out inactive sessions.
+# Please see the manual for more information.
+#
+# Note also that this is calculated at login time and refresh time:
+# changes are not applied to existing sessions until they are refreshed.
+#
+# By default, this is infinite.
+#
+#refresh_token_lifetime: 24h
+
+# Time that an access token remains valid for, if the session is NOT
+# using refresh tokens.
+# Please note that not all clients support refresh tokens, so setting
+# this to a short value may be inconvenient for some users who will
+# then be logged out frequently.
+#
+# Note also that this is calculated at login time: changes are not applied
+# retrospectively to existing sessions for users that have already logged in.
+#
+# By default, this is infinite.
+#
+#nonrefreshable_access_token_lifetime: 24h
+
+# The user must provide all of the below types of 3PID when registering.
+
 # The user must provide all of the below types of 3PID when registering.
 #
 #registrations_require_3pid:
@@ -1270,7 +1331,7 @@ allow_guest_access: {{ matrix_synapse_allow_guest_access|to_json }}
 # in on this server.
 #
 # (By default, no suggestion is made, so it is left up to the client.
-# This setting is ignored unless public_baseurl is also set.)
+# This setting is ignored unless public_baseurl is also explicitly set.)
 #
 #default_identity_server: https://matrix.org
 
@@ -1294,8 +1355,6 @@ allow_guest_access: {{ matrix_synapse_allow_guest_access|to_json }}
 # Servers handling the these requests must answer the `/requestToken` endpoints defined
 # by the Matrix Identity Service API specification:
 # https://matrix.org/docs/spec/identity_service/latest
-#
-# If a delegate is specified, the config option public_baseurl must also be filled out.
 #
 account_threepid_delegates:
     email: {{ matrix_synapse_account_threepid_delegates_email|to_json }}
@@ -1989,11 +2048,10 @@ sso:
     # phishing attacks from evil.site. To avoid this, include a slash after the
     # hostname: "https://my.client/".
     #
-    # If public_baseurl is set, then the login fallback page (used by clients
-    # that don't natively support the required login flows) is whitelisted in
-    # addition to any URLs in this list.
+    # The login fallback page (used by clients that don't natively support the
+    # required login flows) is whitelisted in addition to any URLs in this list.
     #
-    # By default, this list is empty.
+    # By default, this list contains only the login fallback page.
     #
     #client_whitelist:
     #  - https://riot.im/develop
@@ -2211,6 +2269,12 @@ sso:
     #
     #algorithm: "provided-by-your-issuer"
 
+    # Name of the claim containing a unique identifier for the user.
+    #
+    # Optional, defaults to `sub`.
+    #
+    #subject_claim: "sub"
+
     # The issuer to validate the "iss" claim against.
     #
     # Optional, if provided the "iss" claim will be required and
@@ -2320,9 +2384,10 @@ email:
 
   # Username/password for authentication to the SMTP server. By default, no
   # authentication is attempted.
-  #
-  #smtp_user: "exampleusername"
-  #smtp_pass: "examplepassword"
+  {% if matrix_synapse_email_smtp_user %}
+  smtp_user: {{ matrix_synapse_email_smtp_user|string|to_json }}
+  smtp_pass: {{ matrix_synapse_email_smtp_pass|string|to_json }}
+  {% endif %}
 
   # Uncomment the following to require TLS transport security for SMTP.
   # By default, Synapse will connect over plain text, and will then switch to
@@ -2620,8 +2685,8 @@ user_directory:
     # indexes were (re)built was before Synapse 1.44, you'll have to
     # rebuild the indexes in order to search through all known users.
     # These indexes are built the first time Synapse starts; admins can
-    # manually trigger a rebuild following the instructions at
-    #     https://matrix-org.github.io/synapse/latest/user_directory.html
+    # manually trigger a rebuild via API following the instructions at
+    #     https://matrix-org.github.io/synapse/latest/usage/administration/admin_api/background_updates.html#run
     #
     # Uncomment to return search results containing all known users, even if that
     # user does not share a room with the requester.

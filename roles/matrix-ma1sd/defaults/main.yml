@@ -19,7 +19,8 @@ matrix_ma1sd_docker_src_files_path: "{{ matrix_ma1sd_base_path }}/docker-src/ma1
 matrix_ma1sd_config_path: "{{ matrix_ma1sd_base_path }}/config"
 matrix_ma1sd_data_path: "{{ matrix_ma1sd_base_path }}/data"
 
-# Controls whether the matrix-ma1sd container exposes its HTTP port (tcp/8090 in the container).
+matrix_ma1sd_container_port: 8090
+# Controls whether the matrix-ma1sd container exposes its HTTP port (tcp/{{ matrix_ma1sd_container_port }} in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8090"), or empty string to not expose.
 matrix_ma1sd_container_http_host_bind_port: ''
@@ -47,7 +48,7 @@ matrix_ma1sd_matrixorg_forwarding_enabled: false
 #
 # To use Postgres:
 # - change the engine (`matrix_ma1sd_database_engine: 'postgres'`)
-# - adjust your database credentials via the `matrix_ma1sd_postgres_*` variables
+# - adjust your database credentials via the `matrix_ma1sd_database_*` variables
 matrix_ma1sd_database_engine: 'sqlite'
 
 matrix_ma1sd_sqlite_database_path_local: "{{ matrix_ma1sd_data_path }}/ma1sd.db"
@@ -82,7 +83,7 @@ matrix_ma1sd_threepid_medium_email_connectors_smtp_password: ""
 # so that ma1sd can rewrite the original URL to one that would reach the homeserver.
 matrix_ma1sd_dns_overwrite_enabled: false
 matrix_ma1sd_dns_overwrite_homeserver_client_name: "{{ matrix_server_fqn_matrix }}"
-matrix_ma1sd_dns_overwrite_homeserver_client_value: "http://matrix-synapse:8008"
+matrix_ma1sd_dns_overwrite_homeserver_client_value: ""
 
 # Override the default session templates
 # To use this, fill in the template variables with the full desired template as a multi-line YAML variable

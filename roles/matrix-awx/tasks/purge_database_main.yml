@@ -29,9 +29,9 @@
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1)
   register: awx_synapse_container_ip
 
-- name: Collect access token for janitor user
+- name: Collect access token for @_janitor user
   shell: |
-    curl -X POST -d '{"type":"m.login.password", "user":"janitor", "password":"{{ awx_janitor_user_password }}"}' "{{ awx_synapse_container_ip.stdout }}:8008/_matrix/client/r0/login" | jq '.access_token'
+    curl -X POST -d '{"type":"m.login.password", "user":"_janitor", "password":"{{ awx_janitor_user_password }}"}' "{{ awx_synapse_container_ip.stdout }}:{{ matrix_synapse_container_client_api_port }}/_matrix/client/r0/login" | jq '.access_token'
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1)
   register: awx_janitors_token
   no_log: True
@@ -47,7 +47,7 @@
 
 - name: Run build_room_list.py script
   shell: |
-    runuser -u matrix -- python3 /usr/local/bin/matrix_build_room_list.py {{ awx_janitors_token.stdout[1:-1] }} {{ awx_synapse_container_ip.stdout }}
+    runuser -u matrix -- python3 /usr/local/bin/matrix_build_room_list.py {{ awx_janitors_token.stdout[1:-1] }} {{ awx_synapse_container_ip.stdout }} {{ matrix_synapse_container_client_api_port.stdout }}
   register: awx_rooms_total
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1)
 
@@ -69,7 +69,7 @@
   shell: |
     jq 'try .rooms[] | select(.joined_local_members == 0) | .room_id' < /tmp/{{ subscription_id }}_room_list_complete.json > /tmp/{{ subscription_id }}_room_list_no_local_users.txt
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1)
-  
+
 - name: Count number of rooms with no local users
   delegate_to: 127.0.0.1
   shell: |
@@ -84,7 +84,7 @@
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1)
 
 - name: Purge all rooms with no local users
-  include_tasks: purge_database_no_local.yml 
+  include_tasks: purge_database_no_local.yml
   loop: "{{ awx_room_list_no_local_users.splitlines() | flatten(levels=1) }}"
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1)
 
@@ -116,7 +116,7 @@
   no_log: True
 
 - name: Purge all rooms with more then N users
-  include_tasks: purge_database_users.yml 
+  include_tasks: purge_database_users.yml
   loop: "{{ awx_room_list_joined_members.splitlines() | flatten(levels=1) }}"
   when: awx_purge_mode.find("Number of users [slower]") != -1
 
@@ -141,7 +141,7 @@
   no_log: True
 
 - name: Purge all rooms with more then N events
-  include_tasks: purge_database_events.yml 
+  include_tasks: purge_database_events.yml
   loop: "{{ awx_room_list_state_events.splitlines() | flatten(levels=1) }}"
   when: awx_purge_mode.find("Number of events [slower]") != -1
 
@@ -171,7 +171,7 @@
     wait: yes
     tower_host: "https://{{ awx_host }}"
     tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
-    validate_certs: yes 
+    validate_certs: yes
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1) or (awx_purge_mode.find("Skip purging rooms [faster]") != -1)
 
 - name: Revert 'Deploy/Update a Server' job template
@@ -237,7 +237,7 @@
     wait: yes
     tower_host: "https://{{ awx_host }}"
     tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
-    validate_certs: yes 
+    validate_certs: yes
   when: (awx_purge_mode.find("Perform final shrink") != -1)
 
 - name: Revert 'Deploy/Update a Server' job template
@@ -272,7 +272,7 @@
   when: (awx_purge_mode.find("Perform final shrink") != -1)
   no_log: True
 
-- name: Print total number of rooms processed 
+- name: Print total number of rooms processed
   debug:
     msg: '{{ awx_rooms_total.stdout }}'
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1)

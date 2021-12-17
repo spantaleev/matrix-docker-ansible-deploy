@@ -18,6 +18,7 @@ List of roles where self-building the Docker image is currently possible:
 - `matrix-registration`
 - `matrix-coturn`
 - `matrix-corporal`
+- `matrix-dimension`
 - `matrix-ma1sd`
 - `matrix-mailer`
 - `matrix-bridge-appservice-irc`

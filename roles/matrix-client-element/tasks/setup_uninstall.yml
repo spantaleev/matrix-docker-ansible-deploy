@@ -1,0 +1,36 @@
+---
+
+- name: Check existence of matrix-client-element.service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-client-element.service"
+  register: matrix_client_element_service_stat
+
+- name: Ensure matrix-client-element is stopped
+  service:
+    name: matrix-client-element
+    state: stopped
+    enabled: no
+    daemon_reload: yes
+  register: stopping_result
+  when: "matrix_client_element_service_stat.stat.exists|bool"
+
+- name: Ensure matrix-client-element.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-client-element.service"
+    state: absent
+  when: "matrix_client_element_service_stat.stat.exists|bool"
+
+- name: Ensure systemd reloaded after matrix-client-element.service removal
+  service:
+    daemon_reload: yes
+  when: "matrix_client_element_service_stat.stat.exists|bool"
+
+- name: Ensure Element paths doesn't exist
+  file:
+    path: "{{ matrix_client_element_data_path }}"
+    state: absent
+
+- name: Ensure Element Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_client_element_docker_image }}"
+    state: absent

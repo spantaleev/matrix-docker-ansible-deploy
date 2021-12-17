@@ -8,10 +8,24 @@ matrix_jitsi_enable_recording: false
 matrix_jitsi_enable_transcriptions: false
 matrix_jitsi_enable_p2p: true
 matrix_jitsi_enable_av_moderation: true
+matrix_jitsi_enable_breakout_rooms: true
 
-# Authentication type, must be one of internal, jwt or ldap. Currently only
-# internal and ldap are supported by this playbook.
+# Authentication type, must be one of internal, jwt or ldap.
+# Currently only internal and ldap mechanisms are supported by this playbook.
 matrix_jitsi_auth_type: internal
+
+# A list of Jitsi (Prosody) accounts to create using the internal authentication mechanism.
+#
+# Accounts added here and subsquently removed will not be automatically removed
+# from the Prosody server until user account cleaning is integrated into the playbook.
+#
+# Example:
+# matrix_jitsi_prosody_auth_internal_accounts:
+#  - username: "jitsi-moderator"
+#    password: "secret-password"
+#  - username: "another-user"
+#    password: "another-password"
+matrix_jitsi_prosody_auth_internal_accounts: []
 
 # Configuration options for LDAP authentication. For details see upstream:
 #   https://github.com/jitsi/docker-jitsi-meet#authentication-using-ldap.
@@ -54,7 +68,7 @@ matrix_jitsi_jibri_recorder_password: ''
 
 matrix_jitsi_enable_lobby: false
 
-matrix_jitsi_version: stable-6173
+matrix_jitsi_version: stable-6726-1
 matrix_jitsi_container_image_tag: "{{ matrix_jitsi_version }}" # for backward-compatibility
 
 matrix_jitsi_web_docker_image: "{{ matrix_container_global_registry_prefix }}jitsi/web:{{ matrix_jitsi_container_image_tag }}"
@@ -63,6 +77,7 @@ matrix_jitsi_web_docker_image_force_pull: "{{ matrix_jitsi_web_docker_image.ends
 matrix_jitsi_web_base_path: "{{ matrix_base_data_path }}/jitsi/web"
 matrix_jitsi_web_config_path: "{{ matrix_jitsi_web_base_path }}/config"
 matrix_jitsi_web_transcripts_path: "{{ matrix_jitsi_web_base_path }}/transcripts"
+matrix_jitsi_web_crontabs_path: "{{ matrix_jitsi_web_base_path }}/crontabs"
 
 matrix_jitsi_web_public_url: "https://{{ matrix_server_fqn_jitsi }}"
 
@@ -204,7 +219,6 @@ matrix_jitsi_jicofo_systemd_required_services_list: ['docker.service', 'matrix-j
 matrix_jitsi_jicofo_component_secret: ''
 matrix_jitsi_jicofo_auth_user: focus
 matrix_jitsi_jicofo_auth_password: ''
-
 
 matrix_jitsi_jvb_docker_image: "{{ matrix_container_global_registry_prefix }}jitsi/jvb:{{ matrix_jitsi_container_image_tag }}"
 matrix_jitsi_jvb_docker_image_force_pull: "{{ matrix_jitsi_jvb_docker_image.endswith(':latest') }}"
