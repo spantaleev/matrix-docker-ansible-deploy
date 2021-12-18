@@ -111,14 +111,28 @@ matrix_nginx_proxy_access_log_enabled: true
 matrix_nginx_proxy_proxy_riot_compat_redirect_enabled: false
 matrix_nginx_proxy_proxy_riot_compat_redirect_hostname: "riot.{{ matrix_domain }}"
 
-# Controls whether proxying the Synapse domain should be done.
+# Controls whether proxying for Synapse should be done.
 matrix_nginx_proxy_proxy_synapse_enabled: false
 matrix_nginx_proxy_proxy_synapse_hostname: "matrix-nginx-proxy"
 matrix_nginx_proxy_proxy_synapse_federation_api_enabled: "{{ matrix_nginx_proxy_proxy_matrix_federation_api_enabled }}"
-
+# The addresses where the Matrix Client API is, when using Synapse.
+matrix_nginx_proxy_proxy_synapse_client_api_addr_with_container: ""
+matrix_nginx_proxy_proxy_synapse_client_api_addr_sans_container: ""
 # The addresses where the Federation API is, when using Synapse.
 matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container: ""
 matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container: ""
+# A list of strings containing additional configuration blocks to add to the Synapse's server configuration (matrix-synapse.conf).
+matrix_nginx_proxy_proxy_synapse_additional_server_configuration_blocks: []
+
+# Controls whether proxying for Dendrite should be done.
+matrix_nginx_proxy_proxy_dendrite_enabled: false
+matrix_nginx_proxy_proxy_dendrite_hostname: "matrix-nginx-proxy"
+matrix_nginx_proxy_proxy_dendrite_federation_api_enabled: "{{ matrix_nginx_proxy_proxy_matrix_federation_api_enabled }}"
+# The addresses where the Matrix Client API is, when using Dendrite.
+matrix_nginx_proxy_proxy_dendrite_client_api_addr_with_container: ""
+matrix_nginx_proxy_proxy_dendrite_client_api_addr_sans_container: ""
+# A list of strings containing additional configuration blocks to add to the Dendrite's server configuration (matrix-dendrite.conf).
+matrix_nginx_proxy_proxy_dendrite_additional_server_configuration_blocks: []
 
 # Controls whether proxying the Element domain should be done.
 matrix_nginx_proxy_proxy_element_enabled: false
@@ -200,10 +214,6 @@ matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key: ""
 matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "matrix-nginx-proxy:12080"
 matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "127.0.0.1:12080"
 
-# The addresses where the Matrix Client API is, when using Synapse.
-matrix_nginx_proxy_proxy_synapse_client_api_addr_with_container: ""
-matrix_nginx_proxy_proxy_synapse_client_api_addr_sans_container: ""
-
 # This needs to be equal or higher than the maximum upload size accepted by Synapse.
 matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: 50
 
@@ -267,9 +277,6 @@ matrix_nginx_proxy_proxy_http_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to the base matrix server configuration (matrix-domain.conf).
 matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: []
-
-# A list of strings containing additional configuration blocks to add to the synapse's server configuration (matrix-synapse.conf).
-matrix_nginx_proxy_proxy_synapse_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to Riot's server configuration (matrix-riot-web.conf).
 matrix_nginx_proxy_proxy_riot_additional_server_configuration_blocks: []
