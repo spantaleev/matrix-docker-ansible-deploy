@@ -9,9 +9,6 @@
   with_items:
     - { path: "{{ matrix_dendrite_config_dir_path }}", when: true }
     - { path: "{{ matrix_dendrite_ext_path }}", when: true }
-    # We handle matrix_dendrite_media_store_path elsewhere (in ./dendrite/setup_install.yml),
-    # because if it's using Goofys and it's already mounted (from before),
-    # trying to chown/chmod it here will cause trouble.
-  when: "(matrix_dendrite_enabled|bool or matrix_s3_media_store_enabled|bool) and item.when"
+  when: "matrix_dendrite_enabled|bool and item.when"
 
 - import_tasks: "{{ role_path }}/tasks/dendrite/setup.yml"
