@@ -128,6 +128,9 @@ matrix_nginx_proxy_proxy_synapse_additional_server_configuration_blocks: []
 matrix_nginx_proxy_proxy_dendrite_enabled: false
 matrix_nginx_proxy_proxy_dendrite_hostname: "matrix-nginx-proxy"
 matrix_nginx_proxy_proxy_dendrite_federation_api_enabled: "{{ matrix_nginx_proxy_proxy_matrix_federation_api_enabled }}"
+# Controls whether the Client API server (usually at matrix.DOMAIN:443) should explicitly reject `/_matrix/federation` endpoints.
+# Normally, Dendrite Monolith serves both APIs (Client & Federation) at the same port, so we can serve federation at `matrix.DOMAIN:443` too.
+matrix_nginx_proxy_proxy_dendrite_block_federation_api_on_client_port: true
 # The addresses where the Matrix Client API is, when using Dendrite.
 matrix_nginx_proxy_proxy_dendrite_client_api_addr_with_container: ""
 matrix_nginx_proxy_proxy_dendrite_client_api_addr_sans_container: ""

@@ -14,6 +14,16 @@ server {
 		{{- configuration_block }}
 	{% endfor %}
 
+	{% if matrix_nginx_proxy_proxy_dendrite_block_federation_api_on_client_port %}
+	location /_matrix/federation {
+		{% if matrix_nginx_proxy_proxy_dendrite_federation_api_enabled %}
+			return 404 'The Federation API is served at https://{{ matrix_server_fqn_matrix }}:{{ matrix_federation_public_port }}';
+		{% else %}
+			return 404 'This Matrix server is running with federation disabled';
+		{% endif %}
+	}
+	{% endif %}
+
 	{# Everything else just goes to the API server ##}
 	location / {
 		{% if matrix_nginx_proxy_enabled %}
