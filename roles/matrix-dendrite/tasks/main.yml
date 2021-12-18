@@ -22,14 +22,14 @@
 - import_tasks: "{{ role_path }}/tasks/self_check_client_api.yml"
   delegate_to: 127.0.0.1
   become: false
-  when: run_self_check|bool
+  when: run_self_check|bool and matrix_dendrite_enabled|bool
   tags:
     - self-check
 
 - import_tasks: "{{ role_path }}/tasks/self_check_federation_api.yml"
   delegate_to: 127.0.0.1
   become: false
-  when: run_self_check|bool
+  when: run_self_check|bool and matrix_dendrite_enabled|bool
   tags:
     - self-check
 

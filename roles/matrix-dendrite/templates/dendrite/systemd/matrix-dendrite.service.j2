@@ -44,7 +44,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-dendrite \
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_dendrite_docker_image }} \
-			--config /data/dendrite.yaml
+			-config /data/dendrite.yaml \
+			-http-bind-address {{ matrix_dendrite_container_http_bind_address }}
 
 ExecStop=-{{ matrix_host_command_docker }} kill matrix-dendrite
 ExecStop=-{{ matrix_host_command_docker }} rm matrix-dendrite

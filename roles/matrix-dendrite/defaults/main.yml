@@ -14,6 +14,15 @@ matrix_dendrite_storage_path: "{{ matrix_dendrite_base_path }}/storage"
 matrix_dendrite_media_store_path: "{{ matrix_dendrite_storage_path }}/media-store"
 matrix_dendrite_ext_path: "{{ matrix_dendrite_base_path }}/ext"
 
+matrix_dendrite_container_http_bind_port: 8008
+
+# This is passed as a flag `-http-bind-address` flag to the Dendrite server in the container
+matrix_dendrite_container_http_bind_address: ":{{ matrix_dendrite_container_http_bind_port }}"
+
+# Dendrite monolith exposes both the Client API and the Federation API on the same port
+matrix_dendrite_container_client_api_port: "{{ matrix_dendrite_container_http_bind_port }}"
+matrix_dendrite_container_federation_api_plain_port: "{{ matrix_dendrite_container_http_bind_port }}"
+
 # Controls whether the matrix-dendrite container exposes the Client/Server API port (tcp/8008 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8008"), or empty string to not expose.
@@ -116,7 +125,10 @@ matrix_dendrite_trusted_id_servers:
 
 # Controls whether Dendrite will federate at all.
 # Disable this to completely isolate your server from the rest of the Matrix network.
-matrix_dendrite_disable_federation: false
+matrix_dendrite_federation_enabled: true
+
+# Controls whether the self-check feature should validate SSL certificates.
+matrix_dendrite_self_check_validate_certificates: true
 
 # Default Dendrite configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
