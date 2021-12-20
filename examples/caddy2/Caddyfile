@@ -27,6 +27,10 @@ matrix.DOMAIN.tld {
         not path /matrix/static-files/*
   }
 
+  @wellknown {
+        path /.well-known/matrix/*
+  }
+
   header {
         # Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
         Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
@@ -69,6 +73,15 @@ matrix.DOMAIN.tld {
         }
   }
 
+  handle @wellknown {
+        encode zstd gzip
+        root * /matrix/static-files
+	header Cache-Control max-age=14400
+        header Content-Type application/json
+        header Access-Control-Allow-Origin *
+        file_server
+  }
+
   handle {
         encode zstd gzip
 
@@ -102,17 +115,17 @@ element.DOMAIN.tld {
       # tls your@email.com
 
       header {
-         	# Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
-        	Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-        	# Enable cross-site filter (XSS) and tell browser to block detected attacks
-        	X-XSS-Protection "1; mode=block"
-        	# Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
-        	X-Content-Type-Options "nosniff"
-        	# Disallow the site to be rendered within a frame (clickjacking protection)
-        	X-Frame-Options "DENY"
-        	# X-Robots-Tag
-        	X-Robots-Tag "noindex, noarchive, nofollow"
-  	}
+                # Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
+                Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+                # Enable cross-site filter (XSS) and tell browser to block detected attacks
+                X-XSS-Protection "1; mode=block"
+                # Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
+                X-Content-Type-Options "nosniff"
+                # Disallow the site to be rendered within a frame (clickjacking protection)
+                X-Frame-Options "DENY"
+                # X-Robots-Tag
+                X-Robots-Tag "noindex, noarchive, nofollow"
+        }
 
         handle {
               encode zstd gzip
