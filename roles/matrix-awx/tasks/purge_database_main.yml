@@ -29,9 +29,9 @@
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1)
   register: awx_synapse_container_ip
 
-- name: Collect access token for @_janitor user
+- name: Collect access token for @admin-janitor user
   shell: |
-    curl -X POST -d '{"type":"m.login.password", "user":"_janitor", "password":"{{ awx_janitor_user_password }}"}' "{{ awx_synapse_container_ip.stdout }}:{{ matrix_synapse_container_client_api_port }}/_matrix/client/r0/login" | jq '.access_token'
+    curl -X POST -d '{"type":"m.login.password", "user":"admin-janitor", "password":"{{ awx_janitor_user_password }}"}' "{{ awx_synapse_container_ip.stdout }}:{{ matrix_synapse_container_client_api_port }}/_matrix/client/r0/login" | jq '.access_token'
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1)
   register: awx_janitors_token
   no_log: True

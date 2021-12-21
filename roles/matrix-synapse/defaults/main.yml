@@ -15,8 +15,8 @@ matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_cont
 # amd64 gets released first.
 # arm32 relies on self-building, so the same version can be built immediately.
 # arm64 users need to wait for a prebuilt image to become available.
-matrix_synapse_version: v1.48.0
-matrix_synapse_version_arm64: v1.48.0
+matrix_synapse_version: v1.49.0
+matrix_synapse_version_arm64: v1.49.0
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version if matrix_architecture in ['arm32', 'amd64'] else matrix_synapse_version_arm64 }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -320,6 +320,9 @@ matrix_synapse_push_include_content: true
 # If url previews should be generated. This will cause a request from Synapse to
 # URLs shared by users.
 matrix_synapse_url_preview_enabled: true
+
+# A list of values for the Accept-Language HTTP header used when downloading webpages during URL preview generation
+matrix_url_preview_accept_language: ['en-US', 'en']
 
 # Enable exposure of metrics to Prometheus
 # See https://github.com/matrix-org/synapse/blob/master/docs/metrics-howto.md

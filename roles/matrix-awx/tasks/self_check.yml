@@ -50,12 +50,14 @@
 - name: Calculate size of local media repository
   shell: du -sh /matrix/synapse/storage/media-store/local*
   register: awx_local_media_size_stat
+  async: 600
   ignore_errors: yes
   no_log: True
 
 - name: Calculate size of remote media repository
   shell: du -sh /matrix/synapse/storage/media-store/remote*
   register: awx_remote_media_size_stat
+  async: 600
   ignore_errors: yes
   no_log: True
 
