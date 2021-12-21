@@ -10,10 +10,16 @@ matrix_dimension_admins: []
 # Whether to allow Dimension widgets serve websites with invalid or self signed SSL certificates
 matrix_dimension_widgets_allow_self_signed_ssl_certificates: false
 
+matrix_dimension_container_image_self_build: false
+matrix_dimension_container_image_self_build_repo: "https://github.com/turt2live/matrix-dimension.git"
+matrix_dimension_container_image_self_build_branch: master
+
 matrix_dimension_base_path: "{{ matrix_base_data_path }}/dimension"
+matrix_dimension_docker_src_files_path: "{{ matrix_base_data_path }}/docker-src/dimension"
 
 matrix_dimension_version: latest
-matrix_dimension_docker_image: "{{ matrix_container_global_registry_prefix }}turt2live/matrix-dimension:{{ matrix_dimension_version }}"
+matrix_dimension_docker_image: "{{ matrix_dimension_docker_image_name_prefix }}turt2live/matrix-dimension:{{ matrix_dimension_version }}"
+matrix_dimension_docker_image_name_prefix: "{{ 'localhost/' if matrix_dimension_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_dimension_docker_image_force_pull: "{{ matrix_dimension_docker_image.endswith(':latest') }}"
 
 # List of systemd services that matrix-dimension.service depends on.
@@ -48,7 +54,7 @@ matrix_dimension_homeserver_federationUrl: ""
 #
 # To use Postgres:
 # - change the engine (`matrix_dimension_database_engine: 'postgres'`)
-# - adjust your database credentials via the `matrix_dimension_postgres_*` variables
+# - adjust your database credentials via the `matrix_dimension_database_*` variables
 matrix_dimension_database_engine: 'sqlite'
 
 matrix_dimension_sqlite_database_path_local: "{{ matrix_dimension_base_path }}/dimension.db"

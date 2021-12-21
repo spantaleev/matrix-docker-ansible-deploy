@@ -51,6 +51,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [mautrix-facebook](https://github.com/mautrix/facebook) bridge for bridging your Matrix server to [Facebook](https://facebook.com/)
 
+- (optional) the [mautrix-twitter](https://github.com/mautrix/twitter) bridge for bridging your Matrix server to [Twitter](https://twitter.com/)
+
 - (optional) the [mautrix-hangouts](https://github.com/mautrix/hangouts) bridge for bridging your Matrix server to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts)
 
 - (optional) the [mautrix-googlechat](https://github.com/mautrix/googlechat) bridge for bridging your Matrix server to [Google Chat](https://en.wikipedia.org/wiki/Google_Chat)
