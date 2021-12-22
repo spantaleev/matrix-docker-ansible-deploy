@@ -1,5 +1,7 @@
 # Setting up MX Puppet Twitter (optional)
 
+**Note**: bridging to [Twitter](https://twitter.com/) can also happen via the [mautrix-twitter](configuring-playbook-bridge-mautrix-twitter.md) bridge supported by the playbook.
+
 The playbook can install and configure
 [mx-puppet-twitter](https://github.com/Sorunome/mx-puppet-twitter) for you.
 
