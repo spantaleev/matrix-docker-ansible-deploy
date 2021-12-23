@@ -1415,10 +1415,10 @@ matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container: "matrix-syn
 matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container: "localhost:{{matrix_synapse_container_federation_api_plain_port|string}}"
 
 matrix_nginx_proxy_proxy_dendrite_enabled: "{{ matrix_dendrite_enabled }}"
-matrix_nginx_proxy_proxy_dendrite_client_api_addr_with_container: "matrix-dendrite:{{ matrix_dendrite_container_client_api_port }}"
-matrix_nginx_proxy_proxy_dendrite_client_api_addr_sans_container: "127.0.0.1:{{ matrix_synapse_container_client_api_port }}"
-matrix_nginx_proxy_proxy_dendrite_federation_api_addr_with_container: "matrix-dendrite:{{ matrix_dendrite_container_federation_api_plain_port|string }}"
-matrix_nginx_proxy_proxy_dendrite_federation_api_addr_sans_container: "127.0.0.1:{{ matrix_dendrite_container_federation_api_plain_port|string }}"
+matrix_nginx_proxy_proxy_dendrite_client_api_addr_with_container: "matrix-dendrite:{{ matrix_dendrite_http_bind_port|string }}"
+matrix_nginx_proxy_proxy_dendrite_client_api_addr_sans_container: "127.0.0.1:{{ matrix_dendrite_http_bind_port|string }}"
+matrix_nginx_proxy_proxy_dendrite_federation_api_addr_with_container: "matrix-dendrite:{{ matrix_dendrite_http_bind_port|string }}"
+matrix_nginx_proxy_proxy_dendrite_federation_api_addr_sans_container: "127.0.0.1:{{ matrix_dendrite_http_bind_port|string }}"
 
 # When matrix-nginx-proxy is disabled, the actual port number that the vhost uses may begin to matter.
 matrix_nginx_proxy_proxy_matrix_federation_port: "{{ matrix_federation_public_port }}"
@@ -2209,11 +2209,11 @@ matrix_postgres_backup_databases: |
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it,
 # you can expose Dendrite's ports to the host.
 #
-# For exposing the Matrix Client API's port (plain HTTP) to the local host.
-matrix_dendrite_container_client_api_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8008' }}"
+# For exposing Dendrite's plain HTTP server to the local host.
+matrix_dendrite_container_http_host_bind_address: "{{ '' if matrix_nginx_proxy_enabled else ('127.0.0.1:' + matrix_dendrite_http_bind_port|string) }}"
 #
-# For exposing the Matrix Federation API's TLS port (HTTPS) to the internet on all network interfaces.
-matrix_dendrite_container_federation_api_tls_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else matrix_federation_public_port }}"
+# For exposing Dendrite's HTTPS server to the local host.
+matrix_dendrite_container_https_host_bind_address: "{{ '' if matrix_nginx_proxy_enabled or not matrix_dendrite_https_bind_port else ('127.0.0.1:' + matrix_dendrite_https_bind_port|string) }}"
 
 matrix_dendrite_registration_shared_secret: "{{ matrix_dendrite_generic_secret_key | password_hash('sha512', 'dendrite.rss') | to_uuid }}"
 

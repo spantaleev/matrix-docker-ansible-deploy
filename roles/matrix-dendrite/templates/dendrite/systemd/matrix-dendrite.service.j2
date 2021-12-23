@@ -29,11 +29,11 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-dendrite \
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_dendrite_tmp_directory_size_mb }}m \
 			--network={{ matrix_docker_network }} \
-			{% if matrix_dendrite_container_client_api_host_bind_port %}
-			-p {{ matrix_dendrite_container_client_api_host_bind_port }}:8008 \
+			{% if matrix_dendrite_container_http_host_bind_address and matrix_dendrite_http_bind_port %}
+			-p {{ matrix_dendrite_container_http_host_bind_address }}:{{ matrix_dendrite_http_bind_port }} \
 			{% endif %}
-			{% if matrix_dendrite_container_federation_api_tls_host_bind_port %}
-			-p {{ matrix_dendrite_container_federation_api_tls_host_bind_port }}:8448 \
+			{% if matrix_dendrite_container_https_host_bind_address and matrix_dendrite_https_bind_port %}
+			-p {{ matrix_dendrite_container_https_host_bind_address }}:{{ matrix_dendrite_https_bind_port }} \
 			{% endif %}
 			--mount type=bind,src={{ matrix_dendrite_config_dir_path }},dst=/data,ro \
 			--mount type=bind,src={{ matrix_dendrite_storage_path }},dst=/matrix-media-store-parent,bind-propagation=slave \
@@ -45,7 +45,13 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-dendrite \
 			{% endfor %}
 			{{ matrix_dendrite_docker_image }} \
 			-config /data/dendrite.yaml \
-			-http-bind-address {{ matrix_dendrite_container_http_bind_address }}
+			{% if matrix_dendrite_http_bind_address %}
+			-http-bind-address {{ matrix_dendrite_http_bind_address }}
+			{% endif %}
+			{% if matrix_dendrite_https_bind_address %}
+			-https-bind-address {{ matrix_dendrite_https_bind_address }}
+			{% endif %}
+			{{ matrix_dendrite_process_extra_arguments|join(' ') }}
 
 ExecStop=-{{ matrix_host_command_docker }} kill matrix-dendrite
 ExecStop=-{{ matrix_host_command_docker }} rm matrix-dendrite

@@ -14,30 +14,41 @@ matrix_dendrite_storage_path: "{{ matrix_dendrite_base_path }}/storage"
 matrix_dendrite_media_store_path: "{{ matrix_dendrite_storage_path }}/media-store"
 matrix_dendrite_ext_path: "{{ matrix_dendrite_base_path }}/ext"
 
-matrix_dendrite_container_http_bind_port: 8008
+# By default, we make Dendrite only serve HTTP (not HTTPS).
+# HTTPS is usually served at the reverse-proxy side (usually via `matrix-nginx-proxy`).
+#
+# To enable HTTPS serving by Dendrite (directly):
+# - `matrix_dendrite_https_bind_port` must be set
+# - `-tls-cert` and `-tls-key` must be passed to Dendrite via `matrix_dendrite_process_extra_arguments`
+# - the TLS certificate files must be mounted into the container using `matrix_dendrite_container_additional_volumes`
+matrix_dendrite_http_bind_port: 8008
+matrix_dendrite_https_bind_port: ~
 
-# This is passed as a flag `-http-bind-address` flag to the Dendrite server in the container
-matrix_dendrite_container_http_bind_address: ":{{ matrix_dendrite_container_http_bind_port }}"
+# This is passed as an `-http-bind-address` flag to the Dendrite server in the container
+matrix_dendrite_http_bind_address: "{{ (':' + matrix_dendrite_http_bind_port|string) if matrix_dendrite_http_bind_port else '' }}"
 
-# Dendrite monolith exposes both the Client API and the Federation API on the same port
-matrix_dendrite_container_client_api_port: "{{ matrix_dendrite_container_http_bind_port }}"
-matrix_dendrite_container_federation_api_plain_port: "{{ matrix_dendrite_container_http_bind_port }}"
+# This is passed as an `-https-bind-address` flag to the Dendrite server in the container
+matrix_dendrite_https_bind_address: "{{ (':' + matrix_dendrite_https_bind_port|string) if matrix_dendrite_https_bind_port else '' }}"
 
-# Controls whether the matrix-dendrite container exposes the Client/Server API port (tcp/8008 in the container).
+# Controls whether the matrix-dendrite container exposes the HTTP port (tcp/{{ matrix_dendrite_http_bind_port }} in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8008"), or empty string to not expose.
-matrix_dendrite_container_client_api_host_bind_port: ""
+matrix_dendrite_container_http_host_bind_address: ""
 
-# Controls whether the matrix-dendrite container exposes the tls (encrypted) Server/Server (Federation) API port (tcp/8448 in the container).
+# Controls whether the matrix-dendrite container exposes the HTTPS port (tcp/{{ matrix_dendrite_https_bind_port }} in the container).
 #
-# Takes effect only if federation is enabled (matrix_dendrite_federation_enabled)
-# and TLS support is enabled (matrix_dendrite_tls_federation_listener_enabled).
-#
-# Takes an "<ip>:<port>" or "<port>" value (e.g. "8448"), or empty string to not expose.
-matrix_dendrite_container_federation_api_tls_host_bind_port: ""
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8448"), or empty string to not expose.
+matrix_dendrite_container_https_host_bind_address: ""
 
-# A list of extra arguments to pass to the container
+# A list of extra arguments to pass to the container (`docker run` command)
 matrix_dendrite_container_extra_arguments: []
+
+# A list of extra arguments to pass to the container process (`dendrite-monolith` command)
+# Example:
+# matrix_dendrite_process_extra_arguments:
+#  - "-tls-cert /some/path.crt"
+#  - "-tls-key /some/path.pem"
+matrix_dendrite_process_extra_arguments: []
 
 # List of systemd services that matrix-dendrite.service depends on
 matrix_dendrite_systemd_required_services_list: ["docker.service"]
