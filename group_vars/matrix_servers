@@ -29,6 +29,14 @@ matrix_homeserver_container_url: |-
     }[matrix_homeserver_implementation]
   }}
 
+matrix_homeserver_container_federation_url: |-
+  {{
+    'http://matrix-nginx-proxy:12088' if matrix_nginx_proxy_enabled else {
+      'synapse': ('http://matrix-synapse:'+ matrix_synapse_container_federation_api_plain_port|string),
+      'dendrite': ('http://matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
+    }[matrix_homeserver_implementation]
+  }}
+
 ######################################################################
 #
 # /matrix-base
@@ -1131,7 +1139,7 @@ matrix_dimension_container_image_self_build: "{{ matrix_architecture != 'amd64' 
 # the Dimension HTTP port to the local host.
 matrix_dimension_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8184' }}"
 
-matrix_dimension_homeserver_federationUrl: "http://matrix-synapse:{{matrix_synapse_container_federation_api_plain_port|string}}"
+matrix_dimension_homeserver_federationUrl: "{{ matrix_homeserver_container_federation_url }}"
 
 matrix_integration_manager_rest_url: "{{ matrix_dimension_integrations_rest_url if matrix_dimension_enabled else None }}"
 matrix_integration_manager_ui_url: "{{ matrix_dimension_integrations_ui_url if matrix_dimension_enabled else None }}"
