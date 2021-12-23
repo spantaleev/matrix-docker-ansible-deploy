@@ -17,17 +17,6 @@ matrix_container_global_registry_prefix: "docker.io/"
 #
 ######################################################################
 
-matrix_homeserver_enabled_implementations_list: |
-  {{
-    (
-      (['synapse'] if matrix_synapse_enabled else [])
-      +
-      (['dendrite'] if matrix_dendrite_enabled else [])
-    )
-  }}
-
-matrix_homeserver_implementation: "{{ matrix_homeserver_enabled_implementations_list[0] if matrix_homeserver_enabled_implementations_list|length == 1 else '' }}"
-
 matrix_identity_server_url: "{{ ('https://' + matrix_server_fqn_matrix) if matrix_ma1sd_enabled else None }}"
 
 # If Synapse workers are enabled and matrix-nginx-proxy is disabled, certain APIs may not work over 'http://matrix-synapse:{{ matrix_synapse_container_client_api_port }}'.
@@ -1906,6 +1895,8 @@ matrix_client_cinny_self_check_validate_certificates: "{{ false if matrix_ssl_re
 #
 ######################################################################
 
+matrix_synapse_enabled: "{{ matrix_homeserver_implementation == 'synapse' }}"
+
 matrix_synapse_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
 # When ma1sd is enabled, we can use it to validate email addresses and phone numbers.
@@ -2204,6 +2195,8 @@ matrix_postgres_backup_databases: |
 # matrix-dendrite
 #
 ######################################################################
+
+matrix_dendrite_enabled: "{{ matrix_homeserver_implementation == 'dendrite' }}"
 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Dendrite over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it,

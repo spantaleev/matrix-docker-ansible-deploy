@@ -1,15 +1,9 @@
 ---
 
-- name: Fail if 0 or more than 1 homeserver implementations enabled
+- name: Fail if invalid homeserver implementation
   fail:
-    msg: >-
-      You have 0 or more than 1 homeserver implementations enabled
-      ({{ matrix_homeserver_enabled_implementations_list|join(', ') }}).
-
-      If you have more than 1 implementation enabled, you can disable the unnecessary implementations by adding `matrix_IMPLEMENTATION_enabled: false` to your vars.yml file.
-
-      If you have 0 implementations enabled, you can enable one by adding `matrix_IMPLEMENTATION_enabled: false` to your vars.yml file (e.g. `matrix_dendrite_enabled: true`).
-  when: "matrix_homeserver_enabled_implementations_list|length != 1"
+    msg: "You need to set a valid homeserver implementation in `matrix_homeserver_implementation`"
+  when: "matrix_homeserver_implementation not in ['synapse', 'dendrite']"
 
 # We generally support Ansible 2.7.1 and above.
 - name: Fail if running on Ansible < 2.7.1
