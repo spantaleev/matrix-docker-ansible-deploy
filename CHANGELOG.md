@@ -1,3 +1,10 @@
+# 2021-12-22
+
+## Twitter bridging support via mautrix-twitter
+
+Thanks to [Matthew Cengia](https://github.com/mattcen) and [Shreyas Ajjarapu](https://github.com/shreyasajj), besides [mx-puppet-twitter](docs/configuring-playbook-bridge-mx-puppet-twitter.md), bridging to [Twitter](https://twitter.com/) can now also happen with [mautrix-twitter](docs/configuring-playbook-bridge-mautrix-twitter.md).
+
+
 # 2021-12-14
 
 ## (Security) Users of the Signal bridge may wish to upgrade it to work around log4j vulnerability
