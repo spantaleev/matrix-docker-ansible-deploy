@@ -64,7 +64,7 @@ Once you've followed the [Preparation](#preparation) guide above, you can take a
 
 ### Using your own external caddy webserver
 
-After following  the [Preparation](#preparation) guide above, you can take a look at the [examples/caddy](../examples/caddy) directory for a sample configuration.
+After following  the [Preparation](#preparation) guide above, you can take a look at the [examples/caddy](../examples/caddy) directory and [examples/caddy2](../examples/caddy2) directory for a sample configuration for Caddy v1 and v2, respectively.
 
 ### Using your own HAproxy reverse proxy
 After following  the [Preparation](#preparation) guide above, you can take a look at the [examples/haproxy](../examples/haproxy) directory for a sample configuration. In this case HAproxy is used as a reverse proxy and a simple Nginx container is used to serve statically `.well-known` files.
