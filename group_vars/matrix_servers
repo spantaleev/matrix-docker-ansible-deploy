@@ -647,6 +647,42 @@ matrix_heisenbridge_systemd_wanted_services_list: |
 
 ######################################################################
 #
+# matrix-bridge-hookshot
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_hookshot_enabled: false
+
+matrix_hookshot_appservice_token: "{{ '%s' | format(matrix_synapse_macaroon_secret_key) | password_hash('sha512', 'hookshot.as.tok') | to_uuid }}"
+
+matrix_hookshot_homeserver_token: "{{ '%s' | format(matrix_synapse_macaroon_secret_key) | password_hash('sha512', 'hookshot.hs.tok') | to_uuid }}"
+
+matrix_hookshot_systemd_wanted_services_list: |
+  {{
+    (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+  }}
+
+matrix_hookshot_container_http_host_bind_ports:
+{% if matrix_nginx_proxy_enabled %}
+  []
+{% else %}
+  - "{{ '127.0.0.1:' ~ matrix_hookshot_hookshot_port ~ ':' ~ matrix_hookshot_hookshot_port }}"
+  - "{{ '127.0.0.1:' ~ matrix_hookshot_metrics_port ~ ':' ~ matrix_hookshot_metrics_port }}"
+  - "{{ '127.0.0.1:' ~ matrix_hookshot_webhook_port ~ ':' ~ matrix_hookshot_webhook_port }}"
+  - "{{ '127.0.0.1:' ~ matrix_hookshot_provisioning_port ~ ':' ~ matrix_hookshot_provisioning_port }}"
+{% endif %}
+
+######################################################################
+#
+# /matrix-bridge-hookshot
+#
+######################################################################
+
+######################################################################
+#
 # matrix-bridge-mx-puppet-skype
 #
 ######################################################################

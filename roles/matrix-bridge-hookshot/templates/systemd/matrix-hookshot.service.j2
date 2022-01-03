@@ -1,0 +1,37 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=A bridge between Matrix and multiple project management services, such as GitHub, GitLab and JIRA.
+{% for service in matrix_hookshot_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_hookshot_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
+ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-hookshot
+ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-hookshot
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-hookshot \
+          --log-driver=none \
+          --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+          --cap-drop=ALL \
+          --network={{ matrix_docker_network }} \
+          -v {{ matrix_hookshot_base_path }}:/data:z \
+          {% for arg in matrix_hookshot_container_extra_arguments %}
+          {{ arg }} \
+          {% endfor %}
+          {{ matrix_hookshot_docker_image }}
+
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-hookshot
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-hookshot
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-hookshot
+
+[Install]
+WantedBy=multi-user.target
