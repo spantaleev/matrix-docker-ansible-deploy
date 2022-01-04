@@ -71,6 +71,14 @@
     "chatAndUsers": false,
     "lang": "en-gb"
   },
+{% if matrix_etherpad_admin_username != "" and matrix_etherpad_admin_password != "" %}
+  "users": {
+    {{ matrix_etherpad_admin_username|to_json }}: {
+      "password": {{ matrix_etherpad_admin_password|to_json }},
+      "is_admin": true
+    }
+  },
+{% endif %}
   "padShortcutEnabled" : {
     "altF9": true,
     "altC": true,
