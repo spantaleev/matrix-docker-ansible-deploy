@@ -22,6 +22,9 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-hookshot \
           --cap-drop=ALL \
           --network={{ matrix_docker_network }} \
           -v {{ matrix_hookshot_base_path }}:/data:z \
+          {% for port in matrix_hookshot_container_http_host_bind_ports %}
+          -p {{ port }} \
+          {% endfor %}
           {% for arg in matrix_hookshot_container_extra_arguments %}
           {{ arg }} \
           {% endfor %}

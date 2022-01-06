@@ -13,28 +13,35 @@ matrix_hookshot_homeserver_address: "{{ matrix_homeserver_container_url }}"
 
 matrix_hookshot_public_endpoint: /hookshot
 
+# there is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
+matrix_hookshot_appservice_port: 9993
+matrix_hookshot_appservice_endpoint: "{{ matrix_hookshot_public_endpoint }}/_matrix/app"
+
 # metrics work only in conjunction with matrix_synapse_metrics_enabled etc
 matrix_hookshot_metrics_enabled: true
+# there is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
 matrix_hookshot_metrics_port: 9001
+matrix_hookshot_metrics_endpoint: "{{ matrix_hookshot_public_endpoint }}/metrics"
 
-matrix_hookshot_hookshot_port: 9993
+# there is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
 matrix_hookshot_webhook_port: 9000
+matrix_hookshot_webhook_endpoint: "{{ matrix_hookshot_public_endpoint }}/webhooks"
 
 # you need to create a GitHub app to enable this
 # https://half-shot.github.io/matrix-hookshot/setup/github.html
-matrix_hookshot_github_enabled: true
-matrix_hookshot_github_appid: 123
+matrix_hookshot_github_enabled: false
+matrix_hookshot_github_appid: ''
 matrix_hookshot_github_private_key: ''
 matrix_hookshot_github_secret: '' # "Webhook secret" on the GitHub App page
-matrix_hookshot_github_oauth_enabled: true
+matrix_hookshot_github_oauth_enabled: false
 matrix_hookshot_github_oauth_id: '' # "Client ID" on the GitHub App page
 matrix_hookshot_github_oauth_secret: '' # "Client Secret" on the GitHub App page
-matrix_hookshot_github_oauth_endpoint: "{{ matrix_hookshot_public_endpoint }}/oauth"
+matrix_hookshot_github_oauth_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/oauth"
 matrix_hookshot_github_oauth_uri: "{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_github_oauth_endpoint }}"
-matrix_hookshot_github_ignore_hooks: '{}'
+matrix_hookshot_github_ignore_hooks: "{}"
 matrix_hookshot_github_command_prefix: '!gh'
 matrix_hookshot_github_show_issue_room_link: false
-matrix_hookshot_github_pr_diff: '{enabled: false, maxLines: 5}'
+matrix_hookshot_github_pr_diff: "{enabled: false, maxLines: 5}"
 matrix_hookshot_github_including_labels: ''
 matrix_hookshot_github_excluding_labels: ''
 
@@ -45,21 +52,37 @@ matrix_hookshot_gitlab_instances:
 
 matrix_hookshot_gitlab_secret: ''
 
-matrix_hookshot_jira_enabled: true
+matrix_hookshot_jira_enabled: false
 matrix_hookshot_jira_secret: ''
 matrix_hookshot_jira_oauth_id: ''
 matrix_hookshot_jira_oauth_secret: ''
-matrix_hookshot_jira_oauth_endpoint: "{{ matrix_hookshot_public_endpoint }}/jira/oauth"
+matrix_hookshot_jira_oauth_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/jira/oauth"
 matrix_hookshot_jira_oauth_uri: "{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_jira_oauth_endpoint }}"
 
 matrix_hookshot_generic_enabled: true
-matrix_hookshot_generic_endpoint: '{{ matrix_hookshot_public_endpoint }}/webhooks'
-matrix_hookshot_generic_urlprefix: '{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_generic_endpoint }}'
+matrix_hookshot_generic_endpoint: "{{ matrix_hookshot_webhook_endpoint }}"
+matrix_hookshot_generic_urlprefix: "{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_generic_endpoint }}"
 matrix_hookshot_generic_allow_js_transformation_functions: false
 matrix_hookshot_generic_user_id_prefix: 'webhooks_'
 
-# matrix_hookshot_provisioning_port: 9002
+matrix_hookshot_figma_enabled: false
+matrix_hookshot_figma_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/figma/webhook"
+matrix_hookshot_figma_publicUrl: "{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_figma_endpoint }}"
+# to bridge figma webhooks, you need to configure one of multiple instances like this:
+# matrix_hookshot_figma_instances:
+#   your-instance:
+#       teamId: your-team-id
+#       accessToken: your-personal-access-token
+#       passcode: your-webhook-passcode
+
+matrix_hookshot_provisioning_enabled: true
+# there is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
+matrix_hookshot_provisioning_port: 9002
 matrix_hookshot_provisioning_secret: ''
+matrix_hookshot_provisioning_endpoint: "{{ matrix_hookshot_public_endpoint }}/v1"
+
+matrix_hookshot_bot_displayname: Hookshot Bot
+matrix_hookshot_bot_avatar: 'mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d'
 
 # A list of extra arguments to pass to the container
 matrix_hookshot_container_extra_arguments: []
@@ -69,6 +92,17 @@ matrix_hookshot_systemd_required_services_list: ['docker.service']
 
 # List of systemd services that service wants
 matrix_hookshot_systemd_wanted_services_list: []
+
+# List of ports to bind to the host to expose them directly.
+# Ports will automatically be bound to localhost if matrix_nginx_proxy_enabled is false.
+# Setting this variable will override that behaviour in either case.
+# Supply docker port bind arguments in a list like this:
+#
+# matrix_hookshot_container_http_host_bind_ports:
+#   - "127.0.0.1:9999:{{ matrix_hookshot_metrics_port }}"
+#
+# Above example will bind the metrics port in the container to port 9999 on localhost.
+matrix_hookshot_container_http_host_bind_ports: []
 
 matrix_hookshot_appservice_token: ''
 matrix_hookshot_homeserver_token: ''

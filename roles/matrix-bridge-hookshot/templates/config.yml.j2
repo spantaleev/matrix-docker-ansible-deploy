@@ -5,7 +5,7 @@ bridge:
   domain: {{ matrix_domain }}
   url: {{ matrix_hookshot_homeserver_address }}
   mediaUrl: { matrix_hookshot_homeserver_address }}
-  port: {{ matrix_hookshot_hookshot_port }}
+  port: {{ matrix_hookshot_appservice_port }}
   bindAddress: 0.0.0.0
 {% if matrix_hookshot_github_enabled %}
 github:
@@ -67,6 +67,13 @@ generic:
   allowJsTransformationFunctions: {{ matrix_hookshot_generic_allow_js_transformation_functions }}
   userIdPrefix: {{ matrix_hookshot_generic_user_id_prefix }}
 {% endif %}
+{% if matrix_hookshot_figma_enabled %}
+figma:
+  # (Optional) Configure this to enable Figma support
+  #
+  publicUrl: https://example.com/hookshot/
+  instances: {{ matrix_hookshot_figma_instances }}
+{% endif %}
 provisioning:
   # (Optional) Provisioning API for integration managers
   #
@@ -79,8 +86,8 @@ passFile:
 bot:
   # (Optional) Define profile information for the bot user
   #
-  displayname: GitHub Bot
-  avatar: mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d
+  displayname: {{ matrix_hookshot_bot_displayname }}
+  avatar: {{ matrix_hookshot_bot_avatar }}
 metrics:
   # (Optional) Prometheus metrics support
   #
@@ -94,17 +101,20 @@ listeners:
   # Bind resource endpoints to ports and addresses.
   # 'resources' may be any of webhooks, widgets, metrics, provisioning, appservice
   #
+{# always enabled since all services need it #}
   - port: {{ matrix_hookshot_webhook_port }}
     bindAddress: 0.0.0.0
     resources:
       - webhooks
-      - widgets
+{% if matrix_hookshot_metrics_enabled %}
   - port: {{ matrix_hookshot_metrics_port }}
     bindAddress: 0.0.0.0
     resources:
       - metrics
-  - port: {{ matrix_hookshot_hookshot_port }}
+{% endif %}
+{% if matrix_hookshot_provisioning_enabled %}
+  - port: {{ matrix_hookshot_provisioning_port }}
     bindAddress: 0.0.0.0
     resources:
       - provisioning
-      - appservice
+{% endif %}

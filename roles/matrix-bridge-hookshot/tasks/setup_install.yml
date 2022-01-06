@@ -17,6 +17,27 @@
   with_items:
     - "{{ matrix_hookshot_base_path }}"
 
+# - name: Ensure openssl is installed (#1510)
+
+- name: Check if hookshot passkey exists
+  stat:
+    path: "{{ matrix_hookshot_data_path }}/passkey.pem"
+  register: hookshot_passkey_file
+
+- name: Generate hookshot passkey if it doesn't exist
+  shell: "{{ matrix_host_command_openssl }} genpkey -out {{ matrix_hookshot_base_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096"
+  become: true
+  become_user: "{{ matrix_user_username }}"
+  when: "not hookshot_passkey_file.stat.exists"
+
+- name: Ensure hookshot config.yaml installed if provided
+  copy:
+    content: "{{ matrix_hookshot_config|to_nice_yaml }}"
+    dest: "{{ matrix_hookshot_base_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
 - name: Ensure hookshot registration.yaml installed if provided
   copy:
     content: "{{ matrix_hookshot_registration|to_nice_yaml }}"
