@@ -1,3 +1,14 @@
+# 2022-01-06
+
+## Cinny support
+
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook now supports [Cinny](https://cinny.in/) - a new simple, elegant and secure Matrix client.
+
+By default, we still install Element. Still, people who'd like to try Cinny out can now install it via the playbook.
+
+Additional details are available in [Setting up Cinny](docs/configuring-playbook-client-cinny.md).
+
+
 # 2021-12-22
 
 ## Twitter bridging support via mautrix-twitter
