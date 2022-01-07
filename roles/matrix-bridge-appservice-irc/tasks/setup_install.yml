@@ -11,7 +11,7 @@
     - { path: "{{ matrix_appservice_irc_base_path }}", when: true }
     - { path: "{{ matrix_appservice_irc_config_path }}", when: true }
     - { path: "{{ matrix_appservice_irc_data_path }}", when: true }
-    - { path: "{{ matrix_appservice_irc_docker_src_files_path }}", when: "{{ matrix_appservice_irc_container_self_build }}" }
+    - { path: "{{ matrix_appservice_irc_docker_src_files_path }}", when: "{{ matrix_appservice_irc_container_image_self_build }}" }
   when: item.when|bool
 
 - name: Check if an old passkey file already exists
@@ -61,7 +61,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_appservice_irc_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_irc_docker_image_force_pull }}"
-  when: "matrix_appservice_irc_enabled|bool and not matrix_appservice_irc_container_self_build|bool"
+  when: "matrix_appservice_irc_enabled|bool and not matrix_appservice_irc_container_image_self_build|bool"
 
 - name: Ensure matrix-appservice-irc repository is present when self-building
   git:
@@ -69,7 +69,7 @@
     dest: "{{ matrix_appservice_irc_docker_src_files_path }}"
     force: "yes"
   register: matrix_appservice_irc_git_pull_results
-  when: "matrix_appservice_irc_enabled|bool and matrix_appservice_irc_container_self_build|bool"
+  when: "matrix_appservice_irc_enabled|bool and matrix_appservice_irc_container_image_self_build|bool"
 
 - name: Ensure matrix-appservice-irc Docker image is built
   docker_image:
@@ -81,7 +81,7 @@
       dockerfile: Dockerfile
       path: "{{ matrix_appservice_irc_docker_src_files_path }}"
       pull: yes
-  when: "matrix_appservice_irc_enabled|bool and matrix_appservice_irc_container_self_build|bool and matrix_appservice_irc_git_pull_results.changed"
+  when: "matrix_appservice_irc_enabled|bool and matrix_appservice_irc_container_image_self_build|bool and matrix_appservice_irc_git_pull_results.changed"
 
 - name: Ensure Matrix Appservice IRC config installed
   copy:

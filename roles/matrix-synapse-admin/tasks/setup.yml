@@ -10,16 +10,16 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_synapse_admin_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_synapse_admin_docker_image_force_pull }}"
-  when: "matrix_synapse_admin_enabled|bool and not matrix_synapse_admin_container_self_build|bool"
+  when: "matrix_synapse_admin_enabled|bool and not matrix_synapse_admin_container_image_self_build|bool"
 
 - name: Ensure matrix-synapse-admin repository is present when self-building
   git:
-    repo: "{{ matrix_synapse_admin_container_self_build_repo }}"
+    repo: "{{ matrix_synapse_admin_container_image_self_build_repo }}"
     dest: "{{ matrix_synapse_admin_docker_src_files_path }}"
     version: "{{ matrix_synapse_admin_docker_image.split(':')[1] }}"
     force: "yes"
   register: matrix_synapse_admin_git_pull_results
-  when: "matrix_synapse_admin_enabled|bool and matrix_synapse_admin_container_self_build|bool"
+  when: "matrix_synapse_admin_enabled|bool and matrix_synapse_admin_container_image_self_build|bool"
 
 - name: Ensure matrix-synapse-admin Docker image is built
   docker_image:
@@ -31,7 +31,7 @@
       dockerfile: Dockerfile
       path: "{{ matrix_synapse_admin_docker_src_files_path }}"
       pull: yes
-  when: "matrix_synapse_admin_enabled|bool and matrix_synapse_admin_container_self_build|bool"
+  when: "matrix_synapse_admin_enabled|bool and matrix_synapse_admin_container_image_self_build|bool"
 
 - name: Ensure matrix-synapse-admin.service installed
   template:

@@ -143,7 +143,7 @@ matrix_appservice_webhooks_systemd_required_services_list: |
 # We don't enable bridges by default.
 matrix_appservice_slack_enabled: false
 
-matrix_appservice_slack_container_self_build: "{{ matrix_architecture != 'amd64' }}"
+matrix_appservice_slack_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-slack over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
@@ -185,7 +185,7 @@ matrix_appservice_slack_database_password: "{{ '%s' | format(matrix_synapse_maca
 # We don't enable bridges by default.
 matrix_appservice_irc_enabled: false
 
-matrix_appservice_irc_container_self_build: "{{ matrix_architecture != 'amd64' }}"
+matrix_appservice_irc_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-irc over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
@@ -459,8 +459,8 @@ matrix_mautrix_signal_login_shared_secret: "{{ matrix_synapse_ext_password_provi
 matrix_mautrix_signal_database_engine: 'postgres'
 matrix_mautrix_signal_database_password: "{{ '%s' | format(matrix_synapse_macaroon_secret_key) | password_hash('sha512', 'mau.signal.db') | to_uuid }}"
 
-matrix_mautrix_signal_container_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
-matrix_mautrix_signal_daemon_container_self_build: "{{ matrix_architecture != 'amd64' }}"
+matrix_mautrix_signal_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
+matrix_mautrix_signal_daemon_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 ######################################################################
 #
@@ -478,9 +478,9 @@ matrix_mautrix_signal_daemon_container_self_build: "{{ matrix_architecture != 'a
 matrix_mautrix_telegram_enabled: false
 
 # Images are multi-arch (amd64 and arm64, but not arm32).
-matrix_mautrix_telegram_container_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
-matrix_telegram_lottieconverter_container_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
-matrix_telegram_lottieconverter_container_self_build_mask_arch: "{{ matrix_architecture != 'amd64' }}"
+matrix_mautrix_telegram_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+matrix_telegram_lottieconverter_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+matrix_telegram_lottieconverter_container_image_self_build_mask_arch: "{{ matrix_architecture != 'amd64' }}"
 
 matrix_mautrix_telegram_systemd_required_services_list: |
   {{
@@ -938,7 +938,7 @@ matrix_bot_matrix_reminder_bot_systemd_required_services_list: |
 # Postgres is the default, except if not using `matrix_postgres` (internal postgres)
 matrix_bot_matrix_reminder_bot_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
 matrix_bot_matrix_reminder_bot_database_password: "{{ '%s' | format(matrix_synapse_macaroon_secret_key) | password_hash('sha512', 'reminder.bot.db') | to_uuid }}"
-matrix_bot_matrix_reminder_bot_container_self_build: "{{ matrix_architecture != 'amd64' }}"
+matrix_bot_matrix_reminder_bot_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 ######################################################################
 #
@@ -1948,7 +1948,7 @@ matrix_synapse_admin_enabled: false
 # Synapse Admin's HTTP port to the local host.
 matrix_synapse_admin_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8766' }}"
 
-matrix_synapse_admin_container_self_build: "{{ matrix_architecture != 'amd64' }}"
+matrix_synapse_admin_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 ######################################################################
 #
