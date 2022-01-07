@@ -22,19 +22,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-bot-honoroit \
 			--cap-drop=ALL \
 			--read-only \
 			--network={{ matrix_docker_network }} \
-			-e 'HONOROIT_LOGIN={{ matrix_bot_honoroit_login }}' \
-			-e 'HONOROIT_PASSWORD={{ matrix_bot_honoroit_password }}' \
-			-e 'HONOROIT_HOMESERVER={{ matrix_bot_honoroit_homeserver }}' \
-			-e 'HONOROIT_ROOMID={{ matrix_bot_honoroit_roomid }}' \
-			-e 'HONOROIT_DB_DSN={{ matrix_bot_honoroit_database_connection_string }}' \
-			-e 'HONOROIT_DB_DIALECT={{ matrix_bot_honoroit_database_dialect }}' \
-			-e 'HONOROIT_PREFIX={{ matrix_bot_honoroit_prefix }}' \
-			-e 'HONOROIT_SENTRY={{ matrix_bot_honoroit_sentry }}' \
-			-e 'HONOROIT_LOGLEVEL={{ matrix_bot_honoroit_loglevel }}' \
-			-e 'HONOROIT_TEXT_GREETINGS={{ matrix_bot_honoroit_text_greetings }}' \
-			-e 'HONOROIT_TEXT_ERROR={{ matrix_bot_honoroit_text_error }}' \
-			-e 'HONOROIT_TEXT_EMPTYROOM={{ matrix_bot_honoroit_text_emptyroom }}' \
-			-e 'HONOROIT_TEXT_DONE={{ matrix_bot_honoroit_text_done }}' \
+			--env-file={{ matrix_bot_honoroit_config_path }}/env \
 			--mount type=bind,src={{ matrix_bot_honoroit_data_path }},dst=/data \
 			{% for arg in matrix_bot_honoroit_container_extra_arguments %}
 			{{ arg }} \

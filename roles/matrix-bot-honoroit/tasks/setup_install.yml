@@ -39,6 +39,12 @@
     - { path: "{{ matrix_bot_honoroit_docker_src_files_path }}", when: true}
   when: "item.when|bool"
 
+- name: Ensure honoroit environment variables file created
+  template:
+    src: "{{ role_path }}/templates/env.j2"
+    dest: "{{ matrix_bot_honoroit_config_path }}/env"
+    mode: 0640
+
 - name: Ensure honoroit image is pulled
   docker_image:
     name: "{{ matrix_bot_honoroit_docker_image }}"
