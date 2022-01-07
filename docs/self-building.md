@@ -34,6 +34,7 @@ List of roles where self-building the Docker image is currently possible:
 - `matrix-bridge-mautrix-whatsapp`
 - `matrix-bridge-mx-puppet-skype`
 - `matrix-bot-mjolnir`
+- `matrix-bot-honoroit`
 - `matrix-bot-matrix-reminder-bot`
 - `matrix-email2matrix`
 
