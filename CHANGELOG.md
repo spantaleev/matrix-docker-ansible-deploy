@@ -1,3 +1,12 @@
+# 2022-01-07
+
+## Honoroit bot support
+
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now help you set up [Honoroit](https://gitlab.com/etke.cc/honoroit) - a helpdesk bot.
+
+See our [Setting up Honoroit](docs/configuring-playbook-bot-honoroit.md) documentation to get started.
+
+
 # 2022-01-06
 
 ## Cinny support
