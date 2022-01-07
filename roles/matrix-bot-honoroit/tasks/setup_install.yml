@@ -51,7 +51,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_bot_honoroit_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_honoroit_docker_image_force_pull }}"
-  when: "not matrix_bot_honoroit_container_self_build|bool"
+  when: "not matrix_bot_honoroit_container_image_self_build|bool"
 
 - name: Ensure honoroit repository is present on self-build
   git:
@@ -59,7 +59,7 @@
     dest: "{{ matrix_bot_honoroit_docker_src_files_path }}"
     force: "yes"
   register: matrix_bot_honoroit_git_pull_results
-  when: "matrix_bot_honoroit_container_self_build|bool"
+  when: "matrix_bot_honoroit_container_image_self_build|bool"
 
 - name: Ensure honoroit image is built
   docker_image:
@@ -71,7 +71,7 @@
       dockerfile: docker/Dockerfile
       path: "{{ matrix_bot_honoroit_docker_src_files_path }}"
       pull: yes
-  when: "matrix_bot_honoroit_container_self_build|bool"
+  when: "matrix_bot_honoroit_container_image_self_build|bool"
 
 - name: Ensure matrix-bot-honoroit.service installed
   template:
