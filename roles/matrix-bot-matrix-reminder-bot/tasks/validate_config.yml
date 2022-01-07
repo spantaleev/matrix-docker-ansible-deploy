@@ -8,3 +8,12 @@
   with_items:
     - "matrix_bot_matrix_reminder_bot_matrix_user_password"
     - "matrix_bot_matrix_reminder_bot_reminders_timezone"
+
+- name: (Deprecation) Catch and report renamed settings
+  fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_bot_matrix_reminder_bot_container_self_build', 'new': 'matrix_bot_matrix_reminder_bot_container_image_self_build'}
