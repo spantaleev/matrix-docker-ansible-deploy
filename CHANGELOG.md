@@ -1,5 +1,40 @@
 # 2022-01-07
 
+## Dendrite support
+
+**Existing (Synapse) installations need to be updated**, see below.
+
+[Jip J. Dekker](https://github.com/Dekker1) did the initial [work of adding Dendrite support](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/818) to the playbook back in January 2021. Lots of work (and time) later, Dendrite support is finally ready for testing.
+
+We believe that 2022 will be the year of the non-Synapse Matrix server!
+
+The playbook was previously quite [Synapse](https://github.com/matrix-org/synapse)-centric, but can now accommodate multiple homeserver implementations. Only one homeserver implementation can be active (installed) at a given time.
+
+**Synapse is still the default homeserver implementation** installed by the playbook. A new variable (`matrix_homeserver_implementation`) controls which server implementation is enabled (`synapse` or `dendrite` at the given moment).
+
+Because the playbook is not so Synapse-centric anymore, a small configuration change is necessary for existing installations to bring them up to date.
+
+The `vars.yml` file for **existing installations will need to be updated**:
+
+```yaml
+# All secrets keys are now derived from `matrix_homeserver_generic_secret_key`, not from `matrix_synapse_macaroon_secret_key`.
+# To keep them all the same, define `matrix_homeserver_generic_secret_key` in terms of `matrix_synapse_macaroon_secret_key`.
+# Using a new secret value for this configuration key is also possible and should not cause any problems.
+#
+# Fun fact: new installations (based on the new `examples/vars.yml` file) do this in reverse.
+# That is, the Synapse macaroon secret is derived from `matrix_homeserver_generic_secret_key`.
+matrix_homeserver_generic_secret_key: "{{ matrix_synapse_macaroon_secret_key }}"
+```
+
+Finally, **to try out Dendrite**, we recommend that you **use a new server** and the following addition to your `vars.yml` configuration:
+
+```yaml
+matrix_homeserver_implementation: dendrite
+```
+
+We're excited to gain support for other homeserver implementations, like [Conduit](https://conduit.rs/), etc!
+
+
 ## Honoroit bot support
 
 Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now help you set up [Honoroit](https://gitlab.com/etke.cc/honoroit) - a helpdesk bot.
