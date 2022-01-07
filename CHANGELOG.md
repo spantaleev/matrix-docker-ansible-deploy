@@ -4,7 +4,7 @@
 
 **Existing (Synapse) installations need to be updated**, see below.
 
-[Jip J. Dekker](https://github.com/Dekker1) did the initial [work of adding Dendrite support](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/818) to the playbook back in January 2021. Lots of work (and time) later, Dendrite support is finally ready for testing.
+[Jip J. Dekker](https://github.com/Dekker1) did the [initial work](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/818) of adding [Dendrite](https://github.com/matrix-org/dendrite) support to the playbook back in January 2021. Lots of work (and time) later, Dendrite support is finally ready for testing.
 
 We believe that 2022 will be the year of the non-Synapse Matrix server!
 
