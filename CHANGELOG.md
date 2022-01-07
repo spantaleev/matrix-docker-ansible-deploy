@@ -32,6 +32,8 @@ Finally, **to try out Dendrite**, we recommend that you **use a new server** and
 matrix_homeserver_implementation: dendrite
 ```
 
+**The homeserver implementation of an existing server cannot be changed** (e.g. from Synapse to Dendrite) without data loss.
+
 We're excited to gain support for other homeserver implementations, like [Conduit](https://conduit.rs/), etc!
 
 
