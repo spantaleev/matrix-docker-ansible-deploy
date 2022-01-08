@@ -37,6 +37,9 @@ matrix_homeserver_container_federation_url: |-
     }[matrix_homeserver_implementation]
   }}
 
+matrix_integration_manager_rest_url: "{{ matrix_dimension_integrations_rest_url if matrix_dimension_enabled else None }}"
+matrix_integration_manager_ui_url: "{{ matrix_dimension_integrations_ui_url if matrix_dimension_enabled else None }}"
+
 ######################################################################
 #
 # /matrix-base
@@ -1140,9 +1143,6 @@ matrix_dimension_container_image_self_build: "{{ matrix_architecture != 'amd64' 
 matrix_dimension_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8184' }}"
 
 matrix_dimension_homeserver_federationUrl: "{{ matrix_homeserver_container_federation_url }}"
-
-matrix_integration_manager_rest_url: "{{ matrix_dimension_integrations_rest_url if matrix_dimension_enabled else None }}"
-matrix_integration_manager_ui_url: "{{ matrix_dimension_integrations_ui_url if matrix_dimension_enabled else None }}"
 
 matrix_dimension_systemd_required_services_list: |
   {{
