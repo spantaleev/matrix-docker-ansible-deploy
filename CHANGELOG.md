@@ -2,7 +2,7 @@
 
 ## Dendrite support
 
-**Existing (Synapse) installations need to be updated**, see below.
+**TLDR**: We now have optional experimental [Dendrite](https://github.com/matrix-org/dendrite) homeserver support for new installations. **Existing (Synapse) installations need to be updated**, because some internals changed. See [Adapting the configuration for existing Synapse installations](#adapting-the-configuration-for-existing-synapse-installations).
 
 [Jip J. Dekker](https://github.com/Dekker1) did the [initial work](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/818) of adding [Dendrite](https://github.com/matrix-org/dendrite) support to the playbook back in January 2021. Lots of work (and time) later, Dendrite support is finally ready for testing.
 
@@ -11,6 +11,8 @@ We believe that 2022 will be the year of the non-Synapse Matrix server!
 The playbook was previously quite [Synapse](https://github.com/matrix-org/synapse)-centric, but can now accommodate multiple homeserver implementations. Only one homeserver implementation can be active (installed) at a given time.
 
 **Synapse is still the default homeserver implementation** installed by the playbook. A new variable (`matrix_homeserver_implementation`) controls which server implementation is enabled (`synapse` or `dendrite` at the given moment).
+
+### Adapting the configuration for existing Synapse installations
 
 Because the playbook is not so Synapse-centric anymore, a small configuration change is necessary for existing installations to bring them up to date.
 
@@ -25,6 +27,8 @@ The `vars.yml` file for **existing installations will need to be updated**:
 # That is, the Synapse macaroon secret is derived from `matrix_homeserver_generic_secret_key`.
 matrix_homeserver_generic_secret_key: "{{ matrix_synapse_macaroon_secret_key }}"
 ```
+
+### Trying out Dendrite
 
 Finally, **to try out Dendrite**, we recommend that you **use a new server** and the following addition to your `vars.yml` configuration:
 
