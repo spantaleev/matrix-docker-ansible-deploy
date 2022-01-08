@@ -1,0 +1,23 @@
+
+# This is for both CentOS 7 and 8
+- name: Ensure fuse installed (CentOS)
+  yum:
+    name:
+      - fuse
+    state: latest
+  when: ansible_distribution == 'CentOS'
+
+# This is for both Debian and Raspbian
+- name: Ensure fuse installed (Debian/Raspbian)
+  apt:
+    name:
+      - fuse
+    state: latest
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure fuse installed (Archlinux)
+  pacman:
+    name:
+      - fuse3
+    state: latest
+  when: ansible_distribution == 'Archlinux'
