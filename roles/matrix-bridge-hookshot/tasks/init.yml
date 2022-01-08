@@ -35,13 +35,13 @@
 
   - name: Generate Matrix hookshot proxying configuration for matrix-nginx-proxy
     set_fact:
-      matrix_appservice_webhooks_matrix_nginx_proxy_configuration: |
+      matrix_hookshot_matrix_nginx_proxy_configuration: |
         {% if matrix_hookshot_metrics_enabled %}
         location {{ matrix_hookshot_metrics_endpoint }} {
           {% if matrix_nginx_proxy_enabled|default(False) %}
             {# Use the embedded DNS resolver in Docker containers to discover the service #}
             resolver 127.0.0.11 valid=5s;
-            set $backend "matrix-hookshot:{{ matrix_hookshot_metrics_port }}";
+            set $backend "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_metrics_port }}";
             proxy_pass http://$backend/metrics;
           {% else %}
             {# Generic configuration for use outside of our container setup #}
@@ -58,7 +58,7 @@
           {% if matrix_nginx_proxy_enabled|default(False) %}
             {# Use the embedded DNS resolver in Docker containers to discover the service #}
             resolver 127.0.0.11 valid=5s;
-            set $backend "matrix-hookshot:{{ matrix_hookshot_appservice_port }}";
+            set $backend "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_appservice_port }}";
             proxy_pass http://$backend/$1;
           {% else %}
             {# Generic configuration for use outside of our container setup #}
@@ -71,7 +71,7 @@
           {% if matrix_nginx_proxy_enabled|default(False) %}
             {# Use the embedded DNS resolver in Docker containers to discover the service #}
             resolver 127.0.0.11 valid=5s;
-            set $backend "matrix-hookshot:{{ matrix_hookshot_provisioning_port }}";
+            set $backend "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_provisioning_port }}";
             proxy_pass http://$backend/$1;
           {% else %}
             {# Generic configuration for use outside of our container setup #}
@@ -84,7 +84,7 @@
           {% if matrix_nginx_proxy_enabled|default(False) %}
             {# Use the embedded DNS resolver in Docker containers to discover the service #}
             resolver 127.0.0.11 valid=5s;
-            set $backend "matrix-hookshot:{{ matrix_hookshot_webhook_port }}";
+            set $backend "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_webhook_port }}";
             proxy_pass http://$backend/$1;
           {% else %}
             {# Generic configuration for use outside of our container setup #}
@@ -93,7 +93,7 @@
           proxy_set_header Host $host;
         }
 
-  - name: Register webhooks Appservice proxying configuration with matrix-nginx-proxy
+  - name: Register hookshot proxying configuration with matrix-nginx-proxy
     set_fact:
       matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: |
         {{
@@ -113,4 +113,4 @@
       Please make sure that you're proxying the `{{ matrix_hookshot_public_endpoint }}`
       URL endpoint to the matrix-hookshot container.
       You can expose the container's ports using the `matrix_hookshot_container_http_host_bind_ports` variable.
-  when: "matrix_appservice_webhooks_enabled|bool and matrix_nginx_proxy_enabled is not defined"
+  when: "matrix_hookshot_enabled|bool and matrix_nginx_proxy_enabled is not defined"

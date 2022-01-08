@@ -21,7 +21,7 @@
 
 - name: Check if hookshot passkey exists
   stat:
-    path: "{{ matrix_hookshot_data_path }}/passkey.pem"
+    path: "{{ matrix_hookshot_base_path }}/passkey.pem"
   register: hookshot_passkey_file
 
 - name: Generate hookshot passkey if it doesn't exist
@@ -32,7 +32,7 @@
 
 - name: Ensure hookshot config.yaml installed if provided
   copy:
-    content: "{{ matrix_hookshot_config|to_nice_yaml }}"
+    content: "{{ matrix_hookshot_configuration|to_nice_yaml }}"
     dest: "{{ matrix_hookshot_base_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
