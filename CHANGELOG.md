@@ -16,7 +16,7 @@ The playbook was previously quite [Synapse](https://github.com/matrix-org/synaps
 
 Because the playbook is not so Synapse-centric anymore, a small configuration change is necessary for existing installations to bring them up to date.
 
-The `vars.yml` file for **existing installations will need to be updated**:
+The `vars.yml` file for **existing installations will need to be updated** by adding this **additional configuration**:
 
 ```yaml
 # All secrets keys are now derived from `matrix_homeserver_generic_secret_key`, not from `matrix_synapse_macaroon_secret_key`.
