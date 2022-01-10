@@ -43,14 +43,6 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure mautrix-imessage config-ios.yaml installed
-  copy:
-    content: "{{ matrix_mautrix_imessage_configuration|to_nice_yaml }}"
-    dest: "{{ matrix_mautrix_wsproxy_config_path }}/config-ios.yaml"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-
 - name: Ensure mautrix-wsproxy registration.yaml installed
   copy:
     content: "{{ matrix_mautrix_wsproxy_registration|to_nice_yaml }}"
@@ -58,6 +50,54 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
+
+- name: Fail if matrix-nginx-proxy role already executed
+  fail:
+    msg: >-
+      Trying to append mautrix-wsproxy reverse-proxying configuration to matrix-nginx-proxy,
+      but it's pointless since the matrix-nginx-proxy role had already executed.
+      To fix this, please change the order of roles in your plabook,
+      so that the matrix-nginx-proxy role would run after the matrix-wspoxy role.
+  when: matrix_nginx_proxy_role_executed|default(False)|bool and matrix_mautrix_wsproxy_enabled|bool
+
+- name: Generate Wsproxy proxying configuration for matrix-nginx-proxy
+  set_fact:
+    matrix_mautrix_wsproxy_matrix_nginx_proxy_configuration: |
+      location ~ ^/(_matrix/client/unstable/fi.mau.syncproxy/*) {      
+      {% if matrix_nginx_proxy_enabled|default(False) %}
+      	{# Use the embedded DNS resolver in Docker containers to discover the service #}
+      	resolver 127.0.0.11 valid=5s;
+      	set $backend "matrix-mautrix-wsproxy:{{ matrix_mautrix_wsproxy_port }}/$1";
+      	proxy_pass http://$backend;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+      {% else %}
+      	{# Generic configuration for use outside of our container setup #}
+      	proxy_pass http://127.0.0.1:{{ matrix_mautrix_wsproxy_port }}/$1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+      {% endif %}
+      }
+  when: matrix_mautrix_wsproxy_enabled|bool
+
+- name: Register Wsproxy's proxying configuration with matrix-nginx-proxy
+  set_fact:
+    matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: |
+      {{
+        matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks|default([])
+        +
+        [matrix_bot_maubot_matrix_nginx_proxy_configuration]
+      }}
+  when: matrix_mautrix_wsproxy_enabled|bool
+
+- name: Warn about reverse-proxying if matrix-nginx-proxy not used
+  debug:
+    msg: >-
+      NOTE: You've enabled mautrix-wsproxy but are not using the matrix-nginx-proxy
+      reverse proxy.
+      Please make sure that you're proxying the `/_matrix/client/unstable/fi.mau.syncproxy`
+      URL endpoint to the mautrix-wsproxy container.
+  when: "matrix_mautrix_wsproxy_enabled|bool and matrix_nginx_proxy_enabled is not defined"
 
 - name: Ensure matrix-mautrix-wsproxy.service installed
   template:
