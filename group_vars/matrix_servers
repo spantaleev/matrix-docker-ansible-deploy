@@ -609,6 +609,48 @@ matrix_mautrix_whatsapp_database_password: "{{ '%s' | format(matrix_homeserver_g
 
 ######################################################################
 #
+# matrix-bridge-mautrix-wsproxy
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_mautrix_wsproxy_enabled: false
+
+matrix_mautrix_wsproxy_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    +
+    (['matrix-postgres.service'] if matrix_postgres_enabled else []) 
+  }}
+
+matrix_mautrix_wsproxy_homeserver_domain: '{{ matrix_domain }}'
+
+matrix_mautrix_wsproxy_homeserver_address: "{{ 'http://matrix-synapse:8008' if matrix_synapse_enabled else '' }}"
+
+matrix_mautrix_wsproxy_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'wsproxy.hs.token') | to_uuid }}"
+
+matrix_mautrix_wsproxy_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'wsproxy.as.token') | to_uuid }}"
+
+matrix_mautrix_imessage_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'imessage.hs.token') | to_uuid }}"
+
+matrix_mautrix_imessage_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'imessage.as.token') | to_uuid }}"
+
+matrix_mautrix_wsproxy_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+
+######################################################################
+#
+# /matrix-bridge-mautrix-wsproxy
+#
+######################################################################
+
+
+
+######################################################################
+#
 # matrix-sms-bridge
 #
 ######################################################################
@@ -1390,6 +1432,7 @@ matrix_nginx_proxy_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled }}"
 matrix_nginx_proxy_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
 matrix_nginx_proxy_proxy_grafana_enabled: "{{ matrix_grafana_enabled }}"
 matrix_nginx_proxy_proxy_sygnal_enabled: "{{ matrix_sygnal_enabled }}"
+matrix_nginx_proxy_proxy_mautrix_wsproxy_enabled: "{{ matrix_mautrix_wsproxy_enabled }}"
 
 matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: "{{ matrix_corporal_enabled and matrix_corporal_http_api_enabled }}"
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
@@ -1491,6 +1534,8 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     ([matrix_server_fqn_grafana] if matrix_grafana_enabled else [])
     +
     ([matrix_server_fqn_sygnal] if matrix_sygnal_enabled else [])
+    +
+    ([matrix_server_fqn_mautrix_wsproxy] if matrix_mautrix_wsproxy_enabled else [])
     +
     ([matrix_domain] if matrix_nginx_proxy_base_domain_serving_enabled else [])
     +
