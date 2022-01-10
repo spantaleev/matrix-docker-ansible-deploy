@@ -63,21 +63,22 @@
 - name: Generate Wsproxy proxying configuration for matrix-nginx-proxy
   set_fact:
     matrix_mautrix_wsproxy_matrix_nginx_proxy_configuration: |
-      location ~ ^/(_matrix/client/unstable/fi.mau.syncproxy/*) {      
+      location ~ ^/(_matrix/client/unstable/fi.mau.syncproxy/.*) {      
       {% if matrix_nginx_proxy_enabled|default(False) %}
-      	{# Use the embedded DNS resolver in Docker containers to discover the service #}
-      	resolver 127.0.0.11 valid=5s;
-      	set $backend "matrix-mautrix-wsproxy:{{ matrix_mautrix_wsproxy_port }}/$1";
-      	proxy_pass http://$backend;
+        {# Use the embedded DNS resolver in Docker containers to discover the service #}
+        resolver 127.0.0.11 valid=5s;
+        set $backend "matrix-mautrix-wsproxy:{{ matrix_mautrix_wsproxy_port }}/$1";
+        proxy_pass http://$backend;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
       {% else %}
-      	{# Generic configuration for use outside of our container setup #}
-      	proxy_pass http://127.0.0.1:{{ matrix_mautrix_wsproxy_port }}/$1;
+        {# Generic configuration for use outside of our container setup #}
+        proxy_pass http://127.0.0.1:{{ matrix_mautrix_wsproxy_port }}/$1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
       {% endif %}
       }
+
   when: matrix_mautrix_wsproxy_enabled|bool
 
 - name: Register Wsproxy's proxying configuration with matrix-nginx-proxy
