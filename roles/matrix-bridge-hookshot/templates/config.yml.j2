@@ -53,10 +53,12 @@ jira:
   #
   webhook:
     secret: {{ matrix_hookshot_jira_secret }}
+{% if matrix_hookshot_jira_oauth_enabled %}
   oauth:
     client_id: {{ matrix_hookshot_jira_oauth_id }}
     client_secret: {{ matrix_hookshot_jira_oauth_secret }}
     redirect_uri: {{ matrix_hookshot_jira_oauth_uri }}
+{% endif %}
 {% endif %}
 {% if matrix_hookshot_generic_enabled %}
 generic:
@@ -74,10 +76,12 @@ figma:
   publicUrl: https://example.com/hookshot/
   instances: {{ matrix_hookshot_figma_instances }}
 {% endif %}
+{% if matrix_hookshot_provisioning_enabled %}
 provisioning:
   # (Optional) Provisioning API for integration managers
   #
   secret: {{ matrix_hookshot_provisioning_secret }}
+{% endif %}
 passFile:
   # A passkey used to encrypt tokens stored inside the bridge.
   # Run openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 to generate
