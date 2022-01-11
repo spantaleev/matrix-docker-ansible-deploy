@@ -31,10 +31,10 @@
   become_user: "{{ matrix_user_username }}"
   when: "not hookshot_passkey_file.stat.exists"
 
-- name: Ensure hookshot config.yaml installed if provided
+- name: Ensure hookshot config.yml installed if provided
   copy:
     content: "{{ matrix_hookshot_configuration|to_nice_yaml }}"
-    dest: "{{ matrix_hookshot_base_path }}/config.yaml"
+    dest: "{{ matrix_hookshot_base_path }}/config.yml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
@@ -55,10 +55,10 @@
     msg: "Your hookshot configuration did not pass validation:\n{{ hookshot_config_validation_result.stdout }}\n{{ hookshot_config_validation_result.stderr }}"
   when: "hookshot_config_validation_result.rc > 0"
 
-- name: Ensure hookshot registration.yaml installed if provided
+- name: Ensure hookshot registration.yml installed if provided
   copy:
     content: "{{ matrix_hookshot_registration|to_nice_yaml }}"
-    dest: "{{ matrix_hookshot_base_path }}/registration.yaml"
+    dest: "{{ matrix_hookshot_base_path }}/registration.yml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
