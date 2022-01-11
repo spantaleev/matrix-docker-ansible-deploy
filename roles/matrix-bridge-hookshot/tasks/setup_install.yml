@@ -39,6 +39,22 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
+- name: Validate hookshot config.yml
+  command: |
+    {{ matrix_host_command_docker }} run
+    --rm
+    --name={{ matrix_hookshot_container_url }}-validate
+    --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+    --cap-drop=ALL
+    -v {{ matrix_hookshot_base_path }}/config.yml:/config.yml
+    {{ matrix_hookshot_docker_image }} node Config/Config.js /config.yml
+  register: hookshot_config_validation_result
+
+- name: Fail if hookshot config.yml invalid
+  fail:
+    msg: "Your hookshot configuration did not pass validation:\n{{ hookshot_config_validation_result.stdout }}\n{{ hookshot_config_validation_result.stderr }}"
+  when: "hookshot_config_validation_result.rc > 0"
+
 - name: Ensure hookshot registration.yaml installed if provided
   copy:
     content: "{{ matrix_hookshot_registration|to_nice_yaml }}"
