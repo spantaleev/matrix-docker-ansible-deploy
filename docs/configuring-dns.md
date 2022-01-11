@@ -38,6 +38,7 @@ If you are using Cloudflare DNS, make sure to disable the proxy and set all reco
 | CNAME | `sygnal`                     | -        | -      | -    | `matrix.<your-domain>` |
 | CNAME | `hydrogen`                   | -        | -      | -    | `matrix.<your-domain>` |
 | CNAME | `cinny`                      | -        | -      | -    | `matrix.<your-domain>` |
+| CNAME | `wsproxy`                    | -        | -      | -    | `matrix.<your-domain>` |
 
 ## Subdomains setup
 
@@ -59,6 +60,8 @@ The `sygnal.<your-domain>` subdomain may be necessary, because this playbook cou
 The `hydrogen.<your-domain>` subdomain may be necessary, because this playbook could install the [Hydrogen](https://github.com/vector-im/hydrogen-web) web client. The installation of Hydrogen is disabled by default, it is not a core required component. To learn how to install it, see our [configuring Hydrogen guide](configuring-playbook-client-hydrogen.md). If you do not wish to set up Hydrogen, feel free to skip the `hydrogen.<your-domain>` DNS record.
 
 The `cinny.<your-domain>` subdomain may be necessary, because this playbook could install the [Cinny](https://github.com/ajbura/cinny) web client. The installation of cinny is disabled by default, it is not a core required component. To learn how to install it, see our [configuring cinny guide](configuring-playbook-client-cinny.md). If you do not wish to set up cinny, feel free to skip the `cinny.<your-domain>` DNS record.
+
+The `wsproxy.<your-domain>` subdomain may be necessary, because this playbook could install the [wsproxy](https://github.com/mautrix/wsproxy) web client. The installation of wsproxy is disabled by default, it is not a core required component. To learn how to install it, see our [configuring wsproxy guide](configuring-playbook-bridge-mautrix-wsproxy.md). If you do not wish to set up wsproxy, feel free to skip the `wsproxy.<your-domain>` DNS record.
 
 ## `_matrix-identity._tcp` SRV record setup
 
