@@ -629,13 +629,9 @@ matrix_mautrix_wsproxy_homeserver_domain: '{{ matrix_domain }}'
 
 matrix_mautrix_wsproxy_homeserver_address: "{{ 'http://matrix-synapse:8008' if matrix_synapse_enabled else '' }}"
 
-matrix_mautrix_wsproxy_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'wsproxy.hs.token') | to_uuid }}"
+matrix_mautrix_wsproxy_homeserver_token: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'wsproxy.hs.token') | to_uuid }}"
 
-matrix_mautrix_wsproxy_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'wsproxy.as.token') | to_uuid }}"
-
-matrix_mautrix_imessage_homeserver_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'imessage.hs.token') | to_uuid }}"
-
-matrix_mautrix_imessage_appservice_token: "{{ matrix_synapse_macaroon_secret_key | password_hash('sha512', 'imessage.as.token') | to_uuid }}"
+matrix_mautrix_wsproxy_appservice_token: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'wsproxy.as.token') | to_uuid }}"
 
 matrix_mautrix_wsproxy_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
