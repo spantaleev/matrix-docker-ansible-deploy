@@ -8,7 +8,8 @@ Use the following playbook configuration:
 
 ```yaml
 matrix_mautrix_wsproxy_enabled: true
-matrix_mautrix_imessage_user: 'user@domain.com'
+matrix_mautrix_wsproxy_appservice_token: 'random string'
+matrix_mautrix_wsproxy_homeserver_token: 'random string'
 ```
 
 
@@ -24,4 +25,4 @@ This is the recommended way of setting up Double Puppeting, as it's easier to ac
 
 ## Usage
 
-Follow the [matrix-imessage documenation](https://docs.mau.fi/bridges/go/imessage/index.html) for running `matrix-imessage` on your iOS device.
+Follow the [matrix-imessage documenation](https://docs.mau.fi/bridges/go/imessage/index.html) for running `matrix-imessage` on your iOS/MacOS device.
