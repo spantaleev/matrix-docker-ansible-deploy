@@ -87,7 +87,7 @@
   - name: Generate Matrix hookshot proxying configuration for matrix-nginx-proxy
     set_fact:
       matrix_hookshot_matrix_nginx_proxy_metrics_configuration: |
-        {% if matrix_hookshot_metrics_enabled %}
+        {% if matrix_hookshot_metrics_enabled and matrix_hookshot_proxy_metrics %}
         location {{ matrix_hookshot_metrics_endpoint }} {
           {% if matrix_nginx_proxy_enabled|default(False) %}
             {# Use the embedded DNS resolver in Docker containers to discover the service #}
@@ -99,7 +99,7 @@
             proxy_pass http://127.0.0.1:{{ matrix_hookshot_metrics_port }}/metrics;
           {% endif %}
           proxy_set_header Host $host;
-          {% if matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled %}
+          {% if matrix_hookshot_proxy_metrics_basic_auth_enabled %}
             auth_basic "protected";
             auth_basic_user_file /nginx-data/matrix-synapse-metrics-htpasswd;
           {% endif %}
