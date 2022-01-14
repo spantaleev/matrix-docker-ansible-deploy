@@ -26,6 +26,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-signal
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--read-only \
+			--tmpfs /tmp \
 			{% if matrix_mautrix_signal_container_http_host_bind_port %}
 			-p {{ matrix_mautrix_signal_container_http_host_bind_port }}:29328 \
 			{% endif %}
