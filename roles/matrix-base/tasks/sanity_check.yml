@@ -1,5 +1,10 @@
 ---
 
+- name: Fail if invalid homeserver implementation
+  fail:
+    msg: "You need to set a valid homeserver implementation in `matrix_homeserver_implementation`"
+  when: "matrix_homeserver_implementation not in ['synapse', 'dendrite']"
+
 # We generally support Ansible 2.7.1 and above.
 - name: Fail if running on Ansible < 2.7.1
   fail:
@@ -28,14 +33,29 @@
     - {'old': 'hostname_riot', 'new': 'matrix_server_fqn_element'}
     - {'old': 'matrix_server_fqn_riot', 'new': 'matrix_server_fqn_element'}
 
+# We have a dedicated check for this variable, because we'd like to have a custom (friendlier) message.
+- name: Fail if matrix_homeserver_generic_secret_key is undefined
+  fail:
+    msg: |
+      The `matrix_homeserver_generic_secret_key` variable must be defined and have a non-null and non-empty value.
+
+      If you're observing this error on a new installation, you should ensure that the `matrix_homeserver_generic_secret_key` is defined.
+
+      If you're observing this error on an existing homeserver installation, you can fix it easily and in a backward-compatible way by adding
+      `{% raw %}matrix_homeserver_generic_secret_key: "{{ matrix_synapse_macaroon_secret_key }}"{% endraw %}`
+      to your `vars.yml` file. Using another secret value for the new variable is also possible and shouldn't cause any trouble.
+  when: "matrix_homeserver_generic_secret_key is none or matrix_homeserver_generic_secret_key == ''"
+
 - name: Fail if required variables are undefined
   fail:
-    msg: "The `{{ item }}` variable must be defined and have a non-null value"
+    msg: "The `{{ item.var }}` variable must be defined and have a non-null and non-empty value"
   with_items:
-    - matrix_domain
-    - matrix_server_fqn_matrix
-    - matrix_server_fqn_element
-  when: "item not in vars or vars[item] is none"
+    - {'var': matrix_domain, 'value': "{{ matrix_domain|default('') }}"}
+    - {'var': matrix_server_fqn_matrix, 'value': "{{ matrix_server_fqn_matrix|default('') }}"}
+    - {'var': matrix_server_fqn_element, 'value': "{{ matrix_server_fqn_element|default('') }}"}
+    - {'var': matrix_homeserver_container_url, 'value': "{{ matrix_homeserver_container_url|default('') }}"}
+    - {'var': matrix_homeserver_container_federation_url, 'value': "{{ matrix_homeserver_container_federation_url|default('') }}"}
+  when: "item.value is none or item.value == ''"
 
 - name: Fail if uppercase domain used
   fail:

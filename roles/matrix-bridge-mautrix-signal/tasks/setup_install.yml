@@ -14,7 +14,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mautrix_signal_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_signal_docker_image_force_pull }}"
-  when: "not matrix_mautrix_signal_container_self_build|bool"
+  when: "not matrix_mautrix_signal_container_image_self_build|bool"
 
 
 - name: Ensure Mautrix Signal repository is present on self-build
@@ -23,19 +23,19 @@
     dest: "{{ matrix_mautrix_signal_docker_src_files_path }}"
     force: "yes"
   register: matrix_mautrix_signal_git_pull_results
-  when: "matrix_mautrix_signal_container_self_build|bool"
+  when: "matrix_mautrix_signal_container_image_self_build|bool"
 
 - name: Ensure Mautrix Signal image is built
   docker_image:
     name: "{{ matrix_mautrix_signal_docker_image }}"
     source: build
     force_source: "{{ matrix_mautrix_signal_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_git_pull_results.changed }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_signal_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_signal_docker_src_files_path }}"
       pull: yes
-  when: "matrix_mautrix_signal_container_self_build|bool"
+  when: "matrix_mautrix_signal_container_image_self_build|bool"
 
 
 - name: Ensure Mautrix Signal Daemon image is pulled
@@ -44,7 +44,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mautrix_signal_daemon_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_signal_daemon_docker_image_force_pull }}"
-  when: matrix_mautrix_signal_enabled and not matrix_mautrix_signal_daemon_container_self_build|bool
+  when: matrix_mautrix_signal_enabled and not matrix_mautrix_signal_daemon_container_image_self_build|bool
   register: matrix_mautrix_signal_daemon_pull_results
 
 - name: Ensure Mautrix Signal Daemon repository is present on self-build
@@ -53,19 +53,19 @@
     dest: "{{ matrix_mautrix_signal_daemon_docker_src_files_path }}"
     force: "yes"
   register: matrix_mautrix_signal_daemon_git_pull_results
-  when: "matrix_mautrix_signal_daemon_container_self_build|bool"
+  when: "matrix_mautrix_signal_daemon_container_image_self_build|bool"
 
 - name: Ensure Mautrix Signal Daemon image is built
   docker_image:
     name: "{{ matrix_mautrix_signal_daemon_docker_image }}"
     source: build
     force_source: "{{ matrix_mautrix_signal_daemon_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_git_pull_results.changed }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_signal_daemon_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_signal_daemon_docker_src_files_path }}"
       pull: yes
-  when: "matrix_mautrix_signal_daemon_container_self_build|bool"
+  when: "matrix_mautrix_signal_daemon_container_image_self_build|bool"
 
 - name: Ensure Mautrix Signal paths exist
   file:

@@ -2,9 +2,9 @@
 
 **Note**: bridging to [Twitter](https://twitter.com/) can also happen via the [mx-puppet-twitter](configuring-playbook-bridge-mx-puppet-twitter.md) bridge supported by the playbook.
 
-The playbook can install and configure [mautrix-twitter](https://github.com/tulir/mautrix-twitter) for you.
+The playbook can install and configure [mautrix-twitter](https://github.com/mautrix/twitter) for you.
 
-See the project's [documentation](https://github.com/tulir/mautrix-twitter/wiki#usage) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/mautrix/twitter) to learn what it does and why it might be useful to you.
 
 ```yaml
 matrix_mautrix_twitter_enabled: true
@@ -13,7 +13,7 @@ matrix_mautrix_twitter_enabled: true
 
 ## Set up Double Puppeting
 
-If you'd like to use [Double Puppeting](https://github.com/tulir/mautrix-twitter/wiki/Authentication#double-puppeting) (hint: you most likely do), you have 2 ways of going about it.
+If you'd like to use [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do), you have 2 ways of going about it.
 
 ### Method 1: automatically, by enabling Shared Secret Auth
 
@@ -23,7 +23,7 @@ This is the recommended way of setting up Double Puppeting, as it's easier to ac
 
 ### Method 2: manually, by asking each user to provide a working access token
 
-This method is currently not available for the Mautrix-Twitter bridge, but is on the [roadmap](https://github.com/tulir/mautrix-twitter/blob/master/ROADMAP.md) under Misc/Manual login with `login-matrix`
+This method is currently not available for the Mautrix-Twitter bridge, but is on the [roadmap](https://github.com/mautrix/twitter/blob/master/ROADMAP.md) under Misc/Manual login with `login-matrix`
 
 ## Usage
 
@@ -31,7 +31,5 @@ This method is currently not available for the Mautrix-Twitter bridge, but is on
 2. Send login-cookie to start the login. The bot should respond with instructions on how to proceed.
 
 You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/twitter/authentication.html).
-
-If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
 
 After successfully enabling bridging, you may wish to [set up Double Puppeting](#set-up-double-puppeting), if you haven't already done so.

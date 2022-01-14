@@ -20,7 +20,7 @@
     - import-synapse-media-store
 
 - import_tasks: "{{ role_path }}/tasks/register_user.yml"
-  when: run_synapse_register_user|bool
+  when: run_synapse_register_user|bool and matrix_synapse_enabled|bool
   tags:
     - register-user
 
@@ -39,7 +39,7 @@
     - self-check
 
 - import_tasks: "{{ role_path }}/tasks/update_user_password.yml"
-  when: run_synapse_update_user_password|bool
+  when: run_synapse_update_user_password|bool and matrix_synapse_enabled|bool
   tags:
     - update-user-password
 

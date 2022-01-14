@@ -3,7 +3,7 @@
 - name: Fail if trying to self-build on Ansible < 2.8
   fail:
     msg: "To self-build the Element image, you should use Ansible 2.8 or higher. See docs/ansible.md"
-  when: "ansible_version.major == 2 and ansible_version.minor < 8 and matrix_mautrix_telegram_container_self_build and matrix_mautrix_telegram_enabled"
+  when: "ansible_version.major == 2 and ansible_version.minor < 8 and matrix_mautrix_telegram_container_image_self_build and matrix_mautrix_telegram_enabled"
 
 - set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-mautrix-telegram.service'] }}"
@@ -28,7 +28,7 @@
       msg: >-
         Trying to append Mautrix Telegram's reverse-proxying configuration to matrix-nginx-proxy,
         but it's pointless since the matrix-nginx-proxy role had already executed.
-        To fix this, please change the order of roles in your plabook,
+        To fix this, please change the order of roles in your playbook,
         so that the matrix-nginx-proxy role would run after the matrix-bridge-mautrix-telegram role.
     when: matrix_nginx_proxy_role_executed|default(False)|bool
 

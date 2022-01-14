@@ -1,0 +1,8 @@
+---
+- name: Fail if required Cinny settings not defined
+  fail:
+    msg: >
+      You need to define a required configuration setting (`{{ item }}`) to use Cinny.
+  when: "vars[item] == '' or vars[item] is none"
+  with_items:
+    - "matrix_client_cinny_default_hs_url"

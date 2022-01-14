@@ -19,6 +19,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional, default) a [Synapse](https://github.com/matrix-org/synapse) homeserver - storing your data and managing your presence in the [Matrix](http://matrix.org/) network
 
+- (optional) a [Dendrite](https://github.com/matrix-org/dendrite) homeserver - storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Dendrite is a second-generation Matrix homeserver written in Go, an alternative to Synapse.
+
 - (optional) [Amazon S3](https://aws.amazon.com/s3/) storage for Synapse's content repository (`media_store`) files using [Goofys](https://github.com/kahing/goofys)
 
 - (optional, default) [PostgreSQL](https://www.postgresql.org/) database for Synapse. [Using an external PostgreSQL server](docs/configuring-playbook-external-postgres.md) is also possible.
@@ -99,6 +101,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot) for scheduling one-off & recurring reminders and alarms - see [docs/configuring-playbook-bot-matrix-reminder-bot.md](docs/configuring-playbook-bot-matrix-reminder-bot.md) for setup documentation
 
+- (optional) [honoroit](https://gitlab.com/etke.cc/honoroit) helpdesk bot - see [docs/configuring-playbook-bot-honoroit.md](docs/configuring-playbook-bot-honoroit.md) for setup documentation
+
 - (optional) [Go-NEB](https://github.com/matrix-org/go-neb) multi functional bot written in Go - see [docs/configuring-playbook-bot-go-neb.md](docs/configuring-playbook-bot-go-neb.md) for setup documentation
 
 - (optional) [Mjolnir](https://github.com/matrix-org/mjolnir), a moderation tool for Matrix - see [docs/configuring-playbook-bot-mjolnir.md](docs/configuring-playbook-bot-mjolnir.md) for setup documentation
@@ -112,6 +116,8 @@ Using this playbook, you can get the following services configured on your serve
 - (optional) the [Sygnal](https://github.com/matrix-org/sygnal) push gateway - see [Setting up the Sygnal push gateway](docs/configuring-playbook-sygnal.md) for setup documentation
 
 - (optional) the [Hydrogen](https://github.com/vector-im/hydrogen-web) web client - see [docs/configuring-playbook-client-hydrogen.md](docs/configuring-playbook-client-hydrogen.md) for setup documentation
+
+- (optional) the [Cinny](https://github.com/ajbura/cinny) web client - see [docs/configuring-playbook-client-cinny.md](docs/configuring-playbook-client-cinny.md) for setup documentation
 
 Basically, this playbook aims to get you up-and-running with all the necessities around Matrix, without you having to do anything else.
 

@@ -30,6 +30,8 @@ These services are enabled and used by default, but you can turn them off, if yo
 
 These services are not part of our default installation, but can be enabled by [configuring the playbook](configuring-playbook.md) (either before the initial installation or any time later):
 
+- [matrixdotorg/dendrite-monolith](https://hub.docker.com/r/matrixdotorg/dendrite-monolith/) - the official [Dendrite](https://github.com/matrix-org/dendrite) Matrix homeserver (optional)
+
 - [ewoutp/goofys](https://hub.docker.com/r/ewoutp/goofys/) - the [Goofys](https://github.com/kahing/goofys) Amazon [S3](https://aws.amazon.com/s3/) file-system-mounting program (optional)
 
 - [etherpad/etherpad](https://hub.docker.com/r/etherpad/etherpad/) - the [Etherpad](https://etherpad.org) realtime collaborative text editor that can be used in a Jitsi audio/video call or integrated as a widget into Matrix chat rooms via the Dimension integration manager (optional)
@@ -46,7 +48,7 @@ These services are not part of our default installation, but can be enabled by [
 
 - [mautrix/facebook](https://mau.dev/mautrix/facebook/container_registry) - the [mautrix-facebook](https://github.com/mautrix/facebook) bridge to [Facebook](https://facebook.com/) (optional)
 
-- [tulir/mautrix-twitter](https://mau.dev/mautrix/twitter/container_registry) - the [mautrix-twitter](https://github.com/tulir/mautrix-twitter) bridge to [Twitter](https://twitter.com/) (optional)
+- [mautrix/twitter](https://mau.dev/mautrix/twitter/container_registry) - the [mautrix-twitter](https://github.com/mautrix/twitter) bridge to [Twitter](https://twitter.com/) (optional)
 
 - [mautrix/hangouts](https://mau.dev/mautrix/hangouts/container_registry) - the [mautrix-hangouts](https://github.com/mautrix/hangouts) bridge to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts) (optional)
 
@@ -91,6 +93,8 @@ These services are not part of our default installation, but can be enabled by [
 - [jitsi/jvb](https://hub.docker.com/r/jitsi/jvb) - the [Jitsi](https://jitsi.org/) Video Bridge component (optional)
 
 - [anoa/matrix-reminder-bot](https://hub.docker.com/r/anoa/matrix-reminder-bot) - the [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot) bot for one-off & recurring reminders and alarms (optional)
+
+- [etke.cc/honoroit](https://gitlab.com/etke.cc/honoroit/container_registry) - the [honoroit](https://gitlab.com/etke.cc/honoroit) helpdesk bot (optional)
 
 - [matrixdotorg/go-neb](https://hub.docker.com/r/matrixdotorg/go-neb) - the [Go-NEB](https://github.com/matrix-org/go-neb) bot (optional)
 

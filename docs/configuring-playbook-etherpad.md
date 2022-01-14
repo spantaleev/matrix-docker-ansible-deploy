@@ -25,6 +25,23 @@ The Dimension administrator users can configure the default URL template. The Di
 If you wish to disable the Etherpad chat button, you can do it by appending `?showChat=false` to the end of the pad URL, or the template.
 Example: `https://dimension.<your-domain>/etherpad/p/$roomId_$padName?showChat=false`
 
+### Etherpad Admin access (optional)
+
+Etherpad comes with a admin web-UI which is disabled by default. You can enable it by setting a username and password in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+
+```yaml
+matrix_etherpad_admin_username: admin
+matrix_etherpad_admin_password: some-password
+```
+
+The admin web-UI should then be available on: `https://dimension.<your-domain>/etherpad/admin`
+
+### Managing / Deleting old pads
+
+If you want to manage and remove old unused pads from Etherpad, you will first need to able Admin access as described above.
+
+Then from the plugin manager page (`https://dimension.<your-domain>/etherpad/admin/plugins`), install the `adminpads2` plugin. Once installed, you should have a "Manage pads" section in the Admin web-UI.
+
 ## Known issues
 
 If your Etherpad widget fails to load, this might be due to Dimension generating a Pad name so long, the Etherpad app rejects it.
