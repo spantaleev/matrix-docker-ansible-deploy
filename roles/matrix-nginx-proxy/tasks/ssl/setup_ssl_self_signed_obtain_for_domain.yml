@@ -37,6 +37,13 @@
     -keyout {{ matrix_ssl_certificate_cert_key_path }} \
     -out {{ matrix_ssl_certificate_cert_path }} \
     -days 3650
-  become: true
-  become_user: "{{ matrix_user_username }}"
   when: "not matrix_ssl_certificate_cert_path_stat_result.stat.exists"
+
+- name: Adjust SSL certificate file ownership
+  file:
+    path: "{{ item }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_ssl_certificate_cert_key_path }}"
+    - "{{ matrix_ssl_certificate_cert_path }}"

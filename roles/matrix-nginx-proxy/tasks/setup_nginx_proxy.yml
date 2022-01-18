@@ -67,6 +67,19 @@
     state: absent
   when: "not matrix_nginx_proxy_proxy_synapse_enabled|bool"
 
+- name: Ensure Matrix nginx-proxy configuration for matrix-dendrite exists
+  template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-dendrite.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-dendrite.conf"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_dendrite_enabled|bool
+
+- name: Ensure Matrix nginx-proxy configuration for matrix-dendrite deleted
+  file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-dendrite.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_dendrite_enabled|bool"
+
 - name: Ensure Matrix nginx-proxy configuration for Element domain exists
   template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-client-element.conf.j2"
@@ -87,6 +100,13 @@
     dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-hydrogen.conf"
     mode: 0644
   when: matrix_nginx_proxy_proxy_hydrogen_enabled|bool
+
+- name: Ensure Matrix nginx-proxy configuration for Cinny domain exists
+  template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-client-cinny.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-cinny.conf"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_cinny_enabled|bool
 
 - name: Ensure Matrix nginx-proxy configuration for dimension domain exists
   template:
@@ -226,6 +246,12 @@
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-hydrogen.conf"
     state: absent
   when: "not matrix_nginx_proxy_proxy_hydrogen_enabled|bool"
+
+- name: Ensure Matrix nginx-proxy configuration for Cinny domain deleted
+  file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-cinny.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_cinny_enabled|bool"
 
 - name: Ensure Matrix nginx-proxy configuration for dimension domain deleted
   file:

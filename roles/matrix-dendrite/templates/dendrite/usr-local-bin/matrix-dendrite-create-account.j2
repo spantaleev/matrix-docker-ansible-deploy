@@ -1,0 +1,12 @@
+#jinja2: lstrip_blocks: "True"
+#!/bin/bash
+
+if [ $# -ne 2 ]; then
+	echo "Usage: "$0" <username> <password>"
+	exit 1
+fi
+
+user=$1
+password=$2
+
+docker exec matrix-dendrite create-account -config /data/dendrite.yaml -username "$user" -password "$password"

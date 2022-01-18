@@ -3,14 +3,22 @@
 
 matrix_beeper_linkedin_enabled: true
 
-matrix_beeper_linkedin_version: v0.5.1
+matrix_beeper_linkedin_version: v0.5.2
+
 # See: https://gitlab.com/beeper/linkedin/container_registry
-matrix_beeper_linkedin_docker_image: "registry.gitlab.com/beeper/linkedin:{{ matrix_beeper_linkedin_version }}-amd64"
-matrix_beeper_linkedin_docker_image_force_pull: "{{ matrix_beeper_linkedin_docker_image.endswith(':latest-amd64') }}"
+matrix_beeper_linkedin_docker_image: "{{ matrix_beeper_linkedin_docker_image_name_prefix }}beeper/linkedin:{{ matrix_beeper_linkedin_docker_image_tag }}"
+matrix_beeper_linkedin_docker_image_force_pull: "{{ matrix_beeper_linkedin_docker_image_tag.startswith('latest') }}"
+matrix_beeper_linkedin_docker_image_name_prefix: "{{ 'localhost/' if matrix_beeper_linkedin_container_image_self_build else 'registry.gitlab.com/' }}"
+matrix_beeper_linkedin_docker_image_tag: "{{ 'latest' if matrix_beeper_linkedin_version == 'master' else matrix_beeper_linkedin_version }}-{{ matrix_architecture }}"
+
+matrix_beeper_linkedin_container_image_self_build: false
+matrix_beeper_linkedin_container_image_self_build_repo: "https://gitlab.com/beeper/linkedin"
+matrix_beeper_linkedin_container_image_self_build_branch: "{{ matrix_beeper_linkedin_version }}"
 
 matrix_beeper_linkedin_base_path: "{{ matrix_base_data_path }}/beeper-linkedin"
 matrix_beeper_linkedin_config_path: "{{ matrix_beeper_linkedin_base_path }}/config"
 matrix_beeper_linkedin_data_path: "{{ matrix_beeper_linkedin_base_path }}/data"
+matrix_beeper_linkedin_docker_src_files_path: "{{ matrix_beeper_linkedin_base_path }}/docker-src"
 
 matrix_beeper_linkedin_homeserver_address: "{{ matrix_homeserver_container_url }}"
 matrix_beeper_linkedin_homeserver_domain: "{{ matrix_domain }}"

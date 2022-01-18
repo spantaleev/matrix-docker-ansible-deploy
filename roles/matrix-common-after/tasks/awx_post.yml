@@ -1,11 +1,11 @@
 ---
 
-- name: Create user account @_janitor
+- name: Create user account @admin-janitor
   command: |
-    /usr/local/bin/matrix-synapse-register-user _janitor {{ awx_janitor_user_password | quote }} 1
+    /usr/local/bin/matrix-synapse-register-user admin-janitor {{ awx_janitor_user_password | quote }} 1
   register: cmd
   when: not awx_janitor_user_created|bool
-  no_log: True
+  no_log: false
     
 - name: Update AWX janitor user created variable
   delegate_to: 127.0.0.1
@@ -18,12 +18,12 @@
     'awx_janitor_user_created': 'true'
   when: not awx_janitor_user_created|bool
 
-- name: Create user account @_dimension
+- name: Create user account @admin-dimension
   command: |
-    /usr/local/bin/matrix-synapse-register-user _dimension {{ awx_dimension_user_password | quote }} 0
+    /usr/local/bin/matrix-synapse-register-user admin-dimension {{ awx_dimension_user_password | quote }} 0
   register: cmd
   when: not awx_dimension_user_created|bool
-  no_log: True
+  no_log: false
   
 - name: Update AWX dimension user created variable
   delegate_to: 127.0.0.1
@@ -36,12 +36,12 @@
     'awx_dimension_user_created': 'true'
   when: not awx_dimension_user_created|bool
 
-- name: Create user account @_mjolnir
+- name: Create user account @admin-mjolnir
   command: |
-    /usr/local/bin/matrix-synapse-register-user _mjolnir {{ awx_mjolnir_user_password | quote }} 0
+    /usr/local/bin/matrix-synapse-register-user admin-mjolnir {{ awx_mjolnir_user_password | quote }} 0
   register: cmd
   when: not awx_mjolnir_user_created|bool
-  no_log: True
+  no_log: false
   
 - name: Update AWX dimension user created variable
   delegate_to: 127.0.0.1

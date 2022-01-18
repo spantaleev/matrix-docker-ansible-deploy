@@ -11,7 +11,7 @@
     - { path: "{{ matrix_appservice_slack_base_path }}", when: true }
     - { path: "{{ matrix_appservice_slack_config_path }}", when: true }
     - { path: "{{ matrix_appservice_slack_data_path }}", when: true }
-    - { path: "{{ matrix_appservice_slack_docker_src_files_path }}", when: "{{ matrix_appservice_slack_container_self_build }}" }
+    - { path: "{{ matrix_appservice_slack_docker_src_files_path }}", when: "{{ matrix_appservice_slack_container_image_self_build }}" }
   when: item.when|bool
 
 - set_fact:
@@ -37,7 +37,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_appservice_slack_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_slack_docker_image_force_pull }}"
-  when: "not matrix_appservice_slack_container_self_build|bool"
+  when: "not matrix_appservice_slack_container_image_self_build|bool"
 
 - name: Ensure matrix-appservice-slack repository is present when self-building
   git:
@@ -45,7 +45,7 @@
     dest: "{{ matrix_appservice_slack_docker_src_files_path }}"
     force: "yes"
   register: matrix_appservice_slack_git_pull_results
-  when: "matrix_appservice_slack_container_self_build|bool"
+  when: "matrix_appservice_slack_container_image_self_build|bool"
 
 - name: Ensure matrix-appservice-slack Docker image is built
   docker_image:
@@ -57,7 +57,7 @@
       dockerfile: Dockerfile
       path: "{{ matrix_appservice_slack_docker_src_files_path }}"
       pull: yes
-  when: "matrix_appservice_slack_container_self_build|bool and matrix_appservice_slack_git_pull_results.changed"
+  when: "matrix_appservice_slack_container_image_self_build|bool and matrix_appservice_slack_git_pull_results.changed"
 
 - name: Ensure Matrix Appservice Slack config installed
   copy:

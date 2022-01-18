@@ -15,8 +15,8 @@ matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_cont
 # amd64 gets released first.
 # arm32 relies on self-building, so the same version can be built immediately.
 # arm64 users need to wait for a prebuilt image to become available.
-matrix_synapse_version: v1.49.0
-matrix_synapse_version_arm64: v1.49.0
+matrix_synapse_version: v1.50.1
+matrix_synapse_version_arm64: v1.50.1
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version if matrix_architecture in ['arm32', 'amd64'] else matrix_synapse_version_arm64 }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -321,6 +321,9 @@ matrix_synapse_push_include_content: true
 # URLs shared by users.
 matrix_synapse_url_preview_enabled: true
 
+# A list of values for the Accept-Language HTTP header used when downloading webpages during URL preview generation
+matrix_url_preview_accept_language: ['en-US', 'en']
+
 # Enable exposure of metrics to Prometheus
 # See https://github.com/matrix-org/synapse/blob/master/docs/metrics-howto.md
 matrix_synapse_metrics_enabled: false
@@ -576,6 +579,8 @@ matrix_synapse_default_room_version: "9"
 # If a spam-checker extension is enabled, this variable's value is set automatically by the playbook during runtime.
 # If not, you can also control its value manually.
 matrix_synapse_spam_checker: []
+
+matrix_synapse_encryption_enabled_by_default_for_room_type: off
 
 matrix_synapse_trusted_key_servers:
   - server_name: "matrix.org"
