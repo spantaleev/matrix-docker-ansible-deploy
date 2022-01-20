@@ -1,28 +1,7 @@
 ---
 
-- name: Ensure OpenSSL installed (RedHat)
-  yum:
-    name:
-      - openssl
-    state: present
-    update_cache: no
-  when: "matrix_ssl_retrieval_method == 'self-signed' and ansible_os_family == 'RedHat'"
-
-- name: Ensure APT usage dependencies are installed (Debian)
-  apt:
-    name:
-      - openssl
-    state: present
-    update_cache: no
-  when: "matrix_ssl_retrieval_method == 'self-signed' and ansible_os_family == 'Debian'"
-
-- name: Ensure OpenSSL installed (Archlinux)
-  pacman:
-    name:
-      - openssl
-    state: latest
-    update_cache: no
-  when: "matrix_ssl_retrieval_method == 'self-signed' and ansible_distribution == 'Archlinux'"
+- import_tasks: "{{ role_path }}/../matrix-base/tasks/util/ensure_openssl_installed.yml"
+  when: "matrix_ssl_retrieval_method == 'self-signed'"
 
 - name: Generate self-signed certificates
   include_tasks: "{{ role_path }}/tasks/ssl/setup_ssl_self_signed_obtain_for_domain.yml"
