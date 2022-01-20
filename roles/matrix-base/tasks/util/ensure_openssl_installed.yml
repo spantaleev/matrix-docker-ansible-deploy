@@ -1,0 +1,23 @@
+
+# This is for both CentOS 7 and 8
+- name: Ensure openssl installed (CentOS)
+  yum:
+    name:
+      - openssl
+    state: latest
+  when: ansible_distribution == 'CentOS'
+
+# This is for both Debian and Raspbian
+- name: Ensure openssl installed (Debian/Raspbian)
+  apt:
+    name:
+      - openssl
+    state: latest
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure openssl installed (Archlinux)
+  pacman:
+    name:
+      - openssl
+    state: latest
+  when: ansible_distribution == 'Archlinux'
