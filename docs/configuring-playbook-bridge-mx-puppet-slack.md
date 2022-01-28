@@ -1,20 +1,33 @@
 # Setting up MX Puppet Slack (optional)
 
-**Note**: bridging to [Slack](https://slack.com) can also happen via the [matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md) bridge supported by the playbook.
+**Note**: bridging to [Slack](https://slack.com) can also happen via the
+[matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md)
+bridge supported by the playbook.
 
 The playbook can install and configure
 [mx-puppet-slack](https://github.com/Sorunome/mx-puppet-slack) for you.
 
 See the project page to learn what it does and why it might be useful to you.
 
-To enable the [Slack](https://slack.com/) bridge just use the following
-playbook configuration:
+## Setup
 
+To enable the [Slack](https://slack.com/) bridge:
 
-```yaml
-matrix_mx_puppet_slack_enabled: true
-```
-
+1. Follow the
+   [OAuth credentials](https://github.com/Sorunome/mx-puppet-slack#option-2-oauth)
+   instructions to create a new Slack app, setting the redirect URL to
+   `https://matrix.YOUR_DOMAIN/slack/oauth`.
+2. Update your `vars.yml` with the following:
+    ```yaml
+    matrix_mx_puppet_slack_enabled: true
+    # Client ID must be quoted so YAML does not parse it as a float.
+    matrix_mx_puppet_slack_oauth_client_id: "<SLACK_APP_CLIENT_ID>"
+    matrix_mx_puppet_slack_oauth_client_secret: "<SLACK_APP_CLIENT_SECRET>"
+    ```
+3. Run playbooks with `setup-all` and `start` tags:
+    ```
+    ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+    ```
 
 ## Usage
 
