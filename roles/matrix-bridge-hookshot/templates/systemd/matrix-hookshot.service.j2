@@ -30,8 +30,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name {{ matrix_hookshot_co
           {% endfor %}
           {{ matrix_hookshot_docker_image }}
 
-ExecStop=-{{ matrix_host_command_docker }} kill {{ matrix_hookshot_container_url }}
-ExecStop=-{{ matrix_host_command_docker }} rm {{ matrix_hookshot_container_url }}
+ExecStopPost=-{{ matrix_host_command_docker }} kill {{ matrix_hookshot_container_url }}
+ExecStopPost=-{{ matrix_host_command_docker }} rm {{ matrix_hookshot_container_url }}
 Restart=always
 RestartSec=30
 SyslogIdentifier={{ matrix_hookshot_container_url }}
