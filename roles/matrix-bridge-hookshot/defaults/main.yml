@@ -14,44 +14,44 @@ matrix_hookshot_container_url: 'matrix-hookshot'
 
 matrix_hookshot_public_endpoint: /hookshot
 
-# there is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
+# There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
 matrix_hookshot_appservice_port: 9993
 matrix_hookshot_appservice_endpoint: "{{ matrix_hookshot_public_endpoint }}/_matrix/app"
 
-# metrics work only in conjunction with matrix_synapse_metrics_enabled etc
+# Metrics work only in conjunction with matrix_synapse_metrics_enabled etc
 matrix_hookshot_metrics_enabled: true
-# there is no need to edit ports.
-# read the documentation to learn about using hookshot metrics with external Prometheus
-# if you still want something different, use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
+# There is no need to edit ports.
+# Read the documentation to learn about using hookshot metrics with external Prometheus
+# If you still want something different, use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
 matrix_hookshot_metrics_port: 9001
 matrix_hookshot_metrics_endpoint: "{{ matrix_hookshot_public_endpoint }}/metrics"
 
-# there is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
+# There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
 matrix_hookshot_webhook_port: 9000
 matrix_hookshot_webhook_endpoint: "{{ matrix_hookshot_public_endpoint }}/webhooks"
 
 
-# you need to create a GitHub app to enable this and fill in the empty variables below
+# You need to create a GitHub app to enable this and fill in the empty variables below
 # https://half-shot.github.io/matrix-hookshot/setup/github.html
 matrix_hookshot_github_enabled: false
 matrix_hookshot_github_appid: ''
-# set this variable to the contents of the generated and downloaded GitHub private key:
+# Set this variable to the contents of the generated and downloaded GitHub private key:
 # matrix_hookshot_github_private_key: |
 #   -----BEGIN RSA PRIVATE KEY-----
 #   0123456789ABCDEF...
 #   -----END RSA PRIVATE KEY-----
-# alternatively, leave it empty and do it manually or use matrix-aux instead, see docs/matrix-bridge-hookshot.md for info.
+# Alternatively, leave it empty and do it manually or use matrix-aux instead, see docs/matrix-bridge-hookshot.md for info.
 matrix_hookshot_github_private_key: ''
 matrix_hookshot_github_private_key_file: 'private-key.pem'
 matrix_hookshot_github_secret: '' # "Webhook secret" on the GitHub App page
 matrix_hookshot_github_oauth_enabled: false
-# you need to configure oauth settings only when you have enabled oauth (optional)
+# You need to configure oauth settings only when you have enabled oauth (optional)
 matrix_hookshot_github_oauth_id: '' # "Client ID" on the GitHub App page
 matrix_hookshot_github_oauth_secret: '' # "Client Secret" on the GitHub App page
-# default value of matrix_hookshot_github_oauth_endpoint: "/hookshot/webhooks/oauth"
+# Default value of matrix_hookshot_github_oauth_endpoint: "/hookshot/webhooks/oauth"
 matrix_hookshot_github_oauth_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/oauth"
 matrix_hookshot_github_oauth_uri: "https://{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_github_oauth_endpoint }}"
-# these are the default settings mentioned here and don't need to be modified: https://half-shot.github.io/matrix-hookshot/usage/room_configuration/github_repo.html#configuration
+# These are the default settings mentioned here and don't need to be modified: https://half-shot.github.io/matrix-hookshot/usage/room_configuration/github_repo.html#configuration
 matrix_hookshot_github_ignore_hooks: "{}"
 matrix_hookshot_github_command_prefix: '!gh'
 matrix_hookshot_github_show_issue_room_link: false
@@ -61,7 +61,7 @@ matrix_hookshot_github_excluding_labels: ''
 
 
 matrix_hookshot_gitlab_enabled: true
-# optionally add your instances, e.g.
+# Optionally add your instances, e.g.
 # matrix_hookshot_gitlab_instances:
 #   gitlab.com:
 #     url: https://gitlab.com
@@ -71,36 +71,36 @@ matrix_hookshot_gitlab_instances:
   gitlab.com:
     url: https://gitlab.com
 
-# this will be the "Secret token" you have to enter into all GitLab instances for authentication
+# This will be the "Secret token" you have to enter into all GitLab instances for authentication
 matrix_hookshot_gitlab_secret: ''
 
 
 matrix_hookshot_jira_enabled: false
-# get the these values from https://half-shot.github.io/matrix-hookshot/setup/jira.html#jira-oauth
+# Get the these values from https://half-shot.github.io/matrix-hookshot/setup/jira.html#jira-oauth
 matrix_hookshot_jira_secret: ''
 matrix_hookshot_jira_oauth_enabled: false
 matrix_hookshot_jira_oauth_id: ''
 matrix_hookshot_jira_oauth_secret: ''
-# default value of matrix_hookshot_jira_oauth_endpoint: "/hookshot/webhooks/jira/oauth"
+# Default value of matrix_hookshot_jira_oauth_endpoint: "/hookshot/webhooks/jira/oauth"
 matrix_hookshot_jira_oauth_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/jira/oauth"
 matrix_hookshot_jira_oauth_uri: "{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_jira_oauth_endpoint }}"
 
 
-# no need to change these
+# No need to change these
 matrix_hookshot_generic_enabled: true
-# default value of matrix_hookshot_generic_endpoint: "/hookshot/webhooks"
+# Default value of matrix_hookshot_generic_endpoint: "/hookshot/webhooks"
 matrix_hookshot_generic_endpoint: "{{ matrix_hookshot_webhook_endpoint }}"
 matrix_hookshot_generic_urlprefix: "{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_generic_endpoint }}"
 matrix_hookshot_generic_allow_js_transformation_functions: false
-# if you're also using matrix-appservice-webhooks, take care that these prefixes don't overlap
+# If you're also using matrix-appservice-webhooks, take care that these prefixes don't overlap
 matrix_hookshot_generic_user_id_prefix: '_webhooks_'
 
 
 matrix_hookshot_figma_enabled: false
-# default value of matrix_hookshot_figma_endpoint: "/hookshot/webhooks/figma/webhook"
+# Default value of matrix_hookshot_figma_endpoint: "/hookshot/webhooks/figma/webhook"
 matrix_hookshot_figma_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/figma/webhook"
 matrix_hookshot_figma_publicUrl: "{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_figma_endpoint }}"
-# to bridge figma webhooks, you need to configure one of multiple instances like this:
+# To bridge figma webhooks, you need to configure one of multiple instances like this:
 # matrix_hookshot_figma_instances:
 #   your-instance:
 #       teamId: your-team-id
@@ -108,10 +108,10 @@ matrix_hookshot_figma_publicUrl: "{{ matrix_server_fqn_matrix }}{{ matrix_hooksh
 #       passcode: your-webhook-passcode
 
 
-# there is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
+# There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
 matrix_hookshot_provisioning_port: 9002
 matrix_hookshot_provisioning_secret: ''
-# provisioning will be automatically enabled if dimension is enabled and you have provided a provisioning secret, unless you override it
+# Provisioning will be automatically enabled if dimension is enabled and you have provided a provisioning secret, unless you override it
 matrix_hookshot_provisioning_enabled: false
 matrix_hookshot_provisioning_endpoint: "{{ matrix_hookshot_public_endpoint }}/v1"
 
@@ -152,6 +152,7 @@ matrix_hookshot_systemd_wanted_services_list: []
 # Above example will bind the metrics port in the container to port 9999 on localhost.
 matrix_hookshot_container_http_host_bind_ports: []
 
+# These tokens will be set automatically
 matrix_hookshot_appservice_token: ''
 matrix_hookshot_homeserver_token: ''
 
