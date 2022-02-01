@@ -2,7 +2,7 @@
 
 ## matrix-hookshot bridging support
 
-Thanks to [Kim Brose](https://github.com/HarHarLinks), the playbook can now install the [matrix-hookshot](https://github.com/Half-Shot/matrix-hookshot) bridge for bridging Matrix to multiple project management services, such as GitHub, GitLab and JIRA.
+Thanks to [HarHarLinks](https://github.com/HarHarLinks), the playbook can now install the [matrix-hookshot](https://github.com/Half-Shot/matrix-hookshot) bridge for bridging Matrix to multiple project management services, such as GitHub, GitLab and JIRA.
 See our [Setting up matrix-hookshot](docs/configuring-playbook-bridge-hookshot.md) documentation to get started.
 
 
