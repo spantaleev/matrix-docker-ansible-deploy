@@ -1,3 +1,18 @@
+# 2022-02-01
+
+## matrix-hookshot bridging support
+
+Thanks to [Kim Brose](https://github.com/HarHarLinks), the playbook can now install the [matrix-hookshot](https://github.com/Half-Shot/matrix-hookshot) bridge for bridging Matrix to multiple project management services, such as GitHub, GitLab and JIRA.
+See our [Setting up matrix-hookshot](docs/configuring-playbook-bridge-hookshot.md) documentation to get started.
+
+
+# 2022-01-31
+
+## ARM support for matrix-corporal
+
+[matrix-corporal](https://github.com/devture/matrix-corporal) (as of version `2.2.3`) is now published to Docker Hub (see [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal)) as a multi-arch container image with support for all these platforms: `linux/amd64`, `linux/arm64/v8` and `linux/arm/v7`. The playbook no longer resorts to self-building matrix-corporal on these ARM architectures.
+
+
 # 2022-01-07
 
 ## Dendrite support
