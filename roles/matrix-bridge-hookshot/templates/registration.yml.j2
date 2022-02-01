@@ -1,0 +1,16 @@
+#jinja2: lstrip_blocks: "True"
+id: matrix-hookshot # This can be anything, but must be unique within your homeserver
+as_token: {{ matrix_hookshot_appservice_token|to_json }} # This again can be a random string
+hs_token: {{ matrix_hookshot_homeserver_token|to_json }} # ..as can this
+namespaces:
+  rooms: []
+  users:
+    - regex: "@_github_.*:{{ matrix_domain }}"
+      exclusive: true
+  aliases:
+    - regex: "#github_.+:{{ matrix_domain }}"
+      exclusive: true
+
+sender_localpart: hookshot
+url: "http://{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_appservice_port }}" # This should match the bridge.port in your config file
+rate_limited: false
