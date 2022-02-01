@@ -73,6 +73,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) bridge for slack compatible webhooks ([ConcourseCI](https://concourse-ci.org/), [Slack](https://slack.com/) etc. pp.)
 
+- (optional) the [matrix-hookshot](https://github.com/Half-Shot/matrix-hookshot) bridge for bridging Matrix to generic webhooks and multiple project management services, such as GitHub, GitLab, Figma, and Jira in particular
+
 - (optional) the [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) for bridging your Matrix server to SMS - see [docs/configuring-playbook-bridge-matrix-bridge-sms.md](docs/configuring-playbook-bridge-matrix-bridge-sms.md) for setup documentation
 
 - (optional) the [Heisenbridge](https://github.com/hifi/heisenbridge) for bridging your Matrix server to IRC bouncer-style - see [docs/configuring-playbook-bridge-heisenbridge.md](docs/configuring-playbook-bridge-heisenbridge.md) for setup documentation
