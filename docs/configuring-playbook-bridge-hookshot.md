@@ -2,8 +2,11 @@
 
 The playbook can install and configure [matrix-hookshot](https://github.com/Half-Shot/matrix-hookshot) for you.
 
-See the project's [documentation](https://half-shot.github.io/matrix-hookshot/hookshot.html) to learn what it does and why it might be useful to you.
+Hookshot can bridge [Webhooks](https://en.wikipedia.org/wiki/Webhook) from software project management services such as GitHub, GitLab, JIRA, and Figma, as well as generic webhooks.
 
+See the project's [documentation](https://half-shot.github.io/matrix-hookshot/hookshot.html) to learn what it does in detail and why it might be useful to you.
+
+Note: the playbook also supports [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), which however is soon to be archived by its author and to be replaced by hookshot.
 
 ## Setup Instructions
 
