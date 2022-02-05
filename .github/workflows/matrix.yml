@@ -1,0 +1,19 @@
+---
+name: Matrix CI
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: 0 12 * * *
+
+jobs:
+  yamllint:
+    name: 🧹 yamllint
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️ Check out configuration from GitHub
+        uses: actions/checkout@v2.4.0
+      - name: 🚀 Run yamllint
+        uses: frenck/action-yamllint@v1.1.2
