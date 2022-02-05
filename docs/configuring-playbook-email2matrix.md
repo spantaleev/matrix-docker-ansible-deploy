@@ -40,7 +40,7 @@ To do this, you can execute a command like this:
 
 ```
 curl \
---data '{"identifier": {"type": "m.id.user", "user": "email2matrix" }, "password": "MATRIX_PASSWORD_FOR_THE_USER", "type": "m.login.password", "device_id": "Email2Matrix", "initial_device_display_name": "Email2Matrix"}' \
+--data '{"identifier": {"type": "m.id.user", "user": "email2matrix"}, "password": "MATRIX_PASSWORD_FOR_THE_USER", "type": "m.login.password", "device_id": "Email2Matrix", "initial_device_display_name": "Email2Matrix"}' \
 https://matrix.DOMAIN/_matrix/client/r0/login
 ```
 

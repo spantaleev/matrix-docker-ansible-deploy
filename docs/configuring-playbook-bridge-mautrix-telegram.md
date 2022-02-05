@@ -32,7 +32,7 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 ```
 curl \
---data '{"identifier": {"type": "m.id.user", "user": "YOUR_MATRIX_USERNAME" }, "password": "YOUR_MATRIX_PASSWORD", "type": "m.login.password", "device_id": "Mautrix-Telegram", "initial_device_display_name": "Mautrix-Telegram"}' \
+--data '{"identifier": {"type": "m.id.user", "user": "YOUR_MATRIX_USERNAME"}, "password": "YOUR_MATRIX_PASSWORD", "type": "m.login.password", "device_id": "Mautrix-Telegram", "initial_device_display_name": "Mautrix-Telegram"}' \
 https://matrix.DOMAIN/_matrix/client/r0/login
 ```
 

@@ -195,7 +195,7 @@
 
 - name: Ensure systemd reloaded after matrix-nginx-proxy.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_nginx_proxy_enabled and matrix_nginx_proxy_systemd_service_result.changed"
 
 
@@ -213,8 +213,8 @@
   service:
     name: matrix-nginx-proxy
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   register: stopping_result
   when: "not matrix_nginx_proxy_enabled|bool and matrix_nginx_proxy_service_stat.stat.exists"
 
@@ -226,7 +226,7 @@
 
 - name: Ensure systemd reloaded after matrix-nginx-proxy.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "not matrix_nginx_proxy_enabled|bool and matrix_nginx_proxy_service_stat.stat.exists"
 
 - name: Ensure Matrix nginx-proxy configuration for matrix domain deleted

@@ -7,7 +7,7 @@
     validate_certs: "{{ matrix_synapse_self_check_validate_certificates }}"
   register: result_matrix_synapse_federation_api
   ignore_errors: true
-  check_mode: no
+  check_mode: false
   when: matrix_synapse_enabled|bool
 
 - name: Fail if Matrix Federation API not working
@@ -17,7 +17,7 @@
 
 - name: Fail if Matrix Federation API unexpectedly enabled
   fail:
-      msg: "Matrix Federation API is up at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_synapse_federation_api_url_endpoint_public }}`) despite being disabled."
+    msg: "Matrix Federation API is up at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_synapse_federation_api_url_endpoint_public }}`) despite being disabled."
   when: "matrix_synapse_enabled|bool and not matrix_synapse_federation_enabled|bool and not result_matrix_synapse_federation_api.failed"
 
 - name: Report working Matrix Federation API

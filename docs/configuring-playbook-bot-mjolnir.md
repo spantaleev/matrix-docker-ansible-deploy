@@ -28,7 +28,7 @@ If you use curl, you can get an access token like this:
 
 ```
 curl -X POST --header 'Content-Type: application/json' -d '{
-    "identifier": { "type": "m.id.user", "user": "bot.mjolnir" },
+    "identifier": { "type": "m.id.user", "user": "bot.mjolnir"},
     "password": "PASSWORD_FOR_THE_BOT",
     "type": "m.login.password"
 }' 'https://matrix.DOMAIN/_matrix/client/r0/login'

@@ -53,7 +53,7 @@ To get an access token for the Dimension user, you can follow one of two options
 
 ```
 curl -X POST --header 'Content-Type: application/json' -d '{
-    "identifier": { "type": "m.id.user", "user": "YourDimensionUsername" },
+    "identifier": { "type": "m.id.user", "user": "YourDimensionUsername"},
     "password": "YourDimensionPassword",
     "type": "m.login.password"
 }' 'https://matrix.YOURDOMAIN/_matrix/client/r0/login'

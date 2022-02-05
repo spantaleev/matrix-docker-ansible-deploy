@@ -8,7 +8,7 @@
     name: "{{ item.key }}"
     state: stopped
   with_dict: "{{ ansible_facts.services|default({})|dict2items|selectattr('key', 'match', 'matrix-synapse-worker-.+\\.service')|list|items2dict }}"
-  when: "item.value['status'] != 'not-found'" # see https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1461
+  when: "item.value['status'] != 'not-found'"  # see https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1461
 
 - name: Find worker configs to be cleaned
   find:

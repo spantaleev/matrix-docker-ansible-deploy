@@ -4,8 +4,8 @@
   docker_image:
     name: "{{ matrix_heisenbridge_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_heisenbridge_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}" 
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_heisenbridge_docker_image_force_pull }}" 
+    force_source: "{{ matrix_heisenbridge_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_heisenbridge_docker_image_force_pull }}"
 
 - name: Ensure heisenbridge paths exist
   file:
@@ -34,5 +34,5 @@
 
 - name: Ensure systemd reloaded after matrix-heisenbridge.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: matrix_heisenbridge_systemd_service_result.changed

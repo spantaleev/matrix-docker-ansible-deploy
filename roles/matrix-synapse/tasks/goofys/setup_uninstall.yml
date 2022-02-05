@@ -1,3 +1,5 @@
+---
+
 - name: Check existence of matrix-goofys service
   stat:
     path: "{{ matrix_systemd_path }}/matrix-goofys.service"
@@ -7,8 +9,8 @@
   service:
     name: matrix-goofys
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   register: stopping_result
   when: "matrix_goofys_service_stat.stat.exists"
 
@@ -20,7 +22,7 @@
 
 - name: Ensure systemd reloaded after matrix-goofys.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_goofys_service_stat.stat.exists"
 
 - name: Ensure goofys environment variables file doesn't exist

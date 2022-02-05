@@ -12,9 +12,9 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_jitsi_prosody_base_path }}", when: true }
-    - { path: "{{ matrix_jitsi_prosody_config_path }}", when: true }
-    - { path: "{{ matrix_jitsi_prosody_plugins_path }}", when: true }
+    - {path: "{{ matrix_jitsi_prosody_base_path }}", when: true}
+    - {path: "{{ matrix_jitsi_prosody_config_path }}", when: true}
+    - {path: "{{ matrix_jitsi_prosody_plugins_path }}", when: true}
   when: matrix_jitsi_enabled|bool and item.when
 
 - name: Ensure jitsi-prosody Docker image is pulled
@@ -42,7 +42,7 @@
 
 - name: Ensure systemd service is reloaded after matrix-jitsi-prosody.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_jitsi_enabled and matrix_jitsi_prosody_systemd_service_result.changed"
 
 - name: Ensure authentication is properly configured
@@ -67,8 +67,8 @@
   service:
     name: matrix-jitsi-prosody
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   register: stopping_result
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_prosody_service_stat.stat.exists"
 
@@ -80,7 +80,7 @@
 
 - name: Ensure systemd is reloaded after matrix-jitsi-prosody.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_prosody_service_stat.stat.exists"
 
 - name: Ensure Matrix jitsi-prosody paths doesn't exist

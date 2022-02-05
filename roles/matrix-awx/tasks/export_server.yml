@@ -1,7 +1,7 @@
 ---
 
-- name: Run export of /matrix/ and snapshot the database simultaneously 
-  command: "{{ item }}" 
+- name: Run export of /matrix/ and snapshot the database simultaneously
+  command: "{{ item }}"
   with_items:
     - /bin/sh /usr/local/bin/awx-export-service.sh 1 0
     - /bin/sh /usr/local/bin/awx-export-service.sh 0 1
@@ -23,7 +23,7 @@
     command: rm /chroot/export/matrix*
     count: 1
     units: days
-    unique: yes
+    unique: true
 
 - name: Delete the AWX session token for executing modules
   awx.awx.tower_token:

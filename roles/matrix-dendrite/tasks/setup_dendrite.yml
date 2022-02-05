@@ -7,8 +7,8 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_dendrite_config_dir_path }}", when: true }
-    - { path: "{{ matrix_dendrite_ext_path }}", when: true }
+    - {path: "{{ matrix_dendrite_config_dir_path }}", when: true}
+    - {path: "{{ matrix_dendrite_ext_path }}", when: true}
   when: "matrix_dendrite_enabled|bool and item.when"
 
 - import_tasks: "{{ role_path }}/tasks/dendrite/setup.yml"

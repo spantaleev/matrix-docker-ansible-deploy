@@ -12,8 +12,8 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_mailer_base_path }}", when: true }
-    - { path: "{{ matrix_mailer_container_image_self_build_src_files_path }}", when: "{{ matrix_mailer_container_image_self_build }}" }
+    - {path: "{{ matrix_mailer_base_path }}", when: true}
+    - {path: "{{ matrix_mailer_container_image_self_build_src_files_path }}", when: "{{ matrix_mailer_container_image_self_build }}"}
   when: "matrix_mailer_enabled|bool and item.when"
 
 - name: Ensure mailer environment variables file created
@@ -41,7 +41,7 @@
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mailer_container_image_self_build_src_files_path }}"
-      pull: yes
+      pull: true
   when: "matrix_mailer_enabled|bool and matrix_mailer_container_image_self_build|bool"
 
 - name: Ensure exim-relay image is pulled
@@ -62,7 +62,7 @@
 
 - name: Ensure systemd reloaded after matrix-mailer.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_mailer_enabled|bool and matrix_mailer_systemd_service_result.changed"
 
 #
@@ -79,8 +79,8 @@
   service:
     name: matrix-mailer
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   register: stopping_result
   when: "not matrix_mailer_enabled|bool and matrix_mailer_service_stat.stat.exists"
 
@@ -92,7 +92,7 @@
 
 - name: Ensure systemd reloaded after matrix-mailer.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "not matrix_mailer_enabled|bool and matrix_mailer_service_stat.stat.exists"
 
 - name: Ensure Matrix mailer environment variables path doesn't exist

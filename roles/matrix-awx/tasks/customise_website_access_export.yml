@@ -48,7 +48,7 @@
 - name: Reload vars in matrix_vars.yml
   include_vars:
     file: '{{ awx_cached_matrix_vars }}'
-  no_log: True
+  no_log: true
 
 - name: Save new 'Customise Website + Access Export' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1
@@ -60,7 +60,7 @@
 - name: Copy new 'Customise Website + Access Export' survey.json to target machine
   copy:
     src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_website_access_export.json'
-    dest:  '/matrix/awx/configure_website_access_export.json'
+    dest: '/matrix/awx/configure_website_access_export.json'
     mode: '0660'
   when: awx_customise_base_domain_website is defined
 
@@ -74,7 +74,7 @@
 - name: Copy new 'Customise Website + Access Export' survey.json to target machine
   copy:
     src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/access_export.json'
-    dest:  '/matrix/awx/access_export.json'
+    dest: '/matrix/awx/access_export.json'
     mode: '0660'
   when: awx_customise_base_domain_website is undefined
 
@@ -92,12 +92,12 @@
     credential: "{{ member_id }} - AWX SSH Key"
     survey_enabled: true
     survey_spec: "{{ lookup('file', '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_website_access_export.json') }}"
-    become_enabled: yes
+    become_enabled: true
     state: present
     verbosity: 1
     tower_host: "https://{{ awx_host }}"
     tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
-    validate_certs: yes
+    validate_certs: true
   when: awx_customise_base_domain_website is defined
 
 - name: Recreate 'Access Export' job template
@@ -114,12 +114,12 @@
     credential: "{{ member_id }} - AWX SSH Key"
     survey_enabled: true
     survey_spec: "{{ lookup('file', '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/access_export.json') }}"
-    become_enabled: yes
+    become_enabled: true
     state: present
     verbosity: 1
     tower_host: "https://{{ awx_host }}"
     tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
-    validate_certs: yes
+    validate_certs: true
   when: awx_customise_base_domain_website is undefined
 
 - name: If user doesn't define a awx_sftp_password, create a disabled 'sftp' account
@@ -153,7 +153,7 @@
   user:
     name: sftp
     groups: sftp
-    append: yes
+    append: true
   when: awx_customise_base_domain_website is defined
 
 - name: Create the ro /chroot directory with sticky bit if it doesn't exist. (/chroot/website has matrix:matrix permissions and is mounted to nginx container)
@@ -208,7 +208,7 @@
     group: sftp
     mode: '0644'
   when: (awx_sftp_public_key | length > 0) and (awx_sftp_auth_method == "SSH Key")
-    
+
 - name: Remove any existing Subsystem lines
   lineinfile:
     path: /etc/ssh/sshd_config
