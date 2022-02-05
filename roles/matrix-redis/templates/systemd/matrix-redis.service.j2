@@ -27,8 +27,8 @@ ExecStart=/usr/bin/docker run --rm --name matrix-redis \
 			{{ matrix_redis_docker_image_to_use }} \
 			redis-server /usr/local/etc/redis/redis.conf
 
-ExecStopPost=-/usr/bin/docker stop matrix-redis
-ExecStopPost=-/usr/bin/docker rm matrix-redis
+ExecStop=-/usr/bin/docker stop matrix-redis
+ExecStop=-/usr/bin/docker rm matrix-redis
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-redis
