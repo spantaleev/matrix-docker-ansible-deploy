@@ -62,10 +62,10 @@
       update_cache: yes
     when: (ansible_os_family == 'Debian')
 
-  - name: Ensure gradle is installed for self-building (CentOS)
+  - name: Ensure gradle is installed for self-building (RedHat)
     fail:
-      msg: "Installing gradle on CentOS is currently not supported, so self-building ma1sd cannot happen at this time"
-    when: ansible_distribution == 'CentOS'
+      msg: "Installing gradle on RedHat ({{ ansible_distribution }}) is currently not supported, so self-building ma1sd cannot happen at this time"
+    when: ansible_os_family == 'RedHat'
 
   - name: Ensure gradle is installed for self-building (Archlinux)
     pacman:
