@@ -41,5 +41,5 @@ If you didn't make your account a server admin when you created it, you can use 
 ### Example:
 To set @user:domain.com's password to `correct_horse_battery_staple` you could use this curl command:
 ```
-curl -XPOST -d '{ "new_password": "correct_horse_battery_staple"}' "https://matrix.<domain>/_matrix/client/r0/admin/reset_password/@user:domain.com?access_token=MDA...this_is_my_access_token
+curl -XPOST -d '{ "new_password": "correct_horse_battery_staple" }' "https://matrix.<domain>/_matrix/client/r0/admin/reset_password/@user:domain.com?access_token=MDA...this_is_my_access_token
 ```
