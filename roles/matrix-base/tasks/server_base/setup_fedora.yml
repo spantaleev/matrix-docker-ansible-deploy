@@ -8,21 +8,14 @@
     group: "root"
     mode: 0644
   with_items:
-    - docker-ce-centos.repo
+    - docker-ce-fedora.repo
   when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure Docker's RPM key is trusted
   rpm_key:
     state: present
-    key: https://download.docker.com/linux/centos/gpg
+    key: https://download.docker.com/linux/fedora/gpg
   when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
-
-- name: Ensure EPEL is installed
-  yum:
-    name:
-      - epel-release
-    state: latest
-    update_cache: true
 
 - name: Ensure yum packages are installed
   yum:
