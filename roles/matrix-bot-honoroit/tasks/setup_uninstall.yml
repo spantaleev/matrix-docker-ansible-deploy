@@ -9,8 +9,8 @@
   service:
     name: matrix-bot-honoroit
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   register: stopping_result
   when: "matrix_bot_honoroit_service_stat.stat.exists|bool"
 
@@ -22,7 +22,7 @@
 
 - name: Ensure systemd reloaded after matrix-bot-honoroit.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_bot_honoroit_service_stat.stat.exists|bool"
 
 - name: Ensure Matrix honoroit paths don't exist

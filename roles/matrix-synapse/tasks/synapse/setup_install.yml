@@ -5,7 +5,7 @@
   stat:
     path: "{{ matrix_synapse_media_store_path }}"
   register: local_path_media_store_stat
-  ignore_errors: yes
+  ignore_errors: true
 
 # This is separate and conditional, to ensure we don't execute it
 # if the path already exists or we failed to check, because it's mounted using fuse.
@@ -19,32 +19,32 @@
   when: "not local_path_media_store_stat.failed and not local_path_media_store_stat.stat.exists"
 
 - block:
-  - name: Ensure Synapse repository is present on self-build
-    git:
-      repo: "{{ matrix_synapse_container_image_self_build_repo }}"
-      dest: "{{ matrix_synapse_docker_src_files_path }}"
-      version: "{{ matrix_synapse_docker_image.split(':')[1] }}"
-      force: "yes"
-    register: matrix_synapse_git_pull_results
+    - name: Ensure Synapse repository is present on self-build
+      git:
+        repo: "{{ matrix_synapse_container_image_self_build_repo }}"
+        dest: "{{ matrix_synapse_docker_src_files_path }}"
+        version: "{{ matrix_synapse_docker_image.split(':')[1] }}"
+        force: "yes"
+      register: matrix_synapse_git_pull_results
 
-  - name: Check if Synapse Docker image exists
-    command: "{{ matrix_host_command_docker }} images --quiet --filter 'reference={{ matrix_synapse_docker_image }}'"
-    register: matrix_synapse_docker_image_check_result
+    - name: Check if Synapse Docker image exists
+      command: "{{ matrix_host_command_docker }} images --quiet --filter 'reference={{ matrix_synapse_docker_image }}'"
+      register: matrix_synapse_docker_image_check_result
 
-  # Invoking the `docker build` command here, instead of calling the `docker_image` Ansible module,
-  # because the latter does not support BuildKit.
-  # See: https://github.com/ansible-collections/community.general/issues/514
-  - name: Ensure Synapse Docker image is built
-    shell:
-      chdir: "{{ matrix_synapse_docker_src_files_path }}"
-      cmd: |
-        {{ matrix_host_command_docker }} build \
-        -t "{{ matrix_synapse_docker_image }}" \
-        -f docker/Dockerfile \
-        .
-    environment:
-      DOCKER_BUILDKIT: 1
-    when: "matrix_synapse_git_pull_results.changed|bool or matrix_synapse_docker_image_check_result.stdout == ''"
+    # Invoking the `docker build` command here, instead of calling the `docker_image` Ansible module,
+    # because the latter does not support BuildKit.
+    # See: https://github.com/ansible-collections/community.general/issues/514
+    - name: Ensure Synapse Docker image is built
+      shell:
+        chdir: "{{ matrix_synapse_docker_src_files_path }}"
+        cmd: |
+          {{ matrix_host_command_docker }} build \
+          -t "{{ matrix_synapse_docker_image }}" \
+          -f docker/Dockerfile \
+          .
+      environment:
+        DOCKER_BUILDKIT: 1
+      when: "matrix_synapse_git_pull_results.changed|bool or matrix_synapse_docker_image_check_result.stdout == ''"
   when: "matrix_synapse_container_image_self_build|bool"
 
 - name: Ensure Synapse Docker image is pulled
@@ -105,7 +105,7 @@
 
 - name: Ensure systemd reloaded after matrix-synapse.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_synapse_systemd_service_result.changed"
 
 - name: Ensure matrix-synapse-register-user script created

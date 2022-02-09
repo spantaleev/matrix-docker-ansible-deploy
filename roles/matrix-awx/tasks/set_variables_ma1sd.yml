@@ -66,7 +66,7 @@
   with_dict:
     'awx_matrix_ma1sd_auth_store': '{{ awx_matrix_ma1sd_auth_store }}'
     'awx_matrix_ma1sd_configuration_extension_yaml': '{{ awx_matrix_ma1sd_configuration_extension_yaml.splitlines() | to_json }}'
-  no_log: True
+  no_log: true
 
 - name: Save new 'Configure ma1sd' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1
@@ -77,7 +77,7 @@
 - name: Copy new 'Configure ma1sd' survey.json to target machine
   copy:
     src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_ma1sd.json'
-    dest:  '/matrix/awx/configure_ma1sd.json'
+    dest: '/matrix/awx/configure_ma1sd.json'
     mode: '0660'
 
 - name: Recreate 'Configure ma1sd (Advanced)' job template
@@ -94,10 +94,9 @@
     credential: "{{ member_id }} - AWX SSH Key"
     survey_enabled: true
     survey_spec: "{{ lookup('file', '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_ma1sd.json') }}"
-    become_enabled: yes
+    become_enabled: true
     state: present
     verbosity: 1
     tower_host: "https://{{ awx_host }}"
     tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
-    validate_certs: yes
-
+    validate_certs: true

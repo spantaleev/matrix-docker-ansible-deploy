@@ -7,7 +7,7 @@
       - ca-certificates
       - gnupg
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Ensure Docker's APT key is trusted
   apt_key:
@@ -22,7 +22,7 @@
   apt_repository:
     repo: "deb [arch={{ matrix_debian_arch }}] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable"
     state: present
-    update_cache: yes
+    update_cache: true
   when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure APT packages are installed
@@ -30,7 +30,7 @@
     name:
       - "{{ matrix_ntpd_package }}"
     state: latest
-    update_cache: yes
+    update_cache: true
 
 - name: Ensure Docker is installed
   apt:

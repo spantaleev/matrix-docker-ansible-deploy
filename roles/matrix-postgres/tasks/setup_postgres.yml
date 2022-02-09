@@ -65,7 +65,7 @@
     state: directory
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-    recurse: yes
+    recurse: true
   when: matrix_postgres_enabled|bool
 
 - name: Ensure Postgres environment variables file created
@@ -115,7 +115,7 @@
 
 - name: Ensure systemd reloaded after matrix-postgres.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_postgres_enabled|bool and matrix_postgres_systemd_service_result.changed"
 
 - include_tasks:
@@ -158,7 +158,7 @@
   service:
     name: matrix-postgres
     state: stopped
-    daemon_reload: yes
+    daemon_reload: true
   when: "not matrix_postgres_enabled|bool and matrix_postgres_service_stat.stat.exists"
 
 - name: Ensure matrix-postgres.service doesn't exist
@@ -169,7 +169,7 @@
 
 - name: Ensure systemd reloaded after matrix-postgres.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "not matrix_postgres_enabled|bool and matrix_postgres_service_stat.stat.exists"
 
 - name: Check existence of matrix-postgres local data path

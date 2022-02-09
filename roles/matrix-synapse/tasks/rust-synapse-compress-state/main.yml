@@ -1,3 +1,4 @@
+---
 # Pre-checks
 
 - name: Fail if Postgres not enabled
@@ -80,12 +81,12 @@
 # Row 3 contains a space when there's no result.
 
 - block:
-  - debug: var="matrix_synapse_rust_synapse_compress_state_find_rooms_command_result"
+    - debug: var="matrix_synapse_rust_synapse_compress_state_find_rooms_command_result"
 
-  - name: Fail if room find result is not what we expect
-    fail:
-      msg: >-
-        Expecting 4 lines in the "find rooms" result.
+    - name: Fail if room find result is not what we expect
+      fail:
+        msg: >-
+          Expecting 4 lines in the "find rooms" result.
   when: "matrix_synapse_rust_synapse_compress_state_find_rooms_command_result.failed or matrix_synapse_rust_synapse_compress_state_find_rooms_command_result.stdout_lines|length != 4"
 
 - block:

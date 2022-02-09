@@ -22,7 +22,7 @@
 
 - name: Ensure systemd reloaded after matrix-prometheus.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_prometheus_postgres_exporter_enabled|bool and matrix_prometheus_postgres_exporter_systemd_service_result.changed"
 
 #
@@ -38,8 +38,8 @@
   service:
     name: matrix-prometheus-postgres-exporter
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   register: stopping_result
   when: "not matrix_prometheus_postgres_exporter_enabled|bool and matrix_prometheus_postgres_exporter_service_stat.stat.exists"
 
@@ -51,5 +51,5 @@
 
 - name: Ensure systemd reloaded after matrix-prometheus-postgres-exporter.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "not matrix_prometheus_postgres_exporter_enabled|bool and matrix_prometheus_postgres_exporter_service_stat.stat.exists"

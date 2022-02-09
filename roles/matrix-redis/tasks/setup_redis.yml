@@ -33,7 +33,7 @@
     state: directory
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_username }}"
-    recurse: yes
+    recurse: true
   when: matrix_redis_enabled|bool
 
 - name: Ensure redis environment variables file created
@@ -55,7 +55,7 @@
 
 - name: Ensure systemd reloaded after matrix-redis.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_redis_enabled|bool and matrix_redis_systemd_service_result.changed"
 
 #
@@ -72,8 +72,8 @@
   service:
     name: matrix-redis
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   when: "not matrix_redis_enabled|bool and matrix_redis_service_stat.stat.exists"
 
 - name: Ensure matrix-redis.service doesn't exist
@@ -84,7 +84,7 @@
 
 - name: Ensure systemd reloaded after matrix-redis.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "not matrix_redis_enabled|bool and matrix_redis_service_stat.stat.exists"
 
 - name: Check existence of matrix-redis local data path

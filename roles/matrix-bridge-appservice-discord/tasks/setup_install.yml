@@ -54,8 +54,8 @@
   service:
     name: matrix-appservice-discord
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   failed_when: false
   when: "matrix_appservice_discord_stat_db.stat.exists"
 
@@ -105,7 +105,7 @@
 
 - name: Ensure systemd reloaded after matrix-appservice-discord.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_appservice_discord_systemd_service_result.changed"
 
 - name: Ensure matrix-appservice-discord.service restarted, if necessary

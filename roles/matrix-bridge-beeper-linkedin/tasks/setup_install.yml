@@ -15,10 +15,10 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_beeper_linkedin_base_path }}", when: true }
-    - { path: "{{ matrix_beeper_linkedin_config_path }}", when: true }
-    - { path: "{{ matrix_beeper_linkedin_data_path }}", when: true }
-    - { path: "{{ matrix_beeper_linkedin_docker_src_files_path }}", when: "{{ matrix_beeper_linkedin_container_image_self_build }}" }
+    - {path: "{{ matrix_beeper_linkedin_base_path }}", when: true}
+    - {path: "{{ matrix_beeper_linkedin_config_path }}", when: true}
+    - {path: "{{ matrix_beeper_linkedin_data_path }}", when: true}
+    - {path: "{{ matrix_beeper_linkedin_docker_src_files_path }}", when: "{{ matrix_beeper_linkedin_container_image_self_build }}"}
   when: "item.when|bool"
 
 
@@ -31,38 +31,38 @@
   when: "not matrix_beeper_linkedin_container_image_self_build|bool"
 
 - block:
-  - name: Ensure Beeper LinkedIn repository is present on self-build
-    git:
-      repo: "{{ matrix_beeper_linkedin_container_image_self_build_repo }}"
-      dest: "{{ matrix_beeper_linkedin_docker_src_files_path }}"
-      version: "{{ matrix_beeper_linkedin_container_image_self_build_branch }}"
-      force: "yes"
-    register: matrix_beeper_linkedin_git_pull_results
+    - name: Ensure Beeper LinkedIn repository is present on self-build
+      git:
+        repo: "{{ matrix_beeper_linkedin_container_image_self_build_repo }}"
+        dest: "{{ matrix_beeper_linkedin_docker_src_files_path }}"
+        version: "{{ matrix_beeper_linkedin_container_image_self_build_branch }}"
+        force: "yes"
+      register: matrix_beeper_linkedin_git_pull_results
 
-  # Building the container image (using the default Dockerfile) requires that a docker-requirements.txt file be generated.
-  # See: https://gitlab.com/beeper/linkedin/-/blob/94442db17ccb9769b377cdb8e4bf1cb3955781d7/.gitlab-ci.yml#L30-40
-  - name: Ensure docker-requirements.txt is generated before building Beeper LinkedIn Docker Image
-    command: |
-      {{ matrix_host_command_docker }} run \
-      --rm \
-      --entrypoint=/bin/sh \
-      --mount type=bind,src={{ matrix_beeper_linkedin_docker_src_files_path }},dst=/work \
-      -w /work \
-      docker.io/python:3.9.6-buster \
-      -c "pip install poetry && poetry export --without-hashes -E e2be -E images -E metrics | sed 's/==.*//g' > docker-requirements.txt"
+    # Building the container image (using the default Dockerfile) requires that a docker-requirements.txt file be generated.
+    # See: https://gitlab.com/beeper/linkedin/-/blob/94442db17ccb9769b377cdb8e4bf1cb3955781d7/.gitlab-ci.yml#L30-40
+    - name: Ensure docker-requirements.txt is generated before building Beeper LinkedIn Docker Image
+      command: |
+        {{ matrix_host_command_docker }} run \
+        --rm \
+        --entrypoint=/bin/sh \
+        --mount type=bind,src={{ matrix_beeper_linkedin_docker_src_files_path }},dst=/work \
+        -w /work \
+        docker.io/python:3.9.6-buster \
+        -c "pip install poetry && poetry export --without-hashes -E e2be -E images -E metrics | sed 's/==.*//g' > docker-requirements.txt"
 
-  - name: Ensure Beeper LinkedIn Docker image is built
-    docker_image:
-      name: "{{ matrix_beeper_linkedin_docker_image }}"
-      source: build
-      force_source: "{{ matrix_beeper_linkedin_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-      force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_beeper_linkedin_git_pull_results.changed }}"
-      build:
-        dockerfile: Dockerfile
-        path: "{{ matrix_beeper_linkedin_docker_src_files_path }}"
-        pull: yes
-        args:
-          TARGETARCH: "{{ matrix_architecture }}"
+    - name: Ensure Beeper LinkedIn Docker image is built
+      docker_image:
+        name: "{{ matrix_beeper_linkedin_docker_image }}"
+        source: build
+        force_source: "{{ matrix_beeper_linkedin_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+        force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_beeper_linkedin_git_pull_results.changed }}"
+        build:
+          dockerfile: Dockerfile
+          path: "{{ matrix_beeper_linkedin_docker_src_files_path }}"
+          pull: true
+          args:
+            TARGETARCH: "{{ matrix_architecture }}"
   when: "matrix_beeper_linkedin_container_image_self_build|bool"
 
 - name: Ensure beeper-linkedin config.yaml installed
@@ -90,5 +90,5 @@
 
 - name: Ensure systemd reloaded after matrix-beeper-linkedin.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_beeper_linkedin_systemd_service_result.changed"

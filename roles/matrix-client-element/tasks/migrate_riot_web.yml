@@ -10,8 +10,8 @@
   service:
     name: matrix-riot-web
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   register: stopping_result
   when: "matrix_client_element_enabled|bool and matrix_client_riot_web_service_stat.stat.exists"
 
@@ -23,7 +23,7 @@
 
 - name: Ensure systemd reloaded after matrix-riot-web.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_client_element_enabled|bool and matrix_client_riot_web_service_stat.stat.exists"
 
 - name: Check existence of /matrix/riot-web
