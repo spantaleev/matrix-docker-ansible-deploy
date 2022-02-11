@@ -2,13 +2,11 @@
 
 - name: Ensure Docker repository is enabled
   template:
-    src: "{{ role_path }}/files/yum.repos.d/{{ item }}"
-    dest: "/etc/yum.repos.d/{{ item }}"
+    src: "{{ role_path }}/files/yum.repos.d/docker-ce-centos.repo"
+    dest: "/etc/yum.repos.d/docker-ce.repo"
     owner: "root"
     group: "root"
     mode: 0644
-  with_items:
-    - docker-ce.repo
   when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure Docker's RPM key is trusted

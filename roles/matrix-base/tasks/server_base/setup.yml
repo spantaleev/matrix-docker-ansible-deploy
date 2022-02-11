@@ -4,7 +4,10 @@
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version|int < 8
 
 - include_tasks: "{{ role_path }}/tasks/server_base/setup_redhat8.yml"
-  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7
+  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7 and ansible_distribution_major_version|int < 30
+
+- include_tasks: "{{ role_path }}/tasks/server_base/setup_fedora.yml"
+  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 30
 
 - block:
   # ansible_lsb is only available if lsb-release is installed.
