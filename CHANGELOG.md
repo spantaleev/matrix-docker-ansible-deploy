@@ -1644,7 +1644,7 @@ Additional details are available in [Setting up the LDAP authentication password
 
 ## Support for controlling public registration and room auto-join
 
-The playbook now lets you enable public registration for users (controlled via `matrix_synapse_enable_registration`).
+The playbook now lets you enable public registration for users (controlled via `matrix_homeserver_enable_registration`).
 By default, public registration is forbidden.
 
 You can also make people automatically get auto-joined to rooms (controlled via `matrix_synapse_auto_join_rooms`).

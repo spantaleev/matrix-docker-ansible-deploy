@@ -42,9 +42,9 @@ If you'd like to change the default email templates used by ma1sd, take a look a
 
 To use the [Registration](https://github.com/ma1uta/ma1sd/blob/master/docs/features/registration.md) feature of ma1sd, you can make use of the following variables:
 
-- `matrix_synapse_enable_registration` - to enable user-initiated registration in Synapse
+- `matrix_homeserver_enable_registration` - to enable user-initiated registration in Synapse
 
-- `matrix_synapse_enable_registration_captcha` - to validate registering users using reCAPTCHA, as described in the [enabling reCAPTCHA](configuring_captcha.md) documentation.
+- `matrix_homeserver_enable_registration_captcha` - to validate registering users using reCAPTCHA, as described in the [enabling reCAPTCHA](configuring_captcha.md) documentation.
 
 - `matrix_synapse_registrations_require_3pid` - to control the types of 3pid (`'email'`, `'msisdn'`) required by the Synapse server for registering
 

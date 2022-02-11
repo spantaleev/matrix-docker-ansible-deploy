@@ -50,7 +50,7 @@ If you'd rather **keep your server private** (public registration closed, as is 
 To **open up user registration publicly** (usually **not recommended**), consider using the following configuration:
 
 ```yaml
-matrix_synapse_enable_registration: true
+matrix_homeserver_enable_registration: true
 ```
 
 and running the [installation](installing.md) procedure once again.
