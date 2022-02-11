@@ -5,6 +5,11 @@
     msg: "Shared Secret Auth is enabled, but no secret has been set in matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret"
   when: "matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret == ''"
 
+- name: Fail if no Shared Secret Auth login types enabled
+  fail:
+    msg: "Shared Secret Auth is enabled, but none of the login types are"
+  when: "not (matrix_synapse_ext_password_provider_shared_secret_auth_m_login_password_support_enabled or matrix_synapse_ext_password_provider_shared_secret_auth_com_devture_shared_secret_auth_support_enabled)"
+
 - name: Download matrix-synapse-shared-secret-auth
   get_url:
     url: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_download_url }}"
@@ -15,7 +20,17 @@
     group: "{{ matrix_user_groupname }}"
 
 - set_fact:
-    matrix_synapse_password_providers_enabled: true
+    matrix_synapse_modules: |
+      {{
+        matrix_synapse_modules|default([])
+        +
+        [
+          {
+            "module": "shared_secret_authenticator.SharedSecretAuthProvider",
+            "config": matrix_synapse_ext_password_provider_shared_secret_config
+          }
+        ]
+      }}
 
     matrix_synapse_container_extra_arguments: >
       {{ matrix_synapse_container_extra_arguments|default([]) }}
