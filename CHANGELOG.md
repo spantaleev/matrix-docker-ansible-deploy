@@ -1,3 +1,12 @@
+# 2022-02-12
+
+## matrix_encryption_disabler support
+
+We now support installing the [matrix_encryption_disabler](https://github.com/digitalentity/matrix_encryption_disabler) Synapse module, which lets you prevent End-to-End-Encryption from being enabled by users on your homeserver. The popular opinion is that this is dangerous and shouldn't be done, but there are valid use cases for disabling encryption discussed [here](https://github.com/matrix-org/synapse/issues/4401).
+
+To enable this module (and prevent encryption from being used on your homserver), add `matrix_synapse_ext_encryption_disabler_enabled: true` to your configuration. This module provides further customization. Check its other configuration settings (and defaults) in `roles/matrix-synapse/defaults/main.yml`.
+
+
 # 2022-02-01
 
 ## matrix-hookshot bridging support
