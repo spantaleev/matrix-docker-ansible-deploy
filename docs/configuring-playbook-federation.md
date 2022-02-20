@@ -59,7 +59,7 @@ matrix_synapse_http_listener_resource_names: ["client","federation"]
 # Any port can be used but in this case we use 443
 matrix_federation_public_port: 443
 matrix_synapse_federation_port_enabled: false
-# Note tht the following change might not be "required per se" but probably will be due to the proxying of the traffic through the CDN proxy servers (CloudFlare for instance). The security impact of doing this should be minimal as your CDN itself will encrypt the traffic no matter what on their proxy servers. You could however first try and see if federation works while setting the following to true.
+# Note that the following change might not be "required per se" but probably will be due to the proxying of the traffic through the CDN proxy servers (CloudFlare for instance). The security impact of doing this should be minimal as your CDN itself will encrypt the traffic no matter what on their proxy servers. You could however first try and see if federation works while setting the following to true.
 matrix_synapse_tls_federation_listener_enabled: false
 ```
 
