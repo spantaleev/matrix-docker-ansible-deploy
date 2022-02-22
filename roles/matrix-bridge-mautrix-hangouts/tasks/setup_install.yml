@@ -50,10 +50,10 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_mautrix_hangouts_base_path }}", when: true }
-    - { path: "{{ matrix_mautrix_hangouts_config_path }}", when: true }
-    - { path: "{{ matrix_mautrix_hangouts_data_path }}", when: true }
-    - { path: "{{ matrix_mautrix_hangouts_docker_src_files_path }}", when: "{{ matrix_mautrix_hangouts_container_image_self_build }}" }
+    - {path: "{{ matrix_mautrix_hangouts_base_path }}", when: true}
+    - {path: "{{ matrix_mautrix_hangouts_config_path }}", when: true}
+    - {path: "{{ matrix_mautrix_hangouts_data_path }}", when: true}
+    - {path: "{{ matrix_mautrix_hangouts_docker_src_files_path }}", when: "{{ matrix_mautrix_hangouts_container_image_self_build }}"}
   when: "item.when|bool"
 
 - name: Ensure Mautrix Hangots repository is present on self build
@@ -73,7 +73,7 @@
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_hangouts_docker_src_files_path }}"
-      pull: yes
+      pull: true
   when: "matrix_mautrix_hangouts_container_image_self_build|bool"
 
 - name: Check if an old database file already exists
@@ -85,8 +85,8 @@
   service:
     name: matrix-mautrix-hangouts
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   failed_when: false
   when: "matrix_mautrix_hangouts_stat_database.stat.exists"
 
@@ -119,7 +119,7 @@
 
 - name: Ensure systemd reloaded after matrix-mautrix-hangouts.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_mautrix_hangouts_systemd_service_result.changed"
 
 - name: Ensure matrix-mautrix-hangouts.service restarted, if necessary

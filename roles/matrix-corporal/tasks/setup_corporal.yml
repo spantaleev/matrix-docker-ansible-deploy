@@ -35,7 +35,7 @@
     build:
       dockerfile: etc/docker/Dockerfile
       path: "{{ matrix_corporal_container_src_files_path }}"
-      pull: yes
+      pull: true
   when: "matrix_corporal_enabled|bool and matrix_corporal_container_image_self_build|bool"
 
 - name: Ensure Matrix Corporal Docker image is pulled
@@ -65,7 +65,7 @@
 
 - name: Ensure systemd reloaded after matrix-corporal.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_corporal_enabled|bool and matrix_corporal_systemd_service_result.changed"
 
 
@@ -83,8 +83,8 @@
   service:
     name: matrix-corporal
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   register: stopping_result
   when: "not matrix_corporal_enabled|bool and matrix_corporal_service_stat.stat.exists"
 
@@ -96,7 +96,7 @@
 
 - name: Ensure systemd reloaded after matrix-corporal.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "not matrix_corporal_enabled|bool and matrix_corporal_service_stat.stat.exists"
 
 - name: Ensure matrix-corporal files don't exist

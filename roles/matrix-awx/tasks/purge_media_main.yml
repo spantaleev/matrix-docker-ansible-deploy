@@ -1,3 +1,4 @@
+---
 
 - name: Ensure dateutils is installed in AWX
   delegate_to: 127.0.0.1
@@ -8,13 +9,13 @@
 - name: Include vars in matrix_vars.yml
   include_vars:
     file: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
-  no_log: True
+  no_log: true
 
 - name: Ensure curl and jq intalled on target machine
   apt:
     pkg:
-    - curl
-    - jq
+      - curl
+      - jq
     state: present
 
 - name: Collect the internal IP of the matrix-synapse container
@@ -25,7 +26,7 @@
   shell: |
     curl -XPOST -d '{"type":"m.login.password", "user":"admin-janitor", "password":"{{ awx_janitor_user_password }}"}' "{{ awx_synapse_container_ip.stdout }}:{{ matrix_synapse_container_client_api_port }}/_matrix/client/r0/login" | jq '.access_token'
   register: awx_janitors_token
-  no_log: True
+  no_log: true
 
 - name: Generate list of dates to purge to
   delegate_to: 127.0.0.1
@@ -37,16 +38,16 @@
   register: awx_local_media_size_before
   when: awx_purge_media_type == "Local Media"
   async: 600
-  ignore_errors: yes
-  no_log: True
+  ignore_errors: true
+  no_log: true
 
 - name: Calculate initial size of remote media repository
   shell: du -sh /matrix/synapse/storage/media-store/remote*
   register: awx_remote_media_size_before
   when: awx_purge_media_type == "Remote Media"
-  async: 600 
-  ignore_errors: yes
-  no_log: True
+  async: 600
+  ignore_errors: true
+  no_log: true
 
 - name: Purge local media with loop
   include_tasks: purge_media_local.yml
@@ -62,15 +63,15 @@
   shell: du -sh /matrix/synapse/storage/media-store/local*
   register: awx_local_media_size_after
   when: awx_purge_media_type == "Local Media"
-  ignore_errors: yes
-  no_log: True
+  ignore_errors: true
+  no_log: true
 
 - name: Calculate final size of remote media repository
   shell: du -sh /matrix/synapse/storage/media-store/remote*
   register: awx_remote_media_size_after
   when: awx_purge_media_type == "Remote Media"
-  ignore_errors: yes
-  no_log: True
+  ignore_errors: true
+  no_log: true
 
 - name: Print size of local media repository before purge
   debug:

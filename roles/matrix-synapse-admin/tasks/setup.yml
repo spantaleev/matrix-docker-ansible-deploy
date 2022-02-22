@@ -30,7 +30,7 @@
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_synapse_admin_docker_src_files_path }}"
-      pull: yes
+      pull: true
   when: "matrix_synapse_admin_enabled|bool and matrix_synapse_admin_container_image_self_build|bool"
 
 - name: Ensure matrix-synapse-admin.service installed
@@ -43,7 +43,7 @@
 
 - name: Ensure systemd reloaded after matrix-synapse-admin.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_synapse_admin_enabled|bool and matrix_synapse_admin_systemd_service_result.changed"
 
 #
@@ -59,8 +59,8 @@
   service:
     name: matrix-synapse-admin
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   register: stopping_result
   when: "not matrix_synapse_admin_enabled|bool and matrix_synapse_admin_service_stat.stat.exists"
 
@@ -72,7 +72,7 @@
 
 - name: Ensure systemd reloaded after matrix-synapse-admin.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "not matrix_synapse_admin_enabled|bool and matrix_synapse_admin_service_stat.stat.exists"
 
 - name: Ensure matrix-synapse-admin Docker image doesn't exist

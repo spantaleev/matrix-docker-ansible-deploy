@@ -4,7 +4,7 @@
   stat:
     path: "{{ matrix_dendrite_media_store_path }}"
   register: local_path_media_store_stat
-  ignore_errors: yes
+  ignore_errors: true
 
 # This is separate and conditional, to ensure we don't execute it
 # if the path already exists or we failed to check, because it's mounted using fuse.
@@ -67,7 +67,7 @@
 
 - name: Ensure systemd reloaded after matrix-dendrite.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_dendrite_systemd_service_result.changed|bool"
 
 - name: Ensure matrix-dendrite-create-account script created

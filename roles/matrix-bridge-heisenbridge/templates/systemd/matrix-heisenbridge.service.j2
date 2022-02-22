@@ -41,8 +41,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-heisenbridge \
           --listen-port 9898 \
           {{ matrix_heisenbridge_homeserver_url }}
 
-ExecStopPost=-{{ matrix_host_command_docker }} kill matrix-heisenbridge
-ExecStopPost=-{{ matrix_host_command_docker }} rm matrix-heisenbridge
+ExecStop=-{{ matrix_host_command_docker }} kill matrix-heisenbridge
+ExecStop=-{{ matrix_host_command_docker }} rm matrix-heisenbridge
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-heisenbridge

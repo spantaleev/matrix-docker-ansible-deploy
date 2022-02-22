@@ -16,10 +16,10 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_mx_puppet_skype_base_path }}", when: true }
-    - { path: "{{ matrix_mx_puppet_skype_config_path }}", when: true }
-    - { path: "{{ matrix_mx_puppet_skype_data_path }}", when: true }
-    - { path: "{{ matrix_mx_puppet_skype_docker_src_files_path }}", when: "{{ matrix_mx_puppet_skype_container_image_self_build }}" }
+    - {path: "{{ matrix_mx_puppet_skype_base_path }}", when: true}
+    - {path: "{{ matrix_mx_puppet_skype_config_path }}", when: true}
+    - {path: "{{ matrix_mx_puppet_skype_data_path }}", when: true}
+    - {path: "{{ matrix_mx_puppet_skype_docker_src_files_path }}", when: "{{ matrix_mx_puppet_skype_container_image_self_build }}"}
   when: matrix_mx_puppet_skype_enabled|bool and item.when|bool
 
 - name: Check if an old database file already exists
@@ -31,8 +31,8 @@
   service:
     name: matrix-mx-puppet-skype
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   failed_when: false
   when: "matrix_mx_puppet_skype_stat_database.stat.exists"
 
@@ -91,7 +91,7 @@
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mx_puppet_skype_docker_src_files_path }}"
-      pull: yes
+      pull: true
   when: "matrix_mx_puppet_skype_enabled|bool and matrix_mx_puppet_skype_container_image_self_build|bool"
 
 - name: Ensure mx-puppet-skype config.yaml installed
@@ -119,7 +119,7 @@
 
 - name: Ensure systemd reloaded after matrix-mx-puppet-skype.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_mx_puppet_skype_systemd_service_result.changed"
 
 - name: Ensure matrix-mx-puppet-skype.service restarted, if necessary

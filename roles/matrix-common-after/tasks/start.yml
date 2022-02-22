@@ -6,7 +6,7 @@
 
 - name: Ensure systemd is reloaded
   service:
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: Ensure Matrix services are stopped
   service:
@@ -35,39 +35,39 @@
   become: false
 
 - block:
-  - name: Populate service facts
-    service_facts:
+    - name: Populate service facts
+      service_facts:
 
-  - name: Fail if service isn't detected to be running
-    fail:
-      msg: >-
-        {{ item }} was not detected to be running.
-        It's possible that there's a configuration problem or another service on your server interferes with it (uses the same ports, etc.).
-        Try running `systemctl status {{ item }}` and `journalctl -fu {{ item }}` on the server to investigate.
-        If you're on a slow or overloaded server, it may be that services take a longer time to start and that this error is a false-positive.
-        You can consider raising the value of the `matrix_common_after_systemd_service_start_wait_for_timeout_seconds` variable.
-        See `roles/matrix-common-after/defaults/main.yml` for more details about that.
-    with_items: "{{ matrix_systemd_services_list }}"
-    when:
-      - "item.endswith('.service') and (ansible_facts.services[item]|default(none) is none or ansible_facts.services[item].state != 'running')"
+    - name: Fail if service isn't detected to be running
+      fail:
+        msg: >-
+          {{ item }} was not detected to be running.
+          It's possible that there's a configuration problem or another service on your server interferes with it (uses the same ports, etc.).
+          Try running `systemctl status {{ item }}` and `journalctl -fu {{ item }}` on the server to investigate.
+          If you're on a slow or overloaded server, it may be that services take a longer time to start and that this error is a false-positive.
+          You can consider raising the value of the `matrix_common_after_systemd_service_start_wait_for_timeout_seconds` variable.
+          See `roles/matrix-common-after/defaults/main.yml` for more details about that.
+      with_items: "{{ matrix_systemd_services_list }}"
+      when:
+        - "item.endswith('.service') and (ansible_facts.services[item]|default(none) is none or ansible_facts.services[item].state != 'running')"
   when: " ansible_distribution != 'Archlinux'"
 
 - block:
-  # Currently there is a bug in ansible that renders is incompatible with systemd.
-  # service_facts is not collecting the data successfully.
-  # Therefore iterating here manually
-  - name: Fetch systemd information
-    systemd:
-      name: "{{ item }}"
-    register: systemdstatus
-    with_items: "{{ matrix_systemd_services_list }}"
+    # Currently there is a bug in ansible that renders is incompatible with systemd.
+    # service_facts is not collecting the data successfully.
+    # Therefore iterating here manually
+    - name: Fetch systemd information
+      systemd:
+        name: "{{ item }}"
+      register: systemdstatus
+      with_items: "{{ matrix_systemd_services_list }}"
 
-  - name: Fail if service isn't detected to be running
-    fail:
-      msg: >-
-        {{ item.item }} was not detected to be running.
-        It's possible that there's a configuration problem or another service on your server interferes with it (uses the same ports, etc.).
-        Try running `systemctl status {{ item.item }}` and `journalctl -fu {{ item.item }}` on the server to investigate.
-    with_items: "{{ systemdstatus.results }}"
-    when: "item.status['ActiveState'] != 'active'"
+    - name: Fail if service isn't detected to be running
+      fail:
+        msg: >-
+          {{ item.item }} was not detected to be running.
+          It's possible that there's a configuration problem or another service on your server interferes with it (uses the same ports, etc.).
+          Try running `systemctl status {{ item.item }}` and `journalctl -fu {{ item.item }}` on the server to investigate.
+      with_items: "{{ systemdstatus.results }}"
+      when: "item.status['ActiveState'] != 'active'"
   when: "ansible_distribution == 'Archlinux'"

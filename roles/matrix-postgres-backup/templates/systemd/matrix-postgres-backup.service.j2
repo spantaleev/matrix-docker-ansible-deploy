@@ -21,8 +21,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-postgres-backu
 			--mount type=bind,src={{ matrix_postgres_backup_path }},dst=/backups \
 			{{ matrix_postgres_backup_docker_image_to_use }}
 
-ExecStopPost=-{{ matrix_host_command_docker }} stop matrix-postgres-backup
-ExecStopPost=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-postgres-backup 2>/dev/null'
+ExecStop=-{{ matrix_host_command_docker }} stop matrix-postgres-backup
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-postgres-backup 2>/dev/null'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-postgres-backup

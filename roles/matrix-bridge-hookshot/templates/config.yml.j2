@@ -1,0 +1,127 @@
+#jinja2: lstrip_blocks: "True"
+bridge:
+  # Basic homeserver configuration
+  #
+  domain: {{ matrix_domain }}
+  url: {{ matrix_hookshot_homeserver_address }}
+  mediaUrl: {{ matrix_hookshot_homeserver_address }}
+  port: {{ matrix_hookshot_appservice_port }}
+  bindAddress: 0.0.0.0
+{% if matrix_hookshot_github_enabled %}
+github:
+  # (Optional) Configure this to enable GitHub support
+  #
+  auth:
+    # Authentication for the GitHub App.
+    #
+    id: {{ matrix_hookshot_github_appid }}
+    privateKeyFile: /data/{{ matrix_hookshot_github_private_key_file }}
+  webhook:
+    # Webhook settings for the GitHub app.
+    #
+    secret: {{ matrix_hookshot_github_secret|to_json }}
+{% if matrix_hookshot_github_oauth_enabled %}
+  oauth:
+    # (Optional) Settings for allowing users to sign in via OAuth.
+    #
+    client_id: {{ matrix_hookshot_github_oauth_id }}
+    client_secret: {{ matrix_hookshot_github_oauth_secret|to_json }}
+    redirect_uri: {{ matrix_hookshot_github_oauth_uri }}
+{% endif %}
+  defaultOptions:
+    # (Optional) Default options for GitHub connections.
+    #
+    ignoreHooks: {{ matrix_hookshot_github_ignore_hooks }}
+    commandPrefix: "{{ matrix_hookshot_github_command_prefix }}"
+    showIssueRoomLink: {{ matrix_hookshot_github_show_issue_room_link }}
+    prDiff: {{ matrix_hookshot_github_pr_diff }}
+    includingLabels:{{ matrix_hookshot_github_including_labels }}
+    excludingLabels: {{ matrix_hookshot_github_excluding_labels }}
+{% endif %}
+{% if matrix_hookshot_gitlab_enabled %}
+gitlab:
+  # (Optional) Configure this to enable GitLab support
+  #
+  instances:
+    {{ matrix_hookshot_gitlab_instances }}
+  webhook:
+    secret: {{ matrix_hookshot_gitlab_secret|to_json }}
+{% endif %}
+{% if matrix_hookshot_jira_enabled %}
+jira:
+  # (Optional) Configure this to enable Jira support
+  #
+  webhook:
+    secret: {{ matrix_hookshot_jira_secret|to_json }}
+{% if matrix_hookshot_jira_oauth_enabled %}
+  oauth:
+    client_id: {{ matrix_hookshot_jira_oauth_id|to_json }}
+    client_secret: {{ matrix_hookshot_jira_oauth_secret|to_json }}
+    redirect_uri: {{ matrix_hookshot_jira_oauth_uri }}
+{% endif %}
+{% endif %}
+{% if matrix_hookshot_generic_enabled %}
+generic:
+  # (Optional) Support for generic webhook events. `allowJsTransformationFunctions` will allow users to write short transformation snippets in code, and thus is unsafe in untrusted environments
+  #
+  enabled: {{ matrix_hookshot_generic_enabled }}
+  urlPrefix: {{ matrix_hookshot_generic_urlprefix }}
+  allowJsTransformationFunctions: {{ matrix_hookshot_generic_allow_js_transformation_functions }}
+  userIdPrefix: {{ matrix_hookshot_generic_user_id_prefix|to_json }}
+{% endif %}
+{% if matrix_hookshot_figma_enabled %}
+figma:
+  # (Optional) Configure this to enable Figma support
+  #
+  publicUrl: {{ matrix_hookshot_figma_publicUrl }}
+  instances: {{ matrix_hookshot_figma_instances }}
+{% endif %}
+{% if matrix_hookshot_provisioning_enabled %}
+provisioning:
+  # (Optional) Provisioning API for integration managers
+  #
+  secret: {{ matrix_hookshot_provisioning_secret|to_json }}
+{% endif %}
+passFile:
+  # A passkey used to encrypt tokens stored inside the bridge.
+  # Run openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 to generate
+  #
+  /data/passkey.pem
+bot:
+  # (Optional) Define profile information for the bot user
+  #
+  displayname: {{ matrix_hookshot_bot_displayname }}
+  avatar: {{ matrix_hookshot_bot_avatar }}
+metrics:
+  # (Optional) Prometheus metrics support
+  #
+  enabled: {{ matrix_hookshot_metrics_enabled }}
+logging:
+  # (Optional) Logging settings. You can have a severity debug,info,warn,error
+  #
+  level: info
+{% if matrix_hookshot_permissions %}
+permissions: {{ matrix_hookshot_permissions }}
+{% endif %}
+listeners:
+  # (Optional) HTTP Listener configuration.
+  # Bind resource endpoints to ports and addresses.
+  # 'resources' may be any of webhooks, widgets, metrics, provisioning, appservice
+  #
+{# always enabled since all services need it #}
+  - port: {{ matrix_hookshot_webhook_port }}
+    bindAddress: 0.0.0.0
+    resources:
+      - webhooks
+{% if matrix_hookshot_metrics_enabled %}
+  - port: {{ matrix_hookshot_metrics_port }}
+    bindAddress: 0.0.0.0
+    resources:
+      - metrics
+{% endif %}
+{% if matrix_hookshot_provisioning_enabled %}
+  - port: {{ matrix_hookshot_provisioning_port }}
+    bindAddress: 0.0.0.0
+    resources:
+      - provisioning
+{% endif %}

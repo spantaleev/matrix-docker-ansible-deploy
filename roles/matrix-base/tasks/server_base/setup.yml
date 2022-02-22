@@ -1,10 +1,13 @@
 ---
 
-- include_tasks: "{{ role_path }}/tasks/server_base/setup_centos.yml"
-  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version < '8'
+- include_tasks: "{{ role_path }}/tasks/server_base/setup_redhat.yml"
+  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version|int < 8
 
-- include_tasks: "{{ role_path }}/tasks/server_base/setup_centos8.yml"
-  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version > '7'
+- include_tasks: "{{ role_path }}/tasks/server_base/setup_redhat8.yml"
+  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7 and ansible_distribution_major_version|int < 30
+
+- include_tasks: "{{ role_path }}/tasks/server_base/setup_fedora.yml"
+  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 30
 
 - block:
   # ansible_lsb is only available if lsb-release is installed.
@@ -13,7 +16,7 @@
       name:
         - lsb-release
       state: present
-      update_cache: yes
+      update_cache: true
     register: lsb_release_installation_result
 
   - name: Reread ansible_lsb facts if lsb-release got installed
@@ -34,10 +37,10 @@
   service:
     name: docker
     state: started
-    enabled: yes
+    enabled: true
 
 - name: "Ensure {{ matrix_ntpd_service }} is started and autoruns"
   service:
     name: "{{ matrix_ntpd_service }}"
     state: started
-    enabled: yes
+    enabled: true

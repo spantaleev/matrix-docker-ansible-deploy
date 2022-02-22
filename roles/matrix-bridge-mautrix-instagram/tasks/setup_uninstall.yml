@@ -8,8 +8,8 @@
   service:
     name: matrix-mautrix-instagram
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   when: "matrix_mautrix_instagram_service_stat.stat.exists"
 
 - name: Ensure matrix-mautrix-instagram.service doesn't exist
@@ -20,5 +20,5 @@
 
 - name: Ensure systemd reloaded after matrix-mautrix-instagram.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_mautrix_instagram_service_stat.stat.exists"

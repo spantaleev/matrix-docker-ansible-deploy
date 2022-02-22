@@ -117,6 +117,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (optional)
 
+- [Setting up matrix-hookshot](configuring-playbook-bridge-hookshot.md) - a bridge between Matrix and multiple project management services, such as [GitHub](https://github.com), [GitLab](https://about.gitlab.com) and [JIRA](https://www.atlassian.com/software/jira). (optional)
+
 - [Setting up MX Puppet Skype bridging](configuring-playbook-bridge-mx-puppet-skype.md) (optional)
 
 - [Setting up MX Puppet Slack bridging](configuring-playbook-bridge-mx-puppet-slack.md) (optional)

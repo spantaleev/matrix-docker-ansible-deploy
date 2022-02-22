@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-hookshot service
+  stat:
+    path: "{{ matrix_systemd_path }}/matrix-hookshot.service"
+  register: matrix_hookshot_service_stat
+
+- name: Ensure matrix-hookshot is stopped
+  service:
+    name: matrix-hookshot
+    state: stopped
+    enabled: false
+    daemon_reload: true
+  when: "matrix_hookshot_service_stat.stat.exists"
+
+- name: Ensure matrix-hookshot.service doesn't exist
+  file:
+    path: "{{ matrix_systemd_path }}/matrix-hookshot.service"
+    state: absent
+  when: "matrix_hookshot_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-hookshot.service removal
+  service:
+    daemon_reload: true
+  when: "matrix_hookshot_service_stat.stat.exists"

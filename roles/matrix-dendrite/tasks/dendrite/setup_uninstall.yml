@@ -1,3 +1,5 @@
+---
+
 - name: Check existence of matrix-dendrite service
   stat:
     path: "{{ matrix_systemd_path }}/matrix-dendrite.service"
@@ -7,7 +9,7 @@
   service:
     name: matrix-dendrite
     state: stopped
-    daemon_reload: yes
+    daemon_reload: true
   register: stopping_result
   when: "matrix_dendrite_service_stat.stat.exists"
 
@@ -19,7 +21,7 @@
 
 - name: Ensure systemd reloaded after matrix-dendrite.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_dendrite_service_stat.stat.exists"
 
 - name: Ensure Dendrite Docker image doesn't exist

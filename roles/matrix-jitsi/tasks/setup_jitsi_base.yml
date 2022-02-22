@@ -1,5 +1,7 @@
 ---
 
+- import_tasks: "{{ role_path }}/../matrix-base/tasks/util/ensure_openssl_installed.yml"
+
 #
 # Tasks related to setting up jitsi
 #
@@ -12,7 +14,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_jitsi_base_path }}", when: true }
+    - {path: "{{ matrix_jitsi_base_path }}", when: true}
   when: matrix_jitsi_enabled|bool and item.when
 
 #

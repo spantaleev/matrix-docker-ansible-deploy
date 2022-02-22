@@ -1,9 +1,10 @@
+---
 # matrix-prometheus-postgres-exporter is an Prometheus exporter for postgres metrics
 # See: https://github.com/prometheus-community/postgres_exporter
 
 matrix_prometheus_postgres_exporter_enabled: false
 
-matrix_prometheus_postgres_exporter_version: v0.10.0
+matrix_prometheus_postgres_exporter_version: v0.10.1
 matrix_prometheus_postgres_exporter_port: 9187
 
 matrix_prometheus_postgres_exporter_docker_image: "quay.io/prometheuscommunity/postgres-exporter:{{ matrix_prometheus_postgres_exporter_version }}"
@@ -11,8 +12,8 @@ matrix_prometheus_postgres_exporter_docker_image_force_pull: "{{ matrix_promethe
 
 # A list of extra arguments to pass to the container
 matrix_prometheus_postgres_exporter_container_extra_arguments: ["-e PG_EXPORTER_AUTO_DISCOVER_DATABASES=true",
- "-e PG_EXPORTER_WEB_LISTEN_ADDRESS=\":{{matrix_prometheus_postgres_exporter_port}}\"",
- "-e DATA_SOURCE_NAME=\"postgresql://{{matrix_prometheus_postgres_exporter_database_username}}:{{matrix_prometheus_postgres_exporter_database_password}}@{{matrix_prometheus_postgres_exporter_database_hostname}}:5432/{{matrix_prometheus_postgres_exporter_database_name}}?sslmode=disable\"" ]
+                                                                "-e PG_EXPORTER_WEB_LISTEN_ADDRESS=\":{{matrix_prometheus_postgres_exporter_port}}\"",
+                                                                "-e DATA_SOURCE_NAME=\"postgresql://{{matrix_prometheus_postgres_exporter_database_username}}:{{matrix_prometheus_postgres_exporter_database_password}}@{{matrix_prometheus_postgres_exporter_database_hostname}}:5432/{{matrix_prometheus_postgres_exporter_database_name}}?sslmode=disable\""]
 
 # List of systemd services that matrix-prometheus-postgres-exporter.service depends on
 matrix_prometheus_postgres_exporter_systemd_required_services_list: ['docker.service']
@@ -46,4 +47,4 @@ matrix_prometheus_postgres_exporter_database_name: 'matrix_prometheus_postgres_e
 matrix_prometheus_postgres_exporter_container_http_host_bind_port: ''
 
 matrix_prometheus_postgres_exporter_dashboard_urls:
-- "https://grafana.com/api/dashboards/9628/revisions/7/download"
+  - "https://grafana.com/api/dashboards/9628/revisions/7/download"

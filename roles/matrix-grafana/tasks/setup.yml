@@ -77,7 +77,7 @@
 
 - name: Ensure systemd reloaded after matrix-grafana.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_grafana_enabled|bool and matrix_grafana_systemd_service_result.changed"
 
 #
@@ -93,8 +93,8 @@
   service:
     name: matrix-grafana
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   register: stopping_result
   when: "not matrix_grafana_enabled|bool and matrix_grafana_service_stat.stat.exists"
 
@@ -106,6 +106,5 @@
 
 - name: Ensure systemd reloaded after matrix-grafana.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "not matrix_grafana_enabled|bool and matrix_grafana_service_stat.stat.exists"
-

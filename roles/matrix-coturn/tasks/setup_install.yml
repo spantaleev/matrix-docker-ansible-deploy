@@ -14,7 +14,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_coturn_docker_src_files_path }}", when: "{{ matrix_coturn_container_image_self_build }}"}
+    - {path: "{{ matrix_coturn_docker_src_files_path }}", when: "{{ matrix_coturn_container_image_self_build }}"}
   when: "item.when|bool"
 
 - name: Ensure Coturn image is pulled
@@ -43,7 +43,7 @@
         build:
           dockerfile: "{{ matrix_coturn_container_image_self_build_repo_dockerfile_path }}"
           path: "{{ matrix_coturn_docker_src_files_path }}"
-          pull: yes
+          pull: true
   when: "matrix_coturn_container_image_self_build|bool"
 
 - name: Ensure Coturn configuration path exists
@@ -101,5 +101,5 @@
 
 - name: Ensure systemd reloaded if systemd units changed
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_coturn_systemd_service_change_results.changed"

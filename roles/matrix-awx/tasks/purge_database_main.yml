@@ -9,20 +9,20 @@
 - name: Include vars in matrix_vars.yml
   include_vars:
     file: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
-  no_log: True
+  no_log: true
 
 - name: Ensure curl and jq intalled on target machine
   apt:
     pkg:
-    - curl
-    - jq
+      - curl
+      - jq
     state: present
 
 - name: Collect before shrink size of Synapse database
   shell: du -sh /matrix/postgres/data
   register: awx_db_size_before_stat
   when: (awx_purge_mode.find("Perform final shrink") != -1)
-  no_log: True
+  no_log: true
 
 - name: Collect the internal IP of the matrix-synapse container
   shell: "/usr/bin/docker inspect --format '{''{range.NetworkSettings.Networks}''}{''{.IPAddress}''}{''{end}''}' matrix-synapse"
@@ -34,7 +34,7 @@
     curl -X POST -d '{"type":"m.login.password", "user":"admin-janitor", "password":"{{ awx_janitor_user_password }}"}' "{{ awx_synapse_container_ip.stdout }}:{{ matrix_synapse_container_client_api_port }}/_matrix/client/r0/login" | jq '.access_token'
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1)
   register: awx_janitors_token
-  no_log: True
+  no_log: true
 
 - name: Copy build_room_list.py script to target machine
   copy:
@@ -55,7 +55,7 @@
   fetch:
     src: /tmp/room_list_complete.json
     dest: "/tmp/{{ subscription_id }}_room_list_complete.json"
-    flat: yes
+    flat: true
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1)
 
 - name: Remove complete room list from target machine
@@ -80,7 +80,7 @@
 - name: Setting host fact awx_room_list_no_local_users
   set_fact:
     awx_room_list_no_local_users: "{{ lookup('file', '/tmp/{{ subscription_id }}_room_list_no_local_users.txt') }}"
-  no_log: True
+  no_log: true
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1)
 
 - name: Purge all rooms with no local users
@@ -113,7 +113,7 @@
   set_fact:
     awx_room_list_joined_members: "{{ lookup('file', '/tmp/{{ subscription_id }}_room_list_joined_members.txt') }}"
   when: awx_purge_mode.find("Number of users [slower]") != -1
-  no_log: True
+  no_log: true
 
 - name: Purge all rooms with more then N users
   include_tasks: purge_database_users.yml
@@ -138,7 +138,7 @@
   set_fact:
     awx_room_list_state_events: "{{ lookup('file', '/tmp/{{ subscription_id }}_room_list_state_events.txt') }}"
   when: awx_purge_mode.find("Number of events [slower]") != -1
-  no_log: True
+  no_log: true
 
 - name: Purge all rooms with more then N events
   include_tasks: purge_database_events.yml
@@ -161,17 +161,17 @@
     verbosity: 1
     tower_host: "https://{{ awx_host }}"
     tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
-    validate_certs: yes
+    validate_certs: true
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1) or (awx_purge_mode.find("Skip purging rooms [faster]") != -1)
 
 - name: Execute rust-synapse-compress-state job template
   delegate_to: 127.0.0.1
   awx.awx.tower_job_launch:
     job_template: "{{ matrix_domain }} - 0 - Deploy/Update a Server"
-    wait: yes
+    wait: true
     tower_host: "https://{{ awx_host }}"
     tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
-    validate_certs: yes
+    validate_certs: true
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1) or (awx_purge_mode.find("Skip purging rooms [faster]") != -1)
 
 - name: Revert 'Deploy/Update a Server' job template
@@ -190,14 +190,14 @@
     verbosity: 1
     tower_host: "https://{{ awx_host }}"
     tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
-    validate_certs: yes
+    validate_certs: true
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1) or (awx_purge_mode.find("Skip purging rooms [faster]") != -1)
 
 - name: Ensure matrix-synapse is stopped
   service:
     name: matrix-synapse
     state: stopped
-    daemon_reload: yes
+    daemon_reload: true
   when: (awx_purge_mode.find("Perform final shrink") != -1)
 
 - name: Re-index Synapse database
@@ -208,7 +208,7 @@
   service:
     name: matrix-synapse
     state: started
-    daemon_reload: yes
+    daemon_reload: true
   when: (awx_purge_mode.find("Perform final shrink") != -1)
 
 - name: Adjust 'Deploy/Update a Server' job template
@@ -227,17 +227,17 @@
     verbosity: 1
     tower_host: "https://{{ awx_host }}"
     tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
-    validate_certs: yes
+    validate_certs: true
   when: (awx_purge_mode.find("Perform final shrink") != -1)
 
 - name: Execute run-postgres-vacuum job template
   delegate_to: 127.0.0.1
   awx.awx.tower_job_launch:
     job_template: "{{ matrix_domain }} - 0 - Deploy/Update a Server"
-    wait: yes
+    wait: true
     tower_host: "https://{{ awx_host }}"
     tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
-    validate_certs: yes
+    validate_certs: true
   when: (awx_purge_mode.find("Perform final shrink") != -1)
 
 - name: Revert 'Deploy/Update a Server' job template
@@ -256,7 +256,7 @@
     verbosity: 1
     tower_host: "https://{{ awx_host }}"
     tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
-    validate_certs: yes
+    validate_certs: true
   when: (awx_purge_mode.find("Perform final shrink") != -1)
 
 - name: Cleanup room_list files
@@ -264,13 +264,13 @@
   shell: |
     rm /tmp/{{ subscription_id }}_room_list*
   when: (awx_purge_mode.find("No local users [recommended]") != -1) or (awx_purge_mode.find("Number of users [slower]") != -1) or (awx_purge_mode.find("Number of events [slower]") != -1)
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Collect after shrink size of Synapse database
   shell: du -sh /matrix/postgres/data
   register: awx_db_size_after_stat
   when: (awx_purge_mode.find("Perform final shrink") != -1)
-  no_log: True
+  no_log: true
 
 - name: Print total number of rooms processed
   debug:

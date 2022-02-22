@@ -664,6 +664,45 @@ matrix_heisenbridge_systemd_wanted_services_list: |
 
 ######################################################################
 #
+# matrix-bridge-hookshot
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_hookshot_enabled: false
+
+matrix_hookshot_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'hookshot.as.tok') | to_uuid }}"
+
+matrix_hookshot_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'hookshot.hs.tok') | to_uuid }}"
+
+matrix_hookshot_systemd_wanted_services_list: |
+  {{
+    (['matrix-' + matrix_homeserver_implementation + '.service'])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+  }}
+
+matrix_hookshot_container_http_host_bind_ports_defaultmapping:
+  - "127.0.0.1:{{ matrix_hookshot_appservice_port }}:{{ matrix_hookshot_appservice_port }}"
+  - "127.0.0.1:{{ matrix_hookshot_metrics_port }}:{{ matrix_hookshot_metrics_port }}"
+  - "127.0.0.1:{{ matrix_hookshot_webhook_port }}:{{ matrix_hookshot_webhook_port }}"
+  - "127.0.0.1:{{ matrix_hookshot_provisioning_port }}:{{ matrix_hookshot_provisioning_port }}"
+
+matrix_hookshot_container_http_host_bind_ports: "{{ [] if matrix_nginx_proxy_enabled else matrix_hookshot_container_http_host_bind_ports_defaultmapping }}"
+
+matrix_hookshot_provisioning_enabled: "{{ matrix_hookshot_provisioning_secret and matrix_dimension_enabled }}"
+
+matrix_hookshot_proxy_metrics: "{{ matrix_nginx_proxy_proxy_synapse_metrics }}"
+matrix_hookshot_proxy_metrics_basic_auth_enabled: "{{ matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled }}"
+
+######################################################################
+#
+# /matrix-bridge-hookshot
+#
+######################################################################
+
+######################################################################
+#
 # matrix-bridge-mx-puppet-skype
 #
 ######################################################################
@@ -1059,7 +1098,7 @@ matrix_bot_mjolnir_systemd_required_services_list: |
 
 matrix_corporal_enabled: false
 
-matrix_corporal_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+matrix_corporal_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-corporal over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
@@ -1088,8 +1127,6 @@ matrix_corporal_matrix_registration_shared_secret: "{{ matrix_synapse_registrati
 # /matrix-corporal
 #
 ######################################################################
-
-
 
 ######################################################################
 #
@@ -1124,8 +1161,6 @@ matrix_coturn_container_additional_volumes: |
 # /matrix-coturn
 #
 ######################################################################
-
-
 
 ######################################################################
 #
@@ -1204,8 +1239,6 @@ matrix_dynamic_dns_enabled: false
 #
 ######################################################################
 
-
-
 ######################################################################
 #
 # matrix-email2matrix
@@ -1214,15 +1247,13 @@ matrix_dynamic_dns_enabled: false
 
 matrix_email2matrix_enabled: false
 
-matrix_email2matrix_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+matrix_email2matrix_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
 
 ######################################################################
 #
 # /matrix-email2matrix
 #
 ######################################################################
-
-
 
 ######################################################################
 #
@@ -1268,8 +1299,6 @@ matrix_jitsi_etherpad_base: "{{ matrix_etherpad_base_url if matrix_etherpad_enab
 #
 ######################################################################
 
-
-
 ######################################################################
 #
 # matrix-mailer
@@ -1281,15 +1310,13 @@ matrix_jitsi_etherpad_base: "{{ matrix_etherpad_base_url if matrix_etherpad_enab
 # Other services (like ma1sd), also use the mailer.
 matrix_mailer_enabled: true
 
-matrix_mailer_container_image_self_build: "{{ matrix_architecture != 'amd64'}}"
+matrix_mailer_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
 
 ######################################################################
 #
 # /matrix-mailer
 #
 ######################################################################
-
-
 
 ######################################################################
 #
@@ -1353,8 +1380,6 @@ matrix_ma1sd_database_password: "{{ '%s' | format(matrix_homeserver_generic_secr
 # /matrix-ma1sd
 #
 ######################################################################
-
-
 
 ######################################################################
 #
@@ -1482,6 +1507,10 @@ matrix_nginx_proxy_systemd_wanted_services_list: |
     (['matrix-jitsi.service'] if matrix_jitsi_enabled else [])
     +
     (['matrix-bot-go-neb.service'] if matrix_bot_go_neb_enabled else [])
+    +
+    (['matrix-etherpad.service'] if matrix_etherpad_enabled and matrix_dimension_enabled else [])
+    +
+    (['matrix-hookshot.service'] if matrix_hookshot_enabled else [])
   }}
 
 matrix_ssl_domains_to_obtain_certificates_for: |
@@ -1526,8 +1555,6 @@ matrix_ssl_pre_obtaining_required_service_name: "{{ 'matrix-dynamic-dns' if matr
 # /matrix-nginx-proxy
 #
 ######################################################################
-
-
 
 ######################################################################
 #
@@ -1777,8 +1804,6 @@ matrix_postgres_import_databases_to_ignore: |
 #
 ######################################################################
 
-
-
 ######################################################################
 #
 # matrix-sygnal
@@ -1799,8 +1824,6 @@ matrix_sygnal_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enable
 #
 ######################################################################
 
-
-
 ######################################################################
 #
 # matrix-redis
@@ -1814,8 +1837,6 @@ matrix_redis_enabled: "{{ matrix_synapse_workers_enabled }}"
 # /matrix-redis
 #
 ######################################################################
-
-
 
 ######################################################################
 #
@@ -1864,8 +1885,6 @@ matrix_client_element_jitsi_preferredDomain: "{{ matrix_server_fqn_jitsi if matr
 #
 ######################################################################
 
-
-
 ######################################################################
 #
 # matrix-client-hydrogen
@@ -1888,8 +1907,6 @@ matrix_client_hydrogen_self_check_validate_certificates: "{{ false if matrix_ssl
 # /matrix-client-hydrogen
 #
 ######################################################################
-
-
 
 ######################################################################
 #
@@ -1915,8 +1932,6 @@ matrix_client_cinny_self_check_validate_certificates: "{{ false if matrix_ssl_re
 # /matrix-client-cinny
 #
 ######################################################################
-
-
 
 ######################################################################
 #
@@ -2028,8 +2043,6 @@ matrix_synapse_redis_password: "{{ matrix_redis_connection_password if matrix_re
 #
 ######################################################################
 
-
-
 ######################################################################
 #
 # matrix-synapse-admin
@@ -2051,8 +2064,6 @@ matrix_synapse_admin_container_image_self_build: "{{ matrix_architecture != 'amd
 #
 ######################################################################
 
-
-
 ######################################################################
 #
 # matrix-prometheus-node-exporter
@@ -2066,8 +2077,6 @@ matrix_prometheus_node_exporter_enabled: false
 # /matrix-prometheus-node-exporter
 #
 ######################################################################
-
-
 
 ######################################################################
 #
@@ -2093,13 +2102,14 @@ matrix_prometheus_scraper_node_targets: "{{ ['matrix-prometheus-node-exporter:91
 matrix_prometheus_scraper_postgres_enabled: "{{ matrix_prometheus_postgres_exporter_enabled }}"
 matrix_prometheus_scraper_postgres_targets: "{{ ['matrix-prometheus-postgres-exporter:'+ matrix_prometheus_postgres_exporter_port|string] if matrix_prometheus_scraper_postgres_enabled else [] }}"
 
+matrix_prometheus_scraper_hookshot_enabled: "{{ matrix_hookshot_metrics_enabled }}"
+matrix_prometheus_scraper_hookshot_targets: "{{ [matrix_hookshot_container_url|string +':'+ matrix_hookshot_metrics_port|string] if matrix_hookshot_metrics_enabled else [] }}"
 
 ######################################################################
 #
 # /matrix-prometheus
 #
 ######################################################################
-
 
 ######################################################################
 #
@@ -2155,8 +2165,6 @@ matrix_grafana_systemd_wanted_services_list: |
 # /matrix-grafana
 #
 ######################################################################
-
-
 
 ######################################################################
 #

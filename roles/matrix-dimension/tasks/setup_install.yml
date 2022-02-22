@@ -111,7 +111,7 @@
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_dimension_docker_src_files_path }}"
-      pull: yes
+      pull: true
   when: "matrix_dimension_container_image_self_build|bool"
 
 - name: Ensure matrix-dimension.service installed
@@ -123,7 +123,7 @@
 
 - name: Ensure systemd reloaded after matrix-dimension.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_dimension_systemd_service_result.changed|bool"
 
 - name: Ensure matrix-dimension.service restarted, if necessary

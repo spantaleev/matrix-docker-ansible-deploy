@@ -8,9 +8,9 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_ma1sd_config_path }}", when: true }
-    - { path: "{{ matrix_ma1sd_data_path }}", when: true }
-    - { path: "{{ matrix_ma1sd_docker_src_files_path }}", when: "{{ matrix_ma1sd_container_image_self_build }}"}
+    - {path: "{{ matrix_ma1sd_config_path }}", when: true}
+    - {path: "{{ matrix_ma1sd_data_path }}", when: true}
+    - {path: "{{ matrix_ma1sd_docker_src_files_path }}", when: "{{ matrix_ma1sd_container_image_self_build }}"}
   when: "item.when|bool"
 
 - import_tasks: "{{ role_path }}/tasks/migrate_mxisd.yml"
@@ -54,52 +54,52 @@
   when: "not matrix_ma1sd_container_image_self_build|bool"
 
 - block:
-  - name: Ensure gradle is installed for self-building (Debian)
-    apt:
-      name:
-        - gradle
-      state: present
-      update_cache: yes
-    when: (ansible_os_family == 'Debian')
+    - name: Ensure gradle is installed for self-building (Debian)
+      apt:
+        name:
+          - gradle
+        state: present
+        update_cache: true
+      when: (ansible_os_family == 'Debian')
 
-  - name: Ensure gradle is installed for self-building (CentOS)
-    fail:
-      msg: "Installing gradle on CentOS is currently not supported, so self-building ma1sd cannot happen at this time"
-    when: ansible_distribution == 'CentOS'
+    - name: Ensure gradle is installed for self-building (RedHat)
+      fail:
+        msg: "Installing gradle on RedHat ({{ ansible_distribution }}) is currently not supported, so self-building ma1sd cannot happen at this time"
+      when: ansible_os_family == 'RedHat'
 
-  - name: Ensure gradle is installed for self-building (Archlinux)
-    pacman:
-      name:
-        - gradle
-      state: latest
-      update_cache: yes
-    when: ansible_distribution == 'Archlinux'
+    - name: Ensure gradle is installed for self-building (Archlinux)
+      pacman:
+        name:
+          - gradle
+        state: latest
+        update_cache: true
+      when: ansible_distribution == 'Archlinux'
 
-  - name: Ensure ma1sd repository is present on self-build
-    git:
-      repo: "{{ matrix_ma1sd_container_image_self_build_repo }}"
-      dest: "{{ matrix_ma1sd_docker_src_files_path }}"
-      version: "{{ matrix_ma1sd_container_image_self_build_branch }}"
-      force: "yes"
-    register: matrix_ma1sd_git_pull_results
+    - name: Ensure ma1sd repository is present on self-build
+      git:
+        repo: "{{ matrix_ma1sd_container_image_self_build_repo }}"
+        dest: "{{ matrix_ma1sd_docker_src_files_path }}"
+        version: "{{ matrix_ma1sd_container_image_self_build_branch }}"
+        force: "yes"
+      register: matrix_ma1sd_git_pull_results
 
-  - name: Ensure ma1sd Docker image is built
-    shell: "DOCKER_BUILDKIT=1 ./gradlew dockerBuild"
-    args:
-      chdir: "{{ matrix_ma1sd_docker_src_files_path }}"
+    - name: Ensure ma1sd Docker image is built
+      shell: "DOCKER_BUILDKIT=1 ./gradlew dockerBuild"
+      args:
+        chdir: "{{ matrix_ma1sd_docker_src_files_path }}"
 
-  - name: Ensure ma1sd Docker image is tagged correctly
-    docker_image:
-      # The build script always tags the image with 2 tags:
-      # - based on the branch/version: e.g. `ma1uta/ma1sd:2.4.0` (when on `2.4.0`)
-      #   or `ma1uta/ma1sd:2.4.0-19-ga71d32b` (when on a given commit for a pre-release)
-      # - generic one: `ma1uta/ma1sd:latest-dev`
-      #
-      # It's hard to predict the first one, so we'll use the latter.
-      name: "ma1uta/ma1sd:latest-dev"
-      repository: "{{ matrix_ma1sd_docker_image }}"
-      force_tag: yes
-      source: local
+    - name: Ensure ma1sd Docker image is tagged correctly
+      docker_image:
+        # The build script always tags the image with 2 tags:
+        # - based on the branch/version: e.g. `ma1uta/ma1sd:2.4.0` (when on `2.4.0`)
+        #   or `ma1uta/ma1sd:2.4.0-19-ga71d32b` (when on a given commit for a pre-release)
+        # - generic one: `ma1uta/ma1sd:latest-dev`
+        #
+        # It's hard to predict the first one, so we'll use the latter.
+        name: "ma1uta/ma1sd:latest-dev"
+        repository: "{{ matrix_ma1sd_docker_image }}"
+        force_tag: true
+        source: local
   when: "matrix_ma1sd_container_image_self_build|bool"
 
 - name: Ensure ma1sd config installed
@@ -157,7 +157,7 @@
 
 - name: Ensure systemd reloaded after matrix-ma1sd.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_ma1sd_systemd_service_result.changed|bool"
 
 - name: Ensure matrix-ma1sd.service restarted, if necessary
