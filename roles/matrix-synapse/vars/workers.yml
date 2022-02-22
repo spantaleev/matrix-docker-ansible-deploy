@@ -64,7 +64,7 @@ matrix_synapse_workers_generic_worker_endpoints:
   # Registration/login requests
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/login$
   - ^/_matrix/client/(r0|v3|unstable)/register$
-  - ^/_matrix/client/unstable/org.matrix.msc3231/register/org.matrix.msc3231.login.registration_token/validity$
+  - ^/_matrix/client/v1/register/m.login.registration_token/validity$
 
   # Event sending requests
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/rooms/.*/redact
@@ -206,7 +206,7 @@ matrix_synapse_workers_generic_worker_endpoints:
   # You might also wish to investigate the `update_user_directory` and
   # `media_instance_running_background_jobs` settings.
 
-  # pusher worker (no API endpoints) [
+# pusher worker (no API endpoints) [
   # Handles sending push notifications to sygnal and email. Doesn't handle any
   # REST endpoints itself, but you should set `start_pushers: False` in the
   # shared configuration file to stop the main synapse sending push notifications.
@@ -220,18 +220,18 @@ matrix_synapse_workers_generic_worker_endpoints:
   #     - pusher_worker2
   # ```
 
-  # ]
+# ]
 
-  # appservice worker (no API endpoints) [
+# appservice worker (no API endpoints) [
   # Handles sending output traffic to Application Services. Doesn't handle any
   # REST endpoints itself, but you should set `notify_appservices: False` in the
   # shared configuration file to stop the main synapse sending appservice notifications.
 
   # Note this worker cannot be load-balanced: only one instance should be active.
 
-  # ]
+# ]
 
-  # federation_sender worker (no API endpoints) [
+# federation_sender worker (no API endpoints) [
   # Handles sending federation traffic to other servers. Doesn't handle any
   # REST endpoints itself, but you should set `send_federation: False` in the
   # shared configuration file to stop the main synapse sending this traffic.
