@@ -16,9 +16,9 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_dynamic_dns_base_path }}", when: true }
-    - { path: "{{ matrix_dynamic_dns_config_path }}", when: true }
-    - { path: "{{ matrix_dynamic_dns_docker_src_files_path }}", when: "{{ matrix_dynamic_dns_container_image_self_build }}" }
+    - {path: "{{ matrix_dynamic_dns_base_path }}", when: true}
+    - {path: "{{ matrix_dynamic_dns_config_path }}", when: true}
+    - {path: "{{ matrix_dynamic_dns_docker_src_files_path }}", when: "{{ matrix_dynamic_dns_container_image_self_build }}"}
   when: matrix_dynamic_dns_enabled|bool and item.when|bool
 
 - name: Ensure Dynamic DNS repository is present on self build
@@ -38,7 +38,7 @@
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_dynamic_dns_docker_src_files_path }}"
-      pull: yes
+      pull: true
   when: "matrix_dynamic_dns_enabled|bool and matrix_dynamic_dns_container_image_self_build|bool"
 
 - name: Ensure Dynamic DNS ddclient.conf installed
@@ -58,5 +58,5 @@
 
 - name: Ensure systemd reloaded after matrix-dynamic-dns.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_dynamic_dns_systemd_service_result.changed"

@@ -1,3 +1,5 @@
+---
+
 - name: Fail if Postgres not enabled
   fail:
     msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot migrate."
@@ -16,7 +18,7 @@
   service:
     name: matrix-postgres
     state: started
-    daemon_reload: yes
+    daemon_reload: true
   register: matrix_postgres_service_start_result
 
 - name: Wait a bit, so that Postgres can start

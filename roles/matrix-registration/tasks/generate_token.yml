@@ -1,3 +1,5 @@
+---
+
 - name: Fail if playbook called incorrectly
   fail:
     msg: "The `one_time` variable needs to be provided to this playbook, via --extra-vars"
@@ -23,7 +25,7 @@
         "one_time": {{ 'true' if one_time == 'yes' else 'false' }},
         "ex_date": {{ ex_date|to_json }}
       }
-  check_mode: no
+  check_mode: false
   register: matrix_registration_api_result
 
 - set_fact:
@@ -37,7 +39,7 @@
       Full token details are:
 
       {{ matrix_registration_api_result.json }}
-  check_mode: no
+  check_mode: false
 
 - name: Inject result message into matrix_playbook_runtime_results
   set_fact:
@@ -47,4 +49,4 @@
         +
         [matrix_registration_api_result_message]
       }}
-  check_mode: no
+  check_mode: false

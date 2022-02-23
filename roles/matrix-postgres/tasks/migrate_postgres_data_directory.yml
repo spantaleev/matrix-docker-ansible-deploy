@@ -29,7 +29,7 @@
   service:
     name: matrix-postgres
     state: stopped
-    daemon_reload: yes
+    daemon_reload: true
   when: "result_pg_old_data_dir_stat.stat.exists"
 
 - name: Find files and directories in old Postgres data path
@@ -68,5 +68,5 @@
 
 - name: Ensure systemd reloaded after getting rid of outdated matrix-postgres.service
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "result_pg_old_data_dir_stat.stat.exists"

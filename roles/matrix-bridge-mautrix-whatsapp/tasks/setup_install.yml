@@ -44,10 +44,10 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_mautrix_whatsapp_base_path }}", when: true }
-    - { path: "{{ matrix_mautrix_whatsapp_config_path }}", when: true }
-    - { path: "{{ matrix_mautrix_whatsapp_data_path }}", when: true }
-    - { path: "{{ matrix_mautrix_whatsapp_docker_src_files_path }}", when: "{{ matrix_mautrix_whatsapp_container_image_self_build }}" }
+    - {path: "{{ matrix_mautrix_whatsapp_base_path }}", when: true}
+    - {path: "{{ matrix_mautrix_whatsapp_config_path }}", when: true}
+    - {path: "{{ matrix_mautrix_whatsapp_data_path }}", when: true}
+    - {path: "{{ matrix_mautrix_whatsapp_docker_src_files_path }}", when: "{{ matrix_mautrix_whatsapp_container_image_self_build }}"}
   when: item.when|bool
 
 - name: Ensure Mautrix Whatsapp image is pulled
@@ -76,7 +76,7 @@
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_whatsapp_docker_src_files_path }}"
-      pull: yes
+      pull: true
   when: "matrix_mautrix_whatsapp_container_image_self_build|bool"
 
 - name: Check if an old database file exists
@@ -93,8 +93,8 @@
   service:
     name: matrix-mautrix-whatsapp
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   failed_when: false
   when: "matrix_mautrix_whatsapp_stat_database.stat.exists"
 
@@ -131,7 +131,7 @@
 
 - name: Ensure systemd reloaded after matrix-mautrix-whatsapp.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_mautrix_whatsapp_systemd_service_result.changed"
 
 - name: Ensure matrix-mautrix-whatsapp.service restarted, if necessary

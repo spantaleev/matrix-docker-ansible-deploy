@@ -34,7 +34,7 @@
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_signal_docker_src_files_path }}"
-      pull: yes
+      pull: true
   when: "matrix_mautrix_signal_container_image_self_build|bool"
 
 
@@ -64,7 +64,7 @@
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_signal_daemon_docker_src_files_path }}"
-      pull: yes
+      pull: true
   when: "matrix_mautrix_signal_daemon_container_image_self_build|bool"
 
 - name: Ensure Mautrix Signal paths exist
@@ -114,5 +114,5 @@
 
 - name: Ensure systemd reloaded after matrix-mautrix-signal.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_mautrix_signal_systemd_service_result.changed or matrix_mautrix_signal_daemon_systemd_service_result.changed"

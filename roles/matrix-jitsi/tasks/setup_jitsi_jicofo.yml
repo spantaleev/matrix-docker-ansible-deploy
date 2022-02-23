@@ -12,8 +12,8 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_jitsi_jicofo_base_path }}", when: true }
-    - { path: "{{ matrix_jitsi_jicofo_config_path }}", when: true }
+    - {path: "{{ matrix_jitsi_jicofo_base_path }}", when: true}
+    - {path: "{{ matrix_jitsi_jicofo_config_path }}", when: true}
   when: matrix_jitsi_enabled|bool and item.when
 
 - name: Ensure jitsi-jicofo Docker image is pulled
@@ -51,7 +51,7 @@
 
 - name: Ensure systemd reloaded after matrix-jitsi-jicofo.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_jitsi_enabled and matrix_jitsi_jicofo_systemd_service_result.changed"
 
 #
@@ -68,8 +68,8 @@
   service:
     name: matrix-jitsi-jicofo
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   register: stopping_result
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_jicofo_service_stat.stat.exists"
 
@@ -81,7 +81,7 @@
 
 - name: Ensure systemd reloaded after matrix-jitsi-jicofo.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_jicofo_service_stat.stat.exists"
 
 - name: Ensure Matrix jitsi-jicofo paths doesn't exist

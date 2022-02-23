@@ -12,10 +12,10 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_jitsi_web_base_path }}", when: true }
-    - { path: "{{ matrix_jitsi_web_config_path }}", when: true }
-    - { path: "{{ matrix_jitsi_web_transcripts_path }}", when: true }
-    - { path: "{{ matrix_jitsi_web_crontabs_path }}", when: true }
+    - {path: "{{ matrix_jitsi_web_base_path }}", when: true}
+    - {path: "{{ matrix_jitsi_web_config_path }}", when: true}
+    - {path: "{{ matrix_jitsi_web_transcripts_path }}", when: true}
+    - {path: "{{ matrix_jitsi_web_crontabs_path }}", when: true}
   when: matrix_jitsi_enabled|bool and item.when
 
 - name: Ensure jitsi-web Docker image is pulled
@@ -53,7 +53,7 @@
 
 - name: Ensure systemd reloaded after matrix-jitsi-web.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_jitsi_enabled and matrix_jitsi_web_systemd_service_result.changed"
 
 #
@@ -70,8 +70,8 @@
   service:
     name: matrix-jitsi-web
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   register: stopping_result
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_web_service_stat.stat.exists"
 
@@ -83,7 +83,7 @@
 
 - name: Ensure systemd reloaded after matrix-jitsi-web.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_web_service_stat.stat.exists"
 
 - name: Ensure Matrix jitsi-web paths doesn't exist
@@ -94,4 +94,3 @@
 
 # Intentionally not removing the Docker image when uninstalling.
 # We can't be sure it had been pulled by us in the first place.
-

@@ -64,7 +64,7 @@
   service:
     name: matrix-postgres
     state: started
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: Wait a bit, so that Postgres can start
   wait_for:
@@ -107,9 +107,9 @@
 - name: Ensure matrix-postgres autoruns and is restarted
   service:
     name: matrix-postgres
-    enabled: yes
+    enabled: true
     state: restarted
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: Wait a bit, so that Postgres can start
   wait_for:
@@ -166,7 +166,7 @@
   service:
     name: matrix-synapse
     state: started
-    daemon_reload: yes
+    daemon_reload: true
 
 - debug:
     msg: "NOTE: Your old Postgres data directory is preserved at `{{ postgres_auto_upgrade_backup_data_path }}`. You might want to get rid of it once you've confirmed that all is well."

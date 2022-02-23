@@ -8,9 +8,9 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_email2matrix_base_path }}", when: true }
-    - { path: "{{ matrix_email2matrix_config_dir_path }}", when: true }
-    - { path: "{{ matrix_email2matrix_docker_src_files_path }}", when: "{{ matrix_email2matrix_container_image_self_build }}"}
+    - {path: "{{ matrix_email2matrix_base_path }}", when: true}
+    - {path: "{{ matrix_email2matrix_config_dir_path }}", when: true}
+    - {path: "{{ matrix_email2matrix_docker_src_files_path }}", when: "{{ matrix_email2matrix_container_image_self_build }}"}
   when: "item.when|bool"
 
 - name: Ensure Email2Matrix configuration file created
@@ -47,7 +47,7 @@
     build:
       dockerfile: etc/docker/Dockerfile
       path: "{{ matrix_email2matrix_docker_src_files_path }}"
-      pull: yes
+      pull: true
   when: "matrix_email2matrix_container_image_self_build|bool"
 
 - name: Ensure matrix-email2matrix.service installed
@@ -59,5 +59,5 @@
 
 - name: Ensure systemd reloaded after matrix-email2matrix.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_email2matrix_systemd_service_result.changed|bool"

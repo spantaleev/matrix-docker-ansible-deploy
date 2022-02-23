@@ -1,0 +1,203 @@
+---
+
+# A bridge between Matrix and multiple project management services, such as GitHub, GitLab and JIRA.
+# https://github.com/Half-Shot/matrix-hookshot
+
+matrix_hookshot_enabled: true
+
+matrix_hookshot_version: 1.1.0
+matrix_hookshot_docker_image: "{{ matrix_container_global_registry_prefix }}halfshot/matrix-hookshot:{{ matrix_hookshot_version }}"
+matrix_hookshot_docker_image_force_pull: "{{ matrix_hookshot_docker_image.endswith(':latest') }}"
+
+matrix_hookshot_base_path: "{{ matrix_base_data_path }}/hookshot"
+
+matrix_hookshot_homeserver_address: "{{ matrix_homeserver_container_url }}"
+matrix_hookshot_container_url: 'matrix-hookshot'
+
+matrix_hookshot_public_endpoint: /hookshot
+
+# There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
+matrix_hookshot_appservice_port: 9993
+matrix_hookshot_appservice_endpoint: "{{ matrix_hookshot_public_endpoint }}/_matrix/app"
+
+# Metrics work only in conjunction with matrix_synapse_metrics_enabled etc
+matrix_hookshot_metrics_enabled: true
+# There is no need to edit ports.
+# Read the documentation to learn about using hookshot metrics with external Prometheus
+# If you still want something different, use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
+matrix_hookshot_metrics_port: 9001
+matrix_hookshot_metrics_endpoint: "{{ matrix_hookshot_public_endpoint }}/metrics"
+
+# There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
+matrix_hookshot_webhook_port: 9000
+matrix_hookshot_webhook_endpoint: "{{ matrix_hookshot_public_endpoint }}/webhooks"
+
+
+# You need to create a GitHub app to enable this and fill in the empty variables below
+# https://half-shot.github.io/matrix-hookshot/setup/github.html
+matrix_hookshot_github_enabled: false
+matrix_hookshot_github_appid: ''
+# Set this variable to the contents of the generated and downloaded GitHub private key:
+# matrix_hookshot_github_private_key: |
+#   -----BEGIN RSA PRIVATE KEY-----
+#   0123456789ABCDEF...
+#   -----END RSA PRIVATE KEY-----
+# Alternatively, leave it empty and do it manually or use matrix-aux instead, see docs/matrix-bridge-hookshot.md for info.
+matrix_hookshot_github_private_key: ''
+matrix_hookshot_github_private_key_file: 'private-key.pem'
+matrix_hookshot_github_secret: ''  # "Webhook secret" on the GitHub App page
+matrix_hookshot_github_oauth_enabled: false
+# You need to configure oauth settings only when you have enabled oauth (optional)
+matrix_hookshot_github_oauth_id: ''  # "Client ID" on the GitHub App page
+matrix_hookshot_github_oauth_secret: ''  # "Client Secret" on the GitHub App page
+# Default value of matrix_hookshot_github_oauth_endpoint: "/hookshot/webhooks/oauth"
+matrix_hookshot_github_oauth_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/oauth"
+matrix_hookshot_github_oauth_uri: "https://{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_github_oauth_endpoint }}"
+# These are the default settings mentioned here and don't need to be modified: https://half-shot.github.io/matrix-hookshot/usage/room_configuration/github_repo.html#configuration
+matrix_hookshot_github_ignore_hooks: "{}"
+matrix_hookshot_github_command_prefix: '!gh'
+matrix_hookshot_github_show_issue_room_link: false
+matrix_hookshot_github_pr_diff: "{enabled: false, maxLines: 5}"
+matrix_hookshot_github_including_labels: ''
+matrix_hookshot_github_excluding_labels: ''
+
+
+matrix_hookshot_gitlab_enabled: true
+# Optionally add your instances, e.g.
+# matrix_hookshot_gitlab_instances:
+#   gitlab.com:
+#     url: https://gitlab.com
+#   mygitlab:
+#     url: https://gitlab.example.org
+matrix_hookshot_gitlab_instances:
+  gitlab.com:
+    url: https://gitlab.com
+
+# This will be the "Secret token" you have to enter into all GitLab instances for authentication
+matrix_hookshot_gitlab_secret: ''
+
+
+matrix_hookshot_jira_enabled: false
+# Get the these values from https://half-shot.github.io/matrix-hookshot/setup/jira.html#jira-oauth
+matrix_hookshot_jira_secret: ''
+matrix_hookshot_jira_oauth_enabled: false
+matrix_hookshot_jira_oauth_id: ''
+matrix_hookshot_jira_oauth_secret: ''
+# Default value of matrix_hookshot_jira_oauth_endpoint: "/hookshot/webhooks/jira/oauth"
+matrix_hookshot_jira_oauth_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/jira/oauth"
+matrix_hookshot_jira_oauth_uri: "{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_jira_oauth_endpoint }}"
+
+
+# No need to change these
+matrix_hookshot_generic_enabled: true
+# Default value of matrix_hookshot_generic_endpoint: "/hookshot/webhooks"
+matrix_hookshot_generic_endpoint: "{{ matrix_hookshot_webhook_endpoint }}"
+matrix_hookshot_generic_urlprefix: "{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_generic_endpoint }}"
+matrix_hookshot_generic_allow_js_transformation_functions: false
+# If you're also using matrix-appservice-webhooks, take care that these prefixes don't overlap
+matrix_hookshot_generic_user_id_prefix: '_webhooks_'
+
+
+matrix_hookshot_figma_enabled: false
+# Default value of matrix_hookshot_figma_endpoint: "/hookshot/webhooks/figma/webhook"
+matrix_hookshot_figma_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/figma/webhook"
+matrix_hookshot_figma_publicUrl: "{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_figma_endpoint }}"
+# To bridge figma webhooks, you need to configure one of multiple instances like this:
+# matrix_hookshot_figma_instances:
+#   your-instance:
+#       teamId: your-team-id
+#       accessToken: your-personal-access-token
+#       passcode: your-webhook-passcode
+
+
+# There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
+matrix_hookshot_provisioning_port: 9002
+matrix_hookshot_provisioning_secret: ''
+# Provisioning will be automatically enabled if dimension is enabled and you have provided a provisioning secret, unless you override it
+matrix_hookshot_provisioning_enabled: false
+matrix_hookshot_provisioning_endpoint: "{{ matrix_hookshot_public_endpoint }}/v1"
+
+# You can configure access to the bridge as documented here https://half-shot.github.io/matrix-hookshot/setup.html#permissions
+# When empty, the default permissions are applied.
+# Example:
+# matrix_hookshot_permissions:
+#   - actor: *
+#     services:
+#       - service: *
+#         level: commands
+#   - actor: example.com
+#     services:
+#       - service: "*"
+#         level: admin
+matrix_hookshot_permissions: []
+
+matrix_hookshot_bot_displayname: Hookshot Bot
+matrix_hookshot_bot_avatar: 'mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d'
+
+# A list of extra arguments to pass to the container
+matrix_hookshot_container_extra_arguments: []
+
+# List of systemd services that service depends on.
+matrix_hookshot_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that service wants
+matrix_hookshot_systemd_wanted_services_list: []
+
+# List of ports to bind to the host to expose them directly.
+# Ports will automatically be bound to localhost if matrix_nginx_proxy_enabled is false.
+# Setting this variable will override that behaviour in either case.
+# Supply docker port bind arguments in a list like this:
+#
+# matrix_hookshot_container_http_host_bind_ports:
+#   - "127.0.0.1:9999:{{ matrix_hookshot_metrics_port }}"
+#
+# Above example will bind the metrics port in the container to port 9999 on localhost.
+matrix_hookshot_container_http_host_bind_ports: []
+
+# These tokens will be set automatically
+matrix_hookshot_appservice_token: ''
+matrix_hookshot_homeserver_token: ''
+
+# Default configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrixhookshot_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_hookshot_configuration_yaml: "{{ lookup('template', 'templates/config.yml.j2') }}"
+
+matrix_hookshot_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_hookshot_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_hookshot_configuration_yaml`.
+
+matrix_hookshot_configuration_extension: "{{ matrix_hookshot_configuration_extension_yaml|from_yaml if matrix_hookshot_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_hookshot_configuration_yaml`.
+matrix_hookshot_configuration: "{{ matrix_hookshot_configuration_yaml|from_yaml|combine(matrix_hookshot_configuration_extension, recursive=True) }}"
+
+# Default registration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrixhookshot_registration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_hookshot_registration_yaml: "{{ lookup('template', 'templates/registration.yml.j2') }}"
+
+matrix_hookshot_registration_extension_yaml: |
+  # Your custom YAML registration goes here.
+  # This registration extends the default starting registration (`matrix_hookshot_registration_yaml`).
+  #
+  # You can override individual variables from the default registration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_hookshot_registration_yaml`.
+
+matrix_hookshot_registration_extension: "{{ matrix_hookshot_registration_extension_yaml|from_yaml if matrix_hookshot_registration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final registration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_hookshot_registration_yaml`.
+matrix_hookshot_registration: "{{ matrix_hookshot_registration_yaml|from_yaml|combine(matrix_hookshot_registration_extension, recursive=True) }}"

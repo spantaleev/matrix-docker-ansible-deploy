@@ -8,16 +8,16 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_client_hydrogen_data_path }}", when: true }
-    - { path: "{{ matrix_client_hydrogen_docker_src_files_path }}", when: "{{ matrix_client_hydrogen_container_image_self_build }}" }
+    - {path: "{{ matrix_client_hydrogen_data_path }}", when: true}
+    - {path: "{{ matrix_client_hydrogen_docker_src_files_path }}", when: "{{ matrix_client_hydrogen_container_image_self_build }}"}
   when: "item.when|bool"
 
 - name: Ensure Hydrogen Docker image is pulled
   docker_image:
-   name: "{{ matrix_client_hydrogen_docker_image }}"
-   source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-   force_source: "{{ matrix_client_hydrogen_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-   force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_hydrogen_docker_image_force_pull }}"
+    name: "{{ matrix_client_hydrogen_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_client_hydrogen_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_hydrogen_docker_image_force_pull }}"
   when: "not matrix_client_hydrogen_container_image_self_build|bool"
 
 - name: Ensure Hydrogen repository is present on self-build
@@ -32,7 +32,7 @@
 - name: Ensure Hydrogen configuration installed
   copy:
     content: "{{ matrix_client_hydrogen_configuration|to_nice_json }}"
-    dest: "{{ matrix_client_hydrogen_docker_src_files_path }}/assets/config.json"
+    dest: "{{ matrix_client_hydrogen_docker_src_files_path }}/src/platform/web/assets/config.json"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
@@ -59,7 +59,7 @@
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_client_hydrogen_docker_src_files_path }}"
-      pull: yes
+      pull: true
   when: "matrix_client_hydrogen_container_image_self_build|bool"
 
 - name: Ensure matrix-client-hydrogen.service installed
@@ -71,5 +71,5 @@
 
 - name: Ensure systemd reloaded after matrix-client-hydrogen.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_client_hydrogen_systemd_service_result.changed|bool"

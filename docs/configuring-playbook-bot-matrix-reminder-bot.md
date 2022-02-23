@@ -54,6 +54,6 @@ You can also add the bot to any existing Matrix room (`/invite @bot.matrix-remin
 
 Basic usage is like this: `!remindme in 2 minutes; This is a test`
 
-Send `!help commands` to the room to see the bot's help menu for additional commands.
+Send `!help reminders` to the room to see the bot's help menu for additional commands.
 
 You can also refer to the upstream [Usage documentation](https://github.com/anoadragon453/matrix-reminder-bot#usage).

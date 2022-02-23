@@ -1,9 +1,10 @@
+---
 # heisenbridge is a bouncer-style Matrix IRC bridge
 # See: https://github.com/hifi/heisenbridge
 
 matrix_heisenbridge_enabled: true
 
-matrix_heisenbridge_version: 1.9.0
+matrix_heisenbridge_version: 1.10.1
 matrix_heisenbridge_docker_image: "{{ matrix_container_global_registry_prefix }}hif1/heisenbridge:{{ matrix_heisenbridge_version }}"
 matrix_heisenbridge_docker_image_force_pull: "{{ matrix_heisenbridge_docker_image.endswith(':latest') }}"
 
@@ -34,13 +35,13 @@ matrix_heisenbridge_registration_yaml:
   id: heisenbridge
   url: http://matrix-heisenbridge:9898
   as_token: "{{ matrix_heisenbridge_appservice_token }}"
-  hs_token: "{{ matrix_heisenbridge_homeserver_token }}" 
+  hs_token: "{{ matrix_heisenbridge_homeserver_token }}"
   rate_limited: false
   sender_localpart: heisenbridge
   namespaces:
     users:
-    - regex: '@hbirc_.*'
-      exclusive: true
+      - regex: '@hbirc_.*'
+        exclusive: true
     aliases: []
     rooms: []
 

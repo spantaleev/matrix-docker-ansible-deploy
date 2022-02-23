@@ -9,7 +9,7 @@
     insertafter: '# Element Settings Start'
   with_dict:
     'matrix_server_fqn_element': "{{ awx_element_subdomain | trim }}.{{ matrix_domain }}"
-    
+
 - name: Save new 'Configure Element Subdomain' survey.json to the AWX tower, template
   delegate_to: 127.0.0.1
   template:
@@ -40,4 +40,4 @@
     verbosity: 1
     tower_host: "https://{{ awx_host }}"
     tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
-    validate_certs: yes
+    validate_certs: true

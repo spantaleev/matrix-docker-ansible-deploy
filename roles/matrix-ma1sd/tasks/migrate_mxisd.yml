@@ -23,8 +23,8 @@
   service:
     name: matrix-mxisd
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   when: "matrix_mxisd_service_stat.stat.exists"
 
 - name: Check existence of matrix-ma1sd service
@@ -37,26 +37,26 @@
   service:
     name: matrix-ma1sd
     state: stopped
-    daemon_reload: yes
+    daemon_reload: true
   when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists and matrix_ma1sd_service_stat.stat.exists"
 
 # We use shell commands for the migration, because the Ansible copy module cannot
 # recursively copy remote directories (like `/matrix/mxisd/data/sign.key`) in older versions of Ansible.
 - block:
-  - name: Copy mxisd data files to ma1sd folder
-    command: "cp -ar {{ matrix_base_data_path }}/mxisd/data {{ matrix_ma1sd_base_path }}"
+    - name: Copy mxisd data files to ma1sd folder
+      command: "cp -ar {{ matrix_base_data_path }}/mxisd/data {{ matrix_ma1sd_base_path }}"
 
-  - name: Check existence of mxisd.db file
-    stat:
-      path: "{{ matrix_ma1sd_data_path }}/mxisd.db"
-    register: matrix_ma1sd_mxisd_db_stat
+    - name: Check existence of mxisd.db file
+      stat:
+        path: "{{ matrix_ma1sd_data_path }}/mxisd.db"
+      register: matrix_ma1sd_mxisd_db_stat
 
-  - name: Rename database (mxisd.db -> ma1sd.db)
-    command: "mv {{ matrix_ma1sd_data_path }}/mxisd.db {{ matrix_ma1sd_data_path }}/ma1sd.db"
-    when: "matrix_ma1sd_mxisd_db_stat.stat.exists"
+    - name: Rename database (mxisd.db -> ma1sd.db)
+      command: "mv {{ matrix_ma1sd_data_path }}/mxisd.db {{ matrix_ma1sd_data_path }}/ma1sd.db"
+      when: "matrix_ma1sd_mxisd_db_stat.stat.exists"
 
-  - name: Rename mxisd folder
-    command: "mv {{ matrix_base_data_path }}/mxisd {{ matrix_base_data_path }}/mxisd.migrated"
+    - name: Rename mxisd folder
+      command: "mv {{ matrix_base_data_path }}/mxisd {{ matrix_base_data_path }}/mxisd.migrated"
   when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists"
 
 - name: Ensure outdated matrix-mxisd.service doesn't exist
@@ -67,7 +67,5 @@
 
 - name: Ensure systemd reloaded after removing outdated matrix-mxisd.service
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_mxisd_service_stat.stat.exists"
-
-
