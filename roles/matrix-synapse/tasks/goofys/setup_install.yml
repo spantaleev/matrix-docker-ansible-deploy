@@ -1,3 +1,5 @@
+---
+
 - import_tasks: "{{ role_path }}/../matrix-base/tasks/util/ensure_fuse_installed.yml"
 
 - name: Ensure Goofys Docker image is pulled
@@ -12,7 +14,7 @@
   stat:
     path: "{{ matrix_s3_media_store_path }}"
   register: local_path_matrix_s3_media_store_path_stat
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Ensure Matrix Goofys external storage mountpoint exists
   file:
@@ -39,5 +41,5 @@
 
 - name: Ensure systemd reloaded after matrix-goofys.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_goofys_systemd_service_result.changed"

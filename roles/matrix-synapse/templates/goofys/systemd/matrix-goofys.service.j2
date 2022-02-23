@@ -27,10 +27,10 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name %n \
 			-c 'goofys -f{% if not matrix_s3_media_store_custom_endpoint_enabled %} --storage-class=STANDARD_IA{% endif %}{% if matrix_s3_media_store_custom_endpoint_enabled %} --endpoint={{ matrix_s3_media_store_custom_endpoint }}{% endif %} --region {{ matrix_s3_media_store_region }} --stat-cache-ttl 60m0s --type-cache-ttl 60m0s --dir-mode 0700 --file-mode 0700 {{ matrix_s3_media_store_bucket_name }} /s3'
 
 TimeoutStartSec=5min
-ExecStopPost=-{{ matrix_host_command_docker }} stop %n
-ExecStopPost=-{{ matrix_host_command_docker }} kill %n
-ExecStopPost=-{{ matrix_host_command_docker }} rm %n
-ExecStopPost=-{{ matrix_host_command_fusermount }} -u {{ matrix_s3_media_store_path }}
+ExecStop=-{{ matrix_host_command_docker }} stop %n
+ExecStop=-{{ matrix_host_command_docker }} kill %n
+ExecStop=-{{ matrix_host_command_docker }} rm %n
+ExecStop=-{{ matrix_host_command_fusermount }} -u {{ matrix_s3_media_store_path }}
 Restart=always
 RestartSec=5
 SyslogIdentifier=matrix-goofys

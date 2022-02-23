@@ -226,7 +226,7 @@ Using a separate domain name is easier to manage (although it's a little hard to
 
 We allow `matrix.DOMAIN` to be the Matrix server handling Matrix stuff for `DOMAIN` by [Server Delegation](howto-server-delegation.md). During the installation procedure, we recommend that you set up server delegation using the [.well-known](configuring-well-known.md) method.
 
-If you'd really like to install Matrix services directly on the base domain, see [How do I install on matrix.DOMAIN without involving the base DOMAIN?](#how-do-i-install-on-matrixdomain-without-involving-the-base-domain).
+If you'd really like to install Matrix services directly on the base domain, see [How do I install on matrix.DOMAIN without involving the base DOMAIN?](#how-do-i-install-on-matrixdomain-without-involving-the-base-domain)
 
 ### I don't control anything on the base domain and can't set up delegation to matrix.DOMAIN. What do I do?
 

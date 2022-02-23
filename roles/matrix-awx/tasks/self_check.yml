@@ -25,53 +25,53 @@
   shell: |
     curl -s localhost:9000 | grep "^synapse_admin_mau_current "
   register: awx_mau_stat
-  no_log: True
+  no_log: true
 
 - name: Calculate CPU usage statistics
   shell: iostat -c
   register: awx_cpu_usage_stat
-  no_log: True
+  no_log: true
 
 - name: Calculate RAM usage statistics
   shell: free -mh
   register: awx_ram_usage_stat
-  no_log: True
+  no_log: true
 
 - name: Calculate free disk space
   shell: df -h
   register: awx_disk_space_stat
-  no_log: True
+  no_log: true
 
 - name: Calculate size of Synapse database
   shell: du -sh /matrix/postgres/data
   register: awx_db_size_stat
-  no_log: True
+  no_log: true
 
 - name: Calculate size of local media repository
   shell: du -sh /matrix/synapse/storage/media-store/local*
   register: awx_local_media_size_stat
   async: 600
-  ignore_errors: yes
-  no_log: True
+  ignore_errors: true
+  no_log: true
 
 - name: Calculate size of remote media repository
   shell: du -sh /matrix/synapse/storage/media-store/remote*
   register: awx_remote_media_size_stat
   async: 600
-  ignore_errors: yes
-  no_log: True
+  ignore_errors: true
+  no_log: true
 
 - name: Calculate docker container statistics
   shell: docker stats --all --no-stream
   register: awx_docker_stats
-  ignore_errors: yes
-  no_log: True
+  ignore_errors: true
+  no_log: true
 
 - name: Print size of remote media repository
   debug:
     msg: "{{ awx_remote_media_size_stat.stdout.split('\n') }}"
   when: awx_remote_media_size_stat is defined
-  
+
 - name: Print size of local media repository
   debug:
     msg: "{{ awx_local_media_size_stat.stdout.split('\n') }}"

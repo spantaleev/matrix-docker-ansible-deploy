@@ -9,8 +9,8 @@
   service:
     name: matrix-mx-puppet-twitter
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   when: "matrix_mx_puppet_twitter_service_stat.stat.exists"
 
 - name: Ensure matrix-mx-puppet-twitter.service doesn't exist
@@ -21,5 +21,5 @@
 
 - name: Ensure systemd reloaded after matrix-mx-puppet-twitter.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_mx_puppet_twitter_service_stat.stat.exists"

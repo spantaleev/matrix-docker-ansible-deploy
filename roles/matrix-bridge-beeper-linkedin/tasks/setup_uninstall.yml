@@ -9,8 +9,8 @@
   service:
     name: matrix-beeper-linkedin
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   when: "matrix_beeper_linkedin_service_stat.stat.exists"
 
 - name: Ensure matrix-beeper-linkedin.service doesn't exist
@@ -21,5 +21,5 @@
 
 - name: Ensure systemd reloaded after matrix-beeper-linkedin.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_beeper_linkedin_service_stat.stat.exists"

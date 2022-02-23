@@ -44,8 +44,8 @@
   service:
     name: matrix-synapse
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   register: stopping_result
 
 # This can only work with local files, not if the media store is on Amazon S3,
@@ -54,11 +54,11 @@
   synchronize:
     src: "{{ server_path_media_store }}/"
     dest: "{{ matrix_synapse_media_store_path }}"
-    delete: yes
+    delete: true
     # It's wasteful to preserve owner/group now. We chown below anyway.
-    owner: no
-    group: no
-    times: yes
+    owner: false
+    group: false
+    times: true
   delegate_to: "{{ inventory_hostname }}"
 
 # This is for the generic case and fails in other cases (remote file systems),
@@ -68,7 +68,7 @@
     path: "{{ matrix_synapse_media_store_path }}"
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-    recurse: yes
+    recurse: true
   when: "not matrix_s3_media_store_enabled|bool"
 
 # We don't chown for Goofys, because due to the way it's mounted,
@@ -78,7 +78,7 @@
   service:
     name: "{{ item }}"
     state: started
-    daemon_reload: yes
+    daemon_reload: true
   when: "stopping_result.changed"
   with_items:
     - matrix-synapse

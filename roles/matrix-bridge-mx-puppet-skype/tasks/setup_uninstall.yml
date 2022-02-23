@@ -9,8 +9,8 @@
   service:
     name: matrix-mx-puppet-skype
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   when: "matrix_mx_puppet_skype_service_stat.stat.exists"
 
 - name: Ensure matrix-mx-puppet-skype.service doesn't exist
@@ -21,5 +21,5 @@
 
 - name: Ensure systemd reloaded after matrix-mx-puppet-skype.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_mx_puppet_skype_service_stat.stat.exists"

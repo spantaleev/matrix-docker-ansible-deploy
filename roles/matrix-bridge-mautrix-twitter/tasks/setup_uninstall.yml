@@ -9,7 +9,7 @@
   service:
     name: matrix-mautrix-twitter
     state: stopped
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_mautrix_twitter_service_stat.stat.exists"
 
 - name: Ensure matrix-mautrix-twitter.service doesn't exist
@@ -20,5 +20,5 @@
 
 - name: Ensure systemd reloaded after matrix-mautrix-twitter.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_mautrix_twitter_service_stat.stat.exists"

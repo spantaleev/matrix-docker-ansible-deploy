@@ -3,18 +3,18 @@
 - name: Include vars in matrix_vars.yml
   include_vars:
     file: '{{ awx_cached_matrix_vars }}'
-  no_log: True
+  no_log: true
 
 - name: Install jq and curl on remote machine
   apt:
-    name: 
+    name:
       - jq
       - curl
     state: present
 
 - name: Collect access token of @admin-dimension user
   shell: |
-    curl -X POST --header 'Content-Type: application/json' -d '{ "identifier": { "type": "m.id.user","user": "admin-dimension" }, "password": "{{ awx_dimension_user_password }}", "type": "m.login.password"}' 'https://matrix.{{ matrix_domain }}/_matrix/client/r0/login' | jq -c '. | {access_token}' | sed 's/.*\":\"//' | sed 's/\"}//'
+    curl -X POST --header 'Content-Type: application/json' -d '{"identifier": {"type": "m.id.user","user": "admin-dimension"}, "password": "{{ awx_dimension_user_password }}", "type": "m.login.password"}' 'https://matrix.{{ matrix_domain }}/_matrix/client/r0/login' | jq -c '. | {access_token}' | sed 's/.*\":\"//' | sed 's/\"}//'
   register: awx_dimension_user_access_token
 
 - name: Record Synapse variables locally on AWX
@@ -27,7 +27,7 @@
   with_dict:
     'matrix_dimension_enabled': '{{ matrix_dimension_enabled }}'
     'matrix_dimension_access_token': '"{{ awx_dimension_user_access_token.stdout }}"'
-  
+
 - name: Set final users list if users are defined
   set_fact:
     awx_dimension_users_final: "{{ awx_dimension_users }}"
@@ -80,7 +80,7 @@
 - name: Copy new 'Configure Dimension' survey.json to target machine
   copy:
     src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_dimension.json'
-    dest:  '/matrix/awx/configure_dimension.json'
+    dest: '/matrix/awx/configure_dimension.json'
     mode: '0660'
 
 - name: Recreate 'Configure Dimension' job template
@@ -97,9 +97,9 @@
     credential: "{{ member_id }} - AWX SSH Key"
     survey_enabled: true
     survey_spec: "{{ lookup('file', '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_dimension.json') }}"
-    become_enabled: yes
+    become_enabled: true
     state: present
     verbosity: 1
     tower_host: "https://{{ awx_host }}"
     tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
-    validate_certs: yes
+    validate_certs: true

@@ -10,8 +10,8 @@
   service:
     name: matrix-mautrix-signal-daemon
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   when: "matrix_mautrix_signal_daemon_service_stat.stat.exists"
 
 - name: Ensure matrix-mautrix-signal-daemon.service doesn't exist
@@ -30,8 +30,8 @@
   service:
     name: matrix-mautrix-signal
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   when: "matrix_mautrix_signal_service_stat.stat.exists"
 
 - name: Ensure matrix-mautrix-signal.service doesn't exist
@@ -43,5 +43,5 @@
 # All services
 - name: Ensure systemd reloaded after matrix-mautrix-signal_X.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_mautrix_signal_service_stat.stat.exists or matrix_mautrix_signal_daemon_service_stat.stat.exists"

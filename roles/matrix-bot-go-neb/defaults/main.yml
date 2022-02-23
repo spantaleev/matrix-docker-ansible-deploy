@@ -1,3 +1,4 @@
+---
 # Go-NEB is a Matrix bot written in Go. It is the successor to Matrix-NEB, the original Matrix bot written in Python.
 # See: https://github.com/matrix-org/go-neb
 
@@ -203,8 +204,8 @@ matrix_bot_go_neb_services: []
 #      # Each room will get the notification with the alert rendered with the given template
 #      rooms:
 #        "!someroomid:domain.tld":
-#          text_template: "{{range .Alerts -}} [{{ .Status }}] {{index .Labels \"alertname\" }}: {{index .Annotations \"description\"}} {{ end -}}"
-#          html_template: "{{range .Alerts -}}  {{ $severity := index .Labels \"severity\" }}    {{ if eq .Status \"firing\" }}      {{ if eq $severity \"critical\"}}        <font color='red'><b>[FIRING - CRITICAL]</b></font>      {{ else if eq $severity \"warning\"}}        <font color='orange'><b>[FIRING - WARNING]</b></font>      {{ else }}        <b>[FIRING - {{ $severity }}]</b>      {{ end }}    {{ else }}      <font color='green'><b>[RESOLVED]</b></font>    {{ end }}  {{ index .Labels \"alertname\"}} : {{ index .Annotations \"description\"}}   <a href=\"{{ .GeneratorURL }}\">source</a><br/>{{end -}}"
+#          text_template: "{% raw %}{{range .Alerts -}} [{{ .Status }}] {{index .Labels \"alertname\"}}: {{index .Annotations \"description\"}} {{ end -}}{% endraw %}"
+#          html_template: "{% raw %}{{range .Alerts -}}  {{ $severity := index .Labels \"severity\"}}    {{ if eq .Status \"firing\"}}      {{ if eq $severity \"critical\"}}        <font color='red'><b>[FIRING - CRITICAL]</b></font>      {{ else if eq $severity \"warning\"}}        <font color='orange'><b>[FIRING - WARNING]</b></font>      {{ else }}        <b>[FIRING - {{ $severity }}]</b>      {{ end }}    {{ else }}      <font color='green'><b>[RESOLVED]</b></font>    {{ end }}  {{ index .Labels \"alertname\"}} : {{ index .Annotations \"description\"}}   <a href=\"{{ .GeneratorURL }}\">source</a><br/>{{end -}}{% endraw %}"
 #          msg_type: "m.text"  # Must be either `m.text` or `m.notice`
 
 # Default configuration template which covers the generic use case.
@@ -228,4 +229,3 @@ matrix_bot_go_neb_configuration_extension: "{{ matrix_bot_go_neb_configuration_e
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_bot_go_neb_configuration_yaml`.
 matrix_bot_go_neb_configuration: "{{ matrix_bot_go_neb_configuration_yaml|from_yaml|combine(matrix_bot_go_neb_configuration_extension, recursive=True) }}"
-

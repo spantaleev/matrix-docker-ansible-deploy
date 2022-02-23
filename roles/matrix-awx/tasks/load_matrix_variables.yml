@@ -3,9 +3,9 @@
 - name: Include new vars in matrix_vars.yml
   include_vars:
     file: '{{ awx_cached_matrix_vars }}'
-  no_log: True
+  no_log: true
 
-- name: If include_vars succeeds overwrite the old matrix_vars.yml 
+- name: If include_vars succeeds overwrite the old matrix_vars.yml
   delegate_to: 127.0.0.1
   shell: "cp {{ awx_cached_matrix_vars }} /var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml && rm {{ awx_cached_matrix_vars }}"
 

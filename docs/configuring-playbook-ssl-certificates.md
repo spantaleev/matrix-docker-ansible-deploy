@@ -67,8 +67,13 @@ By default, it obtains certificates for:
 - `matrix.<your-domain>` (`matrix_server_fqn_matrix`)
 - possibly for `element.<your-domain>`, unless you have disabled the [Element client component](configuring-playbook-client-element.md) using `matrix_client_element_enabled: false`
 - possibly for `riot.<your-domain>`, if you have explicitly enabled Riot to Element redirection (for background compatibility) using `matrix_nginx_proxy_proxy_riot_compat_redirect_enabled: true`
+- possibly for `hydrogen.<your-domain>`, if you have explicitly [set up Hydrogen client](configuring-playbook-client-hydrogen.md).
+- possibly for `cinny.<your-domain>`, if you have explicitly [set up Cinny client](configuring-playbook-client-cinny.md).
 - possibly for `dimension.<your-domain>`, if you have explicitly [set up Dimension](configuring-playbook-dimension.md).
+- possibly for `goneb.<your-domain>`, if you have explicitly [set up Go-NEB bot](configuring-playbook-bot-go-neb.md).
 - possibly for `jitsi.<your-domain>`, if you have explicitly [set up Jitsi](configuring-playbook-jitsi.md).
+- possibly for `stats.<your-domain>`, if you have explicitly [set up Grafana](configuring-playbook-prometheus-grafana.md).
+- possibly for `sygnal.<your-domain>`, if you have explicitly [set up Sygnal](configuring-playbook-sygnal.md).
 - possibly for your base domain (`<your-domain>`), if you have explicitly configured [Serving the base domain](configuring-playbook-base-domain-serving.md)
 
 If you are hosting other domains on the Matrix machine, you can make the playbook obtain and renew certificates for those other domains too.

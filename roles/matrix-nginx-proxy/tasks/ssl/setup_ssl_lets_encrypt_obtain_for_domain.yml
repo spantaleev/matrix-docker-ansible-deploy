@@ -1,3 +1,4 @@
+---
 - debug:
     msg: "Dealing with SSL certificate retrieval for domain: {{ domain_name }}"
 
@@ -13,16 +14,16 @@
     domain_name_needs_cert: "{{ not domain_name_certificate_path_stat.stat.exists }}"
 
 - block:
-  - name: Ensure required service for obtaining is started
-    service:
-      name: "{{ matrix_ssl_pre_obtaining_required_service_name }}"
-      state: started
-    register: matrix_ssl_pre_obtaining_required_service_start_result
+    - name: Ensure required service for obtaining is started
+      service:
+        name: "{{ matrix_ssl_pre_obtaining_required_service_name }}"
+        state: started
+      register: matrix_ssl_pre_obtaining_required_service_start_result
 
-  - name: Wait some time, so that the required service for obtaining can start
-    wait_for:
-      timeout: "{{ matrix_ssl_pre_obtaining_required_service_start_wait_time_seconds }}"
-    when: "matrix_ssl_pre_obtaining_required_service_start_result.changed|bool"
+    - name: Wait some time, so that the required service for obtaining can start
+      wait_for:
+        timeout: "{{ matrix_ssl_pre_obtaining_required_service_start_wait_time_seconds }}"
+      when: "matrix_ssl_pre_obtaining_required_service_start_result.changed|bool"
   when: "domain_name_needs_cert|bool and matrix_ssl_pre_obtaining_required_service_name != ''"
 
 # This will fail if there is something running on port 80 (like matrix-nginx-proxy).

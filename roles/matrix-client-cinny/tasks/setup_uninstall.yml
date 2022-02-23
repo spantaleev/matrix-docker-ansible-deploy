@@ -8,8 +8,8 @@
   service:
     name: matrix-client-cinny
     state: stopped
-    enabled: no
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   register: stopping_result
   when: "matrix_client_cinny_service_stat.stat.exists|bool"
 
@@ -21,7 +21,7 @@
 
 - name: Ensure systemd reloaded after matrix-client-cinny.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_client_cinny_service_stat.stat.exists|bool"
 
 - name: Ensure Cinny paths doesn't exist
