@@ -7,15 +7,21 @@
     regexp: 'matrix_synapse_use_presence'
     replace: 'matrix_synapse_presence_enabled'
 
-- name: Generate matrix_homeserver_generic_secret_key variable
+- name: Search for matrix_homeserver_generic_secret_key variable in matrix_vars.yml
+  delegate_to: 127.0.0.1
+  register: presence
+  shell: "grep -i 'matrix_homeserver_generic_secret_key' /var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml"
+  no_log: true
+
+- name: Generate matrix_homeserver_generic_secret_key variable if not present
   delegate_to: 127.0.0.1
   command: |
       openssl rand -hex 16
   register: generic_secret
   no_log: true
-  when: ( matrix_homeserver_generic_secret_key is undefined ) or ( matrix_homeserver_generic_secret_key | length == 0 )
+  when: presence is not changed
 
-- name: Add new matrix_homeserver_generic_secret_key variable
+- name: Add new matrix_homeserver_generic_secret_key variable if not present
   delegate_to: 127.0.0.1
   lineinfile:
     path: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/matrix_vars.yml'
@@ -23,4 +29,4 @@
     insertbefore: '# Basic Settings End'
     mode: '0600'
     state: present
-  when: ( matrix_homeserver_generic_secret_key is undefined ) or ( matrix_homeserver_generic_secret_key | length == 0 )
+  when: presence is not changed
