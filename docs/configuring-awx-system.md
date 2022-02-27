@@ -10,6 +10,7 @@ The AWX system is arranged into 'members' each with their own 'subscriptions'. A
 
 This system can manage the updates, configuration, import and export, backups and monitoring on its own. It is an extension of the popular deploy script [spantaleev/matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy).
 
+Warning: This system is about to undergo heavy revision, **we do not recommend using it at this time.**
 
 ## Other Required Playbooks
 
