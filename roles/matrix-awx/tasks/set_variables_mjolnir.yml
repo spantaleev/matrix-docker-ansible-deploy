@@ -1,0 +1,68 @@
+---
+
+- name: Include vars in matrix_vars.yml
+  include_vars:
+    file: '{{ awx_cached_matrix_vars }}'
+  no_log: true
+
+- name: Collect the internal IP of the matrix-synapse container
+  shell: |
+    /usr/bin/docker inspect --format '{''{range.NetworkSettings.Networks}''}{''{.IPAddress}''}{''{end}''}' matrix-synapse
+  register: matrix_synapse_ip
+
+- name: Collect access token of @admin-mjolnir user
+  shell: |
+    curl -X POST --header 'Content-Type: application/json' -d '{"identifier": {"type": "m.id.user","user": "admin-mjolnir"}, "password": "{{ awx_mjolnir_user_password }}", "type": "m.login.password"}' 'http://{{ matrix_synapse_ip.stdout }}:8008/_matrix/client/r0/login' | jq '.access_token'
+  register: awx_mjolnir_user_access_token
+  no_log: true
+
+- name: Record Mjolnir Bot variables locally on AWX
+  delegate_to: 127.0.0.1
+  lineinfile:
+    path: '{{ awx_cached_matrix_vars }}'
+    regexp: "^#? *{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
+    insertafter: '# Mjolnir Settings Start'
+  with_dict:
+    'matrix_bot_mjolnir_enabled': '{{ matrix_bot_mjolnir_enabled }}'
+    'matrix_bot_mjolnir_access_token': '{{ awx_mjolnir_user_access_token.stdout[1:-1] }}'
+    'matrix_bot_mjolnir_management_room': '"{{ matrix_bot_mjolnir_management_room }}"'
+  no_log: true
+
+- name: Remove Synapse rate-limiting for admin-mjolnir user
+  shell: |
+    /usr/local/bin/matrix-postgres-cli-non-interactive --dbname=synapse --command="INSERT INTO ratelimit_override VALUES ('@admin-mjolnir:{{ matrix_domain }}', 0, 0);"
+  ignore_errors: true
+
+- name: Save new 'Configure Mjolnir' survey.json to the AWX tower, template
+  delegate_to: 127.0.0.1
+  template:
+    src: 'roles/matrix-awx/surveys/configure_mjolnir.json.j2'
+    dest: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_mjolnir.json'
+
+- name: Copy new 'Configure Mjolnir' survey.json to target machine
+  copy:
+    src: '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_mjolnir.json'
+    dest: '/matrix/awx/configure_mjolnir.json'
+    mode: '0660'
+
+- name: Recreate 'Configure Mjolnir Bot' job template
+  delegate_to: 127.0.0.1
+  awx.awx.tower_job_template:
+    name: "{{ matrix_domain }} - 1 - Configure Mjolnir Bot"
+    description: "Configure Mjolnir settings, Mjolnir is a moderation bot for Matrix."
+    extra_vars: "{{ lookup('file', '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/extra_vars.json') }}"
+    job_type: run
+    job_tags: "start,setup-bot-mjolnir"
+    inventory: "{{ member_id }}"
+    project: "{{ member_id }} - Matrix Docker Ansible Deploy"
+    playbook: setup.yml
+    credential: "{{ member_id }} - AWX SSH Key"
+    survey_enabled: true
+    survey_spec: "{{ lookup('file', '/var/lib/awx/projects/clients/{{ member_id }}/{{ subscription_id }}/configure_mjolnir.json') }}"
+    become_enabled: true
+    state: present
+    verbosity: 1
+    tower_host: "https://{{ awx_host }}"
+    tower_oauthtoken: "{{ awx_session_token.ansible_facts.tower_token.token }}"
+    validate_certs: true

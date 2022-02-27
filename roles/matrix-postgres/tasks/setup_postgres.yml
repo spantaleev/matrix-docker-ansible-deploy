@@ -85,6 +85,13 @@
     mode: 0755
   when: matrix_postgres_enabled|bool
 
+- name: Ensure matrix-postgres-cli-non-interactive script created
+  template:
+    src: "{{ role_path }}/templates/usr-local-bin/matrix-postgres-cli-non-interactive.j2"
+    dest: "{{ matrix_local_bin_path }}/matrix-postgres-cli-non-interactive"
+    mode: 0755
+  when: matrix_postgres_enabled|bool
+
 - name: Ensure matrix-change-user-admin-status script created
   template:
     src: "{{ role_path }}/templates/usr-local-bin/matrix-change-user-admin-status.j2"
