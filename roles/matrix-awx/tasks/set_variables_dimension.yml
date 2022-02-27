@@ -14,7 +14,7 @@
 
 - name: Collect access token of @admin-dimension user
   shell: |
-    curl -X POST --header 'Content-Type: application/json' -d '{"identifier": {"type": "m.id.user","user": "admin-dimension"}, "password": "{{ awx_dimension_user_password }}", "type": "m.login.password"}' 'https://matrix.{{ matrix_domain }}/_matrix/client/r0/login' | jq -c '. | {access_token}' | sed 's/.*\":\"//' | sed 's/\"}//'
+    curl -X POST --header 'Content-Type: application/json' -d '{"identifier": {"type": "m.id.user","user": "admin-dimension"}, "password": "{{ awx_dimension_user_password }}", "type": "m.login.password"}' 'https://matrix.{{ matrix_domain }}/_matrix/client/r0/login' | jq '.access_token'
   register: awx_dimension_user_access_token
 
 - name: Record Synapse variables locally on AWX
@@ -26,7 +26,7 @@
     insertafter: '# Dimension Settings Start'
   with_dict:
     'matrix_dimension_enabled': '{{ matrix_dimension_enabled }}'
-    'matrix_dimension_access_token': '"{{ awx_dimension_user_access_token.stdout }}"'
+    'matrix_dimension_access_token': '"{{ awx_dimension_user_access_token.stdout[1:-1] }}"'
 
 - name: Set final users list if users are defined
   set_fact:
