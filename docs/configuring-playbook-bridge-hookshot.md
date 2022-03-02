@@ -45,3 +45,7 @@ The provisioning API will be enabled automatically if you set `matrix_dimension_
 ### Metrics
 
 If metrics are enabled, they will be automatically available in the builtin Prometheus and Grafana, but you need to set up your own Dashboard for now. If additionally metrics proxying for use with external Prometheus is enabled (`matrix_nginx_proxy_proxy_synapse_metrics`), hookshot metrics will also be available (at `matrix_hookshot_metrics_endpoint`, default `/hookshot/metrics`, on the stats subdomain) and with the same password. See also [the Prometheus and Grafana docs](../configuring-playbook-prometheus-grafana.md).
+
+### Collision with matrix-appservice-webhooks
+
+If you are also running [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), it reserves its namespace by the default setting `matrix_appservice_webhooks_user_prefix: '_webhook_'`. You should take care if you modify its or hookshot's prefix that they do not collide with each other's namespace (default `matrix_hookshot_generic_user_id_prefix: '_webhooks_'`).
