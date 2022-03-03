@@ -5,8 +5,22 @@ hs_token: {{ matrix_hookshot_homeserver_token|to_json }} # ..as can this
 namespaces:
   rooms: []
   users:
+{% if matrix_hookshot_github_enabled %}
     - regex: "@_github_.*:{{ matrix_domain }}"
       exclusive: true
+{% endif %}
+{% if matrix_hookshot_gitlab_enabled %}
+    - regex: "@_gitlab_.*:{{ matrix_domain }}" # Where foobar is your homeserver's domain
+      exclusive: true
+{% endif %}
+{% if matrix_hookshot_jira_enabled %}
+    - regex: "@_jira_.*:{{ matrix_domain }}" # Where foobar is your homeserver's domain
+      exclusive: true
+{% endif %}
+{% if matrix_hookshot_generic_enabled %}
+    - regex: "@{{ matrix_hookshot_generic_user_id_prefix }}.*:{{ matrix_domain }}" # Where foobar is your homeserver's domain // depending on userIdPrefix setting in conf
+      exclusive: true
+{% endif %}
   aliases:
     - regex: "#github_.+:{{ matrix_domain }}"
       exclusive: true
