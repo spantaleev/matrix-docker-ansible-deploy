@@ -102,10 +102,10 @@ See how this is configured for the `matrix.` subdomain in `/matrix/nginx-proxy/c
 Don't be alarmed if the above configuration file says port `8080`, instead of port `80`. It's due to port mapping due to our use of containers.
 
 
-## Obtaining SSL certificates with ECDSA private key algorithm
+## Specify the SSL private key algorithm
 
-If you'd like to obtain ECDSA keys by Let's Encrypt, define your own custom configuration like this:
+If you'd like to [specify the private key type](https://eff-certbot.readthedocs.io/en/stable/using.html#using-ecdsa-keys) used with Let's Encrypt, define your own custom configuration like this:
 
 ```yaml
-matrix_ssl_lets_encrypt_use_ecdsa_keys: true
+matrix_ssl_lets_encrypt_key_type: ecdsa
 ```
