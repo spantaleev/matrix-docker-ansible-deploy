@@ -558,10 +558,8 @@ matrix_mautrix_twitter_homeserver_token: "{{ matrix_homeserver_generic_secret_ke
 
 matrix_mautrix_twitter_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-# We'd like to force-set people with external Postgres to SQLite, so the bridge role can complain
-# and point them to a migration path.
-matrix_mautrix_twitter_database_engine: "{{ 'postgres' if matrix_postgres_enabled else '' }}"
-matrix_mautrix_twitter_database_password: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'mau.twt.db') | to_uuid }}"
+matrix_mautrix_twitter_database_hostname: "{{ 'matrix-postgres' if matrix_postgres_enabled else '' }}"
+matrix_mautrix_twitter_database_password: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'mau.twt.db') | to_uuid if matrix_postgres_enabled else '' }}"
 
 ######################################################################
 #
