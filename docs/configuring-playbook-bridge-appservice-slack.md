@@ -11,7 +11,7 @@ See the project's [documentation](https://github.com/matrix-org/matrix-appservic
 loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Setup)
 
 1. Create a new Matrix room to act as the administration control room. Note its internal room ID. This can
-be done in Riot by making a message, opening the options for that message and choosing "view source". The
+be done in Element by making a message, opening the options for that message and choosing "view source". The
 room ID will be displayed near the top.
 2. Enable the bridge with the following configuration in your `vars.yml` file:
 
