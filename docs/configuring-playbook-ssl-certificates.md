@@ -100,3 +100,12 @@ For automated certificate renewal to work, each port `80` vhost for each domain 
 
 See how this is configured for the `matrix.` subdomain in `/matrix/nginx-proxy/conf.d/matrix-synapse.conf`
 Don't be alarmed if the above configuration file says port `8080`, instead of port `80`. It's due to port mapping due to our use of containers.
+
+
+## Specify the SSL private key algorithm
+
+If you'd like to [specify the private key type](https://eff-certbot.readthedocs.io/en/stable/using.html#using-ecdsa-keys) used with Let's Encrypt, define your own custom configuration like this:
+
+```yaml
+matrix_ssl_lets_encrypt_key_type: ecdsa
+```

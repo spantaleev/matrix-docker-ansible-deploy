@@ -170,6 +170,15 @@
   tags:
     - setup-ma1sd
 
+# Additional playbook to set the variable file during Mjolnir Bot configuration
+- include_tasks:
+    file: "set_variables_mjolnir.yml"
+    apply:
+      tags: setup-bot-mjolnir
+  when: run_setup|bool and matrix_awx_enabled|bool
+  tags:
+    - setup-bot-mjolnir
+
 # Additional playbook to set the variable file during Corporal configuration
 - include_tasks:
     file: "set_variables_corporal.yml"

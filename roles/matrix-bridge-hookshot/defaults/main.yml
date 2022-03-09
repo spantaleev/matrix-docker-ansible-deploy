@@ -1,11 +1,11 @@
 ---
 
 # A bridge between Matrix and multiple project management services, such as GitHub, GitLab and JIRA.
-# https://github.com/Half-Shot/matrix-hookshot
+# https://github.com/matrix-org/matrix-hookshot
 
 matrix_hookshot_enabled: true
 
-matrix_hookshot_version: 1.1.0
+matrix_hookshot_version: 1.2.0
 matrix_hookshot_docker_image: "{{ matrix_container_global_registry_prefix }}halfshot/matrix-hookshot:{{ matrix_hookshot_version }}"
 matrix_hookshot_docker_image_force_pull: "{{ matrix_hookshot_docker_image.endswith(':latest') }}"
 
@@ -34,7 +34,7 @@ matrix_hookshot_webhook_endpoint: "{{ matrix_hookshot_public_endpoint }}/webhook
 
 
 # You need to create a GitHub app to enable this and fill in the empty variables below
-# https://half-shot.github.io/matrix-hookshot/setup/github.html
+# https://matrix-org.github.io/matrix-hookshot/setup/github.html
 matrix_hookshot_github_enabled: false
 matrix_hookshot_github_appid: ''
 # Set this variable to the contents of the generated and downloaded GitHub private key:
@@ -53,7 +53,7 @@ matrix_hookshot_github_oauth_secret: ''  # "Client Secret" on the GitHub App pag
 # Default value of matrix_hookshot_github_oauth_endpoint: "/hookshot/webhooks/oauth"
 matrix_hookshot_github_oauth_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/oauth"
 matrix_hookshot_github_oauth_uri: "https://{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_github_oauth_endpoint }}"
-# These are the default settings mentioned here and don't need to be modified: https://half-shot.github.io/matrix-hookshot/usage/room_configuration/github_repo.html#configuration
+# These are the default settings mentioned here and don't need to be modified: https://matrix-org.github.io/matrix-hookshot/usage/room_configuration/github_repo.html#configuration
 matrix_hookshot_github_ignore_hooks: "{}"
 matrix_hookshot_github_command_prefix: '!gh'
 matrix_hookshot_github_show_issue_room_link: false
@@ -78,7 +78,7 @@ matrix_hookshot_gitlab_secret: ''
 
 
 matrix_hookshot_jira_enabled: false
-# Get the these values from https://half-shot.github.io/matrix-hookshot/setup/jira.html#jira-oauth
+# Get the these values from https://matrix-org.github.io/matrix-hookshot/setup/jira.html#jira-oauth
 matrix_hookshot_jira_secret: ''
 matrix_hookshot_jira_oauth_enabled: false
 matrix_hookshot_jira_oauth_id: ''
@@ -92,6 +92,7 @@ matrix_hookshot_jira_oauth_uri: "{{ matrix_server_fqn_matrix }}{{ matrix_hooksho
 matrix_hookshot_generic_enabled: true
 # Default value of matrix_hookshot_generic_endpoint: "/hookshot/webhooks"
 matrix_hookshot_generic_endpoint: "{{ matrix_hookshot_webhook_endpoint }}"
+# urlprefix gets updated with protocol & port in group_vars/matrix_servers
 matrix_hookshot_generic_urlprefix: "{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_generic_endpoint }}"
 matrix_hookshot_generic_allow_js_transformation_functions: false
 # If you're also using matrix-appservice-webhooks, take care that these prefixes don't overlap
@@ -117,7 +118,7 @@ matrix_hookshot_provisioning_secret: ''
 matrix_hookshot_provisioning_enabled: false
 matrix_hookshot_provisioning_endpoint: "{{ matrix_hookshot_public_endpoint }}/v1"
 
-# You can configure access to the bridge as documented here https://half-shot.github.io/matrix-hookshot/setup.html#permissions
+# You can configure access to the bridge as documented here https://matrix-org.github.io/matrix-hookshot/setup.html#permissions
 # When empty, the default permissions are applied.
 # Example:
 # matrix_hookshot_permissions:

@@ -5,6 +5,11 @@
     msg: "The `matrix_ssl_retrieval_method` variable contains an unsupported value"
   when: "matrix_ssl_retrieval_method not in ['lets-encrypt', 'self-signed', 'manually-managed', 'none']"
 
+- name: Fail if using unsupported private key type
+  fail:
+    msg: "The `matrix_ssl_lets_encrypt_key_type` variable contains an unsupported value"
+  when: "matrix_ssl_lets_encrypt_key_type not in ['rsa', 'ecdsa']"
+
 
 # Common tasks, required by almost any method below.
 

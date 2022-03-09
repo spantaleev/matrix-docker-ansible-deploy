@@ -558,10 +558,8 @@ matrix_mautrix_twitter_homeserver_token: "{{ matrix_homeserver_generic_secret_ke
 
 matrix_mautrix_twitter_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-# We'd like to force-set people with external Postgres to SQLite, so the bridge role can complain
-# and point them to a migration path.
-matrix_mautrix_twitter_database_engine: "{{ 'postgres' if matrix_postgres_enabled else '' }}"
-matrix_mautrix_twitter_database_password: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'mau.twt.db') | to_uuid }}"
+matrix_mautrix_twitter_database_hostname: "{{ 'matrix-postgres' if matrix_postgres_enabled else '' }}"
+matrix_mautrix_twitter_database_password: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'mau.twt.db') | to_uuid if matrix_postgres_enabled else '' }}"
 
 ######################################################################
 #
@@ -732,6 +730,10 @@ matrix_hookshot_provisioning_enabled: "{{ matrix_hookshot_provisioning_secret an
 
 matrix_hookshot_proxy_metrics: "{{ matrix_nginx_proxy_proxy_synapse_metrics }}"
 matrix_hookshot_proxy_metrics_basic_auth_enabled: "{{ matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled }}"
+
+matrix_hookshot_generic_urlprefix_port_enabled: "{{ matrix_nginx_proxy_container_https_host_bind_port == 443 if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_https_host_bind_port == 80 }}"
+matrix_hookshot_generic_urlprefix_port: ":{{ matrix_nginx_proxy_container_https_host_bind_port if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_http_host_bind_port }}"
+matrix_hookshot_generic_urlprefix: "http{{ 's' if matrix_nginx_proxy_https_enabled else '' }}://{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_generic_urlprefix_port if matrix_hookshot_generic_urlprefix_port_enabled else '' }}{{ matrix_hookshot_generic_endpoint }}"
 
 ######################################################################
 #

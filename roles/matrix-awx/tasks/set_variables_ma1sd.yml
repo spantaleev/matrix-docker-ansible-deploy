@@ -38,22 +38,22 @@
   replace:
     path: '{{ awx_cached_matrix_vars }}'
     regexp: '^.*\n'
-    after: '# Start ma1sd Extension'
-    before: '# End ma1sd Extension'
+    after: '# ma1sd Extension Start'
+    before: '# ma1sd Extension End'
 
 - name: Replace conjoined ma1sd configuration extension limiters
   delegate_to: 127.0.0.1
   replace:
     path: '{{ awx_cached_matrix_vars }}'
-    regexp: '^# Start ma1sd Extension# End ma1sd Extension'
-    replace: '# Start ma1sd Extension\n# End ma1sd Extension'
+    regexp: '^# ma1sd Extension Start# ma1sd Extension End'
+    replace: '# ma1sd Extension Start\n# ma1sd Extension End'
 
 - name: Insert/Update ma1sd configuration extension variables
   delegate_to: 127.0.0.1
   blockinfile:
     path: '{{ awx_cached_matrix_vars }}'
     marker: "# {mark} ma1sd ANSIBLE MANAGED BLOCK"
-    insertafter: '# Start ma1sd Extension'
+    insertafter: '# ma1sd Extension Start'
     block: '{{ awx_matrix_ma1sd_configuration_extension_yaml }}'
 
 - name: Record ma1sd Custom variables locally on AWX

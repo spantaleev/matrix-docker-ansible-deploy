@@ -54,12 +54,6 @@ appservice:
     bot_displayname: Twitter bridge bot
     bot_avatar: mxc://maunium.net/HVHcnusJkQcpVcsVGZRELLCn
 
-    # Community ID for bridged users (changes registration file) and rooms.
-    # Must be created manually.
-    #
-    # Example: "+twitter:example.com". Set to false to disable.
-    community_id: false
-
     # Whether or not to receive ephemeral events via appservice transactions.
     # Requires MSC2409 support (i.e. Synapse 1.22+).
     # You should disable bridge -> sync_with_custom_puppets when this is enabled.
@@ -111,7 +105,7 @@ bridge:
     login_shared_secret_map: {{ matrix_mautrix_twitter_bridge_login_shared_secret_map|to_json }}
     # Whether or not created rooms should have federation enabled.
     # If false, created portal rooms will never be federated.
-    federate_rooms: true
+    federate_rooms: {{ matrix_mautrix_twitter_federate_rooms|to_json }}
     # Settings for backfilling messages from Twitter.
     #
     # Missed message backfilling is currently based on receiving them from the Twitter polling API,

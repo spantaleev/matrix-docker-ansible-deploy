@@ -22,8 +22,9 @@ docker run \
 		--work-dir=/tmp \
 		--http-01-port 8080 \
 		{% if matrix_ssl_lets_encrypt_staging %}
-			--staging \
+		--staging \
 		{% endif %}
+		--key-type {{ matrix_ssl_lets_encrypt_key_type }} \
 		--standalone \
 		--preferred-challenges http \
 		--agree-tos \

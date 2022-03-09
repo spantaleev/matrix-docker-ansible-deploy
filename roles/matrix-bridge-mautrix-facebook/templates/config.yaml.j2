@@ -66,12 +66,6 @@ bridge:
     # Localpart template of MXIDs for Facebook users.
     # {userid} is replaced with the user ID of the Facebook user.
     username_template: "facebook_{userid}"
-    # Localpart template for per-user room grouping community IDs.
-    # The bridge will create these communities and add all of the specific user's portals to the community.
-    # {localpart} is the MXID localpart and {server} is the MXID server part of the user.
-    #
-    # `facebook_{localpart}={server}` is a good value.
-    community_template: null
     # Displayname template for Facebook users.
     # {displayname} is replaced with the display name of the Facebook user
     #               as defined below in displayname_preference.
@@ -147,6 +141,9 @@ bridge:
     delivery_receipts: false
     # Whether to allow inviting arbitrary mxids to portal rooms
     allow_invites: false
+    # Whether or not created rooms should have federation enabled.
+    # If false, created portal rooms will never be federated.
+    federate_rooms: {{ matrix_mautrix_facebook_federate_rooms|to_json }}
     # Settings for backfilling messages from Facebook.
     backfill:
         # Whether or not the Facebook users of logged in Matrix users should be

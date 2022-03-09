@@ -70,31 +70,6 @@ If you run into trouble, check the [Troubleshooting](#troubleshooting) section b
 After successfully enabling bridging, you may wish to [set up Double Puppeting](#set-up-double-puppeting), if you haven't already done so.
 
 
-## Set up community-grouping
-
-This is an **optional feature** that you may wish to enable.
-
-The Facebook bridge can create a Matrix community for you, which would contain all your chats and contacts.
-
-For this to work, the bridge's bot needs to have permissions to create communities (also referred to as groups).
-Since the bot is a non-admin user, you need to enable such group-creation for non-privileged users in [Synapse's settings](configuring-playbook-synapse.md).
-
-Here's an example configuration:
-
-```yaml
-matrix_synapse_configuration_extension_yaml: |
-  enable_group_creation: true
-  group_creation_prefix: "unofficial/"
-
-matrix_mautrix_facebook_configuration_extension_yaml: |
-  bridge:
-    community_template: "unofficial/facebook_{localpart}={server}"
-```
-
-Once the bridge is restarted, it would create a community and invite you to it. You need to accept the community invitation manually.
-If you don't see all your contacts, you may wish to send a `sync` message to the bot.
-
-
 ## Troubleshooting
 
 ### Facebook rejecting login attempts and forcing you to change password

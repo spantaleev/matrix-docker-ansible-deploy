@@ -46,12 +46,6 @@ appservice:
   bot_displayname: Instagram bridge bot
   bot_avatar: mxc://maunium.net/JxjlbZUlCPULEeHZSwleUXQv
 
-  # Community ID for bridged users (changes registration file) and rooms.
-  # Must be created manually.
-  #
-  # Example: "+instagram:example.com". Set to false to disable.
-  community_id: false
-
   # Whether or not to receive ephemeral events via appservice transactions.
   # Requires MSC2409 support (i.e. Synapse 1.22+).
   # You should disable bridge -> sync_with_custom_puppets when this is enabled.
@@ -116,7 +110,7 @@ bridge:
   update_avatar_initial_sync: true
   # Whether or not created rooms should have federation enabled.
   # If false, created portal rooms will never be federated.
-  federate_rooms: true
+  federate_rooms: {{ matrix_mautrix_instagram_federate_rooms|to_json }}
   # Settings for backfilling messages from Instagram.
   backfill:
     # Whether or not the Instagram users of logged in Matrix users should be
