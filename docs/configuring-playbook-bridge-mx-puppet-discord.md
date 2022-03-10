@@ -7,6 +7,8 @@ The playbook can install and configure
 
 See the project page to learn what it does and why it might be useful to you.
 
+**Note**: we actually use the [Beeper](https://www.beeper.com/)-maintained [fork of mx-puppet-discord](https://gitlab.com/beeper/mx-puppet-monorepo), because `matrix-discord/mx-puppet-discord` is a low-quality and poorly maintained project.
+
 To enable the [Discord](https://discordapp.com/) bridge just use the following
 playbook configuration:
 
