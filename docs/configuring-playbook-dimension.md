@@ -22,7 +22,7 @@ matrix_dimension_enabled: true
 
 ## Define admin users
 
-These users can modify the integrations this Dimension supports. Admin interface is accessible at `https://dimension.<your-domain>/riot-app/admin` after logging in to element.
+These users can modify the integrations this Dimension supports. 
 Add this to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
@@ -31,6 +31,7 @@ matrix_dimension_admins:
   - "@user2:{{ matrix_domain }}"
 ```
 
+Admin interface is accessible at `https://dimension.<your-domain>/riot-app/admin` after logging in to element and opening it in any room via "Edit widgets, bridges & bots" and then clicking the "settings"-icon in the upper right corner.
 
 ## Access token
 
