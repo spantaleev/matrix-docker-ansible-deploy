@@ -56,16 +56,16 @@
             +
             [matrix_mautrix_telegram_matrix_nginx_proxy_configuration]
           }}
+    - name: Warn about reverse-proxying if matrix-nginx-proxy not used
+      debug:
+        msg: >-
+          NOTE: You've enabled the Mautrix Telegram bridge but are not using the matrix-nginx-proxy
+          reverse proxy.
+          Please make sure that you're proxying the `{{ matrix_mautrix_telegram_public_endpoint }}`
+          URL endpoint to the matrix-mautrix-telegram container.
+          You can expose the container's port using the `matrix_mautrix_telegram_container_http_host_bind_port` variable.
+      when: "not matrix_nginx_proxy_enabled|default(False)|bool"
+
   tags:
     - always
-  when: matrix_mautrix_telegram_enabled|bool
-
-- name: Warn about reverse-proxying if matrix-nginx-proxy not used
-  debug:
-    msg: >-
-      NOTE: You've enabled the Mautrix Telegram bridge but are not using the matrix-nginx-proxy
-      reverse proxy.
-      Please make sure that you're proxying the `{{ matrix_mautrix_telegram_public_endpoint }}`
-      URL endpoint to the matrix-mautrix-telegram container.
-      You can expose the container's port using the `matrix_mautrix_telegram_container_http_host_bind_port` variable.
-  when: "matrix_mautrix_telegram_enabled|bool and matrix_nginx_proxy_enabled is not defined"
+  when: matrix_mautrix_telegram_enabled|bool and matrix_mautrix_telegram_appservice_public_enabled|bool
