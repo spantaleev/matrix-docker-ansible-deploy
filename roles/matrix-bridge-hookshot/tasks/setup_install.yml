@@ -32,7 +32,7 @@
 
 - name: Ensure hookshot config.yml installed if provided
   copy:
-    content: "{{ matrix_hookshot_configuration|to_nice_yaml }}"
+    content: "{{ matrix_hookshot_configuration|to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_hookshot_base_path }}/config.yml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
@@ -56,7 +56,7 @@
 
 - name: Ensure hookshot registration.yml installed if provided
   copy:
-    content: "{{ matrix_hookshot_registration|to_nice_yaml }}"
+    content: "{{ matrix_hookshot_registration|to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_hookshot_base_path }}/registration.yml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
