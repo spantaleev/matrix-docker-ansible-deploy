@@ -32,16 +32,12 @@ appservice:
     # Public part of web server for out-of-Matrix interaction with the bridge.
     public:
         # Whether or not the public-facing endpoints should be enabled.
-        enabled: false
+        enabled: {{ matrix_mautrix_facebook_appservice_public_enabled|to_json }}
         # The prefix to use in the public-facing endpoints.
-        prefix: /public
+        prefix: {{ matrix_mautrix_facebook_public_endpoint|to_json }}
         # The base URL where the public-facing endpoints are available. The prefix is not added
         # implicitly.
-        external: https://example.com/public
-        # Shared secret for integration managers such as mautrix-manager.
-        # If set to "generate", a random string will be generated on the next startup.
-        # If null, integration manager access to the API will not be possible.
-        shared_secret: generate
+        external: {{ matrix_mautrix_facebook_appservice_public_external|to_json }}
 
     # The unique ID of this appservice.
     id: facebook
@@ -176,7 +172,7 @@ bridge:
     # Whether or not temporary disconnections should send notices to the notice room.
     # If this is false, disconnections will never send messages and connections will only send
     # messages if it was disconnected for more than resync_max_disconnected_time seconds.
-    temporary_disconnect_notices: true
+    temporary_disconnect_notices: false
     # Whether or not the bridge should try to "refresh" the connection if a normal reconnection
     # attempt fails.
     refresh_on_reconnection_fail: false

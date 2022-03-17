@@ -24,7 +24,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-telegr
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
-			{% if matrix_mautrix_telegram_container_http_host_bind_port %}
+			{% if matrix_mautrix_telegram_appservice_public_enabled and matrix_mautrix_telegram_container_http_host_bind_port %}
 			-p {{ matrix_mautrix_telegram_container_http_host_bind_port }}:8080 \
 			{% endif %}
 			-v {{ matrix_mautrix_telegram_config_path }}:/config:z \

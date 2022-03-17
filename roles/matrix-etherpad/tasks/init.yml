@@ -61,4 +61,4 @@
       Please make sure that you're proxying the `{{ matrix_etherpad_public_endpoint }}`
       URL endpoint to the matrix-etherpad container.
       You can expose the container's port using the `matrix_etherpad_container_http_host_bind_port` variable.
-  when: "matrix_etherpad_enabled|bool and matrix_nginx_proxy_enabled is not defined"
+  when: "matrix_etherpad_enabled|bool and not matrix_nginx_proxy_enabled|default(False)|bool"

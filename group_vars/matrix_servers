@@ -299,6 +299,10 @@ matrix_mautrix_facebook_appservice_token: "{{ '%s' | format(matrix_homeserver_ge
 
 matrix_mautrix_facebook_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'fb.hs.token') | to_uuid }}"
 
+matrix_mautrix_facebook_public_endpoint: "/{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'facebook') | to_uuid }}"
+
+matrix_mautrix_facebook_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9008' }}"
+
 matrix_mautrix_facebook_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
 matrix_mautrix_facebook_bridge_presence: "{{ matrix_synapse_presence_enabled if matrix_synapse_enabled else true }}"
@@ -2143,7 +2147,7 @@ matrix_prometheus_scraper_node_targets: "{{ ['matrix-prometheus-node-exporter:91
 matrix_prometheus_scraper_postgres_enabled: "{{ matrix_prometheus_postgres_exporter_enabled }}"
 matrix_prometheus_scraper_postgres_targets: "{{ ['matrix-prometheus-postgres-exporter:'+ matrix_prometheus_postgres_exporter_port|string] if matrix_prometheus_scraper_postgres_enabled else [] }}"
 
-matrix_prometheus_scraper_hookshot_enabled: "{{ matrix_hookshot_metrics_enabled }}"
+matrix_prometheus_scraper_hookshot_enabled: "{{ matrix_hookshot_metrics_enabled|default(false) }}"
 matrix_prometheus_scraper_hookshot_targets: "{{ [matrix_hookshot_container_url|string +':'+ matrix_hookshot_metrics_port|string] if matrix_hookshot_metrics_enabled else [] }}"
 
 ######################################################################
