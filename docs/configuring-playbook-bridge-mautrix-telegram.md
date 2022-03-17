@@ -49,4 +49,19 @@ If you want to use the relay-bot feature ([relay bot documentation](https://docs
 
 ```yaml
 matrix_mautrix_telegram_bot_token: YOUR_TELEGRAM_BOT_TOKEN
+matrix_mautrix_telegram_configuration_extension_yaml: |
+  bridge:
+    permissions:
+      '*': relaybot
 ```
+
+You might also want to give permissions to administrate the bot:
+```yaml
+matrix_mautrix_telegram_configuration_extension_yaml: |
+  bridge:
+    permissions:
+      '@user:DOMAIN': admin
+```
+
+More details about permissions in this example:
+https://github.com/mautrix/telegram/blob/master/mautrix_telegram/example-config.yaml#L410
