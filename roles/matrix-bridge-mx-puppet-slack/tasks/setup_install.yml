@@ -79,6 +79,7 @@
     repo: "{{ matrix_mx_puppet_slack_container_image_self_build_repo }}"
     dest: "{{ matrix_mx_puppet_slack_docker_src_files_path }}"
     force: "yes"
+    version: "{{ matrix_mx_puppet_slack_container_image_self_build_version }}"
   register: matrix_mx_puppet_slack_git_pull_results
   when: "matrix_mx_puppet_slack_enabled|bool and matrix_mx_puppet_slack_container_image_self_build"
 
@@ -89,7 +90,7 @@
     force_source: "{{ matrix_mx_puppet_slack_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mx_puppet_slack_git_pull_results.changed }}"
     build:
-      dockerfile: Dockerfile
+      dockerfile: "{{ matrix_mx_puppet_slack_container_image_self_build_dockerfile_path }}"
       path: "{{ matrix_mx_puppet_slack_docker_src_files_path }}"
       pull: true
   when: "matrix_mx_puppet_slack_enabled|bool and matrix_mx_puppet_slack_container_image_self_build"
