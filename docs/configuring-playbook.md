@@ -47,8 +47,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Using an external PostgreSQL server](configuring-playbook-external-postgres.md) (optional)
 
-- [Adjusting ma1sd Identity Server configuration](configuring-playbook-ma1sd.md) (optional)
-
 - [Adjusting SSL certificate retrieval](configuring-playbook-ssl-certificates.md) (optional, advanced)
 
 - [Serving your base domain using this playbook's nginx server](configuring-playbook-base-domain-serving.md) (optional)
@@ -69,10 +67,13 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Adjusting email-sending settings](configuring-playbook-email.md) (optional)
 
 - [Setting up Hydrogen](configuring-playbook-client-hydrogen.md) - a new lightweight matrix client with legacy and mobile browser support (optional)
+
 - [Setting up Cinny](configuring-playbook-client-cinny.md) - a web client focusing primarily on simple, elegant and secure interface (optional)
 
 
 ### Authentication and user-related
+
+- [Setting up an ma1sd Identity Server](configuring-playbook-ma1sd.md) (optional)
 
 - [Setting up Synapse Admin](configuring-playbook-synapse-admin.md) (optional)
 

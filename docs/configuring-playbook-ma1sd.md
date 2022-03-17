@@ -1,23 +1,21 @@
 # Adjusting ma1sd Identity Server configuration (optional)
 
-By default, this playbook configures an [ma1sd](https://github.com/ma1uta/ma1sd) Identity Server for you.
+The playbook can configure the [ma1sd](https://github.com/ma1uta/ma1sd) Identity Server for you.
+
+ma1sd, being an Identity Server, is not strictly needed. It is only used for 3PIDs (3rd party identifiers like E-mail and phone numbers) and some [enhanced features](https://github.com/ma1uta/ma1sd/#features).
 
 This server is private by default, potentially at the expense of user discoverability.
 
 *ma1sd is a fork of [mxisd](https://github.com/kamax-io/mxisd) which was pronounced end of life 2019-06-21.*
 
-**Note**: enabling ma1sd (which is also the default), means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. It's something to be aware of, especially in terms of firewall whitelisting (make sure port `8448` is accessible).
+**Note**: enabling ma1sd, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. It's something to be aware of, especially in terms of firewall whitelisting (make sure port `8448` is accessible).
 
-
-## Disabling ma1sd
-
-ma1sd, being an Identity Server, is not strictly needed. It is only used for 3PIDs (3rd party identifiers like E-mail and phone numbers) and some [enhanced features](https://github.com/ma1uta/ma1sd/#features).
-
-If you'd like for the playbook to not install ma1sd (or to uninstall it if it was previously installed), you can disable it in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+To enable ma1sd, use the following additional configuration in your `vars.yml` file:
 
 ```yaml
-matrix_ma1sd_enabled: false
+matrix_ma1sd_enabled: true
 ```
+
 
 ## Matrix.org lookup forwarding
 
