@@ -1,6 +1,6 @@
 ---
 # Mx Puppet Slack is a Matrix <-> Slack bridge
-# See: https://github.com/Sorunome/mx-puppet-slack
+# See: https://gitlab.com/beeper/mx-puppet-monorepo (originally based on https://github.com/Sorunome/mx-puppet-slack)
 
 matrix_mx_puppet_slack_enabled: true
 
@@ -8,7 +8,9 @@ matrix_mx_puppet_slack_oauth_client_id: ''
 matrix_mx_puppet_slack_oauth_client_secret: ''
 
 matrix_mx_puppet_slack_container_image_self_build: false
-matrix_mx_puppet_slack_container_image_self_build_repo: "https://github.com/Sorunome/mx-puppet-slack.git"
+matrix_mx_puppet_slack_container_image_self_build_repo: "https://gitlab.com/beeper/mx-puppet-monorepo.git"
+matrix_mx_puppet_slack_container_image_self_build_version: "{{ 'main' if matrix_mx_puppet_slack_version == 'latest' else matrix_mx_puppet_slack_version }}"
+matrix_mx_puppet_slack_container_image_self_build_dockerfile_path: "docker/Dockerfile-slack"
 
 # Controls whether the mx-puppet-slack container exposes its HTTP port (tcp/8432 in the container).
 #
@@ -16,8 +18,8 @@ matrix_mx_puppet_slack_container_image_self_build_repo: "https://github.com/Soru
 matrix_mx_puppet_slack_container_http_host_bind_port: ''
 
 matrix_mx_puppet_slack_version: latest
-matrix_mx_puppet_slack_docker_image: "{{ matrix_mx_puppet_slack_docker_image_name_prefix }}sorunome/mx-puppet-slack:{{ matrix_mx_puppet_slack_version }}"
-matrix_mx_puppet_slack_docker_image_name_prefix: "{{ 'localhost/' if matrix_mx_puppet_slack_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_mx_puppet_slack_docker_image: "{{ matrix_mx_puppet_slack_docker_image_name_prefix }}beeper/mx-puppet-monorepo/slack:{{ matrix_mx_puppet_slack_version }}"
+matrix_mx_puppet_slack_docker_image_name_prefix: "{{ 'localhost/' if matrix_mx_puppet_slack_container_image_self_build else 'registry.gitlab.com/' }}"
 matrix_mx_puppet_slack_docker_image_force_pull: "{{ matrix_mx_puppet_slack_docker_image.endswith(':latest') }}"
 
 matrix_mx_puppet_slack_base_path: "{{ matrix_base_data_path }}/mx-puppet-slack"
