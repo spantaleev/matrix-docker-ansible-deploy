@@ -1,3 +1,20 @@
+# 2022-03-17
+
+## (Compatibility Break) ma1sd identity server no longer installed by default
+
+The playbook no longer installs the [ma1sd](https://github.com/ma1uta/ma1sd) identity server by default. The next time you run the playbook, ma1sd will be uninstalled from your server, unless you explicitly enable the ma1sd service (see how below).
+
+The main reason we used to install ma1sd by default in the past was to prevent Element from talking to the `matrix.org` / `vector.im` identity servers, by forcing it to talk to our own self-hosted (but otherwise useless) identity server instead, thus preventing contact list leaks.
+
+Since Element no longer defaults to using a public identity server if another one is not provided, we can stop installing ma1sd.
+
+If you need to install the ma1sd identity server for some reason, you can explicitly enable it by adding this to your `vars.yml` file:
+
+```yaml
+matrix_ma1sd_enabled: true
+```
+
+
 # 2022-02-12
 
 ## matrix_encryption_disabler support

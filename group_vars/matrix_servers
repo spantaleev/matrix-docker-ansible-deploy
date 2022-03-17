@@ -1328,9 +1328,16 @@ matrix_mailer_container_image_self_build: "{{ matrix_architecture not in ['amd64
 #
 ######################################################################
 
-# By default, this playbook installs the ma1sd identity server on the same domain as Synapse (`matrix_server_fqn_matrix`).
-# If you wish to use the public identity servers (matrix.org, vector.im) instead of your own you may wish to disable this.
-matrix_ma1sd_enabled: true
+# We no longer install the ma1sd identity server by default.
+#
+# The main reason we used to install ma1sd by default in the past was to
+# prevent Element from talking to the `matrix.org` / `vector.im` identity servers,
+# by forcing it to talk to our own self-hosted (but otherwise useless) identity server instead,
+# thus preventing contact list leaks.
+#
+# Since Element no longer defaults to using a public identity server if another one is not provided,
+# we can stop installing ma1sd.
+matrix_ma1sd_enabled: false
 
 matrix_ma1sd_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 

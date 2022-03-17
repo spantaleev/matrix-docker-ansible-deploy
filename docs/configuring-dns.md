@@ -62,11 +62,11 @@ The `cinny.<your-domain>` subdomain may be necessary, because this playbook coul
 
 ## `_matrix-identity._tcp` SRV record setup
 
-To make the [ma1sd](https://github.com/ma1uta/ma1sd) Identity Server (which this playbook installs for you) enable its federation features, set up an SRV record that looks like this:
+To make the [ma1sd](https://github.com/ma1uta/ma1sd) Identity Server (which this playbook may optionally install for you) enable its federation features, set up an SRV record that looks like this:
 - Name: `_matrix-identity._tcp` (use this text as-is)
 - Content: `10 0 443 matrix.<your-domain>` (replace `<your-domain>` with your own)
 
-This is an optional feature. See [ma1sd's documentation](https://github.com/ma1uta/ma1sd/wiki/mxisd-and-your-privacy#choices-are-never-easy) for information on the privacy implications of setting up this SRV record.
+This is an optional feature for the optionally-installed [ma1sd service](configuring-playbook-ma1sd.md). See [ma1sd's documentation](https://github.com/ma1uta/ma1sd/wiki/mxisd-and-your-privacy#choices-are-never-easy) for information on the privacy implications of setting up this SRV record.
 
 Note: This `_matrix-identity._tcp` SRV record for the identity server is different from the `_matrix._tcp` that can be used for Synapse delegation. See [howto-server-delegation.md](howto-server-delegation.md) for more information about delegation.
 
