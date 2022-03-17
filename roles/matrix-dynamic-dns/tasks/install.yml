@@ -7,6 +7,10 @@
     force_source: "{{ matrix_dynamic_dns_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_dynamic_dns_docker_image_force_pull }}"
   when: matrix_dynamic_dns_enabled|bool and not matrix_dynamic_dns_container_image_self_build
+  register: result
+  retries: "{{ matrix_container_retries_count }}"
+  delay: "{{ matrix_container_retries_delay }}"
+  until: result is not failed
 
 - name: Ensure Dynamic DNS paths exist
   file:

@@ -28,6 +28,10 @@
     force_source: "{{ matrix_email2matrix_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_email2matrix_docker_image_force_pull }}"
   when: "not matrix_email2matrix_container_image_self_build|bool"
+  register: result
+  retries: "{{ matrix_container_retries_count }}"
+  delay: "{{ matrix_container_retries_delay }}"
+  until: result is not failed
 
 - name: Ensure Email2Matrix repository is present on self-build
   git:

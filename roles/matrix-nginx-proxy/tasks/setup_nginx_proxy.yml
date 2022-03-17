@@ -184,6 +184,10 @@
     force_source: "{{ matrix_nginx_proxy_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_nginx_proxy_docker_image_force_pull }}"
   when: matrix_nginx_proxy_enabled|bool
+  register: result
+  retries: "{{ matrix_container_retries_count }}"
+  delay: "{{ matrix_container_retries_delay }}"
+  until: result is not failed
 
 - name: Ensure matrix-nginx-proxy.service installed
   template:
