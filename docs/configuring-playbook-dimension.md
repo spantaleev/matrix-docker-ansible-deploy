@@ -31,7 +31,7 @@ matrix_dimension_admins:
   - "@user2:{{ matrix_domain }}"
 ```
 
-Admin interface is accessible at `https://dimension.<your-domain>/riot-app/admin` after logging in to element and opening it in any room via "Edit widgets, bridges & bots" and then clicking the "settings"-icon in the upper right corner.
+The admin interface is accessible within Element by accessing it in any room and clicking the cog wheel/settings icon in the top right. Currently, Dimension can be opened in Element by the "Add widgets, bridges, & bots" link in the room information.
 
 ## Access token
 
