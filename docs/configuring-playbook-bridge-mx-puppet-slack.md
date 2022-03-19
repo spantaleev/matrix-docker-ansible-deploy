@@ -4,8 +4,8 @@
 [matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md)
 bridge supported by the playbook.
 
-The playbook can install and configure
-[mx-puppet-slack](https://github.com/Sorunome/mx-puppet-slack) for you.
+The playbook can install and configure [Beeper](https://www.beeper.com/)-maintained fork of
+[mx-puppet-slack](https://gitlab.com/beeper/mx-puppet-monorepo) for you.
 
 See the project page to learn what it does and why it might be useful to you.
 

@@ -31,7 +31,7 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional, default) an [Element](https://app.element.io/) ([formerly Riot](https://element.io/previously-riot)) web UI, which is configured to connect to your own Synapse server by default
 
-- (optional, default) a [ma1sd](https://github.com/ma1uta/ma1sd) Matrix Identity server
+- (optional) a [ma1sd](https://github.com/ma1uta/ma1sd) Matrix Identity server
 
 - (optional, default) an [Exim](https://www.exim.org/) mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server)
 
