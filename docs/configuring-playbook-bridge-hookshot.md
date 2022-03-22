@@ -31,7 +31,7 @@ All of the following endpoints are reachable on your `matrix.` subdomain (if the
 | jira oauth | `/hookshot/webhooks/jira/oauth` | `matrix_hookshot_jira_oauth_endpoint` | JIRA OAuth |
 | figma endpoint | `/hookshot/webhooks/figma/webhook` | `matrix_hookshot_figma_endpoint` | Figma |
 | provisioning | `/hookshot/v1/` | `matrix_hookshot_provisioning_endpoint` | Dimension [provisioning](#provisioning-api) |
-| appservice | `/hookshot/_matrix/app/` | `matrix_hookshot_appservice_endpoint` | GitHub "Webhook URL" |
+| appservice | `/hookshot/_matrix/app/` | `matrix_hookshot_appservice_endpoint` | Matrix server |
 | metrics | `/hookshot/metrics/` | `matrix_hookshot_metrics_endpoint` | Prometheus |
 | widgets |  |  | not supported |
 
