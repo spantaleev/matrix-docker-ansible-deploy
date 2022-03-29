@@ -25,6 +25,8 @@ matrix_grafana_default_admin_password: "some_strong_password_chosen_by_you"
 
 By default, a [Grafana](https://grafana.com/) web user-interface will be available at `https://stats.<your-domain>`.
 
+The retention policy of Prometheus metrics is [15 days by default](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Older data gets deleted automatically.
+
 
 ## What does it do?
 
