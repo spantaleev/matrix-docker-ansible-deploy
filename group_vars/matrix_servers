@@ -24,6 +24,7 @@ matrix_homeserver_container_url: |-
     'http://matrix-nginx-proxy:12080' if matrix_nginx_proxy_enabled else {
       'synapse': ('http://matrix-synapse:'+ matrix_synapse_container_client_api_port|string),
       'dendrite': ('http://matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
+	  'conduit': ('http://matrix-conduit:' + matrix_conduit_http_bind_port|string),
     }[matrix_homeserver_implementation]
   }}
 
@@ -32,6 +33,7 @@ matrix_homeserver_container_federation_url: |-
     'http://matrix-nginx-proxy:12088' if matrix_nginx_proxy_enabled else {
       'synapse': ('http://matrix-synapse:'+ matrix_synapse_container_federation_api_plain_port|string),
       'dendrite': ('http://matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
+	  'conduit': ('http://matrix-conduit:' + matrix_conduit_http_bind_port|string),
     }[matrix_homeserver_implementation]
   }}
 
@@ -1410,6 +1412,7 @@ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: |-
     {
       'synapse': matrix_synapse_max_upload_size_mb,
       'dendrite': (matrix_dendrite_max_file_size_bytes / 1024 / 1024) | round,
+	  'conduit': (matrix_dendrite_max_file_size_bytes / 1024 / 1024) | round,
     }[matrix_homeserver_implementation]|int
   }}
 
@@ -1459,6 +1462,12 @@ matrix_nginx_proxy_proxy_dendrite_client_api_addr_with_container: "matrix-dendri
 matrix_nginx_proxy_proxy_dendrite_client_api_addr_sans_container: "127.0.0.1:{{ matrix_dendrite_http_bind_port|string }}"
 matrix_nginx_proxy_proxy_dendrite_federation_api_addr_with_container: "matrix-dendrite:{{ matrix_dendrite_http_bind_port|string }}"
 matrix_nginx_proxy_proxy_dendrite_federation_api_addr_sans_container: "127.0.0.1:{{ matrix_dendrite_http_bind_port|string }}"
+
+matrix_nginx_proxy_proxy_conduit_enabled: "{{ matrix_conduit_enabled }}"
+matrix_nginx_proxy_proxy_conduit_client_api_addr_with_container: "matrix-dendrite:{{ matrix_conduit_http_bind_port|string }}"
+matrix_nginx_proxy_proxy_conduit_client_api_addr_sans_container: "127.0.0.1:{{ matrix_conduit_http_bind_port|string }}"
+matrix_nginx_proxy_proxy_conduit_federation_api_addr_with_container: "matrix-dendrite:{{ matrix_conduit_http_bind_port|string }}"
+matrix_nginx_proxy_proxy_conduit_federation_api_addr_sans_container: "127.0.0.1:{{ matrix_conduit_http_bind_port|string }}"
 
 # When matrix-nginx-proxy is disabled, the actual port number that the vhost uses may begin to matter.
 matrix_nginx_proxy_proxy_matrix_federation_port: "{{ matrix_federation_public_port }}"
@@ -2315,5 +2324,71 @@ matrix_dendrite_systemd_wanted_services_list: |
 ######################################################################
 #
 # /matrix-dendrite
+#
+######################################################################
+
+######################################################################
+#
+# matrix-conduit
+#
+######################################################################
+
+matrix_conduit_enabled: "{{ matrix_homeserver_implementation == 'dendrite' }}"
+
+# Normally, matrix-nginx-proxy is enabled and nginx can reach Dendrite over the container network.
+# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it,
+# you can expose Dendrite's ports to the host.
+#
+# For exposing Dendrite's plain HTTP server to the local host.
+matrix_conduit_container_http_host_bind_address: "{{ '' if matrix_nginx_proxy_enabled else ('127.0.0.1:' + matrix_conduit_http_bind_port|string) }}"
+#
+# For exposing Dendrite's HTTPS server to the local host.
+matrix_conduit_container_https_host_bind_address: "{{ '' if matrix_nginx_proxy_enabled or not matrix_conduit_https_bind_port else ('127.0.0.1:' + matrix_conduit_https_bind_port|string) }}"
+
+matrix_conduit_sync_api_real_ip_header: "{{ 'X-Forwarded-For' if matrix_nginx_proxy_enabled else '' }}"
+
+matrix_conduit_registration_shared_secret: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'dendrite.rss') | to_uuid }}"
+
+matrix_conduit_database_password: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'dendrite.db') | to_uuid }}"
+
+# Even if TURN doesn't support TLS (it does by default),
+# it doesn't hurt to try a secure connection anyway.
+matrix_conduit_turn_uris: |
+  {{
+    [
+      'turns:' + matrix_server_fqn_matrix + '?transport=udp',
+      'turns:' + matrix_server_fqn_matrix + '?transport=tcp',
+      'turn:' + matrix_server_fqn_matrix + '?transport=udp',
+      'turn:' + matrix_server_fqn_matrix + '?transport=tcp',
+    ]
+    if matrix_coturn_enabled
+    else []
+  }}
+
+matrix_conduit_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
+
+matrix_conduit_disable_tls_validation: "{{ true if matrix_ssl_retrieval_method == 'self-signed' else false }}"
+
+matrix_conduit_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
+
+matrix_conduit_trusted_id_servers: "{{ [matrix_server_fqn_matrix] if matrix_ma1sd_enabled else ['matrix.org', 'vector.im'] }}"
+
+matrix_conduit_systemd_required_services_list: |
+  {{
+    (['docker.service'])
+    +
+    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-goofys'] if matrix_s3_media_store_enabled else [])
+  }}
+
+matrix_conduit_systemd_wanted_services_list: |
+  {{
+    (['matrix-coturn.service'] if matrix_coturn_enabled else [])
+  }}
+
+######################################################################
+#
+# /matrix-conduit
 #
 ######################################################################
