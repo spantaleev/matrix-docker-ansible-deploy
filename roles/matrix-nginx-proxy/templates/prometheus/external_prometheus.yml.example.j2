@@ -22,7 +22,7 @@ scrape_configs:
       - targets: ['{{ matrix_server_fqn_matrix }}:{{ matrix_nginx_proxy_container_https_host_bind_port if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_http_host_bind_port }}']
         labels:
           job: "master"
-          index: 1
+          index: "0"
 {% for worker in matrix_nginx_proxy_proxy_synapse_workers_enabled_list %}
   - job_name: 'synapse-{{ worker.type }}-{{ worker.instanceId }}'
     metrics_path: /_synapse-worker-{{ worker.type }}-{{ worker.instanceId }}/metrics
@@ -36,5 +36,5 @@ scrape_configs:
       - targets: ['{{ matrix_server_fqn_matrix }}:{{ matrix_nginx_proxy_container_https_host_bind_port if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_http_host_bind_port }}']
         labels:
           job: "{{ worker.type }}"
-          index: {{ worker.instanceId }}
+          index: "{{ worker.instanceId }}"
 {% endfor %}

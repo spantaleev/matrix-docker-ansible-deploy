@@ -106,7 +106,9 @@ bridge:
     # If using this for other servers than the bridge's server,
     # you must also set the URL in the double_puppet_server_map.
     login_shared_secret_map: {{ matrix_mautrix_facebook_bridge_login_shared_secret_map|to_json }}
-    presence: {{ matrix_mautrix_facebook_bridge_presence|to_json }}
+    # Should presence from Facebook be bridged? This doesn't use the same API as the Android app,
+    # so it might be more suspicious to Facebook.
+    presence_from_facebook: {{ matrix_mautrix_facebook_bridge_presence|to_json }}
     # Whether or not to update avatars when syncing all contacts at startup.
     update_avatar_initial_sync: true
     # End-to-bridge encryption support options. These require matrix-nio to be installed with pip
