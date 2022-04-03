@@ -19,7 +19,6 @@
     group: "{{ matrix_user_groupname }}"
     mode: 0640
 
-  # the passwd file with correct username, UID and GID is mandatory to work with borg over ssh, otherwise ssh connections will fail
 - name: Ensure borg passwd is created
   template:
     src: "{{ role_path }}/templates/passwd.j2"
@@ -89,10 +88,10 @@
 
 - name: Ensure matrix-backup-borg.service enabled
   service:
-    enabled: yes
+    enabled: true
     name: matrix-backup-borg.service
 
 - name: Ensure matrix-backup-borg.timer enabled
   service:
-    enabled: yes
+    enabled: true
     name: matrix-backup-borg.timer
