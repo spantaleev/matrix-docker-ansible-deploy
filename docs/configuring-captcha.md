@@ -17,7 +17,7 @@ Must be a reCAPTCHA **v2** key using the "I'm not a robot" Checkbox option
 Once registered as above, set the following values:
 
 ```yaml
-matrix_synapse_enable_registration_captcha: true
+matrix_homeserver_enable_registration_captcha: true
 matrix_synapse_recaptcha_public_key: 'YOUR_SITE_KEY'
 matrix_synapse_recaptcha_private_key: 'YOUR_SECRET_KEY'
 ```
