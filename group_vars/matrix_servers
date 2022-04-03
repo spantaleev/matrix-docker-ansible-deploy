@@ -908,7 +908,7 @@ matrix_mx_puppet_discord_database_password: "{{ '%s' | format(matrix_homeserver_
 # We don't enable bridges by default.
 matrix_mx_puppet_steam_enabled: false
 
-matrix_mx_puppet_steam_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+matrix_mx_puppet_steam_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
 matrix_mx_puppet_steam_systemd_required_services_list: |
   {{
@@ -1552,11 +1552,11 @@ matrix_ssl_domains_to_obtain_certificates_for: |
   }}
 
 matrix_ssl_architecture: "{{
-	{
-		'amd64': 'amd64',
-		'arm32': 'arm32v6',
-		'arm64': 'arm64v8',
-	}[matrix_architecture]
+  {
+    'amd64': 'amd64',
+    'arm32': 'arm32v6',
+    'arm64': 'arm64v8',
+  }[matrix_architecture]
 }}"
 
 matrix_ssl_pre_obtaining_required_service_name: "{{ 'matrix-dynamic-dns' if matrix_dynamic_dns_enabled else '' }}"
