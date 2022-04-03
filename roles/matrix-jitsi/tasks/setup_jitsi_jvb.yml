@@ -32,6 +32,8 @@
   template:
     src: "{{ role_path }}/templates/jvb/{{ item }}.j2"
     dest: "{{ matrix_jitsi_jvb_config_path }}/{{ item }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
     mode: 0644
   with_items:
     - custom-sip-communicator.properties
@@ -42,6 +44,8 @@
   template:
     src: "{{ role_path }}/templates/jvb/env.j2"
     dest: "{{ matrix_jitsi_jvb_base_path }}/env"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
     mode: 0640
   when: matrix_jitsi_enabled|bool
 
