@@ -32,6 +32,8 @@
   template:
     src: "{{ role_path }}/templates/jicofo/env.j2"
     dest: "{{ matrix_jitsi_jicofo_base_path }}/env"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
     mode: 0640
   when: matrix_jitsi_enabled|bool
 
@@ -39,6 +41,8 @@
   template:
     src: "{{ role_path }}/templates/jicofo/{{ item }}.j2"
     dest: "{{ matrix_jitsi_jicofo_config_path }}/{{ item }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
     mode: 0644
   with_items:
     - sip-communicator.properties
