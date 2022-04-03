@@ -23,7 +23,7 @@ ExecStartPre=-{{ matrix_host_command_docker }} run --rm --name matrix-backup-bor
 			--network={{ matrix_docker_network }} \
 			--tmpfs=/tmp:rw,noexec,nosuid,size=100m \
 			--mount type=bind,src={{ matrix_backup_borg_config_path }}/passwd,dst=/etc/passwd,ro \
-			--mount type=bind,src={{ matrix_backup_borg_source }},dst=/matrix,ro \
+			--mount type=bind,src={{ matrix_backup_borg_source }},dst={{ matrix_backup_borg_source }},ro \
 			--mount type=bind,src={{ matrix_backup_borg_config_path }},dst=/etc/borgmatic.d,ro \
 			{% for arg in matrix_backup_borg_container_extra_arguments %}
 			{{ arg }} \

@@ -28,6 +28,13 @@ matrix_backup_borg_schedule: "*-*-* 04:00:00"
 # what directory should be added to backup
 matrix_backup_borg_source: "{{ matrix_base_data_path }}"
 
+# exclude following paths:
+matrix_backup_borg_exclude:
+  - "{{ matrix_synapse_media_store_path }}/local_thumbnails"
+  - "{{ matrix_synapse_media_store_path }}/remote_thumbnail"
+  - "{{ matrix_synapse_media_store_path }}/url_cache"
+  - "{{ matrix_synapse_media_store_path }}/url_cache_thumbnails"
+
 # borg encryption mode, only repokey-* is supported
 matrix_backup_borg_encryption: repokey-blake2
 
