@@ -1,0 +1,33 @@
+#jinja2: lstrip_blocks: "True", trim_blocks: "True"
+
+location:
+  source_directories:
+  - /matrix
+  repositories:
+  - {{ matrix_backup_borg_repository }}
+  one_file_system: true
+
+storage:
+  compression: {{ matrix_backup_borg_compression }}
+  ssh_command: {{ matrix_backup_borg_ssh_command }}
+  archive_name_format: '{{ matrix_backup_borg_name }}'
+  encryption_passphrase: {{ matrix_backup_borg_passphrase }}
+
+retention:
+  keep_hourly: {{ matrix_backup_borg_hourly }}
+  keep_daily: {{ matrix_backup_borg_daily }}
+  keep_weekly: {{ matrix_backup_borg_weekly }}
+  keep_monthly: {{ matrix_backup_borg_monthly }}
+  keep_yearly: {{ matrix_backup_borg_yearly }}
+  prefix: '{{ matrix_backup_borg_prefix }}'
+
+consistency:
+  checks:
+    - repository
+    - archives
+
+hooks:
+  after_backup:
+    - echo "Backup created."
+  on_error:
+    - echo "Error while creating a backup."

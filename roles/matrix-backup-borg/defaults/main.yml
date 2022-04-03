@@ -1,0 +1,60 @@
+---
+matrix_backup_borg_enabled: false
+
+matrix_backup_borg_container_image_self_build: false
+matrix_backup_borg_docker_repo: "https://github.com/borgmatic-collective/docker-borgmatic"
+matrix_backup_borg_docker_src_files_path: "{{ matrix_base_data_path }}/borg/docker-src"
+
+matrix_backup_borg_version: latest
+matrix_backup_borg_docker_image: "{{ matrix_backup_borg_docker_image_name_prefix }}etke.cc/borgmatic:{{ matrix_backup_borg_version }}"
+matrix_backup_borg_docker_image_name_prefix: "{{ 'localhost/' if matrix_backup_borg_container_image_self_build else 'registry.gitlab.com/' }}"
+matrix_backup_borg_docker_image_force_pull: "{{ matrix_backup_borg_docker_image.endswith(':latest') }}"
+
+matrix_backup_borg_base_path: "{{ matrix_base_data_path }}/backup-borg"
+matrix_backup_borg_config_path: "{{ matrix_backup_borg_base_path }}/config"
+
+# A list of extra arguments to pass to the container
+matrix_backup_borg_container_extra_arguments: []
+
+# List of systemd services that matrix-backup-borg.service depends on
+matrix_backup_borg_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-backup-borg.service wants
+matrix_backup_borg_systemd_wanted_services_list: []
+
+# systemd calendar configuration for backup job
+matrix_backup_borg_schedule: "*-*-* 04:00:00"
+
+# what directory should be added to backup
+matrix_backup_borg_source: "{{ matrix_base_data_path }}"
+
+# borg encryption mode, only repokey-* is supported
+matrix_backup_borg_encryption: repokey-blake2
+
+# private ssh key used to connect to the borg repo
+matrix_backup_borg_ssh_key: ""
+
+# borg ssh command with ssh key
+matrix_backup_borg_ssh_command: ssh -o "StrictHostKeyChecking accept-new" -i /etc/borgmatic.d/sshkey
+
+# target repository
+matrix_backup_borg_repository: ""
+
+# compression algorithm
+matrix_backup_borg_compression: lz4
+
+# archive name format
+matrix_backup_borg_name: "matrix-{now:%Y-%m-%d-%H%M%S}"
+
+# retention prefix
+matrix_backup_borg_prefix: "matrix-"
+
+# repository passphrase
+matrix_backup_borg_passphrase: ""
+
+# retention configuration
+matrix_backup_borg_hourly: 0
+matrix_backup_borg_daily: 7
+matrix_backup_borg_weekly: 4
+matrix_backup_borg_monthly: 12
+matrix_backup_borg_yearly: 2
