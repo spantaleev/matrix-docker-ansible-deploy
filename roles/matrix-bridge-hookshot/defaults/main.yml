@@ -5,11 +5,20 @@
 
 matrix_hookshot_enabled: true
 
+
+matrix_hookshot_container_image_self_build: false
+matrix_hookshot_container_image_self_build_repo: "https://github.com/matrix-org/matrix-hookshot.git"
+matrix_hookshot_container_image_self_build_branch: "{{ 'main' if matrix_hookshot_version == 'latest' else matrix_hookshot_version }}"
+
 matrix_hookshot_version: 1.3.0
-matrix_hookshot_docker_image: "{{ matrix_container_global_registry_prefix }}halfshot/matrix-hookshot:{{ matrix_hookshot_version }}"
+
+matrix_hookshot_docker_image: "{{ matrix_hookshot_docker_image_name_prefix }}mautrix/whatsapp:{{ matrix_mautrix_whatsapp_version }}"
+matrix_hookshot_docker_image_name_prefix: "{{ 'localhost/' if matrix_hookshot_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_hookshot_docker_image_force_pull: "{{ matrix_hookshot_docker_image.endswith(':latest') }}"
 
 matrix_hookshot_base_path: "{{ matrix_base_data_path }}/hookshot"
+
+matrix_hookshot_docker_src_files_path: "{{ matrix_hookshot_base_path }}/docker-src"
 
 matrix_hookshot_homeserver_address: "{{ matrix_homeserver_container_url }}"
 matrix_hookshot_container_url: 'matrix-hookshot'
