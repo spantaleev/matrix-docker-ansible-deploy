@@ -1,0 +1,97 @@
+---
+- name: Ensure borg paths exist
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_backup_borg_config_path }}", when: true}
+    - {path: "{{ matrix_backup_borg_docker_src_files_path }}", when: true}
+  when: "item.when|bool"
+
+- name: Ensure borg config is created
+  template:
+    src: "{{ role_path }}/templates/config.yaml.j2"
+    dest: "{{ matrix_backup_borg_config_path }}/config.yaml"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0640
+
+- name: Ensure borg passwd is created
+  template:
+    src: "{{ role_path }}/templates/passwd.j2"
+    dest: "{{ matrix_backup_borg_config_path }}/passwd"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0640
+
+- name: Ensure borg ssh key is created
+  template:
+    src: "{{ role_path }}/templates/sshkey.j2"
+    dest: "{{ matrix_backup_borg_config_path }}/sshkey"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0600
+
+- name: Ensure borg image is pulled
+  docker_image:
+    name: "{{ matrix_backup_borg_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_backup_borg_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_backup_borg_docker_image_force_pull }}"
+  when: "not matrix_backup_borg_container_image_self_build|bool"
+  register: result
+  retries: "{{ matrix_container_retries_count }}"
+  delay: "{{ matrix_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure borg repository is present on self-build
+  git:
+    repo: "{{ matrix_backup_borg_docker_repo }}"
+    dest: "{{ matrix_backup_borg_docker_src_files_path }}"
+    force: "yes"
+  register: matrix_backup_borg_git_pull_results
+  when: "matrix_backup_borg_container_image_self_build|bool"
+
+- name: Ensure borg image is built
+  docker_image:
+    name: "{{ matrix_backup_borg_docker_image }}"
+    source: build
+    force_source: "{{ matrix_backup_borg_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_backup_borg_docker_src_files_path }}"
+      pull: true
+  when: "matrix_backup_borg_container_image_self_build|bool"
+
+- name: Ensure matrix-backup-borg.service installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-backup-borg.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-backup-borg.service"
+    mode: 0644
+  register: matrix_backup_borg_systemd_service_result
+
+- name: Ensure matrix-backup-borg.timer installed
+  template:
+    src: "{{ role_path }}/templates/systemd/matrix-backup-borg.timer.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-backup-borg.timer"
+    mode: 0644
+  register: matrix_backup_borg_systemd_timer_result
+
+- name: Ensure systemd reloaded after matrix-backup-borg.service installation
+  service:
+    daemon_reload: true
+  when: "matrix_backup_borg_systemd_service_result.changed|bool"
+
+- name: Ensure matrix-backup-borg.service enabled
+  service:
+    enabled: true
+    name: matrix-backup-borg.service
+
+- name: Ensure matrix-backup-borg.timer enabled
+  service:
+    enabled: true
+    name: matrix-backup-borg.timer

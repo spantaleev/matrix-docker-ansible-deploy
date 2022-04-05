@@ -1095,6 +1095,27 @@ matrix_bot_mjolnir_systemd_required_services_list: |
 #
 ######################################################################
 
+######################################################################
+#
+# matrix-backup-borg
+#
+######################################################################
+
+matrix_backup_borg_enabled: false
+matrix_backup_borg_location_source_directories:
+  - "{{ matrix_base_data_path }}"
+matrix_backup_borg_location_exclude_patterns: |
+  {{
+    {
+      'synapse': ["{{ matrix_synapse_media_store_path }}/local_thumbnails", "{{ matrix_synapse_media_store_path }}/remote_thumbnail", "{{ matrix_synapse_media_store_path }}/url_cache", "{{ matrix_synapse_media_store_path }}/url_cache_thumbnails"],
+    }[matrix_homeserver_implementation]
+  }}
+
+######################################################################
+#
+# /matrix-backup-borg
+#
+######################################################################
 
 ######################################################################
 #

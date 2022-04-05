@@ -121,6 +121,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [Cinny](https://github.com/ajbura/cinny) web client - see [docs/configuring-playbook-client-cinny.md](docs/configuring-playbook-client-cinny.md) for setup documentation
 
+- (optional) the [Borg](https://borgbackup.org) backup - see [docs/configuring-playbook-backup-borg.md](docs/configuring-playbook-backup-borg.md) for setup documentation
+
 Basically, this playbook aims to get you up-and-running with all the necessities around Matrix, without you having to do anything else.
 
 **Note**: the list above is exhaustive. It includes optional or even some advanced components that you will most likely not need.
