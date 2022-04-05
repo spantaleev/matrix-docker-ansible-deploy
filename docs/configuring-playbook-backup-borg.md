@@ -28,10 +28,10 @@ Minimal working configuration (`inventory/host_vars/matrix.DOMAIN/vars.yml`) to 
 ```yaml
 matrix_backup_borg_enabled: true
 matrix_backup_borg_repositories:
-	- USER@HOST:REPO
+ - USER@HOST:REPO
 matrix_backup_borg_encryption_passphrase: "PASSPHRASE"
 matrix_backup_borg_ssh_key_private: |
-	PRIVATE KEY
+  PRIVATE KEY
 ```
 
 where:
