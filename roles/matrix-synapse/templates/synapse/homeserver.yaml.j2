@@ -35,7 +35,7 @@ modules: {{ matrix_synapse_modules|to_json }}
 # In most cases you should avoid using a matrix specific subdomain such as
 # matrix.example.com or synapse.example.com as the server_name for the same
 # reasons you wouldn't use user@email.example.com as your email address.
-# See https://github.com/matrix-org/synapse/blob/master/docs/delegate.md
+# See https://matrix-org.github.io/synapse/latest/delegate.html
 # for information on how to host Synapse on a subdomain while preserving
 # a clean server_name.
 #
@@ -232,9 +232,9 @@ default_room_version: {{ matrix_synapse_default_room_version|to_json }}
 #       'all local interfaces'.
 #
 #   type: the type of listener. Normally 'http', but other valid options are:
-#       'manhole' (see docs/manhole.md),
-#       'metrics' (see docs/metrics-howto.md),
-#       'replication' (see docs/workers.md).
+#       'manhole' (see https://matrix-org.github.io/synapse/latest/manhole.html),
+#       'metrics' (see https://matrix-org.github.io/synapse/latest/metrics-howto.html),
+#       'replication' (see https://matrix-org.github.io/synapse/latest/workers.html).
 #
 #   tls: set to true to enable TLS for this listener. Will use the TLS
 #       key/cert specified in tls_private_key_path / tls_certificate_path.
@@ -259,8 +259,8 @@ default_room_version: {{ matrix_synapse_default_room_version|to_json }}
 #   client: the client-server API (/_matrix/client), and the synapse admin
 #       API (/_synapse/admin). Also implies 'media' and 'static'.
 #
-#   consent: user consent forms (/_matrix/consent). See
-#       docs/consent_tracking.md.
+#   consent: user consent forms (/_matrix/consent).
+#       See https://matrix-org.github.io/synapse/latest/consent_tracking.html.
 #
 #   federation: the server-server API (/_matrix/federation). Also implies
 #       'media', 'keys', 'openid'
@@ -269,12 +269,13 @@ default_room_version: {{ matrix_synapse_default_room_version|to_json }}
 #
 #   media: the media API (/_matrix/media).
 #
-#   metrics: the metrics interface. See docs/metrics-howto.md.
+#   metrics: the metrics interface.
+#     See https://matrix-org.github.io/synapse/latest/consent_tracking.html.
 #
 #   openid: OpenID authentication.
 #
-#   replication: the HTTP replication API (/_synapse/replication). See
-#       docs/workers.md.
+#   replication: the HTTP replication API (/_synapse/replication).
+#       See https://matrix-org.github.io/synapse/latest/consent_tracking.html.
 #
 #   static: static resources under synapse/static (/_matrix/static). (Mostly
 #       useful for 'fallback authentication'.)
@@ -431,9 +432,16 @@ manhole_settings:
 # sign up in a short space of time never to return after their initial
 # session.
 #
+# 'mau_limit_alerting' is a means of limiting client side alerting
+# should the mau limit be reached. This is useful for small instances
+# where the admin has 5 mau seats (say) for 5 specific people and no
+# interest increasing the mau limit further. Defaults to True, which
+# means that alerting is enabled
+#
 #limit_usage_by_mau: False
 #max_mau_value: 50
 #mau_trial_days: 2
+#mau_limit_alerting: false
 
 # If enabled, the metrics for the number of monthly active users will
 # be populated, however no one will be limited. If limit_usage_by_mau
@@ -559,6 +567,15 @@ templates:
   # information about using custom templates.
   #
   #custom_template_directory: /path/to/custom/templates/
+
+# List of rooms to exclude from sync responses. This is useful for server
+# administrators wishing to group users into a room without these users being able
+# to see it from their client.
+#
+# By default, no room is excluded.
+#
+#exclude_rooms_from_sync:
+#    - !foo:example.com
 
 
 # Message retention policy at the server level.
@@ -808,6 +825,12 @@ caches:
 # 'txn_limit' gives the maximum number of transactions to run per connection
 # before reconnecting. Defaults to 0, which means no limit.
 #
+# 'allow_unsafe_locale' is an option specific to Postgres. Under the default behavior, Synapse will refuse to
+# start if the postgres db is set to a non-C locale. You can override this behavior (which is *not* recommended)
+# by setting 'allow_unsafe_locale' to true. Note that doing so may corrupt your database. You can find more information
+# here: https://matrix-org.github.io/synapse/latest/postgres.html#fixing-incorrect-collate-or-ctype and here:
+# https://wiki.postgresql.org/wiki/Locale_data_changes
+#
 # 'args' gives options which are passed through to the database engine,
 # except for options starting 'cp_', which are used to configure the Twisted
 # connection pool. For a reference to valid arguments, see:
@@ -1020,7 +1043,7 @@ media_store_path: "/matrix-media-store-parent/{{ matrix_synapse_media_store_dire
 #
 # If you are using a reverse proxy you may also need to set this value in
 # your reverse proxy's config. Notably Nginx has a small max body size by default.
-# See https://matrix-org.github.io/synapse/develop/reverse_proxy.html.
+# See https://matrix-org.github.io/synapse/latest/reverse_proxy.html.
 #
 max_upload_size: "{{ matrix_synapse_max_upload_size_mb }}M"
 
@@ -1171,6 +1194,26 @@ max_spider_size: 10M
 url_preview_accept_language: {{ matrix_url_preview_accept_language|to_json }}
 
 
+# oEmbed allows for easier embedding content from a website. It can be
+# used for generating URLs previews of services which support it.
+#
+oembed:
+  # A default list of oEmbed providers is included with Synapse.
+  #
+  # Uncomment the following to disable using these default oEmbed URLs.
+  # Defaults to 'false'.
+  #
+  #disable_default_providers: true
+  # Additional files with oEmbed configuration (each should be in the
+  # form of providers.json).
+  #
+  # By default, this list is empty (so only the default providers.json
+  # is used).
+  #
+  #additional_providers:
+  #  - oembed/my_providers.json
+
+
 ## Captcha ##
 # See docs/CAPTCHA_SETUP.md for full details of configuring this.
 
@@ -1230,9 +1273,17 @@ turn_allow_guests: {{ matrix_synapse_turn_allow_guests|to_json }}
 # Registration can be rate-limited using the parameters in the "Ratelimiting"
 # section of this file.
 
-# Enable registration for new users.
+# Enable registration for new users. Defaults to 'false'. It is highly recommended that if you enable registration,
+# you use either captcha, email, or token-based verification to verify that new users are not bots. In order to enable registration
+# without any verification, you must also set `enable_registration_without_verification`, found below.
 #
 enable_registration: {{ matrix_synapse_enable_registration|to_json }}
+
+# Enable registration without email or captcha verification. Note: this option is *not* recommended,
+# as registration without verification is a known vector for spam and abuse. Defaults to false. Has no effect
+# unless `enable_registration` is also enabled.
+#
+enable_registration_without_verification: {{ matrix_synapse_enable_registration_without_verification|to_json }}
 
 # Time that a user's session remains valid for, after they log in.
 #
@@ -1282,8 +1333,6 @@ enable_registration: {{ matrix_synapse_enable_registration|to_json }}
 # By default, this is infinite.
 #
 #nonrefreshable_access_token_lifetime: 24h
-
-# The user must provide all of the below types of 3PID when registering.
 
 # The user must provide all of the below types of 3PID when registering.
 #
@@ -1962,7 +2011,7 @@ saml2_config:
 #
 #       module: The class name of a custom mapping module. Default is
 #           'synapse.handlers.oidc.JinjaOidcMappingProvider'.
-#           See https://github.com/matrix-org/synapse/blob/master/docs/sso_mapping_providers.md#openid-mapping-providers
+#           See https://matrix-org.github.io/synapse/latest/sso_mapping_providers.html#openid-mapping-providers
 #           for information on implementing a custom mapping provider.
 #
 #       config: Configuration for the mapping provider module. This section will
@@ -2019,7 +2068,7 @@ saml2_config:
 #     - attribute: groups
 #       value: "admin"
 #
-# See https://github.com/matrix-org/synapse/blob/master/docs/openid.md
+# See https://matrix-org.github.io/synapse/latest/openid.html
 # for information on how to configure these options.
 #
 # For backwards compatibility, it is also possible to configure a single OIDC
@@ -2044,6 +2093,7 @@ oidc_providers:
   #  token_endpoint: "https://accounts.example.com/oauth2/token"
   #  userinfo_endpoint: "https://accounts.example.com/userinfo"
   #  jwks_uri: "https://accounts.example.com/.well-known/jwks.json"
+  #  skip_verification: true
   #  user_mapping_provider:
   #    config:
   #      subject_claim: "id"
@@ -2121,169 +2171,6 @@ sso:
     #
     #update_profile_information: true
 
-    # Directory in which Synapse will try to find the template files below.
-    # If not set, or the files named below are not found within the template
-    # directory, default templates from within the Synapse package will be used.
-    #
-    # Synapse will look for the following templates in this directory:
-    #
-    # * HTML page to prompt the user to choose an Identity Provider during
-    #   login: 'sso_login_idp_picker.html'.
-    #
-    #   This is only used if multiple SSO Identity Providers are configured.
-    #
-    #   When rendering, this template is given the following variables:
-    #     * redirect_url: the URL that the user will be redirected to after
-    #       login.
-    #
-    #     * server_name: the homeserver's name.
-    #
-    #     * providers: a list of available Identity Providers. Each element is
-    #       an object with the following attributes:
-    #
-    #         * idp_id: unique identifier for the IdP
-    #         * idp_name: user-facing name for the IdP
-    #         * idp_icon: if specified in the IdP config, an MXC URI for an icon
-    #              for the IdP
-    #         * idp_brand: if specified in the IdP config, a textual identifier
-    #              for the brand of the IdP
-    #
-    #   The rendered HTML page should contain a form which submits its results
-    #   back as a GET request, with the following query parameters:
-    #
-    #     * redirectUrl: the client redirect URI (ie, the `redirect_url` passed
-    #       to the template)
-    #
-    #     * idp: the 'idp_id' of the chosen IDP.
-    #
-    # * HTML page to prompt new users to enter a userid and confirm other
-    #   details: 'sso_auth_account_details.html'. This is only shown if the
-    #   SSO implementation (with any user_mapping_provider) does not return
-    #   a localpart.
-    #
-    #   When rendering, this template is given the following variables:
-    #
-    #     * server_name: the homeserver's name.
-    #
-    #     * idp: details of the SSO Identity Provider that the user logged in
-    #       with: an object with the following attributes:
-    #
-    #         * idp_id: unique identifier for the IdP
-    #         * idp_name: user-facing name for the IdP
-    #         * idp_icon: if specified in the IdP config, an MXC URI for an icon
-    #              for the IdP
-    #         * idp_brand: if specified in the IdP config, a textual identifier
-    #              for the brand of the IdP
-    #
-    #     * user_attributes: an object containing details about the user that
-    #       we received from the IdP. May have the following attributes:
-    #
-    #         * display_name: the user's display_name
-    #         * emails: a list of email addresses
-    #
-    #   The template should render a form which submits the following fields:
-    #
-    #     * username: the localpart of the user's chosen user id
-    #
-    # * HTML page allowing the user to consent to the server's terms and
-    #   conditions. This is only shown for new users, and only if
-    #   `user_consent.require_at_registration` is set.
-    #
-    #   When rendering, this template is given the following variables:
-    #
-    #     * server_name: the homeserver's name.
-    #
-    #     * user_id: the user's matrix proposed ID.
-    #
-    #     * user_profile.display_name: the user's proposed display name, if any.
-    #
-    #     * consent_version: the version of the terms that the user will be
-    #       shown
-    #
-    #     * terms_url: a link to the page showing the terms.
-    #
-    #   The template should render a form which submits the following fields:
-    #
-    #     * accepted_version: the version of the terms accepted by the user
-    #       (ie, 'consent_version' from the input variables).
-    #
-    # * HTML page for a confirmation step before redirecting back to the client
-    #   with the login token: 'sso_redirect_confirm.html'.
-    #
-    #   When rendering, this template is given the following variables:
-    #
-    #     * redirect_url: the URL the user is about to be redirected to.
-    #
-    #     * display_url: the same as `redirect_url`, but with the query
-    #                    parameters stripped. The intention is to have a
-    #                    human-readable URL to show to users, not to use it as
-    #                    the final address to redirect to.
-    #
-    #     * server_name: the homeserver's name.
-    #
-    #     * new_user: a boolean indicating whether this is the user's first time
-    #          logging in.
-    #
-    #     * user_id: the user's matrix ID.
-    #
-    #     * user_profile.avatar_url: an MXC URI for the user's avatar, if any.
-    #           None if the user has not set an avatar.
-    #
-    #     * user_profile.display_name: the user's display name. None if the user
-    #           has not set a display name.
-    #
-    # * HTML page which notifies the user that they are authenticating to confirm
-    #   an operation on their account during the user interactive authentication
-    #   process: 'sso_auth_confirm.html'.
-    #
-    #   When rendering, this template is given the following variables:
-    #     * redirect_url: the URL the user is about to be redirected to.
-    #
-    #     * description: the operation which the user is being asked to confirm
-    #
-    #     * idp: details of the Identity Provider that we will use to confirm
-    #       the user's identity: an object with the following attributes:
-    #
-    #         * idp_id: unique identifier for the IdP
-    #         * idp_name: user-facing name for the IdP
-    #         * idp_icon: if specified in the IdP config, an MXC URI for an icon
-    #              for the IdP
-    #         * idp_brand: if specified in the IdP config, a textual identifier
-    #              for the brand of the IdP
-    #
-    # * HTML page shown after a successful user interactive authentication session:
-    #   'sso_auth_success.html'.
-    #
-    #   Note that this page must include the JavaScript which notifies of a successful authentication
-    #   (see https://matrix.org/docs/spec/client_server/r0.6.0#fallback).
-    #
-    #   This template has no additional variables.
-    #
-    # * HTML page shown after a user-interactive authentication session which
-    #   does not map correctly onto the expected user: 'sso_auth_bad_user.html'.
-    #
-    #   When rendering, this template is given the following variables:
-    #     * server_name: the homeserver's name.
-    #     * user_id_to_verify: the MXID of the user that we are trying to
-    #       validate.
-    #
-    # * HTML page shown during single sign-on if a deactivated user (according to Synapse's database)
-    #   attempts to login: 'sso_account_deactivated.html'.
-    #
-    #   This template has no additional variables.
-    #
-    # * HTML page to display to users if something goes wrong during the
-    #   OpenID Connect authentication process: 'sso_error.html'.
-    #
-    #   When rendering, this template is given two variables:
-    #     * error: the technical name of the error
-    #     * error_description: a human-readable message for the error
-    #
-    # You can see the default templates at:
-    # https://github.com/matrix-org/synapse/tree/master/synapse/res/templates
-    #
-    #template_dir: "res/templates"
-
 
 # JSON web token integration. The following settings can be used to make
 # Synapse JSON web tokens for authentication, instead of its internal
@@ -2298,7 +2185,7 @@ sso:
 # Note that this is a non-standard login type and client support is
 # expected to be non-existent.
 #
-# See https://github.com/matrix-org/synapse/blob/master/docs/jwt.md.
+# See https://matrix-org.github.io/synapse/latest/jwt.html.
 #
 #jwt_config:
     # Uncomment the following to enable authorization using JSON web
@@ -2477,7 +2364,8 @@ email:
   #app_name: my_branded_matrix_server
   app_name: Matrix
 
-  # Enable sending emails for messages that the user has missed
+  # Uncomment the following to enable sending emails for messages that the user
+  # has missed. Disabled by default.
   #
   #enable_notifs: false
   enable_notifs: true
@@ -2754,7 +2642,7 @@ user_directory:
 # User Consent configuration
 #
 # for detailed instructions, see
-# https://github.com/matrix-org/synapse/blob/master/docs/consent_tracking.md
+# https://matrix-org.github.io/synapse/latest/consent_tracking.html
 #
 # Parts of this section are required if enabling the 'consent' resource under
 # 'listeners', in particular 'template_dir' and 'version'.
@@ -2804,7 +2692,7 @@ user_directory:
 
 
 # Settings for local room and user statistics collection. See
-# docs/room_and_user_statistics.md.
+# https://matrix-org.github.io/synapse/latest/room_and_user_statistics.html.
 #
 stats:
   # Uncomment the following to disable room and user statistics. Note that doing
@@ -2919,7 +2807,7 @@ opentracing:
     #enabled: true
 
     # The list of homeservers we wish to send and receive span contexts and span baggage.
-    # See docs/opentracing.rst.
+    # See https://matrix-org.github.io/synapse/latest/opentracing.html.
     #
     # This is a list of regexes which are matched against the server_name of the
     # homeserver.
