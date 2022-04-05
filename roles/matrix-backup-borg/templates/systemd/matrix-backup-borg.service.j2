@@ -24,7 +24,7 @@ ExecStartPre=-{{ matrix_host_command_docker }} run --rm --name matrix-backup-bor
 			--tmpfs=/tmp:rw,noexec,nosuid,size=100m \
 			--mount type=bind,src={{ matrix_backup_borg_config_path }}/passwd,dst=/etc/passwd,ro \
 			--mount type=bind,src={{ matrix_backup_borg_config_path }},dst=/etc/borgmatic.d,ro \
-			{% for source in matrix_backup_borg_source_directories %}
+			{% for source in matrix_backup_borg_location_source_directories %}
 			--mount type=bind,src={{ source }},dst={{ source }},ro \
 			{% endfor %}
 			{% for arg in matrix_backup_borg_container_extra_arguments %}
@@ -42,7 +42,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-backup-borg \
 			--tmpfs=/tmp:rw,noexec,nosuid,size=100m \
 			--mount type=bind,src={{ matrix_backup_borg_config_path }}/passwd,dst=/etc/passwd,ro \
 			--mount type=bind,src={{ matrix_backup_borg_config_path }},dst=/etc/borgmatic.d,ro \
-			{% for source in matrix_backup_borg_source_directories %}
+			{% for source in matrix_backup_borg_location_source_directories %}
 			--mount type=bind,src={{ source }},dst={{ source }},ro \
 			{% endfor %}
 			{% for arg in matrix_backup_borg_container_extra_arguments %}

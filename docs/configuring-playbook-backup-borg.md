@@ -1,6 +1,9 @@
 # Setting up borg backup (optional)
 
 The playbook can install and configure [borgbackup](https://www.borgbackup.org/) with [borgmatic](https://torsion.org/borgmatic/) for you.
+BorgBackup is a deduplicating backup program with optional compression and encryption.
+That means your daily incremental backups can be stored in a fraction of the space and is safe weather you store it at home or a cloud service.
+
 The backup will run based on `matrix_backup_borg_schedule` var (systemd timer calendar), default: 4am every day
 
 ## Prerequisites
@@ -27,11 +30,11 @@ Minimal working configuration (`inventory/host_vars/matrix.DOMAIN/vars.yml`) to 
 
 ```yaml
 matrix_backup_borg_enabled: true
-matrix_backup_borg_repositories:
+matrix_backup_borg_location_repositories:
  - USER@HOST:REPO
-matrix_backup_borg_encryption_passphrase: "PASSPHRASE"
+matrix_backup_borg_storage_encryption_passphrase: "PASSPHRASE"
 matrix_backup_borg_ssh_key_private: |
-  PRIVATE KEY
+	PRIVATE KEY
 ```
 
 where:
