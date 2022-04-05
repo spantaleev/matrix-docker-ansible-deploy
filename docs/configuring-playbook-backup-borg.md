@@ -2,7 +2,7 @@
 
 The playbook can install and configure [borgbackup](https://www.borgbackup.org/) with [borgmatic](https://torsion.org/borgmatic/) for you.
 BorgBackup is a deduplicating backup program with optional compression and encryption.
-That means your daily incremental backups can be stored in a fraction of the space and is safe weather you store it at home or a cloud service.
+That means your daily incremental backups can be stored in a fraction of the space and is safe wether you store it at home or on a cloud service.
 
 The backup will run based on `matrix_backup_borg_schedule` var (systemd timer calendar), default: 4am every day
 
