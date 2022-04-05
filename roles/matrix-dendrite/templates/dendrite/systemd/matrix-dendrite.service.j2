@@ -37,6 +37,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-dendrite \
 			{% endif %}
 			--mount type=bind,src={{ matrix_dendrite_config_dir_path }},dst=/data,ro \
 			--mount type=bind,src={{ matrix_dendrite_storage_path }},dst=/matrix-media-store-parent,bind-propagation=slave \
+			--mount type=bind,src={{ matrix_dendrite_nats_storage_path }},dst=/matrix-nats-store,bind-propagation=slave \
 			{% for volume in matrix_dendrite_container_additional_volumes %}
 			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
 			{% endfor %}
