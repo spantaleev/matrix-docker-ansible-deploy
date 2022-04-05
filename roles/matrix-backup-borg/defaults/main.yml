@@ -25,11 +25,12 @@ matrix_backup_borg_systemd_wanted_services_list: []
 # systemd calendar configuration for backup job
 matrix_backup_borg_schedule: "*-*-* 04:00:00"
 
-# what directory should be added to backup
-matrix_backup_borg_source: "{{ matrix_base_data_path }}"
+# what directories should be added to backup
+matrix_backup_borg_source_directories:
+  - "{{ matrix_base_data_path }}"
 
 # exclude following paths:
-matrix_backup_borg_exclude:
+matrix_backup_borg_exclude_patterns:
   - "{{ matrix_synapse_media_store_path }}/local_thumbnails"
   - "{{ matrix_synapse_media_store_path }}/remote_thumbnail"
   - "{{ matrix_synapse_media_store_path }}/url_cache"
@@ -39,29 +40,29 @@ matrix_backup_borg_exclude:
 matrix_backup_borg_encryption: repokey-blake2
 
 # private ssh key used to connect to the borg repo
-matrix_backup_borg_ssh_key: ""
+matrix_backup_borg_ssh_key_private: ""
 
 # borg ssh command with ssh key
 matrix_backup_borg_ssh_command: ssh -o "StrictHostKeyChecking accept-new" -i /etc/borgmatic.d/sshkey
 
-# target repository
-matrix_backup_borg_repository: ""
+# target repositories
+matrix_backup_borg_repositories: []
 
 # compression algorithm
 matrix_backup_borg_compression: lz4
 
 # archive name format
-matrix_backup_borg_name: "matrix-{now:%Y-%m-%d-%H%M%S}"
-
-# retention prefix
-matrix_backup_borg_prefix: "matrix-"
+matrix_backup_borg_archive_name_format: "matrix-{now:%Y-%m-%d-%H%M%S}"
 
 # repository passphrase
-matrix_backup_borg_passphrase: ""
+matrix_backup_borg_encryption_passphrase: ""
 
 # retention configuration
-matrix_backup_borg_hourly: 0
-matrix_backup_borg_daily: 7
-matrix_backup_borg_weekly: 4
-matrix_backup_borg_monthly: 12
-matrix_backup_borg_yearly: 2
+matrix_backup_borg_retention_keep_hourly: 0
+matrix_backup_borg_retention_keep_daily: 7
+matrix_backup_borg_retention_keep_weekly: 4
+matrix_backup_borg_retention_keep_monthly: 12
+matrix_backup_borg_retention_keep_yearly: 2
+
+# retention prefix
+matrix_backup_borg_retention_prefix: "matrix-"

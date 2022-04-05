@@ -5,10 +5,10 @@ The backup will run based on `matrix_backup_borg_schedule` var (systemd timer ca
 
 ## Prerequisites
 
-1. Create ssh key:
+1. Create ssh key on any machine:
 
 ```bash
-ssh-keygen -t ed25519 -N '' -C matrix
+ssh-keygen -t ed25519 -N '' -f matrix-borg-backup -C matrix
 ```
 
 2. Add public part of that ssh key to your borg provider / server:
@@ -27,9 +27,10 @@ Minimal working configuration (`inventory/host_vars/matrix.DOMAIN/vars.yml`) to 
 
 ```yaml
 matrix_backup_borg_enabled: true
-matrix_backup_borg_repository: "USER@HOST:REPO"
-matrix_backup_borg_passphrase: "PASSPHRASE"
-matrix_backup_borg_ssh_key: |
+matrix_backup_borg_repositories:
+	- USER@HOST:REPO
+matrix_backup_borg_encryption_passphrase: "PASSPHRASE"
+matrix_backup_borg_ssh_key_private: |
 	PRIVATE KEY
 ```
 

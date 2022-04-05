@@ -1,29 +1,24 @@
 #jinja2: lstrip_blocks: "True", trim_blocks: "True"
 
 location:
-  source_directories:
-  - {{ matrix_backup_borg_source }}
-  repositories:
-  - {{ matrix_backup_borg_repository }}
+  source_directories: {{ matrix_backup_borg_source_directories|to_json }}
+  repositories: {{ matrix_backup_borg_repositories|to_json }}
   one_file_system: true
-  exclude_patterns:
-  {% for pattern in matrix_backup_borg_exclude %}
-  - {{ pattern }}
-  {% endfor %}
+  exclude_patterns: {{ matrix_backup_borg_exclude_patterns|to_json }}
 
 storage:
   compression: {{ matrix_backup_borg_compression }}
   ssh_command: {{ matrix_backup_borg_ssh_command }}
-  archive_name_format: '{{ matrix_backup_borg_name }}'
-  encryption_passphrase: {{ matrix_backup_borg_passphrase }}
+  archive_name_format: '{{ matrix_backup_borg_archive_name_format }}'
+  encryption_passphrase: {{ matrix_backup_borg_encryption_passphrase }}
 
 retention:
-  keep_hourly: {{ matrix_backup_borg_hourly }}
-  keep_daily: {{ matrix_backup_borg_daily }}
-  keep_weekly: {{ matrix_backup_borg_weekly }}
-  keep_monthly: {{ matrix_backup_borg_monthly }}
-  keep_yearly: {{ matrix_backup_borg_yearly }}
-  prefix: '{{ matrix_backup_borg_prefix }}'
+  keep_hourly: {{ matrix_backup_borg_retention_keep_hourly }}
+  keep_daily: {{ matrix_backup_borg_retention_keep_daily }}
+  keep_weekly: {{ matrix_backup_borg_retention_keep_weekly }}
+  keep_monthly: {{ matrix_backup_borg_retention_keep_monthly }}
+  keep_yearly: {{ matrix_backup_borg_retention_keep_yearly }}
+  prefix: '{{ matrix_backup_borg_retention_prefix }}'
 
 consistency:
   checks:
