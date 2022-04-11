@@ -47,6 +47,13 @@ gitlab:
   webhook:
     secret: {{ matrix_hookshot_gitlab_secret|to_json }}
 {% endif %}
+{% if matrix_hookshot_figma_enabled %}
+figma:
+  # (Optional) Configure this to enable Figma support
+  #
+  publicUrl: {{ matrix_hookshot_figma_publicUrl }}
+  instances: {{ matrix_hookshot_figma_instances }}
+{% endif %}
 {% if matrix_hookshot_jira_enabled %}
 jira:
   # (Optional) Configure this to enable Jira support
@@ -68,13 +75,6 @@ generic:
   urlPrefix: {{ matrix_hookshot_generic_urlprefix }}
   allowJsTransformationFunctions: {{ matrix_hookshot_generic_allow_js_transformation_functions }}
   userIdPrefix: {{ matrix_hookshot_generic_user_id_prefix|to_json }}
-{% endif %}
-{% if matrix_hookshot_figma_enabled %}
-figma:
-  # (Optional) Configure this to enable Figma support
-  #
-  publicUrl: {{ matrix_hookshot_figma_publicUrl }}
-  instances: {{ matrix_hookshot_figma_instances }}
 {% endif %}
 {% if matrix_hookshot_provisioning_enabled %}
 provisioning:
