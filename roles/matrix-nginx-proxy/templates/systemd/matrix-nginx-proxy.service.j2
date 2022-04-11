@@ -13,8 +13,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-nginx-proxy 2>/dev/null'
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-nginx-proxy 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-nginx-proxy 2>/dev/null || true'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-nginx-proxy 2>/dev/null || true'
 
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-nginx-proxy \
 			--log-driver=none \
@@ -51,8 +51,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-nginx-proxy \
 ExecStartPost={{ matrix_host_command_sh }} -c 'attempt=0; while [ $attempt -le 29 ]; do attempt=$(( $attempt + 1 )); if [ "`docker inspect -f {{ '{{.State.Running}}' }} matrix-nginx-proxy 2> /dev/null`" = "true" ]; then break; fi; sleep 1; done; {{ matrix_host_command_docker }} network connect {{ network }} matrix-nginx-proxy'
 {% endfor %}
 
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-nginx-proxy 2>/dev/null'
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-nginx-proxy 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-nginx-proxy 2>/dev/null || true'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-nginx-proxy 2>/dev/null || true'
 ExecReload={{ matrix_host_command_docker }} exec matrix-nginx-proxy /usr/sbin/nginx -s reload
 Restart=always
 RestartSec=30
