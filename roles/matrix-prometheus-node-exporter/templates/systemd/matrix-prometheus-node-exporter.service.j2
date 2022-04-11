@@ -13,8 +13,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-prometheus-node-exporter 2>/dev/null'
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-prometheus-node-exporter 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-prometheus-node-exporter 2>/dev/null || true'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-prometheus-node-exporter 2>/dev/null || true'
 
 
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-prometheus-node-exporter \
@@ -34,8 +34,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-prometheus-nod
 			{{ matrix_prometheus_node_exporter_docker_image }} \
 			--path.rootfs=/host
 
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-prometheus-node-exporter 2>/dev/null'
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-prometheus-node-exporter 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-prometheus-node-exporter 2>/dev/null || true'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-prometheus-node-exporter 2>/dev/null || true'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-prometheus-node-exporter

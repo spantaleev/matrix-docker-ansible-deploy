@@ -13,8 +13,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-dendrite 2>/dev/null'
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-dendrite 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-dendrite 2>/dev/null || true'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-dendrite 2>/dev/null || true'
 
 {% if 'matrix-postgres.service' in matrix_dendrite_systemd_required_services_list %}
 # Dendrite is too quick to start in relation to its matrix-postgres dependency.
@@ -54,8 +54,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-dendrite \
 			{% endif %}
 			{{ matrix_dendrite_process_extra_arguments|join(' ') }}
 
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-dendrite 2>/dev/null'
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-dendrite 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-dendrite 2>/dev/null || true'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-dendrite 2>/dev/null || true'
 ExecReload={{ matrix_host_command_docker }} exec matrix-dendrite /bin/sh -c 'kill -HUP 1'
 Restart=always
 RestartSec=30
