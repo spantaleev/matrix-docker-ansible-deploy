@@ -4,17 +4,23 @@ The playbook can install and configure [borgbackup](https://www.borgbackup.org/)
 BorgBackup is a deduplicating backup program with optional compression and encryption.
 That means your daily incremental backups can be stored in a fraction of the space and is safe whether you store it at home or on a cloud service.
 
-The backup will run based on `matrix_backup_borg_schedule` var (systemd timer calendar), default: 4am every day
+You will need a remote server where borg will store the backups. There are hosted, borg compatible solutions available, such as [BorgBase](https://www.borgbase.com).
+
+The backup will run based on `matrix_backup_borg_schedule` var (systemd timer calendar), default: 4am every day.
 
 ## Prerequisites
 
-1. Create ssh key on any machine:
+1. Create a new SSH key:
 
 ```bash
 ssh-keygen -t ed25519 -N '' -f matrix-borg-backup -C matrix
 ```
 
-2. Add public part of that ssh key to your borg provider / server:
+This can be done on any machine and you don't need to place the key in the `.ssh` folder. It will be added to the Ansible config later.
+
+2. Add the **public** part of this SSH key (the `matrix-borg-backup.pub` file) to your borg provider/server:
+
+If you plan to use a hosted solution, follow their instructions. If you have your own server, copy the key over:
 
 ```bash
 # example to append the new PUBKEY contents, where:
@@ -35,17 +41,21 @@ matrix_backup_borg_location_repositories:
 matrix_backup_borg_storage_encryption_passphrase: "PASSPHRASE"
 matrix_backup_borg_ssh_key_private: |
 	PRIVATE KEY
+matrix_backup_borg_location_source_directories:
+  - "{{ matrix_base_data_path }}"
 ```
 
 where:
 
-* USER - ssh user of a provider / server
-* HOST - ssh host of a provider / server
+* USER - SSH user of a provider/server
+* HOST - SSH host of a provider/server
 * REPO - borg repository name, it will be initialized on backup start, eg: `matrix`
-* PASSPHRASE - super-secret borg passphrase, you may generate it with `pwgen -s 64 1` or use any password manager
-* PRIVATE KEY - the content of the public part of the ssh key you created before
+* PASSPHRASE - passphrase used for encrypting backups, you may generate it with `pwgen -s 64 1` or use any password manager
+* PRIVATE KEY - the content of the **private** part of the SSH key you created before
 
-Check the `roles/matrix-backup-borg/defaults/main.yml` for the full list of available options
+`matrix_backup_borg_location_source_directories` defines the list of directories to back up, `{{ matrix_base_data_path }}` is the base directory for every service's data, such as Synapse, Postgres and the bridges. You might want to exclude certain directories or file patterns from the backup using the `matrix_backup_borg_location_exclude_patterns` variable.
+
+Check the `roles/matrix-backup-borg/defaults/main.yml` file for the full list of available options.
 
 ## Installing
 
