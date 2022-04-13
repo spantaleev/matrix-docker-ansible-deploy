@@ -1,0 +1,10 @@
+---
+- name: Fail if required settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_backup_borg_ssh_key_private"
+    - "matrix_backup_borg_location_repositories"
+    - "matrix_backup_borg_storage_encryption_passphrase"

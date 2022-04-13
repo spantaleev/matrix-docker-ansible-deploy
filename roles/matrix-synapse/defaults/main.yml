@@ -9,7 +9,7 @@ matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/s
 
 matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_container_global_registry_prefix }}"
-matrix_synapse_version: v1.54.0
+matrix_synapse_version: v1.56.0
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -202,11 +202,18 @@ matrix_synapse_include_profile_data_on_invite: true
 
 # Controls whether people with access to the homeserver can register by themselves.
 matrix_synapse_enable_registration: false
+# Controls whether people with access to the homeserver can register by themselves without verification (email/msisdn/token)
+matrix_synapse_enable_registration_without_verification: false
 
 # reCAPTCHA API for validating registration attempts
 matrix_synapse_enable_registration_captcha: false
 matrix_synapse_recaptcha_public_key: ''
 matrix_synapse_recaptcha_private_key: ''
+
+# Requires an MSC3231 token for registration. Note that `matrix_synapse_enable_registration` must be set to `true`.
+# Tokens can be created via the API or through synapse-admin.
+# Disabling this option will not delete any tokens previously generated.
+matrix_synapse_registration_requires_token: false
 
 # Allows non-server-admin users to create groups on this server
 matrix_synapse_enable_group_creation: false
@@ -525,7 +532,7 @@ matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeserve
 # See: https://github.com/matrix-org/mjolnir#synapse-module
 matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled: false
 matrix_synapse_ext_spam_checker_mjolnir_antispam_git_repository_url: "https://github.com/matrix-org/mjolnir"
-matrix_synapse_ext_spam_checker_mjolnir_antispam_git_version: "70f353fbbad0af469b1001080dea194d512b2815"
+matrix_synapse_ext_spam_checker_mjolnir_antispam_git_version: "4008e3f65d3745b9307dd31f1c5aa80c13a61a58"
 matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites: true
 # Flag messages sent by servers/users in the ban lists as spam. Currently
 # this means that spammy messages will appear as empty to users. Default
@@ -620,10 +627,11 @@ matrix_synapse_redaction_retention_period: 7d
 matrix_synapse_user_ips_max_age: 28d
 
 
-matrix_synapse_rust_synapse_compress_state_docker_image: "devture/rust-synapse-compress-state:v0.1.0"
+matrix_synapse_rust_synapse_compress_state_docker_image: "registry.gitlab.com/mb-saces/rust-synapse-compress-state:latest"
 matrix_synapse_rust_synapse_compress_state_docker_image_force_pull: "{{ matrix_synapse_rust_synapse_compress_state_docker_image.endswith(':latest') }}"
 
 matrix_synapse_rust_synapse_compress_state_base_path: "{{ matrix_base_data_path }}/rust-synapse-compress-state"
+matrix_synapse_rust_synapse_compress_state_synapse_compress_state_in_container_path: "/usr/local/bin/synapse_compress_state"
 
 
 # Default Synapse configuration template which covers the generic use case.

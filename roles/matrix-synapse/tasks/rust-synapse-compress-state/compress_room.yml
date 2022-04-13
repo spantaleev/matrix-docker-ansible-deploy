@@ -12,7 +12,7 @@
       --network={{ matrix_docker_network }}
       --mount type=bind,src={{ matrix_synapse_rust_synapse_compress_state_base_path }},dst=/work
       {{ matrix_synapse_rust_synapse_compress_state_docker_image }}
-      /synapse-compress-state -t -o /work/state-compressor.sql
+      {{ matrix_synapse_rust_synapse_compress_state_synapse_compress_state_in_container_path }} -t -o /work/state-compressor.sql
       -p "host={{ matrix_synapse_database_host }} user={{ matrix_synapse_database_user }} password={{ matrix_synapse_database_password }} dbname={{ matrix_synapse_database_database }}"
       -r '{{ room_details.room_id }}'
 

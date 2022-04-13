@@ -34,6 +34,8 @@
   template:
     src: "{{ role_path }}/templates/web/env.j2"
     dest: "{{ matrix_jitsi_web_base_path }}/env"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
     mode: 0640
   when: matrix_jitsi_enabled|bool
 
@@ -41,6 +43,8 @@
   template:
     src: "{{ role_path }}/templates/web/{{ item }}.j2"
     dest: "{{ matrix_jitsi_web_config_path }}/{{ item }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
     mode: 0644
   with_items:
     - custom-config.js

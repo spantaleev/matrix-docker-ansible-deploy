@@ -47,27 +47,6 @@ matrix_integration_manager_ui_url: "{{ matrix_dimension_integrations_ui_url if m
 
 ######################################################################
 #
-# matrix-awx
-#
-######################################################################
-
-# We don't enable AWX support by default.
-matrix_awx_enabled: false
-
-matrix_nginx_proxy_data_path: "{{ '/chroot/website' if (matrix_awx_enabled and not matrix_nginx_proxy_base_domain_homepage_enabled) else (matrix_nginx_proxy_base_path + '/data') }}"
-matrix_nginx_proxy_data_path_in_container: "{{ '/nginx-data/matrix-domain' if (matrix_awx_enabled and not matrix_nginx_proxy_base_domain_homepage_enabled) else '/nginx-data' }}"
-matrix_nginx_proxy_data_path_extension: "{{ '' if (matrix_awx_enabled and not matrix_nginx_proxy_base_domain_homepage_enabled) else '/matrix-domain' }}"
-matrix_nginx_proxy_base_domain_create_directory: "{{ not matrix_awx_enabled }}"
-
-######################################################################
-#
-# /matrix-awx
-#
-######################################################################
-
-
-######################################################################
-#
 # matrix-bridge-appservice-discord
 #
 ######################################################################
@@ -709,6 +688,8 @@ matrix_heisenbridge_systemd_wanted_services_list: |
 # We don't enable bridges by default.
 matrix_hookshot_enabled: false
 
+matrix_hookshot_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
+
 matrix_hookshot_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'hookshot.as.tok') | to_uuid }}"
 
 matrix_hookshot_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'hookshot.hs.tok') | to_uuid }}"
@@ -733,9 +714,9 @@ matrix_hookshot_provisioning_enabled: "{{ matrix_hookshot_provisioning_secret an
 matrix_hookshot_proxy_metrics: "{{ matrix_nginx_proxy_proxy_synapse_metrics }}"
 matrix_hookshot_proxy_metrics_basic_auth_enabled: "{{ matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled }}"
 
-matrix_hookshot_generic_urlprefix_port_enabled: "{{ matrix_nginx_proxy_container_https_host_bind_port == 443 if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_https_host_bind_port == 80 }}"
-matrix_hookshot_generic_urlprefix_port: ":{{ matrix_nginx_proxy_container_https_host_bind_port if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_http_host_bind_port }}"
-matrix_hookshot_generic_urlprefix: "http{{ 's' if matrix_nginx_proxy_https_enabled else '' }}://{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_generic_urlprefix_port if matrix_hookshot_generic_urlprefix_port_enabled else '' }}{{ matrix_hookshot_generic_endpoint }}"
+matrix_hookshot_urlprefix_port_enabled: "{{ matrix_nginx_proxy_container_https_host_bind_port == 443 if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_https_host_bind_port == 80 }}"
+matrix_hookshot_urlprefix_port: ":{{ matrix_nginx_proxy_container_https_host_bind_port if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_http_host_bind_port }}"
+matrix_hookshot_urlprefix: "http{{ 's' if matrix_nginx_proxy_https_enabled else '' }}://{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_urlprefix_port if matrix_hookshot_urlprefix_port_enabled else '' }}"
 
 ######################################################################
 #
@@ -946,7 +927,7 @@ matrix_mx_puppet_discord_database_password: "{{ '%s' | format(matrix_homeserver_
 # We don't enable bridges by default.
 matrix_mx_puppet_steam_enabled: false
 
-matrix_mx_puppet_steam_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+matrix_mx_puppet_steam_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
 matrix_mx_puppet_steam_systemd_required_services_list: |
   {{
@@ -1131,6 +1112,27 @@ matrix_bot_mjolnir_systemd_required_services_list: |
 #
 ######################################################################
 
+######################################################################
+#
+# matrix-backup-borg
+#
+######################################################################
+
+matrix_backup_borg_enabled: false
+matrix_backup_borg_location_source_directories:
+  - "{{ matrix_base_data_path }}"
+matrix_backup_borg_location_exclude_patterns: |
+  {{
+    {
+      'synapse': ["{{ matrix_synapse_media_store_path }}/local_thumbnails", "{{ matrix_synapse_media_store_path }}/remote_thumbnail", "{{ matrix_synapse_media_store_path }}/url_cache", "{{ matrix_synapse_media_store_path }}/url_cache_thumbnails"],
+    }[matrix_homeserver_implementation]
+  }}
+
+######################################################################
+#
+# /matrix-backup-borg
+#
+######################################################################
 
 ######################################################################
 #
@@ -1633,15 +1635,11 @@ matrix_postgres_additional_databases: |
     }] if (matrix_synapse_enabled and matrix_synapse_database_database != matrix_postgres_db_name and matrix_synapse_database_host == 'matrix-postgres') else [])
     +
     ([{
-      'name': matrix_dendrite_naffka_database,
-      'username': matrix_dendrite_database_user,
-      'password': matrix_dendrite_database_password,
-    },{
       'name': matrix_dendrite_appservice_database,
       'username': matrix_dendrite_database_user,
       'password': matrix_dendrite_database_password,
     },{
-      'name': matrix_dendrite_federationsender_database,
+      'name': matrix_dendrite_federationapi_database,
       'username': matrix_dendrite_database_user,
       'password': matrix_dendrite_database_password,
     },{
@@ -1657,19 +1655,15 @@ matrix_postgres_additional_databases: |
       'username': matrix_dendrite_database_user,
       'password': matrix_dendrite_database_password,
     },{
-      'name': matrix_dendrite_singingkeyserver_database,
-      'username': matrix_dendrite_database_user,
-      'password': matrix_dendrite_database_password,
-    },{
       'name': matrix_dendrite_syncapi_database,
       'username': matrix_dendrite_database_user,
       'password': matrix_dendrite_database_password,
     },{
-      'name': matrix_dendrite_account_database,
+      'name': matrix_dendrite_userapi_database,
       'username': matrix_dendrite_database_user,
       'password': matrix_dendrite_database_password,
     },{
-      'name': matrix_dendrite_device_database,
+      'name': matrix_dendrite_pushserver_database,
       'username': matrix_dendrite_database_user,
       'password': matrix_dendrite_database_password,
     },{

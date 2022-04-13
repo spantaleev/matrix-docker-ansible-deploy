@@ -5,11 +5,20 @@
 
 matrix_hookshot_enabled: true
 
-matrix_hookshot_version: 1.2.0
-matrix_hookshot_docker_image: "{{ matrix_container_global_registry_prefix }}halfshot/matrix-hookshot:{{ matrix_hookshot_version }}"
+
+matrix_hookshot_container_image_self_build: false
+matrix_hookshot_container_image_self_build_repo: "https://github.com/matrix-org/matrix-hookshot.git"
+matrix_hookshot_container_image_self_build_branch: "{{ 'main' if matrix_hookshot_version == 'latest' else matrix_hookshot_version }}"
+
+matrix_hookshot_version: 1.4.0
+
+matrix_hookshot_docker_image: "{{ matrix_hookshot_docker_image_name_prefix }}halfshot/matrix-hookshot:{{ matrix_hookshot_version }}"
+matrix_hookshot_docker_image_name_prefix: "{{ 'localhost/' if matrix_hookshot_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_hookshot_docker_image_force_pull: "{{ matrix_hookshot_docker_image.endswith(':latest') }}"
 
 matrix_hookshot_base_path: "{{ matrix_base_data_path }}/hookshot"
+
+matrix_hookshot_docker_src_files_path: "{{ matrix_hookshot_base_path }}/docker-src"
 
 matrix_hookshot_homeserver_address: "{{ matrix_homeserver_container_url }}"
 matrix_hookshot_container_url: 'matrix-hookshot'
@@ -52,14 +61,15 @@ matrix_hookshot_github_oauth_id: ''  # "Client ID" on the GitHub App page
 matrix_hookshot_github_oauth_secret: ''  # "Client Secret" on the GitHub App page
 # Default value of matrix_hookshot_github_oauth_endpoint: "/hookshot/webhooks/oauth"
 matrix_hookshot_github_oauth_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/oauth"
-matrix_hookshot_github_oauth_uri: "https://{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_github_oauth_endpoint }}"
+matrix_hookshot_github_oauth_uri: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_github_oauth_endpoint }}"
 # These are the default settings mentioned here and don't need to be modified: https://matrix-org.github.io/matrix-hookshot/usage/room_configuration/github_repo.html#configuration
 matrix_hookshot_github_ignore_hooks: "{}"
 matrix_hookshot_github_command_prefix: '!gh'
-matrix_hookshot_github_show_issue_room_link: false
+matrix_hookshot_github_showIssueRoomLink: false
 matrix_hookshot_github_pr_diff: "{enabled: false, maxLines: 5}"
 matrix_hookshot_github_including_labels: ''
 matrix_hookshot_github_excluding_labels: ''
+matrix_hookshot_github_hotlink_prefix: "#"
 
 
 matrix_hookshot_gitlab_enabled: true
@@ -77,32 +87,10 @@ matrix_hookshot_gitlab_instances:
 matrix_hookshot_gitlab_secret: ''
 
 
-matrix_hookshot_jira_enabled: false
-# Get the these values from https://matrix-org.github.io/matrix-hookshot/setup/jira.html#jira-oauth
-matrix_hookshot_jira_secret: ''
-matrix_hookshot_jira_oauth_enabled: false
-matrix_hookshot_jira_oauth_id: ''
-matrix_hookshot_jira_oauth_secret: ''
-# Default value of matrix_hookshot_jira_oauth_endpoint: "/hookshot/webhooks/jira/oauth"
-matrix_hookshot_jira_oauth_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/jira/oauth"
-matrix_hookshot_jira_oauth_uri: "{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_jira_oauth_endpoint }}"
-
-
-# No need to change these
-matrix_hookshot_generic_enabled: true
-# Default value of matrix_hookshot_generic_endpoint: "/hookshot/webhooks"
-matrix_hookshot_generic_endpoint: "{{ matrix_hookshot_webhook_endpoint }}"
-# urlprefix gets updated with protocol & port in group_vars/matrix_servers
-matrix_hookshot_generic_urlprefix: "{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_generic_endpoint }}"
-matrix_hookshot_generic_allow_js_transformation_functions: false
-# If you're also using matrix-appservice-webhooks, take care that these prefixes don't overlap
-matrix_hookshot_generic_user_id_prefix: '_webhooks_'
-
-
 matrix_hookshot_figma_enabled: false
 # Default value of matrix_hookshot_figma_endpoint: "/hookshot/webhooks/figma/webhook"
 matrix_hookshot_figma_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/figma/webhook"
-matrix_hookshot_figma_publicUrl: "{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_figma_endpoint }}"
+matrix_hookshot_figma_publicUrl: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_figma_endpoint }}"
 # To bridge figma webhooks, you need to configure one of multiple instances like this:
 # matrix_hookshot_figma_instances:
 #   your-instance:
@@ -111,12 +99,70 @@ matrix_hookshot_figma_publicUrl: "{{ matrix_server_fqn_matrix }}{{ matrix_hooksh
 #       passcode: your-webhook-passcode
 
 
+matrix_hookshot_jira_enabled: false
+# Get the these values from https://matrix-org.github.io/matrix-hookshot/setup/jira.html#jira-oauth
+matrix_hookshot_jira_secret: ''
+matrix_hookshot_jira_oauth_enabled: false
+matrix_hookshot_jira_oauth_id: ''
+matrix_hookshot_jira_oauth_secret: ''
+# Default value of matrix_hookshot_jira_oauth_endpoint: "/hookshot/webhooks/jira/oauth"
+matrix_hookshot_jira_oauth_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/jira/oauth"
+matrix_hookshot_jira_oauth_uri: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_jira_oauth_endpoint }}"
+
+
+# No need to change these
+matrix_hookshot_generic_enabled: true
+# Default value of matrix_hookshot_generic_endpoint: "/hookshot/webhooks"
+matrix_hookshot_generic_endpoint: "{{ matrix_hookshot_webhook_endpoint }}"
+# urlprefix gets updated with protocol & port in group_vars/matrix_servers
+matrix_hookshot_generic_urlprefix: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_generic_endpoint }}"
+matrix_hookshot_generic_allow_js_transformation_functions: false
+# If you're also using matrix-appservice-webhooks, take care that these prefixes don't overlap
+matrix_hookshot_generic_user_id_prefix: '_webhooks_'
+
+
 # There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
 matrix_hookshot_provisioning_port: 9002
 matrix_hookshot_provisioning_secret: ''
 # Provisioning will be automatically enabled if dimension is enabled and you have provided a provisioning secret, unless you override it
 matrix_hookshot_provisioning_enabled: false
-matrix_hookshot_provisioning_endpoint: "{{ matrix_hookshot_public_endpoint }}/v1"
+matrix_hookshot_provisioning_internal: "/v1"
+matrix_hookshot_provisioning_endpoint: "{{ matrix_hookshot_public_endpoint }}{{ matrix_hookshot_provisioning_internal }}"
+
+
+matrix_hookshot_widgets_enabled: true
+matrix_hookshot_widgets_port: 9003
+matrix_hookshot_widgets_addToAdminRooms: false  # default off as it is a beta feature
+matrix_hookshot_widgets_roomSetupWidget_enabled: true
+matrix_hookshot_widgets_roomSetupWidget_addOnInvite: false
+# `disallowedIpRanges` describes which IP ranges should be disallowed when resolving homeserver IP addresses (for security reasons). Unless you know what you are doing, it is recommended to not include this key. The following IPs are blocked by default, unless you supply another list.
+# matrix_hookshot_widgets_disallowedIpRanges:
+#   - 127.0.0.0/8
+#   - 10.0.0.0/8
+#   - 172.16.0.0/12
+#   - 192.168.0.0/16
+#   - 100.64.0.0/10
+#   - 192.0.0.0/24
+#   - 169.254.0.0/16
+#   - 192.88.99.0/24
+#   - 198.18.0.0/15
+#   - 192.0.2.0/24
+#   - 198.51.100.0/24
+#   - 203.0.113.0/24
+#   - 224.0.0.0/4
+#   - ::1/128
+#   - fe80::/10
+#   - fc00::/7
+#   - 2001:db8::/32
+#   - ff00::/8
+#   - fec0::/10
+matrix_hookshot_widgets_disallowedIpRanges: ''
+matrix_hookshot_widgets_internal: "/widgetapi"
+# Default value of matrix_hookshot_widgets_endpoint: "/hookshot/widgetapi"
+matrix_hookshot_widgets_endpoint: "{{ matrix_hookshot_public_endpoint }}{{ matrix_hookshot_widgets_internal }}"
+matrix_hookshot_widgets_publicUrl: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_widgets_endpoint }}/v1/static"
+matrix_hookshot_widgets_branding_widgetTitle: "Hookshot Configuration"
+
 
 # You can configure access to the bridge as documented here https://matrix-org.github.io/matrix-hookshot/setup.html#permissions
 # When empty, the default permissions are applied.

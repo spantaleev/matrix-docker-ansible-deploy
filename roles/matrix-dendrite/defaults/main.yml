@@ -6,13 +6,14 @@ matrix_dendrite_enabled: true
 
 matrix_dendrite_docker_image: "{{ matrix_dendrite_docker_image_name_prefix }}matrixdotorg/dendrite-monolith:{{ matrix_dendrite_docker_image_tag }}"
 matrix_dendrite_docker_image_name_prefix: "docker.io/"
-matrix_dendrite_docker_image_tag: "v0.5.1"
+matrix_dendrite_docker_image_tag: "v0.8.1"
 matrix_dendrite_docker_image_force_pull: "{{ matrix_dendrite_docker_image.endswith(':latest') }}"
 
 matrix_dendrite_base_path: "{{ matrix_base_data_path }}/dendrite"
 matrix_dendrite_config_dir_path: "{{ matrix_dendrite_base_path }}/config"
 matrix_dendrite_storage_path: "{{ matrix_dendrite_base_path }}/storage"
 matrix_dendrite_media_store_path: "{{ matrix_dendrite_storage_path }}/media-store"
+matrix_dendrite_nats_storage_path: "{{ matrix_dendrite_base_path }}/nats"
 matrix_dendrite_ext_path: "{{ matrix_dendrite_base_path }}/ext"
 
 # By default, we make Dendrite only serve HTTP (not HTTPS).
@@ -114,16 +115,14 @@ matrix_dendrite_database_str: "postgresql://{{ matrix_dendrite_database_user }}:
 matrix_dendrite_database_hostname: "matrix-postgres"
 matrix_dendrite_database_user: "dendrite"
 matrix_dendrite_database_password: "itsasecret"
-matrix_dendrite_naffka_database: "dendrite_naffka"
 matrix_dendrite_appservice_database: "dendrite_appservice"
-matrix_dendrite_federationsender_database: "dendrite_federationsender"
+matrix_dendrite_federationapi_database: "dendrite_federationapi"
 matrix_dendrite_keyserver_database: "dendrite_keyserver"
 matrix_dendrite_mediaapi_database: "dendrite_mediaapi"
 matrix_dendrite_room_database: "dendrite_room"
-matrix_dendrite_singingkeyserver_database: "dendrite_sigingkeyserver"
 matrix_dendrite_syncapi_database: "dendrite_syncapi"
-matrix_dendrite_account_database: "dendrite_account"
-matrix_dendrite_device_database: "dendrite_device"
+matrix_dendrite_userapi_database: "dendrite_userapi"
+matrix_dendrite_pushserver_database: "dendrite_pushserver"
 matrix_dendrite_mscs_database: "dendrite_mscs"
 
 matrix_dendrite_turn_uris: []
