@@ -26,6 +26,16 @@ consistency:
     - archives
 
 hooks:
+{% if matrix_backup_borg_postgresql_enabled %}
+  postgresql_databases:
+  {% for database in matrix_backup_borg_postgresql_databases %}
+  - name: {{ database }}
+    hostname: {{ matrix_backup_borg_postgresql_databases_hostname }}
+    username: {{ matrix_backup_borg_postgresql_databases_username }}
+    password: {{ matrix_backup_borg_postgresql_databases_password }}
+    port: {{ matrix_backup_borg_postgresql_databases_port }}
+  {% endfor %}
+{% endif %}
   after_backup:
     - echo "Backup created."
   on_error:

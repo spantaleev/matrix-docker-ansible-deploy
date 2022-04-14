@@ -1,4 +1,7 @@
 ---
+- import_tasks: "{{ role_path }}/tasks/util/detect_existing_postgres_version.yml"
+  when: 'matrix_backup_borg_enabled|bool and matrix_backup_borg_postgresql_enabled|bool and matrix_postgres_backup_postgres_data_path != ""'
+
 - name: Ensure borg paths exist
   file:
     path: "{{ item.path }}"
@@ -11,9 +14,9 @@
     - {path: "{{ matrix_backup_borg_docker_src_files_path }}", when: true}
   when: "item.when|bool"
 
-- name: Ensure borg config is created
-  template:
-    src: "{{ role_path }}/templates/config.yaml.j2"
+- name: Ensure borgmatic config is created
+  copy:
+    content: "{{ matrix_backup_borg_configuration|to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_backup_borg_config_path }}/config.yaml"
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
