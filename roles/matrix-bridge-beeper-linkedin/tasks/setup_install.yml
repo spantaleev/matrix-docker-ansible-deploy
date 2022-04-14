@@ -41,6 +41,8 @@
         dest: "{{ matrix_beeper_linkedin_docker_src_files_path }}"
         version: "{{ matrix_beeper_linkedin_container_image_self_build_branch }}"
         force: "yes"
+      become: true
+      become_user: "{{ matrix_user_username }}"
       register: matrix_beeper_linkedin_git_pull_results
 
     # Building the container image (using the default Dockerfile) requires that a docker-requirements.txt file be generated.

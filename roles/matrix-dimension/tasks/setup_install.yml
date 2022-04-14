@@ -102,6 +102,8 @@
     dest: "{{ matrix_dimension_docker_src_files_path }}"
     version: "{{ matrix_dimension_container_image_self_build_branch }}"
     force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
   when: "matrix_dimension_container_image_self_build|bool"
   register: matrix_dimension_git_pull_results
 

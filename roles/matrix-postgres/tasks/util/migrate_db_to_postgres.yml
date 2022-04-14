@@ -38,6 +38,8 @@
         dest: "{{ matrix_postgres_pgloader_container_image_self_build_src_path }}"
         version: "{{ matrix_postgres_pgloader_container_image_self_build_repo_branch }}"
         force: "yes"
+      become: true
+      become_user: "{{ matrix_user_username }}"
       register: matrix_postgres_pgloader_git_pull_results
 
     # If `stable` is used, we hit an error when processing /opt/src/pgloader/build/quicklisp/dists/quicklisp/software/uax-15-20201220-git/data/CompositionExclusions.txt:

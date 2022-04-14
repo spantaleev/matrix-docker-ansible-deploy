@@ -83,6 +83,8 @@
     repo: "{{ matrix_mx_puppet_twitter_container_image_self_build_repo }}"
     dest: "{{ matrix_mx_puppet_twitter_docker_src_files_path }}"
     force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
   register: matrix_mx_puppet_twitter_git_pull_results
   when: "matrix_mx_puppet_twitter_enabled|bool and matrix_mx_puppet_twitter_container_image_self_build"
 
