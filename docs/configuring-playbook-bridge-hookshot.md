@@ -22,18 +22,18 @@ Other configuration options are available via the `matrix_hookshot_configuration
 
 ### URLs for bridges setup
 
-All of the following endpoints are reachable on your `matrix.` subdomain (if the feature is enabled).
+Unless indicated otherwise, the following endpoints are reachable on your `matrix.` subdomain (if the feature is enabled).
 
-| Listener | default path | variable | used as |
+| listener | default path | variable | used as |
 |---|---|---|---|
-| webhooks | `/hookshot/webhooks/` | `matrix_hookshot_webhook_endpoint` | GitHub "Webhook URL" |
+| webhooks | `/hookshot/webhooks/` | `matrix_hookshot_webhook_endpoint` | generics, GitHub "Webhook URL", etc. |
 | github oauth | `/hookshot/webhooks/oauth` | `matrix_hookshot_github_oauth_endpoint` | GitHub "Callback URL" |
 | jira oauth | `/hookshot/webhooks/jira/oauth` | `matrix_hookshot_jira_oauth_endpoint` | JIRA OAuth |
 | figma endpoint | `/hookshot/webhooks/figma/webhook` | `matrix_hookshot_figma_endpoint` | Figma |
 | provisioning | `/hookshot/v1/` | `matrix_hookshot_provisioning_endpoint` | Dimension [provisioning](#provisioning-api) |
 | appservice | `/hookshot/_matrix/app/` | `matrix_hookshot_appservice_endpoint` | Matrix server |
-| metrics | `/hookshot/metrics/` | `matrix_hookshot_metrics_endpoint` | Prometheus |
-| widgets |  |  | not supported |
+| widgets | `/hookshot/widgetapi/` | `/matrix_hookshot_widgets_endpoint` | Widgets |
+| metrics | `/hookshot/metrics/` (on `stats.` subdomain) | `matrix_hookshot_metrics_endpoint` | Prometheus |
 
 See also `matrix_hookshot_matrix_nginx_proxy_configuration` in [init.yml](/roles/matrix-bridge-hookshot/tasks/init.yml).
 

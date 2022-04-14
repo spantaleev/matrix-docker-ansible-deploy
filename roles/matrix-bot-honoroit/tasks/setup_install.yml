@@ -64,6 +64,8 @@
     repo: "{{ matrix_bot_honoroit_docker_repo }}"
     dest: "{{ matrix_bot_honoroit_docker_src_files_path }}"
     force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
   register: matrix_bot_honoroit_git_pull_results
   when: "matrix_bot_honoroit_container_image_self_build|bool"
 

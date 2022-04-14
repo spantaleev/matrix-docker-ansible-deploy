@@ -63,6 +63,8 @@
     dest: "{{ matrix_registration_docker_src_files_path }}"
     version: "{{ matrix_registration_container_image_self_build_branch }}"
     force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
   register: matrix_registration_git_pull_results
   when: "matrix_registration_container_image_self_build|bool"
 

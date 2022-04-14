@@ -7,7 +7,7 @@ matrix_coturn_container_image_self_build_repo: "https://github.com/coturn/coturn
 matrix_coturn_container_image_self_build_repo_version: "docker/{{ matrix_coturn_version }}"
 matrix_coturn_container_image_self_build_repo_dockerfile_path: "docker/coturn/alpine/Dockerfile"
 
-matrix_coturn_version: 4.5.2-r8
+matrix_coturn_version: 4.5.2-r11
 matrix_coturn_docker_image: "{{ matrix_coturn_docker_image_name_prefix }}coturn/coturn:{{ matrix_coturn_version }}-alpine"
 matrix_coturn_docker_image_name_prefix: "{{ 'localhost/' if matrix_coturn_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_coturn_docker_image_force_pull: "{{ matrix_coturn_docker_image.endswith(':latest') }}"
@@ -65,6 +65,7 @@ matrix_coturn_turn_static_auth_secret: ""
 
 # The external IP address of the machine where Coturn is.
 matrix_coturn_turn_external_ip_address: ''
+matrix_coturn_turn_external_ip_addresses: ["{{ matrix_coturn_turn_external_ip_address }}"]
 
 matrix_coturn_allowed_peer_ips: []
 matrix_coturn_denied_peer_ips: []

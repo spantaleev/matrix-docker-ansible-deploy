@@ -66,6 +66,13 @@ global:
   # to other servers and the federation API will not be exposed.
   disable_federation: {{ (not matrix_dendrite_federation_enabled)|to_json }}
 
+  # Configures the handling of presence events.
+  presence:
+    # Whether inbound presence events are allowed, e.g. receiving presence events from other servers
+    enable_inbound: false
+    # Whether outbound presence events are allowed, e.g. sending presence events to other servers
+    enable_outbound: false
+
   # Server notices allows server admins to send messages to all users.
   server_notices:
     enabled: false
@@ -131,6 +138,11 @@ app_service_api:
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
+
+  # Disable the validation of TLS certificates of appservices. This is
+  # not recommended in production since it may allow appservice traffic
+  # to be sent to an unverified endpoint.
+  disable_tls_validation: {{ matrix_dendrite_disable_tls_validation|to_json }}
 
   # Appservice configuration files to load into this homeserver.
   config_files: {{ matrix_dendrite_app_service_config_files|to_json }}
@@ -201,12 +213,13 @@ federation_api:
   # enable this option in production as it presents a security risk!
   disable_tls_validation: {{ matrix_dendrite_disable_tls_validation|to_json }}
 
+  # Not in dendrite-config.yaml, but is in build/docker/config/dendrite.yaml
   # Use the following proxy server for outbound federation traffic.
-  proxy_outbound:
-    enabled: false
-    protocol: http
-    host: localhost
-    port: 8080
+  #proxy_outbound:
+  #  enabled: false
+  #  protocol: http
+  #  host: localhost
+  #  port: 8080
 
   # Perspective keyservers to use as a backup when direct key fetches fail. This may
   # be required to satisfy key requests for servers that are no longer online when
@@ -319,6 +332,13 @@ sync_api:
 
 # Configuration for the User API.
 user_api:
+  # The cost when hashing passwords on registration/login. Default: 10. Min: 4, Max: 31
+  # See https://pkg.go.dev/golang.org/x/crypto/bcrypt for more information.
+  # Setting this lower makes registration/login consume less CPU resources at the cost of security
+  # should the database be compromised. Setting this higher makes registration/login consume more
+  # CPU resources but makes it harder to brute force password hashes.
+  # This value can be low if performing tests or on embedded Dendrite instances (e.g WASM builds)
+  # bcrypt_cost: 10
   internal_api:
     listen: http://0.0.0.0:7781
     connect: http://user_api:7781
@@ -327,7 +347,13 @@ user_api:
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
+  # The length of time that a token issued for a relying party from
+  # /_matrix/client/r0/user/{userId}/openid/request_token endpoint
+  # is considered to be valid in milliseconds.
+  # The default lifetime is 3600000ms (60 minutes).
+  # openid_token_lifetime_ms: 3600000
 
+# Not in dendrite-config.yaml, but is in build/docker/config/dendrite.yaml
 # Configuration for the Push Server API.
 push_server:
   internal_api:

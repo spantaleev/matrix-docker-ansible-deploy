@@ -35,6 +35,8 @@
     dest: "{{ matrix_bot_mjolnir_docker_src_files_path }}"
     version: "{{ matrix_bot_mjolnir_docker_image.split(':')[1] }}"
     force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
   register: matrix_bot_mjolnir_git_pull_results
   when: "matrix_bot_mjolnir_container_image_self_build|bool"
 

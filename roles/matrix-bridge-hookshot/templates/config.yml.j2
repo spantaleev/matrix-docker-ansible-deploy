@@ -33,10 +33,12 @@ github:
     #
     ignoreHooks: {{ matrix_hookshot_github_ignore_hooks }}
     commandPrefix: "{{ matrix_hookshot_github_command_prefix }}"
-    showIssueRoomLink: {{ matrix_hookshot_github_show_issue_room_link }}
+    showIssueRoomLink: {{ matrix_hookshot_github_showIssueRoomLink }}
     prDiff: {{ matrix_hookshot_github_pr_diff }}
     includingLabels:{{ matrix_hookshot_github_including_labels }}
     excludingLabels: {{ matrix_hookshot_github_excluding_labels }}
+    hotlinkIssues:
+      prefix: "{{ matrix_hookshot_github_hotlink_prefix }}"
 {% endif %}
 {% if matrix_hookshot_gitlab_enabled %}
 gitlab:
@@ -46,6 +48,13 @@ gitlab:
     {{ matrix_hookshot_gitlab_instances }}
   webhook:
     secret: {{ matrix_hookshot_gitlab_secret|to_json }}
+{% endif %}
+{% if matrix_hookshot_figma_enabled %}
+figma:
+  # (Optional) Configure this to enable Figma support
+  #
+  publicUrl: {{ matrix_hookshot_figma_publicUrl }}
+  instances: {{ matrix_hookshot_figma_instances }}
 {% endif %}
 {% if matrix_hookshot_jira_enabled %}
 jira:
@@ -68,13 +77,6 @@ generic:
   urlPrefix: {{ matrix_hookshot_generic_urlprefix }}
   allowJsTransformationFunctions: {{ matrix_hookshot_generic_allow_js_transformation_functions }}
   userIdPrefix: {{ matrix_hookshot_generic_user_id_prefix|to_json }}
-{% endif %}
-{% if matrix_hookshot_figma_enabled %}
-figma:
-  # (Optional) Configure this to enable Figma support
-  #
-  publicUrl: {{ matrix_hookshot_figma_publicUrl }}
-  instances: {{ matrix_hookshot_figma_instances }}
 {% endif %}
 {% if matrix_hookshot_provisioning_enabled %}
 provisioning:
@@ -100,6 +102,22 @@ logging:
   # (Optional) Logging settings. You can have a severity debug,info,warn,error
   #
   level: info
+{% if matrix_hookshot_widgets_enabled %}
+widgets:
+  # (Optional) EXPERIMENTAL support for complimentary widgets
+  #
+  addToAdminRooms: {{ matrix_hookshot_widgets_addToAdminRooms }}
+{% if matrix_hookshot_widgets_roomSetupWidget_enabled %}
+  roomSetupWidget:
+    addOnInvite: {{ matrix_hookshot_widgets_roomSetupWidget_addOnInvite }}
+{% endif %}
+{% if not matrix_hookshot_widgets_disallowedIpRanges is in [None, ''] %}
+  disallowedIpRanges: {{ matrix_hookshot_widgets_disallowedIpRanges }}
+{% endif %}
+  publicUrl: {{ matrix_hookshot_widgets_publicUrl }}
+  branding:
+    widgetTitle: {{ matrix_hookshot_widgets_branding_widgetTitle }}
+{% endif %}
 {% if matrix_hookshot_permissions %}
 permissions: {{ matrix_hookshot_permissions }}
 {% endif %}
@@ -124,4 +142,10 @@ listeners:
     bindAddress: 0.0.0.0
     resources:
       - provisioning
+{% endif %}
+{% if matrix_hookshot_widgets_enabled %}
+  - port: {{ matrix_hookshot_widgets_port }}
+    bindAddress: 0.0.0.0
+    resources:
+      - widgets
 {% endif %}

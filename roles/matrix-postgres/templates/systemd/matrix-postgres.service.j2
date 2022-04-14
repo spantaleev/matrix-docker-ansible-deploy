@@ -8,8 +8,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-postgres 2>/dev/null'
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-postgres 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-postgres 2>/dev/null || true'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-postgres 2>/dev/null || true'
 
 # We need /dev/shm to be larger than the default to allow VACUUM to work.
 # See:
@@ -36,8 +36,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-postgres \
 			{{ matrix_postgres_docker_image_to_use }} \
 			postgres {{ matrix_postgres_process_extra_arguments|join(' ') }}
 
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-postgres 2>/dev/null'
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-postgres 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-postgres 2>/dev/null || true'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-postgres 2>/dev/null || true'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-postgres

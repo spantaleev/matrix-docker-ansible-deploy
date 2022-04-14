@@ -13,8 +13,8 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ matrix_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-beeper-linkedin 2>/dev/null'
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-beeper-linkedin 2>/dev/null'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-beeper-linkedin 2>/dev/null || true'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-beeper-linkedin 2>/dev/null || true'
 
 # Intentional delay, so that the homeserver (we likely depend on) can manage to start.
 ExecStartPre={{ matrix_host_command_sleep }} 5
@@ -32,8 +32,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-beeper-linkedi
 			{{ matrix_beeper_linkedin_docker_image }} \
                         python3 -m linkedin_matrix -c /data/config.yaml -r /data/registration.yaml
 
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-beeper-linkedin 2>/dev/null'
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-beeper-linkedin 2>/dev/null'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-beeper-linkedin 2>/dev/null || true'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-beeper-linkedin 2>/dev/null || true'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-beeper-linkedin
