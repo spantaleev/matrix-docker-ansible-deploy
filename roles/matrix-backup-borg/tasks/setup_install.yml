@@ -1,6 +1,16 @@
 ---
-- import_tasks: "{{ role_path }}/tasks/util/detect_existing_postgres_version.yml"
-  when: 'matrix_backup_borg_enabled|bool and matrix_backup_borg_postgresql_enabled|bool and matrix_postgres_backup_postgres_data_path != ""'
+- block:
+  - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/detect_existing_postgres_version.yml"
+
+  - name: Fail if detected Postgres version is unsupported
+    fail:
+      msg: "You cannot use borg backup with such an old version ({{ matrix_postgres_detected_version }}) of Postgres. Consider upgrading - link to docs for upgrading Postgres: docs/maintenance-postgres.md#upgrading-postgresql"
+    when: "matrix_postgres_detected_version not in matrix_backup_borg_supported_postgres_versions"
+
+  - name: Set the correct borg backup version to use
+    set_fact:
+       matrix_backup_borg_version: "{{ matrix_postgres_detected_version }}"
+  when: matrix_backup_borg_postgresql_enabled|bool and matrix_backup_borg_version == ''
 
 - name: Ensure borg paths exist
   file:

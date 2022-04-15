@@ -5,9 +5,10 @@ matrix_backup_borg_base_path: "{{ matrix_base_data_path }}/backup-borg"
 matrix_backup_borg_config_path: "{{ matrix_backup_borg_base_path }}/config"
 
 matrix_backup_borg_container_image_self_build: false
-matrix_backup_borg_docker_repo: "https://github.com/borgmatic-collective/docker-borgmatic"
+matrix_backup_borg_docker_repo: "https://gitlab.com/etke.cc/borgmatic"
 matrix_backup_borg_docker_src_files_path: "{{ matrix_backup_borg_base_path }}/docker-src"
 
+# version determined automatically, based on postgres server version (if enabled), otherwise latest is used
 matrix_backup_borg_version: ""
 matrix_backup_borg_docker_image: "{{ matrix_backup_borg_docker_image_name_prefix }}etke.cc/borgmatic:{{ matrix_backup_borg_version }}"
 matrix_backup_borg_docker_image_name_prefix: "{{ 'localhost/' if matrix_backup_borg_container_image_self_build else 'registry.gitlab.com/' }}"
@@ -30,6 +31,7 @@ matrix_backup_borg_location_source_directories: []
 
 # postgres db backup
 matrix_backup_borg_postgresql_enabled: true
+matrix_backup_borg_supported_postgres_versions: ['12', '13', '14']
 matrix_backup_borg_postgresql_databases: []
 matrix_backup_borg_postgresql_databases_hostname: "matrix-postgres"
 matrix_backup_borg_postgresql_databases_username: "matrix"
@@ -55,7 +57,7 @@ matrix_backup_borg_storage_ssh_command: ssh -o "StrictHostKeyChecking accept-new
 matrix_backup_borg_storage_compression: lz4
 
 # archive name format
-matrix_backup_borg_storage_archive_name_format: "matrix-{now:%Y-%m-%d-%H%M%S}"
+matrix_backup_borg_storage_archive_name_format: matrix-{now:%Y-%m-%d-%H%M%S}
 
 # repository passphrase
 matrix_backup_borg_storage_encryption_passphrase: ""
@@ -68,7 +70,7 @@ matrix_backup_borg_retention_keep_monthly: 12
 matrix_backup_borg_retention_keep_yearly: 2
 
 # retention prefix
-matrix_backup_borg_retention_prefix: "matrix-"
+matrix_backup_borg_retention_prefix: matrix-
 
 # Default borgmatic configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
