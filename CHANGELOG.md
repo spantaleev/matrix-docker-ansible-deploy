@@ -1,3 +1,16 @@
+# 2022-04-14
+
+## (Compatibility Break) Changes to `docker-src` permissions necessitating manual action
+
+Users who build container images from source will need to manually correct file permissions of some directories on the server.
+
+When self-building, the playbook used to `git clone` repositories (into `/matrix/SERVICE/docker-src`) using the `root` user, but now uses `matrix` instead to work around [the following issue with git 2.35.2](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1749).
+
+If you're on a non-`amd64` architecture (that is, you're overriding `matrix_architecture` in your `vars.yml` file) or you have enabled self-building for some service (e.g. `matrix_*_self_build: true`), you're certainly building some container images from source and have `docker-src` directories with mixed permissions lying around in various `/matrix/SERVICE` directories.
+
+The playbook *could* correct these permissions automatically, but that requires additional Ansible tasks in some ~45 different places - something that takes considerable effort. So we ask users observing errors related to `docker-src` directories to correct the problem manually by **running this command on the Matrix server** (which deletes all `/matrix/*/docker-src` directories): `find /matrix -maxdepth 2 -name 'docker-src' | xargs rm -rf`
+
+
 # 2022-03-17
 
 ## (Compatibility Break) ma1sd identity server no longer installed by default

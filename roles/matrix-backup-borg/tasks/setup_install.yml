@@ -1,4 +1,17 @@
 ---
+- block:
+  - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/detect_existing_postgres_version.yml"
+
+  - name: Fail if detected Postgres version is unsupported
+    fail:
+      msg: "You cannot use borg backup with such an old version ({{ matrix_postgres_detected_version }}) of Postgres. Consider upgrading - link to docs for upgrading Postgres: docs/maintenance-postgres.md#upgrading-postgresql"
+    when: "matrix_postgres_detected_version not in matrix_backup_borg_supported_postgres_versions"
+
+  - name: Set the correct borg backup version to use
+    set_fact:
+      matrix_backup_borg_version: "{{ matrix_postgres_detected_version }}"
+  when: matrix_backup_borg_postgresql_enabled|bool and matrix_backup_borg_version == ''
+
 - name: Ensure borg paths exist
   file:
     path: "{{ item.path }}"
@@ -11,9 +24,9 @@
     - {path: "{{ matrix_backup_borg_docker_src_files_path }}", when: true}
   when: "item.when|bool"
 
-- name: Ensure borg config is created
-  template:
-    src: "{{ role_path }}/templates/config.yaml.j2"
+- name: Ensure borgmatic config is created
+  copy:
+    content: "{{ matrix_backup_borg_configuration|to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_backup_borg_config_path }}/config.yaml"
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
@@ -52,6 +65,8 @@
     repo: "{{ matrix_backup_borg_docker_repo }}"
     dest: "{{ matrix_backup_borg_docker_src_files_path }}"
     force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
   register: matrix_backup_borg_git_pull_results
   when: "matrix_backup_borg_container_image_self_build|bool"
 

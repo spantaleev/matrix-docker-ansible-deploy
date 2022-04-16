@@ -33,6 +33,8 @@
         dest: "{{ matrix_appservice_webhooks_docker_src_files_path }}"
         version: "{{ matrix_appservice_webhooks_container_image_self_build_repo_version }}"
         force: "yes"
+      become: true
+      become_user: "{{ matrix_user_username }}"
       register: matrix_appservice_webhooks_git_pull_results
 
     - name: Ensure Appservice webhooks Docker image is built
