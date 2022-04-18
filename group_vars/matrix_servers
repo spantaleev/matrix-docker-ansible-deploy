@@ -1081,13 +1081,33 @@ matrix_bot_mjolnir_systemd_required_services_list: |
 ######################################################################
 
 matrix_backup_borg_enabled: false
+matrix_backup_borg_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
+matrix_backup_borg_postgresql_enabled: "{{ matrix_postgres_enabled }}"
+matrix_backup_borg_postgresql_databases_hostname: "{{ matrix_postgres_connection_hostname }}"
+matrix_backup_borg_postgresql_databases_username: "{{ matrix_postgres_connection_username }}"
+matrix_backup_borg_postgresql_databases_password: "{{ matrix_postgres_connection_password }}"
+matrix_backup_borg_postgresql_databases_port: "{{ matrix_postgres_connection_port }}"
+matrix_backup_borg_postgresql_databases: |
+  {{
+    (([{
+        'name': matrix_synapse_database_database
+    }] if (matrix_synapse_enabled and matrix_synapse_database_database == matrix_postgres_db_name and matrix_synapse_database_host == 'matrix-postgres') else [])
+    +
+    matrix_postgres_additional_databases)|map(attribute='name')|list
+  }}
 matrix_backup_borg_location_source_directories:
   - "{{ matrix_base_data_path }}"
 matrix_backup_borg_location_exclude_patterns: |
   {{
-    {
-      'synapse': ["{{ matrix_synapse_media_store_path }}/local_thumbnails", "{{ matrix_synapse_media_store_path }}/remote_thumbnail", "{{ matrix_synapse_media_store_path }}/url_cache", "{{ matrix_synapse_media_store_path }}/url_cache_thumbnails"],
-    }[matrix_homeserver_implementation]
+    ([matrix_synapse_media_store_path + '/local_thumbnails', matrix_synapse_media_store_path + '/remote_thumbnail', matrix_synapse_media_store_path + '/url_cache', matrix_synapse_media_store_path + '/url_cache_thumbnails'] if matrix_homeserver_implementation == 'synapse' else [])
+    +
+    ([matrix_postgres_data_path] if matrix_postgres_enabled else [])
+  }}
+matrix_backup_borg_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
   }}
 
 ######################################################################
