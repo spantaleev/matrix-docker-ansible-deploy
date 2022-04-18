@@ -51,6 +51,8 @@ where:
 * PASSPHRASE - passphrase used for encrypting backups, you may generate it with `pwgen -s 64 1` or use any password manager
 * PRIVATE KEY - the content of the **private** part of the SSH key you created before
 
+To backup without encryption, add `matrix_backup_borg_encryption: 'none'` to your vars. This will also enable the `matrix_backup_borg_unknown_unencrypted_repo_access_is_ok` variable.
+
 `matrix_backup_borg_location_source_directories` defines the list of directories to back up: it's set to `{{ matrix_base_data_path }}` by default, which is the base directory for every service's data, such as Synapse, Postgres and the bridges. You might want to exclude certain directories or file patterns from the backup using the `matrix_backup_borg_location_exclude_patterns` variable.
 
 Check the `roles/matrix-backup-borg/defaults/main.yml` file for the full list of available options.
