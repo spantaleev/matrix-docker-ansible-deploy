@@ -37,16 +37,16 @@
     # because the latter does not support BuildKit.
     # See: https://github.com/ansible-collections/community.general/issues/514
     - name: Ensure Synapse Docker image is built
+      # Adding the Installcommand for https://github.com/matrix-org/synapse-s3-storage-provider
+      # to the Dockerfile https://github.com/matrix-org/synapse-s3-storage-provider/issues/14#issuecomment-847146994
+      - name: Adding the S3 Install Command
+        lineinfile:
+          path: "{{ matrix_synapse_docker_src_files_path }}/docker/Dockerfile"
+          line: RUN pip install --prefix="/install" --no-deps --no-warn-script-location synapse-s3-storage-provider
+          insertafter: /synapse.*
+      when: "matrix_synapse_s3_media_store_enabled|bool"
       shell:
         chdir: "{{ matrix_synapse_docker_src_files_path }}"
-        # Adding the Installcommand for https://github.com/matrix-org/synapse-s3-storage-provider
-        # to the Dockerfile https://github.com/matrix-org/synapse-s3-storage-provider/issues/14#issuecomment-847146994
-        - name: Adding the S3 Install Command
-          lineinfile:
-            path: docker/Dockerfile
-            line: RUN pip install --prefix="/install" --no-deps --no-warn-script-location synapse-s3-storage-provider
-            insertafter: /synapse.*
-            when: "matrix_synapse_s3_media_store_enabled|bool"
         cmd: |
           {{ matrix_host_command_docker }} build \
           -t "{{ matrix_synapse_docker_image }}" \
