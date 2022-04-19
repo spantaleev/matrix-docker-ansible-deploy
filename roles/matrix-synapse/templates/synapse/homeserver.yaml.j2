@@ -1043,8 +1043,10 @@ media_store_path: "/matrix-media-store-parent/{{ matrix_synapse_media_store_dire
 {% if matrix_synapse_s3_media_store_enabled %}
 media_storage_providers:
 - module: s3_storage_provider.S3StorageProviderBackend
-  store_local: {{ matrix_synapse_s3_media_store_local }}
-  store_remote: {{ matrix_synapse_s3_media_store_remote }}
+  # In the context of this module the local store means the S3 Bucket
+  # and the remote store the local volume ¯\_(ツ)_/¯ (i swaped it for convenience)
+  store_local: {{ matrix_synapse_s3_media_store_remote }}
+  store_remote: {{ matrix_synapse_s3_media_store_local }}
   store_synchronous: {{ matrix_synapse_s3_media_store_sync }}
   config:
     bucket: {{ matrix_synapse_s3_media_store_bucket }}
