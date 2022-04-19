@@ -1039,6 +1039,23 @@ media_store_path: "/matrix-media-store-parent/{{ matrix_synapse_media_store_dire
 #    config:
 #       directory: /mnt/some/other/directory
 
+# Matrix S3 Storage Provider
+{% if matrix_synapse_s3_media_store_enabled %}
+media_storage_providers:
+- module: s3_storage_provider.S3StorageProviderBackend
+  store_local: {{ matrix_synapse_s3_media_store_local }}
+  store_remote: {{ matrix_synapse_s3_media_store_remote }}
+  store_synchronous: {{ matrix_synapse_s3_media_store_sync }}
+  config:
+    bucket: {{ matrix_synapse_s3_media_store_bucket }}
+    # All of the below options are optional, for use with non-AWS S3-like
+    # services, or to specify access tokens here instead of some external method.
+    region_name: {{ matrix_synapse_s3_media_store_region }}
+    endpoint_url: {{ matrix_synapse_s3_media_store_endpoint }}
+    access_key_id: {{ matrix_synapse_s3_media_store_access }}
+    secret_access_key: {{ matrix_synapse_s3_media_store_key }}
+{% endif %}
+
 # The largest allowed upload size in bytes
 #
 # If you are using a reverse proxy you may also need to set this value in
