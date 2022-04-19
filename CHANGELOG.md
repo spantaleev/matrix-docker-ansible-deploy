@@ -1,5 +1,12 @@
 # 2022-04-19
 
+## Borg backup support
+
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up [Borg](https://www.borgbackup.org/) backups with [borgmatic](https://torsion.org/borgmatic/) of your Matrix server.
+
+See our [Setting up borg backup](docs/configuring-playbook-backup-borg.md) documentation to get started.
+
+
 ## (Compatibility Break) Upgrading to Synapse v1.57 on setups using workers may require manual action
 
 If you're running a worker setup for Synapse (`matrix_synapse_workers_enabled: true`), the [Synapse v1.57 upgrade notes](https://github.com/matrix-org/synapse/blob/v1.57.0rc1/docs/upgrade.md#changes-to-database-schema-for-application-services) say that you may need to take special care when upgrading:
