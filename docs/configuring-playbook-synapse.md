@@ -58,7 +58,7 @@ If you'd like to use OpenID Connect authentication with Synapse, you'll need som
 
 In case you encounter errors regarding the parsing of the variables, you can try to add `{% raw %}` and `{% endraw %}` blocks around them. For example ;
 
-```
+```yaml
  - idp_id: keycloak
         idp_name: "Keycloak"
         issuer: "https://url.ix/auth/realms/x"
@@ -74,3 +74,30 @@ In case you encounter errors regarding the parsing of the variables, you can try
             email_template: "{% raw %}{{ user.email }}{% endraw %}"
 ```
 
+## Synapse S3 Storage Provider
+
+If you'd like to use Synapse with a S3 storage backend.
+This method is implementing the S3 module for Synapse from [Matrix-Org](https://github.com/matrix-org/synapse-s3-storage-provider)
+
+You need to enable it in the config as followed:
+
+```yaml
+# To enable the Module
+matrix_synapse_s3_media_store_enabled: true
+# Connection information
+matrix_synapse_s3_media_store_bucket: ""
+matrix_synapse_s3_media_store_access: ""
+matrix_synapse_s3_media_store_key: ""
+```
+
+For Amazon S3 Users you can set the S3 region with the key:
+```yaml
+# To set the S3 Region. Default value is eu-central-1
+matrix_synapse_s3_media_store_region: "eu-central-1"
+```
+
+The set a custom S3 Endpoint (MinIO):
+```yaml
+# To set the S3 Endpoint URL. Defaults to AmazonS3
+matrix_synapse_s3_media_store_endpoint: "https://..."
+```
