@@ -19,6 +19,11 @@ ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} 
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-bot-matrix-registration-bot \
 			--log-driver=none \
 			--cap-drop=ALL \
+			-e "CONFIG_PATH=/config/config.yml" \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--read-only \
+			--mount type=bind,src={{ matrix_bot_matrix_registration_bot_config_path }},dst=/config,ro \
+			--mount type=bind,src={{ matrix_bot_matrix_registration_bot_data_path }},dst=/data \
 			--network={{ matrix_docker_network }} \
 			--env-file={{ matrix_bot_matrix_registration_bot_config_path }}/env \
 			{{ matrix_bot_matrix_registration_bot_docker_image }}
