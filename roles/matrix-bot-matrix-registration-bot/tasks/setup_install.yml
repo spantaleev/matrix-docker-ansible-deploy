@@ -1,9 +1,5 @@
 ---
 
-- set_fact:
-    matrix_bot_matrix_registration_bot_requires_restart: false
-
-
 - name: Ensure matrix-registration-bot paths exist
   file:
     path: "{{ item.path }}"
@@ -45,7 +41,7 @@
     force_source: "{{ matrix_bot_matrix_registration_bot_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_git_pull_results.changed }}"
     build:
-      dockerfile: docker/Dockerfile
+      dockerfile: Dockerfile
       path: "{{ matrix_bot_matrix_registration_bot_docker_src_files_path }}"
       pull: true
   when: "matrix_bot_matrix_registration_bot_container_image_self_build|bool"
@@ -66,4 +62,3 @@
   service:
     name: "matrix-bot-matrix-registration-bot.service"
     state: restarted
-  when: "matrix_bot_matrix_registration_bot_requires_restart|bool"
