@@ -19,15 +19,17 @@ By default, the playbook will set use the bot with a username like this: `@bot.m
 You **need to register the bot user manually** before setting up the bot. You can use the playbook to [register a new user](registering-users.md):
 
 ```
-ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.matrix-registration-bot password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.matrix-registration-bot password=PASSWORD_FOR_THE_BOT admin=yes' --tags=register-user
 ```
 
 Choose a strong password for the bot. You can generate a good password with a command like this: `pwgen -s 64 1`.
 
 ## Obtaining an admin API token
 
-In order to use the bot you need to add an admin API token to the configuration. Log into Element/Schildichat with an
-administrator account and navigate to `Settings->Help&About` and scroll to the bottom. You can expand "Access token" to copy it.
+In order to use the bot you need to add an admin API token to the configuration. As you created an admin user with the 
+bot, it is recommended to obgtain a access token by loggin into Element/Schildichat with the bot account
+(using the password you set) and navigate to `Settings->Help&About` and scroll to the bottom.
+You can expand "Access token" to copy it.
 
 ![Obatining an admin access token with Element](assets/obtain_admin_access_token_element.png)
 
@@ -37,10 +39,8 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 
 ```yaml
 matrix_bot_matrix_registration_bot_enabled: true
-# Adjust this to whatever password you chose when registering the bot user
-matrix_bot_matrix_registration_bot_matrix_user_password: "PASSWORD_FOR_THE_BOT"
-# Token obtained via an administrator account
-matrix_bot_matrix_registration_bot_matrix_admin_token: "syt_bW9hbm9z_XXXXXXXXXXXXXr_2kuzbE"
+# Token obtained via logging into the bot account (see above)
+matrix_bot_matrix_registration_bot_bot_access_token: "syt_bW9hbm9z_XXXXXXXXXXXXXr_2kuzbE"
 
 # Enables registration
 matrix_synapse_enable_registration: true
