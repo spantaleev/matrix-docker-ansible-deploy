@@ -20,12 +20,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-bot-matrix-reg
 			--log-driver=none \
 			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
-			-e 'BOT_SERVER=https://{{ matrix_server_fqn_matrix }}' \
-			-e 'BOT_USERNAME={{ matrix_bot_matrix_registration_bot_matrix_user_id_localpart }}' \
-			-e 'BOT_PASSWORD={{ matrix_bot_matrix_registration_bot_matrix_user_password }}' \
-			-e 'API_BASE_URL=https://{{ matrix_server_fqn_matrix }}' \
-			-e 'API_TOKEN={{ matrix_bot_matrix_registration_bot_matrix_admin_token }}' \
-			-e 'LOGGING_LEVEL=info' \
+			--env-file={{ matrix_bot_matrix_registration_bot_config_path }}/env \
 			{{ matrix_bot_matrix_registration_bot_docker_image }}
 
 ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-bot-matrix-registration-bot 2>/dev/null || true'
