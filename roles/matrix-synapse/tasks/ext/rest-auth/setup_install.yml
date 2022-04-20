@@ -13,6 +13,10 @@
     mode: 0440
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
+  register: result
+  retries: "{{ matrix_geturl_retries_count }}"
+  delay: "{{ matrix_geturl_retries_delay }}"
+  until: result is not failed
 
 - set_fact:
     matrix_synapse_password_providers_enabled: true
