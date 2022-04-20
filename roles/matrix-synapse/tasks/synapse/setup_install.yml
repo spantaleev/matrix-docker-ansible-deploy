@@ -40,7 +40,7 @@
         path: "{{ matrix_synapse_docker_src_files_path }}/docker/Dockerfile"
         line: RUN pip install --no-deps --no-warn-script-location synapse-s3-storage-provider boto3 botocore humanize jmespath s3transfer tqdm typing-extensions
         insertafter: /synapse.*
-      when: "matrix_synapse_s3_media_store_enabled|bool"
+      when: "matrix_synapse_media_storage_provider_s3_enabled|bool"
 
     # Invoking the `docker build` command here, instead of calling the `docker_image` Ansible module,
     # because the latter does not support BuildKit.
@@ -56,7 +56,7 @@
       environment:
         DOCKER_BUILDKIT: 1
       when: "matrix_synapse_git_pull_results.changed|bool or matrix_synapse_docker_image_check_result.stdout == ''"
-  when: "matrix_synapse_container_image_self_build|bool or matrix_synapse_s3_media_store_enabled|bool"
+  when: "matrix_synapse_container_image_self_build|bool"
 
 - name: Ensure Synapse Docker image is pulled
   docker_image:

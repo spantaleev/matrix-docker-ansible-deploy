@@ -83,21 +83,21 @@ You need to enable it in the config as followed:
 
 ```yaml
 # To enable the Module
-matrix_synapse_s3_media_store_enabled: true
+matrix_synapse_media_storage_provider_s3_enabled: true
 # Connection information
-matrix_synapse_s3_media_store_bucket: ""
-matrix_synapse_s3_media_store_access: ""
-matrix_synapse_s3_media_store_key: ""
+matrix_synapse_media_storage_provider_s3_bucket: ""
+matrix_synapse_media_storage_provider_s3_access_key_id: ""
+matrix_synapse_media_storage_provider_s3_secret_access_key: ""
 ```
 
 For Amazon S3 Users you can set the S3 region with the key:
 ```yaml
 # To set the S3 Region. Default value is eu-central-1
-matrix_synapse_s3_media_store_region: "eu-central-1"
+matrix_synapse_s3_media_store_region_name: "eu-central-1"
 ```
 
 The set a custom S3 Endpoint (MinIO):
 ```yaml
 # To set the S3 Endpoint URL. Defaults to AmazonS3
-matrix_synapse_s3_media_store_endpoint: "https://..."
+matrix_synapse_s3_media_store_endpoint_url: "https://..."
 ```
