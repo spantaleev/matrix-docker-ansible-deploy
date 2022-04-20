@@ -22,7 +22,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-nginx-proxy \
 			--cap-drop=ALL \
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_nginx_proxy_tmp_directory_size_mb }}m \
-			{% if matrix_nginx_proxy_enabled and matrix_nginx_proxy_synapse_cache_enabled %}
+			{% if matrix_nginx_proxy_synapse_cache_enabled %}
 			--tmpfs=/tmp/cache:rw,noexec,nosuid,size={{ matrix_nginx_proxy_tmp_cache_directory_size_mb }}m\
 			{% endif %}
 			--network={{ matrix_docker_network }} \
