@@ -1,17 +1,18 @@
 ---
 matrix_backup_borg_enabled: true
 
-matrix_backup_borg_container_image_self_build: false
-matrix_backup_borg_docker_repo: "https://github.com/borgmatic-collective/docker-borgmatic"
-matrix_backup_borg_docker_src_files_path: "{{ matrix_base_data_path }}/borg/docker-src"
-
-matrix_backup_borg_version: latest
-matrix_backup_borg_docker_image: "{{ matrix_backup_borg_docker_image_name_prefix }}etke.cc/borgmatic:{{ matrix_backup_borg_version }}"
-matrix_backup_borg_docker_image_name_prefix: "{{ 'localhost/' if matrix_backup_borg_container_image_self_build else 'registry.gitlab.com/' }}"
-matrix_backup_borg_docker_image_force_pull: "{{ matrix_backup_borg_docker_image.endswith(':latest') }}"
-
 matrix_backup_borg_base_path: "{{ matrix_base_data_path }}/backup-borg"
 matrix_backup_borg_config_path: "{{ matrix_backup_borg_base_path }}/config"
+
+matrix_backup_borg_container_image_self_build: false
+matrix_backup_borg_docker_repo: "https://gitlab.com/etke.cc/borgmatic"
+matrix_backup_borg_docker_src_files_path: "{{ matrix_backup_borg_base_path }}/docker-src"
+
+# version determined automatically, based on postgres server version (if enabled), otherwise latest is used
+matrix_backup_borg_version: ""
+matrix_backup_borg_docker_image: "{{ matrix_backup_borg_docker_image_name_prefix }}etke.cc/borgmatic:{{ matrix_backup_borg_version }}"
+matrix_backup_borg_docker_image_name_prefix: "{{ 'localhost/' if matrix_backup_borg_container_image_self_build else 'registry.gitlab.com/' }}"
+matrix_backup_borg_docker_image_force_pull: "{{ matrix_backup_borg_docker_image.endswith(':latest') or matrix_backup_borg_version|default('') == '' }}"
 
 # A list of extra arguments to pass to the container
 matrix_backup_borg_container_extra_arguments: []
@@ -28,17 +29,29 @@ matrix_backup_borg_schedule: "*-*-* 04:00:00"
 # what directories should be added to backup
 matrix_backup_borg_location_source_directories: []
 
+# postgres db backup
+matrix_backup_borg_postgresql_enabled: true
+matrix_backup_borg_supported_postgres_versions: ['12', '13', '14']
+matrix_backup_borg_postgresql_databases: []
+matrix_backup_borg_postgresql_databases_hostname: "matrix-postgres"
+matrix_backup_borg_postgresql_databases_username: "matrix"
+matrix_backup_borg_postgresql_databases_password: ""
+matrix_backup_borg_postgresql_databases_port: 5432
+
 # target repositories
 matrix_backup_borg_location_repositories: []
 
 # exclude following paths:
 matrix_backup_borg_location_exclude_patterns: []
 
-# borg encryption mode, only repokey-* is supported
+# borg encryption mode, only "repokey-*" and "none" are supported
 matrix_backup_borg_encryption: repokey-blake2
 
 # private ssh key used to connect to the borg repo
 matrix_backup_borg_ssh_key_private: ""
+
+# allow unencrypted repo access
+matrix_backup_borg_unknown_unencrypted_repo_access_is_ok: "{{ matrix_backup_borg_encryption == 'none' }}"
 
 # borg ssh command with ssh key
 matrix_backup_borg_storage_ssh_command: ssh -o "StrictHostKeyChecking accept-new" -i /etc/borgmatic.d/sshkey
@@ -47,7 +60,7 @@ matrix_backup_borg_storage_ssh_command: ssh -o "StrictHostKeyChecking accept-new
 matrix_backup_borg_storage_compression: lz4
 
 # archive name format
-matrix_backup_borg_storage_archive_name_format: "matrix-{now:%Y-%m-%d-%H%M%S}"
+matrix_backup_borg_storage_archive_name_format: matrix-{now:%Y-%m-%d-%H%M%S}
 
 # repository passphrase
 matrix_backup_borg_storage_encryption_passphrase: ""
@@ -60,4 +73,26 @@ matrix_backup_borg_retention_keep_monthly: 12
 matrix_backup_borg_retention_keep_yearly: 2
 
 # retention prefix
-matrix_backup_borg_retention_prefix: "matrix-"
+matrix_backup_borg_retention_prefix: matrix-
+
+# Default borgmatic configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_backup_borg_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_backup_borg_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_backup_borg_configuration_extension_yaml: |
+  # Your custom YAML configuration for borgmatic goes here.
+  # This configuration extends the default starting configuration (`matrix_borg_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_backup_borg_configuration_yaml`.
+
+matrix_backup_borg_configuration_extension: "{{ matrix_backup_borg_configuration_extension_yaml|from_yaml if matrix_backup_borg_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final borgmatic configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_backup_borg_configuration_yaml`.
+matrix_backup_borg_configuration: "{{ matrix_backup_borg_configuration_yaml|from_yaml|combine(matrix_backup_borg_configuration_extension, recursive=True) }}"

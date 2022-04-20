@@ -2,6 +2,9 @@
 
 The playbook can install and configure [docker-postgres-backup-local](https://github.com/prodrigestivill/docker-postgres-backup-local) for you.
 
+For a more complete backup solution (one that includes not only Postgres, but also other configuration/data files), you may wish to look into [borg backup](configuring-playbook-backup-borg.md) instead.
+
+
 ## Adjusting the playbook configuration
 
 Minimal working configuration (`inventory/host_vars/matrix.DOMAIN/vars.yml`) to enable Postgres backup:
