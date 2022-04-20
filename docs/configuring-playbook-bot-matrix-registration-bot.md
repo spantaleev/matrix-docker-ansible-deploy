@@ -46,8 +46,7 @@ matrix_bot_matrix_registration_bot_bot_access_token: "syt_bW9hbm9z_XXXXXXXXXXXXX
 matrix_synapse_enable_registration: true
 
 # Restrict registration to users with a token
-matrix_synapse_configuration_extension_yaml: |
-  registration_requires_token: true # For token based registration
+matrix_synapse_registration_requires_token: true
 ```
 
 
