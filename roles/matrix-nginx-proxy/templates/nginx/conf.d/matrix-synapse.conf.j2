@@ -6,7 +6,11 @@
 {% set frontend_proxy_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'frontend_proxy')|list %}
 {% if matrix_nginx_proxy_synapse_workers_enabled %}
 	{% if matrix_nginx_proxy_synapse_cache_enabled %}
-    	proxy_cache_path  {{ matrix_nginx_proxy_synapse_cache_path }} levels=1:2 keys_zone={{ matrix_nginx_proxy_synapse_cache_keys_zone_name }}:{{ matrix_nginx_proxy_synapse_cache_keys_zone_size }} inactive={{ matrix_nginx_proxy_synapse_cache_inactive_time }}  max_size={{ matrix_nginx_proxy_synapse_cache_max_size }};
+    	proxy_cache_path  {{ matrix_nginx_proxy_synapse_cache_path }} \
+		levels=1:2 \
+		keys_zone={{ matrix_nginx_proxy_synapse_cache_keys_zone_name }}:{{ matrix_nginx_proxy_synapse_cache_keys_zone_size }} \
+		inactive={{ matrix_nginx_proxy_synapse_cache_inactive_time }} \
+		max_size={{ matrix_nginx_proxy_synapse_cache_max_size }}m;
 	{% endif %}
 	# Round Robin "upstream" pools for workers
 
