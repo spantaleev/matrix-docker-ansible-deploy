@@ -275,7 +275,7 @@ matrix_nginx_proxy_proxy_matrix_federation_api_ssl_trusted_certificate: "{{ matr
 
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_nginx_proxy_tmp_directory_size_mb: "{{ (matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb | int) * 50 }}"
-matrix_nginx_proxy_tmp_cache_directory_size_mb: "{{ (matrix_nginx_proxy_synapse_cache_max_size | int) * 2 }}"
+matrix_nginx_proxy_tmp_cache_directory_size_mb: "{{ (matrix_nginx_proxy_synapse_cache_max_size_mb | int) * 2 }}"
 # A list of strings containing additional configuration blocks to add to the nginx server configuration (nginx.conf).
 # for big matrixservers to enlarge the number of open files to prevent timeouts
 # matrix_nginx_proxy_proxy_additional_configuration_blocks:
@@ -563,7 +563,7 @@ matrix_nginx_proxy_synapse_cache_path: "{{ '/tmp/synapse-cache' if matrix_nginx_
 matrix_nginx_proxy_synapse_cache_keys_zone_name: "STATIC"
 matrix_nginx_proxy_synapse_cache_keys_zone_size: "10m"
 matrix_nginx_proxy_synapse_cache_inactive_time: "48h"
-matrix_nginx_proxy_synapse_cache_max_size: 1024
+matrix_nginx_proxy_synapse_cache_max_size_mb: 1024
 matrix_nginx_proxy_synapse_cache_proxy_cache_valid_time: "24h"
 
 
