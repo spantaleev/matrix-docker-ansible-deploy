@@ -4,40 +4,6 @@
 
 matrix_synapse_enabled: true
 
-# Synapse S3 Media Store Integration
-
-# The S3 Integration requires the installation directly in the Synapse container.
-# So there is a need to build our own Synapse container.
-# So with setting matrix_synapse_media_storage_provider_s3_enabled to true the matrix_synapse_container_image_self_build is overwritten.
-# All configuration options are avaliable here: https://github.com/matrix-org/synapse-s3-storage-provider
-matrix_synapse_media_storage_provider_s3_enabled: false
-# Save media on remote S3 Bucket
-matrix_synapse_s3_media_store_on_s3: false
-# Save media on local media store
-matrix_synapse_s3_media_store_on_local_filesystem: true
-# Synchronous upload
-matrix_synapse_media_storage_provider_s3_store_synchronous: false
-
-matrix_synapse_media_storage_provider_s3_bucket: ""
-matrix_synapse_media_storage_provider_s3_region_name: "eu-central-1"
-matrix_synapse_media_storage_provider_s3_endpoint_url: "https://s3.{{ matrix_synapse_media_storage_provider_s3_region }}.amazonaws.com"
-matrix_synapse_media_storage_provider_s3_access_key_id: ""
-matrix_synapse_media_storage_provider_s3_secret_access_key: ""
-matrix_synapse_media_storage_provider_s3_storage_class: "STANDARD"
-matrix_synapse_media_storage_provider_s3_threadpool_size: "20"
-
-matrix_synapse_media_storage_provider_s3_config: "{{ matrix_synapse_media_storage_provider_s3_config_yaml|from_yaml }}"
-matrix_synapse_media_storage_provider_s3_config_yaml: |
-  "bucket": {{ matrix_synapse_media_storage_provider_s3_bucket|to_json }},
-  # All of the below options are optional, for use with non-AWS S3-like
-  # services, or to specify access tokens here instead of some external method.
-  "region_name": {{ matrix_synapse_media_storage_provider_s3_region_name|to_json }},
-  "endpoint_url": {{ matrix_synapse_media_storage_provider_s3_endpoint_url|to_json }},
-  "access_key_id": {{ matrix_synapse_media_storage_provider_s3_access_key_id|to_json }},
-  "secret_access_key": {{ matrix_synapse_media_storage_provider_s3_secret_access_key|to_json }},
-  "storage_class": {{ matrix_synapse_s3_media_store_storage_class|to_json }},
-  "threadpool_size": {{ matrix_synapse_media_storage_provider_s3_threadpool_size }}
-
 matrix_synapse_container_image_self_build: "{{ matrix_synapse_s3_media_store_enabled }}"
 matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/synapse.git"
 
@@ -606,6 +572,40 @@ matrix_synapse_ext_encryption_config_yaml: |
   deny_encryption_for_rooms_of: {{ matrix_synapse_ext_encryption_disabler_deny_encryption_for_rooms_of|to_json }}
   patch_power_levels: {{ matrix_synapse_ext_encryption_disabler_patch_power_levels|to_json }}
 
+
+# Matrix-Org Synapse S3 Media Store Integration
+
+# The S3 Integration requires the installation directly in the Synapse container.
+# So there is a need to build our own Synapse container.
+# So with setting matrix_synapse_media_storage_provider_s3_enabled to true the matrix_synapse_container_image_self_build is overwritten.
+# All configuration options are avaliable here: https://github.com/matrix-org/synapse-s3-storage-provider
+matrix_synapse_media_storage_provider_s3_enabled: false
+# Save media on remote S3 Bucket
+matrix_synapse_s3_media_store_on_s3: false
+# Save media on local media store
+matrix_synapse_s3_media_store_on_local_filesystem: true
+# Synchronous upload
+matrix_synapse_media_storage_provider_s3_store_synchronous: false
+
+matrix_synapse_media_storage_provider_s3_bucket: ""
+matrix_synapse_media_storage_provider_s3_region_name: "eu-central-1"
+matrix_synapse_media_storage_provider_s3_endpoint_url: "https://s3.{{ matrix_synapse_media_storage_provider_s3_region }}.amazonaws.com"
+matrix_synapse_media_storage_provider_s3_access_key_id: ""
+matrix_synapse_media_storage_provider_s3_secret_access_key: ""
+matrix_synapse_media_storage_provider_s3_storage_class: "STANDARD"
+matrix_synapse_media_storage_provider_s3_threadpool_size: "20"
+
+matrix_synapse_media_storage_provider_s3_config: "{{ matrix_synapse_media_storage_provider_s3_config_yaml|from_yaml }}"
+matrix_synapse_media_storage_provider_s3_config_yaml: |
+  "bucket": {{ matrix_synapse_media_storage_provider_s3_bucket|to_json }},
+  # All of the below options are optional, for use with non-AWS S3-like
+  # services, or to specify access tokens here instead of some external method.
+  "region_name": {{ matrix_synapse_media_storage_provider_s3_region_name|to_json }},
+  "endpoint_url": {{ matrix_synapse_media_storage_provider_s3_endpoint_url|to_json }},
+  "access_key_id": {{ matrix_synapse_media_storage_provider_s3_access_key_id|to_json }},
+  "secret_access_key": {{ matrix_synapse_media_storage_provider_s3_secret_access_key|to_json }},
+  "storage_class": {{ matrix_synapse_s3_media_store_storage_class|to_json }},
+  "threadpool_size": {{ matrix_synapse_media_storage_provider_s3_threadpool_size }}
 
 # Goofys S3 Integration
 matrix_s3_media_store_enabled: false
