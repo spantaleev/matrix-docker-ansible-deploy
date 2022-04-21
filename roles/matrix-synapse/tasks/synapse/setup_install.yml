@@ -130,20 +130,20 @@
     mode: 0755
 
 - set_fact:
-  matrix_synapse_media_storage_providers: |
-    {{
-      matrix_synapse_media_storage_providers|default([])
-      +
-      [
-        {
-          "module": "s3_storage_provider.S3StorageProviderBackend",
-          "config":{
-            "store_local": {{ matrix_synapse_s3_media_store_on_s3 }},
-            "store_remote": {{ matrix_synapse_s3_media_store_on_local_filesystem }},
-            "store_synchronous": {{ matrix_synapse_media_storage_provider_s3_store_synchronous }},
-            "config": {{ matrix_synapse_media_storage_provider_s3_config }}
+    matrix_synapse_media_storage_providers: |
+      {{
+        matrix_synapse_media_storage_providers|default([])
+        +
+        [
+          {
+            "module": "s3_storage_provider.S3StorageProviderBackend",
+            "config":{
+              "store_local": {{ matrix_synapse_s3_media_store_on_s3 }},
+              "store_remote": {{ matrix_synapse_s3_media_store_on_local_filesystem }},
+              "store_synchronous": {{ matrix_synapse_media_storage_provider_s3_store_synchronous }},
+              "config": {{ matrix_synapse_media_storage_provider_s3_config }}
+            }
           }
-        }
-      ]
-    }}
+        ]
+      }}
   when: "matrix_synapse_media_storage_provider_s3_enabled|bool"
