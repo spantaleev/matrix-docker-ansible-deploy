@@ -151,6 +151,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Mjolnir](configuring-playbook-bot-mjolnir.md) - a moderation tool/bot (optional)
 
+- [Setting up matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md) - a bot to create and manage registration tokens to invite users (optional)
 
 ### Backups
 

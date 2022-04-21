@@ -1,0 +1,49 @@
+---
+# matrix-registration-bot creates and manages registration tokens for a matrix server
+# See: https://github.com/moan0s/matrix-registration-bot
+
+matrix_bot_matrix_registration_bot_enabled: true
+matrix_bot_matrix_registration_bot_container_image_self_build: false
+matrix_bot_matrix_registration_bot_docker_repo: "https://github.com/moan0s/matrix-registration-bot.git"
+matrix_bot_matrix_registration_bot_docker_src_files_path: "{{ matrix_bot_matrix_registration_bot_base_path }}/docker-src"
+
+matrix_bot_matrix_registration_bot_version: latest
+matrix_bot_matrix_registration_bot_docker_image: "{{ matrix_container_global_registry_prefix }}moanos/matrix-registration-bot:{{ matrix_bot_matrix_registration_bot_version }}"
+matrix_bot_matrix_registration_bot_docker_image_force_pull: "{{ matrix_bot_matrix_registration_bot_docker_image.endswith(':latest') }}"
+
+matrix_bot_matrix_registration_bot_base_path: "{{ matrix_base_data_path }}/matrix-registration-bot"
+matrix_bot_matrix_registration_bot_config_path: "{{ matrix_bot_matrix_registration_bot_base_path }}/config"
+matrix_bot_matrix_registration_bot_data_path: "{{ matrix_bot_matrix_registration_bot_base_path }}/data"
+
+matrix_bot_matrix_registration_bot_bot_server: "https://{{ matrix_server_fqn_matrix }}"
+matrix_bot_matrix_registration_bot_api_base_url: "https://{{ matrix_server_fqn_matrix }}"
+
+# The access token that the bot uses to communicate in Matrix chats
+# This does not necessarily need to be a privileged (admin) access token.
+matrix_bot_matrix_registration_bot_bot_access_token: ''
+
+# The access token that the bot uses to call the Matrix API for creating registration tokens.
+# This needs to be a privileged (admin) access token.
+# By default, we assume `matrix_bot_matrix_registration_bot_bot_access_token` is such a privileged token and we use it as is.
+# If necessary, you can define your own other access token here, which might even be for a different Matrix user.
+matrix_bot_matrix_registration_bot_api_token: "{{ matrix_bot_matrix_registration_bot_bot_access_token }}"
+
+matrix_bot_matrix_registration_bot_logging_level: info
+matrix_bot_matrix_registration_environment_variables_extension: ''
+
+# A list of extra arguments to pass to the container
+matrix_bot_matrix_registration_bot_container_extra_arguments: []
+
+# List of systemd services that matrix-bot-matrix-registration-bot.service depends on
+matrix_bot_matrix_registration_bot_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-bot-matrix-registration-bot.service wants
+matrix_bot_matrix_registration_bot_systemd_wanted_services_list: []
+
+# The bot's username. This user needs to be created manually beforehand.
+# Also see `matrix_bot_matrix_registration_bot_user_password`.
+matrix_bot_matrix_registration_bot_matrix_user_id_localpart: "bot.matrix-registration-bot"
+
+matrix_bot_matrix_registration_bot_matrix_user_id: '@{{ matrix_bot_matrix_registration_bot_matrix_user_id_localpart }}:{{ matrix_domain }}'
+
+matrix_bot_matrix_registration_bot_matrix_homeserver_url: "{{ matrix_homeserver_container_url }}"
