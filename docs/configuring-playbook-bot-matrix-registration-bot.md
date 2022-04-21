@@ -24,14 +24,16 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.matrix-
 
 Choose a strong password for the bot. You can generate a good password with a command like this: `pwgen -s 64 1`.
 
-## Obtaining an admin API token
+## Obtaining an admin access token
 
-In order to use the bot you need to add an admin API token to the configuration. As you created an admin user with the 
-bot, it is recommended to obgtain a access token by loggin into Element/Schildichat with the bot account
+In order to use the bot you need to add an admin user's access token token to the configuration. As you created an admin user for the 
+bot, it is recommended to obtain an access token by logging into Element/Schildichat with the bot account
 (using the password you set) and navigate to `Settings->Help&About` and scroll to the bottom.
 You can expand "Access token" to copy it.
 
 ![Obatining an admin access token with Element](assets/obtain_admin_access_token_element.png)
+
+**IMPORTANT**: once you copy the token, just close the Matrix client window/tab. Do not "log out", as that would invalidate the token.
 
 ## Adjusting the playbook configuration
 
