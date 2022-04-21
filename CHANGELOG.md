@@ -2,7 +2,7 @@
 
 ## matrix-registration-bot support
 
-Thanks to [Julian-Samuel Gebühr (@moan0s)](https://github.com/moan0s), the playbook can now help you set up [matrix-registration-bot](https://github.com/moanos/matrix-registration-bot) - a bot that is used to create and manage registration tokens for a Matrix server.
+Thanks to [Julian-Samuel Gebühr (@moan0s)](https://github.com/moan0s), the playbook can now help you set up [matrix-registration-bot](https://github.com/moan0s/matrix-registration-bot) - a bot that is used to create and manage registration tokens for a Matrix server.
 
 See our [Setting up matrix-registration-bot](docs/configuring-playbook-bot-matrix-registration-bot.md) documentation to get started.
 

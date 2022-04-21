@@ -1,9 +1,9 @@
 # Setting up matrix-registration-bot (optional)
 
-The playbook can install and configure [matrix-registration-bot](https://github.com/moanos/matrix-registration-bot) for you.
+The playbook can install and configure [matrix-registration-bot](https://github.com/moan0s/matrix-registration-bot) for you.
 
 The bot allows you to easily **create and manage registration tokens**. It can be used for an invitation-based server,
-where you invite someone by sending them a registration token. They can register as normal but have to provide a valid 
+where you invite someone by sending them a registration token. They can register as normal but have to provide a valid
 registration token in a final step  of the registration.
 
 See the project's [documentation](https://github.com/moan0s/matrix-registration-bot#supported-commands) to learn what it
@@ -26,7 +26,7 @@ Choose a strong password for the bot. You can generate a good password with a co
 
 ## Obtaining an admin access token
 
-In order to use the bot you need to add an admin user's access token token to the configuration. As you created an admin user for the 
+In order to use the bot you need to add an admin user's access token token to the configuration. As you created an admin user for the
 bot, it is recommended to obtain an access token by logging into Element/Schildichat with the bot account
 (using the password you set) and navigate to `Settings->Help&About` and scroll to the bottom.
 You can expand "Access token" to copy it.
