@@ -76,10 +76,13 @@ In case you encounter errors regarding the parsing of the variables, you can try
 
 ## Synapse S3 Storage Provider
 
-If you'd like to use Synapse with a S3 storage backend.
-This method is implementing the S3 module for Synapse from [Matrix-Org](https://github.com/matrix-org/synapse-s3-storage-provider)
+If you'd like to use Synapse with [Amazon S3](https://aws.amazon.com/s3/) an other S3-compatible storage backends.
+This method is implementing the [S3 module for Synapse](https://github.com/matrix-org/synapse-s3-storage-provider)
 
-You need to enable it in the config as followed:
+> Enabling the module will force the Synapse Container to [self-build](/docs/self-building.md) because of the S3 module installation.
+> So it is necessary that you don't set the `matrix_synapse_container_image_self_build` to false!
+
+You need to enable S3 support in the config as followed:
 
 ```yaml
 # To enable the Module
@@ -96,8 +99,14 @@ For Amazon S3 Users you can set the S3 region with the key:
 matrix_synapse_s3_media_store_region_name: "eu-central-1"
 ```
 
-The set a custom S3 Endpoint (MinIO):
+To set a custom S3 Endpoint (MinIO):
 ```yaml
 # To set the S3 Endpoint URL. Defaults to AmazonS3
 matrix_synapse_s3_media_store_endpoint_url: "https://..."
+```
+
+To set the S3 Storage Class [a list of Amazons Storage Classes](https://aws.amazon.com/s3/storage-classes/):
+```yaml
+# S3 Storage Classes. Defaults to STANDARD
+matrix_synapse_s3_media_store_storage_class: "STANDARD"
 ```
