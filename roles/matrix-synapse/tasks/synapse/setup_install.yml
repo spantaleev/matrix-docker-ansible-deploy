@@ -128,3 +128,16 @@
     src: "{{ role_path }}/templates/synapse/usr-local-bin/matrix-synapse-register-user.j2"
     dest: "{{ matrix_local_bin_path }}/matrix-synapse-register-user"
     mode: 0755
+
+- set_fact:
+    matrix_synapse_modules: |
+      {{
+        matrix_synapse_modules|default([])
+        +
+        [
+          {
+            "module": "s3_storage_provider.S3StorageProviderBackend",
+            "config": "matrix_synapse_media_storage_provider_s3_config"
+          }
+        ]
+      }}
