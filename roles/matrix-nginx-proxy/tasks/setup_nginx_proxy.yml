@@ -12,15 +12,17 @@
 #
 - name: Ensure Matrix nginx-proxy paths exist
   file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - "{{ matrix_nginx_proxy_base_path }}"
-    - "{{ matrix_nginx_proxy_data_path }}"
-    - "{{ matrix_nginx_proxy_confd_path }}"
+    - {path: "{{ matrix_nginx_proxy_base_path }}", when: true}
+    - {path: "{{ matrix_nginx_proxy_data_path }}", when: true}
+    - {path: "{{ matrix_nginx_proxy_confd_path }}", when: true}
+    - {path: "{{ matrix_nginx_proxy_synapse_cache_path }}", when: "{{ matrix_nginx_proxy_synapse_cache_enabled and not matrix_nginx_proxy_enabled }}"}
+  when: item.when|bool
 
 - name: Ensure Matrix nginx-proxy configured (main config override)
   template:

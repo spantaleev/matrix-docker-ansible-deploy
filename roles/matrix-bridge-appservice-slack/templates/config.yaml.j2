@@ -9,6 +9,21 @@ homeserver:
     url: "{{ matrix_appservice_slack_homeserver_url }}"
     media_url: "{{ matrix_appservice_slack_homeserver_media_url }}"
 
+# Real Time Messaging API (RTM)
+# Optional if slack_hook_port and inbound_uri_prefix are defined, required otherwise.
+#
+rtm:
+  # Use the RTM API to listen for requests, which does not require
+  # the bridge to listen on the hook port.
+  # You should leave this enabled, unless you plan to use the
+  # bridge exclusively for webhooks.
+  #
+  enable: true
+
+  # Logging level specific to RTM traffic.
+  #
+  log_level: "silent"
+
 {% if matrix_appservice_slack_database_engine == 'nedb' %}
 dbdir: "/data"
 {% else %}
