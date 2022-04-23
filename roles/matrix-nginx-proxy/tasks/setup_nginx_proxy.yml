@@ -110,6 +110,13 @@
     mode: 0644
   when: matrix_nginx_proxy_proxy_cinny_enabled|bool
 
+- name: Ensure Matrix nginx-proxy configuration for buscarron domain exists
+  template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-bot-buscarron.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-bot-buscarron.conf"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_buscarron_enabled|bool
+
 - name: Ensure Matrix nginx-proxy configuration for dimension domain exists
   template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-dimension.conf.j2"
@@ -258,6 +265,12 @@
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-cinny.conf"
     state: absent
   when: "not matrix_nginx_proxy_proxy_cinny_enabled|bool"
+
+- name: Ensure Matrix nginx-proxy configuration for buscarron domain deleted
+  file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-bot-buscarron.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_buscarron_enabled|bool"
 
 - name: Ensure Matrix nginx-proxy configuration for dimension domain deleted
   file:
