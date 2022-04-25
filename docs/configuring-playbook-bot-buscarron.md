@@ -7,7 +7,7 @@ It's a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) matri
 
 ## Registering the bot user
 
-By default, the playbook will set up the bot with a username like this: `@buscarron:DOMAIN`.
+By default, the playbook will set up the bot with a username like this: `@bot.buscarron:DOMAIN`.
 
 (to use a different username, adjust the `matrix_bot_buscarron_login` variable).
 
@@ -32,11 +32,11 @@ matrix_bot_buscarron_password: PASSWORD_FOR_THE_BOT
 
 # Adjust accepted forms
 matrix_bot_buscarron_forms:
-	- name: contact # (mandatory) Your form name, will be used as endpoint, eg: buscarron.DOMAIN/contact
-		room: "!yourRoomID:DOMAIN" # (mandatory) Room ID where form submission will be posted
-		redirect: https://DOMAIN # (mandatory) To what page user will be redirected after the form submission
-		ratelimit: 1r/m # (optional) rate limit of the form, format: <max requests>r/<interval:s,m>, eg: 1r/s or 54r/m
-		extensions: [] # (optional) list of form extensions (not used yet)
+  - name: contact # (mandatory) Your form name, will be used as endpoint, eg: buscarron.DOMAIN/contact
+    room: "!yourRoomID:DOMAIN" # (mandatory) Room ID where form submission will be posted
+    redirect: https://DOMAIN # (mandatory) To what page user will be redirected after the form submission
+    ratelimit: 1r/m # (optional) rate limit of the form, format: <max requests>r/<interval:s,m>, eg: 1r/s or 54r/m
+    extensions: [] # (optional) list of form extensions (not used yet)
 
 matrix_bot_buscarron_spam_hosts: [] # (optional) list of email domains/hosts that should be rejected automatically
 matrix_bot_buscarron_spam_emails: [] # (optional) list of email addresses that should be rejected automatically
@@ -64,7 +64,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-To use the bot, invite the `@buscarron:DOMAIN` to the room you specified in a config, after that any point your form to the form url, example for the `contact` form:
+To use the bot, invite the `@bot.buscarron:DOMAIN` to the room you specified in a config, after that any point your form to the form url, example for the `contact` form:
 
 ```html
 <form method="POST" action="https://buscarron.DOMAIN/contact">
