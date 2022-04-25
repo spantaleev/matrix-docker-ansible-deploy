@@ -14,7 +14,7 @@ By default, the playbook will set up the bot with a username like this: `@bot.bu
 You **need to register the bot user manually** before setting up the bot. You can use the playbook to [register a new user](registering-users.md):
 
 ```
-ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=buscarron password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.buscarron password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
 ```
 
 Choose a strong password for the bot. You can generate a good password with a command like this: `pwgen -s 64 1`.
