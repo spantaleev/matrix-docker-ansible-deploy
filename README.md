@@ -123,6 +123,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [Borg](https://borgbackup.org) backup - see [docs/configuring-playbook-backup-borg.md](docs/configuring-playbook-backup-borg.md) for setup documentation
 
+- (optional) the [Buscarron](https://gitlab.com/etke.cc/buscarron) bot - see [docs/configuring-playbook-bot-buscarron.md](docs/configuring-playbook-bot-buscarron.md) for setup documentation
+
 Basically, this playbook aims to get you up-and-running with all the necessities around Matrix, without you having to do anything else.
 
 **Note**: the list above is exhaustive. It includes optional or even some advanced components that you will most likely not need.

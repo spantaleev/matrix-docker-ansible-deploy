@@ -25,7 +25,6 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-bot-matrix-reg
 			--mount type=bind,src={{ matrix_bot_matrix_registration_bot_config_path }},dst=/config,ro \
 			--mount type=bind,src={{ matrix_bot_matrix_registration_bot_data_path }},dst=/data \
 			--network={{ matrix_docker_network }} \
-			--env-file={{ matrix_bot_matrix_registration_bot_config_path }}/env \
 			{{ matrix_bot_matrix_registration_bot_docker_image }}
 
 ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-bot-matrix-registration-bot 2>/dev/null || true'

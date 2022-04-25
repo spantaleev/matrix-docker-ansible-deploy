@@ -159,6 +159,10 @@ matrix_nginx_proxy_proxy_hydrogen_hostname: "{{ matrix_server_fqn_hydrogen }}"
 matrix_nginx_proxy_proxy_cinny_enabled: false
 matrix_nginx_proxy_proxy_cinny_hostname: "{{ matrix_server_fqn_cinny }}"
 
+# Controls whether proxying the buscarron domain should be done.
+matrix_nginx_proxy_proxy_buscarron_enabled: false
+matrix_nginx_proxy_proxy_buscarron_hostname: "{{ matrix_server_fqn_buscarron }}"
+
 # Controls whether proxying the matrix domain should be done.
 matrix_nginx_proxy_proxy_matrix_enabled: false
 matrix_nginx_proxy_proxy_matrix_hostname: "{{ matrix_server_fqn_matrix }}"
@@ -221,6 +225,7 @@ matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled: false
 # e.g. `htpasswd -c mypass.htpasswd prometheus` and enter `mysecurepw` when prompted yields `prometheus:$apr1$wZhqsn.U$7LC3kMmjUbjNAZjyMyvYv/`
 # The part after `prometheus:` is needed here. matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key: "$apr1$wZhqsn.U$7LC3kMmjUbjNAZjyMyvYv/"
 matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key: ""
+matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_path: "{{ matrix_nginx_proxy_data_path_in_container if matrix_nginx_proxy_enabled else matrix_nginx_proxy_data_path }}/matrix-synapse-metrics-htpasswd"
 
 # The addresses where the Matrix Client API is.
 # Certain extensions (like matrix-corporal) may override this in order to capture all traffic.
@@ -302,6 +307,9 @@ matrix_nginx_proxy_proxy_hydrogen_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to Cinny's server configuration (matrix-client-cinny.conf).
 matrix_nginx_proxy_proxy_cinny_additional_server_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to buscarron's server configuration (matrix-bot-buscarron.conf).
+matrix_nginx_proxy_proxy_buscarron_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to Dimension's server configuration (matrix-dimension.conf).
 matrix_nginx_proxy_proxy_dimension_additional_server_configuration_blocks: []
