@@ -1,3 +1,12 @@
+# 2022-04-25
+
+## buscarron bot support
+
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up [the Buscarron bot](https://gitlab.com/etke.cc/buscarron). It's a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room
+
+See our [Setting up Buscarron](docs/configuring-playbook-bot-buscarron.md) documentation to get started.
+
+
 # 2022-04-21
 
 ## matrix-registration-bot support
