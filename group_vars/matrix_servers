@@ -533,14 +533,14 @@ matrix_mautrix_twitter_systemd_required_services_list: |
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
-matrix_mautrix_twitter_appservice_token: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'twt.as.token') | to_uuid }}"
+matrix_mautrix_twitter_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'twt.as.token') | to_uuid }}"
 
-matrix_mautrix_twitter_homeserver_token: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'twt.hs.token') | to_uuid }}"
+matrix_mautrix_twitter_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'twt.hs.token') | to_uuid }}"
 
 matrix_mautrix_twitter_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
 matrix_mautrix_twitter_database_hostname: "{{ 'matrix-postgres' if matrix_postgres_enabled else '' }}"
-matrix_mautrix_twitter_database_password: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'mau.twt.db') | to_uuid if matrix_postgres_enabled else '' }}"
+matrix_mautrix_twitter_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.twt.db') | to_uuid if matrix_postgres_enabled else '' }}"
 
 ######################################################################
 #
@@ -2357,9 +2357,9 @@ matrix_dendrite_container_https_host_bind_address: "{{ '' if matrix_nginx_proxy_
 
 matrix_dendrite_sync_api_real_ip_header: "{{ 'X-Forwarded-For' if matrix_nginx_proxy_enabled else '' }}"
 
-matrix_dendrite_registration_shared_secret: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'dendrite.rss') | to_uuid }}"
+matrix_dendrite_registration_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.rss') | to_uuid }}"
 
-matrix_dendrite_database_password: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'dendrite.db') | to_uuid }}"
+matrix_dendrite_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.db') | to_uuid }}"
 
 # Even if TURN doesn't support TLS (it does by default),
 # it doesn't hurt to try a secure connection anyway.
