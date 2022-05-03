@@ -39,6 +39,7 @@ If you are using Cloudflare DNS, make sure to disable the proxy and set all reco
 | CNAME | `hydrogen`                   | -        | -      | -    | `matrix.<your-domain>` |
 | CNAME | `cinny`                      | -        | -      | -    | `matrix.<your-domain>` |
 | CNAME | `wsproxy`                    | -        | -      | -    | `matrix.<your-domain>` |
+| CNAME | `buscarron`                  | -        | -      | -    | `matrix.<your-domain>` |
 
 ## Subdomains setup
 
@@ -61,7 +62,11 @@ The `hydrogen.<your-domain>` subdomain may be necessary, because this playbook c
 
 The `cinny.<your-domain>` subdomain may be necessary, because this playbook could install the [Cinny](https://github.com/ajbura/cinny) web client. The installation of cinny is disabled by default, it is not a core required component. To learn how to install it, see our [configuring cinny guide](configuring-playbook-client-cinny.md). If you do not wish to set up cinny, feel free to skip the `cinny.<your-domain>` DNS record.
 
+<<<<<<< HEAD
 The `wsproxy.<your-domain>` subdomain may be necessary, because this playbook could install the [wsproxy](https://github.com/mautrix/wsproxy) web client. The installation of wsproxy is disabled by default, it is not a core required component. To learn how to install it, see our [configuring wsproxy guide](configuring-playbook-bridge-mautrix-wsproxy.md). If you do not wish to set up wsproxy, feel free to skip the `wsproxy.<your-domain>` DNS record.
+=======
+The `buscarron.<your-domain>` subdomain may be necessary, because this playbook could install the [buscarron](https://github.com/etke.cc/buscarron) bot. The installation of buscarron is disabled by default, it is not a core required component. To learn how to install it, see our [configuring buscarron guide](configuring-playbook-bot-buscarron.md). If you do not wish to set up buscarron, feel free to skip the `buscarron.<your-domain>` DNS record.
+>>>>>>> 7adc167412b95917ff04012ff5a01577211ef41c
 
 ## `_matrix-identity._tcp` SRV record setup
 

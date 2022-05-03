@@ -44,11 +44,14 @@ matrix_backup_borg_location_repositories: []
 # exclude following paths:
 matrix_backup_borg_location_exclude_patterns: []
 
-# borg encryption mode, only repokey-* is supported
+# borg encryption mode, only "repokey-*" and "none" are supported
 matrix_backup_borg_encryption: repokey-blake2
 
 # private ssh key used to connect to the borg repo
 matrix_backup_borg_ssh_key_private: ""
+
+# allow unencrypted repo access
+matrix_backup_borg_unknown_unencrypted_repo_access_is_ok: "{{ matrix_backup_borg_encryption == 'none' }}"
 
 # borg ssh command with ssh key
 matrix_backup_borg_storage_ssh_command: ssh -o "StrictHostKeyChecking accept-new" -i /etc/borgmatic.d/sshkey

@@ -1,3 +1,49 @@
+# 2022-04-25
+
+## buscarron bot support
+
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up [the Buscarron bot](https://gitlab.com/etke.cc/buscarron). It's a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room
+
+See our [Setting up Buscarron](docs/configuring-playbook-bot-buscarron.md) documentation to get started.
+
+
+# 2022-04-21
+
+## matrix-registration-bot support
+
+Thanks to [Julian-Samuel Gebühr (@moan0s)](https://github.com/moan0s), the playbook can now help you set up [matrix-registration-bot](https://github.com/moan0s/matrix-registration-bot) - a bot that is used to create and manage registration tokens for a Matrix server.
+
+See our [Setting up matrix-registration-bot](docs/configuring-playbook-bot-matrix-registration-bot.md) documentation to get started.
+
+
+# 2022-04-19
+
+## Borg backup support
+
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up [Borg](https://www.borgbackup.org/) backups with [borgmatic](https://torsion.org/borgmatic/) of your Matrix server.
+
+See our [Setting up borg backup](docs/configuring-playbook-backup-borg.md) documentation to get started.
+
+
+## (Compatibility Break) Upgrading to Synapse v1.57 on setups using workers may require manual action
+
+If you're running a worker setup for Synapse (`matrix_synapse_workers_enabled: true`), the [Synapse v1.57 upgrade notes](https://github.com/matrix-org/synapse/blob/v1.57.0rc1/docs/upgrade.md#changes-to-database-schema-for-application-services) say that you may need to take special care when upgrading:
+
+> Synapse v1.57.0 includes a change to the way transaction IDs are managed for application services. If your deployment uses a dedicated worker for application service traffic, **it must be stopped** when the database is upgraded (which normally happens when the main process is upgraded), to ensure the change is made safely without any risk of reusing transaction IDs.
+
+If you're not running an `appservice` worker (`matrix_synapse_workers_preset: little-federation-helper` or `matrix_synapse_workers_appservice_workers_count: 0`), you are probably safe to upgrade as per normal, without taking any special care.
+
+If you are running a setup with an `appservice` worker, or otherwise want to be on the safe side, we recommend the following upgrade path:
+
+0. Pull the latest playbook changes
+1. Stop all services (`ansible-playbook -i inventory/hosts setup.yml --tags=stop`)
+2. Re-run the playbook (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-all`)
+3. Start Postgres (`systemctl start matrix-postgres` on the server)
+4. Start the main Synapse process (`systemctl start matrix-synapse` on the server)
+5. Wait a while so that Synapse can start and complete the database migrations. You can use `journalctl -fu matrix-synapse` on the server to get a clue. Waiting a few minutes should also be enough.
+6. It should now be safe to start all other services. `ansible-playbook -i inventory/hosts setup.yml --tags=start` will do it for you
+
+
 # 2022-04-14
 
 ## (Compatibility Break) Changes to `docker-src` permissions necessitating manual action

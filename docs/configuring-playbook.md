@@ -145,11 +145,22 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) - a bot to remind you about stuff (optional)
 
+- [Setting up matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md) - a bot to create and manage registration tokens to invite users (optional)
+
 - [Setting up honoroit](configuring-playbook-bot-honoroit.md) - a helpdesk bot (optional)
 
 - [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) - an extensible multifunctional bot (optional)
 
 - [Setting up Mjolnir](configuring-playbook-bot-mjolnir.md) - a moderation tool/bot (optional)
+
+- [Setting up Buscarron](configuring-playbook-bot-buscarron.md) - a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room (optional)
+
+
+### Backups
+
+- [Setting up borg backup](configuring-playbook-backup-borg.md) - a full Matrix server backup solution, including the Postgres database (optional)
+
+- [Setting up postgres backup](configuring-playbook-postgres-backup.md) - a Postgres-database backup solution (note: does not include other files) (optional)
 
 
 ### Other specialized services

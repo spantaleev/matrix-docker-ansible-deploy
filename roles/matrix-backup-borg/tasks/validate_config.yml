@@ -7,4 +7,9 @@
   with_items:
     - "matrix_backup_borg_ssh_key_private"
     - "matrix_backup_borg_location_repositories"
-    - "matrix_backup_borg_storage_encryption_passphrase"
+
+- name: Fail if encryption passphrase is undefined unless repository is unencrypted
+  fail:
+    msg: >-
+      You need to define a required passphrase using the `matrix_backup_borg_storage_encryption_passphrase` variable.
+  when: "matrix_backup_borg_storage_encryption_passphrase == '' and matrix_backup_borg_encryption != 'none'"

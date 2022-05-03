@@ -70,6 +70,10 @@
     group: "{{ matrix_user_groupname }}"
   with_items: "{{ matrix_grafana_dashboard_download_urls_all }}"
   when: matrix_grafana_enabled|bool
+  register: result
+  retries: "{{ matrix_geturl_retries_count }}"
+  delay: "{{ matrix_geturl_retries_delay }}"
+  until: result is not failed
 
 - name: Ensure matrix-grafana.service installed
   template:
