@@ -120,7 +120,7 @@ enable_parsing {
                 worker_stanza_append("  # " line linefeed)
 
                 # and take note of words hinting at additional conditions to be met
-                if (line ~ /(^| )[Ii]f |(^| )[Ff]or /) {
+                if (line ~ /(^[Ii]f|care must be taken|can be handled for)/) {
                     endpoints_seem_conditional = 1
                 }
             }
