@@ -43,6 +43,8 @@
   template:
     src: "{{ role_path }}/templates/env.j2"
     dest: "{{ matrix_bot_honoroit_config_path }}/env"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
     mode: 0640
 
 - name: Ensure honoroit image is pulled
@@ -62,6 +64,8 @@
     repo: "{{ matrix_bot_honoroit_docker_repo }}"
     dest: "{{ matrix_bot_honoroit_docker_src_files_path }}"
     force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
   register: matrix_bot_honoroit_git_pull_results
   when: "matrix_bot_honoroit_container_image_self_build|bool"
 

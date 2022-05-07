@@ -1,0 +1,58 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Borg Backup
+{% for service in matrix_backup_borg_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_backup_borg_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-backup-borg 2>/dev/null || true'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-backup-borg 2>/dev/null || true'
+ExecStartPre=-{{ matrix_host_command_docker }} run --rm --name matrix-backup-borg \
+			--log-driver=none \
+			--cap-drop=ALL \
+			--read-only \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--network={{ matrix_docker_network }} \
+			--tmpfs=/tmp:rw,noexec,nosuid,size=100m \
+			--mount type=bind,src={{ matrix_backup_borg_config_path }}/passwd,dst=/etc/passwd,ro \
+			--mount type=bind,src={{ matrix_backup_borg_config_path }},dst=/etc/borgmatic.d,ro \
+			{% for source in matrix_backup_borg_location_source_directories %}
+			--mount type=bind,src={{ source }},dst={{ source }},ro \
+			{% endfor %}
+			{% for arg in matrix_backup_borg_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_backup_borg_docker_image }} \
+			sh -c "borgmatic --init --encryption {{ matrix_backup_borg_encryption }}"
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-backup-borg \
+			--log-driver=none \
+			--cap-drop=ALL \
+			--read-only \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--network={{ matrix_docker_network }} \
+			--tmpfs=/tmp:rw,noexec,nosuid,size=100m \
+			--mount type=bind,src={{ matrix_backup_borg_config_path }}/passwd,dst=/etc/passwd,ro \
+			--mount type=bind,src={{ matrix_backup_borg_config_path }},dst=/etc/borgmatic.d,ro \
+			{% for source in matrix_backup_borg_location_source_directories %}
+			--mount type=bind,src={{ source }},dst={{ source }},ro \
+			{% endfor %}
+			{% for arg in matrix_backup_borg_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_backup_borg_docker_image }}
+
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-backup-borg 2>/dev/null || true'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-backup-borg 2>/dev/null || true'
+SyslogIdentifier=matrix-backup-borg
+
+[Install]
+WantedBy=multi-user.target

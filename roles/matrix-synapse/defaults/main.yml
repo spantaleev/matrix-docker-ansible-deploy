@@ -9,7 +9,7 @@ matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/s
 
 matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_container_global_registry_prefix }}"
-matrix_synapse_version: v1.55.2
+matrix_synapse_version: v1.58.1
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -74,7 +74,7 @@ matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.9/site
 # Specifies which template files to use when configuring Synapse.
 # If you'd like to have your own different configuration, feel free to copy and paste
 # the original files into your inventory (e.g. in `inventory/host_vars/<host>/`)
-# and then change the specific host's `vars.yaml` file like this:
+# and then change the specific host's `vars.yml` file like this:
 # matrix_synapse_template_synapse_homeserver: "{{ playbook_dir }}/inventory/host_vars/<host>/homeserver.yaml.j2"
 matrix_synapse_template_synapse_homeserver: "{{ role_path }}/templates/synapse/homeserver.yaml.j2"
 matrix_synapse_template_synapse_log: "{{ role_path }}/templates/synapse/synapse.log.config.j2"
@@ -202,11 +202,18 @@ matrix_synapse_include_profile_data_on_invite: true
 
 # Controls whether people with access to the homeserver can register by themselves.
 matrix_synapse_enable_registration: false
+# Controls whether people with access to the homeserver can register by themselves without verification (email/msisdn/token)
+matrix_synapse_enable_registration_without_verification: false
 
 # reCAPTCHA API for validating registration attempts
 matrix_synapse_enable_registration_captcha: false
 matrix_synapse_recaptcha_public_key: ''
 matrix_synapse_recaptcha_private_key: ''
+
+# Requires an MSC3231 token for registration. Note that `matrix_synapse_enable_registration` must be set to `true`.
+# Tokens can be created via the API or through synapse-admin.
+# Disabling this option will not delete any tokens previously generated.
+matrix_synapse_registration_requires_token: false
 
 # Allows non-server-admin users to create groups on this server
 matrix_synapse_enable_group_creation: false

@@ -49,27 +49,6 @@ matrix_integration_manager_ui_url: "{{ matrix_dimension_integrations_ui_url if m
 
 ######################################################################
 #
-# matrix-awx
-#
-######################################################################
-
-# We don't enable AWX support by default.
-matrix_awx_enabled: false
-
-matrix_nginx_proxy_data_path: "{{ '/chroot/website' if (matrix_awx_enabled and not matrix_nginx_proxy_base_domain_homepage_enabled) else (matrix_nginx_proxy_base_path + '/data') }}"
-matrix_nginx_proxy_data_path_in_container: "{{ '/nginx-data/matrix-domain' if (matrix_awx_enabled and not matrix_nginx_proxy_base_domain_homepage_enabled) else '/nginx-data' }}"
-matrix_nginx_proxy_data_path_extension: "{{ '' if (matrix_awx_enabled and not matrix_nginx_proxy_base_domain_homepage_enabled) else '/matrix-domain' }}"
-matrix_nginx_proxy_base_domain_create_directory: "{{ not matrix_awx_enabled }}"
-
-######################################################################
-#
-# /matrix-awx
-#
-######################################################################
-
-
-######################################################################
-#
 # matrix-bridge-appservice-discord
 #
 ######################################################################
@@ -481,7 +460,7 @@ matrix_mautrix_signal_database_engine: 'postgres'
 matrix_mautrix_signal_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.signal.db') | to_uuid }}"
 
 matrix_mautrix_signal_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
-matrix_mautrix_signal_daemon_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+matrix_mautrix_signal_daemon_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 ######################################################################
 #
@@ -556,14 +535,14 @@ matrix_mautrix_twitter_systemd_required_services_list: |
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
-matrix_mautrix_twitter_appservice_token: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'twt.as.token') | to_uuid }}"
+matrix_mautrix_twitter_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'twt.as.token') | to_uuid }}"
 
-matrix_mautrix_twitter_homeserver_token: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'twt.hs.token') | to_uuid }}"
+matrix_mautrix_twitter_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'twt.hs.token') | to_uuid }}"
 
 matrix_mautrix_twitter_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
 matrix_mautrix_twitter_database_hostname: "{{ 'matrix-postgres' if matrix_postgres_enabled else '' }}"
-matrix_mautrix_twitter_database_password: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'mau.twt.db') | to_uuid if matrix_postgres_enabled else '' }}"
+matrix_mautrix_twitter_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.twt.db') | to_uuid if matrix_postgres_enabled else '' }}"
 
 ######################################################################
 #
@@ -673,6 +652,8 @@ matrix_heisenbridge_systemd_wanted_services_list: |
 # We don't enable bridges by default.
 matrix_hookshot_enabled: false
 
+matrix_hookshot_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
+
 matrix_hookshot_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'hookshot.as.tok') | to_uuid }}"
 
 matrix_hookshot_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'hookshot.hs.tok') | to_uuid }}"
@@ -697,9 +678,9 @@ matrix_hookshot_provisioning_enabled: "{{ matrix_hookshot_provisioning_secret an
 matrix_hookshot_proxy_metrics: "{{ matrix_nginx_proxy_proxy_synapse_metrics }}"
 matrix_hookshot_proxy_metrics_basic_auth_enabled: "{{ matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled }}"
 
-matrix_hookshot_generic_urlprefix_port_enabled: "{{ matrix_nginx_proxy_container_https_host_bind_port == 443 if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_https_host_bind_port == 80 }}"
-matrix_hookshot_generic_urlprefix_port: ":{{ matrix_nginx_proxy_container_https_host_bind_port if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_http_host_bind_port }}"
-matrix_hookshot_generic_urlprefix: "http{{ 's' if matrix_nginx_proxy_https_enabled else '' }}://{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_generic_urlprefix_port if matrix_hookshot_generic_urlprefix_port_enabled else '' }}{{ matrix_hookshot_generic_endpoint }}"
+matrix_hookshot_urlprefix_port_enabled: "{{ matrix_nginx_proxy_container_https_host_bind_port == 443 if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_https_host_bind_port == 80 }}"
+matrix_hookshot_urlprefix_port: ":{{ matrix_nginx_proxy_container_https_host_bind_port if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_http_host_bind_port }}"
+matrix_hookshot_urlprefix: "http{{ 's' if matrix_nginx_proxy_https_enabled else '' }}://{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_urlprefix_port if matrix_hookshot_urlprefix_port_enabled else '' }}"
 
 ######################################################################
 #
@@ -1008,6 +989,35 @@ matrix_bot_matrix_reminder_bot_container_image_self_build: "{{ matrix_architectu
 #
 ######################################################################
 
+
+######################################################################
+#
+# matrix-bot-matrix-registration-bot
+#
+######################################################################
+
+# We don't enable bots by default.
+matrix_bot_matrix_registration_bot_enabled: false
+
+matrix_bot_matrix_registration_bot_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
+
+matrix_bot_matrix_registration_bot_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    ['matrix-' + matrix_homeserver_implementation + '.service']
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+  }}
+
+
+######################################################################
+#
+# /matrix-bot-matrix-registration-bot
+#
+######################################################################
+
+
 ######################################################################
 #
 # matrix-bot-honoroit
@@ -1036,6 +1046,37 @@ matrix_bot_honoroit_container_image_self_build: "{{ matrix_architecture not in [
 ######################################################################
 #
 # /matrix-bot-honoroit
+#
+######################################################################
+
+######################################################################
+#
+# matrix-bot-buscarron
+#
+######################################################################
+
+# We don't enable bots by default.
+matrix_bot_buscarron_enabled: false
+
+matrix_bot_buscarron_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+  }}
+
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_bot_buscarron_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_bot_buscarron_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'buscarron.bot.db') | to_uuid }}"
+matrix_bot_buscarron_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
+
+######################################################################
+#
+# /matrix-bot-buscarron
 #
 ######################################################################
 
@@ -1095,6 +1136,47 @@ matrix_bot_mjolnir_systemd_required_services_list: |
 #
 ######################################################################
 
+######################################################################
+#
+# matrix-backup-borg
+#
+######################################################################
+
+matrix_backup_borg_enabled: false
+matrix_backup_borg_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
+matrix_backup_borg_postgresql_enabled: "{{ matrix_postgres_enabled }}"
+matrix_backup_borg_postgresql_databases_hostname: "{{ matrix_postgres_connection_hostname }}"
+matrix_backup_borg_postgresql_databases_username: "{{ matrix_postgres_connection_username }}"
+matrix_backup_borg_postgresql_databases_password: "{{ matrix_postgres_connection_password }}"
+matrix_backup_borg_postgresql_databases_port: "{{ matrix_postgres_connection_port }}"
+matrix_backup_borg_postgresql_databases: |
+  {{
+    (([{
+        'name': matrix_synapse_database_database
+    }] if (matrix_synapse_enabled and matrix_synapse_database_database == matrix_postgres_db_name and matrix_synapse_database_host == 'matrix-postgres') else [])
+    +
+    matrix_postgres_additional_databases)|map(attribute='name')|list
+  }}
+matrix_backup_borg_location_source_directories:
+  - "{{ matrix_base_data_path }}"
+matrix_backup_borg_location_exclude_patterns: |
+  {{
+    ([matrix_synapse_media_store_path + '/local_thumbnails', matrix_synapse_media_store_path + '/remote_thumbnail', matrix_synapse_media_store_path + '/url_cache', matrix_synapse_media_store_path + '/url_cache_thumbnails'] if matrix_homeserver_implementation == 'synapse' else [])
+    +
+    ([matrix_postgres_data_path] if matrix_postgres_enabled else [])
+  }}
+matrix_backup_borg_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+  }}
+
+######################################################################
+#
+# /matrix-backup-borg
+#
+######################################################################
 
 ######################################################################
 #
@@ -1424,6 +1506,7 @@ matrix_nginx_proxy_proxy_matrix_enabled: true
 matrix_nginx_proxy_proxy_element_enabled: "{{ matrix_client_element_enabled }}"
 matrix_nginx_proxy_proxy_hydrogen_enabled: "{{ matrix_client_hydrogen_enabled }}"
 matrix_nginx_proxy_proxy_cinny_enabled: "{{ matrix_client_cinny_enabled }}"
+matrix_nginx_proxy_proxy_buscarron_enabled: "{{ matrix_bot_buscarron_enabled }}"
 matrix_nginx_proxy_proxy_dimension_enabled: "{{ matrix_dimension_enabled }}"
 matrix_nginx_proxy_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled }}"
 matrix_nginx_proxy_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
@@ -1514,6 +1597,8 @@ matrix_nginx_proxy_systemd_wanted_services_list: |
     +
     (['matrix-client-cinny.service'] if matrix_client_cinny_enabled else [])
     +
+    (['matrix-bot-buscarron.service'] if matrix_bot_buscarron_enabled else [])
+    +
     (['matrix-client-element.service'] if matrix_client_element_enabled else [])
     +
     (['matrix-client-hydrogen.service'] if matrix_client_hydrogen_enabled else [])
@@ -1544,6 +1629,8 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     ([matrix_server_fqn_hydrogen] if matrix_client_hydrogen_enabled else [])
     +
     ([matrix_server_fqn_cinny] if matrix_client_cinny_enabled else [])
+    +
+    ([matrix_server_fqn_buscarron] if matrix_bot_buscarron_enabled else [])
     +
     ([matrix_server_fqn_dimension] if matrix_dimension_enabled else [])
     +
@@ -1601,15 +1688,11 @@ matrix_postgres_additional_databases: |
     }] if (matrix_synapse_enabled and matrix_synapse_database_database != matrix_postgres_db_name and matrix_synapse_database_host == 'matrix-postgres') else [])
     +
     ([{
-      'name': matrix_dendrite_naffka_database,
-      'username': matrix_dendrite_database_user,
-      'password': matrix_dendrite_database_password,
-    },{
       'name': matrix_dendrite_appservice_database,
       'username': matrix_dendrite_database_user,
       'password': matrix_dendrite_database_password,
     },{
-      'name': matrix_dendrite_federationsender_database,
+      'name': matrix_dendrite_federationapi_database,
       'username': matrix_dendrite_database_user,
       'password': matrix_dendrite_database_password,
     },{
@@ -1625,19 +1708,15 @@ matrix_postgres_additional_databases: |
       'username': matrix_dendrite_database_user,
       'password': matrix_dendrite_database_password,
     },{
-      'name': matrix_dendrite_singingkeyserver_database,
-      'username': matrix_dendrite_database_user,
-      'password': matrix_dendrite_database_password,
-    },{
       'name': matrix_dendrite_syncapi_database,
       'username': matrix_dendrite_database_user,
       'password': matrix_dendrite_database_password,
     },{
-      'name': matrix_dendrite_account_database,
+      'name': matrix_dendrite_userapi_database,
       'username': matrix_dendrite_database_user,
       'password': matrix_dendrite_database_password,
     },{
-      'name': matrix_dendrite_device_database,
+      'name': matrix_dendrite_pushserver_database,
       'username': matrix_dendrite_database_user,
       'password': matrix_dendrite_database_password,
     },{
@@ -1663,6 +1742,12 @@ matrix_postgres_additional_databases: |
       'username': matrix_bot_honoroit_database_username,
       'password': matrix_bot_honoroit_database_password,
     }] if (matrix_bot_honoroit_enabled and matrix_bot_honoroit_database_engine == 'postgres' and matrix_bot_honoroit_database_hostname == 'matrix-postgres') else [])
+    +
+    ([{
+      'name': matrix_bot_buscarron_database_name,
+      'username': matrix_bot_buscarron_database_username,
+      'password': matrix_bot_buscarron_database_password,
+    }] if (matrix_bot_buscarron_enabled and matrix_bot_buscarron_database_engine == 'postgres' and matrix_bot_buscarron_database_hostname == 'matrix-postgres') else [])
     +
     ([{
       'name': matrix_registration_database_name,
@@ -2281,9 +2366,9 @@ matrix_dendrite_container_https_host_bind_address: "{{ '' if matrix_nginx_proxy_
 
 matrix_dendrite_sync_api_real_ip_header: "{{ 'X-Forwarded-For' if matrix_nginx_proxy_enabled else '' }}"
 
-matrix_dendrite_registration_shared_secret: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'dendrite.rss') | to_uuid }}"
+matrix_dendrite_registration_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.rss') | to_uuid }}"
 
-matrix_dendrite_database_password: "{{ matrix_homeserver_generic_secret_key | password_hash('sha512', 'dendrite.db') | to_uuid }}"
+matrix_dendrite_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.db') | to_uuid }}"
 
 # Even if TURN doesn't support TLS (it does by default),
 # it doesn't hurt to try a secure connection anyway.

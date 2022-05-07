@@ -26,6 +26,8 @@
     repo: "{{ matrix_mautrix_signal_docker_repo }}"
     dest: "{{ matrix_mautrix_signal_docker_src_files_path }}"
     force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
   register: matrix_mautrix_signal_git_pull_results
   when: "matrix_mautrix_signal_container_image_self_build|bool"
 
@@ -56,6 +58,8 @@
     repo: "{{ matrix_mautrix_signal_daemon_docker_repo }}"
     dest: "{{ matrix_mautrix_signal_daemon_docker_src_files_path }}"
     force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
   register: matrix_mautrix_signal_daemon_git_pull_results
   when: "matrix_mautrix_signal_daemon_container_image_self_build|bool"
 
@@ -66,7 +70,7 @@
     force_source: "{{ matrix_mautrix_signal_daemon_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_signal_daemon_git_pull_results.changed }}"
     build:
-      dockerfile: Dockerfile
+      dockerfile: Containerfile
       path: "{{ matrix_mautrix_signal_daemon_docker_src_files_path }}"
       pull: true
   when: "matrix_mautrix_signal_daemon_container_image_self_build|bool"

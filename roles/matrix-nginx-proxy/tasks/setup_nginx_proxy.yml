@@ -12,15 +12,17 @@
 #
 - name: Ensure Matrix nginx-proxy paths exist
   file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - "{{ matrix_nginx_proxy_base_path }}"
-    - "{{ matrix_nginx_proxy_data_path }}"
-    - "{{ matrix_nginx_proxy_confd_path }}"
+    - {path: "{{ matrix_nginx_proxy_base_path }}", when: true}
+    - {path: "{{ matrix_nginx_proxy_data_path }}", when: true}
+    - {path: "{{ matrix_nginx_proxy_confd_path }}", when: true}
+    - {path: "{{ matrix_nginx_proxy_synapse_cache_path }}", when: "{{ matrix_nginx_proxy_synapse_cache_enabled and not matrix_nginx_proxy_enabled }}"}
+  when: item.when|bool
 
 - name: Ensure Matrix nginx-proxy configured (main config override)
   template:
@@ -107,6 +109,13 @@
     dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-cinny.conf"
     mode: 0644
   when: matrix_nginx_proxy_proxy_cinny_enabled|bool
+
+- name: Ensure Matrix nginx-proxy configuration for buscarron domain exists
+  template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-bot-buscarron.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-bot-buscarron.conf"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_buscarron_enabled|bool
 
 - name: Ensure Matrix nginx-proxy configuration for dimension domain exists
   template:
@@ -256,6 +265,12 @@
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-cinny.conf"
     state: absent
   when: "not matrix_nginx_proxy_proxy_cinny_enabled|bool"
+
+- name: Ensure Matrix nginx-proxy configuration for buscarron domain deleted
+  file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-bot-buscarron.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_buscarron_enabled|bool"
 
 - name: Ensure Matrix nginx-proxy configuration for dimension domain deleted
   file:

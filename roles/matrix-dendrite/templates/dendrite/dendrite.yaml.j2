@@ -28,7 +28,7 @@
 # connection can be idle in seconds - a negative value is unlimited.
 
 # The version of the configuration file.
-version: 1
+version: 2
 
 # Global Matrix configuration. This configuration applies to all components.
 global:
@@ -66,33 +66,46 @@ global:
   # to other servers and the federation API will not be exposed.
   disable_federation: {{ (not matrix_dendrite_federation_enabled)|to_json }}
 
-  # Configuration for Kafka/Naffka.
-  kafka:
-    # List of Kafka broker addresses to connect to. This is not needed if using
-    # Naffka in monolith mode.
-    addresses: []
+  # Configures the handling of presence events.
+  presence:
+    # Whether inbound presence events are allowed, e.g. receiving presence events from other servers
+    enable_inbound: false
+    # Whether outbound presence events are allowed, e.g. sending presence events to other servers
+    enable_outbound: false
 
-    # The prefix to use for Kafka topic names for this homeserver. Change this only if
-    # you are running more than one Dendrite homeserver on the same Kafka deployment.
+  # Server notices allows server admins to send messages to all users.
+  server_notices:
+    enabled: false
+    # The server localpart to be used when sending notices, ensure this is not yet taken
+    local_part: "_server"
+    # The displayname to be used when sending notices
+    display_name: "Server alerts"
+    # The mxid of the avatar to use
+    avatar_url: ""
+    # The roomname to be used when creating messages
+    room_name: "Server Alerts"
+
+  # Configuration for NATS JetStream
+  jetstream:
+    # A list of NATS Server addresses to connect to. If none are specified, an
+    # internal NATS server will be started automatically when running Dendrite
+    # in monolith mode. It is required to specify the address of at least one
+    # NATS Server node if running in polylith mode.
+    addresses:
+    #  - jetstream:4222
+
+    # Keep all NATS streams in memory, rather than persisting it to the storage
+    # path below. This option is present primarily for integration testing and
+    # should not be used on a real world Dendrite deployment.
+    in_memory: false
+
+    # Persistent directory to store JetStream streams in. This directory
+    # should be preserved across Dendrite restarts.
+    storage_path: "/matrix-nats-store"
+
+    # The prefix to use for stream names for this homeserver - really only
+    # useful if running more than one Dendrite on the same NATS deployment.
     topic_prefix: Dendrite
-
-    # Whether to use Naffka instead of Kafka. This is only available in monolith
-    # mode, but means that you can run a single-process server without requiring
-    # Kafka.
-    use_naffka: true
-
-    # The max size a Kafka message is allowed to use.
-    # You only need to change this value, if you encounter issues with too large messages.
-    # Must be less than/equal to "max.message.bytes" configured in Kafka.
-    # Defaults to 8388608 bytes.
-    # max_message_bytes: 8388608
-
-    # Naffka database options. Not required when using Kafka.
-    naffka_database:
-      connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_naffka_database }}?sslmode=disable
-      max_open_conns: 10
-      max_idle_conns: 2
-      conn_max_lifetime: -1
 
   # Configuration for Prometheus metric collection.
   metrics:
@@ -129,7 +142,7 @@ app_service_api:
   # Disable the validation of TLS certificates of appservices. This is
   # not recommended in production since it may allow appservice traffic
   # to be sent to an unverified endpoint.
-  disable_tls_validation: false
+  disable_tls_validation: {{ matrix_dendrite_disable_tls_validation|to_json }}
 
   # Appservice configuration files to load into this homeserver.
   config_files: {{ matrix_dendrite_app_service_config_files|to_json }}
@@ -145,6 +158,10 @@ client_api:
   # Prevents new users from being able to register on this homeserver, except when
   # using the registration shared secret below.
   registration_disabled: {{ matrix_dendrite_registration_disabled|to_json }}
+
+  # Prevents new guest accounts from being created. Guest registration is also
+  # disabled implicitly by setting 'registration_disabled' above.
+  guests_disabled: true
 
   # If set, allows registration by anyone who knows the shared secret, regardless of
   # whether registration is otherwise disabled.
@@ -175,12 +192,6 @@ client_api:
     threshold: {{ matrix_dendrite_rate_limiting_threshold|to_json }}
     cooloff_ms: {{ matrix_dendrite_rate_limiting_cooloff_ms|to_json }}
 
-# Configuration for the EDU server.
-edu_server:
-  internal_api:
-    listen: http://0.0.0.0:7778
-    connect: http://edu_server:7778
-
 # Configuration for the Federation API.
 federation_api:
   internal_api:
@@ -188,20 +199,8 @@ federation_api:
     connect: http://federation_api:7772
   external_api:
     listen: http://0.0.0.0:8072
-
-  # List of paths to X.509 certificates to be used by the external federation listeners.
-  # These certificates will be used to calculate the TLS fingerprints and other servers
-  # will expect the certificate to match these fingerprints. Certificates must be in PEM
-  # format.
-  federation_certificates: []
-
-# Configuration for the Federation Sender.
-federation_sender:
-  internal_api:
-    listen: http://0.0.0.0:7775
-    connect: http://federation_sender:7775
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_federationsender_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_federationapi_database }}?sslmode=disable
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -214,12 +213,29 @@ federation_sender:
   # enable this option in production as it presents a security risk!
   disable_tls_validation: {{ matrix_dendrite_disable_tls_validation|to_json }}
 
+  # Not in dendrite-config.yaml, but is in build/docker/config/dendrite.yaml
   # Use the following proxy server for outbound federation traffic.
-  proxy_outbound:
-    enabled: false
-    protocol: http
-    host: localhost
-    port: 8080
+  #proxy_outbound:
+  #  enabled: false
+  #  protocol: http
+  #  host: localhost
+  #  port: 8080
+
+  # Perspective keyservers to use as a backup when direct key fetches fail. This may
+  # be required to satisfy key requests for servers that are no longer online when
+  # joining some rooms.
+  key_perspectives:
+    - server_name: matrix.org
+      keys:
+        - key_id: ed25519:auto
+          public_key: Noi6WqcDj0QmPxCNQqgezwTlBKrfqehY1u2FyWP9uYw
+        - key_id: ed25519:a_RXGa
+          public_key: l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ
+
+  # This option will control whether Dendrite will prefer to look up keys directly
+  # or whether it should try perspective servers first, using direct fetches as a
+  # last resort.
+  prefer_direct_fetch: false
 
 # Configuration for the Key Server (for end-to-end encryption).
 key_server:
@@ -261,15 +277,15 @@ media_api:
 
   # A list of thumbnail sizes to be generated for media content.
   thumbnail_sizes:
-  - width: 32
-    height: 32
-    method: crop
-  - width: 96
-    height: 96
-    method: crop
-  - width: 640
-    height: 480
-    method: scale
+    - width: 32
+      height: 32
+      method: crop
+    - width: 96
+      height: 96
+      method: crop
+    - width: 640
+      height: 480
+      method: scale
 
 # Configuration for experimental MSC's
 mscs:
@@ -295,40 +311,13 @@ room_server:
     max_idle_conns: 2
     conn_max_lifetime: -1
 
-# Configuration for the Signing Key Server (for server signing keys).
-signing_key_server:
-  internal_api:
-    listen: http://0.0.0.0:7780
-    connect: http://signing_key_server:7780
-  database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_singingkeyserver_database }}?sslmode=disable
-    max_open_conns: 10
-    max_idle_conns: 2
-    conn_max_lifetime: -1
-
-  # Perspective keyservers to use as a backup when direct key fetches fail. This may
-  # be required to satisfy key requests for servers that are no longer online when
-  # joining some rooms.
-  key_perspectives:
-  - server_name: matrix.org
-    keys:
-    - key_id: ed25519:auto
-      public_key: Noi6WqcDj0QmPxCNQqgezwTlBKrfqehY1u2FyWP9uYw
-    - key_id: ed25519:a_RXGa
-      public_key: l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ
-
-  # This option will control whether Dendrite will prefer to look up keys directly
-  # or whether it should try perspective servers first, using direct fetches as a
-  # last resort.
-  prefer_direct_fetch: false
-
 # Configuration for the Sync API.
 sync_api:
   internal_api:
     listen: http://0.0.0.0:7773
     connect: http://sync_api:7773
   external_api:
-      listen: http://0.0.0.0:8073
+    listen: http://0.0.0.0:8073
   database:
     connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_syncapi_database }}?sslmode=disable
     max_open_conns: 10
@@ -354,12 +343,7 @@ user_api:
     listen: http://0.0.0.0:7781
     connect: http://user_api:7781
   account_database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_account_database }}?sslmode=disable
-    max_open_conns: 10
-    max_idle_conns: 2
-    conn_max_lifetime: -1
-  device_database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_device_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_userapi_database }}?sslmode=disable
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -368,6 +352,18 @@ user_api:
   # is considered to be valid in milliseconds.
   # The default lifetime is 3600000ms (60 minutes).
   # openid_token_lifetime_ms: 3600000
+
+# Not in dendrite-config.yaml, but is in build/docker/config/dendrite.yaml
+# Configuration for the Push Server API.
+push_server:
+  internal_api:
+    listen: http://localhost:7782
+    connect: http://localhost:7782
+  database:
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_pushserver_database }}?sslmode=disable
+    max_open_conns: 10
+    max_idle_conns: 2
+    conn_max_lifetime: -1
 
 # Configuration for Opentracing.
 # See https://github.com/matrix-org/dendrite/tree/master/docs/tracing for information on

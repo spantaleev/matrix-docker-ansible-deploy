@@ -32,6 +32,10 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   when: "matrix_prometheus_scraper_synapse_rules_enabled|bool"
+  register: result
+  retries: "{{ matrix_geturl_retries_count }}"
+  delay: "{{ matrix_geturl_retries_delay }}"
+  until: result is not failed
 
 - name: Ensure prometheus.yml installed
   copy:

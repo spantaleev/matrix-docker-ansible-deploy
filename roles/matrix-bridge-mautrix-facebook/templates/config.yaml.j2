@@ -12,6 +12,9 @@ homeserver:
     # such as /_matrix/client/unstable/net.maunium.asmux/dms for atomically
     # updating m.direct.
     asmux: false
+    # Whether asynchronous uploads via MSC2246 should be enabled for media.
+    # Requires a media repo that supports MSC2246.
+    async_media: false
 
 # Application service host/registration related details
 # Changing these values requires regeneration of the registration.
@@ -38,6 +41,11 @@ appservice:
         # The base URL where the public-facing endpoints are available. The prefix is not added
         # implicitly.
         external: {{ matrix_mautrix_facebook_appservice_public_external|to_json }}
+        # Allow logging in within Matrix. If false, users can only log in using the web interface.
+        allow_matrix_login: true
+        # Segment API key to enable analytics tracking for web server endpoints. Set to null to disable.
+        # Currently the only events are login start, success and fail.
+        segment_key: null
 
     # The unique ID of this appservice.
     id: facebook
@@ -171,6 +179,8 @@ bridge:
     # and missed message backfilling when reconnecting.
     # Set to 0 to always re-sync, or -1 to never re-sync automatically.
     resync_max_disconnected_time: 5
+    # Should the bridge do a resync on startup?
+    sync_on_startup: true
     # Whether or not temporary disconnections should send notices to the notice room.
     # If this is false, disconnections will never send messages and connections will only send
     # messages if it was disconnected for more than resync_max_disconnected_time seconds.
@@ -193,6 +203,34 @@ bridge:
     #     mxid - Specific user
     permissions:
       '{{ matrix_mautrix_facebook_homeserver_domain }}': user
+
+    relay:
+        # Whether relay mode should be allowed. If allowed, `!fb set-relay` can be used to turn any
+        # authenticated user into a relaybot for that chat.
+        enabled: false
+        # The formats to use when sending messages to Messenger via a relay user.
+        #
+        # Available variables:
+        #   $sender_displayname - The display name of the sender (e.g. Example User)
+        #   $sender_username    - The username (Matrix ID localpart) of the sender (e.g. exampleuser)
+        #   $sender_mxid        - The Matrix ID of the sender (e.g. @exampleuser:example.com)
+        #   $message            - The message content
+        message_formats:
+            m.text: '<b>$sender_displayname</b>: $message'
+            m.notice: '<b>$sender_displayname<b>: $message'
+            m.emote: '* <b>$sender_displayname<b> $message'
+            m.file: '<b>$sender_displayname</b> sent a file'
+            m.image: '<b>$sender_displayname</b> sent an image'
+            m.audio: '<b>$sender_displayname</b> sent an audio file'
+            m.video: '<b>$sender_displayname</b> sent a video'
+            m.location: '<b>$sender_displayname</b> sent a location'
+
+facebook:
+    device_seed: generate
+    default_region_hint: ODN
+    connection_type: WIFI
+    carrier: Verizon
+    hni: 311390
 
 # Python logging configuration.
 #

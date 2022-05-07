@@ -1,0 +1,43 @@
+#jinja2: lstrip_blocks: "True", trim_blocks: "True"
+
+location:
+  source_directories: {{ matrix_backup_borg_location_source_directories|to_json }}
+  repositories: {{ matrix_backup_borg_location_repositories|to_json }}
+  one_file_system: true
+  exclude_patterns: {{ matrix_backup_borg_location_exclude_patterns|to_json }}
+
+storage:
+  compression: {{ matrix_backup_borg_storage_compression|to_json }}
+  ssh_command: {{ matrix_backup_borg_storage_ssh_command|to_json }}
+  archive_name_format: {{ matrix_backup_borg_storage_archive_name_format|to_json }}
+  encryption_passphrase: {{ matrix_backup_borg_storage_encryption_passphrase|to_json }}
+  unknown_unencrypted_repo_access_is_ok: {{ matrix_backup_borg_unknown_unencrypted_repo_access_is_ok|to_json }}
+
+retention:
+  keep_hourly: {{ matrix_backup_borg_retention_keep_hourly|to_json }}
+  keep_daily: {{ matrix_backup_borg_retention_keep_daily|to_json }}
+  keep_weekly: {{ matrix_backup_borg_retention_keep_weekly|to_json }}
+  keep_monthly: {{ matrix_backup_borg_retention_keep_monthly|to_json }}
+  keep_yearly: {{ matrix_backup_borg_retention_keep_yearly|to_json }}
+  prefix: {{ matrix_backup_borg_retention_prefix|to_json }}
+
+consistency:
+  checks:
+    - repository
+    - archives
+
+hooks:
+{% if matrix_backup_borg_postgresql_enabled and matrix_backup_borg_postgresql_databases|length > 0 %}
+  postgresql_databases:
+  {% for database in matrix_backup_borg_postgresql_databases %}
+  - name: {{ database|to_json }}
+    hostname: {{ matrix_backup_borg_postgresql_databases_hostname|to_json }}
+    username: {{ matrix_backup_borg_postgresql_databases_username|to_json }}
+    password: {{ matrix_backup_borg_postgresql_databases_password|to_json }}
+    port: {{ matrix_backup_borg_postgresql_databases_port|to_json }}
+  {% endfor %}
+{% endif %}
+  after_backup:
+    - echo "Backup created."
+  on_error:
+    - echo "Error while creating a backup."

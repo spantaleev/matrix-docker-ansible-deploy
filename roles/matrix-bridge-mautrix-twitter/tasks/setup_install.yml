@@ -43,6 +43,8 @@
     dest: "{{ matrix_mautrix_twitter_docker_src_files_path }}"
     # version: "{{ matrix_coturn_docker_image.split(':')[1] }}"
     force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
   register: matrix_mautrix_twitter_git_pull_results
   when: "matrix_mautrix_twitter_enabled|bool and matrix_mautrix_twitter_container_image_self_build"
 

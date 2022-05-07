@@ -36,6 +36,8 @@
         dest: "{{ matrix_coturn_docker_src_files_path }}"
         version: "{{ matrix_coturn_container_image_self_build_repo_version }}"
         force: "yes"
+      become: true
+      become_user: "{{ matrix_user_username }}"
       register: matrix_coturn_git_pull_results
 
     - name: Ensure Coturn Docker image is built

@@ -1,0 +1,96 @@
+---
+# buscarron is a helpdesk bot
+# See: https://gitlab.com/etke.cc/buscarron
+
+matrix_bot_buscarron_enabled: true
+
+matrix_bot_buscarron_container_image_self_build: false
+matrix_bot_buscarron_docker_repo: "https://gitlab.com/etke.cc/buscarron.git"
+matrix_bot_buscarron_docker_src_files_path: "{{ matrix_base_data_path }}/buscarron/docker-src"
+
+matrix_bot_buscarron_version: v1.0.0
+matrix_bot_buscarron_docker_image: "{{ matrix_bot_buscarron_docker_image_name_prefix }}buscarron:{{ matrix_bot_buscarron_version }}"
+matrix_bot_buscarron_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_buscarron_container_image_self_build else 'registry.gitlab.com/etke.cc/' }}"
+matrix_bot_buscarron_docker_image_force_pull: "{{ matrix_bot_buscarron_docker_image.endswith(':latest') }}"
+
+matrix_bot_buscarron_base_path: "{{ matrix_base_data_path }}/buscarron"
+matrix_bot_buscarron_config_path: "{{ matrix_bot_buscarron_base_path }}/config"
+matrix_bot_buscarron_data_path: "{{ matrix_bot_buscarron_base_path }}/data"
+matrix_bot_buscarron_data_store_path: "{{ matrix_bot_buscarron_data_path }}/store"
+
+# A list of extra arguments to pass to the container
+matrix_bot_buscarron_container_extra_arguments: []
+
+# List of systemd services that matrix-bot-buscarron.service depends on
+matrix_bot_buscarron_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-bot-buscarron.service wants
+matrix_bot_buscarron_systemd_wanted_services_list: []
+
+
+# Database-related configuration fields.
+#
+# To use SQLite, stick to these defaults.
+#
+# To use Postgres:
+# - change the engine (`matrix_bot_buscarron_database_engine: 'postgres'`)
+# - adjust your database credentials via the `matrix_bot_buscarron_database_*` variables
+matrix_bot_buscarron_database_engine: 'sqlite'
+
+matrix_bot_buscarron_sqlite_database_path_local: "{{ matrix_bot_buscarron_data_path }}/bot.db"
+matrix_bot_buscarron_sqlite_database_path_in_container: "/data/bot.db"
+
+matrix_bot_buscarron_database_username: 'buscarron'
+matrix_bot_buscarron_database_password: 'some-password'
+matrix_bot_buscarron_database_hostname: 'matrix-postgres'
+matrix_bot_buscarron_database_port: 5432
+matrix_bot_buscarron_database_name: 'buscarron'
+
+matrix_bot_buscarron_database_connection_string: 'postgres://{{ matrix_bot_buscarron_database_username }}:{{ matrix_bot_buscarron_database_password }}@{{ matrix_bot_buscarron_database_hostname }}:{{ matrix_bot_buscarron_database_port }}/{{ matrix_bot_buscarron_database_name }}?sslmode=disable'
+
+matrix_bot_buscarron_storage_database: "{{
+	{
+		'sqlite': matrix_bot_buscarron_sqlite_database_path_in_container,
+		'postgres': matrix_bot_buscarron_database_connection_string,
+	}[matrix_bot_buscarron_database_engine]
+}}"
+
+matrix_bot_buscarron_database_dialect: "{{
+  {
+    'sqlite': 'sqlite3',
+    'postgres': 'postgres',
+  }[matrix_bot_buscarron_database_engine]
+}}"
+
+
+# The bot's username. This user needs to be created manually beforehand.
+# Also see `matrix_bot_buscarron_password`.
+matrix_bot_buscarron_login: "bot.buscarron"
+
+# The password that the bot uses to authenticate.
+matrix_bot_buscarron_password: ''
+
+# the homeserver URL, uses internal synapse container address by default
+matrix_bot_buscarron_homeserver: "{{ matrix_homeserver_container_url }}"
+
+# forms configuration
+matrix_bot_buscarron_forms: []
+
+# Sentry DSN
+matrix_bot_buscarron_sentry:
+
+# Log level
+matrix_bot_buscarron_loglevel: INFO
+
+# spam hosts/domains
+matrix_bot_buscarron_spam_hosts: []
+
+# spam email addresses
+matrix_bot_buscarron_spam_emails: []
+
+# Additional environment variables to pass to the buscarron container
+#
+# Example:
+# matrix_bot_buscarron_environment_variables_extension: |
+#   BUSCARRON_LOGLEVEL=DEBUG
+matrix_bot_buscarron_environment_variables_extension: ''
