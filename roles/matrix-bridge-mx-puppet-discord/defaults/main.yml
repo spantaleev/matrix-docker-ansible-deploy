@@ -1,27 +1,21 @@
 ---
 # Mx Puppet Discord is a Matrix <-> Discord bridge
-# See: https://gitlab.com/beeper/mx-puppet-monorepo (originally based on https://github.com/matrix-discord/mx-puppet-discord)
-#
-# We use the Beeper-maintained fork, because https://github.com/matrix-discord/mx-puppet-discord is horribly broken often. See:
-# - https://github.com/matrix-discord/mx-puppet-discord/issues/201
-# - https://github.com/matrix-discord/mx-puppet-discord/issues/202
-# - https://github.com/matrix-discord/mx-puppet-discord/issues/203
-# - (other similar issues in the past)
+# See: https://gitlab.com/mx-puppet/discord/mx-puppet-discord
 
 matrix_mx_puppet_discord_enabled: true
 
 matrix_mx_puppet_discord_container_image_self_build: false
-matrix_mx_puppet_discord_container_image_self_build_repo: "https://gitlab.com/beeper/mx-puppet-monorepo"
+matrix_mx_puppet_discord_container_image_self_build_repo: "https://gitlab.com/mx-puppet/discord/mx-puppet-discord"
 matrix_mx_puppet_discord_container_image_self_build_version: "{{ 'main' if matrix_mx_puppet_discord_version == 'latest' else matrix_mx_puppet_discord_version }}"
-matrix_mx_puppet_discord_container_image_self_build_dockerfile_path: "docker/Dockerfile-discord"
+matrix_mx_puppet_discord_container_image_self_build_dockerfile_path: "Dockerfile"
 
 # Controls whether the mx-puppet-discord container exposes its HTTP port (tcp/8432 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8432"), or empty string to not expose.
 matrix_mx_puppet_discord_container_http_host_bind_port: ''
 
-matrix_mx_puppet_discord_version: latest
-matrix_mx_puppet_discord_docker_image: "{{ matrix_mx_puppet_discord_docker_image_name_prefix }}beeper/mx-puppet-monorepo/discord:{{ matrix_mx_puppet_discord_version }}"
+matrix_mx_puppet_discord_version: v0.1.1
+matrix_mx_puppet_discord_docker_image: "{{ matrix_mx_puppet_discord_docker_image_name_prefix }}mx-puppet/discord/mx-puppet-discord:{{ matrix_mx_puppet_discord_version }}"
 matrix_mx_puppet_discord_docker_image_name_prefix: "{{ 'localhost/' if matrix_mx_puppet_discord_container_image_self_build else 'registry.gitlab.com/' }}"
 matrix_mx_puppet_discord_docker_image_force_pull: "{{ matrix_mx_puppet_discord_docker_image.endswith(':latest') }}"
 
