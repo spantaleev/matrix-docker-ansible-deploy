@@ -116,8 +116,22 @@ server {
 **For Caddy 2**, it would be something like this:
 
 ```caddy
-reverse_proxy /.well-known/matrix/* https://matrix.DOMAIN {
-	header_up Host {http.reverse_proxy.upstream.hostport}
+DOMAIN.com {
+   @wellknown {
+         path /.well-known/matrix/*:x
+   }
+
+   handle @wellknown {
+      reverse_proxy https://matrix.DOMAIN.com {
+          header_up Host {http.reverse_proxy.upstream.hostport}
+      }
+   }
+    # Configration for the base domain goes here
+  # handle {
+  #    header -Server
+  #     encode zstd gzip
+  #    reverse_proxy localhost:4020
+  # }
 }
 ```
 
