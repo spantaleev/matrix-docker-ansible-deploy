@@ -26,7 +26,7 @@ Unless indicated otherwise, the following endpoints are reachable on your `matri
 
 | listener | default path | variable | used as |
 |---|---|---|---|
-| webhooks | `/hookshot/webhooks/` | `matrix_hookshot_webhook_endpoint` | generics, GitHub "Webhook URL", etc. |
+| webhooks | `/hookshot/webhooks/` | `matrix_hookshot_webhook_endpoint` | generics, GitHub "Webhook URL", GitLab "URL", etc. |
 | github oauth | `/hookshot/webhooks/oauth` | `matrix_hookshot_github_oauth_endpoint` | GitHub "Callback URL" |
 | jira oauth | `/hookshot/webhooks/jira/oauth` | `matrix_hookshot_jira_oauth_endpoint` | JIRA OAuth |
 | figma endpoint | `/hookshot/webhooks/figma/webhook` | `matrix_hookshot_figma_endpoint` | Figma |
