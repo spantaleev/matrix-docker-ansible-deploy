@@ -105,8 +105,8 @@ server {
 	ServerName DOMAIN
 
 	SSLProxyEngine on
-    ProxyPass /.well-known/matrix https://matrix.DOMAIN/.well-known/matrix nocanon
-    ProxyPassReverse /.well-known/matrix https://matrix.DOMAIN/.well-known/matrix nocanon
+	ProxyPass /.well-known/matrix https://matrix.DOMAIN/.well-known/matrix nocanon
+	ProxyPassReverse /.well-known/matrix https://matrix.DOMAIN/.well-known/matrix nocanon
 
 	# other configuration
 </VirtualHost>
