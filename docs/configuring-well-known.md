@@ -98,16 +98,15 @@ server {
 }
 ```
 
-**For Apache**, it would be something like this:
+**For Apache2**, it would be something like this:
 
 ```apache
 <VirtualHost *:443>
 	ServerName DOMAIN
 
 	SSLProxyEngine on
-	<Location /.well-known/matrix>
-		ProxyPass "https://matrix.DOMAIN/.well-known/matrix"
-	</Location>
+    ProxyPass /.well-known/matrix https://matrix.DOMAIN/.well-known/matrix nocanon
+    ProxyPassReverse /.well-known/matrix https://matrix.DOMAIN/.well-known/matrix nocanon
 
 	# other configuration
 </VirtualHost>
