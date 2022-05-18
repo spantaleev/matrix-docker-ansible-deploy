@@ -22,11 +22,15 @@
     matrix_synapse_password_providers_enabled: true
 
     matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      ["--mount type=bind,src={{ matrix_synapse_ext_path }}/rest_auth_provider.py,dst={{ matrix_synapse_in_container_python_packages_path }}/rest_auth_provider.py,ro"]
+      {{
+        matrix_synapse_container_extra_arguments|default([])
+        +
+        ["--mount type=bind,src={{ matrix_synapse_ext_path }}/rest_auth_provider.py,dst={{ matrix_synapse_in_container_python_packages_path }}/rest_auth_provider.py,ro"]
+      }}
 
     matrix_synapse_additional_loggers: >
-      {{ matrix_synapse_additional_loggers }}
-      +
-      {{ [{'name': 'rest_auth_provider', 'level': 'INFO'}] }}
+      {{
+        matrix_synapse_additional_loggers
+        +
+        [{'name': 'rest_auth_provider', 'level': 'INFO'}]
+      }}

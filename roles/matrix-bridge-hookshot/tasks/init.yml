@@ -14,14 +14,18 @@
 # If the matrix-synapse role is not used, these variables may not exist.
 - set_fact:
     matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      ["--mount type=bind,src={{ matrix_hookshot_base_path }}/registration.yml,dst=/hookshot-registration.yml,ro"]
+      {{
+        matrix_synapse_container_extra_arguments|default([])
+        +
+        ["--mount type=bind,src={{ matrix_hookshot_base_path }}/registration.yml,dst=/hookshot-registration.yml,ro"]
+      }}
 
     matrix_synapse_app_service_config_files: >
-      {{ matrix_synapse_app_service_config_files|default([]) }}
-      +
-      {{ ["/hookshot-registration.yml"] }}
+      {{
+        matrix_synapse_app_service_config_files|default([])
+        +
+        ["/hookshot-registration.yml"]
+      }}
   when: matrix_hookshot_enabled|bool
 
 - block:

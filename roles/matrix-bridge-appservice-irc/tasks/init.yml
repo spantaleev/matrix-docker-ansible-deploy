@@ -21,12 +21,16 @@
 # If the matrix-synapse role is not used, these variables may not exist.
 - set_fact:
     matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      ["--mount type=bind,src={{ matrix_appservice_irc_config_path }}/registration.yaml,dst=/matrix-appservice-irc-registration.yaml,ro"]
+      {{
+        matrix_synapse_container_extra_arguments|default([])
+        +
+        ["--mount type=bind,src={{ matrix_appservice_irc_config_path }}/registration.yaml,dst=/matrix-appservice-irc-registration.yaml,ro"]
+      }}
 
     matrix_synapse_app_service_config_files: >
-      {{ matrix_synapse_app_service_config_files|default([]) }}
-      +
-      {{ ["/matrix-appservice-irc-registration.yaml"] }}
+      {{
+        matrix_synapse_app_service_config_files|default([])
+        +
+        ["/matrix-appservice-irc-registration.yaml"]
+      }}
   when: matrix_appservice_irc_enabled|bool
