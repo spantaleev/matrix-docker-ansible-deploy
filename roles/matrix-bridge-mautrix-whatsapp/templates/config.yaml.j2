@@ -158,16 +158,16 @@ bridge:
     # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
     encryption:
         # Allow encryption, work in group chat rooms with e2ee enabled
-        allow: false
+        allow: {{ matrix_mautrix_whatsapp_bridge_encryption_allow|to_json }}
         # Default to encryption, force-enable encryption in all portals the bridge creates
         # This will cause the bridge bot to be in private chats for the encryption to work properly.
         # It is recommended to also set private_chat_portal_meta to true when using this.
-        default: false
+        default: {{ matrix_mautrix_whatsapp_bridge_encryption_default|to_json }}
         # Options for automatic key sharing.
         key_sharing:
             # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
             # You must use a client that supports requesting keys from other users to use this feature.
-            allow: false
+            allow: {{ matrix_mautrix_whatsapp_bridge_encryption_key_sharing_allow|to_json }}
             # Require the requesting device to have a valid cross-signing signature?
             # This doesn't require that the bridge has verified the device, only that the user has verified it.
             # Not yet implemented.
