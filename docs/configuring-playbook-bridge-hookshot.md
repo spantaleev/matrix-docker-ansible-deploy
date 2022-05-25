@@ -4,13 +4,13 @@ The playbook can install and configure [matrix-hookshot](https://github.com/matr
 
 Hookshot can bridge [Webhooks](https://en.wikipedia.org/wiki/Webhook) from software project management services such as GitHub, GitLab, JIRA, and Figma, as well as generic webhooks.
 
-See the project's [documentation](https://matrix-org.github.io/matrix-hookshot/hookshot.html) to learn what it does in detail and why it might be useful to you.
+See the project's [documentation](https://matrix-org.github.io/matrix-hookshot/latest/hookshot.html) to learn what it does in detail and why it might be useful to you.
 
 Note: the playbook also supports [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), which however is soon to be archived by its author and to be replaced by hookshot.
 
 ## Setup Instructions
 
-Refer to the [official instructions](https://matrix-org.github.io/matrix-hookshot/setup.html) to learn what the individual options do.
+Refer to the [official instructions](https://matrix-org.github.io/matrix-hookshot/latest/setup.html) to learn what the individual options do.
 
 1. For each of the services (GitHub, GitLab, Jira, Figma, generic webhooks) fill in the respective variables `matrix_hookshot_service_*` listed in [main.yml](/roles/matrix-bridge-hookshot/defaults/main.yml) as required.
 2. Take special note of the `matrix_hookshot_*_enabled` variables. Services that need no further configuration are enabled by default (GitLab, Generic), while you must first add the required configuration and enable the others (GitHub, Jira, Figma).
