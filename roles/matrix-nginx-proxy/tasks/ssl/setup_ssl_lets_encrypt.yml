@@ -17,12 +17,71 @@
 #
 
 - block:
+    - ansible.builtin.set_fact:
+        matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_ssl_lets_encrypt_certbot_custom_docker_image if matrix_ssl_lets_encrypt_certbot_challenge_image == 'custom' else matrix_ssl_lets_encrypt_certbot_dns_docker_image if matrix_ssl_lets_encrypt_certbot_challenge_image == 'dns' else matrix_ssl_lets_encrypt_certbot_http_docker_image }}"
+
+    - ansible.builtin.set_fact:
+        matrix_ssl_lets_encrypt_certbot_docker_image_force_pull: "{{ matrix_ssl_lets_encrypt_certbot_docker_image.endswith(':latest') }}"
+
+    - ansible.builtin.debug:
+        msg: "Using certbot docker image: {{ matrix_ssl_lets_encrypt_certbot_docker_image }}"
+
     - name: Ensure certbot Docker image is pulled
       docker_image:
         name: "{{ matrix_ssl_lets_encrypt_certbot_docker_image }}"
         source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
         force_source: "{{ matrix_ssl_lets_encrypt_certbot_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
         force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_ssl_lets_encrypt_certbot_docker_image_force_pull }}"
+
+    - name: Ensure cerbot DNS configurations removed
+      ansible.builtin.file:
+        path: "{{ matrix_ssl_dns_config_dir_path }}"
+        state: absent
+      when: "(matrix_ssl_lets_encrypt_dns_config is not defined) or (matrix_ssl_lets_encrypt_dns_config | length == 0)"
+
+    - block:
+        - name: Ensure cerbot DNS configurations paths exists
+          ansible.builtin.file:
+            path: "{{ matrix_ssl_dns_config_dir_path }}"
+            state: directory
+            mode: 0770
+            owner: "{{ matrix_user_username }}"
+            group: "{{ matrix_user_groupname }}"
+            recurse: true
+
+        - name: List existing cerbot DNS configurations
+          ansible.builtin.shell: "ls -1 {{ matrix_ssl_dns_config_dir_path }}"
+          register: dns_config_files
+          changed_when: false
+
+        - name: Remove useless cerbot DNS configurations
+          ansible.builtin.file:
+            path: "{{ matrix_ssl_dns_config_dir_path }}/{{ item }}"
+            state: absent
+          with_items: "{{ dns_config_files.stdout_lines }}"
+          when: "item not in matrix_ssl_lets_encrypt_dns_config | map(attribute='name') | list"
+
+        - name: Set up certbot DNS provider configurations
+          ansible.builtin.template:
+            src: "{{ role_path }}/templates/dns-config/{{ dns_config.template }}.j2"
+            dest: "{{ matrix_ssl_dns_config_dir_path }}/{{ dns_config.name }}"
+            mode: 0600
+            owner: "{{ matrix_user_username }}"
+            group: "{{ matrix_user_groupname }}"
+          no_log: true
+          with_items: "{{ matrix_ssl_lets_encrypt_dns_config }}"
+          loop_control:
+            loop_var: dns_config
+
+        - name: Ensure awsconfig setup script exists
+          ansible.builtin.template:
+            src: "{{ role_path }}/templates/certbot-hook/setup-awsconfig.sh.j2"
+            dest: "{{ matrix_ssl_dns_config_dir_path }}/setup-awsconfig.sh"
+            mode: 0700
+            owner: "{{ matrix_user_username }}"
+            group: "{{ matrix_user_groupname }}"
+          with_items: "{{ dns_config_files.stdout_lines }}"
+      when: "(matrix_ssl_lets_encrypt_dns_config is defined) and (matrix_ssl_lets_encrypt_dns_config | length > 0)"
 
     - name: Obtain Let's Encrypt certificates
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/ssl/setup_ssl_lets_encrypt_obtain_for_domain.yml"
@@ -60,5 +119,10 @@
     - name: Ensure Let's Encrypt SSL renewal script removed
       ansible.builtin.file:
         path: "{{ matrix_local_bin_path }}/matrix-ssl-lets-encrypt-certificates-renew"
+        state: absent
+
+    - name: Ensure Let's Encrypt DNS provider configurations removed
+      ansible.builtin.file:
+        path: "{{ matrix_ssl_dns_config_dir_path }}"
         state: absent
   when: "matrix_ssl_retrieval_method != 'lets-encrypt'"

@@ -56,7 +56,69 @@
         - "matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container"
         - "matrix_nginx_proxy_proxy_synapse_client_api_addr_with_container"
         - "matrix_nginx_proxy_proxy_synapse_client_api_addr_sans_container"
+        - "matrix_ssl_lets_encrypt_certbot_challenge_image"
       when: "vars[item] == '' or vars[item] is none"
+
+    - name: "Fail if unsupported matrix_ssl_lets_encrypt_certbot_challenge_image"
+      ansible.builtin.fail:
+        msg: >-
+          `matrix_ssl_lets_encrypt_certbot_challenge_image` must be set to a known value: 'http' (default), 'dns' or 'custom'.
+      when: "matrix_ssl_lets_encrypt_certbot_challenge_image not in ['http', 'dns', 'custom']"
+
+    - name: "Fail if custom certbot image is missing when required"
+      ansible.builtin.fail:
+        msg: >-
+          No `matrix_ssl_lets_encrypt_certbot_custom_docker_image` has been provided while `matrix_ssl_lets_encrypt_certbot_challenge_image` is set to 'custom'.
+      when: "matrix_ssl_lets_encrypt_certbot_challenge_image == 'custom' and (matrix_ssl_lets_encrypt_certbot_custom_docker_image == '' or matrix_ssl_lets_encrypt_certbot_custom_docker_image is none)"
+
+    - name: "Fail if DNS certbot official image is not supported"
+      ansible.builtin.fail:
+        msg: >-
+          `matrix_ssl_lets_encrypt_certbot_official_dns_provider` needs to be set to a known value.
+      when: "matrix_ssl_lets_encrypt_certbot_challenge_image == 'dns' and matrix_ssl_lets_encrypt_certbot_official_dns_provider not in ['cloudflare', 'cloudxns', 'digitalocean', 'dnsmadeeasy', 'dnssimple', 'gehirn', 'google', 'linode', 'luadns', 'nsone', 'ovh', 'rfc2136', 'route53', 'sakuracloud']"
+
+    - block:
+        - name: "Fail if DNS challenge configured with image supporting only HTTP challenge"
+          ansible.builtin.fail:
+            msg: >-
+              `matrix_ssl_lets_encrypt_dns_challenge_domains` is defined but the configured image doesn't support DNS challenges.
+          when: matrix_ssl_lets_encrypt_certbot_challenge_image not in ['dns', 'custom']
+
+        - name: "Fail if required variables are undefined for an entry of `matrix_ssl_lets_encrypt_dns_challenge_domains`"
+          ansible.builtin.fail:
+            msg: >-
+              The `{{ item[1] }}` variable must be defined for configuration `{{ item[0] }}`
+          loop: "{{ matrix_ssl_lets_encrypt_dns_challenge_domains | product(['domain', 'provider', 'config_file']) | list }}"
+          when: "item[0][item[1]] is not defined"
+
+        - name: "Fail if domain configured for DNS challenge is unkown"
+          ansible.builtin.fail:
+            msg: >-
+              The domain `{{ dns_challenge_domain.domain }}` is not in the list of domains for which a certificate will be requested.
+              The associated module might be enabled or it might be added to `matrix_ssl_additional_domains_to_obtain_certificates_for`.
+          with_items: "{{ matrix_ssl_lets_encrypt_dns_challenge_domains }}"
+          loop_control:
+            loop_var: dns_challenge_domain
+          when: "dns_challenge_domain.domain not in matrix_ssl_domains_to_obtain_certificates_for | list"
+
+        - name: "Fail if DNS provider is not supported"
+          ansible.builtin.fail:
+            msg: >-
+              The DNS provider `{{ dns_challenge_domain.provider }}` is not supported for DNS challenges.
+          with_items: "{{ matrix_ssl_lets_encrypt_dns_challenge_domains }}"
+          loop_control:
+            loop_var: dns_challenge_domain
+          when: "dns_challenge_domain.provider not in ['cloudflare', 'cloudxns', 'digitalocean', 'dnsmadeeasy', 'dnssimple', 'gehirn', 'google', 'linode', 'luadns', 'nsone', 'ovh', 'rfc2136', 'route53', 'sakuracloud']"
+
+        - name: "Fail if DNS provider configuration is missing"
+          ansible.builtin.fail:
+            msg: >-
+              The configuration file `{{ dns_challenge_domain.config_file }}` is not declared in `matrix_ssl_lets_encrypt_dns_config`.
+          with_items: "{{ matrix_ssl_lets_encrypt_dns_challenge_domains }}"
+          loop_control:
+            loop_var: dns_challenge_domain
+          when: "dns_challenge_domain.config_file not in matrix_ssl_lets_encrypt_dns_config | map(attribute='name') | list"
+      when: "(matrix_ssl_lets_encrypt_dns_challenge_domains is defined) and (matrix_ssl_lets_encrypt_dns_challenge_domains | length > 0)"
   when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
 
 - name: (Deprecation) Catch and report old metrics usage

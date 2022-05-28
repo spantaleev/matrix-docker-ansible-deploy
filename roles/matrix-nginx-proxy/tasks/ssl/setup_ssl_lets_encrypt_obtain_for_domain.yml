@@ -26,71 +26,129 @@
       when: "matrix_ssl_pre_obtaining_required_service_start_result.changed | bool"
   when: "domain_name_needs_cert | bool and matrix_ssl_pre_obtaining_required_service_name != ''"
 
-# This will fail if there is something running on port 80 (like matrix-nginx-proxy).
-# We suppress the error, as we'll try another method below.
-- name: Attempt initial SSL certificate retrieval with standalone authenticator (directly)
-  ansible.builtin.shell: >-
-    {{ matrix_host_command_docker }} run
-    --rm
-    --name=matrix-certbot
-    --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
-    --cap-drop=ALL
-    -p {{ matrix_ssl_lets_encrypt_container_standalone_http_host_bind_port }}:8080
-    --mount type=bind,src={{ matrix_ssl_config_dir_path }},dst=/etc/letsencrypt
-    --mount type=bind,src={{ matrix_ssl_log_dir_path }},dst=/var/log/letsencrypt
-    {{ matrix_ssl_lets_encrypt_certbot_docker_image }}
-    certonly
-    --non-interactive
-    --work-dir=/tmp
-    --http-01-port 8080
-    {% if matrix_ssl_lets_encrypt_server %}--server={{ matrix_ssl_lets_encrypt_server|quote }}{% endif %}
-    {% if matrix_ssl_lets_encrypt_staging %}--staging{% endif %}
-    --key-type {{ matrix_ssl_lets_encrypt_key_type }}
-    --standalone
-    --preferred-challenges http
-    --agree-tos
-    --email={{ matrix_ssl_lets_encrypt_support_email }}
-    -d {{ domain_name }}
-  when: domain_name_needs_cert | bool
-  register: result_certbot_direct
-  ignore_errors: true
+# Execute certbot challenge
+- block:
+    # Decide which challenge to execute for the challenge
+    - ansible.builtin.set_fact:
+        certbot_challenge: "{{ 'dns' if domain_name in matrix_ssl_lets_encrypt_dns_challenge_domains | map(attribute='domain') | list else 'http' }}"
 
-# If matrix-nginx-proxy is configured from a previous run of this playbook,
-# and it's running now, it may be able to proxy requests to `matrix_ssl_lets_encrypt_certbot_standalone_http_port`.
-- name: Attempt initial SSL certificate retrieval with standalone authenticator (via proxy)
-  ansible.builtin.shell: >-
-    {{ matrix_host_command_docker }} run
-    --rm
-    --name=matrix-certbot
-    --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
-    --cap-drop=ALL
-    -p 127.0.0.1:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }}:8080
-    --network={{ matrix_docker_network }}
-    --mount type=bind,src={{ matrix_ssl_config_dir_path }},dst=/etc/letsencrypt
-    --mount type=bind,src={{ matrix_ssl_log_dir_path }},dst=/var/log/letsencrypt
-    {{ matrix_ssl_lets_encrypt_certbot_docker_image }}
-    certonly
-    --non-interactive
-    --work-dir=/tmp
-    --http-01-port 8080
-    {% if matrix_ssl_lets_encrypt_server %}--server={{ matrix_ssl_lets_encrypt_server|quote }}{% endif %}
-    {% if matrix_ssl_lets_encrypt_staging %}--staging{% endif %}
-    --key-type {{ matrix_ssl_lets_encrypt_key_type }}
-    --standalone
-    --preferred-challenges http
-    --agree-tos
-    --email={{ matrix_ssl_lets_encrypt_support_email }}
-    -d {{ domain_name }}
-  when: "domain_name_needs_cert and result_certbot_direct.failed"
-  register: result_certbot_proxy
-  ignore_errors: true
+    # Execute HTTP challenge
+    - block:
+        - ansible.builtin.debug:
+            msg: "Executing HTTP challenge"
 
-- name: Fail if all SSL certificate retrieval attempts failed
-  ansible.builtin.fail:
-    msg: |
-      Failed to obtain a certificate directly (by listening on port 80)
-      and also failed to obtain by relying on the server at port 80 to proxy the request.
-      See above for details.
-      You may wish to set up proxying of /.well-known/acme-challenge to {{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }} or,
-      more easily, stop the server on port 80 while this playbook runs.
-  when: "domain_name_needs_cert and result_certbot_direct.failed and result_certbot_proxy.failed"
+        # This will fail if there is something running on port 80 (like matrix-nginx-proxy).
+        # We suppress the error, as we'll try another method below.
+        - name: Attempt initial SSL certificate retrieval with standalone authenticator (directly)
+          ansible.builtin.shell: >-
+            {{ matrix_host_command_docker }} run
+            --rm
+            --name=matrix-certbot
+            --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+            --cap-drop=ALL
+            --publish {{ matrix_ssl_lets_encrypt_container_standalone_http_host_bind_port }}:8080
+            --mount type=bind,src={{ matrix_ssl_config_dir_path }},dst=/etc/letsencrypt
+            --mount type=bind,src={{ matrix_ssl_log_dir_path }},dst=/var/log/letsencrypt
+            {{ matrix_ssl_lets_encrypt_certbot_docker_image }}
+            certonly
+            --non-interactive
+            --work-dir=/tmp
+            --http-01-port 8080
+            {% if matrix_ssl_lets_encrypt_server %}--server={{ matrix_ssl_lets_encrypt_server | quote }}{% endif %}
+            {% if matrix_ssl_lets_encrypt_staging %}--staging{% endif %}
+            --key-type {{ matrix_ssl_lets_encrypt_key_type }}
+            --standalone
+            --preferred-challenges http
+            --agree-tos
+            --email={{ matrix_ssl_lets_encrypt_support_email }}
+            -d {{ domain_name }}
+          register: result_certbot_direct
+          changed_when: "not result_certbot_direct.failed"
+          ignore_errors: true
+
+        # If matrix-nginx-proxy is configured from a previous run of this playbook,
+        # and it's running now, it may be able to proxy requests to `matrix_ssl_lets_encrypt_certbot_standalone_http_port`.
+        - name: Attempt initial SSL certificate retrieval with standalone authenticator (via proxy)
+          ansible.builtin.shell: >-
+            {{ matrix_host_command_docker }} run
+            --rm
+            --name=matrix-certbot
+            --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+            --cap-drop=ALL
+            --publish 127.0.0.1:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }}:8080
+            --network={{ matrix_docker_network }}
+            --mount type=bind,src={{ matrix_ssl_config_dir_path }},dst=/etc/letsencrypt
+            --mount type=bind,src={{ matrix_ssl_log_dir_path }},dst=/var/log/letsencrypt
+            {{ matrix_ssl_lets_encrypt_certbot_docker_image }}
+            certonly
+            --non-interactive
+            --work-dir=/tmp
+            --http-01-port 8080
+            {% if matrix_ssl_lets_encrypt_server %}--server={{ matrix_ssl_lets_encrypt_server | quote }}{% endif %}
+            {% if matrix_ssl_lets_encrypt_staging %}--staging{% endif %}
+            --key-type {{ matrix_ssl_lets_encrypt_key_type }}
+            --standalone
+            --preferred-challenges http
+            --agree-tos
+            --email={{ matrix_ssl_lets_encrypt_support_email }}
+            -d {{ domain_name }}
+          when: "result_certbot_direct.failed"
+          register: result_certbot_proxy
+          changed_when: "not result_certbot_proxy.failed"
+          ignore_errors: true
+
+        - name: Fail if all SSL certificate retrieval attempts failed for HTTP challenge
+          ansible.builtin.fail:
+            msg: |
+              Failed to obtain a certificate directly (by listening on port 80)
+              and also failed to obtain by relying on the server at port 80 to proxy the request.
+              See above for details.
+              You may wish to set up proxying of /.well-known/acme-challenge to {{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }} or,
+              more easily, stop the server on port 80 while this playbook runs.
+          when: "result_certbot_direct.failed and result_certbot_proxy.failed"
+      when: "certbot_challenge == 'http'"
+
+    # Execute DNS challenge
+    - block:
+        - ansible.builtin.set_fact:
+            domain_config: "{{ matrix_ssl_lets_encrypt_dns_challenge_domains | selectattr('domain', 'equalto', domain_name) | list | first }}"
+
+        - ansible.builtin.debug:
+            msg: "Executing DNS challenge for {{ domain_config.provider }} with {{ domain_config.config_file }}"
+
+        - name: Attempt initial SSL certificate retrieval with dns authenticator
+          ansible.builtin.shell: >-
+            {{ matrix_host_command_docker }} run
+            --rm
+            --name=matrix-certbot
+            --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+            --cap-drop=ALL
+            --mount type=bind,src={{ matrix_ssl_config_dir_path }},dst=/etc/letsencrypt
+            --mount type=bind,src={{ matrix_ssl_dns_config_dir_path }},dst=/etc/letsencrypt-dns-config,readonly
+            --mount type=bind,src={{ matrix_ssl_log_dir_path }},dst=/var/log/letsencrypt
+            {{ matrix_ssl_lets_encrypt_certbot_docker_image }}
+            certonly
+            --non-interactive
+            --work-dir=/tmp
+            {% if matrix_ssl_lets_encrypt_server %}--server={{ matrix_ssl_lets_encrypt_server | quote }}{% endif %}
+            {% if matrix_ssl_lets_encrypt_staging %}--staging{% endif %}
+            --key-type {{ matrix_ssl_lets_encrypt_key_type }}
+            --dns-{{ domain_config.provider }}
+            {% if domain_config.provider in ['cloudflare', 'cloudxns', 'digitalocean', 'dnsmadeeasy', 'dnssimple', 'gehirn', 'google', 'linode', 'luadns', 'nsone', 'ovh', 'rfc2136', 'sakuracloud'] %}--dns-{{ domain_config.provider }}-credentials "/etc/letsencrypt-dns-config/{{ domain_config.config_file }}"{% endif %}
+            {% if domain_config.provider in ['route53'] %}--pre-hook "/etc/letsencrypt-dns-config/setup-awsconfig.sh '{{ domain_config.config_file }}'"{% endif %}
+            --agree-tos
+            --email={{ matrix_ssl_lets_encrypt_support_email }}
+            -d {{ domain_name }}
+          register: result_certbot_dns
+          changed_when: "not result_certbot_dns.failed"
+          ignore_errors: true
+
+        - name: Fail if all SSL certificate retrieval attempts failed for DNS challenge
+          ansible.builtin.fail:
+            msg: |
+              Failed to obtain a certificate through DNS challenge.
+              See above for details.
+              You may wish to ensure permissions to update DNS records are properly set and still valid.
+          when: "result_certbot_dns.failed"
+      when: "certbot_challenge == 'dns'"
+  when: "domain_name_needs_cert | bool"

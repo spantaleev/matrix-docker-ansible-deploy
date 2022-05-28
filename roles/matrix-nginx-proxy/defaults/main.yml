@@ -547,8 +547,12 @@ matrix_ssl_lets_encrypt_staging: false
 # Learn more here: https://eff-certbot.readthedocs.io/en/stable/using.html#changing-the-acme-server
 matrix_ssl_lets_encrypt_server: ''
 
-matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v1.28.0"
-matrix_ssl_lets_encrypt_certbot_docker_image_force_pull: "{{ matrix_ssl_lets_encrypt_certbot_docker_image.endswith(':latest') }}"
+matrix_ssl_lets_encrypt_certbot_challenge_image: 'http'
+matrix_ssl_lets_encrypt_certbot_docker_image_version: "v1.28.0"
+matrix_ssl_lets_encrypt_certbot_http_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-{{ matrix_ssl_lets_encrypt_certbot_docker_image_version }}"
+matrix_ssl_lets_encrypt_certbot_dns_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/dns-{{ matrix_ssl_lets_encrypt_certbot_official_dns_provider }}:{{ matrix_ssl_architecture }}-{{ matrix_ssl_lets_encrypt_certbot_docker_image_version }}"
+matrix_ssl_lets_encrypt_certbot_official_dns_provider: ''
+matrix_ssl_lets_encrypt_certbot_custom_docker_image: ''
 matrix_ssl_lets_encrypt_certbot_standalone_http_port: 2402
 matrix_ssl_lets_encrypt_support_email: ~
 
@@ -566,6 +570,8 @@ matrix_ssl_lets_encrypt_key_type: rsa
 matrix_ssl_base_path: "{{ matrix_base_data_path }}/ssl"
 matrix_ssl_config_dir_path: "{{ matrix_ssl_base_path }}/config"
 matrix_ssl_log_dir_path: "{{ matrix_ssl_base_path }}/log"
+# dns-config must be a folder different from matrix_ssl_config_dir_path to ensure it is mounted only when needed
+matrix_ssl_dns_config_dir_path: "{{ matrix_ssl_base_path }}/dns-config"
 
 # If you'd like to start some service before a certificate is obtained, specify it here.
 # This could be something like `matrix-dynamic-dns`, etc.
