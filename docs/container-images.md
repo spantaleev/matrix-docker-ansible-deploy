@@ -34,6 +34,34 @@ These services are not part of our default installation, but can be enabled by [
 
 - [matrixdotorg/dendrite-monolith](https://hub.docker.com/r/matrixdotorg/dendrite-monolith/) - the [Dendrite](https://github.com/matrix-org/dendrite) Matrix homeserver (optional)
 
+- [certbot/dns-cloudflare](https://hub.docker.com/r/certbot/dns-cloudflare/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) with its plugin for doing DNS challenges using Cloudflare (optional)
+
+- [certbot/dns-cloudxns](https://hub.docker.com/r/certbot/dns-cloudxns/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) with its plugin for doing DNS challenges using CloudXNS (optional)
+
+- [certbot/dns-digitalocean](https://hub.docker.com/r/certbot/dns-digitalocean/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) with its plugin for doing DNS challenges using DigitalOcean (optional)
+
+- [certbot/dns-dnsmadeeasy](https://hub.docker.com/r/certbot/dns-dnsmadeeasy/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) with its plugin for doing DNS challenges using DNS Made Easy (optional)
+
+- [certbot/dns-dnsimple](https://hub.docker.com/r/certbot/dns-dnsimple/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) with its plugin for doing DNS challenges using DNSimple (optional)
+
+- [certbot/dns-gehirn](https://hub.docker.com/r/certbot/dns-gehirn/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) with its plugin for doing DNS challenges using Gehirn (optional)
+
+- [certbot/dns-google](https://hub.docker.com/r/certbot/dns-google/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) with its plugin for doing DNS challenges using Google Cloud DNS (optional)
+
+- [certbot/dns-linode](https://hub.docker.com/r/certbot/dns-linode/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) with its plugin for doing DNS challenges using Linode (optional)
+
+- [certbot/dns-luadns](https://hub.docker.com/r/certbot/dns-luadns/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) with its plugin for doing DNS challenges using LuaDNS (optional)
+
+- [certbot/dns-nsone](https://hub.docker.com/r/certbot/dns-nsone/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) with its plugin for doing DNS challenges using NS1 (optional)
+
+- [certbot/dns-ovh](https://hub.docker.com/r/certbot/dns-ovh/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) with its plugin for doing DNS challenges using OVH (optional)
+
+- [certbot/dns-rfc2136](https://hub.docker.com/r/certbot/dns-rfc2136/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) with its plugin for doing DNS challenges using RFC 2136 Dynamic Updates (optional)
+
+- [certbot/dns-route53](https://hub.docker.com/r/certbot/dns-route53/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) with its plugin for doing DNS challenges using Amazon Route 53 (optional)
+
+- [certbot/dns-sakuracloud](https://hub.docker.com/r/certbot/dns-sakuracloud/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) with its plugin for doing DNS challenges using Sakura Cloud (optional)
+
 - [ewoutp/goofys](https://hub.docker.com/r/ewoutp/goofys/) - the [Goofys](https://github.com/kahing/goofys) Amazon [S3](https://aws.amazon.com/s3/) file-system-mounting program (optional)
 
 - [etherpad/etherpad](https://hub.docker.com/r/etherpad/etherpad/) - the [Etherpad](https://etherpad.org) realtime collaborative text editor that can be used in a Jitsi audio/video call or integrated as a widget into Matrix chat rooms via the Dimension integration manager (optional)
