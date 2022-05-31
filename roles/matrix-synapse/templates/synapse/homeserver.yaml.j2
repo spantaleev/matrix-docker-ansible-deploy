@@ -352,9 +352,6 @@ worker_app: synapse.app.homeserver
 
 # thx https://oznetnerd.com/2017/04/18/jinja2-selectattr-filter/
 # reduce the main worker's offerings to core homeserver business
-{% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'appservice')|list  %}
-notify_appservices: false
-{% endif %}
 {% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'federation_sender')|list  %}
 send_federation: false
 {% endif %}
@@ -363,9 +360,6 @@ enable_media_repo: false
 {% endif %}
 {% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'pusher')|list  %}
 start_pushers: false
-{% endif %}
-{% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'user_dir')|list  %}
-update_user_directory: false
 {% endif %}
 
 daemonize: false
