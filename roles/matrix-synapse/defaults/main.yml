@@ -9,7 +9,7 @@ matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/s
 
 matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_container_global_registry_prefix }}"
-matrix_synapse_version: v1.59.1
+matrix_synapse_version: v1.60.0
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -559,7 +559,9 @@ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
 # Enable this to activate the E2EE disabling Synapse module.
 # See: https://github.com/digitalentity/matrix_encryption_disabler
 matrix_synapse_ext_encryption_disabler_enabled: false
-matrix_synapse_ext_encryption_disabler_download_url: "https://raw.githubusercontent.com/digitalentity/matrix_encryption_disabler/1182388f7019e8ec1e28f035070c7919d0e4cc24/matrix_e2ee_filter.py"
+# Using a fork for this until this gets merged to make it compatible with Synapse v1.60: https://github.com/digitalentity/matrix_encryption_disabler/pull/9
+# See: https://github.com/matrix-org/synapse/blob/v1.60.0/docs/upgrade.md#new-signature-for-the-spam-checker-callback-check_event_for_spam
+matrix_synapse_ext_encryption_disabler_download_url: "https://raw.githubusercontent.com/spantaleev/matrix_encryption_disabler/60b0e211281954f70f8202636cea8d6e27b83148/matrix_e2ee_filter.py"
 # A list of server domain names for which to deny encryption if the event sender's domain matches the domain in the list.
 # By default, with the configuration below, we prevent all homeserver users from initiating encryption in ANY room.
 matrix_synapse_ext_encryption_disabler_deny_encryption_for_users_of: ["{{ matrix_domain }}"]

@@ -1,3 +1,38 @@
+# 2022-05-31
+
+## Synapse v1.60 upgrade may cause trouble and require manual intervention
+
+Synapse v1.60 will try to add a new unique index to `state_group_edges` upon startup and could fail if your database is corrupted.
+
+We haven't observed this problem yet, but [the Synapse v1.60.0 upgrade notes](https://github.com/matrix-org/synapse/blob/v1.60.0/docs/upgrade.md#adding-a-new-unique-index-to-state_group_edges-could-fail-if-your-database-is-corrupted) mention it, so we're giving you a heads up here in case you're unlucky.
+
+**If Synapse fails to start** after your next playbook run, you'll need to:
+
+- SSH into the Matrix server
+- launch `/usr/local/bin/matrix-postgres-cli`
+- switch to the `synapse` database: `\c synapse`
+- run the following SQL query:
+
+```sql
+BEGIN;
+DELETE FROM state_group_edges WHERE (ctid, state_group, prev_state_group) IN (
+  SELECT row_id, state_group, prev_state_group
+  FROM (
+    SELECT
+      ctid AS row_id,
+      MIN(ctid) OVER (PARTITION BY state_group, prev_state_group) AS min_row_id,
+      state_group,
+      prev_state_group
+    FROM state_group_edges
+  ) AS t1
+  WHERE row_id <> min_row_id
+);
+COMMIT;
+```
+
+You could then restart services: `ansible-playbook -i inventory/hosts setup.yml --tags=start`
+
+
 # 2022-04-25
 
 ## buscarron bot support
