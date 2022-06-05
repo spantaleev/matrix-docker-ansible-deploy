@@ -162,3 +162,17 @@ To rebuild your Jitsi configuration:
   - stop all Jitsi services (`systemctl stop matrix-jitsi-*`).
   - remove all Jitsi configuration & data (`rm -rf /matrix/jitsi`)
 - ask Ansible to set up Jitsi anew and restart services (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-jitsi,start`)
+
+### No video or audio with more than 2 users
+
+One possible problem you may be facing is your server being behind a NAT, then your solution could be to add this to the vars.yaml:
+```yaml
+matrix_jitsi_jvb_custom_config_extension: |
+  org.ice4j.ice.harvest.STUN_MAPPING_HARVESTER_ADDRESSES=<STUN Server>
+```
+You can either use a Google STUN server (`stun.l.google.com:19302`) or choose one from this [list of public STUN servers](https://raw.githubusercontent.com/pradt2/always-online-stun/master/valid_hosts.txt), choose wisely!
+
+You might be confused by it working with 2 participants, however this may just be the p2p working. 
+
+You can check out a more detailed explaination from Jitsi [here](https://jitsi.github.io/handbook/docs/faq/#clients-could-communicate-well-in-room-created-at-meetjitsi-the-same-clients-still-could-connect-to-my-self-hosted-instance-but-can-neither-hear-nor-see-one-another-whats-wrong).
+
