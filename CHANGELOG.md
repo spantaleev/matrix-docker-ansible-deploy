@@ -1,3 +1,10 @@
+# 2022-06-09
+
+## Running Ansible in a container can now happen on the Matrix server itself
+
+If you're tired of being on an old and problematic Ansible version, you can now run [run Ansible in a container on the Matrix server itself](docs/ansible.md#running-ansible-in-a-container-on-the-matrix-server-itself).
+
+
 # 2022-05-31
 
 ## Synapse v1.60 upgrade may cause trouble and require manual intervention
