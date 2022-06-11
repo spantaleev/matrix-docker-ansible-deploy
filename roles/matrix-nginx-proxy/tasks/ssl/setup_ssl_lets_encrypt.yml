@@ -17,12 +17,6 @@
 #
 
 - block:
-    - ansible.builtin.set_fact:
-        matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_ssl_lets_encrypt_certbot_custom_docker_image if matrix_ssl_lets_encrypt_certbot_challenge_image == 'custom' else matrix_ssl_lets_encrypt_certbot_dns_docker_image if matrix_ssl_lets_encrypt_certbot_challenge_image == 'dns' else matrix_ssl_lets_encrypt_certbot_http_docker_image }}"
-
-    - ansible.builtin.set_fact:
-        matrix_ssl_lets_encrypt_certbot_docker_image_force_pull: "{{ matrix_ssl_lets_encrypt_certbot_docker_image.endswith(':latest') }}"
-
     - ansible.builtin.debug:
         msg: "Using certbot docker image: {{ matrix_ssl_lets_encrypt_certbot_docker_image }}"
 

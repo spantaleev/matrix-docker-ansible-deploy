@@ -553,6 +553,9 @@ matrix_ssl_lets_encrypt_certbot_http_docker_image: "{{ matrix_container_global_r
 matrix_ssl_lets_encrypt_certbot_dns_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/dns-{{ matrix_ssl_lets_encrypt_certbot_official_dns_provider }}:{{ matrix_ssl_architecture }}-{{ matrix_ssl_lets_encrypt_certbot_docker_image_version }}"
 matrix_ssl_lets_encrypt_certbot_official_dns_provider: ''
 matrix_ssl_lets_encrypt_certbot_custom_docker_image: ''
+# Don't modify matrix_ssl_lets_encrypt_certbot_docker_image directly, look at documentation and rely on matrix_ssl_lets_encrypt_certbot_challenge_image instead
+matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_ssl_lets_encrypt_certbot_custom_docker_image if matrix_ssl_lets_encrypt_certbot_challenge_image == 'custom' else matrix_ssl_lets_encrypt_certbot_dns_docker_image if matrix_ssl_lets_encrypt_certbot_challenge_image == 'dns' else matrix_ssl_lets_encrypt_certbot_http_docker_image }}"
+matrix_ssl_lets_encrypt_certbot_docker_image_force_pull: "{{ matrix_ssl_lets_encrypt_certbot_docker_image.endswith(':latest') }}"
 matrix_ssl_lets_encrypt_certbot_standalone_http_port: 2402
 matrix_ssl_lets_encrypt_support_email: ~
 
