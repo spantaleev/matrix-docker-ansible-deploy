@@ -46,7 +46,7 @@ If you decide to go this route, you don't need to read ahead in this document. W
 
 If you're managing the base domain by yourself somehow, you'll need to set up serving of some `/.well-known/matrix/*` files from it via HTTPS.
 
-To make things easy for you to set up, this playbook generates and hosts 2 well-known files on the Matrix domain's server (e.g. `https://matrix.example.com/.well-known/matrix/server` and `https://matrix.example.com/.well-known/matrix/client`), even though this is the wrong place to host them.
+To make things easy for you to set up, this playbook generates and hosts 2 well-known files on the Matrix domain's server. The files are generated at `/matrix/static-files/.well-known/matrix/` and hosted at `https://matrix.example.com/.well-known/matrix/server` and `https://matrix.example.com/.well-known/matrix/client`, even though this is the wrong place to host them.
 
 You have 3 options when it comes to installing the files on the base domain's server:
 
@@ -98,16 +98,15 @@ server {
 }
 ```
 
-**For Apache**, it would be something like this:
+**For Apache2**, it would be something like this:
 
 ```apache
 <VirtualHost *:443>
 	ServerName DOMAIN
 
 	SSLProxyEngine on
-	<Location /.well-known/matrix>
-		ProxyPass "https://matrix.DOMAIN/.well-known/matrix"
-	</Location>
+	ProxyPass /.well-known/matrix https://matrix.DOMAIN/.well-known/matrix nocanon
+	ProxyPassReverse /.well-known/matrix https://matrix.DOMAIN/.well-known/matrix nocanon
 
 	# other configuration
 </VirtualHost>
@@ -116,8 +115,22 @@ server {
 **For Caddy 2**, it would be something like this:
 
 ```caddy
-reverse_proxy /.well-known/matrix/* https://matrix.DOMAIN {
-	header_up Host {http.reverse_proxy.upstream.hostport}
+DOMAIN.com {
+   @wellknown {
+         path /.well-known/matrix/*:x
+   }
+
+   handle @wellknown {
+      reverse_proxy https://matrix.DOMAIN.com {
+          header_up Host {http.reverse_proxy.upstream.hostport}
+      }
+   }
+    # Configration for the base domain goes here
+  # handle {
+  #    header -Server
+  #     encode zstd gzip
+  #    reverse_proxy localhost:4020
+  # }
 }
 ```
 

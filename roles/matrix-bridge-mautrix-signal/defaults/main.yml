@@ -9,7 +9,7 @@ matrix_mautrix_signal_docker_repo: "https://mau.dev/mautrix/signal.git"
 matrix_mautrix_signal_docker_src_files_path: "{{ matrix_base_data_path }}/mautrix-signal/docker-src"
 
 matrix_mautrix_signal_version: v0.3.0
-matrix_mautrix_signal_daemon_version: 0.18.1
+matrix_mautrix_signal_daemon_version: 0.18.5
 # See: https://mau.dev/mautrix/signal/container_registry
 matrix_mautrix_signal_docker_image: "dock.mau.dev/mautrix/signal:{{ matrix_mautrix_signal_version }}"
 matrix_mautrix_signal_docker_image_force_pull: "{{ matrix_mautrix_signal_docker_image.endswith(':latest') }}"
@@ -127,3 +127,7 @@ matrix_mautrix_signal_registration_yaml: "{{ lookup('template', 'templates/regis
 matrix_mautrix_signal_registration: "{{ matrix_mautrix_signal_registration_yaml|from_yaml }}"
 
 matrix_mautrix_signal_log_level: 'DEBUG'
+
+matrix_mautrix_signal_bridge_encryption_allow: false
+matrix_mautrix_signal_bridge_encryption_default: "{{ matrix_mautrix_signal_bridge_encryption_allow }}"
+matrix_mautrix_signal_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_signal_bridge_encryption_allow }}"

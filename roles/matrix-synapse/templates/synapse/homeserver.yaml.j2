@@ -352,9 +352,6 @@ worker_app: synapse.app.homeserver
 
 # thx https://oznetnerd.com/2017/04/18/jinja2-selectattr-filter/
 # reduce the main worker's offerings to core homeserver business
-{% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'appservice')|list  %}
-notify_appservices: false
-{% endif %}
 {% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'federation_sender')|list  %}
 send_federation: false
 {% endif %}
@@ -363,9 +360,6 @@ enable_media_repo: false
 {% endif %}
 {% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'pusher')|list  %}
 start_pushers: false
-{% endif %}
-{% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'user_dir')|list  %}
-update_user_directory: false
 {% endif %}
 
 daemonize: false
@@ -432,6 +426,11 @@ manhole_settings:
 # sign up in a short space of time never to return after their initial
 # session.
 #
+# The option `mau_appservice_trial_days` is similar to `mau_trial_days`, but
+# applies a different trial number if the user was registered by an appservice.
+# A value of 0 means no trial days are applied. Appservices not listed in this
+# dictionary use the value of `mau_trial_days` instead.
+#
 # 'mau_limit_alerting' is a means of limiting client side alerting
 # should the mau limit be reached. This is useful for small instances
 # where the admin has 5 mau seats (say) for 5 specific people and no
@@ -442,6 +441,8 @@ manhole_settings:
 #max_mau_value: 50
 #mau_trial_days: 2
 #mau_limit_alerting: false
+#mau_appservice_trial_days:
+#  "appservice-id": 1
 
 # If enabled, the metrics for the number of monthly active users will
 # be populated, however no one will be limited. If limit_usage_by_mau
@@ -742,11 +743,11 @@ federation_domain_whitelist: {{ matrix_synapse_federation_domain_whitelist|to_js
 #
 #allow_profile_lookup_over_federation: false
 
-# Uncomment to disable device display name lookup over federation. By default, the
-# Federation API allows other homeservers to obtain device display names of any user
-# on this homeserver. Defaults to 'true'.
+# Uncomment to allow device display name lookup over federation. By default, the
+# Federation API prevents other homeservers from obtaining the display names of
+# user devices on this homeserver. Defaults to 'false'.
 #
-#allow_device_name_lookup_over_federation: false
+#allow_device_name_lookup_over_federation: true
 
 
 ## Caching ##
@@ -1375,7 +1376,11 @@ allowed_local_3pids: {{ matrix_synapse_allowed_local_3pids|to_json }}
 #
 registration_requires_token: {{ matrix_synapse_registration_requires_token|to_json }}
 
-
+# Allow users to submit a token during registration to bypass any required 3pid
+# steps configured in `registrations_require_3pid`.
+# Defaults to false, requiring that registration tokens (if enabled) complete a 3pid flow.
+#
+#enable_registration_token_3pid_bypass: false
 
 # If set, allows registration of standard or admin accounts by anyone who
 # has the shared secret, even if registration is otherwise disabled.
@@ -2521,8 +2526,10 @@ password_providers:
         uid: {{ matrix_synapse_ext_password_provider_ldap_attributes_uid|string|to_json }}
         mail: {{ matrix_synapse_ext_password_provider_ldap_attributes_mail|string|to_json }}
         name: {{ matrix_synapse_ext_password_provider_ldap_attributes_name|string|to_json }}
+{% if matrix_synapse_ext_password_provider_ldap_bind_dn %}
       bind_dn: {{ matrix_synapse_ext_password_provider_ldap_bind_dn|string|to_json }}
       bind_password: {{ matrix_synapse_ext_password_provider_ldap_bind_password|string|to_json }}
+{% endif %}
       filter: {{ matrix_synapse_ext_password_provider_ldap_filter|string|to_json }}
 {% endif %}
 {% endif %}

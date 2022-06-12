@@ -4,19 +4,19 @@ The playbook can install and configure [matrix-hookshot](https://github.com/matr
 
 Hookshot can bridge [Webhooks](https://en.wikipedia.org/wiki/Webhook) from software project management services such as GitHub, GitLab, JIRA, and Figma, as well as generic webhooks.
 
-See the project's [documentation](https://matrix-org.github.io/matrix-hookshot/hookshot.html) to learn what it does in detail and why it might be useful to you.
+See the project's [documentation](https://matrix-org.github.io/matrix-hookshot/latest/hookshot.html) to learn what it does in detail and why it might be useful to you.
 
 Note: the playbook also supports [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), which however is soon to be archived by its author and to be replaced by hookshot.
 
 ## Setup Instructions
 
-Refer to the [official instructions](https://matrix-org.github.io/matrix-hookshot/setup.html) to learn what the individual options do.
+Refer to the [official instructions](https://matrix-org.github.io/matrix-hookshot/latest/setup.html) to learn what the individual options do.
 
 1. For each of the services (GitHub, GitLab, Jira, Figma, generic webhooks) fill in the respective variables `matrix_hookshot_service_*` listed in [main.yml](/roles/matrix-bridge-hookshot/defaults/main.yml) as required.
 2. Take special note of the `matrix_hookshot_*_enabled` variables. Services that need no further configuration are enabled by default (GitLab, Generic), while you must first add the required configuration and enable the others (GitHub, Jira, Figma).
 3. If you're setting up the GitHub bridge, you'll need to generate and download a private key file after you created your GitHub app. Copy the contents of that file to the variable `matrix_hookshot_github_private_key` so the playbook can install it for you, or use one of the [other methods](#manage-github-private-key-with-matrix-aux-role) explained below. 
 4. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready. Hookshot can be set up individually using the tag `setup-hookshot`.
-5. Refer to [Hookshot's official instructions](https://matrix-org.github.io/matrix-hookshot/usage.html) to start using the bridge. **Important:** Note that the different listeners are bound to certain paths which might differ from those assumed by the hookshot documentation, see [URLs for bridges setup](urls-for-bridges-setup) below.
+5. Refer to [Hookshot's official instructions](https://matrix-org.github.io/matrix-hookshot/latest/usage.html) to start using the bridge. **Important:** Note that the different listeners are bound to certain paths which might differ from those assumed by the hookshot documentation, see [URLs for bridges setup](urls-for-bridges-setup) below.
 
 Other configuration options are available via the `matrix_hookshot_configuration_extension_yaml` and `matrix_hookshot_registration_extension_yaml` variables, see the comments in [main.yml](/roles/matrix-bridge-hookshot/defaults/main.yml) for how to use them.
 
@@ -26,7 +26,7 @@ Unless indicated otherwise, the following endpoints are reachable on your `matri
 
 | listener | default path | variable | used as |
 |---|---|---|---|
-| webhooks | `/hookshot/webhooks/` | `matrix_hookshot_webhook_endpoint` | generics, GitHub "Webhook URL", etc. |
+| webhooks | `/hookshot/webhooks/` | `matrix_hookshot_webhook_endpoint` | generics, GitHub "Webhook URL", GitLab "URL", etc. |
 | github oauth | `/hookshot/webhooks/oauth` | `matrix_hookshot_github_oauth_endpoint` | GitHub "Callback URL" |
 | jira oauth | `/hookshot/webhooks/jira/oauth` | `matrix_hookshot_jira_oauth_endpoint` | JIRA OAuth |
 | figma endpoint | `/hookshot/webhooks/figma/webhook` | `matrix_hookshot_figma_endpoint` | Figma |

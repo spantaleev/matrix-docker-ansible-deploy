@@ -34,19 +34,23 @@
 
 - set_fact:
     matrix_synapse_spam_checker: >
-      {{ matrix_synapse_spam_checker }}
-      +
-      [{
-        "module": "mjolnir.AntiSpam",
-        "config": {
-          "block_invites": {{ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites }},
-          "block_messages": {{ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_messages }},
-          "block_usernames": {{ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_usernames }},
-          "ban_lists": {{ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists }}
-        }
-      }]
+      {{
+        matrix_synapse_spam_checker
+        +
+        [{
+          "module": "mjolnir.AntiSpam",
+          "config": {
+            "block_invites": matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites,
+            "block_messages": matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_messages,
+            "block_usernames": matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_usernames,
+            "ban_lists": matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists,
+          }
+        }]
+      }}
 
     matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      ["--mount type=bind,src={{ matrix_synapse_ext_path }}/mjolnir/synapse_antispam/mjolnir,dst={{ matrix_synapse_in_container_python_packages_path }}/mjolnir,ro"]
+      {{
+        matrix_synapse_container_extra_arguments|default([])
+        +
+        ["--mount type=bind,src={{ matrix_synapse_ext_path }}/mjolnir/synapse_antispam/mjolnir,dst={{ matrix_synapse_in_container_python_packages_path }}/mjolnir,ro"]
+      }}

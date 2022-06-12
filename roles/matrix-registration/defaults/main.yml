@@ -7,6 +7,10 @@ matrix_registration_enabled: true
 matrix_registration_container_image_self_build: false
 matrix_registration_container_image_self_build_repo: "https://github.com/ZerataX/matrix-registration"
 matrix_registration_container_image_self_build_branch: "{{ 'master' if matrix_registration_version == 'latest' else matrix_registration_version }}"
+# Controls whether we'll be patching the dependencies in `setup.py` when self-building.
+# Without patching, building will likely fail, because of the poor unbounded way dependencies are defined (e.g. `flask-limiter>=1.1.0`).
+# This is an attempt to get matrix-registration in its current (outdated) version to build.
+matrix_registration_container_image_self_build_python_dependencies_patch_enabled: true
 
 matrix_registration_base_path: "{{ matrix_base_data_path }}/matrix-registration"
 matrix_registration_config_path: "{{ matrix_registration_base_path }}/config"

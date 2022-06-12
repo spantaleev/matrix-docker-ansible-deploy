@@ -9,7 +9,7 @@ matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/s
 
 matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_container_global_registry_prefix }}"
-matrix_synapse_version: v1.58.1
+matrix_synapse_version: v1.60.0
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -358,10 +358,13 @@ matrix_synapse_workers_presets:
   one-of-each:
     generic_workers_count: 1
     pusher_workers_count: 1
-    appservice_workers_count: 1
+    # appservice workers are deprecated since Synapse v1.59. This will be removed.
+    appservice_workers_count: 0
     federation_sender_workers_count: 1
     media_repository_workers_count: 1
     # Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
+    # user_dir workers are deprecated since Synapse v1.59. This will be removed.
+    # See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
     user_dir_workers_count: 0
     frontend_proxy_workers_count: 1
 
@@ -383,7 +386,9 @@ matrix_synapse_workers_pusher_workers_count: "{{ matrix_synapse_workers_presets[
 matrix_synapse_workers_pusher_workers_metrics_range_start: 19200
 
 # matrix_synapse_workers_appservice_workers_count can only be 0 or 1. More instances are not supported.
-matrix_synapse_workers_appservice_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['appservice_workers_count'] }}"
+# appservice workers are deprecated since Synapse v1.59. This will be removed.
+# See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
+matrix_synapse_workers_appservice_workers_count: 0
 matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
 
 # matrix_synapse_workers_federation_sender_workers_count can only be 0 or 1 for now.
@@ -397,7 +402,9 @@ matrix_synapse_workers_media_repository_workers_port_range_start: 18551
 matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
 
 # Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
-matrix_synapse_workers_user_dir_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['user_dir_workers_count'] }}"
+# user_dir workers are deprecated since Synapse v1.59. This will be removed.
+# See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
+matrix_synapse_workers_user_dir_workers_count: 0
 matrix_synapse_workers_user_dir_workers_port_range_start: 18661
 matrix_synapse_workers_user_dir_workers_metrics_range_start: 19661
 
@@ -552,7 +559,7 @@ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
 # Enable this to activate the E2EE disabling Synapse module.
 # See: https://github.com/digitalentity/matrix_encryption_disabler
 matrix_synapse_ext_encryption_disabler_enabled: false
-matrix_synapse_ext_encryption_disabler_download_url: "https://raw.githubusercontent.com/digitalentity/matrix_encryption_disabler/1182388f7019e8ec1e28f035070c7919d0e4cc24/matrix_e2ee_filter.py"
+matrix_synapse_ext_encryption_disabler_download_url: "https://raw.githubusercontent.com/digitalentity/matrix_encryption_disabler/cdc37a07441acb7c2a3288bcb29b376658d5e766/matrix_e2ee_filter.py"
 # A list of server domain names for which to deny encryption if the event sender's domain matches the domain in the list.
 # By default, with the configuration below, we prevent all homeserver users from initiating encryption in ANY room.
 matrix_synapse_ext_encryption_disabler_deny_encryption_for_users_of: ["{{ matrix_domain }}"]
