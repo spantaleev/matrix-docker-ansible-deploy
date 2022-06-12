@@ -134,6 +134,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up MX Puppet Steam bridging](configuring-playbook-bridge-mx-puppet-steam.md) (optional)
 
+- [Setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md) (optional)
+
 - [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (optional)
 
 - [Setting up Matrix SMS bridging](configuring-playbook-bridge-matrix-bridge-sms.md) (optional)
