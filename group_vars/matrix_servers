@@ -254,6 +254,44 @@ matrix_beeper_linkedin_database_password: "{{ '%s' | format(matrix_homeserver_ge
 
 ######################################################################
 #
+# matrix-bridge-go-skype-bridge
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_go_skype_bridge_enabled: false
+
+matrix_go_skype_bridge_container_image_self_build: true
+
+matrix_go_skype_bridge_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    ['matrix-' + matrix_homeserver_implementation + '.service']
+    +
+    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+  }}
+
+matrix_go_skype_bridge_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'skype.as.token') | to_uuid }}"
+
+matrix_go_skype_bridge_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'skype.hs.token') | to_uuid }}"
+
+matrix_go_skype_bridge_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_go_skype_bridge_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_go_skype_bridge_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'goskype.db') | to_uuid }}"
+
+######################################################################
+#
+# /matrix-bridge-go-skype-bridge
+#
+######################################################################
+
+######################################################################
+#
 # matrix-bridge-mautrix-facebook
 #
 ######################################################################
@@ -1769,6 +1807,12 @@ matrix_postgres_additional_databases: |
       'username': matrix_beeper_linkedin_database_username,
       'password': matrix_beeper_linkedin_database_password,
     }] if (matrix_beeper_linkedin_enabled and matrix_beeper_linkedin_database_engine == 'postgres' and matrix_beeper_linkedin_database_hostname == 'matrix-postgres') else [])
+    +
+    ([{
+      'name': matrix_go_skype_bridge_database_name,
+      'username': matrix_go_skype_bridge_database_username,
+      'password': matrix_go_skype_bridge_database_password,
+    }] if (matrix_go_skype_bridge_enabled and matrix_go_skype_bridge_database_engine == 'postgres' and matrix_go_skype_bridge_database_hostname == 'matrix-postgres') else [])
     +
     ([{
       'name': matrix_mautrix_facebook_database_name,

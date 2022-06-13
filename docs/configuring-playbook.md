@@ -120,7 +120,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up matrix-hookshot](configuring-playbook-bridge-hookshot.md) - a bridge between Matrix and multiple project management services, such as [GitHub](https://github.com), [GitLab](https://about.gitlab.com) and [JIRA](https://www.atlassian.com/software/jira). (optional)
 
-- [Setting up MX Puppet Skype bridging](configuring-playbook-bridge-mx-puppet-skype.md) (optional)
+- [Setting up MX Puppet Skype bridging](configuring-playbook-bridge-mx-puppet-skype.md) (optional) - often reported as broken; see **Go Skype Bridge** (below) as an alternative
 
 - [Setting up MX Puppet Slack bridging](configuring-playbook-bridge-mx-puppet-slack.md) (optional)
 
@@ -133,6 +133,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up MX Puppet GroupMe bridging](configuring-playbook-bridge-mx-puppet-groupme.md) (optional)
 
 - [Setting up MX Puppet Steam bridging](configuring-playbook-bridge-mx-puppet-steam.md) (optional)
+
+- [Setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md) (optional)
 
 - [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (optional)
 
