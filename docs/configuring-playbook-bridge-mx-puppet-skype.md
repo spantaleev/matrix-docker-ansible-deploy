@@ -1,5 +1,7 @@
 # Setting up MX Puppet Skype (optional)
 
+**Note**: bridging to [Skype](https://www.skype.com/) can also happen via the [go-skype-bridge](configuring-playbook-bridge-go-skype-bridge.md) bridge supported by the playbook. In fact, bridging via `mx-puppet-skype` has often been reported as broken, so we recommend that you go directly for `go-skype-bridge`, instead of this.
+
 The playbook can install and configure
 [mx-puppet-skype](https://github.com/Sorunome/mx-puppet-skype) for you.
 
