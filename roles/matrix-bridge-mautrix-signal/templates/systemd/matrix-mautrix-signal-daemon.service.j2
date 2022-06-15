@@ -24,6 +24,7 @@ ExecStartPre={{ matrix_host_command_sleep }} 5
 # We can't use `--read-only` for this bridge.
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-signal-daemon \
 			--log-driver=none \
+			--env SIGNALD_TRUST_NEW_KEYS=true \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
