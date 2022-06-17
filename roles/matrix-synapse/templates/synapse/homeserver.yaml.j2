@@ -1048,6 +1048,14 @@ media_store_path: "/matrix-media-store-parent/{{ matrix_synapse_media_store_dire
 #
 max_upload_size: "{{ matrix_synapse_max_upload_size_mb }}M"
 
+media_retention:
+{% if matrix_synapse_media_retention_local_media_lifetime|length > 0 %}
+  local_media_lifetime: "{{ matrix_synapse_media_retention_local_media_lifetime }}"
+{% endif %}
+{% if matrix_synapse_media_retention_remote_media_lifetime|length > 0 %}
+  remote_media_lifetime: "{{ matrix_synapse_media_retention_remote_media_lifetime }}"
+{% endif %}
+
 # Maximum number of pixels that will be thumbnailed
 #
 #max_image_pixels: 32M
