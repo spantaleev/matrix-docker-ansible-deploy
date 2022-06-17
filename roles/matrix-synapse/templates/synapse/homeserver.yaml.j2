@@ -1050,10 +1050,10 @@ max_upload_size: "{{ matrix_synapse_max_upload_size_mb }}M"
 
 media_retention:
 {% if matrix_synapse_media_retention_local_media_lifetime|length > 0 %}
-  local_media_lifetime: "{{ matrix_synapse_media_retention_local_media_lifetime }}"
+  local_media_lifetime: {{ matrix_synapse_media_retention_local_media_lifetime|to_json }}
 {% endif %}
 {% if matrix_synapse_media_retention_remote_media_lifetime|length > 0 %}
-  remote_media_lifetime: "{{ matrix_synapse_media_retention_remote_media_lifetime }}"
+  remote_media_lifetime: {{ matrix_synapse_media_retention_remote_media_lifetime|to_json }}
 {% endif %}
 
 # Maximum number of pixels that will be thumbnailed
