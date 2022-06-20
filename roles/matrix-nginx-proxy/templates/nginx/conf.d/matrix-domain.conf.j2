@@ -45,6 +45,19 @@
 		{{ render_nginx_status_location_block(matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses) }}
 	{% endif %}
 
+    {% if matrix_nginx_proxy_node_exporter_reverse_enabled %}
+        location /node-exporter/ {
+          resolver 127.0.0.11 valid=5s;
+          proxy_pass http://matrix-prometheus-node-exporter:9100/;
+        }
+	{% endif %}
+	{% if matrix_nginx_proxy_postgres_exporter_reverse_enabled %}
+        location /postgres-exporter/ {
+        resolver 127.0.0.11 valid=5s;
+        proxy_pass http://matrix-prometheus-postgres-exporter:9187/;
+  }
+	{% endif %}
+
 	{% if matrix_nginx_proxy_proxy_matrix_corporal_api_enabled %}
 	location ^~ /_matrix/corporal {
 		{% if matrix_nginx_proxy_enabled %}
