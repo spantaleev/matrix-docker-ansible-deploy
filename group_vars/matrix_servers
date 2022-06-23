@@ -711,8 +711,13 @@ matrix_hookshot_container_http_host_bind_ports: "{{ [] if matrix_nginx_proxy_ena
 
 matrix_hookshot_provisioning_enabled: "{{ matrix_hookshot_provisioning_secret and matrix_dimension_enabled }}"
 
-matrix_hookshot_proxy_metrics: "{{ matrix_nginx_proxy_proxy_synapse_metrics }}"
-matrix_hookshot_proxy_metrics_basic_auth_enabled: "{{ matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled }}"
+# We only enable metrics (locally, in the container network) for the bridge if Prometheus is enabled.
+#
+# People using an external Prometheus server will need to toggle all of these to be able to consume metrics remotely:
+# - `matrix_hookshot_metrics_enabled`
+# - `matrix_hookshot_metrics_proxying_enabled`
+# - `matrix_nginx_proxy_proxy_matrix_metrics_enabled`
+matrix_hookshot_metrics_enabled: "{{ matrix_prometheus_enabled }}"
 
 matrix_hookshot_urlprefix_port_enabled: "{{ matrix_nginx_proxy_container_https_host_bind_port == 443 if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_https_host_bind_port == 80 }}"
 matrix_hookshot_urlprefix_port: ":{{ matrix_nginx_proxy_container_https_host_bind_port if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_http_host_bind_port }}"
@@ -1287,7 +1292,7 @@ matrix_corporal_matrix_registration_shared_secret: "{{ matrix_synapse_registrati
 
 matrix_coturn_enabled: true
 
-matrix_coturn_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+matrix_coturn_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
 
 matrix_coturn_turn_external_ip_address: "{{ ansible_host }}"
 
@@ -1613,13 +1618,6 @@ matrix_nginx_proxy_proxy_matrix_federation_port: "{{ matrix_federation_public_po
 
 matrix_nginx_proxy_container_federation_host_bind_port: "{{ matrix_federation_public_port }}"
 
-# This used to be hooked to `matrix_synapse_metrics_enabled`, but we don't do it anymore.
-# The fact that someone wishes to enable Synapse metrics does not necessarily mean they want to make them public.
-# A local Prometheus can consume them over the container network.
-matrix_nginx_proxy_proxy_synapse_metrics: false
-matrix_nginx_proxy_proxy_synapse_metrics_addr_with_container: "matrix-synapse:{{ matrix_synapse_metrics_port }}"
-matrix_nginx_proxy_proxy_synapse_metrics_addr_sans_container: "127.0.0.1:{{ matrix_synapse_metrics_port }}"
-
 matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_ma1sd_enabled }}"
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}"
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container }}"
@@ -1640,8 +1638,6 @@ matrix_nginx_proxy_synapse_generic_worker_federation_locations: "{{ matrix_synap
 matrix_nginx_proxy_synapse_media_repository_locations: "{{matrix_synapse_workers_media_repository_endpoints|default([]) }}"
 matrix_nginx_proxy_synapse_user_dir_locations: "{{ matrix_synapse_workers_user_dir_endpoints|default([]) }}"
 matrix_nginx_proxy_synapse_frontend_proxy_locations: "{{ matrix_synapse_workers_frontend_proxy_endpoints|default([]) }}"
-
-matrix_nginx_proxy_proxy_synapse_workers_enabled_list: "{{ matrix_synapse_workers_enabled_list }}"
 
 matrix_nginx_proxy_systemd_wanted_services_list: |
   {{
@@ -2223,7 +2219,7 @@ matrix_synapse_admin_enabled: false
 # Synapse Admin's HTTP port to the local host.
 matrix_synapse_admin_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8766' }}"
 
-matrix_synapse_admin_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+matrix_synapse_admin_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
 ######################################################################
 #

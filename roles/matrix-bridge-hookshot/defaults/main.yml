@@ -29,13 +29,20 @@ matrix_hookshot_public_endpoint: /hookshot
 matrix_hookshot_appservice_port: 9993
 matrix_hookshot_appservice_endpoint: "{{ matrix_hookshot_public_endpoint }}/_matrix/app"
 
-# Metrics work only in conjunction with matrix_synapse_metrics_enabled etc
-matrix_hookshot_metrics_enabled: true
+# Controls whether metrics are enabled in the bridge configuration.
+# Enabling them is usually enough for a local (in-container) Prometheus to consume them.
+# If metrics need to be consumed by another (external) Prometheus server, consider exposing them via `matrix_hookshot_metrics_proxying_enabled`.
+matrix_hookshot_metrics_enabled: false
+
+# Controls whether Hookshot metrics should be proxied (exposed) on `matrix.DOMAIN/metrics/hookshot`.
+# This will only work take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
+# See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
+matrix_hookshot_metrics_proxying_enabled: false
+
 # There is no need to edit ports.
 # Read the documentation to learn about using hookshot metrics with external Prometheus
 # If you still want something different, use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
 matrix_hookshot_metrics_port: 9001
-matrix_hookshot_metrics_endpoint: "{{ matrix_hookshot_public_endpoint }}/metrics"
 
 # There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
 matrix_hookshot_webhook_port: 9000

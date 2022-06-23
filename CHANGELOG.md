@@ -1,3 +1,32 @@
+# 2022-06-23
+
+## (Potential Backward Compatibility Break) Changes around metrics collection
+
+**TLDR**: we've made extensive **changes to metrics exposure/collection, which concern people using an external Prometheus server**. If you don't know what that is, you don't need to read below.
+
+**Why do major changes to metrics**? Because various services were exposing metrics in different, hacky, ways. Synapse was exposing metrics at `/_synapse/metrics` and `/_synapse-worker-.../metrics` on the `matrix.DOMAIN`. The Hookshot role was **repurposing** the Granana web UI domain (`stats.DOMAIN`) for exposing its metrics on `stats.DOMAIN/hookshot/metrics`, while protecting these routes using Basic Authentication **normally used for Synapse** (`/_synapse/metrics`). Node-exporter and Postgres-exporter roles were advising for more `stats.DOMAIN` usage in manual ways. Each role was doing things differently and mixing variables from other roles. Each metrics endpoint was ending up in a different place, protected by who knows what Basic Authentication credentials (if protected at all).
+
+**The solution**: a completely revamped way to expose metrics to an external Prometheus server. We are **introducing new `https://matrix.DOMAIN/metrics/*` endpoints**, where various services *can* expose their metrics, for collection by external Prometheus servers. To enable the `/metrics/*` endpoints, use `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`. There's also a way to protect access using [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication). See the `matrix-nginx-proxy` role or our [Collecting metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) documentation for additional variables around `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
+
+**If you are using the [Hookshot bridge](docs/configuring-playbook-bridge-hookshot.md)**, you may find that:
+1. **Metrics may not be enabled by default anymore**:
+  - If Prometheus is enabled (`matrix_prometheus_enabled: true`), then Hookshot metrics will be enabled automatically (`matrix_hookshot_metrics_enabled: true`). These metrics will be collected from the local (in-container) Prometheus over the container network.
+  - **If Prometheus is not enabled** (you are either not using Prometheus or are using an external one), **Hookshot metrics will not be enabled by default anymore**. Feel free to enable them by setting `matrix_hookshot_metrics_enabled: true`. Also, see below.
+2. When metrics are meant to be **consumed by an external Prometheus server**, `matrix_hookshot_metrics_proxying_enabled` needs to be set to `true`, so that metrics would be exposed (proxied) "publicly" on `https://matrix.DOMAIN/metrics/hookshot`. To make use of this, you'll also need to enable the new `https://matrix.DOMAIN/metrics/*` endpoints mentioned above, using `matrix_nginx_proxy_proxy_matrix_metrics_enabled`. Learn more in our [Collecting metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) documentation.
+3. **We've changed the URL we're exposing Hookshot metrics at** for external Prometheus servers. Until now, you were advised to consume Hookshot metrics from `https://stats.DOMAIN/hookshot/metrics` (working in conjunction with `matrix_nginx_proxy_proxy_synapse_metrics`). From now on, **this no longer works**. As described above, you need to start consuming metrics from `https://matrix.DOMAIN/metrics/hookshot`.
+
+**If you're using node-exporter** (`matrix_prometheus_node_exporter_enabled: true`) and would like to collect its metrics from an external Prometheus server, see `matrix_prometheus_node_exporter_metrics_proxying_enabled` described in our [Collecting metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) documentation. You will be able to collect its metrics from `https://matrix.DOMAIN/metrics/node-exporter`.
+
+**If you're using [postgres-exporter](docs/configuring-playbook-prometheus-postgres.md)** (`matrix_prometheus_postgres_exporter_enabled: true`) and would like to collect its metrics from an external Prometheus server, see `matrix_prometheus_postgres_exporter_metrics_proxying_enabled` described in our [Collecting metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) documentation. You will be able to collect its metrics from `https://matrix.DOMAIN/metrics/postgres-exporter`.
+
+**If you're using Synapse** and would like to collect its metrics from an external Prometheus server, you may find that:
+
+1. Exposing metrics is now done using `matrix_synapse_metrics_proxying_enabled`, not `matrix_nginx_proxy_proxy_synapse_metrics: true`. You may still need to enable metrics using `matrix_synapse_metrics_enabled: true` before exposing them.
+2. Protecting metrics endpoints using [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) is now done in another way. See our [Collecting metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) documentation
+3. If Synapse metrics are exposed, they will be made available at `https://matrix.DOMAIN/metrics/synapse/main-process` or `https://matrix.DOMAIN/metrics/synapse/worker/TYPE-ID` (when workers are enabled), not at `https://matrix.DOMAIN/_synapse/metrics` and `https://matrix.DOMAIN/_synapse-worker-.../metrics`
+4. The playbook still generates an `external_prometheus.yml.example` sample file for scraping Synapse from Prometheus as described in [Collecting Synapse worker metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-synapse-worker-metrics-to-an-external-prometheus-server), but it's now saved under `/matrix/synapse` (not `/matrix`).
+
+
 # 2022-06-13
 
 ## go-skype-bridge bridging support

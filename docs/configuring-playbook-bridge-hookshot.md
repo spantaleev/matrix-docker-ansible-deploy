@@ -14,7 +14,7 @@ Refer to the [official instructions](https://matrix-org.github.io/matrix-hooksho
 
 1. For each of the services (GitHub, GitLab, Jira, Figma, generic webhooks) fill in the respective variables `matrix_hookshot_service_*` listed in [main.yml](/roles/matrix-bridge-hookshot/defaults/main.yml) as required.
 2. Take special note of the `matrix_hookshot_*_enabled` variables. Services that need no further configuration are enabled by default (GitLab, Generic), while you must first add the required configuration and enable the others (GitHub, Jira, Figma).
-3. If you're setting up the GitHub bridge, you'll need to generate and download a private key file after you created your GitHub app. Copy the contents of that file to the variable `matrix_hookshot_github_private_key` so the playbook can install it for you, or use one of the [other methods](#manage-github-private-key-with-matrix-aux-role) explained below. 
+3. If you're setting up the GitHub bridge, you'll need to generate and download a private key file after you created your GitHub app. Copy the contents of that file to the variable `matrix_hookshot_github_private_key` so the playbook can install it for you, or use one of the [other methods](#manage-github-private-key-with-matrix-aux-role) explained below.
 4. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready. Hookshot can be set up individually using the tag `setup-hookshot`.
 5. Refer to [Hookshot's official instructions](https://matrix-org.github.io/matrix-hookshot/latest/usage.html) to start using the bridge. **Important:** Note that the different listeners are bound to certain paths which might differ from those assumed by the hookshot documentation, see [URLs for bridges setup](urls-for-bridges-setup) below.
 
@@ -32,8 +32,8 @@ Unless indicated otherwise, the following endpoints are reachable on your `matri
 | figma endpoint | `/hookshot/webhooks/figma/webhook` | `matrix_hookshot_figma_endpoint` | Figma |
 | provisioning | `/hookshot/v1/` | `matrix_hookshot_provisioning_endpoint` | Dimension [provisioning](#provisioning-api) |
 | appservice | `/hookshot/_matrix/app/` | `matrix_hookshot_appservice_endpoint` | Matrix server |
-| widgets | `/hookshot/widgetapi/` | `/matrix_hookshot_widgets_endpoint` | Widgets |
-| metrics | `/hookshot/metrics/` (on `stats.` subdomain) | `matrix_hookshot_metrics_endpoint` | Prometheus |
+| widgets | `/hookshot/widgetapi/` | `matrix_hookshot_widgets_endpoint` | Widgets |
+| metrics | `/metrics/hookshot` | `matrix_hookshot_metrics_enabled` and `matrix_hookshot_metrics_proxying_enabled`. Requires `/metrics/*` endpoints to also be enabled via `matrix_nginx_proxy_proxy_matrix_metrics_enabled` (see the `matrix-nginx-proxy` role). Read more in the [Metrics section](#metrics) below. | Prometheus |
 
 See also `matrix_hookshot_matrix_nginx_proxy_configuration` in [init.yml](/roles/matrix-bridge-hookshot/tasks/init.yml).
 
@@ -63,7 +63,14 @@ The provisioning API will be enabled automatically if you set `matrix_dimension_
 
 ### Metrics
 
-If metrics are enabled, they will be automatically available in the builtin Prometheus and Grafana, but you need to set up your own Dashboard for now. If additionally metrics proxying for use with external Prometheus is enabled (`matrix_nginx_proxy_proxy_synapse_metrics`), hookshot metrics will also be available (at `matrix_hookshot_metrics_endpoint`, default `/hookshot/metrics`, on the stats subdomain) and with the same password. See also [the Prometheus and Grafana docs](../configuring-playbook-prometheus-grafana.md).
+Metrics are **only enabled by default** if the builtin [Prometheus](configuring-playbook-prometheus-grafana.md) is enabled (by default, Prometheus isn't enabled). If so, metrics will automatically be collected by Prometheus and made available in Grafana. You will, however, need to set up your own Dashboard for displaying them.
+
+To explicitly enable metrics, use `matrix_hookshot_metrics_enabled: true`. This only exposes metrics over the container network, however.
+
+**To collect metrics from an external Prometheus server**, besides enabling metrics as described above, you will also need to:
+
+- enable the `https://matrix.DOMAIN/metrics/*` endpoints on `matrix.DOMAIN` using `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true` (see the `matrix-nginx-role` or [the Prometheus and Grafana docs](configuring-playbook-prometheus-grafana.md) for enabling this feature)
+- expose the Hookshot metrics under `https://matrix.DOMAIN/metrics/hookshot` by setting `matrix_hookshot_metrics_proxying_enabled: true`
 
 ### Collision with matrix-appservice-webhooks
 

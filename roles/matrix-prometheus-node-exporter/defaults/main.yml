@@ -11,15 +11,34 @@ matrix_prometheus_node_exporter_docker_image_force_pull: "{{ matrix_prometheus_n
 # A list of extra arguments to pass to the container
 matrix_prometheus_node_exporter_container_extra_arguments: []
 
+# A list of extra arguments to pass to the node_exporter process
+#
+# Example:
+# matrix_prometheus_node_exporter_process_extra_arguments:
+#   - "--collector.systemd"
+#   - "--collector.logind"
+#
+# Note: the above is just an example. We have not confirmed that these collectors work when running in a container.
+# In fact, the systemd collector is exhibiting issues:
+# > caller=collector.go:169 level=error msg="collector failed" name=systemd duration_seconds=0.000121001 err="couldn't get dbus connection: dial unix /var/run/dbus/system_bus_socket: connect: no such file or directory"
+matrix_prometheus_node_exporter_process_extra_arguments: []
+
 # List of systemd services that matrix-prometheus.service depends on
 matrix_prometheus_node_exporter_systemd_required_services_list: ['docker.service']
 
 # List of systemd services that matrix-prometheus.service wants
 matrix_prometheus_node_exporter_systemd_wanted_services_list: []
 
+# Controls whether node-exporter metrics should be proxied (exposed) on `matrix.DOMAIN/metrics/node-exporter`.
+# This will only work take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
+# See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
+matrix_prometheus_node_exporter_metrics_proxying_enabled: false
+
 # Controls whether the matrix-prometheus container exposes its HTTP port (tcp/9100 in the container).
 #
 # Takes an "<ip>:<port>" value (e.g. "127.0.0.1:9100"), or empty string to not expose.
+#
+# You likely don't need to do this. See `matrix_prometheus_node_exporter_metrics_proxying_enabled`.
 #
 # Official recommendations are to run this container with `--net=host`,
 # but we don't do that, since it:

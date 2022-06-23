@@ -145,45 +145,6 @@ server {
 		{{- configuration_block }}
 	{% endfor %}
 
-	{% if matrix_nginx_proxy_proxy_synapse_metrics %}
-	location /_synapse/metrics {
-		{% if matrix_nginx_proxy_enabled %}
-			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
-			set $backend "{{ matrix_nginx_proxy_proxy_synapse_metrics_addr_with_container }}";
-			proxy_pass http://$backend;
-		{% else %}
-			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://{{ matrix_nginx_proxy_proxy_synapse_metrics_addr_sans_container }};
-		{% endif %}
-
-		proxy_set_header Host $host;
-
-		{% if matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled %}
-			auth_basic "protected";
-			auth_basic_user_file {{ matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_path }};
-		{% endif %}
-	}
-	{% endif %}
-
-	{% if matrix_nginx_proxy_enabled and matrix_nginx_proxy_proxy_synapse_metrics %}
-		{% for worker in matrix_nginx_proxy_proxy_synapse_workers_enabled_list %}
-			{% if worker.metrics_port != 0 %}
-				location /_synapse-worker-{{ worker.type }}-{{ worker.instanceId }}/metrics {
-					resolver 127.0.0.11 valid=5s;
-					set $backend "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.metrics_port }}";
-					proxy_pass http://$backend/_synapse/metrics;
-					proxy_set_header Host $host;
-
-					{% if matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled %}
-						auth_basic "protected";
-						auth_basic_user_file {{ matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_path }};
-					{% endif %}
-				}
-			{% endif %}
-		{% endfor %}
-	{% endif %}
-
 	{# Everything else just goes to the API server ##}
 	location / {
 		{% if matrix_nginx_proxy_enabled %}
