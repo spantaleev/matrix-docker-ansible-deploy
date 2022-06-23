@@ -11,6 +11,18 @@ matrix_prometheus_node_exporter_docker_image_force_pull: "{{ matrix_prometheus_n
 # A list of extra arguments to pass to the container
 matrix_prometheus_node_exporter_container_extra_arguments: []
 
+# A list of extra arguments to pass to the node_exporter process
+#
+# Example:
+# matrix_prometheus_node_exporter_process_extra_arguments:
+#   - "--collector.systemd"
+#   - "--collector.logind"
+#
+# Note: the above is just an example. We have not confirmed that these collectors work when running in a container.
+# In fact, the systemd collector is exhibiting issues:
+# > caller=collector.go:169 level=error msg="collector failed" name=systemd duration_seconds=0.000121001 err="couldn't get dbus connection: dial unix /var/run/dbus/system_bus_socket: connect: no such file or directory"
+matrix_prometheus_node_exporter_process_extra_arguments: []
+
 # List of systemd services that matrix-prometheus.service depends on
 matrix_prometheus_node_exporter_systemd_required_services_list: ['docker.service']
 
