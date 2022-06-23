@@ -1,0 +1,11 @@
+---
+
+- name: Fail if required settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - matrix_maubot_secret
+    - matrix_maubot_admin_user
+    - matrix_maubot_admin_password
