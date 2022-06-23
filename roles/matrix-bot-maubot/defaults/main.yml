@@ -1,0 +1,33 @@
+---
+
+matrix_bot_maubot_enabled: true
+matrix_bot_maubot_container_image_self_build: false
+matrix_bot_maubot_docker_repo: "https://mau.dev/maubot/maubot.git"
+matrix_bot_maubot_docker_src_files_path: "{{ matrix_bot_maubot_base_path }}/docker-src"
+
+matrix_bot_maubot_version: latest
+matrix_bot_maubot_docker_image: "dock.mau.dev/maubot/maubot:{{ matrix_bot_maubot_version }}"
+matrix_bot_maubot_docker_image_force_pull: "{{ matrix_bot_maubot_docker_image.endswith(':latest') }}"
+
+matrix_bot_maubot_base_path: "{{ matrix_base_data_path }}/maubot"
+matrix_bot_maubot_data_path: "{{ matrix_bot_maubot_base_path }}/data"
+matrix_bot_maubot_container_data_dir: "/data"
+
+matrix_bot_maubot_bot_server: "https://{{ matrix_server_fqn_matrix }}"
+
+
+
+matrix_bot_maubot_logging_level: info
+matrix_bot_maubot_secret: ''
+matrix_bot_maubot_admin_user: ''
+matrix_bot_maubot_admin_password: ''
+matrix_mau_environment_variables_extension: ''
+
+# A list of extra arguments to pass to the container
+matrix_bot_maubot_container_extra_arguments: []
+
+# List of systemd services that matrix-bot-matrix-registration-bot.service depends on
+matrix_bot_maubot_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-bot-matrix-registration-bot.service wants
+matrix_bot_maubot_systemd_wanted_services_list: []

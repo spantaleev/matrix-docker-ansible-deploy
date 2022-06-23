@@ -50,7 +50,7 @@ server:
     hostname: 0.0.0.0
     port: 29316
     # Public base URL where the server is visible.
-    public_url: {{ matrix_maubot_bot_server }}
+    public_url: {{ matrix_bot_maubot_bot_server }}
     # The base management API path.
     base_path: /_matrix/maubot/v1
     # The base path for the UI.
@@ -64,7 +64,7 @@ server:
     appservice_base_path: /_matrix/app/v1
     # The shared secret to sign API access tokens.
     # Set to "generate" to generate and save a new token at startup.
-    unshared_secret: {{ matrix_maubot_secret }}
+    unshared_secret: {{ matrix_bot_maubot_secret }}
 
 # Known homeservers. This is required for the `mbc auth` command and also allows
 # more convenient access from the management UI. This is not required to create
@@ -73,14 +73,16 @@ server:
 homeservers:
   {{  matrix_domain }}:
     # Client-server API URL
-        url: {{ matrix_maubot_bot_server }}
+        url: {{ matrix_bot_maubot_bot_server }}
     # registration_shared_secret from synapse config
     # You can leave this empty if you don't have access to the homeserver.
     # When this is empty, `mbc auth --register` won't work, but `mbc auth` (login) will.
         secret: {{ matrix_registration_shared_secret }}
-admins:
-    root: ''
-  {{ matrix_maubot_admin_user }}: {{ matrix_maubot_admin_password }}
+
+# List of administrator users. Plaintext passwords will be bcrypted on startup. Set empty password
+# to prevent normal login. Root is a special user that can't have a password and will always exist.
+admins: {{ matrix_bot_maubot_admins | combine( {"root": ""} ) }}
+
 api_features:
     login: true
     plugin: true

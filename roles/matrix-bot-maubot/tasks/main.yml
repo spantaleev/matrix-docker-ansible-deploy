@@ -5,19 +5,19 @@
     - always
 
 - import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: "run_setup|bool and matrix_maubot_enabled|bool"
+  when: "run_setup|bool and matrix_bot_maubot_enabled|bool"
   tags:
     - setup-all
-    - setup-maubot
+    - setup-bot-maubot
 
 - import_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  when: "run_setup|bool and matrix_maubot_enabled|bool"
+  when: "run_setup|bool and matrix_bot_maubot_enabled|bool"
   tags:
     - setup-all
-    - setup-maubot
+    - setup-bot-maubot
 
 - import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  when: "run_setup|bool and not matrix_maubot_enabled|bool"
+  when: "run_setup|bool and not matrix_bot_maubot_enabled|bool"
   tags:
     - setup-all
-    - setup-maubot
+    - setup-bot-maubot
