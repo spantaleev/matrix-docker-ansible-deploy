@@ -9,17 +9,55 @@
     group: "{{ matrix_user_groupname }}"
   with_items:
     - {path: "{{ matrix_bot_maubot_base_path }}", when: true}
-    - - {path: "{{ matrix_bot_maubot_data_path }}", when: true}
+    - {path: "{{ matrix_bot_maubot_data_path }}", when: true}
     - {path: "{{ matrix_bot_maubot_docker_src_files_path }}", when: true}
   when: "item.when|bool"
 
 - name: Ensure maubot configuration file created
   template:
     src: "{{ role_path }}/templates/config/config.yaml.j2"
-    dest: "{{ matrix_bot_maubot_base_path }}/config.yaml"
+    dest: "{{ matrix_bot_maubot_data_path }}/config.yaml"
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
     mode: "u=rwx"
+
+- name: Generate Maubot proxying configuration for matrix-nginx-proxy
+  set_fact:
+    matrix_bot_maubot_matrix_nginx_proxy_configuration: |
+      location ~ ^/(_matrix/maubot/.*) {
+      {% if matrix_nginx_proxy_enabled|default(False) %}
+      	{# Use the embedded DNS resolver in Docker containers to discover the service #}
+      	resolver 127.0.0.11 valid=5s;
+      	set $backend "matrix-maubot:{{ matrix_bot_maubot_port }}/$1";
+      	proxy_pass http://$backend;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+      {% else %}
+      	{# Generic configuration for use outside of our container setup #}
+      	proxy_pass http://127.0.0.1:{{ matrix_bot_maubot_port }}/$1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+      {% endif %}
+      }
+
+- name: Register Maubot's proxying configuration with matrix-nginx-proxy
+  set_fact:
+    matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: |
+      {{
+        matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks|default([])
+        +
+        [matrix_bot_maubot_matrix_nginx_proxy_configuration]
+      }}
+
+- name: Warn about reverse-proxying if matrix-nginx-proxy not used
+  debug:
+    msg: >-
+      NOTE: You've enabled Maubot but are not using the matrix-nginx-proxy
+      reverse proxy.
+      Please make sure that you're proxying the `/_matrix/maubot`
+      URL endpoint to the matrix-maubot container.
+  when: "matrix_bot_maubot_enabled|bool and matrix_nginx_proxy_enabled is not defined"
+
 
 - name: Ensure maubot image is pulled
   docker_image:
