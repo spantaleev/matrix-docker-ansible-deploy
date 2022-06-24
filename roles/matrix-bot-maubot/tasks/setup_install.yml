@@ -39,6 +39,7 @@
         proxy_set_header Connection "upgrade";
       {% endif %}
       }
+  when: matrix_bot_maubot_proxy_management_interface|bool
 
 - name: Register Maubot's proxying configuration with matrix-nginx-proxy
   set_fact:
@@ -48,6 +49,7 @@
         +
         [matrix_bot_maubot_matrix_nginx_proxy_configuration]
       }}
+  when: matrix_bot_maubot_proxy_management_interface|bool
 
 - name: Warn about reverse-proxying if matrix-nginx-proxy not used
   debug:
@@ -56,7 +58,7 @@
       reverse proxy.
       Please make sure that you're proxying the `/_matrix/maubot`
       URL endpoint to the matrix-maubot container.
-  when: "matrix_bot_maubot_enabled|bool and matrix_nginx_proxy_enabled is not defined"
+  when: "matrix_bot_maubot_enabled|bool and matrix_bot_maubot_proxy_management_interface|bool and matrix_nginx_proxy_enabled is not defined"
 
 
 - name: Ensure maubot image is pulled
