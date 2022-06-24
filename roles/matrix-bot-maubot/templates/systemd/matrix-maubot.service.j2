@@ -20,9 +20,10 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-maubot \
 			--log-driver=none \
             -e UID={{ matrix_user_uid }} \
             -e GID={{ matrix_user_gid }} \
+            --read-only \
             -v {{ matrix_bot_maubot_data_path }}:{{ matrix_bot_maubot_container_data_dir }}:z \
 			{% for arg in matrix_bot_maubot_container_extra_arguments %}
-			{{ arg }} \
+			    {{ arg }} \
 			{% endfor %}
 			--network={{ matrix_docker_network }} \
             {% if matrix_bot_maubot_expose_management_interface|bool %}
