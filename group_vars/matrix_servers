@@ -1078,6 +1078,14 @@ matrix_bot_maubot_systemd_required_services_list: |
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
+matrix_bot_maubot_registration_shared_secret: |-
+  {{
+    {
+      'synapse': matrix_synapse_registration_shared_secret,
+      'dendrite': matrix_dendrite_registration_shared_secret,
+    }[matrix_homeserver_implementation]
+  }}
+
 
 ######################################################################
 #
