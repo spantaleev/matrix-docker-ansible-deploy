@@ -90,6 +90,7 @@ matrix_nginx_proxy_proxy_matrix_metrics_additional_user_location_configuration_b
 
 Using `matrix_nginx_proxy_proxy_matrix_metrics_additional_user_location_configuration_blocks` only takes effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true` (see above).
 
+Note : The playbook will hash the basic_auth password for you on setup. Thus, you need to give the plain-text version of the password as a variable. 
 
 ### Collecting Synapse worker metrics to an external Prometheus server
 
@@ -130,4 +131,3 @@ scrape_configs:
 - [The Prometheus scraping rules](https://github.com/matrix-org/synapse/tree/master/contrib/prometheus) (we use v2)
 - [The Synapse Grafana dashboard](https://github.com/matrix-org/synapse/tree/master/contrib/grafana)
 - [The Node Exporter dashboard](https://github.com/rfrail3/grafana-dashboards) (for generic non-synapse performance graphs)
-
