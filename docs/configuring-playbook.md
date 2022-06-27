@@ -168,3 +168,5 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 ### Other specialized services
 
 - [Setting up the Sygnal push gateway](configuring-playbook-sygnal.md) (optional)
+
+- [Setting up the ntfy push notifications server](configuring-playbook-ntfy.md) (optional)
