@@ -91,3 +91,5 @@ Once connected, you should be able to verify that you're browsing the web throug
 Then proceed to log in to [Facebook/Messenger](https://www.facebook.com/).
 
 Once logged in, proceed to [set up bridging](#usage).
+
+If that doesn't work, enable 2FA [Facebook help page on enabling 2FA](https://www.facebook.com/help/148233965247823) and try to login again with a new password, and entering the 2FA code when prompted, it may take more then one try, in between attempts, check facebook.com to see if they are requiring another password change
