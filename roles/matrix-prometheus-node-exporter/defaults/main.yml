@@ -18,9 +18,10 @@ matrix_prometheus_node_exporter_container_extra_arguments: []
 #   - "--collector.systemd"
 #   - "--collector.logind"
 #
-# Note: the above is just an example. We have not confirmed that these collectors work when running in a container.
-# In fact, the systemd collector is exhibiting issues:
-# > caller=collector.go:169 level=error msg="collector failed" name=systemd duration_seconds=0.000121001 err="couldn't get dbus connection: dial unix /var/run/dbus/system_bus_socket: connect: no such file or directory"
+# Note: the above is just an example. Various collectors may require various tweaks to be able to run.
+# Running the systemd collector requires the following `matrix_prometheus_node_exporter_container_extra_arguments`:
+# - the socket to be mounted as well (`--mount type=bind,src=/var/run/dbus/system_bus_socket,dst=/var/run/dbus/system_bus_socket,ro,bind-propagation=rslave`)
+# - (on AppArmor-based distros) disabling AppArmor protection (`--security-opt apparmor=unconfined`)
 matrix_prometheus_node_exporter_process_extra_arguments: []
 
 # List of systemd services that matrix-prometheus.service depends on
