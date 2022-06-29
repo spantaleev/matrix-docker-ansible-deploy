@@ -21,3 +21,10 @@
   tags:
     - setup-all
     - setup-client-hydrogen
+
+- import_tasks: "{{ role_path }}/tasks/self_check.yml"
+  delegate_to: 127.0.0.1
+  become: false
+  when: "run_self_check|bool and matrix_client_hydrogen_enabled|bool"
+  tags:
+    - self-check
