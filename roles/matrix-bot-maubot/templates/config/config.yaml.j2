@@ -3,12 +3,12 @@
 # Format examples:
 #   SQLite:   sqlite:///filename.db
 #   Postgres: postgresql://username:password@hostname/dbname
-database: {{ matrix_bot_maubot_storage_database|to_json }}
+database: {{ matrix_bot_maubot_database_uri|to_json }}
 
 # Separate database URL for the crypto database. "default" means use the same database as above.
 crypto_database: 
     type: default
-    postgres_uri: {{ matrix_bot_maubot_storage_database|to_json }}
+    postgres_uri: {{ matrix_bot_maubot_database_uri|to_json }}
 
 # Additional arguments for asyncpg.create_pool() or sqlite3.connect()
 # https://magicstack.github.io/asyncpg/current/api/index.html#asyncpg.pool.create_pool
