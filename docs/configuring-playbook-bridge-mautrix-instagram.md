@@ -20,13 +20,18 @@ matrix_mautrix_instagram_configuration_extension_yaml: |
 
 If you would like to be able to administrate the bridge from your account it can be configured like this:
 ```yaml
+# The easy way. The specified Matrix user ID will be made an admin of all bridges
+matrix_admin: "@YOUR_USERNAME:{{ matrix_domain }}"
+
+# OR:
+# The more verbose way. Applies to this bridge only. You may define multiple Matrix users as admins.
 matrix_mautrix_instagram_configuration_extension_yaml: |
   bridge:
     permissions:
       '@YOUR_USERNAME:YOUR_DOMAIN': admin
 ```
 
-You may wish to look at `roles/matrix-bridge-mautrix-instagram/templates/config.yaml.j2` to find other things you would like to configure.
+You may wish to look at `roles/matrix-bridge-mautrix-instagram/templates/config.yaml.j2` and `roles/matrix-bridge-mautrix-instagram/defaults/main.yml` to find other things you would like to configure.
 
 
 ## Usage
