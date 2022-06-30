@@ -7,6 +7,27 @@ See the project's [documentation](https://docs.mau.fi/bridges/python/instagram/i
 ```yaml
 matrix_mautrix_instagram_enabled: true
 ```
+There are some additional things you may wish to configure about the bridge before you continue.
+
+Encryption support is off by default. If you would like to enable encryption, add the following to your `vars.yml` file:
+```yaml
+matrix_mautrix_instagram_configuration_extension_yaml: |
+  bridge:
+    encryption:
+      allow: true
+      default: true
+```
+
+If you would like to be able to administrate the bridge from your account it can be configured like this:
+```yaml
+matrix_mautrix_instagram_configuration_extension_yaml: |
+  bridge:
+    permissions:
+      '@YOUR_USERNAME:YOUR_DOMAIN': admin
+```
+
+You may wish to look at `roles/matrix-bridge-mautrix-instagram/templates/config.yaml.j2` to find other things you would like to configure.
+
 
 ## Usage
 
