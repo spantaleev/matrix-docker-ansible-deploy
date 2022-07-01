@@ -24,10 +24,22 @@ If you would like to be able to administrate the bridge from your account it can
 matrix_mautrix_facebook_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@YOUR_USERNAME:YOUR_DOMAIN': admin
+      '@YOUR_USERNAME:{{ matrix_domain }}': admin
 ```
 
-You may wish to look at `roles/matrix-bridge-mautrix-facebook/templates/config.yaml.j2` to find other things you would like to configure.
+Using both would look like
+
+```yaml
+matrix_mautrix_facebook_configuration_extension_yaml: |
+  bridge:
+    permissions:
+      '@YOUR_USERNAME:{{ matrix_domain }}': admin
+    encryption:
+      allow: true
+      default: true
+```
+
+You may wish to look at `roles/matrix-bridge-mautrix-facebook/templates/config.yaml.j2` and `roles/matrix-bridge-mautrix-facebook/defaults/main.yml` to find other things you would like to configure.
 
 
 ## Set up Double Puppeting
