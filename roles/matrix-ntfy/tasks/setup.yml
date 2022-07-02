@@ -15,6 +15,17 @@
   delay: "{{ matrix_container_retries_delay }}"
   until: result is not failed
 
+- name: Ensure matrix-ntfy paths exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_ntfy_base_path }}"
+    - "{{ matrix_ntfy_data_path }}"
+
 - name: Ensure matrix-ntfy.service installed
   template:
     src: "{{ role_path }}/templates/systemd/matrix-ntfy.service.j2"
