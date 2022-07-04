@@ -1,7 +1,4 @@
 ---
-#
-# Tasks related to setting up matrix-ntfy
-#
 
 - name: Ensure matrix-ntfy image is pulled
   docker_image:
@@ -9,7 +6,6 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_ntfy_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_ntfy_docker_image_force_pull }}"
-  when: "matrix_ntfy_enabled|bool"
   register: result
   retries: "{{ matrix_container_retries_count }}"
   delay: "{{ matrix_container_retries_delay }}"
@@ -32,38 +28,8 @@
     dest: "{{ matrix_systemd_path }}/matrix-ntfy.service"
     mode: 0644
   register: matrix_ntfy_systemd_service_result
-  when: matrix_ntfy_enabled|bool
 
 - name: Ensure systemd reloaded after matrix-ntfy.service installation
   service:
     daemon_reload: true
-  when: "matrix_ntfy_enabled|bool and matrix_ntfy_systemd_service_result.changed"
-
-#
-# Tasks related to getting rid of matrix-ntfy (if it was previously enabled)
-#
-
-- name: Check existence of matrix-ntfy service
-  stat:
-    path: "{{ matrix_systemd_path }}/matrix-ntfy.service"
-  register: matrix_ntfy_service_stat
-
-- name: Ensure matrix-ntfy is stopped
-  service:
-    name: matrix-ntfy
-    state: stopped
-    enabled: false
-    daemon_reload: true
-  register: stopping_result
-  when: "not matrix_ntfy_enabled|bool and matrix_ntfy_service_stat.stat.exists"
-
-- name: Ensure matrix-ntfy.service doesn't exist
-  file:
-    path: "{{ matrix_systemd_path }}/matrix-ntfy.service"
-    state: absent
-  when: "not matrix_ntfy_enabled|bool and matrix_ntfy_service_stat.stat.exists"
-
-- name: Ensure systemd reloaded after matrix-ntfy.service removal
-  service:
-    daemon_reload: true
-  when: "not matrix_ntfy_enabled|bool and matrix_ntfy_service_stat.stat.exists"
+  when: "matrix_ntfy_systemd_service_result.changed"
