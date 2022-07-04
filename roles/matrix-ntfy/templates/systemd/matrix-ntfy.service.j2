@@ -25,7 +25,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-ntfy \
 			{% endif %}
 			--mount type=bind,src={{ matrix_ntfy_data_path }},dst=/data \
 			--env NTFY_CACHE_FILE=/data/cache.db \
-			--env NTFY_BASE_URL=https://{{ matrix_server_fqn_ntfy }} \
+			--env NTFY_BASE_URL={{ matrix_ntfy_base_url }} \
 			{{ matrix_ntfy_docker_image }} \
 			serve --behind-proxy
 
