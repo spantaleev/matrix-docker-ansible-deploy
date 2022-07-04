@@ -19,12 +19,13 @@ matrix_ntfy_enabled: true
 
 # Some other options
 matrix_server_fqn_ntfy: "ntfy.{{ matrix_domain }}"
-matrix_ntfy_container_extra_arguments: [ '--env=NTFY_LOG_LEVEL=DEBUG' ]
+matrix_ntfy_configuration_extension_yaml: |
+  log_level: DEBUG
 ```
 
 For a more complete list of variables that you could override, see `roles/matrix-ntfy/defaults/main.yml`.
 
-For a complete list of ntfy config options that you could put in `matrix_ntfy_container_extra_arguments`, see the [ntfy config documentation](https://ntfy.sh/docs/config/#config-options).
+For a complete list of ntfy config options that you could put in `matrix_ntfy_configuration_extension_yaml`, see the [ntfy config documentation](https://ntfy.sh/docs/config/#config-options).
 
 
 ## Installing

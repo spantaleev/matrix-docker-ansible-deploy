@@ -23,11 +23,10 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-ntfy \
 			{% if matrix_ntfy_container_http_host_bind_port %}
 			-p {{ matrix_ntfy_container_http_host_bind_port }}:80 \
 			{% endif %}
+			--mount type=bind,src={{ matrix_ntfy_config_dir_path }},dst=/etc/ntfy,ro \
 			--mount type=bind,src={{ matrix_ntfy_data_path }},dst=/data \
-			--env NTFY_CACHE_FILE=/data/cache.db \
-			--env NTFY_BASE_URL={{ matrix_ntfy_base_url }} \
 			{{ matrix_ntfy_docker_image }} \
-			serve --behind-proxy
+			serve
 
 ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-ntfy 2>/dev/null || true'
 ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-ntfy 2>/dev/null || true'
