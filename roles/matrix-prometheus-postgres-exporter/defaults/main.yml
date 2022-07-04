@@ -28,15 +28,21 @@ matrix_prometheus_postgres_exporter_database_hostname: 'matrix-postgres'
 matrix_prometheus_postgres_exporter_database_port: 5432
 matrix_prometheus_postgres_exporter_database_name: 'matrix_prometheus_postgres_exporter'
 
+# Controls whether postgres-exporter metrics should be proxied (exposed) on `matrix.DOMAIN/metrics/postgres-exporter`.
+# This will only work take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
+# See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
+matrix_prometheus_postgres_exporter_metrics_proxying_enabled: false
 
-# Controls whether the matrix-prometheus container exposes its HTTP port (tcp/9100 in the container).
+# Controls whether the matrix-prometheus container exposes its HTTP port (tcp/9187 in the container).
 #
-# Takes an "<ip>:<port>" value (e.g. "127.0.0.1:9100"), or empty string to not expose.
+# Takes an "<ip>:<port>" value (e.g. "127.0.0.1:9187"), or empty string to not expose.
+#
+# You likely don't need to do this. See `matrix_prometheus_postgres_exporter_metrics_proxying_enabled`.
 #
 # Official recommendations are to run this container with `--net=host`,
 # but we don't do that, since it:
 # - likely exposes the metrics web server way too publicly (before applying https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1008)
-# - or listens on a loopback interface only (--net=host and 127.0.0.1:9100), which is not reachable from another container (like `matrix-prometheus`)
+# - or listens on a loopback interface only (--net=host and 127.0.0.1:9187), which is not reachable from another container (like `matrix-prometheus`)
 #
 # Using `--net=host` and binding to Docker's `matrix` bridge network may be a solution to both,
 # but that's trickier to accomplish and won't necessarily work (hasn't been tested).

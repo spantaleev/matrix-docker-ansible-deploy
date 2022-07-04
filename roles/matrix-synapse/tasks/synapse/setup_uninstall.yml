@@ -29,3 +29,9 @@
   docker_image:
     name: "{{ matrix_synapse_docker_image }}"
     state: absent
+
+- name: Ensure sample prometheus.yml for external scraping is deleted
+  file:
+    path: "{{ matrix_synapse_base_path }}/external_prometheus.yml.example"
+    state: absent
+  when: "not matrix_synapse_metrics_proxying_enabled|bool"

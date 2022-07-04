@@ -203,6 +203,9 @@ bridge:
     #     mxid - Specific user
     permissions:
       '{{ matrix_mautrix_facebook_homeserver_domain }}': user
+      {% if matrix_admin %}
+      '{{ matrix_admin }}': admin
+      {% endif %}
 
     relay:
         # Whether relay mode should be allowed. If allowed, `!fb set-relay` can be used to turn any
@@ -250,11 +253,11 @@ logging:
             formatter: colored
     loggers:
         mau:
-            level: DEBUG
+            level: {{ matrix_mautrix_facebook_logging_level|to_json }}
         paho:
-            level: INFO
+            level: {{ matrix_mautrix_facebook_logging_level|to_json }}
         aiohttp:
-            level: INFO
+            level: {{ matrix_mautrix_facebook_logging_level|to_json }}
     root:
-        level: DEBUG
+        level: {{ matrix_mautrix_facebook_logging_level|to_json }}
         handlers: [console]

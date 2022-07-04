@@ -6,12 +6,16 @@
 # If the matrix-synapse role is not used, these variables may not exist.
 - set_fact:
     matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      ["--mount type=bind,src={{ matrix_mautrix_whatsapp_config_path }}/registration.yaml,dst=/matrix-mautrix-whatsapp-registration.yaml,ro"]
+      {{
+        matrix_synapse_container_extra_arguments|default([])
+        +
+        ["--mount type=bind,src={{ matrix_mautrix_whatsapp_config_path }}/registration.yaml,dst=/matrix-mautrix-whatsapp-registration.yaml,ro"]
+      }}
 
     matrix_synapse_app_service_config_files: >
-      {{ matrix_synapse_app_service_config_files|default([]) }}
-      +
-      {{ ["/matrix-mautrix-whatsapp-registration.yaml"] }}
+      {{
+        matrix_synapse_app_service_config_files|default([])
+        +
+        ["/matrix-mautrix-whatsapp-registration.yaml"]
+      }}
   when: matrix_mautrix_whatsapp_enabled|bool

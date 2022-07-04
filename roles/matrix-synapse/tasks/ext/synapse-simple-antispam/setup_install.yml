@@ -39,16 +39,20 @@
 
 - set_fact:
     matrix_synapse_modules: >
-      {{ matrix_synapse_modules }}
-      +
-      [{
-        "module": "synapse_simple_antispam.AntiSpamInvites",
-        "config": {
-          "blocked_homeservers": {{ matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeservers }}
-        }
-      }]
+      {{
+        matrix_synapse_modules
+        +
+        [{
+          "module": "synapse_simple_antispam.AntiSpamInvites",
+          "config": {
+            "blocked_homeservers": matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeservers
+          }
+        }]
+      }}
 
     matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      ["--mount type=bind,src={{ matrix_synapse_ext_path }}/synapse-simple-antispam/synapse_simple_antispam,dst={{ matrix_synapse_in_container_python_packages_path }}/synapse_simple_antispam,ro"]
+      {{
+        matrix_synapse_container_extra_arguments|default([])
+        +
+        ["--mount type=bind,src={{ matrix_synapse_ext_path }}/synapse-simple-antispam/synapse_simple_antispam,dst={{ matrix_synapse_in_container_python_packages_path }}/synapse_simple_antispam,ro"]
+      }}

@@ -21,14 +21,18 @@
 # If the matrix-synapse role is not used, these variables may not exist.
 - set_fact:
     matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      ["--mount type=bind,src={{ matrix_appservice_slack_config_path }}/slack-registration.yaml,dst=/matrix-appservice-slack-registration.yaml,ro"]
+      {{
+        matrix_synapse_container_extra_arguments|default([])
+        +
+        ["--mount type=bind,src={{ matrix_appservice_slack_config_path }}/slack-registration.yaml,dst=/matrix-appservice-slack-registration.yaml,ro"]
+      }}
 
     matrix_synapse_app_service_config_files: >
-      {{ matrix_synapse_app_service_config_files|default([]) }}
-      +
-      {{ ["/matrix-appservice-slack-registration.yaml"] }}
+      {{
+        matrix_synapse_app_service_config_files|default([])
+        +
+        ["/matrix-appservice-slack-registration.yaml"]
+      }}
   when: matrix_appservice_slack_enabled|bool
 
 # If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.

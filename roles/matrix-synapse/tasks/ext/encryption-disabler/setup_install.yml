@@ -27,11 +27,15 @@
       }}
 
     matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      ["--mount type=bind,src={{ matrix_synapse_ext_path }}/matrix_e2ee_filter.py,dst={{ matrix_synapse_in_container_python_packages_path }}/matrix_e2ee_filter.py,ro"]
+      {{
+        matrix_synapse_container_extra_arguments|default([])
+        +
+        ["--mount type=bind,src={{ matrix_synapse_ext_path }}/matrix_e2ee_filter.py,dst={{ matrix_synapse_in_container_python_packages_path }}/matrix_e2ee_filter.py,ro"]
+      }}
 
     matrix_synapse_additional_loggers: >
-      {{ matrix_synapse_additional_loggers }}
-      +
-      {{ [{'name': 'matrix_e2ee_filter', 'level': 'INFO'}] }}
+      {{
+        matrix_synapse_additional_loggers
+        +
+        [{'name': 'matrix_e2ee_filter', 'level': 'INFO'}]
+      }}

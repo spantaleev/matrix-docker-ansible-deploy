@@ -26,6 +26,7 @@ worker_listeners:
 {% if http_resources|length > 0 %}
   - type: http
     bind_addresses: ['::']
+    x_forwarded: true
     port: {{ matrix_synapse_worker_details.port }}
     resources:
       - names: {{ http_resources|to_json }}

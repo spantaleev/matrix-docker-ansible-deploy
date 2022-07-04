@@ -68,6 +68,14 @@
   register: matrix_registration_git_pull_results
   when: "matrix_registration_container_image_self_build|bool"
 
+# See: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1864
+- name: Patch setup.py to allow self-built version to work
+  lineinfile:
+    path: "{{ matrix_registration_docker_src_files_path }}/setup.py"
+    regexp: 'flask-limiter'
+    line: '"flask-limiter~=1.1.0", "Markupsafe<2.1",'
+  when: "matrix_registration_container_image_self_build|bool and matrix_registration_container_image_self_build_python_dependencies_patch_enabled|bool"
+
 - name: Ensure matrix-registration Docker image is built
   docker_image:
     name: "{{ matrix_registration_docker_image }}"

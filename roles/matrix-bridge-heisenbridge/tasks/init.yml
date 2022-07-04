@@ -14,12 +14,16 @@
 # If the matrix-synapse role is not used, these variables may not exist.
 - set_fact:
     matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      ["--mount type=bind,src={{ matrix_heisenbridge_base_path }}/registration.yaml,dst=/heisenbridge-registration.yaml,ro"]
+      {{
+        matrix_synapse_container_extra_arguments|default([])
+        +
+        ["--mount type=bind,src={{ matrix_heisenbridge_base_path }}/registration.yaml,dst=/heisenbridge-registration.yaml,ro"]
+      }}
 
     matrix_synapse_app_service_config_files: >
-      {{ matrix_synapse_app_service_config_files|default([]) }}
-      +
-      {{ ["/heisenbridge-registration.yaml"] }}
+      {{
+        matrix_synapse_app_service_config_files|default([])
+        +
+        ["/heisenbridge-registration.yaml"]
+      }}
   when: matrix_heisenbridge_enabled|bool
