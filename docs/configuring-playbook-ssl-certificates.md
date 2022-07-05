@@ -74,6 +74,7 @@ By default, it obtains certificates for:
 - possibly for `jitsi.<your-domain>`, if you have explicitly [set up Jitsi](configuring-playbook-jitsi.md).
 - possibly for `stats.<your-domain>`, if you have explicitly [set up Grafana](configuring-playbook-prometheus-grafana.md).
 - possibly for `sygnal.<your-domain>`, if you have explicitly [set up Sygnal](configuring-playbook-sygnal.md).
+- possibly for `ntfy.<your-domain>`, if you have explicitly [set up ntfy](configuring-playbook-ntfy.md).
 - possibly for your base domain (`<your-domain>`), if you have explicitly configured [Serving the base domain](configuring-playbook-base-domain-serving.md)
 
 If you are hosting other domains on the Matrix machine, you can make the playbook obtain and renew certificates for those other domains too.

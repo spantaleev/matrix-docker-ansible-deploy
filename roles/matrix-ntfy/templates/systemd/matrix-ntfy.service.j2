@@ -1,0 +1,38 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=matrix-ntfy
+After=docker.service
+Requires=docker.service
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-ntfy 2>/dev/null || true'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-ntfy 2>/dev/null || true'
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-ntfy \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			{% for arg in matrix_ntfy_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			--network={{ matrix_docker_network }} \
+			{% if matrix_ntfy_container_http_host_bind_port %}
+			-p {{ matrix_ntfy_container_http_host_bind_port }}:80 \
+			{% endif %}
+			--mount type=bind,src={{ matrix_ntfy_config_dir_path }},dst=/etc/ntfy,ro \
+			--mount type=bind,src={{ matrix_ntfy_data_path }},dst=/data \
+			{{ matrix_ntfy_docker_image }} \
+			serve
+
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-ntfy 2>/dev/null || true'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-ntfy 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-ntfy
+
+[Install]
+WantedBy=multi-user.target

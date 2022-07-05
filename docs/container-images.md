@@ -109,3 +109,5 @@ These services are not part of our default installation, but can be enabled by [
 - [grafana/grafana](https://hub.docker.com/r/grafana/grafana/) - [Grafana](https://github.com/grafana/grafana/) is a graphing tool that works well with the above two images. Our playbook also adds two dashboards for [Synapse](https://github.com/matrix-org/synapse/tree/master/contrib/grafana) and  [Node Exporter](https://github.com/rfrail3/grafana-dashboards)
 
 - [matrixdotorg/sygnal](https://hub.docker.com/r/matrixdotorg/sygnal/) - [Sygnal](https://github.com/matrix-org/sygnal) is a reference Push Gateway for Matrix
+
+- [binwiederhier/ntfy](https://hub.docker.com/r/binwiederhier/ntfy/) - [ntfy](https://ntfy.sh/) is a self-hosted, UnifiedPush-compatible push notifications server
