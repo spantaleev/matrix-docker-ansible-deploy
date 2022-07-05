@@ -1,3 +1,12 @@
+# 2022-07-05
+
+## Ntfy push notifications support
+
+Thanks to [Julian Foad](https://matrix.to/#/@julian:foad.me.uk), the playbook can now install a [ntfy](https://ntfy.sh/) push notifications server for you.
+
+See our [Setting up the ntfy push notifications server](docs/configuring-playbook-ntfy.md) documentation to get started.
+
+
 # 2022-06-23
 
 ## (Potential Backward Compatibility Break) Changes around metrics collection
@@ -26,7 +35,7 @@
 3. If Synapse metrics are exposed, they will be made available at `https://matrix.DOMAIN/metrics/synapse/main-process` or `https://matrix.DOMAIN/metrics/synapse/worker/TYPE-ID` (when workers are enabled), not at `https://matrix.DOMAIN/_synapse/metrics` and `https://matrix.DOMAIN/_synapse-worker-.../metrics`
 4. The playbook still generates an `external_prometheus.yml.example` sample file for scraping Synapse from Prometheus as described in [Collecting Synapse worker metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-synapse-worker-metrics-to-an-external-prometheus-server), but it's now saved under `/matrix/synapse` (not `/matrix`).
 
-**If you where already using a external Prometheus server** before this change, and you gave a hashed version of the password as a variable, the playbook will now take care of hashing the password for you. Thus, you need to provide the non-hashed version now. 
+**If you where already using a external Prometheus server** before this change, and you gave a hashed version of the password as a variable, the playbook will now take care of hashing the password for you. Thus, you need to provide the non-hashed version now.
 
 # 2022-06-13
 
