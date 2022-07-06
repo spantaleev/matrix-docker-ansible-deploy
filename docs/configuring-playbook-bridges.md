@@ -1,6 +1,3 @@
-# Setting up a Mautrix Bridge (optional)
-
-
 # Setting up a Generic Mautrix Bridge (optional)
 
 The playbook can install and configure various [mautrix](https://github.com/mautrix) bridges (twitter, facebook, instagram, signal, hangouts, googlechat, etc.), as well as many other (non-mautrix) bridges.
@@ -86,6 +83,15 @@ You should generate a strong shared secret with a command like this: pwgen -s 64
 
 This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
 
+## Controlling the logging level
+
+```yaml
+matrix_mautrix_SERVICENAME_logging_level: WARN
+```
+
+to `vars.yml` to control the logging level, where you may replace WARN with one of the following to control the verbosity of the logs generated:     TRACE, DEBUG, INFO, WARN, ERROR, or FATAL.
+
+If you have issues with a service, and are requesting support, the higher levels of logging will generally be more helpful.
 
 
 ## Usage
