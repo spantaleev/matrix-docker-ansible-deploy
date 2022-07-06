@@ -41,9 +41,28 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-To make use of your ntfy installation, on Android for example, first you need to install the `ntfy` client app and configure it to point to your ntfy server, such as `https://ntfy.DOMAIN`. That is the only thing you need to do in the ntfy client app. (It has many other features, but for our purposes you can ignore them.)
+To make use of your ntfy installation, on Android for example, you need two things:
 
-Then any UnifiedPush-enabled matrix app on that device will discover it and tell your matrix server to use your ntfy server to send push notifications to that matrix app.
+* the `ntfy` app
+* a UnifiedPush-compatible matrix app
+
+You need to install the `ntfy` app on each device on which you want to receive push notifications through your ntfy server. The `ntfy` app will provide UnifiedPush notifications to any number of UnifiedPush-compatible messaging apps installed on the same device.
+
+### Setting up the `ntfy` Android app
+
+1. Install the [ntfy Android app](https://ntfy.sh/docs/subscribe/phone/) from F-droid or Google Play.
+2. In its Settings -> `General: Default server`, enter your ntfy server URL, such as `https://ntfy.DOMAIN`.
+3. In its Settings -> `Advanced: Connection protocol`, choose `WebSockets`.
+
+That is all you need to do in the ntfy app. It has many other features, but for our purposes you can ignore them. In particular you do not need to follow any instructions about subscribing to a notification topic as UnifiedPush will do that automatically.
+
+### Setting up a UnifiedPush-compatible matrix app
+
+Install any UnifiedPush-enabled matrix app on that same device. The matrix app will learn from the `ntfy` app that you have configured UnifiedPush on this device, and then it will tell your matrix server to use it.
+
+Steps needed for specific matrix apps:
+
+* SchildiChat: enable `Settings` -> `Notifications` -> `UnifiedPush: Force custom push gateway`.
 
 If the matrix app asks, "Choose a distributor: FCM Fallback or ntfy", then choose "ntfy".
 
