@@ -9,6 +9,7 @@ To enable a bridge add:
 
 
 ```yaml
+# Replace SERVICENAME with one of: twitter, facebook, instagram, ..
 matrix_mautrix_SERVICENAME_enabled: true
 ```
 
