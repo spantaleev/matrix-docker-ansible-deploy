@@ -62,7 +62,16 @@ Install any UnifiedPush-enabled matrix app on that same device. The matrix app w
 
 Steps needed for specific matrix apps:
 
-* SchildiChat: enable `Settings` -> `Notifications` -> `UnifiedPush: Force custom push gateway`.
+* FluffyChat-android:
+  - Should auto-detect and use it. No manual settings.
+
+* SchildiChat-android:
+  1. enable `Settings` -> `Notifications` -> `UnifiedPush: Force custom push gateway`.
+  2. choose `Settings` -> `Notifications` -> `UnifiedPush: Re-register push distributor`. *(For info, a more complex alternative to achieve the same is: delete the relevant unifiedpush registration in `ntfy` app, force-close SchildiChat, re-open it.)*
+  3. verify `Settings` -> `Notifications` -> `UnifiedPush: Notification targets` as described below in the "Troubleshooting" section.
+
+* Element-android v1.4.26+:
+  - [not yet documented; should auto-detect and use it?]
 
 If the matrix app asks, "Choose a distributor: FCM Fallback or ntfy", then choose "ntfy".
 
@@ -75,7 +84,9 @@ First check that the matrix client app you are using supports UnifiedPush. There
 
 Set the ntfy server's log level to 'DEBUG', as shown in the example settings above, and watch the server's logs with `sudo journalctl -fu matrix-ntfy`.
 
-To check if UnifiedPush is correctly configured on the client device, look at "Settings -> Notifications -> Notification Targets" in Element-Android or SchildiChat, or "Settings -> Notifications -> Devices" in FluffyChat. There should be one entry for each matrix client app that has enabled push notifications, and when that client is using UnifiedPush you should see a URL that begins with your ntfy server's URL. In Element-Android or SchildiChat, two URLs are shown: "push\_key" and "Url", and both should begin with your ntfy server's URL.
+To check if UnifiedPush is correctly configured on the client device, look at "Settings -> Notifications -> Notification Targets" in Element-Android or SchildiChat, or "Settings -> Notifications -> Devices" in FluffyChat. There should be one entry for each matrix client app that has enabled push notifications, and when that client is using UnifiedPush you should see a URL that begins with your ntfy server's URL.
+
+In the "Notification Targets" screen in Element-Android or SchildiChat, two relevant URLs are shown, "push\_key" and "Url", and both should begin with your ntfy server's URL. If "push\_key" shows your server but "Url" shows an external server such as `up.schildi.chat` then push notifications will still work but are being routed through that external server before they reach your ntfy server. To rectify that, in SchildiChat (at least around version 1.4.20.sc55) you must enable the `Force custom push gateway` setting as described in the "Usage" section above.
 
 If it is not working, useful tools are "Settings -> Notifications -> Re-register push distributor" and "Settings -> Notifications -> Troubleshoot Notifications" in SchildiChat (possibly also Element-Android). In particular the "Endpoint/FCM" step of that troubleshooter should display your ntfy server's URL that it has discovered from the ntfy client app.
 
