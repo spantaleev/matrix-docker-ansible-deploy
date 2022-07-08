@@ -119,6 +119,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [Sygnal](https://github.com/matrix-org/sygnal) push gateway - see [Setting up the Sygnal push gateway](docs/configuring-playbook-sygnal.md) for setup documentation
 
+- (optional) the [ntfy](https://ntfy.sh) push notifications server - see [docs/configuring-playbook-ntfy.md](docs/configuring-playbook-ntfy.md) for setup documentation
+
 - (optional) the [Hydrogen](https://github.com/vector-im/hydrogen-web) web client - see [docs/configuring-playbook-client-hydrogen.md](docs/configuring-playbook-client-hydrogen.md) for setup documentation
 
 - (optional) the [Cinny](https://github.com/ajbura/cinny) web client - see [docs/configuring-playbook-client-cinny.md](docs/configuring-playbook-client-cinny.md) for setup documentation
