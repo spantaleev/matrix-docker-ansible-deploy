@@ -6,9 +6,8 @@
 database: {{ matrix_bot_maubot_database_uri|to_json }}
 
 # Separate database URL for the crypto database. "default" means use the same database as above.
-crypto_database: 
-    type: default
-    postgres_uri: {{ matrix_bot_maubot_database_uri|to_json }}
+crypto_database:
+  type: default
 
 # Additional arguments for asyncpg.create_pool() or sqlite3.connect()
 # https://magicstack.github.io/asyncpg/current/api/index.html#asyncpg.pool.create_pool
@@ -28,24 +27,7 @@ plugin_directories:
 
 # Configuration for storing plugin databases
 plugin_databases:
-    # The directory where SQLite plugin databases should be stored.
-    sqlite: /data/dbs
-    # The connection URL for plugin databases. If null, all plugins will get SQLite databases.
-    # If set, plugins using the new asyncpg interface will get a Postgres connection instead.
-    # Plugins using the legacy SQLAlchemy interface will always get a SQLite connection.
-    #
-    # To use the same connection pool as the default database, set to "default"
-    # (the default database above must be postgres to do this).
-    #
-    # When enabled, maubot will create separate Postgres schemas in the database for each plugin.
-    # To view schemas in psql, use `\dn`. To view enter and interact with a specific schema,
-    # use `SET search_path = name` (where `name` is the name found with `\dn`) and then use normal
-    # SQL queries/psql commands.
-    postgres:
-    # Maximum number of connections per plugin instance.
-    postgres_max_conns_per_plugin: 3
-    # Overrides for the default database_opts when using a non-"default" postgres connection string.
-    postgres_opts: {}
+  type: default
 
 server:
     # The IP and port to listen to.
