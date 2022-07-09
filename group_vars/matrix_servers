@@ -1088,6 +1088,9 @@ matrix_bot_maubot_registration_shared_secret: |-
     }[matrix_homeserver_implementation]
   }}
 
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_bot_maubot_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_bot_maubot_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.dsc.db') | to_uuid }}"
 
 ######################################################################
 #
@@ -1804,6 +1807,12 @@ matrix_postgres_additional_databases: |
       'username': matrix_bot_honoroit_database_username,
       'password': matrix_bot_honoroit_database_password,
     }] if (matrix_bot_honoroit_enabled and matrix_bot_honoroit_database_engine == 'postgres' and matrix_bot_honoroit_database_hostname == 'matrix-postgres') else [])
+    +
+    ([{
+      'name': matrix_bot_maubot_database_name,
+      'username': matrix_bot_maubot_database_username,
+      'password': matrix_bot_maubot_database_password,
+    }] if (matrix_bot_maubot_enabled  and matrix_bot_maubot_database_engine == 'postgres' and matrix_bot_maubot_database_hostname == 'matrix-postgres') else [])
     +
     ([{
       'name': matrix_bot_buscarron_database_name,
