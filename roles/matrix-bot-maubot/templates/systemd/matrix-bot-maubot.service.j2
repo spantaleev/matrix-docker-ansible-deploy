@@ -18,9 +18,9 @@ ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} 
 
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-bot-maubot \
             --log-driver=none \
-            -e UID={{ matrix_user_uid }} \
-            -e GID={{ matrix_user_gid }} \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
             --read-only \
+            --cap-drop=ALL \
             -v {{ matrix_bot_maubot_data_path }}:/data:z \
             {% for arg in matrix_bot_maubot_container_extra_arguments %}
             {{ arg }} \
