@@ -26,15 +26,15 @@
     matrix_bot_maubot_matrix_nginx_proxy_configuration: |
       location ~ ^/(_matrix/maubot/.*) {
       {% if matrix_nginx_proxy_enabled|default(False) %}
-      	{# Use the embedded DNS resolver in Docker containers to discover the service #}
-      	resolver 127.0.0.11 valid=5s;
-      	set $backend "matrix-maubot:{{ matrix_bot_maubot_port }}/$1";
-      	proxy_pass http://$backend;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
+        {# Use the embedded DNS resolver in Docker containers to discover the service #}
+         resolver 127.0.0.11 valid=5s;
+         set $backend "matrix-bot-maubot:29316/$1";
+         proxy_pass http://$backend;
+         proxy_set_header Upgrade $http_upgrade;
+         proxy_set_header Connection "upgrade";
       {% else %}
-      	{# Generic configuration for use outside of our container setup #}
-      	proxy_pass http://127.0.0.1:{{ matrix_bot_maubot_port }}/$1;
+        {# Generic configuration for use outside of our container setup #}
+        proxy_pass http://127.0.0.1:{{ matrix_bot_maubot_port }}/$1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
       {% endif %}
