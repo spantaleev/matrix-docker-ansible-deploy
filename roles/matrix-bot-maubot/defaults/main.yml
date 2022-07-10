@@ -26,7 +26,15 @@ matrix_bot_maubot_database_password: ~
 matrix_bot_maubot_database_hostname: 'matrix-postgres'
 matrix_bot_maubot_database_port: 5432
 matrix_bot_maubot_database_name: matrix_bot_maubot
-matrix_bot_maubot_database_uri: 'postgres://{{ matrix_bot_maubot_database_username }}:{{ matrix_bot_maubot_database_password }}@{{ matrix_bot_maubot_database_hostname }}:{{ matrix_bot_maubot_database_port }}/{{ matrix_bot_maubot_database_name }}?sslmode=disable'
+
+matrix_bot_maubot_database_connection_string: 'postgres://{{ matrix_bot_maubot_database_username }}:{{ matrix_bot_maubot_database_password }}@{{ matrix_bot_maubot_database_hostname }}:{{ matrix_bot_maubot_database_port }}/{{ matrix_bot_maubot_database_name }}?sslmode=disable'
+
+matrix_bot_maubot_database_uri: "{{
+ 	{
+ 		'sqlite': ('sqlite:///' + matrix_bot_maubot_sqlite_database_path_in_container),
+ 		'postgres': matrix_bot_maubot_database_connection_string,
+ 	}[matrix_bot_maubot_database_engine]
+    }}"
 
 matrix_bot_maubot_port: 29316
 matrix_bot_maubot_secret: 'generate'
