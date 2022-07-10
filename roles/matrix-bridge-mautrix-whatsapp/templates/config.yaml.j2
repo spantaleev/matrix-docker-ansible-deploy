@@ -139,7 +139,7 @@ bridge:
     federate_rooms: {{ matrix_mautrix_whatsapp_federate_rooms|to_json }}
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!wa"
+    command_prefix: "{{ matrix_mautrix_whatsapp_command_prefix }}"
 
     # Messages sent upon joining a management room.
     # Markdown is supported. The defaults are listed below.
@@ -187,6 +187,9 @@ bridge:
     #     mxid - Specific user
     permissions:
         "{{ matrix_mautrix_whatsapp_homeserver_domain }}": user
+        {% if matrix_admin %}
+        "{{ matrix_admin }}": admin
+        {% endif %}
 
     # Settings for relay mode
     relay:
@@ -221,4 +224,4 @@ logging:
     timestamp_format: "Jan _2, 2006 15:04:05"
     # Minimum severity for log messages.
     # Options: debug, info, warn, error, fatal
-    print_level: {{ matrix_mautrix_whatsapp_log_level }}
+    print_level: {{ matrix_mautrix_whatsapp_logging_level }}

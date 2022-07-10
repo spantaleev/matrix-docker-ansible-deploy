@@ -29,9 +29,8 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/federation/v1/event_auth/
   - ^/_matrix/federation/v1/exchange_third_party_invite/
   - ^/_matrix/federation/v1/user/devices/
-  - ^/_matrix/federation/v1/get_groups_publicised$
   - ^/_matrix/key/v2/query
-  - ^/_matrix/federation/(v1|unstable/org.matrix.msc2946)/hierarchy/
+  - ^/_matrix/federation/v1/hierarchy/
 
   # Inbound federation transaction request
   - ^/_matrix/federation/v1/send/
@@ -43,15 +42,14 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/rooms/.*/context/.*$
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/rooms/.*/members$
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/rooms/.*/state$
-  - ^/_matrix/client/(v1|unstable/org.matrix.msc2946)/rooms/.*/hierarchy$
+  - ^/_matrix/client/v1/rooms/.*/hierarchy$
+  - ^/_matrix/client/unstable/org.matrix.msc2716/rooms/.*/batch_send$
   - ^/_matrix/client/unstable/im.nheko.summary/rooms/.*/summary$
   - ^/_matrix/client/(r0|v3|unstable)/account/3pid$
+  - ^/_matrix/client/(r0|v3|unstable)/account/whoami$
   - ^/_matrix/client/(r0|v3|unstable)/devices$
   - ^/_matrix/client/versions$
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/voip/turnServer$
-  - ^/_matrix/client/(r0|v3|unstable)/joined_groups$
-  - ^/_matrix/client/(r0|v3|unstable)/publicised_groups$
-  - ^/_matrix/client/(r0|v3|unstable)/publicised_groups/
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/rooms/.*/event/
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/joined_rooms$
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/search$
@@ -75,31 +73,27 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/join/
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/profile/
 
-  # These appear to be conditional and should not be enabled by default.
-  # We need to fix up our workers-doc-to-yaml.awk parsing script to exclude them.
-  # For now, they've been commented out manually.
-  #
-  # # Device requests
-  # - ^/_matrix/client/(r0|v3|unstable)/sendToDevice/
+# These appear to be conditional and should not be enabled by default.
+# We need to fix up our workers-doc-to-yaml.awk parsing script to exclude them.
+# For now, they've been commented out manually.
+#  # Account data requests
+#  - ^/_matrix/client/(r0|v3|unstable)/.*/tags
+#  - ^/_matrix/client/(r0|v3|unstable)/.*/account_data
+#
+#  # Receipts requests
+#  - ^/_matrix/client/(r0|v3|unstable)/rooms/.*/receipt
+#  - ^/_matrix/client/(r0|v3|unstable)/rooms/.*/read_markers
+#
+#  # Presence requests
+#  - ^/_matrix/client/(api/v1|r0|v3|unstable)/presence/
 
-  # # Account data requests
-  # - ^/_matrix/client/(r0|v3|unstable)/.*/tags
-  # - ^/_matrix/client/(r0|v3|unstable)/.*/account_data
-
-  # # Receipts requests
-  # - ^/_matrix/client/(r0|v3|unstable)/rooms/.*/receipt
-  # - ^/_matrix/client/(r0|v3|unstable)/rooms/.*/read_markers
-
-  # # Presence requests
-  # - ^/_matrix/client/(api/v1|r0|v3|unstable)/presence/
-
+  # User directory search requests
+  - ^/_matrix/client/(r0|v3|unstable)/user_directory/search$
 
   # Additionally, the following REST endpoints can be handled for GET requests:
 
   # FIXME: ADDITIONAL CONDITIONS REQUIRED: to be enabled manually
-  # ^/_matrix/federation/v1/groups/
   # ^/_matrix/client/(api/v1|r0|v3|unstable)/pushrules/
-  # ^/_matrix/client/(r0|v3|unstable)/groups/
 
   # Pagination requests can also be handled, but all requests for a given
   # room must be routed to the same instance. Additionally, care must be taken to
@@ -300,6 +294,15 @@ matrix_synapse_workers_generic_worker_endpoints:
 
   # This work cannot be load-balanced; please ensure the main process is restarted
   # after setting this option in the shared configuration!
+
+  # User directory updates allow REST endpoints matching the following regular
+  # expressions to work:
+
+  # FIXME: ADDITIONAL CONDITIONS REQUIRED: to be enabled manually
+  # ^/_matrix/client/(r0|v3|unstable)/user_directory/search$
+
+  # The above endpoints can be routed to any worker, though you may choose to route
+  # it to the chosen user directory worker.
 
   # This style of configuration supersedes the legacy `synapse.app.user_dir`
   # worker application type.

@@ -149,7 +149,7 @@ bridge:
     # been sent to Twitter.
     delivery_receipts: false
     # Whether or not delivery errors should be reported as messages in the Matrix room.
-    delivery_error_reports: false
+    delivery_error_reports: true
     # Whether or not non-fatal polling errors should send notices to the notice room.
     temporary_disconnect_notices: true
     # Number of seconds to sleep more than the previous error when a polling error occurs.
@@ -163,7 +163,7 @@ bridge:
     resend_bridge_info: false
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!tw"
+    command_prefix: "{{ matrix_mautrix_twitter_command_prefix }}"
 
     # Permissions for using the bridge.
     # Permitted values:
@@ -175,6 +175,9 @@ bridge:
     #     mxid - Specific user
     permissions:
       '{{ matrix_mautrix_twitter_homeserver_domain }}': user
+      {% if matrix_admin %}
+      '{{ matrix_admin }}': admin
+      {% endif %}
 
 
 # Python logging configuration.
@@ -195,9 +198,9 @@ logging:
             formatter: colored
     loggers:
         mau:
-            level: DEBUG
+            level: {{ matrix_mautrix_twitter_logging_level|to_json }}
         aiohttp:
-            level: INFO
+            level: {{ matrix_mautrix_twitter_logging_level|to_json }}
     root:
-        level: DEBUG
+        level: {{ matrix_mautrix_twitter_logging_level|to_json }}
         handlers: [console]

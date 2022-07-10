@@ -57,3 +57,16 @@
   when: "matrix_hookshot_provisioning_enabled and vars[item] == ''"
   with_items:
     - "matrix_hookshot_provisioning_secret"
+
+- name: (Deprecation) Catch and report old metrics usage
+  fail:
+    msg: >-
+      Your configuration contains a variable (`{{ item }}`), which refers to the old metrics collection system for Hookshot,
+      which exposed metrics on `https://stats.DOMAIN/hookshot/metrics`.
+
+      We now recommend exposing Hookshot metrics in another way, from another URL.
+      Refer to the changelog for more details: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#2022-06-22
+  with_items:
+    - matrix_hookshot_proxy_metrics
+    - matrix_hookshot_metrics_endpoint
+  when: "item in vars"

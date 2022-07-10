@@ -168,6 +168,11 @@ backend matrix-backend
 /.well-known/matrix/* https://matrix.DOMAIN/.well-known/matrix/:splat 200!
 ```
 
+**For AWS CloudFront**
+
+   1. Add a custom origin with matrix.<your-domain> to your distribution
+   1. Add two behaviors, one for `.well-known/matrix/client` and one for `.well-known/matrix/server` and point them to your new origin.
+
 Make sure to:
 
 - **replace `DOMAIN`** in the server configuration with your actual domain name

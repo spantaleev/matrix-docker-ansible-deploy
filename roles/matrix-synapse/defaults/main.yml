@@ -9,7 +9,7 @@ matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/s
 
 matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_container_global_registry_prefix }}"
-matrix_synapse_version: v1.60.0
+matrix_synapse_version: v1.62.0
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -85,6 +85,14 @@ matrix_synapse_allow_guest_access: false
 matrix_synapse_form_secret: "{{ matrix_synapse_macaroon_secret_key }}"
 
 matrix_synapse_max_upload_size_mb: 50
+
+# Controls whether local media should be removed under certain conditions, typically for the purpose of saving space.
+# should be empty to disable
+matrix_synapse_media_retention_local_media_lifetime:
+# Controls whether remote media cache (media that is downloaded from other homeservers)
+# should be removed under certain conditions, typically for the purpose of saving space.
+# should be empty to disable
+matrix_synapse_media_retention_remote_media_lifetime:
 
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_synapse_tmp_directory_size_mb: "{{ matrix_synapse_max_upload_size_mb * 50 }}"
@@ -215,9 +223,6 @@ matrix_synapse_recaptcha_private_key: ''
 # Disabling this option will not delete any tokens previously generated.
 matrix_synapse_registration_requires_token: false
 
-# Allows non-server-admin users to create groups on this server
-matrix_synapse_enable_group_creation: false
-
 # A list of 3PID types which users must supply when registering (possible values: email, msisdn).
 matrix_synapse_registrations_require_3pid: []
 
@@ -328,6 +333,14 @@ matrix_url_preview_accept_language: ['en-US', 'en']
 # See https://github.com/matrix-org/synapse/blob/master/docs/metrics-howto.md
 matrix_synapse_metrics_enabled: false
 matrix_synapse_metrics_port: 9100
+
+# Controls whether Synapse metrics should be proxied (exposed) on:
+# - `matrix.DOMAIN/metrics/synapse/main-process` for the main process
+# - `matrix.DOMAIN/metrics/synapse/worker/{type}-{id}` for each worker process
+#
+# This will only work take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
+# See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
+matrix_synapse_metrics_proxying_enabled: false
 
 # Enable the Synapse manhole
 # See https://github.com/matrix-org/synapse/blob/master/docs/manhole.md

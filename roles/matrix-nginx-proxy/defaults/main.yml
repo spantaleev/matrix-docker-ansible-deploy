@@ -192,6 +192,62 @@ matrix_nginx_proxy_proxy_grafana_hostname: "{{ matrix_server_fqn_grafana }}"
 matrix_nginx_proxy_proxy_sygnal_enabled: false
 matrix_nginx_proxy_proxy_sygnal_hostname: "{{ matrix_server_fqn_sygnal }}"
 
+# Controls whether proxying the ntfy domain should be done.
+matrix_nginx_proxy_proxy_ntfy_enabled: false
+matrix_nginx_proxy_proxy_ntfy_hostname: "{{ matrix_server_fqn_ntfy }}"
+
+# Controls whether proxying for (Prometheus) metrics (`/metrics/*`) for the various services should be done (on the matrix domain)
+# If the internal Prometheus server (`matrix-prometheus` role) is used, proxying is not necessary, since Prometheus can access each container directly.
+# This is only useful when an external Prometheus will be collecting metrics.
+#
+# To control what kind of metrics are exposed under `/metrics/` (e.g `/metrics/node-exporter`, `/metrics/postgres-exporter`, etc.),
+# use `matrix_SERVICE_metrics_proxying_enabled` variables in each respective role.
+# Roles inject themselves into the matrix-nginx-proxy configuration.
+#
+# To protect the metrics endpoints, see `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled`
+matrix_nginx_proxy_proxy_matrix_metrics_enabled: false
+
+# Controls whether Basic Auth is enabled for all `/metrics/*` endpoints.
+#
+# You can provide the Basic Auth credentials in 2 ways:
+# 1. A single username/password pair using `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username` and `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_password`
+# 2. Using raw content (`htpasswd`-generated file) provided in `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content`
+matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled: false
+
+# `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username` and `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_password` specify
+# the Basic Auth username/password for protecting `/metrics/*` endpoints.
+# Alternatively, use `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content`.
+matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username: ""
+matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_password: ""
+
+# `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content` value will be written verbatim to the htpasswd file protecting `/metrics/*` endpoints.
+# Use this when a single username/password is not enough and you'd like to get more control over credentials.
+#
+# Read the manpage at `man 1 htpasswd` to learn more, then encrypt your password, and paste the encrypted value here.
+# e.g. `htpasswd -c mypass.htpasswd prometheus` and enter `mysecurepw` when prompted yields `prometheus:$apr1$wZhqsn.U$7LC3kMmjUbjNAZjyMyvYv/`
+# The whole thing is needed here. matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content: "prometheus:$apr1$wZhqsn.U$7LC3kMmjUbjNAZjyMyvYv/"
+matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content: ""
+
+# Specifies the path to the htpasswd file holding the htpasswd credentials for protecting `/metrics/*` endpoints
+# This is not meant to be modified.
+matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_path: "{{ matrix_nginx_proxy_data_path_in_container if matrix_nginx_proxy_enabled else matrix_nginx_proxy_data_path }}/matrix-metrics-htpasswd"
+
+# Specifies the Apache container image to use
+# when `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username` and `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_password` are provided.
+# This image provides the `htpasswd` tool which we use for generating the htpasswd file protecting `/metrics/*`.
+# To avoid using this, use `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content` instead of supplying username/password.
+# Learn more in: `roles/matrix-nginx-proxy/tasks/nginx-proxy/setup_metrics_auth.yml`.
+matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_image: "{{ matrix_container_global_registry_prefix }}httpd:{{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_image_tag }}"
+matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_image_tag: "2.4.54-alpine3.16"
+matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_force_pull: "{{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_image_tag.endswith(':latest') }}"
+
+# A list of strings containing additional configuration blocks to add to the `location /metrics` configuration (matrix-domain.conf).
+# Do not modify `matrix_nginx_proxy_proxy_matrix_metrics_additional_location_configuration_blocks` and `matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks`.
+# If you'd like to inject your own configuration blocks, use `matrix_nginx_proxy_proxy_matrix_metrics_additional_user_location_configuration_blocks`.
+matrix_nginx_proxy_proxy_matrix_metrics_additional_location_configuration_blocks: "{{ matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks + matrix_nginx_proxy_proxy_matrix_metrics_additional_user_location_configuration_blocks }}"
+matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks: []
+matrix_nginx_proxy_proxy_matrix_metrics_additional_user_location_configuration_blocks: []
+
 # Controls whether proxying for the matrix-corporal API (`/_matrix/corporal`) should be done (on the matrix domain)
 matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: false
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
@@ -215,17 +271,6 @@ matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_sans_container: "127.0.0.
 matrix_nginx_proxy_proxy_matrix_identity_api_enabled: false
 matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-ma1sd:{{ matrix_ma1sd_container_port }}"
 matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "127.0.0.1:{{ matrix_ma1sd_container_port }}"
-
-# Controls whether proxying for metrics (`/_synapse/metrics`) should be done (on the matrix domain)
-matrix_nginx_proxy_proxy_synapse_metrics: false
-matrix_nginx_proxy_synapse_workers_enabled_list: []
-matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled: false
-# The following value will be written verbatim to the htpasswd file that stores the password for nginx to check against and needs to be encoded appropriately.
-# Read the manpage at `man 1 htpasswd` to learn more, then encrypt your password, and paste the encrypted value here.
-# e.g. `htpasswd -c mypass.htpasswd prometheus` and enter `mysecurepw` when prompted yields `prometheus:$apr1$wZhqsn.U$7LC3kMmjUbjNAZjyMyvYv/`
-# The part after `prometheus:` is needed here. matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key: "$apr1$wZhqsn.U$7LC3kMmjUbjNAZjyMyvYv/"
-matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key: ""
-matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_path: "{{ matrix_nginx_proxy_data_path_in_container if matrix_nginx_proxy_enabled else matrix_nginx_proxy_data_path }}/matrix-synapse-metrics-htpasswd"
 
 # The addresses where the Matrix Client API is.
 # Certain extensions (like matrix-corporal) may override this in order to capture all traffic.
@@ -259,8 +304,6 @@ matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_prefix_regexes: |
     (['/_synapse/oidc'] if matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled else [])
     +
     (['/_synapse/admin'] if matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled else [])
-    +
-    (['/_synapse.*/metrics'] if matrix_nginx_proxy_proxy_synapse_metrics else [])
   }}
 
 # Specifies where requests for the root URI (`/`) on the `matrix.` domain should be redirected.
@@ -272,7 +315,7 @@ matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain: ""
 # Controls whether proxying for the Matrix Federation API should be done.
 matrix_nginx_proxy_proxy_matrix_federation_api_enabled: false
 matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container: "matrix-nginx-proxy:12088"
-matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "localhost:12088"
+matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "127.0.0.1:12088"
 matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb: "{{ (matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb | int) * 3 }}"
 matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/fullchain.pem"
 matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate_key: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/privkey.pem"
@@ -325,6 +368,9 @@ matrix_nginx_proxy_proxy_grafana_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to Sygnal's server configuration (matrix-sygnal.conf).
 matrix_nginx_proxy_proxy_sygnal_additional_server_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to ntfy's server configuration (matrix-ntfy.conf).
+matrix_nginx_proxy_proxy_ntfy_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to the base domain server configuration (matrix-base-domain.conf).
 matrix_nginx_proxy_proxy_domain_additional_server_configuration_blocks: []
@@ -485,7 +531,7 @@ matrix_ssl_lets_encrypt_staging: false
 # Learn more here: https://eff-certbot.readthedocs.io/en/stable/using.html#changing-the-acme-server
 matrix_ssl_lets_encrypt_server: ''
 
-matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v1.27.0"
+matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v1.28.0"
 matrix_ssl_lets_encrypt_certbot_docker_image_force_pull: "{{ matrix_ssl_lets_encrypt_certbot_docker_image.endswith(':latest') }}"
 matrix_ssl_lets_encrypt_certbot_standalone_http_port: 2402
 matrix_ssl_lets_encrypt_support_email: ~

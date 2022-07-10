@@ -8,7 +8,7 @@ matrix_mautrix_whatsapp_container_image_self_build: false
 matrix_mautrix_whatsapp_container_image_self_build_repo: "https://mau.dev/mautrix/whatsapp.git"
 matrix_mautrix_whatsapp_container_image_self_build_branch: "{{ 'master' if matrix_mautrix_whatsapp_version == 'latest' else matrix_mautrix_whatsapp_version }}"
 
-matrix_mautrix_whatsapp_version: v0.4.0
+matrix_mautrix_whatsapp_version: v0.5.0
 # See: https://mau.dev/mautrix/whatsapp/container_registry
 matrix_mautrix_whatsapp_docker_image: "{{ matrix_mautrix_whatsapp_docker_image_name_prefix }}mautrix/whatsapp:{{ matrix_mautrix_whatsapp_version }}"
 matrix_mautrix_whatsapp_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_whatsapp_container_image_self_build else 'dock.mau.dev/' }}"
@@ -23,6 +23,8 @@ matrix_mautrix_whatsapp_homeserver_address: "{{ matrix_homeserver_container_url 
 matrix_mautrix_whatsapp_homeserver_domain: "{{ matrix_domain }}"
 matrix_mautrix_whatsapp_appservice_address: "http://matrix-mautrix-whatsapp:8080"
 
+matrix_mautrix_whatsapp_command_prefix: "!wa"
+
 # A list of extra arguments to pass to the container
 matrix_mautrix_whatsapp_container_extra_arguments: []
 
@@ -36,6 +38,10 @@ matrix_mautrix_whatsapp_appservice_token: ''
 matrix_mautrix_whatsapp_homeserver_token: ''
 
 matrix_mautrix_whatsapp_appservice_bot_username: whatsappbot
+
+# Minimum severity of journal log messages.
+# Options: debug, info, warn, error, fatal
+matrix_mautrix_whatsapp_logging_level: 'warn'
 
 # Whether or not created rooms should have federation enabled.
 # If false, created portal rooms will never be federated.
@@ -128,7 +134,3 @@ matrix_mautrix_whatsapp_registration: "{{ matrix_mautrix_whatsapp_registration_y
 matrix_mautrix_whatsapp_bridge_encryption_allow: false
 matrix_mautrix_whatsapp_bridge_encryption_default: "{{ matrix_mautrix_whatsapp_bridge_encryption_allow }}"
 matrix_mautrix_whatsapp_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_whatsapp_bridge_encryption_allow }}"
-
-# Minimum severity of journal log messages.
-# Options: debug, info, warn, error, fatal
-matrix_mautrix_whatsapp_log_level: 'warn'

@@ -4,7 +4,7 @@
 
 matrix_prometheus_enabled: false
 
-matrix_prometheus_version: v2.33.3
+matrix_prometheus_version: v2.36.2
 matrix_prometheus_docker_image: "{{ matrix_container_global_registry_prefix }}prom/prometheus:{{ matrix_prometheus_version }}"
 matrix_prometheus_docker_image_force_pull: "{{ matrix_prometheus_docker_image.endswith(':latest') }}"
 
@@ -25,6 +25,19 @@ matrix_prometheus_systemd_wanted_services_list: []
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9090"), or empty string to not expose.
 matrix_prometheus_container_http_host_bind_port: ''
+
+# A list of default arguments to pass to the prometheus process
+matrix_prometheus_process_default_arguments:
+  - "--config.file=/etc/prometheus/prometheus.yml"
+  - "--storage.tsdb.path=/prometheus"
+  - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+  - "--web.console.templates=/usr/share/prometheus/consoles"
+
+# A list of extra arguments to pass to the prometheus process
+matrix_prometheus_process_extra_arguments: []
+
+# holds the final list of process arguments
+matrix_prometheus_process_arguments: "{{ matrix_prometheus_process_default_arguments + matrix_prometheus_process_extra_arguments }}"
 
 # Tells whether the "synapse" scraper configuration is enabled.
 matrix_prometheus_scraper_synapse_enabled: false

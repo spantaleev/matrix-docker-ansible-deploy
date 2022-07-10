@@ -103,11 +103,10 @@
             [matrix_hookshot_matrix_nginx_proxy_configuration]
           }}
 
-    - name: Generate Matrix hookshot proxying configuration for matrix-nginx-proxy
+    - name: Generate hookshot metrics proxying configuration for matrix-nginx-proxy (matrix.DOMAIN/metrics/hookshot)
       set_fact:
-        matrix_hookshot_matrix_nginx_proxy_metrics_configuration: |
-          {% if matrix_hookshot_metrics_enabled and matrix_hookshot_proxy_metrics %}
-          location {{ matrix_hookshot_metrics_endpoint }} {
+        matrix_hookshot_matrix_nginx_proxy_metrics_configuration_matrix_domain: |
+          location /metrics/hookshot {
             {% if matrix_nginx_proxy_enabled|default(False) %}
               {# Use the embedded DNS resolver in Docker containers to discover the service #}
               resolver 127.0.0.11 valid=5s;
@@ -117,24 +116,18 @@
               {# Generic configuration for use outside of our container setup #}
               proxy_pass http://127.0.0.1:{{ matrix_hookshot_metrics_port }}/metrics;
             {% endif %}
-            proxy_set_header Host $host;
-            {% if matrix_hookshot_proxy_metrics_basic_auth_enabled %}
-              auth_basic "protected";
-              auth_basic_user_file /nginx-data/matrix-synapse-metrics-htpasswd;
-            {% endif %}
           }
-          {% endif %}
+      when: matrix_hookshot_metrics_enabled|bool and matrix_hookshot_metrics_proxying_enabled|bool
 
-    - name: Register hookshot metrics proxying configuration with matrix-nginx-proxy
+    - name: Register hookshot metrics proxying configuration with matrix-nginx-proxy (matrix.DOMAIN/metrics/hookshot)
       set_fact:
-        matrix_nginx_proxy_proxy_grafana_additional_server_configuration_blocks: |
+        matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks: |
           {{
-            matrix_nginx_proxy_proxy_grafana_additional_server_configuration_blocks|default([])
+            matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks|default([])
             +
-            [matrix_hookshot_matrix_nginx_proxy_metrics_configuration]
+            [matrix_hookshot_matrix_nginx_proxy_metrics_configuration_matrix_domain]
           }}
-  tags:
-    - always
+      when: matrix_hookshot_metrics_enabled|bool and matrix_hookshot_metrics_proxying_enabled|bool
   when: matrix_hookshot_enabled|bool
 
 - name: Warn about reverse-proxying if matrix-nginx-proxy not used
