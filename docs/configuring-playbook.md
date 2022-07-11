@@ -149,6 +149,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md) - a bot to create and manage registration tokens to invite users (optional)
 
+- [Setting up maubot](configuring-playbook-bot-maubot.md) - a plugin-based Matrix bot system (optional)
+
 - [Setting up honoroit](configuring-playbook-bot-honoroit.md) - a helpdesk bot (optional)
 
 - [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) - an extensible multifunctional bot (optional)
