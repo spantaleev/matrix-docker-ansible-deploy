@@ -1,3 +1,37 @@
+# 2022-07-14
+
+## mautrix-signal upgrade requires manual data migration
+
+In [Pull Request #1921](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1921) we upgraded [signald](https://signald.org/) (used by the mautrix-signal bridge) from `v0.18.5` to `v0.20.0`.
+
+Back in the `v0.19.0` released of signald (which we skipped and migrated straight to `v0.20.0`), a new `--migrate-data` command had been added that migrates avatars, group images, attachments, etc., into the database (those were previously stored in the filesystem).
+
+If you've been using the mautrix-signal bridge for a while, you may have files stored in the local filesystem, which will need to be upgraded using a `--migrate-data` command when you're upgrading mautrix-signal and signald.
+
+We don't have a test setup running signald with actual data in it, so we're not sure what the best way to upgrade is. You could try the following steps:
+
+1. Update the playbook's source code
+2. Do a full install (update), but tell Ansible to stop all services (note the `stop` tag): `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,stop`
+3. Start Postgres manually by running this **on the server**: `systemctl start matrix-postgres`
+4. Run the following migration command **on the server**:
+
+```sh
+/usr/bin/env docker run --rm --name matrix-mautrix-signal-daemon \
+--log-driver=none \
+--user=997:1002 \
+--cap-drop=ALL \
+--network=matrix \
+-v /matrix/mautrix-signal/signald:/signald:z \
+docker.io/signald/signald:0.20.0 \
+--migrate-data
+```
+
+If you're doing this upgrade in the future, you may need to adjust the Signald version in the command above to match the up-to-date value of `matrix_mautrix_signal_daemon_version`, as seen in `roles/matrix-bridge-mautrix-signal/defaults/main.yml`. As of 2022-07-14, the signald version is `v0.20.0`
+
+5. Start all services: `ansible-playbook -i inventory/hosts setup.yml --tags=start`
+6. Tell us how this upgrade went in our [support room](README.md#support) or in [Pull Request #1921](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1921)
+
+
 # 2022-07-05
 
 ## Ntfy push notifications support
