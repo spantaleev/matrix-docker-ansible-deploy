@@ -729,44 +729,6 @@ matrix_hookshot_urlprefix: "http{{ 's' if matrix_nginx_proxy_https_enabled else 
 #
 ######################################################################
 
-######################################################################
-#
-# matrix-bridge-mx-puppet-skype
-#
-######################################################################
-
-# We don't enable bridges by default.
-matrix_mx_puppet_skype_enabled: false
-
-matrix_mx_puppet_skype_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
-
-matrix_mx_puppet_skype_systemd_required_services_list: |
-  {{
-    ['docker.service']
-    +
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-    +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
-    +
-    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
-  }}
-
-matrix_mx_puppet_skype_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'skype.as.tok') | to_uuid }}"
-
-matrix_mx_puppet_skype_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'skype.hs.tok') | to_uuid }}"
-
-matrix_mx_puppet_skype_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
-
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_mx_puppet_skype_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
-matrix_mx_puppet_skype_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.skype.db') | to_uuid }}"
-
-######################################################################
-#
-# /matrix-bridge-mx-puppet-skype
-#
-######################################################################
-
 
 ######################################################################
 #
@@ -1862,12 +1824,6 @@ matrix_postgres_additional_databases: |
       'username': matrix_mautrix_whatsapp_database_username,
       'password': matrix_mautrix_whatsapp_database_password,
     }] if (matrix_mautrix_whatsapp_enabled and matrix_mautrix_whatsapp_database_engine == 'postgres' and matrix_mautrix_whatsapp_database_hostname == 'matrix-postgres') else [])
-    +
-    ([{
-      'name': matrix_mx_puppet_skype_database_name,
-      'username': matrix_mx_puppet_skype_database_username,
-      'password': matrix_mx_puppet_skype_database_password,
-    }] if (matrix_mx_puppet_skype_enabled and matrix_mx_puppet_skype_database_engine == 'postgres' and matrix_mx_puppet_skype_database_hostname == 'matrix-postgres') else [])
     +
     ([{
       'name': matrix_mx_puppet_slack_database_name,

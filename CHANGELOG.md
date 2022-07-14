@@ -1,5 +1,22 @@
 # 2022-07-14
 
+## mx-puppet-skype removal
+
+The playbook no longer includes the [mx-puppet-skype](https://github.com/Sorunome/mx-puppet-skype) bridge, because it has been broken and unmaintaned for a long time. Users that have `matrix_mx_puppet_skype_enabled` in their configuration files will encounter an error when running the playbook until they remove references to this bridge from their configuration.
+
+To completely clean up your server from `mx-puppet-skype`'s presence on it:
+
+- ensure your Ansible configuration (`vars.yml` file) no longer contains `matrix_mx_puppet_skype_*` references
+- stop and disable the systemd service (run `systemctl disable --now matrix-mx-puppet-skype` on the server)
+- delete the systemd service (run `rm /etc/systemd/system/matrix-mx-puppet-skype.service` on the server)
+- delete `/matrix/mx-puppet-skype` (run `rm -rf /matrix/mx-puppet-skype` on the server)
+- drop the `matrix_mx_puppet_skype` database (run `/usr/local/bin/matrix-postgres-cli` on the server, and execute the `DROP DATABASE matrix_mx_puppet_skype;` query there)
+
+If you still need bridging to [Skype](https://www.skype.com/), consider switching to [go-skype-bridge](https://github.com/kelaresg/go-skype-bridge) instead. See [Setting up Go Skype Bridge bridging](docs/configuring-playbook-bridge-go-skype-bridge.md).
+
+If you think this is a mistake and `mx-puppet-skype` works for you (or you get it to work somehow), let us know and we may reconsider this removal.
+
+
 ## signald (0.19.0+) upgrade requires data migration
 
 In [Pull Request #1921](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1921) we upgraded [signald](https://signald.org/) (used by the mautrix-signal bridge) from `v0.18.5` to `v0.20.0`.

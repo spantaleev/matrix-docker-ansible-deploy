@@ -79,8 +79,6 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [Heisenbridge](https://github.com/hifi/heisenbridge) for bridging your Matrix server to IRC bouncer-style - see [docs/configuring-playbook-bridge-heisenbridge.md](docs/configuring-playbook-bridge-heisenbridge.md) for setup documentation
 
-- (optional) the [mx-puppet-skype](https://hub.docker.com/r/sorunome/mx-puppet-skype) for bridging your Matrix server to [Skype](https://www.skype.com) - see [docs/configuring-playbook-bridge-mx-puppet-skype.md](docs/configuring-playbook-bridge-mx-puppet-skype.md) for setup documentation
-
 - (optional) the [go-skype-bridge](https://github.com/kelaresg/go-skype-bridge) for bridging your Matrix server to [Skype](https://www.skype.com) - see [docs/configuring-playbook-bridge-go-skype-bridge.md](docs/configuring-playbook-bridge-go-skype-bridge.md) for setup documentation
 
 - (optional) the [mx-puppet-slack](https://hub.docker.com/r/sorunome/mx-puppet-slack) for bridging your Matrix server to [Slack](https://slack.com) - see [docs/configuring-playbook-bridge-mx-puppet-slack.md](docs/configuring-playbook-bridge-mx-puppet-slack.md) for setup documentation
