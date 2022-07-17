@@ -80,16 +80,16 @@ whatsapp:
 # Bridge config
 bridge:
     # Localpart template of MXIDs for WhatsApp users.
-    # {% raw %}{{.}}{% endraw %} is replaced with the phone number of the WhatsApp user.
+    # {{ '{{.}}' }} is replaced with the phone number of the WhatsApp user.
     username_template: "{{ 'whatsapp_{{.}}' }}"
     # Displayname template for WhatsApp users.
-    # {{.PushName}}     - nickname set by the WhatsApp user
-    # {{.BusinessName}} - validated WhatsApp business name
-    # {{.Phone}}        - phone number (international format)
+    # {{ '{{.PushName}}' }}     - nickname set by the WhatsApp user
+    # {{ '{{.BusinessName}}' }} - validated WhatsApp business name
+    # {{ '{{.Phone}}' }}        - phone number (international format)
     # The following variables are also available, but will cause problems on multi-user instances:
-    # {{.FullName}}  - full name from contact list
-    # {{.FirstName}} - first name from contact list
-    displayname_template: "{{if .BusinessName}}{{.BusinessName}}{{else if .PushName}}{{.PushName}}{{else}}{{.JID}}{{end}} (WA)"
+    # {{ '{{.FullName}}' }}  - full name from contact list
+    # {{ '{{.FirstName}}' }} - first name from contact list
+    displayname_template: "{{ '{{if .BusinessName}}{{.BusinessName}}{{else if .PushName}}{{.PushName}}{{else}}{{.JID}}{{end}} (WA)' }}"
     # Should the bridge create a space for each logged-in user and add bridged rooms to it?
     # Users who logged in before turning this on should run `!wa sync space` to create and fill the space for the first time.
     personal_filtering_spaces: false
