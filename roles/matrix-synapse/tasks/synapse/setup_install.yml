@@ -119,3 +119,12 @@
     src: "{{ role_path }}/templates/synapse/usr-local-bin/matrix-synapse-register-user.j2"
     dest: "{{ matrix_local_bin_path }}/matrix-synapse-register-user"
     mode: 0755
+
+- name: Generate sample prometheus.yml for external scraping
+  template:
+    src: "{{ role_path }}/templates/synapse/prometheus/external_prometheus.yml.example.j2"
+    dest: "{{ matrix_synapse_base_path }}/external_prometheus.yml.example"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0644
+  when: matrix_synapse_metrics_proxying_enabled|bool

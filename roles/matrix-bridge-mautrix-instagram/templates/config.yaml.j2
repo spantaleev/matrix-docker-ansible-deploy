@@ -135,7 +135,7 @@ bridge:
     # Whether or not the bridge should backfill chats when reconnecting.
     resync: true
     # Should even disconnected users be reconnected?
-    always: false  
+    always: false
   # End-to-bridge encryption support options. These require matrix-nio to be installed with pip
   # and login_shared_secret to be configured in order to get a device for the bridge bot.
   #
@@ -166,7 +166,7 @@ bridge:
   # been sent to Instagram.
   delivery_receipts: false
   # Whether or not delivery errors should be reported as messages in the Matrix room.
-  delivery_error_reports: false
+  delivery_error_reports: true
   # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
   # This field will automatically be changed back to false after it,
   # except if the config file is not writable.
@@ -176,7 +176,7 @@ bridge:
   unimportant_bridge_notices: true
 
   # The prefix for commands. Only required in non-management rooms.
-  command_prefix: "!ig"
+  command_prefix: "{{ matrix_mautrix_instagram_command_prefix }}"
   # Permissions for using the bridge.
   # Permitted values:
   #       user - Use the bridge with puppeting.
@@ -187,6 +187,9 @@ bridge:
   #     mxid - Specific user
   permissions:
     "{{ matrix_mautrix_instagram_homeserver_domain }}": user
+    {% if matrix_admin %}
+    "{{ matrix_admin }}": admin
+    {% endif %}
   # Provisioning API part of the web server for automated portal creation and fetching information.
   # Used by things like mautrix-manager (https://github.com/tulir/mautrix-manager).
   provisioning:
@@ -216,13 +219,13 @@ logging:
       formatter: colored
   loggers:
     mau:
-      level: DEBUG
+      level: {{ matrix_mautrix_instagram_logging_level|to_json }}
     mauigpapi:
-      level: DEBUG
+      level: {{ matrix_mautrix_instagram_logging_level|to_json }}
     paho:
-      level: INFO
+      level: {{ matrix_mautrix_instagram_logging_level|to_json }}
     aiohttp:
-      level: INFO
+      level: {{ matrix_mautrix_instagram_logging_level|to_json }}
   root:
-    level: DEBUG
+    level: {{ matrix_mautrix_instagram_logging_level|to_json }}
     handlers: [console]

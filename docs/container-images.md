@@ -68,8 +68,6 @@ These services are not part of our default installation, but can be enabled by [
 
 - [folivonet/matrix-sms-bridge](https://hub.docker.com/repository/docker/folivonet/matrix-sms-bridge) - the [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) (optional)
 
-- [sorunome/mx-puppet-skype](https://hub.docker.com/r/sorunome/mx-puppet-skype) - the [mx-puppet-skype](https://github.com/Sorunome/mx-puppet-skype) bridge to [Skype](https://www.skype.com) (optional)
-
 - [sorunome/mx-puppet-slack](https://hub.docker.com/r/sorunome/mx-puppet-slack) - the [mx-puppet-slack](https://github.com/Sorunome/mx-puppet-slack) bridge to [Slack](https://slack.com) (optional)
 
 - [sorunome/mx-puppet-instagram](https://hub.docker.com/r/sorunome/mx-puppet-instagram) - the [mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) bridge to [Instagram](https://www.instagram.com) (optional)
@@ -109,3 +107,5 @@ These services are not part of our default installation, but can be enabled by [
 - [grafana/grafana](https://hub.docker.com/r/grafana/grafana/) - [Grafana](https://github.com/grafana/grafana/) is a graphing tool that works well with the above two images. Our playbook also adds two dashboards for [Synapse](https://github.com/matrix-org/synapse/tree/master/contrib/grafana) and  [Node Exporter](https://github.com/rfrail3/grafana-dashboards)
 
 - [matrixdotorg/sygnal](https://hub.docker.com/r/matrixdotorg/sygnal/) - [Sygnal](https://github.com/matrix-org/sygnal) is a reference Push Gateway for Matrix
+
+- [binwiederhier/ntfy](https://hub.docker.com/r/binwiederhier/ntfy/) - [ntfy](https://ntfy.sh/) is a self-hosted, UnifiedPush-compatible push notifications server

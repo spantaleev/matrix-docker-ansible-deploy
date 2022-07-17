@@ -79,3 +79,13 @@
   when: (ansible_architecture == "x86_64" and matrix_architecture != "amd64") or
         (ansible_architecture == "aarch64" and matrix_architecture != "arm64") or
         (ansible_architecture.startswith("armv") and matrix_architecture != "arm32")
+
+- name: Fail if encountering usage of removed role (mx-puppet-skype)
+  fail:
+    msg: >-
+      Your configuration seems to include a reference to `matrix_mx_puppet_skype_enabled`. Are you trying to install the mx-puppet-skype bridge?
+      The playbook no longer includes a role for installing mx-puppet-skype, because the mx-puppet-bridge is unmaintained and has been reported as broken for a long time.
+      To get rid of this error, remove all `matrix_mx_puppet_*` references from your configuration.
+      To clean up your server from mx-puppet-skype's presence, see this changelog entry: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#mx-puppet-skype-removal.
+      If you still need bridging to Skype, consider switching to the go-skype bridge instead. See `docs/configuring-playbook-bridge-go-skype-bridge.md`.
+  when: "'matrix_mx_puppet_skype_enabled' in vars"

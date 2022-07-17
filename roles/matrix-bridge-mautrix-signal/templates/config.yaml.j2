@@ -177,7 +177,7 @@ bridge:
     # Note that this is not related to Signal delivery receipts.
     delivery_receipts: false
     # Whether or not delivery errors should be reported as messages in the Matrix room. (not yet implemented)
-    delivery_error_reports: false
+    delivery_error_reports: true
     # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
     # This field will automatically be changed back to false after it,
     # except if the config file is not writable.
@@ -197,7 +197,7 @@ bridge:
         shared_secret: generate
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!signal"
+    command_prefix: "{{ matrix_mautrix_signal_command_prefix }}"
 
     # Messages sent upon joining a management room.
     # Markdown is supported. The defaults are listed below.
@@ -223,7 +223,7 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions: 
+    permissions:
         {{ matrix_mautrix_signal_bridge_permissions|from_yaml }}
 
     relay:
@@ -266,9 +266,9 @@ logging:
             formatter: colored
     loggers:
         mau:
-            level: {{ matrix_mautrix_signal_log_level }}
+            level: {{ matrix_mautrix_signal_logging_level|to_json }}
         aiohttp:
-            level: INFO
+            level: {{ matrix_mautrix_signal_logging_level|to_json }}
     root:
-        level: {{ matrix_mautrix_signal_log_level }}
+        level: {{ matrix_mautrix_signal_logging_level|to_json }}
         handlers: [console]
