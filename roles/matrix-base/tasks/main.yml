@@ -10,7 +10,9 @@
     - setup-all
 
 - import_tasks: "{{ role_path }}/tasks/server_base/setup.yml"
-  when: run_setup|bool
+  when:
+    - run_setup|bool
+    - not matrix_skip_setup_server_base|bool
   tags:
     - setup-all
 
