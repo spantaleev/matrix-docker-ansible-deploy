@@ -47,23 +47,15 @@ The two playbook variables that you could look for, if you're interested in bein
 Example snippet for `vars.yml`:
 ```
 # Homeserver admin contacts as per MSC 1929 https://github.com/matrix-org/matrix-spec-proposals/pull/1929
-matrix_homeserver_admin_contacts: |
-  [
-    {
-      "matrix_id": "@admin1:domain.tld",
-      "email_address": "admin@domain.tld",
-      "role": "admin"
-    },
-    {
-      "matrix_id": "@admin2:domain.tld",
-      "email_address": "admin@domain.tld",
-      "role": "admin"
-    },
-    {
-      "email_address": "security@domain.tld",
-      "role": "security"
-    }
-  ]
+matrix_homeserver_admin_contacts:
+  - matrix_id: @admin1:domain.tld
+    email_address: admin@domain.tld
+    role: admin
+  - matrix_id: @admin2:domain.tld
+    email_address: admin@domain.tld
+    role: admin
+  - email_address: security@domain.tld
+    role: security
 
 matrix_homeserver_support_url: "https://example.domain.tld/support"
 ```
