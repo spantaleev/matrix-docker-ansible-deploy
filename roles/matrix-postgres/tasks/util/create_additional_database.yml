@@ -33,6 +33,7 @@
       {{ matrix_postgres_docker_image_to_use }}
       -c
       'psql -h {{ matrix_postgres_connection_hostname }} --file=/matrix-postgres-init-additional-db-user-and-role.sql'
+  changed_when: true
 
 - name: Delete additional database initialization SQL file for {{ additional_db.name }}
   ansible.builtin.file:

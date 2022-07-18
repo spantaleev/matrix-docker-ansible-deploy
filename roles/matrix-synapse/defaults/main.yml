@@ -523,7 +523,7 @@ matrix_synapse_ext_password_provider_shared_secret_auth_m_login_password_support
 matrix_synapse_ext_password_provider_shared_secret_auth_com_devture_shared_secret_auth_support_enabled: false
 matrix_synapse_ext_password_provider_shared_secret_config: "{{ matrix_synapse_ext_password_provider_shared_secret_config_yaml | from_yaml }}"
 matrix_synapse_ext_password_provider_shared_secret_config_yaml: |
-  shared_secret: {{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret|string | to_json }}
+  shared_secret: {{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret | string | to_json }}
   m_login_password_support_enabled: {{ matrix_synapse_ext_password_provider_shared_secret_auth_m_login_password_support_enabled | to_json }}
   com_devture_shared_secret_auth_support_enabled: {{ matrix_synapse_ext_password_provider_shared_secret_auth_com_devture_shared_secret_auth_support_enabled | to_json }}
 
@@ -682,4 +682,4 @@ matrix_synapse_configuration_extension: "{{ matrix_synapse_configuration_extensi
 
 # Holds the final Synapse configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_synapse_configuration_yaml`.
-matrix_synapse_configuration: "{{ matrix_synapse_configuration_yaml | from_yaml|combine(matrix_synapse_configuration_extension, recursive=True) }}"
+matrix_synapse_configuration: "{{ matrix_synapse_configuration_yaml | from_yaml | combine(matrix_synapse_configuration_extension, recursive=True) }}"

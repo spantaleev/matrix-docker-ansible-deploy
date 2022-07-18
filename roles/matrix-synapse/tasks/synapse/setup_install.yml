@@ -32,6 +32,7 @@
     - name: Check if Synapse Docker image exists
       ansible.builtin.command: "{{ matrix_host_command_docker }} images --quiet --filter 'reference={{ matrix_synapse_docker_image }}'"
       register: matrix_synapse_docker_image_check_result
+      changed_when: false
 
     # Invoking the `docker build` command here, instead of calling the `docker_image` Ansible module,
     # because the latter does not support BuildKit.

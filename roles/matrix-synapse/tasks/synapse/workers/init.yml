@@ -12,7 +12,7 @@
       port: "{{ matrix_synapse_workers_generic_workers_port_range_start + item }}"
       metrics_port: "{{ matrix_synapse_workers_generic_workers_metrics_range_start + item }}"
   register: "matrix_synapse_workers_list_results_generic_workers"
-  loop: "{{ range(0, matrix_synapse_workers_generic_workers_count|int) | list }}"
+  loop: "{{ range(0, matrix_synapse_workers_generic_workers_count | int) | list }}"
 
 - name: Build federation sender workers
   ansible.builtin.set_fact:
@@ -22,7 +22,7 @@
       port: 0
       metrics_port: "{{ matrix_synapse_workers_federation_sender_workers_metrics_range_start + item }}"
   register: "matrix_synapse_workers_list_results_federation_sender_workers"
-  loop: "{{ range(0, matrix_synapse_workers_federation_sender_workers_count|int) | list }}"
+  loop: "{{ range(0, matrix_synapse_workers_federation_sender_workers_count | int) | list }}"
 
 # This type of worker can only have a count of 1, at most
 - name: Build pusher workers
@@ -33,7 +33,7 @@
       port: 0
       metrics_port: "{{ matrix_synapse_workers_pusher_workers_metrics_range_start + item }}"
   register: "matrix_synapse_workers_list_results_pusher_workers"
-  loop: "{{ range(0, matrix_synapse_workers_pusher_workers_count|int) | list }}"
+  loop: "{{ range(0, matrix_synapse_workers_pusher_workers_count | int) | list }}"
 
 # This type of worker can only have a count of 1, at most
 - name: Build appservice workers
@@ -44,7 +44,7 @@
       port: 0
       metrics_port: "{{ matrix_synapse_workers_appservice_workers_metrics_range_start + item }}"
   register: "matrix_synapse_workers_list_results_appservice_workers"
-  loop: "{{ range(0, matrix_synapse_workers_appservice_workers_count|int) | list }}"
+  loop: "{{ range(0, matrix_synapse_workers_appservice_workers_count | int) | list }}"
 
 - name: Build media_repository workers
   ansible.builtin.set_fact:
@@ -54,7 +54,7 @@
       port: "{{ matrix_synapse_workers_media_repository_workers_port_range_start + item }}"
       metrics_port: "{{ matrix_synapse_workers_media_repository_workers_metrics_range_start + item }}"
   register: "matrix_synapse_workers_list_results_media_repository_workers"
-  loop: "{{ range(0, matrix_synapse_workers_media_repository_workers_count|int) | list }}"
+  loop: "{{ range(0, matrix_synapse_workers_media_repository_workers_count | int) | list }}"
 
 - name: Build frontend_proxy workers
   ansible.builtin.set_fact:
@@ -64,7 +64,7 @@
       port: "{{ matrix_synapse_workers_frontend_proxy_workers_port_range_start + item }}"
       metrics_port: "{{ matrix_synapse_workers_frontend_proxy_workers_metrics_range_start + item }}"
   register: "matrix_synapse_workers_list_results_frontend_proxy_workers"
-  loop: "{{ range(0, matrix_synapse_workers_frontend_proxy_workers_count|int) | list }}"
+  loop: "{{ range(0, matrix_synapse_workers_frontend_proxy_workers_count | int) | list }}"
 
 - ansible.builtin.set_fact:
     matrix_synapse_dynamic_workers_list: "{{ matrix_synapse_dynamic_workers_list | default([]) + [item.ansible_facts.worker] }}"

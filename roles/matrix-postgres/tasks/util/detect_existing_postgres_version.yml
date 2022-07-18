@@ -27,7 +27,7 @@
 
 - name: Determine existing Postgres version (make sense of PG_VERSION file)
   ansible.builtin.set_fact:
-    matrix_postgres_detected_version: "{{ result_pg_version['content']|b64decode|replace('\n', '') }}"
+    matrix_postgres_detected_version: "{{ result_pg_version['content'] | b64decode | replace('\n', '') }}"
   when: matrix_postgres_detected_existing | bool
 
 - name: Determine corresponding Docker image to detected version (assume default of latest)

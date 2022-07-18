@@ -103,7 +103,7 @@ matrix_mautrix_googlechat_configuration_extension: "{{ matrix_mautrix_googlechat
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_mautrix_googlechat_configuration_yaml`.
-matrix_mautrix_googlechat_configuration: "{{ matrix_mautrix_googlechat_configuration_yaml | from_yaml|combine(matrix_mautrix_googlechat_configuration_extension, recursive=True) }}"
+matrix_mautrix_googlechat_configuration: "{{ matrix_mautrix_googlechat_configuration_yaml | from_yaml | combine(matrix_mautrix_googlechat_configuration_extension, recursive=True) }}"
 
 matrix_mautrix_googlechat_registration_yaml: |
   id: googlechat
@@ -112,9 +112,9 @@ matrix_mautrix_googlechat_registration_yaml: |
   namespaces:
     users:
     - exclusive: true
-      regex: '^@googlechat_.+:{{ matrix_mautrix_googlechat_homeserver_domain|regex_escape }}$'
+      regex: '^@googlechat_.+:{{ matrix_mautrix_googlechat_homeserver_domain | regex_escape }}$'
     - exclusive: true
-      regex: '^@{{ matrix_mautrix_googlechat_appservice_bot_username|regex_escape }}:{{ matrix_mautrix_googlechat_homeserver_domain|regex_escape }}$'
+      regex: '^@{{ matrix_mautrix_googlechat_appservice_bot_username | regex_escape }}:{{ matrix_mautrix_googlechat_homeserver_domain | regex_escape }}$'
   url: {{ matrix_mautrix_googlechat_appservice_address }}
   # See https://github.com/mautrix/signal/issues/43
   sender_localpart: _bot_{{ matrix_mautrix_googlechat_appservice_bot_username }}

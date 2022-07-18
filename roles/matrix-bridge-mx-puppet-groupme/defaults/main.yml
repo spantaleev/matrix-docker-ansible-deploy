@@ -32,7 +32,7 @@ matrix_mx_puppet_groupme_appservice_address: 'http://matrix-mx-puppet-groupme:{{
 # "@.*:yourserver.com" to allow users on a specific homeserver
 # "@.*" to allow anyone
 matrix_mx_puppet_groupme_provisioning_whitelist:
-  - "@.*:{{ matrix_domain|regex_escape }}"
+  - "@.*:{{ matrix_domain | regex_escape }}"
 
 # Leave empty to disable blacklist
 # "@user:server.com" disallow a specific user
@@ -87,7 +87,7 @@ matrix_mx_puppet_groupme_configuration_extension: "{{ matrix_mx_puppet_groupme_c
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_mx_puppet_groupme_configuration_yaml`.
-matrix_mx_puppet_groupme_configuration: "{{ matrix_mx_puppet_groupme_configuration_yaml | from_yaml|combine(matrix_mx_puppet_groupme_configuration_extension, recursive=True) }}"
+matrix_mx_puppet_groupme_configuration: "{{ matrix_mx_puppet_groupme_configuration_yaml | from_yaml | combine(matrix_mx_puppet_groupme_configuration_extension, recursive=True) }}"
 
 matrix_mx_puppet_groupme_registration_yaml: |
   as_token: "{{ matrix_mx_puppet_groupme_appservice_token }}"
@@ -96,11 +96,11 @@ matrix_mx_puppet_groupme_registration_yaml: |
   namespaces:
     users:
       - exclusive: true
-        regex: '@_groupmepuppet_.*:{{ matrix_mx_puppet_groupme_homeserver_domain|regex_escape }}'
+        regex: '@_groupmepuppet_.*:{{ matrix_mx_puppet_groupme_homeserver_domain | regex_escape }}'
     rooms: []
     aliases:
       - exclusive: true
-        regex: '#_groupmepuppet_.*:{{ matrix_mx_puppet_groupme_homeserver_domain|regex_escape }}'
+        regex: '#_groupmepuppet_.*:{{ matrix_mx_puppet_groupme_homeserver_domain | regex_escape }}'
   protocols: []
   rate_limited: false
   sender_localpart: _groupmepuppet_bot

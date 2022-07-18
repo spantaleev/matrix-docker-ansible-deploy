@@ -51,6 +51,7 @@
           {{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_image }}
           -c
           'cat /password | htpasswd -i -c /data/matrix-metrics-htpasswd {{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username }} && chmod 600 /data/matrix-metrics-htpasswd'
+      changed_when: true
 
     - name: Delete temporary metrics password file
       ansible.builtin.file:

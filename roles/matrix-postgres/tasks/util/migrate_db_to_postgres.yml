@@ -131,6 +131,8 @@
       {{ matrix_postgres_pgloader_docker_image }}
       -c
       'pgloader {{ matrix_postgres_db_migration_request.pgloader_options | default([]) | join(' ') }} /in.db {{ matrix_postgres_db_migration_request.dst }}'
+  register: matrix_postgres_migrate_db_to_postgres_import_result
+  changed_when: matrix_postgres_migrate_db_to_postgres_import_result.rc == 0
 
 - block:
     # We can't use `{{ role_path }}` here, neither with `import_tasks`, nor with `include_tasks`,
@@ -152,12 +154,16 @@
           {{ matrix_postgres_docker_image_to_use }}
           psql --host=matrix-postgres --dbname={{ matrix_postgres_db_migration_request.additional_psql_statements_db_name }} --command='{{ item }}'
       with_items: "{{ matrix_postgres_db_migration_request.additional_psql_statements_list }}"
+      register: matrix_postgres_migrate_db_to_postgres_additional_queries_result
+      changed_when: matrix_postgres_migrate_db_to_postgres_additional_queries_result.rc == 0
 
   when: "matrix_postgres_db_migration_request.additional_psql_statements_list | default([])|length > 0"
 
 - name: Archive {{ matrix_postgres_db_migration_request.engine_old }} database ({{ matrix_postgres_db_migration_request.src }} -> {{ matrix_postgres_db_migration_request.src }}.backup)
   ansible.builtin.command:
     cmd: "mv {{ matrix_postgres_db_migration_request.src }} {{ matrix_postgres_db_migration_request.src }}.backup"
+  register: matrix_postgres_migrate_db_to_postgres_move_result
+  changed_when: matrix_postgres_migrate_db_to_postgres_move_result.rc == 0
 
 - name: Inject result
   ansible.builtin.set_fact:

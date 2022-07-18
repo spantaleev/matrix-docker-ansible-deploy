@@ -90,9 +90,11 @@
       register: matrix_ma1sd_git_pull_results
 
     - name: Ensure ma1sd Docker image is built
-      ansible.builtin.shell: "DOCKER_BUILDKIT=1 ./gradlew dockerBuild"
-      args:
+      ansible.builtin.command:
+        cmd: ./gradlew dockerBuild
         chdir: "{{ matrix_ma1sd_docker_src_files_path }}"
+      environment:
+        DOCKER_BUILDKIT: 1
       when: matrix_ma1sd_git_pull_results.changed
 
     - name: Ensure ma1sd Docker image is tagged correctly

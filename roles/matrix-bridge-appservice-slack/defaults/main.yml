@@ -97,7 +97,7 @@ matrix_appservice_slack_configuration_extension_yaml: |
 
 matrix_appservice_slack_configuration_extension: "{{ matrix_appservice_slack_configuration_extension_yaml | from_yaml if matrix_appservice_slack_configuration_extension_yaml | from_yaml else {} }}"
 
-matrix_appservice_slack_configuration: "{{ matrix_appservice_slack_configuration_yaml | from_yaml|combine(matrix_appservice_slack_configuration_extension, recursive=True) }}"
+matrix_appservice_slack_configuration: "{{ matrix_appservice_slack_configuration_yaml | from_yaml | combine(matrix_appservice_slack_configuration_extension, recursive=True) }}"
 
 matrix_appservice_slack_registration_yaml: |
   id: "{{ matrix_appservice_slack_id_token }}"

@@ -89,7 +89,7 @@ matrix_appservice_discord_configuration_extension_yaml: |
 
 matrix_appservice_discord_configuration_extension: "{{ matrix_appservice_discord_configuration_extension_yaml | from_yaml if matrix_appservice_discord_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
-matrix_appservice_discord_configuration: "{{ matrix_appservice_discord_configuration_yaml | from_yaml|combine(matrix_appservice_discord_configuration_extension, recursive=True) }}"
+matrix_appservice_discord_configuration: "{{ matrix_appservice_discord_configuration_yaml | from_yaml | combine(matrix_appservice_discord_configuration_extension, recursive=True) }}"
 
 matrix_appservice_discord_registration_yaml: |
   #jinja2: lstrip_blocks: "True"
@@ -99,10 +99,10 @@ matrix_appservice_discord_registration_yaml: |
   namespaces:
     users:
     - exclusive: true
-      regex: '@_discord_.*:{{ matrix_appservice_discord_homeserver_domain|regex_escape }}'
+      regex: '@_discord_.*:{{ matrix_appservice_discord_homeserver_domain | regex_escape }}'
     aliases:
     - exclusive: true
-      regex: '#_discord_.*:{{ matrix_appservice_discord_homeserver_domain|regex_escape }}'
+      regex: '#_discord_.*:{{ matrix_appservice_discord_homeserver_domain | regex_escape }}'
   url: {{ matrix_appservice_discord_appservice_url }}
   sender_localpart: _discord_bot
   rate_limited: false
