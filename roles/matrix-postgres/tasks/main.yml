@@ -1,45 +1,45 @@
 ---
 
-- import_tasks: "{{ role_path }}/tasks/init.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
   tags:
     - always
 
-- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: "run_setup|bool and matrix_postgres_enabled|bool"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: "run_setup | bool and matrix_postgres_enabled | bool"
   tags:
     - setup-all
     - setup-postgres
 
-- import_tasks: "{{ role_path }}/tasks/setup_postgres.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_postgres.yml"
+  when: run_setup | bool
   tags:
     - setup-all
     - setup-postgres
 
-- import_tasks: "{{ role_path }}/tasks/import_postgres.yml"
-  when: run_postgres_import|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/import_postgres.yml"
+  when: run_postgres_import | bool
   tags:
     - import-postgres
 
 # The `run_postgres_import_sqlite_db` variable had better be renamed to be consistent,
 # but that's a breaking change which may cause trouble for people.
-- import_tasks: "{{ role_path }}/tasks/import_synapse_sqlite_db.yml"
-  when: run_postgres_import_sqlite_db|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/import_synapse_sqlite_db.yml"
+  when: run_postgres_import_sqlite_db | bool
   tags:
     - import-synapse-sqlite-db
 
 # Perhaps we need a new variable here, instead of `run_postgres_import_sqlite_db`.
-- import_tasks: "{{ role_path }}/tasks/import_generic_sqlite_db.yml"
-  when: run_postgres_import_sqlite_db|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/import_generic_sqlite_db.yml"
+  when: run_postgres_import_sqlite_db | bool
   tags:
     - import-generic-sqlite-db
 
-- import_tasks: "{{ role_path }}/tasks/upgrade_postgres.yml"
-  when: run_postgres_upgrade|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/upgrade_postgres.yml"
+  when: run_postgres_upgrade | bool
   tags:
     - upgrade-postgres
 
-- import_tasks: "{{ role_path }}/tasks/run_vacuum.yml"
-  when: run_postgres_vacuum|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/run_vacuum.yml"
+  when: run_postgres_vacuum | bool
   tags:
     - run-postgres-vacuum

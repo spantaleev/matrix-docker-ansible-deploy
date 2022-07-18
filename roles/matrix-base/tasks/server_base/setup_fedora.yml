@@ -9,13 +9,13 @@
     mode: 0644
   with_items:
     - docker-ce-fedora.repo
-  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
+  when: matrix_docker_installation_enabled | bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure Docker's RPM key is trusted
   rpm_key:
     state: present
     key: https://download.docker.com/linux/fedora/gpg
-  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
+  when: matrix_docker_installation_enabled | bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure yum packages are installed
   ansible.builtin.yum:
@@ -30,10 +30,10 @@
       - "{{ matrix_docker_package_name }}"
       - python3-pip
     state: latest
-  when: matrix_docker_installation_enabled|bool
+  when: matrix_docker_installation_enabled | bool
 
 - name: Ensure Docker-Py is installed
   pip:
     name: docker-py
     state: latest
-  when: matrix_docker_installation_enabled|bool
+  when: matrix_docker_installation_enabled | bool

@@ -1,6 +1,6 @@
 ---
 
-- import_tasks: "{{ role_path }}/../matrix-base/tasks/util/ensure_openssl_installed.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/../matrix-base/tasks/util/ensure_openssl_installed.yml"
 
 - name: Ensure hookshot paths exist
   ansible.builtin.file:
@@ -12,7 +12,7 @@
   with_items:
     - {path: "{{ matrix_hookshot_base_path }}", when: true}
     - {path: "{{ matrix_hookshot_docker_src_files_path }}", when: "{{ matrix_hookshot_container_image_self_build }}"}
-  when: item.when|bool
+  when: item.when | bool
 
 - name: Ensure hookshot image is pulled
   docker_image:
@@ -35,7 +35,7 @@
   become: true
   become_user: "{{ matrix_user_username }}"
   register: matrix_hookshot_git_pull_results
-  when: "matrix_hookshot_container_image_self_build|bool"
+  when: "matrix_hookshot_container_image_self_build | bool"
 
 - name: Ensure hookshot Docker image is built
   docker_image:
@@ -47,10 +47,10 @@
       dockerfile: Dockerfile
       path: "{{ matrix_hookshot_docker_src_files_path }}"
       pull: true
-  when: "matrix_hookshot_container_image_self_build|bool"
+  when: "matrix_hookshot_container_image_self_build | bool"
 
 - name: Check if hookshot passkey exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_hookshot_base_path }}/passkey.pem"
   register: hookshot_passkey_file
 
@@ -62,7 +62,7 @@
 
 - name: Ensure hookshot config.yml installed if provided
   ansible.builtin.copy:
-    content: "{{ matrix_hookshot_configuration|to_nice_yaml(indent=2, width=999999) }}"
+    content: "{{ matrix_hookshot_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_hookshot_base_path }}/config.yml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
@@ -86,7 +86,7 @@
 
 - name: Ensure hookshot registration.yml installed if provided
   ansible.builtin.copy:
-    content: "{{ matrix_hookshot_registration|to_nice_yaml(indent=2, width=999999) }}"
+    content: "{{ matrix_hookshot_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_hookshot_base_path }}/registration.yml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
@@ -99,7 +99,7 @@
     mode: 0400
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: matrix_hookshot_github_enabled|bool and matrix_hookshot_github_private_key|length > 0
+  when: matrix_hookshot_github_enabled | bool and matrix_hookshot_github_private_key|length > 0
 
 - name: Ensure matrix-hookshot.service installed
   ansible.builtin.template:

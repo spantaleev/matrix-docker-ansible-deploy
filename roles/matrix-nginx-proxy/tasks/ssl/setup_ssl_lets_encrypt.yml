@@ -25,7 +25,7 @@
         force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_ssl_lets_encrypt_certbot_docker_image_force_pull }}"
 
     - name: Obtain Let's Encrypt certificates
-      include_tasks: "{{ role_path }}/tasks/ssl/setup_ssl_lets_encrypt_obtain_for_domain.yml"
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ssl/setup_ssl_lets_encrypt_obtain_for_domain.yml"
       with_items: "{{ matrix_ssl_domains_to_obtain_certificates_for }}"
       loop_control:
         loop_var: domain_name
@@ -41,7 +41,7 @@
         src: "{{ role_path }}/templates/systemd/{{ item.name }}.j2"
         dest: "{{ matrix_systemd_path }}/{{ item.name }}"
         mode: 0644
-      when: "item.applicable|bool"
+      when: "item.applicable | bool"
       with_items: "{{ matrix_ssl_renewal_systemd_units_list }}"
   when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
 
@@ -54,7 +54,7 @@
       ansible.builtin.file:
         path: "{{ matrix_systemd_path }}/{{ item.name }}"
         state: absent
-      when: "not item.applicable|bool"
+      when: "not item.applicable | bool"
       with_items: "{{ matrix_ssl_renewal_systemd_units_list }}"
 
     - name: Ensure Let's Encrypt SSL renewal script removed

@@ -11,7 +11,7 @@
 # which still store it in the parent directory (`/matrix/postgres`).
 
 - name: Check if old Postgres data directory is used
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_postgres_base_path }}/PG_VERSION"
   register: result_pg_old_data_dir_stat
 
@@ -33,7 +33,7 @@
   when: "result_pg_old_data_dir_stat.stat.exists"
 
 - name: Find files and directories in old Postgres data path
-  find:
+  ansible.builtin.find:
     paths: "{{ matrix_postgres_base_path }}"
     file_type: any
     excludes: ["data"]
@@ -51,7 +51,7 @@
 
 - block:
     - name: Relocate Postgres data files from old directory to new
-      ansible.builtin.command: "mv {{ item.path }} {{ matrix_postgres_data_path }}/{{ item.path|basename }}"
+      ansible.builtin.command: "mv {{ item.path }} {{ matrix_postgres_data_path }}/{{ item.path | basename }}"
       with_items: "{{ result_pg_old_data_dir_find.files }}"
   when: "result_pg_old_data_dir_stat.stat.exists"
 

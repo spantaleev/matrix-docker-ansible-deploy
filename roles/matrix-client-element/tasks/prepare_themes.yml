@@ -11,7 +11,7 @@
       dest: "{{ role_path }}/files/scratchpad/themes"
 
   - name: Find all Element theme files
-    find:
+    ansible.builtin.find:
       paths: "{{ role_path }}/files/scratchpad/themes"
       patterns: "*.json"
       recurse: true
@@ -31,7 +31,7 @@
   run_once: true
   delegate_to: 127.0.0.1
   become: false
-  when: matrix_client_element_themes_enabled|bool
+  when: matrix_client_element_themes_enabled | bool
 
 
 #
@@ -45,4 +45,4 @@
   run_once: true
   delegate_to: 127.0.0.1
   become: false
-  when: "not matrix_client_element_themes_enabled|bool"
+  when: "not matrix_client_element_themes_enabled | bool"

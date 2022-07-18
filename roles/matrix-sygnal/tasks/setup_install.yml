@@ -25,7 +25,7 @@
 
 - name: Ensure Sygnal config installed
   ansible.builtin.copy:
-    content: "{{ matrix_sygnal_configuration|to_nice_yaml(indent=2, width=999999) }}"
+    content: "{{ matrix_sygnal_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_sygnal_config_path }}/sygnal.yaml"
     mode: 0640
     owner: "{{ matrix_user_username }}"
@@ -41,4 +41,4 @@
 - name: Ensure systemd reloaded after matrix-sygnal.service installation
   ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_sygnal_systemd_service_result.changed|bool"
+  when: "matrix_sygnal_systemd_service_result.changed | bool"

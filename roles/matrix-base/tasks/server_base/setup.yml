@@ -1,12 +1,12 @@
 ---
 
-- include_tasks: "{{ role_path }}/tasks/server_base/setup_redhat.yml"
+- ansible.builtin.include_tasks: "{{ role_path }}/tasks/server_base/setup_redhat.yml"
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version|int < 8
 
-- include_tasks: "{{ role_path }}/tasks/server_base/setup_redhat8.yml"
+- ansible.builtin.include_tasks: "{{ role_path }}/tasks/server_base/setup_redhat8.yml"
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7 and ansible_distribution_major_version|int < 30
 
-- include_tasks: "{{ role_path }}/tasks/server_base/setup_fedora.yml"
+- ansible.builtin.include_tasks: "{{ role_path }}/tasks/server_base/setup_fedora.yml"
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 30
 
 - block:
@@ -23,14 +23,14 @@
     setup: filter=ansible_lsb*
     when: lsb_release_installation_result.changed
 
-  - include_tasks: "{{ role_path }}/tasks/server_base/setup_debian.yml"
+  - ansible.builtin.include_tasks: "{{ role_path }}/tasks/server_base/setup_debian.yml"
     when: (ansible_os_family == 'Debian') and (ansible_lsb.id != 'Raspbian')
 
-  - include_tasks: "{{ role_path }}/tasks/server_base/setup_raspbian.yml"
+  - ansible.builtin.include_tasks: "{{ role_path }}/tasks/server_base/setup_raspbian.yml"
     when: (ansible_os_family == 'Debian') and (ansible_lsb.id == 'Raspbian')
   when: ansible_os_family == 'Debian'
 
-- include_tasks: "{{ role_path }}/tasks/server_base/setup_archlinux.yml"
+- ansible.builtin.include_tasks: "{{ role_path }}/tasks/server_base/setup_archlinux.yml"
   when: ansible_distribution == 'Archlinux'
 
 - name: Ensure Docker is started and autoruns

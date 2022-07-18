@@ -10,7 +10,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_prometheus_postgres_exporter_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_prometheus_postgres_exporter_docker_image_force_pull }}"
-  when: "matrix_prometheus_postgres_exporter_enabled|bool"
+  when: "matrix_prometheus_postgres_exporter_enabled | bool"
   register: result
   retries: "{{ matrix_container_retries_count }}"
   delay: "{{ matrix_container_retries_delay }}"
@@ -22,19 +22,19 @@
     dest: "{{ matrix_systemd_path }}/matrix-prometheus-postgres-exporter.service"
     mode: 0644
   register: matrix_prometheus_postgres_exporter_systemd_service_result
-  when: matrix_prometheus_postgres_exporter_enabled|bool
+  when: matrix_prometheus_postgres_exporter_enabled | bool
 
 - name: Ensure systemd reloaded after matrix-prometheus.service installation
   ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_prometheus_postgres_exporter_enabled|bool and matrix_prometheus_postgres_exporter_systemd_service_result.changed"
+  when: "matrix_prometheus_postgres_exporter_enabled | bool and matrix_prometheus_postgres_exporter_systemd_service_result.changed"
 
 #
 # Tasks related to getting rid of matrix-prometheus-postgres-exporter (if it was previously enabled)
 #
 
 - name: Check existence of matrix-prometheus-postgres-exporter service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-prometheus-postgres-exporter.service"
   register: matrix_prometheus_postgres_exporter_service_stat
 
@@ -45,15 +45,15 @@
     enabled: false
     daemon_reload: true
   register: stopping_result
-  when: "not matrix_prometheus_postgres_exporter_enabled|bool and matrix_prometheus_postgres_exporter_service_stat.stat.exists"
+  when: "not matrix_prometheus_postgres_exporter_enabled | bool and matrix_prometheus_postgres_exporter_service_stat.stat.exists"
 
 - name: Ensure matrix-prometheus-postgres-exporter.service doesn't exist
   ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-prometheus-postgres-exporter.service"
     state: absent
-  when: "not matrix_prometheus_postgres_exporter_enabled|bool and matrix_prometheus_postgres_exporter_service_stat.stat.exists"
+  when: "not matrix_prometheus_postgres_exporter_enabled | bool and matrix_prometheus_postgres_exporter_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-prometheus-postgres-exporter.service removal
   ansible.builtin.service:
     daemon_reload: true
-  when: "not matrix_prometheus_postgres_exporter_enabled|bool and matrix_prometheus_postgres_exporter_service_stat.stat.exists"
+  when: "not matrix_prometheus_postgres_exporter_enabled | bool and matrix_prometheus_postgres_exporter_service_stat.stat.exists"

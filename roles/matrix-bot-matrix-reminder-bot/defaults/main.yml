@@ -93,8 +93,8 @@ matrix_bot_matrix_reminder_bot_configuration_extension_yaml: |
   # matrix:
   #   device_name: My-Reminder-Bot
 
-matrix_bot_matrix_reminder_bot_configuration_extension: "{{ matrix_bot_matrix_reminder_bot_configuration_extension_yaml|from_yaml if matrix_bot_matrix_reminder_bot_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_bot_matrix_reminder_bot_configuration_extension: "{{ matrix_bot_matrix_reminder_bot_configuration_extension_yaml | from_yaml if matrix_bot_matrix_reminder_bot_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_bot_matrix_reminder_bot_configuration_yaml`.
-matrix_bot_matrix_reminder_bot_configuration: "{{ matrix_bot_matrix_reminder_bot_configuration_yaml|from_yaml|combine(matrix_bot_matrix_reminder_bot_configuration_extension, recursive=True) }}"
+matrix_bot_matrix_reminder_bot_configuration: "{{ matrix_bot_matrix_reminder_bot_configuration_yaml | from_yaml|combine(matrix_bot_matrix_reminder_bot_configuration_extension, recursive=True) }}"

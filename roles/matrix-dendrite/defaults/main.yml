@@ -167,8 +167,8 @@ matrix_dendrite_configuration_extension_yaml: |
   #   system_mxid_avatar_url: "mxc://server.com/oumMVlgDnLYFaPVkExemNVVZ"
   #   room_name: "Server Notices"
 
-matrix_dendrite_configuration_extension: "{{ matrix_dendrite_configuration_extension_yaml|from_yaml if matrix_dendrite_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_dendrite_configuration_extension: "{{ matrix_dendrite_configuration_extension_yaml | from_yaml if matrix_dendrite_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final Dendrite configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_dendrite_configuration_yaml`.
-matrix_dendrite_configuration: "{{ matrix_dendrite_configuration_yaml|from_yaml|combine(matrix_dendrite_configuration_extension, recursive=True) }}"
+matrix_dendrite_configuration: "{{ matrix_dendrite_configuration_yaml | from_yaml|combine(matrix_dendrite_configuration_extension, recursive=True) }}"

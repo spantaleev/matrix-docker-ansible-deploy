@@ -23,7 +23,7 @@
     body: |
       {
         "one_time": {{ 'true' if one_time == 'yes' else 'false' }},
-        "ex_date": {{ ex_date|to_json }}
+        "ex_date": {{ ex_date | to_json }}
       }
   check_mode: false
   register: matrix_registration_api_result
@@ -45,7 +45,7 @@
   ansible.builtin.set_fact:
     matrix_playbook_runtime_results: |
       {{
-        matrix_playbook_runtime_results|default([])
+        matrix_playbook_runtime_results | default([])
         +
         [matrix_registration_api_result_message]
       }}

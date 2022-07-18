@@ -15,7 +15,7 @@
 
 - name: Ensure Matrix /.well-known/matrix/client file configured
   ansible.builtin.copy:
-    content: "{{ matrix_well_known_matrix_client_configuration|to_nice_json }}"
+    content: "{{ matrix_well_known_matrix_client_configuration | to_nice_json }}"
     dest: "{{ matrix_static_files_base_path }}/.well-known/matrix/client"
     mode: 0644
     owner: "{{ matrix_user_username }}"
@@ -23,18 +23,18 @@
 
 - name: Ensure Matrix /.well-known/matrix/server file configured
   ansible.builtin.copy:
-    content: "{{ matrix_well_known_matrix_server_configuration|to_nice_json }}"
+    content: "{{ matrix_well_known_matrix_server_configuration | to_nice_json }}"
     dest: "{{ matrix_static_files_base_path }}/.well-known/matrix/server"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: matrix_well_known_matrix_server_enabled|bool
+  when: matrix_well_known_matrix_server_enabled | bool
 
 - name: Ensure Matrix /.well-known/matrix/server file deleted
   ansible.builtin.file:
     path: "{{ matrix_static_files_base_path }}/.well-known/matrix/server"
     state: absent
-  when: "not matrix_well_known_matrix_server_enabled|bool"
+  when: "not matrix_well_known_matrix_server_enabled | bool"
 
 - name: Ensure Matrix /.well-known/matrix/support file configured
   ansible.builtin.copy:

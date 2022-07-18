@@ -5,7 +5,7 @@
 
 - block:
     - name: Check if an SQLite database already exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ matrix_appservice_discord_sqlite_database_path_local }}"
       register: matrix_appservice_discord_sqlite_database_path_local_stat_result
 
@@ -14,16 +14,16 @@
             matrix_postgres_db_migration_request:
               src: "{{ matrix_appservice_discord_sqlite_database_path_local }}"
               dst: "{{ matrix_appservice_discord_database_connString }}"
-              caller: "{{ role_path|basename }}"
+              caller: "{{ role_path | basename }}"
               engine_variable_name: 'matrix_appservice_discord_database_engine'
               engine_old: 'sqlite'
               systemd_services_to_stop: ['matrix-appservice-discord.service']
 
-        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+        - ansible.builtin.import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
 
         - ansible.builtin.set_fact:
             matrix_appservice_discord_requires_restart: true
-      when: "matrix_appservice_discord_sqlite_database_path_local_stat_result.stat.exists|bool"
+      when: "matrix_appservice_discord_sqlite_database_path_local_stat_result.stat.exists | bool"
   when: "matrix_appservice_discord_database_engine == 'postgres'"
 
 - name: Ensure Appservice Discord image is pulled
@@ -50,7 +50,7 @@
     - "{{ matrix_appservice_discord_data_path }}"
 
 - name: Check if an old database file already exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_appservice_discord_base_path }}/discord.db"
   register: matrix_appservice_discord_stat_db
 
@@ -73,7 +73,7 @@
 
 - name: Ensure AppService Discord config.yaml installed
   ansible.builtin.copy:
-    content: "{{ matrix_appservice_discord_configuration|to_nice_yaml(indent=2, width=999999) }}"
+    content: "{{ matrix_appservice_discord_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_discord_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
@@ -81,7 +81,7 @@
 
 - name: Ensure AppService Discord registration.yaml installed
   ansible.builtin.copy:
-    content: "{{ matrix_appservice_discord_registration|to_nice_yaml(indent=2, width=999999) }}"
+    content: "{{ matrix_appservice_discord_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_discord_config_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
@@ -116,4 +116,4 @@
   ansible.builtin.service:
     name: "matrix-appservice-discord.service"
     state: restarted
-  when: "matrix_appservice_discord_requires_restart|bool"
+  when: "matrix_appservice_discord_requires_restart | bool"

@@ -15,7 +15,7 @@
     group: "{{ matrix_user_groupname }}"
   with_items:
     - {path: "{{ matrix_coturn_docker_src_files_path }}", when: "{{ matrix_coturn_container_image_self_build }}"}
-  when: "item.when|bool"
+  when: "item.when | bool"
 
 - name: Ensure Coturn image is pulled
   docker_image:
@@ -23,7 +23,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_coturn_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_coturn_docker_image_force_pull }}"
-  when: "not matrix_coturn_container_image_self_build|bool"
+  when: "not matrix_coturn_container_image_self_build | bool"
   register: result
   retries: "{{ matrix_container_retries_count }}"
   delay: "{{ matrix_container_retries_delay }}"
@@ -50,7 +50,7 @@
           dockerfile: "{{ matrix_coturn_container_image_self_build_repo_dockerfile_path }}"
           path: "{{ matrix_coturn_docker_src_files_path }}"
           pull: true
-  when: "matrix_coturn_container_image_self_build|bool"
+  when: "matrix_coturn_container_image_self_build | bool"
 
 - name: Ensure Coturn configuration path exists
   ansible.builtin.file:
@@ -89,7 +89,7 @@
     dest: "{{ matrix_systemd_path }}/{{ item }}"
     mode: 0644
   register: "matrix_coturn_systemd_service_change_results"
-  when: "matrix_coturn_tls_enabled|bool"
+  when: "matrix_coturn_tls_enabled | bool"
   with_items:
     - matrix-coturn-reload.service
     - matrix-coturn-reload.timer
@@ -100,7 +100,7 @@
     path: "{{ item }}"
     state: absent
   register: "matrix_coturn_systemd_service_change_results"
-  when: "not matrix_coturn_tls_enabled|bool"
+  when: "not matrix_coturn_tls_enabled | bool"
   with_items:
     - matrix-coturn-reload.service
     - matrix-coturn-reload.timer

@@ -5,7 +5,7 @@
 - name: Fail if Postgres not enabled
   ansible.builtin.fail:
     msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot import."
-  when: "not matrix_postgres_enabled|bool"
+  when: "not matrix_postgres_enabled | bool"
 
 - name: Fail if playbook called incorrectly
   ansible.builtin.fail:
@@ -13,7 +13,7 @@
   when: "sqlite_database_path is not defined or sqlite_database_path.startswith('<')"
 
 - name: Check if the provided SQLite database file exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ sqlite_database_path }}"
   register: sqlite_database_path_stat_result
 
@@ -48,7 +48,7 @@
 - name: Set postgres_start_wait_time, if not provided
   ansible.builtin.set_fact:
     postgres_start_wait_time: 15
-  when: "postgres_start_wait_time|default('') == ''"
+  when: "postgres_start_wait_time | default('') == ''"
 
 
 # Actual import work
@@ -61,11 +61,11 @@
   register: matrix_postgres_service_start_result
 
 - name: Wait a bit, so that Postgres can start
-  wait_for:
+  ansible.builtin.wait_for:
     timeout: "{{ postgres_start_wait_time }}"
   delegate_to: 127.0.0.1
   become: false
-  when: "matrix_postgres_service_start_result.changed|bool"
+  when: "matrix_postgres_service_start_result.changed | bool"
 
 - name: Import SQLite database from {{ sqlite_database_path }} into Postgres
   ansible.builtin.command:
@@ -89,7 +89,7 @@
   ansible.builtin.set_fact:
     matrix_playbook_runtime_results: |
       {{
-        matrix_playbook_runtime_results|default([])
+        matrix_playbook_runtime_results | default([])
         +
         [
           "NOTE: Your SQLite database file has been imported into Postgres. The original file has been moved from `{{ sqlite_database_path }}` to `{{ sqlite_database_path }}.backup`. When you've confirmed that the import went well and everything works, you should be able to safely delete this file."

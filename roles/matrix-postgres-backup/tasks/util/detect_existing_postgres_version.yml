@@ -11,7 +11,7 @@
     matrix_postgres_backup_detected_version_corresponding_docker_image: ""
 
 - name: Determine existing Postgres version (check PG_VERSION file)
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_postgres_backup_detection_pg_version_path }}"
   register: result_pg_version_stat
 
@@ -23,12 +23,12 @@
   ansible.builtin.slurp:
     src: "{{ matrix_postgres_backup_detection_pg_version_path }}"
   register: result_pg_version
-  when: matrix_postgres_backup_detected_existing|bool
+  when: matrix_postgres_backup_detected_existing | bool
 
 - name: Determine existing Postgres version (make sense of PG_VERSION file)
   ansible.builtin.set_fact:
     matrix_postgres_backup_detected_version: "{{ result_pg_version['content']|b64decode|replace('\n', '') }}"
-  when: matrix_postgres_backup_detected_existing|bool
+  when: matrix_postgres_backup_detected_existing | bool
 
 - name: Determine corresponding Docker image to detected version (assume default of latest)
   ansible.builtin.set_fact:

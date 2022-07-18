@@ -6,7 +6,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_dynamic_dns_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_dynamic_dns_docker_image_force_pull }}"
-  when: matrix_dynamic_dns_enabled|bool and not matrix_dynamic_dns_container_image_self_build
+  when: matrix_dynamic_dns_enabled | bool and not matrix_dynamic_dns_container_image_self_build
   register: result
   retries: "{{ matrix_container_retries_count }}"
   delay: "{{ matrix_container_retries_delay }}"
@@ -23,7 +23,7 @@
     - {path: "{{ matrix_dynamic_dns_base_path }}", when: true}
     - {path: "{{ matrix_dynamic_dns_config_path }}", when: true}
     - {path: "{{ matrix_dynamic_dns_docker_src_files_path }}", when: "{{ matrix_dynamic_dns_container_image_self_build }}"}
-  when: matrix_dynamic_dns_enabled|bool and item.when|bool
+  when: matrix_dynamic_dns_enabled | bool and item.when | bool
 
 - name: Ensure Dynamic DNS repository is present on self build
   ansible.builtin.git:
@@ -33,7 +33,7 @@
   become: true
   become_user: "{{ matrix_user_username }}"
   register: matrix_dynamic_dns_git_pull_results
-  when: "matrix_dynamic_dns_enabled|bool and matrix_dynamic_dns_container_image_self_build|bool"
+  when: "matrix_dynamic_dns_enabled | bool and matrix_dynamic_dns_container_image_self_build | bool"
 
 - name: Ensure Dynamic DNS Docker image is built
   docker_image:
@@ -45,7 +45,7 @@
       dockerfile: Dockerfile
       path: "{{ matrix_dynamic_dns_docker_src_files_path }}"
       pull: true
-  when: "matrix_dynamic_dns_enabled|bool and matrix_dynamic_dns_container_image_self_build|bool"
+  when: "matrix_dynamic_dns_enabled | bool and matrix_dynamic_dns_container_image_self_build | bool"
 
 - name: Ensure Dynamic DNS ddclient.conf installed
   ansible.builtin.template:

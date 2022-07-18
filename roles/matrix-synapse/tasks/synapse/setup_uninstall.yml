@@ -1,7 +1,7 @@
 ---
 
 - name: Check existence of matrix-synapse service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-synapse.service"
   register: matrix_synapse_service_stat
 
@@ -34,4 +34,4 @@
   ansible.builtin.file:
     path: "{{ matrix_synapse_base_path }}/external_prometheus.yml.example"
     state: absent
-  when: "not matrix_synapse_metrics_proxying_enabled|bool"
+  when: "not matrix_synapse_metrics_proxying_enabled | bool"

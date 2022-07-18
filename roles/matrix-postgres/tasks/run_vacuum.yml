@@ -5,7 +5,7 @@
 - name: Fail if Postgres not enabled
   ansible.builtin.fail:
     msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot run vacuum."
-  when: "not matrix_postgres_enabled|bool"
+  when: "not matrix_postgres_enabled | bool"
 
 
 # Defaults
@@ -13,12 +13,12 @@
 - name: Set postgres_start_wait_time, if not provided
   ansible.builtin.set_fact:
     postgres_start_wait_time: 15
-  when: "postgres_start_wait_time|default('') == ''"
+  when: "postgres_start_wait_time | default('') == ''"
 
 - name: Set postgres_vacuum_wait_time, if not provided
   ansible.builtin.set_fact:
     postgres_vacuum_wait_time: "{{ 7 * 86400 }}"
-  when: "postgres_vacuum_wait_time|default('') == ''"
+  when: "postgres_vacuum_wait_time | default('') == ''"
 
 
 # Actual vacuuming work
@@ -30,17 +30,17 @@
     daemon_reload: true
 
 - name: Wait a bit, so that Postgres can start
-  wait_for:
+  ansible.builtin.wait_for:
     timeout: "{{ postgres_start_wait_time }}"
   delegate_to: 127.0.0.1
   become: false
 
-- import_tasks: tasks/util/detect_existing_postgres_version.yml
+- ansible.builtin.import_tasks: tasks/util/detect_existing_postgres_version.yml
 
 - name: Abort, if no existing Postgres version detected
   ansible.builtin.fail:
     msg: "Could not find existing Postgres installation"
-  when: "not matrix_postgres_detected_existing|bool"
+  when: "not matrix_postgres_detected_existing | bool"
 
 - name: Generate Postgres database vacuum command
   ansible.builtin.set_fact:
@@ -62,7 +62,7 @@
       and manually run the above command directly on the server.
 
 - name: Populate service facts
-  service_facts:
+  ansible.builtin.service_facts:
 
 - ansible.builtin.set_fact:
     matrix_postgres_synapse_was_running: "{{ ansible_facts.services['matrix-synapse.service']|default(none) is not none and ansible_facts.services['matrix-synapse.service'].state == 'running' }}"
@@ -87,4 +87,4 @@
     name: matrix-synapse
     state: started
     daemon_reload: true
-  when: "matrix_postgres_synapse_was_running|bool"
+  when: "matrix_postgres_synapse_was_running | bool"

@@ -41,8 +41,8 @@ matrix_ntfy_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_ntfy_configuration_yaml`.
 
-matrix_ntfy_configuration_extension: "{{ matrix_ntfy_configuration_extension_yaml|from_yaml if matrix_ntfy_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_ntfy_configuration_extension: "{{ matrix_ntfy_configuration_extension_yaml | from_yaml if matrix_ntfy_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final ntfy configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_ntfy_configuration_yaml`.
-matrix_ntfy_configuration: "{{ matrix_ntfy_configuration_yaml|from_yaml|combine(matrix_ntfy_configuration_extension, recursive=True) }}"
+matrix_ntfy_configuration: "{{ matrix_ntfy_configuration_yaml | from_yaml|combine(matrix_ntfy_configuration_extension, recursive=True) }}"

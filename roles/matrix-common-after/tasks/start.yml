@@ -2,7 +2,7 @@
 
 - name: Determine whether we should make services autostart
   ansible.builtin.set_fact:
-    matrix_services_autostart_enabled_bool: "{{ true if matrix_services_autostart_enabled|default('') == '' else matrix_services_autostart_enabled|bool }}"
+    matrix_services_autostart_enabled_bool: "{{ true if matrix_services_autostart_enabled | default('') == '' else matrix_services_autostart_enabled | bool }}"
 
 - name: Ensure systemd is reloaded
   ansible.builtin.service:
@@ -29,14 +29,14 @@
 # Waiting too long (30s) may not work for a similar reason,
 # as we may run into systemd's automatic restart logic retrying the service.
 - name: Wait a bit, so that services can start (or fail)
-  wait_for:
+  ansible.builtin.wait_for:
     timeout: "{{ matrix_common_after_systemd_service_start_wait_for_timeout_seconds }}"
   delegate_to: 127.0.0.1
   become: false
 
 - block:
     - name: Populate service facts
-      service_facts:
+      ansible.builtin.service_facts:
 
     - name: Fail if service isn't detected to be running
       ansible.builtin.fail:

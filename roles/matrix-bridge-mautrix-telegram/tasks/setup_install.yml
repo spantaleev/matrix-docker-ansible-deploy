@@ -6,14 +6,14 @@
   ansible.builtin.fail:
     msg: >-
       The matrix-bridge-mautrix-telegram role needs to execute before the matrix-synapse role.
-  when: "matrix_synapse_role_executed|default(False)"
+  when: "matrix_synapse_role_executed | default(False)"
 
 - ansible.builtin.set_fact:
     matrix_mautrix_telegram_requires_restart: false
 
 - block:
     - name: Check if an SQLite database already exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ matrix_mautrix_telegram_sqlite_database_path_local }}"
       register: matrix_mautrix_telegram_sqlite_database_path_local_stat_result
 
@@ -22,16 +22,16 @@
             matrix_postgres_db_migration_request:
               src: "{{ matrix_mautrix_telegram_sqlite_database_path_local }}"
               dst: "{{ matrix_mautrix_telegram_database_connection_string }}"
-              caller: "{{ role_path|basename }}"
+              caller: "{{ role_path | basename }}"
               engine_variable_name: 'matrix_mautrix_telegram_database_engine'
               engine_old: 'sqlite'
               systemd_services_to_stop: ['matrix-mautrix-telegram.service']
 
-        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+        - ansible.builtin.import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
 
         - ansible.builtin.set_fact:
             matrix_mautrix_telegram_requires_restart: true
-      when: "matrix_mautrix_telegram_sqlite_database_path_local_stat_result.stat.exists|bool"
+      when: "matrix_mautrix_telegram_sqlite_database_path_local_stat_result.stat.exists | bool"
   when: "matrix_mautrix_telegram_database_engine == 'postgres'"
 
 - name: Ensure Mautrix Telegram paths exist
@@ -46,7 +46,7 @@
     - {path: "{{ matrix_mautrix_telegram_config_path }}", when: true}
     - {path: "{{ matrix_mautrix_telegram_data_path }}", when: true}
     - {path: "{{ matrix_mautrix_telegram_docker_src_files_path }}", when: "{{ matrix_mautrix_telegram_container_image_self_build }}"}
-  when: item.when|bool
+  when: item.when | bool
 
 - name: Ensure Mautrix Telegram image is pulled
   docker_image:
@@ -54,7 +54,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mautrix_telegram_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_telegram_docker_image_force_pull }}"
-  when: "not matrix_mautrix_telegram_container_image_self_build|bool"
+  when: "not matrix_mautrix_telegram_container_image_self_build | bool"
   register: result
   retries: "{{ matrix_container_retries_count }}"
   delay: "{{ matrix_container_retries_delay }}"
@@ -68,7 +68,7 @@
   become: true
   become_user: "{{ matrix_user_username }}"
   register: matrix_telegram_lottieconverter_git_pull_results
-  when: "matrix_telegram_lottieconverter_container_image_self_build|bool and matrix_mautrix_telegram_container_image_self_build|bool"
+  when: "matrix_telegram_lottieconverter_container_image_self_build | bool and matrix_mautrix_telegram_container_image_self_build | bool"
 
 - name: Ensure lottieconverter Docker image is built
   docker_image:
@@ -80,7 +80,7 @@
       dockerfile: Dockerfile
       path: "{{ matrix_telegram_lottieconverter_docker_src_files_path }}"
       pull: true
-  when: "matrix_telegram_lottieconverter_container_image_self_build|bool and matrix_telegram_lottieconverter_git_pull_results.changed and matrix_mautrix_telegram_container_image_self_build|bool"
+  when: "matrix_telegram_lottieconverter_container_image_self_build | bool and matrix_telegram_lottieconverter_git_pull_results.changed and matrix_mautrix_telegram_container_image_self_build | bool"
 
 - name: Ensure matrix-mautrix-telegram repository is present when self-building
   ansible.builtin.git:
@@ -90,7 +90,7 @@
   become: true
   become_user: "{{ matrix_user_username }}"
   register: matrix_mautrix_telegram_git_pull_results
-  when: "matrix_mautrix_telegram_container_image_self_build|bool"
+  when: "matrix_mautrix_telegram_container_image_self_build | bool"
 
 - name: Ensure matrix-mautrix-telegram Docker image is built
   docker_image:
@@ -101,13 +101,13 @@
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_telegram_docker_src_files_path }}"
-      pull: "{{ not matrix_telegram_lottieconverter_container_image_self_build_mask_arch|bool }}"
+      pull: "{{ not matrix_telegram_lottieconverter_container_image_self_build_mask_arch | bool }}"
       args:
         TARGETARCH: ""
-  when: "matrix_mautrix_telegram_container_image_self_build|bool and matrix_mautrix_telegram_git_pull_results.changed"
+  when: "matrix_mautrix_telegram_container_image_self_build | bool and matrix_mautrix_telegram_git_pull_results.changed"
 
 - name: Check if an old database file already exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_mautrix_telegram_base_path }}/mautrix-telegram.db"
   register: matrix_mautrix_telegram_stat_database
 
@@ -126,7 +126,7 @@
 
 - name: Ensure mautrix-telegram config.yaml installed
   ansible.builtin.copy:
-    content: "{{ matrix_mautrix_telegram_configuration|to_nice_yaml(indent=2, width=999999) }}"
+    content: "{{ matrix_mautrix_telegram_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_telegram_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
@@ -134,7 +134,7 @@
 
 - name: Ensure mautrix-telegram registration.yaml installed
   ansible.builtin.copy:
-    content: "{{ matrix_mautrix_telegram_registration|to_nice_yaml(indent=2, width=999999) }}"
+    content: "{{ matrix_mautrix_telegram_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_telegram_config_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
@@ -156,4 +156,4 @@
   ansible.builtin.service:
     name: "matrix-mautrix-telegram.service"
     state: restarted
-  when: "matrix_mautrix_telegram_requires_restart|bool"
+  when: "matrix_mautrix_telegram_requires_restart | bool"

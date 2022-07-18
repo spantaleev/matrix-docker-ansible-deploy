@@ -15,7 +15,7 @@
     - {path: "{{ matrix_jitsi_prosody_base_path }}", when: true}
     - {path: "{{ matrix_jitsi_prosody_config_path }}", when: true}
     - {path: "{{ matrix_jitsi_prosody_plugins_path }}", when: true}
-  when: matrix_jitsi_enabled|bool and item.when
+  when: matrix_jitsi_enabled | bool and item.when
 
 - name: Ensure jitsi-prosody Docker image is pulled
   docker_image:
@@ -23,7 +23,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_jitsi_prosody_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_jitsi_prosody_docker_image_force_pull }}"
-  when: matrix_jitsi_enabled|bool
+  when: matrix_jitsi_enabled | bool
   register: result
   retries: "{{ matrix_container_retries_count }}"
   delay: "{{ matrix_container_retries_delay }}"
@@ -36,7 +36,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
     mode: 0640
-  when: matrix_jitsi_enabled|bool
+  when: matrix_jitsi_enabled | bool
 
 - name: Ensure matrix-jitsi-prosody.service file is installed
   ansible.builtin.template:
@@ -44,7 +44,7 @@
     dest: "{{ matrix_systemd_path }}/matrix-jitsi-prosody.service"
     mode: 0644
   register: matrix_jitsi_prosody_systemd_service_result
-  when: matrix_jitsi_enabled|bool
+  when: matrix_jitsi_enabled | bool
 
 - name: Ensure systemd service is reloaded after matrix-jitsi-prosody.service installation
   ansible.builtin.service:
@@ -52,11 +52,11 @@
   when: "matrix_jitsi_enabled and matrix_jitsi_prosody_systemd_service_result.changed"
 
 - name: Ensure authentication is properly configured
-  include_tasks:
+  ansible.builtin.include_tasks:
     ansible.builtin.file: "{{ role_path }}/tasks/util/setup_jitsi_auth.yml"
   when:
-    - matrix_jitsi_enabled|bool
-    - matrix_jitsi_enable_auth|bool
+    - matrix_jitsi_enabled | bool
+    - matrix_jitsi_enable_auth | bool
 
 
 #
@@ -64,10 +64,10 @@
 #
 
 - name: Ensure matrix-jitsi-prosody.service file exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-jitsi-prosody.service"
   register: matrix_jitsi_prosody_service_stat
-  when: "not matrix_jitsi_enabled|bool"
+  when: "not matrix_jitsi_enabled | bool"
 
 - name: Ensure matrix-jitsi-prosody is stopped
   ansible.builtin.service:
@@ -76,24 +76,24 @@
     enabled: false
     daemon_reload: true
   register: stopping_result
-  when: "not matrix_jitsi_enabled|bool and matrix_jitsi_prosody_service_stat.stat.exists"
+  when: "not matrix_jitsi_enabled | bool and matrix_jitsi_prosody_service_stat.stat.exists"
 
 - name: Ensure matrix-jitsi-prosody.service file doesn't exist
   ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-jitsi-prosody.service"
     state: absent
-  when: "not matrix_jitsi_enabled|bool and matrix_jitsi_prosody_service_stat.stat.exists"
+  when: "not matrix_jitsi_enabled | bool and matrix_jitsi_prosody_service_stat.stat.exists"
 
 - name: Ensure systemd is reloaded after matrix-jitsi-prosody.service removal
   ansible.builtin.service:
     daemon_reload: true
-  when: "not matrix_jitsi_enabled|bool and matrix_jitsi_prosody_service_stat.stat.exists"
+  when: "not matrix_jitsi_enabled | bool and matrix_jitsi_prosody_service_stat.stat.exists"
 
 - name: Ensure Matrix jitsi-prosody paths doesn't exist
   ansible.builtin.file:
     path: "{{ matrix_jitsi_prosody_base_path }}"
     state: absent
-  when: "not matrix_jitsi_enabled|bool"
+  when: "not matrix_jitsi_enabled | bool"
 
 # Intentionally not removing the Docker image when uninstalling.
 # We can't be sure it had been pulled by us in the first place.

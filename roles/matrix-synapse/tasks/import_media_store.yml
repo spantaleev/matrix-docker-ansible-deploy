@@ -10,10 +10,10 @@
 - name: Fail if media store is on Amazon S3
   ansible.builtin.fail:
     msg: "Your media store is on Amazon S3. Due to technical limitations, restoring is not supported."
-  when: matrix_s3_media_store_enabled|bool
+  when: matrix_s3_media_store_enabled | bool
 
 - name: Check if the provided media store directory exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ server_path_media_store }}"
   register: server_path_media_store_stat
 
@@ -23,12 +23,12 @@
   when: "not server_path_media_store_stat.stat.exists or not server_path_media_store_stat.stat.isdir"
 
 - name: Check if media store contains local_content
-  stat:
+  ansible.builtin.stat:
     path: "{{ server_path_media_store }}/local_content"
   register: server_path_media_store_local_content_stat
 
 - name: Check if media store contains remote_content
-  stat:
+  ansible.builtin.stat:
     path: "{{ server_path_media_store }}/remote_content"
   register: server_path_media_store_remote_content_stat
 
@@ -69,7 +69,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
     recurse: true
-  when: "not matrix_s3_media_store_enabled|bool"
+  when: "not matrix_s3_media_store_enabled | bool"
 
 # We don't chown for Goofys, because due to the way it's mounted,
 # all files become owned by whoever needs to own them.

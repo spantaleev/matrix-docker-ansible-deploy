@@ -3,7 +3,7 @@
 - name: Fail if Postgres not enabled
   ansible.builtin.fail:
     msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot migrate."
-  when: "not matrix_postgres_enabled|bool"
+  when: "not matrix_postgres_enabled | bool"
 
 - name: Fail if util called incorrectly (missing matrix_postgres_db_migration_request)
   ansible.builtin.fail:
@@ -22,7 +22,7 @@
   when: "item not in matrix_postgres_db_migration_request"
 
 - name: Check if the provided source database file exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_postgres_db_migration_request.src }}"
   register: matrix_postgres_db_migration_request_src_stat_result
 
@@ -69,7 +69,7 @@
           dockerfile: Dockerfile
           path: "{{ matrix_postgres_pgloader_container_image_self_build_src_path }}"
           pull: true
-  when: "matrix_postgres_pgloader_container_image_self_build|bool"
+  when: "matrix_postgres_pgloader_container_image_self_build | bool"
 
 - name: Ensure pgloader Docker image is pulled
   docker_image:
@@ -84,7 +84,7 @@
 - name: Set postgres_start_wait_time, if not provided
   ansible.builtin.set_fact:
     postgres_start_wait_time: 15
-  when: "postgres_start_wait_time|default('') == ''"
+  when: "postgres_start_wait_time | default('') == ''"
 
 # Actual import work
 
@@ -97,11 +97,11 @@
   register: matrix_postgres_service_start_result
 
 - name: Wait a bit, so that Postgres can start
-  wait_for:
+  ansible.builtin.wait_for:
     timeout: "{{ postgres_start_wait_time }}"
   delegate_to: 127.0.0.1
   become: false
-  when: "matrix_postgres_service_start_result.changed|bool"
+  when: "matrix_postgres_service_start_result.changed | bool"
 
 # We only stop services here, leaving it to the caller to start them later.
 #
@@ -130,12 +130,12 @@
       --entrypoint=/bin/sh
       {{ matrix_postgres_pgloader_docker_image }}
       -c
-      'pgloader {{ matrix_postgres_db_migration_request.pgloader_options|default([])|join(' ') }} /in.db {{ matrix_postgres_db_migration_request.dst }}'
+      'pgloader {{ matrix_postgres_db_migration_request.pgloader_options | default([]) | join(' ') }} /in.db {{ matrix_postgres_db_migration_request.dst }}'
 
 - block:
     # We can't use `{{ role_path }}` here, neither with `import_tasks`, nor with `include_tasks`,
     # because it refers to the role that included this util, and not to the role this file belongs to.
-    - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/detect_existing_postgres_version.yml"
+    - ansible.builtin.import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/detect_existing_postgres_version.yml"
 
     - ansible.builtin.set_fact:
         matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_latest if matrix_postgres_detected_version_corresponding_docker_image == '' else matrix_postgres_detected_version_corresponding_docker_image }}"
@@ -153,7 +153,7 @@
           psql --host=matrix-postgres --dbname={{ matrix_postgres_db_migration_request.additional_psql_statements_db_name }} --command='{{ item }}'
       with_items: "{{ matrix_postgres_db_migration_request.additional_psql_statements_list }}"
 
-  when: "matrix_postgres_db_migration_request.additional_psql_statements_list|default([])|length > 0"
+  when: "matrix_postgres_db_migration_request.additional_psql_statements_list | default([])|length > 0"
 
 - name: Archive {{ matrix_postgres_db_migration_request.engine_old }} database ({{ matrix_postgres_db_migration_request.src }} -> {{ matrix_postgres_db_migration_request.src }}.backup)
   ansible.builtin.command:
@@ -163,7 +163,7 @@
   ansible.builtin.set_fact:
     matrix_playbook_runtime_results: |
       {{
-        matrix_playbook_runtime_results|default([])
+        matrix_playbook_runtime_results | default([])
         +
         [
           "NOTE: Your {{ matrix_postgres_db_migration_request.engine_old }} database file has been imported into Postgres. The original database file has been moved from `{{ matrix_postgres_db_migration_request.src }}` to `{{ matrix_postgres_db_migration_request.src }}.backup`. When you've confirmed that the import went well and everything works, you should be able to safely delete this file."

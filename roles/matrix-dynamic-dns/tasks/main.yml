@@ -1,23 +1,23 @@
 ---
 
-- import_tasks: "{{ role_path }}/tasks/init.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
   tags:
     - always
 
-- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: "run_setup|bool and matrix_dynamic_dns_enabled|bool"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: "run_setup | bool and matrix_dynamic_dns_enabled | bool"
   tags:
     - setup-all
     - setup-dynamic-dns
 
-- import_tasks: "{{ role_path }}/tasks/install.yml"
-  when: "run_setup|bool and matrix_dynamic_dns_enabled|bool"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/install.yml"
+  when: "run_setup | bool and matrix_dynamic_dns_enabled | bool"
   tags:
     - setup-all
     - setup-dynamic-dns
 
-- import_tasks: "{{ role_path }}/tasks/uninstall.yml"
-  when: "run_setup|bool and not matrix_dynamic_dns_enabled|bool"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/uninstall.yml"
+  when: "run_setup | bool and not matrix_dynamic_dns_enabled | bool"
   tags:
     - setup-all
     - setup-dynamic-dns

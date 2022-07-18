@@ -1,6 +1,6 @@
 ---
 
-- import_tasks: "{{ role_path }}/../matrix-base/tasks/util/ensure_openssl_installed.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/../matrix-base/tasks/util/ensure_openssl_installed.yml"
 
 - name: Ensure Appservice IRC paths exist
   ansible.builtin.file:
@@ -14,10 +14,10 @@
     - {path: "{{ matrix_appservice_irc_config_path }}", when: true}
     - {path: "{{ matrix_appservice_irc_data_path }}", when: true}
     - {path: "{{ matrix_appservice_irc_docker_src_files_path }}", when: "{{ matrix_appservice_irc_container_image_self_build }}"}
-  when: item.when|bool
+  when: item.when | bool
 
 - name: Check if an old passkey file already exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_appservice_irc_base_path }}/passkey.pem"
   register: matrix_appservice_irc_stat_passkey
 
@@ -45,16 +45,16 @@
 
 - block:
     - name: Check if a nedb database already exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ matrix_appservice_irc_data_path }}/users.db"
       register: matrix_appservice_irc_nedb_database_path_local_stat_result
 
     - block:
-        - import_tasks: "{{ role_path }}/tasks/migrate_nedb_to_postgres.yml"
+        - ansible.builtin.import_tasks: "{{ role_path }}/tasks/migrate_nedb_to_postgres.yml"
 
         - ansible.builtin.set_fact:
             matrix_appservice_irc_requires_restart: true
-      when: "matrix_appservice_irc_nedb_database_path_local_stat_result.stat.exists|bool"
+      when: "matrix_appservice_irc_nedb_database_path_local_stat_result.stat.exists | bool"
   when: "matrix_appservice_irc_database_engine == 'postgres'"
 
 - name: Ensure Appservice IRC image is pulled
@@ -63,7 +63,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_appservice_irc_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_irc_docker_image_force_pull }}"
-  when: "matrix_appservice_irc_enabled|bool and not matrix_appservice_irc_container_image_self_build|bool"
+  when: "matrix_appservice_irc_enabled | bool and not matrix_appservice_irc_container_image_self_build | bool"
   register: result
   retries: "{{ matrix_container_retries_count }}"
   delay: "{{ matrix_container_retries_delay }}"
@@ -77,7 +77,7 @@
   become: true
   become_user: "{{ matrix_user_username }}"
   register: matrix_appservice_irc_git_pull_results
-  when: "matrix_appservice_irc_enabled|bool and matrix_appservice_irc_container_image_self_build|bool"
+  when: "matrix_appservice_irc_enabled | bool and matrix_appservice_irc_container_image_self_build | bool"
 
 - name: Ensure matrix-appservice-irc Docker image is built
   docker_image:
@@ -89,18 +89,18 @@
       dockerfile: Dockerfile
       path: "{{ matrix_appservice_irc_docker_src_files_path }}"
       pull: true
-  when: "matrix_appservice_irc_enabled|bool and matrix_appservice_irc_container_image_self_build|bool and matrix_appservice_irc_git_pull_results.changed"
+  when: "matrix_appservice_irc_enabled | bool and matrix_appservice_irc_container_image_self_build | bool and matrix_appservice_irc_git_pull_results.changed"
 
 - name: Ensure Matrix Appservice IRC config installed
   ansible.builtin.copy:
-    content: "{{ matrix_appservice_irc_configuration|to_nice_yaml(indent=2, width=999999) }}"
+    content: "{{ matrix_appservice_irc_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_irc_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Check if Appservice IRC passkey exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_appservice_irc_data_path }}/passkey.pem"
   register: irc_passkey_file
 
@@ -177,7 +177,7 @@
 
 - name: Ensure Appservice IRC registration.yaml installed
   ansible.builtin.copy:
-    content: "{{ matrix_appservice_irc_registration|to_nice_yaml(indent=2, width=999999) }}"
+    content: "{{ matrix_appservice_irc_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_irc_config_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
@@ -199,4 +199,4 @@
   ansible.builtin.service:
     name: "matrix-appservice-irc.service"
     state: restarted
-  when: "matrix_appservice_irc_requires_restart|bool"
+  when: "matrix_appservice_irc_requires_restart | bool"

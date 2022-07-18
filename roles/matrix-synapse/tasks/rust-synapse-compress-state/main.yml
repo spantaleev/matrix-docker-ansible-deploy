@@ -4,7 +4,7 @@
 - name: Fail if Postgres not enabled
   ansible.builtin.fail:
     msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot use rust-synapse-compress-state."
-  when: "not matrix_postgres_enabled|bool"
+  when: "not matrix_postgres_enabled | bool"
 
 
 # Defaults
@@ -12,24 +12,24 @@
 - name: Set matrix_synapse_rust_synapse_compress_state_find_rooms_command_wait_time, if not provided
   ansible.builtin.set_fact:
     matrix_synapse_rust_synapse_compress_state_find_rooms_command_wait_time: 1800
-  when: "matrix_synapse_rust_synapse_compress_state_find_rooms_command_wait_time|default('') == ''"
+  when: "matrix_synapse_rust_synapse_compress_state_find_rooms_command_wait_time | default('') == ''"
 
 - name: Set matrix_synapse_rust_synapse_compress_state_compress_room_time, if not provided
   ansible.builtin.set_fact:
     matrix_synapse_rust_synapse_compress_state_compress_room_time: 3600
-  when: "matrix_synapse_rust_synapse_compress_state_compress_room_time|default('') == ''"
+  when: "matrix_synapse_rust_synapse_compress_state_compress_room_time | default('') == ''"
 
 - name: Set matrix_synapse_rust_synapse_compress_state_psql_import_time, if not provided
   ansible.builtin.set_fact:
     matrix_synapse_rust_synapse_compress_state_psql_import_time: 3600
-  when: "matrix_synapse_rust_synapse_compress_state_psql_import_time|default('') == ''"
+  when: "matrix_synapse_rust_synapse_compress_state_psql_import_time | default('') == ''"
 
 - name: Set matrix_synapse_rust_synapse_compress_state_min_state_groups_required, if not provided
   ansible.builtin.set_fact:
     # The minimum number of state groups we're looking for before we consider a room eligible for compression.
     # Rooms with a smaller state groups count will not be compressed.
     matrix_synapse_rust_synapse_compress_state_min_state_groups_required: 100000
-  when: "matrix_synapse_rust_synapse_compress_state_min_state_groups_required|default('') == ''"
+  when: "matrix_synapse_rust_synapse_compress_state_min_state_groups_required | default('') == ''"
 
 
 # Actual compression work
@@ -108,7 +108,7 @@
           {{ matrix_synapse_rust_synapse_compress_state_eligible_rooms }}
 
     - name: Compress room state
-      include_tasks: "{{ role_path }}/tasks/rust-synapse-compress-state/compress_room.yml"
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/rust-synapse-compress-state/compress_room.yml"
       with_items: "{{ matrix_synapse_rust_synapse_compress_state_eligible_rooms }}"
       loop_control:
         loop_var: room_details

@@ -16,14 +16,14 @@
     state: present
   register: add_repository_key
   ignore_errors: true
-  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
+  when: matrix_docker_installation_enabled | bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure Docker repository is enabled
   apt_repository:
     repo: "deb [arch={{ matrix_debian_arch }}] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable"
     state: present
     update_cache: true
-  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
+  when: matrix_docker_installation_enabled | bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure APT packages are installed
   ansible.builtin.apt:
@@ -38,4 +38,4 @@
       - "{{ matrix_docker_package_name }}"
       - "python{{'3' if ansible_python.version.major == 3 else ''}}-docker"
     state: latest
-  when: matrix_docker_installation_enabled|bool
+  when: matrix_docker_installation_enabled | bool

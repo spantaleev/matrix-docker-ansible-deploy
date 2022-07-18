@@ -1,10 +1,10 @@
 ---
 
 - name: Check existence of matrix-coturn service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-coturn.service"
   register: matrix_coturn_service_stat
-  when: "not matrix_coturn_enabled|bool"
+  when: "not matrix_coturn_enabled | bool"
 
 - name: Ensure matrix-coturn is stopped
   ansible.builtin.service:
@@ -12,7 +12,7 @@
     state: stopped
     enabled: false
     daemon_reload: true
-  when: "matrix_coturn_service_stat.stat.exists|bool"
+  when: "matrix_coturn_service_stat.stat.exists | bool"
 
 - name: Ensure matrix-coturn-reload.timer is stopped
   ansible.builtin.service:
@@ -21,7 +21,7 @@
     enabled: false
     daemon_reload: true
   failed_when: false
-  when: "matrix_coturn_service_stat.stat.exists|bool"
+  when: "matrix_coturn_service_stat.stat.exists | bool"
 
 - name: Ensure systemd units don't exist
   ansible.builtin.file:
@@ -36,7 +36,7 @@
 - name: Ensure systemd reloaded after unit removal
   ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_coturn_systemd_unit_uninstallation_result.changed|bool"
+  when: "matrix_coturn_systemd_unit_uninstallation_result.changed | bool"
 
 - name: Ensure Matrix coturn paths don't exist
   ansible.builtin.file:

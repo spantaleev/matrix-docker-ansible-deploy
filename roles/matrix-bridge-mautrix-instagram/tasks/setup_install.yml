@@ -5,7 +5,7 @@
   ansible.builtin.fail:
     msg: >-
       The matrix-bridge-mautrix-instagram role needs to execute before the matrix-synapse role.
-  when: "matrix_synapse_role_executed|default(False)"
+  when: "matrix_synapse_role_executed | default(False)"
 
 - name: Ensure Mautrix instagram image is pulled
   docker_image:
@@ -31,7 +31,7 @@
     - {path: "{{ matrix_mautrix_instagram_config_path }}", when: true}
     - {path: "{{ matrix_mautrix_instagram_data_path }}", when: true}
     - {path: "{{ matrix_mautrix_instagram_docker_src_files_path }}", when: "{{ matrix_mautrix_instagram_container_image_self_build }}"}
-  when: item.when|bool
+  when: item.when | bool
 
 - name: Ensure Mautrix instagram repository is present on self-build
   ansible.builtin.git:
@@ -41,7 +41,7 @@
   become: true
   become_user: "{{ matrix_user_username }}"
   register: matrix_mautrix_instagram_git_pull_results
-  when: "matrix_mautrix_instagram_container_image_self_build|bool"
+  when: "matrix_mautrix_instagram_container_image_self_build | bool"
 
 - name: Ensure Mautrix instagram Docker image is built
   docker_image:
@@ -53,11 +53,11 @@
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_instagram_docker_src_files_path }}"
       pull: true
-  when: "matrix_mautrix_instagram_container_image_self_build|bool"
+  when: "matrix_mautrix_instagram_container_image_self_build | bool"
 
 - name: Ensure mautrix-instagram config.yaml installed
   ansible.builtin.copy:
-    content: "{{ matrix_mautrix_instagram_configuration|to_nice_yaml(indent=2, width=999999) }}"
+    content: "{{ matrix_mautrix_instagram_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_instagram_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
@@ -65,7 +65,7 @@
 
 - name: Ensure mautrix-instagram registration.yaml installed
   ansible.builtin.copy:
-    content: "{{ matrix_mautrix_instagram_registration|to_nice_yaml(indent=2, width=999999) }}"
+    content: "{{ matrix_mautrix_instagram_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_instagram_config_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"

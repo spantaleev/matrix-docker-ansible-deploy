@@ -52,8 +52,8 @@ matrix_bot_mjolnir_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_bot_mjolnir_configuration_yaml`.
 
-matrix_bot_mjolnir_configuration_extension: "{{ matrix_bot_mjolnir_configuration_extension_yaml|from_yaml if matrix_bot_mjolnir_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_bot_mjolnir_configuration_extension: "{{ matrix_bot_mjolnir_configuration_extension_yaml | from_yaml if matrix_bot_mjolnir_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_bot_mjolnir_configuration_yaml`.
-matrix_bot_mjolnir_configuration: "{{ matrix_bot_mjolnir_configuration_yaml|from_yaml|combine(matrix_bot_mjolnir_configuration_extension, recursive=True) }}"
+matrix_bot_mjolnir_configuration: "{{ matrix_bot_mjolnir_configuration_yaml | from_yaml|combine(matrix_bot_mjolnir_configuration_extension, recursive=True) }}"

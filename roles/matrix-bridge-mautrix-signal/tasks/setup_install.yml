@@ -6,7 +6,7 @@
   ansible.builtin.fail:
     msg: >-
       The matrix-bridge-mautrix-signal role needs to execute before the matrix-synapse role.
-  when: "matrix_synapse_role_executed|default(False)"
+  when: "matrix_synapse_role_executed | default(False)"
 
 - name: Ensure Mautrix Signal image is pulled
   docker_image:
@@ -14,7 +14,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mautrix_signal_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_signal_docker_image_force_pull }}"
-  when: "not matrix_mautrix_signal_container_image_self_build|bool"
+  when: "not matrix_mautrix_signal_container_image_self_build | bool"
   register: result
   retries: "{{ matrix_container_retries_count }}"
   delay: "{{ matrix_container_retries_delay }}"
@@ -29,7 +29,7 @@
   become: true
   become_user: "{{ matrix_user_username }}"
   register: matrix_mautrix_signal_git_pull_results
-  when: "matrix_mautrix_signal_container_image_self_build|bool"
+  when: "matrix_mautrix_signal_container_image_self_build | bool"
 
 - name: Ensure Mautrix Signal image is built
   docker_image:
@@ -41,7 +41,7 @@
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_signal_docker_src_files_path }}"
       pull: true
-  when: "matrix_mautrix_signal_container_image_self_build|bool"
+  when: "matrix_mautrix_signal_container_image_self_build | bool"
 
 
 - name: Ensure Mautrix Signal Daemon image is pulled
@@ -50,7 +50,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mautrix_signal_daemon_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_signal_daemon_docker_image_force_pull }}"
-  when: matrix_mautrix_signal_enabled and not matrix_mautrix_signal_daemon_container_image_self_build|bool
+  when: matrix_mautrix_signal_enabled and not matrix_mautrix_signal_daemon_container_image_self_build | bool
   register: matrix_mautrix_signal_daemon_pull_results
 
 - name: Ensure Mautrix Signal Daemon repository is present on self-build
@@ -61,7 +61,7 @@
   become: true
   become_user: "{{ matrix_user_username }}"
   register: matrix_mautrix_signal_daemon_git_pull_results
-  when: "matrix_mautrix_signal_daemon_container_image_self_build|bool"
+  when: "matrix_mautrix_signal_daemon_container_image_self_build | bool"
 
 - name: Ensure Mautrix Signal Daemon image is built
   docker_image:
@@ -73,7 +73,7 @@
       dockerfile: Containerfile
       path: "{{ matrix_mautrix_signal_daemon_docker_src_files_path }}"
       pull: true
-  when: "matrix_mautrix_signal_daemon_container_image_self_build|bool"
+  when: "matrix_mautrix_signal_daemon_container_image_self_build | bool"
 
 - name: Ensure Mautrix Signal paths exist
   ansible.builtin.file:
@@ -92,7 +92,7 @@
 
 - name: Ensure mautrix-signal config.yaml installed
   ansible.builtin.copy:
-    content: "{{ matrix_mautrix_signal_configuration|to_nice_yaml(indent=2, width=999999) }}"
+    content: "{{ matrix_mautrix_signal_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_signal_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
@@ -100,7 +100,7 @@
 
 - name: Ensure mautrix-signal registration.yaml installed
   ansible.builtin.copy:
-    content: "{{ matrix_mautrix_signal_registration|to_nice_yaml(indent=2, width=999999) }}"
+    content: "{{ matrix_mautrix_signal_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_signal_config_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"

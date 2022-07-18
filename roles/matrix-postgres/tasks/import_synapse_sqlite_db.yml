@@ -5,7 +5,7 @@
 - name: Fail if Postgres not enabled
   ansible.builtin.fail:
     msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot import."
-  when: "not matrix_postgres_enabled|bool"
+  when: "not matrix_postgres_enabled | bool"
 
 - name: Fail if playbook called incorrectly
   ansible.builtin.fail:
@@ -13,7 +13,7 @@
   when: "server_path_homeserver_db is not defined or server_path_homeserver_db.startswith('<')"
 
 - name: Check if the provided SQLite homeserver.db file exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ server_path_homeserver_db }}"
   register: result_server_path_homeserver_db_stat
 
@@ -28,7 +28,7 @@
 - name: Set postgres_start_wait_time, if not provided
   ansible.builtin.set_fact:
     postgres_start_wait_time: 15
-  when: "postgres_start_wait_time|default('') == ''"
+  when: "postgres_start_wait_time | default('') == ''"
 
 
 # Actual import work
@@ -59,7 +59,7 @@
     daemon_reload: true
 
 - name: Wait a bit, so that Postgres can start
-  wait_for:
+  ansible.builtin.wait_for:
     timeout: "{{ postgres_start_wait_time }}"
   delegate_to: 127.0.0.1
   become: false
@@ -81,6 +81,6 @@
     --entrypoint=python
     --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data
     --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/matrix-media-store-parent/media-store
-    --mount type=bind,src={{ server_path_homeserver_db }},dst=/{{ server_path_homeserver_db|basename }}
+    --mount type=bind,src={{ server_path_homeserver_db }},dst=/{{ server_path_homeserver_db | basename }}
     {{ matrix_synapse_docker_image }}
-    /usr/local/bin/synapse_port_db --sqlite-database /{{ server_path_homeserver_db|basename }} --postgres-config /data/homeserver.yaml
+    /usr/local/bin/synapse_port_db --sqlite-database /{{ server_path_homeserver_db | basename }} --postgres-config /data/homeserver.yaml
