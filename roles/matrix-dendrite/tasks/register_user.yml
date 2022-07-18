@@ -19,7 +19,10 @@
 - name: Wait a while, so that Dendrite can manage to start
   ansible.builtin.pause:
     seconds: 7
-  when: "start_result.changed"
+  when: start_result.changed | bool
 
 - name: Register user
-  ansible.builtin.command: "{{ matrix_local_bin_path }}/matrix-dendrite-create-account {{ username|quote }} {{ password|quote }}"
+  ansible.builtin.command:
+    cmd: "{{ matrix_local_bin_path }}/matrix-dendrite-create-account {{ username|quote }} {{ password|quote }}"
+  register: matrix_dendrite_register_user_result
+  changed_when: matrix_dendrite_register_user_result.rc == 0

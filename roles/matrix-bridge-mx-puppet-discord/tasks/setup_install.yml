@@ -36,7 +36,10 @@
       failed_when: false
 
     - name: (Data relocation) Move mx-puppet-discord database file to ./data directory
-      ansible.builtin.command: "mv {{ matrix_mx_puppet_discord_base_path }}/database.db {{ matrix_mx_puppet_discord_data_path }}/database.db"
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_mx_puppet_discord_base_path }}/database.db {{ matrix_mx_puppet_discord_data_path }}/database.db"
+      register: matrix_mx_puppet_discord_relocate_database_result
+      changed_when: matrix_mx_puppet_discord_relocate_database_result.rc == 0
   when: "matrix_mx_puppet_discord_stat_database.stat.exists"
 
 - ansible.builtin.set_fact:

@@ -52,6 +52,8 @@
       {{ matrix_appservice_irc_docker_image }}
       -c
       '/usr/local/bin/node /app/lib/scripts/migrate-db-to-pgres.js --dbdir /data --privateKey /data/passkey.pem --connectionString {{ matrix_appservice_irc_database_connection_string }}'
+  register: matrix_appservice_irc_import_nedb_to_postgres_result
+  changed_when: matrix_appservice_irc_import_nedb_to_postgres_result.rc == 0
 
 - name: Archive NeDB database files
   ansible.builtin.command:
@@ -59,6 +61,8 @@
   with_items:
     - rooms.db
     - users.db
+  register: matrix_appservice_irc_import_nedb_to_postgres_move_result
+  changed_when: matrix_appservice_irc_import_nedb_to_postgres_move_result.rc == 0
 
 - name: Inject result
   ansible.builtin.set_fact:

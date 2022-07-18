@@ -69,15 +69,17 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Validate hookshot config.yml
-  ansible.builtin.command: |
-    {{ matrix_host_command_docker }} run
-    --rm
-    --name={{ matrix_hookshot_container_url }}-validate
-    --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
-    --cap-drop=ALL
-    -v {{ matrix_hookshot_base_path }}/config.yml:/config.yml
-    {{ matrix_hookshot_docker_image }} node Config/Config.js /config.yml
+  ansible.builtin.command:
+    cmd: |
+      {{ matrix_host_command_docker }} run
+      --rm
+      --name={{ matrix_hookshot_container_url }}-validate
+      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+      --cap-drop=ALL
+      -v {{ matrix_hookshot_base_path }}/config.yml:/config.yml
+      {{ matrix_hookshot_docker_image }} node Config/Config.js /config.yml
   register: hookshot_config_validation_result
+  changed_when: false
 
 - name: Fail if hookshot config.yml invalid
   ansible.builtin.fail:

@@ -70,17 +70,20 @@
 # Also, some old `docker_container` versions were buggy and would leave containers behind
 # on failure, which we had to work around to allow retries (by re-running the playbook).
 - name: Import SQLite database into Postgres
-  ansible.builtin.command: |
-    docker run
-    --rm
-    --name=matrix-synapse-migrate
-    --log-driver=none
-    --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
-    --cap-drop=ALL
-    --network={{ matrix_docker_network }}
-    --entrypoint=python
-    --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data
-    --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/matrix-media-store-parent/media-store
-    --mount type=bind,src={{ server_path_homeserver_db }},dst=/{{ server_path_homeserver_db | basename }}
-    {{ matrix_synapse_docker_image }}
-    /usr/local/bin/synapse_port_db --sqlite-database /{{ server_path_homeserver_db | basename }} --postgres-config /data/homeserver.yaml
+  ansible.builtin.command:
+    cmd: |
+      docker run
+      --rm
+      --name=matrix-synapse-migrate
+      --log-driver=none
+      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+      --cap-drop=ALL
+      --network={{ matrix_docker_network }}
+      --entrypoint=python
+      --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data
+      --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/matrix-media-store-parent/media-store
+      --mount type=bind,src={{ server_path_homeserver_db }},dst=/{{ server_path_homeserver_db | basename }}
+      {{ matrix_synapse_docker_image }}
+      /usr/local/bin/synapse_port_db --sqlite-database /{{ server_path_homeserver_db | basename }} --postgres-config /data/homeserver.yaml
+  register: matrix_postgres_import_synapse_sqlite_db_result
+  changed_when: matrix_postgres_import_synapse_sqlite_db_result.rc == 0

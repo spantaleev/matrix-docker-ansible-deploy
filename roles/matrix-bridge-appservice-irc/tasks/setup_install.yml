@@ -30,10 +30,16 @@
       failed_when: false
 
     - name: (Data relocation) Move AppService IRC passkey.pem file to ./data directory
-      ansible.builtin.command: "mv {{ matrix_appservice_irc_base_path }}/passkey.pem {{ matrix_appservice_irc_data_path }}/passkey.pem"
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_appservice_irc_base_path }}/passkey.pem {{ matrix_appservice_irc_data_path }}/passkey.pem"
+      register: matrix_appservice_irc_move_passkey_result
+      changed_when: matrix_appservice_irc_move_passkey_result.rc == 0
 
     - name: (Data relocation) Move AppService IRC database files to ./data directory
-      ansible.builtin.command: "mv {{ matrix_appservice_irc_base_path }}/{{ item }} {{ matrix_appservice_irc_data_path }}/{{ item }}"
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_appservice_irc_base_path }}/{{ item }} {{ matrix_appservice_irc_data_path }}/{{ item }}"
+      register: matrix_appservice_irc_move_dbs_result
+      changed_when: matrix_appservice_irc_move_dbs_result.rc == 0
       with_items:
         - rooms.db
         - users.db

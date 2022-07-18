@@ -44,7 +44,10 @@
 # recursively copy remote directories (like `/matrix/mxisd/data/sign.key`) in older versions of Ansible.
 - block:
     - name: Copy mxisd data files to ma1sd folder
-      ansible.builtin.command: "cp -ar {{ matrix_base_data_path }}/mxisd/data {{ matrix_ma1sd_base_path }}"
+      ansible.builtin.command:
+        cmd: "cp -ar {{ matrix_base_data_path }}/mxisd/data {{ matrix_ma1sd_base_path }}"
+      register: matrix_ma1sd_migrate_mxisd_data_files_copying_result
+      changed_when: matrix_ma1sd_migrate_mxisd_data_files_copying_result.rc == 0
 
     - name: Check existence of mxisd.db file
       ansible.builtin.stat:
@@ -52,11 +55,17 @@
       register: matrix_ma1sd_mxisd_db_stat
 
     - name: Rename database (mxisd.db -> ma1sd.db)
-      ansible.builtin.command: "mv {{ matrix_ma1sd_data_path }}/mxisd.db {{ matrix_ma1sd_data_path }}/ma1sd.db"
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_ma1sd_data_path }}/mxisd.db {{ matrix_ma1sd_data_path }}/ma1sd.db"
+      register: matrix_ma1sd_migrate_mxisd_move_db_result
+      changed_when: matrix_ma1sd_migrate_mxisd_move_db_result.rc == 0
       when: "matrix_ma1sd_mxisd_db_stat.stat.exists"
 
     - name: Rename mxisd folder
-      ansible.builtin.command: "mv {{ matrix_base_data_path }}/mxisd {{ matrix_base_data_path }}/mxisd.migrated"
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_base_data_path }}/mxisd {{ matrix_base_data_path }}/mxisd.migrated"
+      register: matrix_ma1sd_migrate_mxisd_move_directory_result
+      changed_when: matrix_ma1sd_migrate_mxisd_move_directory_result.rc == 0
   when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists"
 
 - name: Ensure outdated matrix-mxisd.service doesn't exist

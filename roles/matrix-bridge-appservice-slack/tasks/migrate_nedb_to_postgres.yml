@@ -46,10 +46,14 @@
       {{ matrix_appservice_slack_docker_image }}
       -c
       '/usr/local/bin/node /usr/src/app/lib/scripts/migrateToPostgres.js --dbdir /data --connectionString {{ matrix_appservice_slack_database_connection_string }}'
+  register: matrix_appservice_slack_import_nedb_to_postgres_result
+  changed_when: matrix_appservice_slack_import_nedb_to_postgres_result.rc == 0
 
 - name: Archive NeDB database files
   ansible.builtin.command:
     cmd: "mv {{ matrix_appservice_slack_data_path }}/{{ item }} {{ matrix_appservice_slack_data_path }}/{{ item }}.backup"
+  register: matrix_appservice_slack_import_nedb_to_postgres_move_result
+  changed_when: matrix_appservice_slack_import_nedb_to_postgres_move_result.rc == 0
   with_items:
     - teams.db
     - room-store.db
