@@ -36,6 +36,33 @@ However, this playbook installs your Matrix server on another domain (e.g. `matr
 To learn how to set it up, read the Installing section below.
 
 
+## (Optional) Introduction to Homeserver Admin Contact and Support page
+
+[MSC 1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929) specifies a way to add contact details of admins, as well as a link to a support page for users who are having issues with the service.
+
+This MSC did not get accepted yet, but we think it might already be useful to Homeserver admins who wish to provide this information to end-users.
+
+The two playbook variables that you could look for, if you're interested in being an early adopter, are: `matrix_homeserver_admin_contacts` and `matrix_homeserver_support_url`.
+
+Example snippet for `vars.yml`:
+```
+# Homeserver admin contacts as per MSC 1929 https://github.com/matrix-org/matrix-spec-proposals/pull/1929
+matrix_homeserver_admin_contacts:
+  - matrix_id: @admin1:domain.tld
+    email_address: admin@domain.tld
+    role: admin
+  - matrix_id: @admin2:domain.tld
+    email_address: admin@domain.tld
+    role: admin
+  - email_address: security@domain.tld
+    role: security
+
+matrix_homeserver_support_url: "https://example.domain.tld/support"
+```
+
+To learn how to set up `/.well-known/matrix/support` for the base domain, read the Installing section below.
+
+
 ## Installing well-known files on the base domain's server
 
 To implement the two service discovery mechanisms, your base domain's server (e.g. `example.com`) needs to run an HTTPS-capable webserver.
@@ -185,5 +212,6 @@ No matter which method you've used to set up the well-known files, if you've don
 
 - `https://<domain>/.well-known/matrix/server`
 - `https://<domain>/.well-known/matrix/client`
+- `https://<domain>/.well-known/matrix/support`
 
 You can also check if everything is configured correctly, by [checking if services work](maintenance-checking-services.md).

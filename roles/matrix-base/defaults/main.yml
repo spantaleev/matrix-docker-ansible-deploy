@@ -12,6 +12,19 @@ matrix_domain: ~
 # Example value: "@someone:{{ matrix_domain }}"
 matrix_admin: ''
 
+# Homeserver admin contacts and support page as per MSC 1929
+# See: https://github.com/matrix-org/matrix-spec-proposals/pull/1929
+# Users in form:
+# matrix_homeserver_admin_contacts:
+#   - matrix_id: @admin:domain.tld
+#     email_address: admin@domain.tld
+#     role: admin
+#   - email_address: security@domain.tld
+#     role: security
+matrix_homeserver_admin_contacts: []
+# Url string like https://domain.tld/support.html
+matrix_homeserver_support_url: ''
+
 # This will contain the homeserver implementation that is in use.
 # Valid values: synapse, dendrite
 #
@@ -224,6 +237,18 @@ matrix_well_known_matrix_server_configuration_extension: "{{ matrix_well_known_m
 # Holds the final `/.well-known/matrix/server` configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_well_known_matrix_server_configuration_default` and `matrix_well_known_matrix_server_configuration_extension_json`.
 matrix_well_known_matrix_server_configuration: "{{ matrix_well_known_matrix_server_configuration_default|combine(matrix_well_known_matrix_server_configuration_extension, recursive=True) }}"
+
+# The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
+# This is unlike what it does when looking up YAML template files (no automatic parsing there).
+matrix_well_known_matrix_support_configuration_default: "{{ lookup('template', 'templates/static-files/well-known/matrix-support.j2') }}"
+
+matrix_well_known_matrix_support_configuration_extension_json: '{}'
+
+matrix_well_known_matrix_support_configuration_extension: "{{ matrix_well_known_matrix_support_configuration_extension_json|from_json if matrix_well_known_matrix_support_configuration_extension_json|from_json is mapping else {} }}"
+
+# Holds the final `/.well-known/matrix/support` configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_well_known_matrix_support_configuration_default` and `matrix_well_known_matrix_support_configuration_extension_json`.
+matrix_well_known_matrix_support_configuration: "{{ matrix_well_known_matrix_support_configuration_default|combine(matrix_well_known_matrix_support_configuration_extension, recursive=True) }}"
 
 # The Docker network that all services would be put into
 matrix_docker_network: "matrix"
