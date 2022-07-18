@@ -84,6 +84,8 @@
       grep -vE '{{ matrix_postgres_import_roles_ignore_regex }}' |
       grep -vE '{{ matrix_postgres_import_databases_ignore_regex }}' |
       psql -v ON_ERROR_STOP=1 -h matrix-postgres --dbname={{ postgres_default_import_database }}"
+  tags:
+    - skip_ansible_lint
 
 # This is a hack.
 # See: https://ansibledaily.com/print-to-standard-output-without-escaping/
