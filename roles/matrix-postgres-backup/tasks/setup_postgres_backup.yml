@@ -1,9 +1,11 @@
 ---
 
 #
-# Tasks related to setting up an internal postgres server
+# Tasks related to setting up postgres backup
 #
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/util/detect_existing_postgres_version.yml"
+- ansible.builtin.import_role:
+    name: matrix-postgres
+    tasks_from: detect_existing_postgres_version
   when: 'matrix_postgres_backup_enabled | bool and matrix_postgres_backup_postgres_data_path != ""'
 
 # If we have found an existing version (installed from before), we use its corresponding Docker image.
@@ -62,7 +64,7 @@
   when: "matrix_postgres_backup_enabled | bool and matrix_postgres_backup_systemd_service_result.changed"
 
 #
-# Tasks related to getting rid of the internal postgres backup server (if it was previously enabled)
+# Tasks related to getting rid of postgres backup (if it was previously enabled)
 #
 
 - name: Check existence of matrix-postgres-backup service

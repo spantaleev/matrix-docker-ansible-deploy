@@ -9,6 +9,9 @@
 #
 # For this reason, we store the Postgres data in `/matrix/postgres/data` and need to relocate any installations
 # which still store it in the parent directory (`/matrix/postgres`).
+#
+# This utility is intentionally not in `tasks/util`, because if it were, it wouldn't be possible
+# to include it in other roles via the import_role module: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/import_role_module.html
 
 - name: Check if old Postgres data directory is used
   ansible.builtin.stat:

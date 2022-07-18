@@ -1,6 +1,9 @@
 ---
+
 - block:
-  - ansible.builtin.import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/detect_existing_postgres_version.yml"
+  - ansible.builtin.import_role:
+      name: matrix-postgres
+      tasks_from: detect_existing_postgres_version
 
   - name: Fail if detected Postgres version is unsupported
     ansible.builtin.fail:

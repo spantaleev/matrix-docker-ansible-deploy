@@ -135,9 +135,9 @@
   changed_when: matrix_postgres_migrate_db_to_postgres_import_result.rc == 0
 
 - block:
-    # We can't use `{{ role_path }}` here, neither with `import_tasks`, nor with `include_tasks`,
-    # because it refers to the role that included this util, and not to the role this file belongs to.
-    - ansible.builtin.import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/detect_existing_postgres_version.yml"
+    - ansible.builtin.import_role:
+        name: matrix-postgres
+        tasks_from: detect_existing_postgres_version
 
     - ansible.builtin.set_fact:
         matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_latest if matrix_postgres_detected_version_corresponding_docker_image == '' else matrix_postgres_detected_version_corresponding_docker_image }}"

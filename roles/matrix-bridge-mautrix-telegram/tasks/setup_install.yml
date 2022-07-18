@@ -27,7 +27,9 @@
               engine_old: 'sqlite'
               systemd_services_to_stop: ['matrix-mautrix-telegram.service']
 
-        - ansible.builtin.import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+        - ansible.builtin.import_role:
+            name: matrix-postgres
+            tasks_from: migrate_db_to_postgres
 
         - ansible.builtin.set_fact:
             matrix_mautrix_telegram_requires_restart: true

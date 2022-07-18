@@ -40,7 +40,7 @@
     msg: "Detected that a left-over {{ postgres_auto_upgrade_backup_data_path }} exists. You should rename it to {{ matrix_postgres_data_path }} if the previous upgrade went wrong, or delete it if it went well."
   when: "result_auto_upgrade_path.stat.exists"
 
-- ansible.builtin.import_tasks: tasks/util/detect_existing_postgres_version.yml
+- ansible.builtin.import_tasks: tasks/detect_existing_postgres_version.yml
 
 - name: Abort, if no existing Postgres version detected
   ansible.builtin.fail:
