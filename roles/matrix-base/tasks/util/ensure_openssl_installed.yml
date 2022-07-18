@@ -4,7 +4,7 @@
   ansible.builtin.yum:
     name:
       - openssl
-    state: latest
+    state: present
   when: ansible_os_family == 'RedHat'
 
 # This is for both Debian and Raspbian
@@ -12,12 +12,12 @@
   ansible.builtin.apt:
     name:
       - openssl
-    state: latest
+    state: present
   when: ansible_os_family == 'Debian'
 
 - name: Ensure openssl installed (Archlinux)
   pacman:
     name:
       - openssl
-    state: latest
+    state: present
   when: ansible_distribution == 'Archlinux'

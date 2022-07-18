@@ -19,7 +19,7 @@
   ansible.builtin.yum:
     name:
       - "{{ matrix_ntpd_package }}"
-    state: latest
+    state: present
     update_cache: true
 
 - name: Ensure Docker is installed
@@ -27,5 +27,5 @@
     name:
       - "{{ matrix_docker_package_name }}"
       - docker-python
-    state: latest
+    state: present
   when: matrix_docker_installation_enabled | bool

@@ -29,7 +29,7 @@
   ansible.builtin.apt:
     name:
       - "{{ matrix_ntpd_package }}"
-    state: latest
+    state: present
     update_cache: true
 
 - name: Ensure Docker is installed
@@ -37,5 +37,5 @@
     name:
       - "{{ matrix_docker_package_name }}"
       - "python{{ '3' if ansible_python.version.major == 3 else '' }}-docker"
-    state: latest
+    state: present
   when: matrix_docker_installation_enabled | bool
