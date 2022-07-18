@@ -1,32 +1,32 @@
 ---
 
 - name: Check existence of matrix-dimension service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-dimension.service"
   register: matrix_dimension_service_stat
 
 - name: Ensure matrix-dimension is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-dimension
     state: stopped
     enabled: false
     daemon_reload: true
   register: stopping_result
-  when: "matrix_dimension_service_stat.stat.exists|bool"
+  when: "matrix_dimension_service_stat.stat.exists | bool"
 
 - name: Ensure matrix-dimension.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-dimension.service"
     state: absent
-  when: "matrix_dimension_service_stat.stat.exists|bool"
+  when: "matrix_dimension_service_stat.stat.exists | bool"
 
 - name: Ensure systemd reloaded after matrix-dimension.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_dimension_service_stat.stat.exists|bool"
+  when: "matrix_dimension_service_stat.stat.exists | bool"
 
 - name: Ensure Dimension base directory doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_dimension_base_path }}"
     state: absent
 

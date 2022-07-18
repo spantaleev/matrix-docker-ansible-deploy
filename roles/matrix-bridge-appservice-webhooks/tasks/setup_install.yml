@@ -1,7 +1,7 @@
 ---
 
 - name: Ensure AppService webhooks paths exist
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     mode: 0750
@@ -12,7 +12,7 @@
     - {path: "{{ matrix_appservice_webhooks_config_path }}", when: true}
     - {path: "{{ matrix_appservice_webhooks_data_path }}", when: true}
     - {path: "{{ matrix_appservice_webhooks_docker_src_files_path }}", when: "{{ matrix_appservice_webhooks_container_image_self_build }}"}
-  when: "item.when|bool"
+  when: "item.when | bool"
 
 - name: Ensure Appservice webhooks image is pulled
   docker_image:
@@ -20,7 +20,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_appservice_webhooks_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_webhooks_docker_image_force_pull }}"
-  when: "not matrix_appservice_webhooks_container_image_self_build|bool"
+  when: "not matrix_appservice_webhooks_container_image_self_build | bool"
   register: result
   retries: "{{ matrix_container_retries_count }}"
   delay: "{{ matrix_container_retries_delay }}"
@@ -28,7 +28,7 @@
 
 - block:
     - name: Ensure Appservice webhooks repository is present on self-build
-      git:
+      ansible.builtin.git:
         repo: "{{ matrix_appservice_webhooks_container_image_self_build_repo }}"
         dest: "{{ matrix_appservice_webhooks_docker_src_files_path }}"
         version: "{{ matrix_appservice_webhooks_container_image_self_build_repo_version }}"
@@ -47,18 +47,18 @@
           dockerfile: "{{ matrix_appservice_webhooks_container_image_self_build_repo_dockerfile_path }}"
           path: "{{ matrix_appservice_webhooks_docker_src_files_path }}"
           pull: true
-  when: "matrix_appservice_webhooks_container_image_self_build|bool"
+  when: "matrix_appservice_webhooks_container_image_self_build | bool"
 
 - name: Ensure Matrix Appservice webhooks config is installed
-  copy:
-    content: "{{ matrix_appservice_webhooks_configuration|to_nice_yaml(indent=2, width=999999) }}"
+  ansible.builtin.copy:
+    content: "{{ matrix_appservice_webhooks_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_webhooks_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure Matrix Appservice webhooks schema.yml template exists
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/schema.yml.j2"
     dest: "{{ matrix_appservice_webhooks_config_path }}/schema.yml"
     mode: 0644
@@ -66,7 +66,7 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure Matrix Appservice webhooks database.json template exists
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/database.json.j2"
     dest: "{{ matrix_appservice_webhooks_data_path }}/database.json"
     mode: 0644
@@ -74,21 +74,21 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure appservice-webhooks registration.yaml installed
-  copy:
-    content: "{{ matrix_appservice_webhooks_registration|to_nice_yaml(indent=2, width=999999) }}"
+  ansible.builtin.copy:
+    content: "{{ matrix_appservice_webhooks_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_webhooks_config_path }}/webhooks-registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-appservice-webhooks.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-appservice-webhooks.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-appservice-webhooks.service"
     mode: 0644
   register: matrix_appservice_webhooks_systemd_service_result
 
 - name: Ensure systemd reloaded after matrix-appservice-webhooks.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_appservice_webhooks_systemd_service_result.changed"

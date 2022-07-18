@@ -1,12 +1,12 @@
 ---
 
 - name: Fail if using unsupported SSL certificate retrieval method
-  fail:
+  ansible.builtin.fail:
     msg: "The `matrix_ssl_retrieval_method` variable contains an unsupported value"
   when: "matrix_ssl_retrieval_method not in ['lets-encrypt', 'self-signed', 'manually-managed', 'none']"
 
 - name: Fail if using unsupported private key type
-  fail:
+  ansible.builtin.fail:
     msg: "The `matrix_ssl_lets_encrypt_key_type` variable contains an unsupported value"
   when: "matrix_ssl_lets_encrypt_key_type not in ['rsa', 'ecdsa']"
 
@@ -14,7 +14,7 @@
 # Common tasks, required by almost any method below.
 
 - name: Ensure SSL certificate paths exists
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: 0770
@@ -29,8 +29,8 @@
 
 # Method specific tasks follow
 
-- import_tasks: tasks/ssl/setup_ssl_lets_encrypt.yml
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/ssl/setup_ssl_lets_encrypt.yml"
 
-- import_tasks: tasks/ssl/setup_ssl_self_signed.yml
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/ssl/setup_ssl_self_signed.yml"
 
-- import_tasks: tasks/ssl/setup_ssl_manually_managed.yml
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/ssl/setup_ssl_manually_managed.yml"

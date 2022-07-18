@@ -1,32 +1,32 @@
 ---
 
 - name: Check existence of matrix-etherpad service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-etherpad.service"
   register: matrix_etherpad_service_stat
 
 - name: Ensure matrix-etherpad is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-etherpad
     state: stopped
     enabled: false
     daemon_reload: true
   register: stopping_result
-  when: "matrix_etherpad_service_stat.stat.exists|bool"
+  when: "matrix_etherpad_service_stat.stat.exists | bool"
 
 - name: Ensure matrix-etherpad.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-etherpad.service"
     state: absent
-  when: "matrix_etherpad_service_stat.stat.exists|bool"
+  when: "matrix_etherpad_service_stat.stat.exists | bool"
 
 - name: Ensure systemd reloaded after matrix-etherpad.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_etherpad_service_stat.stat.exists|bool"
+  when: "matrix_etherpad_service_stat.stat.exists | bool"
 
 - name: Ensure Etherpad base directory doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_etherpad_base_path }}"
     state: absent
 

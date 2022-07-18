@@ -1,21 +1,21 @@
 ---
 
 - name: Check Matrix Client API
-  uri:
+  ansible.builtin.uri:
     url: "{{ matrix_synapse_client_api_url_endpoint_public }}"
     follow_redirects: none
     validate_certs: "{{ matrix_synapse_self_check_validate_certificates }}"
   register: result_matrix_synapse_client_api
   ignore_errors: true
   check_mode: false
-  when: matrix_synapse_enabled|bool
+  when: matrix_synapse_enabled | bool
 
 - name: Fail if Matrix Client API not working
-  fail:
+  ansible.builtin.fail:
     msg: "Failed checking Matrix Client API is up at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_synapse_client_api_url_endpoint_public }}`). Is Synapse running? Is port 443 open in your firewall? Full error: {{ result_matrix_synapse_client_api }}"
-  when: "matrix_synapse_enabled|bool and (result_matrix_synapse_client_api.failed or 'json' not in result_matrix_synapse_client_api)"
+  when: "matrix_synapse_enabled | bool and (result_matrix_synapse_client_api.failed or 'json' not in result_matrix_synapse_client_api)"
 
 - name: Report working Matrix Client API
-  debug:
+  ansible.builtin.debug:
     msg: "The Matrix Client API at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_synapse_client_api_url_endpoint_public }}`) is working"
-  when: matrix_synapse_enabled|bool
+  when: matrix_synapse_enabled | bool

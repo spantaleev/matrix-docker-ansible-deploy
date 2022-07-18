@@ -1,32 +1,32 @@
 ---
 
 - name: Check existence of matrix-email2matrix service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-email2matrix.service"
   register: matrix_email2matrix_service_stat
 
 - name: Ensure matrix-email2matrix is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-email2matrix
     state: stopped
     enabled: false
     daemon_reload: true
   register: stopping_result
-  when: "matrix_email2matrix_service_stat.stat.exists|bool"
+  when: "matrix_email2matrix_service_stat.stat.exists | bool"
 
 - name: Ensure matrix-email2matrix.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-email2matrix.service"
     state: absent
-  when: "matrix_email2matrix_service_stat.stat.exists|bool"
+  when: "matrix_email2matrix_service_stat.stat.exists | bool"
 
 - name: Ensure systemd reloaded after matrix-email2matrix.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_email2matrix_service_stat.stat.exists|bool"
+  when: "matrix_email2matrix_service_stat.stat.exists | bool"
 
 - name: Ensure Email2Matrix data path doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_email2matrix_base_path }}"
     state: absent
 

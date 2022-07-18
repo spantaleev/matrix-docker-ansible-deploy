@@ -1,7 +1,7 @@
 ---
 
 - name: Fail if required Synapse settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) for using Synapse.
   when: "vars[item] == ''"
@@ -13,7 +13,7 @@
     - "matrix_synapse_database_database"
 
 - name: Fail if asking to configure deprecaed workers (appservice, userdir)
-  fail:
+  ansible.builtin.fail:
     msg: >-
       `{{ item }}` cannot be more than 0.
       This type of worker has been deprecated since Synapse v1.59.
@@ -25,7 +25,7 @@
     - "matrix_synapse_workers_user_dir_workers_count"
 
 - name: Fail if asking for more than 1 instance of single-instance workers
-  fail:
+  ansible.builtin.fail:
     msg: >-
       `{{ item }}` cannot be more than 1. This is a single-instance worker.
   when: "vars[item]|int > 1"
@@ -34,7 +34,7 @@
     - "matrix_synapse_workers_federation_sender_workers_count"
 
 - name: (Deprecation) Catch and report renamed settings
-  fail:
+  ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
@@ -63,7 +63,7 @@
     - {'old': 'matrix_synapse_enable_group_creation', 'new': '<removed in Synapse v1.61.0 - use the new Spaces feature instead>'}
 
 - name: (Deprecation) Catch and report renamed settings in matrix_synapse_configuration_extension_yaml
-  fail:
+  ansible.builtin.fail:
     msg: >-
       Your matrix_synapse_configuration_extension_yaml configuration contains a variable, which now has a different name.
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).

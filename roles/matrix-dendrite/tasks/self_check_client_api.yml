@@ -1,6 +1,6 @@
 ---
 - name: Check Matrix Client API
-  uri:
+  ansible.builtin.uri:
     url: "{{ matrix_dendrite_client_api_url_endpoint_public }}"
     follow_redirects: none
     validate_certs: "{{ matrix_dendrite_self_check_validate_certificates }}"
@@ -9,10 +9,10 @@
   check_mode: false
 
 - name: Fail if Matrix Client API not working
-  fail:
+  ansible.builtin.fail:
     msg: "Failed checking Matrix Client API is up at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_dendrite_client_api_url_endpoint_public }}`). Is Dendrite running? Is port 443 open in your firewall? Full error: {{ result_matrix_dendrite_client_api }}"
   when: "(result_matrix_dendrite_client_api.failed or 'json' not in result_matrix_dendrite_client_api)"
 
 - name: Report working Matrix Client API
-  debug:
+  ansible.builtin.debug:
     msg: "The Matrix Client API at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_dendrite_client_api_url_endpoint_public }}`) is working"

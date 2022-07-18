@@ -3,7 +3,7 @@
 # It'd be better if this is belonged to `validate_config.yml`, but it would have to be some loop-within-a-loop there,
 # and that's ugly. We also don't expect this to catch errors often. It's more of a defensive last-minute check.
 - name: Fail if additional database data appears invalid
-  fail:
+  ansible.builtin.fail:
     msg: "Additional database definition ({{ additional_db }} lacks a required key: {{ item }}"
   when: "item not in additional_db"
   with_items: "{{ ['name', 'username', 'password'] }}"
@@ -12,7 +12,7 @@
 # This file will be mounted into the container and fed to Postgres.
 # This way, we avoid passing sensitive data around in CLI commands that other users on the system can see.
 - name: Create additional database initialization SQL file for {{ additional_db.name }}
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/sql/init-additional-db-user-and-role.sql.j2"
     dest: "/tmp/matrix-postgres-init-additional-db-user-and-role.sql"
     mode: 0600
@@ -20,7 +20,7 @@
     group: "{{ matrix_user_gid }}"
 
 - name: Execute Postgres additional database initialization SQL file for {{ additional_db.name }}
-  command:
+  ansible.builtin.command:
     cmd: >-
       {{ matrix_host_command_docker }} run
       --rm
@@ -33,8 +33,9 @@
       {{ matrix_postgres_docker_image_to_use }}
       -c
       'psql -h {{ matrix_postgres_connection_hostname }} --file=/matrix-postgres-init-additional-db-user-and-role.sql'
+  changed_when: true
 
 - name: Delete additional database initialization SQL file for {{ additional_db.name }}
-  file:
+  ansible.builtin.file:
     path: /tmp/matrix-postgres-init-additional-db-user-and-role.sql
     state: absent

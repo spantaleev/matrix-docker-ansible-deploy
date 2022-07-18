@@ -1,37 +1,37 @@
 ---
 
 - name: Check existence of matrix-riot-web.service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-riot-web.service"
   register: matrix_client_riot_web_service_stat
-  when: "matrix_client_element_enabled|bool"
+  when: "matrix_client_element_enabled | bool"
 
 - name: Ensure matrix-riot-web is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-riot-web
     state: stopped
     enabled: false
     daemon_reload: true
   register: stopping_result
-  when: "matrix_client_element_enabled|bool and matrix_client_riot_web_service_stat.stat.exists"
+  when: "matrix_client_element_enabled | bool and matrix_client_riot_web_service_stat.stat.exists"
 
 - name: Ensure matrix-riot-web.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-riot-web.service"
     state: absent
-  when: "matrix_client_element_enabled|bool and matrix_client_riot_web_service_stat.stat.exists"
+  when: "matrix_client_element_enabled | bool and matrix_client_riot_web_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-riot-web.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_client_element_enabled|bool and matrix_client_riot_web_service_stat.stat.exists"
+  when: "matrix_client_element_enabled | bool and matrix_client_riot_web_service_stat.stat.exists"
 
 - name: Check existence of /matrix/riot-web
-  stat:
+  ansible.builtin.stat:
     path: "/matrix/riot-web"
   register: matrix_client_riot_web_dir_stat
-  when: "matrix_client_element_enabled|bool"
+  when: "matrix_client_element_enabled | bool"
 
 - name: Relocate /matrix/riot-web to /matrix/client-element
-  command: "mv /matrix/riot-web /matrix/client-element"
-  when: "matrix_client_element_enabled|bool and matrix_client_riot_web_dir_stat.stat.exists"
+  ansible.builtin.command: "mv /matrix/riot-web /matrix/client-element"
+  when: "matrix_client_element_enabled | bool and matrix_client_riot_web_dir_stat.stat.exists"

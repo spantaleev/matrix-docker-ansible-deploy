@@ -3,7 +3,7 @@
 # This is a cleanup/migration task, because of to the new way we manage cronjobs (`cron` module) and the new script name.
 # This migration task can be removed some time in the future.
 - name: (Migration) Remove deprecated Let's Encrypt SSL certificate management files
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   with_items:
@@ -25,23 +25,23 @@
         force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_ssl_lets_encrypt_certbot_docker_image_force_pull }}"
 
     - name: Obtain Let's Encrypt certificates
-      include_tasks: "{{ role_path }}/tasks/ssl/setup_ssl_lets_encrypt_obtain_for_domain.yml"
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ssl/setup_ssl_lets_encrypt_obtain_for_domain.yml"
       with_items: "{{ matrix_ssl_domains_to_obtain_certificates_for }}"
       loop_control:
         loop_var: domain_name
 
     - name: Ensure Let's Encrypt SSL renewal script installed
-      template:
+      ansible.builtin.template:
         src: "{{ role_path }}/templates/usr-local-bin/matrix-ssl-lets-encrypt-certificates-renew.j2"
         dest: "{{ matrix_local_bin_path }}/matrix-ssl-lets-encrypt-certificates-renew"
         mode: 0755
 
     - name: Ensure SSL renewal systemd units installed
-      template:
+      ansible.builtin.template:
         src: "{{ role_path }}/templates/systemd/{{ item.name }}.j2"
         dest: "{{ matrix_systemd_path }}/{{ item.name }}"
         mode: 0644
-      when: "item.applicable|bool"
+      when: "item.applicable | bool"
       with_items: "{{ matrix_ssl_renewal_systemd_units_list }}"
   when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
 
@@ -51,14 +51,14 @@
 
 - block:
     - name: Ensure matrix-ssl-lets-encrypt-renew cronjob removed
-      file:
+      ansible.builtin.file:
         path: "{{ matrix_systemd_path }}/{{ item.name }}"
         state: absent
-      when: "not item.applicable|bool"
+      when: "not item.applicable | bool"
       with_items: "{{ matrix_ssl_renewal_systemd_units_list }}"
 
     - name: Ensure Let's Encrypt SSL renewal script removed
-      file:
+      ansible.builtin.file:
         path: "{{ matrix_local_bin_path }}/matrix-ssl-lets-encrypt-certificates-renew"
         state: absent
   when: "matrix_ssl_retrieval_method != 'lets-encrypt'"

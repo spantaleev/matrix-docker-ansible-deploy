@@ -1,6 +1,6 @@
 ---
 
-- import_tasks: "{{ role_path }}/../matrix-base/tasks/util/ensure_fuse_installed.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/../matrix-base/tasks/util/ensure_fuse_installed.yml"
 
 - name: Ensure Goofys Docker image is pulled
   docker_image:
@@ -15,13 +15,13 @@
 
 # This will throw a Permission Denied error if already mounted
 - name: Check Matrix Goofys external storage mountpoint path
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_s3_media_store_path }}"
   register: local_path_matrix_s3_media_store_path_stat
   ignore_errors: true
 
 - name: Ensure Matrix Goofys external storage mountpoint exists
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_s3_media_store_path }}"
     state: directory
     mode: 0750
@@ -30,20 +30,20 @@
   when: "not local_path_matrix_s3_media_store_path_stat.failed and not local_path_matrix_s3_media_store_path_stat.stat.exists"
 
 - name: Ensure goofys environment variables file created
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/goofys/env-goofys.j2"
     dest: "{{ matrix_synapse_config_dir_path }}/env-goofys"
     owner: root
     mode: 0600
 
 - name: Ensure matrix-goofys.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/goofys/systemd/matrix-goofys.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-goofys.service"
     mode: 0644
   register: matrix_goofys_systemd_service_result
 
 - name: Ensure systemd reloaded after matrix-goofys.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_goofys_systemd_service_result.changed"

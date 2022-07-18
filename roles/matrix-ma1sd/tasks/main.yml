@@ -1,30 +1,30 @@
 ---
 
-- import_tasks: "{{ role_path }}/tasks/init.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
   tags:
     - always
 
-- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: "run_setup|bool and matrix_ma1sd_enabled|bool"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: "run_setup | bool and matrix_ma1sd_enabled | bool"
   tags:
     - setup-all
     - setup-ma1sd
 
-- import_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  when: "run_setup|bool and matrix_ma1sd_enabled|bool"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  when: "run_setup | bool and matrix_ma1sd_enabled | bool"
   tags:
     - setup-all
     - setup-ma1sd
 
-- import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  when: "run_setup|bool and not matrix_ma1sd_enabled|bool"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+  when: "run_setup | bool and not matrix_ma1sd_enabled | bool"
   tags:
     - setup-all
     - setup-ma1sd
 
-- import_tasks: "{{ role_path }}/tasks/self_check_ma1sd.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/self_check_ma1sd.yml"
   delegate_to: 127.0.0.1
   become: false
-  when: "run_self_check|bool and matrix_ma1sd_enabled|bool"
+  when: "run_self_check | bool and matrix_ma1sd_enabled | bool"
   tags:
     - self-check

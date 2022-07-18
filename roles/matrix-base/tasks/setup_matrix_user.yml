@@ -1,18 +1,18 @@
 ---
 
 - name: Ensure Matrix group is created
-  group:
+  ansible.builtin.group:
     name: "{{ matrix_user_groupname }}"
     gid: "{{ omit if matrix_user_gid is none else matrix_user_gid }}"
     state: present
   register: matrix_group
 
 - name: Set Matrix Group GID Variable
-  set_fact:
+  ansible.builtin.set_fact:
     matrix_user_gid: "{{ matrix_group.gid }}"
 
 - name: Ensure Matrix user is created
-  user:
+  ansible.builtin.user:
     name: "{{ matrix_user_username }}"
     uid: "{{ omit if matrix_user_uid is none else matrix_user_uid }}"
     state: present
@@ -23,5 +23,5 @@
   register: matrix_user
 
 - name: Set Matrix Group UID Variable
-  set_fact:
+  ansible.builtin.set_fact:
     matrix_user_uid: "{{ matrix_user.uid }}"

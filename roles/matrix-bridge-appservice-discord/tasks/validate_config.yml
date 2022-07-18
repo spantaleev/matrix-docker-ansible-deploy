@@ -1,7 +1,7 @@
 ---
 
 - name: Fail if required settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
   when: "vars[item] == ''"
@@ -13,7 +13,7 @@
     - "matrix_appservice_discord_homeserver_domain"
 
 - name: (Deprecation) Catch and report renamed appservice-discord variables
-  fail:
+  ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
@@ -22,5 +22,5 @@
     - {'old': 'matrix_appservice_discord_container_expose_client_server_api_port', 'new': '<superseded by matrix_appservice_discord_container_http_host_bind_port>'}
 
 - name: Require a valid database engine
-  fail: msg="`matrix_appservice_discord_database_engine` needs to be either 'sqlite' or 'postgres'"
+  ansible.builtin.fail: msg="`matrix_appservice_discord_database_engine` needs to be either 'sqlite' or 'postgres'"
   when: "matrix_appservice_discord_database_engine not in ['sqlite', 'postgres']"

@@ -1,5 +1,5 @@
 ---
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_well_known_file_path: "{{ matrix_static_files_base_path }}/.well-known/matrix/client"
 
 # We need others to be able to read these directories too,
@@ -7,7 +7,7 @@
 #
 # For running with another webserver, we recommend being part of the `matrix` group.
 - name: Ensure Matrix static-files path exists
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: 0755
@@ -17,7 +17,7 @@
     - "{{ matrix_static_files_base_path }}/.well-known/matrix"
 
 - name: Ensure Matrix /.well-known/matrix/client configured
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/well-known/matrix-client.j2"
     dest: "{{ matrix_static_files_base_path }}/.well-known/matrix"
     mode: 0644

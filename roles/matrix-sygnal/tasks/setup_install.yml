@@ -12,7 +12,7 @@
   until: result is not failed
 
 - name: Ensure Sygnal paths exists
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: 0750
@@ -24,21 +24,21 @@
     - "{{ matrix_sygnal_data_path }}"
 
 - name: Ensure Sygnal config installed
-  copy:
-    content: "{{ matrix_sygnal_configuration|to_nice_yaml(indent=2, width=999999) }}"
+  ansible.builtin.copy:
+    content: "{{ matrix_sygnal_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_sygnal_config_path }}/sygnal.yaml"
     mode: 0640
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-sygnal.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-sygnal.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-sygnal.service"
     mode: 0644
   register: matrix_sygnal_systemd_service_result
 
 - name: Ensure systemd reloaded after matrix-sygnal.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_sygnal_systemd_service_result.changed|bool"
+  when: "matrix_sygnal_systemd_service_result.changed | bool"

@@ -1,44 +1,44 @@
 ---
 
 - name: Ensure Docker repository is enabled
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/files/yum.repos.d/docker-ce-centos.repo"
     dest: "/etc/yum.repos.d/docker-ce.repo"
     owner: "root"
     group: "root"
     mode: 0644
-  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
+  when: matrix_docker_installation_enabled | bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure Docker's RPM key is trusted
-  rpm_key:
+  ansible.builtin.rpm_key:
     state: present
     key: https://download.docker.com/linux/centos/gpg
-  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
+  when: matrix_docker_installation_enabled | bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure EPEL is installed
-  yum:
+  ansible.builtin.yum:
     name:
       - epel-release
-    state: latest
+    state: present
     update_cache: true
 
 - name: Ensure yum packages are installed
-  yum:
+  ansible.builtin.yum:
     name:
       - "{{ matrix_ntpd_package }}"
-    state: latest
+    state: present
     update_cache: true
 
 - name: Ensure Docker is installed
-  yum:
+  ansible.builtin.yum:
     name:
       - "{{ matrix_docker_package_name }}"
       - python3-pip
-    state: latest
-  when: matrix_docker_installation_enabled|bool
+    state: present
+  when: matrix_docker_installation_enabled | bool
 
 - name: Ensure Docker-Py is installed
-  pip:
+  ansible.builtin.pip:
     name: docker-py
-    state: latest
-  when: matrix_docker_installation_enabled|bool
+    state: present
+  when: matrix_docker_installation_enabled | bool

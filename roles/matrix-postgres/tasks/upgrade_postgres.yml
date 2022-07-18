@@ -1,73 +1,73 @@
 ---
 
 - name: Set default postgres_dump_dir, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_dump_dir: "/tmp"
-  when: "postgres_dump_dir|default('') == ''"
+  when: "postgres_dump_dir | default('') == ''"
 
 - name: Set postgres_dump_name, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_dump_name: "matrix-postgres-dump.sql.gz"
-  when: "postgres_dump_name|default('') == ''"
+  when: "postgres_dump_name | default('') == ''"
 
 - name: Set postgres_auto_upgrade_backup_data_path, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_auto_upgrade_backup_data_path: "{{ matrix_postgres_data_path }}-auto-upgrade-backup"
-  when: "postgres_auto_upgrade_backup_data_path|default('') == ''"
+  when: "postgres_auto_upgrade_backup_data_path | default('') == ''"
 
 - name: Set postgres_start_wait_time, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_start_wait_time: 15
-  when: "postgres_start_wait_time|default('') == ''"
+  when: "postgres_start_wait_time | default('') == ''"
 
 - name: Set postgres_force_upgrade, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_force_upgrade: false
-  when: "postgres_force_upgrade|default('') == ''"
+  when: "postgres_force_upgrade | default('') == ''"
 
 - name: Fail, if trying to upgrade external Postgres database
-  fail:
+  ansible.builtin.fail:
     msg: "Your configuration indicates that you're not using Postgres from this role. There is nothing to upgrade."
-  when: "not matrix_postgres_enabled|bool"
+  when: "not matrix_postgres_enabled | bool"
 
 - name: Check Postgres auto-upgrade backup data directory
-  stat:
+  ansible.builtin.stat:
     path: "{{ postgres_auto_upgrade_backup_data_path }}"
   register: result_auto_upgrade_path
 
 - name: Abort, if existing Postgres auto-upgrade data path detected
-  fail:
+  ansible.builtin.fail:
     msg: "Detected that a left-over {{ postgres_auto_upgrade_backup_data_path }} exists. You should rename it to {{ matrix_postgres_data_path }} if the previous upgrade went wrong, or delete it if it went well."
   when: "result_auto_upgrade_path.stat.exists"
 
-- import_tasks: tasks/util/detect_existing_postgres_version.yml
+- ansible.builtin.import_tasks: tasks/detect_existing_postgres_version.yml
 
 - name: Abort, if no existing Postgres version detected
-  fail:
+  ansible.builtin.fail:
     msg: "Could not find existing Postgres installation"
-  when: "not matrix_postgres_detected_existing|bool"
+  when: "not matrix_postgres_detected_existing | bool"
 
 - name: Abort, if already at latest Postgres version
-  fail:
+  ansible.builtin.fail:
     msg: "You are already running the latest Postgres version supported ({{ matrix_postgres_docker_image_latest }}). Nothing to do"
   when: "matrix_postgres_detected_version_corresponding_docker_image == matrix_postgres_docker_image_latest and not postgres_force_upgrade"
 
-- debug:
+- ansible.builtin.debug:
     msg: "Upgrading database from {{ matrix_postgres_detected_version_corresponding_docker_image }} to {{ matrix_postgres_docker_image_latest }}"
 
 - name: Ensure matrix-synapse is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-synapse
     state: stopped
 
 - name: Ensure matrix-postgres is started
-  service:
+  ansible.builtin.service:
     name: matrix-postgres
     state: started
     daemon_reload: true
 
 - name: Wait a bit, so that Postgres can start
-  wait_for:
+  ansible.builtin.wait_for:
     timeout: "{{ postgres_start_wait_time }}"
   delegate_to: 127.0.0.1
   become: false
@@ -78,41 +78,49 @@
 # role (`matrix_postgres_connection_username`) and database (`matrix_postgres_db_name`) by itself on startup,
 # we need to remove these from the dump, or we'll get errors saying these already exist.
 - name: Perform Postgres database dump
-  command: >-
-    {{ matrix_host_command_docker }} run --rm --name matrix-postgres-dump
-    --log-driver=none
-    --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
-    --network={{ matrix_docker_network }}
-    --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
-    --entrypoint=/bin/sh
-    --mount type=bind,src={{ postgres_dump_dir }},dst=/out
-    {{ matrix_postgres_detected_version_corresponding_docker_image }}
-    -c "pg_dumpall -h matrix-postgres
-    {{ '| gzip -c ' if postgres_dump_name.endswith('.gz') else '' }}
-    > /out/{{ postgres_dump_name }}"
+  ansible.builtin.command:
+    cmd: >-
+      {{ matrix_host_command_docker }} run --rm --name matrix-postgres-dump
+      --log-driver=none
+      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+      --network={{ matrix_docker_network }}
+      --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
+      --entrypoint=/bin/sh
+      --mount type=bind,src={{ postgres_dump_dir }},dst=/out
+      {{ matrix_postgres_detected_version_corresponding_docker_image }}
+      -c "pg_dumpall -h matrix-postgres
+      {{ '| gzip -c ' if postgres_dump_name.endswith('.gz') else '' }}
+      > /out/{{ postgres_dump_name }}"
+  register: matrix_postgres_upgrade_postgres_dump_command_result
+  changed_when: matrix_postgres_upgrade_postgres_dump_command_result.rc == 0
+  tags:
+    - skip_ansible_lint
 
 - name: Ensure matrix-postgres is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-postgres
     state: stopped
 
 - name: Rename existing Postgres data directory
-  command: "mv {{ matrix_postgres_data_path }} {{ postgres_auto_upgrade_backup_data_path }}"
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_postgres_data_path }} {{ postgres_auto_upgrade_backup_data_path }}"
+  register: matrix_postgres_upgrade_postgres_move_command_result
+  changed_when: matrix_postgres_upgrade_postgres_move_command_result.rc == 0
 
-- debug:
+- ansible.builtin.debug:
     msg: "NOTE: Your Postgres data directory has been moved from `{{ matrix_postgres_data_path }}` to `{{ postgres_auto_upgrade_backup_data_path }}`. In the event of failure, you can move it back and run the playbook with --tags=setup-postgres to restore operation."
 
-- import_tasks: tasks/setup_postgres.yml
+- ansible.builtin.import_tasks: tasks/setup_postgres.yml
 
 - name: Ensure matrix-postgres autoruns and is restarted
-  service:
+  ansible.builtin.service:
     name: matrix-postgres
     enabled: true
     state: restarted
     daemon_reload: true
 
 - name: Wait a bit, so that Postgres can start
-  wait_for:
+  ansible.builtin.wait_for:
     timeout: "{{ postgres_start_wait_time }}"
   delegate_to: 127.0.0.1
   become: false
@@ -122,7 +130,7 @@
 # The dump most likely contains those same entries and would try to re-create them, leading to errors.
 # We need to skip over those lines.
 - name: Generate Postgres database import command
-  set_fact:
+  ansible.builtin.set_fact:
     matrix_postgres_import_command: >-
       {{ matrix_host_command_docker }} run --rm --name matrix-postgres-import
       --log-driver=none
@@ -138,6 +146,8 @@
       grep -vE '{{ matrix_postgres_import_roles_ignore_regex }}' |
       grep -vE '{{ matrix_postgres_import_databases_ignore_regex }}' |
       psql -v ON_ERROR_STOP=1 -h matrix-postgres"
+  tags:
+    - skip_ansible_lint
 
 # This is a hack.
 # See: https://ansibledaily.com/print-to-standard-output-without-escaping/
@@ -145,7 +155,7 @@
 # We want to run `debug: msg=".."`, but that dumps it as JSON and escapes double quotes within it,
 # which ruins the command (`matrix_postgres_import_command`)
 - name: Note about Postgres importing
-  set_fact:
+  ansible.builtin.set_fact:
     dummy: true
   with_items:
     - >-
@@ -155,18 +165,21 @@
         and restore the automatically-made backup (`mv {{ postgres_auto_upgrade_backup_data_path }} {{ matrix_postgres_data_path }}`).
 
 - name: Perform Postgres database import
-  command: "{{ matrix_postgres_import_command }}"
+  ansible.builtin.command:
+    cmd: "{{ matrix_postgres_import_command }}"
+  register: matrix_postgres_upgrade_postgres_import_command_result
+  changed_when: matrix_postgres_upgrade_postgres_import_command_result.rc == 0
 
 - name: Delete Postgres database dump file
-  file:
+  ansible.builtin.file:
     path: "{{ postgres_dump_dir }}/{{ postgres_dump_name }}"
     state: absent
 
 - name: Ensure matrix-synapse is started
-  service:
+  ansible.builtin.service:
     name: matrix-synapse
     state: started
     daemon_reload: true
 
-- debug:
+- ansible.builtin.debug:
     msg: "NOTE: Your old Postgres data directory is preserved at `{{ postgres_auto_upgrade_backup_data_path }}`. You might want to get rid of it once you've confirmed that all is well."

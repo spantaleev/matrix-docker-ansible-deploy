@@ -3,41 +3,43 @@
 # If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
 # We don't want to fail in such cases.
 - name: Fail if matrix-synapse role already executed
-  fail:
+  ansible.builtin.fail:
     msg: >-
       The matrix-bridge-go-skype-bridge role needs to execute before the matrix-synapse role.
-  when: "matrix_synapse_role_executed|default(False)"
+  when: "matrix_synapse_role_executed | default(False)"
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_go_skype_bridge_requires_restart: false
 
 - block:
     - name: Check if an SQLite database already exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ matrix_go_skype_bridge_sqlite_database_path_local }}"
       register: matrix_go_skype_bridge_sqlite_database_path_local_stat_result
 
     - block:
-        - set_fact:
+        - ansible.builtin.set_fact:
             matrix_postgres_db_migration_request:
               src: "{{ matrix_go_skype_bridge_sqlite_database_path_local }}"
               dst: "{{ matrix_go_skype_bridge_database_connection_string }}"
-              caller: "{{ role_path|basename }}"
+              caller: "{{ role_path | basename }}"
               engine_variable_name: 'matrix_go_skype_bridge_database_engine'
               engine_old: 'sqlite'
               systemd_services_to_stop: ['matrix-go-skype-bridge.service']
               pgloader_options: ['--with "quote identifiers"']
 
-        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+        - ansible.builtin.import_role:
+            name: matrix-postgres
+            tasks_from: migrate_db_to_postgres
 
-        - set_fact:
+        - ansible.builtin.set_fact:
             matrix_go_skype_bridge_requires_restart: true
-      when: "matrix_go_skype_bridge_sqlite_database_path_local_stat_result.stat.exists|bool"
+      when: "matrix_go_skype_bridge_sqlite_database_path_local_stat_result.stat.exists | bool"
   when: "matrix_go_skype_bridge_database_engine == 'postgres'"
 
 
 - name: Ensure Go Skype Bridge paths exists
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     mode: 0750
@@ -48,7 +50,7 @@
     - {path: "{{ matrix_go_skype_bridge_config_path }}", when: true}
     - {path: "{{ matrix_go_skype_bridge_data_path }}", when: true}
     - {path: "{{ matrix_go_skype_bridge_docker_src_files_path }}", when: "{{ matrix_go_skype_bridge_container_image_self_build }}"}
-  when: item.when|bool
+  when: item.when | bool
 
 - name: Ensure Go Skype Bridge image is pulled
   docker_image:
@@ -63,7 +65,7 @@
   until: result is not failed
 
 - name: Ensure Go Skype Bridge repository is present on self-build
-  git:
+  ansible.builtin.git:
     repo: "{{ matrix_go_skype_bridge_container_image_self_build_repo }}"
     dest: "{{ matrix_go_skype_bridge_docker_src_files_path }}"
     version: "{{ matrix_go_skype_bridge_container_image_self_build_branch }}"
@@ -71,7 +73,7 @@
   become: true
   become_user: "{{ matrix_user_username }}"
   register: matrix_go_skype_bridge_git_pull_results
-  when: "matrix_go_skype_bridge_container_image_self_build|bool"
+  when: "matrix_go_skype_bridge_container_image_self_build | bool"
 
 - name: Ensure Go Skype Bridge Docker image is built
   docker_image:
@@ -83,20 +85,20 @@
       dockerfile: Dockerfile
       path: "{{ matrix_go_skype_bridge_docker_src_files_path }}"
       pull: true
-  when: "matrix_go_skype_bridge_container_image_self_build|bool"
+  when: "matrix_go_skype_bridge_container_image_self_build | bool"
 
 - name: Check if an old database file exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_go_skype_bridge_base_path }}/go-skype-bridge.db"
   register: matrix_go_skype_bridge_stat_database
 
 - name: Check if an old matrix state file exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_go_skype_bridge_base_path }}/mx-state.json"
   register: matrix_go_skype_bridge_stat_mx_state
 
 - name: (Data relocation) Ensure matrix-go-skype-bridge.service is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-go-skype-bridge
     state: stopped
     enabled: false
@@ -105,43 +107,43 @@
   when: "matrix_go_skype_bridge_stat_database.stat.exists"
 
 - name: (Data relocation) Move go-skype-bridge database file to ./data directory
-  command: "mv {{ matrix_go_skype_bridge_base_path }}/go-skype-bridge.db {{ matrix_go_skype_bridge_data_path }}/go-skype-bridge.db"
+  ansible.builtin.command: "mv {{ matrix_go_skype_bridge_base_path }}/go-skype-bridge.db {{ matrix_go_skype_bridge_data_path }}/go-skype-bridge.db"
   when: "matrix_go_skype_bridge_stat_database.stat.exists"
 
 - name: (Data relocation) Move go-skype-bridge mx-state file to ./data directory
-  command: "mv {{ matrix_go_skype_bridge_base_path }}/mx-state.json {{ matrix_go_skype_bridge_data_path }}/mx-state.json"
+  ansible.builtin.command: "mv {{ matrix_go_skype_bridge_base_path }}/mx-state.json {{ matrix_go_skype_bridge_data_path }}/mx-state.json"
   when: "matrix_go_skype_bridge_stat_mx_state.stat.exists"
 
 - name: Ensure go-skype-bridge config.yaml installed
-  copy:
-    content: "{{ matrix_go_skype_bridge_configuration|to_nice_yaml(indent=2, width=999999) }}"
+  ansible.builtin.copy:
+    content: "{{ matrix_go_skype_bridge_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_go_skype_bridge_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure go-skype-bridge registration.yaml installed
-  copy:
-    content: "{{ matrix_go_skype_bridge_registration|to_nice_yaml(indent=2, width=999999) }}"
+  ansible.builtin.copy:
+    content: "{{ matrix_go_skype_bridge_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_go_skype_bridge_config_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-go-skype-bridge.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-go-skype-bridge.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-go-skype-bridge.service"
     mode: 0644
   register: matrix_go_skype_bridge_systemd_service_result
 
 - name: Ensure systemd reloaded after matrix-go-skype-bridge.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_go_skype_bridge_systemd_service_result.changed"
 
 - name: Ensure matrix-go-skype-bridge.service restarted, if necessary
-  service:
+  ansible.builtin.service:
     name: "matrix-go-skype-bridge.service"
     state: restarted
-  when: "matrix_go_skype_bridge_requires_restart|bool"
+  when: "matrix_go_skype_bridge_requires_restart | bool"

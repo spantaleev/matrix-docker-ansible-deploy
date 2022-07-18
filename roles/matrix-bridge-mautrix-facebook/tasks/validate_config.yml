@@ -1,7 +1,7 @@
 ---
 
 - name: Fail if required settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
   when: "vars[item] == ''"
@@ -12,10 +12,10 @@
 
 - block:
     - name: Inject warning if on an old SQLite-supporting version
-      set_fact:
+      ansible.builtin.set_fact:
         matrix_playbook_runtime_results: |
           {{
-            matrix_playbook_runtime_results|default([])
+            matrix_playbook_runtime_results | default([])
             +
             [
               "NOTE: Your mautrix-facebook bridge is still on SQLite and on the last version that supported it, before support was dropped. Support has been subsequently re-added in v0.3.2, so we advise you to upgrade (by removing your `matrix_mautrix_facebook_docker_image` definition from vars.yml)"

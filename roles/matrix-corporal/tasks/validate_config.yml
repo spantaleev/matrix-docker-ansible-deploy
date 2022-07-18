@@ -1,7 +1,7 @@
 ---
 
 - name: Fail if required matrix-corporal settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) for using matrix-corporal.
   when: "vars[item] == ''"
@@ -12,12 +12,12 @@
     - "matrix_corporal_policy_provider_config"
 
 - name: Fail if HTTP API enabled, but no token set
-  fail:
+  ansible.builtin.fail:
     msg: "The Matrix Corporal HTTP API is enabled (`matrix_corporal_http_api_enabled`), but no auth token has been set in `matrix_corporal_http_api_auth_token`"
-  when: "matrix_corporal_http_api_enabled|bool and matrix_corporal_http_api_auth_token == ''"
+  when: "matrix_corporal_http_api_enabled | bool and matrix_corporal_http_api_auth_token == ''"
 
 - name: (Deprecation) Catch and report renamed corporal variables
-  fail:
+  ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).

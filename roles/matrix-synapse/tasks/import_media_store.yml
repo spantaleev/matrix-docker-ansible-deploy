@@ -3,37 +3,37 @@
 # Pre-checks
 
 - name: Fail if playbook called incorrectly
-  fail:
+  ansible.builtin.fail:
     msg: "The `server_path_media_store` variable needs to be provided to this playbook, via --extra-vars"
   when: "server_path_media_store is not defined or server_path_media_store.startswith('<')"
 
 - name: Fail if media store is on Amazon S3
-  fail:
+  ansible.builtin.fail:
     msg: "Your media store is on Amazon S3. Due to technical limitations, restoring is not supported."
-  when: matrix_s3_media_store_enabled|bool
+  when: matrix_s3_media_store_enabled | bool
 
 - name: Check if the provided media store directory exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ server_path_media_store }}"
   register: server_path_media_store_stat
 
 - name: Fail if provided media store directory doesn't exist on the server
-  fail:
+  ansible.builtin.fail:
     msg: "{{ server_path_media_store }} cannot be found on the server"
   when: "not server_path_media_store_stat.stat.exists or not server_path_media_store_stat.stat.isdir"
 
 - name: Check if media store contains local_content
-  stat:
+  ansible.builtin.stat:
     path: "{{ server_path_media_store }}/local_content"
   register: server_path_media_store_local_content_stat
 
 - name: Check if media store contains remote_content
-  stat:
+  ansible.builtin.stat:
     path: "{{ server_path_media_store }}/remote_content"
   register: server_path_media_store_remote_content_stat
 
 - name: Fail if media store directory doesn't look okay (lacking remote and local content)
-  fail:
+  ansible.builtin.fail:
     msg: "{{ server_path_media_store }} contains neither local_content nor remote_content directories. It's most likely a mistake and is not a media store directory."
   when: "not server_path_media_store_local_content_stat.stat.exists and not server_path_media_store_remote_content_stat.stat.exists"
 
@@ -41,7 +41,7 @@
 # Actual import work
 
 - name: Ensure matrix-synapse is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-synapse
     state: stopped
     enabled: false
@@ -57,25 +57,25 @@
     delete: true
     # It's wasteful to preserve owner/group now. We chown below anyway.
     owner: false
-    group: false
+    ansible.builtin.group: false
     times: true
   delegate_to: "{{ inventory_hostname }}"
 
 # This is for the generic case and fails in other cases (remote file systems),
 # because in such cases the base path (matrix_synapse_media_store_path) is a mount point.
 - name: Ensure media store permissions are correct (generic case)
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_synapse_media_store_path }}"
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
     recurse: true
-  when: "not matrix_s3_media_store_enabled|bool"
+  when: "not matrix_s3_media_store_enabled | bool"
 
 # We don't chown for Goofys, because due to the way it's mounted,
 # all files become owned by whoever needs to own them.
 
 - name: Ensure Synapse is started (if it previously was)
-  service:
+  ansible.builtin.service:
     name: "{{ item }}"
     state: started
     daemon_reload: true

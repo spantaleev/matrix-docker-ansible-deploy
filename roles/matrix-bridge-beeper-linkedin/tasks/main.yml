@@ -1,22 +1,22 @@
 ---
 
-- import_tasks: "{{ role_path }}/tasks/init.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
   tags:
     - always
 
-- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: "run_setup|bool and matrix_beeper_linkedin_enabled|bool"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: "run_setup | bool and matrix_beeper_linkedin_enabled | bool"
   tags:
     - setup-all
     - setup-beeper-linkedin
 
-- import_tasks: "{{ role_path }}/tasks/setup_install.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_install.yml"
   when: "run_setup and matrix_beeper_linkedin_enabled"
   tags:
     - setup-all
     - setup-beeper-linkedin
 
-- import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   when: "run_setup and not matrix_beeper_linkedin_enabled"
   tags:
     - setup-all

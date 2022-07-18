@@ -3,24 +3,24 @@
 # This task is for migrating existing mxisd data when transitioning to the ma1sd fork.
 
 - name: Check for existent mxisd data
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_base_data_path }}/mxisd/data"
   register: ma1sd_migrate_mxisd_data_dir_stat
 
 - name: Warn if mxisd data detected
-  debug:
+  ansible.builtin.debug:
     msg: >
       You seem to have an existing mxisd folder in `{{ matrix_base_data_path }}/mxisd`.
       We are going to migrate it to ma1sd and rename the folder to mxisd.migrated.
   when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists"
 
 - name: Check existence of old matrix-mxisd service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-mxisd.service"
   register: matrix_mxisd_service_stat
 
 - name: Ensure matrix-mxisd is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-mxisd
     state: stopped
     enabled: false
@@ -28,13 +28,13 @@
   when: "matrix_mxisd_service_stat.stat.exists"
 
 - name: Check existence of matrix-ma1sd service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-ma1sd.service"
   register: matrix_ma1sd_service_stat
   when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists"
 
 - name: Ensure matrix-ma1sd is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-ma1sd
     state: stopped
     daemon_reload: true
@@ -44,28 +44,37 @@
 # recursively copy remote directories (like `/matrix/mxisd/data/sign.key`) in older versions of Ansible.
 - block:
     - name: Copy mxisd data files to ma1sd folder
-      command: "cp -ar {{ matrix_base_data_path }}/mxisd/data {{ matrix_ma1sd_base_path }}"
+      ansible.builtin.command:
+        cmd: "cp -ar {{ matrix_base_data_path }}/mxisd/data {{ matrix_ma1sd_base_path }}"
+      register: matrix_ma1sd_migrate_mxisd_data_files_copying_result
+      changed_when: matrix_ma1sd_migrate_mxisd_data_files_copying_result.rc == 0
 
     - name: Check existence of mxisd.db file
-      stat:
+      ansible.builtin.stat:
         path: "{{ matrix_ma1sd_data_path }}/mxisd.db"
       register: matrix_ma1sd_mxisd_db_stat
 
     - name: Rename database (mxisd.db -> ma1sd.db)
-      command: "mv {{ matrix_ma1sd_data_path }}/mxisd.db {{ matrix_ma1sd_data_path }}/ma1sd.db"
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_ma1sd_data_path }}/mxisd.db {{ matrix_ma1sd_data_path }}/ma1sd.db"
+      register: matrix_ma1sd_migrate_mxisd_move_db_result
+      changed_when: matrix_ma1sd_migrate_mxisd_move_db_result.rc == 0
       when: "matrix_ma1sd_mxisd_db_stat.stat.exists"
 
     - name: Rename mxisd folder
-      command: "mv {{ matrix_base_data_path }}/mxisd {{ matrix_base_data_path }}/mxisd.migrated"
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_base_data_path }}/mxisd {{ matrix_base_data_path }}/mxisd.migrated"
+      register: matrix_ma1sd_migrate_mxisd_move_directory_result
+      changed_when: matrix_ma1sd_migrate_mxisd_move_directory_result.rc == 0
   when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists"
 
 - name: Ensure outdated matrix-mxisd.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-mxisd.service"
     state: absent
   when: "matrix_mxisd_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after removing outdated matrix-mxisd.service
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_mxisd_service_stat.stat.exists"

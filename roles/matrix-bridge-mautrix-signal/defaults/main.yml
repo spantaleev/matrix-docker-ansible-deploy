@@ -6,6 +6,7 @@ matrix_mautrix_signal_enabled: true
 
 matrix_mautrix_signal_container_image_self_build: false
 matrix_mautrix_signal_docker_repo: "https://mau.dev/mautrix/signal.git"
+matrix_mautrix_signal_docker_repo_version: "{{ 'master' if matrix_mautrix_signal_version == 'latest' else matrix_mautrix_signal_version }}"
 matrix_mautrix_signal_docker_src_files_path: "{{ matrix_base_data_path }}/mautrix-signal/docker-src"
 
 matrix_mautrix_signal_version: v0.3.0
@@ -16,6 +17,7 @@ matrix_mautrix_signal_docker_image_force_pull: "{{ matrix_mautrix_signal_docker_
 
 matrix_mautrix_signal_daemon_container_image_self_build: false
 matrix_mautrix_signal_daemon_docker_repo: "https://gitlab.com/signald/signald"
+matrix_mautrix_signal_daemon_docker_repo_version: "{{ 'master' if matrix_mautrix_signal_daemon_version == 'latest' else matrix_mautrix_signal_daemon_version }}"
 matrix_mautrix_signal_daemon_docker_src_files_path: "{{ matrix_base_data_path }}/mautrix-signald/docker-src"
 
 matrix_mautrix_signal_daemon_docker_image: "docker.io/signald/signald:{{ matrix_mautrix_signal_daemon_docker_image_tag }}"
@@ -124,15 +126,15 @@ matrix_mautrix_signal_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_mautrix_signal_configuration_yaml`.
 
-matrix_mautrix_signal_configuration_extension: "{{ matrix_mautrix_signal_configuration_extension_yaml|from_yaml if matrix_mautrix_signal_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_mautrix_signal_configuration_extension: "{{ matrix_mautrix_signal_configuration_extension_yaml | from_yaml if matrix_mautrix_signal_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_mautrix_signal_configuration_yaml`.
-matrix_mautrix_signal_configuration: "{{ matrix_mautrix_signal_configuration_yaml|from_yaml|combine(matrix_mautrix_signal_configuration_extension, recursive=True) }}"
+matrix_mautrix_signal_configuration: "{{ matrix_mautrix_signal_configuration_yaml | from_yaml | combine(matrix_mautrix_signal_configuration_extension, recursive=True) }}"
 
 matrix_mautrix_signal_registration_yaml: "{{ lookup('template', 'templates/registration.yaml.j2') }}"
 
-matrix_mautrix_signal_registration: "{{ matrix_mautrix_signal_registration_yaml|from_yaml }}"
+matrix_mautrix_signal_registration: "{{ matrix_mautrix_signal_registration_yaml | from_yaml }}"
 
 matrix_mautrix_signal_log_level: 'DEBUG'
 

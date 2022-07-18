@@ -12,7 +12,7 @@
   until: result is not failed
 
 - name: Ensure heisenbridge paths exist
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: 0750
@@ -22,21 +22,21 @@
     - "{{ matrix_heisenbridge_base_path }}"
 
 - name: Ensure heisenbridge registration.yaml installed if provided
-  copy:
-    content: "{{ matrix_heisenbridge_registration|to_nice_yaml(indent=2, width=999999) }}"
+  ansible.builtin.copy:
+    content: "{{ matrix_heisenbridge_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_heisenbridge_base_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-heisenbridge.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-heisenbridge.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-heisenbridge.service"
     mode: 0644
   register: matrix_heisenbridge_systemd_service_result
 
 - name: Ensure systemd reloaded after matrix-heisenbridge.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: matrix_heisenbridge_systemd_service_result.changed

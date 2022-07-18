@@ -1,24 +1,24 @@
 ---
 
 - name: Check existence of matrix-mautrix-twitter service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-mautrix-twitter.service"
   register: matrix_mautrix_twitter_service_stat
 
 - name: Ensure matrix-mautrix-twitter is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-mautrix-twitter
     state: stopped
     daemon_reload: true
   when: "matrix_mautrix_twitter_service_stat.stat.exists"
 
 - name: Ensure matrix-mautrix-twitter.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-mautrix-twitter.service"
     state: absent
   when: "matrix_mautrix_twitter_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-mautrix-twitter.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_mautrix_twitter_service_stat.stat.exists"

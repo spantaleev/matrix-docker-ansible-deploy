@@ -1,13 +1,13 @@
 ---
 
-- set_fact:
+- ansible.builtin.set_fact:
     well_known_url_matrix: "https://{{ matrix_server_fqn_matrix }}{{ well_known_file_check.path }}"
     well_known_url_identity: "https://{{ matrix_domain }}{{ well_known_file_check.path }}"
 
 # These well-known files may be served without a `Content-Type: application/json` header,
 # so we can't rely on the uri module's automatic parsing of JSON.
 - name: Check .well-known on the matrix hostname
-  uri:
+  ansible.builtin.uri:
     url: "{{ well_known_url_matrix }}"
     follow_redirects: none
     return_content: true
@@ -19,25 +19,25 @@
   ignore_errors: true
 
 - name: Fail if .well-known not working on the matrix hostname
-  fail:
+  ansible.builtin.fail:
     msg: "Failed checking that the well-known file for {{ well_known_file_check.purpose }} is configured at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ well_known_url_matrix }}`). Is port 443 open in your firewall? Full error: {{ result_well_known_matrix }}"
   when: "result_well_known_matrix.failed"
 
 - name: Parse JSON for well-known payload at the matrix hostname
-  set_fact:
-    well_known_matrix_payload: "{{ result_well_known_matrix.content|from_json }}"
+  ansible.builtin.set_fact:
+    well_known_matrix_payload: "{{ result_well_known_matrix.content | from_json }}"
 
 - name: Fail if .well-known not CORS-aware on the matrix hostname
-  fail:
+  ansible.builtin.fail:
     msg: "The well-known file for {{ well_known_file_check.purpose }} on `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ well_known_url_matrix }}`) is not CORS-aware. The file needs to be served with an Access-Control-Allow-Origin header set."
   when: "well_known_file_check.cors and 'access_control_allow_origin' not in result_well_known_matrix"
 
 - name: Report working .well-known on the matrix hostname
-  debug:
+  ansible.builtin.debug:
     msg: "well-known for {{ well_known_file_check.purpose }} is configured correctly for `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ well_known_url_matrix }}`)"
 
 - name: Check .well-known on the identity hostname
-  uri:
+  ansible.builtin.uri:
     url: "{{ well_known_url_identity }}"
     follow_redirects: "{{ well_known_file_check.follow_redirects }}"
     return_content: true
@@ -49,25 +49,25 @@
   ignore_errors: true
 
 - name: Fail if .well-known not working on the identity hostname
-  fail:
+  ansible.builtin.fail:
     msg: "Failed checking that the well-known file for {{ well_known_file_check.purpose }} is configured at `{{ matrix_domain }}` (checked endpoint: `{{ well_known_url_identity }}`). Is port 443 open in your firewall? Full error: {{ result_well_known_identity }}"
   when: "result_well_known_identity.failed"
 
 - name: Parse JSON for well-known payload at the identity hostname
-  set_fact:
-    well_known_identity_payload: "{{ result_well_known_identity.content|from_json }}"
+  ansible.builtin.set_fact:
+    well_known_identity_payload: "{{ result_well_known_identity.content | from_json }}"
 
 - name: Fail if .well-known not CORS-aware on the identity hostname
-  fail:
+  ansible.builtin.fail:
     msg: "The well-known file for {{ well_known_file_check.purpose }} on `{{ matrix_domain }}` (checked endpoint: `{{ well_known_url_identity }}`) is not CORS-aware. The file needs to be served with an Access-Control-Allow-Origin header set. See docs/configuring-well-known.md"
   when: "well_known_file_check.cors and 'access_control_allow_origin' not in result_well_known_identity"
 
 # For people who manually copy the well-known file, try to detect if it's outdated
 - name: Fail if well-known is different on matrix hostname and identity hostname
-  fail:
+  ansible.builtin.fail:
     msg: "The well-known files for {{ well_known_file_check.purpose }} at `{{ matrix_server_fqn_matrix }}` and `{{ matrix_domain }}` are different. Perhaps you copied the file ({{ well_known_file_check.path }}) manually before and now it's outdated?"
   when: "well_known_matrix_payload != well_known_identity_payload"
 
 - name: Report working .well-known on the identity hostname
-  debug:
+  ansible.builtin.debug:
     msg: "well-known for {{ well_known_file_check.purpose }} ({{ well_known_file_check.path }}) is configured correctly for `{{ matrix_domain }}` (checked endpoint: `{{ well_known_url_identity }}`)"

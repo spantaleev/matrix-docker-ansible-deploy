@@ -1,7 +1,7 @@
 ---
 
 - name: Fail if required Jitsi settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) to properly configure Jitsi.
 
@@ -21,19 +21,19 @@
 
 
 - name: Fail if a Jitsi internal authentication account is not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       At least one Jitsi user needs to be defined in `matrix_jitsi_prosody_auth_internal_accounts` when using internal authentication.
       If you're setting up Jitsi for the first time, you may have missed a step.
       Refer to our setup instructions (docs/configuring-playbook-jitsi.md).
   when:
-    - matrix_jitsi_enable_auth|bool
+    - matrix_jitsi_enable_auth | bool
     - matrix_jitsi_auth_type == 'internal'
     - matrix_jitsi_prosody_auth_internal_accounts|length == 0
 
 
 - name: (Deprecation) Catch and report renamed settings
-  fail:
+  ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).

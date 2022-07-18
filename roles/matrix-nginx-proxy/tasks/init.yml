@@ -1,9 +1,9 @@
 ---
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-nginx-proxy.service'] }}"
-  when: matrix_nginx_proxy_enabled|bool
+  when: matrix_nginx_proxy_enabled | bool
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + [item.name] }}"
-  when: "item.applicable|bool and item.enableable|bool"
+  when: "item.applicable | bool and item.enableable | bool"
   with_items: "{{ matrix_ssl_renewal_systemd_units_list }}"

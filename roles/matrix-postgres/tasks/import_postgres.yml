@@ -3,22 +3,22 @@
 # Pre-checks
 
 - name: Fail if Postgres not enabled
-  fail:
+  ansible.builtin.fail:
     msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot import."
-  when: "not matrix_postgres_enabled|bool"
+  when: "not matrix_postgres_enabled | bool"
 
 - name: Fail if playbook called incorrectly
-  fail:
+  ansible.builtin.fail:
     msg: "The `server_path_postgres_dump` variable needs to be provided to this playbook, via --extra-vars"
   when: "server_path_postgres_dump is not defined or server_path_postgres_dump.startswith('<')"
 
 - name: Check if the provided Postgres dump file exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ server_path_postgres_dump }}"
   register: result_server_path_postgres_dump_stat
 
 - name: Fail if provided Postgres dump file doesn't exists
-  fail:
+  ansible.builtin.fail:
     msg: "File cannot be found on the server at {{ server_path_postgres_dump }}"
   when: "not result_server_path_postgres_dump_stat.stat.exists"
 
@@ -26,49 +26,49 @@
 # Defaults
 
 - name: Set postgres_start_wait_time, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_start_wait_time: 15
-  when: "postgres_start_wait_time|default('') == ''"
+  when: "postgres_start_wait_time | default('') == ''"
 
 - name: Set postgres_import_wait_time, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_import_wait_time: "{{ 7 * 86400 }}"
-  when: "postgres_import_wait_time|default('') == ''"
+  when: "postgres_import_wait_time | default('') == ''"
 
 # By default, we connect and import into the main (`matrix`) database.
 # Single-database dumps for Synapse may wish to import into `synapse` instead.
 - name: Set postgres_default_import_database, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_default_import_database: "{{ matrix_postgres_db_name }}"
-  when: "postgres_default_import_database|default('') == ''"
+  when: "postgres_default_import_database | default('') == ''"
 
 # Actual import work
 
 - name: Ensure matrix-postgres is started
-  service:
+  ansible.builtin.service:
     name: matrix-postgres
     state: started
     daemon_reload: true
 
 - name: Wait a bit, so that Postgres can start
-  wait_for:
+  ansible.builtin.wait_for:
     timeout: "{{ postgres_start_wait_time }}"
   delegate_to: 127.0.0.1
   become: false
 
-- import_tasks: tasks/util/detect_existing_postgres_version.yml
+- ansible.builtin.import_tasks: tasks/detect_existing_postgres_version.yml
 
 - name: Abort, if no existing Postgres version detected
-  fail:
+  ansible.builtin.fail:
     msg: "Could not find existing Postgres installation"
-  when: "not matrix_postgres_detected_existing|bool"
+  when: "not matrix_postgres_detected_existing | bool"
 
 # Starting the database container had automatically created the default
 # role (`matrix_postgres_connection_username`) and database (`matrix_postgres_db_name`).
 # The dump most likely contains those same entries and would try to re-create them, leading to errors.
 # We need to skip over those lines.
 - name: Generate Postgres database import command
-  set_fact:
+  ansible.builtin.set_fact:
     matrix_postgres_import_command: >-
       {{ matrix_host_command_docker }} run --rm --name matrix-postgres-import
       --log-driver=none
@@ -76,14 +76,16 @@
       --cap-drop=ALL
       --network={{ matrix_docker_network }}
       --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
-      --mount type=bind,src={{ server_path_postgres_dump }},dst=/{{ server_path_postgres_dump|basename }},ro
+      --mount type=bind,src={{ server_path_postgres_dump }},dst=/{{ server_path_postgres_dump | basename }},ro
       --entrypoint=/bin/sh
       {{ matrix_postgres_docker_image_latest }}
-      -c "cat /{{ server_path_postgres_dump|basename }} |
+      -c "cat /{{ server_path_postgres_dump | basename }} |
       {{ 'gunzip |' if server_path_postgres_dump.endswith('.gz') else '' }}
       grep -vE '{{ matrix_postgres_import_roles_ignore_regex }}' |
       grep -vE '{{ matrix_postgres_import_databases_ignore_regex }}' |
       psql -v ON_ERROR_STOP=1 -h matrix-postgres --dbname={{ postgres_default_import_database }}"
+  tags:
+    - skip_ansible_lint
 
 # This is a hack.
 # See: https://ansibledaily.com/print-to-standard-output-without-escaping/
@@ -91,7 +93,7 @@
 # We want to run `debug: msg=".."`, but that dumps it as JSON and escapes double quotes within it,
 # which ruins the command (`matrix_postgres_import_command`)
 - name: Note about Postgres importing alternative
-  set_fact:
+  ansible.builtin.set_fact:
     dummy: true
   with_items:
     - >-
@@ -101,6 +103,9 @@
         and manually run the above import command directly on the server.
 
 - name: Perform Postgres database import
-  command: "{{ matrix_postgres_import_command }}"
+  ansible.builtin.command:
+    cmd: "{{ matrix_postgres_import_command }}"
   async: "{{ postgres_import_wait_time }}"
   poll: 10
+  register: matrix_postgres_import_postgres_command_result
+  changed_when: matrix_postgres_import_postgres_command_result.rc == 0
