@@ -48,11 +48,11 @@ Example snippet for `vars.yml`:
 ```
 # Homeserver admin contacts as per MSC 1929 https://github.com/matrix-org/matrix-spec-proposals/pull/1929
 matrix_homeserver_admin_contacts:
-  - matrix_id: @admin1:domain.tld
+  - matrix_id: "@admin1:{{ matrix_domain }}"
     email_address: admin@domain.tld
     role: admin
-  - matrix_id: @admin2:domain.tld
-    email_address: admin@domain.tld
+  - matrix_id: "@admin2:{{ matrix_domain }}"
+    email_address: admin2@domain.tld
     role: admin
   - email_address: security@domain.tld
     role: security
