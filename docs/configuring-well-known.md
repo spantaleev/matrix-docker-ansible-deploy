@@ -46,6 +46,10 @@ The two playbook variables that you could look for, if you're interested in bein
 
 Example snippet for `vars.yml`:
 ```
+# Enable generation of `/.well-known/matrix/support`.
+# This needs to be enabled explicitly for now, because MSC 1929 is not yet accepted.
+matrix_well_known_matrix_support_enabled: true
+
 # Homeserver admin contacts as per MSC 1929 https://github.com/matrix-org/matrix-spec-proposals/pull/1929
 matrix_homeserver_admin_contacts:
   - matrix_id: "@admin1:{{ matrix_domain }}"
