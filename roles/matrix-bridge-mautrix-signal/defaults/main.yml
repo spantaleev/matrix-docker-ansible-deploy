@@ -130,9 +130,9 @@ matrix_mautrix_signal_configuration_extension: "{{ matrix_mautrix_signal_configu
 # You most likely don't need to touch this variable. Instead, see `matrix_mautrix_signal_configuration_yaml`.
 matrix_mautrix_signal_configuration: "{{ matrix_mautrix_signal_configuration_yaml|from_yaml|combine(matrix_mautrix_signal_configuration_extension, recursive=True) }}"
 
-# Prevents the puppet from breaking when the signal security nuber changes.
-# The new security nuber will marked as trusted_unverified if this is set to true
-matrix_mautrix_signal_deamon_trust_new_security_nuber: false
+# Prevents the puppet from breaking when the signal safety number changes.
+# The new safety number will be marked as trusted_unverified if this is set to true
+matrix_mautrix_signal_deamon_trust_new_safety_number: false
 
 matrix_mautrix_signal_registration_yaml: "{{ lookup('template', 'templates/registration.yaml.j2') }}"
 
@@ -143,3 +143,10 @@ matrix_mautrix_signal_log_level: 'DEBUG'
 matrix_mautrix_signal_bridge_encryption_allow: false
 matrix_mautrix_signal_bridge_encryption_default: "{{ matrix_mautrix_signal_bridge_encryption_allow }}"
 matrix_mautrix_signal_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_signal_bridge_encryption_allow }}"
+
+# Additional environment variables to pass to the Signal Deamon container
+#
+# Example:
+# matrix_mautrix_signal_deamon_environment_variables_extension: |
+#   SIGNALD_TRUST_ALL_KEYS=true
+matrix_mautrix_signal_deamon_environment_variables_extension: ''
