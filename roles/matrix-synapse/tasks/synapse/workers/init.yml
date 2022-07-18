@@ -5,7 +5,7 @@
 # so we're forced to do something much uglier.
 
 - name: Build generic workers
-  set_fact:
+  ansible.builtin.set_fact:
     worker:
       type: 'generic_worker'
       instanceId: "{{ matrix_synapse_workers_generic_workers_port_range_start + item }}"
@@ -15,7 +15,7 @@
   loop: "{{ range(0, matrix_synapse_workers_generic_workers_count|int)|list }}"
 
 - name: Build federation sender workers
-  set_fact:
+  ansible.builtin.set_fact:
     worker:
       type: 'federation_sender'
       instanceId: "{{ item }}"
@@ -26,7 +26,7 @@
 
 # This type of worker can only have a count of 1, at most
 - name: Build pusher workers
-  set_fact:
+  ansible.builtin.set_fact:
     worker:
       type: 'pusher'
       instanceId: "{{ item }}"
@@ -37,7 +37,7 @@
 
 # This type of worker can only have a count of 1, at most
 - name: Build appservice workers
-  set_fact:
+  ansible.builtin.set_fact:
     worker:
       type: 'appservice'
       instanceId: "{{ item }}"
@@ -47,7 +47,7 @@
   loop: "{{ range(0, matrix_synapse_workers_appservice_workers_count|int)|list }}"
 
 - name: Build media_repository workers
-  set_fact:
+  ansible.builtin.set_fact:
     worker:
       type: 'media_repository'
       instanceId: "{{ matrix_synapse_workers_media_repository_workers_port_range_start + item }}"
@@ -57,7 +57,7 @@
   loop: "{{ range(0, matrix_synapse_workers_media_repository_workers_count|int)|list }}"
 
 - name: Build frontend_proxy workers
-  set_fact:
+  ansible.builtin.set_fact:
     worker:
       type: 'frontend_proxy'
       instanceId: "{{ matrix_synapse_workers_frontend_proxy_workers_port_range_start + item }}"
@@ -66,7 +66,7 @@
   register: "matrix_synapse_workers_list_results_frontend_proxy_workers"
   loop: "{{ range(0, matrix_synapse_workers_frontend_proxy_workers_count|int)|list }}"
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_synapse_dynamic_workers_list: "{{ matrix_synapse_dynamic_workers_list|default([]) + [item.ansible_facts.worker] }}"
   with_items: |
     {{
@@ -83,5 +83,5 @@
       matrix_synapse_workers_list_results_frontend_proxy_workers.results
     }}
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_synapse_workers_enabled_list: "{{ matrix_synapse_dynamic_workers_list }}"

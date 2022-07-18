@@ -1,12 +1,12 @@
 ---
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-prometheus-node-exporter.service'] }}"
   when: matrix_prometheus_node_exporter_enabled|bool
 
 - block:
     - name: Fail if matrix-nginx-proxy role already executed
-      fail:
+      ansible.builtin.fail:
         msg: >-
           Trying to append node-exporter's reverse-proxying configuration to matrix-nginx-proxy,
           but it's pointless since the matrix-nginx-proxy role had already executed.
@@ -15,7 +15,7 @@
       when: matrix_nginx_proxy_role_executed|default(False)|bool
 
     - name: Generate node-exporter metrics proxying configuration for matrix-nginx-proxy (matrix.DOMAIN/metrics/node-exporter)
-      set_fact:
+      ansible.builtin.set_fact:
         matrix_prometheus_node_exporter_nginx_metrics_configuration_block: |
           location /metrics/node-exporter {
             {% if matrix_nginx_proxy_enabled|default(False) %}
@@ -31,7 +31,7 @@
           }
 
     - name: Register node-exporter metrics proxying configuration with matrix-nginx-proxy (matrix.DOMAIN/metrics/node-exporter)
-      set_fact:
+      ansible.builtin.set_fact:
         matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks: |
           {{
             matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks|default([])

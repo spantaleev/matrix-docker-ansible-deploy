@@ -1,12 +1,12 @@
 ---
 
 - name: Check existence of matrix-dendrite service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-dendrite.service"
   register: matrix_dendrite_service_stat
 
 - name: Ensure matrix-dendrite is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-dendrite
     state: stopped
     daemon_reload: true
@@ -14,13 +14,13 @@
   when: "matrix_dendrite_service_stat.stat.exists"
 
 - name: Ensure matrix-dendrite.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-dendrite.service"
     state: absent
   when: "matrix_dendrite_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-dendrite.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_dendrite_service_stat.stat.exists"
 

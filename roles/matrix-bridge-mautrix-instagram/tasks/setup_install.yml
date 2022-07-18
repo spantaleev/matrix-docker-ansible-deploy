@@ -2,7 +2,7 @@
 # If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
 # We don't want to fail in such cases.
 - name: Fail if matrix-synapse role already executed
-  fail:
+  ansible.builtin.fail:
     msg: >-
       The matrix-bridge-mautrix-instagram role needs to execute before the matrix-synapse role.
   when: "matrix_synapse_role_executed|default(False)"
@@ -20,7 +20,7 @@
   until: result is not failed
 
 - name: Ensure Mautrix instagram paths exist
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     mode: 0750
@@ -34,7 +34,7 @@
   when: item.when|bool
 
 - name: Ensure Mautrix instagram repository is present on self-build
-  git:
+  ansible.builtin.git:
     repo: "{{ matrix_mautrix_instagram_container_image_self_build_repo }}"
     dest: "{{ matrix_mautrix_instagram_docker_src_files_path }}"
     force: "yes"
@@ -56,7 +56,7 @@
   when: "matrix_mautrix_instagram_container_image_self_build|bool"
 
 - name: Ensure mautrix-instagram config.yaml installed
-  copy:
+  ansible.builtin.copy:
     content: "{{ matrix_mautrix_instagram_configuration|to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_instagram_config_path }}/config.yaml"
     mode: 0644
@@ -64,7 +64,7 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure mautrix-instagram registration.yaml installed
-  copy:
+  ansible.builtin.copy:
     content: "{{ matrix_mautrix_instagram_registration|to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_instagram_config_path }}/registration.yaml"
     mode: 0644
@@ -72,13 +72,13 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-mautrix-instagram.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-instagram.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-mautrix-instagram.service"
     mode: 0644
   register: matrix_mautrix_instagram_systemd_service_result
 
 - name: Ensure systemd reloaded after matrix-mautrix-instagram.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_mautrix_instagram_systemd_service_result.changed"

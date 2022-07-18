@@ -1,10 +1,10 @@
 ---
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-mautrix-whatsapp.service'] }}"
   when: matrix_mautrix_whatsapp_enabled|bool
 
 # If the matrix-synapse role is not used, these variables may not exist.
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_synapse_container_extra_arguments: >
       {{
         matrix_synapse_container_extra_arguments|default([])

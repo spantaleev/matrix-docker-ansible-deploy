@@ -13,7 +13,7 @@
   until: result is not failed
 
 - name: Ensure Dynamic DNS paths exist
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     mode: 0751
@@ -26,7 +26,7 @@
   when: matrix_dynamic_dns_enabled|bool and item.when|bool
 
 - name: Ensure Dynamic DNS repository is present on self build
-  git:
+  ansible.builtin.git:
     repo: "{{ matrix_dynamic_dns_container_image_self_build_repo }}"
     dest: "{{ matrix_dynamic_dns_docker_src_files_path }}"
     force: "yes"
@@ -48,7 +48,7 @@
   when: "matrix_dynamic_dns_enabled|bool and matrix_dynamic_dns_container_image_self_build|bool"
 
 - name: Ensure Dynamic DNS ddclient.conf installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/ddclient.conf.j2"
     dest: "{{ matrix_dynamic_dns_config_path }}/ddclient.conf"
     mode: 0644
@@ -56,13 +56,13 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-dynamic-dns.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-dynamic-dns.service.j2"
     dest: "/etc/systemd/system/matrix-dynamic-dns.service"
     mode: 0644
   register: matrix_dynamic_dns_systemd_service_result
 
 - name: Ensure systemd reloaded after matrix-dynamic-dns.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_dynamic_dns_systemd_service_result.changed"

@@ -1,7 +1,7 @@
 ---
 
 - name: (Deprecation) Warn about ma1sd variables that are not used anymore
-  fail:
+  ansible.builtin.fail:
     msg: >
       The `{{ item }}` variable defined in your configuration is not used by this playbook anymore!
       You'll need to adapt to the new way of extending ma1sd configuration.
@@ -31,7 +31,7 @@
     - 'matrix_ma1sd_architecture'
 
 - name: Ensure ma1sd configuration does not contain any dot-notation keys
-  fail:
+  ansible.builtin.fail:
     msg: >
       Since version 1.3.0, ma1sd will not accept property-style configuration keys.
       You have defined a key (`{{ item.key }}`) which contains a dot.
@@ -40,7 +40,7 @@
   with_dict: "{{ matrix_ma1sd_configuration }}"
 
 - name: Fail if required ma1sd settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >
       You need to define a required configuration setting (`{{ item }}`) for using ma1sd.
   when: "vars[item] == ''"
@@ -49,7 +49,7 @@
     - "matrix_ma1sd_dns_overwrite_homeserver_client_value"
 
 - name: (Deprecation) Catch and report renamed ma1sd variables
-  fail:
+  ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
@@ -60,7 +60,7 @@
     - {'old': 'matrix_ma1sd_default_port', 'new': 'matrix_ma1sd_container_port'}
 
 - name: (Deprecation) Catch and report mxisd variables
-  fail:
+  ansible.builtin.fail:
     msg: >-
       mxisd is deprecated and has been replaced with ma1sd (https://github.com/ma1uta/ma1sd), a compatible fork.
       The playbook will migrate your existing mxisd configuration and data automatically, but you need to adjust variable names.

@@ -15,7 +15,7 @@
 #
 
 - name: Ensure Jitsi internal authentication users are configured
-  shell: "docker exec matrix-jitsi-prosody prosodyctl --config /config/prosody.cfg.lua register {{ item.username | quote }} meet.jitsi {{ item.password | quote }}"
+  ansible.builtin.shell: "docker exec matrix-jitsi-prosody prosodyctl --config /config/prosody.cfg.lua register {{ item.username | quote }} meet.jitsi {{ item.password | quote }}"
   with_items: "{{ matrix_jitsi_prosody_auth_internal_accounts }}"
   when:
     - matrix_jitsi_auth_type == "internal"
