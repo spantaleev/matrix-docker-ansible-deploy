@@ -1,7 +1,7 @@
 ---
 
 - name: Ensure Hydrogen paths exists
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     mode: 0750
@@ -25,7 +25,7 @@
   until: result is not failed
 
 - name: Ensure Hydrogen repository is present on self-build
-  git:
+  ansible.builtin.git:
     repo: "{{ matrix_client_hydrogen_container_image_self_build_repo }}"
     dest: "{{ matrix_client_hydrogen_docker_src_files_path }}"
     version: "{{ matrix_client_hydrogen_docker_image.split(':')[1] }}"
@@ -36,7 +36,7 @@
   when: "matrix_client_hydrogen_container_image_self_build|bool"
 
 - name: Ensure Hydrogen configuration installed
-  copy:
+  ansible.builtin.copy:
     content: "{{ matrix_client_hydrogen_configuration|to_nice_json }}"
     dest: "{{ matrix_client_hydrogen_docker_src_files_path }}/src/platform/web/assets/config.json"
     mode: 0644
@@ -45,7 +45,7 @@
   when: "matrix_client_hydrogen_container_image_self_build|bool"
 
 - name: Ensure Hydrogen additional config files installed
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ matrix_client_hydrogen_data_path }}/{{ item.name }}"
     mode: 0644
@@ -69,13 +69,13 @@
   when: "matrix_client_hydrogen_container_image_self_build|bool"
 
 - name: Ensure matrix-client-hydrogen.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-client-hydrogen.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-client-hydrogen.service"
     mode: 0644
   register: matrix_client_hydrogen_systemd_service_result
 
 - name: Ensure systemd reloaded after matrix-client-hydrogen.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_client_hydrogen_systemd_service_result.changed|bool"

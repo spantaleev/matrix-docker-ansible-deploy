@@ -6,7 +6,7 @@
   register: matrix_bot_matrix_reminder_bot_service_stat
 
 - name: Ensure matrix-matrix-reminder-bot is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-bot-matrix-reminder-bot
     state: stopped
     enabled: false
@@ -15,18 +15,18 @@
   when: "matrix_bot_matrix_reminder_bot_service_stat.stat.exists|bool"
 
 - name: Ensure matrix-bot-matrix-reminder-bot.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-bot-matrix-reminder-bot.service"
     state: absent
   when: "matrix_bot_matrix_reminder_bot_service_stat.stat.exists|bool"
 
 - name: Ensure systemd reloaded after matrix-bot-matrix-reminder-bot.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_bot_matrix_reminder_bot_service_stat.stat.exists|bool"
 
 - name: Ensure Matrix matrix-reminder-bot paths don't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_bot_matrix_reminder_bot_base_path }}"
     state: absent
 

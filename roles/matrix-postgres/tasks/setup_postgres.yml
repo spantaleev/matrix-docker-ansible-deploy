@@ -14,17 +14,17 @@
 # If not, we install using the latest Postgres.
 #
 # Upgrading is supposed to be performed separately and explicitly (see `upgrade_postgres.yml`).
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_postgres_docker_image_to_use: "{{ matrix_postgres_docker_image_latest if matrix_postgres_detected_version_corresponding_docker_image == '' else matrix_postgres_detected_version_corresponding_docker_image }}"
   when: matrix_postgres_enabled|bool
 
 - name: Abort if on an unsupported Postgres version
-  fail:
+  ansible.builtin.fail:
     msg: "You're on Postgres {{ matrix_postgres_detected_version }}, which is no longer supported. To upgrade, see docs/maintenance-postgres.md"
   when: "matrix_postgres_enabled|bool and matrix_postgres_detected_version.startswith('9.')"
 
 - name: Inject warning if on an old version of Postgres
-  set_fact:
+  ansible.builtin.set_fact:
     matrix_playbook_runtime_results: |
       {{
         matrix_playbook_runtime_results|default([])
@@ -49,7 +49,7 @@
   until: result is not failed
 
 - name: Ensure Postgres paths exist
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: 0700
@@ -64,7 +64,7 @@
 # - we'd like to do it for the data path only, not for the base path (which contains root-owned environment variable files we'd like to leave as-is)
 # - we need to do it without `mode`, or we risk making certain `.conf` and other files's executable bit to flip to true
 - name: Ensure Postgres data path ownership is correct
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_postgres_data_path }}"
     state: directory
     owner: "{{ matrix_user_username }}"
@@ -73,7 +73,7 @@
   when: matrix_postgres_enabled|bool
 
 - name: Ensure Postgres environment variables file created
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_postgres_base_path }}/{{ item }}"
     owner: "{{ matrix_user_username }}"
@@ -85,41 +85,41 @@
   when: matrix_postgres_enabled|bool
 
 - name: Ensure matrix-postgres-cli script created
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/usr-local-bin/matrix-postgres-cli.j2"
     dest: "{{ matrix_local_bin_path }}/matrix-postgres-cli"
     mode: 0755
   when: matrix_postgres_enabled|bool
 
 - name: Ensure matrix-postgres-cli-non-interactive script created
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/usr-local-bin/matrix-postgres-cli-non-interactive.j2"
     dest: "{{ matrix_local_bin_path }}/matrix-postgres-cli-non-interactive"
     mode: 0755
   when: matrix_postgres_enabled|bool
 
 - name: Ensure matrix-change-user-admin-status script created
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/usr-local-bin/matrix-change-user-admin-status.j2"
     dest: "{{ matrix_local_bin_path }}/matrix-change-user-admin-status"
     mode: 0755
   when: matrix_postgres_enabled|bool
 
 - name: (Migration) Ensure old matrix-make-user-admin script deleted
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_local_bin_path }}/matrix-make-user-admin"
     state: absent
   when: matrix_postgres_enabled|bool
 
 - name: Ensure matrix-postgres-update-user-password-hash script created
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/usr-local-bin/matrix-postgres-update-user-password-hash.j2"
     dest: "{{ matrix_local_bin_path }}/matrix-postgres-update-user-password-hash"
     mode: 0755
   when: matrix_postgres_enabled|bool
 
 - name: Ensure matrix-postgres.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-postgres.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-postgres.service"
     mode: 0644
@@ -127,12 +127,12 @@
   when: matrix_postgres_enabled|bool
 
 - name: Ensure systemd reloaded after matrix-postgres.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_postgres_enabled|bool and matrix_postgres_systemd_service_result.changed"
 
 - include_tasks:
-    file: "{{ role_path }}/tasks/util/create_additional_databases.yml"
+    ansible.builtin.file: "{{ role_path }}/tasks/util/create_additional_databases.yml"
     apply:
       tags:
         - always
@@ -145,7 +145,7 @@
   when: "matrix_postgres_enabled|bool"
 
 - name: Inject warning if backup data remains
-  set_fact:
+  ansible.builtin.set_fact:
     matrix_playbook_runtime_results: |
       {{
         matrix_playbook_runtime_results|default([])
@@ -168,20 +168,20 @@
   when: "not matrix_postgres_enabled|bool"
 
 - name: Ensure matrix-postgres is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-postgres
     state: stopped
     daemon_reload: true
   when: "not matrix_postgres_enabled|bool and matrix_postgres_service_stat.stat.exists"
 
 - name: Ensure matrix-postgres.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-postgres.service"
     state: absent
   when: "not matrix_postgres_enabled|bool and matrix_postgres_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-postgres.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "not matrix_postgres_enabled|bool and matrix_postgres_service_stat.stat.exists"
 
@@ -193,7 +193,7 @@
 
 # We just want to notify the user. Deleting data is too destructive.
 - name: Inject warning if matrix-postgres local data remains
-  set_fact:
+  ansible.builtin.set_fact:
     matrix_playbook_runtime_results: |
       {{
         matrix_playbook_runtime_results|default([])
@@ -205,7 +205,7 @@
   when: "not matrix_postgres_enabled|bool and matrix_postgres_data_path_stat.stat.exists"
 
 - name: Remove Postgres scripts
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_local_bin_path }}/{{ item }}"
     state: absent
   with_items:

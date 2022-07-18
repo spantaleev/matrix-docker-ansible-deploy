@@ -6,7 +6,7 @@
   register: matrix_dynamic_dns_service_stat
 
 - name: Ensure matrix-dynamic-dns is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-dynamic-dns
     state: stopped
     enabled: false
@@ -14,13 +14,13 @@
   when: "matrix_dynamic_dns_service_stat.stat.exists"
 
 - name: Ensure matrix-dynamic-dns.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-dynamic-dns.service"
     state: absent
   when: "matrix_dynamic_dns_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-dynamic-dns.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_dynamic_dns_service_stat.stat.exists"
 

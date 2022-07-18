@@ -3,12 +3,12 @@
 # Pre-checks
 
 - name: Fail if Postgres not enabled
-  fail:
+  ansible.builtin.fail:
     msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot import."
   when: "not matrix_postgres_enabled|bool"
 
 - name: Fail if playbook called incorrectly
-  fail:
+  ansible.builtin.fail:
     msg: "The `server_path_homeserver_db` variable needs to be provided to this playbook, via --extra-vars"
   when: "server_path_homeserver_db is not defined or server_path_homeserver_db.startswith('<')"
 
@@ -18,7 +18,7 @@
   register: result_server_path_homeserver_db_stat
 
 - name: Fail if provided SQLite homeserver.db file doesn't exist
-  fail:
+  ansible.builtin.fail:
     msg: "File cannot be found on the server at {{ server_path_homeserver_db }}"
   when: "not result_server_path_homeserver_db_stat.stat.exists"
 
@@ -26,7 +26,7 @@
 # Defaults
 
 - name: Set postgres_start_wait_time, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_start_wait_time: 15
   when: "postgres_start_wait_time|default('') == ''"
 
@@ -34,18 +34,18 @@
 # Actual import work
 
 - name: Ensure matrix-postgres is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-postgres
     state: stopped
     daemon_reload: true
 
 - name: Ensure postgres data is wiped out
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_postgres_data_path }}"
     state: absent
 
 - name: Ensure postgres data path exists
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_postgres_data_path }}"
     state: directory
     mode: 0700
@@ -53,7 +53,7 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-postgres is started
-  service:
+  ansible.builtin.service:
     name: matrix-postgres
     state: restarted
     daemon_reload: true
@@ -70,7 +70,7 @@
 # Also, some old `docker_container` versions were buggy and would leave containers behind
 # on failure, which we had to work around to allow retries (by re-running the playbook).
 - name: Import SQLite database into Postgres
-  command: |
+  ansible.builtin.command: |
     docker run
     --rm
     --name=matrix-synapse-migrate

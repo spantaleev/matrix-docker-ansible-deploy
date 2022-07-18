@@ -17,7 +17,7 @@
   until: result is not failed
 
 - name: Ensure matrix-synapse-admin repository is present when self-building
-  git:
+  ansible.builtin.git:
     repo: "{{ matrix_synapse_admin_container_image_self_build_repo }}"
     dest: "{{ matrix_synapse_admin_docker_src_files_path }}"
     version: "{{ matrix_synapse_admin_docker_image.split(':')[1] }}"
@@ -40,7 +40,7 @@
   when: "matrix_synapse_admin_enabled|bool and matrix_synapse_admin_container_image_self_build|bool"
 
 - name: Ensure matrix-synapse-admin.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-synapse-admin.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-synapse-admin.service"
     mode: 0644
@@ -48,7 +48,7 @@
   when: matrix_synapse_admin_enabled|bool
 
 - name: Ensure systemd reloaded after matrix-synapse-admin.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_synapse_admin_enabled|bool and matrix_synapse_admin_systemd_service_result.changed"
 
@@ -62,7 +62,7 @@
   register: matrix_synapse_admin_service_stat
 
 - name: Ensure matrix-synapse-admin is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-synapse-admin
     state: stopped
     enabled: false
@@ -71,13 +71,13 @@
   when: "not matrix_synapse_admin_enabled|bool and matrix_synapse_admin_service_stat.stat.exists"
 
 - name: Ensure matrix-synapse-admin.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-synapse-admin.service"
     state: absent
   when: "not matrix_synapse_admin_enabled|bool and matrix_synapse_admin_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-synapse-admin.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "not matrix_synapse_admin_enabled|bool and matrix_synapse_admin_service_stat.stat.exists"
 

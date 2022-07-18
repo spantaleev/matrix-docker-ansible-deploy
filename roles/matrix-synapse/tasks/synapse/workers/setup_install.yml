@@ -9,7 +9,7 @@
 
 # This also deletes some things which we need. They will be recreated below.
 - name: Ensure previous worker configs are cleaned
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: absent
   with_items: "{{ matrix_synapse_workers_current_config_files.files }}"
@@ -22,7 +22,7 @@
   register: matrix_synapse_workers_current_systemd_services
 
 - name: Ensure unnecessary worker systemd services are stopped and disabled
-  service:
+  ansible.builtin.service:
     name: "{{ item.path|basename }}"
     state: stopped
     enabled: false
@@ -30,7 +30,7 @@
   when: "not ansible_check_mode and item.path|basename not in matrix_systemd_services_list"
 
 - name: Ensure unnecessary worker systemd services are cleaned
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: absent
   with_items: "{{ matrix_synapse_workers_current_systemd_services.files }}"

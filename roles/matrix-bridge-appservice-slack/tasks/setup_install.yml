@@ -1,7 +1,7 @@
 ---
 
 - name: Ensure AppService Slack paths exist
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     mode: 0750
@@ -14,7 +14,7 @@
     - {path: "{{ matrix_appservice_slack_docker_src_files_path }}", when: "{{ matrix_appservice_slack_container_image_self_build }}"}
   when: item.when|bool
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_appservice_slack_requires_restart: false
 
 - block:
@@ -26,7 +26,7 @@
     - block:
         - import_tasks: "{{ role_path }}/tasks/migrate_nedb_to_postgres.yml"
 
-        - set_fact:
+        - ansible.builtin.set_fact:
             matrix_appservice_slack_requires_restart: true
       when: "matrix_appservice_slack_nedb_database_path_local_stat_result.stat.exists|bool"
   when: "matrix_appservice_slack_database_engine == 'postgres'"
@@ -44,7 +44,7 @@
   until: result is not failed
 
 - name: Ensure matrix-appservice-slack repository is present when self-building
-  git:
+  ansible.builtin.git:
     repo: "{{ matrix_appservice_slack_docker_repo }}"
     dest: "{{ matrix_appservice_slack_docker_src_files_path }}"
     force: "yes"
@@ -66,7 +66,7 @@
   when: "matrix_appservice_slack_container_image_self_build|bool and matrix_appservice_slack_git_pull_results.changed"
 
 - name: Ensure Matrix Appservice Slack config installed
-  copy:
+  ansible.builtin.copy:
     content: "{{ matrix_appservice_slack_configuration|to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_slack_config_path }}/config.yaml"
     mode: 0644
@@ -74,7 +74,7 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure appservice-slack registration.yaml installed
-  copy:
+  ansible.builtin.copy:
     content: "{{ matrix_appservice_slack_registration|to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_slack_config_path }}/slack-registration.yaml"
     mode: 0644
@@ -82,19 +82,19 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-appservice-slack.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-appservice-slack.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-appservice-slack.service"
     mode: 0644
   register: matrix_appservice_slack_systemd_service_result
 
 - name: Ensure systemd reloaded after matrix-appservice-slack.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_appservice_slack_systemd_service_result.changed"
 
 - name: Ensure matrix-appservice-slack.service restarted, if necessary
-  service:
+  ansible.builtin.service:
     name: "matrix-appservice-slack.service"
     state: restarted
   when: "matrix_appservice_slack_requires_restart|bool"

@@ -5,7 +5,7 @@
 #
 
 - name: Ensure Matrix jitsi-jicofo path exists
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     mode: 0777
@@ -29,7 +29,7 @@
   until: result is not failed
 
 - name: Ensure jitsi-jicofo environment variables file created
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/jicofo/env.j2"
     dest: "{{ matrix_jitsi_jicofo_base_path }}/env"
     owner: "{{ matrix_user_username }}"
@@ -38,7 +38,7 @@
   when: matrix_jitsi_enabled|bool
 
 - name: Ensure jitsi-jicofo configuration files created
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/jicofo/{{ item }}.j2"
     dest: "{{ matrix_jitsi_jicofo_config_path }}/{{ item }}"
     owner: "{{ matrix_user_username }}"
@@ -50,7 +50,7 @@
   when: matrix_jitsi_enabled|bool
 
 - name: Ensure matrix-jitsi-jicofo.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/jicofo/matrix-jitsi-jicofo.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-jitsi-jicofo.service"
     mode: 0644
@@ -58,7 +58,7 @@
   when: matrix_jitsi_enabled|bool
 
 - name: Ensure systemd reloaded after matrix-jitsi-jicofo.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_jitsi_enabled and matrix_jitsi_jicofo_systemd_service_result.changed"
 
@@ -73,7 +73,7 @@
   when: "not matrix_jitsi_enabled|bool"
 
 - name: Ensure matrix-jitsi-jicofo is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-jitsi-jicofo
     state: stopped
     enabled: false
@@ -82,18 +82,18 @@
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_jicofo_service_stat.stat.exists"
 
 - name: Ensure matrix-jitsi-jicofo.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-jitsi-jicofo.service"
     state: absent
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_jicofo_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-jitsi-jicofo.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_jicofo_service_stat.stat.exists"
 
 - name: Ensure Matrix jitsi-jicofo paths doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_jitsi_jicofo_base_path }}"
     state: absent
   when: "not matrix_jitsi_enabled|bool"

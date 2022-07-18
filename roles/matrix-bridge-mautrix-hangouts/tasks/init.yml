@@ -2,16 +2,16 @@
 # See https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1070
 # and https://github.com/spantaleev/matrix-docker-ansible-deploy/commit/1ab507349c752042d26def3e95884f6df8886b74#commitcomment-51108407
 - name: Fail if trying to self-build on Ansible < 2.8
-  fail:
+  ansible.builtin.fail:
     msg: "To self-build the Element image, you should use Ansible 2.8 or higher. See docs/ansible.md"
   when: "ansible_version.major == 2 and ansible_version.minor < 8 and matrix_mautrix_hangouts_container_image_self_build and matrix_mautrix_hangouts_enabled"
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-mautrix-hangouts.service'] }}"
   when: matrix_mautrix_hangouts_enabled|bool
 
 # If the matrix-synapse role is not used, these variables may not exist.
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_synapse_container_extra_arguments: >
       {{
         matrix_synapse_container_extra_arguments|default([])
@@ -29,7 +29,7 @@
 
 - block:
     - name: Fail if matrix-nginx-proxy role already executed
-      fail:
+      ansible.builtin.fail:
         msg: >-
           Trying to append Mautrix Hangouts's reverse-proxying configuration to matrix-nginx-proxy,
           but it's pointless since the matrix-nginx-proxy role had already executed.
@@ -38,7 +38,7 @@
       when: matrix_nginx_proxy_role_executed|default(False)|bool
 
     - name: Generate Mautrix Hangouts proxying configuration for matrix-nginx-proxy
-      set_fact:
+      ansible.builtin.set_fact:
         matrix_mautrix_hangouts_matrix_nginx_proxy_configuration: |
           location {{ matrix_mautrix_hangouts_public_endpoint }} {
           {% if matrix_nginx_proxy_enabled|default(False) %}
@@ -52,7 +52,7 @@
           {% endif %}
           }
     - name: Register Mautrix Hangouts proxying configuration with matrix-nginx-proxy
-      set_fact:
+      ansible.builtin.set_fact:
         matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: |
           {{
             matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks|default([])
@@ -64,7 +64,7 @@
   when: matrix_mautrix_hangouts_enabled|bool
 
 - name: Warn about reverse-proxying if matrix-nginx-proxy not used
-  debug:
+  ansible.builtin.debug:
     msg: >-
       NOTE: You've enabled the Mautrix Hangouts bridge but are not using the matrix-nginx-proxy
       reverse proxy.

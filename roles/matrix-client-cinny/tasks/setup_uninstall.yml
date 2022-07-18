@@ -5,7 +5,7 @@
   register: matrix_client_cinny_service_stat
 
 - name: Ensure matrix-client-cinny is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-client-cinny
     state: stopped
     enabled: false
@@ -14,18 +14,18 @@
   when: "matrix_client_cinny_service_stat.stat.exists|bool"
 
 - name: Ensure matrix-client-cinny.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-client-cinny.service"
     state: absent
   when: "matrix_client_cinny_service_stat.stat.exists|bool"
 
 - name: Ensure systemd reloaded after matrix-client-cinny.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_client_cinny_service_stat.stat.exists|bool"
 
 - name: Ensure Cinny paths doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_client_cinny_data_path }}"
     state: absent
 

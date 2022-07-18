@@ -6,7 +6,7 @@
   register: matrix_bot_buscarron_service_stat
 
 - name: Ensure matrix-buscarron is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-bot-buscarron
     state: stopped
     enabled: false
@@ -15,18 +15,18 @@
   when: "matrix_bot_buscarron_service_stat.stat.exists|bool"
 
 - name: Ensure matrix-bot-buscarron.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-bot-buscarron.service"
     state: absent
   when: "matrix_bot_buscarron_service_stat.stat.exists|bool"
 
 - name: Ensure systemd reloaded after matrix-bot-buscarron.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_bot_buscarron_service_stat.stat.exists|bool"
 
 - name: Ensure Matrix buscarron paths don't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_bot_buscarron_base_path }}"
     state: absent
 

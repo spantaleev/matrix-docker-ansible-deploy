@@ -12,7 +12,7 @@
 - block:
   # ansible_lsb is only available if lsb-release is installed.
   - name: Ensure lsb-release installed
-    apt:
+    ansible.builtin.apt:
       name:
         - lsb-release
       state: present
@@ -34,13 +34,13 @@
   when: ansible_distribution == 'Archlinux'
 
 - name: Ensure Docker is started and autoruns
-  service:
+  ansible.builtin.service:
     name: docker
     state: started
     enabled: true
 
 - name: "Ensure {{ matrix_ntpd_service }} is started and autoruns"
-  service:
+  ansible.builtin.service:
     name: "{{ matrix_ntpd_service }}"
     state: started
     enabled: true

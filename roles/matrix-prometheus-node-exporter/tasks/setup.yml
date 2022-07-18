@@ -17,7 +17,7 @@
   until: result is not failed
 
 - name: Ensure matrix-prometheus-node-exporter.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-prometheus-node-exporter.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-prometheus-node-exporter.service"
     mode: 0644
@@ -25,7 +25,7 @@
   when: matrix_prometheus_node_exporter_enabled|bool
 
 - name: Ensure systemd reloaded after matrix-prometheus.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_prometheus_node_exporter_enabled|bool and matrix_prometheus_node_exporter_systemd_service_result.changed"
 
@@ -39,7 +39,7 @@
   register: matrix_prometheus_node_exporter_service_stat
 
 - name: Ensure matrix-prometheus-node-exporter is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-prometheus-node-exporter
     state: stopped
     enabled: false
@@ -48,12 +48,12 @@
   when: "not matrix_prometheus_node_exporter_enabled|bool and matrix_prometheus_node_exporter_service_stat.stat.exists"
 
 - name: Ensure matrix-prometheus-node-exporter.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-prometheus-node-exporter.service"
     state: absent
   when: "not matrix_prometheus_node_exporter_enabled|bool and matrix_prometheus_node_exporter_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-prometheus-node-exporter.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "not matrix_prometheus_node_exporter_enabled|bool and matrix_prometheus_node_exporter_service_stat.stat.exists"

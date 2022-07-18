@@ -3,12 +3,12 @@
 # If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
 # We don't want to fail in such cases.
 - name: Fail if matrix-synapse role already executed
-  fail:
+  ansible.builtin.fail:
     msg: >-
       The matrix-bridge-mautrix-telegram role needs to execute before the matrix-synapse role.
   when: "matrix_synapse_role_executed|default(False)"
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_mautrix_telegram_requires_restart: false
 
 - block:
@@ -18,7 +18,7 @@
       register: matrix_mautrix_telegram_sqlite_database_path_local_stat_result
 
     - block:
-        - set_fact:
+        - ansible.builtin.set_fact:
             matrix_postgres_db_migration_request:
               src: "{{ matrix_mautrix_telegram_sqlite_database_path_local }}"
               dst: "{{ matrix_mautrix_telegram_database_connection_string }}"
@@ -29,13 +29,13 @@
 
         - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
 
-        - set_fact:
+        - ansible.builtin.set_fact:
             matrix_mautrix_telegram_requires_restart: true
       when: "matrix_mautrix_telegram_sqlite_database_path_local_stat_result.stat.exists|bool"
   when: "matrix_mautrix_telegram_database_engine == 'postgres'"
 
 - name: Ensure Mautrix Telegram paths exist
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     mode: 0750
@@ -61,7 +61,7 @@
   until: result is not failed
 
 - name: Ensure lottieconverter is present when self-building
-  git:
+  ansible.builtin.git:
     repo: "{{ matrix_telegram_lottieconverter_docker_repo }}"
     dest: "{{ matrix_telegram_lottieconverter_docker_src_files_path }}"
     force: "yes"
@@ -83,7 +83,7 @@
   when: "matrix_telegram_lottieconverter_container_image_self_build|bool and matrix_telegram_lottieconverter_git_pull_results.changed and matrix_mautrix_telegram_container_image_self_build|bool"
 
 - name: Ensure matrix-mautrix-telegram repository is present when self-building
-  git:
+  ansible.builtin.git:
     repo: "{{ matrix_mautrix_telegram_docker_repo }}"
     dest: "{{ matrix_mautrix_telegram_docker_src_files_path }}"
     force: "yes"
@@ -112,7 +112,7 @@
   register: matrix_mautrix_telegram_stat_database
 
 - name: (Data relocation) Ensure matrix-mautrix-telegram.service is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-mautrix-telegram
     state: stopped
     enabled: false
@@ -121,11 +121,11 @@
   when: "matrix_mautrix_telegram_stat_database.stat.exists"
 
 - name: (Data relocation) Move mautrix-telegram database file to ./data directory
-  command: "mv {{ matrix_mautrix_telegram_base_path }}/mautrix-telegram.db {{ matrix_mautrix_telegram_data_path }}/mautrix-telegram.db"
+  ansible.builtin.command: "mv {{ matrix_mautrix_telegram_base_path }}/mautrix-telegram.db {{ matrix_mautrix_telegram_data_path }}/mautrix-telegram.db"
   when: "matrix_mautrix_telegram_stat_database.stat.exists"
 
 - name: Ensure mautrix-telegram config.yaml installed
-  copy:
+  ansible.builtin.copy:
     content: "{{ matrix_mautrix_telegram_configuration|to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_telegram_config_path }}/config.yaml"
     mode: 0644
@@ -133,7 +133,7 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure mautrix-telegram registration.yaml installed
-  copy:
+  ansible.builtin.copy:
     content: "{{ matrix_mautrix_telegram_registration|to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_telegram_config_path }}/registration.yaml"
     mode: 0644
@@ -141,19 +141,19 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-mautrix-telegram.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-telegram.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-mautrix-telegram.service"
     mode: 0644
   register: matrix_mautrix_telegram_systemd_service_result
 
 - name: Ensure systemd reloaded after matrix-mautrix-telegram.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_mautrix_telegram_systemd_service_result.changed"
 
 - name: Ensure matrix-mautrix-telegram.service restarted, if necessary
-  service:
+  ansible.builtin.service:
     name: "matrix-mautrix-telegram.service"
     state: restarted
   when: "matrix_mautrix_telegram_requires_restart|bool"

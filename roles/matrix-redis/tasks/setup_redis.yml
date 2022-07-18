@@ -17,7 +17,7 @@
   until: result is not failed
 
 - name: Ensure redis paths exist
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: 0700
@@ -32,7 +32,7 @@
 # - we'd like to do it for the data path only, not for the base path (which contains root-owned environment variable files we'd like to leave as-is)
 # - we need to do it without `mode`, or we risk making certain `.conf` and other files's executable bit to flip to true
 - name: Ensure redis data path ownership is correct
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_redis_data_path }}"
     state: directory
     owner: "{{ matrix_user_username }}"
@@ -41,7 +41,7 @@
   when: matrix_redis_enabled|bool
 
 - name: Ensure redis environment variables file created
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_redis_base_path }}/{{ item }}"
     mode: 0644
@@ -50,7 +50,7 @@
   when: matrix_redis_enabled|bool
 
 - name: Ensure matrix-redis.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-redis.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-redis.service"
     mode: 0644
@@ -58,7 +58,7 @@
   when: matrix_redis_enabled|bool
 
 - name: Ensure systemd reloaded after matrix-redis.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_redis_enabled|bool and matrix_redis_systemd_service_result.changed"
 
@@ -73,7 +73,7 @@
   when: "not matrix_redis_enabled|bool"
 
 - name: Ensure matrix-redis is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-redis
     state: stopped
     enabled: false
@@ -81,13 +81,13 @@
   when: "not matrix_redis_enabled|bool and matrix_redis_service_stat.stat.exists"
 
 - name: Ensure matrix-redis.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-redis.service"
     state: absent
   when: "not matrix_redis_enabled|bool and matrix_redis_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-redis.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "not matrix_redis_enabled|bool and matrix_redis_service_stat.stat.exists"
 
@@ -99,6 +99,6 @@
 
 # We just want to notify the user. Deleting data is too destructive.
 - name: Notify if matrix-redis local data remains
-  debug:
+  ansible.builtin.debug:
     msg: "Note: You are not using a local redis instance, but some old data remains from before in `{{ matrix_redis_data_path }}`. Feel free to delete it."
   when: "not matrix_redis_enabled|bool and matrix_redis_data_path_stat.stat.exists"

@@ -4,7 +4,7 @@
   service_facts:
 
 - name: Ensure any worker services are stopped
-  service:
+  ansible.builtin.service:
     name: "{{ item.key }}"
     state: stopped
   with_dict: "{{ ansible_facts.services|default({})|dict2items|selectattr('key', 'match', 'matrix-synapse-worker-.+\\.service')|list|items2dict }}"
@@ -18,7 +18,7 @@
   register: matrix_synapse_workers_current_config_files
 
 - name: Ensure previous worker configs are cleaned
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: absent
   with_items: "{{ matrix_synapse_workers_current_config_files.files }}"
@@ -31,7 +31,7 @@
   register: matrix_synapse_workers_current_systemd_services
 
 - name: Ensure previous worker systemd services are cleaned
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: absent
   with_items: "{{ matrix_synapse_workers_current_systemd_services.files }}"

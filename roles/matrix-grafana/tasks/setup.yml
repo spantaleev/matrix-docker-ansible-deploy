@@ -17,7 +17,7 @@
   until: result is not failed
 
 - name: Ensure grafana paths exists
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: 0750
@@ -34,7 +34,7 @@
   when: matrix_grafana_enabled|bool
 
 - name: Ensure grafana.ini present
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/grafana.ini.j2"
     dest: "{{ matrix_grafana_config_path }}/grafana.ini"
     mode: 0440
@@ -43,7 +43,7 @@
   when: matrix_grafana_enabled|bool
 
 - name: Ensure provisioning/datasources/default.yaml present
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/datasources.yaml.j2"
     dest: "{{ matrix_grafana_config_path }}/provisioning/datasources/default.yaml"
     mode: 0440
@@ -52,7 +52,7 @@
   when: matrix_grafana_enabled|bool
 
 - name: Ensure provisioning/dashboards/default.yaml present
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/dashboards.yaml.j2"
     dest: "{{ matrix_grafana_config_path }}/provisioning/dashboards/default.yaml"
     mode: 0440
@@ -61,7 +61,7 @@
   when: matrix_grafana_enabled|bool
 
 - name: Ensure dashboard(s) downloaded
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ item }}"
     dest: "{{ matrix_grafana_config_path }}/dashboards/"
     force: true
@@ -76,7 +76,7 @@
   until: result is not failed
 
 - name: Ensure matrix-grafana.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-grafana.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-grafana.service"
     mode: 0644
@@ -84,7 +84,7 @@
   when: matrix_grafana_enabled|bool
 
 - name: Ensure systemd reloaded after matrix-grafana.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_grafana_enabled|bool and matrix_grafana_systemd_service_result.changed"
 
@@ -98,7 +98,7 @@
   register: matrix_grafana_service_stat
 
 - name: Ensure matrix-grafana is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-grafana
     state: stopped
     enabled: false
@@ -107,12 +107,12 @@
   when: "not matrix_grafana_enabled|bool and matrix_grafana_service_stat.stat.exists"
 
 - name: Ensure matrix-grafana.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-grafana.service"
     state: absent
   when: "not matrix_grafana_enabled|bool and matrix_grafana_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-grafana.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "not matrix_grafana_enabled|bool and matrix_grafana_service_stat.stat.exists"

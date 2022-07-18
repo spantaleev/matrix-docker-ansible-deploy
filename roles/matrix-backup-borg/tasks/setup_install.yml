@@ -3,17 +3,17 @@
   - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/detect_existing_postgres_version.yml"
 
   - name: Fail if detected Postgres version is unsupported
-    fail:
+    ansible.builtin.fail:
       msg: "You cannot use borg backup with such an old version ({{ matrix_postgres_detected_version }}) of Postgres. Consider upgrading - link to docs for upgrading Postgres: docs/maintenance-postgres.md#upgrading-postgresql"
     when: "matrix_postgres_detected_version not in matrix_backup_borg_supported_postgres_versions"
 
   - name: Set the correct borg backup version to use
-    set_fact:
+    ansible.builtin.set_fact:
       matrix_backup_borg_version: "{{ matrix_postgres_detected_version }}"
   when: matrix_backup_borg_postgresql_enabled|bool and matrix_backup_borg_version == ''
 
 - name: Ensure borg paths exist
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     mode: 0750
@@ -25,7 +25,7 @@
   when: "item.when|bool"
 
 - name: Ensure borgmatic config is created
-  copy:
+  ansible.builtin.copy:
     content: "{{ matrix_backup_borg_configuration|to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_backup_borg_config_path }}/config.yaml"
     owner: "{{ matrix_user_username }}"
@@ -33,7 +33,7 @@
     mode: 0640
 
 - name: Ensure borg passwd is created
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/passwd.j2"
     dest: "{{ matrix_backup_borg_config_path }}/passwd"
     owner: "{{ matrix_user_username }}"
@@ -41,7 +41,7 @@
     mode: 0640
 
 - name: Ensure borg ssh key is created
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/sshkey.j2"
     dest: "{{ matrix_backup_borg_config_path }}/sshkey"
     owner: "{{ matrix_user_username }}"
@@ -61,7 +61,7 @@
   until: result is not failed
 
 - name: Ensure borg repository is present on self-build
-  git:
+  ansible.builtin.git:
     repo: "{{ matrix_backup_borg_docker_repo }}"
     dest: "{{ matrix_backup_borg_docker_src_files_path }}"
     force: "yes"
@@ -83,30 +83,30 @@
   when: "matrix_backup_borg_container_image_self_build|bool"
 
 - name: Ensure matrix-backup-borg.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-backup-borg.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-backup-borg.service"
     mode: 0644
   register: matrix_backup_borg_systemd_service_result
 
 - name: Ensure matrix-backup-borg.timer installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-backup-borg.timer.j2"
     dest: "{{ matrix_systemd_path }}/matrix-backup-borg.timer"
     mode: 0644
   register: matrix_backup_borg_systemd_timer_result
 
 - name: Ensure systemd reloaded after matrix-backup-borg.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_backup_borg_systemd_service_result.changed|bool"
 
 - name: Ensure matrix-backup-borg.service enabled
-  service:
+  ansible.builtin.service:
     enabled: true
     name: matrix-backup-borg.service
 
 - name: Ensure matrix-backup-borg.timer enabled
-  service:
+  ansible.builtin.service:
     enabled: true
     name: matrix-backup-borg.timer

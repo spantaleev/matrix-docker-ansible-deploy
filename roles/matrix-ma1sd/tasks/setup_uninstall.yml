@@ -6,7 +6,7 @@
   register: matrix_ma1sd_service_stat
 
 - name: Ensure matrix-ma1sd is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-ma1sd
     state: stopped
     enabled: false
@@ -15,18 +15,18 @@
   when: "matrix_ma1sd_service_stat.stat.exists|bool"
 
 - name: Ensure matrix-ma1sd.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-ma1sd.service"
     state: absent
   when: "matrix_ma1sd_service_stat.stat.exists|bool"
 
 - name: Ensure systemd reloaded after matrix-ma1sd.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_ma1sd_service_stat.stat.exists|bool"
 
 - name: Ensure Matrix ma1sd paths don't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_ma1sd_base_path }}"
     state: absent
 

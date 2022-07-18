@@ -1,6 +1,6 @@
 ---
 - name: Fail if required Dendrite settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) for using Dendrite.
   when: "vars[item] == ''"
@@ -8,7 +8,7 @@
     - "matrix_dendrite_registration_shared_secret"
 
 - name: (Deprecation) Catch and report renamed settings
-  fail:
+  ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).

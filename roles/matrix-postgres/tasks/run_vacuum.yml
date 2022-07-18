@@ -3,7 +3,7 @@
 # Pre-checks
 
 - name: Fail if Postgres not enabled
-  fail:
+  ansible.builtin.fail:
     msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot run vacuum."
   when: "not matrix_postgres_enabled|bool"
 
@@ -11,12 +11,12 @@
 # Defaults
 
 - name: Set postgres_start_wait_time, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_start_wait_time: 15
   when: "postgres_start_wait_time|default('') == ''"
 
 - name: Set postgres_vacuum_wait_time, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_vacuum_wait_time: "{{ 7 * 86400 }}"
   when: "postgres_vacuum_wait_time|default('') == ''"
 
@@ -24,7 +24,7 @@
 # Actual vacuuming work
 
 - name: Ensure matrix-postgres is started
-  service:
+  ansible.builtin.service:
     name: matrix-postgres
     state: started
     daemon_reload: true
@@ -38,12 +38,12 @@
 - import_tasks: tasks/util/detect_existing_postgres_version.yml
 
 - name: Abort, if no existing Postgres version detected
-  fail:
+  ansible.builtin.fail:
     msg: "Could not find existing Postgres installation"
   when: "not matrix_postgres_detected_existing|bool"
 
 - name: Generate Postgres database vacuum command
-  set_fact:
+  ansible.builtin.set_fact:
     matrix_postgres_vacuum_command: >-
       {{ matrix_host_command_docker }} run --rm --name matrix-postgres-synapse-vacuum
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
@@ -54,9 +54,9 @@
       psql -v ON_ERROR_STOP=1 -h matrix-postgres {{ matrix_synapse_database_database }} -c 'VACUUM FULL VERBOSE'
 
 - name: Note about Postgres vacuum alternative
-  debug:
+  ansible.builtin.debug:
     msg: >-
-      Running vacuum with the following Postgres command: `{{ matrix_postgres_vacuum_command }}`.
+      Running vacuum with the following Postgres ansible.builtin.command: `{{ matrix_postgres_vacuum_command }}`.
       If this crashes, you can stop all processes (`systemctl stop matrix-*`),
       start Postgres only (`systemctl start matrix-postgres`)
       and manually run the above command directly on the server.
@@ -64,26 +64,26 @@
 - name: Populate service facts
   service_facts:
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_postgres_synapse_was_running: "{{ ansible_facts.services['matrix-synapse.service']|default(none) is not none and ansible_facts.services['matrix-synapse.service'].state == 'running' }}"
 
 - name: Ensure matrix-synapse is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-synapse
     state: stopped
     daemon_reload: true
 
 - name: Run Postgres vacuum command
-  command: "{{ matrix_postgres_vacuum_command }}"
+  ansible.builtin.command: "{{ matrix_postgres_vacuum_command }}"
   async: "{{ postgres_vacuum_wait_time }}"
   poll: 10
   register: matrix_postgres_synapse_vacuum_result
 
 # Intentionally show the results
-- debug: var="matrix_postgres_synapse_vacuum_result"
+- ansible.builtin.debug: var="matrix_postgres_synapse_vacuum_result"
 
 - name: Ensure matrix-synapse is started, if it previously was
-  service:
+  ansible.builtin.service:
     name: matrix-synapse
     state: started
     daemon_reload: true

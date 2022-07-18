@@ -5,7 +5,7 @@
 #
 
 - name: Ensure Matrix jitsi-web path exists
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     mode: 0777
@@ -31,7 +31,7 @@
   until: result is not failed
 
 - name: Ensure jitsi-web environment variables file created
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/web/env.j2"
     dest: "{{ matrix_jitsi_web_base_path }}/env"
     owner: "{{ matrix_user_username }}"
@@ -40,7 +40,7 @@
   when: matrix_jitsi_enabled|bool
 
 - name: Ensure jitsi-web configuration files created
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/web/{{ item }}.j2"
     dest: "{{ matrix_jitsi_web_config_path }}/{{ item }}"
     owner: "{{ matrix_user_username }}"
@@ -52,7 +52,7 @@
   when: matrix_jitsi_enabled|bool
 
 - name: Ensure matrix-jitsi-web.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/web/matrix-jitsi-web.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-jitsi-web.service"
     mode: 0644
@@ -60,7 +60,7 @@
   when: matrix_jitsi_enabled|bool
 
 - name: Ensure systemd reloaded after matrix-jitsi-web.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_jitsi_enabled and matrix_jitsi_web_systemd_service_result.changed"
 
@@ -75,7 +75,7 @@
   when: "not matrix_jitsi_enabled|bool"
 
 - name: Ensure matrix-jitsi-web is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-jitsi-web
     state: stopped
     enabled: false
@@ -84,18 +84,18 @@
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_web_service_stat.stat.exists"
 
 - name: Ensure matrix-jitsi-web.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-jitsi-web.service"
     state: absent
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_web_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-jitsi-web.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "not matrix_jitsi_enabled|bool and matrix_jitsi_web_service_stat.stat.exists"
 
 - name: Ensure Matrix jitsi-web paths doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_jitsi_web_base_path }}"
     state: absent
   when: "not matrix_jitsi_enabled|bool"

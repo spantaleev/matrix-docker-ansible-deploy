@@ -3,12 +3,12 @@
 # Pre-checks
 
 - name: Fail if Postgres not enabled
-  fail:
+  ansible.builtin.fail:
     msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot import."
   when: "not matrix_postgres_enabled|bool"
 
 - name: Fail if playbook called incorrectly
-  fail:
+  ansible.builtin.fail:
     msg: "The `server_path_postgres_dump` variable needs to be provided to this playbook, via --extra-vars"
   when: "server_path_postgres_dump is not defined or server_path_postgres_dump.startswith('<')"
 
@@ -18,7 +18,7 @@
   register: result_server_path_postgres_dump_stat
 
 - name: Fail if provided Postgres dump file doesn't exists
-  fail:
+  ansible.builtin.fail:
     msg: "File cannot be found on the server at {{ server_path_postgres_dump }}"
   when: "not result_server_path_postgres_dump_stat.stat.exists"
 
@@ -26,26 +26,26 @@
 # Defaults
 
 - name: Set postgres_start_wait_time, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_start_wait_time: 15
   when: "postgres_start_wait_time|default('') == ''"
 
 - name: Set postgres_import_wait_time, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_import_wait_time: "{{ 7 * 86400 }}"
   when: "postgres_import_wait_time|default('') == ''"
 
 # By default, we connect and import into the main (`matrix`) database.
 # Single-database dumps for Synapse may wish to import into `synapse` instead.
 - name: Set postgres_default_import_database, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_default_import_database: "{{ matrix_postgres_db_name }}"
   when: "postgres_default_import_database|default('') == ''"
 
 # Actual import work
 
 - name: Ensure matrix-postgres is started
-  service:
+  ansible.builtin.service:
     name: matrix-postgres
     state: started
     daemon_reload: true
@@ -59,7 +59,7 @@
 - import_tasks: tasks/util/detect_existing_postgres_version.yml
 
 - name: Abort, if no existing Postgres version detected
-  fail:
+  ansible.builtin.fail:
     msg: "Could not find existing Postgres installation"
   when: "not matrix_postgres_detected_existing|bool"
 
@@ -68,7 +68,7 @@
 # The dump most likely contains those same entries and would try to re-create them, leading to errors.
 # We need to skip over those lines.
 - name: Generate Postgres database import command
-  set_fact:
+  ansible.builtin.set_fact:
     matrix_postgres_import_command: >-
       {{ matrix_host_command_docker }} run --rm --name matrix-postgres-import
       --log-driver=none
@@ -91,7 +91,7 @@
 # We want to run `debug: msg=".."`, but that dumps it as JSON and escapes double quotes within it,
 # which ruins the command (`matrix_postgres_import_command`)
 - name: Note about Postgres importing alternative
-  set_fact:
+  ansible.builtin.set_fact:
     dummy: true
   with_items:
     - >-
@@ -101,6 +101,6 @@
         and manually run the above import command directly on the server.
 
 - name: Perform Postgres database import
-  command: "{{ matrix_postgres_import_command }}"
+  ansible.builtin.command: "{{ matrix_postgres_import_command }}"
   async: "{{ postgres_import_wait_time }}"
   poll: 10

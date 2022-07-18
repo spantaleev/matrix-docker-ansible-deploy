@@ -7,7 +7,7 @@
   register: matrix_mautrix_signal_daemon_service_stat
 
 - name: Ensure matrix-mautrix-signal-daemon is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-mautrix-signal-daemon
     state: stopped
     enabled: false
@@ -15,7 +15,7 @@
   when: "matrix_mautrix_signal_daemon_service_stat.stat.exists"
 
 - name: Ensure matrix-mautrix-signal-daemon.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-mautrix-signal-daemon.service"
     state: absent
   when: "matrix_mautrix_signal_daemon_service_stat.stat.exists"
@@ -27,7 +27,7 @@
   register: matrix_mautrix_signal_service_stat
 
 - name: Ensure matrix-mautrix-signal is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-mautrix-signal
     state: stopped
     enabled: false
@@ -35,13 +35,13 @@
   when: "matrix_mautrix_signal_service_stat.stat.exists"
 
 - name: Ensure matrix-mautrix-signal.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-mautrix-signal.service"
     state: absent
   when: "matrix_mautrix_signal_service_stat.stat.exists"
 
 # All services
 - name: Ensure systemd reloaded after matrix-mautrix-signal_X.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_mautrix_signal_service_stat.stat.exists or matrix_mautrix_signal_daemon_service_stat.stat.exists"

@@ -1,7 +1,7 @@
 ---
 
 - name: Ensure APT usage dependencies are installed
-  apt:
+  ansible.builtin.apt:
     name:
       - apt-transport-https
       - ca-certificates
@@ -26,14 +26,14 @@
   when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure APT packages are installed
-  apt:
+  ansible.builtin.apt:
     name:
       - "{{ matrix_ntpd_package }}"
     state: latest
     update_cache: true
 
 - name: Ensure Docker is installed
-  apt:
+  ansible.builtin.apt:
     name:
       - "{{ matrix_docker_package_name }}"
       - "python{{'3' if ansible_python.version.major == 3 else ''}}-docker"

@@ -1,7 +1,7 @@
 ---
 
 - name: Fail if required Element settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >
       You need to define a required configuration setting (`{{ item }}`) for using Element.
   when: "vars[item] == ''"
@@ -9,7 +9,7 @@
     - "matrix_client_element_default_hs_url"
 
 - name: (Deprecation) Catch and report riot-web variables
-  fail:
+  ansible.builtin.fail:
     msg: >-
       Riot has been renamed to Element (https://element.io/blog/welcome-to-element/).
       The playbook will migrate your existing configuration and data automatically, but you need to adjust variable names.
