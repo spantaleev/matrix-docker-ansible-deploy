@@ -18,5 +18,9 @@ matrix_synapse_report_stats: true
 
 ## Usage statistics being submitted
 
+When enabled, Synapse will regularly upload a few dozen statistics about your server.
+This data includes your homeserver's domain, the total number of users, the number of active
+users, the total number of rooms, and the number of messages sent per day on your homeserver.
+
 See [Synapse's documentation](https://github.com/matrix-org/synapse/blob/develop/docs/usage/administration/monitoring/reporting_homeserver_usage_statistics.md#available-statistics)
-for a list of the individual parameters that are reported.
+for the full list of statistics that are reported.
