@@ -1,11 +1,11 @@
 ---
 # Mx Puppet GroupMe is a Matrix <-> GroupMe bridge
-# Project source code URL: https://gitlab.com/robintown/mx-puppet-groupme
+# Project source code URL: https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme
 
 matrix_mx_puppet_groupme_enabled: true
 
 matrix_mx_puppet_groupme_container_image_self_build: false
-matrix_mx_puppet_groupme_container_image_self_build_repo: "https://gitlab.com/robintown/mx-puppet-groupme"
+matrix_mx_puppet_groupme_container_image_self_build_repo: "https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme"
 matrix_mx_puppet_groupme_container_image_self_build_repo_version: "{{ 'main' if matrix_mx_puppet_groupme_version == 'latest' else matrix_mx_puppet_groupme_version }}"
 
 # Controls whether the mx-puppet-groupme container exposes its HTTP port (tcp/8437 in the container).
@@ -13,9 +13,9 @@ matrix_mx_puppet_groupme_container_image_self_build_repo_version: "{{ 'main' if 
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8437"), or empty string to not expose.
 matrix_mx_puppet_groupme_container_http_host_bind_port: ''
 
-matrix_mx_puppet_groupme_version: latest
-matrix_mx_puppet_groupme_docker_image: "{{ matrix_mx_puppet_groupme_docker_image_name_prefix }}xangelix/mx-puppet-groupme:{{ matrix_mx_puppet_groupme_version }}"
-matrix_mx_puppet_groupme_docker_image_name_prefix: "{{ 'localhost/' if matrix_mx_puppet_groupme_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_mx_puppet_groupme_version: 533cccc8
+matrix_mx_puppet_groupme_docker_image: "{{ matrix_mx_puppet_groupme_docker_image_name_prefix }}xangelix-pub/matrix/mx-puppet-groupme:{{ matrix_mx_puppet_groupme_version }}"
+matrix_mx_puppet_groupme_docker_image_name_prefix: "{{ 'localhost/' if matrix_mx_puppet_groupme_container_image_self_build else 'registry.gitlab.com/' }}"
 matrix_mx_puppet_groupme_docker_image_force_pull: "{{ matrix_mx_puppet_groupme_docker_image.endswith(':latest') }}"
 
 matrix_mx_puppet_groupme_base_path: "{{ matrix_base_data_path }}/mx-puppet-groupme"

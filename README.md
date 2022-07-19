@@ -89,7 +89,7 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [mx-puppet-discord](https://github.com/matrix-discord/mx-puppet-discord) bridge for [Discord](https://discordapp.com/) - see [docs/configuring-playbook-bridge-mx-puppet-discord.md](docs/configuring-playbook-bridge-mx-puppet-discord.md) for setup documentation
 
-- (optional) the [mx-puppet-groupme](https://gitlab.com/robintown/mx-puppet-groupme) bridge for [GroupMe](https://groupme.com/) - see [docs/configuring-playbook-bridge-mx-puppet-groupme.md](docs/configuring-playbook-bridge-mx-puppet-groupme.md) for setup documentation
+- (optional) the [mx-puppet-groupme](https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme) bridge for [GroupMe](https://groupme.com/) - see [docs/configuring-playbook-bridge-mx-puppet-groupme.md](docs/configuring-playbook-bridge-mx-puppet-groupme.md) for setup documentation
 
 - (optional) the [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) bridge for [Steam](https://steamapp.com/) - see [docs/configuring-playbook-bridge-mx-puppet-steam.md](docs/configuring-playbook-bridge-mx-puppet-steam.md) for setup documentation
 
