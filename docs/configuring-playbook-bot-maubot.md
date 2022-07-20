@@ -18,7 +18,8 @@ matrix_bot_maubot_admins:
   - yourusername: securepassword
 ```
 
-You can add multiple admins.
+You can add multiple admins. The admin accounts are not connected to any matrix ID and are only used to access the
+maubot administration interface.
 
 
 ## Installing
