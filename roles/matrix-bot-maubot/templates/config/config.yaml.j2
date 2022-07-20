@@ -34,7 +34,7 @@ server:
     hostname: 0.0.0.0
     port: 29316
     # Public base URL where the server is visible.
-    public_url: {{ matrix_bot_maubot_bot_server_public_url }}
+    public_url: {{ matrix_bot_maubot_bot_server_public_url|to_json }}
     # The base management API path.
     base_path: /_matrix/maubot/v1
     # The base path for the UI.
@@ -65,7 +65,7 @@ homeservers:
 
 # List of administrator users. Plaintext passwords will be bcrypted on startup. Set empty password
 # to prevent normal login. Root is a special user that can't have a password and will always exist.
-admins: {{ matrix_bot_maubot_admins | combine( {"root": ""} ) }}
+admins: {{ matrix_bot_maubot_admins | combine( {"root": ""} )|to_json }}
 
 api_features:
     login: true
