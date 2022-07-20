@@ -62,7 +62,7 @@ bridge:
     - name
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!HO"
+    command_prefix: "{{ matrix_mautrix_hangouts_command_prefix }}"
 
     # Number of chats to sync (and create portals for) on startup/login.
     # Maximum 20, set 0 to disable automatic syncing.
@@ -138,11 +138,11 @@ logging:
             formatter: colored
     loggers:
         mau:
-            level: WARNING
+            level: {{ matrix_mautrix_hangouts_logging_level|to_json }}
         hangups:
-            level: WARNING
+            level: {{ matrix_mautrix_hangouts_logging_level|to_json }}
         aiohttp:
-            level: WARNING
+            level: {{ matrix_mautrix_hangouts_logging_level|to_json }}
     root:
-        level: WARNING
+        level: {{ matrix_mautrix_hangouts_logging_level|to_json }}
         handlers: [console]

@@ -1,22 +1,22 @@
 ---
 
 - name: Determine whether we should make services autostart
-  set_fact:
-    matrix_services_autostart_enabled_bool: "{{ true if matrix_services_autostart_enabled|default('') == '' else matrix_services_autostart_enabled|bool }}"
+  ansible.builtin.set_fact:
+    matrix_services_autostart_enabled_bool: "{{ true if matrix_services_autostart_enabled | default('') == '' else matrix_services_autostart_enabled | bool }}"
 
 - name: Ensure systemd is reloaded
-  service:
+  ansible.builtin.service:
     daemon_reload: true
 
 - name: Ensure Matrix services are stopped
-  service:
+  ansible.builtin.service:
     name: "{{ item }}"
     state: stopped
   with_items: "{{ matrix_systemd_services_list }}"
   when: not ansible_check_mode
 
 - name: Ensure Matrix services are started
-  service:
+  ansible.builtin.service:
     name: "{{ item }}"
     enabled: "{{ matrix_services_autostart_enabled_bool }}"
     state: started
@@ -29,17 +29,17 @@
 # Waiting too long (30s) may not work for a similar reason,
 # as we may run into systemd's automatic restart logic retrying the service.
 - name: Wait a bit, so that services can start (or fail)
-  wait_for:
+  ansible.builtin.wait_for:
     timeout: "{{ matrix_common_after_systemd_service_start_wait_for_timeout_seconds }}"
   delegate_to: 127.0.0.1
   become: false
 
 - block:
     - name: Populate service facts
-      service_facts:
+      ansible.builtin.service_facts:
 
     - name: Fail if service isn't detected to be running
-      fail:
+      ansible.builtin.fail:
         msg: >-
           {{ item }} was not detected to be running.
           It's possible that there's a configuration problem or another service on your server interferes with it (uses the same ports, etc.).
@@ -57,13 +57,13 @@
     # service_facts is not collecting the data successfully.
     # Therefore iterating here manually
     - name: Fetch systemd information
-      systemd:
+      ansible.builtin.systemd:
         name: "{{ item }}"
       register: systemdstatus
       with_items: "{{ matrix_systemd_services_list }}"
 
     - name: Fail if service isn't detected to be running
-      fail:
+      ansible.builtin.fail:
         msg: >-
           {{ item.item }} was not detected to be running.
           It's possible that there's a configuration problem or another service on your server interferes with it (uses the same ports, etc.).

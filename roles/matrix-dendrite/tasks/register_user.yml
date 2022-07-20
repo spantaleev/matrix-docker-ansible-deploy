@@ -1,25 +1,28 @@
 ---
 - name: Fail if playbook called incorrectly
-  fail:
+  ansible.builtin.fail:
     msg: "The `username` variable needs to be provided to this playbook, via --extra-vars"
   when: "username is not defined or username == '<your-username>'"
 
 - name: Fail if playbook called incorrectly
-  fail:
+  ansible.builtin.fail:
     msg: "The `password` variable needs to be provided to this playbook, via --extra-vars"
   when: "password is not defined or password == '<your-password>'"
 
 - name: Ensure matrix-dendrite is started
-  service:
+  ansible.builtin.service:
     name: matrix-dendrite
     state: started
     daemon_reload: true
   register: start_result
 
 - name: Wait a while, so that Dendrite can manage to start
-  pause:
+  ansible.builtin.pause:
     seconds: 7
-  when: "start_result.changed"
+  when: start_result.changed | bool
 
 - name: Register user
-  command: "{{ matrix_local_bin_path }}/matrix-dendrite-create-account {{ username|quote }} {{ password|quote }}"
+  ansible.builtin.command:
+    cmd: "{{ matrix_local_bin_path }}/matrix-dendrite-create-account {{ username | quote }} {{ password | quote }}"
+  register: matrix_dendrite_register_user_result
+  changed_when: matrix_dendrite_register_user_result.rc == 0

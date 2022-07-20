@@ -1,6 +1,6 @@
 ---
 # mautrix-whatsapp is a Matrix <-> Whatsapp bridge
-# See: https://github.com/mautrix/whatsapp
+# Project source code URL: https://github.com/mautrix/whatsapp
 
 matrix_mautrix_whatsapp_enabled: true
 
@@ -8,7 +8,7 @@ matrix_mautrix_whatsapp_container_image_self_build: false
 matrix_mautrix_whatsapp_container_image_self_build_repo: "https://mau.dev/mautrix/whatsapp.git"
 matrix_mautrix_whatsapp_container_image_self_build_branch: "{{ 'master' if matrix_mautrix_whatsapp_version == 'latest' else matrix_mautrix_whatsapp_version }}"
 
-matrix_mautrix_whatsapp_version: v0.5.0
+matrix_mautrix_whatsapp_version: v0.6.0
 # See: https://mau.dev/mautrix/whatsapp/container_registry
 matrix_mautrix_whatsapp_docker_image: "{{ matrix_mautrix_whatsapp_docker_image_name_prefix }}mautrix/whatsapp:{{ matrix_mautrix_whatsapp_version }}"
 matrix_mautrix_whatsapp_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_whatsapp_container_image_self_build else 'dock.mau.dev/' }}"
@@ -23,6 +23,8 @@ matrix_mautrix_whatsapp_homeserver_address: "{{ matrix_homeserver_container_url 
 matrix_mautrix_whatsapp_homeserver_domain: "{{ matrix_domain }}"
 matrix_mautrix_whatsapp_appservice_address: "http://matrix-mautrix-whatsapp:8080"
 
+matrix_mautrix_whatsapp_command_prefix: "!wa"
+
 # A list of extra arguments to pass to the container
 matrix_mautrix_whatsapp_container_extra_arguments: []
 
@@ -36,6 +38,10 @@ matrix_mautrix_whatsapp_appservice_token: ''
 matrix_mautrix_whatsapp_homeserver_token: ''
 
 matrix_mautrix_whatsapp_appservice_bot_username: whatsappbot
+
+# Minimum severity of journal log messages.
+# Options: debug, info, warn, error, fatal
+matrix_mautrix_whatsapp_logging_level: 'warn'
 
 # Whether or not created rooms should have federation enabled.
 # If false, created portal rooms will never be federated.
@@ -100,11 +106,11 @@ matrix_mautrix_whatsapp_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_mautrix_whatsapp_configuration_yaml`.
 
-matrix_mautrix_whatsapp_configuration_extension: "{{ matrix_mautrix_whatsapp_configuration_extension_yaml|from_yaml if matrix_mautrix_whatsapp_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_mautrix_whatsapp_configuration_extension: "{{ matrix_mautrix_whatsapp_configuration_extension_yaml | from_yaml if matrix_mautrix_whatsapp_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_mautrix_whatsapp_configuration_yaml`.
-matrix_mautrix_whatsapp_configuration: "{{ matrix_mautrix_whatsapp_configuration_yaml|from_yaml|combine(matrix_mautrix_whatsapp_configuration_extension, recursive=True) }}"
+matrix_mautrix_whatsapp_configuration: "{{ matrix_mautrix_whatsapp_configuration_yaml | from_yaml | combine(matrix_mautrix_whatsapp_configuration_extension, recursive=True) }}"
 
 matrix_mautrix_whatsapp_registration_yaml: |
   id: whatsapp
@@ -116,19 +122,15 @@ matrix_mautrix_whatsapp_registration_yaml: |
   rate_limited: false
   namespaces:
       users:
-      - regex: '^@whatsapp_[0-9]+:{{ matrix_mautrix_whatsapp_homeserver_domain|regex_escape }}$'
+      - regex: '^@whatsapp_[0-9]+:{{ matrix_mautrix_whatsapp_homeserver_domain | regex_escape }}$'
         exclusive: true
       - exclusive: true
-        regex: '^@{{ matrix_mautrix_whatsapp_appservice_bot_username|regex_escape }}:{{ matrix_mautrix_whatsapp_homeserver_domain|regex_escape }}$'
+        regex: '^@{{ matrix_mautrix_whatsapp_appservice_bot_username | regex_escape }}:{{ matrix_mautrix_whatsapp_homeserver_domain | regex_escape }}$'
   de.sorunome.msc2409.push_ephemeral: true
 
-matrix_mautrix_whatsapp_registration: "{{ matrix_mautrix_whatsapp_registration_yaml|from_yaml }}"
+matrix_mautrix_whatsapp_registration: "{{ matrix_mautrix_whatsapp_registration_yaml | from_yaml }}"
 
 # Enable End-to-bridge encryption
 matrix_mautrix_whatsapp_bridge_encryption_allow: false
 matrix_mautrix_whatsapp_bridge_encryption_default: "{{ matrix_mautrix_whatsapp_bridge_encryption_allow }}"
 matrix_mautrix_whatsapp_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_whatsapp_bridge_encryption_allow }}"
-
-# Minimum severity of journal log messages.
-# Options: debug, info, warn, error, fatal
-matrix_mautrix_whatsapp_log_level: 'warn'

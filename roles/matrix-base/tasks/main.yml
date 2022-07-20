@@ -1,34 +1,34 @@
 ---
 
-- import_tasks: "{{ role_path }}/tasks/sanity_check.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/sanity_check.yml"
   tags:
     - always
 
-- import_tasks: "{{ role_path }}/tasks/clean_up_old_files.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/clean_up_old_files.yml"
+  when: run_setup | bool
   tags:
     - setup-all
 
-- import_tasks: "{{ role_path }}/tasks/server_base/setup.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/server_base/setup.yml"
+  when: run_setup | bool
   tags:
     - setup-all
 
 # This needs to always run, because it populates `matrix_user_uid` and `matrix_user_gid`,
 # which are required by many other roles.
-- import_tasks: "{{ role_path }}/tasks/setup_matrix_user.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_matrix_user.yml"
+  when: run_setup | bool
   tags:
     - always
     - setup-system-user
 
-- import_tasks: "{{ role_path }}/tasks/setup_matrix_base.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_matrix_base.yml"
+  when: run_setup | bool
   tags:
     - setup-all
 
-- import_tasks: "{{ role_path }}/tasks/setup_well_known.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_well_known.yml"
+  when: run_setup | bool
   tags:
     - setup-all
     - setup-ma1sd

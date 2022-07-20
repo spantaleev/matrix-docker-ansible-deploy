@@ -197,7 +197,7 @@ bridge:
         shared_secret: generate
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!signal"
+    command_prefix: "{{ matrix_mautrix_signal_command_prefix }}"
 
     # Messages sent upon joining a management room.
     # Markdown is supported. The defaults are listed below.
@@ -223,11 +223,8 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions: 
+    permissions:
         {{ matrix_mautrix_signal_bridge_permissions|from_yaml }}
-        {% if matrix_admin %}
-        "{{ matrix_admin }}": admin
-        {% endif %}
 
     relay:
         # Whether or not relay mode should be allowed. If allowed, `!signal set-relay` can be used to turn any
@@ -269,9 +266,9 @@ logging:
             formatter: colored
     loggers:
         mau:
-            level: WARNING
+            level: {{ matrix_mautrix_signal_logging_level|to_json }}
         aiohttp:
-            level: WARNING
+            level: {{ matrix_mautrix_signal_logging_level|to_json }}
     root:
-        level: WARNING
+        level: {{ matrix_mautrix_signal_logging_level|to_json }}
         handlers: [console]

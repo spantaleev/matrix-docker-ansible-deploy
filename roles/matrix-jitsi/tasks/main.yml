@@ -1,41 +1,41 @@
 ---
 
-- import_tasks: "{{ role_path }}/tasks/init.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
   tags:
     - always
 
-- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: "run_setup|bool and matrix_jitsi_enabled|bool"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: "run_setup | bool and matrix_jitsi_enabled | bool"
   tags:
     - setup-all
     - setup-jitsi
 
-- import_tasks: "{{ role_path }}/tasks/setup_jitsi_base.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_jitsi_base.yml"
+  when: run_setup | bool
   tags:
     - setup-all
     - setup-jitsi
 
-- import_tasks: "{{ role_path }}/tasks/setup_jitsi_web.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_jitsi_web.yml"
+  when: run_setup | bool
   tags:
     - setup-all
     - setup-jitsi
 
-- import_tasks: "{{ role_path }}/tasks/setup_jitsi_prosody.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_jitsi_prosody.yml"
+  when: run_setup | bool
   tags:
     - setup-all
     - setup-jitsi
 
-- import_tasks: "{{ role_path }}/tasks/setup_jitsi_jicofo.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_jitsi_jicofo.yml"
+  when: run_setup | bool
   tags:
     - setup-all
     - setup-jitsi
 
-- import_tasks: "{{ role_path }}/tasks/setup_jitsi_jvb.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_jitsi_jvb.yml"
+  when: run_setup | bool
   tags:
     - setup-all
     - setup-jitsi

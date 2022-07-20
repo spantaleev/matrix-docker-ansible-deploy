@@ -1,32 +1,32 @@
 ---
 
 - name: Check existence of matrix-honoroit service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-bot-honoroit.service"
   register: matrix_bot_honoroit_service_stat
 
 - name: Ensure matrix-honoroit is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-bot-honoroit
     state: stopped
     enabled: false
     daemon_reload: true
   register: stopping_result
-  when: "matrix_bot_honoroit_service_stat.stat.exists|bool"
+  when: "matrix_bot_honoroit_service_stat.stat.exists | bool"
 
 - name: Ensure matrix-bot-honoroit.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-bot-honoroit.service"
     state: absent
-  when: "matrix_bot_honoroit_service_stat.stat.exists|bool"
+  when: "matrix_bot_honoroit_service_stat.stat.exists | bool"
 
 - name: Ensure systemd reloaded after matrix-bot-honoroit.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_bot_honoroit_service_stat.stat.exists|bool"
+  when: "matrix_bot_honoroit_service_stat.stat.exists | bool"
 
 - name: Ensure Matrix honoroit paths don't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_bot_honoroit_base_path }}"
     state: absent
 

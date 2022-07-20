@@ -1,3 +1,44 @@
+# 2022-07-14
+
+## mx-puppet-skype removal
+
+The playbook no longer includes the [mx-puppet-skype](https://github.com/Sorunome/mx-puppet-skype) bridge, because it has been broken and unmaintaned for a long time. Users that have `matrix_mx_puppet_skype_enabled` in their configuration files will encounter an error when running the playbook until they remove references to this bridge from their configuration.
+
+To completely clean up your server from `mx-puppet-skype`'s presence on it:
+
+- ensure your Ansible configuration (`vars.yml` file) no longer contains `matrix_mx_puppet_skype_*` references
+- stop and disable the systemd service (run `systemctl disable --now matrix-mx-puppet-skype` on the server)
+- delete the systemd service (run `rm /etc/systemd/system/matrix-mx-puppet-skype.service` on the server)
+- delete `/matrix/mx-puppet-skype` (run `rm -rf /matrix/mx-puppet-skype` on the server)
+- drop the `matrix_mx_puppet_skype` database (run `/usr/local/bin/matrix-postgres-cli` on the server, and execute the `DROP DATABASE matrix_mx_puppet_skype;` query there)
+
+If you still need bridging to [Skype](https://www.skype.com/), consider switching to [go-skype-bridge](https://github.com/kelaresg/go-skype-bridge) instead. See [Setting up Go Skype Bridge bridging](docs/configuring-playbook-bridge-go-skype-bridge.md).
+
+If you think this is a mistake and `mx-puppet-skype` works for you (or you get it to work somehow), let us know and we may reconsider this removal.
+
+
+## signald (0.19.0+) upgrade requires data migration
+
+In [Pull Request #1921](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1921) we upgraded [signald](https://signald.org/) (used by the mautrix-signal bridge) from `v0.18.5` to `v0.20.0`.
+
+Back in the [`v0.19.0` released of signald](https://gitlab.com/signald/signald/-/blob/main/releases/0.19.0.md) (which we skipped and migrated straight to `v0.20.0`), a new `--migrate-data` command had been added that migrates avatars, group images, attachments, etc., into the database (those were previously stored in the filesystem).
+
+If you've been using the mautrix-signal bridge for a while, you may have files stored in the local filesystem, which will need to be upgraded.
+
+We attempt to do this data migration automatically every time Signald starts (`matrix-mautrix-signal-daemon.service`) using a `ExecStartPre` systemd unit definition.
+
+Keep an eye on your Signal bridge and let us know (in our [support room](README.md#support) or in [Pull Request #1921](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1921)) if you experience any trouble!
+
+
+# 2022-07-05
+
+## Ntfy push notifications support
+
+Thanks to [Julian Foad](https://matrix.to/#/@julian:foad.me.uk), the playbook can now install a [ntfy](https://ntfy.sh/) push notifications server for you.
+
+See our [Setting up the ntfy push notifications server](docs/configuring-playbook-ntfy.md) documentation to get started.
+
+
 # 2022-06-23
 
 ## (Potential Backward Compatibility Break) Changes around metrics collection
@@ -26,7 +67,7 @@
 3. If Synapse metrics are exposed, they will be made available at `https://matrix.DOMAIN/metrics/synapse/main-process` or `https://matrix.DOMAIN/metrics/synapse/worker/TYPE-ID` (when workers are enabled), not at `https://matrix.DOMAIN/_synapse/metrics` and `https://matrix.DOMAIN/_synapse-worker-.../metrics`
 4. The playbook still generates an `external_prometheus.yml.example` sample file for scraping Synapse from Prometheus as described in [Collecting Synapse worker metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-synapse-worker-metrics-to-an-external-prometheus-server), but it's now saved under `/matrix/synapse` (not `/matrix`).
 
-**If you where already using a external Prometheus server** before this change, and you gave a hashed version of the password as a variable, the playbook will now take care of hashing the password for you. Thus, you need to provide the non-hashed version now. 
+**If you where already using a external Prometheus server** before this change, and you gave a hashed version of the password as a variable, the playbook will now take care of hashing the password for you. Thus, you need to provide the non-hashed version now.
 
 # 2022-06-13
 

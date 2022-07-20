@@ -1,4 +1,5 @@
 ---
+# Project source code URL: https://github.com/postgres/postgres
 
 # Controls if the Postgres server managed by the playbook is enabled.
 # You can turn it off and use an external Postgres server by setting this to `false`.
@@ -77,7 +78,7 @@ matrix_postgres_import_roles_to_ignore: [matrix_postgres_connection_username]
 # which is unsupported by default by newer Postgres versions (v14+).
 # When users are created and passwords are set by the playbook, they end up hashed as `scram-sha-256` on Postgres v14+.
 # If an md5-hashed password is restored on top, Postgres v14+ will refuse to authenticate users with it by default.
-matrix_postgres_import_roles_ignore_regex: "^(CREATE|ALTER) ROLE ({{ matrix_postgres_import_roles_to_ignore|join('|') }})(;| WITH)"
+matrix_postgres_import_roles_ignore_regex: "^(CREATE|ALTER) ROLE ({{ matrix_postgres_import_roles_to_ignore | join('|') }})(;| WITH)"  # noqa var-spacing
 
 # A list of databases to avoid creating when importing (or upgrading) the database.
 # If a dump file contains the databases and they've also been created beforehand (see `matrix_postgres_additional_databases`),
@@ -85,7 +86,7 @@ matrix_postgres_import_roles_ignore_regex: "^(CREATE|ALTER) ROLE ({{ matrix_post
 # We either need to not create them or to ignore the `CREATE DATABASE` statements in the dump.
 matrix_postgres_import_databases_to_ignore: [matrix_postgres_db_name]
 
-matrix_postgres_import_databases_ignore_regex: "^CREATE DATABASE ({{ matrix_postgres_import_databases_to_ignore|join('|') }})\\s"
+matrix_postgres_import_databases_ignore_regex: "^CREATE DATABASE ({{ matrix_postgres_import_databases_to_ignore | join('|') }})\\s"  # noqa var-spacing
 
 # The number of seconds to wait after starting `matrix-postgres.service`
 # and before trying to run queries for creating additional databases/users against it.

@@ -2,7 +2,7 @@
 
 # When we're dealing with raw htpasswd content, we just store it in the file directly.
 - name: Ensure matrix-metrics-htpasswd is present when generated from raw content (protecting /metrics/* URIs)
-  copy:
+  ansible.builtin.copy:
     content: "{{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content }}"
     dest: "{{ matrix_nginx_proxy_data_path }}/matrix-metrics-htpasswd"
     owner: "{{ matrix_user_username }}"
@@ -30,7 +30,7 @@
     # We store the password in a file and make the `htpasswd` tool read it from there,
     # as opposed to passing it directly on stdin (which will expose it to other processes on the server).
     - name: Store metrics password in a temporary file
-      copy:
+      ansible.builtin.copy:
         content: "{{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_password }}"
         dest: "/tmp/matrix-nginx-proxy-metrics-password"
         mode: 0400
@@ -38,7 +38,7 @@
         group: "{{ matrix_user_gid }}"
 
     - name: Generate matrix-metrics-htpasswd from username/password (protecting /metrics/* URIs)
-      command:
+      ansible.builtin.command:
         cmd: >-
           {{ matrix_host_command_docker }} run
           --rm
@@ -51,9 +51,10 @@
           {{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_image }}
           -c
           'cat /password | htpasswd -i -c /data/matrix-metrics-htpasswd {{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username }} && chmod 600 /data/matrix-metrics-htpasswd'
+      changed_when: true
 
     - name: Delete temporary metrics password file
-      file:
+      ansible.builtin.file:
         path: /tmp/matrix-nginx-proxy-metrics-password
         state: absent
   when: matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username != ''

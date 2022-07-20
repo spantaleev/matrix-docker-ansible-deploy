@@ -2,14 +2,14 @@
 # See https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1070
 # and https://github.com/spantaleev/matrix-docker-ansible-deploy/commit/1ab507349c752042d26def3e95884f6df8886b74#commitcomment-51108407
 - name: Fail if trying to self-build on Ansible < 2.8
-  fail:
-    msg: "To self-build the Element image, you should use Ansible 2.8 or higher. See docs/ansible.md"
+  ansible.builtin.fail:
+    msg: "To self-build the coturn image, you should use Ansible 2.8 or higher. See docs/ansible.md"
   when: "ansible_version.major == 2 and ansible_version.minor < 8 and matrix_coturn_container_image_self_build and matrix_coturn_enabled"
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-coturn.service'] }}"
-  when: matrix_coturn_enabled|bool
+  when: matrix_coturn_enabled | bool
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-coturn-reload.timer'] }}"
-  when: "matrix_coturn_enabled|bool and matrix_coturn_tls_enabled|bool"
+  when: "matrix_coturn_enabled | bool and matrix_coturn_tls_enabled | bool"

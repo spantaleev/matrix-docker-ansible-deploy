@@ -1,6 +1,6 @@
 ---
 - name: Check Matrix Federation API
-  uri:
+  ansible.builtin.uri:
     url: "{{ matrix_dendrite_federation_api_url_endpoint_public }}"
     follow_redirects: none
     validate_certs: "{{ matrix_dendrite_self_check_validate_certificates }}"
@@ -9,16 +9,16 @@
   check_mode: false
 
 - name: Fail if Matrix Federation API not working
-  fail:
+  ansible.builtin.fail:
     msg: "Failed checking Matrix Federation API is up at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_dendrite_federation_api_url_endpoint_public }}`). Is Dendrite running? Is port {{ matrix_federation_public_port }} open in your firewall? Full error: {{ result_matrix_dendrite_federation_api }}"
-  when: "matrix_dendrite_federation_enabled|bool and (result_matrix_dendrite_federation_api.failed or 'json' not in result_matrix_dendrite_federation_api)"
+  when: "matrix_dendrite_federation_enabled | bool and (result_matrix_dendrite_federation_api.failed or 'json' not in result_matrix_dendrite_federation_api)"
 
 - name: Fail if Matrix Federation API unexpectedly enabled
-  fail:
+  ansible.builtin.fail:
     msg: "Matrix Federation API is up at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_dendrite_federation_api_url_endpoint_public }}`) despite being disabled."
-  when: "not matrix_dendrite_federation_enabled|bool and not result_matrix_dendrite_federation_api.failed"
+  when: "not matrix_dendrite_federation_enabled | bool and not result_matrix_dendrite_federation_api.failed"
 
 - name: Report working Matrix Federation API
-  debug:
+  ansible.builtin.debug:
     msg: "The Matrix Federation API at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_dendrite_federation_api_url_endpoint_public }}`) is working"
-  when: "matrix_dendrite_federation_enabled|bool"
+  when: "matrix_dendrite_federation_enabled | bool"

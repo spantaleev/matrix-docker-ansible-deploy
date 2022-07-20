@@ -1,26 +1,26 @@
 ---
 
 - name: Check existence of matrix-prometheus service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-prometheus.service"
   register: matrix_prometheus_service_stat
 
 - name: Ensure matrix-prometheus is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-prometheus
     state: stopped
     enabled: false
     daemon_reload: true
   register: stopping_result
-  when: "matrix_prometheus_service_stat.stat.exists|bool"
+  when: "matrix_prometheus_service_stat.stat.exists | bool"
 
 - name: Ensure matrix-prometheus.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-prometheus.service"
     state: absent
-  when: "matrix_prometheus_service_stat.stat.exists|bool"
+  when: "matrix_prometheus_service_stat.stat.exists | bool"
 
 - name: Ensure systemd reloaded after matrix-prometheus.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_prometheus_service_stat.stat.exists|bool"
+  when: "matrix_prometheus_service_stat.stat.exists | bool"

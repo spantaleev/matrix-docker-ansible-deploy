@@ -1,4 +1,6 @@
 ---
+# Project source code URL: https://gitlab.com/etke.cc/borgmatic
+
 matrix_backup_borg_enabled: true
 
 matrix_backup_borg_base_path: "{{ matrix_base_data_path }}/backup-borg"
@@ -6,13 +8,14 @@ matrix_backup_borg_config_path: "{{ matrix_backup_borg_base_path }}/config"
 
 matrix_backup_borg_container_image_self_build: false
 matrix_backup_borg_docker_repo: "https://gitlab.com/etke.cc/borgmatic"
+matrix_backup_borg_docker_repo_version: main
 matrix_backup_borg_docker_src_files_path: "{{ matrix_backup_borg_base_path }}/docker-src"
 
 # version determined automatically, based on postgres server version (if enabled), otherwise latest is used
 matrix_backup_borg_version: ""
 matrix_backup_borg_docker_image: "{{ matrix_backup_borg_docker_image_name_prefix }}etke.cc/borgmatic:{{ matrix_backup_borg_version }}"
 matrix_backup_borg_docker_image_name_prefix: "{{ 'localhost/' if matrix_backup_borg_container_image_self_build else 'registry.gitlab.com/' }}"
-matrix_backup_borg_docker_image_force_pull: "{{ matrix_backup_borg_docker_image.endswith(':latest') or matrix_backup_borg_version|default('') == '' }}"
+matrix_backup_borg_docker_image_force_pull: "{{ matrix_backup_borg_docker_image.endswith(':latest') or matrix_backup_borg_version | default('') == '' }}"
 
 # A list of extra arguments to pass to the container
 matrix_backup_borg_container_extra_arguments: []
@@ -91,8 +94,8 @@ matrix_backup_borg_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_backup_borg_configuration_yaml`.
 
-matrix_backup_borg_configuration_extension: "{{ matrix_backup_borg_configuration_extension_yaml|from_yaml if matrix_backup_borg_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_backup_borg_configuration_extension: "{{ matrix_backup_borg_configuration_extension_yaml | from_yaml if matrix_backup_borg_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final borgmatic configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_backup_borg_configuration_yaml`.
-matrix_backup_borg_configuration: "{{ matrix_backup_borg_configuration_yaml|from_yaml|combine(matrix_backup_borg_configuration_extension, recursive=True) }}"
+matrix_backup_borg_configuration: "{{ matrix_backup_borg_configuration_yaml | from_yaml | combine(matrix_backup_borg_configuration_extension, recursive=True) }}"

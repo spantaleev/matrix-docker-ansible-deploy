@@ -1,6 +1,6 @@
 ---
 # Mx Puppet Discord is a Matrix <-> Discord bridge
-# See: https://gitlab.com/mx-puppet/discord/mx-puppet-discord
+# Project source code URL: https://gitlab.com/mx-puppet/discord/mx-puppet-discord
 
 matrix_mx_puppet_discord_enabled: true
 
@@ -30,13 +30,13 @@ matrix_mx_puppet_discord_homeserver_address: "{{ matrix_homeserver_container_url
 matrix_mx_puppet_discord_homeserver_domain: '{{ matrix_domain }}'
 matrix_mx_puppet_discord_appservice_address: 'http://matrix-mx-puppet-discord:{{ matrix_mx_puppet_discord_appservice_port }}'
 
-matrix_mx_puppet_discord_bridge_mediaUrl: "https://{{ matrix_server_fqn_matrix }}"
+matrix_mx_puppet_discord_bridge_mediaUrl: "https://{{ matrix_server_fqn_matrix }}"  # noqa var-naming
 
 # "@user:server.com" to allow specific user
 # "@.*:yourserver.com" to allow users on a specific homeserver
 # "@.*" to allow anyone
 matrix_mx_puppet_discord_provisioning_whitelist:
-  - "@.*:{{ matrix_domain|regex_escape }}"
+  - "@.*:{{ matrix_domain | regex_escape }}"
 
 # Leave empty to disable blacklist
 # "@user:server.com" disallow a specific user
@@ -88,11 +88,11 @@ matrix_mx_puppet_discord_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_mx_puppet_discord_configuration_yaml`.
 
-matrix_mx_puppet_discord_configuration_extension: "{{ matrix_mx_puppet_discord_configuration_extension_yaml|from_yaml if matrix_mx_puppet_discord_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_mx_puppet_discord_configuration_extension: "{{ matrix_mx_puppet_discord_configuration_extension_yaml | from_yaml if matrix_mx_puppet_discord_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_mx_puppet_discord_configuration_yaml`.
-matrix_mx_puppet_discord_configuration: "{{ matrix_mx_puppet_discord_configuration_yaml|from_yaml|combine(matrix_mx_puppet_discord_configuration_extension, recursive=True) }}"
+matrix_mx_puppet_discord_configuration: "{{ matrix_mx_puppet_discord_configuration_yaml | from_yaml | combine(matrix_mx_puppet_discord_configuration_extension, recursive=True) }}"
 
 matrix_mx_puppet_discord_registration_yaml: |
   as_token: "{{ matrix_mx_puppet_discord_appservice_token }}"
@@ -101,15 +101,15 @@ matrix_mx_puppet_discord_registration_yaml: |
   namespaces:
     users:
       - exclusive: true
-        regex: '@_discordpuppet_.*:{{ matrix_mx_puppet_discord_homeserver_domain|regex_escape }}'
+        regex: '@_discordpuppet_.*:{{ matrix_mx_puppet_discord_homeserver_domain | regex_escape }}'
     rooms: []
     aliases:
       - exclusive: true
-        regex: '#_discordpuppet_.*:{{ matrix_mx_puppet_discord_homeserver_domain|regex_escape }}'
+        regex: '#_discordpuppet_.*:{{ matrix_mx_puppet_discord_homeserver_domain | regex_escape }}'
   protocols: []
   rate_limited: false
   sender_localpart: _discordpuppet_bot
   url: {{ matrix_mx_puppet_discord_appservice_address }}
   de.sorunome.msc2409.push_ephemeral: true
 
-matrix_mx_puppet_discord_registration: "{{ matrix_mx_puppet_discord_registration_yaml|from_yaml }}"
+matrix_mx_puppet_discord_registration: "{{ matrix_mx_puppet_discord_registration_yaml | from_yaml }}"

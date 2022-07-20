@@ -163,7 +163,7 @@ bridge:
     resend_bridge_info: false
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!tw"
+    command_prefix: "{{ matrix_mautrix_twitter_command_prefix }}"
 
     # Permissions for using the bridge.
     # Permitted values:
@@ -198,9 +198,9 @@ logging:
             formatter: colored
     loggers:
         mau:
-            level: WARNING
+            level: {{ matrix_mautrix_twitter_logging_level|to_json }}
         aiohttp:
-            level: WARNING
+            level: {{ matrix_mautrix_twitter_logging_level|to_json }}
     root:
-        level: WARNING
+        level: {{ matrix_mautrix_twitter_logging_level|to_json }}
         handlers: [console]

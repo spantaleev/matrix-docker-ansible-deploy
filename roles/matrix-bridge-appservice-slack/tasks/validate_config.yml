@@ -1,7 +1,7 @@
 ---
 
 - name: Fail if required settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
   when: "vars[item] == ''"
@@ -13,7 +13,7 @@
     - "matrix_appservice_slack_id_token"
 
 - name: (Deprecation) Catch and report renamed settings
-  fail:
+  ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).

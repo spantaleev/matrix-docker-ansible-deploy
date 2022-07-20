@@ -1,10 +1,20 @@
 ---
 
 - name: Fail if required settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
   when: "vars[item] == ''"
   with_items:
     - "matrix_mautrix_whatsapp_appservice_token"
     - "matrix_mautrix_whatsapp_homeserver_token"
+
+
+- name: (Deprecation) Catch and report renamed settings
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_mautrix_whatsapp_log_level', 'new': 'matrix_mautrix_whatsapp_logging_level'}

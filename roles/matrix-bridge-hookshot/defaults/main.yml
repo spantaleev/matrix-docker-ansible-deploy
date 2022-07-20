@@ -1,7 +1,7 @@
 ---
 
 # A bridge between Matrix and multiple project management services, such as GitHub, GitLab and JIRA.
-# https://github.com/matrix-org/matrix-hookshot
+# Project source code URL: https://github.com/matrix-org/matrix-hookshot
 
 matrix_hookshot_enabled: true
 
@@ -10,7 +10,7 @@ matrix_hookshot_container_image_self_build: false
 matrix_hookshot_container_image_self_build_repo: "https://github.com/matrix-org/matrix-hookshot.git"
 matrix_hookshot_container_image_self_build_branch: "{{ 'main' if matrix_hookshot_version == 'latest' else matrix_hookshot_version }}"
 
-matrix_hookshot_version: 1.7.3
+matrix_hookshot_version: 1.8.1
 
 matrix_hookshot_docker_image: "{{ matrix_hookshot_docker_image_name_prefix }}halfshot/matrix-hookshot:{{ matrix_hookshot_version }}"
 matrix_hookshot_docker_image_name_prefix: "{{ 'localhost/' if matrix_hookshot_container_image_self_build else matrix_container_global_registry_prefix }}"
@@ -72,7 +72,7 @@ matrix_hookshot_github_oauth_uri: "{{ matrix_hookshot_urlprefix }}{{ matrix_hook
 # These are the default settings mentioned here and don't need to be modified: https://matrix-org.github.io/matrix-hookshot/usage/room_configuration/github_repo.html#configuration
 matrix_hookshot_github_ignore_hooks: "{}"
 matrix_hookshot_github_command_prefix: '!gh'
-matrix_hookshot_github_showIssueRoomLink: false
+matrix_hookshot_github_showIssueRoomLink: false  # noqa var-naming
 matrix_hookshot_github_pr_diff: "{enabled: false, maxLines: 5}"
 matrix_hookshot_github_including_labels: ''
 matrix_hookshot_github_excluding_labels: ''
@@ -97,7 +97,7 @@ matrix_hookshot_gitlab_secret: ''
 matrix_hookshot_figma_enabled: false
 # Default value of matrix_hookshot_figma_endpoint: "/hookshot/webhooks/figma/webhook"
 matrix_hookshot_figma_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/figma/webhook"
-matrix_hookshot_figma_publicUrl: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_figma_endpoint }}"
+matrix_hookshot_figma_publicUrl: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_figma_endpoint }}"  # noqa var-naming
 # To bridge figma webhooks, you need to configure one of multiple instances like this:
 # matrix_hookshot_figma_instances:
 #   your-instance:
@@ -144,9 +144,9 @@ matrix_hookshot_provisioning_endpoint: "{{ matrix_hookshot_public_endpoint }}{{ 
 
 matrix_hookshot_widgets_enabled: true
 matrix_hookshot_widgets_port: 9003
-matrix_hookshot_widgets_addToAdminRooms: false  # default off as it is a beta feature
-matrix_hookshot_widgets_roomSetupWidget_enabled: true
-matrix_hookshot_widgets_roomSetupWidget_addOnInvite: false
+matrix_hookshot_widgets_addToAdminRooms: false  # default off as it is a beta feature  # noqa var-naming
+matrix_hookshot_widgets_roomSetupWidget_enabled: true   # noqa var-naming
+matrix_hookshot_widgets_roomSetupWidget_addOnInvite: false   # noqa var-naming
 # `disallowedIpRanges` describes which IP ranges should be disallowed when resolving homeserver IP addresses (for security reasons). Unless you know what you are doing, it is recommended to not include this key. The following IPs are blocked by default, unless you supply another list.
 # matrix_hookshot_widgets_disallowedIpRanges:
 #   - 127.0.0.0/8
@@ -168,12 +168,12 @@ matrix_hookshot_widgets_roomSetupWidget_addOnInvite: false
 #   - 2001:db8::/32
 #   - ff00::/8
 #   - fec0::/10
-matrix_hookshot_widgets_disallowedIpRanges: ''
+matrix_hookshot_widgets_disallowedIpRanges: ''   # noqa var-naming
 matrix_hookshot_widgets_internal: "/widgetapi"
 # Default value of matrix_hookshot_widgets_endpoint: "/hookshot/widgetapi"
 matrix_hookshot_widgets_endpoint: "{{ matrix_hookshot_public_endpoint }}{{ matrix_hookshot_widgets_internal }}"
-matrix_hookshot_widgets_publicUrl: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_widgets_endpoint }}/v1/static"
-matrix_hookshot_widgets_branding_widgetTitle: "Hookshot Configuration"
+matrix_hookshot_widgets_publicUrl: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_widgets_endpoint }}/v1/static"   # noqa var-naming
+matrix_hookshot_widgets_branding_widgetTitle: "Hookshot Configuration"   # noqa var-naming
 
 
 # You can configure access to the bridge as documented here https://matrix-org.github.io/matrix-hookshot/setup.html#permissions
@@ -233,11 +233,11 @@ matrix_hookshot_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_hookshot_configuration_yaml`.
 
-matrix_hookshot_configuration_extension: "{{ matrix_hookshot_configuration_extension_yaml|from_yaml if matrix_hookshot_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_hookshot_configuration_extension: "{{ matrix_hookshot_configuration_extension_yaml | from_yaml if matrix_hookshot_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_hookshot_configuration_yaml`.
-matrix_hookshot_configuration: "{{ matrix_hookshot_configuration_yaml|from_yaml|combine(matrix_hookshot_configuration_extension, recursive=True) }}"
+matrix_hookshot_configuration: "{{ matrix_hookshot_configuration_yaml | from_yaml | combine(matrix_hookshot_configuration_extension, recursive=True) }}"
 
 # Default registration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
@@ -255,8 +255,8 @@ matrix_hookshot_registration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_hookshot_registration_yaml`.
 
-matrix_hookshot_registration_extension: "{{ matrix_hookshot_registration_extension_yaml|from_yaml if matrix_hookshot_registration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_hookshot_registration_extension: "{{ matrix_hookshot_registration_extension_yaml | from_yaml if matrix_hookshot_registration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final registration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_hookshot_registration_yaml`.
-matrix_hookshot_registration: "{{ matrix_hookshot_registration_yaml|from_yaml|combine(matrix_hookshot_registration_extension, recursive=True) }}"
+matrix_hookshot_registration: "{{ matrix_hookshot_registration_yaml | from_yaml | combine(matrix_hookshot_registration_extension, recursive=True) }}"

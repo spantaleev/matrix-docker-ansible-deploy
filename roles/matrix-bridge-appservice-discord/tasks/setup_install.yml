@@ -1,29 +1,31 @@
 ---
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_appservice_discord_requires_restart: false
 
 - block:
     - name: Check if an SQLite database already exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ matrix_appservice_discord_sqlite_database_path_local }}"
       register: matrix_appservice_discord_sqlite_database_path_local_stat_result
 
     - block:
-        - set_fact:
+        - ansible.builtin.set_fact:
             matrix_postgres_db_migration_request:
               src: "{{ matrix_appservice_discord_sqlite_database_path_local }}"
               dst: "{{ matrix_appservice_discord_database_connString }}"
-              caller: "{{ role_path|basename }}"
+              caller: "{{ role_path | basename }}"
               engine_variable_name: 'matrix_appservice_discord_database_engine'
               engine_old: 'sqlite'
               systemd_services_to_stop: ['matrix-appservice-discord.service']
 
-        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+        - ansible.builtin.import_role:
+            name: matrix-postgres
+            tasks_from: migrate_db_to_postgres
 
-        - set_fact:
+        - ansible.builtin.set_fact:
             matrix_appservice_discord_requires_restart: true
-      when: "matrix_appservice_discord_sqlite_database_path_local_stat_result.stat.exists|bool"
+      when: "matrix_appservice_discord_sqlite_database_path_local_stat_result.stat.exists | bool"
   when: "matrix_appservice_discord_database_engine == 'postgres'"
 
 - name: Ensure Appservice Discord image is pulled
@@ -38,7 +40,7 @@
   until: result is not failed
 
 - name: Ensure AppService Discord paths exist
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: 0750
@@ -50,12 +52,12 @@
     - "{{ matrix_appservice_discord_data_path }}"
 
 - name: Check if an old database file already exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_appservice_discord_base_path }}/discord.db"
   register: matrix_appservice_discord_stat_db
 
 - name: (Data relocation) Ensure matrix-appservice-discord.service is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-appservice-discord
     state: stopped
     enabled: false
@@ -64,7 +66,7 @@
   when: "matrix_appservice_discord_stat_db.stat.exists"
 
 - name: (Data relocation) Move AppService Discord discord.db file to ./data directory
-  command: "mv {{ matrix_appservice_discord_base_path }}/{{ item }} {{ matrix_appservice_discord_data_path }}/{{ item }}"
+  ansible.builtin.command: "mv {{ matrix_appservice_discord_base_path }}/{{ item }} {{ matrix_appservice_discord_data_path }}/{{ item }}"
   with_items:
     - discord.db
     - user-store.db
@@ -72,16 +74,16 @@
   when: "matrix_appservice_discord_stat_db.stat.exists"
 
 - name: Ensure AppService Discord config.yaml installed
-  copy:
-    content: "{{ matrix_appservice_discord_configuration|to_nice_yaml(indent=2, width=999999) }}"
+  ansible.builtin.copy:
+    content: "{{ matrix_appservice_discord_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_discord_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure AppService Discord registration.yaml installed
-  copy:
-    content: "{{ matrix_appservice_discord_registration|to_nice_yaml(indent=2, width=999999) }}"
+  ansible.builtin.copy:
+    content: "{{ matrix_appservice_discord_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_discord_config_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
@@ -90,7 +92,7 @@
 # If `matrix_appservice_discord_client_id` hasn't changed, the same invite link would be generated.
 # We intentionally suppress Ansible changes.
 - name: Generate AppService Discord invite link
-  shell: >-
+  ansible.builtin.shell: >-
     {{ matrix_host_command_docker }} run --rm --name matrix-appservice-discord-link-gen
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
     --cap-drop=ALL
@@ -101,19 +103,19 @@
   changed_when: false
 
 - name: Ensure matrix-appservice-discord.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-appservice-discord.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-appservice-discord.service"
     mode: 0644
   register: matrix_appservice_discord_systemd_service_result
 
 - name: Ensure systemd reloaded after matrix-appservice-discord.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_appservice_discord_systemd_service_result.changed"
 
 - name: Ensure matrix-appservice-discord.service restarted, if necessary
-  service:
+  ansible.builtin.service:
     name: "matrix-appservice-discord.service"
     state: restarted
-  when: "matrix_appservice_discord_requires_restart|bool"
+  when: "matrix_appservice_discord_requires_restart | bool"

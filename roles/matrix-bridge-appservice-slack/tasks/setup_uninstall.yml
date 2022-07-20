@@ -1,12 +1,12 @@
 ---
 
 - name: Check existence of matrix-appservice-slack service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-appservice-slack.service"
   register: matrix_appservice_slack_service_stat
 
 - name: Ensure matrix-appservice-slack is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-appservice-slack
     state: stopped
     enabled: false
@@ -14,12 +14,12 @@
   when: "matrix_appservice_slack_service_stat.stat.exists"
 
 - name: Ensure matrix-appservice-slack.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-appservice-slack.service"
     state: absent
   when: "matrix_appservice_slack_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-appservice-slack.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_appservice_slack_service_stat.stat.exists"

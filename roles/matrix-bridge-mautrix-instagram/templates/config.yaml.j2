@@ -135,7 +135,7 @@ bridge:
     # Whether or not the bridge should backfill chats when reconnecting.
     resync: true
     # Should even disconnected users be reconnected?
-    always: false  
+    always: false
   # End-to-bridge encryption support options. These require matrix-nio to be installed with pip
   # and login_shared_secret to be configured in order to get a device for the bridge bot.
   #
@@ -176,7 +176,7 @@ bridge:
   unimportant_bridge_notices: true
 
   # The prefix for commands. Only required in non-management rooms.
-  command_prefix: "!ig"
+  command_prefix: "{{ matrix_mautrix_instagram_command_prefix }}"
   # Permissions for using the bridge.
   # Permitted values:
   #       user - Use the bridge with puppeting.
@@ -219,13 +219,13 @@ logging:
       formatter: colored
   loggers:
     mau:
-      level: WARNING
+      level: {{ matrix_mautrix_instagram_logging_level|to_json }}
     mauigpapi:
-      level: WARNING
+      level: {{ matrix_mautrix_instagram_logging_level|to_json }}
     paho:
-      level: WARNING
+      level: {{ matrix_mautrix_instagram_logging_level|to_json }}
     aiohttp:
-      level: WARNING
+      level: {{ matrix_mautrix_instagram_logging_level|to_json }}
   root:
-    level: WARNING
+    level: {{ matrix_mautrix_instagram_logging_level|to_json }}
     handlers: [console]

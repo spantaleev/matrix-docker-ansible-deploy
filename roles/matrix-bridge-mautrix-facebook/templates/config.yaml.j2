@@ -86,7 +86,7 @@ bridge:
     - first_name
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!fb"
+    command_prefix: "{{ matrix_mautrix_facebook_command_prefix }}"
 
     # Number of chats to sync (and create portals for) on startup/login.
     # Set 0 to disable automatic syncing.
@@ -253,11 +253,11 @@ logging:
             formatter: colored
     loggers:
         mau:
-            level: WARNING
+            level: {{ matrix_mautrix_facebook_logging_level|to_json }}
         paho:
-            level: WARNING
+            level: {{ matrix_mautrix_facebook_logging_level|to_json }}
         aiohttp:
-            level: WARNING
+            level: {{ matrix_mautrix_facebook_logging_level|to_json }}
     root:
-        level: WARNING
+        level: {{ matrix_mautrix_facebook_logging_level|to_json }}
         handlers: [console]

@@ -22,16 +22,16 @@ matrix_identity_server_url: "{{ ('https://' + matrix_server_fqn_matrix) if matri
 matrix_homeserver_container_url: |-
   {{
     'http://matrix-nginx-proxy:12080' if matrix_nginx_proxy_enabled else {
-      'synapse': ('http://matrix-synapse:'+ matrix_synapse_container_client_api_port|string),
-      'dendrite': ('http://matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
+      'synapse': ('http://matrix-synapse:'+ matrix_synapse_container_client_api_port | string),
+      'dendrite': ('http://matrix-dendrite:' + matrix_dendrite_http_bind_port | string),
     }[matrix_homeserver_implementation]
   }}
 
 matrix_homeserver_container_federation_url: |-
   {{
     'http://matrix-nginx-proxy:12088' if matrix_nginx_proxy_enabled else {
-      'synapse': ('http://matrix-synapse:'+ matrix_synapse_container_federation_api_plain_port|string),
-      'dendrite': ('http://matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
+      'synapse': ('http://matrix-synapse:'+ matrix_synapse_container_federation_api_plain_port | string),
+      'dendrite': ('http://matrix-dendrite:' + matrix_dendrite_http_bind_port | string),
     }[matrix_homeserver_implementation]
   }}
 
@@ -729,44 +729,6 @@ matrix_hookshot_urlprefix: "http{{ 's' if matrix_nginx_proxy_https_enabled else 
 #
 ######################################################################
 
-######################################################################
-#
-# matrix-bridge-mx-puppet-skype
-#
-######################################################################
-
-# We don't enable bridges by default.
-matrix_mx_puppet_skype_enabled: false
-
-matrix_mx_puppet_skype_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
-
-matrix_mx_puppet_skype_systemd_required_services_list: |
-  {{
-    ['docker.service']
-    +
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-    +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
-    +
-    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
-  }}
-
-matrix_mx_puppet_skype_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'skype.as.tok') | to_uuid }}"
-
-matrix_mx_puppet_skype_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'skype.hs.tok') | to_uuid }}"
-
-matrix_mx_puppet_skype_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
-
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_mx_puppet_skype_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
-matrix_mx_puppet_skype_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.skype.db') | to_uuid }}"
-
-######################################################################
-#
-# /matrix-bridge-mx-puppet-skype
-#
-######################################################################
-
 
 ######################################################################
 #
@@ -1236,7 +1198,7 @@ matrix_backup_borg_postgresql_databases: |
         'name': matrix_synapse_database_database
     }] if (matrix_synapse_enabled and matrix_synapse_database_database == matrix_postgres_db_name and matrix_synapse_database_host == 'matrix-postgres') else [])
     +
-    matrix_postgres_additional_databases)|map(attribute='name')|list
+    matrix_postgres_additional_databases)|map(attribute='name') | list
   }}
 matrix_backup_borg_location_source_directories:
   - "{{ matrix_base_data_path }}"
@@ -1509,7 +1471,7 @@ matrix_ma1sd_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 # Normally, matrix-nginx-proxy is enabled and nginx can reach ma1sd over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # ma1sd's web-server port.
-matrix_ma1sd_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:' + matrix_ma1sd_container_port|string }}"
+matrix_ma1sd_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:' + matrix_ma1sd_container_port | string }}"
 
 
 # We enable Synapse integration via its Postgres database by default.
@@ -1592,6 +1554,7 @@ matrix_nginx_proxy_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled }}"
 matrix_nginx_proxy_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
 matrix_nginx_proxy_proxy_grafana_enabled: "{{ matrix_grafana_enabled }}"
 matrix_nginx_proxy_proxy_sygnal_enabled: "{{ matrix_sygnal_enabled }}"
+matrix_nginx_proxy_proxy_ntfy_enabled: "{{ matrix_ntfy_enabled }}"
 
 matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: "{{ matrix_corporal_enabled and matrix_corporal_http_api_enabled }}"
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
@@ -1617,14 +1580,14 @@ matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "127.0.0.1:1
 matrix_nginx_proxy_proxy_synapse_enabled: "{{ matrix_synapse_enabled }}"
 matrix_nginx_proxy_proxy_synapse_client_api_addr_with_container: "matrix-synapse:{{ matrix_synapse_container_client_api_port }}"
 matrix_nginx_proxy_proxy_synapse_client_api_addr_sans_container: "127.0.0.1:{{ matrix_synapse_container_client_api_port }}"
-matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container: "matrix-synapse:{{matrix_synapse_container_federation_api_plain_port|string}}"
-matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container: "localhost:{{matrix_synapse_container_federation_api_plain_port|string}}"
+matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container: "matrix-synapse:{{matrix_synapse_container_federation_api_plain_port | string}}"
+matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container: "127.0.0.1:{{matrix_synapse_container_federation_api_plain_port | string}}"
 
 matrix_nginx_proxy_proxy_dendrite_enabled: "{{ matrix_dendrite_enabled }}"
-matrix_nginx_proxy_proxy_dendrite_client_api_addr_with_container: "matrix-dendrite:{{ matrix_dendrite_http_bind_port|string }}"
-matrix_nginx_proxy_proxy_dendrite_client_api_addr_sans_container: "127.0.0.1:{{ matrix_dendrite_http_bind_port|string }}"
-matrix_nginx_proxy_proxy_dendrite_federation_api_addr_with_container: "matrix-dendrite:{{ matrix_dendrite_http_bind_port|string }}"
-matrix_nginx_proxy_proxy_dendrite_federation_api_addr_sans_container: "127.0.0.1:{{ matrix_dendrite_http_bind_port|string }}"
+matrix_nginx_proxy_proxy_dendrite_client_api_addr_with_container: "matrix-dendrite:{{ matrix_dendrite_http_bind_port | string }}"
+matrix_nginx_proxy_proxy_dendrite_client_api_addr_sans_container: "127.0.0.1:{{ matrix_dendrite_http_bind_port | string }}"
+matrix_nginx_proxy_proxy_dendrite_federation_api_addr_with_container: "matrix-dendrite:{{ matrix_dendrite_http_bind_port | string }}"
+matrix_nginx_proxy_proxy_dendrite_federation_api_addr_sans_container: "127.0.0.1:{{ matrix_dendrite_http_bind_port | string }}"
 
 # When matrix-nginx-proxy is disabled, the actual port number that the vhost uses may begin to matter.
 matrix_nginx_proxy_proxy_matrix_federation_port: "{{ matrix_federation_public_port }}"
@@ -1674,6 +1637,8 @@ matrix_nginx_proxy_systemd_wanted_services_list: |
     +
     (['matrix-sygnal.service'] if matrix_sygnal_enabled else [])
     +
+    (['matrix-ntfy.service'] if matrix_ntfy_enabled else [])
+    +
     (['matrix-jitsi.service'] if matrix_jitsi_enabled else [])
     +
     (['matrix-bot-go-neb.service'] if matrix_bot_go_neb_enabled else [])
@@ -1706,6 +1671,8 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     ([matrix_server_fqn_grafana] if matrix_grafana_enabled else [])
     +
     ([matrix_server_fqn_sygnal] if matrix_sygnal_enabled else [])
+    +
+    ([matrix_server_fqn_ntfy] if matrix_ntfy_enabled else [])
     +
     ([matrix_domain] if matrix_nginx_proxy_base_domain_serving_enabled else [])
     +
@@ -1905,12 +1872,6 @@ matrix_postgres_additional_databases: |
     }] if (matrix_mautrix_whatsapp_enabled and matrix_mautrix_whatsapp_database_engine == 'postgres' and matrix_mautrix_whatsapp_database_hostname == 'matrix-postgres') else [])
     +
     ([{
-      'name': matrix_mx_puppet_skype_database_name,
-      'username': matrix_mx_puppet_skype_database_username,
-      'password': matrix_mx_puppet_skype_database_password,
-    }] if (matrix_mx_puppet_skype_enabled and matrix_mx_puppet_skype_database_engine == 'postgres' and matrix_mx_puppet_skype_database_hostname == 'matrix-postgres') else [])
-    +
-    ([{
       'name': matrix_mx_puppet_slack_database_name,
       'username': matrix_mx_puppet_slack_database_username,
       'password': matrix_mx_puppet_slack_database_password,
@@ -1970,14 +1931,14 @@ matrix_postgres_import_roles_to_ignore: |
   {{
     [matrix_postgres_connection_username]
     +
-    matrix_postgres_additional_databases|map(attribute='username')|list
+    matrix_postgres_additional_databases|map(attribute='username') | list
   }}
 
 matrix_postgres_import_databases_to_ignore: |
   {{
     [matrix_postgres_db_name]
     +
-    matrix_postgres_additional_databases|map(attribute='name')|list
+    matrix_postgres_additional_databases|map(attribute='name') | list
   }}
 
 ######################################################################
@@ -2003,6 +1964,22 @@ matrix_sygnal_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enable
 ######################################################################
 #
 # /matrix-sygnal
+#
+######################################################################
+
+######################################################################
+#
+# matrix-ntfy
+#
+######################################################################
+
+matrix_ntfy_enabled: false
+
+matrix_ntfy_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:2586' }}"
+
+######################################################################
+#
+# /matrix-ntfy
 #
 ######################################################################
 
@@ -2127,18 +2104,18 @@ matrix_synapse_container_image_self_build: "{{ matrix_architecture not in ['arm6
 
 # When ma1sd is enabled, we can use it to validate email addresses and phone numbers.
 # Synapse can validate email addresses by itself as well, but it's probably not what we want by default when we have an identity server.
-matrix_synapse_account_threepid_delegates_email: "{{ 'http://matrix-ma1sd:' + matrix_ma1sd_container_port|string if matrix_ma1sd_enabled else '' }}"
-matrix_synapse_account_threepid_delegates_msisdn: "{{ 'http://matrix-ma1sd:' + matrix_ma1sd_container_port|string if matrix_ma1sd_enabled else '' }}"
+matrix_synapse_account_threepid_delegates_email: "{{ 'http://matrix-ma1sd:' + matrix_ma1sd_container_port | string if matrix_ma1sd_enabled else '' }}"
+matrix_synapse_account_threepid_delegates_msisdn: "{{ 'http://matrix-ma1sd:' + matrix_ma1sd_container_port | string if matrix_ma1sd_enabled else '' }}"
 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Synapse over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it,
 # you can expose Synapse's ports to the host.
 #
 # For exposing the Matrix Client API's port (plain HTTP) to the local host.
-matrix_synapse_container_client_api_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:' + matrix_synapse_container_client_api_port|string }}"
+matrix_synapse_container_client_api_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:' + matrix_synapse_container_client_api_port | string }}"
 #
 # For exposing the Matrix Federation API's plain port (plain HTTP) to the local host.
-matrix_synapse_container_federation_api_plain_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:' + matrix_synapse_container_federation_api_plain_port|string }}"
+matrix_synapse_container_federation_api_plain_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:' + matrix_synapse_container_federation_api_plain_port | string }}"
 #
 # For exposing the Matrix Federation API's TLS port (HTTPS) to the internet on all network interfaces.
 matrix_synapse_container_federation_api_tls_host_bind_port: "{{ matrix_federation_public_port if (matrix_synapse_federation_enabled and matrix_synapse_tls_federation_listener_enabled) else '' }}"
@@ -2282,10 +2259,10 @@ matrix_prometheus_scraper_node_enabled: "{{ matrix_prometheus_node_exporter_enab
 matrix_prometheus_scraper_node_targets: "{{ ['matrix-prometheus-node-exporter:9100'] if matrix_prometheus_node_exporter_enabled else [] }}"
 
 matrix_prometheus_scraper_postgres_enabled: "{{ matrix_prometheus_postgres_exporter_enabled }}"
-matrix_prometheus_scraper_postgres_targets: "{{ ['matrix-prometheus-postgres-exporter:'+ matrix_prometheus_postgres_exporter_port|string] if matrix_prometheus_scraper_postgres_enabled else [] }}"
+matrix_prometheus_scraper_postgres_targets: "{{ ['matrix-prometheus-postgres-exporter:'+ matrix_prometheus_postgres_exporter_port | string] if matrix_prometheus_scraper_postgres_enabled else [] }}"
 
 matrix_prometheus_scraper_hookshot_enabled: "{{ matrix_hookshot_metrics_enabled|default(false) }}"
-matrix_prometheus_scraper_hookshot_targets: "{{ [matrix_hookshot_container_url|string +':'+ matrix_hookshot_metrics_port|string] if matrix_hookshot_metrics_enabled else [] }}"
+matrix_prometheus_scraper_hookshot_targets: "{{ [matrix_hookshot_container_url | string +':'+ matrix_hookshot_metrics_port | string] if matrix_hookshot_metrics_enabled else [] }}"
 
 ######################################################################
 #
@@ -2414,7 +2391,7 @@ matrix_postgres_backup_databases: |
         'name': matrix_synapse_database_database
     }] if (matrix_synapse_enabled and matrix_synapse_database_database == matrix_postgres_db_name and matrix_synapse_database_host == 'matrix-postgres') else [])
     +
-    matrix_postgres_additional_databases)|map(attribute='name')|list
+    matrix_postgres_additional_databases)|map(attribute='name') | list
   }}
 
 ######################################################################
@@ -2436,10 +2413,10 @@ matrix_dendrite_enabled: "{{ matrix_homeserver_implementation == 'dendrite' }}"
 # you can expose Dendrite's ports to the host.
 #
 # For exposing Dendrite's plain HTTP server to the local host.
-matrix_dendrite_container_http_host_bind_address: "{{ '' if matrix_nginx_proxy_enabled else ('127.0.0.1:' + matrix_dendrite_http_bind_port|string) }}"
+matrix_dendrite_container_http_host_bind_address: "{{ '' if matrix_nginx_proxy_enabled else ('127.0.0.1:' + matrix_dendrite_http_bind_port | string) }}"
 #
 # For exposing Dendrite's HTTPS server to the local host.
-matrix_dendrite_container_https_host_bind_address: "{{ '' if matrix_nginx_proxy_enabled or not matrix_dendrite_https_bind_port else ('127.0.0.1:' + matrix_dendrite_https_bind_port|string) }}"
+matrix_dendrite_container_https_host_bind_address: "{{ '' if matrix_nginx_proxy_enabled or not matrix_dendrite_https_bind_port else ('127.0.0.1:' + matrix_dendrite_https_bind_port | string) }}"
 
 matrix_dendrite_sync_api_real_ip_header: "{{ 'X-Forwarded-For' if matrix_nginx_proxy_enabled else '' }}"
 

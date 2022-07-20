@@ -1,4 +1,5 @@
 ---
+# Project source code URL: https://github.com/turt2live/matrix-dimension
 
 matrix_dimension_enabled: false
 
@@ -47,7 +48,7 @@ matrix_dimension_integrations_rest_url: "https://{{ matrix_server_fqn_dimension 
 matrix_dimension_integrations_widgets_urls: ["https://{{ matrix_server_fqn_dimension }}/widgets"]
 matrix_dimension_integrations_jitsi_widget_url: "https://{{ matrix_server_fqn_dimension }}/widgets/jitsi"
 
-matrix_dimension_homeserver_federationUrl: ""
+matrix_dimension_homeserver_federationUrl: ""  # noqa var-naming
 
 
 # Database-related configuration fields.
@@ -92,8 +93,8 @@ matrix_dimension_configuration_extension_yaml: |
   #   botToken: "YourTokenHere"
   #
 
-matrix_dimension_configuration_extension: "{{ matrix_dimension_configuration_extension_yaml|from_yaml if matrix_dimension_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_dimension_configuration_extension: "{{ matrix_dimension_configuration_extension_yaml | from_yaml if matrix_dimension_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final Dimension configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_dimension_configuration_yaml`.
-matrix_dimension_configuration: "{{ matrix_dimension_configuration_yaml|from_yaml|combine(matrix_dimension_configuration_extension, recursive=True) }}"
+matrix_dimension_configuration: "{{ matrix_dimension_configuration_yaml | from_yaml | combine(matrix_dimension_configuration_extension, recursive=True) }}"

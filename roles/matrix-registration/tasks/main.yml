@@ -1,33 +1,33 @@
 ---
 
-- import_tasks: "{{ role_path }}/tasks/init.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
   tags:
     - always
 
-- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: "run_setup|bool and matrix_registration_enabled|bool"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: "run_setup | bool and matrix_registration_enabled | bool"
   tags:
     - setup-all
     - setup-matrix-registration
 
-- import_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  when: "run_setup|bool and matrix_registration_enabled|bool"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  when: "run_setup | bool and matrix_registration_enabled | bool"
   tags:
     - setup-all
     - setup-matrix-registration
 
-- import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  when: "run_setup|bool and not matrix_registration_enabled|bool"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+  when: "run_setup | bool and not matrix_registration_enabled | bool"
   tags:
     - setup-all
     - setup-matrix-registration
 
-- import_tasks: "{{ role_path }}/tasks/generate_token.yml"
-  when: "run_setup|bool and matrix_registration_enabled|bool"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/generate_token.yml"
+  when: "run_setup | bool and matrix_registration_enabled | bool"
   tags:
     - generate-matrix-registration-token
 
-- import_tasks: "{{ role_path }}/tasks/list_tokens.yml"
-  when: "run_setup|bool and matrix_registration_enabled|bool"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/list_tokens.yml"
+  when: "run_setup | bool and matrix_registration_enabled | bool"
   tags:
     - list-matrix-registration-tokens

@@ -1,12 +1,12 @@
 ---
 
 - name: Check existence of matrix-mautrix-hangouts service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-mautrix-hangouts.service"
   register: matrix_mautrix_hangouts_service_stat
 
 - name: Ensure matrix-mautrix-hangouts is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-mautrix-hangouts
     state: stopped
     enabled: false
@@ -14,12 +14,12 @@
   when: "matrix_mautrix_hangouts_service_stat.stat.exists"
 
 - name: Ensure matrix-mautrix-hangouts.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-mautrix-hangouts.service"
     state: absent
   when: "matrix_mautrix_hangouts_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-mautrix-hangouts.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_mautrix_hangouts_service_stat.stat.exists"

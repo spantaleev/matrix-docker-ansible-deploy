@@ -1,10 +1,10 @@
 ---
 # A moderation tool for Matrix
-# See: https://github.com/matrix-org/mjolnir
+# Project source code URL: https://github.com/matrix-org/mjolnir
 
 matrix_bot_mjolnir_enabled: true
 
-matrix_bot_mjolnir_version: "v1.4.2"
+matrix_bot_mjolnir_version: "v1.5.0"
 
 matrix_bot_mjolnir_container_image_self_build: false
 matrix_bot_mjolnir_container_image_self_build_repo: "https://github.com/matrix-org/mjolnir.git"
@@ -52,8 +52,8 @@ matrix_bot_mjolnir_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_bot_mjolnir_configuration_yaml`.
 
-matrix_bot_mjolnir_configuration_extension: "{{ matrix_bot_mjolnir_configuration_extension_yaml|from_yaml if matrix_bot_mjolnir_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_bot_mjolnir_configuration_extension: "{{ matrix_bot_mjolnir_configuration_extension_yaml | from_yaml if matrix_bot_mjolnir_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_bot_mjolnir_configuration_yaml`.
-matrix_bot_mjolnir_configuration: "{{ matrix_bot_mjolnir_configuration_yaml|from_yaml|combine(matrix_bot_mjolnir_configuration_extension, recursive=True) }}"
+matrix_bot_mjolnir_configuration: "{{ matrix_bot_mjolnir_configuration_yaml | from_yaml | combine(matrix_bot_mjolnir_configuration_extension, recursive=True) }}"

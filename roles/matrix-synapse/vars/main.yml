@@ -6,7 +6,7 @@ matrix_synapse_federation_api_url_endpoint_public: "https://{{ matrix_server_fqn
 # Tells whether this role had executed or not. Toggled to `true` during runtime.
 matrix_synapse_role_executed: false
 
-matrix_synapse_media_store_directory_name: "{{ matrix_synapse_media_store_path|basename }}"
+matrix_synapse_media_store_directory_name: "{{ matrix_synapse_media_store_path | basename }}"
 
 # A Synapse generic worker can handle both federation and client-server API endpoints.
 # We wish to split these, as we normally serve federation separately and don't want them mixed up.
@@ -24,11 +24,15 @@ matrix_synapse_media_store_directory_name: "{{ matrix_synapse_media_store_path|b
 # so it's not that important whether we forward them or not.
 #
 # Basically, we aim to cover most things. Skipping `/_synapse/client` or a few other minor things doesn't matter too much.
-matrix_synapse_workers_generic_worker_client_server_endpoints: "{{ matrix_synapse_workers_generic_worker_endpoints|default([]) | map('regex_search', '.*/_matrix/client.*')| list | difference([none]) }}"
+matrix_synapse_workers_generic_worker_client_server_endpoints: "{{ matrix_synapse_workers_generic_worker_endpoints | default([]) | map('regex_search', '.*/_matrix/client.*') | list | difference([none]) }}"
 
 # A Synapse generic worker can handle both federation and client-server API endpoints.
 # We wish to split these, as we normally serve federation separately and don't want them mixed up.
 #
 # This is some ugly Ansible/Jinja2 hack (seen here: https://stackoverflow.com/a/47831492),
 # which takes a list of various strings and removes the ones NOT containing `/_matrix/federation` or `/_matrix/key` anywhere in them.
-matrix_synapse_workers_generic_worker_federation_endpoints: "{{ matrix_synapse_workers_generic_worker_endpoints|default([]) | map('regex_search', '.*(/_matrix/federation|/_matrix/key).*')| list | difference([none]) }}"
+matrix_synapse_workers_generic_worker_federation_endpoints: "{{ matrix_synapse_workers_generic_worker_endpoints | default([]) | map('regex_search', matrix_synapse_workers_generic_worker_federation_endpoints_regex) | list | difference([none]) }}"
+
+# matrix_synapse_workers_generic_worker_federation_endpoints_regex contains the regex used in matrix_synapse_workers_generic_worker_federation_endpoints.
+# It's intentionally put in a separate variable, to avoid tripping ansible-lint's var-spacing rule.
+matrix_synapse_workers_generic_worker_federation_endpoints_regex: '.*(/_matrix/federation|/_matrix/key).*'

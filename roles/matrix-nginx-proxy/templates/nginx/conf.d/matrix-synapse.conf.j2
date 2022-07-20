@@ -1,9 +1,9 @@
 #jinja2: lstrip_blocks: "True"
 
-{% set generic_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'generic_worker')|list %}
-{% set media_repository_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'media_repository')|list %}
-{% set user_dir_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'user_dir')|list %}
-{% set frontend_proxy_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'frontend_proxy')|list %}
+{% set generic_workers = matrix_nginx_proxy_synapse_workers_list | selectattr('type', 'equalto', 'generic_worker') | list %}
+{% set media_repository_workers = matrix_nginx_proxy_synapse_workers_list | selectattr('type', 'equalto', 'media_repository') | list %}
+{% set user_dir_workers = matrix_nginx_proxy_synapse_workers_list | selectattr('type', 'equalto', 'user_dir') | list %}
+{% set frontend_proxy_workers = matrix_nginx_proxy_synapse_workers_list | selectattr('type', 'equalto', 'frontend_proxy') | list %}
 {% if matrix_nginx_proxy_synapse_workers_enabled %}
 	{% if matrix_nginx_proxy_synapse_cache_enabled %}
     	proxy_cache_path  {{ matrix_nginx_proxy_synapse_cache_path }} levels=1:2 keys_zone={{ matrix_nginx_proxy_synapse_cache_keys_zone_name }}:{{ matrix_nginx_proxy_synapse_cache_keys_zone_size }} inactive={{ matrix_nginx_proxy_synapse_cache_inactive_time }} max_size={{ matrix_nginx_proxy_synapse_cache_max_size_mb }}m;

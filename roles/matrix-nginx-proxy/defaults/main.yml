@@ -1,6 +1,7 @@
 ---
+# Project source code URL: https://github.com/nginx/nginx
 matrix_nginx_proxy_enabled: true
-matrix_nginx_proxy_version: 1.21.6-alpine
+matrix_nginx_proxy_version: 1.23.0-alpine
 
 # We use an official nginx image, which we fix-up to run unprivileged.
 # An alternative would be an `nginxinc/nginx-unprivileged` image, but
@@ -192,6 +193,10 @@ matrix_nginx_proxy_proxy_grafana_hostname: "{{ matrix_server_fqn_grafana }}"
 matrix_nginx_proxy_proxy_sygnal_enabled: false
 matrix_nginx_proxy_proxy_sygnal_hostname: "{{ matrix_server_fqn_sygnal }}"
 
+# Controls whether proxying the ntfy domain should be done.
+matrix_nginx_proxy_proxy_ntfy_enabled: false
+matrix_nginx_proxy_proxy_ntfy_hostname: "{{ matrix_server_fqn_ntfy }}"
+
 # Controls whether proxying for (Prometheus) metrics (`/metrics/*`) for the various services should be done (on the matrix domain)
 # If the internal Prometheus server (`matrix-prometheus` role) is used, proxying is not necessary, since Prometheus can access each container directly.
 # This is only useful when an external Prometheus will be collecting metrics.
@@ -311,7 +316,7 @@ matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain: ""
 # Controls whether proxying for the Matrix Federation API should be done.
 matrix_nginx_proxy_proxy_matrix_federation_api_enabled: false
 matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container: "matrix-nginx-proxy:12088"
-matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "localhost:12088"
+matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "127.0.0.1:12088"
 matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb: "{{ (matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb | int) * 3 }}"
 matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/fullchain.pem"
 matrix_nginx_proxy_proxy_matrix_federation_api_ssl_certificate_key: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_nginx_proxy_proxy_matrix_hostname }}/privkey.pem"
@@ -364,6 +369,9 @@ matrix_nginx_proxy_proxy_grafana_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to Sygnal's server configuration (matrix-sygnal.conf).
 matrix_nginx_proxy_proxy_sygnal_additional_server_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to ntfy's server configuration (matrix-ntfy.conf).
+matrix_nginx_proxy_proxy_ntfy_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to the base domain server configuration (matrix-base-domain.conf).
 matrix_nginx_proxy_proxy_domain_additional_server_configuration_blocks: []

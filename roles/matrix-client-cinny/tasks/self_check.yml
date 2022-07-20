@@ -1,10 +1,10 @@
 ---
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_client_cinny_url_endpoint_public: "https://{{ matrix_server_fqn_cinny }}/config.json"
 
 - name: Check Cinny
-  uri:
+  ansible.builtin.uri:
     url: "{{ matrix_client_cinny_url_endpoint_public }}"
     follow_redirects: none
     validate_certs: "{{ matrix_client_cinny_self_check_validate_certificates }}"
@@ -13,10 +13,10 @@
   ignore_errors: true
 
 - name: Fail if Cinny not working
-  fail:
+  ansible.builtin.fail:
     msg: "Failed checking Cinny is up at `{{ matrix_server_fqn_cinny }}` (checked endpoint: `{{ matrix_client_cinny_url_endpoint_public }}`). Is Cinny running? Is port 443 open in your firewall? Full error: {{ matrix_client_cinny_self_check_result }}"
   when: "matrix_client_cinny_self_check_result.failed or 'json' not in matrix_client_cinny_self_check_result"
 
 - name: Report working Cinny
-  debug:
+  ansible.builtin.debug:
     msg: "Cinny at `{{ matrix_server_fqn_cinny }}` is working (checked endpoint: `{{ matrix_client_cinny_url_endpoint_public }}`)"

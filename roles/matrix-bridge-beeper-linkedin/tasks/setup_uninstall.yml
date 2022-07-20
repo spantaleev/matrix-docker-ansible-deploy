@@ -1,12 +1,12 @@
 ---
 
 - name: Check existence of matrix-beeper-linkedin service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-beeper-linkedin.service"
   register: matrix_beeper_linkedin_service_stat
 
 - name: Ensure matrix-beeper-linkedin is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-beeper-linkedin
     state: stopped
     enabled: false
@@ -14,12 +14,12 @@
   when: "matrix_beeper_linkedin_service_stat.stat.exists"
 
 - name: Ensure matrix-beeper-linkedin.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-beeper-linkedin.service"
     state: absent
   when: "matrix_beeper_linkedin_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-beeper-linkedin.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_beeper_linkedin_service_stat.stat.exists"

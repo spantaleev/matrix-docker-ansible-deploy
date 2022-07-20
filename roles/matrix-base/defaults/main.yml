@@ -12,6 +12,21 @@ matrix_domain: ~
 # Example value: "@someone:{{ matrix_domain }}"
 matrix_admin: ''
 
+# Homeserver admin contacts and support page as per MSC 1929
+# See: https://github.com/matrix-org/matrix-spec-proposals/pull/1929
+# Users in form:
+# matrix_homeserver_admin_contacts:
+#   - matrix_id: @admin:domain.tld
+#     email_address: admin@domain.tld
+#     role: admin
+#   - email_address: security@domain.tld
+#     role: security
+# Also see: `matrix_well_known_matrix_support_enabled`
+matrix_homeserver_admin_contacts: []
+# Url string like https://domain.tld/support.html
+# Also see: `matrix_well_known_matrix_support_enabled`
+matrix_homeserver_support_url: ''
+
 # This will contain the homeserver implementation that is in use.
 # Valid values: synapse, dendrite
 #
@@ -58,6 +73,9 @@ matrix_server_fqn_grafana: "stats.{{ matrix_domain }}"
 
 # This is where you access the Sygnal push gateway.
 matrix_server_fqn_sygnal: "sygnal.{{ matrix_domain }}"
+
+# This is where you access the ntfy push notification service.
+matrix_server_fqn_ntfy: "ntfy.{{ matrix_domain }}"
 
 matrix_federation_public_port: 8448
 
@@ -116,8 +134,8 @@ matrix_host_command_openssl: "/usr/bin/env openssl"
 matrix_host_command_systemctl: "/usr/bin/env systemctl"
 matrix_host_command_sh: "/usr/bin/env sh"
 
-matrix_ntpd_package: "{{ 'systemd-timesyncd' if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7) or (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 18)  else ( 'systemd' if ansible_os_family == 'Suse' else 'ntp' ) }}"
-matrix_ntpd_service: "{{ 'systemd-timesyncd' if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7) or (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 18) or ansible_distribution == 'Archlinux' or ansible_os_family == 'Suse' else ('ntpd' if ansible_os_family == 'RedHat' else 'ntp') }}"
+matrix_ntpd_package: "{{ 'systemd-timesyncd' if (ansible_os_family == 'RedHat' and ansible_distribution_major_version | int > 7) or (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version | int > 18)  else ( 'systemd' if ansible_os_family == 'Suse' else 'ntp' ) }}"
+matrix_ntpd_service: "{{ 'systemd-timesyncd' if (ansible_os_family == 'RedHat' and ansible_distribution_major_version | int > 7) or (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version | int > 18) or ansible_distribution == 'Archlinux' or ansible_os_family == 'Suse' else ('ntpd' if ansible_os_family == 'RedHat' else 'ntp') }}"
 
 matrix_homeserver_url: "https://{{ matrix_server_fqn_matrix }}"
 
@@ -139,7 +157,7 @@ matrix_integration_manager_ui_url: ~
 # The domain name where a Jitsi server is self-hosted.
 # If set, `/.well-known/matrix/client` will suggest Element clients to use that Jitsi server.
 # See: https://github.com/vector-im/element-web/blob/develop/docs/jitsi.md#configuring-element-to-use-your-self-hosted-jitsi-server
-matrix_client_element_jitsi_preferredDomain: ''
+matrix_client_element_jitsi_preferredDomain: ''  # noqa var-naming
 
 # Controls whether Element should use End-to-End Encryption by default.
 # Setting this to false will update `/.well-known/matrix/client` and tell Element clients to avoid E2EE.
@@ -184,11 +202,11 @@ matrix_well_known_matrix_client_configuration_default: "{{ lookup('template', 't
 #   }
 matrix_well_known_matrix_client_configuration_extension_json: '{}'
 
-matrix_well_known_matrix_client_configuration_extension: "{{ matrix_well_known_matrix_client_configuration_extension_json|from_json if matrix_well_known_matrix_client_configuration_extension_json|from_json is mapping else {} }}"
+matrix_well_known_matrix_client_configuration_extension: "{{ matrix_well_known_matrix_client_configuration_extension_json | from_json if matrix_well_known_matrix_client_configuration_extension_json | from_json is mapping else {} }}"
 
 # Holds the final `/.well-known/matrix/client` configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_well_known_matrix_client_configuration_default` and `matrix_well_known_matrix_client_configuration_extension_json`.
-matrix_well_known_matrix_client_configuration: "{{ matrix_well_known_matrix_client_configuration_default|combine(matrix_well_known_matrix_client_configuration_extension, recursive=True) }}"
+matrix_well_known_matrix_client_configuration: "{{ matrix_well_known_matrix_client_configuration_default | combine(matrix_well_known_matrix_client_configuration_extension, recursive=True) }}"
 
 # Default `/.well-known/matrix/server` configuration - it covers the generic use case.
 # You can customize it by controlling the various variables inside the template file that it references.
@@ -216,11 +234,23 @@ matrix_well_known_matrix_server_configuration_default: "{{ lookup('template', 't
 #   }
 matrix_well_known_matrix_server_configuration_extension_json: '{}'
 
-matrix_well_known_matrix_server_configuration_extension: "{{ matrix_well_known_matrix_server_configuration_extension_json|from_json if matrix_well_known_matrix_server_configuration_extension_json|from_json is mapping else {} }}"
+matrix_well_known_matrix_server_configuration_extension: "{{ matrix_well_known_matrix_server_configuration_extension_json | from_json if matrix_well_known_matrix_server_configuration_extension_json | from_json is mapping else {} }}"
 
 # Holds the final `/.well-known/matrix/server` configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_well_known_matrix_server_configuration_default` and `matrix_well_known_matrix_server_configuration_extension_json`.
-matrix_well_known_matrix_server_configuration: "{{ matrix_well_known_matrix_server_configuration_default|combine(matrix_well_known_matrix_server_configuration_extension, recursive=True) }}"
+matrix_well_known_matrix_server_configuration: "{{ matrix_well_known_matrix_server_configuration_default | combine(matrix_well_known_matrix_server_configuration_extension, recursive=True) }}"
+
+# The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
+# This is unlike what it does when looking up YAML template files (no automatic parsing there).
+matrix_well_known_matrix_support_configuration_default: "{{ lookup('template', 'templates/static-files/well-known/matrix-support.j2') }}"
+
+matrix_well_known_matrix_support_configuration_extension_json: '{}'
+
+matrix_well_known_matrix_support_configuration_extension: "{{ matrix_well_known_matrix_support_configuration_extension_json | from_json if matrix_well_known_matrix_support_configuration_extension_json | from_json is mapping else {} }}"
+
+# Holds the final `/.well-known/matrix/support` configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_well_known_matrix_support_configuration_default` and `matrix_well_known_matrix_support_configuration_extension_json`.
+matrix_well_known_matrix_support_configuration: "{{ matrix_well_known_matrix_support_configuration_default | combine(matrix_well_known_matrix_support_configuration_extension, recursive=True) }}"
 
 # The Docker network that all services would be put into
 matrix_docker_network: "matrix"
@@ -238,6 +268,13 @@ matrix_vars_yml_snapshotting_src: "{{ inventory_dir }}/host_vars/{{ inventory_ho
 # using certificates for the base domain (`matrix_domain`) and not for the
 # matrix domain (`matrix_server_fqn_matrix`).
 matrix_well_known_matrix_server_enabled: true
+
+# Controls whether a `/.well-known/matrix/support` file is generated and used at all.
+#
+# This is not enabled by default, until the MSC gets accepted: https://github.com/matrix-org/matrix-spec-proposals/pull/1929
+#
+# See `matrix_homeserver_admin_contacts`, `matrix_homeserver_support_url`, etc.
+matrix_well_known_matrix_support_enabled: false
 
 # Controls whether Docker is automatically installed.
 # If you change this to false you must install and update Docker manually. You also need to install the docker (https://pypi.org/project/docker/) Python package.

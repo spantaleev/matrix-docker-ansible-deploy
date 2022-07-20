@@ -1,6 +1,6 @@
 ---
 # ma1sd is a Federated Matrix Identity Server
-# See: https://github.com/ma1uta/ma1sd
+# Project source code URL: https://github.com/ma1uta/ma1sd
 
 matrix_ma1sd_enabled: true
 
@@ -93,9 +93,9 @@ matrix_ma1sd_dns_overwrite_homeserver_client_value: ""
 # https://github.com/ma1uta/ma1sd/blob/master/docs/threepids/session/session-views.md
 matrix_ma1sd_view_session_custom_templates_enabled: false
 # Defaults to: https://github.com/ma1uta/ma1sd/blob/master/src/main/resources/templates/session/tokenSubmitSuccess.html
-matrix_ma1sd_view_session_custom_onTokenSubmit_success_template: ""
+matrix_ma1sd_view_session_custom_onTokenSubmit_success_template: ""  # noqa var-naming
 # Defaults to: https://github.com/ma1uta/ma1sd/blob/master/src/main/resources/templates/session/tokenSubmitFailure.html
-matrix_ma1sd_view_session_custom_onTokenSubmit_failure_template: ""
+matrix_ma1sd_view_session_custom_onTokenSubmit_failure_template: ""  # noqa var-naming
 
 # Override the default email templates
 # To use this, fill in the template variables with the full desired template as a multi-line YAML variable
@@ -156,8 +156,8 @@ matrix_ma1sd_configuration_extension_yaml: |
   #     bindDn: CN=My Ma1sd User,OU=Users,DC=example,DC=org
   #     bindPassword: TheUserPassword
 
-matrix_ma1sd_configuration_extension: "{{ matrix_ma1sd_configuration_extension_yaml|from_yaml if matrix_ma1sd_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_ma1sd_configuration_extension: "{{ matrix_ma1sd_configuration_extension_yaml | from_yaml if matrix_ma1sd_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final ma1sd configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_ma1sd_configuration_yaml`.
-matrix_ma1sd_configuration: "{{ matrix_ma1sd_configuration_yaml|from_yaml|combine(matrix_ma1sd_configuration_extension, recursive=True) }}"
+matrix_ma1sd_configuration: "{{ matrix_ma1sd_configuration_yaml | from_yaml | combine(matrix_ma1sd_configuration_extension, recursive=True) }}"
