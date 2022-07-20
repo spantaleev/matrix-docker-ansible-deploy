@@ -1,3 +1,12 @@
+# 2022-07-20
+
+## maubot support
+
+Thanks to [Stuart Mumford (@Cadair)](https://github.com/cadair) for starting ([PR #373](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/373) and [PR #622](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/622)) and to [Julian-Samuel Gebühr (@moan0s)](https://github.com/moan0s) for finishing up (in [PR #1894](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1894)), the playbook can now help you set up [maubot](https://github.com/maubot/maubot) - a plugin-based Matrix bot system.
+
+See our [Setting up maubot](docs/configuring-playbook-bot-maubot.md) documentation to get started.
+
+
 # 2022-07-14
 
 ## mx-puppet-skype removal

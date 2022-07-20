@@ -37,6 +37,7 @@ List of roles where self-building the Docker image is currently possible:
 - `matrix-bot-mjolnir`
 - `matrix-bot-honoroit`
 - `matrix-bot-matrix-reminder-bot`
+- `matrix-bot-maubot`
 - `matrix-email2matrix`
 
 Adding self-building support to other roles is welcome. Feel free to contribute!
