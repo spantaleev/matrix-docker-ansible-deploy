@@ -79,7 +79,7 @@ If you're managing the base domain by yourself somehow, you'll need to set up se
 
 To make things easy for you to set up, this playbook generates and hosts 2 well-known files on the Matrix domain's server. The files are generated at `/matrix/static-files/.well-known/matrix/` and hosted at `https://matrix.example.com/.well-known/matrix/server` and `https://matrix.example.com/.well-known/matrix/client`, even though this is the wrong place to host them.
 
-You have 4 options when it comes to installing the files on the base domain's server:
+You have 3 options when it comes to installing the files on the base domain's server:
 
 
 ### (Option 1): **Copying the files manually** to your base domain's server
