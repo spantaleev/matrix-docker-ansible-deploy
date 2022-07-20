@@ -33,6 +33,13 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ## Usage
 
 You can visit `matrix.<your-domain>/_matrix/maubot/` to manage your available plugins, clients and instances.
+
+You should start in the following order
+1. **Create one or more clients:** A client is a matrix account which the bot will use to message.
+2. **Upload some Plugins:** Plugins can be obtained from [here](https://github.com/maubot/maubot#plugins) or any other source.
+3. **Create an instance:** An instance is the actual bot. You have to specify a client which the bot instance will use 
+and the plugin (how the bot will behave)
+
 To add a client you first need to create an account and obtain a valid access token.
 
 ## Registering the bot user
