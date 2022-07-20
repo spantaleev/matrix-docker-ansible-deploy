@@ -103,6 +103,10 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot) for scheduling one-off & recurring reminders and alarms - see [docs/configuring-playbook-bot-matrix-reminder-bot.md](docs/configuring-playbook-bot-matrix-reminder-bot.md) for setup documentation
 
+- (optional) [matrix-registration-bot](https://github.com/moan0s/matrix-registration-bot) for invitations by creating and managing registration tokens  - see [docs/configuring-playbook-bot-matrix-registration-bot.md](docs/configuring-playbook-bot-matrix-registration-bot.md) for setup documentation
+
+- (optional) [matrix-maubot](https://github.com/maubot/maubot) a plugin-based Matrix bot system - see [docs/configuring-playbook-bot-matrix-maubot.md](docs/configuring-playbook-bot-matrix-maubot.md) for setup documentation
+
 - (optional) [honoroit](https://gitlab.com/etke.cc/honoroit) helpdesk bot - see [docs/configuring-playbook-bot-honoroit.md](docs/configuring-playbook-bot-honoroit.md) for setup documentation
 
 - (optional) [Go-NEB](https://github.com/matrix-org/go-neb) multi functional bot written in Go - see [docs/configuring-playbook-bot-go-neb.md](docs/configuring-playbook-bot-go-neb.md) for setup documentation
