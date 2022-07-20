@@ -92,6 +92,8 @@ These services are not part of our default installation, but can be enabled by [
 
 - [anoa/matrix-reminder-bot](https://hub.docker.com/r/anoa/matrix-reminder-bot) - the [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot) bot for one-off & recurring reminders and alarms (optional)
 
+- [moanos/matrix-registration-bot/](https://hub.docker.com/r/moanos/matrix-registration-bot/) - the [matrix-registration-bot](https://github.com/moan0s/matrix-registration-bot) bot (manage registration tokens for invitations to the server) (optional)
+
 - [dock.mau.dev/maubot/maubot](https://mau.dev/maubot/maubot/container_registry) - the [maubot](https://github.com/maubot/maubot) bot (a plugin-based Matrix bot system) (optional)
 
 - [etke.cc/honoroit](https://gitlab.com/etke.cc/honoroit/container_registry) - the [honoroit](https://gitlab.com/etke.cc/honoroit) helpdesk bot (optional)
