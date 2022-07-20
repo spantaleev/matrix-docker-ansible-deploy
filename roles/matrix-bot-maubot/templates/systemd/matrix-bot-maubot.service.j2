@@ -26,9 +26,9 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-bot-maubot \
 			{{ arg }} \
 			{% endfor %}
 			--network={{ matrix_docker_network }} \
-			{% if matrix_bot_maubot_expose_management_interface|bool %}
-			-p {{ matrix_bot_maubot_management_interface_port }}:29316 \
-			{% endif %}
+            {% if matrix_bot_maubot_management_interface_http_bind_port | bool %}
+            -p {{ matrix_bot_maubot_management_interface_http_bind_port }}:29316
+            {% endif %}
 			{{ matrix_bot_maubot_docker_image }} \
  			python3 -m maubot -c /data/config.yaml
 
