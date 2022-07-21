@@ -43,7 +43,13 @@ matrix_backup_borg_location_repositories:
  - USER@HOST:REPO
 matrix_backup_borg_storage_encryption_passphrase: "PASSPHRASE"
 matrix_backup_borg_ssh_key_private: |
-	PRIVATE KEY
+  -----BEGIN OPENSSH PRIVATE KEY-----
+  TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZW
+  xpdCwgc2VkIGRvIGVpdXNtb2QgdGVtcG9yIGluY2lkaWR1bnQgdXQgbGFib3JlIGV0IGRv
+  bG9yZSBtYWduYSBhbGlxdWEuIFV0IGVuaW0gYWQgbWluaW0gdmVuaWFtLCBxdWlzIG5vc3
+  RydWQgZXhlcmNpdGF0aW9uIHVsbGFtY28gbGFib3JpcyBuaXNpIHV0IGFsaXF1aXAgZXgg
+  ZWEgY29tbW9kbyBjb25zZXF1YXQuIA==
+  -----END OPENSSH PRIVATE KEY-----
 ```
 
 where:
