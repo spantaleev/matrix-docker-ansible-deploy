@@ -15,7 +15,7 @@ All services created by this playbook are meant to be installed on their own ser
 
 As [per the Server-Server specification](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), to use a Matrix user identifier like `@<username>:<your-domain>` while hosting services on a subdomain like `matrix.<your-domain>`, the Matrix network needs to be instructed of such delegation/redirection.
 
-Server delegation can be configured using DNS SRV records or by setting up a `/.well-known/matrix/server` file on the base domain (`<your-domain.com>`).
+Server delegation can be configured using DNS SRV records or by setting up a `/.well-known/matrix/server` file on the base domain (`<your-domain>`).
 
 Both methods have their place and will continue to do so. You only need to use just one of these delegation methods.
 For simplicity reasons, our setup advocates for the `/.well-known/matrix/server` method and guides you into using that.
@@ -116,12 +116,12 @@ With this method, you **don't need** to add special HTTP headers for [CORS](http
 **For nginx**, it would be something like this:
 
 ```nginx
-# This is your HTTPS-enabled server for DOMAIN.
+# This is your HTTPS-enabled server for example.com.
 server {
-	server_name DOMAIN;
+	server_name example.com;
 
 	location /.well-known/matrix {
-		proxy_pass https://matrix.DOMAIN/.well-known/matrix;
+		proxy_pass https://matrix.example.com/.well-known/matrix;
 		proxy_set_header X-Forwarded-For $remote_addr;
 	}
 
@@ -133,11 +133,11 @@ server {
 
 ```apache
 <VirtualHost *:443>
-	ServerName DOMAIN
+	ServerName example.com
 
 	SSLProxyEngine on
-	ProxyPass /.well-known/matrix https://matrix.DOMAIN/.well-known/matrix nocanon
-	ProxyPassReverse /.well-known/matrix https://matrix.DOMAIN/.well-known/matrix nocanon
+	ProxyPass /.well-known/matrix https://matrix.example.com/.well-known/matrix nocanon
+	ProxyPassReverse /.well-known/matrix https://matrix.example.com/.well-known/matrix nocanon
 
 	# other configuration
 </VirtualHost>
@@ -146,30 +146,10 @@ server {
 **For Caddy 2**, it would be something like this:
 
 ```caddy
-DOMAIN.com {
-   @wellknown {
-         path /.well-known/matrix/*:x
-   }
-
-   handle @wellknown {
-      reverse_proxy https://matrix.DOMAIN.com {
-          header_up Host {http.reverse_proxy.upstream.hostport}
-      }
-   }
-    # Configration for the base domain goes here
-  # handle {
-  #    header -Server
-  #     encode zstd gzip
-  #    reverse_proxy localhost:4020
-  # }
-}
-```
-
-**For Caddy 1**, it would be something like this:
-
-```caddy
-proxy /.well-known/matrix/ https://matrix.DOMAIN {
-    header_upstream Host {http.reverse_proxy.upstream.hostport}
+example.com {
+	reverse_proxy /.well-known/matrix/* https://matrix.example.com {
+		header_up Host {upstream_hostport}
+	}
 }
 ```
 
@@ -196,7 +176,7 @@ backend matrix-backend
 
 ```
 # In the _redirects file in the website's root
-/.well-known/matrix/* https://matrix.DOMAIN/.well-known/matrix/:splat 200!
+/.well-known/matrix/* https://matrix.example.com/.well-known/matrix/:splat 200!
 ```
 
 **For AWS CloudFront**
@@ -206,7 +186,7 @@ backend matrix-backend
 
 Make sure to:
 
-- **replace `DOMAIN`** in the server configuration with your actual domain name
+- **replace `example.com`** in the server configuration with your actual domain name
 - and: to **do this for the HTTPS-enabled server block**, as that's where Matrix expects the file to be
 
 
