@@ -58,7 +58,7 @@ where:
 * HOST - SSH host of a provider/server
 * REPO - borg repository name, it will be initialized on backup start, eg: `matrix`
 * PASSPHRASE - passphrase used for encrypting backups, you may generate it with `pwgen -s 64 1` or use any password manager
-* PRIVATE KEY - the content of the **private** part of the SSH key you created before
+* PRIVATE KEY - the content of the **private** part of the SSH key you created before. The whole key (all of its belonging lines) under `matrix_backup_borg_ssh_key_private` needs to be indented with 2 spaces
 
 To backup without encryption, add `matrix_backup_borg_encryption: 'none'` to your vars. This will also enable the `matrix_backup_borg_unknown_unencrypted_repo_access_is_ok` variable.
 
