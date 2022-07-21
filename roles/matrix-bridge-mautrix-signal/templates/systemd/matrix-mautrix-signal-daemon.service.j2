@@ -21,6 +21,16 @@ ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} 
 # Intentional delay, so that the homeserver (we likely depend on) can manage to start.
 ExecStartPre={{ matrix_host_command_sleep }} 5
 
+# Migration task required by the 0.19.0 upgrade
+ExecStartPre=-{{ matrix_host_command_docker }} run --rm --name matrix-mautrix-signal-daemon \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_docker_network }} \
+			-v {{ matrix_mautrix_signal_daemon_path }}:/signald:z \
+			{{ matrix_mautrix_signal_daemon_docker_image }} \
+			--migrate-data
+
 # We can't use `--read-only` for this bridge.
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-signal-daemon \
 			--log-driver=none \

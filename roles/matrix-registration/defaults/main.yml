@@ -1,12 +1,17 @@
 ---
 # matrix-registration is a simple python application to have a token based matrix registration
 # See: https://zeratax.github.io/matrix-registration/
+# Project source code URL: https://github.com/ZerataX/matrix-registration
 
 matrix_registration_enabled: true
 
 matrix_registration_container_image_self_build: false
 matrix_registration_container_image_self_build_repo: "https://github.com/ZerataX/matrix-registration"
 matrix_registration_container_image_self_build_branch: "{{ 'master' if matrix_registration_version == 'latest' else matrix_registration_version }}"
+# Controls whether we'll be patching the dependencies in `setup.py` when self-building.
+# Without patching, building will likely fail, because of the poor unbounded way dependencies are defined (e.g. `flask-limiter>=1.1.0`).
+# This is an attempt to get matrix-registration in its current (outdated) version to build.
+matrix_registration_container_image_self_build_python_dependencies_patch_enabled: true
 
 matrix_registration_base_path: "{{ matrix_base_data_path }}/matrix-registration"
 matrix_registration_config_path: "{{ matrix_registration_base_path }}/config"
@@ -110,8 +115,8 @@ matrix_registration_configuration_extension_yaml: |
   # password:
   #   min_length: 12
 
-matrix_registration_configuration_extension: "{{ matrix_registration_configuration_extension_yaml|from_yaml if matrix_registration_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_registration_configuration_extension: "{{ matrix_registration_configuration_extension_yaml | from_yaml if matrix_registration_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final matrix-registration configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_registration_configuration_yaml`.
-matrix_registration_configuration: "{{ matrix_registration_configuration_yaml|from_yaml|combine(matrix_registration_configuration_extension, recursive=True) }}"
+matrix_registration_configuration: "{{ matrix_registration_configuration_yaml | from_yaml | combine(matrix_registration_configuration_extension, recursive=True) }}"

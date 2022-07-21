@@ -24,10 +24,22 @@ If you would like to be able to administrate the bridge from your account it can
 matrix_mautrix_facebook_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@YOUR_USERNAME:YOUR_DOMAIN': admin
+      '@YOUR_USERNAME:{{ matrix_domain }}': admin
 ```
 
-You may wish to look at `roles/matrix-bridge-mautrix-facebook/templates/config.yaml.j2` to find other things you would like to configure.
+Using both would look like
+
+```yaml
+matrix_mautrix_facebook_configuration_extension_yaml: |
+  bridge:
+    permissions:
+      '@YOUR_USERNAME:{{ matrix_domain }}': admin
+    encryption:
+      allow: true
+      default: true
+```
+
+You may wish to look at `roles/matrix-bridge-mautrix-facebook/templates/config.yaml.j2` and `roles/matrix-bridge-mautrix-facebook/defaults/main.yml` to find other things you would like to configure.
 
 
 ## Set up Double Puppeting
@@ -91,3 +103,5 @@ Once connected, you should be able to verify that you're browsing the web throug
 Then proceed to log in to [Facebook/Messenger](https://www.facebook.com/).
 
 Once logged in, proceed to [set up bridging](#usage).
+
+If that doesn't work, enable 2FA [Facebook help page on enabling 2FA](https://www.facebook.com/help/148233965247823) and try to login again with a new password, and entering the 2FA code when prompted, it may take more then one try, in between attempts, check facebook.com to see if they are requiring another password change

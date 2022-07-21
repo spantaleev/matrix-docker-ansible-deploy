@@ -1,17 +1,17 @@
 ---
 
 - name: Fail if playbook called incorrectly
-  fail:
+  ansible.builtin.fail:
     msg: "The `one_time` variable needs to be provided to this playbook, via --extra-vars"
   when: "one_time is not defined or one_time not in ['yes', 'no']"
 
 - name: Fail if playbook called incorrectly
-  fail:
+  ansible.builtin.fail:
     msg: "The `ex_date` variable (expiration date) needs to be provided to this playbook, via --extra-vars"
   when: "ex_date is not defined or ex_date == '<date>'"
 
 - name: Call matrix-registration token creation API
-  uri:
+  ansible.builtin.uri:
     url: "{{ matrix_registration_api_token_endpoint }}"
     follow_redirects: none
     validate_certs: "{{ matrix_registration_api_validate_certs }}"
@@ -23,12 +23,12 @@
     body: |
       {
         "one_time": {{ 'true' if one_time == 'yes' else 'false' }},
-        "ex_date": {{ ex_date|to_json }}
+        "ex_date": {{ ex_date | to_json }}
       }
   check_mode: false
   register: matrix_registration_api_result
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_registration_api_result_message: >-
       matrix-registration result:
 
@@ -42,10 +42,10 @@
   check_mode: false
 
 - name: Inject result message into matrix_playbook_runtime_results
-  set_fact:
+  ansible.builtin.set_fact:
     matrix_playbook_runtime_results: |
       {{
-        matrix_playbook_runtime_results|default([])
+        matrix_playbook_runtime_results | default([])
         +
         [matrix_registration_api_result_message]
       }}

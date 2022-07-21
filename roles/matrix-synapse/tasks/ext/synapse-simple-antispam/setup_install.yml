@@ -1,12 +1,12 @@
 ---
 
 - name: Fail if Synapse Simple Antispam blocked homeservers is not set
-  fail:
+  ansible.builtin.fail:
     msg: "Synapse Simple Antispam is enabled, but no blocked homeservers have been set in matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeservers"
   when: "matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeservers|length == 0"
 
 - name: Ensure git installed (RedHat)
-  yum:
+  ansible.builtin.yum:
     name:
       - git
     state: present
@@ -14,7 +14,7 @@
   when: "ansible_os_family == 'RedHat'"
 
 - name: Ensure git installed (Debian)
-  apt:
+  ansible.builtin.apt:
     name:
       - git
     state: present
@@ -30,25 +30,29 @@
   when: "ansible_distribution == 'Archlinux'"
 
 - name: Clone synapse-simple-antispam git repository
-  git:
+  ansible.builtin.git:
     repo: "{{ matrix_synapse_ext_spam_checker_synapse_simple_antispam_git_repository_url }}"
     version: "{{ matrix_synapse_ext_spam_checker_synapse_simple_antispam_git_version }}"
     dest: "{{ matrix_synapse_ext_path }}/synapse-simple-antispam"
   become: true
   become_user: "{{ matrix_user_username }}"
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_synapse_modules: >
-      {{ matrix_synapse_modules }}
-      +
-      [{
-        "module": "synapse_simple_antispam.AntiSpamInvites",
-        "config": {
-          "blocked_homeservers": {{ matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeservers }}
-        }
-      }]
+      {{
+        matrix_synapse_modules
+        +
+        [{
+          "module": "synapse_simple_antispam.AntiSpamInvites",
+          "config": {
+            "blocked_homeservers": matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeservers
+          }
+        }]
+      }}
 
     matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      ["--mount type=bind,src={{ matrix_synapse_ext_path }}/synapse-simple-antispam/synapse_simple_antispam,dst={{ matrix_synapse_in_container_python_packages_path }}/synapse_simple_antispam,ro"]
+      {{
+        matrix_synapse_container_extra_arguments | default([])
+        +
+        ["--mount type=bind,src={{ matrix_synapse_ext_path }}/synapse-simple-antispam/synapse_simple_antispam,dst={{ matrix_synapse_in_container_python_packages_path }}/synapse_simple_antispam,ro"]
+      }}

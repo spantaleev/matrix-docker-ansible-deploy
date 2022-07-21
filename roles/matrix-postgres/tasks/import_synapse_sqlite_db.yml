@@ -3,22 +3,22 @@
 # Pre-checks
 
 - name: Fail if Postgres not enabled
-  fail:
+  ansible.builtin.fail:
     msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot import."
-  when: "not matrix_postgres_enabled|bool"
+  when: "not matrix_postgres_enabled | bool"
 
 - name: Fail if playbook called incorrectly
-  fail:
+  ansible.builtin.fail:
     msg: "The `server_path_homeserver_db` variable needs to be provided to this playbook, via --extra-vars"
   when: "server_path_homeserver_db is not defined or server_path_homeserver_db.startswith('<')"
 
 - name: Check if the provided SQLite homeserver.db file exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ server_path_homeserver_db }}"
   register: result_server_path_homeserver_db_stat
 
 - name: Fail if provided SQLite homeserver.db file doesn't exist
-  fail:
+  ansible.builtin.fail:
     msg: "File cannot be found on the server at {{ server_path_homeserver_db }}"
   when: "not result_server_path_homeserver_db_stat.stat.exists"
 
@@ -26,26 +26,26 @@
 # Defaults
 
 - name: Set postgres_start_wait_time, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_start_wait_time: 15
-  when: "postgres_start_wait_time|default('') == ''"
+  when: "postgres_start_wait_time | default('') == ''"
 
 
 # Actual import work
 
 - name: Ensure matrix-postgres is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-postgres
     state: stopped
     daemon_reload: true
 
 - name: Ensure postgres data is wiped out
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_postgres_data_path }}"
     state: absent
 
 - name: Ensure postgres data path exists
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_postgres_data_path }}"
     state: directory
     mode: 0700
@@ -53,13 +53,13 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-postgres is started
-  service:
+  ansible.builtin.service:
     name: matrix-postgres
     state: restarted
     daemon_reload: true
 
 - name: Wait a bit, so that Postgres can start
-  wait_for:
+  ansible.builtin.wait_for:
     timeout: "{{ postgres_start_wait_time }}"
   delegate_to: 127.0.0.1
   become: false
@@ -70,17 +70,20 @@
 # Also, some old `docker_container` versions were buggy and would leave containers behind
 # on failure, which we had to work around to allow retries (by re-running the playbook).
 - name: Import SQLite database into Postgres
-  command: |
-    docker run
-    --rm
-    --name=matrix-synapse-migrate
-    --log-driver=none
-    --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
-    --cap-drop=ALL
-    --network={{ matrix_docker_network }}
-    --entrypoint=python
-    --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data
-    --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/matrix-media-store-parent/media-store
-    --mount type=bind,src={{ server_path_homeserver_db }},dst=/{{ server_path_homeserver_db|basename }}
-    {{ matrix_synapse_docker_image }}
-    /usr/local/bin/synapse_port_db --sqlite-database /{{ server_path_homeserver_db|basename }} --postgres-config /data/homeserver.yaml
+  ansible.builtin.command:
+    cmd: |
+      docker run
+      --rm
+      --name=matrix-synapse-migrate
+      --log-driver=none
+      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+      --cap-drop=ALL
+      --network={{ matrix_docker_network }}
+      --entrypoint=python
+      --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data
+      --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/matrix-media-store-parent/media-store
+      --mount type=bind,src={{ server_path_homeserver_db }},dst=/{{ server_path_homeserver_db | basename }}
+      {{ matrix_synapse_docker_image }}
+      /usr/local/bin/synapse_port_db --sqlite-database /{{ server_path_homeserver_db | basename }} --postgres-config /data/homeserver.yaml
+  register: matrix_postgres_import_synapse_sqlite_db_result
+  changed_when: matrix_postgres_import_synapse_sqlite_db_result.rc == 0

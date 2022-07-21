@@ -3,22 +3,22 @@
 # Pre-checks
 
 - name: Fail if Postgres not enabled
-  fail:
+  ansible.builtin.fail:
     msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot import."
-  when: "not matrix_postgres_enabled|bool"
+  when: "not matrix_postgres_enabled | bool"
 
 - name: Fail if playbook called incorrectly
-  fail:
+  ansible.builtin.fail:
     msg: "The `sqlite_database_path` variable needs to be provided to this playbook, via --extra-vars"
   when: "sqlite_database_path is not defined or sqlite_database_path.startswith('<')"
 
 - name: Check if the provided SQLite database file exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ sqlite_database_path }}"
   register: sqlite_database_path_stat_result
 
 - name: Fail if provided SQLite database file doesn't exist
-  fail:
+  ansible.builtin.fail:
     msg: "File cannot be found on the server at {{ sqlite_database_path }}"
   when: "not sqlite_database_path_stat_result.stat.exists"
 
@@ -27,16 +27,16 @@
 
 - block:
     - name: Fail if postgres_connection_string_variable_name points to an undefined variable
-      fail: msg="postgres_connection_string_variable_name is defined, but there is no variable with the name `{{ postgres_connection_string_variable_name }}`"
+      ansible.builtin.fail: msg="postgres_connection_string_variable_name is defined, but there is no variable with the name `{{ postgres_connection_string_variable_name }}`"
       when: "postgres_connection_string_variable_name not in vars"
 
     - name: Get Postgres connection string from variable
-      set_fact:
+      ansible.builtin.set_fact:
         postgres_db_connection_string: "{{ lookup('vars', postgres_connection_string_variable_name) }}"
   when: 'postgres_connection_string_variable_name is defined'
 
 - name: Fail if playbook called incorrectly
-  fail:
+  ansible.builtin.fail:
     msg: >-
       Either a `postgres_db_connection_string` variable or a `postgres_connection_string_variable_name` needs to be provided to this playbook, via `--extra-vars`.
       Example: `--extra-vars="postgres_db_connection_string=postgresql://username:password@localhost:<port>/database_name"` or `--extra-vars="postgres_connection_string_variable_name=matrix_appservice_discord_database_connString"`
@@ -46,29 +46,29 @@
 # Defaults
 
 - name: Set postgres_start_wait_time, if not provided
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_start_wait_time: 15
-  when: "postgres_start_wait_time|default('') == ''"
+  when: "postgres_start_wait_time | default('') == ''"
 
 
 # Actual import work
 
 - name: Ensure matrix-postgres is started
-  service:
+  ansible.builtin.service:
     name: matrix-postgres
     state: started
     daemon_reload: true
   register: matrix_postgres_service_start_result
 
 - name: Wait a bit, so that Postgres can start
-  wait_for:
+  ansible.builtin.wait_for:
     timeout: "{{ postgres_start_wait_time }}"
   delegate_to: 127.0.0.1
   become: false
-  when: "matrix_postgres_service_start_result.changed|bool"
+  when: "matrix_postgres_service_start_result.changed | bool"
 
 - name: Import SQLite database from {{ sqlite_database_path }} into Postgres
-  command:
+  ansible.builtin.command:
     cmd: >-
       {{ matrix_host_command_docker }} run
       --rm
@@ -80,16 +80,20 @@
       {{ matrix_postgres_pgloader_docker_image }}
       -c
       'pgloader /in.db {{ postgres_db_connection_string }}'
+  register: matrix_postgres_import_generic_sqlite_db_import_result
+  changed_when: matrix_postgres_import_generic_sqlite_db_import_result.rc == 0
 
 - name: Archive SQLite database ({{ sqlite_database_path }} -> {{ sqlite_database_path }}.backup)
-  command:
+  ansible.builtin.command:
     cmd: "mv {{ sqlite_database_path }} {{ sqlite_database_path }}.backup"
+  register: matrix_postgres_import_generic_sqlite_db_move_result
+  changed_when: matrix_postgres_import_generic_sqlite_db_move_result.rc == 0
 
 - name: Inject result
-  set_fact:
+  ansible.builtin.set_fact:
     matrix_playbook_runtime_results: |
       {{
-        matrix_playbook_runtime_results|default([])
+        matrix_playbook_runtime_results | default([])
         +
         [
           "NOTE: Your SQLite database file has been imported into Postgres. The original file has been moved from `{{ sqlite_database_path }}` to `{{ sqlite_database_path }}.backup`. When you've confirmed that the import went well and everything works, you should be able to safely delete this file."

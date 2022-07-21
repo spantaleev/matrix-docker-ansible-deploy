@@ -45,6 +45,19 @@
 		{{ render_nginx_status_location_block(matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses) }}
 	{% endif %}
 
+	{% if matrix_nginx_proxy_proxy_matrix_metrics_enabled %}
+	location /metrics {
+		{% if matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled %}
+			auth_basic "protected";
+			auth_basic_user_file {{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_path }};
+		{% endif %}
+
+		{% for configuration_block in matrix_nginx_proxy_proxy_matrix_metrics_additional_location_configuration_blocks %}
+			{{- configuration_block }}
+		{% endfor %}
+	}
+	{% endif %}
+
 	{% if matrix_nginx_proxy_proxy_matrix_corporal_api_enabled %}
 	location ^~ /_matrix/corporal {
 		{% if matrix_nginx_proxy_enabled %}

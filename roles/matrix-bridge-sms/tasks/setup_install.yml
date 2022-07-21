@@ -10,7 +10,7 @@
   until: result is not failed
 
 - name: Ensure matrix-sms-bridge paths exist
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: 0750
@@ -22,23 +22,23 @@
     - "{{ matrix_sms_bridge_data_path }}"
 
 - name: Ensure matrix-sms-bridge application.yml installed
-  copy:
-    content: "{{ matrix_sms_bridge_configuration|to_nice_yaml(indent=2, width=999999) }}"
+  ansible.builtin.copy:
+    content: "{{ matrix_sms_bridge_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_sms_bridge_config_path }}/application.yml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-sms-bridge registration.yaml installed
-  copy:
-    content: "{{ matrix_sms_bridge_registration|to_nice_yaml(indent=2, width=999999) }}"
+  ansible.builtin.copy:
+    content: "{{ matrix_sms_bridge_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_sms_bridge_config_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure android-sms-gateway-server cert installed
-  copy:
+  ansible.builtin.copy:
     src: "{{ matrix_sms_bridge_provider_android_truststore_local_path }}"
     dest: "{{ matrix_sms_bridge_config_path }}/matrix-sms-gateway-server.p12"
     mode: 0644
@@ -47,13 +47,13 @@
   when: matrix_sms_bridge_provider_android_truststore_local_path != ""
 
 - name: Ensure matrix-sms-bridge.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-sms-bridge.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-sms-bridge.service"
     mode: 0644
   register: matrix_sms_bridge_systemd_service_result
 
 - name: Ensure systemd reloaded after matrix-sms-bridge.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: matrix_sms_bridge_systemd_service_result.changed

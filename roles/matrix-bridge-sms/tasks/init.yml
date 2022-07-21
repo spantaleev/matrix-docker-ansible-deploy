@@ -3,24 +3,28 @@
 # If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
 # We don't want to fail in such cases.
 - name: Fail if matrix-synapse role already executed
-  fail:
+  ansible.builtin.fail:
     msg: >-
       The matrix-sms-bridge role needs to execute before the matrix-synapse role.
-  when: "matrix_sms_bridge_enabled and matrix_synapse_role_executed|default(False)"
+  when: "matrix_sms_bridge_enabled and matrix_synapse_role_executed | default(False)"
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-sms-bridge.service'] }}"
-  when: matrix_sms_bridge_enabled|bool
+  when: matrix_sms_bridge_enabled | bool
 
 # If the matrix-synapse role is not used, these variables may not exist.
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      ["--mount type=bind,src={{ matrix_sms_bridge_config_path }}/registration.yaml,dst=/matrix-sms-bridge-registration.yaml,ro"]
+      {{
+        matrix_synapse_container_extra_arguments | default([])
+        +
+        ["--mount type=bind,src={{ matrix_sms_bridge_config_path }}/registration.yaml,dst=/matrix-sms-bridge-registration.yaml,ro"]
+      }}
 
     matrix_synapse_app_service_config_files: >
-      {{ matrix_synapse_app_service_config_files|default([]) }}
-      +
-      {{ ["/matrix-sms-bridge-registration.yaml"] }}
-  when: matrix_sms_bridge_enabled|bool
+      {{
+        matrix_synapse_app_service_config_files | default([])
+        +
+        ["/matrix-sms-bridge-registration.yaml"]
+      }}
+  when: matrix_sms_bridge_enabled | bool

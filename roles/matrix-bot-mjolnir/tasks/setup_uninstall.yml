@@ -1,32 +1,32 @@
 ---
 
 - name: Check existence of matrix-bot-mjolnir service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-bot-mjolnir.service"
   register: matrix_bot_mjolnir_service_stat
 
 - name: Ensure matrix-bot-mjolnir is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-bot-mjolnir
     state: stopped
     enabled: false
     daemon_reload: true
   register: stopping_result
-  when: "matrix_bot_mjolnir_service_stat.stat.exists|bool"
+  when: "matrix_bot_mjolnir_service_stat.stat.exists | bool"
 
 - name: Ensure matrix-bot-mjolnir.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-bot-mjolnir.service"
     state: absent
-  when: "matrix_bot_mjolnir_service_stat.stat.exists|bool"
+  when: "matrix_bot_mjolnir_service_stat.stat.exists | bool"
 
 - name: Ensure systemd reloaded after matrix-bot-mjolnir.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_bot_mjolnir_service_stat.stat.exists|bool"
+  when: "matrix_bot_mjolnir_service_stat.stat.exists | bool"
 
 - name: Ensure matrix-bot-mjolnir paths don't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_bot_mjolnir_base_path }}"
     state: absent
 

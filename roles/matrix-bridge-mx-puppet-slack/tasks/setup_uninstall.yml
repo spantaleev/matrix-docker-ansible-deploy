@@ -1,12 +1,12 @@
 ---
 
 - name: Check existence of matrix-mx-puppet-slack service
-  stat:
+  ansible.builtin.stat:
     path: "/etc/systemd/system/matrix-mx-puppet-slack.service"
   register: matrix_mx_puppet_slack_service_stat
 
 - name: Ensure matrix-mx-puppet-slack is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-mx-puppet-slack
     state: stopped
     enabled: false
@@ -14,12 +14,12 @@
   when: "matrix_mx_puppet_slack_service_stat.stat.exists"
 
 - name: Ensure matrix-mx-puppet-slack.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "/etc/systemd/system/matrix-mx-puppet-slack.service"
     state: absent
   when: "matrix_mx_puppet_slack_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-mx-puppet-slack.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_mx_puppet_slack_service_stat.stat.exists"

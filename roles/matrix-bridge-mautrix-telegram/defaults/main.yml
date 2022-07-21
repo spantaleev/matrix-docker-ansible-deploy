@@ -1,17 +1,19 @@
 ---
 # mautrix-telegram is a Matrix <-> Telegram bridge
-# See: https://github.com/mautrix/telegram
+# Project source code URL: https://github.com/mautrix/telegram
 
 matrix_mautrix_telegram_enabled: true
 
 matrix_telegram_lottieconverter_container_image_self_build: false
 matrix_telegram_lottieconverter_container_image_self_build_mask_arch: false
 matrix_telegram_lottieconverter_docker_repo: "https://mau.dev/tulir/lottieconverter.git"
+matrix_telegram_lottieconverter_docker_repo_version: "master"
 matrix_telegram_lottieconverter_docker_src_files_path: "{{ matrix_base_data_path }}/lotticonverter/docker-src"
 matrix_telegram_lottieconverter_docker_image: "dock.mau.dev/tulir/lottieconverter:alpine-3.15"  # needs to be ajusted according to FROM clause of Dockerfile of mautrix-telegram
 
 matrix_mautrix_telegram_container_image_self_build: false
 matrix_mautrix_telegram_docker_repo: "https://mau.dev/mautrix/telegram.git"
+matrix_mautrix_telegram_docker_repo_version: "{{ 'master' if matrix_mautrix_telegram_version == 'latest' else matrix_mautrix_telegram_version }}"
 matrix_mautrix_telegram_docker_src_files_path: "{{ matrix_base_data_path }}/mautrix-telegram/docker-src"
 
 matrix_mautrix_telegram_version: v0.11.3
@@ -22,6 +24,8 @@ matrix_mautrix_telegram_docker_image_force_pull: "{{ matrix_mautrix_telegram_doc
 matrix_mautrix_telegram_base_path: "{{ matrix_base_data_path }}/mautrix-telegram"
 matrix_mautrix_telegram_config_path: "{{ matrix_mautrix_telegram_base_path }}/config"
 matrix_mautrix_telegram_data_path: "{{ matrix_mautrix_telegram_base_path }}/data"
+
+matrix_mautrix_telegram_command_prefix: "!tg"
 
 # Get your own API keys at https://my.telegram.org/apps
 matrix_mautrix_telegram_api_id: ''
@@ -42,6 +46,9 @@ matrix_mautrix_telegram_appservice_address: 'http://matrix-mautrix-telegram:8080
 matrix_mautrix_telegram_appservice_public_external: 'https://{{ matrix_server_fqn_matrix }}{{ matrix_mautrix_telegram_public_endpoint }}'
 
 matrix_mautrix_telegram_appservice_bot_username: telegrambot
+
+# Specifies the default log level for all bridge loggers.
+matrix_mautrix_telegram_logging_level: WARNING
 
 # Whether or not created rooms should have federation enabled.
 # If false, created portal rooms will never be federated.
@@ -112,11 +119,11 @@ matrix_mautrix_telegram_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_mautrix_telegram_configuration_yaml`.
 
-matrix_mautrix_telegram_configuration_extension: "{{ matrix_mautrix_telegram_configuration_extension_yaml|from_yaml if matrix_mautrix_telegram_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_mautrix_telegram_configuration_extension: "{{ matrix_mautrix_telegram_configuration_extension_yaml | from_yaml if matrix_mautrix_telegram_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_mautrix_telegram_configuration_yaml`.
-matrix_mautrix_telegram_configuration: "{{ matrix_mautrix_telegram_configuration_yaml|from_yaml|combine(matrix_mautrix_telegram_configuration_extension, recursive=True) }}"
+matrix_mautrix_telegram_configuration: "{{ matrix_mautrix_telegram_configuration_yaml | from_yaml | combine(matrix_mautrix_telegram_configuration_extension, recursive=True) }}"
 
 matrix_mautrix_telegram_registration_yaml: |
   id: telegram
@@ -125,19 +132,19 @@ matrix_mautrix_telegram_registration_yaml: |
   namespaces:
       users:
       - exclusive: true
-        regex: '^@telegram_.+:{{ matrix_mautrix_telegram_homeserver_domain|regex_escape }}$'
+        regex: '^@telegram_.+:{{ matrix_mautrix_telegram_homeserver_domain | regex_escape }}$'
       - exclusive: true
-        regex: '^@{{ matrix_mautrix_telegram_appservice_bot_username|regex_escape }}:{{ matrix_mautrix_telegram_homeserver_domain|regex_escape }}$'
+        regex: '^@{{ matrix_mautrix_telegram_appservice_bot_username | regex_escape }}:{{ matrix_mautrix_telegram_homeserver_domain | regex_escape }}$'
       aliases:
       - exclusive: true
-        regex: '^#telegram_.+:{{ matrix_mautrix_telegram_homeserver_domain|regex_escape }}$'
+        regex: '^#telegram_.+:{{ matrix_mautrix_telegram_homeserver_domain | regex_escape }}$'
   # See https://github.com/mautrix/signal/issues/43
   sender_localpart: _bot_{{ matrix_mautrix_telegram_appservice_bot_username }}
   url: {{ matrix_mautrix_telegram_appservice_address }}
   rate_limited: false
   de.sorunome.msc2409.push_ephemeral: true
 
-matrix_mautrix_telegram_registration: "{{ matrix_mautrix_telegram_registration_yaml|from_yaml }}"
+matrix_mautrix_telegram_registration: "{{ matrix_mautrix_telegram_registration_yaml | from_yaml }}"
 
 # Templates for defining MXID's and displaynames for users and rooms.
 matrix_mautrix_telegram_username_template: 'telegram_{userid}'

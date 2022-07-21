@@ -105,11 +105,11 @@ bridge:
     # synced when they send messages. The maximum is 10000, after which the Telegram server
     # will not send any more members.
     # Defaults to no local limit (-> limited to 10000 by server)
-    max_initial_member_sync: -1
+    max_initial_member_sync: 10
     # Whether or not to sync the member list in channels.
     # If no channel admins have logged into the bridge, the bridge won't be able to sync the member
     # list regardless of this setting.
-    sync_channel_members: true
+    sync_channel_members: false
     # Whether or not to skip deleted members when syncing members.
     skip_deleted_members: true
     # Whether or not to automatically synchronize contacts and chats of Matrix users logged into
@@ -204,7 +204,7 @@ bridge:
     # been sent to Telegram.
     delivery_receipts: false
     # Whether or not delivery errors should be reported as messages in the Matrix room.
-    delivery_error_reports: false
+    delivery_error_reports: true
     # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
     # This field will automatically be changed back to false after it,
     # except if the config file is not writable.
@@ -276,7 +276,7 @@ bridge:
         list: []
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!tg"
+    command_prefix: "{{ matrix_mautrix_telegram_command_prefix }}"
 
     # Permissions for using the bridge.
     # Permitted values:
@@ -291,6 +291,9 @@ bridge:
     #     mxid - Specific user
     permissions:
       '{{ matrix_mautrix_telegram_homeserver_domain }}': full
+      {% if matrix_admin %}
+      '{{ matrix_admin }}': admin
+      {% endif %}
 
     # Options related to the message relay Telegram bot.
     relaybot:
@@ -401,11 +404,11 @@ logging:
             formatter: precise
     loggers:
         mau:
-            level: DEBUG
+            level: {{ matrix_mautrix_telegram_logging_level|to_json }}
         telethon:
-            level: DEBUG
+            level: {{ matrix_mautrix_telegram_logging_level|to_json }}
         aiohttp:
-            level: INFO
+            level: {{ matrix_mautrix_telegram_logging_level|to_json }}
     root:
-        level: DEBUG
+        level: {{ matrix_mautrix_telegram_logging_level|to_json }}
         handlers: [console]

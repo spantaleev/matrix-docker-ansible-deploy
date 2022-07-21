@@ -9,14 +9,17 @@
 #
 # For this reason, we store the Postgres data in `/matrix/postgres/data` and need to relocate any installations
 # which still store it in the parent directory (`/matrix/postgres`).
+#
+# This utility is intentionally not in `tasks/util`, because if it were, it wouldn't be possible
+# to include it in other roles via the import_role module: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/import_role_module.html
 
 - name: Check if old Postgres data directory is used
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_postgres_base_path }}/PG_VERSION"
   register: result_pg_old_data_dir_stat
 
 - name: Warn if old Postgres data directory detected
-  debug:
+  ansible.builtin.debug:
     msg: >
       Found that you have Postgres data in `{{ matrix_postgres_base_path }}`.
       From now on, Postgres data is supposed to be stored in `{{ matrix_postgres_data_path }}` instead.
@@ -26,14 +29,14 @@
 # We should stop Postgres first, before building a list of files,
 # as to ignore any `postmaster.pid` files, etc.
 - name: Ensure matrix-postgres is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-postgres
     state: stopped
     daemon_reload: true
   when: "result_pg_old_data_dir_stat.stat.exists"
 
 - name: Find files and directories in old Postgres data path
-  find:
+  ansible.builtin.find:
     paths: "{{ matrix_postgres_base_path }}"
     file_type: any
     excludes: ["data"]
@@ -41,7 +44,7 @@
   when: "result_pg_old_data_dir_stat.stat.exists"
 
 - name: Ensure new Postgres data path exists
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_postgres_data_path }}"
     state: directory
     mode: 0700
@@ -51,8 +54,11 @@
 
 - block:
     - name: Relocate Postgres data files from old directory to new
-      command: "mv {{ item.path }} {{ matrix_postgres_data_path }}/{{ item.path|basename }}"
+      ansible.builtin.command:
+        cmd: "mv {{ item.path }} {{ matrix_postgres_data_path }}/{{ item.path | basename }}"
       with_items: "{{ result_pg_old_data_dir_find.files }}"
+      register: matrix_postgres_migrate_postgres_data_directory_move_result
+      changed_when: matrix_postgres_migrate_postgres_data_directory_move_result.rc == 0
   when: "result_pg_old_data_dir_stat.stat.exists"
 
 # Intentionally not starting matrix-postgres here.
@@ -61,12 +67,12 @@
 # and have it initialize a new database.
 
 - name: Ensure outdated matrix-postgres.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-postgres.service"
     state: absent
   when: "result_pg_old_data_dir_stat.stat.exists"
 
 - name: Ensure systemd reloaded after getting rid of outdated matrix-postgres.service
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "result_pg_old_data_dir_stat.stat.exists"

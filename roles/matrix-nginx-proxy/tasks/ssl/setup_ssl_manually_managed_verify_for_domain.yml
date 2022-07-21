@@ -1,23 +1,23 @@
 ---
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_ssl_certificate_verification_cert_path: "{{ matrix_ssl_config_dir_path }}/live/{{ domain_name }}/fullchain.pem"
     matrix_ssl_certificate_verification_cert_key_path: "{{ matrix_ssl_config_dir_path }}/live/{{ domain_name }}/privkey.pem"
 
 - name: Check if SSL certificate file exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_ssl_certificate_verification_cert_path }}"
   register: matrix_ssl_certificate_verification_cert_path_stat_result
 
-- fail:
+- ansible.builtin.fail:
     msg: "Failed finding a certificate file (for domain `{{ domain_name }}`) at `{{ matrix_ssl_certificate_verification_cert_path }}`"
   when: "not matrix_ssl_certificate_verification_cert_path_stat_result.stat.exists"
 
 - name: Check if SSL certificate key file exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_ssl_certificate_verification_cert_key_path }}"
   register: matrix_ssl_certificate_verification_cert_key_path_stat_result
 
-- fail:
+- ansible.builtin.fail:
     msg: "Failed finding a certificate key file (for domain `{{ domain_name }}`) at `{{ matrix_ssl_certificate_verification_cert_key_path }}`"
   when: "not matrix_ssl_certificate_verification_cert_key_path_stat_result.stat.exists"

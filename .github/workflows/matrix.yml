@@ -7,10 +7,18 @@ on:  # yamllint disable-line rule:truthy
 
 jobs:
   yamllint:
-    name: 🧹 yamllint
+    name: yamllint
     runs-on: ubuntu-latest
     steps:
-      - name: ⤵️ Check out configuration from GitHub
+      - name: Check out
         uses: actions/checkout@v3
-      - name: 🚀 Run yamllint
-        uses: frenck/action-yamllint@v1.1.2
+      - name: Run yamllint
+        uses: frenck/action-yamllint@v1.2.0
+  ansible-lint:
+    name: ansible-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+      - name: Run ansible-lint
+        uses: ansible-community/ansible-lint-action@main

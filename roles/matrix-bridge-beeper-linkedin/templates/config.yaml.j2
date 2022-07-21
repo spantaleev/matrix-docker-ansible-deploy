@@ -226,7 +226,7 @@ bridge:
 
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!li"
+    command_prefix: "{{ matrix_beeper_linkedin_command_prefix }}"
 
     # Permissions for using the bridge.
     # Permitted values:
@@ -238,6 +238,9 @@ bridge:
     #     mxid - Specific user
     permissions:
         "{{ matrix_beeper_linkedin_homeserver_domain }}": user
+        {% if matrix_admin %}
+        "{{ matrix_admin }}": admin
+        {% endif %}
 
 
 
@@ -256,12 +259,12 @@ logging:
             formatter: colored
     loggers:
         mau:
-            level: DEBUG
+            level: WARNING
         paho:
-            level: INFO
+            level: WARNING
         aiohttp:
-            level: INFO
+            level: WARNING
     root:
-        level: DEBUG
+        level: WARNING
         handlers: [ console]
 

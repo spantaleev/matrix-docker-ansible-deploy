@@ -1,0 +1,44 @@
+---
+
+- name: Ensure matrix-ntfy image is pulled
+  docker_image:
+    name: "{{ matrix_ntfy_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_ntfy_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_ntfy_docker_image_force_pull }}"
+  register: result
+  retries: "{{ matrix_container_retries_count }}"
+  delay: "{{ matrix_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure matrix-ntfy paths exists
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_ntfy_base_path }}"
+    - "{{ matrix_ntfy_config_dir_path }}"
+    - "{{ matrix_ntfy_data_path }}"
+
+- name: Ensure matrix-ntfy config installed
+  ansible.builtin.copy:
+    content: "{{ matrix_ntfy_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_ntfy_config_dir_path }}/server.yml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-ntfy.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-ntfy.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-ntfy.service"
+    mode: 0644
+  register: matrix_ntfy_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-ntfy.service installation
+  ansible.builtin.service:
+    daemon_reload: true
+  when: "matrix_ntfy_systemd_service_result.changed"

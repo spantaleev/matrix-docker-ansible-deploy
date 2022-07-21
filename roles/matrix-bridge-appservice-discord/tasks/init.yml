@@ -2,24 +2,28 @@
 # If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
 # We don't want to fail in such cases.
 - name: Fail if matrix-synapse role already executed
-  fail:
+  ansible.builtin.fail:
     msg: >-
       The matrix-bridge-appservice-discord role needs to execute before the matrix-synapse role.
-  when: "matrix_appservice_discord_enabled and matrix_synapse_role_executed|default(False)"
+  when: "matrix_appservice_discord_enabled and matrix_synapse_role_executed | default(False)"
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-appservice-discord.service'] }}"
-  when: matrix_appservice_discord_enabled|bool
+  when: matrix_appservice_discord_enabled | bool
 
 # If the matrix-synapse role is not used, these variables may not exist.
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      ["--mount type=bind,src={{ matrix_appservice_discord_config_path }}/registration.yaml,dst=/matrix-appservice-discord-registration.yaml,ro"]
+      {{
+        matrix_synapse_container_extra_arguments | default([])
+        +
+        ["--mount type=bind,src={{ matrix_appservice_discord_config_path }}/registration.yaml,dst=/matrix-appservice-discord-registration.yaml,ro"]
+      }}
 
     matrix_synapse_app_service_config_files: >
-      {{ matrix_synapse_app_service_config_files|default([]) }}
-      +
-      {{ ["/matrix-appservice-discord-registration.yaml"] }}
-  when: matrix_appservice_discord_enabled|bool
+      {{
+        matrix_synapse_app_service_config_files | default([])
+        +
+        ["/matrix-appservice-discord-registration.yaml"]
+      }}
+  when: matrix_appservice_discord_enabled | bool

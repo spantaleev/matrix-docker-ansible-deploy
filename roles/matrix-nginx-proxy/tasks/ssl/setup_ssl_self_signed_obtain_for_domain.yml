@@ -1,19 +1,19 @@
 ---
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_ssl_certificate_csr_path: "{{ matrix_ssl_config_dir_path }}/live/{{ domain_name }}/csr.csr"
     matrix_ssl_certificate_cert_path: "{{ matrix_ssl_config_dir_path }}/live/{{ domain_name }}/fullchain.pem"
     matrix_ssl_certificate_cert_key_path: "{{ matrix_ssl_config_dir_path }}/live/{{ domain_name }}/privkey.pem"
 
 - name: Check if SSL certificate file exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_ssl_certificate_cert_path }}"
   register: matrix_ssl_certificate_cert_path_stat_result
 
 # In order to do any sort of generation (below), we need to ensure the directory exists first
 - name: Ensure SSL certificate directory exists
-  file:
-    path: "{{ matrix_ssl_certificate_csr_path|dirname }}"
+  ansible.builtin.file:
+    path: "{{ matrix_ssl_certificate_csr_path | dirname }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
@@ -28,7 +28,7 @@
 #
 # We'll do it in a more manual way.
 - name: Generate SSL certificate
-  command: |
+  ansible.builtin.command: |
     openssl req -x509 \
     -sha256 \
     -newkey rsa:4096 \
@@ -40,7 +40,7 @@
   when: "not matrix_ssl_certificate_cert_path_stat_result.stat.exists"
 
 - name: Adjust SSL certificate file ownership
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"

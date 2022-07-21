@@ -57,6 +57,14 @@ matrix_nginx_proxy_ssl_protocols: "TLSv1.2"
 
 If you are experiencing issues, try updating to a newer version of Nginx. As a data point in May 2021 a user reported that Nginx 1.14.2 was not working for them. They were getting errors about socket leaks. Updating to Nginx 1.19 fixed their issue.
 
+If you are not going to be running your webserver on the same docker network, or the same machine as matrix, these variables can be set to bind synapse to an exposed port. [Keep in mind that there are some security concerns if you simply proxy everything to it](https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md#synapse-administration-endpoints)
+```yaml
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8048" or "192.168.1.3:80"), or empty string to not expose.
+matrix_synapse_container_client_api_host_bind_port: ''
+matrix_synapse_container_federation_api_plain_host_bind_port: ''
+```
+
+
 
 ### Using your own external Apache webserver
 

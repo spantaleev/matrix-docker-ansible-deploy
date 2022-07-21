@@ -1,6 +1,6 @@
 ---
 # matrix-corporal is a reconciliator and gateway for a managed Matrix server.
-# See: https://github.com/devture/matrix-corporal
+# Project source code URL: https://github.com/devture/matrix-corporal
 
 matrix_corporal_enabled: true
 
@@ -23,7 +23,7 @@ matrix_corporal_container_extra_arguments: []
 # List of systemd services that matrix-corporal.service depends on
 matrix_corporal_systemd_required_services_list: ['docker.service']
 
-matrix_corporal_version: 2.2.3
+matrix_corporal_version: 2.3.0
 matrix_corporal_docker_image: "{{ matrix_corporal_docker_image_name_prefix }}devture/matrix-corporal:{{ matrix_corporal_docker_image_tag }}"
 matrix_corporal_docker_image_name_prefix: "{{ 'localhost/' if matrix_corporal_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_corporal_docker_image_tag: "{{ matrix_corporal_version }}"  # for backward-compatibility
@@ -100,8 +100,8 @@ matrix_corporal_configuration_default: "{{ lookup('template', 'templates/config.
 #  }
 matrix_corporal_configuration_extension_json: '{}'
 
-matrix_corporal_configuration_extension: "{{ matrix_corporal_configuration_extension_json|from_json if matrix_corporal_configuration_extension_json|from_json is mapping else {} }}"
+matrix_corporal_configuration_extension: "{{ matrix_corporal_configuration_extension_json | from_json if matrix_corporal_configuration_extension_json | from_json is mapping else {} }}"
 
 # Holds the final Corporal configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_corporal_configuration_default`.
-matrix_corporal_configuration: "{{ matrix_corporal_configuration_default|combine(matrix_corporal_configuration_extension, recursive=True) }}"
+matrix_corporal_configuration: "{{ matrix_corporal_configuration_default | combine(matrix_corporal_configuration_extension, recursive=True) }}"

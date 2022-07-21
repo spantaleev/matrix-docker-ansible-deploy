@@ -1,6 +1,6 @@
 ---
 # matrix-sms-bridge is a Matrix <-> SMS bridge
-# See: https://github.com/benkuly/matrix-sms-bridge
+# Project source code URL: https://github.com/benkuly/matrix-sms-bridge
 
 matrix_sms_bridge_enabled: true
 
@@ -104,9 +104,9 @@ matrix_sms_bridge_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_sms_bridge_configuration_yaml`.
 
-matrix_sms_bridge_configuration_extension: "{{ matrix_sms_bridge_configuration_extension_yaml|from_yaml if matrix_sms_bridge_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_sms_bridge_configuration_extension: "{{ matrix_sms_bridge_configuration_extension_yaml | from_yaml if matrix_sms_bridge_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
-matrix_sms_bridge_configuration: "{{ matrix_sms_bridge_configuration_yaml|from_yaml|combine(matrix_sms_bridge_configuration_extension, recursive=True) }}"
+matrix_sms_bridge_configuration: "{{ matrix_sms_bridge_configuration_yaml | from_yaml | combine(matrix_sms_bridge_configuration_extension, recursive=True) }}"
 
 matrix_sms_bridge_registration_yaml: |
   id: sms
@@ -115,12 +115,12 @@ matrix_sms_bridge_registration_yaml: |
   namespaces:
       users:
       - exclusive: true
-        regex: '^@sms_.+:{{ matrix_sms_bridge_homserver_domain|regex_escape }}$'
+        regex: '^@sms_.+:{{ matrix_sms_bridge_homserver_domain | regex_escape }}$'
       aliases:
       - exclusive: true
-        regex: '^#sms_.+:{{ matrix_sms_bridge_homserver_domain|regex_escape }}$'
+        regex: '^#sms_.+:{{ matrix_sms_bridge_homserver_domain | regex_escape }}$'
   url: {{ matrix_sms_bridge_appservice_url }}
   sender_localpart: smsbot
   rate_limited: false
 
-matrix_sms_bridge_registration: "{{ matrix_sms_bridge_registration_yaml|from_yaml }}"
+matrix_sms_bridge_registration: "{{ matrix_sms_bridge_registration_yaml | from_yaml }}"

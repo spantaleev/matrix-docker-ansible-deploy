@@ -3,35 +3,37 @@
 # If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
 # We don't want to fail in such cases.
 - name: Fail if matrix-synapse role already executed
-  fail:
+  ansible.builtin.fail:
     msg: >-
       The matrix-bridge-mautrix-hangouts role needs to execute before the matrix-synapse role.
-  when: "matrix_synapse_role_executed|default(False)"
+  when: "matrix_synapse_role_executed | default(False)"
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_mautrix_hangouts_requires_restart: false
 
 - block:
     - name: Check if an SQLite database already exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ matrix_mautrix_hangouts_sqlite_database_path_local }}"
       register: matrix_mautrix_hangouts_sqlite_database_path_local_stat_result
 
     - block:
-        - set_fact:
+        - ansible.builtin.set_fact:
             matrix_postgres_db_migration_request:
               src: "{{ matrix_mautrix_hangouts_sqlite_database_path_local }}"
               dst: "{{ matrix_mautrix_hangouts_database_connection_string }}"
-              caller: "{{ role_path|basename }}"
+              caller: "{{ role_path | basename }}"
               engine_variable_name: 'matrix_mautrix_hangouts_database_engine'
               engine_old: 'sqlite'
               systemd_services_to_stop: ['matrix-mautrix-hangouts.service']
 
-        - import_tasks: "{{ role_path }}/../matrix-postgres/tasks/util/migrate_db_to_postgres.yml"
+        - ansible.builtin.import_role:
+            name: matrix-postgres
+            tasks_from: migrate_db_to_postgres
 
-        - set_fact:
+        - ansible.builtin.set_fact:
             matrix_mautrix_hangouts_requires_restart: true
-      when: "matrix_mautrix_hangouts_sqlite_database_path_local_stat_result.stat.exists|bool"
+      when: "matrix_mautrix_hangouts_sqlite_database_path_local_stat_result.stat.exists | bool"
   when: "matrix_mautrix_hangouts_database_engine == 'postgres'"
 
 - name: Ensure Mautrix Hangouts image is pulled
@@ -47,7 +49,7 @@
   until: result is not failed
 
 - name: Ensure Mautrix Hangouts paths exist
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     mode: 0750
@@ -58,17 +60,18 @@
     - {path: "{{ matrix_mautrix_hangouts_config_path }}", when: true}
     - {path: "{{ matrix_mautrix_hangouts_data_path }}", when: true}
     - {path: "{{ matrix_mautrix_hangouts_docker_src_files_path }}", when: "{{ matrix_mautrix_hangouts_container_image_self_build }}"}
-  when: "item.when|bool"
+  when: "item.when | bool"
 
 - name: Ensure Mautrix Hangots repository is present on self build
-  git:
+  ansible.builtin.git:
     repo: "{{ matrix_mautrix_hangouts_container_image_self_build_repo }}"
+    version: "{{ matrix_mautrix_hangouts_container_image_self_build_repo_version }}"
     dest: "{{ matrix_mautrix_hangouts_docker_src_files_path }}"
     force: "yes"
   become: true
   become_user: "{{ matrix_user_username }}"
   register: matrix_mautrix_hangouts_git_pull_results
-  when: "matrix_mautrix_hangouts_container_image_self_build|bool"
+  when: "matrix_mautrix_hangouts_container_image_self_build | bool"
 
 - name: Ensure Mautrix Hangouts Docker image is built
   docker_image:
@@ -80,15 +83,15 @@
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_hangouts_docker_src_files_path }}"
       pull: true
-  when: "matrix_mautrix_hangouts_container_image_self_build|bool"
+  when: "matrix_mautrix_hangouts_container_image_self_build | bool"
 
 - name: Check if an old database file already exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_mautrix_hangouts_base_path }}/mautrix-hangouts.db"
   register: matrix_mautrix_hangouts_stat_database
 
 - name: (Data relocation) Ensure matrix-mautrix-hangouts.service is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-mautrix-hangouts
     state: stopped
     enabled: false
@@ -97,39 +100,39 @@
   when: "matrix_mautrix_hangouts_stat_database.stat.exists"
 
 - name: (Data relocation) Move mautrix-hangouts database file to ./data directory
-  command: "mv {{ matrix_mautrix_hangouts_base_path }}/mautrix-hangouts.db {{ matrix_mautrix_hangouts_data_path }}/mautrix-hangouts.db"
+  ansible.builtin.command: "mv {{ matrix_mautrix_hangouts_base_path }}/mautrix-hangouts.db {{ matrix_mautrix_hangouts_data_path }}/mautrix-hangouts.db"
   when: "matrix_mautrix_hangouts_stat_database.stat.exists"
 
 - name: Ensure mautrix-hangouts config.yaml installed
-  copy:
-    content: "{{ matrix_mautrix_hangouts_configuration|to_nice_yaml(indent=2, width=999999) }}"
+  ansible.builtin.copy:
+    content: "{{ matrix_mautrix_hangouts_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_hangouts_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure mautrix-hangouts registration.yaml installed
-  copy:
-    content: "{{ matrix_mautrix_hangouts_registration|to_nice_yaml(indent=2, width=999999) }}"
+  ansible.builtin.copy:
+    content: "{{ matrix_mautrix_hangouts_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_hangouts_config_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-mautrix-hangouts.service installed
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-hangouts.service.j2"
     dest: "{{ matrix_systemd_path }}/matrix-mautrix-hangouts.service"
     mode: 0644
   register: matrix_mautrix_hangouts_systemd_service_result
 
 - name: Ensure systemd reloaded after matrix-mautrix-hangouts.service installation
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_mautrix_hangouts_systemd_service_result.changed"
 
 - name: Ensure matrix-mautrix-hangouts.service restarted, if necessary
-  service:
+  ansible.builtin.service:
     name: "matrix-mautrix-hangouts.service"
     state: restarted
-  when: "matrix_mautrix_hangouts_requires_restart|bool"
+  when: "matrix_mautrix_hangouts_requires_restart | bool"

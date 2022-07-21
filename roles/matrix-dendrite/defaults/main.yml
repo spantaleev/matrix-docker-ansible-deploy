@@ -1,6 +1,6 @@
 ---
 # Dendrite is a second-generation Matrix homeserver currently in Beta
-# See: https://github.com/matrix-org/dendrite
+# Project source code URL: https://github.com/matrix-org/dendrite
 
 matrix_dendrite_enabled: true
 
@@ -27,10 +27,10 @@ matrix_dendrite_http_bind_port: 8008
 matrix_dendrite_https_bind_port: ~
 
 # This is passed as an `-http-bind-address` flag to the Dendrite server in the container
-matrix_dendrite_http_bind_address: "{{ (':' + matrix_dendrite_http_bind_port|string) if matrix_dendrite_http_bind_port else '' }}"
+matrix_dendrite_http_bind_address: "{{ (':' + matrix_dendrite_http_bind_port | string) if matrix_dendrite_http_bind_port else '' }}"
 
 # This is passed as an `-https-bind-address` flag to the Dendrite server in the container
-matrix_dendrite_https_bind_address: "{{ (':' + matrix_dendrite_https_bind_port|string) if matrix_dendrite_https_bind_port else '' }}"
+matrix_dendrite_https_bind_address: "{{ (':' + matrix_dendrite_https_bind_port | string) if matrix_dendrite_https_bind_port else '' }}"
 
 # Controls whether the matrix-dendrite container exposes the HTTP port (tcp/{{ matrix_dendrite_http_bind_port }} in the container).
 #
@@ -167,8 +167,8 @@ matrix_dendrite_configuration_extension_yaml: |
   #   system_mxid_avatar_url: "mxc://server.com/oumMVlgDnLYFaPVkExemNVVZ"
   #   room_name: "Server Notices"
 
-matrix_dendrite_configuration_extension: "{{ matrix_dendrite_configuration_extension_yaml|from_yaml if matrix_dendrite_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_dendrite_configuration_extension: "{{ matrix_dendrite_configuration_extension_yaml | from_yaml if matrix_dendrite_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final Dendrite configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_dendrite_configuration_yaml`.
-matrix_dendrite_configuration: "{{ matrix_dendrite_configuration_yaml|from_yaml|combine(matrix_dendrite_configuration_extension, recursive=True) }}"
+matrix_dendrite_configuration: "{{ matrix_dendrite_configuration_yaml | from_yaml | combine(matrix_dendrite_configuration_extension, recursive=True) }}"

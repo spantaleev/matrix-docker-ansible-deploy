@@ -1,0 +1,60 @@
+---
+
+# When we're dealing with raw htpasswd content, we just store it in the file directly.
+- name: Ensure matrix-metrics-htpasswd is present when generated from raw content (protecting /metrics/* URIs)
+  ansible.builtin.copy:
+    content: "{{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content }}"
+    dest: "{{ matrix_nginx_proxy_data_path }}/matrix-metrics-htpasswd"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0600
+  when: not matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username
+
+# Alternatively, we need to use the `htpasswd` tool to generate the htpasswd file.
+# There's an Ansible module that helps with that, but it requires passlib (a Python module) to be installed on the server.
+# See: https://docs.ansible.com/ansible/2.3/htpasswd_module.html#requirements-on-host-that-executes-module
+# We support various distros, with various versions of Python. Installing additional Python modules can be a hassle.
+# As a workaround, we run `htpasswd` from an Apache container image.
+- block:
+    - name: Ensure Apache Docker image is pulled for generating matrix-metrics-htpasswd from username/password (protecting /metrics/* URIs)
+      docker_image:
+        name: "{{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_image }}"
+        source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+        force_source: "{{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+        force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_force_pull }}"
+      register: result
+      retries: "{{ matrix_container_retries_count }}"
+      delay: "{{ matrix_container_retries_delay }}"
+      until: result is not failed
+
+    # We store the password in a file and make the `htpasswd` tool read it from there,
+    # as opposed to passing it directly on stdin (which will expose it to other processes on the server).
+    - name: Store metrics password in a temporary file
+      ansible.builtin.copy:
+        content: "{{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_password }}"
+        dest: "/tmp/matrix-nginx-proxy-metrics-password"
+        mode: 0400
+        owner: "{{ matrix_user_uid }}"
+        group: "{{ matrix_user_gid }}"
+
+    - name: Generate matrix-metrics-htpasswd from username/password (protecting /metrics/* URIs)
+      ansible.builtin.command:
+        cmd: >-
+          {{ matrix_host_command_docker }} run
+          --rm
+          --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+          --cap-drop=ALL
+          --network=none
+          --mount type=bind,src={{ matrix_nginx_proxy_data_path }},dst=/data
+          --mount type=bind,src=/tmp/matrix-nginx-proxy-metrics-password,dst=/password,ro
+          --entrypoint=/bin/sh
+          {{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_image }}
+          -c
+          'cat /password | htpasswd -i -c /data/matrix-metrics-htpasswd {{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username }} && chmod 600 /data/matrix-metrics-htpasswd'
+      changed_when: true
+
+    - name: Delete temporary metrics password file
+      ansible.builtin.file:
+        path: /tmp/matrix-nginx-proxy-metrics-password
+        state: absent
+  when: matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username != ''

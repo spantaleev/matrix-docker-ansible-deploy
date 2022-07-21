@@ -1,6 +1,6 @@
 ---
 # Go-NEB is a Matrix bot written in Go. It is the successor to Matrix-NEB, the original Matrix bot written in Python.
-# See: https://github.com/matrix-org/go-neb
+# Project source code URL: https://github.com/matrix-org/go-neb
 
 matrix_bot_go_neb_enabled: true
 matrix_bot_go_neb_version: latest
@@ -224,8 +224,8 @@ matrix_bot_go_neb_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_bot_go_neb_configuration_yaml`.
 
-matrix_bot_go_neb_configuration_extension: "{{ matrix_bot_go_neb_configuration_extension_yaml|from_yaml if matrix_bot_go_neb_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_bot_go_neb_configuration_extension: "{{ matrix_bot_go_neb_configuration_extension_yaml | from_yaml if matrix_bot_go_neb_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_bot_go_neb_configuration_yaml`.
-matrix_bot_go_neb_configuration: "{{ matrix_bot_go_neb_configuration_yaml|from_yaml|combine(matrix_bot_go_neb_configuration_extension, recursive=True) }}"
+matrix_bot_go_neb_configuration: "{{ matrix_bot_go_neb_configuration_yaml | from_yaml | combine(matrix_bot_go_neb_configuration_extension, recursive=True) }}"

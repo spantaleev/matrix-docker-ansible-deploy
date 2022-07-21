@@ -1,42 +1,42 @@
 ---
 
-- import_tasks: "{{ role_path }}/tasks/init.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
   tags:
     - always
 
-- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: run_setup | bool
   tags:
     - setup-all
     - setup-dendrite
 
-- import_tasks: "{{ role_path }}/tasks/setup_dendrite.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_dendrite.yml"
+  when: run_setup | bool
   tags:
     - setup-all
     - setup-dendrite
 
-- import_tasks: "{{ role_path }}/tasks/register_user.yml"
-  when: run_dendrite_register_user|bool and matrix_dendrite_enabled|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/register_user.yml"
+  when: run_dendrite_register_user | bool and matrix_dendrite_enabled | bool
   tags:
     - register-user
 
-- import_tasks: "{{ role_path }}/tasks/self_check_client_api.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/self_check_client_api.yml"
   delegate_to: 127.0.0.1
   become: false
-  when: run_self_check|bool and matrix_dendrite_enabled|bool
+  when: run_self_check | bool and matrix_dendrite_enabled | bool
   tags:
     - self-check
 
-- import_tasks: "{{ role_path }}/tasks/self_check_federation_api.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/self_check_federation_api.yml"
   delegate_to: 127.0.0.1
   become: false
-  when: run_self_check|bool and matrix_dendrite_enabled|bool
+  when: run_self_check | bool and matrix_dendrite_enabled | bool
   tags:
     - self-check
 
 - name: Mark matrix-dendrite role as executed
-  set_fact:
+  ansible.builtin.set_fact:
     matrix_dendrite_role_executed: true
   tags:
     - always
