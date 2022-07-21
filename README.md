@@ -105,7 +105,7 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) [matrix-registration-bot](https://github.com/moan0s/matrix-registration-bot) for invitations by creating and managing registration tokens  - see [docs/configuring-playbook-bot-matrix-registration-bot.md](docs/configuring-playbook-bot-matrix-registration-bot.md) for setup documentation
 
-- (optional) [matrix-maubot](https://github.com/maubot/maubot) a plugin-based Matrix bot system - see [docs/configuring-playbook-bot-maubot.md](docs/configuring-playbook-bot-maubot.md) for setup documentation
+- (optional) [maubot](https://github.com/maubot/maubot) a plugin-based Matrix bot system - see [docs/configuring-playbook-bot-maubot.md](docs/configuring-playbook-bot-maubot.md) for setup documentation
 
 - (optional) [honoroit](https://gitlab.com/etke.cc/honoroit) helpdesk bot - see [docs/configuring-playbook-bot-honoroit.md](docs/configuring-playbook-bot-honoroit.md) for setup documentation
 
