@@ -92,6 +92,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Bridging other networks
 
+- [Setting up Mautrix Discord bridging](configuring-playbook-bridge-mautrix-discord.md) (optional)
+
 - [Setting up Mautrix Telegram bridging](configuring-playbook-bridge-mautrix-telegram.md) (optional)
 
 - [Setting up Mautrix Whatsapp bridging](configuring-playbook-bridge-mautrix-whatsapp.md) (optional)

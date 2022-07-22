@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-mautrix-discord service
+  ansible.builtin.stat:
+    path: "{{ matrix_systemd_path }}/matrix-mautrix-discord.service"
+  register: matrix_mautrix_discord_service_stat
+
+- name: Ensure matrix-mautrix-discord is stopped
+  ansible.builtin.service:
+    name: matrix-mautrix-discord
+    state: stopped
+    enabled: false
+    daemon_reload: true
+  when: "matrix_mautrix_discord_service_stat.stat.exists"
+
+- name: Ensure matrix-mautrix-discord.service doesn't exist
+  ansible.builtin.file:
+    path: "{{ matrix_systemd_path }}/matrix-mautrix-discord.service"
+    state: absent
+  when: "matrix_mautrix_discord_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-mautrix-discord.service removal
+  ansible.builtin.service:
+    daemon_reload: true
+  when: "matrix_mautrix_discord_service_stat.stat.exists"
