@@ -51,7 +51,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Serving your base domain using this playbook's nginx server](configuring-playbook-base-domain-serving.md) (optional)
 
-- [Configure Nginx (optional, advanced)](configuring-playbook-nginx.md) (optional, advanced)
+- [Configure Nginx](configuring-playbook-nginx.md) (optional, advanced)
 
 - [Using your own webserver, instead of this playbook's nginx proxy](configuring-playbook-own-webserver.md) (optional, advanced)
 
