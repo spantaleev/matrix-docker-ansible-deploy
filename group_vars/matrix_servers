@@ -216,6 +216,49 @@ matrix_appservice_irc_database_password: "{{ '%s' | format(matrix_homeserver_gen
 
 ######################################################################
 #
+# matrix-bridge-appservice-kakaotalk
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_appservice_kakaotalk_enabled: false
+
+matrix_appservice_kakaotalk_container_image_self_build: true
+
+matrix_appservice_kakaotalk_node_container_image_self_build: true
+
+matrix_appservice_kakaotalk_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    ['matrix-' + matrix_homeserver_implementation + '.service']
+    +
+    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+    +
+    ['matrix-appservice-kakaotalk-node.service']
+  }}
+
+matrix_appservice_kakaotalk_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'kt.as.token') | to_uuid }}"
+
+matrix_appservice_kakaotalk_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'kt.hs.token') | to_uuid }}"
+
+matrix_appservice_kakaotalk_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
+# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
+matrix_appservice_kakaotalk_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_appservice_kakaotalk_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.kt.db') | to_uuid }}"
+
+######################################################################
+#
+# /matrix-bridge-appservice-kakaotalk
+#
+######################################################################
+
+
+######################################################################
+#
 # matrix-bridge-beeper-linkedin
 #
 ######################################################################
@@ -1810,6 +1853,12 @@ matrix_postgres_additional_databases: |
       'username': matrix_appservice_irc_database_username,
       'password': matrix_appservice_irc_database_password,
     }] if (matrix_appservice_irc_enabled and matrix_appservice_irc_database_engine == 'postgres' and matrix_appservice_irc_database_hostname == 'matrix-postgres') else [])
+    +
+    ([{
+      'name': matrix_appservice_kakaotalk_database_name,
+      'username': matrix_appservice_kakaotalk_database_username,
+      'password': matrix_appservice_kakaotalk_database_password,
+    }] if (matrix_appservice_kakaotalk_enabled and matrix_appservice_kakaotalk_database_engine == 'postgres' and matrix_appservice_kakaotalk_database_hostname == 'matrix-postgres') else [])
     +
     ([{
       'name': matrix_beeper_linkedin_database_name,
