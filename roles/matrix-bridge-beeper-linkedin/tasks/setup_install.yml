@@ -50,12 +50,12 @@
     - name: Ensure docker-requirements.txt is generated before building Beeper LinkedIn Docker Image
       ansible.builtin.command:
         cmd: |
-          {{ matrix_host_command_docker }} run \
-          --rm \
-          --entrypoint=/bin/sh \
-          --mount type=bind,src={{ matrix_beeper_linkedin_docker_src_files_path }},dst=/work \
-          -w /work \
-          docker.io/python:3.9.6-buster \
+          {{ matrix_host_command_docker }} run
+          --rm
+          --entrypoint=/bin/sh
+          --mount type=bind,src={{ matrix_beeper_linkedin_docker_src_files_path }},dst=/work
+          -w /work
+          docker.io/python:3.9.6-buster
           -c "pip install poetry && poetry export --without-hashes -E e2be -E images -E metrics | sed 's/==.*//g' > docker-requirements.txt"
       register: matrix_beeper_linkedin_generate_docker_requirements_result
       changed_when: matrix_beeper_linkedin_generate_docker_requirements_result.rc == 0
