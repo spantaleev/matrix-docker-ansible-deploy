@@ -26,23 +26,7 @@ There are some additional things you may wish to configure about the bridge.
 Take a look at:
 
 - `roles/matrix-bridge-appservice-kakaotalk/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/matrix-bridge-appservice-kakaotalk/templates/config.yaml.j2` for the bridge's default configuration. You can override settings using the `matrix_appservice_kakaotalk_configuration_extension_yaml` variable
-
-Here's some example configuration (which goes into your `vars.yml` file):
-```yaml
-# This configuration:
-# - enables encryption (it's off by default)
-# - grants some user on your homeserver 'admin' access to the bridge
-#   (note: the user specified in the `matrix_admin` (part of `roles/matrix-base/defaults/main.yml`) is made an admin by default)
-matrix_appservice_kakaotalk_configuration_extension_yaml: |
-  bridge:
-    permissions:
-      '@YOUR_USERNAME:{{ matrix_domain }}': admin
-
-    encryption:
-      allow: true
-      default: true
-```
+- `roles/matrix-bridge-appservice-kakaotalk/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_appservice_kakaotalk_configuration_extension_yaml` variable
 
 
 ### Set up Double Puppeting
