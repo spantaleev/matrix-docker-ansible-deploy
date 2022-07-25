@@ -110,13 +110,15 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Appservice IRC bridging](configuring-playbook-bridge-appservice-irc.md) (optional)
 
-- [Setting up Beeper LinkedIn bridging](configuring-playbook-bridge-beeper-linkedin.md) (optional)
-
 - [Setting up Appservice Discord bridging](configuring-playbook-bridge-appservice-discord.md) (optional)
 
 - [Setting up Appservice Slack bridging](configuring-playbook-bridge-appservice-slack.md) (optional)
 
 - [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (optional)
+
+- [Setting up Appservice Kakaotalk bridging](configuring-playbook-bridge-appservice-kakaotalk.md) (optional)
+
+- [Setting up Beeper LinkedIn bridging](configuring-playbook-bridge-beeper-linkedin.md) (optional)
 
 - [Setting up matrix-hookshot](configuring-playbook-bridge-hookshot.md) - a bridge between Matrix and multiple project management services, such as [GitHub](https://github.com), [GitLab](https://about.gitlab.com) and [JIRA](https://www.atlassian.com/software/jira). (optional)
 

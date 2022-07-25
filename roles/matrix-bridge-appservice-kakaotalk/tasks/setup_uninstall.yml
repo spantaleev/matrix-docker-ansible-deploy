@@ -1,0 +1,41 @@
+---
+
+- name: Check existence of matrix-appservice-kakaotalk service
+  ansible.builtin.stat:
+    path: "{{ matrix_systemd_path }}/matrix-appservice-kakaotalk.service"
+  register: matrix_appservice_kakaotalk_service_stat
+
+- name: Ensure matrix-appservice-kakaotalk is stopped
+  ansible.builtin.service:
+    name: matrix-appservice-kakaotalk
+    state: stopped
+    enabled: false
+    daemon_reload: true
+  when: "matrix_appservice_kakaotalk_service_stat.stat.exists"
+
+- name: Check existence of matrix-appservice-kakaotalk-node service
+  ansible.builtin.stat:
+    path: "{{ matrix_systemd_path }}/matrix-appservice-kakaotalk-node.service"
+  register: matrix_appservice_kakaotalk_node_service_stat
+
+- name: Ensure matrix-appservice-kakaotalk-node is stopped
+  ansible.builtin.service:
+    name: matrix-appservice-kakaotalk-node
+    state: stopped
+    enabled: false
+    daemon_reload: true
+  when: "matrix_appservice_kakaotalk_node_service_stat.stat.exists"
+
+- name: Ensure matrix-appservice-kakaotalk.service files don't exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ matrix_systemd_path }}/matrix-appservice-kakaotalk-node.service"
+    - "{{ matrix_systemd_path }}/matrix-appservice-kakaotalk.service"
+  when: "matrix_appservice_kakaotalk_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-appservice-kakaotalk service files removal
+  ansible.builtin.service:
+    daemon_reload: true
+  when: "matrix_appservice_kakaotalk_service_stat.stat.exists or matrix_appservice_kakaotalk_node_service_stat.stat.exists"
