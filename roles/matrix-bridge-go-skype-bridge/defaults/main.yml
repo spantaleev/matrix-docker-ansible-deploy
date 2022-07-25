@@ -85,6 +85,20 @@ matrix_go_skype_bridge_bridge_login_shared_secret_map:
 matrix_go_skype_bridge_bridge_double_puppet_server_map:
   "{{ matrix_go_skype_bridge_homeserver_domain :  matrix_go_skype_bridge_homeserver_address }}"
 
+# Enable End-to-bridge encryption
+matrix_go_skype_bridge_bridge_encryption_allow: false
+matrix_go_skype_bridge_bridge_encryption_default: "{{ matrix_go_skype_bridge_bridge_encryption_allow }}"
+
+# Minimum severity of journal log messages.
+# Options: debug, info, warn, error, fatal
+matrix_go_skype_bridge_log_level: 'warn'
+
+matrix_go_skype_bridge_bridge_permissions: |
+  {{
+    {matrix_go_skype_bridge_homeserver_domain: 'user'}
+    | combine({matrix_admin: 'admin'} if matrix_admin else {})
+  }}
+
 # Default go-skype-bridge configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
@@ -124,11 +138,3 @@ matrix_go_skype_bridge_registration_yaml: |
   de.sorunome.msc2409.push_ephemeral: true
 
 matrix_go_skype_bridge_registration: "{{ matrix_go_skype_bridge_registration_yaml | from_yaml }}"
-
-# Enable End-to-bridge encryption
-matrix_go_skype_bridge_bridge_encryption_allow: false
-matrix_go_skype_bridge_bridge_encryption_default: "{{ matrix_go_skype_bridge_bridge_encryption_allow }}"
-
-# Minimum severity of journal log messages.
-# Options: debug, info, warn, error, fatal
-matrix_go_skype_bridge_log_level: 'warn'

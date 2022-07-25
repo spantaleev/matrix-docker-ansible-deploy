@@ -90,6 +90,17 @@ matrix_mautrix_whatsapp_bridge_login_shared_secret_map:
 matrix_mautrix_whatsapp_bridge_double_puppet_server_map:
   "{{ matrix_mautrix_whatsapp_homeserver_domain :  matrix_mautrix_whatsapp_homeserver_address }}"
 
+# Enable End-to-bridge encryption
+matrix_mautrix_whatsapp_bridge_encryption_allow: false
+matrix_mautrix_whatsapp_bridge_encryption_default: "{{ matrix_mautrix_whatsapp_bridge_encryption_allow }}"
+matrix_mautrix_whatsapp_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_whatsapp_bridge_encryption_allow }}"
+
+matrix_mautrix_whatsapp_bridge_permissions: |
+  {{
+    {matrix_mautrix_whatsapp_homeserver_domain: 'user'}
+    | combine({matrix_admin: 'admin'} if matrix_admin else {})
+  }}
+
 # Default mautrix-whatsapp configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
@@ -130,7 +141,3 @@ matrix_mautrix_whatsapp_registration_yaml: |
 
 matrix_mautrix_whatsapp_registration: "{{ matrix_mautrix_whatsapp_registration_yaml | from_yaml }}"
 
-# Enable End-to-bridge encryption
-matrix_mautrix_whatsapp_bridge_encryption_allow: false
-matrix_mautrix_whatsapp_bridge_encryption_default: "{{ matrix_mautrix_whatsapp_bridge_encryption_allow }}"
-matrix_mautrix_whatsapp_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_whatsapp_bridge_encryption_allow }}"

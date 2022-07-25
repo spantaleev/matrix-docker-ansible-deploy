@@ -48,6 +48,12 @@ matrix_mautrix_googlechat_homeserver_token: ''
 # If false, created portal rooms will never be federated.
 matrix_mautrix_googlechat_federate_rooms: true
 
+matrix_mautrix_googlechat_bridge_permissions: |
+  {{
+    {matrix_mautrix_googlechat_homeserver_domain: 'user'}
+    | combine({matrix_admin: 'admin'} if matrix_admin else {})
+  }}
+
 # Database-related configuration fields.
 #
 # To use SQLite, stick to these defaults.

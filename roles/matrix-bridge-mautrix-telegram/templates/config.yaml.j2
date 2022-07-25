@@ -289,11 +289,7 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions:
-      '{{ matrix_mautrix_telegram_homeserver_domain }}': full
-      {% if matrix_admin %}
-      '{{ matrix_admin }}': admin
-      {% endif %}
+    permissions: {{ matrix_mautrix_telegram_bridge_permissions|to_json }}
 
     # Options related to the message relay Telegram bot.
     relaybot:

@@ -27,6 +27,12 @@ matrix_mautrix_telegram_data_path: "{{ matrix_mautrix_telegram_base_path }}/data
 
 matrix_mautrix_telegram_command_prefix: "!tg"
 
+matrix_mautrix_telegram_bridge_permissions: |
+  {{
+    {matrix_mautrix_telegram_homeserver_domain: 'user'}
+    | combine({matrix_admin: 'admin'} if matrix_admin else {})
+  }}
+
 # Get your own API keys at https://my.telegram.org/apps
 matrix_mautrix_telegram_api_id: ''
 matrix_mautrix_telegram_api_hash: ''

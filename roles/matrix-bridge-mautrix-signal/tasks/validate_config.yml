@@ -11,6 +11,15 @@
     - "matrix_mautrix_signal_homeserver_token"
     - "matrix_mautrix_signal_appservice_token"
 
+- name: (Deprecation) Fail if matrix_mautrix_signal_bridge_permissions specified as YAML string, instead of a dictionary
+  ansible.builtin.fail:
+    msg: >-
+      The `matrix_mautrix_signal_bridge_permissions` variable in your configuration is specified as a YAML string.
+      The playbook now expects a hashmap/dictionary in this variable.
+      Change your configuration like this:
+      matrix_mautrix_signal_bridge_permissions: {{ matrix_mautrix_signal_bridge_permissions | from_yaml | to_json }}
+  when: "matrix_mautrix_signal_bridge_permissions is string"
+
 - name: (Deprecation) Catch and report renamed Signal variables
   ansible.builtin.fail:
     msg: >-

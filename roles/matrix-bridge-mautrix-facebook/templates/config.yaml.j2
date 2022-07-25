@@ -201,11 +201,7 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions:
-      '{{ matrix_mautrix_facebook_homeserver_domain }}': user
-      {% if matrix_admin %}
-      '{{ matrix_admin }}': admin
-      {% endif %}
+    permissions: {{ matrix_mautrix_facebook_bridge_permissions|to_json }}
 
     relay:
         # Whether relay mode should be allowed. If allowed, `!fb set-relay` can be used to turn any

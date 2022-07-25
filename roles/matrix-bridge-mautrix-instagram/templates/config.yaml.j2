@@ -185,11 +185,7 @@ bridge:
   #        * - All Matrix users
   #   domain - All users on that homeserver
   #     mxid - Specific user
-  permissions:
-    "{{ matrix_mautrix_instagram_homeserver_domain }}": user
-    {% if matrix_admin %}
-    "{{ matrix_admin }}": admin
-    {% endif %}
+  permissions: {{ matrix_mautrix_instagram_bridge_permissions|to_json }}
   # Provisioning API part of the web server for automated portal creation and fetching information.
   # Used by things like mautrix-manager (https://github.com/tulir/mautrix-manager).
   provisioning:

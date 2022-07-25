@@ -103,12 +103,14 @@ matrix_mautrix_signal_relaybot_enabled: false
 #        * - All Matrix users
 #   domain - All users on that homeserver
 #     mxid - Specific user
+#
+# This variable used to contain a YAML string, but now needs to contain a hashmap/dictionary.
 matrix_mautrix_signal_bridge_permissions: |
-  '*': relay
-  '{{ matrix_mautrix_signal_homeserver_domain }}': user
-  {% if matrix_admin %}
-  "{{ matrix_admin }}": admin
-  {% endif %}
+  {{
+    {'*': 'relay'}
+    | combine({matrix_mautrix_signal_homeserver_domain: 'user'})
+    | combine({matrix_admin: 'admin'} if matrix_admin else {})
+  }}
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.

@@ -46,6 +46,12 @@ matrix_mautrix_facebook_homeserver_token: ''
 # If false, created portal rooms will never be federated.
 matrix_mautrix_facebook_federate_rooms: true
 
+matrix_mautrix_facebook_bridge_permissions: |
+  {{
+    {matrix_mautrix_facebook_homeserver_domain: 'user'}
+    | combine({matrix_admin: 'admin'} if matrix_admin else {})
+  }}
+
 # Controls whether the matrix-mautrix-facebook container exposes its HTTP port.
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9008"), or empty string to not expose.

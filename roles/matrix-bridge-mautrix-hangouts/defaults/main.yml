@@ -27,6 +27,12 @@ matrix_mautrix_hangouts_appservice_address: 'http://matrix-mautrix-hangouts:8080
 
 matrix_mautrix_hangouts_command_prefix: "!HO"
 
+matrix_mautrix_hangouts_bridge_permissions: |
+  {{
+    {matrix_mautrix_hangouts_homeserver_domain: 'user'}
+    | combine({matrix_admin: 'admin'} if matrix_admin else {})
+  }}
+
 # Controls whether the matrix-mautrix-hangouts container exposes its HTTP port (tcp/8080 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9007"), or empty string to not expose.

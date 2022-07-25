@@ -56,7 +56,7 @@ appservice:
         # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
         # to leave display name/avatar as-is.
         displayname: LinkedIn bridge bot
-        avatar: mxc://sumnerevans.com/XMtwdeUBnxYvWNFFrfeTSHqB 
+        avatar: mxc://sumnerevans.com/XMtwdeUBnxYvWNFFrfeTSHqB
 
     # Whether or not to receive ephemeral events via appservice transactions.
     # Requires MSC2409 support (i.e. Synapse 1.22+).
@@ -236,11 +236,7 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions:
-        "{{ matrix_beeper_linkedin_homeserver_domain }}": user
-        {% if matrix_admin %}
-        "{{ matrix_admin }}": admin
-        {% endif %}
+    permissions: {{ matrix_beeper_linkedin_bridge_permissions|to_json }}
 
 
 

@@ -197,11 +197,7 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions:
-        "{{ matrix_go_skype_bridge_homeserver_domain }}": user
-        {% if matrix_admin %}
-        "{{ matrix_admin }}": admin
-        {% endif %}
+    permissions: {{ matrix_go_skype_bridge_bridge_permissions|to_json }}
 
     relaybot:
         # Whether or not relaybot support is enabled.
