@@ -1,6 +1,13 @@
 ---
 
 - block:
+  - name: Fail with matrix_backup_borg_version advice if Postgres not enabled
+    ansible.builtin.fail:
+      msg: >-
+        You are not running a built-in Postgres server (`matrix_postgres_enabled: false`), so auto-detecting its version and setting `matrix_backup_borg_version` automatically based on that cannot happen.
+        Consider setting `matrix_backup_borg_version` to your Postgres version manually.
+    when: not matrix_postgres_enabled
+
   - ansible.builtin.import_role:
       name: matrix-postgres
       tasks_from: detect_existing_postgres_version

@@ -6,6 +6,12 @@
 # This utility is intentionally not in `tasks/util`, because if it were, it wouldn't be possible
 # to include it in other roles via the import_role module: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/import_role_module.html
 
+
+- name: Fail detection if expectation fails (Postgres not enabled)
+  ansible.builtin.fail:
+    msg: "Trying to detect the version of the built-in Postgres server, but Postgres installation is not enabled (`matrix_postgres_enabled: false`)"
+  when: not matrix_postgres_enabled
+
 - name: Initialize Postgres version determination variables (default to empty)
   ansible.builtin.set_fact:
     matrix_postgres_detection_pg_version_path: "{{ matrix_postgres_data_path }}/PG_VERSION"
