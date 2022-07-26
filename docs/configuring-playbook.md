@@ -18,6 +18,7 @@ You can then follow these steps inside the playbook directory:
 
 1. edit the inventory hosts file (`inventory/hosts`) to your liking
 
+1. (optional, advanced) to run Ansible against multiple servers with different `sudo` credentials, you can copy the sample inventory hosts yaml file for each of your hosts: (`cp examples/host.yml inventory/my_host1.yml` …) and use the [`ansible-all-hosts.sh`](../inventory/scripts/ansible-all-hosts.sh) script [in the installation step](installing.md).
 
 For a basic Matrix installation, that's all you need.
 For a more custom setup, see the [Other configuration options](#other-configuration-options) below.
