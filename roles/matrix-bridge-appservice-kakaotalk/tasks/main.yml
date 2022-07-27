@@ -1,0 +1,23 @@
+---
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
+  tags:
+    - always
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: "run_setup | bool and matrix_appservice_kakaotalk_enabled | bool"
+  tags:
+    - setup-all
+    - setup-appservice-kakaotalk
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  when: "run_setup | bool and matrix_appservice_kakaotalk_enabled | bool"
+  tags:
+    - setup-all
+    - setup-appservice-kakaotalk
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+  when: "run_setup | bool and not matrix_appservice_kakaotalk_enabled | bool"
+  tags:
+    - setup-all
+    - setup-appservice-kakaotalk

@@ -1,3 +1,12 @@
+# 2022-07-27
+
+## matrix-appservice-kakaotalk support
+
+The playbook now supports bridging to [Kakaotalk](https://www.kakaocorp.com/page/service/service/KakaoTalk?lang=ENG) via [matrix-appservice-kakaotalk](https://src.miscworks.net/fair/matrix-appservice-kakaotalk) - a bridge based on [node-kakao](https://github.com/storycraft/node-kakao) (now unmaintained) and some [mautrix-facebook](https://github.com/mautrix/facebook) code. Thanks to [hnarjis](https://github.com/hnarjis) for helping us add support for this!
+
+See our [Setting up Appservice Kakaotalk bridging](docs/configuring-playbook-bridge-appservice-kakaotalk.md) documentation to get started.
+
+
 # 2022-07-20
 
 ## maubot support
