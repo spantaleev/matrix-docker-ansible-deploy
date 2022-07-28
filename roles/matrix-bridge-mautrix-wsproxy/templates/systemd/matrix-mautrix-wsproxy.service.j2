@@ -25,7 +25,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-wsprox
 			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
 			-v {{ matrix_mautrix_wsproxy_config_path }}:/data:z \
-			-p 29331:29331 \
+			-p {{ matrix_mautrix_wsproxy_port }}:29331 \
 			{% for arg in matrix_mautrix_wsproxy_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

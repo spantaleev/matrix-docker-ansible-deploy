@@ -10,6 +10,7 @@ Use the following playbook configuration:
 matrix_mautrix_wsproxy_enabled: true
 matrix_mautrix_wsproxy_appservice_token: 'random string'
 matrix_mautrix_wsproxy_homeserver_token: 'random string'
+matrix_mautrix_wsproxy_syncproxy_shared_secret: 'random string'
 ```
 
 

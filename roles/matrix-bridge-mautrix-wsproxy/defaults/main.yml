@@ -33,7 +33,7 @@ matrix_mautrix_wsproxy_systemd_wanted_services_list: []
 matrix_mautrix_wsproxy_appservice_token: ''
 matrix_mautrix_wsproxy_homeserver_token: ''
 
-matrix_mautrix_wsproxy_appservice_bot_username: imessagebot
+matrix_mautrix_wsproxy_appservice_bot_username: androidsmsbot
 
 # Default mautrix-wsproxy configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
@@ -58,7 +58,7 @@ matrix_mautrix_wsproxy_configuration_extension: "{{ matrix_mautrix_wsproxy_confi
 matrix_mautrix_wsproxy_configuration: "{{ matrix_mautrix_wsproxy_configuration_yaml|from_yaml|combine(matrix_mautrix_wsproxy_configuration_extension, recursive=True) }}"
 
 matrix_mautrix_wsproxy_registration_yaml: |
-  id: imessage
+  id: androidsms
   url: {{ matrix_mautrix_wsproxy_appservice_address }}
   as_token: "{{ matrix_mautrix_wsproxy_appservice_token }}"
   hs_token: "{{ matrix_mautrix_wsproxy_homeserver_token }}"
@@ -66,9 +66,37 @@ matrix_mautrix_wsproxy_registration_yaml: |
   rate_limited: false
   namespaces:
       users:
-      - regex: '@imessage_.+:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
+      - regex: '@androidsms_.+:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
         exclusive: true
       - exclusive: true
         regex: '^@{{ matrix_mautrix_wsproxy_appservice_bot_username|regex_escape }}:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
 
 matrix_mautrix_wsproxy_registration: "{{ matrix_mautrix_wsproxy_registration_yaml|from_yaml }}"
+
+# Syncproxy-related configuration fields
+matrix_mautrix_wsproxy_syncproxy_version: latest
+# See: https://mau.dev/mautrix/wsproxy/container_registry
+matrix_mautrix_wsproxy_syncproxy_docker_image: "dock.mau.dev/mautrix/syncproxy:{{ matrix_mautrix_wsproxy_syncproxy_version }}"
+matrix_mautrix_wsproxy_syncproxy_docker_image_force_pull: "{{ matrix_mautrix_wsproxy_syncproxy_docker_image.endswith(':latest') }}"
+matrix_mautrix_wsproxy_syncproxy_container_extra_arguments: []
+
+matrix_mautrix_wsproxy_syncproxy_systemd_required_services_list: ['docker.service', 'matrix-mautrix-wsproxy.service']
+matrix_mautrix_wsproxy_syncproxy_systemd_wanted_services_list: []
+
+matrix_mautrix_wsproxy_syncproxy_shared_secret: ''
+matrix_mautrix_wsproxy_syncproxy_port: 29332
+matrix_mautrix_wsproxy_syncproxy_appservice_address: "http://matrix-mautrix-wsproxy-syncproxy:{{ matrix_mautrix_wsproxy_syncproxy_port }}"
+
+# Database-related configuration fields
+#
+# This bridge supports Postgres and SQLite.
+#
+matrix_mautrix_wsproxy_syncproxy_database_engine: 'postgres'
+
+matrix_mautrix_wsproxy_syncproxy_database_username: 'matrix_mautrix_wsproxy_syncproxy'
+matrix_mautrix_wsproxy_syncproxy_database_password: 'some-password'
+matrix_mautrix_wsproxy_syncproxy_database_hostname: 'matrix-postgres'
+matrix_mautrix_wsproxy_syncproxy_database_port: 5432
+matrix_mautrix_wsproxy_syncproxy_database_name: 'matrix_mautrix_wsproxy_syncproxy'
+
+matrix_mautrix_signal_wsproxy_syncproxy_connection_string: 'postgres://{{ matrix_mautrix_wsproxy_syncproxy_database_username }}:{{ matrix_mautrix_wsproxy_syncproxy_database_password }}@{{ matrix_mautrix_wsproxy_syncproxy_database_hostname }}:{{ matrix_mautrix_wsproxy_syncproxy_database_port }}/{{ matrix_mautrix_wsproxy_syncproxy_database_name }}'
