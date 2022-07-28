@@ -130,10 +130,6 @@ matrix_mautrix_signal_configuration_extension: "{{ matrix_mautrix_signal_configu
 # You most likely don't need to touch this variable. Instead, see `matrix_mautrix_signal_configuration_yaml`.
 matrix_mautrix_signal_configuration: "{{ matrix_mautrix_signal_configuration_yaml|from_yaml|combine(matrix_mautrix_signal_configuration_extension, recursive=True) }}"
 
-# Prevents the puppet from breaking when the signal safety number changes.
-# The new safety number will be marked as trusted_unverified if this is set to true
-matrix_mautrix_signal_daemon_trust_new_keys: false
-
 matrix_mautrix_signal_registration_yaml: "{{ lookup('template', 'templates/registration.yaml.j2') }}"
 
 matrix_mautrix_signal_registration: "{{ matrix_mautrix_signal_registration_yaml|from_yaml }}"
@@ -148,5 +144,5 @@ matrix_mautrix_signal_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_si
 #
 # Example:
 # matrix_mautrix_signal_daemon_environment_variables_extension: |
-#   SIGNALD_TRUST_ALL_KEYS=true
+#   SIGNALD_TRUST_NEW_KEYS=true
 matrix_mautrix_signal_daemon_environment_variables_extension: ''
