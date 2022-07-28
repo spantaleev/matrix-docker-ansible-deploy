@@ -25,6 +25,12 @@ matrix_mautrix_discord_appservice_address: "http://matrix-mautrix-discord:8080"
 
 matrix_mautrix_discord_command_prefix: "!discord"
 
+matrix_mautrix_discord_bridge_permissions: |
+  {{
+    {matrix_mautrix_discord_homeserver_domain: 'user'}
+    | combine({matrix_admin: 'admin'} if matrix_admin else {})
+  }}
+
 # A list of extra arguments to pass to the container
 matrix_mautrix_discord_container_extra_arguments: []
 

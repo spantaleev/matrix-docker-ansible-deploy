@@ -1,5 +1,7 @@
 # Setting up Mautrix Discord (optional)
 
+**Note**: bridging to [Discord](https://discordapp.com/) can also happen via the [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) and [matrix-appservice-discord](configuring-playbook-bridge-appservice-discord.md) bridges supported by the playbook.
+
 The playbook can install and configure [mautrix-discord](https://github.com/mautrix/discord) for you.
 
 See the project's [documentation](https://docs.mau.fi/bridges/go/discord/index.html) to learn what it does and why it might be useful to you.

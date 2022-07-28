@@ -24,8 +24,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-discor
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
-			-v {{ matrix_mautrix_discord_config_path }}:/config:z \
-			-v {{ matrix_mautrix_discord_data_path }}:/data:z \
+			--mount type=bind,src={{ matrix_mautrix_discord_config_path }},dst=/config,ro \
+			--mount type=bind,src={{ matrix_mautrix_discord_data_path }},dst=/data \
 			--workdir=/data \
 			{% for arg in matrix_mautrix_discord_container_extra_arguments %}
 			{{ arg }} \
