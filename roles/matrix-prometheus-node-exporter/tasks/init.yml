@@ -23,10 +23,10 @@
               resolver 127.0.0.11 valid=5s;
               set $backend "matrix-prometheus-node-exporter:9100";
               proxy_pass http://$backend/metrics;
+            {% elif matrix_prometheus_node_exporter_matrix_nginx_proxy_not_enabled_proxy_pass_host != '' %}
+              proxy_pass http://{{ matrix_prometheus_node_exporter_matrix_nginx_proxy_not_enabled_proxy_pass_host }}/metrics;
             {% else %}
-              {# Generic configuration for use outside of our container setup #}
-              {# This may be implemented in the future. #}
-              return 404 "matrix-nginx-proxy is disabled, so metrics are unavailable";
+              return 404 "matrix-nginx-proxy is disabled and no host port was bound to the container, so metrics are unavailable";
             {% endif %}
           }
 
