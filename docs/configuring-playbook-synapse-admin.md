@@ -65,7 +65,7 @@ matrix_synapse_admin_container_extra_arguments:
 
 ### Sample configuration for running behind Caddy v2
 
-Below is a sample configuration for using this playbook with a [Caddy](https://caddyserver.com/v2) 2.0 reverse proxy (non-default confiuratuon assuming `matrix-nginx-proxy` is disabled - `matrix_nginx_proxy_enabled: false`).
+Below is a sample configuration for using this playbook with a [Caddy](https://caddyserver.com/v2) 2.0 reverse proxy (non-default configuration where `matrix-nginx-proxy` is disabled - `matrix_nginx_proxy_enabled: false`).
 
 ```caddy
 # This is a basic configuration that will function the same as the default nginx proxy - exposing the synapse-admin panel to matrix.YOURSERVER.com/synapse-admin/
