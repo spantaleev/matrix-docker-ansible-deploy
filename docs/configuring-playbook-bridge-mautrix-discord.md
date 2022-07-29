@@ -9,7 +9,7 @@ See the project's [documentation](https://docs.mau.fi/bridges/go/discord/index.h
 
 ## Prerequisites
 
-Fr using this bridge, you would **need to authenticate by scanning a QR code with the Discord app on your phone**.
+For using this bridge, you would **need to authenticate by scanning a QR code with the Discord app on your phone**.
 
 You can delete the Discord app after the authentication process.
 
