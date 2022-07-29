@@ -1,3 +1,12 @@
+# 2022-07-29
+
+## mautrix-discord support
+
+Thanks to [MdotAmaan](https://github.com/MdotAmaan)'s efforts, the playbook now supports bridging to [Discord](https://discordapp.com/) via the [mautrix-discord](https://mau.dev/mautrix/discord) bridge. See our [Setting up Mautrix Discord bridging](docs/configuring-playbook-bridge-mautrix-discord.md) documentation page for getting started.
+
+**Note**: this is a new Discord bridge. The playbook still retains Discord bridging via [matrix-appservice-discord](docs/configuring-playbook-bridge-appservice-discord.md) and [mx-puppet-discord](docs/configuring-playbook-bridge-mx-puppet-discord.md). You're free too use the bridge that serves you better, or even all three of them (for different users and use-cases).
+
+
 # 2022-07-27
 
 ## matrix-appservice-kakaotalk support
