@@ -13,7 +13,7 @@ For using this bridge, you would **need to authenticate by scanning a QR code wi
 
 You can delete the Discord app after the authentication process.
 
-If this is a dealbreaker for you, consider using one of the other Discord bridges supported by the playbook: [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) or [matrix-appservice-discord](configuring-playbook-bridge-appservice-discord.md). These come with their own complexity and limitations, however, so we recommend that you to proceed with this one if possible.
+If this is a dealbreaker for you, consider using one of the other Discord bridges supported by the playbook: [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) or [matrix-appservice-discord](configuring-playbook-bridge-appservice-discord.md). These come with their own complexity and limitations, however, so we recommend that you proceed with this one if possible.
 
 
 ## Installing
@@ -75,7 +75,7 @@ https://matrix.DOMAIN/_matrix/client/r0/login
 1. Start a chat with `@discordbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
 2. Send a `login` command
 3. You'll see a QR code which you need to scan with the Discord app on your phone. You can scan it with the camera app too, which will open Discord, which will then instruct you to scan it a 2nd time in the Discord app.
-4. After confirming (in the Discord app) that you'd like to allow this login, the bot shoul respond with "Succcessfully authenticated as ..."
+4. After confirming (in the Discord app) that you'd like to allow this login, the bot should respond with "Succcessfully authenticated as ..."
 5. Now that you're logged in, you can send a `help` command to the bot again, to see additional commands you have access to
 6. Some Direct Messages from Discord should start syncing automatically
 7. If you'd like to bridge guilds:
