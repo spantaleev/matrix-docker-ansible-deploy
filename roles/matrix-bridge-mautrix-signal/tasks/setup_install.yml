@@ -92,6 +92,15 @@
     - "{{ matrix_mautrix_signal_daemon_path }}/attachments"
     - "{{ matrix_mautrix_signal_daemon_path }}/data"
 
+
+- name: Ensure mautrix-signal-daemon environment variables file created
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/env.j2"
+    dest: "{{ matrix_mautrix_signal_daemon_path }}/env"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0644
+
 - name: Ensure mautrix-signal config.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_mautrix_signal_configuration | to_nice_yaml(indent=2, width=999999) }}"
