@@ -1,7 +1,7 @@
 # Setting up Mautrix Discord (optional)
 
 **Note**: bridging to [Discord](https://discordapp.com/) can also happen via the [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) and [matrix-appservice-discord](configuring-playbook-bridge-appservice-discord.md) bridges supported by the playbook.  
-- For using as a Bot we are recommend the [Appservice Discord](configuring-playbook-bridge-appservice-discord.md), because it supports plumbing.  
+- For using as a Bot we recommend the [Appservice Discord](configuring-playbook-bridge-appservice-discord.md), because it supports plumbing.  
 - For personal use with a discord account we recommend the `mautrix-discord` bridge (the one being discussed here), because it is the most fully-featured and stable of the 3 Discord bridges supported by the playbook.
 The `mautrix-discord` bridge (the one being discussed here) is the most fully-featured and stable of the 3 Discord bridges supported by the playbook, so it's the one we recommend.
 
