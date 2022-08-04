@@ -1,0 +1,77 @@
+#jinja2: lstrip_blocks: "True"
+
+server {
+	listen 12080;
+	server_name {{ matrix_nginx_proxy_proxy_conduit_hostname }};
+
+	server_tokens off;
+	root /dev/null;
+
+	gzip on;
+	gzip_types text/plain application/json;
+
+	{% for configuration_block in matrix_nginx_proxy_proxy_conduit_additional_server_configuration_blocks %}
+		{{- configuration_block }}
+	{% endfor %}
+
+	{% if matrix_nginx_proxy_proxy_conduit_block_federation_api_on_client_port %}
+	location /_matrix/federation {
+		{% if matrix_nginx_proxy_proxy_conduit_federation_api_enabled %}
+			return 404 'The Federation API is served at https://{{ matrix_server_fqn_matrix }}:{{ matrix_federation_public_port }}';
+		{% else %}
+			return 404 'This Matrix server is running with federation disabled';
+		{% endif %}
+	}
+	{% endif %}
+
+	{# Everything else just goes to the API server ##}
+	location / {
+		{% if matrix_nginx_proxy_enabled %}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver 127.0.0.11 valid=5s;
+			set $backend "{{ matrix_nginx_proxy_proxy_conduit_client_api_addr_with_container }}";
+			proxy_pass http://$backend;
+		{% else %}
+			{# Generic configuration for use outside of our container setup #}
+			proxy_pass http://{{ matrix_nginx_proxy_proxy_conduit_client_api_addr_sans_container }};
+		{% endif %}
+
+		proxy_set_header Host $host;
+
+		client_body_buffer_size 25M;
+		client_max_body_size {{ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb }}M;
+		proxy_max_temp_file_size 0;
+	}
+}
+
+{% if matrix_nginx_proxy_proxy_conduit_federation_api_enabled %}
+server {
+	listen 12088;
+
+	server_name {{ matrix_nginx_proxy_proxy_conduit_hostname }};
+	server_tokens off;
+
+	root /dev/null;
+
+	gzip on;
+	gzip_types text/plain application/json;
+
+	location / {
+		{% if matrix_nginx_proxy_enabled %}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver 127.0.0.11 valid=5s;
+			set $backend "{{ matrix_nginx_proxy_proxy_conduit_federation_api_addr_with_container }}";
+			proxy_pass http://$backend;
+		{% else %}
+			{# Generic configuration for use outside of our container setup #}
+			proxy_pass http://{{ matrix_nginx_proxy_proxy_conduit_federation_api_addr_sans_container }};
+		{% endif %}
+
+		proxy_set_header Host $host;
+
+		client_body_buffer_size 25M;
+		client_max_body_size {{ matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb }}M;
+		proxy_max_temp_file_size 0;
+	}
+}
+{% endif %}

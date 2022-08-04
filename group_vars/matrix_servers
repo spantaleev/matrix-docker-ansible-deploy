@@ -24,6 +24,7 @@ matrix_homeserver_container_url: |-
     'http://matrix-nginx-proxy:12080' if matrix_nginx_proxy_enabled else {
       'synapse': ('http://matrix-synapse:'+ matrix_synapse_container_client_api_port|string),
       'dendrite': ('http://matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
+      'conduit': ('http://matrix-conduit:' + matrix_conduit_port_number|string),
     }[matrix_homeserver_implementation]
   }}
 
@@ -32,6 +33,7 @@ matrix_homeserver_container_federation_url: |-
     'http://matrix-nginx-proxy:12088' if matrix_nginx_proxy_enabled else {
       'synapse': ('http://matrix-synapse:'+ matrix_synapse_container_federation_api_plain_port|string),
       'dendrite': ('http://matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
+      'conduit': ('http://matrix-conduit:' + matrix_conduit_port_number|string),
     }[matrix_homeserver_implementation]
   }}
 
@@ -1432,6 +1434,7 @@ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: |-
     {
       'synapse': matrix_synapse_max_upload_size_mb,
       'dendrite': (matrix_dendrite_max_file_size_bytes / 1024 / 1024) | round,
+      'conduit': (matrix_conduit_max_request_size / 1024 / 1024) | round,
     }[matrix_homeserver_implementation]|int
   }}
 
@@ -1464,6 +1467,7 @@ matrix_nginx_proxy_proxy_matrix_federation_api_enabled: |-
     {
       'synapse': (matrix_synapse_federation_port_enabled and not matrix_synapse_tls_federation_listener_enabled),
       'dendrite': matrix_dendrite_federation_enabled,
+      'conduit': matrix_conduit_allow_federation,
     }[matrix_homeserver_implementation]|bool
   }}
 
@@ -1481,6 +1485,12 @@ matrix_nginx_proxy_proxy_dendrite_client_api_addr_with_container: "matrix-dendri
 matrix_nginx_proxy_proxy_dendrite_client_api_addr_sans_container: "127.0.0.1:{{ matrix_dendrite_http_bind_port|string }}"
 matrix_nginx_proxy_proxy_dendrite_federation_api_addr_with_container: "matrix-dendrite:{{ matrix_dendrite_http_bind_port|string }}"
 matrix_nginx_proxy_proxy_dendrite_federation_api_addr_sans_container: "127.0.0.1:{{ matrix_dendrite_http_bind_port|string }}"
+
+matrix_nginx_proxy_proxy_conduit_enabled: "{{ matrix_conduit_enabled }}"
+matrix_nginx_proxy_proxy_conduit_client_api_addr_with_container: "matrix-conduit:{{ matrix_conduit_port_number|string }}"
+matrix_nginx_proxy_proxy_conduit_client_api_addr_sans_container: "127.0.0.1:{{ matrix_conduit_port_number|string }}"
+matrix_nginx_proxy_proxy_conduit_federation_api_addr_with_container: "matrix-conduit:{{ matrix_conduit_port_number|string }}"
+matrix_nginx_proxy_proxy_conduit_federation_api_addr_sans_container: "127.0.0.1:{{ matrix_conduit_port_number|string }}"
 
 # When matrix-nginx-proxy is disabled, the actual port number that the vhost uses may begin to matter.
 matrix_nginx_proxy_proxy_matrix_federation_port: "{{ matrix_federation_public_port }}"
@@ -2211,6 +2221,7 @@ matrix_registration_shared_secret: |-
     {
       'synapse': matrix_synapse_registration_shared_secret,
       'dendrite': matrix_dendrite_registration_shared_secret,
+      'conduit': ''
     }[matrix_homeserver_implementation]
   }}
 
@@ -2329,5 +2340,25 @@ matrix_dendrite_systemd_wanted_services_list: |
 ######################################################################
 #
 # /matrix-dendrite
+#
+######################################################################
+
+######################################################################
+#
+# matrix-conduit
+#
+######################################################################
+
+matrix_conduit_enabled: "{{ matrix_homeserver_implementation == 'conduit' }}"
+
+matrix_conduit_systemd_required_services_list: |
+  {{
+    (['docker.service'])
+  }}
+
+
+######################################################################
+#
+# /matrix-conduit
 #
 ######################################################################
