@@ -1,7 +1,10 @@
 #jinja2: lstrip_blocks: "True"
 [Unit]
 Description=Conduit Matrix homeserver
-After=network.target
+{% for service in matrix_conduit_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
 
 [Service]
 Type=simple
@@ -16,7 +19,6 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-conduit \
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_conduit_tmp_directory_size_mb }}m \
 			--network={{ matrix_docker_network }} \
-			-p 8448:6167 \
 			--mount type=bind,src={{ matrix_conduit_config_dir_path }},dst=/etc/matrix-conduit,ro \
 			--mount type=bind,src={{ matrix_conduit_data_dir_path }},dst=/var/lib/conduit \
 			{% for arg in matrix_conduit_container_extra_arguments %}
