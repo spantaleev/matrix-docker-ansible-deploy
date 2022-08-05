@@ -67,6 +67,7 @@ You can expand "Access token" to copy it.
 To use the management interface with an [external nginx webserver](configuring-playbook-own-webserver.md) the configuration will default to
 a http bind port at `127.0.0.1:29316`. If you need to use a different interface add the following to your `vars.yml` (e.g. with `0.0.0.0`).
 
+
 ```yaml
 # Controls whether the maubot container exposes its HTTP management interface port (tcp/29316 in the container).
 #
