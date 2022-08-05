@@ -1125,6 +1125,8 @@ matrix_bot_maubot_registration_shared_secret: |-
     }[matrix_homeserver_implementation]
   }}
 
+matrix_bot_maubot_management_interface_http_bind_port: "{{ '' if matrix_nginx_proxy_enabled else ('127.0.0.1:' + matrix_bot_maubot_management_interface_port | string) }}"
+
 # Postgres is the default, except if not using `matrix_postgres` (internal postgres)
 matrix_bot_maubot_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
 matrix_bot_maubot_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.dsc.db') | to_uuid }}"

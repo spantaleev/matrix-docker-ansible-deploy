@@ -61,10 +61,3 @@ You can expand "Access token" to copy it.
 ![Obatining an admin access token with Element](assets/obtain_admin_access_token_element.png)
 
 **IMPORTANT**: once you copy the token, just close the Matrix client window/tab. Do not "log out", as that would invalidate the token.
-
-
-
-
-
-
-
