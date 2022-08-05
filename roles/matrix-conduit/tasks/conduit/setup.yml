@@ -7,7 +7,7 @@
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: "matrix_conduit_enabled|bool"
+  when: "matrix_conduit_enabled | bool"
 
 - name: Ensure Conduit data path exists
   ansible.builtin.file:
@@ -16,10 +16,10 @@
     mode: 0770
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: "matrix_conduit_enabled|bool"
+  when: "matrix_conduit_enabled | bool"
 
 - import_tasks: "{{ role_path }}/tasks/conduit/setup_install.yml"
-  when: matrix_conduit_enabled|bool
+  when: "matrix_conduit_enabled | bool"
 
 - import_tasks: "{{ role_path }}/tasks/conduit/setup_uninstall.yml"
-  when: "not matrix_conduit_enabled|bool"
+  when: "not matrix_conduit_enabled | bool"
