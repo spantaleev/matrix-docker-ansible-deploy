@@ -62,8 +62,20 @@ You can expand "Access token" to copy it.
 
 **IMPORTANT**: once you copy the token, just close the Matrix client window/tab. Do not "log out", as that would invalidate the token.
 
+## External nginx
+
+To use the management interface with an [external nginx webserver](configuring-playbook-own-webserver.md) you can use
 
 
+```yaml
+# Controls whether the maubot container exposes its HTTP management interface port (tcp/29316 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:29316"), or empty string to not expose.
+# If you'll be setting this at all, it should be defined in terms of `matrix_bot_maubot_management_interface_port`.
+# Example:
+# matrix_bot_maubot_management_interface_http_bind_port: "127.0.0.1:{{ matrix_bot_maubot_management_interface_port }}"
+matrix_bot_maubot_management_interface_http_bind_port: '127.0.0.1:{{ matrix_bot_maubot_management_interface_port }}'
+```
 
 
 
