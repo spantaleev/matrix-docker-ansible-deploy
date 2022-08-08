@@ -47,6 +47,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional, advanced) the [Matrix Corporal](https://github.com/devture/matrix-corporal) reconciliator and gateway for a managed Matrix server
 
+- (optional) the [mautrix-discord](https://github.com/mautrix/discord) bridge for bridging your Matrix server to [Discord](https://discord.com/) - see [docs/configuring-playbook-bridge-mautrix-discord.md](docs/configuring-playbook-bridge-mautrix-discord.md) for setup documentation
+
 - (optional) the [mautrix-telegram](https://github.com/mautrix/telegram) bridge for bridging your Matrix server to [Telegram](https://telegram.org/)
 
 - (optional) the [mautrix-whatsapp](https://github.com/mautrix/whatsapp) bridge for bridging your Matrix server to [WhatsApp](https://www.whatsapp.com/)
