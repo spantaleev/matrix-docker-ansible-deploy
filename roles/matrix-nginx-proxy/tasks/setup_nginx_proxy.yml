@@ -68,6 +68,19 @@
     state: absent
   when: "not matrix_nginx_proxy_proxy_dendrite_enabled | bool"
 
+- name: Ensure Matrix nginx-proxy configuration for matrix-conduit exists
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-conduit.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-conduit.conf"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_conduit_enabled | bool
+
+- name: Ensure Matrix nginx-proxy configuration for matrix-conduit deleted
+  ansible.builtin.file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-conduit.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_conduit_enabled | bool"
+
 - name: Ensure Matrix nginx-proxy configuration for Element domain exists
   ansible.builtin.template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-client-element.conf.j2"

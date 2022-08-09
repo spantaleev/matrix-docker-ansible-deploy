@@ -1,0 +1,30 @@
+---
+
+- name: Check existence of matrix-conduit service
+  ansible.builtin.stat:
+    path: "{{ matrix_systemd_path }}/matrix-conduit.service"
+  register: matrix_conduit_service_stat
+
+- name: Ensure matrix-conduit is stopped
+  ansible.builtin.systemd:
+    name: matrix-conduit
+    state: stopped
+    daemon_reload: true
+  register: stopping_result
+  when: "matrix_conduit_service_stat.stat.exists"
+
+- name: Ensure matrix-conduit.service doesn't exist
+  ansible.builtin.file:
+    path: "{{ matrix_systemd_path }}/matrix-conduit.service"
+    state: absent
+  when: "matrix_conduit_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-conduit.service removal
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: "matrix_conduit_service_stat.stat.exists"
+
+- name: Ensure Conduit Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_conduit_docker_image }}"
+    state: absent

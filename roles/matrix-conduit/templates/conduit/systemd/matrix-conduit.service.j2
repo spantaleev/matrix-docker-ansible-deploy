@@ -1,0 +1,38 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Conduit Matrix homeserver
+{% for service in matrix_conduit_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+
+[Service]
+Type=simple
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-conduit 2>/dev/null || true'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-conduit 2>/dev/null || true'
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-conduit \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_conduit_tmp_directory_size_mb }}m \
+			--network={{ matrix_docker_network }} \
+			--env CONDUIT_CONFIG=/etc/matrix-conduit/conduit.toml \
+			--mount type=bind,src={{ matrix_conduit_data_path }},dst=/var/lib/matrix-conduit \
+			--mount type=bind,src={{ matrix_conduit_config_path }},dst=/etc/matrix-conduit,ro \
+			{% for arg in matrix_conduit_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_conduit_docker_image }}
+
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-conduit 2>/dev/null || true'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-conduit 2>/dev/null || true'
+ExecReload={{ matrix_host_command_docker }} exec matrix-conduit /bin/sh -c 'kill -HUP 1'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-conduit
+
+[Install]
+WantedBy=multi-user.target
