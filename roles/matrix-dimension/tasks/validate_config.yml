@@ -1,6 +1,6 @@
 ---
 - name: Fail if required Dimension settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) for using Dimension.
   with_items:
@@ -8,7 +8,7 @@
   when: "matrix_dimension_enabled and vars[item] == ''"
 
 - name: (Deprecation) Catch and report renamed Dimension variables
-  fail:
+  ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).

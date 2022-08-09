@@ -1,4 +1,5 @@
 ---
+# Project source code URL: https://github.com/vector-im/hydrogen-web
 
 matrix_client_hydrogen_enabled: true
 
@@ -7,7 +8,7 @@ matrix_client_hydrogen_enabled: true
 matrix_client_hydrogen_container_image_self_build: true
 matrix_client_hydrogen_container_image_self_build_repo: "https://github.com/vector-im/hydrogen-web.git"
 
-matrix_client_hydrogen_version: v0.2.26
+matrix_client_hydrogen_version: v0.3.1
 matrix_client_hydrogen_docker_image: "{{ matrix_client_hydrogen_docker_image_name_prefix }}vectorim/hydrogen-web:{{ matrix_client_hydrogen_version }}"
 matrix_client_hydrogen_docker_image_name_prefix: "{{ 'localhost/' if matrix_client_hydrogen_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_client_hydrogen_docker_image_force_pull: "{{ matrix_client_hydrogen_docker_image.endswith(':latest') }}"
@@ -30,7 +31,13 @@ matrix_client_hydrogen_systemd_required_services_list: ['docker.service']
 matrix_client_hydrogen_self_check_validate_certificates: true
 
 # config.json
+matrix_client_hydrogen_push:
+  appId: io.element.hydrogen.web
+  gatewayUrl: https://matrix.org
+  applicationServerKey: "BC-gpSdVHEXhvHSHS0AzzWrQoukv2BE7KzpoPO_FfPacqOo3l1pdqz7rSgmB04pZCWaHPz7XRe6fjLaC-WPDopM"
 matrix_client_hydrogen_default_hs_url: ""
+matrix_client_hydrogen_bugReportEndpointUrl: "https://element.io/bugreports/submit"  # noqa var-naming
+
 
 # Default Hydrogen configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
@@ -63,8 +70,8 @@ matrix_client_hydrogen_configuration_default: "{{ lookup('template', 'templates/
 #  }
 matrix_client_hydrogen_configuration_extension_json: '{}'
 
-matrix_client_hydrogen_configuration_extension: "{{ matrix_client_hydrogen_configuration_extension_json|from_json if matrix_client_hydrogen_configuration_extension_json|from_json is mapping else {} }}"
+matrix_client_hydrogen_configuration_extension: "{{ matrix_client_hydrogen_configuration_extension_json | from_json if matrix_client_hydrogen_configuration_extension_json | from_json is mapping else {} }}"
 
 # Holds the final Hydrogen configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_client_hydrogen_configuration_default`.
-matrix_client_hydrogen_configuration: "{{ matrix_client_hydrogen_configuration_default|combine(matrix_client_hydrogen_configuration_extension, recursive=True) }}"
+matrix_client_hydrogen_configuration: "{{ matrix_client_hydrogen_configuration_default | combine(matrix_client_hydrogen_configuration_extension, recursive=True) }}"

@@ -56,7 +56,7 @@ appservice:
         # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
         # to leave display name/avatar as-is.
         displayname: LinkedIn bridge bot
-        avatar: mxc://sumnerevans.com/XMtwdeUBnxYvWNFFrfeTSHqB 
+        avatar: mxc://sumnerevans.com/XMtwdeUBnxYvWNFFrfeTSHqB
 
     # Whether or not to receive ephemeral events via appservice transactions.
     # Requires MSC2409 support (i.e. Synapse 1.22+).
@@ -226,7 +226,7 @@ bridge:
 
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!li"
+    command_prefix: "{{ matrix_beeper_linkedin_command_prefix }}"
 
     # Permissions for using the bridge.
     # Permitted values:
@@ -236,8 +236,7 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions:
-        "{{ matrix_beeper_linkedin_homeserver_domain }}": user
+    permissions: {{ matrix_beeper_linkedin_bridge_permissions|to_json }}
 
 
 
@@ -256,12 +255,12 @@ logging:
             formatter: colored
     loggers:
         mau:
-            level: DEBUG
+            level: {{ matrix_beeper_linkedin_logging_level|to_json }}
         paho:
-            level: INFO
+            level: {{ matrix_beeper_linkedin_logging_level|to_json }}
         aiohttp:
-            level: INFO
+            level: {{ matrix_beeper_linkedin_logging_level|to_json }}
     root:
-        level: DEBUG
-        handlers: [ console]
+        level: {{ matrix_beeper_linkedin_logging_level|to_json }}
+        handlers: [console]
 

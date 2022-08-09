@@ -1,0 +1,122 @@
+---
+
+# If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
+# We don't want to fail in such cases.
+- name: Fail if matrix-synapse role already executed
+  ansible.builtin.fail:
+    msg: >-
+      The matrix-bridge-mautrix-discord role needs to execute before the matrix-synapse role.
+  when: "matrix_synapse_role_executed | default(False)"
+
+- ansible.builtin.set_fact:
+    matrix_mautrix_discord_requires_restart: false
+
+- block:
+    - name: Check if an SQLite database already exists
+      ansible.builtin.stat:
+        path: "{{ matrix_mautrix_discord_sqlite_database_path_local }}"
+      register: matrix_mautrix_discord_sqlite_database_path_local_stat_result
+
+    - block:
+        - ansible.builtin.set_fact:
+            matrix_postgres_db_migration_request:
+              src: "{{ matrix_mautrix_discord_sqlite_database_path_local }}"
+              dst: "{{ matrix_mautrix_discord_database_connection_string }}"
+              caller: "{{ role_path | basename }}"
+              engine_variable_name: 'matrix_mautrix_discord_database_engine'
+              engine_old: 'sqlite'
+              systemd_services_to_stop: ['matrix-mautrix-discord.service']
+              pgloader_options: ['--with "quote identifiers"']
+
+        - ansible.builtin.import_role:
+            name: matrix-postgres
+            tasks_from: migrate_db_to_postgres
+
+        - ansible.builtin.set_fact:
+            matrix_mautrix_discord_requires_restart: true
+      when: "matrix_mautrix_discord_sqlite_database_path_local_stat_result.stat.exists | bool"
+  when: "matrix_mautrix_discord_database_engine == 'postgres'"
+
+
+- name: Ensure Mautrix Discord paths exists
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_mautrix_discord_base_path }}", when: true}
+    - {path: "{{ matrix_mautrix_discord_config_path }}", when: true}
+    - {path: "{{ matrix_mautrix_discord_data_path }}", when: true}
+    - {path: "{{ matrix_mautrix_discord_docker_src_files_path }}", when: "{{ matrix_mautrix_discord_container_image_self_build }}"}
+  when: item.when | bool
+
+- name: Ensure Mautrix Discord image is pulled
+  docker_image:
+    name: "{{ matrix_mautrix_discord_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_mautrix_discord_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_discord_docker_image_force_pull }}"
+  when: not matrix_mautrix_discord_container_image_self_build
+  register: result
+  retries: "{{ matrix_container_retries_count }}"
+  delay: "{{ matrix_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure Mautrix discord repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_mautrix_discord_container_image_self_build_repo }}"
+    dest: "{{ matrix_mautrix_discord_docker_src_files_path }}"
+    version: "{{ matrix_mautrix_discord_container_image_self_build_branch }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
+  register: matrix_mautrix_discord_git_pull_results
+  when: "matrix_mautrix_discord_container_image_self_build | bool"
+
+- name: Ensure Mautrix discord Docker image is built
+  docker_image:
+    name: "{{ matrix_mautrix_discord_docker_image }}"
+    source: build
+    force_source: "{{ matrix_mautrix_discord_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_discord_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_mautrix_discord_docker_src_files_path }}"
+      pull: true
+  when: "matrix_mautrix_discord_container_image_self_build | bool"
+
+- name: Ensure mautrix-discord config.yaml installed
+  ansible.builtin.copy:
+    content: "{{ matrix_mautrix_discord_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_mautrix_discord_config_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure mautrix-discord registration.yaml installed
+  ansible.builtin.copy:
+    content: "{{ matrix_mautrix_discord_registration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_mautrix_discord_config_path }}/registration.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-mautrix-discord.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-mautrix-discord.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-mautrix-discord.service"
+    mode: 0644
+  register: matrix_mautrix_discord_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-mautrix-discord.service installation
+  ansible.builtin.service:
+    daemon_reload: true
+  when: "matrix_mautrix_discord_systemd_service_result.changed"
+
+- name: Ensure matrix-mautrix-discord.service restarted, if necessary
+  ansible.builtin.service:
+    name: "matrix-mautrix-discord.service"
+    state: restarted
+  when: "matrix_mautrix_discord_requires_restart | bool"

@@ -1,6 +1,8 @@
 # Setting up Appservice Discord (optional)
 
-**Note**: bridging to [Discord](https://discordapp.com/) can also happen via the [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) bridge supported by the playbook.
+**Note**: bridging to [Discord](https://discordapp.com/) can also happen via the [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) and [mautrix-discord](configuring-playbook-bridge-mautrix-discord.md) bridges supported by the playbook.   
+- For using as a Bot we are recommend the Appservice Discord bridge (the one being discussed here), because it supports plumbing.  
+- For personal use we recommend the [mautrix-discord](configuring-playbook-bridge-mautrix-discord.md) bridge, because it is the most fully-featured and stable of the 3 Discord bridges supported by the playbook.
 
 The playbook can install and configure [matrix-appservice-discord](https://github.com/Half-Shot/matrix-appservice-discord) for you.
 
@@ -61,7 +63,7 @@ To get started with Portal Bridging:
 
 1. To invite the bot to Discord, retrieve the invite link from the `{{ matrix_appservice_discord_config_path }}/invite_link` file on the server (this defaults to `/matrix/appservice-discord/config/invite_link`). You need to peek at the file on the server via SSH, etc., because it's not available via HTTP(S).
 2. Room addresses follow this syntax: `#_discord_<guildID>_<channelID>`. You can easily find the guild and channel IDs by logging into Discord in a browser and opening the desired channel. The URL will have this format: `discord.com/channels/<guildID>/<channelID>`.
-3. Once you have figured out the appropriate room address, you can join by doing `/join #_discord_<guildID>_<channelID>` in your Matrix client. 
+3. Once you have figured out the appropriate room address, you can join by doing `/join #_discord_<guildID>_<channelID>` in your Matrix client.
 
 ## Getting Administrator access in a portal bridged room
 

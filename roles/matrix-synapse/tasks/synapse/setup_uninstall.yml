@@ -1,12 +1,12 @@
 ---
 
 - name: Check existence of matrix-synapse service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-synapse.service"
   register: matrix_synapse_service_stat
 
 - name: Ensure matrix-synapse is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-synapse
     state: stopped
     enabled: false
@@ -15,13 +15,13 @@
   when: "matrix_synapse_service_stat.stat.exists"
 
 - name: Ensure matrix-synapse.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-synapse.service"
     state: absent
   when: "matrix_synapse_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-synapse.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_synapse_service_stat.stat.exists"
 
@@ -29,3 +29,9 @@
   docker_image:
     name: "{{ matrix_synapse_docker_image }}"
     state: absent
+
+- name: Ensure sample prometheus.yml for external scraping is deleted
+  ansible.builtin.file:
+    path: "{{ matrix_synapse_base_path }}/external_prometheus.yml.example"
+    state: absent
+  when: "not matrix_synapse_metrics_proxying_enabled | bool"

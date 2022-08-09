@@ -1,0 +1,36 @@
+---
+
+- name: Check existence of matrix-maubot service
+  ansible.builtin.stat:
+    path: "{{ matrix_systemd_path }}/matrix-bot-maubot.service"
+  register: matrix_bot_maubot_service_stat
+
+- name: Ensure matrix-bot-maubot is stopped
+  ansible.builtin.service:
+    name: matrix-bot-maubot
+    state: stopped
+    enabled: false
+    daemon_reload: true
+  register: stopping_result
+  when: "matrix_bot_maubot_service_stat.stat.exists|bool"
+
+- name: Ensure matrix-bot-maubot.service doesn't exist
+  ansible.builtin.file:
+    path: "{{ matrix_systemd_path }}/matrix-bot-maubot.service"
+    state: absent
+  when: "matrix_bot_maubot_service_stat.stat.exists|bool"
+
+- name: Ensure systemd reloaded after matrix-bot-maubot.service removal
+  ansible.builtin.service:
+    daemon_reload: true
+  when: "matrix_bot_maubot_service_stat.stat.exists|bool"
+
+- name: Ensure Matrix maubot paths don't exist
+  ansible.builtin.file:
+    path: "{{ matrix_bot_maubot_base_path }}"
+    state: absent
+
+- name: Ensure maubot Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_bot_maubot_docker_image }}"
+    state: absent

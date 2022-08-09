@@ -1,12 +1,12 @@
 ---
 
 - name: Check existence of matrix-appservice-irc service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-appservice-irc.service"
   register: matrix_appservice_irc_service_stat
 
 - name: Ensure matrix-appservice-irc is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-appservice-irc
     state: stopped
     enabled: false
@@ -14,12 +14,12 @@
   when: "matrix_appservice_irc_service_stat.stat.exists"
 
 - name: Ensure matrix-appservice-irc.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-appservice-irc.service"
     state: absent
   when: "matrix_appservice_irc_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-appservice-irc.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_appservice_irc_service_stat.stat.exists"

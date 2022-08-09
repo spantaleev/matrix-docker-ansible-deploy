@@ -4,7 +4,7 @@
 #
 # For running with another webserver, we recommend being part of the `matrix` group.
 - name: Ensure Matrix static-files path exists
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: 0755
@@ -14,24 +14,39 @@
     - "{{ matrix_static_files_base_path }}/.well-known/matrix"
 
 - name: Ensure Matrix /.well-known/matrix/client file configured
-  copy:
-    content: "{{ matrix_well_known_matrix_client_configuration|to_nice_json }}"
+  ansible.builtin.copy:
+    content: "{{ matrix_well_known_matrix_client_configuration | to_nice_json }}"
     dest: "{{ matrix_static_files_base_path }}/.well-known/matrix/client"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure Matrix /.well-known/matrix/server file configured
-  copy:
-    content: "{{ matrix_well_known_matrix_server_configuration|to_nice_json }}"
+  ansible.builtin.copy:
+    content: "{{ matrix_well_known_matrix_server_configuration | to_nice_json }}"
     dest: "{{ matrix_static_files_base_path }}/.well-known/matrix/server"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: matrix_well_known_matrix_server_enabled|bool
+  when: matrix_well_known_matrix_server_enabled | bool
 
 - name: Ensure Matrix /.well-known/matrix/server file deleted
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_static_files_base_path }}/.well-known/matrix/server"
     state: absent
-  when: "not matrix_well_known_matrix_server_enabled|bool"
+  when: "not matrix_well_known_matrix_server_enabled | bool"
+
+- name: Ensure Matrix /.well-known/matrix/support file configured
+  ansible.builtin.copy:
+    content: "{{ matrix_well_known_matrix_support_configuration | to_nice_json }}"
+    dest: "{{ matrix_static_files_base_path }}/.well-known/matrix/support"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  when: matrix_well_known_matrix_support_enabled | bool
+
+- name: Ensure Matrix /.well-known/matrix/support file deleted
+  ansible.builtin.file:
+    path: "{{ matrix_static_files_base_path }}/.well-known/matrix/support"
+    state: absent
+  when: "not matrix_well_known_matrix_support_enabled | bool"

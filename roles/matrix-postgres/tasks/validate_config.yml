@@ -1,7 +1,7 @@
 ---
 
 - name: (Deprecation) Warn about matrix_postgres_use_external usage
-  fail:
+  ansible.builtin.fail:
     msg: >
       The `matrix_postgres_use_external` variable defined in your configuration is not used by this playbook anymore!
       You'll need to adapt to the new way of using an external Postgres server.
@@ -13,7 +13,7 @@
 # This is separate (from the other required variables below),
 # because we'd like to have a friendlier message for our existing users.
 - name: Fail if matrix_postgres_connection_password not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       The playbook no longer has a default Postgres password defined in the `matrix_postgres_connection_password` variable, among lots of other Postgres changes.
       You need to perform multiple manual steps to resolve this.
@@ -22,7 +22,7 @@
   when: "matrix_postgres_connection_password == ''"
 
 - name: Fail if required Postgres settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
   when: "vars[item] == ''"
@@ -34,6 +34,6 @@
     - "matrix_postgres_db_name"
 
 - name: Fail if Postgres password length exceeded
-  fail:
+  ansible.builtin.fail:
     msg: "The maximum `matrix_postgres_connection_password` length is 99 characters"
   when: "matrix_postgres_connection_password|length > 99"

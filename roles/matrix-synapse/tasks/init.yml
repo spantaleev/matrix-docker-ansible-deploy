@@ -2,26 +2,86 @@
 # See https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1070
 # and https://github.com/spantaleev/matrix-docker-ansible-deploy/commit/1ab507349c752042d26def3e95884f6df8886b74#commitcomment-51108407
 - name: Fail if trying to self-build on Ansible < 2.8
-  fail:
+  ansible.builtin.fail:
     msg: "To self-build the Synapse image, you should use Ansible 2.8 or higher. See docs/ansible.md"
   when: "ansible_version.major == 2 and ansible_version.minor < 8 and matrix_synapse_container_image_self_build and matrix_synapse_enabled"
 
 # Unless `matrix_synapse_workers_enabled_list` is explicitly defined,
 # we'll generate it dynamically.
-- import_tasks: "{{ role_path }}/tasks/synapse/workers/init.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/synapse/workers/init.yml"
   when: "matrix_synapse_enabled and matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list|length == 0"
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-synapse.service'] }}"
-  when: matrix_synapse_enabled|bool
+  when: matrix_synapse_enabled | bool
 
 - name: Ensure systemd services for workers are injected
-  include_tasks: "{{ role_path }}/tasks/synapse/workers/util/inject_systemd_services_for_worker.yml"
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/util/inject_systemd_services_for_worker.yml"
   with_items: "{{ matrix_synapse_workers_enabled_list }}"
   loop_control:
     loop_var: matrix_synapse_worker_details
-  when: matrix_synapse_enabled|bool and matrix_synapse_workers_enabled|bool
+  when: matrix_synapse_enabled | bool and matrix_synapse_workers_enabled | bool
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-goofys.service'] }}"
-  when: matrix_s3_media_store_enabled|bool
+  when: matrix_s3_media_store_enabled | bool
+
+- block:
+    - name: Fail if matrix-nginx-proxy role already executed
+      ansible.builtin.fail:
+        msg: >-
+          Trying to append Synapse's reverse-proxying configuration to matrix-nginx-proxy,
+          but it's pointless since the matrix-nginx-proxy role had already executed.
+          To fix this, please change the order of roles in your playbook,
+          so that the matrix-nginx-proxy role would run after the matrix-synapse role.
+      when: matrix_nginx_proxy_role_executed | default(False) | bool
+
+    - name: Generate synapse metrics proxying configuration for matrix-nginx-proxy (matrix.DOMAIN/metrics/synapse/main-process)
+      ansible.builtin.set_fact:
+        matrix_synapse_nginx_metrics_configuration_block: |
+          location /metrics/synapse/main-process {
+            {% if matrix_nginx_proxy_enabled | default(False) %}
+              {# Use the embedded DNS resolver in Docker containers to discover the service #}
+              resolver 127.0.0.11 valid=5s;
+              set $backend "matrix-synapse:{{ matrix_synapse_metrics_port }}";
+              proxy_pass http://$backend/_synapse/metrics;
+            {% else %}
+              {# Generic configuration for use outside of our container setup #}
+              proxy_pass http://127.0.0.1:{{ matrix_synapse_metrics_port }}/_synapse/metrics;
+            {% endif %}
+          }
+
+    - name: Register synapse metrics proxying configuration with matrix-nginx-proxy (matrix.DOMAIN/metrics/synapse/main-process)
+      ansible.builtin.set_fact:
+        matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks: |
+          {{
+            matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks | default([])
+            +
+            [matrix_synapse_nginx_metrics_configuration_block]
+          }}
+
+    - name: Generate synapse worker metrics proxying configuration for matrix-nginx-proxy (matrix.DOMAIN/metrics/synapse/worker)
+      ansible.builtin.set_fact:
+        matrix_synapse_worker_nginx_metrics_configuration_block: |
+          {% for worker in matrix_synapse_workers_enabled_list %}
+          {% if worker.metrics_port != 0 %}
+          location /metrics/synapse/worker/{{ worker.type }}-{{ worker.instanceId }} {
+            resolver 127.0.0.11 valid=5s;
+            set $backend "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.metrics_port }}";
+            proxy_pass http://$backend/_synapse/metrics;
+            proxy_set_header Host $host;
+          }
+          {% endif %}
+          {% endfor %}
+      when: matrix_synapse_workers_enabled_list|length > 0
+
+    - name: Register synapse worker metrics proxying configuration with matrix-nginx-proxy (matrix.DOMAIN/metrics/synapse/worker)
+      ansible.builtin.set_fact:
+        matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks: |
+          {{
+            matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks | default([])
+            +
+            [matrix_synapse_worker_nginx_metrics_configuration_block]
+          }}
+      when: matrix_synapse_workers_enabled_list|length > 0
+  when: matrix_synapse_enabled | bool and matrix_synapse_metrics_proxying_enabled | bool

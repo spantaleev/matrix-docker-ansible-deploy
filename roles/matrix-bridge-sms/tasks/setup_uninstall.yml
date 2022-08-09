@@ -1,12 +1,12 @@
 ---
 
 - name: Check existence of matrix-sms-bridge service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-sms-bridge.service"
   register: matrix_sms_bridge_service_stat
 
 - name: Ensure matrix-sms-bridge is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-sms-bridge
     state: stopped
     enabled: false
@@ -14,7 +14,7 @@
   when: "matrix_sms_bridge_service_stat.stat.exists"
 
 - name: Ensure matrix-sms-bridge.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-sms-bridge.service"
     state: absent
   when: "matrix_sms_bridge_service_stat.stat.exists"

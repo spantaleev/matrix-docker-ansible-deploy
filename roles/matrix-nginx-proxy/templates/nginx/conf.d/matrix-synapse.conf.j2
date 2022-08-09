@@ -1,10 +1,13 @@
 #jinja2: lstrip_blocks: "True"
 
-{% set generic_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'generic_worker')|list %}
-{% set media_repository_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'media_repository')|list %}
-{% set user_dir_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'user_dir')|list %}
-{% set frontend_proxy_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'frontend_proxy')|list %}
+{% set generic_workers = matrix_nginx_proxy_synapse_workers_list | selectattr('type', 'equalto', 'generic_worker') | list %}
+{% set media_repository_workers = matrix_nginx_proxy_synapse_workers_list | selectattr('type', 'equalto', 'media_repository') | list %}
+{% set user_dir_workers = matrix_nginx_proxy_synapse_workers_list | selectattr('type', 'equalto', 'user_dir') | list %}
+{% set frontend_proxy_workers = matrix_nginx_proxy_synapse_workers_list | selectattr('type', 'equalto', 'frontend_proxy') | list %}
 {% if matrix_nginx_proxy_synapse_workers_enabled %}
+	{% if matrix_nginx_proxy_synapse_cache_enabled %}
+    	proxy_cache_path  {{ matrix_nginx_proxy_synapse_cache_path }} levels=1:2 keys_zone={{ matrix_nginx_proxy_synapse_cache_keys_zone_name }}:{{ matrix_nginx_proxy_synapse_cache_keys_zone_size }} inactive={{ matrix_nginx_proxy_synapse_cache_inactive_time }} max_size={{ matrix_nginx_proxy_synapse_cache_max_size_mb }}m;
+	{% endif %}
 	# Round Robin "upstream" pools for workers
 
 	{% if generic_workers %}
@@ -95,6 +98,14 @@ server {
 				client_body_buffer_size 25M;
 				client_max_body_size {{ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb }}M;
 				proxy_max_temp_file_size 0;
+
+				{% if matrix_nginx_proxy_synapse_cache_enabled %}
+					proxy_buffering        on;
+					proxy_cache            {{ matrix_nginx_proxy_synapse_cache_keys_zone_name }};
+					proxy_cache_valid      any  {{ matrix_nginx_proxy_synapse_cache_proxy_cache_valid_time }};
+					proxy_force_ranges on;
+					add_header X-Cache-Status $upstream_cache_status;
+				{% endif %}
 			}
 			{% endfor %}
 		{% endif %}
@@ -133,45 +144,6 @@ server {
 	{% for configuration_block in matrix_nginx_proxy_proxy_synapse_additional_server_configuration_blocks %}
 		{{- configuration_block }}
 	{% endfor %}
-
-	{% if matrix_nginx_proxy_proxy_synapse_metrics %}
-	location /_synapse/metrics {
-		{% if matrix_nginx_proxy_enabled %}
-			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
-			set $backend "{{ matrix_nginx_proxy_proxy_synapse_metrics_addr_with_container }}";
-			proxy_pass http://$backend;
-		{% else %}
-			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://{{ matrix_nginx_proxy_proxy_synapse_metrics_addr_sans_container }};
-		{% endif %}
-
-		proxy_set_header Host $host;
-
-		{% if matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled %}
-			auth_basic "protected";
-			auth_basic_user_file /nginx-data/matrix-synapse-metrics-htpasswd;
-		{% endif %}
-	}
-	{% endif %}
-
-	{% if matrix_nginx_proxy_enabled and matrix_nginx_proxy_proxy_synapse_metrics %}
-		{% for worker in matrix_nginx_proxy_proxy_synapse_workers_enabled_list %}
-			{% if worker.metrics_port != 0 %}
-				location /_synapse-worker-{{ worker.type }}-{{ worker.instanceId }}/metrics {
-					resolver 127.0.0.11 valid=5s;
-					set $backend "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.metrics_port }}";
-					proxy_pass http://$backend/_synapse/metrics;
-					proxy_set_header Host $host;
-
-					{% if matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled %}
-						auth_basic "protected";
-						auth_basic_user_file /nginx-data/matrix-synapse-metrics-htpasswd;
-					{% endif %}
-				}
-			{% endif %}
-		{% endfor %}
-	{% endif %}
 
 	{# Everything else just goes to the API server ##}
 	location / {
@@ -227,6 +199,14 @@ server {
 				client_body_buffer_size 25M;
 				client_max_body_size {{ matrix_nginx_proxy_proxy_matrix_federation_api_client_max_body_size_mb }}M;
 				proxy_max_temp_file_size 0;
+
+				{% if matrix_nginx_proxy_synapse_cache_enabled %}
+					proxy_buffering        on;
+					proxy_cache            {{ matrix_nginx_proxy_synapse_cache_keys_zone_name }};
+					proxy_cache_valid      any  {{ matrix_nginx_proxy_synapse_cache_proxy_cache_valid_time }};
+					proxy_force_ranges on;
+					add_header X-Cache-Status $upstream_cache_status;
+				{% endif %}
 			}
 			{% endfor %}
 		{% endif %}

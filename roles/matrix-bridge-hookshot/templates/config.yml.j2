@@ -78,6 +78,13 @@ generic:
   allowJsTransformationFunctions: {{ matrix_hookshot_generic_allow_js_transformation_functions }}
   userIdPrefix: {{ matrix_hookshot_generic_user_id_prefix|to_json }}
 {% endif %}
+{% if matrix_hookshot_feeds_enabled %}
+feeds:
+  # (Optional) Configure this to enable RSS/Atom feed support
+  #
+  enabled: {{ matrix_hookshot_feeds_enabled }}
+  pollIntervalSeconds: {{ matrix_hookshot_feeds_interval }}
+{% endif %}
 {% if matrix_hookshot_provisioning_enabled %}
 provisioning:
   # (Optional) Provisioning API for integration managers

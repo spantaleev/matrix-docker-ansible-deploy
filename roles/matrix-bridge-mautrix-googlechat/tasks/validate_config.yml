@@ -1,7 +1,7 @@
 ---
 
 - name: Fail if required settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
   when: "vars[item] == ''"
@@ -9,6 +9,6 @@
     - "matrix_mautrix_googlechat_public_endpoint"
     - "matrix_mautrix_googlechat_appservice_token"
     - "matrix_mautrix_googlechat_homeserver_token"
-- debug:
+- ansible.builtin.debug:
     msg:
       - '`matrix_mautrix_googlechat_homeserver_domain` == {{ matrix_mautrix_googlechat_homeserver_domain }}'

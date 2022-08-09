@@ -1,6 +1,6 @@
 ---
 # matrix-appservice-discord is a Matrix <-> Discord bridge
-# See: https://github.com/Half-Shot/matrix-appservice-discord
+# Project source code URL: https://github.com/Half-Shot/matrix-appservice-discord
 
 matrix_appservice_discord_enabled: true
 
@@ -39,10 +39,10 @@ matrix_appservice_discord_appservice_url: 'http://matrix-appservice-discord:9005
 
 matrix_appservice_discord_bridge_domain: "{{ matrix_domain }}"
 # As of right now, the homeserver URL must be a public URL. See below.
-matrix_appservice_discord_bridge_homeserverUrl: "{{ matrix_homeserver_url }}"
-matrix_appservice_discord_bridge_disablePresence: false
-matrix_appservice_discord_bridge_enableSelfServiceBridging: false
-matrix_appservice_discord_bridge_disablePortalBridging: false
+matrix_appservice_discord_bridge_homeserverUrl: "{{ matrix_homeserver_url }}"  # noqa var-naming
+matrix_appservice_discord_bridge_disablePresence: false  # noqa var-naming
+matrix_appservice_discord_bridge_enableSelfServiceBridging: false  # noqa var-naming
+matrix_appservice_discord_bridge_disablePortalBridging: false  # noqa var-naming
 
 # Database-related configuration fields.
 #
@@ -65,7 +65,7 @@ matrix_appservice_discord_database_name: 'matrix_appservice_discord'
 # These 2 variables are what actually ends up in the bridge configuration.
 # It's best if you don't change them directly, but rather redefine the sub-variables that constitute them.
 matrix_appservice_discord_database_filename: "{{ matrix_appservice_discord_sqlite_database_path_in_container }}"
-matrix_appservice_discord_database_connString: 'postgresql://{{ matrix_appservice_discord_database_username }}:{{ matrix_appservice_discord_database_password }}@{{ matrix_appservice_discord_database_hostname }}:{{ matrix_appservice_discord_database_port }}/{{ matrix_appservice_discord_database_name }}'
+matrix_appservice_discord_database_connString: 'postgresql://{{ matrix_appservice_discord_database_username }}:{{ matrix_appservice_discord_database_password }}@{{ matrix_appservice_discord_database_hostname }}:{{ matrix_appservice_discord_database_port }}/{{ matrix_appservice_discord_database_name }}'  # noqa var-naming
 
 
 # Tells whether the bot should make use of "Privileged Gateway Intents".
@@ -74,7 +74,7 @@ matrix_appservice_discord_database_connString: 'postgresql://{{ matrix_appservic
 # by triggering all Intent checkboxes on a page like this: `https://discord.com/developers/applications/694448564151123988/bot`
 #
 # Learn more: https://gist.github.com/advaith1/e69bcc1cdd6d0087322734451f15aa2f
-matrix_appservice_discord_auth_usePrivilegedIntents: false
+matrix_appservice_discord_auth_usePrivilegedIntents: false  # noqa var-naming
 
 matrix_appservice_discord_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
 
@@ -87,9 +87,9 @@ matrix_appservice_discord_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_appservice_discord_configuration_yaml`.
 
-matrix_appservice_discord_configuration_extension: "{{ matrix_appservice_discord_configuration_extension_yaml|from_yaml if matrix_appservice_discord_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_appservice_discord_configuration_extension: "{{ matrix_appservice_discord_configuration_extension_yaml | from_yaml if matrix_appservice_discord_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
-matrix_appservice_discord_configuration: "{{ matrix_appservice_discord_configuration_yaml|from_yaml|combine(matrix_appservice_discord_configuration_extension, recursive=True) }}"
+matrix_appservice_discord_configuration: "{{ matrix_appservice_discord_configuration_yaml | from_yaml | combine(matrix_appservice_discord_configuration_extension, recursive=True) }}"
 
 matrix_appservice_discord_registration_yaml: |
   #jinja2: lstrip_blocks: "True"
@@ -99,14 +99,14 @@ matrix_appservice_discord_registration_yaml: |
   namespaces:
     users:
     - exclusive: true
-      regex: '@_discord_.*:{{ matrix_appservice_discord_homeserver_domain|regex_escape }}'
+      regex: '@_discord_.*:{{ matrix_appservice_discord_homeserver_domain | regex_escape }}'
     aliases:
     - exclusive: true
-      regex: '#_discord_.*:{{ matrix_appservice_discord_homeserver_domain|regex_escape }}'
+      regex: '#_discord_.*:{{ matrix_appservice_discord_homeserver_domain | regex_escape }}'
   url: {{ matrix_appservice_discord_appservice_url }}
   sender_localpart: _discord_bot
   rate_limited: false
   protocols:
     - discord
 
-matrix_appservice_discord_registration: "{{ matrix_appservice_discord_registration_yaml|from_yaml }}"
+matrix_appservice_discord_registration: "{{ matrix_appservice_discord_registration_yaml | from_yaml }}"

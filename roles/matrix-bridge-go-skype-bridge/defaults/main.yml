@@ -1,0 +1,140 @@
+---
+# Go Skype Bridge is a Matrix <-> Skype bridge
+# Project source code URL: https://github.com/kelaresg/go-skype-bridge
+
+matrix_go_skype_bridge_enabled: true
+
+matrix_go_skype_bridge_container_image_self_build: false
+matrix_go_skype_bridge_container_image_self_build_repo: "https://github.com/kelaresg/go-skype-bridge.git"
+matrix_go_skype_bridge_container_image_self_build_branch: "{{ 'master' if matrix_go_skype_bridge_version == 'latest' else matrix_go_skype_bridge_version }}"
+
+matrix_go_skype_bridge_version: latest
+matrix_go_skype_bridge_docker_image: "{{ matrix_go_skype_bridge_docker_image_name_prefix }}nodefyme/go-skype-bridge:{{ matrix_go_skype_bridge_version }}"
+matrix_go_skype_bridge_docker_image_name_prefix: "{{ 'localhost/' if matrix_go_skype_bridge_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_go_skype_bridge_docker_image_force_pull: "{{ matrix_go_skype_bridge_docker_image.endswith(':latest') }}"
+
+matrix_go_skype_bridge_base_path: "{{ matrix_base_data_path }}/go-skype-bridge"
+matrix_go_skype_bridge_config_path: "{{ matrix_go_skype_bridge_base_path }}/config"
+matrix_go_skype_bridge_data_path: "{{ matrix_go_skype_bridge_base_path }}/data"
+matrix_go_skype_bridge_docker_src_files_path: "{{ matrix_go_skype_bridge_base_path }}/docker-src"
+
+matrix_go_skype_bridge_homeserver_address: "{{ matrix_homeserver_container_url }}"
+matrix_go_skype_bridge_homeserver_domain: "{{ matrix_domain }}"
+matrix_go_skype_bridge_appservice_address: 'http://matrix-go-skype-bridge:8080'
+
+# A list of extra arguments to pass to the container
+matrix_go_skype_bridge_container_extra_arguments: []
+
+# List of systemd services that matrix-go-skype-bridge.service depends on.
+matrix_go_skype_bridge_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-go-skype-bridge.service wants
+matrix_go_skype_bridge_systemd_wanted_services_list: []
+
+matrix_go_skype_bridge_appservice_token: ''
+matrix_go_skype_bridge_homeserver_token: ''
+
+matrix_go_skype_bridge_appservice_bot_username: skypebridgebot
+
+matrix_go_skype_bridge_command_prefix: "!skype"
+
+# Whether or not created rooms should have federation enabled.
+# If false, created portal rooms will never be federated.
+matrix_go_skype_bridge_federate_rooms: true
+
+# Database-related configuration fields.
+#
+# To use SQLite, stick to these defaults.
+#
+# To use Postgres:
+# - change the engine (`matrix_go_skype_bridge_database_engine: 'postgres'`)
+# - adjust your database credentials via the `matrix_go_skype_bridge_database_*` variables
+matrix_go_skype_bridge_database_engine: 'sqlite'
+
+matrix_go_skype_bridge_sqlite_database_path_local: "{{ matrix_go_skype_bridge_data_path }}/go-skype-bridge.db"
+matrix_go_skype_bridge_sqlite_database_path_in_container: "/data/go-skype-bridge.db"
+
+matrix_go_skype_bridge_database_username: 'matrix_go_skype_bridge'
+matrix_go_skype_bridge_database_password: 'some-password'
+matrix_go_skype_bridge_database_hostname: 'matrix-postgres'
+matrix_go_skype_bridge_database_port: 5432
+matrix_go_skype_bridge_database_name: 'matrix_go_skype_bridge'
+
+matrix_go_skype_bridge_database_connection_string: 'postgresql://{{ matrix_go_skype_bridge_database_username }}:{{ matrix_go_skype_bridge_database_password }}@{{ matrix_go_skype_bridge_database_hostname }}:{{ matrix_go_skype_bridge_database_port }}/{{ matrix_go_skype_bridge_database_name }}?sslmode=disable'
+
+matrix_go_skype_bridge_appservice_database_type: "{{
+	{
+		'sqlite': 'sqlite3',
+		'postgres':'postgres',
+	}[matrix_go_skype_bridge_database_engine]
+}}"
+
+matrix_go_skype_bridge_appservice_database_uri: "{{
+	{
+		'sqlite': matrix_go_skype_bridge_sqlite_database_path_in_container,
+		'postgres': matrix_go_skype_bridge_database_connection_string,
+	}[matrix_go_skype_bridge_database_engine]
+}}"
+
+# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
+matrix_go_skype_bridge_login_shared_secret: ''
+matrix_go_skype_bridge_bridge_login_shared_secret_map:
+  "{{ {matrix_go_skype_bridge_homeserver_domain: matrix_go_skype_bridge_login_shared_secret} if matrix_go_skype_bridge_login_shared_secret else {} }}"
+
+# Servers to always allow double puppeting from
+matrix_go_skype_bridge_bridge_double_puppet_server_map:
+  "{{ matrix_go_skype_bridge_homeserver_domain :  matrix_go_skype_bridge_homeserver_address }}"
+
+# Enable End-to-bridge encryption
+matrix_go_skype_bridge_bridge_encryption_allow: false
+matrix_go_skype_bridge_bridge_encryption_default: "{{ matrix_go_skype_bridge_bridge_encryption_allow }}"
+
+# Minimum severity of journal log messages.
+# Options: debug, info, warn, error, fatal
+matrix_go_skype_bridge_log_level: 'warn'
+
+matrix_go_skype_bridge_bridge_permissions: |
+  {{
+    {matrix_go_skype_bridge_homeserver_domain: 'user'}
+    | combine({matrix_admin: 'admin'} if matrix_admin else {})
+  }}
+
+# Default go-skype-bridge configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_go_skype_bridge_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_go_skype_bridge_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_go_skype_bridge_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_go_skype_bridge_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_go_skype_bridge_configuration_yaml`.
+
+matrix_go_skype_bridge_configuration_extension: "{{ matrix_go_skype_bridge_configuration_extension_yaml | from_yaml if matrix_go_skype_bridge_configuration_extension_yaml | from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_go_skype_bridge_configuration_yaml`.
+matrix_go_skype_bridge_configuration: "{{ matrix_go_skype_bridge_configuration_yaml | from_yaml | combine(matrix_go_skype_bridge_configuration_extension, recursive=True) }}"
+
+matrix_go_skype_bridge_registration_yaml: |
+  id: skype
+  url: {{ matrix_go_skype_bridge_appservice_address }}
+  as_token: "{{ matrix_go_skype_bridge_appservice_token }}"
+  hs_token: "{{ matrix_go_skype_bridge_homeserver_token }}"
+  # See https://github.com/mautrix/signal/issues/43
+  sender_localpart: _bot_{{ matrix_go_skype_bridge_appservice_bot_username }}
+  rate_limited: false
+  namespaces:
+      users:
+      - regex: '^@skype-(.*):{{ matrix_go_skype_bridge_homeserver_domain | regex_escape }}$'
+        exclusive: true
+      - exclusive: true
+        regex: '^@{{ matrix_go_skype_bridge_appservice_bot_username | regex_escape }}:{{ matrix_go_skype_bridge_homeserver_domain | regex_escape }}$'
+  de.sorunome.msc2409.push_ephemeral: true
+
+matrix_go_skype_bridge_registration: "{{ matrix_go_skype_bridge_registration_yaml | from_yaml }}"

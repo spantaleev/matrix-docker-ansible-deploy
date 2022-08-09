@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-go-skype-bridge service
+  ansible.builtin.stat:
+    path: "/etc/systemd/system/matrix-go-skype-bridge.service"
+  register: matrix_go_skype_bridge_service_stat
+
+- name: Ensure matrix-go-skype-bridge is stopped
+  ansible.builtin.service:
+    name: matrix-go-skype-bridge
+    state: stopped
+    enabled: false
+    daemon_reload: true
+  when: "matrix_go_skype_bridge_service_stat.stat.exists"
+
+- name: Ensure matrix-go-skype-bridge.service doesn't exist
+  ansible.builtin.file:
+    path: "/etc/systemd/system/matrix-go-skype-bridge.service"
+    state: absent
+  when: "matrix_go_skype_bridge_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-go-skype-bridge.service removal
+  ansible.builtin.service:
+    daemon_reload: true
+  when: "matrix_go_skype_bridge_service_stat.stat.exists"

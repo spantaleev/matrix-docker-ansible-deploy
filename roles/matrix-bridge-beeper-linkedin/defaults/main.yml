@@ -1,6 +1,6 @@
 ---
 # beeper-linkedin is a Matrix <-> LinkedIn bridge
-# See: https://gitlab.com/beeper/linkedin
+# Project source code URL: https://gitlab.com/beeper/linkedin
 
 matrix_beeper_linkedin_enabled: true
 
@@ -24,6 +24,16 @@ matrix_beeper_linkedin_docker_src_files_path: "{{ matrix_beeper_linkedin_base_pa
 matrix_beeper_linkedin_homeserver_address: "{{ matrix_homeserver_container_url }}"
 matrix_beeper_linkedin_homeserver_domain: "{{ matrix_domain }}"
 matrix_beeper_linkedin_appservice_address: "http://matrix-beeper-linkedin:29319"
+
+matrix_beeper_linkedin_bridge_presence: true
+
+matrix_beeper_linkedin_command_prefix: "!li"
+
+matrix_beeper_linkedin_bridge_permissions: |
+  {{
+    {matrix_beeper_linkedin_homeserver_domain: 'user'}
+    | combine({matrix_admin: 'admin'} if matrix_admin else {})
+  }}
 
 # A list of extra arguments to pass to the container
 matrix_beeper_linkedin_container_extra_arguments: []
@@ -68,6 +78,9 @@ matrix_beeper_linkedin_appservice_database_uri: "{{
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
 matrix_beeper_linkedin_login_shared_secret: ''
 
+# Specifies the default log level for all bridge loggers.
+matrix_beeper_linkedin_logging_level: WARNING
+
 # Default beeper-linkedin configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
@@ -84,11 +97,11 @@ matrix_beeper_linkedin_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_beeper_linkedin_configuration_yaml`.
 
-matrix_beeper_linkedin_configuration_extension: "{{ matrix_beeper_linkedin_configuration_extension_yaml|from_yaml if matrix_beeper_linkedin_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_beeper_linkedin_configuration_extension: "{{ matrix_beeper_linkedin_configuration_extension_yaml | from_yaml if matrix_beeper_linkedin_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_beeper_linkedin_configuration_yaml`.
-matrix_beeper_linkedin_configuration: "{{ matrix_beeper_linkedin_configuration_yaml|from_yaml|combine(matrix_beeper_linkedin_configuration_extension, recursive=True) }}"
+matrix_beeper_linkedin_configuration: "{{ matrix_beeper_linkedin_configuration_yaml | from_yaml | combine(matrix_beeper_linkedin_configuration_extension, recursive=True) }}"
 
 matrix_beeper_linkedin_registration_yaml: |
   id: linkedin
@@ -100,10 +113,10 @@ matrix_beeper_linkedin_registration_yaml: |
   rate_limited: false
   namespaces:
       users:
-      - regex: '^@linkedin_.+:{{ matrix_beeper_linkedin_homeserver_domain|regex_escape }}$'
+      - regex: '^@linkedin_.+:{{ matrix_beeper_linkedin_homeserver_domain | regex_escape }}$'
         exclusive: true
       - exclusive: true
-        regex: '^@{{ matrix_beeper_linkedin_appservice_bot_username|regex_escape }}:{{ matrix_beeper_linkedin_homeserver_domain|regex_escape }}$'
+        regex: '^@{{ matrix_beeper_linkedin_appservice_bot_username | regex_escape }}:{{ matrix_beeper_linkedin_homeserver_domain | regex_escape }}$'
   de.sorunome.msc2409.push_ephemeral: true
 
-matrix_beeper_linkedin_registration: "{{ matrix_beeper_linkedin_registration_yaml|from_yaml }}"
+matrix_beeper_linkedin_registration: "{{ matrix_beeper_linkedin_registration_yaml | from_yaml }}"

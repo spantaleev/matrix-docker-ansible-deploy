@@ -86,7 +86,7 @@ bridge:
     - first_name
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!fb"
+    command_prefix: "{{ matrix_mautrix_facebook_command_prefix }}"
 
     # Number of chats to sync (and create portals for) on startup/login.
     # Set 0 to disable automatic syncing.
@@ -201,8 +201,7 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions:
-      '{{ matrix_mautrix_facebook_homeserver_domain }}': user
+    permissions: {{ matrix_mautrix_facebook_bridge_permissions|to_json }}
 
     relay:
         # Whether relay mode should be allowed. If allowed, `!fb set-relay` can be used to turn any
@@ -250,11 +249,11 @@ logging:
             formatter: colored
     loggers:
         mau:
-            level: DEBUG
+            level: {{ matrix_mautrix_facebook_logging_level|to_json }}
         paho:
-            level: INFO
+            level: {{ matrix_mautrix_facebook_logging_level|to_json }}
         aiohttp:
-            level: INFO
+            level: {{ matrix_mautrix_facebook_logging_level|to_json }}
     root:
-        level: DEBUG
+        level: {{ matrix_mautrix_facebook_logging_level|to_json }}
         handlers: [console]

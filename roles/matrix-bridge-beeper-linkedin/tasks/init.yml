@@ -1,18 +1,22 @@
 ---
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-beeper-linkedin.service'] }}"
-  when: matrix_beeper_linkedin_enabled|bool
+  when: matrix_beeper_linkedin_enabled | bool
 
 # If the matrix-synapse role is not used, these variables may not exist.
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      ["--mount type=bind,src={{ matrix_beeper_linkedin_config_path }}/registration.yaml,dst=/matrix-beeper-linkedin-registration.yaml,ro"]
+      {{
+        matrix_synapse_container_extra_arguments | default([])
+        +
+        ["--mount type=bind,src={{ matrix_beeper_linkedin_config_path }}/registration.yaml,dst=/matrix-beeper-linkedin-registration.yaml,ro"]
+      }}
 
     matrix_synapse_app_service_config_files: >
-      {{ matrix_synapse_app_service_config_files|default([]) }}
-      +
-      {{ ["/matrix-beeper-linkedin-registration.yaml"] }}
-  when: matrix_beeper_linkedin_enabled|bool
+      {{
+        matrix_synapse_app_service_config_files | default([])
+        +
+        ["/matrix-beeper-linkedin-registration.yaml"]
+      }}
+  when: matrix_beeper_linkedin_enabled | bool

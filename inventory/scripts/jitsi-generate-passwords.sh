@@ -18,7 +18,7 @@ JIBRI_XMPP_PASSWORD=$(generatePassword)
 
 echo "# Paste these variables into your inventory/host_vars/matrix.DOMAIN/vars.yml file:"
 echo ""
-echo "matrix_jitsi_jicofo_auth_password: "$JICOFO_AUTH_PASSWORD
-echo "matrix_jitsi_jvb_auth_password: "$JVB_AUTH_PASSWORD
-echo "matrix_jitsi_jibri_recorder_password: "$JIBRI_RECORDER_PASSWORD
-echo "matrix_jitsi_jibri_xmpp_password: "$JIBRI_XMPP_PASSWORD
+echo "matrix_jitsi_jicofo_auth_password: $JICOFO_AUTH_PASSWORD"
+echo "matrix_jitsi_jvb_auth_password: $JVB_AUTH_PASSWORD"
+echo "matrix_jitsi_jibri_recorder_password: $JIBRI_RECORDER_PASSWORD"
+echo "matrix_jitsi_jibri_xmpp_password: $JIBRI_XMPP_PASSWORD"

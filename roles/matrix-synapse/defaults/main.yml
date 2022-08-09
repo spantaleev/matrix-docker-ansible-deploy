@@ -1,6 +1,6 @@
 ---
 # Synapse is a Matrix homeserver
-# See: https://github.com/matrix-org/synapse
+# Project source code URL: https://github.com/matrix-org/synapse
 
 matrix_synapse_enabled: true
 
@@ -9,7 +9,7 @@ matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/s
 
 matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_container_global_registry_prefix }}"
-matrix_synapse_version: v1.56.0
+matrix_synapse_version: v1.64.0
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -74,7 +74,7 @@ matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.9/site
 # Specifies which template files to use when configuring Synapse.
 # If you'd like to have your own different configuration, feel free to copy and paste
 # the original files into your inventory (e.g. in `inventory/host_vars/<host>/`)
-# and then change the specific host's `vars.yaml` file like this:
+# and then change the specific host's `vars.yml` file like this:
 # matrix_synapse_template_synapse_homeserver: "{{ playbook_dir }}/inventory/host_vars/<host>/homeserver.yaml.j2"
 matrix_synapse_template_synapse_homeserver: "{{ role_path }}/templates/synapse/homeserver.yaml.j2"
 matrix_synapse_template_synapse_log: "{{ role_path }}/templates/synapse/synapse.log.config.j2"
@@ -85,6 +85,14 @@ matrix_synapse_allow_guest_access: false
 matrix_synapse_form_secret: "{{ matrix_synapse_macaroon_secret_key }}"
 
 matrix_synapse_max_upload_size_mb: 50
+
+# Controls whether local media should be removed under certain conditions, typically for the purpose of saving space.
+# should be empty to disable
+matrix_synapse_media_retention_local_media_lifetime:
+# Controls whether remote media cache (media that is downloaded from other homeservers)
+# should be removed under certain conditions, typically for the purpose of saving space.
+# should be empty to disable
+matrix_synapse_media_retention_remote_media_lifetime:
 
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_synapse_tmp_directory_size_mb: "{{ matrix_synapse_max_upload_size_mb * 50 }}"
@@ -215,9 +223,6 @@ matrix_synapse_recaptcha_private_key: ''
 # Disabling this option will not delete any tokens previously generated.
 matrix_synapse_registration_requires_token: false
 
-# Allows non-server-admin users to create groups on this server
-matrix_synapse_enable_group_creation: false
-
 # A list of 3PID types which users must supply when registering (possible values: email, msisdn).
 matrix_synapse_registrations_require_3pid: []
 
@@ -329,6 +334,14 @@ matrix_url_preview_accept_language: ['en-US', 'en']
 matrix_synapse_metrics_enabled: false
 matrix_synapse_metrics_port: 9100
 
+# Controls whether Synapse metrics should be proxied (exposed) on:
+# - `matrix.DOMAIN/metrics/synapse/main-process` for the main process
+# - `matrix.DOMAIN/metrics/synapse/worker/{type}-{id}` for each worker process
+#
+# This will only work take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
+# See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
+matrix_synapse_metrics_proxying_enabled: false
+
 # Enable the Synapse manhole
 # See https://github.com/matrix-org/synapse/blob/master/docs/manhole.md
 matrix_synapse_manhole_enabled: false
@@ -358,10 +371,13 @@ matrix_synapse_workers_presets:
   one-of-each:
     generic_workers_count: 1
     pusher_workers_count: 1
-    appservice_workers_count: 1
+    # appservice workers are deprecated since Synapse v1.59. This will be removed.
+    appservice_workers_count: 0
     federation_sender_workers_count: 1
     media_repository_workers_count: 1
     # Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
+    # user_dir workers are deprecated since Synapse v1.59. This will be removed.
+    # See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
     user_dir_workers_count: 0
     frontend_proxy_workers_count: 1
 
@@ -383,7 +399,9 @@ matrix_synapse_workers_pusher_workers_count: "{{ matrix_synapse_workers_presets[
 matrix_synapse_workers_pusher_workers_metrics_range_start: 19200
 
 # matrix_synapse_workers_appservice_workers_count can only be 0 or 1. More instances are not supported.
-matrix_synapse_workers_appservice_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['appservice_workers_count'] }}"
+# appservice workers are deprecated since Synapse v1.59. This will be removed.
+# See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
+matrix_synapse_workers_appservice_workers_count: 0
 matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
 
 # matrix_synapse_workers_federation_sender_workers_count can only be 0 or 1 for now.
@@ -397,7 +415,9 @@ matrix_synapse_workers_media_repository_workers_port_range_start: 18551
 matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
 
 # Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
-matrix_synapse_workers_user_dir_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['user_dir_workers_count'] }}"
+# user_dir workers are deprecated since Synapse v1.59. This will be removed.
+# See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
+matrix_synapse_workers_user_dir_workers_count: 0
 matrix_synapse_workers_user_dir_workers_port_range_start: 18661
 matrix_synapse_workers_user_dir_workers_metrics_range_start: 19661
 
@@ -501,11 +521,11 @@ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret: ""
 matrix_synapse_ext_password_provider_shared_secret_auth_m_login_password_support_enabled: true
 # We'd like to enable this, but it causes trouble for Element: https://github.com/vector-im/element-web/issues/19605
 matrix_synapse_ext_password_provider_shared_secret_auth_com_devture_shared_secret_auth_support_enabled: false
-matrix_synapse_ext_password_provider_shared_secret_config: "{{ matrix_synapse_ext_password_provider_shared_secret_config_yaml|from_yaml }}"
+matrix_synapse_ext_password_provider_shared_secret_config: "{{ matrix_synapse_ext_password_provider_shared_secret_config_yaml | from_yaml }}"
 matrix_synapse_ext_password_provider_shared_secret_config_yaml: |
-  shared_secret: {{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret|string|to_json }}
-  m_login_password_support_enabled: {{ matrix_synapse_ext_password_provider_shared_secret_auth_m_login_password_support_enabled|to_json }}
-  com_devture_shared_secret_auth_support_enabled: {{ matrix_synapse_ext_password_provider_shared_secret_auth_com_devture_shared_secret_auth_support_enabled|to_json }}
+  shared_secret: {{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret | string | to_json }}
+  m_login_password_support_enabled: {{ matrix_synapse_ext_password_provider_shared_secret_auth_m_login_password_support_enabled | to_json }}
+  com_devture_shared_secret_auth_support_enabled: {{ matrix_synapse_ext_password_provider_shared_secret_auth_com_devture_shared_secret_auth_support_enabled | to_json }}
 
 # Enable this to activate LDAP password provider
 matrix_synapse_ext_password_provider_ldap_enabled: false
@@ -552,7 +572,7 @@ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
 # Enable this to activate the E2EE disabling Synapse module.
 # See: https://github.com/digitalentity/matrix_encryption_disabler
 matrix_synapse_ext_encryption_disabler_enabled: false
-matrix_synapse_ext_encryption_disabler_download_url: "https://raw.githubusercontent.com/digitalentity/matrix_encryption_disabler/1182388f7019e8ec1e28f035070c7919d0e4cc24/matrix_e2ee_filter.py"
+matrix_synapse_ext_encryption_disabler_download_url: "https://raw.githubusercontent.com/digitalentity/matrix_encryption_disabler/cdc37a07441acb7c2a3288bcb29b376658d5e766/matrix_e2ee_filter.py"
 # A list of server domain names for which to deny encryption if the event sender's domain matches the domain in the list.
 # By default, with the configuration below, we prevent all homeserver users from initiating encryption in ANY room.
 matrix_synapse_ext_encryption_disabler_deny_encryption_for_users_of: ["{{ matrix_domain }}"]
@@ -566,11 +586,11 @@ matrix_synapse_ext_encryption_disabler_deny_encryption_for_rooms_of: ["{{ matrix
 # Enabling this may have incompatiblity consequences with servers / clients.
 # Familiarize yourself with the caveats upstream: https://github.com/digitalentity/matrix_encryption_disabler
 matrix_synapse_ext_encryption_disabler_patch_power_levels: false
-matrix_synapse_ext_encryption_config: "{{ matrix_synapse_ext_encryption_config_yaml|from_yaml }}"
+matrix_synapse_ext_encryption_config: "{{ matrix_synapse_ext_encryption_config_yaml | from_yaml }}"
 matrix_synapse_ext_encryption_config_yaml: |
-  deny_encryption_for_users_of: {{ matrix_synapse_ext_encryption_disabler_deny_encryption_for_users_of|to_json }}
-  deny_encryption_for_rooms_of: {{ matrix_synapse_ext_encryption_disabler_deny_encryption_for_rooms_of|to_json }}
-  patch_power_levels: {{ matrix_synapse_ext_encryption_disabler_patch_power_levels|to_json }}
+  deny_encryption_for_users_of: {{ matrix_synapse_ext_encryption_disabler_deny_encryption_for_users_of | to_json }}
+  deny_encryption_for_rooms_of: {{ matrix_synapse_ext_encryption_disabler_deny_encryption_for_rooms_of | to_json }}
+  patch_power_levels: {{ matrix_synapse_ext_encryption_disabler_patch_power_levels | to_json }}
 
 
 matrix_s3_media_store_enabled: false
@@ -658,8 +678,8 @@ matrix_synapse_configuration_extension_yaml: |
   #   system_mxid_avatar_url: "mxc://server.com/oumMVlgDnLYFaPVkExemNVVZ"
   #   room_name: "Server Notices"
 
-matrix_synapse_configuration_extension: "{{ matrix_synapse_configuration_extension_yaml|from_yaml if matrix_synapse_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_synapse_configuration_extension: "{{ matrix_synapse_configuration_extension_yaml | from_yaml if matrix_synapse_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final Synapse configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_synapse_configuration_yaml`.
-matrix_synapse_configuration: "{{ matrix_synapse_configuration_yaml|from_yaml|combine(matrix_synapse_configuration_extension, recursive=True) }}"
+matrix_synapse_configuration: "{{ matrix_synapse_configuration_yaml | from_yaml | combine(matrix_synapse_configuration_extension, recursive=True) }}"

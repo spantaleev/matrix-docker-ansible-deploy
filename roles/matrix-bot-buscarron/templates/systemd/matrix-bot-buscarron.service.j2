@@ -1,0 +1,39 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix web forms bot
+{% for service in matrix_bot_buscarron_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_bot_buscarron_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ matrix_systemd_unit_home_path }}"
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-bot-buscarron 2>/dev/null || true'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-bot-buscarron 2>/dev/null || true'
+
+ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-bot-buscarron \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--network={{ matrix_docker_network }} \
+			--env-file={{ matrix_bot_buscarron_config_path }}/env \
+			--mount type=bind,src={{ matrix_bot_buscarron_data_path }},dst=/data \
+			{% for arg in matrix_bot_buscarron_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_bot_buscarron_docker_image }}
+
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-bot-buscarron 2>/dev/null || true'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-bot-buscarron 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-bot-buscarron
+
+[Install]
+WantedBy=multi-user.target

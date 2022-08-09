@@ -1,6 +1,6 @@
 ---
 # matrix-appservice-webhooks is a Matrix <-> webhook bridge
-# See: https://github.com/redoonetworks/matrix-appservice-webhooks
+# Project source code URL: https://github.com/redoonetworks/matrix-appservice-webhooks
 
 matrix_appservice_webhooks_enabled: true
 
@@ -61,9 +61,9 @@ matrix_appservice_webhooks_configuration_yaml: "{{ lookup('template', 'templates
 matrix_appservice_webhooks_configuration_extension_yaml: |
   #
 
-matrix_appservice_webhooks_configuration_extension: "{{ matrix_appservice_webhooks_configuration_extension_yaml|from_yaml if matrix_appservice_webhooks_configuration_extension_yaml|from_yaml else {} }}"
+matrix_appservice_webhooks_configuration_extension: "{{ matrix_appservice_webhooks_configuration_extension_yaml | from_yaml if matrix_appservice_webhooks_configuration_extension_yaml | from_yaml else {} }}"
 
-matrix_appservice_webhooks_configuration: "{{ matrix_appservice_webhooks_configuration_yaml|from_yaml|combine(matrix_appservice_webhooks_configuration_extension, recursive=True) }}"
+matrix_appservice_webhooks_configuration: "{{ matrix_appservice_webhooks_configuration_yaml | from_yaml | combine(matrix_appservice_webhooks_configuration_extension, recursive=True) }}"
 
 matrix_appservice_webhooks_registration_yaml: |
   id: "{{ matrix_appservice_webhooks_id_token }}"
@@ -80,4 +80,4 @@ matrix_appservice_webhooks_registration_yaml: |
   rate_limited: false
   protocols: null
 
-matrix_appservice_webhooks_registration: "{{ matrix_appservice_webhooks_registration_yaml|from_yaml }}"
+matrix_appservice_webhooks_registration: "{{ matrix_appservice_webhooks_registration_yaml | from_yaml }}"

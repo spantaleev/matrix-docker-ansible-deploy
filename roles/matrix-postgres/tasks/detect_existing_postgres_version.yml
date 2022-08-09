@@ -1,0 +1,70 @@
+---
+
+# This utility aims to determine if there is some existing Postgres version in use or not.
+# If there is, it also tries to detect the Docker image that corresponds to that version.
+#
+# This utility is intentionally not in `tasks/util`, because if it were, it wouldn't be possible
+# to include it in other roles via the import_role module: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/import_role_module.html
+
+
+- name: Fail detection if expectation fails (Postgres not enabled)
+  ansible.builtin.fail:
+    msg: "Trying to detect the version of the built-in Postgres server, but Postgres installation is not enabled (`matrix_postgres_enabled: false`)"
+  when: not matrix_postgres_enabled
+
+- name: Initialize Postgres version determination variables (default to empty)
+  ansible.builtin.set_fact:
+    matrix_postgres_detection_pg_version_path: "{{ matrix_postgres_data_path }}/PG_VERSION"
+    matrix_postgres_detected_existing: false
+    matrix_postgres_detected_version: ""
+    matrix_postgres_detected_version_corresponding_docker_image: ""
+
+- name: Determine existing Postgres version (check PG_VERSION file)
+  ansible.builtin.stat:
+    path: "{{ matrix_postgres_detection_pg_version_path }}"
+  register: result_pg_version_stat
+
+- ansible.builtin.set_fact:
+    matrix_postgres_detected_existing: true
+  when: "result_pg_version_stat.stat.exists"
+
+- name: Determine existing Postgres version (read PG_VERSION file)
+  ansible.builtin.slurp:
+    src: "{{ matrix_postgres_detection_pg_version_path }}"
+  register: result_pg_version
+  when: matrix_postgres_detected_existing | bool
+
+- name: Determine existing Postgres version (make sense of PG_VERSION file)
+  ansible.builtin.set_fact:
+    matrix_postgres_detected_version: "{{ result_pg_version['content'] | b64decode | replace('\n', '') }}"
+  when: matrix_postgres_detected_existing | bool
+
+- name: Determine corresponding Docker image to detected version (assume default of latest)
+  ansible.builtin.set_fact:
+    matrix_postgres_detected_version_corresponding_docker_image: "{{ matrix_postgres_docker_image_latest }}"
+  when: "matrix_postgres_detected_version != ''"
+
+- name: Determine corresponding Docker image to detected version (use 9.x, if detected)
+  ansible.builtin.set_fact:
+    matrix_postgres_detected_version_corresponding_docker_image: "{{ matrix_postgres_docker_image_v9 }}"
+  when: "matrix_postgres_detected_version.startswith('9.')"
+
+- name: Determine corresponding Docker image to detected version (use 10.x, if detected)
+  ansible.builtin.set_fact:
+    matrix_postgres_detected_version_corresponding_docker_image: "{{ matrix_postgres_docker_image_v10 }}"
+  when: "matrix_postgres_detected_version == '10' or matrix_postgres_detected_version.startswith('10.')"
+
+- name: Determine corresponding Docker image to detected version (use 11.x, if detected)
+  ansible.builtin.set_fact:
+    matrix_postgres_detected_version_corresponding_docker_image: "{{ matrix_postgres_docker_image_v11 }}"
+  when: "matrix_postgres_detected_version == '11' or matrix_postgres_detected_version.startswith('11.')"
+
+- name: Determine corresponding Docker image to detected version (use 12.x, if detected)
+  ansible.builtin.set_fact:
+    matrix_postgres_detected_version_corresponding_docker_image: "{{ matrix_postgres_docker_image_v12 }}"
+  when: "matrix_postgres_detected_version == '12' or matrix_postgres_detected_version.startswith('12.')"
+
+- name: Determine corresponding Docker image to detected version (use 13.x, if detected)
+  ansible.builtin.set_fact:
+    matrix_postgres_detected_version_corresponding_docker_image: "{{ matrix_postgres_docker_image_v13 }}"
+  when: "matrix_postgres_detected_version == '13' or matrix_postgres_detected_version.startswith('13.')"

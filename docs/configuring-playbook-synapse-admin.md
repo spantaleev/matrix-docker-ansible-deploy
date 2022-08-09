@@ -62,3 +62,15 @@ matrix_synapse_admin_container_extra_arguments:
     # The Synapse Admin container uses port 80 by default
     - '--label "traefik.http.services.matrix-synapse-admin.loadbalancer.server.port=80"'
 ```
+
+### Sample configuration for running behind Caddy v2
+
+Below is a sample configuration for using this playbook with a [Caddy](https://caddyserver.com/v2) 2.0 reverse proxy (non-default configuration where `matrix-nginx-proxy` is disabled - `matrix_nginx_proxy_enabled: false`).
+
+```caddy
+# This is a basic configuration that will function the same as the default nginx proxy - exposing the synapse-admin panel to matrix.YOURSERVER.com/synapse-admin/
+  handle_path /synapse-admin* {
+        reverse_proxy localhost:8766  {
+        }
+  }
+```

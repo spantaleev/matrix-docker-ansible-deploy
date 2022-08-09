@@ -1,0 +1,21 @@
+---
+- ansible.builtin.set_fact:
+    matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-mautrix-discord.service'] }}"
+  when: matrix_mautrix_discord_enabled | bool
+
+# If the matrix-synapse role is not used, these variables may not exist.
+- ansible.builtin.set_fact:
+    matrix_synapse_container_extra_arguments: >
+      {{
+        matrix_synapse_container_extra_arguments | default([])
+        +
+        ["--mount type=bind,src={{ matrix_mautrix_discord_config_path }}/registration.yaml,dst=/matrix-mautrix-discord-registration.yaml,ro"]
+      }}
+
+    matrix_synapse_app_service_config_files: >
+      {{
+        matrix_synapse_app_service_config_files | default([])
+        +
+        ["/matrix-mautrix-discord-registration.yaml"]
+      }}
+  when: matrix_mautrix_discord_enabled | bool

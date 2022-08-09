@@ -62,7 +62,7 @@ bridge:
     - name
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!HO"
+    command_prefix: "{{ matrix_mautrix_hangouts_command_prefix }}"
 
     # Number of chats to sync (and create portals for) on startup/login.
     # Maximum 20, set 0 to disable automatic syncing.
@@ -114,8 +114,7 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions:
-      '{{ matrix_mautrix_hangouts_homeserver_domain }}': user
+    permissions: {{ matrix_mautrix_hangouts_bridge_permissions|to_json }}
 
 # Python logging configuration.
 #
@@ -135,11 +134,11 @@ logging:
             formatter: colored
     loggers:
         mau:
-            level: DEBUG
+            level: {{ matrix_mautrix_hangouts_logging_level|to_json }}
         hangups:
-            level: DEBUG
+            level: {{ matrix_mautrix_hangouts_logging_level|to_json }}
         aiohttp:
-            level: INFO
+            level: {{ matrix_mautrix_hangouts_logging_level|to_json }}
     root:
-        level: DEBUG
+        level: {{ matrix_mautrix_hangouts_logging_level|to_json }}
         handlers: [console]

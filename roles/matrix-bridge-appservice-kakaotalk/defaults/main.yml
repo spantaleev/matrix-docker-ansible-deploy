@@ -1,0 +1,200 @@
+---
+# matrix-appservice-kakaotalk is a Matrix <-> Kakaotalk bridge
+# Project source code URL: https://src.miscworks.net/fair/matrix-appservice-kakaotalk/
+
+matrix_appservice_kakaotalk_enabled: true
+
+# No images are published for neither of the container images (appservice or node), so we're self-building everything.
+matrix_appservice_kakaotalk_container_image_self_build: true
+# matrix_appservice_kakaotalk_container_image_self_build_repo: "https://src.miscworks.net/fair/matrix-appservice-kakaotalk.git"
+#
+# hnarjis' fork is used instead of upstream (fair's), because upstream is currently broken.
+# The following error happens when chatting up the bot without this fix:
+# [2022-07-25 09:04:53,784] [ERROR@mau.as] Exception in Matrix event handler
+# Traceback (most recent call last):
+#   File "/usr/lib/python3.9/site-packages/mautrix/appservice/as_handler.py", line 239, in try_handle
+#     await handler_func(event)
+#   File "/usr/lib/python3.9/site-packages/mautrix/bridge/matrix.py", line 820, in int_handle_event
+#     await self.int_handle_invite(evt)
+#   File "/usr/lib/python3.9/site-packages/mautrix/bridge/matrix.py", line 441, in int_handle_invite
+#     inviter = await self.bridge.get_user(evt.sender)
+#   File "/usr/lib/python3.9/site-packages/matrix_appservice_kakaotalk/__main__.py", line 112, in get_user
+#     return await User.get_by_mxid(user_id, create=create)
+#   File "/usr/lib/python3.9/site-packages/mautrix/util/async_getter_lock.py", line 60, in wrapper
+#     return await fn(cls, *args, **kwargs)
+#   File "/usr/lib/python3.9/site-packages/matrix_appservice_kakaotalk/user.py", line 227, in get_by_mxid
+#     user = cls(mxid)
+# TypeError: __init__() missing 2 required positional arguments: 'force_login' and 'was_connected'
+matrix_appservice_kakaotalk_container_image_self_build_repo: "https://src.miscworks.net/hnarjis/matrix-appservice-kakaotalk.git"
+matrix_appservice_kakaotalk_container_image_self_build_repo_version: "{{ 'master' if matrix_appservice_kakaotalk_version == 'latest' else matrix_appservice_kakaotalk_version }}"
+
+matrix_appservice_kakaotalk_node_version: "{{ matrix_appservice_kakaotalk_version }}"
+matrix_appservice_kakaotalk_node_docker_image: "{{ matrix_appservice_kakaotalk_node_docker_image_prefix }}fair/matrix-appservice-kakaotalk-node:{{ matrix_appservice_kakaotalk_node_version }}"
+matrix_appservice_kakaotalk_node_docker_image_prefix: "localhost/"
+matrix_appservice_kakaotalk_node_docker_image_force_pull: "{{ matrix_appservice_kakaotalk_node_docker_image.endswith(':latest') }}"
+
+matrix_appservice_kakaotalk_version: 86c038fd2ffee5e0aebf65136f085cce7e38b54e
+matrix_appservice_kakaotalk_docker_image: "{{ matrix_appservice_kakaotalk_docker_image_name_prefix }}fair/matrix-appservice-kakaotalk:{{ matrix_appservice_kakaotalk_version }}"
+matrix_appservice_kakaotalk_docker_image_name_prefix: "localhost/"
+matrix_appservice_kakaotalk_docker_image_force_pull: "{{ matrix_appservice_kakaotalk_docker_image.endswith(':latest') }}"
+
+matrix_appservice_kakaotalk_base_path: "{{ matrix_base_data_path }}/appservice-kakaotalk"
+matrix_appservice_kakaotalk_config_path: "{{ matrix_appservice_kakaotalk_base_path }}/config"
+matrix_appservice_kakaotalk_data_path: "{{ matrix_appservice_kakaotalk_base_path }}/data"
+matrix_appservice_kakaotalk_docker_src_files_path: "{{ matrix_appservice_kakaotalk_base_path }}/docker-src"
+
+matrix_appservice_kakaotalk_command_prefix: "!kt"
+
+matrix_appservice_kakaotalk_homeserver_address: "{{ matrix_homeserver_container_url }}"
+matrix_appservice_kakaotalk_homeserver_domain: '{{ matrix_domain }}'
+matrix_appservice_kakaotalk_appservice_address: 'http://matrix-appservice-kakaotalk:11115'
+
+
+# A list of extra arguments to pass to the appservice-kakaotalk container
+matrix_appservice_kakaotalk_container_extra_arguments: []
+
+# List of systemd services that matrix-appservice-kakaotalk.service depends on.
+matrix_appservice_kakaotalk_systemd_required_services_list: ['docker.service', 'matrix-appservice-kakaotalk-node.service']
+
+# List of systemd services that matrix-appservice-kakaotalk.service wants
+matrix_appservice_kakaotalk_systemd_wanted_services_list: []
+
+
+# A list of extra arguments to pass to the appservice-kakaotalk-node container
+matrix_appservice_kakaotalk_node_container_extra_arguments: []
+
+# List of systemd services that matrix-appservice-kakaotalk-node.service depends on.
+matrix_appservice_kakaotalk_node_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-appservice-kakaotalk-node.service wants
+matrix_appservice_kakaotalk_node_systemd_wanted_services_list: []
+
+
+matrix_appservice_kakaotalk_appservice_token: ''
+matrix_appservice_kakaotalk_homeserver_token: ''
+
+# Whether or not created rooms should have federation enabled.
+# If false, created portal rooms will never be federated.
+matrix_appservice_kakaotalk_federate_rooms: true
+
+# Database-related configuration fields.
+#
+# To use SQLite:
+# - change the engine (`matrix_appservice_kakaotalk_database_engine: 'sqlite'`)
+# To use Postgres:
+# - adjust your database credentials via the `matrix_appservice_kakaotalk_database_*` variables
+matrix_appservice_kakaotalk_database_engine: 'postgres'
+
+matrix_appservice_kakaotalk_sqlite_database_path_local: "{{ matrix_appservice_kakaotalk_data_path }}/appservice-kakaotalk.db"
+matrix_appservice_kakaotalk_sqlite_database_path_in_container: "/data/appservice-kakaotalk.db"
+
+matrix_appservice_kakaotalk_database_username: 'matrix_appservice_kakaotalk'
+matrix_appservice_kakaotalk_database_password: 'some-password'
+matrix_appservice_kakaotalk_database_hostname: 'matrix-postgres'
+matrix_appservice_kakaotalk_database_port: 5432
+matrix_appservice_kakaotalk_database_name: 'matrix_appservice_kakaotalk'
+
+matrix_appservice_kakaotalk_database_connection_string: 'postgres://{{ matrix_appservice_kakaotalk_database_username }}:{{ matrix_appservice_kakaotalk_database_password }}@{{ matrix_appservice_kakaotalk_database_hostname }}:{{ matrix_appservice_kakaotalk_database_port }}/{{ matrix_appservice_kakaotalk_database_name }}'
+
+matrix_appservice_kakaotalk_appservice_database: "{{
+	{
+		'sqlite': ('sqlite:///' + matrix_appservice_kakaotalk_sqlite_database_path_in_container),
+		'postgres': matrix_appservice_kakaotalk_database_connection_string,
+	}[matrix_appservice_kakaotalk_database_engine]
+}}"
+
+
+# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
+# Also see: matrix_appservice_kakaotalk_bridge_login_shared_secret_map
+matrix_appservice_kakaotalk_login_shared_secret: ''
+
+matrix_appservice_kakaotalk_bridge_login_shared_secret_map: "{{ {matrix_appservice_kakaotalk_homeserver_domain: matrix_appservice_kakaotalk_login_shared_secret} if matrix_appservice_kakaotalk_login_shared_secret else {} }}"
+
+matrix_appservice_kakaotalk_bridge_permissions: |
+  {{
+    {matrix_appservice_kakaotalk_homeserver_domain: 'user'}
+    | combine({matrix_admin: 'admin'} if matrix_admin else {})
+  }}
+
+matrix_appservice_kakaotalk_appservice_bot_username: kakaotalkbot
+matrix_appservice_kakaotalk_user_prefix: 'kakaotalk_'
+
+# End-to-bridge encryption configuration
+matrix_appservice_kakaotalk_bridge_encryption_allow: false
+matrix_appservice_kakaotalk_bridge_encryption_default: "{{ matrix_appservice_kakaotalk_bridge_encryption_allow }}"
+
+# Specifies the default log level for all bridge loggers.
+matrix_appservice_kakaotalk_logging_level: WARNING
+
+
+# Default configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_appservice_kakaotalk_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_appservice_kakaotalk_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_appservice_kakaotalk_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_appservice_kakaotalk_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_appservice_kakaotalk_configuration_yaml`.
+
+matrix_appservice_kakaotalk_configuration_extension: "{{ matrix_appservice_kakaotalk_configuration_extension_yaml | from_yaml if matrix_appservice_kakaotalk_configuration_extension_yaml | from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_appservice_kakaotalk_configuration_yaml`.
+matrix_appservice_kakaotalk_configuration: "{{ matrix_appservice_kakaotalk_configuration_yaml | from_yaml | combine(matrix_appservice_kakaotalk_configuration_extension, recursive=True) }}"
+
+
+# Default configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_appservice_kakaotalk_node_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+#
+# The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
+# This is unlike what it does when looking up YAML template files (no automatic parsing there).
+matrix_appservice_kakaotalk_node_configuration_default: "{{ lookup('template', 'templates/node-config.json.j2') }}"
+
+# Your custom JSON configuration for appservice-kakaotalk-node should go to `matrix_appservice_kakaotalk_node_configuration_extension_json`.
+# This configuration extends the default starting configuration (`matrix_appservice_kakaotalk_node_configuration_default`).
+#
+# You can override individual variables from the default configuration, or introduce new ones.
+#
+# If you need something more special, you can take full control by
+# completely redefining `matrix_appservice_kakaotalk_node_configuration_default`.
+#
+# Example configuration extension follows:
+#
+# matrix_appservice_kakaotalk_node_configuration_extension_json: |
+#  {
+#  "register_timeout": 5000
+#  }
+matrix_appservice_kakaotalk_node_configuration_extension_json: '{}'
+
+matrix_appservice_kakaotalk_node_configuration_extension: "{{ matrix_appservice_kakaotalk_node_configuration_extension_json | from_json if matrix_appservice_kakaotalk_node_configuration_extension_json | from_json is mapping else {} }}"
+
+# Holds the final appservice-kakaotalk-node configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_appservice_kakaotalk_node_configuration_default`.
+matrix_appservice_kakaotalk_node_configuration: "{{ matrix_appservice_kakaotalk_node_configuration_default | combine(matrix_appservice_kakaotalk_node_configuration_extension, recursive=True) }}"
+
+
+matrix_appservice_kakaotalk_registration_yaml: |
+  id: appservice-kakaotalk
+  as_token: {{ matrix_appservice_kakaotalk_appservice_token | to_json }}
+  hs_token: {{ matrix_appservice_kakaotalk_homeserver_token | to_json }}
+  namespaces:
+    users:
+    - exclusive: true
+      regex: '^@{{ matrix_appservice_kakaotalk_user_prefix | regex_escape }}.*:{{ matrix_appservice_kakaotalk_homeserver_domain | regex_escape }}$'
+    - exclusive: true
+      regex: '^@{{ matrix_appservice_kakaotalk_appservice_bot_username | regex_escape }}:{{ matrix_appservice_kakaotalk_homeserver_domain | regex_escape }}$'
+  url: {{ matrix_appservice_kakaotalk_appservice_address | to_json }}
+  sender_localpart: _appservice_kakaotalk
+  rate_limited: false
+
+matrix_appservice_kakaotalk_registration: "{{ matrix_appservice_kakaotalk_registration_yaml | from_yaml }}"

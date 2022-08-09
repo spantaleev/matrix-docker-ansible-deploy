@@ -1,0 +1,36 @@
+---
+
+- name: Check existence of matrix-matrix-registration-bot service
+  ansible.builtin.stat:
+    path: "{{ matrix_systemd_path }}/matrix-bot-matrix-registration-bot.service"
+  register: matrix_bot_matrix_registration_bot_service_stat
+
+- name: Ensure matrix-matrix-registration-bot is stopped
+  ansible.builtin.service:
+    name: matrix-bot-matrix-registration-bot
+    state: stopped
+    enabled: false
+    daemon_reload: true
+  register: stopping_result
+  when: "matrix_bot_matrix_registration_bot_service_stat.stat.exists | bool"
+
+- name: Ensure matrix-bot-matrix-registration-bot.service doesn't exist
+  ansible.builtin.file:
+    path: "{{ matrix_systemd_path }}/matrix-bot-matrix-registration-bot.service"
+    state: absent
+  when: "matrix_bot_matrix_registration_bot_service_stat.stat.exists | bool"
+
+- name: Ensure systemd reloaded after matrix-bot-matrix-registration-bot.service removal
+  ansible.builtin.service:
+    daemon_reload: true
+  when: "matrix_bot_matrix_registration_bot_service_stat.stat.exists | bool"
+
+- name: Ensure Matrix matrix-registration-bot paths don't exist
+  ansible.builtin.file:
+    path: "{{ matrix_bot_matrix_registration_bot_base_path }}"
+    state: absent
+
+- name: Ensure matrix-registration-bot Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_bot_matrix_registration_bot_docker_image }}"
+    state: absent

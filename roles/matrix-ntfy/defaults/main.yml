@@ -1,0 +1,48 @@
+---
+# Project source code URL: https://github.com/binwiederhier/ntfy
+
+matrix_ntfy_enabled: true
+
+matrix_ntfy_base_path: "{{ matrix_base_data_path }}/ntfy"
+matrix_ntfy_config_dir_path: "{{ matrix_ntfy_base_path }}/config"
+matrix_ntfy_data_path: "{{ matrix_ntfy_base_path }}/data"
+
+matrix_ntfy_version: v1.27.2
+matrix_ntfy_docker_image: "{{ matrix_container_global_registry_prefix }}binwiederhier/ntfy:{{ matrix_ntfy_version }}"
+matrix_ntfy_docker_image_force_pull: "{{ matrix_ntfy_docker_image.endswith(':latest') }}"
+
+# Public facing base URL of the ntfy service
+matrix_ntfy_base_url: "https://{{ matrix_server_fqn_ntfy }}"
+
+# Controls whether the container exposes its HTTP port (tcp/80 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:2586"), or empty string to not expose.
+matrix_ntfy_container_http_host_bind_port: ''
+
+# A list of extra arguments to pass to the container (`docker run` command)
+matrix_ntfy_container_extra_arguments: []
+
+# Controls whether the self-check feature should validate SSL certificates.
+matrix_ntfy_self_check_validate_certificates: true
+
+# Default ntfy configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_ntfy_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_ntfy_configuration_yaml: "{{ lookup('template', 'templates/ntfy/server.yml.j2') }}"
+
+matrix_ntfy_configuration_extension_yaml: |
+  # Your custom YAML configuration for ntfy goes here.
+  # This configuration extends the default starting configuration (`matrix_ntfy_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_ntfy_configuration_yaml`.
+
+matrix_ntfy_configuration_extension: "{{ matrix_ntfy_configuration_extension_yaml | from_yaml if matrix_ntfy_configuration_extension_yaml | from_yaml is mapping else {} }}"
+
+# Holds the final ntfy configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_ntfy_configuration_yaml`.
+matrix_ntfy_configuration: "{{ matrix_ntfy_configuration_yaml | from_yaml | combine(matrix_ntfy_configuration_extension, recursive=True) }}"

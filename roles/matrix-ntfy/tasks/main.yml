@@ -1,0 +1,24 @@
+---
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
+  tags:
+    - always
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  when: "run_setup | bool and matrix_ntfy_enabled | bool"
+  tags:
+    - setup-all
+    - setup-ntfy
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+  when: "run_setup | bool and not matrix_ntfy_enabled | bool"
+  tags:
+    - setup-all
+    - setup-ntfy
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/self_check.yml"
+  delegate_to: 127.0.0.1
+  become: false
+  when: "run_self_check | bool and matrix_ntfy_enabled | bool"
+  tags:
+    - self-check

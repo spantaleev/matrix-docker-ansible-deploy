@@ -1,0 +1,36 @@
+---
+
+- name: Check existence of matrix-ntfy service
+  ansible.builtin.stat:
+    path: "{{ matrix_systemd_path }}/matrix-ntfy.service"
+  register: matrix_ntfy_service_stat
+
+- name: Ensure matrix-ntfy is stopped
+  ansible.builtin.service:
+    name: matrix-ntfy
+    state: stopped
+    enabled: false
+    daemon_reload: true
+  register: stopping_result
+  when: "matrix_ntfy_service_stat.stat.exists"
+
+- name: Ensure matrix-ntfy.service doesn't exist
+  ansible.builtin.file:
+    path: "{{ matrix_systemd_path }}/matrix-ntfy.service"
+    state: absent
+  when: "matrix_ntfy_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-ntfy.service removal
+  ansible.builtin.service:
+    daemon_reload: true
+  when: "matrix_ntfy_service_stat.stat.exists"
+
+- name: Ensure matrix-ntfy path doesn't exist
+  ansible.builtin.file:
+    path: "{{ matrix_ntfy_base_path }}"
+    state: absent
+
+- name: Ensure ntfy Docker image doesn't exist
+  docker_image:
+    name: "{{ matrix_ntfy_docker_image }}"
+    state: absent

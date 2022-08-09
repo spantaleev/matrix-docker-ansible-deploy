@@ -1,7 +1,7 @@
 ---
 
 - name: Fail if required Synapse settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) for using Synapse.
   when: "vars[item] == ''"
@@ -12,18 +12,29 @@
     - "matrix_synapse_database_password"
     - "matrix_synapse_database_database"
 
+- name: Fail if asking to configure deprecaed workers (appservice, userdir)
+  ansible.builtin.fail:
+    msg: >-
+      `{{ item }}` cannot be more than 0.
+      This type of worker has been deprecated since Synapse v1.59.
+      Please remove your `{{ item }}` configuration to solve this problem.
+      See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
+  when: "vars[item]|int != 0"
+  with_items:
+    - "matrix_synapse_workers_appservice_workers_count"
+    - "matrix_synapse_workers_user_dir_workers_count"
+
 - name: Fail if asking for more than 1 instance of single-instance workers
-  fail:
+  ansible.builtin.fail:
     msg: >-
       `{{ item }}` cannot be more than 1. This is a single-instance worker.
   when: "vars[item]|int > 1"
   with_items:
-    - "matrix_synapse_workers_appservice_workers_count"
     - "matrix_synapse_workers_pusher_workers_count"
     - "matrix_synapse_workers_federation_sender_workers_count"
 
 - name: (Deprecation) Catch and report renamed settings
-  fail:
+  ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
@@ -49,9 +60,10 @@
     - {'old': 'matrix_synapse_trusted_third_party_id_servers', 'new': '<deprecated in Synapse v0.99.4 and removed in Synapse v1.19.0>'}
     - {'old': 'matrix_synapse_use_presence', 'new': 'matrix_synapse_presence_enabled'}
     - {'old': 'matrix_synapse_version_arm64', 'new': '<superseded by matrix_synapse_version - see https://github.com/matrix-org/synapse/pull/11810>'}
+    - {'old': 'matrix_synapse_enable_group_creation', 'new': '<removed in Synapse v1.61.0 - use the new Spaces feature instead>'}
 
 - name: (Deprecation) Catch and report renamed settings in matrix_synapse_configuration_extension_yaml
-  fail:
+  ansible.builtin.fail:
     msg: >-
       Your matrix_synapse_configuration_extension_yaml configuration contains a variable, which now has a different name.
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).

@@ -1,26 +1,26 @@
 ---
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-etherpad.service'] }}"
-  when: matrix_etherpad_enabled|bool
+  when: matrix_etherpad_enabled | bool
 
 - block:
     - name: Fail if matrix-nginx-proxy role already executed
-      fail:
+      ansible.builtin.fail:
         msg: >-
           Trying to append Etherpad's reverse-proxying configuration to matrix-nginx-proxy,
           but it's pointless since the matrix-nginx-proxy role had already executed.
           To fix this, please change the order of roles in your playbook,
           so that the matrix-nginx-proxy role would run after the matrix-etherpad role.
-      when: matrix_nginx_proxy_role_executed|default(False)|bool
+      when: matrix_nginx_proxy_role_executed | default(False) | bool
 
     - name: Generate Etherpad proxying configuration for matrix-nginx-proxy
-      set_fact:
+      ansible.builtin.set_fact:
         matrix_etherpad_matrix_nginx_proxy_configuration: |
           rewrite ^{{ matrix_etherpad_public_endpoint }}$ {{ matrix_nginx_proxy_x_forwarded_proto_value }}://$server_name{{ matrix_etherpad_public_endpoint }}/ permanent;
 
           location {{ matrix_etherpad_public_endpoint }}/ {
-          {% if matrix_nginx_proxy_enabled|default(False) %}
+          {% if matrix_nginx_proxy_enabled | default(False) %}
             {# Use the embedded DNS resolver in Docker containers to discover the service #}
             resolver 127.0.0.11 valid=5s;
             proxy_pass http://matrix-etherpad:9001/;
@@ -42,23 +42,23 @@
           }
 
     - name: Register Etherpad proxying configuration with matrix-nginx-proxy
-      set_fact:
+      ansible.builtin.set_fact:
         matrix_nginx_proxy_proxy_dimension_additional_server_configuration_blocks: |
           {{
-            matrix_nginx_proxy_proxy_dimension_additional_server_configuration_blocks|default([])
+            matrix_nginx_proxy_proxy_dimension_additional_server_configuration_blocks | default([])
             +
             [matrix_etherpad_matrix_nginx_proxy_configuration]
           }}
   tags:
     - always
-  when: matrix_etherpad_enabled|bool
+  when: matrix_etherpad_enabled | bool
 
 - name: Warn about reverse-proxying if matrix-nginx-proxy not used
-  debug:
+  ansible.builtin.debug:
     msg: >-
       NOTE: You've enabled the Etherpad tool but are not using the matrix-nginx-proxy
       reverse proxy.
       Please make sure that you're proxying the `{{ matrix_etherpad_public_endpoint }}`
       URL endpoint to the matrix-etherpad container.
       You can expose the container's port using the `matrix_etherpad_container_http_host_bind_port` variable.
-  when: "matrix_etherpad_enabled|bool and not matrix_nginx_proxy_enabled|default(False)|bool"
+  when: "matrix_etherpad_enabled | bool and not matrix_nginx_proxy_enabled | default(False) | bool"

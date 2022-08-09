@@ -1,35 +1,35 @@
 ---
-- debug:
+- ansible.builtin.debug:
     msg: "Dealing with SSL certificate retrieval for domain: {{ domain_name }}"
 
-- set_fact:
+- ansible.builtin.set_fact:
     domain_name_certificate_path: "{{ matrix_ssl_config_dir_path }}/live/{{ domain_name }}/fullchain.pem"
 
 - name: Check if a certificate for the domain already exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ domain_name_certificate_path }}"
   register: domain_name_certificate_path_stat
 
-- set_fact:
+- ansible.builtin.set_fact:
     domain_name_needs_cert: "{{ not domain_name_certificate_path_stat.stat.exists }}"
 
 - block:
     - name: Ensure required service for obtaining is started
-      service:
+      ansible.builtin.service:
         name: "{{ matrix_ssl_pre_obtaining_required_service_name }}"
         state: started
       register: matrix_ssl_pre_obtaining_required_service_start_result
 
     - name: Wait some time, so that the required service for obtaining can start
-      wait_for:
+      ansible.builtin.wait_for:
         timeout: "{{ matrix_ssl_pre_obtaining_required_service_start_wait_time_seconds }}"
-      when: "matrix_ssl_pre_obtaining_required_service_start_result.changed|bool"
-  when: "domain_name_needs_cert|bool and matrix_ssl_pre_obtaining_required_service_name != ''"
+      when: "matrix_ssl_pre_obtaining_required_service_start_result.changed | bool"
+  when: "domain_name_needs_cert | bool and matrix_ssl_pre_obtaining_required_service_name != ''"
 
 # This will fail if there is something running on port 80 (like matrix-nginx-proxy).
 # We suppress the error, as we'll try another method below.
 - name: Attempt initial SSL certificate retrieval with standalone authenticator (directly)
-  shell: >-
+  ansible.builtin.shell: >-
     {{ matrix_host_command_docker }} run
     --rm
     --name=matrix-certbot
@@ -51,14 +51,14 @@
     --agree-tos
     --email={{ matrix_ssl_lets_encrypt_support_email }}
     -d {{ domain_name }}
-  when: domain_name_needs_cert|bool
+  when: domain_name_needs_cert | bool
   register: result_certbot_direct
   ignore_errors: true
 
 # If matrix-nginx-proxy is configured from a previous run of this playbook,
 # and it's running now, it may be able to proxy requests to `matrix_ssl_lets_encrypt_certbot_standalone_http_port`.
 - name: Attempt initial SSL certificate retrieval with standalone authenticator (via proxy)
-  shell: >-
+  ansible.builtin.shell: >-
     {{ matrix_host_command_docker }} run
     --rm
     --name=matrix-certbot
@@ -86,7 +86,7 @@
   ignore_errors: true
 
 - name: Fail if all SSL certificate retrieval attempts failed
-  fail:
+  ansible.builtin.fail:
     msg: |
       Failed to obtain a certificate directly (by listening on port 80)
       and also failed to obtain by relying on the server at port 80 to proxy the request.

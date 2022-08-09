@@ -1,7 +1,7 @@
 ---
 
 - name: Ensure APT usage dependencies are installed
-  apt:
+  ansible.builtin.apt:
     name:
       - apt-transport-https
       - ca-certificates
@@ -10,32 +10,32 @@
     update_cache: true
 
 - name: Ensure Docker's APT key is trusted
-  apt_key:
+  ansible.builtin.apt_key:
     url: https://download.docker.com/linux/raspbian/gpg
     id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
     state: present
   register: add_repository_key
   ignore_errors: true
-  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
+  when: matrix_docker_installation_enabled | bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure Docker repository is enabled
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "deb [arch={{ matrix_debian_arch }}] https://download.docker.com/linux/raspbian {{ ansible_distribution_release }} stable"
     state: present
     update_cache: true
-  when: matrix_docker_installation_enabled|bool and matrix_docker_package_name == 'docker-ce'
+  when: matrix_docker_installation_enabled | bool and matrix_docker_package_name == 'docker-ce'
 
 - name: Ensure APT packages are installed
-  apt:
+  ansible.builtin.apt:
     name:
       - "{{ matrix_ntpd_package }}"
-    state: latest
+    state: present
     update_cache: true
 
 - name: Ensure Docker is installed
-  apt:
+  ansible.builtin.apt:
     name:
       - "{{ matrix_docker_package_name }}"
       - "python{{'3' if ansible_python.version.major == 3 else ''}}-docker"
-    state: latest
-  when: matrix_docker_installation_enabled|bool
+    state: present
+  when: matrix_docker_installation_enabled | bool

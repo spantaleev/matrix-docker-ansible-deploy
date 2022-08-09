@@ -1,7 +1,7 @@
 ---
 
 - name: Fail if required settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
   when: "vars[item] == ''"
@@ -10,7 +10,7 @@
     - "matrix_hookshot_homeserver_token"
 
 - name: Fail if required GitHub settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) to enable GitHub.
   when: "matrix_hookshot_github_enabled and vars[item] == ''"
@@ -19,7 +19,7 @@
     - "matrix_hookshot_github_secret"
 
 - name: Fail if required GitHub OAuth settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) to enable GitHub OAuth.
   when: "matrix_hookshot_github_oauth_enabled and vars[item] == ''"
@@ -28,7 +28,7 @@
     - "matrix_hookshot_github_oauth_secret"
 
 - name: Fail if required Jira settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) to enable Jira.
   when: "matrix_hookshot_jira_enabled and vars[item] == ''"
@@ -36,7 +36,7 @@
     - "matrix_hookshot_jira_secret"
 
 - name: Fail if required Jira OAuth settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) to enable Jira OAuth.
   when: "matrix_hookshot_jira_oauth_enabled and vars[item] == ''"
@@ -45,15 +45,28 @@
     - "matrix_hookshot_jira_oauth_secret"
 
 - name: Fail if required Figma settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define at least one Figma instance to enable Figma.
   when: "matrix_hookshot_figma_enabled and matrix_hookshot_figma_instances is undefined"
 
 - name: Fail if required provisioning settings not defined
-  fail:
+  ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) to enable provisioning.
   when: "matrix_hookshot_provisioning_enabled and vars[item] == ''"
   with_items:
     - "matrix_hookshot_provisioning_secret"
+
+- name: (Deprecation) Catch and report old metrics usage
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable (`{{ item }}`), which refers to the old metrics collection system for Hookshot,
+      which exposed metrics on `https://stats.DOMAIN/hookshot/metrics`.
+
+      We now recommend exposing Hookshot metrics in another way, from another URL.
+      Refer to the changelog for more details: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#2022-06-22
+  with_items:
+    - matrix_hookshot_proxy_metrics
+    - matrix_hookshot_metrics_endpoint
+  when: "item in vars"

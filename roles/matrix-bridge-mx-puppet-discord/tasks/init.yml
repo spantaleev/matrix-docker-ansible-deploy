@@ -2,23 +2,27 @@
 # See https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1070
 # and https://github.com/spantaleev/matrix-docker-ansible-deploy/commit/1ab507349c752042d26def3e95884f6df8886b74#commitcomment-51108407
 - name: Fail if trying to self-build on Ansible < 2.8
-  fail:
-    msg: "To self-build the Element image, you should use Ansible 2.8 or higher. See docs/ansible.md"
+  ansible.builtin.fail:
+    msg: "To self-build the mx-puppet-discord image, you should use Ansible 2.8 or higher. See docs/ansible.md"
   when: "ansible_version.major == 2 and ansible_version.minor < 8 and matrix_mx_puppet_discord_container_image_self_build and matrix_mx_puppet_discord_enabled"
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-mx-puppet-discord.service'] }}"
-  when: matrix_mx_puppet_discord_enabled|bool
+  when: matrix_mx_puppet_discord_enabled | bool
 
 # If the matrix-synapse role is not used, these variables may not exist.
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      ["--mount type=bind,src={{ matrix_mx_puppet_discord_config_path }}/registration.yaml,dst=/matrix-mx-puppet-discord-registration.yaml,ro"]
+      {{
+        matrix_synapse_container_extra_arguments | default([])
+        +
+        ["--mount type=bind,src={{ matrix_mx_puppet_discord_config_path }}/registration.yaml,dst=/matrix-mx-puppet-discord-registration.yaml,ro"]
+      }}
 
     matrix_synapse_app_service_config_files: >
-      {{ matrix_synapse_app_service_config_files|default([]) }}
-      +
-      {{ ["/matrix-mx-puppet-discord-registration.yaml"] }}
-  when: matrix_mx_puppet_discord_enabled|bool
+      {{
+        matrix_synapse_app_service_config_files | default([])
+        +
+        ["/matrix-mx-puppet-discord-registration.yaml"]
+      }}
+  when: matrix_mx_puppet_discord_enabled | bool

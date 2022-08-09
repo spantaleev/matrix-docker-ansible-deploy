@@ -1,39 +1,39 @@
 ---
-- import_tasks: "{{ role_path }}/tasks/init.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
   tags:
     - always
 
 # Always validating the configuration, even if `matrix_nginx_proxy: false`.
 # This role performs actions even if the role is disabled, so we need
 # to ensure there's a valid configuration in any case.
-- import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: run_setup | bool
   tags:
     - setup-all
     - setup-nginx-proxy
 
-- import_tasks: "{{ role_path }}/tasks/ssl/main.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/ssl/main.yml"
+  when: run_setup | bool
   tags:
     - setup-all
     - setup-nginx-proxy
     - setup-ssl
 
-- import_tasks: "{{ role_path }}/tasks/setup_nginx_proxy.yml"
-  when: run_setup|bool
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_nginx_proxy.yml"
+  when: run_setup | bool
   tags:
     - setup-all
     - setup-nginx-proxy
 
-- import_tasks: "{{ role_path }}/tasks/self_check_well_known.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/self_check_well_known.yml"
   delegate_to: 127.0.0.1
   become: false
-  when: run_self_check|bool
+  when: run_self_check | bool
   tags:
     - self-check
 
 - name: Mark matrix-nginx-proxy role as executed
-  set_fact:
+  ansible.builtin.set_fact:
     matrix_nginx_proxy_role_executed: true
   tags:
     - always

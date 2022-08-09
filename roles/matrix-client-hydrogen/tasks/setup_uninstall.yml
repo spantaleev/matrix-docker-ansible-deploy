@@ -1,32 +1,32 @@
 ---
 
 - name: Check existence of matrix-client-hydrogen.service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-client-hydrogen.service"
   register: matrix_client_hydrogen_service_stat
 
 - name: Ensure matrix-client-hydrogen is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-client-hydrogen
     state: stopped
     enabled: false
     daemon_reload: true
   register: stopping_result
-  when: "matrix_client_hydrogen_service_stat.stat.exists|bool"
+  when: "matrix_client_hydrogen_service_stat.stat.exists | bool"
 
 - name: Ensure matrix-client-hydrogen.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-client-hydrogen.service"
     state: absent
-  when: "matrix_client_hydrogen_service_stat.stat.exists|bool"
+  when: "matrix_client_hydrogen_service_stat.stat.exists | bool"
 
 - name: Ensure systemd reloaded after matrix-client-hydrogen.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_client_hydrogen_service_stat.stat.exists|bool"
+  when: "matrix_client_hydrogen_service_stat.stat.exists | bool"
 
 - name: Ensure Hydrogen paths doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_client_hydrogen_data_path }}"
     state: absent
 

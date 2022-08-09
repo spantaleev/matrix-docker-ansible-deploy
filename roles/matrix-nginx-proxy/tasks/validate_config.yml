@@ -1,7 +1,7 @@
 ---
 
 - name: (Deprecation) Catch and report renamed settings
-  fail:
+  ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
@@ -16,30 +16,39 @@
     - {'old': 'matrix_nginx_proxy_reload_cron_time_definition', 'new': '<not configurable anymore>'}
 
 - name: Fail on unknown matrix_ssl_retrieval_method
-  fail:
+  ansible.builtin.fail:
     msg: >-
       `matrix_ssl_retrieval_method` needs to be set to a known value.
   when: "matrix_ssl_retrieval_method not in ['lets-encrypt', 'self-signed', 'manually-managed', 'none']"
 
 - name: Fail on unknown matrix_nginx_proxy_ssl_config
-  fail:
+  ansible.builtin.fail:
     msg: >-
       `matrix_nginx_proxy_ssl_preset` needs to be set to a known value.
   when: "matrix_nginx_proxy_ssl_preset not in ['modern', 'intermediate', 'old']"
 
+- name: Fail if Basic Auth enabled for metrics, but no credentials supplied
+  ansible.builtin.fail:
+    msg: |
+      Enabling Basic Auth for metrics (`matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled`) requires:
+      - either a username/password (provided in `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username` and `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_password`)
+      - or raw htpasswd content (provided in `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content`)
+  when: "matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled | bool and (matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content == '' and (matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username == '' or matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_password == ''))"
+
 - block:
     - name: (Deprecation) Catch and report renamed settings
-      fail:
+      ansible.builtin.fail:
         msg: >-
           Your configuration contains a variable, which now has a different name.
           Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
       with_items:
         - {'old': 'host_specific_matrix_ssl_support_email', 'new': 'matrix_ssl_lets_encrypt_support_email'}
         - {'old': 'host_specific_matrix_ssl_lets_encrypt_support_email', 'new': 'matrix_ssl_lets_encrypt_support_email'}
+        - {'old': 'matrix_nginx_proxy_proxy_synapse_workers_enabled_list', 'new': '<no longer used>'}
       when: "item.old in vars"
 
     - name: Fail if required variables are undefined
-      fail:
+      ansible.builtin.fail:
         msg: "The `{{ item }}` variable must be defined and have a non-null value"
       with_items:
         - "matrix_ssl_lets_encrypt_support_email"
@@ -49,3 +58,17 @@
         - "matrix_nginx_proxy_proxy_synapse_client_api_addr_sans_container"
       when: "vars[item] == '' or vars[item] is none"
   when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
+
+- name: (Deprecation) Catch and report old metrics usage
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable (`{{ item }}`), which refers to the old metrics collection system for Synapse,
+      which exposed metrics on `https://matrix.DOMAIN/_synapse/metrics` and `https://matrix.DOMAIN/_synapse-worker-TYPE-ID/metrics`.
+
+      We now recommend exposing Synapse metrics in another way, from another URL.
+      Refer to the changelog for more details: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#2022-06-22
+  with_items:
+    - matrix_nginx_proxy_proxy_synapse_metrics
+    - matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled
+    - matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_key
+  when: "item in vars"

@@ -1,5 +1,10 @@
 ---
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-jitsi-web.service', 'matrix-jitsi-prosody.service', 'matrix-jitsi-jicofo.service', 'matrix-jitsi-jvb.service'] }}"
-  when: matrix_jitsi_enabled|bool
+  when: matrix_jitsi_enabled | bool
+
+- name: Fail if on an unsupported architecture
+  ansible.builtin.fail:
+    msg: "Jitsi only supports the amd64 architecture right now. See https://github.com/jitsi/docker-jitsi-meet/issues/1069 and https://github.com/jitsi/docker-jitsi-meet/issues/1214"
+  when: matrix_jitsi_enabled | bool and matrix_architecture not in ['amd64', 'arm64']

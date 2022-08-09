@@ -1,18 +1,22 @@
 ---
 
 - name: Download matrix_encryption_disabler
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ matrix_synapse_ext_encryption_disabler_download_url }}"
     dest: "{{ matrix_synapse_ext_path }}/matrix_e2ee_filter.py"
     force: true
     mode: 0440
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
+  register: result
+  retries: "{{ matrix_geturl_retries_count }}"
+  delay: "{{ matrix_geturl_retries_delay }}"
+  until: result is not failed
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_synapse_modules: |
       {{
-        matrix_synapse_modules|default([])
+        matrix_synapse_modules | default([])
         +
         [
           {
@@ -23,11 +27,15 @@
       }}
 
     matrix_synapse_container_extra_arguments: >
-      {{ matrix_synapse_container_extra_arguments|default([]) }}
-      +
-      ["--mount type=bind,src={{ matrix_synapse_ext_path }}/matrix_e2ee_filter.py,dst={{ matrix_synapse_in_container_python_packages_path }}/matrix_e2ee_filter.py,ro"]
+      {{
+        matrix_synapse_container_extra_arguments | default([])
+        +
+        ["--mount type=bind,src={{ matrix_synapse_ext_path }}/matrix_e2ee_filter.py,dst={{ matrix_synapse_in_container_python_packages_path }}/matrix_e2ee_filter.py,ro"]
+      }}
 
     matrix_synapse_additional_loggers: >
-      {{ matrix_synapse_additional_loggers }}
-      +
-      {{ [{'name': 'matrix_e2ee_filter', 'level': 'INFO'}] }}
+      {{
+        matrix_synapse_additional_loggers
+        +
+        [{'name': 'matrix_e2ee_filter', 'level': 'INFO'}]
+      }}

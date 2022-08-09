@@ -1,0 +1,74 @@
+---
+
+- name: Ensure matrix-registration-bot paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_bot_matrix_registration_bot_config_path }}", when: true}
+    - - {path: "{{ matrix_bot_matrix_registration_bot_data_path }}", when: true}
+    - {path: "{{ matrix_bot_matrix_registration_bot_docker_src_files_path }}", when: true}
+  when: "item.when | bool"
+
+- name: Ensure matrix-registration-bot configuration file created
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/config/config.yml.j2"
+    dest: "{{ matrix_bot_matrix_registration_bot_config_path }}/config.yml"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0640
+
+- name: Ensure matrix-registration-bot image is pulled
+  docker_image:
+    name: "{{ matrix_bot_matrix_registration_bot_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_bot_matrix_registration_bot_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_matrix_registration_bot_docker_image_force_pull }}"
+  when: "not matrix_bot_matrix_registration_bot_container_image_self_build | bool"
+  register: result
+  retries: "{{ matrix_container_retries_count }}"
+  delay: "{{ matrix_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure matrix-registration-bot repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_bot_matrix_registration_bot_docker_repo }}"
+    version: "{{ matrix_bot_matrix_registration_bot_docker_repo_version }}"
+    dest: "{{ matrix_bot_matrix_registration_bot_docker_src_files_path }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
+  register: matrix_bot_matrix_registration_bot_git_pull_results
+  when: "matrix_bot_matrix_registration_bot_container_image_self_build | bool"
+
+- name: Ensure matrix-registration-bot image is built
+  docker_image:
+    name: "{{ matrix_bot_matrix_registration_bot_docker_image }}"
+    source: build
+    force_source: "{{ matrix_bot_matrix_registration_bot_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_bot_matrix_registration_bot_docker_src_files_path }}"
+      pull: true
+  when: "matrix_bot_matrix_registration_bot_container_image_self_build | bool"
+
+- name: Ensure matrix-bot-matrix-registration-bot.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-bot-matrix-registration-bot.service.j2"
+    dest: "{{ matrix_systemd_path }}/matrix-bot-matrix-registration-bot.service"
+    mode: 0644
+  register: matrix_bot_matrix_registration_bot_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-bot-matrix-registration-bot.service installation
+  ansible.builtin.service:
+    daemon_reload: true
+  when: "matrix_bot_matrix_registration_bot_systemd_service_result.changed | bool"
+
+- name: Ensure matrix-bot-matrix-registration-bot.service restarted, if necessary
+  ansible.builtin.service:
+    name: "matrix-bot-matrix-registration-bot.service"
+    state: restarted

@@ -1,7 +1,7 @@
 ---
 
 - name: Ensure Synapse paths exist
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     mode: 0750
@@ -14,12 +14,12 @@
     # We handle matrix_synapse_media_store_path elsewhere (in ./synapse/setup_install.yml),
     # because if it's using Goofys and it's already mounted (from before),
     # trying to chown/chmod it here will cause trouble.
-  when: "(matrix_synapse_enabled|bool or matrix_s3_media_store_enabled|bool) and item.when"
+  when: "(matrix_synapse_enabled | bool or matrix_s3_media_store_enabled | bool) and item.when"
 
-- import_tasks: "{{ role_path }}/tasks/ext/setup.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/ext/setup.yml"
 
-- import_tasks: "{{ role_path }}/tasks/synapse/workers/setup.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/synapse/workers/setup.yml"
 
-- import_tasks: "{{ role_path }}/tasks/synapse/setup.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/synapse/setup.yml"
 
-- import_tasks: "{{ role_path }}/tasks/goofys/setup.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/goofys/setup.yml"

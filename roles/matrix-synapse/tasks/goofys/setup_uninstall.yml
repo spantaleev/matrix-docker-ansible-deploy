@@ -1,12 +1,12 @@
 ---
 
 - name: Check existence of matrix-goofys service
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_systemd_path }}/matrix-goofys.service"
   register: matrix_goofys_service_stat
 
 - name: Ensure matrix-goofys is stopped
-  service:
+  ansible.builtin.service:
     name: matrix-goofys
     state: stopped
     enabled: false
@@ -15,18 +15,18 @@
   when: "matrix_goofys_service_stat.stat.exists"
 
 - name: Ensure matrix-goofys.service doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_systemd_path }}/matrix-goofys.service"
     state: absent
   when: "matrix_goofys_service_stat.stat.exists"
 
 - name: Ensure systemd reloaded after matrix-goofys.service removal
-  service:
+  ansible.builtin.service:
     daemon_reload: true
   when: "matrix_goofys_service_stat.stat.exists"
 
 - name: Ensure goofys environment variables file doesn't exist
-  file:
+  ansible.builtin.file:
     path: "{{ matrix_synapse_config_dir_path }}/env-goofys"
     state: absent
 

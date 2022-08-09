@@ -1,20 +1,21 @@
 ---
 # Mx Puppet GroupMe is a Matrix <-> GroupMe bridge
-# See: https://gitlab.com/robintown/mx-puppet-groupme
+# Project source code URL: https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme
 
 matrix_mx_puppet_groupme_enabled: true
 
 matrix_mx_puppet_groupme_container_image_self_build: false
-matrix_mx_puppet_groupme_container_image_self_build_repo: "https://gitlab.com/robintown/mx-puppet-groupme"
+matrix_mx_puppet_groupme_container_image_self_build_repo: "https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme"
+matrix_mx_puppet_groupme_container_image_self_build_repo_version: "{{ 'main' if matrix_mx_puppet_groupme_version == 'latest' else matrix_mx_puppet_groupme_version }}"
 
 # Controls whether the mx-puppet-groupme container exposes its HTTP port (tcp/8437 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8437"), or empty string to not expose.
 matrix_mx_puppet_groupme_container_http_host_bind_port: ''
 
-matrix_mx_puppet_groupme_version: latest
-matrix_mx_puppet_groupme_docker_image: "{{ matrix_mx_puppet_groupme_docker_image_name_prefix }}xangelix/mx-puppet-groupme:{{ matrix_mx_puppet_groupme_version }}"
-matrix_mx_puppet_groupme_docker_image_name_prefix: "{{ 'localhost/' if matrix_mx_puppet_groupme_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_mx_puppet_groupme_version: 533cccc8
+matrix_mx_puppet_groupme_docker_image: "{{ matrix_mx_puppet_groupme_docker_image_name_prefix }}xangelix-pub/matrix/mx-puppet-groupme:{{ matrix_mx_puppet_groupme_version }}"
+matrix_mx_puppet_groupme_docker_image_name_prefix: "{{ 'localhost/' if matrix_mx_puppet_groupme_container_image_self_build else 'registry.gitlab.com/' }}"
 matrix_mx_puppet_groupme_docker_image_force_pull: "{{ matrix_mx_puppet_groupme_docker_image.endswith(':latest') }}"
 
 matrix_mx_puppet_groupme_base_path: "{{ matrix_base_data_path }}/mx-puppet-groupme"
@@ -32,7 +33,7 @@ matrix_mx_puppet_groupme_appservice_address: 'http://matrix-mx-puppet-groupme:{{
 # "@.*:yourserver.com" to allow users on a specific homeserver
 # "@.*" to allow anyone
 matrix_mx_puppet_groupme_provisioning_whitelist:
-  - "@.*:{{ matrix_domain|regex_escape }}"
+  - "@.*:{{ matrix_domain | regex_escape }}"
 
 # Leave empty to disable blacklist
 # "@user:server.com" disallow a specific user
@@ -83,11 +84,11 @@ matrix_mx_puppet_groupme_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_mx_puppet_groupme_configuration_yaml`.
 
-matrix_mx_puppet_groupme_configuration_extension: "{{ matrix_mx_puppet_groupme_configuration_extension_yaml|from_yaml if matrix_mx_puppet_groupme_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_mx_puppet_groupme_configuration_extension: "{{ matrix_mx_puppet_groupme_configuration_extension_yaml | from_yaml if matrix_mx_puppet_groupme_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_mx_puppet_groupme_configuration_yaml`.
-matrix_mx_puppet_groupme_configuration: "{{ matrix_mx_puppet_groupme_configuration_yaml|from_yaml|combine(matrix_mx_puppet_groupme_configuration_extension, recursive=True) }}"
+matrix_mx_puppet_groupme_configuration: "{{ matrix_mx_puppet_groupme_configuration_yaml | from_yaml | combine(matrix_mx_puppet_groupme_configuration_extension, recursive=True) }}"
 
 matrix_mx_puppet_groupme_registration_yaml: |
   as_token: "{{ matrix_mx_puppet_groupme_appservice_token }}"
@@ -96,15 +97,15 @@ matrix_mx_puppet_groupme_registration_yaml: |
   namespaces:
     users:
       - exclusive: true
-        regex: '@_groupmepuppet_.*:{{ matrix_mx_puppet_groupme_homeserver_domain|regex_escape }}'
+        regex: '@_groupmepuppet_.*:{{ matrix_mx_puppet_groupme_homeserver_domain | regex_escape }}'
     rooms: []
     aliases:
       - exclusive: true
-        regex: '#_groupmepuppet_.*:{{ matrix_mx_puppet_groupme_homeserver_domain|regex_escape }}'
+        regex: '#_groupmepuppet_.*:{{ matrix_mx_puppet_groupme_homeserver_domain | regex_escape }}'
   protocols: []
   rate_limited: false
   sender_localpart: _groupmepuppet_bot
   url: {{ matrix_mx_puppet_groupme_appservice_address }}
   de.sorunome.msc2409.push_ephemeral: true
 
-matrix_mx_puppet_groupme_registration: "{{ matrix_mx_puppet_groupme_registration_yaml|from_yaml }}"
+matrix_mx_puppet_groupme_registration: "{{ matrix_mx_puppet_groupme_registration_yaml | from_yaml }}"

@@ -1,6 +1,6 @@
 ---
 # mautrix-facebook is a Matrix <-> Facebook bridge
-# See: https://github.com/mautrix/facebook
+# Project source code URL: https://github.com/mautrix/facebook
 
 matrix_mautrix_facebook_enabled: true
 
@@ -16,6 +16,8 @@ matrix_mautrix_facebook_base_path: "{{ matrix_base_data_path }}/mautrix-facebook
 matrix_mautrix_facebook_config_path: "{{ matrix_mautrix_facebook_base_path }}/config"
 matrix_mautrix_facebook_data_path: "{{ matrix_mautrix_facebook_base_path }}/data"
 matrix_mautrix_facebook_docker_src_files_path: "{{ matrix_mautrix_facebook_base_path }}/docker-src"
+
+matrix_mautrix_facebook_command_prefix: "!fb"
 
 # Whether or not the public-facing endpoints should be enabled (web-based login)
 matrix_mautrix_facebook_appservice_public_enabled: true
@@ -43,6 +45,12 @@ matrix_mautrix_facebook_homeserver_token: ''
 # Whether or not created rooms should have federation enabled.
 # If false, created portal rooms will never be federated.
 matrix_mautrix_facebook_federate_rooms: true
+
+matrix_mautrix_facebook_bridge_permissions: |
+  {{
+    {matrix_mautrix_facebook_homeserver_domain: 'user'}
+    | combine({matrix_admin: 'admin'} if matrix_admin else {})
+  }}
 
 # Controls whether the matrix-mautrix-facebook container exposes its HTTP port.
 #
@@ -89,6 +97,9 @@ matrix_mautrix_facebook_appservice_bot_username: facebookbot
 
 matrix_mautrix_facebook_bridge_presence: true
 
+# Specifies the default log level for all bridge loggers.
+matrix_mautrix_facebook_logging_level: WARNING
+
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
@@ -105,11 +116,11 @@ matrix_mautrix_facebook_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_mautrix_facebook_configuration_yaml`.
 
-matrix_mautrix_facebook_configuration_extension: "{{ matrix_mautrix_facebook_configuration_extension_yaml|from_yaml if matrix_mautrix_facebook_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_mautrix_facebook_configuration_extension: "{{ matrix_mautrix_facebook_configuration_extension_yaml | from_yaml if matrix_mautrix_facebook_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_mautrix_facebook_configuration_yaml`.
-matrix_mautrix_facebook_configuration: "{{ matrix_mautrix_facebook_configuration_yaml|from_yaml|combine(matrix_mautrix_facebook_configuration_extension, recursive=True) }}"
+matrix_mautrix_facebook_configuration: "{{ matrix_mautrix_facebook_configuration_yaml | from_yaml | combine(matrix_mautrix_facebook_configuration_extension, recursive=True) }}"
 
 matrix_mautrix_facebook_registration_yaml: |
   id: facebook
@@ -118,13 +129,13 @@ matrix_mautrix_facebook_registration_yaml: |
   namespaces:
     users:
     - exclusive: true
-      regex: '^@facebook_.+:{{ matrix_mautrix_facebook_homeserver_domain|regex_escape }}$'
+      regex: '^@facebook_.+:{{ matrix_mautrix_facebook_homeserver_domain | regex_escape }}$'
     - exclusive: true
-      regex: '^@{{ matrix_mautrix_facebook_appservice_bot_username|regex_escape }}:{{ matrix_mautrix_facebook_homeserver_domain|regex_escape }}$'
+      regex: '^@{{ matrix_mautrix_facebook_appservice_bot_username | regex_escape }}:{{ matrix_mautrix_facebook_homeserver_domain | regex_escape }}$'
   url: {{ matrix_mautrix_facebook_appservice_address }}
   # See https://github.com/mautrix/signal/issues/43
   sender_localpart: _bot_{{ matrix_mautrix_facebook_appservice_bot_username }}
   rate_limited: false
   de.sorunome.msc2409.push_ephemeral: true
 
-matrix_mautrix_facebook_registration: "{{ matrix_mautrix_facebook_registration_yaml|from_yaml }}"
+matrix_mautrix_facebook_registration: "{{ matrix_mautrix_facebook_registration_yaml | from_yaml }}"

@@ -1,0 +1,110 @@
+# The full URI to the database. SQLite and Postgres are fully supported.
+# Other DBMSes supported by SQLAlchemy may or may not work.
+# Format examples:
+#   SQLite:   sqlite:///filename.db
+#   Postgres: postgresql://username:password@hostname/dbname
+database: {{ matrix_bot_maubot_database_uri|to_json }}
+
+# Separate database URL for the crypto database. "default" means use the same database as above.
+crypto_database:
+  type: default
+
+# Additional arguments for asyncpg.create_pool() or sqlite3.connect()
+# https://magicstack.github.io/asyncpg/current/api/index.html#asyncpg.pool.create_pool
+# https://docs.python.org/3/library/sqlite3.html#sqlite3.connect
+# For sqlite, min_size is used as the connection thread pool size and max_size is ignored.
+database_opts:
+    min_size: 1
+    max_size: 10
+plugin_directories:
+    # The directory where uploaded new plugins should be stored.
+    upload: /data/plugins
+    # The directories from which plugins should be loaded.
+    # Duplicate plugin IDs will be moved to the trash.
+    load:
+    - /data/plugins
+    trash: /data/trash
+
+# Configuration for storing plugin databases
+plugin_databases:
+  # Some plugins still require sqlite, so configure a path here.
+  # postgres will be used if supported.
+  sqlite: /data/dbs
+  postgres: default
+
+server:
+    # The IP and port to listen to.
+    hostname: 0.0.0.0
+    port: {{ matrix_bot_maubot_management_interface_port|to_json }}
+    # Public base URL where the server is visible.
+    public_url: {{ matrix_bot_maubot_bot_server_public_url|to_json }}
+    # The base management API path.
+    base_path: /_matrix/maubot/v1
+    # The base path for the UI.
+    ui_base_path: /_matrix/maubot
+    # The base path for plugin endpoints. The instance ID will be appended directly.
+    plugin_base_path: /_matrix/maubot/plugin/
+    # Override path from where to load UI resources.
+    # Set to false to using pkg_resources to find the path.
+    override_resource_path: /opt/maubot/frontend
+    # The base appservice API path. Use / for legacy appservice API and /_matrix/app/v1 for v1.
+    appservice_base_path: /_matrix/app/v1
+    # The shared secret to sign API access tokens.
+    # Set to "generate" to generate and save a new token at startup.
+    unshared_secret: {{ matrix_bot_maubot_unshared_secret|to_json }}
+
+# Known homeservers. This is required for the `mbc auth` command and also allows
+# more convenient access from the management UI. This is not required to create
+# clients in the management UI, since you can also just type the homeserver URL
+# into the box there.
+homeservers:
+  {{  matrix_domain }}:
+    # Client-server API URL
+        url: "https://{{ matrix_server_fqn_matrix }}"
+    # registration_shared_secret from synapse config
+    # You can leave this empty if you don't have access to the homeserver.
+    # When this is empty, `mbc auth --register` won't work, but `mbc auth` (login) will.
+        secret: {{ matrix_bot_maubot_registration_shared_secret|to_json }}
+
+# List of administrator users. Plaintext passwords will be bcrypted on startup. Set empty password
+# to prevent normal login. Root is a special user that can't have a password and will always exist.
+admins: {{ matrix_bot_maubot_admins | combine( {"root": ""} )|to_json }}
+
+api_features:
+    login: true
+    plugin: true
+    plugin_upload: true
+    instance: true
+    instance_database: true
+    client: true
+    client_proxy: true
+    client_auth: true
+    dev_open: true
+    log: true
+
+# Python logging configuration.
+#
+# See section 16.7.2 of the Python documentation for more info:
+# https://docs.python.org/3.6/library/logging.config.html#configuration-dictionary-schema
+logging:
+    version: 1
+    formatters:
+        colored:
+            (): maubot.lib.color_log.ColorFormatter
+            format: '[%(asctime)s] [%(levelname)s@%(name)s] %(message)s'
+        normal:
+            format: '[%(asctime)s] [%(levelname)s@%(name)s] %(message)s'
+    handlers:
+        console:
+            class: logging.StreamHandler
+            formatter: colored
+    loggers:
+        maubot:
+            level: {{ matrix_bot_maubot_logging_level|to_json }}
+        mau:
+            level: {{ matrix_bot_maubot_logging_level|to_json }}
+        aiohttp:
+            level: {{ matrix_bot_maubot_logging_level|to_json }}
+    root:
+        level: {{ matrix_bot_maubot_logging_level|to_json }}
+        handlers: [console]

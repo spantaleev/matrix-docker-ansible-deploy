@@ -1,15 +1,19 @@
 ---
 # matrix-appservice-slack is a Matrix <-> Slack bridge
-# See: https://github.com/matrix-org/matrix-appservice-slack
+# Project source code URL: https://github.com/matrix-org/matrix-appservice-slack
 
 matrix_appservice_slack_enabled: true
 
 matrix_appservice_slack_container_image_self_build: false
 matrix_appservice_slack_docker_repo: "https://github.com/matrix-org/matrix-appservice-slack.git"
+matrix_appservice_slack_docker_repo_version: "{{ 'master' if matrix_appservice_slack_version == 'latest' else matrix_appservice_slack_version }}"
 matrix_appservice_slack_docker_src_files_path: "{{ matrix_base_data_path }}/appservice-slack/docker-src"
 
-matrix_appservice_slack_version: release-1.10.0
-matrix_appservice_slack_docker_image: "{{ matrix_container_global_registry_prefix }}matrixdotorg/matrix-appservice-slack:{{ matrix_appservice_slack_version }}"
+# matrix_appservice_slack_version used to contain the full Docker image tag (e.g. `release-X.X.X`).
+# It's a bare version number now. We try to somewhat retain compatibility below.
+matrix_appservice_slack_version: 1.11.0
+matrix_appservice_slack_docker_image: "{{ matrix_container_global_registry_prefix }}matrixdotorg/matrix-appservice-slack:{{ matrix_appservice_slack_docker_image_tag }}"
+matrix_appservice_slack_docker_image_tag: "{{ 'latest' if matrix_appservice_slack_version == 'latest' else ('release-' + matrix_appservice_slack_version) }}"
 matrix_appservice_slack_docker_image_force_pull: "{{ matrix_appservice_slack_docker_image.endswith(':latest') }}"
 
 matrix_appservice_slack_base_path: "{{ matrix_base_data_path }}/appservice-slack"
@@ -63,12 +67,13 @@ matrix_appservice_slack_database_name: matrix_appservice_slack
 matrix_appservice_slack_database_connection_string: 'postgresql://{{ matrix_appservice_slack_database_username }}:{{ matrix_appservice_slack_database_password }}@{{ matrix_appservice_slack_database_hostname }}:{{ matrix_appservice_slack_database_port }}/{{ matrix_appservice_slack_database_name }}?sslmode=disable'
 
 # This is what actually goes into `database.connectionString` for the bridge.
-matrix_appservice_slack_database_connectionString: "{{
-	{
-		'nedb': 'nedb:///data',
-		'postgres': matrix_appservice_slack_database_connection_string,
-	}[matrix_appservice_slack_database_engine]
-}}"
+matrix_appservice_slack_database_connectionString: |-  # noqa var-naming
+  {{
+    {
+      'nedb': 'nedb:///data',
+      'postgres': matrix_appservice_slack_database_connection_string,
+    }[matrix_appservice_slack_database_engine]
+  }}
 
 
 matrix_appservice_slack_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
@@ -95,9 +100,9 @@ matrix_appservice_slack_configuration_extension_yaml: |
     #    - "./debug.log": "info"
     #- "./error.log": "error"
 
-matrix_appservice_slack_configuration_extension: "{{ matrix_appservice_slack_configuration_extension_yaml|from_yaml if matrix_appservice_slack_configuration_extension_yaml|from_yaml else {} }}"
+matrix_appservice_slack_configuration_extension: "{{ matrix_appservice_slack_configuration_extension_yaml | from_yaml if matrix_appservice_slack_configuration_extension_yaml | from_yaml else {} }}"
 
-matrix_appservice_slack_configuration: "{{ matrix_appservice_slack_configuration_yaml|from_yaml|combine(matrix_appservice_slack_configuration_extension, recursive=True) }}"
+matrix_appservice_slack_configuration: "{{ matrix_appservice_slack_configuration_yaml | from_yaml | combine(matrix_appservice_slack_configuration_extension, recursive=True) }}"
 
 matrix_appservice_slack_registration_yaml: |
   id: "{{ matrix_appservice_slack_id_token }}"
@@ -111,9 +116,9 @@ matrix_appservice_slack_registration_yaml: |
     - exclusive: false
       regex: '#{{ matrix_appservice_slack_user_prefix }}.*'
     rooms: []
-  url: "{{matrix_appservice_slack_appservice_url}}:{{ matrix_appservice_slack_matrix_port }}"
+  url: "{{ matrix_appservice_slack_appservice_url }}:{{ matrix_appservice_slack_matrix_port }}"
   sender_localpart: slackbot
   rate_limited: true
   protocols: null
 
-matrix_appservice_slack_registration: "{{ matrix_appservice_slack_registration_yaml|from_yaml }}"
+matrix_appservice_slack_registration: "{{ matrix_appservice_slack_registration_yaml | from_yaml }}"

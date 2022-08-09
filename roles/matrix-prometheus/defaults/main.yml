@@ -1,10 +1,11 @@
 ---
 # matrix-prometheus is an open-source systems monitoring and alerting toolkit
 # See: https://github.com/matrix-org/synapse/blob/master/docs/metrics-howto.md
+# Project source code URL: https://github.com/prometheus/prometheus
 
 matrix_prometheus_enabled: false
 
-matrix_prometheus_version: v2.33.3
+matrix_prometheus_version: v2.37.0
 matrix_prometheus_docker_image: "{{ matrix_container_global_registry_prefix }}prom/prometheus:{{ matrix_prometheus_version }}"
 matrix_prometheus_docker_image_force_pull: "{{ matrix_prometheus_docker_image.endswith(':latest') }}"
 
@@ -25,6 +26,19 @@ matrix_prometheus_systemd_wanted_services_list: []
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9090"), or empty string to not expose.
 matrix_prometheus_container_http_host_bind_port: ''
+
+# A list of default arguments to pass to the prometheus process
+matrix_prometheus_process_default_arguments:
+  - "--config.file=/etc/prometheus/prometheus.yml"
+  - "--storage.tsdb.path=/prometheus"
+  - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+  - "--web.console.templates=/usr/share/prometheus/consoles"
+
+# A list of extra arguments to pass to the prometheus process
+matrix_prometheus_process_extra_arguments: []
+
+# holds the final list of process arguments
+matrix_prometheus_process_arguments: "{{ matrix_prometheus_process_default_arguments + matrix_prometheus_process_extra_arguments }}"
 
 # Tells whether the "synapse" scraper configuration is enabled.
 matrix_prometheus_scraper_synapse_enabled: false
@@ -61,8 +75,8 @@ matrix_prometheus_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_prometheus_configuration_yaml`.
 
-matrix_prometheus_configuration_extension: "{{ matrix_prometheus_configuration_extension_yaml|from_yaml if matrix_prometheus_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_prometheus_configuration_extension: "{{ matrix_prometheus_configuration_extension_yaml | from_yaml if matrix_prometheus_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_prometheus_configuration_yaml`.
-matrix_prometheus_configuration: "{{ matrix_prometheus_configuration_yaml|from_yaml|combine(matrix_prometheus_configuration_extension, recursive=True) }}"
+matrix_prometheus_configuration: "{{ matrix_prometheus_configuration_yaml | from_yaml | combine(matrix_prometheus_configuration_extension, recursive=True) }}"

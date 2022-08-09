@@ -1,11 +1,12 @@
 ---
 # Mx Puppet Steam is a Matrix <-> Steam bridge
-# See: https://github.com/matrix-steam/mx-puppet-steam
+# Project source code URL: https://github.com/icewind1991/mx-puppet-steam
 
 matrix_mx_puppet_steam_enabled: true
 
 matrix_mx_puppet_steam_container_image_self_build: false
-matrix_mx_puppet_steam_container_image_self_build_repo: "https://github.com/tilosp/mx-puppet-steam.git"
+matrix_mx_puppet_steam_container_image_self_build_repo: "https://github.com/icewind1991/mx-puppet-steam.git"
+matrix_mx_puppet_steam_container_image_self_build_repo_version: "{{ 'master' if matrix_mx_puppet_steam_version == 'latest' else matrix_mx_puppet_steam_version }}"
 
 # Controls whether the mx-puppet-steam container exposes its HTTP port (tcp/8432 in the container).
 #
@@ -32,7 +33,7 @@ matrix_mx_puppet_steam_appservice_address: 'http://matrix-mx-puppet-steam:{{ mat
 # "@.*:yourserver.com" to allow users on a specific homeserver
 # "@.*" to allow anyone
 matrix_mx_puppet_steam_provisioning_whitelist:
-  - "@.*:{{ matrix_domain|regex_escape }}"
+  - "@.*:{{ matrix_domain | regex_escape }}"
 
 # Leave empty to disable blacklist
 # "@user:server.com" disallow a specific user
@@ -83,11 +84,11 @@ matrix_mx_puppet_steam_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_mx_puppet_steam_configuration_yaml`.
 
-matrix_mx_puppet_steam_configuration_extension: "{{ matrix_mx_puppet_steam_configuration_extension_yaml|from_yaml if matrix_mx_puppet_steam_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_mx_puppet_steam_configuration_extension: "{{ matrix_mx_puppet_steam_configuration_extension_yaml | from_yaml if matrix_mx_puppet_steam_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_mx_puppet_steam_configuration_yaml`.
-matrix_mx_puppet_steam_configuration: "{{ matrix_mx_puppet_steam_configuration_yaml|from_yaml|combine(matrix_mx_puppet_steam_configuration_extension, recursive=True) }}"
+matrix_mx_puppet_steam_configuration: "{{ matrix_mx_puppet_steam_configuration_yaml | from_yaml | combine(matrix_mx_puppet_steam_configuration_extension, recursive=True) }}"
 
 matrix_mx_puppet_steam_registration_yaml: |
   as_token: "{{ matrix_mx_puppet_steam_appservice_token }}"
@@ -96,15 +97,15 @@ matrix_mx_puppet_steam_registration_yaml: |
   namespaces:
     users:
       - exclusive: true
-        regex: '@_steampuppet_.*:{{ matrix_mx_puppet_steam_homeserver_domain|regex_escape }}'
+        regex: '@_steampuppet_.*:{{ matrix_mx_puppet_steam_homeserver_domain | regex_escape }}'
     rooms: []
     aliases:
       - exclusive: true
-        regex: '#_steampuppet_.*:{{ matrix_mx_puppet_steam_homeserver_domain|regex_escape }}'
+        regex: '#_steampuppet_.*:{{ matrix_mx_puppet_steam_homeserver_domain | regex_escape }}'
   protocols: []
   rate_limited: false
   sender_localpart: _steampuppet_bot
   url: {{ matrix_mx_puppet_steam_appservice_address }}
   de.sorunome.msc2409.push_ephemeral: true
 
-matrix_mx_puppet_steam_registration: "{{ matrix_mx_puppet_steam_registration_yaml|from_yaml }}"
+matrix_mx_puppet_steam_registration: "{{ matrix_mx_puppet_steam_registration_yaml | from_yaml }}"
