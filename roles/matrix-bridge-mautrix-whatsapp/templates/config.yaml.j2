@@ -92,7 +92,7 @@ bridge:
     displayname_template: "{{ '{{if .BusinessName}}{{.BusinessName}}{{else if .PushName}}{{.PushName}}{{else}}{{.JID}}{{end}} (WA)' }}"
     # Should the bridge create a space for each logged-in user and add bridged rooms to it?
     # Users who logged in before turning this on should run `!wa sync space` to create and fill the space for the first time.
-    personal_filtering_spaces: false
+    personal_filtering_spaces: {{ matrix_mautrix_whatsapp_bridge_personal_filtering_spaces | to_json }}
     # Should the bridge send a read receipt from the bridge bot when a message has been sent to WhatsApp?
     delivery_receipts: false
     # Whether the bridge should send the message status as a custom com.beeper.message_send_status event.
@@ -232,7 +232,7 @@ bridge:
     # This field will automatically be changed back to false after it, except if the config file is not writable.
     resend_bridge_info: false
     # When using double puppeting, should muted chats be muted in Matrix?
-    mute_bridging: false
+    mute_bridging: {{ matrix_mautrix_whatsapp_bridge_mute_bridging | to_json }}
     # When using double puppeting, should archived chats be moved to a specific tag in Matrix?
     # Note that WhatsApp unarchives chats when a message is received, which will also be mirrored to Matrix.
     # This can be set to a tag (e.g. m.lowpriority), or null to disable.
@@ -243,7 +243,7 @@ bridge:
     tag_only_on_create: true
     # Should WhatsApp status messages be bridged into a Matrix room?
     # Disabling this won't affect already created status broadcast rooms.
-    enable_status_broadcast: true
+    enable_status_broadcast: {{ matrix_mautrix_whatsapp_bridge_enable_status_broadcast | to_json }}
     # Should sending WhatsApp status messages be allowed?
     # This can cause issues if the user has lots of contacts, so it's disabled by default.
     disable_status_broadcast_send: true
@@ -257,7 +257,7 @@ bridge:
     whatsapp_thumbnail: false
     # Allow invite permission for user. User can invite any bots to room with whatsapp
     # users (private chat and groups)
-    allow_user_invite: false
+    allow_user_invite: {{ matrix_mautrix_whatsapp_bridge_allow_user_invite | to_json }}
     # Whether or not created rooms should have federation enabled.
     # If false, created portal rooms will never be federated.
     federate_rooms: {{ matrix_mautrix_whatsapp_federate_rooms|to_json }}
