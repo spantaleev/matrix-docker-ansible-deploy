@@ -10,6 +10,22 @@
   delay: "{{ matrix_container_retries_delay }}"
   until: result is not failed
 
+- name: Ensure Conduit config path exists
+  ansible.builtin.file:
+    path: "{{ matrix_conduit_config_path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Conduit data path exists
+  ansible.builtin.file:
+    path: "{{ matrix_conduit_data_path }}"
+    state: directory
+    mode: 0770
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
 - name: Ensure Conduit configuration installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/conduit/conduit.toml.j2"
