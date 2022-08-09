@@ -30,7 +30,9 @@ These services are not part of our default installation, but can be enabled by [
 
 - [ma1uta/ma1sd](https://hub.docker.com/r/ma1uta/ma1sd/) - the [ma1sd](https://github.com/ma1uta/ma1sd) Matrix Identity server (optional)
 
-- [matrixdotorg/dendrite-monolith](https://hub.docker.com/r/matrixdotorg/dendrite-monolith/) - the official [Dendrite](https://github.com/matrix-org/dendrite) Matrix homeserver (optional)
+- [matrixconduit/matrix-conduit](https://hub.docker.com/r/matrixconduit/matrix-conduit) - the [Conduit](https://conduit.rs) Matrix homeserver (optional)
+
+- [matrixdotorg/dendrite-monolith](https://hub.docker.com/r/matrixdotorg/dendrite-monolith/) - the [Dendrite](https://github.com/matrix-org/dendrite) Matrix homeserver (optional)
 
 - [ewoutp/goofys](https://hub.docker.com/r/ewoutp/goofys/) - the [Goofys](https://github.com/kahing/goofys) Amazon [S3](https://aws.amazon.com/s3/) file-system-mounting program (optional)
 

@@ -1,3 +1,20 @@
+# 2022-08-09
+
+## Conduit support
+
+Thanks to [Charles Wright](https://github.com/cvwright), we now have optional experimental [Conduit](https://conduit.rs) homeserver support for new installations. This comes as a follow-up to the playbook getting [Dendrite support](#dendrite-support) earlier this year.
+
+Existing Synapse or Dendrite installations do **not** need to be updated. **Synapse is still the default homeserver implementation** installed by the playbook.
+
+To try out Conduit, we recommend that you **use a new server** and the following `vars.yml` configuration:
+
+```yaml
+matrix_homeserver_implementation: conduit
+```
+
+**The homeserver implementation of an existing server cannot be changed** (e.g. from Synapse or Dendrite to Conduit) without data loss.
+
+
 # 2022-07-29
 
 ## mautrix-discord support
