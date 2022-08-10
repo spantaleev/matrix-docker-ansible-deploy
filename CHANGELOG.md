@@ -1,3 +1,14 @@
+# 2022-08-10
+
+## mautrix-whatsapp default configuration changes
+
+In [Pull Request #2012](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/2012), we've made some changes to the default configuration used by the `mautrix-whatsapp` bridge.
+
+If you're using this bridge, you should look into this PR and see if the new configuration suits you. If not, you can always change individual preferences in your `vars.yml` file.
+
+Most notably, spaces support has been enabled by default. The bridge will now group rooms into a Matrix space. **If you've already bridged to Whatsapp** prior to this update, you will need to send `!wa sync space` to the bridge bot to make it create the space and put your existing rooms into it.
+
+
 # 2022-08-09
 
 ## Conduit support
