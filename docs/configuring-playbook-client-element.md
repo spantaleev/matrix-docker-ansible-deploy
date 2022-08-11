@@ -32,7 +32,7 @@ Alternatively, **if there is no pre-defined variable** for an Element setting yo
 
 ## Themes
 
-To change the look of Element, you can define your own themes manually by using the `matrix_client_element__settingDefaults_custom_themes` setting.
+To change the look of Element, you can define your own themes manually by using the `matrix_client_element_settingDefaults_custom_themes` setting.
 
 Or better yet, you can automatically pull it all themes provided by the [aaronraimist/element-themes](https://github.com/aaronraimist/element-themes) project by simply flipping a flag (`matrix_client_element_themes_enabled: true`).
 
