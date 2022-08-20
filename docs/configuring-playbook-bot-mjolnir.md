@@ -24,17 +24,7 @@ If you would like Mjolnir to be able to deactivate users, move aliases, shutdown
 
 ## 2. Get an access token
 
-If you use curl, you can get an access token like this:
-
-```
-curl -X POST --header 'Content-Type: application/json' -d '{
-    "identifier": { "type": "m.id.user", "user": "bot.mjolnir" },
-    "password": "PASSWORD_FOR_THE_BOT",
-    "type": "m.login.password"
-}' 'https://matrix.DOMAIN/_matrix/client/r0/login'
-```
-
-Alternatively, you can use a full-featured client (such as Element) to log in and get the access token from there (note: don't log out from the client as that will invalidate the token).
+Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
 
 ## 3. Make sure the account is free from rate limiting

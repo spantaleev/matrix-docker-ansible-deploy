@@ -54,10 +54,4 @@ Choose a strong password for the bot. You can generate a good password with a co
 
 ## Obtaining an admin access token
 
-This can be done via `mbc auth` (see the [maubot documentation](https://docs.mau.fi/maubot/usage/cli/auth.html)) or  by logging into Element/Schildichat with the bot account
-(using the password you set) and navigate to `Settings->Help&About` and scroll to the bottom.
-You can expand "Access token" to copy it.
-
-![Obatining an admin access token with Element](assets/obtain_admin_access_token_element.png)
-
-**IMPORTANT**: once you copy the token, just close the Matrix client window/tab. Do not "log out", as that would invalidate the token.
+This can be done via `mbc auth` (see the [maubot documentation](https://docs.mau.fi/maubot/usage/cli/auth.html)). Alternatively, use Element or curl to [obtain an access token](obtaining-access-tokens.md).
