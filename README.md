@@ -67,7 +67,7 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) the [mautrix-signal](https://github.com/mautrix/signal) bridge for bridging your Matrix server to [Signal](https://www.signal.org/)
 
-- (optional) the [beeper-linkedin](https://gitlab.com/beeper/linkedin) bridge for bridging your Matrix server to [LinkedIn](https://www.linkedin.com/)
+- (optional) the [beeper-linkedin](https://github.com/beeper/linkedin) bridge for bridging your Matrix server to [LinkedIn](https://www.linkedin.com/)
 
 - (optional) the [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) bridge for bridging your Matrix server to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat)
 
