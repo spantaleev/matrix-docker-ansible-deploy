@@ -8,9 +8,9 @@ When setting up some optional features like bots and bridges you will need to pr
 
 The user for whom you want to obtain an access token needs to already exist. You can use this playbook to [register a new user](registering-users.md), if you have not already.
 
-There are two ways to generate an access token for a user, either using [Element](#obtain-an-access-token-via-element) or [curl](#obtain-an-access-token-via-curl). For both ways you need the user's password.
+Below, we describe 2 ways to generate an access token for a user - using [Element](#obtain-an-access-token-via-element) or [curl](#obtain-an-access-token-via-curl). For both ways you need the user's password.
 
-## Obtain an access token via element
+## Obtain an access token via Element
 
 1. In a private browsing session (incognito window), open Element.
 1. Log in with the user's credentials.
@@ -29,13 +29,13 @@ You can use the following command to get an access token for your user directly 
 curl -XPOST -d '{
     "identifier": { "type": "m.id.user", "user": "USERNAME" },
     "password": "PASSWORD",
-    "type": "m.login.password"
+    "type": "m.login.password",
     "device_id": "YOURDEVICEID"
 }' 'https://matrix.YOURDOMAIN/_matrix/client/r0/login'
 ```
 Change `USERNAME`, `PASSWORD`, and `YOURDOMAIN` accordingly.
 
-`YOURDEVICEID` is optional and can be used to more easily identify the session later. When omitted, a random ID will be generated.
+`YOURDEVICEID` is optional and can be used to more easily identify the session later. When omitted (mind the commas in the JSON payload if you'll be omitting it), a random device ID will be generated.
 
 Your response will look like this (prettified):
 
