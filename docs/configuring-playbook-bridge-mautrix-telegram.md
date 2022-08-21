@@ -28,13 +28,7 @@ This is the recommended way of setting up Double Puppeting, as it's easier to ac
 
 When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
 
-- retrieve a Matrix access token for yourself. You can use the following command:
-
-```
-curl \
---data '{"identifier": {"type": "m.id.user", "user": "YOUR_MATRIX_USERNAME" }, "password": "YOUR_MATRIX_PASSWORD", "type": "m.login.password", "device_id": "Mautrix-Telegram", "initial_device_display_name": "Mautrix-Telegram"}' \
-https://matrix.DOMAIN/_matrix/client/r0/login
-```
+- retrieve a Matrix access token for yourself. Refer to the documentation on [how to do that](obtaining-access-tokens.md).
 
 - send `login-matrix` to the bot and follow instructions about how to send the access token to it
 

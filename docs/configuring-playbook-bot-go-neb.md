@@ -21,20 +21,7 @@ You can use the playbook to [register a new user](registering-users.md):
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.go-neb password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
 ```
 
-
-## Getting an access token
-
-If you use curl, you can get an access token like this:
-
-```
-curl -X POST --header 'Content-Type: application/json' -d '{
-    "identifier": { "type": "m.id.user", "user": "bot.go-neb" },
-    "password": "a strong password",
-    "type": "m.login.password"
-}' 'https://matrix.YOURDOMAIN/_matrix/client/r0/login'
-```
-
-Alternatively, you can use a full-featured client (such as Element) to log in and get the access token from there (note: don't log out from the client as that will invalidate the token), but doing so might lead to decryption problems. That warning comes from [here](https://github.com/matrix-org/go-neb#quick-start).
+Once the user is created you can [obtain an access token](obtaining-access-tokens.md).
 
 
 ## Adjusting the playbook configuration
