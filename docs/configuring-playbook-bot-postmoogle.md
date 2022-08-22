@@ -47,8 +47,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-To use the bot, invite the `@postmoogle:DOMAIN` into a room you want to use as a mailbox, after that send `mailbox NAME` to enable email address `NAME@matrix.domain` and start receiving emails
+To use the bot, invite the `@postmoogle:DOMAIN` into a room you want to use as a mailbox, after that send `!pm mailbox NAME` to enable email address `NAME@matrix.domain` and start receiving emails
 
-Send `help` to the room to see the bot's help menu for additional commands.
+Send `!pm help` to the room to see the bot's help menu for additional commands.
 
 You can also refer to the upstream [documentation](https://gitlab.com/etke.cc/postmoogle).
