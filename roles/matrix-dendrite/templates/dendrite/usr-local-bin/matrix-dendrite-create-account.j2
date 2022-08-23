@@ -8,5 +8,10 @@ fi
 
 user=$1
 password=$2
+admin=$3
 
-docker exec matrix-dendrite create-account -config /data/dendrite.yaml -username "$user" -password "$password"
+if [ "$admin" -eq "1" ]; then
+	docker exec matrix-dendrite create-account -config /data/dendrite.yaml -username "$user" -password "$password" -admin -url http://localhost:{{ matrix_dendrite_http_bind_port }}
+else
+	docker exec matrix-dendrite create-account -config /data/dendrite.yaml -username "$user" -password "$password" -url http://localhost:{{ matrix_dendrite_http_bind_port }}
+fi
