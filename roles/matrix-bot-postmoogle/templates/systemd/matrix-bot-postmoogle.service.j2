@@ -23,7 +23,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-bot-postmoogle
 			--read-only \
 			--network={{ matrix_docker_network }} \
 			--env-file={{ matrix_bot_postmoogle_config_path }}/env \
-			-p {{ matrix_bot_postmoogle_port }}:{{ matrix_bot_postmoogle_port }} \
+			-p {{ matrix_bot_postmoogle_smtp_host_bind_port }}:{{ matrix_bot_postmoogle_port }} \
 			--mount type=bind,src={{ matrix_bot_postmoogle_data_path }},dst=/data \
 			{% for arg in matrix_bot_postmoogle_container_extra_arguments %}
 			{{ arg }} \
