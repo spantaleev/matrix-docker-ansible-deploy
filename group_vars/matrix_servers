@@ -2331,6 +2331,9 @@ matrix_synapse_redis_enabled: "{{ matrix_redis_enabled }}"
 matrix_synapse_redis_host: "{{ 'matrix-redis' if matrix_redis_enabled else '' }}"
 matrix_synapse_redis_password: "{{ matrix_redis_connection_password if matrix_redis_enabled else '' }}"
 
+matrix_synapse_container_runtime_injected_arguments: "{{ matrix_homeserver_container_runtime_injected_arguments }}"
+matrix_synapse_app_service_runtime_injected_config_files: "{{ matrix_homeserver_app_service_runtime_injected_config_files }}"
+
 ######################################################################
 #
 # /matrix-synapse
@@ -2595,6 +2598,9 @@ matrix_dendrite_systemd_wanted_services_list: |
   {{
     (['matrix-coturn.service'] if matrix_coturn_enabled else [])
   }}
+
+matrix_dendrite_container_runtime_injected_arguments: "{{ matrix_homeserver_container_runtime_injected_arguments }}"
+matrix_dendrite_app_service_runtime_injected_config_files: "{{ matrix_homeserver_app_service_runtime_injected_config_files }}"
 
 ######################################################################
 #
