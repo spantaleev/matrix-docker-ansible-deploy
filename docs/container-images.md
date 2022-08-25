@@ -100,6 +100,8 @@ These services are not part of our default installation, but can be enabled by [
 
 - [etke.cc/honoroit](https://gitlab.com/etke.cc/honoroit/container_registry) - the [honoroit](https://gitlab.com/etke.cc/honoroit) helpdesk bot (optional)
 
+- [etke.cc/postmoogle](https://gitlab.com/etke.cc/postmoogle/container_registry) - the [Postmoogle](https://gitlab.com/etke.cc/postmoogle) email bridge bot (optional)
+
 - [matrixdotorg/go-neb](https://hub.docker.com/r/matrixdotorg/go-neb) - the [Go-NEB](https://github.com/matrix-org/go-neb) bot (optional)
 
 - [matrixdotorg/mjolnir](https://hub.docker.com/r/matrixdotorg/mjolnir) - the [mjolnir](https://github.com/matrix-org/mjolnir) moderation bot (optional)

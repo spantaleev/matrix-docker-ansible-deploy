@@ -1,3 +1,12 @@
+# 2022-08-23
+
+## Postmoogle email bridge support
+
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up the new [Postmoogle](https://gitlab.com/etke.cc/postmoogle) email bridge/bot. Postmoogle is like the [email2matrix bridge](https://github.com/devture/email2matrix) (also [already supported by the playbook](docs/configuring-playbook-email2matrix.md)), but more capable and with the intention to soon support *sending* emails, not just receiving.
+
+See our [Setting up Postmoogle email bridging](docs/configuring-playbook-bot-postmoogle.md) documentation to get started.
+
+
 # 2022-08-10
 
 ## mautrix-whatsapp default configuration changes
