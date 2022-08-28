@@ -26,8 +26,11 @@ matrix_backup_borg_systemd_required_services_list: ['docker.service']
 # List of systemd services that matrix-backup-borg.service wants
 matrix_backup_borg_systemd_wanted_services_list: []
 
-# systemd calendar configuration for backup job
+# systemd calendar configuration for the backup job
+# the actual job may run with a delay (see matrix_backup_borg_schedule_randomized_delay_sec)
 matrix_backup_borg_schedule: "*-*-* 04:00:00"
+# the delay with which the systemd timer may run in relation to the `matrix_backup_borg_schedule` schedule
+matrix_backup_borg_schedule_randomized_delay_sec: 2h
 
 # what directories should be added to backup
 matrix_backup_borg_location_source_directories: []
