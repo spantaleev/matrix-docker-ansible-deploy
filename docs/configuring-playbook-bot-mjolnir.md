@@ -29,7 +29,7 @@ Refer to the documentation on [how to obtain an access token](obtaining-access-t
 
 ## 3. Make sure the account is free from rate limiting
 
-You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step Mjolnir will crash. The Synapse config option for this can be found [here](https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#ratelimiting) or by using the [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users) but this can also be manually done by editing the Synapse database. Manually editing the Synapse database is rarely a good idea. Please ask for help if you are uncomfortable with these steps.
+You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step Mjolnir will crash. The Synapse config option for this can be found [here](https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#ratelimiting) or by using the [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). This can also be manually done by editing the Synapse database. Manually editing the Synapse database is rarely a good idea. Please ask for help if you are uncomfortable with these steps.
 
 1. Copy the statement below into a text editor. 
 
