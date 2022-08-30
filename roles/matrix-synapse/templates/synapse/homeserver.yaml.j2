@@ -1419,13 +1419,9 @@ allow_guest_access: {{ matrix_synapse_allow_guest_access|to_json }}
 #
 #default_identity_server: https://matrix.org
 
-# Handle threepid (email/phone etc) registration and password resets through a set of
+# Handle threepid (phone etc) registration and password resets through a set of
 # *trusted* identity servers. Note that this allows the configured identity server to
 # reset passwords for accounts!
-#
-# Be aware that if `email` is not set, and SMTP options have not been
-# configured in the email config block, registration and user password resets via
-# email will be globally disabled.
 #
 # Additionally, if `msisdn` is not set, registration and password resets via msisdn
 # will be disabled regardless, and users will not be able to associate an msisdn
@@ -1441,7 +1437,6 @@ allow_guest_access: {{ matrix_synapse_allow_guest_access|to_json }}
 # https://matrix.org/docs/spec/identity_service/latest
 #
 account_threepid_delegates:
-    email: {{ matrix_synapse_account_threepid_delegates_email|to_json }}
     msisdn: {{ matrix_synapse_account_threepid_delegates_msisdn|to_json }}
 
 # Whether users are allowed to change their displayname after it has
