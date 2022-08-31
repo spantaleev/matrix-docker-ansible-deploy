@@ -82,6 +82,7 @@ matrix_bot_postmoogle_maxsize: '1024'
 # A list of whitelisted users allowed to use the bridge.
 # If not defined, everyone is allowed.
 # Example set of rules:
+# matrix_bot_postmoogle_users:
 # - @someone:example.com
 # - @another:example.com
 # - @bot.*:example.com
@@ -91,12 +92,12 @@ matrix_bot_postmoogle_users:
 
 # A list of admins
 # Example set of rules:
+# matrix_bot_postmoogle_admins:
 # - @someone:example.com
 # - @another:example.com
 # - @bot.*:example.com
 # - @*:another.com
-matrix_bot_postmoogle_admins:
-  - "{{ matrix_admin }}"
+matrix_bot_postmoogle_admins: "{{ [matrix_admin] if matrix_admin else [] }}"
 
 # Sentry DSN
 matrix_bot_postmoogle_sentry: ''
