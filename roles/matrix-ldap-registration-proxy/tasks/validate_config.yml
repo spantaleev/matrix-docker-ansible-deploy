@@ -1,0 +1,12 @@
+---
+
+- name: Fail if required settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_ldap_registration_proxy_ldap_uri"
+    - "matrix_ldap_registration_proxy_ldap_base_dn"
+    - "matrix_ldap_registration_proxy_ldap_user"
+    - "matrix_ldap_registration_proxy_ldap_password"
