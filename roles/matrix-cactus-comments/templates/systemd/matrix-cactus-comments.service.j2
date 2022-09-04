@@ -19,10 +19,9 @@ ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} 
 ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-cactus-comments \
 			--log-driver=none \
 			--cap-drop=ALL \
-			-e "CONFIG_PATH=/config/config.yml" \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--read-only \
-			--mount type=bind,src={{ matrix_cactus_comments_config_path }},dst=/config,ro \
+            -env-file {{ matrix_cactus_comments_app_service_env_file }} \
 			--network={{ matrix_docker_network }} \
 			{{ matrix_cactus_comments_docker_image }}
 
