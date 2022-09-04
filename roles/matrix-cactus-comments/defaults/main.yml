@@ -2,6 +2,13 @@
 # Cactus Comments is a federated comment system built on Matrix
 
 matrix_cactus_comments_enabled: true
+matrix_cactus_comments_container_image_self_build: false
+matrix_cactus_comments_docker_repo: "https://gitlab.com/cactus-comments/cactus-appservice.git"
+matrix_cactus_comments_docker_repo_version: "{{ matrix_cactus_comments_version if matrix_cactus_comments_version != 'latest' else 'main' }}"
+matrix_cactus_comments_docker_src_files_path: "{{ matrix_cactus_comments_base_path }}/docker-src"
+
+
+matrix_cactus_comments_base_path: "{{ matrix_base_data_path }}/cactus-comments"
 matrix_cactus_comments_app_service_config_file: "{{ matrix_cactus_comments_base_path }}/cactus_appservice.yaml"
 matrix_synapse_app_service_config_files: {{ matrix_cactus_comments_app_service_config_file }}
 
@@ -15,9 +22,6 @@ matrix_cactus_comments_container_port: 5005
 matrix_cactus_comments_version: latest
 matrix_cactus_comments_docker_image: "{{ matrix_container_global_registry_prefix }}cactuscomments/cactus-appservice:{{ matrix_cactus_comments_version }}"
 matrix_cactus_comments_docker_image_force_pull: "{{ matrix_cactus_comments_docker_image.endswith(':latest') }}"
-
-matrix_cactus_comments_base_path: "{{ matrix_base_data_path }}/cactus-comments"
-matrix_cactus_comments_config_path: "{{ matrix_cactus_comments_base_path }}/config"
 
 
 # List of systemd services that matrix-cactus-comments.service depends on
