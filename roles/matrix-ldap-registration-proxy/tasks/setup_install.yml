@@ -37,8 +37,8 @@
   when: true
 
 - name: Ensure matrix_ldap_registration_proxy config installed
-  ansible.builtin.copy:
-    content: "{{ matrix_ldap_registration_proxy_configuration }}"
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/ldap-registration-proxy.env.j2"
     dest: "{{ matrix_ldap_registration_proxy_config_path }}/ldap-registration-proxy.env"
     mode: 0644
     owner: "{{ matrix_user_username }}"
