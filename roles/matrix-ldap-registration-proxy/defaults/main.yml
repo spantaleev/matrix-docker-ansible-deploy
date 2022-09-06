@@ -7,12 +7,17 @@ matrix_ldap_registration_proxy_enabled: true
 matrix_ldap_registration_proxy_container_image_self_build_repo: "https://gitlab.com/activism.international/matrix_ldap_registration_proxy.git"
 matrix_ldap_registration_proxy_container_image_self_build_branch: "{{ matrix_ldap_registration_proxy_version }}"
 
+matrix_ldap_registration_proxy_docker_image: "{{ matrix_ldap_registration_proxy_docker_image_name_prefix }}activism.international/matrix_ldap_registration_proxy:{{ matrix_ldap_registration_proxy_version }}"
+matrix_ldap_registration_proxy_docker_image_name_prefix: "localhost/"
+
 matrix_ldap_registration_proxy_version: "296246afc6a9b3105e67fcf6621cf05ebc74b873"
 
 matrix_ldap_registration_proxy_base_path: "{{ matrix_base_data_path }}/matrix_ldap_registration_proxy"
 # We need the docker src directory to be named matrix_ldap_registration_proxy.
 matrix_ldap_registration_proxy_docker_src_files_path: "{{ matrix_ldap_registration_proxy_base_path }}/docker-src/matrix_ldap_registration_proxy"
 matrix_ldap_registration_proxy_config_path: "{{ matrix_ldap_registration_proxy_base_path }}/config"
+
+matrix_ldap_registration_proxy_appservice_public_enabled: false
 
 matrix_ldap_registration_proxy_ldap_uri: ""
 matrix_ldap_registration_proxy_ldap_base_dn: ""
@@ -22,7 +27,7 @@ matrix_ldap_registration_proxy_matrix_server_name: "{{ matrix_domain }}"
 matrix_ldap_registration_proxy_matrix_server_url: "https://{{ matrix_server_fqn_matrix }}"
 
 # Controls whether the self-check feature should validate SSL certificates.
-matrix_matrix_ldap_registration_proxy_self_check_validate_certificates: true
+matrix_ldap_registration_proxy_self_check_validate_certificates: true
 
 matrix_ldap_registration_proxy_container_port: 8080
 # Controls whether the matrix_ldap_registration_proxy container exposes its HTTP port (tcp/{{ matrix_ldap_registration_proxy_container_port }} in the container).
