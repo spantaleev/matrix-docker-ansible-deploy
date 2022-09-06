@@ -38,4 +38,4 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-To learn how to use cactus comments message @cactusbot:your-homeserver.com and type `help` or have a look in the [documentation](https://cactus.chat/docs/getting-started/quick-start/).
+To learn how to use cactus comments message @bot.cactusbot:your-homeserver.com and type `help` or have a look in the [documentation](https://cactus.chat/docs/getting-started/quick-start/).
