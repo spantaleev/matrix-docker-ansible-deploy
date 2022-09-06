@@ -9,6 +9,7 @@
     group: "{{ matrix_user_groupname }}"
   with_items:
     - {path: "{{ matrix_cactus_comments_base_path }}", when: true}
+    - {path: "{{ matrix_cactus_comments_client_path }}", when: true}
     - {path: "{{ matrix_cactus_comments_container_tmp_path }}", when: true}
     - {path: "{{ matrix_cactus_comments_docker_src_files_path }}", when: matrix_cactus_comments_container_image_self_build}
   when: "item.when | bool"
@@ -63,6 +64,17 @@
       path: "{{ matrix_cactus_comments_docker_src_files_path }}"
       pull: true
   when: "matrix_cactus_comments_container_image_self_build | bool"
+
+- name: Ensure client javascript file is downloaded
+  ansible.builtin.get_url:
+    url: https://latest.cactus.chat/cactus.js
+    dest: "{{ matrix_cactus_comments_client_path }}/cactus.js"
+    mode: "{{ matrix_cactus_comments_client_file_permissions }}"
+- name: Ensure client css file is downloaded
+  ansible.builtin.get_url:
+    url: https://latest.cactus.chat/style.css
+    dest: "{{ matrix_cactus_comments_client_path }}/style.css"
+    mode: "{{ matrix_cactus_comments_client_file_permissions }}"
 
 - name: Ensure matrix-cactus-comments.service installed
   ansible.builtin.template:
