@@ -44,7 +44,7 @@ Now you are good to go and can include the comment section on your website!
 
 **Careful:** To really make use of self-hosting you need change a few things in comparison to the official docs!
 
-Use the following snippet and make sure to replace `example.com` with your base domain!
+Insert the following snippet into you page and make sure to replace `example.com` with your base domain!
 
 
 ```html
