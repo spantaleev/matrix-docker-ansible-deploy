@@ -38,4 +38,26 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-To learn how to use cactus comments message @bot.cactusbot:your-homeserver.com and type `help` or have a look in the [documentation](https://cactus.chat/docs/getting-started/quick-start/).
+To get started wit cactus comments message @bot.cactusbot:your-homeserver.com and type `help` to make sure it works.
+Then register a site by typing: `register <sitename>`. You will then be invited into a moderation room.
+Now you are good to go and can include the comment section on your website!
+
+**Careful:** To really make use of self-hosting you need change a few things in comparison to the official docs!
+
+Use the following snippet and make sure to replace `example.com` with your base domain!
+
+
+```html
+<script type="text/javascript" src="https://matrix.example.com/cactus-comments/cactus.js"></script>
+<link rel="stylesheet" href="https://matrix.example.com/cactus-comments/style.css" type="text/css">
+<div id="comment-section"></div>
+<script>
+initComments({
+  node: document.getElementById("comment-section"),
+  defaultHomeserverUrl: "https://matrix.example.com:8448",
+  serverName: "example.com",
+  siteName: "YourSiteName",
+  commentSectionId: "1"
+})
+</script>
+```
