@@ -19,8 +19,6 @@ Add the following block to your `vars.yaml` and make sure to exchange the tokens
 #################
 
 matrix_cactus_comments_enabled: true
-matrix_cactus_comments_hs_token: wXchqGY94uhlk4OQ2ObPf0jsOMsnqXE9xuS2szB5
-matrix_cactus_comments_as_token: cvv8Y6OhAJqDbd1KCpRhc4mecZE9xuS2skBopaU5
 
 # To allow guest comments without users needing to log in, you need to have guest registration enabled.
 # To do this you need to uncomment one of the following lines (depending if you are using synapse or dentrite as a homeserver)
