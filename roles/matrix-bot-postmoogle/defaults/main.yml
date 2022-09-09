@@ -9,7 +9,7 @@ matrix_bot_postmoogle_docker_repo: "https://gitlab.com/etke.cc/postmoogle.git"
 matrix_bot_postmoogle_docker_repo_version: "{{ 'main' if matrix_bot_postmoogle_version == 'latest' else matrix_bot_postmoogle_version }}"
 matrix_bot_postmoogle_docker_src_files_path: "{{ matrix_base_data_path }}/postmoogle/docker-src"
 
-matrix_bot_postmoogle_version: v0.9.0
+matrix_bot_postmoogle_version: v0.9.1
 matrix_bot_postmoogle_docker_image: "{{ matrix_bot_postmoogle_docker_image_name_prefix }}postmoogle:{{ matrix_bot_postmoogle_version }}"
 matrix_bot_postmoogle_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_postmoogle_container_image_self_build else 'registry.gitlab.com/etke.cc/' }}"
 matrix_bot_postmoogle_docker_image_force_pull: "{{ matrix_bot_postmoogle_docker_image.endswith(':latest') }}"
@@ -17,6 +17,7 @@ matrix_bot_postmoogle_docker_image_force_pull: "{{ matrix_bot_postmoogle_docker_
 matrix_bot_postmoogle_base_path: "{{ matrix_base_data_path }}/postmoogle"
 matrix_bot_postmoogle_config_path: "{{ matrix_bot_postmoogle_base_path }}/config"
 matrix_bot_postmoogle_data_path: "{{ matrix_bot_postmoogle_base_path }}/data"
+matrix_bot_postmoogle_ssl_path: "{{ matrix_ssl_config_dir_path }}"
 
 # A list of extra arguments to pass to the container
 matrix_bot_postmoogle_container_extra_arguments: []
@@ -110,11 +111,20 @@ matrix_bot_postmoogle_noencryption: false
 
 matrix_bot_postmoogle_domain: "{{ matrix_server_fqn_matrix }}"
 
-# in-container port
-matrix_bot_postmoogle_port: '2525'
+# Mandatory TLS, even on plain SMTP port
+matrix_bot_postmoogle_tls_required: false
 
-# on-host port
+# in-container ports
+matrix_bot_postmoogle_port: '2525'
+matrix_bot_postmoogle_tls_port: '25587'
+
+# on-host ports
 matrix_bot_postmoogle_smtp_host_bind_port: '25'
+matrix_bot_postmoogle_smtps_host_bind_port: '587'
+
+# in-container SSL paths
+matrix_bot_postmoogle_tls_cert: "/ssl/live/{{ matrix_bot_postmoogle_domain }}/fullchain.pem"
+matrix_bot_postmoogle_tls_key: "/ssl/live/{{ matrix_bot_postmoogle_domain }}/privkey.pem"
 
 # Additional environment variables to pass to the postmoogle container
 #
