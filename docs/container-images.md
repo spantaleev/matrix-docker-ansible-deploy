@@ -117,3 +117,5 @@ These services are not part of our default installation, but can be enabled by [
 - [matrixdotorg/sygnal](https://hub.docker.com/r/matrixdotorg/sygnal/) - [Sygnal](https://github.com/matrix-org/sygnal) is a reference Push Gateway for Matrix
 
 - [binwiederhier/ntfy](https://hub.docker.com/r/binwiederhier/ntfy/) - [ntfy](https://ntfy.sh/) is a self-hosted, UnifiedPush-compatible push notifications server
+
+- [cactuscomments/cactus-appservice](https://hub.docker.com/r/cactuscomments/cactus-appservice/) - [Cactus Comments](https://cactus.chat) a federated comment system built on Matrix
