@@ -43,7 +43,7 @@
       ansible.builtin.set_fact:
         matrix_cactus_comments_nginx_proxy_configuration: |
           location {{ matrix_cactus_comments_client_endpoint }} {
-              root /cactus-comments/;
+              root {{ matrix_cactus_comments_client_nginx_path }};
           }
       when: "matrix_nginx_proxy_enabled | default(False) | bool"
     - name: Register Cactus Comment proxying configuration with matrix-nginx-proxy
