@@ -38,8 +38,10 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-To get started wit cactus comments message `@bot.cactusbot:your-homeserver.com` and type `help` to make sure it works.
-Then register a site by typing: `register <sitename>`. You will then be invited into a moderation room.
+Upon starting Cactus Comments, a `bot.cactusbot` user account is created automatically.
+
+To get started, send a `help` message to the `@bot.cactusbot:your-homeserver.com` bot to confirm it's working.
+Then, register a site by typing: `register <sitename>`. You will then be invited into a moderation room.
 Now you are good to go and can include the comment section on your website!
 
 **Careful:** To really make use of self-hosting you need change a few things in comparison to the official docs!
