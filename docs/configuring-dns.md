@@ -84,5 +84,5 @@ When you're done with the DNS configuration and ready to proceed, continue with 
 
 ## `_dmarc`, `postmoogle._domainkey` TXT and `matrix` MX records setup
 
-To make the [postmoogle](https://gitlab.com/etke.cc/postmoogle) email bridge enable its email sending features, you need to configure
+To make the [postmoogle](configuring-playbook-bot-postmoogle.md) email bridge enable its email sending features, you need to configure
 SPF (TXT), DMARC (TXT), DKIM (TXT) and MX records
