@@ -104,20 +104,20 @@
   when: matrix_cactus_comments_client_local_dir | length == 0
 
 - block:
-  - name: Propagate locally distributed client javascreipt
-    copy:
-      src: "{{ matrix_cactus_comments_client_local_dir }}/src/cactus.js"
-      dest: "{{ matrix_cactus_comments_client_path }}/cactus.js"
-      mode: "{{ matrix_cactus_comments_client_file_permissions }}"
-      owner: "{{ matrix_user_username }}"
-      group: "{{ matrix_user_groupname }}"
-  - name: Propagate locally distributed client stlye.css
-    copy:
-      src: "{{ matrix_cactus_comments_client_local_dir }}/src/style.css"
-      dest: "{{ matrix_cactus_comments_client_path }}/style.css"
-      mode: "{{ matrix_cactus_comments_client_file_permissions }}"
-      owner: "{{ matrix_user_username }}"
-      group: "{{ matrix_user_groupname }}"
+    - name: Propagate locally distributed client javascreipt
+      ansible.builtin.copy:
+        src: "{{ matrix_cactus_comments_client_local_dir }}/src/cactus.js"
+        dest: "{{ matrix_cactus_comments_client_path }}/cactus.js"
+        mode: "{{ matrix_cactus_comments_client_file_permissions }}"
+        owner: "{{ matrix_user_username }}"
+        group: "{{ matrix_user_groupname }}"
+    - name: Propagate locally distributed client style.css
+      ansible.builtin.copy:
+        src: "{{ matrix_cactus_comments_client_local_dir }}/src/style.css"
+        dest: "{{ matrix_cactus_comments_client_path }}/style.css"
+        mode: "{{ matrix_cactus_comments_client_file_permissions }}"
+        owner: "{{ matrix_user_username }}"
+        group: "{{ matrix_user_groupname }}"
   when: matrix_cactus_comments_client_local_dir | length > 0
 
 - name: Ensure matrix-cactus-comments.service installed
