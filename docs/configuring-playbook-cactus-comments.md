@@ -13,7 +13,7 @@ does and why it might be useful to you.
 
 Add the following block to your `vars.yaml` and make sure to exchange the tokens to randomly generated values.
 
-```ỳaml
+```yaml
 #################
 ## Cactus Chat ##
 #################
