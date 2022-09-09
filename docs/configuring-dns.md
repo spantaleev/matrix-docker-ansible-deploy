@@ -28,18 +28,22 @@ If you are using Cloudflare DNS, make sure to disable the proxy and set all reco
 
 ## DNS settings for optional services/features
 
-| Type  | Host                         | Priority | Weight | Port | Target                 |
-| ----- | ---------------------------- | -------- | ------ | ---- | ---------------------- |
-| SRV   | `_matrix-identity._tcp`      | 10       | 0      | 443  | `matrix.<your-domain>` |
-| CNAME | `dimension`                  | -        | -      | -    | `matrix.<your-domain>` |
-| CNAME | `jitsi`                      | -        | -      | -    | `matrix.<your-domain>` |
-| CNAME | `stats`                      | -        | -      | -    | `matrix.<your-domain>` |
-| CNAME | `goneb`                      | -        | -      | -    | `matrix.<your-domain>` |
-| CNAME | `sygnal`                     | -        | -      | -    | `matrix.<your-domain>` |
-| CNAME | `ntfy`                       | -        | -      | -    | `matrix.<your-domain>` |
-| CNAME | `hydrogen`                   | -        | -      | -    | `matrix.<your-domain>` |
-| CNAME | `cinny`                      | -        | -      | -    | `matrix.<your-domain>` |
-| CNAME | `buscarron`                  | -        | -      | -    | `matrix.<your-domain>` |
+| Type  | Host                           | Priority | Weight | Port | Target                      |
+| ----- | ------------------------------ | -------- | ------ | ---- | --------------------------- |
+| SRV   | `_matrix-identity._tcp`        | 10       | 0      | 443  | `matrix.<your-domain>`      |
+| CNAME | `dimension`                    | -        | -      | -    | `matrix.<your-domain>`      |
+| CNAME | `jitsi`                        | -        | -      | -    | `matrix.<your-domain>`      |
+| CNAME | `stats`                        | -        | -      | -    | `matrix.<your-domain>`      |
+| CNAME | `goneb`                        | -        | -      | -    | `matrix.<your-domain>`      |
+| CNAME | `sygnal`                       | -        | -      | -    | `matrix.<your-domain>`      |
+| CNAME | `ntfy`                         | -        | -      | -    | `matrix.<your-domain>`      |
+| CNAME | `hydrogen`                     | -        | -      | -    | `matrix.<your-domain>`      |
+| CNAME | `cinny`                        | -        | -      | -    | `matrix.<your-domain>`      |
+| CNAME | `buscarron`                    | -        | -      | -    | `matrix.<your-domain>`      |
+| MX    | `matrix`                       | 10       | 0      | -    | `matrix.<your-domain>`      |
+| TXT   | `matrix`                       | -        | -      | -    | `v=spf1 ip4:<your-ip> -all` |
+| TXT   | `_dmarc.matrix`                | -        | -      | -    | `v=DMARC1; p=quarantine;`   |
+| TXT   | `postmoogle._domainkey.matrix` | -        | -      | -    | get it from `!pm dkim`      |
 
 ## Subdomains setup
 
@@ -77,3 +81,8 @@ This is an optional feature for the optionally-installed [ma1sd service](configu
 Note: This `_matrix-identity._tcp` SRV record for the identity server is different from the `_matrix._tcp` that can be used for Synapse delegation. See [howto-server-delegation.md](howto-server-delegation.md) for more information about delegation.
 
 When you're done with the DNS configuration and ready to proceed, continue with [Getting the playbook](getting-the-playbook.md).
+
+## `_dmarc`, `postmoogle._domainkey` TXT and `matrix` MX records setup
+
+To make the [postmoogle](configuring-playbook-bot-postmoogle.md) email bridge enable its email sending features, you need to configure
+SPF (TXT), DMARC (TXT), DKIM (TXT) and MX records
