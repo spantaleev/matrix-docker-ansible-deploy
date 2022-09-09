@@ -38,7 +38,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-To get started wit cactus comments message @bot.cactusbot:your-homeserver.com and type `help` to make sure it works.
+To get started wit cactus comments message `@bot.cactusbot:your-homeserver.com` and type `help` to make sure it works.
 Then register a site by typing: `register <sitename>`. You will then be invited into a moderation room.
 Now you are good to go and can include the comment section on your website!
 
