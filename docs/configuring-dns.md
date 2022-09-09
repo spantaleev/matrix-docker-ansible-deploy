@@ -28,22 +28,22 @@ If you are using Cloudflare DNS, make sure to disable the proxy and set all reco
 
 ## DNS settings for optional services/features
 
-| Type  | Host                           | Priority | Weight | Port | Target                      |
-| ----- | ------------------------------ | -------- | ------ | ---- | --------------------------- |
-| SRV   | `_matrix-identity._tcp`        | 10       | 0      | 443  | `matrix.<your-domain>`      |
-| CNAME | `dimension`                    | -        | -      | -    | `matrix.<your-domain>`      |
-| CNAME | `jitsi`                        | -        | -      | -    | `matrix.<your-domain>`      |
-| CNAME | `stats`                        | -        | -      | -    | `matrix.<your-domain>`      |
-| CNAME | `goneb`                        | -        | -      | -    | `matrix.<your-domain>`      |
-| CNAME | `sygnal`                       | -        | -      | -    | `matrix.<your-domain>`      |
-| CNAME | `ntfy`                         | -        | -      | -    | `matrix.<your-domain>`      |
-| CNAME | `hydrogen`                     | -        | -      | -    | `matrix.<your-domain>`      |
-| CNAME | `cinny`                        | -        | -      | -    | `matrix.<your-domain>`      |
-| CNAME | `buscarron`                    | -        | -      | -    | `matrix.<your-domain>`      |
-| MX    | `matrix`                       | 10       | 0      | -    | `matrix.<your-domain>`      |
-| TXT   | `matrix`                       | -        | -      | -    | `v=spf1 ip4:<your-ip> -all` |
-| TXT   | `_dmarc.matrix`                | -        | -      | -    | `v=DMARC1; p=quarantine;`   |
-| TXT   | `postmoogle._domainkey.matrix` | -        | -      | -    | get it from `!pm dkim`      |
+| Type  | Host                           | Priority | Weight | Port | Target                      | Used by component                                                                                                       |
+| ----- | ------------------------------ | -------- | ------ | ---- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| SRV   | `_matrix-identity._tcp`        | 10       | 0      | 443  | `matrix.<your-domain>`      | [ma1sd](configuring-playbook-ma1sd.md) identity server                                                                  |
+| CNAME | `dimension`                    | -        | -      | -    | `matrix.<your-domain>`      | [Dimension](configuring-playbook-dimension.md) integration server                                                       |
+| CNAME | `jitsi`                        | -        | -      | -    | `matrix.<your-domain>`      | [Jitsi](configuring-playbook-jitsi.md) video-conferencing platform                                                      |
+| CNAME | `stats`                        | -        | -      | -    | `matrix.<your-domain>`      | [Prometheus/Grafana](configuring-playbook-prometheus-grafana.md) monitoring system                                      |
+| CNAME | `goneb`                        | -        | -      | -    | `matrix.<your-domain>`      | [Go-NEB](configuring-playbook-bot-go-neb.md) bot                                                                        |
+| CNAME | `sygnal`                       | -        | -      | -    | `matrix.<your-domain>`      | [Sygnal](configuring-playbook-sygnal.md) push notification gateway                                                      |
+| CNAME | `ntfy`                         | -        | -      | -    | `matrix.<your-domain>`      | [ntfy](configuring-playbook-ntfy.md) push notifications server                                                          |
+| CNAME | `hydrogen`                     | -        | -      | -    | `matrix.<your-domain>`      | [Hydrogen](configuring-playbook-client-hydrogen.md) web client                                                          |
+| CNAME | `cinny`                        | -        | -      | -    | `matrix.<your-domain>`      | [Cinny](configuring-playbook-client-cinny.md) web client                                                                |
+| CNAME | `buscarron`                    | -        | -      | -    | `matrix.<your-domain>`      | [Buscarron](configuring-playbook-bot-buscarron.md) helpdesk bot                                                         |
+| MX    | `matrix`                       | 10       | 0      | -    | `matrix.<your-domain>`      | [Postmoogle](configuring-playbook-bot-postmoogle.md)/[Email2Matrix](configuring-playbook-email2matrix.md) email bridges |
+| TXT   | `matrix`                       | -        | -      | -    | `v=spf1 ip4:<your-ip> -all` | [Postmoogle](configuring-playbook-bot-postmoogle.md)/[Email2Matrix](configuring-playbook-email2matrix.md) email bridges |
+| TXT   | `_dmarc.matrix`                | -        | -      | -    | `v=DMARC1; p=quarantine;`   | [Postmoogle](configuring-playbook-bot-postmoogle.md)/[Email2Matrix](configuring-playbook-email2matrix.md) email bridges |
+| TXT   | `postmoogle._domainkey.matrix` | -        | -      | -    | get it from `!pm dkim`      | [Postmoogle](configuring-playbook-bot-postmoogle.md)/[Email2Matrix](configuring-playbook-email2matrix.md) email bridges |
 
 ## Subdomains setup
 
