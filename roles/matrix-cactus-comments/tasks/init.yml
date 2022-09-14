@@ -35,17 +35,18 @@
       ansible.builtin.set_fact:
         matrix_nginx_proxy_container_additional_volumes: >
           {{
-                    matrix_nginx_proxy_container_additional_volumes | default([])
+            matrix_nginx_proxy_container_additional_volumes | default([])
             +
             [{"src": "{{ matrix_cactus_comments_client_path }}", "dst": "/cactus-comments/cactus-comments", "options": "ro"}]
           }}
+
     - name: Generate Cactus Comment proxying configuration for matrix-nginx-proxy
       ansible.builtin.set_fact:
         matrix_cactus_comments_nginx_proxy_configuration: |
           location {{ matrix_cactus_comments_client_endpoint }} {
               root {{ matrix_cactus_comments_client_nginx_path }};
           }
-      when: "matrix_nginx_proxy_enabled | default(False) | bool"
+
     - name: Register Cactus Comment proxying configuration with matrix-nginx-proxy
       ansible.builtin.set_fact:
         matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: |
@@ -54,6 +55,7 @@
             +
             [matrix_cactus_comments_nginx_proxy_configuration]
           }}
+
     - name: Warn about reverse-proxying if matrix-nginx-proxy not used
       ansible.builtin.debug:
         msg: >-
