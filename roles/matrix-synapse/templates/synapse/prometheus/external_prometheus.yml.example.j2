@@ -24,8 +24,8 @@ scrape_configs:
           job: "master"
           index: "0"
 {% for worker in matrix_synapse_workers_enabled_list %}
-  - job_name: 'synapse-{{ worker.type }}-{{ worker.instanceId }}'
-    metrics_path: /metrics/synapse/worker/{{ worker.type }}-{{ worker.instanceId }}
+  - job_name: '{{ worker.name }}'
+    metrics_path: /metrics/synapse/worker/{{ worker.id }}
     scheme: {{ 'https' if matrix_nginx_proxy_https_enabled|default(true) else 'http' }}
 {% if matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled|default(true) %}
     basic_auth:
@@ -35,6 +35,7 @@ scrape_configs:
     static_configs:
       - targets: ['{{ matrix_server_fqn_matrix }}:{{ matrix_nginx_proxy_container_https_host_bind_port|default(443) if matrix_nginx_proxy_https_enabled|default(true) else matrix_nginx_proxy_container_http_host_bind_port|default(80) }}']
         labels:
+          worker_id: {{ worker.id }}
           job: "{{ worker.type }}"
-          index: "{{ worker.instanceId }}"
+          app: {{ worker.app }}
 {% endfor %}

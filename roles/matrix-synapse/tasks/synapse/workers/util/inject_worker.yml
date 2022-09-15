@@ -1,0 +1,65 @@
+---
+# The tasks below run before `validate_config.yml`.
+# To avoid failing with a cryptic error message, we'll do validation here.
+#
+# This check is mostly relevant to people who explicitly define `matrix_synapse_workers_enabled_list`
+# (Synapse Workers users from the earlier days of this PR - https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/456).
+#
+# In the future, it should be possible to remove this check.
+# Our own code which dynamically builds `matrix_synapse_workers_enabled_list` does things right.
+- name: Fail if required property not defined for worker
+  ansible.builtin.fail:
+    msg: "Synapse workers (like {{ matrix_synapse_worker_details | to_json }}) need to define a `{{ item }}` property"
+  with_items:
+    - id
+    - name
+    - type
+    - app
+    - port
+    - webserving
+  when: "item not in matrix_synapse_worker_details"
+
+# Names are used for container names and systemd services.
+# Routing happens based on container names, so Synapse processes that try to route to workers with underscores in the name will complain. Example:
+# > InvalidCodepoint Codepoint U+005F at position 46 of 'matrix-synapse-worker-stream-writer-3-account_data' not allowed
+- name: Fail if worker name includes underscore
+  ansible.builtin.fail:
+    msg: "Unrecognized Synapse worker `name`: `{{ matrix_synapse_worker_details.name }}`. It must not include underscores"
+  when: "'_' in matrix_synapse_worker_details.name"
+
+- name: Fail if worker type unknown
+  ansible.builtin.fail:
+    msg: "Unrecognized Synapse worker `type`: `{{ matrix_synapse_worker_details.type }}`. Supported types are: {{ matrix_synapse_known_worker_types | join(', ') }}"
+  when: "matrix_synapse_worker_details.type not in matrix_synapse_known_worker_types"
+
+- name: Fail if worker app unknown
+  ansible.builtin.fail:
+    msg: "Unrecognized Synapse worker `app`: `{{ matrix_synapse_worker_details.app }}`. Supported types are: {{ matrix_synapse_workers_avail_list | join(', ') }}"
+  when: "matrix_synapse_worker_details.app not in matrix_synapse_workers_avail_list"
+
+- block:
+    - name: Fail if stream_writer_stream not defined for stream_writer worker
+      ansible.builtin.fail:
+        msg: >-
+          Synapse stream_writer workers (such as {{ item }}) need to define a valid `stream_writer_stream` property
+          (not `{{ matrix_synapse_worker_details.stream_writer_stream|default('undefined') }}`).
+          Supported types are: {{ matrix_synapse_workers_known_stream_writer_stream_types | join(', ') }}
+      when: "'stream_writer_stream' not in matrix_synapse_worker_details or matrix_synapse_worker_details.stream_writer_stream not in matrix_synapse_workers_known_stream_writer_stream_types"
+
+    - name: Fail if replication_port not defined for stream_writer worker
+      ansible.builtin.fail:
+        msg: "Synapse background workers of type stream_writer (such as {{ item }}) need to define a valid `replication_port` property"
+      when: "'replication_port' not in matrix_synapse_worker_details"
+  when: "matrix_synapse_worker_details.type == 'stream_writer'"
+
+- ansible.builtin.set_fact:
+    matrix_systemd_services_list: "{{ matrix_systemd_services_list + [matrix_synapse_worker_details.name + '.service'] }}"
+
+- ansible.builtin.set_fact:
+    matrix_synapse_webserving_workers_systemd_services_list: "{{ matrix_synapse_webserving_workers_systemd_services_list + [matrix_synapse_worker_details.name + '.service'] }}"
+  when: matrix_synapse_worker_details.webserving | bool
+
+# Inject stream writers and various other background workers into the instance map.
+- ansible.builtin.set_fact:
+    matrix_synapse_instance_map: "{{ matrix_synapse_instance_map | combine({matrix_synapse_worker_details.name: {'host': matrix_synapse_worker_details.name, 'port': matrix_synapse_worker_details.replication_port}}) }}"
+  when: matrix_synapse_worker_details.type in matrix_synapse_known_instance_map_eligible_worker_types

@@ -1,3 +1,42 @@
+# 2022-09-15
+
+## (Potential Backward Compatibility Break) Major changes to Synapse workers
+
+People who are interested in running a Synapse worker setup should know that **our Synapse worker implementation is much more powerful now**:
+
+- we've added [Stream writers support](#stream-writers-support)
+- see the [Potential Backward Incompatibilities after these Synapse worker changes](#potential-backward-incompatibilities-after-these-synapse-worker-changes)
+
+### Stream writers support
+
+From now on, the playbook lets you easily set up various [stream writer workers](https://matrix-org.github.io/synapse/latest/workers.html#stream-writers) which can handle different streams (`events` stream; `typing` URL endpoints, `to_device` URL endpoints, `account_data` URL endpoints, `receipts` URL endpoints, `presence` URL endpoints). All of this work was previously handled by the main Synapse process, but can now be offloaded to stream writer worker processes.
+
+If you're using `matrix_synapse_workers_preset: one-of-each`, you'll automatically get 6 additional workers (one for each of the above stream types). Our `little-federation-helper` preset (meant to be quite minimal and focusing in improved federation performance) does not include stream writer workers.
+
+If you'd like to customize the number of workers we also make that possible using these variables:
+
+```yaml
+# Synapse only supports more than 1 worker for the `events` stream.
+# All other streams can utilize either 0 or 1 workers, not more than that.
+matrix_synapse_workers_stream_writer_events_stream_workers_count: 5
+matrix_synapse_workers_stream_writer_typing_stream_workers_count: 1
+matrix_synapse_workers_stream_writer_to_device_stream_workers_count: 1
+matrix_synapse_workers_stream_writer_account_data_stream_workers_count: 1
+matrix_synapse_workers_stream_writer_receipts_stream_workers_count: 1
+matrix_synapse_workers_stream_writer_presence_stream_workers_count: 1
+```
+
+### Potential Backward Incompatibilities after these Synapse worker changes
+
+Below we'll discuss **potential backward incompatibilities**.
+
+- **Worker names** (container names, systemd services, worker configuration files) **have changed**. Workers are now labeled sequentially (e.g. `matrix-synapse-worker_generic_worker-18111` -> `matrix-synapse-worker-generic-0`). The playbook will handle these changes automatically.
+
+- **Metric endpoints have also changed** (`/metrics/synapse/worker/generic_worker-18111` -> `/metrics/synapse/worker/generic-worker-0`). If you're [collecting metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server), consider revisiting our [Collecting Synapse worker metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-synapse-worker-metrics-to-an-external-prometheus-server) docs and updating your Prometheus configuration. **If you're collecting metrics to the integrated Prometheus server** (not enabled by default), **your Prometheus configuration will be updated automatically**. Old data (from before this change) may stick around though.
+
+- **the format of `matrix_synapse_workers_enabled_list` has changed**. You were never advised to use this variable for directly creating workers (we advise people to control workers using `matrix_synapse_workers_preset` or by tweaking `matrix_synapse_workers_*_workers_count` variables only), but some people may have started using the `matrix_synapse_workers_enabled_list` variable to gain more control over workers. If you're one of them, you'll need to adjust its value. See `roles/matrix-synapse/defaults/main.yml` for more information on the new format. The playbook will also do basic validation and complain if you got something wrong.
+
+
 # 2022-09-09
 
 ## Cactus Comments support

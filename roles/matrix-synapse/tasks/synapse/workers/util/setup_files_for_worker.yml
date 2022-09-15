@@ -1,13 +1,9 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_synapse_worker_systemd_service_name: "matrix-synapse-worker-{{ matrix_synapse_worker_details.type }}-{{ matrix_synapse_worker_details.instanceId }}"
-
-- ansible.builtin.set_fact:
-    matrix_synapse_worker_container_name: "{{ matrix_synapse_worker_systemd_service_name }}"
-
-- ansible.builtin.set_fact:
-    matrix_synapse_worker_config_file_name: "worker.{{ matrix_synapse_worker_details.type }}_{{ matrix_synapse_worker_details.instanceId }}.yaml"
+    matrix_synapse_worker_systemd_service_name: "{{ matrix_synapse_worker_details.name }}"
+    matrix_synapse_worker_container_name: "{{ matrix_synapse_worker_details.name }}"
+    matrix_synapse_worker_config_file_name: "worker.{{ matrix_synapse_worker_details.name }}.yaml"
 
 - name: Ensure configuration exists for {{ matrix_synapse_worker_systemd_service_name }}
   ansible.builtin.template:
