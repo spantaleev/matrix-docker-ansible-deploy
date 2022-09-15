@@ -535,6 +535,11 @@ matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_enable_media_repo: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length > 0) }}"
 
+# matrix_synapse_media_instance_running_background_jobs populates the `media_instance_running_background_jobs` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
+# `media_instance_running_background_jobs` is meant to point to a single media-repository worker, which is dedicated to running background tasks that maintain the media repository.
+# Multiple `media_repository` workers may be enabled. We always pick the first one as the background tasks worker.
+matrix_synapse_media_instance_running_background_jobs: "{{ (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list)[0].name if (matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length > 0) else '' }}"
+
 # matrix_synapse_workers_appservice_workers_count can only be 0 or 1. More instances are not supported.
 # appservice workers were deprecated since Synapse v1.59 (see: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types).
 # Our implementation uses generic worker services and assigns them to perform appservice work using the `notify_appservices_from_worker` Synapse option.

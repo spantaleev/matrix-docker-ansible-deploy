@@ -10,6 +10,7 @@ People who are interested in running a Synapse worker setup should know that **o
 - we've added support for [running background tasks on a worker](#background-tasks-can-run-on-a-worker)
 - we've restored support for [`appservice` workers](#appservice-worker-support-is-back)
 - we've restored support for [`user_dir` workers](#user-directory-worker-support-is-back)
+- we've made it possible to [reliably use more than 1 `media_repository` worker](#using-more-than-1-media-repository-worker-is-now-more-reliable)
 - see the [Potential Backward Incompatibilities after these Synapse worker changes](#potential-backward-incompatibilities-after-these-synapse-worker-changes)
 
 ### Stream writers support
@@ -67,6 +68,13 @@ From now on, we have support for this.
 
 With `matrix_synapse_workers_preset: one-of-each`, you'll get one `user_dir` worker automatically.
 You can also control the `user_dir` workers count with `matrix_synapse_workers_user_dir_workers_count`. Only  `0` or `1` workers of this type are supported by Synapse.
+
+### Using more than 1 media repository worker is now more reliable
+
+With `matrix_synapse_workers_preset: one-of-each`, we only launch one `media_repository` worker.
+
+If you've been configuring `matrix_synapse_workers_media_repository_workers_count` manually, you may have increased that to more workers.
+When multiple media repository workers are in use, background tasks related to the media repository must always be configured to run on a single `media_repository` worker via `media_instance_running_background_jobs`. Until now, we weren't doing this correctly, but we now are.
 
 ### Potential Backward Incompatibilities after these Synapse worker changes
 
