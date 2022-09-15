@@ -349,13 +349,6 @@ listeners:
 
 # c.f. https://github.com/matrix-org/synapse/tree/master/contrib/systemd-with-workers/README.md
 worker_app: synapse.app.homeserver
-
-# thx https://oznetnerd.com/2017/04/18/jinja2-selectattr-filter/
-# reduce the main worker's offerings to core homeserver business
-{% if matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length > 0  %}
-enable_media_repo: false
-{% endif %}
-
 daemonize: false
 {% endif %}
 
@@ -1017,6 +1010,7 @@ federation_rr_transactions_per_room_per_second: {{ matrix_synapse_federation_rr_
 # following if you are using a separate media store worker.
 #
 #enable_media_repo: false
+enable_media_repo: {{ matrix_synapse_enable_media_repo | to_json }}
 
 # Directory where uploaded images and attachments are stored.
 #

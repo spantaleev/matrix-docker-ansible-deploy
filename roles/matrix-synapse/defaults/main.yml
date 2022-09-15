@@ -508,8 +508,8 @@ matrix_synapse_workers_pusher_workers_metrics_range_start: 19200
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_federation_pusher_instances: []
 
-# matrix_synapse_start_pushers controls if theh main Synapse process should push out notifications or if it should be left to pusher workers (see `matrix_synapse_federation_pusher_instances`).
-# This is allowed if workers are disabled, or if there are no pusher workers.
+# matrix_synapse_start_pushers controls if the main Synapse process should push out notifications or if it should be left to pusher workers (see `matrix_synapse_federation_pusher_instances`).
+# This is enabled if workers are disabled, or if there are no pusher workers.
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_start_pushers: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'pusher') | list | length > 0) }}"
 
@@ -529,7 +529,7 @@ matrix_synapse_workers_federation_sender_workers_metrics_range_start: 19400
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_federation_sender_instances: []
 
-# matrix_synapse_send_federation controls if theh main Synapse process should send federation traffic or if it should be left to federation_sender workers (see `matrix_synapse_federation_sender_instances`).
+# matrix_synapse_send_federation controls if the main Synapse process should send federation traffic or if it should be left to federation_sender workers (see `matrix_synapse_federation_sender_instances`).
 # This is allowed if workers are disabled, or if there are no federation sender workers.
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_send_federation: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'federation_sender') | list | length > 0) }}"
@@ -537,6 +537,11 @@ matrix_synapse_send_federation: "{{ not matrix_synapse_workers_enabled or (matri
 matrix_synapse_workers_media_repository_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['media_repository_workers_count'] }}"
 matrix_synapse_workers_media_repository_workers_port_range_start: 18551
 matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
+
+# matrix_synapse_enable_media_repo controls if the main Synapse process should serve media repository endpoints or if it should be left to media_repository workers (see `matrix_synapse_workers_media_repository_workers_count`).
+# This is enabled if workers are disabled, or if there are no media repository workers.
+# Adjusting this value manually is generally not necessary.
+matrix_synapse_enable_media_repo: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length > 0) }}"
 
 # Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
 # user_dir workers are deprecated since Synapse v1.59. This will be removed.
