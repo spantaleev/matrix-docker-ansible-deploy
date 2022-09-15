@@ -2851,9 +2851,13 @@ send_federation: {{ matrix_synapse_send_federation | to_json }}
 #
 #federation_sender_instances:
 #  - federation_sender1
+{% if matrix_synapse_federation_sender_instances | length > 0 %}
 federation_sender_instances: {{ matrix_synapse_federation_sender_instances | to_json }}
+{% endif %}
 
+{% if matrix_synapse_federation_pusher_instances | length > 0 %}
 pusher_instances: {{ matrix_synapse_federation_pusher_instances | to_json }}
+{% endif %}
 start_pushers: {{ matrix_synapse_start_pushers | to_json }}
 
 # When using workers this should be a map from `worker_name` to the
