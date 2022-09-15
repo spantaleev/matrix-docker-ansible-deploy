@@ -6,6 +6,7 @@ People who are interested in running a Synapse worker setup should know that **o
 
 - we've added support for [Stream writers](#stream-writers-support)
 - we've added support for [multiple federation sender workers](#multiple-federation-sender-workers-support)
+- we've added support for [multiple pusher workers](#multiple-pusher-workers-support)
 - see the [Potential Backward Incompatibilities after these Synapse worker changes](#potential-backward-incompatibilities-after-these-synapse-worker-changes)
 
 ### Stream writers support
@@ -31,6 +32,12 @@ matrix_synapse_workers_stream_writer_presence_stream_workers_count: 1
 
 Until now, we only supported a single `federation_sender` worker (`matrix_synapse_workers_federation_sender_workers_count` could either be `0` or `1`).
 From now on, you can have as many as you want to help with your federation traffic.
+
+### Multiple pusher workers support
+
+Until now, we only supported a single `pusher` worker (`matrix_synapse_workers_pusher_workers_count` could either be `0` or `1`).
+From now on, you can have as many as you want to help with pushing notifications out.
+
 
 ### Potential Backward Incompatibilities after these Synapse worker changes
 

@@ -12,7 +12,7 @@
     - "matrix_synapse_database_password"
     - "matrix_synapse_database_database"
 
-- name: Fail if asking to configure deprecaed workers (appservice, userdir)
+- name: Fail if asking to configure deprecated workers (appservice, userdir)
   ansible.builtin.fail:
     msg: >-
       `{{ item }}` cannot be more than 0.
@@ -30,7 +30,6 @@
       `{{ item }}` cannot be more than 1. This is a single-instance worker.
   when: "vars[item]|int > 1"
   with_items:
-    - "matrix_synapse_workers_pusher_workers_count"
     - "matrix_synapse_workers_stream_writer_typing_stream_workers_count"
     - "matrix_synapse_workers_stream_writer_to_device_stream_workers_count"
     - "matrix_synapse_workers_stream_writer_account_data_stream_workers_count"

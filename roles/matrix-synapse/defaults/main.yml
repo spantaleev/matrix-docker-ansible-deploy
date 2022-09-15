@@ -498,11 +498,20 @@ matrix_synapse_workers_stream_writer_workers_http_port_range_start: 20011
 matrix_synapse_workers_stream_writer_workers_replication_port_range_start: 25011
 matrix_synapse_workers_stream_writer_workers_metrics_range_start: 19111
 
-# matrix_synapse_workers_pusher_workers_count can only be 0 or 1 for now.
-# More instances are not supported due to a playbook limitation having to do with keeping `pusher_instances` in `homeserver.yaml` updated.
-# See https://github.com/matrix-org/synapse/commit/ddfdf945064925eba761ae3748e38f3a1c73c328
+# matrix_synapse_workers_pusher_workers_count controls the number of pusher workers (workers who push out notifications) to spawn.
+# See https://matrix-org.github.io/synapse/latest/workers.html#synapseapppusher
 matrix_synapse_workers_pusher_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['pusher_workers_count'] }}"
 matrix_synapse_workers_pusher_workers_metrics_range_start: 19200
+
+# matrix_synapse_federation_pusher_instances populates the `pusher_instances` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
+# What you see below is an initial default value which will be adjusted at runtime based on the value of `matrix_synapse_workers_pusher_workers_count` or `matrix_synapse_workers_enabled_list`.
+# Adjusting this value manually is generally not necessary.
+matrix_synapse_federation_pusher_instances: []
+
+# matrix_synapse_start_pushers controls if theh main Synapse process should push out notifications or if it should be left to pusher workers (see `matrix_synapse_federation_pusher_instances`).
+# This is allowed if workers are disabled, or if there are no pusher workers.
+# Adjusting this value manually is generally not necessary.
+matrix_synapse_start_pushers: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'pusher') | list | length > 0) }}"
 
 # matrix_synapse_workers_appservice_workers_count can only be 0 or 1. More instances are not supported.
 # appservice workers are deprecated since Synapse v1.59. This will be removed.
@@ -511,7 +520,7 @@ matrix_synapse_workers_appservice_workers_count: 0
 matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
 
 # matrix_synapse_workers_federation_sender_workers_count controls the number of federation sender workers to spawn.
-# See https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappfederation_sender
+# See https://matrix-org.github.io/synapse/latest/workers.html#synapseappfederation_sender
 matrix_synapse_workers_federation_sender_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['federation_sender_workers_count'] }}"
 matrix_synapse_workers_federation_sender_workers_metrics_range_start: 19400
 
@@ -520,7 +529,7 @@ matrix_synapse_workers_federation_sender_workers_metrics_range_start: 19400
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_federation_sender_instances: []
 
-# matrix_synapse_send_federation controls if theh main Synapse process should send federation traffic.
+# matrix_synapse_send_federation controls if theh main Synapse process should send federation traffic or if it should be left to federation_sender workers (see `matrix_synapse_federation_sender_instances`).
 # This is allowed if workers are disabled, or if there are no federation sender workers.
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_send_federation: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'federation_sender') | list | length > 0) }}"
