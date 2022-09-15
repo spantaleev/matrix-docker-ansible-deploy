@@ -352,9 +352,6 @@ worker_app: synapse.app.homeserver
 
 # thx https://oznetnerd.com/2017/04/18/jinja2-selectattr-filter/
 # reduce the main worker's offerings to core homeserver business
-{% if matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'federation_sender') | list | length > 0  %}
-send_federation: false
-{% endif %}
 {% if matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length > 0  %}
 enable_media_repo: false
 {% endif %}
@@ -2851,6 +2848,7 @@ opentracing:
 # Uncomment if using a federation sender worker.
 #
 #send_federation: false
+send_federation: {{ matrix_synapse_send_federation | to_json }}
 
 # It is possible to run multiple federation sender workers, in which case the
 # work is balanced across them.
@@ -2862,6 +2860,7 @@ opentracing:
 #
 #federation_sender_instances:
 #  - federation_sender1
+federation_sender_instances: {{ matrix_synapse_federation_sender_instances | to_json }}
 
 # When using workers this should be a map from `worker_name` to the
 # HTTP replication listener of the worker, if configured.

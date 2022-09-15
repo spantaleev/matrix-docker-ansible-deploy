@@ -53,6 +53,13 @@
   register: "matrix_synapse_workers_list_results_federation_sender_workers"
   loop: "{{ range(0, matrix_synapse_workers_federation_sender_workers_count | int) | list }}"
 
+- name: Populate matrix_synapse_federation_sender_instances from enabled federation sender workers list
+  ansible.builtin.set_fact:
+    matrix_synapse_federation_sender_instances: "{{ matrix_synapse_federation_sender_instances + [item.ansible_facts.worker.name] }}"
+  with_items: "{{ matrix_synapse_workers_list_results_federation_sender_workers.results }}"
+
+- debug: var="matrix_synapse_federation_sender_instances"
+
 # This type of worker can only have a count of 1, at most
 - name: Build pusher workers
   ansible.builtin.set_fact:

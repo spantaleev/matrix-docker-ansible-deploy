@@ -4,7 +4,8 @@
 
 People who are interested in running a Synapse worker setup should know that **our Synapse worker implementation is much more powerful now**:
 
-- we've added [Stream writers support](#stream-writers-support)
+- we've added support for [Stream writers](#stream-writers-support)
+- we've added support for [multiple federation sender workers](#multiple-federation-sender-workers-support)
 - see the [Potential Backward Incompatibilities after these Synapse worker changes](#potential-backward-incompatibilities-after-these-synapse-worker-changes)
 
 ### Stream writers support
@@ -25,6 +26,11 @@ matrix_synapse_workers_stream_writer_account_data_stream_workers_count: 1
 matrix_synapse_workers_stream_writer_receipts_stream_workers_count: 1
 matrix_synapse_workers_stream_writer_presence_stream_workers_count: 1
 ```
+
+### Multiple federation sender workers support
+
+Until now, we only supported a single `federation_sender` worker (`matrix_synapse_workers_federation_sender_workers_count` could either be `0` or `1`).
+From now on, you can have as many as you want to help with your federation traffic.
 
 ### Potential Backward Incompatibilities after these Synapse worker changes
 

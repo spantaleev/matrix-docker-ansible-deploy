@@ -510,11 +510,20 @@ matrix_synapse_workers_pusher_workers_metrics_range_start: 19200
 matrix_synapse_workers_appservice_workers_count: 0
 matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
 
-# matrix_synapse_workers_federation_sender_workers_count can only be 0 or 1 for now.
-# More instances are not supported due to a playbook limitation having to do with keeping `federation_sender_instances` in `homeserver.yaml` updated.
+# matrix_synapse_workers_federation_sender_workers_count controls the number of federation sender workers to spawn.
 # See https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappfederation_sender
 matrix_synapse_workers_federation_sender_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['federation_sender_workers_count'] }}"
 matrix_synapse_workers_federation_sender_workers_metrics_range_start: 19400
+
+# matrix_synapse_federation_sender_instances populates the `federation_sender_instances` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
+# What you see below is an initial default value which will be adjusted at runtime based on the value of `matrix_synapse_workers_federation_sender_workers_count` or `matrix_synapse_workers_enabled_list`.
+# Adjusting this value manually is generally not necessary.
+matrix_synapse_federation_sender_instances: []
+
+# matrix_synapse_send_federation controls if theh main Synapse process should send federation traffic.
+# This is allowed if workers are disabled, or if there are no federation sender workers.
+# Adjusting this value manually is generally not necessary.
+matrix_synapse_send_federation: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'federation_sender') | list | length > 0) }}"
 
 matrix_synapse_workers_media_repository_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['media_repository_workers_count'] }}"
 matrix_synapse_workers_media_repository_workers_port_range_start: 18551
