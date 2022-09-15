@@ -64,6 +64,11 @@ matrix_synapse_workers_stream_writer_receipts_stream_worker_client_server_endpoi
 matrix_synapse_workers_stream_writer_presence_stream_worker_client_server_endpoints:
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/presence/
 
+# matrix_synapse_workers_user_dir_worker_client_server_endpoints contains the endpoints serviced by the `type = user_dir` (`app = generic_worker`) worker.
+# See: https://matrix-org.github.io/synapse/latest/workers.html#updating-the-user-directory
+matrix_synapse_workers_user_dir_worker_client_server_endpoints:
+  - ^/_matrix/client/(r0|v3|unstable)/user_directory/search$
+
 # matrix_synapse_workers_known_stream_writer_stream_types contains the list of stream writer stream types that the playbook recognizes.
 # This is used for validation purposes. If adding support for a new type, besides adding it to this list,
 # don't forget to actually configure it where appropriate (see worker.yaml.j2`, the nginx proxy configuration, etc).
@@ -79,13 +84,25 @@ matrix_synapse_workers_webserving_stream_writer_types: ['typing', 'to_device', '
 matrix_synapse_webserving_workers_systemd_services_list: []
 
 # matrix_synapse_known_worker_types contains the list of known worker types.
+#
 # A worker type is different than a worker app (e.g. `generic_worker`).
 # For example, the `stream_writer` worker type is served by the `generic_worker` app, but is a separate type that we recognize.
+#
+# Some other types (`appservice` and `user_dir`) used to be Synapse worker apps, which got subsequently deprecated.
+# We still allow these types of workers and map them to the `generic_worker` app,
+# which is why we make sure they're part of the list below.
+# We use the `unique` filter because they're part of `matrix_synapse_workers_avail_list` too (for now; scheduled for removal).
 matrix_synapse_known_worker_types: |
   {{
-    matrix_synapse_workers_avail_list
-    +
-    ['stream_writer']
+    (
+      matrix_synapse_workers_avail_list
+      +
+      ['stream_writer']
+      +
+      ['appservice']
+      +
+      ['user_dir']
+    ) | unique
   }}
 
 # matrix_synapse_known_instance_map_eligible_worker_types contains the list of worker types that are to be injected into `matrix_synapse_instance_map`.

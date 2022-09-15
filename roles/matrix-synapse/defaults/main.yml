@@ -394,9 +394,9 @@ matrix_synapse_workers_presets:
   little-federation-helper:
     generic_workers_count: 0
     pusher_workers_count: 0
-    appservice_workers_count: 0
     federation_sender_workers_count: 1
     media_repository_workers_count: 0
+    appservice_workers_count: 0
     user_dir_workers_count: 0
     stream_writer_events_stream_workers_count: 0
     stream_writer_typing_stream_workers_count: 0
@@ -407,14 +407,10 @@ matrix_synapse_workers_presets:
   one-of-each:
     generic_workers_count: 1
     pusher_workers_count: 1
-    # appservice workers are deprecated since Synapse v1.59. This will be removed.
-    appservice_workers_count: 0
     federation_sender_workers_count: 1
     media_repository_workers_count: 1
-    # Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
-    # user_dir workers are deprecated since Synapse v1.59. This will be removed.
-    # See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
-    user_dir_workers_count: 0
+    appservice_workers_count: 1
+    user_dir_workers_count: 1
     stream_writer_events_stream_workers_count: 1
     stream_writer_typing_stream_workers_count: 1
     stream_writer_to_device_stream_workers_count: 1
@@ -513,12 +509,6 @@ matrix_synapse_federation_pusher_instances: []
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_start_pushers: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'pusher') | list | length > 0) }}"
 
-# matrix_synapse_workers_appservice_workers_count can only be 0 or 1. More instances are not supported.
-# appservice workers are deprecated since Synapse v1.59. This will be removed.
-# See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
-matrix_synapse_workers_appservice_workers_count: 0
-matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
-
 # matrix_synapse_workers_federation_sender_workers_count controls the number of federation sender workers to spawn.
 # See https://matrix-org.github.io/synapse/latest/workers.html#synapseappfederation_sender
 matrix_synapse_workers_federation_sender_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['federation_sender_workers_count'] }}"
@@ -543,12 +533,26 @@ matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_enable_media_repo: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length > 0) }}"
 
-# Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
-# user_dir workers are deprecated since Synapse v1.59. This will be removed.
-# See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
-matrix_synapse_workers_user_dir_workers_count: 0
+# matrix_synapse_workers_appservice_workers_count can only be 0 or 1. More instances are not supported.
+# appservice workers were deprecated since Synapse v1.59 (see: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types).
+# Our implementation uses generic worker services and assigns them to perform appservice work using the `notify_appservices_from_worker` Synapse option.
+matrix_synapse_workers_appservice_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['appservice_workers_count'] }}"
+matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
+
+# matrix_synapse_notify_appservices_from_worker populates the `notify_appservices_from_worker` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
+# `notify_appservices_from_worker` is meant to point to a worker, which is dedicated to sending output traffic to Application Services.
+matrix_synapse_notify_appservices_from_worker: "{{ (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'appservice') | list)[0].name if (matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'appservice') | list | length > 0) else '' }}"
+
+# matrix_synapse_workers_user_dir_workers_count can only be 0 or 1. More instances are not supported.
+# user_dir workers were deprecated since Synapse v1.59 (see: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types).
+# Our implementation uses generic worker services and assigns them to perform appservice work using the `update_user_directory_from_worker` Synapse option.
+matrix_synapse_workers_user_dir_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['user_dir_workers_count'] }}"
 matrix_synapse_workers_user_dir_workers_port_range_start: 18661
 matrix_synapse_workers_user_dir_workers_metrics_range_start: 19661
+
+# matrix_synapse_update_user_directory_from_worker populates the `update_user_directory_from_worker` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
+# `update_user_directory_from_worker` is meant to point to a worker, which is dedicated to updating the user directory and servicing some user directory URL endpoints (`matrix_synapse_workers_user_dir_worker_client_server_endpoints`).
+matrix_synapse_update_user_directory_from_worker: "{{ (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'user_dir') | list)[0].name if (matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'user_dir') | list | length > 0) else '' }}"
 
 # Default list of workers to spawn.
 #

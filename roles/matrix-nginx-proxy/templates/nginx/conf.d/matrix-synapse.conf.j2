@@ -133,8 +133,9 @@ server {
 		{% endif %}
 
 		{% if user_dir_workers | length > 0 %}
-			# FIXME: obsolete if matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled is set
-			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappuser_dir
+			# https://matrix-org.github.io/synapse/latest/workers.html#updating-the-user-directory
+			# If matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled is set, requests may not reach here,
+			# but could be captured early on (see `matrix-domain.conf.j2`) and forwarded elsewhere (to an identity server, etc.).
 			{{ render_locations_to_upstream(matrix_nginx_proxy_synapse_user_dir_locations, 'user_dir_workers_upstream') }}
 		{% endif %}
 		{# Workers redirects END #}

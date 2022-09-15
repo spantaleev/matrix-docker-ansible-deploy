@@ -58,8 +58,6 @@
     matrix_synapse_federation_sender_instances: "{{ matrix_synapse_federation_sender_instances + [item.ansible_facts.worker.name] }}"
   with_items: "{{ matrix_synapse_workers_list_results_federation_sender_workers.results }}"
 
-- debug: var="matrix_synapse_federation_sender_instances"
-
 # This type of worker can only have a count of 1, at most
 - name: Build pusher workers
   ansible.builtin.set_fact:
@@ -81,12 +79,26 @@
       id: "appservice-{{ item }}"
       name: "matrix-synapse-worker-appservice-{{ item }}"
       type: 'appservice'
-      app: 'appservice'
+      app: 'generic_worker'
       webserving: false
       port: 0
       metrics_port: "{{ matrix_synapse_workers_appservice_workers_metrics_range_start + item }}"
   register: "matrix_synapse_workers_list_results_appservice_workers"
   loop: "{{ range(0, matrix_synapse_workers_appservice_workers_count | int) | list }}"
+
+# This type of worker can only have a count of 1, at most
+- name: Build user_dir workers
+  ansible.builtin.set_fact:
+    worker:
+      id: "user-dir-{{ item }}"
+      name: "matrix-synapse-worker-user-dir-{{ item }}"
+      type: 'user_dir'
+      app: 'generic_worker'
+      webserving: true
+      port: "{{ matrix_synapse_workers_user_dir_workers_port_range_start + item }}"
+      metrics_port: "{{ matrix_synapse_workers_user_dir_workers_metrics_range_start + item }}"
+  register: "matrix_synapse_workers_list_results_user_dir_workers"
+  loop: "{{ range(0, matrix_synapse_workers_user_dir_workers_count | int) | list }}"
 
 - name: Build media_repository workers
   ansible.builtin.set_fact:
@@ -114,6 +126,8 @@
       matrix_synapse_workers_list_results_pusher_workers.results
       +
       matrix_synapse_workers_list_results_appservice_workers.results
+      +
+      matrix_synapse_workers_list_results_user_dir_workers.results
       +
       matrix_synapse_workers_list_results_media_repository_workers.results
     }}
