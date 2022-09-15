@@ -1,3 +1,94 @@
+# 2022-09-15
+
+## (Potential Backward Compatibility Break) Major improvements to Synapse workers
+
+People who are interested in running a Synapse worker setup should know that **our Synapse worker implementation is much more powerful now**:
+
+- we've added support for [Stream writers](#stream-writers-support)
+- we've added support for [multiple federation sender workers](#multiple-federation-sender-workers-support)
+- we've added support for [multiple pusher workers](#multiple-pusher-workers-support)
+- we've added support for [running background tasks on a worker](#background-tasks-can-run-on-a-worker)
+- we've restored support for [`appservice` workers](#appservice-worker-support-is-back)
+- we've restored support for [`user_dir` workers](#user-directory-worker-support-is-back)
+- we've made it possible to [reliably use more than 1 `media_repository` worker](#using-more-than-1-media-repository-worker-is-now-more-reliable)
+- see the [Potential Backward Incompatibilities after these Synapse worker changes](#potential-backward-incompatibilities-after-these-synapse-worker-changes)
+
+### Stream writers support
+
+From now on, the playbook lets you easily set up various [stream writer workers](https://matrix-org.github.io/synapse/latest/workers.html#stream-writers) which can handle different streams (`events` stream; `typing` URL endpoints, `to_device` URL endpoints, `account_data` URL endpoints, `receipts` URL endpoints, `presence` URL endpoints). All of this work was previously handled by the main Synapse process, but can now be offloaded to stream writer worker processes.
+
+If you're using `matrix_synapse_workers_preset: one-of-each`, you'll automatically get 6 additional workers (one for each of the above stream types). Our `little-federation-helper` preset (meant to be quite minimal and focusing in improved federation performance) does not include stream writer workers.
+
+If you'd like to customize the number of workers we also make that possible using these variables:
+
+```yaml
+# Synapse only supports more than 1 worker for the `events` stream.
+# All other streams can utilize either 0 or 1 workers, not more than that.
+matrix_synapse_workers_stream_writer_events_stream_workers_count: 5
+matrix_synapse_workers_stream_writer_typing_stream_workers_count: 1
+matrix_synapse_workers_stream_writer_to_device_stream_workers_count: 1
+matrix_synapse_workers_stream_writer_account_data_stream_workers_count: 1
+matrix_synapse_workers_stream_writer_receipts_stream_workers_count: 1
+matrix_synapse_workers_stream_writer_presence_stream_workers_count: 1
+```
+
+### Multiple federation sender workers support
+
+Until now, we only supported a single `federation_sender` worker (`matrix_synapse_workers_federation_sender_workers_count` could either be `0` or `1`).
+From now on, you can have as many as you want to help with your federation traffic.
+
+### Multiple pusher workers support
+
+Until now, we only supported a single `pusher` worker (`matrix_synapse_workers_pusher_workers_count` could either be `0` or `1`).
+From now on, you can have as many as you want to help with pushing notifications out.
+
+### Background tasks can run on a worker
+
+From now on, you can put [background task processing on a worker](https://matrix-org.github.io/synapse/latest/workers.html#background-tasks).
+
+With `matrix_synapse_workers_preset: one-of-each`, you'll get one `background` worker automatically.
+You can also control the `background` workers count with `matrix_synapse_workers_background_workers_count`. Only  `0` or `1` workers of this type are supported by Synapse.
+
+### Appservice worker support is back
+
+We previously had an `appservice` worker type, which [Synapse deprecated in v1.59.0](https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types). So did we, at the time.
+
+The new way to implement such workers is by using a `generic_worker` and dedicating it to the task of talking to Application Services.
+From now on, we have support for this.
+
+With `matrix_synapse_workers_preset: one-of-each`, you'll get one `appserice` worker automatically.
+You can also control the `appserice` workers count with `matrix_synapse_workers_appserice_workers_count`. Only  `0` or `1` workers of this type are supported by Synapse.
+
+### User Directory worker support is back
+
+We previously had a `user_dir` worker type, which [Synapse deprecated in v1.59.0](https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types). So did we, at the time.
+
+The new way to implement such workers is by using a `generic_worker` and dedicating it to the task of serving the user directory.
+From now on, we have support for this.
+
+With `matrix_synapse_workers_preset: one-of-each`, you'll get one `user_dir` worker automatically.
+You can also control the `user_dir` workers count with `matrix_synapse_workers_user_dir_workers_count`. Only  `0` or `1` workers of this type are supported by Synapse.
+
+### Using more than 1 media repository worker is now more reliable
+
+With `matrix_synapse_workers_preset: one-of-each`, we only launch one `media_repository` worker.
+
+If you've been configuring `matrix_synapse_workers_media_repository_workers_count` manually, you may have increased that to more workers.
+When multiple media repository workers are in use, background tasks related to the media repository must always be configured to run on a single `media_repository` worker via `media_instance_running_background_jobs`. Until now, we weren't doing this correctly, but we now are.
+
+### Potential Backward Incompatibilities after these Synapse worker changes
+
+Below we'll discuss **potential backward incompatibilities**.
+
+- **Worker names** (container names, systemd services, worker configuration files) **have changed**. Workers are now labeled sequentially (e.g. `matrix-synapse-worker_generic_worker-18111` -> `matrix-synapse-worker-generic-0`). The playbook will handle these changes automatically.
+
+- Due to increased worker types support above, people who use `matrix_synapse_workers_preset: one-of-each` should be aware that with these changes, **the playbook will deploy 9 additional workers** (6 stream writers, 1 `appservice` worker, 1 `user_dir` worker, 1 background task worker). This **may increase RAM/CPU usage**, etc. If you find your server struggling, consider disabling some workers with the appropriate `matrix_synapse_workers_*_workers_count` variables.
+
+- **Metric endpoints have also changed** (`/metrics/synapse/worker/generic_worker-18111` -> `/metrics/synapse/worker/generic-worker-0`). If you're [collecting metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server), consider revisiting our [Collecting Synapse worker metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-synapse-worker-metrics-to-an-external-prometheus-server) docs and updating your Prometheus configuration. **If you're collecting metrics to the integrated Prometheus server** (not enabled by default), **your Prometheus configuration will be updated automatically**. Old data (from before this change) may stick around though.
+
+- **the format of `matrix_synapse_workers_enabled_list` has changed**. You were never advised to use this variable for directly creating workers (we advise people to control workers using `matrix_synapse_workers_preset` or by tweaking `matrix_synapse_workers_*_workers_count` variables only), but some people may have started using the `matrix_synapse_workers_enabled_list` variable to gain more control over workers. If you're one of them, you'll need to adjust its value. See `roles/matrix-synapse/defaults/main.yml` for more information on the new format. The playbook will also do basic validation and complain if you got something wrong.
+
+
 # 2022-09-09
 
 ## Cactus Comments support

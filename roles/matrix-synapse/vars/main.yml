@@ -36,3 +36,77 @@ matrix_synapse_workers_generic_worker_federation_endpoints: "{{ matrix_synapse_w
 # matrix_synapse_workers_generic_worker_federation_endpoints_regex contains the regex used in matrix_synapse_workers_generic_worker_federation_endpoints.
 # It's intentionally put in a separate variable, to avoid tripping ansible-lint's var-spacing rule.
 matrix_synapse_workers_generic_worker_federation_endpoints_regex: '.*(/_matrix/federation|/_matrix/key).*'
+
+# matrix_synapse_workers_stream_writer_typing_stream_worker_client_server_endpoints contains the endpoints serviced by the `typing` stream writer.
+# See: https://matrix-org.github.io/synapse/latest/workers.html#the-typing-stream
+matrix_synapse_workers_stream_writer_typing_stream_worker_client_server_endpoints:
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/rooms/.*/typing
+
+# matrix_synapse_workers_stream_writer_to_device_stream_worker_client_server_endpoints contains the endpoints serviced by the `to_device` stream writer.
+# See: https://matrix-org.github.io/synapse/latest/workers.html#the-to_device-stream
+matrix_synapse_workers_stream_writer_to_device_stream_worker_client_server_endpoints:
+  - ^/_matrix/client/(r0|v3|unstable)/sendToDevice/
+
+# matrix_synapse_workers_stream_writer_account_data_stream_worker_client_server_endpoints contains the endpoints serviced by the `account_data` stream writer.
+# See: https://matrix-org.github.io/synapse/latest/workers.html#the-account_data-stream
+matrix_synapse_workers_stream_writer_account_data_stream_worker_client_server_endpoints:
+  - ^/_matrix/client/(r0|v3|unstable)/.*/tags
+  - ^/_matrix/client/(r0|v3|unstable)/.*/account_data
+
+# matrix_synapse_workers_stream_writer_receipts_stream_worker_client_server_endpoints contains the endpoints serviced by the `recepts` stream writer.
+# See: https://matrix-org.github.io/synapse/latest/workers.html#the-receipts-stream
+matrix_synapse_workers_stream_writer_receipts_stream_worker_client_server_endpoints:
+  - ^/_matrix/client/(r0|v3|unstable)/rooms/.*/receipt
+  - ^/_matrix/client/(r0|v3|unstable)/rooms/.*/read_markers
+
+# matrix_synapse_workers_stream_writer_presence_stream_worker_client_server_endpoints contains the endpoints serviced by the `presence` stream writer.
+# See: https://matrix-org.github.io/synapse/latest/workers.html#the-presence-stream
+matrix_synapse_workers_stream_writer_presence_stream_worker_client_server_endpoints:
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/presence/
+
+# matrix_synapse_workers_user_dir_worker_client_server_endpoints contains the endpoints serviced by the `type = user_dir` (`app = generic_worker`) worker.
+# See: https://matrix-org.github.io/synapse/latest/workers.html#updating-the-user-directory
+matrix_synapse_workers_user_dir_worker_client_server_endpoints:
+  - ^/_matrix/client/(r0|v3|unstable)/user_directory/search$
+
+# matrix_synapse_workers_known_stream_writer_stream_types contains the list of stream writer stream types that the playbook recognizes.
+# This is used for validation purposes. If adding support for a new type, besides adding it to this list,
+# don't forget to actually configure it where appropriate (see worker.yaml.j2`, the nginx proxy configuration, etc).
+matrix_synapse_workers_known_stream_writer_stream_types: ['events', 'typing', 'to_device', 'account_data', 'receipts', 'presence']
+
+# matrix_synapse_workers_webserving_stream_writer_types contains a list of stream writer types that serve web (client) requests.
+# Not all stream writers serve web requests. Some just perform background tasks.
+matrix_synapse_workers_webserving_stream_writer_types: ['typing', 'to_device', 'account_data', 'receipts', 'presence']
+
+# matrix_synapse_workers_systemd_services_list contains a list of systemd services (one for each worker systemd service which serves web requests).
+# This list is built during runtime.
+# Not all workers serve web requests. Those that don't won't be injected here.
+matrix_synapse_webserving_workers_systemd_services_list: []
+
+# matrix_synapse_known_worker_types contains the list of known worker types.
+#
+# A worker type is different than a worker app (e.g. `generic_worker`).
+# For example, the `stream_writer` worker type is served by the `generic_worker` app, but is a separate type that we recognize.
+#
+# Some other types (`appservice` and `user_dir`) used to be Synapse worker apps, which got subsequently deprecated.
+# We still allow these types of workers and map them to the `generic_worker` app,
+# which is why we make sure they're part of the list below.
+# We use the `unique` filter because they're part of `matrix_synapse_workers_avail_list` too (for now; scheduled for removal).
+matrix_synapse_known_worker_types: |
+  {{
+    (
+      matrix_synapse_workers_avail_list
+      +
+      ['stream_writer']
+      +
+      ['appservice']
+      +
+      ['user_dir']
+      +
+      ['background']
+    ) | unique
+  }}
+
+# matrix_synapse_known_instance_map_eligible_worker_types contains the list of worker types that are to be injected into `matrix_synapse_instance_map`.
+matrix_synapse_known_instance_map_eligible_worker_types:
+  - stream_writer

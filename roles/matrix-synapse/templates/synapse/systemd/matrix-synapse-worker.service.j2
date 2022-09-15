@@ -43,7 +43,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name {{ matrix_synapse_wor
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_synapse_docker_image }} \
-			run -m synapse.app.{{ matrix_synapse_worker_details.type }} -c /data/homeserver.yaml -c /data/{{ matrix_synapse_worker_config_file_name }}
+			run -m synapse.app.{{ matrix_synapse_worker_details.app }} -c /data/homeserver.yaml -c /data/{{ matrix_synapse_worker_config_file_name }}
 
 
 ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill {{ matrix_synapse_worker_container_name }} 2>/dev/null || true'

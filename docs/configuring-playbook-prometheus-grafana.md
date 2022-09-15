@@ -90,11 +90,11 @@ matrix_nginx_proxy_proxy_matrix_metrics_additional_user_location_configuration_b
 
 Using `matrix_nginx_proxy_proxy_matrix_metrics_additional_user_location_configuration_blocks` only takes effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true` (see above).
 
-Note : The playbook will hash the basic_auth password for you on setup. Thus, you need to give the plain-text version of the password as a variable. 
+Note : The playbook will hash the basic_auth password for you on setup. Thus, you need to give the plain-text version of the password as a variable.
 
 ### Collecting Synapse worker metrics to an external Prometheus server
 
-If you are using workers (`matrix_synapse_workers_enabled: true`) and have enabled `matrix_synapse_metrics_proxying_enabled` as described above, the playbook will also automatically expose all Synapse worker threads' metrics to `https://matrix.DOMAIN/metrics/synapse/worker/TYPE-ID`, where `TYPE` corresponds to the type and `ID` to the instanceId of a worker as exemplified in `matrix_synapse_workers_enabled_list`.
+If you are using workers (`matrix_synapse_workers_enabled: true`) and have enabled `matrix_synapse_metrics_proxying_enabled` as described above, the playbook will also automatically expose all Synapse worker threads' metrics to `https://matrix.DOMAIN/metrics/synapse/worker/ID`, where `ID` corresponds to the worker `id` as exemplified in `matrix_synapse_workers_enabled_list`.
 
 The playbook also generates an exemplary config file (`/matrix/synapse/external_prometheus.yml.template`) with all the correct paths which you can copy to your Prometheus server and adapt to your needs. Make sure to edit the specified `password_file` path and contents and path to your `synapse-v2.rules`.
 It will look a bit like this:
@@ -111,8 +111,8 @@ scrape_configs:
         labels:
           job: "master"
           index: 1
-  - job_name: 'synapse-generic_worker-1'
-    metrics_path: /metrics/synapse/worker/generic_worker-18111
+  - job_name: 'matrix-synapse-synapse-worker-generic-worker-0'
+    metrics_path: /metrics/synapse/worker/generic-worker-0
     scheme: https
     basic_auth:
       username: prometheus

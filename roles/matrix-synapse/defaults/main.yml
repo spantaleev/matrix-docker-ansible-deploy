@@ -394,21 +394,31 @@ matrix_synapse_workers_presets:
   little-federation-helper:
     generic_workers_count: 0
     pusher_workers_count: 0
-    appservice_workers_count: 0
     federation_sender_workers_count: 1
     media_repository_workers_count: 0
+    appservice_workers_count: 0
     user_dir_workers_count: 0
+    background_workers_count: 0
+    stream_writer_events_stream_workers_count: 0
+    stream_writer_typing_stream_workers_count: 0
+    stream_writer_to_device_stream_workers_count: 0
+    stream_writer_account_data_stream_workers_count: 0
+    stream_writer_receipts_stream_workers_count: 0
+    stream_writer_presence_stream_workers_count: 0
   one-of-each:
     generic_workers_count: 1
     pusher_workers_count: 1
-    # appservice workers are deprecated since Synapse v1.59. This will be removed.
-    appservice_workers_count: 0
     federation_sender_workers_count: 1
     media_repository_workers_count: 1
-    # Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
-    # user_dir workers are deprecated since Synapse v1.59. This will be removed.
-    # See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
-    user_dir_workers_count: 0
+    appservice_workers_count: 1
+    user_dir_workers_count: 1
+    background_workers_count: 1
+    stream_writer_events_stream_workers_count: 1
+    stream_writer_typing_stream_workers_count: 1
+    stream_writer_to_device_stream_workers_count: 1
+    stream_writer_account_data_stream_workers_count: 1
+    stream_writer_receipts_stream_workers_count: 1
+    stream_writer_presence_stream_workers_count: 1
 
 # Controls whether the matrix-synapse container exposes the various worker ports
 # (see `port` and `metrics_port` in `matrix_synapse_workers_enabled_list`) outside of the container.
@@ -421,34 +431,144 @@ matrix_synapse_workers_generic_workers_count: "{{ matrix_synapse_workers_presets
 matrix_synapse_workers_generic_workers_port_range_start: 18111
 matrix_synapse_workers_generic_workers_metrics_range_start: 19111
 
-# matrix_synapse_workers_pusher_workers_count can only be 0 or 1 for now.
-# More instances are not supported due to a playbook limitation having to do with keeping `pusher_instances` in `homeserver.yaml` updated.
-# See https://github.com/matrix-org/synapse/commit/ddfdf945064925eba761ae3748e38f3a1c73c328
+# matrix_synapse_workers_stream_writer_events_stream_workers_count controls how many stream writers that handle the `events` stream to spawn.
+# More than 1 worker is also supported of this type.
+matrix_synapse_workers_stream_writer_events_stream_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['stream_writer_events_stream_workers_count'] }}"
+
+# matrix_synapse_workers_stream_writer_typing_stream_workers_count controls how many stream writers that handle the `typing` stream to spawn.
+# The count of these workers can only be 0 or 1.
+matrix_synapse_workers_stream_writer_typing_stream_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['stream_writer_typing_stream_workers_count'] }}"
+
+# matrix_synapse_workers_stream_writer_to_device_stream_workers_count controls how many stream writers that handle the `to_device` stream to spawn.
+# The count of these workers can only be 0 or 1.
+matrix_synapse_workers_stream_writer_to_device_stream_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['stream_writer_to_device_stream_workers_count'] }}"
+
+# matrix_synapse_workers_stream_writer_account_data_stream_workers_count controls how many stream writers that handle the `account_data` stream to spawn.
+# The count of these workers can only be 0 or 1.
+matrix_synapse_workers_stream_writer_account_data_stream_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['stream_writer_account_data_stream_workers_count'] }}"
+
+# matrix_synapse_workers_stream_writer_receipts_stream_workers_count controls how many stream writers that handle the `receipts` stream to spawn.
+# The count of these workers can only be 0 or 1.
+matrix_synapse_workers_stream_writer_receipts_stream_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['stream_writer_receipts_stream_workers_count'] }}"
+
+# matrix_synapse_workers_stream_writer_presence_stream_workers_count controls how many stream writers that handle the `presence` stream to spawn.
+# The count of these workers can only be 0 or 1.
+matrix_synapse_workers_stream_writer_presence_stream_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['stream_writer_presence_stream_workers_count'] }}"
+
+# A list of stream writer workers to enable. This list is built automatically based on other variables.
+# You're encouraged to enable/disable stream writer workers by setting `matrix_synapse_workers_stream_writer_*_stream_workers_count` variables, instead of adjusting this list manually.
+matrix_synapse_workers_stream_writers: |
+  {{
+    []
+    +
+    ([{'stream': 'events'}] * matrix_synapse_workers_stream_writer_events_stream_workers_count | int)
+    +
+    ([{'stream': 'typing'}] * matrix_synapse_workers_stream_writer_typing_stream_workers_count | int)
+    +
+    ([{'stream': 'to_device'}] * matrix_synapse_workers_stream_writer_to_device_stream_workers_count | int)
+    +
+    ([{'stream': 'account_data'}] * matrix_synapse_workers_stream_writer_account_data_stream_workers_count | int)
+    +
+    ([{'stream': 'receipts'}] * matrix_synapse_workers_stream_writer_receipts_stream_workers_count | int)
+    +
+    ([{'stream': 'presence'}] * matrix_synapse_workers_stream_writer_presence_stream_workers_count | int)
+  }}
+
+# matrix_synapse_stream_writers populates the `stream_writers` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
+# What you see below is an initial default value which will be adjusted at runtime based on the value of `matrix_synapse_workers_stream_writers`.
+# Adjusting this value manually is generally not necessary.
+#
+# It's tempting to initialize this like this:
+# matrix_synapse_stream_writers:
+#   - typing: []
+#   - events: []
+#   - to_device: []
+#   - account_data: []
+#   - receipts: []
+#   - presence: []
+# .. but Synapse does not like empty lists (see https://github.com/matrix-org/synapse/issues/13804)
+matrix_synapse_stream_writers: {}
+
+# `matrix_synapse_workers_stream_writer_workers_` variables control the port numbers of various stream writer workers
+# defined in `matrix_synapse_workers_stream_writers`.
+# It should be noted that not all of the background worker types will need to expose HTTP services, etc.
+matrix_synapse_workers_stream_writer_workers_http_port_range_start: 20011
+matrix_synapse_workers_stream_writer_workers_replication_port_range_start: 25011
+matrix_synapse_workers_stream_writer_workers_metrics_range_start: 19111
+
+# matrix_synapse_workers_pusher_workers_count controls the number of pusher workers (workers who push out notifications) to spawn.
+# See https://matrix-org.github.io/synapse/latest/workers.html#synapseapppusher
 matrix_synapse_workers_pusher_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['pusher_workers_count'] }}"
 matrix_synapse_workers_pusher_workers_metrics_range_start: 19200
 
-# matrix_synapse_workers_appservice_workers_count can only be 0 or 1. More instances are not supported.
-# appservice workers are deprecated since Synapse v1.59. This will be removed.
-# See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
-matrix_synapse_workers_appservice_workers_count: 0
-matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
+# matrix_synapse_federation_pusher_instances populates the `pusher_instances` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
+# What you see below is an initial default value which will be adjusted at runtime based on the value of `matrix_synapse_workers_pusher_workers_count` or `matrix_synapse_workers_enabled_list`.
+# Adjusting this value manually is generally not necessary.
+matrix_synapse_federation_pusher_instances: []
 
-# matrix_synapse_workers_federation_sender_workers_count can only be 0 or 1 for now.
-# More instances are not supported due to a playbook limitation having to do with keeping `federation_sender_instances` in `homeserver.yaml` updated.
-# See https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappfederation_sender
+# matrix_synapse_start_pushers controls if the main Synapse process should push out notifications or if it should be left to pusher workers (see `matrix_synapse_federation_pusher_instances`).
+# This is enabled if workers are disabled, or if there are no pusher workers.
+# Adjusting this value manually is generally not necessary.
+matrix_synapse_start_pushers: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'pusher') | list | length > 0) }}"
+
+# matrix_synapse_workers_federation_sender_workers_count controls the number of federation sender workers to spawn.
+# See https://matrix-org.github.io/synapse/latest/workers.html#synapseappfederation_sender
 matrix_synapse_workers_federation_sender_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['federation_sender_workers_count'] }}"
 matrix_synapse_workers_federation_sender_workers_metrics_range_start: 19400
+
+# matrix_synapse_federation_sender_instances populates the `federation_sender_instances` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
+# What you see below is an initial default value which will be adjusted at runtime based on the value of `matrix_synapse_workers_federation_sender_workers_count` or `matrix_synapse_workers_enabled_list`.
+# Adjusting this value manually is generally not necessary.
+matrix_synapse_federation_sender_instances: []
+
+# matrix_synapse_send_federation controls if the main Synapse process should send federation traffic or if it should be left to federation_sender workers (see `matrix_synapse_federation_sender_instances`).
+# This is allowed if workers are disabled, or if there are no federation sender workers.
+# Adjusting this value manually is generally not necessary.
+matrix_synapse_send_federation: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'federation_sender') | list | length > 0) }}"
 
 matrix_synapse_workers_media_repository_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['media_repository_workers_count'] }}"
 matrix_synapse_workers_media_repository_workers_port_range_start: 18551
 matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
 
-# Disabled until https://github.com/matrix-org/synapse/issues/8787 is resolved.
-# user_dir workers are deprecated since Synapse v1.59. This will be removed.
-# See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
-matrix_synapse_workers_user_dir_workers_count: 0
+# matrix_synapse_enable_media_repo controls if the main Synapse process should serve media repository endpoints or if it should be left to media_repository workers (see `matrix_synapse_workers_media_repository_workers_count`).
+# This is enabled if workers are disabled, or if there are no media repository workers.
+# Adjusting this value manually is generally not necessary.
+matrix_synapse_enable_media_repo: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length > 0) }}"
+
+# matrix_synapse_media_instance_running_background_jobs populates the `media_instance_running_background_jobs` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
+# `media_instance_running_background_jobs` is meant to point to a single media-repository worker, which is dedicated to running background tasks that maintain the media repository.
+# Multiple `media_repository` workers may be enabled. We always pick the first one as the background tasks worker.
+matrix_synapse_media_instance_running_background_jobs: "{{ (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list)[0].name if (matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length > 0) else '' }}"
+
+# matrix_synapse_workers_appservice_workers_count can only be 0 or 1. More instances are not supported.
+# appservice workers were deprecated since Synapse v1.59 (see: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types).
+# Our implementation uses generic worker services and assigns them to perform appservice work using the `notify_appservices_from_worker` Synapse option.
+matrix_synapse_workers_appservice_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['appservice_workers_count'] }}"
+matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
+
+# matrix_synapse_notify_appservices_from_worker populates the `notify_appservices_from_worker` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
+# `notify_appservices_from_worker` is meant to point to a worker, which is dedicated to sending output traffic to Application Services.
+matrix_synapse_notify_appservices_from_worker: "{{ (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'appservice') | list)[0].name if (matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'appservice') | list | length > 0) else '' }}"
+
+# matrix_synapse_workers_user_dir_workers_count can only be 0 or 1. More instances are not supported.
+# user_dir workers were deprecated since Synapse v1.59 (see: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types).
+# Our implementation uses generic worker services and assigns them to perform appservice work using the `update_user_directory_from_worker` Synapse option.
+matrix_synapse_workers_user_dir_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['user_dir_workers_count'] }}"
 matrix_synapse_workers_user_dir_workers_port_range_start: 18661
 matrix_synapse_workers_user_dir_workers_metrics_range_start: 19661
+
+# matrix_synapse_update_user_directory_from_worker populates the `update_user_directory_from_worker` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
+# `update_user_directory_from_worker` is meant to point to a worker, which is dedicated to updating the user directory and servicing some user directory URL endpoints (`matrix_synapse_workers_user_dir_worker_client_server_endpoints`).
+matrix_synapse_update_user_directory_from_worker: "{{ (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'user_dir') | list)[0].name if (matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'user_dir') | list | length > 0) else '' }}"
+
+# matrix_synapse_workers_background_workers_count can only be 0 or 1. More instances are not supported.
+# Our implementation uses a generic worker and assigns Synapse to perform background work on this worker using the `run_background_tasks_on` Synapse option.
+matrix_synapse_workers_background_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['background_workers_count'] }}"
+matrix_synapse_workers_background_workers_metrics_range_start: 19700
+
+# matrix_synapse_run_background_tasks_on populates the `run_background_tasks_on` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
+# `run_background_tasks_on` is meant to point to a worker, which is dedicated to processing background tasks.
+matrix_synapse_run_background_tasks_on: "{{ (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'background') | list)[0].name if (matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'background') | list | length > 0) else '' }}"
 
 # Default list of workers to spawn.
 #
@@ -463,24 +583,35 @@ matrix_synapse_workers_user_dir_workers_metrics_range_start: 19661
 # as certain workers can only be spawned just once.
 #
 # Each worker instance in the list defines the following fields:
-# - `type` - the type of worker (`generic_worker`, etc.)
-# - `instanceId` - a string that identifies the worker. The combination of (`type` + `instanceId`) represents the name of the worker and must be unique.
+# - `id` - a string that uniquely identifies the worker
+# - `name` - a string that will be used as the container and systemd service name
+# - `type` - the type of worker (`generic_worker`, `stream_writer`, `pusher`, etc.)
+# - `app` - the Synapse app (https://matrix-org.github.io/synapse/latest/workers.html#available-worker-applications) that powers this worker (`generic_worker`, `federation_sender`, etc.).
+#           The `app` usually matches the `type`, but not always. For example, `type = stream_writer` workers are served by the `generic_worker` type.
 # - `port` - an HTTP port where the worker listens for requests (can be `0` for workers that don't do HTTP request processing)
 # - `metrics_port` - an HTTP port where the worker exports Prometheus metrics
+# - `replication_port` - an HTTP port where the worker serves `replication` endpoints (used by stream writers, etc.)
+# - `webserving` - tells whether this type of worker serves web (client or federation) requests, so that it can be injected as a dependency to the reverse-proxy
 #
 # Example of what this needs to look like, if you're defining it manually:
 # matrix_synapse_workers_enabled_list:
-#   - { type: generic_worker, instanceId: '18111', port: 18111, metrics_port: 19111 }
-#   - { type: generic_worker, instanceId: '18112', port: 18112, metrics_port: 19112 }
-#   - { type: generic_worker, instanceId: '18113', port: 18113, metrics_port: 19113 }
-#   - { type: generic_worker, instanceId: '18114', port: 18114, metrics_port: 19114 }
-#   - { type: generic_worker, instanceId: '18115', port: 18115, metrics_port: 19115 }
-#   - { type: generic_worker, instanceId: '18116', port: 18116, metrics_port: 19116 }
-#   - { type: pusher, instanceId: '0', port: 0, metrics_port: 19200 }
-#   - { type: appservice, instanceId: '0', port: 0, metrics_port: 19300 }
-#   - { type: federation_sender, instanceId: '0', port: 0, metrics_port: 19400 }
-#   - { type: media_repository, instanceId: '18551', port: 18551, metrics_port: 19551 }
+#   - { 'id': 'generic-worker-0', 'name': 'matrix-synapse-worker-generic-0', 'type': 'generic_worker', 'app': 'generic_worker', 'port': 18111, 'metrics_port': 19111, 'webserving': true }
+#   - { 'id': 'generic-worker-1', 'name': 'matrix-synapse-worker-generic-1', 'type': 'generic_worker', 'app': 'generic_worker', 'port': 18112, 'metrics_port': 19112, 'webserving': true }
+#   - { 'id': 'generic-worker-2', 'name': 'matrix-synapse-worker-generic-2', 'type': 'generic_worker', 'app': 'generic_worker', 'port': 18113, 'metrics_port': 19113, 'webserving': true }
+#   - { 'id': 'generic-worker-3', 'name': 'matrix-synapse-worker-generic-3', 'type': 'generic_worker', 'app': 'generic_worker', 'port': 18114, 'metrics_port': 19114, 'webserving': true }
+#   - { 'id': 'generic-worker-4', 'name': 'matrix-synapse-worker-generic-4', 'type': 'generic_worker', 'app': 'generic_worker', 'port': 18115, 'metrics_port': 19115, 'webserving': true }
+#   - { 'id': 'generic-worker-5', 'name': 'matrix-synapse-worker-generic-5', 'type': 'generic_worker', 'app': 'generic_worker', 'port': 18116, 'metrics_port': 19116, 'webserving': true }
+#   - { 'id': 'stream-writer-0-events', 'name': 'matrix-synapse-worker-stream-writer-0-events', 'type': 'stream_writer', 'app': 'generic_worker', 'stream_writer_stream': 'events', 'port': 0, 'replication_port': 25011, metrics_port: 19111, 'webserving': false }
+#   - { 'id': 'stream-writer-1-typing', 'name': 'matrix-synapse-worker-stream-writer-1-typing', 'type': 'stream_writer', 'app': 'generic_worker', 'stream_writer_stream': 'typing', 'port': 20012, 'replication_port': 25012, metrics_port: 19112, 'webserving': true }
+#   - { 'id': 'pusher-0', 'name': 'matrix-synapse-worker-pusher-0', 'type': 'pusher', 'app': 'pusher', 'port': 0, 'metrics_port': 19200, 'webserving': false }
+#   - { 'id': 'appservice-0', 'name': 'matrix-synapse-worker-appservice-0', 'type': 'appservice', 'port': 0, 'metrics_port': 19300, 'webserving': false }
+#   - { 'id': 'federation-sender-0', 'name': 'matrix-synapse-worker-federation-sender-0', 'type': 'federation_sender', 'port': 0, 'metrics_port': 19400, 'webserving': false }
+#   - { 'id': 'media-repository-0', 'name': 'matrix-synapse-worker-media-repository-0', 'type': 'media_repository', 'port': 18551, 'metrics_port': 19551, 'webserving': true }
 matrix_synapse_workers_enabled_list: []
+
+# matrix_synapse_instance_map holds the instance map used for mapping worker names (for certain generic workers only!) to where they live (host, port which handles replication traffic).
+# This is populated automatically based on `matrix_synapse_workers_enabled_list` during runtime, so you're not required to tweak it manually.
+matrix_synapse_instance_map: {}
 
 # Redis information
 matrix_synapse_redis_enabled: false

@@ -8,15 +8,15 @@
 
 # Unless `matrix_synapse_workers_enabled_list` is explicitly defined,
 # we'll generate it dynamically.
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/synapse/workers/init.yml"
+- ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/init.yml"
   when: "matrix_synapse_enabled and matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list|length == 0"
 
 - ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-synapse.service'] }}"
   when: matrix_synapse_enabled | bool
 
-- name: Ensure systemd services for workers are injected
-  ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/util/inject_systemd_services_for_worker.yml"
+- name: Ensure workers are injected into various places
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/util/inject_worker.yml"
   with_items: "{{ matrix_synapse_workers_enabled_list }}"
   loop_control:
     loop_var: matrix_synapse_worker_details
@@ -65,9 +65,9 @@
         matrix_synapse_worker_nginx_metrics_configuration_block: |
           {% for worker in matrix_synapse_workers_enabled_list %}
           {% if worker.metrics_port != 0 %}
-          location /metrics/synapse/worker/{{ worker.type }}-{{ worker.instanceId }} {
+          location /metrics/synapse/worker/{{ worker.id }} {
             resolver 127.0.0.11 valid=5s;
-            set $backend "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.metrics_port }}";
+            set $backend "{{ worker.name }}:{{ worker.metrics_port }}";
             proxy_pass http://$backend/_synapse/metrics;
             proxy_set_header Host $host;
           }

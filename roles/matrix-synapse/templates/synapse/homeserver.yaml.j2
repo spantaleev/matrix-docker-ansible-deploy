@@ -349,19 +349,6 @@ listeners:
 
 # c.f. https://github.com/matrix-org/synapse/tree/master/contrib/systemd-with-workers/README.md
 worker_app: synapse.app.homeserver
-
-# thx https://oznetnerd.com/2017/04/18/jinja2-selectattr-filter/
-# reduce the main worker's offerings to core homeserver business
-{% if matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'federation_sender') | list  %}
-send_federation: false
-{% endif %}
-{% if matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list  %}
-enable_media_repo: false
-{% endif %}
-{% if matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'pusher') | list  %}
-start_pushers: false
-{% endif %}
-
 daemonize: false
 {% endif %}
 
@@ -1023,6 +1010,7 @@ federation_rr_transactions_per_room_per_second: {{ matrix_synapse_federation_rr_
 # following if you are using a separate media store worker.
 #
 #enable_media_repo: false
+enable_media_repo: {{ matrix_synapse_enable_media_repo | to_json }}
 
 # Directory where uploaded images and attachments are stored.
 #
@@ -2851,6 +2839,7 @@ opentracing:
 # Uncomment if using a federation sender worker.
 #
 #send_federation: false
+send_federation: {{ matrix_synapse_send_federation | to_json }}
 
 # It is possible to run multiple federation sender workers, in which case the
 # work is balanced across them.
@@ -2862,6 +2851,14 @@ opentracing:
 #
 #federation_sender_instances:
 #  - federation_sender1
+{% if matrix_synapse_federation_sender_instances | length > 0 %}
+federation_sender_instances: {{ matrix_synapse_federation_sender_instances | to_json }}
+{% endif %}
+
+{% if matrix_synapse_federation_pusher_instances | length > 0 %}
+pusher_instances: {{ matrix_synapse_federation_pusher_instances | to_json }}
+{% endif %}
+start_pushers: {{ matrix_synapse_start_pushers | to_json }}
 
 # When using workers this should be a map from `worker_name` to the
 # HTTP replication listener of the worker, if configured.
@@ -2870,6 +2867,7 @@ opentracing:
 #  worker1:
 #    host: localhost
 #    port: 8034
+instance_map: {{ matrix_synapse_instance_map | to_json }}
 
 # Experimental: When using workers you can define which workers should
 # handle event persistence and typing notifications. Any worker
@@ -2878,11 +2876,27 @@ opentracing:
 #stream_writers:
 #  events: worker1
 #  typing: worker1
+stream_writers: {{ matrix_synapse_stream_writers | to_json }}
+
+{% if matrix_synapse_notify_appservices_from_worker != '' %}
+notify_appservices_from_worker: {{ matrix_synapse_notify_appservices_from_worker | to_json }}
+{% endif %}
+
+{% if matrix_synapse_update_user_directory_from_worker != '' %}
+update_user_directory_from_worker: {{ matrix_synapse_update_user_directory_from_worker | to_json }}
+{% endif %}
 
 # The worker that is used to run background tasks (e.g. cleaning up expired
 # data). If not provided this defaults to the main process.
 #
 #run_background_tasks_on: worker1
+{% if matrix_synapse_run_background_tasks_on != '' %}
+run_background_tasks_on: {{ matrix_synapse_run_background_tasks_on | to_json }}
+{% endif %}
+
+{% if matrix_synapse_media_instance_running_background_jobs != '' %}
+media_instance_running_background_jobs: {{ matrix_synapse_media_instance_running_background_jobs | to_json }}
+{% endif %}
 
 # A shared secret used by the replication APIs to authenticate HTTP requests
 # from workers.
