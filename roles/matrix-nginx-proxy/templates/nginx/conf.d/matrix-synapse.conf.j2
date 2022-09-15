@@ -81,7 +81,7 @@ server {
 		{# Workers redirects BEGIN #}
 
 		{% if generic_workers | length > 0 %}
-			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappgeneric_worker
+			# https://matrix-org.github.io/synapse/latest/workers.html#synapseappgeneric_worker
 			{{ render_locations_to_upstream(matrix_nginx_proxy_synapse_generic_worker_client_server_locations, 'generic_workers_upstream') }}
 		{% endif %}
 
@@ -111,7 +111,7 @@ server {
 		{% endif %}
 
 		{% if media_repository_workers | length > 0 %}
-			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappmedia_repository
+			# https://matrix-org.github.io/synapse/latest/workers.html#synapseappmedia_repository
 			{% for location in matrix_nginx_proxy_synapse_media_repository_locations %}
 			location ~ {{ location }} {
 				proxy_pass http://media_repository_workers_upstream$request_uri;
@@ -182,11 +182,11 @@ server {
 
 	{% if matrix_nginx_proxy_synapse_workers_enabled %}
 		{% if generic_workers | length > 0 %}
-			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappgeneric_worker
+			# https://matrix-org.github.io/synapse/latest/workers.html#synapseappgeneric_worker
 			{{ render_locations_to_upstream(matrix_nginx_proxy_synapse_generic_worker_federation_locations, 'generic_workers_upstream') }}
 		{% endif %}
 		{% if media_repository_workers | length > 0 %}
-			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappmedia_repository
+			# https://matrix-org.github.io/synapse/latest/workers.html#synapseappmedia_repository
 			{% for location in matrix_nginx_proxy_synapse_media_repository_locations %}
 			location ~ {{ location }} {
 				proxy_pass http://media_repository_workers_upstream$request_uri;
