@@ -32,17 +32,17 @@ scrape_configs:
     static_configs:
     - targets: {{ matrix_prometheus_scraper_synapse_targets|to_json }}
       labels:
-        instance: {{ matrix_domain }}
+        instance: {{ matrix_domain | to_json }}
         job: master
         index: 0
   {% for worker in matrix_prometheus_scraper_synapse_workers_enabled_list %}
   {% if worker.metrics_port != 0 %}
     - targets: ['{{ worker.name }}:{{ worker.metrics_port }}']
       labels:
-        instance: {{ matrix_domain }}
-		worker_id: {{ worker.id }}
-        job: {{ worker.type }}
-		app: {{ worker.app }}
+        instance: {{ matrix_domain | to_json }}
+        worker_id: {{ worker.id | to_json }}
+        job: {{ worker.type | to_json }}
+        app: {{ worker.app | to_json }}
   {% endif %}
   {% endfor %}
   {% endif %}

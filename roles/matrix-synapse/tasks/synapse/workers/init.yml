@@ -20,7 +20,7 @@
 - name: Build stream writer workers
   ansible.builtin.set_fact:
     worker:
-      id: "stream-writer-{{ item }}-{{ item.stream }}"
+      id: "stream-writer-{{ idx }}-{{ item.stream }}"
       # Names must not include understores. Certain stream writer streams (to_device, account_data, ..) do, so we fix them up.
       name: "matrix-synapse-worker-stream-writer-{{ idx }}-{{ item.stream | replace('_', '-') }}"
       type: 'stream_writer'
