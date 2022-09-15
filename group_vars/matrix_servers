@@ -1772,7 +1772,7 @@ matrix_nginx_proxy_systemd_wanted_services_list: |
   {{
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (matrix_synapse_webserving_workers_systemd_services_list if matrix_homeserver_implementation == 'synapse' and matrix_synapse_workers_enabled)
+    (matrix_synapse_webserving_workers_systemd_services_list if matrix_homeserver_implementation == 'synapse' and matrix_synapse_workers_enabled else [])
     +
     (['matrix-corporal.service'] if matrix_corporal_enabled else [])
     +
