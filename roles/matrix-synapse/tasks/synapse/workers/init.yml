@@ -100,6 +100,20 @@
   register: "matrix_synapse_workers_list_results_user_dir_workers"
   loop: "{{ range(0, matrix_synapse_workers_user_dir_workers_count | int) | list }}"
 
+# This type of worker can only have a count of 1, at most
+- name: Build background workers
+  ansible.builtin.set_fact:
+    worker:
+      id: "background-{{ item }}"
+      name: "matrix-synapse-worker-background-{{ item }}"
+      type: 'background'
+      app: 'generic_worker'
+      webserving: false
+      port: 0
+      metrics_port: "{{ matrix_synapse_workers_background_workers_metrics_range_start + item }}"
+  register: "matrix_synapse_workers_list_results_background_workers"
+  loop: "{{ range(0, matrix_synapse_workers_background_workers_count | int) | list }}"
+
 - name: Build media_repository workers
   ansible.builtin.set_fact:
     worker:
@@ -130,6 +144,8 @@
       matrix_synapse_workers_list_results_user_dir_workers.results
       +
       matrix_synapse_workers_list_results_media_repository_workers.results
+      +
+      matrix_synapse_workers_list_results_background_workers.results
     }}
 
 - ansible.builtin.set_fact:

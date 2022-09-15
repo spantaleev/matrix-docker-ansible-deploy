@@ -2886,6 +2886,9 @@ update_user_directory_from_worker: {{ matrix_synapse_update_user_directory_from_
 # data). If not provided this defaults to the main process.
 #
 #run_background_tasks_on: worker1
+{% if matrix_synapse_run_background_tasks_on != '' %}
+run_background_tasks_on: {{ matrix_synapse_run_background_tasks_on | to_json }}
+{% endif %}
 
 # A shared secret used by the replication APIs to authenticate HTTP requests
 # from workers.

@@ -398,6 +398,7 @@ matrix_synapse_workers_presets:
     media_repository_workers_count: 0
     appservice_workers_count: 0
     user_dir_workers_count: 0
+    background_workers_count: 0
     stream_writer_events_stream_workers_count: 0
     stream_writer_typing_stream_workers_count: 0
     stream_writer_to_device_stream_workers_count: 0
@@ -411,6 +412,7 @@ matrix_synapse_workers_presets:
     media_repository_workers_count: 1
     appservice_workers_count: 1
     user_dir_workers_count: 1
+    background_workers_count: 1
     stream_writer_events_stream_workers_count: 1
     stream_writer_typing_stream_workers_count: 1
     stream_writer_to_device_stream_workers_count: 1
@@ -553,6 +555,15 @@ matrix_synapse_workers_user_dir_workers_metrics_range_start: 19661
 # matrix_synapse_update_user_directory_from_worker populates the `update_user_directory_from_worker` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # `update_user_directory_from_worker` is meant to point to a worker, which is dedicated to updating the user directory and servicing some user directory URL endpoints (`matrix_synapse_workers_user_dir_worker_client_server_endpoints`).
 matrix_synapse_update_user_directory_from_worker: "{{ (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'user_dir') | list)[0].name if (matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'user_dir') | list | length > 0) else '' }}"
+
+# matrix_synapse_workers_background_workers_count can only be 0 or 1. More instances are not supported.
+# Our implementation uses a generic worker and assigns Synapse to perform background work on this worker using the `run_background_tasks_on` Synapse option.
+matrix_synapse_workers_background_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['background_workers_count'] }}"
+matrix_synapse_workers_background_workers_metrics_range_start: 19700
+
+# matrix_synapse_run_background_tasks_on populates the `run_background_tasks_on` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
+# `run_background_tasks_on` is meant to point to a worker, which is dedicated to processing background tasks.
+matrix_synapse_run_background_tasks_on: "{{ (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'background') | list)[0].name if (matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'background') | list | length > 0) else '' }}"
 
 # Default list of workers to spawn.
 #
