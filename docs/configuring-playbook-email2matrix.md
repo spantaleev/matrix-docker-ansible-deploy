@@ -1,6 +1,7 @@
 # Setting up Email2Matrix (optional)
 
 **Note**: email bridging can also happen via the [Postmoogle](configuring-playbook-bot-postmoogle.md) bot supported by the playbook.
+Postmoogle is much more powerful and easier to use, so we recommend that you use it, instead of Email2Matrix.
 
 The playbook can install and configure [email2matrix](https://github.com/devture/email2matrix) for you.
 
@@ -8,6 +9,10 @@ See the project's [documentation](https://github.com/devture/email2matrix/blob/m
 
 
 ## Preparation
+
+### DNS configuration
+
+It's not strictly necessary, but you may increase the chances that incoming emails reach your server by adding an `MX` record for `matrix.DOMAIN`, as described in the [Configuring DNS](configuring-dns.md) documentation page.
 
 ### Port availability
 

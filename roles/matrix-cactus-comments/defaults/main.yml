@@ -1,0 +1,60 @@
+---
+# Cactus Comments is a federated comment system built on Matrix
+# Project source code URL: https://gitlab.com/cactus-comments/cactus-appservice
+# Project source code URL: https://gitlab.com/cactus-comments/cactus-client
+
+matrix_cactus_comments_enabled: true
+matrix_cactus_comments_serve_client_enabled: true
+matrix_cactus_comments_container_image_self_build: false
+matrix_cactus_comments_docker_repo: "https://gitlab.com/cactus-comments/cactus-appservice.git"
+matrix_cactus_comments_docker_repo_version: "{{ matrix_cactus_comments_version if matrix_cactus_comments_version != 'latest' else 'main' }}"
+matrix_cactus_comments_docker_src_files_path: "{{ matrix_cactus_comments_base_path }}/docker-src"
+
+
+matrix_cactus_comments_base_path: "{{ matrix_base_data_path }}/cactus-comments"
+matrix_cactus_comments_container_tmp_path: "{{ matrix_cactus_comments_base_path }}/tmp"
+matrix_cactus_comments_client_path: "{{ matrix_cactus_comments_base_path }}/client"
+matrix_cactus_comments_client_file_permissions: "0644"
+
+matrix_cactus_comments_app_service_config_file: "{{ matrix_cactus_comments_base_path }}/cactus_appservice.yaml"
+matrix_cactus_comments_app_service_env_file: "{{ matrix_cactus_comments_base_path }}/cactus.env"
+
+matrix_cactus_comments_as_token: ''
+matrix_cactus_comments_hs_token: ''
+matrix_cactus_comments_homeserver_url: "{{ matrix_homeserver_container_url }}"
+matrix_cactus_comments_user_id: "bot.cactusbot"
+matrix_cactus_comments_tmp_directory_size_mb: 1
+
+matrix_cactus_comments_container_port: 5000
+
+matrix_cactus_comments_version: 0.9.0
+matrix_cactus_comments_docker_image: "{{ matrix_container_global_registry_prefix }}cactuscomments/cactus-appservice:{{ matrix_cactus_comments_version }}"
+matrix_cactus_comments_docker_image_force_pull: "{{ matrix_cactus_comments_docker_image.endswith(':latest') }}"
+
+# matrix_cactus_comments_client_version specifies the version of the cactus-client release to use.
+# For available versions, see: https://gitlab.com/cactus-comments/cactus-client/-/releases
+# Also see: `matrix_cactus_comments_client_local_dir`
+matrix_cactus_comments_client_version: "0.13.0"
+
+# matrix_cactus_comments_client_local_dir specifies a local directory (on the Ansible controller, not on the remote server) with cactus-client files to use.
+# This is an alternative to `matrix_cactus_comments_client_version`, to be used when you'd like to
+# provide the files locally / manually.
+matrix_cactus_comments_client_local_dir: ''
+
+# matrix_cactus_comments_client_nginx_path specifies the path where nginx can access the client files.
+# The default value assumes a container setup. If you're running nginx without a container, consider adjusting this path
+matrix_cactus_comments_client_nginx_path: "/cactus-comments/"
+
+# matrix_cactus_comments_client_endpoint specifies where nginx will serve the files in nginx is enabled
+matrix_cactus_comments_client_endpoint: "/cactus-comments/"
+
+# List of systemd services that matrix-cactus-comments.service depends on
+matrix_bot_cactus_comments_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-cactus-comments.service wants
+matrix_bot_cactus_comments_systemd_wanted_services_list: []
+
+# A list of extra arguments to pass to the container
+matrix_cactus_comments_container_extra_arguments: []
+
+matrix_cactus_comments_environment_variables_extension: ''

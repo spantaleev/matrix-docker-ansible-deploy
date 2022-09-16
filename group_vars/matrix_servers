@@ -1210,6 +1210,9 @@ matrix_bot_buscarron_container_image_self_build: "{{ matrix_architecture not in 
 
 # We don't enable bots by default.
 matrix_bot_postmoogle_enabled: false
+matrix_bot_postmoogle_ssl_path: "{{ matrix_ssl_config_dir_path }}"
+matrix_bot_postmoogle_tls_cert: "/ssl/live/{{ matrix_bot_postmoogle_domain }}/fullchain.pem"
+matrix_bot_postmoogle_tls_key: "/ssl/live/{{ matrix_bot_postmoogle_domain }}/privkey.pem"
 
 matrix_bot_postmoogle_systemd_required_services_list: |
   {{
@@ -1327,6 +1330,35 @@ matrix_backup_borg_systemd_required_services_list: |
 ######################################################################
 #
 # /matrix-backup-borg
+#
+######################################################################
+######################################################################
+#
+# matrix-cactus-comments
+#
+######################################################################
+
+matrix_cactus_comments_enabled: false
+
+# Derive secret values from homeserver secret
+matrix_cactus_comments_as_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'cactus.as.token') | to_uuid }}"
+matrix_cactus_comments_hs_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'cactus.hs.token') | to_uuid }}"
+
+matrix_cactus_comments_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
+matrix_cactus_comments_systemd_required_services_list: |
+  {{
+    (['docker.service'])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+    +
+    (['matrix-' + matrix_homeserver_implementation + '.service'])
+  }}
+
+matrix_cactus_comments_client_nginx_path: "{{ '/cactus-comments/' if matrix_nginx_proxy_enabled else matrix_cactus_comments_client_path + '/' }}"
+
+######################################################################
+#
+# /matrix-cactus-comments
 #
 ######################################################################
 
@@ -1750,7 +1782,6 @@ matrix_nginx_proxy_synapse_generic_worker_client_server_locations: "{{ matrix_sy
 matrix_nginx_proxy_synapse_generic_worker_federation_locations: "{{ matrix_synapse_workers_generic_worker_federation_endpoints }}"
 matrix_nginx_proxy_synapse_media_repository_locations: "{{matrix_synapse_workers_media_repository_endpoints|default([]) }}"
 matrix_nginx_proxy_synapse_user_dir_locations: "{{ matrix_synapse_workers_user_dir_endpoints|default([]) }}"
-matrix_nginx_proxy_synapse_frontend_proxy_locations: "{{ matrix_synapse_workers_frontend_proxy_endpoints|default([]) }}"
 
 matrix_nginx_proxy_systemd_wanted_services_list: |
   {{
@@ -1810,6 +1841,8 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     ([matrix_server_fqn_sygnal] if matrix_sygnal_enabled else [])
     +
     ([matrix_server_fqn_ntfy] if matrix_ntfy_enabled else [])
+    +
+    ([matrix_bot_postmoogle_domain] if matrix_bot_postmoogle_enabled else [])
     +
     ([matrix_domain] if matrix_nginx_proxy_base_domain_serving_enabled else [])
     +

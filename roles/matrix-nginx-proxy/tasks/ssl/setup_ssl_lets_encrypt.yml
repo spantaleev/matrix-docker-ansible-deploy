@@ -26,7 +26,7 @@
 
     - name: Obtain Let's Encrypt certificates
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/ssl/setup_ssl_lets_encrypt_obtain_for_domain.yml"
-      with_items: "{{ matrix_ssl_domains_to_obtain_certificates_for }}"
+      with_items: "{{ matrix_ssl_domains_to_obtain_certificates_for | unique }}"
       loop_control:
         loop_var: domain_name
 

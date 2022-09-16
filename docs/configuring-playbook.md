@@ -182,4 +182,4 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up the ntfy push notifications server](configuring-playbook-ntfy.md) (optional)
 
-
+- [Setting up a Cactus Comments server](configuring-playbook-cactus-comments.md) - a federated comment system built on Matrix (optional)

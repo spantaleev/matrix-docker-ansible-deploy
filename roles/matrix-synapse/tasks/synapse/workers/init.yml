@@ -56,16 +56,6 @@
   register: "matrix_synapse_workers_list_results_media_repository_workers"
   loop: "{{ range(0, matrix_synapse_workers_media_repository_workers_count | int) | list }}"
 
-- name: Build frontend_proxy workers
-  ansible.builtin.set_fact:
-    worker:
-      type: 'frontend_proxy'
-      instanceId: "{{ matrix_synapse_workers_frontend_proxy_workers_port_range_start + item }}"
-      port: "{{ matrix_synapse_workers_frontend_proxy_workers_port_range_start + item }}"
-      metrics_port: "{{ matrix_synapse_workers_frontend_proxy_workers_metrics_range_start + item }}"
-  register: "matrix_synapse_workers_list_results_frontend_proxy_workers"
-  loop: "{{ range(0, matrix_synapse_workers_frontend_proxy_workers_count | int) | list }}"
-
 - ansible.builtin.set_fact:
     matrix_synapse_dynamic_workers_list: "{{ matrix_synapse_dynamic_workers_list | default([]) + [item.ansible_facts.worker] }}"
   with_items: |
@@ -79,8 +69,6 @@
       matrix_synapse_workers_list_results_appservice_workers.results
       +
       matrix_synapse_workers_list_results_media_repository_workers.results
-      +
-      matrix_synapse_workers_list_results_frontend_proxy_workers.results
     }}
 
 - ansible.builtin.set_fact:

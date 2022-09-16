@@ -1,3 +1,12 @@
+# 2022-09-09
+
+## Cactus Comments support
+
+Thanks to [Julian-Samuel Gebühr (@moan0s)](https://github.com/moan0s), the playbook can now set up [Cactus Comments](https://cactus.chat) - federated comment system for the web based on Matrix.
+
+See our [Setting up a Cactus Comments server](docs/configuring-playbook-cactus-comments.md) documentation to get started.
+
+
 # 2022-08-23
 
 ## Postmoogle email bridge support

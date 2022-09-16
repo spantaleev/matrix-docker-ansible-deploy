@@ -7,7 +7,7 @@
   when: "ansible_version.major == 2 and ansible_version.minor < 8 and matrix_ldap_registration_proxy_container_image_self_build and matrix_ldap_registration_proxy_enabled | bool"
 
 - ansible.builtin.set_fact:
-    matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-matrix-ldap-registration-proxy.service'] }}"
+    matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-ldap-registration-proxy.service'] }}"
   when: matrix_ldap_registration_proxy_enabled | bool
 
 - block:
@@ -49,7 +49,7 @@
          NOTE: You've enabled the Matrix LDAP registration proxy bridge but are not using the matrix-nginx-proxy
          reverse proxy.
          Please make sure that you're proxying the `{{ matrix_ldap_registration_proxy_public_endpoint }}`
-         URL endpoint to the matrix-matrix-ldap-proxy container.
+         URL endpoint to the matrix-ldap-proxy container.
          You can expose the container's port using the `matrix_ldap_registration_proxy_container_http_host_bind_port` variable.
      when: "not matrix_nginx_proxy_enabled | default(False) | bool"
 

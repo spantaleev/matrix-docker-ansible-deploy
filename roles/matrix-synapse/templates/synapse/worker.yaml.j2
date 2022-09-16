@@ -11,7 +11,7 @@ worker_replication_http_port: {{ matrix_synapse_replication_http_port }}
 
 {% set http_resources = [] %}
 
-{% if matrix_synapse_worker_details.type in ['generic_worker', 'frontend_proxy', 'user_dir'] %}
+{% if matrix_synapse_worker_details.type in ['generic_worker', 'user_dir'] %}
   {% set http_resources = http_resources + ['client'] %}
 {% endif %}
 {% if matrix_synapse_worker_details.type in ['generic_worker'] %}
@@ -38,7 +38,7 @@ worker_listeners:
 {% endif %}
 {% endif %}
 
-{% if matrix_synapse_worker_details.type == 'frontend_proxy' %}
+{% if matrix_synapse_worker_details.type == 'generic_worker' %}
 worker_main_http_uri: http://matrix-synapse:{{ matrix_synapse_container_client_api_port }}
 {% endif %}
 

@@ -9,7 +9,7 @@ matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/s
 
 matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_container_global_registry_prefix }}"
-matrix_synapse_version: v1.66.0
+matrix_synapse_version: v1.67.0
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -398,7 +398,6 @@ matrix_synapse_workers_presets:
     federation_sender_workers_count: 1
     media_repository_workers_count: 0
     user_dir_workers_count: 0
-    frontend_proxy_workers_count: 0
   one-of-each:
     generic_workers_count: 1
     pusher_workers_count: 1
@@ -410,7 +409,6 @@ matrix_synapse_workers_presets:
     # user_dir workers are deprecated since Synapse v1.59. This will be removed.
     # See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
     user_dir_workers_count: 0
-    frontend_proxy_workers_count: 1
 
 # Controls whether the matrix-synapse container exposes the various worker ports
 # (see `port` and `metrics_port` in `matrix_synapse_workers_enabled_list`) outside of the container.
@@ -451,10 +449,6 @@ matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
 matrix_synapse_workers_user_dir_workers_count: 0
 matrix_synapse_workers_user_dir_workers_port_range_start: 18661
 matrix_synapse_workers_user_dir_workers_metrics_range_start: 19661
-
-matrix_synapse_workers_frontend_proxy_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['frontend_proxy_workers_count'] }}"
-matrix_synapse_workers_frontend_proxy_workers_port_range_start: 18771
-matrix_synapse_workers_frontend_proxy_workers_metrics_range_start: 19771
 
 # Default list of workers to spawn.
 #

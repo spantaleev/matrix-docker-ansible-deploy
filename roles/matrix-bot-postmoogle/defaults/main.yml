@@ -9,7 +9,7 @@ matrix_bot_postmoogle_docker_repo: "https://gitlab.com/etke.cc/postmoogle.git"
 matrix_bot_postmoogle_docker_repo_version: "{{ 'main' if matrix_bot_postmoogle_version == 'latest' else matrix_bot_postmoogle_version }}"
 matrix_bot_postmoogle_docker_src_files_path: "{{ matrix_base_data_path }}/postmoogle/docker-src"
 
-matrix_bot_postmoogle_version: v0.9.0
+matrix_bot_postmoogle_version: v0.9.1
 matrix_bot_postmoogle_docker_image: "{{ matrix_bot_postmoogle_docker_image_name_prefix }}postmoogle:{{ matrix_bot_postmoogle_version }}"
 matrix_bot_postmoogle_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_postmoogle_container_image_self_build else 'registry.gitlab.com/etke.cc/' }}"
 matrix_bot_postmoogle_docker_image_force_pull: "{{ matrix_bot_postmoogle_docker_image.endswith(':latest') }}"
@@ -110,11 +110,35 @@ matrix_bot_postmoogle_noencryption: false
 
 matrix_bot_postmoogle_domain: "{{ matrix_server_fqn_matrix }}"
 
-# in-container port
+# in-container ports
 matrix_bot_postmoogle_port: '2525'
+matrix_bot_postmoogle_tls_port: '25587'
 
-# on-host port
+# on-host ports
 matrix_bot_postmoogle_smtp_host_bind_port: '25'
+matrix_bot_postmoogle_submission_host_bind_port: '587'
+
+### SSL
+## on-host SSL dir
+matrix_bot_postmoogle_ssl_path: ""
+
+## in-container SSL paths
+# matrix_bot_postmoogle_tls_cert is the SSL certificate's certificate.
+# This is likely set via group_vars/matrix_servers, so you don't need to set it.
+# If you do need to set it manually, note that this is an in-container path.
+# To mount a certificates volumes into the container, use matrix_bot_postmoogle_ssl_path
+# Example value: /ssl/live/{{ matrix_bot_postmoogle_domain }}/fullchain.pem
+matrix_bot_postmoogle_tls_cert: ""
+
+# matrix_bot_postmoogle_tls_key is the SSL certificate's key.
+# This is likely set via group_vars/matrix_servers, so you don't need to set it.
+# If you do need to set it manually, note that this is an in-container path.
+# To mount a certificates volumes into the container, use matrix_bot_postmoogle_ssl_path
+# Example value: /ssl/live/{{ matrix_bot_postmoogle_domain }}/privkey.pem
+matrix_bot_postmoogle_tls_key: ""
+
+# Mandatory TLS, even on plain SMTP port
+matrix_bot_postmoogle_tls_required: false
 
 # Additional environment variables to pass to the postmoogle container
 #

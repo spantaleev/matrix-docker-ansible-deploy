@@ -56,7 +56,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-To use the bot, create a **non-encrypted** room and invite `@bot.matrix-registration-bot:DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+To use the bot, create a **non-encrypted** room and invite `@bot.matrix-registration-bot:DOMAIN` (where `DOMAIN` is your base domain, not the `matrix.` domain).
 
 In this room send `help` and the bot will reply with all options.
 

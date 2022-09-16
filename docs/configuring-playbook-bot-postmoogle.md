@@ -35,6 +35,9 @@ matrix_bot_postmoogle_enabled: true
 matrix_bot_postmoogle_password: PASSWORD_FOR_THE_BOT
 ```
 
+You will also need to add several DNS records so that postmoogle can send emails.
+See [Configuring DNS](configuring-dns.md).
+
 
 ## Installing
 
