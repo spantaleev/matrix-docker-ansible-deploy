@@ -45,6 +45,8 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional, advanced) the [matrix-synapse-ldap3](https://github.com/matrix-org/matrix-synapse-ldap3) LDAP Auth password provider module
 
+- (optional, advanced) the [matrix-ldap-registration-proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy)  a proxy that handles Matrix registration requests and forwards them to LDAP.
+
 - (optional, advanced) the [synapse-simple-antispam](https://github.com/t2bot/synapse-simple-antispam) spam checker module
 
 - (optional, advanced) the [Matrix Corporal](https://github.com/devture/matrix-corporal) reconciliator and gateway for a managed Matrix server

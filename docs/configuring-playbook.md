@@ -86,6 +86,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up the LDAP password provider module](configuring-playbook-ldap-auth.md) (optional, advanced)
 
+- [Setting up the ldap-registration-proxy](configuring-playbook-matrix-ldap-registration-proxy.md) (optional, advanced)
+
 - [Setting up Synapse Simple Antispam](configuring-playbook-synapse-simple-antispam.md) (optional, advanced)
 
 - [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (optional, advanced)
@@ -179,3 +181,5 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up the Sygnal push gateway](configuring-playbook-sygnal.md) (optional)
 
 - [Setting up the ntfy push notifications server](configuring-playbook-ntfy.md) (optional)
+
+
