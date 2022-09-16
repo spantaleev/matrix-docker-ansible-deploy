@@ -56,8 +56,8 @@ We previously had an `appservice` worker type, which [Synapse deprecated in v1.5
 The new way to implement such workers is by using a `generic_worker` and dedicating it to the task of talking to Application Services.
 From now on, we have support for this.
 
-With `matrix_synapse_workers_preset: one-of-each`, you'll get one `appserice` worker automatically.
-You can also control the `appserice` workers count with `matrix_synapse_workers_appserice_workers_count`. Only  `0` or `1` workers of this type are supported by Synapse.
+With `matrix_synapse_workers_preset: one-of-each`, you'll get one `appservice` worker automatically.
+You can also control the `appservice` workers count with `matrix_synapse_workers_appservice_workers_count`. Only  `0` or `1` workers of this type are supported by Synapse.
 
 ### User Directory worker support is back
 
