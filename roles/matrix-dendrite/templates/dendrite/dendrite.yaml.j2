@@ -58,6 +58,10 @@ global:
   # e.g. localhost:443
   well_known_server_name: ""
 
+  # The server name to delegate client-server communications to, with optional port
+  # e.g. localhost:443
+  well_known_client_name: ""
+
   # Lists of domains that the server will trust as identity servers to verify third
   # party identifiers such as phone numbers and email addresses.
   trusted_third_party_id_servers: {{ matrix_dendrite_trusted_id_servers|to_json }}
@@ -72,6 +76,25 @@ global:
     enable_inbound: false
     # Whether outbound presence events are allowed, e.g. sending presence events to other servers
     enable_outbound: false
+
+  # Configuration for in-memory caches. Caches can often improve performance by
+  # keeping frequently accessed items (like events, identifiers etc.) in memory
+  # rather than having to read them from the database.
+  cache:
+    # The estimated maximum size for the global cache in bytes, or in terabytes,
+    # gigabytes, megabytes or kilobytes when the appropriate 'tb', 'gb', 'mb' or
+    # 'kb' suffix is specified. Note that this is not a hard limit, nor is it a
+    # memory limit for the entire process. A cache that is too small may ultimately
+    # provide little or no benefit.
+    max_size_estimated: 1gb
+
+    # The maximum amount of time that a cache entry can live for in memory before
+    # it will be evicted and/or refreshed from the database. Lower values result in
+    # easier admission of new cache entries but may also increase database load in
+    # comparison to higher values, so adjust conservatively. Higher values may make
+    # it harder for new items to make it into the cache, e.g. if new rooms suddenly
+    # become popular.
+    max_age: 1h
 
   # Server notices allows server admins to send messages to all users.
   server_notices:
@@ -186,6 +209,8 @@ client_api:
     enabled: {{ matrix_dendrite_rate_limiting_enabled|to_json }}
     threshold: {{ matrix_dendrite_rate_limiting_threshold|to_json }}
     cooloff_ms: {{ matrix_dendrite_rate_limiting_cooloff_ms|to_json }}
+    exempt_user_ids:
+    #  - "@user:domain.com"
 
 # Configuration for the Federation API.
 federation_api:
@@ -324,6 +349,10 @@ sync_api:
   # a reverse proxy server.
   # real_ip_header: X-Real-IP
   real_ip_header: {{ matrix_dendrite_sync_api_real_ip_header|to_json }}
+  fulltext:
+    enabled: false
+    index_path: "./fulltextindex"
+    language: "en" # more possible languages can be found at https://github.com/blevesearch/bleve/tree/master/analysis/lang
 
 # Configuration for the User API.
 user_api:
