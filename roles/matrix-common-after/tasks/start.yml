@@ -49,8 +49,8 @@
           See `roles/matrix-common-after/defaults/main.yml` for more details about that.
       with_items: "{{ matrix_systemd_services_list }}"
       when:
-        - "item.endswith('.service') and (ansible_facts.services[item]|default(none) is none or ansible_facts.services[item].state != 'running')"
-  when: " ansible_distribution != 'Archlinux'"
+        - "item.endswith('.service') and (ansible_facts.services[item] | default(none) is none or ansible_facts.services[item].state != 'running')"
+  when: "ansible_distribution != 'Archlinux'"
 
 - block:
     # Currently there is a bug in ansible that renders is incompatible with systemd.

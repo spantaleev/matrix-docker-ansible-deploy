@@ -42,7 +42,7 @@
       ansible.builtin.fail:
         msg: >-
           Synapse stream_writer workers (such as {{ item }}) need to define a valid `stream_writer_stream` property
-          (not `{{ matrix_synapse_worker_details.stream_writer_stream|default('undefined') }}`).
+          (not `{{ matrix_synapse_worker_details.stream_writer_stream | default('undefined') }}`).
           Supported types are: {{ matrix_synapse_workers_known_stream_writer_stream_types | join(', ') }}
       when: "'stream_writer_stream' not in matrix_synapse_worker_details or matrix_synapse_worker_details.stream_writer_stream not in matrix_synapse_workers_known_stream_writer_stream_types"
 

@@ -36,6 +36,6 @@
   ansible.builtin.apt:
     name:
       - "{{ matrix_docker_package_name }}"
-      - "python{{'3' if ansible_python.version.major == 3 else ''}}-docker"
+      - "python{{ '3' if ansible_python.version.major == 3 else '' }}-docker"
     state: present
   when: matrix_docker_installation_enabled | bool

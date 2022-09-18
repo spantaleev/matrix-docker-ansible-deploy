@@ -9,7 +9,7 @@
 # Unless `matrix_synapse_workers_enabled_list` is explicitly defined,
 # we'll generate it dynamically.
 - ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/init.yml"
-  when: "matrix_synapse_enabled and matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list|length == 0"
+  when: "matrix_synapse_enabled and matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list | length == 0"
 
 - ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-synapse.service'] }}"
@@ -73,7 +73,7 @@
           }
           {% endif %}
           {% endfor %}
-      when: matrix_synapse_workers_enabled_list|length > 0
+      when: matrix_synapse_workers_enabled_list | length > 0
 
     - name: Register synapse worker metrics proxying configuration with matrix-nginx-proxy (matrix.DOMAIN/metrics/synapse/worker)
       ansible.builtin.set_fact:
@@ -83,5 +83,5 @@
             +
             [matrix_synapse_worker_nginx_metrics_configuration_block]
           }}
-      when: matrix_synapse_workers_enabled_list|length > 0
+      when: matrix_synapse_workers_enabled_list | length > 0
   when: matrix_synapse_enabled | bool and matrix_synapse_metrics_proxying_enabled | bool

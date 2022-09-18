@@ -37,7 +37,7 @@
 
 - name: Populate matrix_synapse_stream_writers from enabled stream writer workers list
   ansible.builtin.set_fact:
-    matrix_synapse_stream_writers: "{{ matrix_synapse_stream_writers | combine ({item.ansible_facts.worker.stream_writer_stream: [item.ansible_facts.worker.name]}) }}"
+    matrix_synapse_stream_writers: "{{ matrix_synapse_stream_writers | combine({item.ansible_facts.worker.stream_writer_stream: [item.ansible_facts.worker.name]}) }}"
   with_items: "{{ matrix_synapse_workers_list_results_stream_writer_workers.results }}"
 
 - name: Build federation sender workers

@@ -157,7 +157,7 @@
       register: matrix_postgres_migrate_db_to_postgres_additional_queries_result
       changed_when: matrix_postgres_migrate_db_to_postgres_additional_queries_result.rc == 0
 
-  when: "matrix_postgres_db_migration_request.additional_psql_statements_list | default([])|length > 0"
+  when: "matrix_postgres_db_migration_request.additional_psql_statements_list | default([]) | length > 0"
 
 - name: Archive {{ matrix_postgres_db_migration_request.engine_old }} database ({{ matrix_postgres_db_migration_request.src }} -> {{ matrix_postgres_db_migration_request.src }}.backup)
   ansible.builtin.command:
