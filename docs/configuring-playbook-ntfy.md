@@ -71,7 +71,8 @@ Steps needed for specific matrix apps:
   3. verify `Settings` -> `Notifications` -> `UnifiedPush: Notification targets` as described below in the "Troubleshooting" section.
 
 * Element-android v1.4.26+:
-  - [not yet documented; should auto-detect and use it?]
+  1. choose `Settings` -> `Notifications` -> `Notification method` -> `ntfy`
+  2. verify `Settings` -> `Troubleshoot` -> `Troubleshoot notification settings`
 
 If the matrix app asks, "Choose a distributor: FCM Fallback or ntfy", then choose "ntfy".
 
