@@ -2484,6 +2484,15 @@ matrix_grafana_dashboard_download_urls_all: |
     (matrix_prometheus_postgres_exporter_dashboard_urls if matrix_prometheus_postgres_exporter_enabled else [])
   }}
 
+matrix_grafana_default_home_dashboard_path: |-
+  {{
+    {
+      'synapse': ('/etc/grafana/dashboards/synapse.json' if matrix_synapse_metrics_enabled else '/etc/grafana/dashboards/node-exporter-full.json'),
+      'dendrite': '/etc/grafana/dashboards/node-exporter-full.json',
+      'conduit': '/etc/grafana/dashboards/node-exporter-full.json',
+    }[matrix_homeserver_implementation]
+  }}
+
 matrix_grafana_systemd_wanted_services_list: |
   {{
     []
