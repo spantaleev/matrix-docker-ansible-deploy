@@ -2477,9 +2477,11 @@ matrix_grafana_enabled: false
 # Grafana's HTTP port to the local host.
 matrix_grafana_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:3000' }}"
 
-matrix_grafana_dashboard_download_urls_all: |
+matrix_grafana_dashboard_download_urls: |
   {{
-    matrix_grafana_dashboard_download_urls
+    (matrix_synapse_grafana_dashboard_urls if matrix_homeserver_implementation == 'synapse' and matrix_synapse_metrics_enabled else [])
+    +
+    (matrix_prometheus_node_exporter_dashboard_urls if matrix_prometheus_node_exporter_enabled else [])
     +
     (matrix_prometheus_postgres_exporter_dashboard_urls if matrix_prometheus_postgres_exporter_enabled else [])
   }}
