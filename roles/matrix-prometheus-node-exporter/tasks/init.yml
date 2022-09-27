@@ -4,7 +4,8 @@
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-prometheus-node-exporter.service'] }}"
   when: matrix_prometheus_node_exporter_enabled | bool
 
-- block:
+- when: matrix_prometheus_node_exporter_enabled | bool and matrix_prometheus_node_exporter_metrics_proxying_enabled | bool
+  block:
     - name: Fail if matrix-nginx-proxy role already executed
       ansible.builtin.fail:
         msg: >-
@@ -38,4 +39,3 @@
             +
             [matrix_prometheus_node_exporter_nginx_metrics_configuration_block]
           }}
-  when: matrix_prometheus_node_exporter_enabled | bool and matrix_prometheus_node_exporter_metrics_proxying_enabled | bool

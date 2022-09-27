@@ -9,7 +9,8 @@
 - ansible.builtin.include_tasks: "{{ role_path }}/tasks/server_base/setup_fedora.yml"
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version | int > 30
 
-- block:
+- when: ansible_os_family == 'Debian'
+  block:
   # ansible_lsb is only available if lsb-release is installed.
   - name: Ensure lsb-release installed
     ansible.builtin.apt:
@@ -28,7 +29,6 @@
 
   - ansible.builtin.include_tasks: "{{ role_path }}/tasks/server_base/setup_raspbian.yml"
     when: (ansible_os_family == 'Debian') and (ansible_lsb.id == 'Raspbian')
-  when: ansible_os_family == 'Debian'
 
 - ansible.builtin.include_tasks: "{{ role_path }}/tasks/server_base/setup_archlinux.yml"
   when: ansible_distribution == 'Archlinux'
@@ -39,7 +39,7 @@
     state: started
     enabled: true
 
-- name: "Ensure {{ matrix_ntpd_service }} is started and autoruns"
+- name: "Ensure ntpd is started and autoruns"
   ansible.builtin.service:
     name: "{{ matrix_ntpd_service }}"
     state: started

@@ -21,7 +21,8 @@
     path: "{{ matrix_appservice_irc_base_path }}/passkey.pem"
   register: matrix_appservice_irc_stat_passkey
 
-- block:
+- when: "matrix_appservice_irc_stat_passkey.stat.exists"
+  block:
     - name: (Data relocation) Ensure matrix-appservice-irc.service is stopped
       ansible.builtin.service:
         name: matrix-appservice-irc
@@ -44,24 +45,23 @@
         - rooms.db
         - users.db
       failed_when: false
-  when: "matrix_appservice_irc_stat_passkey.stat.exists"
 
 - ansible.builtin.set_fact:
     matrix_appservice_irc_requires_restart: false
 
-- block:
+- when: "matrix_appservice_irc_database_engine == 'postgres'"
+  block:
     - name: Check if a nedb database already exists
       ansible.builtin.stat:
         path: "{{ matrix_appservice_irc_data_path }}/users.db"
       register: matrix_appservice_irc_nedb_database_path_local_stat_result
 
-    - block:
+    - when: "matrix_appservice_irc_nedb_database_path_local_stat_result.stat.exists | bool"
+      block:
         - ansible.builtin.import_tasks: "{{ role_path }}/tasks/migrate_nedb_to_postgres.yml"
 
         - ansible.builtin.set_fact:
             matrix_appservice_irc_requires_restart: true
-      when: "matrix_appservice_irc_nedb_database_path_local_stat_result.stat.exists | bool"
-  when: "matrix_appservice_irc_database_engine == 'postgres'"
 
 - name: Ensure Appservice IRC image is pulled
   docker_image:

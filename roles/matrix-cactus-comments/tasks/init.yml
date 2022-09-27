@@ -21,7 +21,10 @@
       }}
   when: matrix_cactus_comments_enabled | bool
 
-- block:
+- when: matrix_cactus_comments_enabled | bool and matrix_cactus_comments_serve_client_enabled | bool
+  tags:
+    - always
+  block:
     - name: Fail if matrix-nginx-proxy role already executed
       ansible.builtin.fail:
         msg: >-
@@ -63,7 +66,3 @@
           reverse proxy.
           Please make sure that you're proxying client files in {{ matrix_cactus_comments_client_path }} correctly
       when: "not matrix_nginx_proxy_enabled | default(False) | bool"
-
-  tags:
-    - always
-  when: matrix_cactus_comments_enabled | bool and matrix_cactus_comments_serve_client_enabled | bool

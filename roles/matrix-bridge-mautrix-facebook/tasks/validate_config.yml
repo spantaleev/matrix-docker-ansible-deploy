@@ -10,7 +10,8 @@
     - "matrix_mautrix_facebook_appservice_token"
     - "matrix_mautrix_facebook_homeserver_token"
 
-- block:
+- when: "matrix_mautrix_facebook_database_engine == 'sqlite' and matrix_mautrix_facebook_docker_image.endswith(':da1b4ec596e334325a1589e70829dea46e73064b')"
+  block:
     - name: Inject warning if on an old SQLite-supporting version
       ansible.builtin.set_fact:
         matrix_playbook_runtime_results: |
@@ -21,4 +22,3 @@
               "NOTE: Your mautrix-facebook bridge is still on SQLite and on the last version that supported it, before support was dropped. Support has been subsequently re-added in v0.3.2, so we advise you to upgrade (by removing your `matrix_mautrix_facebook_docker_image` definition from vars.yml)"
             ]
           }}
-  when: "matrix_mautrix_facebook_database_engine == 'sqlite' and matrix_mautrix_facebook_docker_image.endswith(':da1b4ec596e334325a1589e70829dea46e73064b')"

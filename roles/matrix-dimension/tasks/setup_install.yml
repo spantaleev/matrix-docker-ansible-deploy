@@ -3,13 +3,15 @@
 - ansible.builtin.set_fact:
     matrix_dimension_requires_restart: false
 
-- block:
+- when: "matrix_dimension_database_engine == 'postgres'"
+  block:
     - name: Check if an SQLite database already exists
       ansible.builtin.stat:
         path: "{{ matrix_dimension_sqlite_database_path_local }}"
       register: matrix_dimension_sqlite_database_path_local_stat_result
 
-    - block:
+    - when: "matrix_dimension_sqlite_database_path_local_stat_result.stat.exists | bool"
+      block:
         # pgloader makes a few columns `smallint`, instead of `boolean`.
         # We need to fix them up.
         - ansible.builtin.set_fact:
@@ -67,8 +69,6 @@
 
         - ansible.builtin.set_fact:
             matrix_dimension_requires_restart: true
-      when: "matrix_dimension_sqlite_database_path_local_stat_result.stat.exists | bool"
-  when: "matrix_dimension_database_engine == 'postgres'"
 
 - name: Ensure Dimension base path exists
   ansible.builtin.file:

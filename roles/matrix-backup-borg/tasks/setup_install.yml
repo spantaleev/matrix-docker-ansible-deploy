@@ -1,6 +1,7 @@
 ---
 
-- block:
+- when: matrix_backup_borg_postgresql_enabled | bool and matrix_backup_borg_version == ''
+  block:
   - name: Fail with matrix_backup_borg_version advice if Postgres not enabled
     ansible.builtin.fail:
       msg: >-
@@ -20,7 +21,6 @@
   - name: Set the correct borg backup version to use
     ansible.builtin.set_fact:
       matrix_backup_borg_version: "{{ matrix_postgres_detected_version }}"
-  when: matrix_backup_borg_postgresql_enabled | bool and matrix_backup_borg_version == ''
 
 - name: Ensure borg paths exist
   ansible.builtin.file:

@@ -43,7 +43,10 @@
       The matrix-bridge-appservice-slack role needs to execute before the matrix-synapse role.
   when: "matrix_synapse_role_executed | default(False)"
 
-- block:
+- when: matrix_appservice_slack_enabled | bool
+  tags:
+    - always
+  block:
     - name: Fail if matrix-nginx-proxy role already executed
       ansible.builtin.fail:
         msg: >-
@@ -76,9 +79,6 @@
             +
             [matrix_appservice_slack_matrix_nginx_proxy_configuration]
           }}
-  tags:
-    - always
-  when: matrix_appservice_slack_enabled | bool
 
 - name: Warn about reverse-proxying if matrix-nginx-proxy not used
   ansible.builtin.debug:

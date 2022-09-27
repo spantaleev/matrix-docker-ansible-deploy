@@ -85,16 +85,17 @@
 #
 # Row 3 contains a space when there's no result.
 
-- block:
+- when: "matrix_synapse_rust_synapse_compress_state_find_rooms_command_result.failed or matrix_synapse_rust_synapse_compress_state_find_rooms_command_result.stdout_lines | length != 4"
+  block:
     - ansible.builtin.debug: var="matrix_synapse_rust_synapse_compress_state_find_rooms_command_result"
 
     - name: Fail if room find result is not what we expect
       ansible.builtin.fail:
         msg: >-
           Expecting 4 lines in the "find rooms" result.
-  when: "matrix_synapse_rust_synapse_compress_state_find_rooms_command_result.failed or matrix_synapse_rust_synapse_compress_state_find_rooms_command_result.stdout_lines | length != 4"
 
-- block:
+- when: "matrix_synapse_rust_synapse_compress_state_find_rooms_command_result.stdout_lines[2] != ' '"
+  block:
     # matrix_synapse_rust_synapse_compress_state_eligible_rooms is a list
     # of dictionaries like this: {'room_id': '!some-id', 'count': 2461329}
     - ansible.builtin.set_fact:
@@ -113,7 +114,6 @@
       with_items: "{{ matrix_synapse_rust_synapse_compress_state_eligible_rooms }}"
       loop_control:
         loop_var: room_details
-  when: "matrix_synapse_rust_synapse_compress_state_find_rooms_command_result.stdout_lines[2] != ' '"
 
 - name: Show notice about lack of rooms to compress
   ansible.builtin.debug:

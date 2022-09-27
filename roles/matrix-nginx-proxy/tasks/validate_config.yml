@@ -35,7 +35,8 @@
       - or raw htpasswd content (provided in `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content`)
   when: "matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled | bool and (matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content == '' and (matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username == '' or matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_password == ''))"
 
-- block:
+- when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
+  block:
     - name: (Deprecation) Catch and report renamed settings
       ansible.builtin.fail:
         msg: >-
@@ -57,7 +58,6 @@
         - "matrix_nginx_proxy_proxy_synapse_client_api_addr_with_container"
         - "matrix_nginx_proxy_proxy_synapse_client_api_addr_sans_container"
       when: "vars[item] == '' or vars[item] is none"
-  when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
 
 - name: (Deprecation) Catch and report old metrics usage
   ansible.builtin.fail:

@@ -43,13 +43,15 @@
 - ansible.builtin.set_fact:
     matrix_mx_puppet_steam_requires_restart: false
 
-- block:
+- when: "matrix_mx_puppet_steam_database_engine == 'postgres'"
+  block:
     - name: Check if an SQLite database already exists
       ansible.builtin.stat:
         path: "{{ matrix_mx_puppet_steam_sqlite_database_path_local }}"
       register: matrix_mx_puppet_steam_sqlite_database_path_local_stat_result
 
-    - block:
+    - when: "matrix_mx_puppet_steam_sqlite_database_path_local_stat_result.stat.exists | bool"
+      block:
         - ansible.builtin.set_fact:
             matrix_postgres_db_migration_request:
               src: "{{ matrix_mx_puppet_steam_sqlite_database_path_local }}"
@@ -65,8 +67,6 @@
 
         - ansible.builtin.set_fact:
             matrix_mx_puppet_steam_requires_restart: true
-      when: "matrix_mx_puppet_steam_sqlite_database_path_local_stat_result.stat.exists | bool"
-  when: "matrix_mx_puppet_steam_database_engine == 'postgres'"
 
 - name: Ensure MX Puppet Steam image is pulled
   docker_image:

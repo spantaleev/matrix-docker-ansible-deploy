@@ -34,7 +34,8 @@
   delegate_to: 127.0.0.1
   become: false
 
-- block:
+- when: "ansible_distribution != 'Archlinux'"
+  block:
     - name: Populate service facts
       ansible.builtin.service_facts:
 
@@ -50,9 +51,9 @@
       with_items: "{{ matrix_systemd_services_list }}"
       when:
         - "item.endswith('.service') and (ansible_facts.services[item] | default(none) is none or ansible_facts.services[item].state != 'running')"
-  when: "ansible_distribution != 'Archlinux'"
 
-- block:
+- when: "ansible_distribution == 'Archlinux'"
+  block:
     # Currently there is a bug in ansible that renders is incompatible with systemd.
     # service_facts is not collecting the data successfully.
     # Therefore iterating here manually
@@ -70,4 +71,3 @@
           Try running `systemctl status {{ item.item }}` and `journalctl -fu {{ item.item }}` on the server to investigate.
       with_items: "{{ systemdstatus.results }}"
       when: "item.status['ActiveState'] != 'active'"
-  when: "ansible_distribution == 'Archlinux'"

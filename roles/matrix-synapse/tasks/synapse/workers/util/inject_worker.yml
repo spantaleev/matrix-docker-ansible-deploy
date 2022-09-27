@@ -37,7 +37,8 @@
     msg: "Unrecognized Synapse worker `app`: `{{ matrix_synapse_worker_details.app }}`. Supported types are: {{ matrix_synapse_workers_avail_list | join(', ') }}"
   when: "matrix_synapse_worker_details.app not in matrix_synapse_workers_avail_list"
 
-- block:
+- when: "matrix_synapse_worker_details.type == 'stream_writer'"
+  block:
     - name: Fail if stream_writer_stream not defined for stream_writer worker
       ansible.builtin.fail:
         msg: >-
@@ -50,7 +51,6 @@
       ansible.builtin.fail:
         msg: "Synapse background workers of type stream_writer (such as {{ item }}) need to define a valid `replication_port` property"
       when: "'replication_port' not in matrix_synapse_worker_details"
-  when: "matrix_synapse_worker_details.type == 'stream_writer'"
 
 - ansible.builtin.set_fact:
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + [matrix_synapse_worker_details.name + '.service'] }}"

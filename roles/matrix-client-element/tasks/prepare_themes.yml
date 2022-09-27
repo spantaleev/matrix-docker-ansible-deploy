@@ -4,7 +4,11 @@
 # Tasks related to setting up Element themes
 #
 
-- block:
+- when: matrix_client_element_themes_enabled | bool
+  run_once: true
+  delegate_to: 127.0.0.1
+  become: false
+  block:
   - name: Ensure Element themes repository is pulled
     ansible.builtin.git:
       repo: "{{ matrix_client_element_themes_repository_url }}"
@@ -28,12 +32,6 @@
     ansible.builtin.set_fact:
       matrix_client_element_settingDefaults_custom_themes: "{{ matrix_client_element_settingDefaults_custom_themes + [item['content'] | b64decode | from_json] }}"  # noqa var-naming
     with_items: "{{ matrix_client_element_theme_file_contents.results }}"
-
-  run_once: true
-  delegate_to: 127.0.0.1
-  become: false
-  when: matrix_client_element_themes_enabled | bool
-
 
 #
 # Tasks related to getting rid of Element themes (if it was previously enabled)

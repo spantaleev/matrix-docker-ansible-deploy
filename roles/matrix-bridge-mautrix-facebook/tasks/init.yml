@@ -27,7 +27,10 @@
       }}
   when: matrix_mautrix_facebook_enabled | bool
 
-- block:
+- when: matrix_mautrix_facebook_enabled | bool and matrix_mautrix_facebook_appservice_public_enabled | bool
+  tags:
+    - always
+  block:
     - name: Fail if matrix-nginx-proxy role already executed
       ansible.builtin.fail:
         msg: >-
@@ -70,7 +73,3 @@
           URL endpoint to the matrix-mautrix-facebook container.
           You can expose the container's port using the `matrix_mautrix_facebook_container_http_host_bind_port` variable.
       when: "not matrix_nginx_proxy_enabled | default(False) | bool"
-
-  tags:
-    - always
-  when: matrix_mautrix_facebook_enabled | bool and matrix_mautrix_facebook_appservice_public_enabled | bool

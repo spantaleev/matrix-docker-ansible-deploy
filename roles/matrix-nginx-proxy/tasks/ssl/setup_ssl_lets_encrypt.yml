@@ -16,7 +16,8 @@
 # Tasks related to setting up Let's Encrypt's management of certificates
 #
 
-- block:
+- when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
+  block:
     - name: Ensure certbot Docker image is pulled
       docker_image:
         name: "{{ matrix_ssl_lets_encrypt_certbot_docker_image }}"
@@ -43,13 +44,13 @@
         mode: 0644
       when: "item.applicable | bool"
       with_items: "{{ matrix_ssl_renewal_systemd_units_list }}"
-  when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
 
 #
 # Tasks related to getting rid of Let's Encrypt's management of certificates
 #
 
-- block:
+- when: "matrix_ssl_retrieval_method != 'lets-encrypt'"
+  block:
     - name: Ensure matrix-ssl-lets-encrypt-renew cronjob removed
       ansible.builtin.file:
         path: "{{ matrix_systemd_path }}/{{ item.name }}"
@@ -61,4 +62,3 @@
       ansible.builtin.file:
         path: "{{ matrix_local_bin_path }}/matrix-ssl-lets-encrypt-certificates-renew"
         state: absent
-  when: "matrix_ssl_retrieval_method != 'lets-encrypt'"

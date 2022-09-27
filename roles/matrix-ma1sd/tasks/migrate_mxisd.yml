@@ -42,7 +42,8 @@
 
 # We use shell commands for the migration, because the Ansible copy module cannot
 # recursively copy remote directories (like `/matrix/mxisd/data/sign.key`) in older versions of Ansible.
-- block:
+- when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists"
+  block:
     - name: Copy mxisd data files to ma1sd folder
       ansible.builtin.command:
         cmd: "cp -ar {{ matrix_base_data_path }}/mxisd/data {{ matrix_ma1sd_base_path }}"
@@ -66,7 +67,6 @@
         cmd: "mv {{ matrix_base_data_path }}/mxisd {{ matrix_base_data_path }}/mxisd.migrated"
       register: matrix_ma1sd_migrate_mxisd_move_directory_result
       changed_when: matrix_ma1sd_migrate_mxisd_move_directory_result.rc == 0
-  when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists"
 
 - name: Ensure outdated matrix-mxisd.service doesn't exist
   ansible.builtin.file:

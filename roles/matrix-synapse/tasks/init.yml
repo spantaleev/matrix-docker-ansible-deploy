@@ -26,7 +26,8 @@
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-goofys.service'] }}"
   when: matrix_s3_media_store_enabled | bool
 
-- block:
+- when: matrix_synapse_enabled | bool and matrix_synapse_metrics_proxying_enabled | bool
+  block:
     - name: Fail if matrix-nginx-proxy role already executed
       ansible.builtin.fail:
         msg: >-
@@ -84,4 +85,3 @@
             [matrix_synapse_worker_nginx_metrics_configuration_block]
           }}
       when: matrix_synapse_workers_enabled_list | length > 0
-  when: matrix_synapse_enabled | bool and matrix_synapse_metrics_proxying_enabled | bool

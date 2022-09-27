@@ -3,13 +3,15 @@
 - ansible.builtin.set_fact:
     matrix_bot_matrix_reminder_bot_requires_restart: false
 
-- block:
+- when: "matrix_bot_matrix_reminder_bot_database_engine == 'postgres'"
+  block:
     - name: Check if an SQLite database already exists
       ansible.builtin.stat:
         path: "{{ matrix_bot_matrix_reminder_bot_sqlite_database_path_local }}"
       register: matrix_bot_matrix_reminder_bot_sqlite_database_path_local_stat_result
 
-    - block:
+    - when: "matrix_bot_matrix_reminder_bot_sqlite_database_path_local_stat_result.stat.exists | bool"
+      block:
         - ansible.builtin.set_fact:
             matrix_postgres_db_migration_request:
               src: "{{ matrix_bot_matrix_reminder_bot_sqlite_database_path_local }}"
@@ -25,8 +27,6 @@
 
         - ansible.builtin.set_fact:
             matrix_bot_matrix_reminder_bot_requires_restart: true
-      when: "matrix_bot_matrix_reminder_bot_sqlite_database_path_local_stat_result.stat.exists | bool"
-  when: "matrix_bot_matrix_reminder_bot_database_engine == 'postgres'"
 
 - name: Ensure matrix-reminder-bot paths exist
   ansible.builtin.file:

@@ -11,13 +11,15 @@
 - ansible.builtin.set_fact:
     matrix_mautrix_telegram_requires_restart: false
 
-- block:
+- when: "matrix_mautrix_telegram_database_engine == 'postgres'"
+  block:
     - name: Check if an SQLite database already exists
       ansible.builtin.stat:
         path: "{{ matrix_mautrix_telegram_sqlite_database_path_local }}"
       register: matrix_mautrix_telegram_sqlite_database_path_local_stat_result
 
-    - block:
+    - when: "matrix_mautrix_telegram_sqlite_database_path_local_stat_result.stat.exists | bool"
+      block:
         - ansible.builtin.set_fact:
             matrix_postgres_db_migration_request:
               src: "{{ matrix_mautrix_telegram_sqlite_database_path_local }}"
@@ -33,8 +35,6 @@
 
         - ansible.builtin.set_fact:
             matrix_mautrix_telegram_requires_restart: true
-      when: "matrix_mautrix_telegram_sqlite_database_path_local_stat_result.stat.exists | bool"
-  when: "matrix_mautrix_telegram_database_engine == 'postgres'"
 
 - name: Ensure Mautrix Telegram paths exist
   ansible.builtin.file:

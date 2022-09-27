@@ -27,7 +27,8 @@
     path: "{{ matrix_mx_puppet_discord_base_path }}/database.db"
   register: matrix_mx_puppet_discord_stat_database
 
-- block:
+- when: "matrix_mx_puppet_discord_stat_database.stat.exists"
+  block:
     - name: (Data relocation) Ensure matrix-mx-puppet-discord.service is stopped
       ansible.builtin.service:
         name: matrix-mx-puppet-discord
@@ -40,18 +41,19 @@
         cmd: "mv {{ matrix_mx_puppet_discord_base_path }}/database.db {{ matrix_mx_puppet_discord_data_path }}/database.db"
       register: matrix_mx_puppet_discord_relocate_database_result
       changed_when: matrix_mx_puppet_discord_relocate_database_result.rc == 0
-  when: "matrix_mx_puppet_discord_stat_database.stat.exists"
 
 - ansible.builtin.set_fact:
     matrix_mx_puppet_discord_requires_restart: false
 
-- block:
+- when: "matrix_mx_puppet_discord_database_engine == 'postgres'"
+  block:
     - name: Check if an SQLite database already exists
       ansible.builtin.stat:
         path: "{{ matrix_mx_puppet_discord_sqlite_database_path_local }}"
       register: matrix_mx_puppet_discord_sqlite_database_path_local_stat_result
 
-    - block:
+    - when: "matrix_mx_puppet_discord_sqlite_database_path_local_stat_result.stat.exists | bool"
+      block:
         - ansible.builtin.set_fact:
             matrix_postgres_db_migration_request:
               src: "{{ matrix_mx_puppet_discord_sqlite_database_path_local }}"
@@ -67,8 +69,6 @@
 
         - ansible.builtin.set_fact:
             matrix_mx_puppet_discord_requires_restart: true
-      when: "matrix_mx_puppet_discord_sqlite_database_path_local_stat_result.stat.exists | bool"
-  when: "matrix_mx_puppet_discord_database_engine == 'postgres'"
 
 - name: Ensure MX Puppet Discord image is pulled
   docker_image:

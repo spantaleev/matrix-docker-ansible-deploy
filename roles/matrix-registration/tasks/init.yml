@@ -10,7 +10,10 @@
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-registration.service'] }}"
   when: matrix_registration_enabled | bool
 
-- block:
+- when: matrix_registration_enabled | bool
+  tags:
+    - always
+  block:
     - name: Fail if matrix-nginx-proxy role already executed
       ansible.builtin.fail:
         msg: >-
@@ -54,9 +57,6 @@
             +
             [matrix_registration_matrix_nginx_proxy_configuration]
           }}
-  tags:
-    - always
-  when: matrix_registration_enabled | bool
 
 - name: Warn about reverse-proxying if matrix-nginx-proxy not used
   ansible.builtin.debug:

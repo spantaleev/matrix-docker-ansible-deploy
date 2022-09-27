@@ -18,7 +18,8 @@
     group: "{{ matrix_user_groupname }}"
   when: "not local_path_media_store_stat.failed and not local_path_media_store_stat.stat.exists"
 
-- block:
+- when: "matrix_synapse_container_image_self_build | bool"
+  block:
     - name: Ensure Synapse repository is present on self-build
       ansible.builtin.git:
         repo: "{{ matrix_synapse_container_image_self_build_repo }}"
@@ -48,7 +49,6 @@
       environment:
         DOCKER_BUILDKIT: 1
       when: "matrix_synapse_git_pull_results.changed | bool or matrix_synapse_docker_image_check_result.stdout == ''"
-  when: "matrix_synapse_container_image_self_build | bool"
 
 - name: Ensure Synapse Docker image is pulled
   docker_image:

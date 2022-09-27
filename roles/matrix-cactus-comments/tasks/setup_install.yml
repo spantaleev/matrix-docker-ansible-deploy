@@ -65,7 +65,8 @@
       pull: true
   when: "matrix_cactus_comments_container_image_self_build | bool"
 
-- block:
+- when: matrix_cactus_comments_client_local_dir | length == 0
+  block:
     - name: Download client binary to local folder
       ansible.builtin.get_url:
         url: "https://gitlab.com/cactus-comments/cactus-client/-/archive/v{{ matrix_cactus_comments_client_version }}/cactus-client-v{{ matrix_cactus_comments_client_version }}.tar.gz"
@@ -101,9 +102,9 @@
         mode: "{{ matrix_cactus_comments_client_file_permissions }}"
         owner: "{{ matrix_user_username }}"
         group: "{{ matrix_user_groupname }}"
-  when: matrix_cactus_comments_client_local_dir | length == 0
 
-- block:
+- when: matrix_cactus_comments_client_local_dir | length > 0
+  block:
     - name: Propagate locally distributed client javascreipt
       ansible.builtin.copy:
         src: "{{ matrix_cactus_comments_client_local_dir }}/src/cactus.js"
@@ -118,7 +119,6 @@
         mode: "{{ matrix_cactus_comments_client_file_permissions }}"
         owner: "{{ matrix_user_username }}"
         group: "{{ matrix_user_groupname }}"
-  when: matrix_cactus_comments_client_local_dir | length > 0
 
 - name: Ensure matrix-cactus-comments.service installed
   ansible.builtin.template:

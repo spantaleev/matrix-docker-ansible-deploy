@@ -27,7 +27,10 @@
       }}
   when: matrix_mautrix_hangouts_enabled | bool
 
-- block:
+- when: matrix_mautrix_hangouts_enabled | bool
+  tags:
+    - always
+  block:
     - name: Fail if matrix-nginx-proxy role already executed
       ansible.builtin.fail:
         msg: >-
@@ -59,9 +62,6 @@
             +
             [matrix_mautrix_hangouts_matrix_nginx_proxy_configuration]
           }}
-  tags:
-    - always
-  when: matrix_mautrix_hangouts_enabled | bool
 
 - name: Warn about reverse-proxying if matrix-nginx-proxy not used
   ansible.builtin.debug:

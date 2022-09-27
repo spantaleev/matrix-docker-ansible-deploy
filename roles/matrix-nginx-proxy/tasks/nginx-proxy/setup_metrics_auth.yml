@@ -15,7 +15,8 @@
 # See: https://docs.ansible.com/ansible/2.3/htpasswd_module.html#requirements-on-host-that-executes-module
 # We support various distros, with various versions of Python. Installing additional Python modules can be a hassle.
 # As a workaround, we run `htpasswd` from an Apache container image.
-- block:
+- when: matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username != ''
+  block:
     - name: Ensure Apache Docker image is pulled for generating matrix-metrics-htpasswd from username/password (protecting /metrics/* URIs)
       docker_image:
         name: "{{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_image }}"
@@ -57,4 +58,3 @@
       ansible.builtin.file:
         path: /tmp/matrix-nginx-proxy-metrics-password
         state: absent
-  when: matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username != ''
