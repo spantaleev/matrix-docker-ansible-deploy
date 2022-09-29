@@ -4,6 +4,7 @@
 
 matrix_ldap_registration_proxy_enabled: true
 
+matrix_ldap_registration_proxy_docker_image: matrix_ldap_registration_proxy
 matrix_ldap_registration_proxy_container_image_self_build_repo: "https://gitlab.com/activism.international/matrix_ldap_registration_proxy.git"
 matrix_ldap_registration_proxy_container_image_self_build_branch: "{{ matrix_ldap_registration_proxy_version }}"
 
@@ -21,6 +22,8 @@ matrix_ldap_registration_proxy_ldap_password: ""
 matrix_ldap_registration_proxy_matrix_server_name: "{{ matrix_domain }}"
 matrix_ldap_registration_proxy_matrix_server_url: "https://{{ matrix_server_fqn_matrix }}"
 
+matrix_ldap_registration_proxy_registration_endpoint: "/_matrix/client/r0/register"
+
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_matrix_ldap_registration_proxy_self_check_validate_certificates: true
 
@@ -28,11 +31,11 @@ matrix_ldap_registration_proxy_container_port: 8080
 # Controls whether the matrix_ldap_registration_proxy container exposes its HTTP port (tcp/{{ matrix_ldap_registration_proxy_container_port }} in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8080"), or empty string to not expose.
-matrix_ldap_registration_proxy_container_http_host_bind_port: '8585'}'
+matrix_ldap_registration_proxy_container_http_host_bind_port: ''
 
 # `matrix_ldap_registration_proxy_container_http_host_bind_port_number_raw` contains the raw port number extracted from `matrix_ldap_registration_proxy_container_http_host_bind_port`,
- # which can contain values like this: ('1234', '127.0.0.1:1234', '0.0.0.0:1234')
- matrix_ldap_registration_proxy_container_http_host_bind_port_number_raw: "{{ '' if matrix_ldap_registration_proxy_container_http_host_bind_port == '' else (matrix_ldap_registration_proxy_container_http_host_bind_port.split(':')[1] if ':' in matrix_ldap_registration_proxy_container_http_host_bind_port else matrix_ldap_registration_proxy_container_http_host_bind_port) }}"
+# which can contain values like this: ('1234', '127.0.0.1:1234', '0.0.0.0:1234')
+matrix_ldap_registration_proxy_container_http_host_bind_port_number_raw: "{{ '' if matrix_ldap_registration_proxy_container_http_host_bind_port == '' else (matrix_ldap_registration_proxy_container_http_host_bind_port.split(':')[1] if ':' in matrix_ldap_registration_proxy_container_http_host_bind_port else matrix_ldap_registration_proxy_container_http_host_bind_port) }}"
 
 matrix_ldap_registration_proxy_registration_addr_with_container: "matrix-ldap_registration-proxy:{{  matrix_ldap_registration_proxy_container_http_host_bind_port_number_raw }}"
 matrix_ldap_registration_proxy_registration_addr_sans_container: "127.0.0.1:{{  matrix_ldap_registration_proxy_container_http_host_bind_port_number_raw }}"
@@ -53,4 +56,3 @@ matrix_ldap_registration_proxy_systemd_wanted_services_list: []
 # matrix_ldap_registration_proxy_env_variables_extension: |
 #   KEY=value
 matrix_ldap_registration_proxy_env_variables_extension: ''
-

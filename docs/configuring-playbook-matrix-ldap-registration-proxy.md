@@ -13,18 +13,21 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 
 ```yaml
 matrix_ldap_registration_proxy_enabled: true
-```
-
-That is enough if you use the synapse external password provider via LDAP.
-If you want to use your own credentials add the following to your  `inventory/host_vars/matrix.DOMAIN/vars.yml`:
-
-
-
 # LDAP credentials
-```yaml
 matrix_ldap_registration_proxy_ldap_uri: <URI>
 matrix_ldap_registration_proxy_ldap_base_dn: <DN>
 matrix_ldap_registration_proxy_ldap_user: <USER>
 matrix_ldap_registration_proxy_ldap_password: <password>
 ```
-TODO: is the block above correct? Else indicate that it can only be used with the LDAP password provider for Synapse
+
+If you already use the [synapse external password provider via LDAP](docs/configuring-playbook-ldap-auth.md) (that is, you have `matrix_synapse_ext_password_provider_ldap_enabled: true` and other options in your configuration)
+you can use the following values as configuration:
+
+```yaml
+# Use the LDAP values specified for the synapse role to setup LDAP proxy
+matrix_ldap_registration_proxy_ldap_uri: "{{ matrix_synapse_ext_password_provider_ldap_uri }}"
+matrix_ldap_registration_proxy_ldap_base_dn: "{{ matrix_synapse_ext_password_provider_ldap_base }}"
+matrix_ldap_registration_proxy_ldap_user: "{{ matrix_synapse_ext_password_provider_ldap_bind_dn }}"
+matrix_ldap_registration_proxy_ldap_password: "{{ matrix_synapse_ext_password_provider_ldap_bind_password }}"
+```
+
