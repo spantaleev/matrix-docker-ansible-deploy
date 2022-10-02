@@ -1,3 +1,12 @@
+# 2022-10-02
+
+## matrix-ldap-registration-proxy support
+
+Thanks to [@TheOneWithTheBraid](https://github.com/TheOneWithTheBraid), we now support installing [matrix-ldap-registration-proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy) - a proxy which handles Matrix registration requests and forwards them to LDAP.
+
+See our [Setting up the ldap-registration-proxy](docs/configuring-playbook-matrix-ldap-registration-proxy.md) documentation to get started.
+
+
 # 2022-09-15
 
 ## (Potential Backward Compatibility Break) Major improvements to Synapse workers
