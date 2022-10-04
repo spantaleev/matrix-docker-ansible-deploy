@@ -1,0 +1,30 @@
+---
+
+# We generally support Ansible 2.7.1 and above.
+- name: Fail if running on Ansible < 2.7.1
+  ansible.builtin.fail:
+    msg: "You are running on Ansible {{ ansible_version.string }}, which is not supported. See our guide about Ansible: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/ansible.md"
+  when:
+    - "(ansible_version.major < 2) or (ansible_version.major == 2 and ansible_version.minor < 7) or (ansible_version.major == 2 and ansible_version.minor == 7 and ansible_version.revision < 1)"
+
+# Though we do not support Ansible 2.9.6 which is buggy
+- name: Fail if running on Ansible 2.9.6 on Ubuntu
+  ansible.builtin.fail:
+    msg: "You are running on Ansible {{ ansible_version.string }}, which is not supported. See our guide about Ansible: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/ansible.md"
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - "ansible_version.major == 2 and ansible_version.minor == 9 and ansible_version.revision == 6"
+
+- name: Fail if using python2 on Archlinux
+  ansible.builtin.fail:
+    msg: "Detected that you're using python2 when installing onto Archlinux. Archlinux by default only supports python3."
+  when:
+    - ansible_distribution == 'Archlinux'
+    - ansible_python.version.major != 3
+
+- name: Fail if architecture is set incorrectly
+  ansible.builtin.fail:
+    msg: "Detected that variable matrix_architecture {{ matrix_architecture }} appears to be set incorrectly. See docs/alternative-architectures.md. Server appears to be {{ ansible_architecture }}."
+  when: (ansible_architecture == "x86_64" and matrix_architecture != "amd64") or
+        (ansible_architecture == "aarch64" and matrix_architecture != "arm64") or
+        (ansible_architecture.startswith("armv") and matrix_architecture != "arm32")
