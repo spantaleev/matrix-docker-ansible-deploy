@@ -34,7 +34,7 @@
 	}
 
 	# colibri (JVB) websockets
-	location ~ ^/colibri-ws/([a-zA-Z0-9-\.]+)/(.*) {
+	location ~ ^/colibri-ws/jvb-1/(.*) {
 		{% if matrix_nginx_proxy_enabled %}
 			resolver 127.0.0.11 valid=5s;
 			set $backend "matrix-jitsi-jvb:9090";
@@ -55,7 +55,7 @@
 	}
 
 	# colibri (JVB) websockets for additional JVBs
-	location ~ ^/colibri-ws/([0-9.]*)/(.*) {
+	location ~ ^/colibri-ws/([a-zA-Z0-9-\.]+)/(.*) {
 		proxy_pass http://$1:9090/colibri-ws/$1/$2$is_args$args;
 
 		proxy_set_header Host $host;
