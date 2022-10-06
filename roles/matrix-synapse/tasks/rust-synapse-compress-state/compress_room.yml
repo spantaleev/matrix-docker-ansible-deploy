@@ -21,7 +21,8 @@
   async: "{{ matrix_synapse_rust_synapse_compress_state_compress_room_time }}"
   poll: 10
   register: matrix_synapse_rust_synapse_compress_state_compress_room_command_result
-  changed_when: matrix_synapse_rust_synapse_compress_state_compress_room_command_result.rc == 0
+  failed_when: not matrix_synapse_rust_synapse_compress_state_compress_room_command_result.async_result.finished
+  changed_when: matrix_synapse_rust_synapse_compress_state_compress_room_command_result.async_result.finished and matrix_synapse_rust_synapse_compress_state_compress_room_command_result.rc == 0
 
 - ansible.builtin.debug: var="matrix_synapse_rust_synapse_compress_state_compress_room_command_result"
 
@@ -44,7 +45,8 @@
   async: "{{ matrix_synapse_rust_synapse_compress_state_psql_import_time }}"
   poll: 10
   register: matrix_synapse_rust_synapse_compress_state_psql_import_command_result
-  changed_when: matrix_synapse_rust_synapse_compress_state_psql_import_command_result.rc == 0
+  failed_when: not matrix_synapse_rust_synapse_compress_state_psql_import_command_result.async_result.finished
+  changed_when: matrix_synapse_rust_synapse_compress_state_psql_import_command_result.async_result.finished and matrix_synapse_rust_synapse_compress_state_psql_import_command_result.rc == 0
 
 - name: Clean up
   ansible.builtin.file:

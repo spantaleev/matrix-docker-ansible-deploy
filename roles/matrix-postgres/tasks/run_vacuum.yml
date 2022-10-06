@@ -78,7 +78,8 @@
   async: "{{ postgres_vacuum_wait_time }}"
   poll: 10
   register: matrix_postgres_synapse_vacuum_result
-  changed_when: matrix_postgres_synapse_vacuum_result.rc == 0
+  failed_when: not matrix_postgres_synapse_vacuum_result.async_result.finished
+  changed_when: matrix_postgres_synapse_vacuum_result.async_result.finished and matrix_postgres_synapse_vacuum_result.rc == 0
 
 # Intentionally show the results
 - ansible.builtin.debug: var="matrix_postgres_synapse_vacuum_result"
