@@ -13,7 +13,7 @@ If your database name differs, be sure to change `matrix_synapse_database_databa
 The playbook supports importing Postgres dump files in **text** (e.g. `pg_dump > dump.sql`) or **gzipped** formats (e.g. `pg_dump | gzip -c > dump.sql.gz`).
 
 Importing multiple databases (as dumped by `pg_dumpall`) is also supported.
-But the migration might be a good moment, to "reset" a not properly working bridge. Be aware, that it might affect all users (new link to bridge, new roomes, ...)
+But the migration might be a good moment, to "reset" a not properly working bridge. Be aware, that it might affect all users (new link to bridge, new rooms, ...)
 
 Before doing the actual import, **you need to upload your Postgres dump file to the server** (any path is okay).
 
