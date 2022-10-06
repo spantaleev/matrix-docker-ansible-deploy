@@ -12,7 +12,7 @@ If your database name differs, be sure to change `matrix_synapse_database_databa
 
 The playbook supports importing Postgres dump files in **text** (e.g. `pg_dump > dump.sql`) or **gzipped** formats (e.g. `pg_dump | gzip -c > dump.sql.gz`).
 
-Importing multiple databases (as dumped by `pg_dumpall`) is also supported.  
+Importing multiple databases (as dumped by `pg_dumpall`) is also supported.
 But the migration might be a good moment, to "reset" a not properly working bridge. Be aware, that it might affect all users (new link to bridge, new roomes, ...)
 
 Before doing the actual import, **you need to upload your Postgres dump file to the server** (any path is okay).
@@ -24,11 +24,14 @@ To import, run this command (make sure to replace `<server-path-to-postgres-dump
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml \
---extra-vars='server_path_postgres_dump=<server-path-to-postgres-dump.sql>' \
+--extra-vars='server_path_postgres_dump=<server-path-to-postgres-dump.sql> postgres_default_import_database=matrix' \
 --tags=import-postgres
 ```
 
-**Note**: `<server-path-to-postgres-dump.sql>` must be a file path to a Postgres dump file on the server (not on your local machine!).
+**Notes**:
+
+- `<server-path-to-postgres-dump.sql>` must be a file path to a Postgres dump file on the server (not on your local machine!)
+- `postgres_default_import_database` defaults to `matrix`, which is useful for importing multiple databases (for dumps made with `pg_dumpall`). If you're importing a single database (e.g. `synapse`), consider changing `postgres_default_import_database` accordingly
 
 
 ## Troubleshooting
@@ -90,7 +93,7 @@ If not, you probably get this error. `synapse` is the correct table owner, but t
 "ERROR:  role synapse does not exist"
 ```
 
-Once the database is clear and the ownership of the tables has been fixed in the SQL file, the import task should succeed.  
+Once the database is clear and the ownership of the tables has been fixed in the SQL file, the import task should succeed.
 Check, if `--dbname` is set to `synapse` (not `matrix`) and replace paths (or even better, copy this line from your terminal)
 
 ```
