@@ -349,10 +349,16 @@ sync_api:
   # a reverse proxy server.
   # real_ip_header: X-Real-IP
   real_ip_header: {{ matrix_dendrite_sync_api_real_ip_header|to_json }}
-  fulltext:
+  # Configuration for the full-text search engine.
+  search:
+    # Whether or not search is enabled.
     enabled: false
-    index_path: "./fulltextindex"
-    language: "en" # more possible languages can be found at https://github.com/blevesearch/bleve/tree/master/analysis/lang
+    # The path where the search index will be created in.
+    index_path: "/matrix-media-store-parent/searchindex"
+    # The language most likely to be used on the server - used when indexing, to
+    # ensure the returned results match expectations. A full list of possible languages
+    # can be found at https://github.com/blevesearch/bleve/tree/master/analysis/lang
+    language: "en"
 
 # Configuration for the User API.
 user_api:
