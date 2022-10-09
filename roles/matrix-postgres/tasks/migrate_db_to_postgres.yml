@@ -118,7 +118,7 @@
   failed_when: false
   with_items: "{{ matrix_postgres_db_migration_request.systemd_services_to_stop }}"
 
-- name: Import {{ matrix_postgres_db_migration_request.engine_old }} database from {{ matrix_postgres_db_migration_request.src }} into Postgres
+- name: Import {{ matrix_postgres_db_migration_request.engine_old }} database from {{ matrix_postgres_db_migration_request.src }} into Postgres  # noqa name[template]
   ansible.builtin.command:
     cmd: >-
       {{ matrix_host_command_docker }} run
@@ -158,7 +158,7 @@
       register: matrix_postgres_migrate_db_to_postgres_additional_queries_result
       changed_when: matrix_postgres_migrate_db_to_postgres_additional_queries_result.rc == 0
 
-- name: Archive {{ matrix_postgres_db_migration_request.engine_old }} database ({{ matrix_postgres_db_migration_request.src }} -> {{ matrix_postgres_db_migration_request.src }}.backup)
+- name: Archive {{ matrix_postgres_db_migration_request.engine_old }} database ({{ matrix_postgres_db_migration_request.src }} -> {{ matrix_postgres_db_migration_request.src }}.backup)  # noqa name[template]
   ansible.builtin.command:
     cmd: "mv {{ matrix_postgres_db_migration_request.src }} {{ matrix_postgres_db_migration_request.src }}.backup"
   register: matrix_postgres_migrate_db_to_postgres_move_result

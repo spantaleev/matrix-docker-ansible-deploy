@@ -67,7 +67,7 @@
   become: false
   when: "matrix_postgres_service_start_result.changed | bool"
 
-- name: Import SQLite database from {{ sqlite_database_path }} into Postgres
+- name: Import SQLite database from {{ sqlite_database_path }} into Postgres  # noqa name[template]
   ansible.builtin.command:
     cmd: >-
       {{ matrix_host_command_docker }} run
@@ -83,7 +83,7 @@
   register: matrix_postgres_import_generic_sqlite_db_import_result
   changed_when: matrix_postgres_import_generic_sqlite_db_import_result.rc == 0
 
-- name: Archive SQLite database ({{ sqlite_database_path }} -> {{ sqlite_database_path }}.backup)
+- name: Archive SQLite database ({{ sqlite_database_path }} -> {{ sqlite_database_path }}.backup)  # noqa name[template]
   ansible.builtin.command:
     cmd: "mv {{ sqlite_database_path }} {{ sqlite_database_path }}.backup"
   register: matrix_postgres_import_generic_sqlite_db_move_result
