@@ -142,8 +142,8 @@ For this role to work you will need an additional section in the ansible hosts f
 
 The followings variables will also need to be set
 
-``` yam,l
-matrix_jitsi_jvb_server_ip: '<ip address of the jvb host>'
+``` yaml
+matrix_jitsi_jvb_server_id: '<ip address of the jvb host>'
 ```
 
 This will provision a single JVB instance to that host which will then register itself with the prosody service and make itself available for jicofo to route conferences too.
