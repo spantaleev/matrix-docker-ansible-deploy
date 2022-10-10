@@ -134,6 +134,18 @@ By default a single JVB is deployed on the same hosts as the matrix server. To t
 There is a ansible role that can be run with the following tag:
 ` ansible-playbook -i inventory/hosts --limit jvb_servers setup.yml --tags=setup-additional-jvb `
 
+For this role to work you will need an additional section in the ansible hosts file with the details of the JVB hosts, for example 
+```
+[jvb_servers]
+<your jvb hosts> ansible_host=<ip address of the jvb host>
+```
+
+The followings variables will also need to be set
+
+``` yam,l
+matrix_jitsi_jvb_server_ip: '<ip address of the jvb host>'
+```
+
 This will provision a single JVB instance to that host which will then register itself with the prosody service and make itself available for jicofo to route conferences too.
 
 
