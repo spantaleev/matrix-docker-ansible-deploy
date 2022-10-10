@@ -127,6 +127,15 @@ Read how it works [here](https://github.com/jitsi/jitsi-videobridge/blob/master/
 
 You may want to **limit the maximum video resolution**, to save up resources on both server and clients.
 
+## (Optional) Additional JVBs
+
+By default a single JVB is deployed on the same hosts as the matrix server. To the scale the JVBs and allow more conferences you may wish to provision additional JVB services on other hosts.
+
+There is a ansible role that can be run with the following tag:
+` ansible-playbook -i inventory/hosts --limit jvb_servers setup.yml --tags=setup-additional-jvb `
+
+This will provision a single JVB instance to that host which will then register itself with the prosody service and make itself available for jicofo to route conferences too.
+
 
 ## Apply changes
 
