@@ -132,11 +132,11 @@ You may want to **limit the maximum video resolution**, to save up resources on 
 By default a single JVB is deployed on the same hosts as the matrix server. To the scale the JVBs and allow more conferences you may wish to provision additional JVB services on other hosts.
 
 There is a ansible role that can be run with the following tag:
-` ansible-playbook -i inventory/hosts --limit jvb_servers setup.yml --tags=setup-additional-jvb `
+` ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers setup.yml --tags=common,setup-additional-jitsi-jvb `
 
 For this role to work you will need an additional section in the ansible hosts file with the details of the JVB hosts, for example 
 ```
-[jvb_servers]
+[jitsi_jvb_servers]
 <your jvb hosts> ansible_host=<ip address of the jvb host>
 ```
 
