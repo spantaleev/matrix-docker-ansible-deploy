@@ -140,7 +140,7 @@ For this role to work you will need an additional section in the ansible hosts f
 <your jvb hosts> ansible_host=<ip address of the jvb host>
 ```
 
-The followings variables will also need to be set
+The followings variables will need to be set in the vars file for each JVB:
 
 ``` yaml
 matrix_jitsi_jvb_server_id: '<ip address of the jvb host>'
