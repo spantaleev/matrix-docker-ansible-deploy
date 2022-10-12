@@ -87,7 +87,7 @@ For more information refer to the [docker-jitsi-meet](https://github.com/jitsi/d
 
 By default the Jitsi Meet instance does not work with a client in LAN (Local Area Network), even if others are connected from WAN. There are no video and audio. In the case of WAN to WAN everything is ok.
 
-The reason is the Jitsi VideoBridge git to LAN client the IP address of the docker image instead of the host. The [documentation](https://github.com/jitsi/docker-jitsi-meet#running-behind-nat-or-on-a-lan-environment) of Jitsi in docker suggest to add `DOCKER_HOST_ADDRESS` in enviornment variable to make it work.
+The reason is the Jitsi VideoBridge git to LAN client the IP address of the docker image instead of the host. The [documentation](https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker/#running-behind-nat-or-on-a-lan-environment) of Jitsi in docker suggest to add `JVB_ADVERTISE_IPS` in enviornment variable to make it work.
 
 Here is how to do it in the playbook.
 
@@ -95,7 +95,7 @@ Add these two lines to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configu
 
 ```yaml
 matrix_jitsi_jvb_container_extra_arguments:
-  - '--env "DOCKER_HOST_ADDRESS=<Local IP adress of the host>"'
+  - '--env "JVB_ADVERTISE_IPS=<Local IP address of the host>"'
 ```
 
 ## (Optional) Fine tune Jitsi
