@@ -35,7 +35,7 @@ No matter which external webserver you decide to go with, you'll need to:
         ```
     - if using an external server on another host, add the `<service>_http_host_bind_port` or `<service>_http_bind_port` variables for the services that will be exposed by the external server on the other host. The actual name of the variable is listed in the `roles/<service>/defaults/vars.yml` file for each service. Most variables follow the `<service>_http_host_bind_port` format.
        
-      These variables will make Docker expose the ports to the local network instead of localhost only.
+      These variables will make Docker expose the ports on all network interfaces instead of localhost only.
       [Keep in mind that there are some security concerns if you simply proxy everything.](https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md#synapse-administration-endpoints)
 
       Here are the variables required for the default configuration (Synapse and Element)
