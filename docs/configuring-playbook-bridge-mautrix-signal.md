@@ -79,6 +79,21 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 - make sure you don't log out the `Mautrix-Signal` device some time in the future, as that would break the Double Puppeting feature
 
+## Enable End-to-End-Encryption
+
+To enable the Bridge to work in encrypted rooms add this to your `vars.yml` file:
+``` yaml
+matrix_mautrix_signal_configuration_extension_yaml: |
+  bridge:
+    encryption:
+	  allow: true
+      default: true
+```
+As seen in the mentioned [upstream-documentation](https://docs.mau.fi/bridges/python/signal/index.html):
+- `allow: true` the bridge won't enable encryption on its own, but will work in encrypted rooms
+- `default: true` the bridge will automatically enable encryption in new portals.
+
+**Note**: [Upstream-documentation](https://docs.mau.fi/bridges/python/signal/index.html) mentions to make sure using postgres if enabling the bridge in encrypted rooms.
 
 ## Usage
 
