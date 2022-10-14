@@ -106,10 +106,10 @@ docker run -it --rm -w /work \
 --env='B2_KEY_ID=YOUR_KEY_GOES_HERE' \
 --env='B2_KEY_SECRET=YOUR_SECRET_GOES_HERE' \
 --env='B2_BUCKET_NAME=YOUR_BUCKET_NAME_GOES_HERE' \
--v /matrix/synapse/storage/media-store/:/work \
+--mount type=bind,src=/matrix/synapse/storage/media-store,dst=/work,ro \
 --entrypoint=/bin/sh \
-docker.io/tianon/backblaze-b2:2.1.0 \
--c 'b2 authorize-account $B2_KEY_ID $B2_KEY_SECRET > /dev/null && b2 sync /work/ b2://$B2_BUCKET_NAME'
+docker.io/tianon/backblaze-b2:3.6.0 \
+-c 'b2 authorize-account $B2_KEY_ID $B2_KEY_SECRET && b2 sync /work b2://$B2_BUCKET_NAME --skipNewer'
 ```
 
 This is some initial file sync, which may take a very long time.

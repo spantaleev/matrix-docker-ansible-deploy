@@ -102,5 +102,5 @@ docker run -it --rm \
 --mount type=bind,src=/matrix/synapse/storage/media-store,dst=/work,ro \
 --entrypoint=/bin/sh \
 tianon/backblaze-b2:3.6.0 \
--c 'b2 authorize-account $B2_KEY_ID $B2_KEY_SECRET > /dev/null && b2 sync /work b2://$B2_BUCKET_NAME --skipNewer'
+-c 'b2 authorize-account $B2_KEY_ID $B2_KEY_SECRET && b2 sync /work b2://$B2_BUCKET_NAME --skipNewer'
 ```
