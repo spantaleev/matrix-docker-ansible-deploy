@@ -38,7 +38,6 @@
 
 - name: Ensure matrix-synapse-s3-storage-provider-migrate.service and timer are installed
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/systemd/.j2"
     src: "{{ role_path }}/templates/synapse/ext/s3-storage-provider/systemd/{{ item }}.j2"
     dest: "{{ matrix_systemd_path }}/{{ item }}"
     mode: 0640
@@ -51,4 +50,3 @@
   ansible.builtin.service:
     daemon_reload: true
   when: matrix_synapse_s3_storage_provider_systemd_service_result.changed | bool
-
