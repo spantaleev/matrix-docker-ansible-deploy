@@ -70,10 +70,16 @@ Then use the following commands (`$` values come from environment variables - th
   - `$UPDATE_DB_DURATION` is influenced by the `matrix_synapse_ext_synapse_s3_storage_provider_update_db_day_count` variable (defaults to `0`)
   - `$UPDATE_DB_DURATION` defaults to `0d` (0 days), which means **include files which haven't been accessed for more than 0 days** (that is, **all files will be included**).
 - `s3_media_upload check-deleted $MEDIA_PATH` - check whether files in the local cache still exist in the local media repository directory
-- `s3_media_upload upload $MEDIA_PATH $BUCKET --delete --endpoint-url $ENDPOINT` - uploads locally-stored files to S3 and deletes them from the local media repository directory
+- `s3_media_upload upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT` - uploads locally-stored files to S3 and deletes them from the local media repository directory
 
-The `upload` command may take a lot of time to complete.
+The `s3_media_upload upload` command may take a lot of time to complete.
 
+Instead of running the above commands manually in the shell, you can also run the `/usr/local/bin/matrix-synapse-s3-storage-provider-migrate` script which will run the same commands automatically. We demonstrate how to do it manually, because:
+
+- it's what the upstream project demonstrates and it teaches you how to use the `s3_media_upload` tool
+- allows you to check and verify the output of each command, to catch mistakes
+- includes progress bars and detailed output for each command
+- allows you to easily interrupt slow-running commands, etc. (the `/usr/local/bin/matrix-synapse-s3-storage-provider-migrate` starts a container without interactive TTY support, so `Ctrl+C` may not work and you and require killing via `docker kill ..`)
 
 ### Using another tool in combination with `s3_media_upload`
 
