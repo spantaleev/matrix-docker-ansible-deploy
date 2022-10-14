@@ -13,7 +13,7 @@ If you'd like to move your locally-stored media store data to Amazon S3 (or anot
 
 ## Amazon S3
 
-You'll need an Amazon S3 bucket and some IAM user credentials (access key + secret key) with full write access to the bucket. Example security policy:
+You'll need an Amazon S3 bucket and some IAM user credentials (access key + secret key) with full write access to the bucket. Example IAM security policy:
 
 ```json
 {
@@ -33,6 +33,8 @@ You'll need an Amazon S3 bucket and some IAM user credentials (access key + secr
 	]
 }
 ```
+
+**NOTE**: This policy needs to be attached to an IAM user creted from the **Security Credentials** menu. This is not a **Bucket Policy**.
 
 You then need to enable S3 support in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`).
 It would be something like this:
@@ -91,8 +93,13 @@ It's a good idea to [make a complete server backup](faq.md#how-do-i-backup-the-d
 
 Follow one of the guides below for a migration path from a locally-stored media store to one stored on S3-compatible storage:
 
-- [Migrating to any S3-compatible storage (universal, but likely slow)](#migrating-to-any-s3-compatible-storage-universal-but-likely-slow)
-- [Migrating to Backblaze B2](#migrating-to-backblaze-b2)
+- [Storing Matrix media files on Amazon S3 (optional)](#storing-matrix-media-files-on-amazon-s3-optional)
+	- [Amazon S3](#amazon-s3)
+	- [Using other S3-compatible object stores](#using-other-s3-compatible-object-stores)
+		- [Backblaze B2](#backblaze-b2)
+	- [Migrating from local filesystem storage to S3](#migrating-from-local-filesystem-storage-to-s3)
+		- [Migrating to any S3-compatible storage (universal, but likely slow)](#migrating-to-any-s3-compatible-storage-universal-but-likely-slow)
+		- [Migrating to Backblaze B2](#migrating-to-backblaze-b2)
 
 ### Migrating to any S3-compatible storage (universal, but likely slow)
 
