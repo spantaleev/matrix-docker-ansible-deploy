@@ -2,6 +2,8 @@
 
 ## synapse-s3-storage-provider support
 
+**`synapse-s3-storage-provider` support is very new and still relatively untested. Using it may cause data loss.**
+
 You can now store your Synapse media repository files on Amazon S3 (or another S3-compatible object store) using [synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider) - a media provider for Synapse (Python module), which should work faster and more reliably than our previous [Goofys](docs/configuring-playbook-s3-goofys.md) implementation (Goofys will continue to work).
 
 This is not just for initial installations. Users with existing files (stored in the local filesystem) can also migrate their files to `synapse-s3-storage-provider`.
