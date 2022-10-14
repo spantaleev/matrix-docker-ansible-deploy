@@ -60,7 +60,7 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-synapse \
 			{% for arg in matrix_synapse_container_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_synapse_docker_image }} \
+			{{ matrix_synapse_docker_image_final }} \
 			run -m synapse.app.homeserver -c /data/homeserver.yaml
 
 ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-synapse 2>/dev/null || true'

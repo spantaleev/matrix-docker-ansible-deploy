@@ -62,6 +62,25 @@
   delay: "{{ matrix_container_retries_delay }}"
   until: result is not failed
 
+- when: "matrix_synapse_container_image_customizations_enabled | bool"
+  block:
+    - name: Ensure customizations Dockerfile is created
+      ansible.builtin.template:
+        src: "{{ role_path }}/templates/synapse/customizations/Dockerfile.j2"
+        dest: "{{ matrix_synapse_customized_docker_src_files_path }}/Dockerfile"
+        owner: "{{ matrix_user_username }}"
+        group: "{{ matrix_user_groupname }}"
+        mode: 0640
+
+    - name: Ensure customized Docker image for Synapse is built
+      docker_image:
+        name: "{{ matrix_synapse_docker_image_customized }}"
+        source: build
+        build:
+          dockerfile: Dockerfile
+          path: "{{ matrix_synapse_customized_docker_src_files_path }}"
+          pull: true
+
 - name: Check if a Synapse signing key exists
   ansible.builtin.stat:
     path: "{{ matrix_synapse_config_dir_path }}/{{ matrix_server_fqn_matrix }}.signing.key"
