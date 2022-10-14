@@ -798,6 +798,26 @@ matrix_synapse_spam_checker: []
 # Certain Synapse extensions that you can enable below auto-inject themselves into `matrix_synapse_modules` at runtime.
 matrix_synapse_modules: []
 
+# matrix_synapse_media_storage_providers contains the Synapse `media_storage_providers` configuration setting.
+# To add your own custom `media_storage_providers`, use `matrix_synapse_media_storage_providers_custom`.
+matrix_synapse_media_storage_providers: "{{ matrix_synapse_media_storage_providers_auto + matrix_synapse_media_storage_providers_custom }}"
+
+# matrix_synapse_media_storage_providers_auto contains a list of storage providers that are added by the playbook based on other configuration
+matrix_synapse_media_storage_providers_auto: |
+  {{
+    []
+  }}
+
+# matrix_synapse_media_storage_providers_custom contains your own custom list of storage providers.
+# You're meant to define each custom module as valid keys and values, not as a YAML string that needs to be parsed.
+#
+# Example:
+# matrix_synapse_media_storage_providers_custom:
+# - module: module.SomeModule
+#   store_local: True
+#   # ...
+matrix_synapse_media_storage_providers_custom: []
+
 matrix_synapse_encryption_enabled_by_default_for_room_type: "off"
 
 matrix_synapse_trusted_key_servers:
