@@ -21,7 +21,7 @@ The way media storage providers in Synapse work has some caveats:
 
 You may be thinking **if all files are stored locally as well, what's the point**?
 
-You can run some scripts to delete the local files once in a while, thus freeing up local disk space. If these files are needed in the future (for serving them to users, etc.), Synapse will pull them from the media storage provider on demand.
+You can run some scripts to delete the local files once in a while (which we do automatically by default - see [Periodically cleaning up the local filesystem](#periodically-cleaning-up-the-local-filesystem)), thus freeing up local disk space. If these files are needed in the future (for serving them to users, etc.), Synapse will pull them from the media storage provider on demand.
 
 While you will need some local disk space around, it's only to accommodate usage, etc., and won't grow as large as your S3 store.
 
@@ -104,3 +104,15 @@ docker run -it --rm \
 tianon/backblaze-b2:3.6.0 \
 -c 'b2 authorize-account $B2_KEY_ID $B2_KEY_SECRET && b2 sync /work b2://$B2_BUCKET_NAME --skipNewer'
 ```
+
+## Periodically cleaning up the local filesystem
+
+As described in [How it works?](#how-it-works) above, when new media is uploaded to the Synapse homeserver, it's first stored locally and then also stored on the remote S3 storage.
+
+By default, we periodically ensure that all local files are uploaded to S3 and are then removed from the local filesystem. This is done automatically using:
+
+- the `/usr/local/bin/matrix-synapse-s3-storage-provider-migrate` script
+- .. invoked via the `matrix-synapse-s3-storage-provider-migrate.service` service
+- .. triggered by the `matrix-synapse-s3-storage-provider-migrate.timer` timer, every day at 05:00
+
+So.. you don't need to perform any maintenance yourself.
