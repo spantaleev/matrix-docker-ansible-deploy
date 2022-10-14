@@ -98,3 +98,8 @@ As seen in the mentioned [upstream-documentation](https://docs.mau.fi/bridges/py
 ## Usage
 
 You then need to start a chat with `@signalbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+
+If you want to invite Signal-contacts to an existing Matrix-Room.
+- invite `@signalbot:<matrix-domain>` into the room (refer to [Enable End-to-End-Encryption](#Enable End-to-End-Encryption))
+- type `!signal create`, which will create the Signal-Group
+- invite the contacts you want
