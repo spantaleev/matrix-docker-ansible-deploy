@@ -23,7 +23,7 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) a [Dendrite](https://github.com/matrix-org/dendrite) homeserver - storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Dendrite is a second-generation Matrix homeserver written in Go, an alternative to Synapse.
 
-- (optional) [Amazon S3](https://aws.amazon.com/s3/) storage for Synapse's content repository (`media_store`) files using [Goofys](https://github.com/kahing/goofys)
+- (optional) [Amazon S3](https://aws.amazon.com/s3/) (or other S3-compatible object store) storage for Synapse's content repository (`media_store`) files using [Goofys](https://github.com/kahing/goofys) or [`synapse-s3-storage-provider`](https://github.com/matrix-org/synapse-s3-storage-provider)
 
 - (optional, default) [PostgreSQL](https://www.postgresql.org/) database for Synapse. [Using an external PostgreSQL server](docs/configuring-playbook-external-postgres.md) is also possible.
 
