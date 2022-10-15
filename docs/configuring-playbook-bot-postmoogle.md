@@ -35,9 +35,39 @@ matrix_bot_postmoogle_enabled: true
 matrix_bot_postmoogle_password: PASSWORD_FOR_THE_BOT
 ```
 
-You will also need to add several DNS records so that postmoogle can send emails.
+## Use Postmoogle for sending mails
+
+You will need to add several DNS records
 See [Configuring DNS](configuring-dns.md).
 
+To be able to get the value for `!pm dkim` for your DNS settings you need to have admin-rights for the bridge:
+```yaml
+matrix_bot_postmoogle_admins:
+  - "@<username>:{{ matrix_domain }}"
+```
+
+If you want to use TLS (you should) and you use `matrix_ssl_retrieval_method: manually-managed`) you have to add to `vars.yml`:
+```yaml
+### SSL
+## on-host SSL dir
+matrix_bot_postmoogle_ssl_path: ""
+
+## in-container SSL paths
+# matrix_bot_postmoogle_tls_cert is the SSL certificate's certificate.
+# This is likely set via group_vars/matrix_servers, so you don't need to set it.
+# If you do need to set it manually, note that this is an in-container path.
+# To mount a certificates volumes into the container, use matrix_bot_postmoogle_ssl_path
+# Example value: /ssl/live/{{ matrix_bot_postmoogle_domain }}/fullchain.pem
+matrix_bot_postmoogle_tls_cert: ""
+
+# matrix_bot_postmoogle_tls_key is the SSL certificate's key.
+# This is likely set via group_vars/matrix_servers, so you don't need to set it.
+# If you do need to set it manually, note that this is an in-container path.
+# To mount a certificates volumes into the container, use matrix_bot_postmoogle_ssl_path
+# Example value: /ssl/live/{{ matrix_bot_postmoogle_domain }}/privkey.pem
+matrix_bot_postmoogle_tls_key: ""
+```
+**Note:** `matrix_bot_postmoogle_ssl_path:` defaults to what you set for `matrix_ssl_config_dir_path:` As seen in [/group_vars/matrix_servers](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/group_vars/matrix_servers#L1213) but it has to be set again to make postmoogle look for it outside the docker-container.
 
 ## Installing
 

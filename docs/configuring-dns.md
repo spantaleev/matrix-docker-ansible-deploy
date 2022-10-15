@@ -43,7 +43,7 @@ If you are using Cloudflare DNS, make sure to disable the proxy and set all reco
 | [Postmoogle](configuring-playbook-bot-postmoogle.md)/[Email2Matrix](configuring-playbook-email2matrix.md) email bridges | MX    | `matrix`                       | 10       | 0      | -    | `matrix.<your-domain>`      |
 | [Postmoogle](configuring-playbook-bot-postmoogle.md) email bridge                                                       | TXT   | `matrix`                       | -        | -      | -    | `v=spf1 ip4:<your-ip> -all` |
 | [Postmoogle](configuring-playbook-bot-postmoogle.md) email bridge                                                       | TXT   | `_dmarc.matrix`                | -        | -      | -    | `v=DMARC1; p=quarantine;`   |
-| [Postmoogle](configuring-playbook-bot-postmoogle.md) email bridge                                                       | TXT   | `postmoogle._domainkey.matrix` | -        | -      | -    | get it from `!pm dkim`      |
+| [Postmoogle](configuring-playbook-bot-postmoogle.md) email bridge                                                       | TXT   | `postmoogle._domainkey.matrix` | -        | -      | -    | get it from [`!pm dkim`](https://github.com/spantaleev/matrix-docker-ansible-deploy/blame/master/docs/configuring-playbook-bot-postmoogle.md#L43)      |
 
 ## Subdomains setup
 
