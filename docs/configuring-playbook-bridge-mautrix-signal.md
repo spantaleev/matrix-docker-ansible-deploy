@@ -93,7 +93,15 @@ As seen in the mentioned [upstream-documentation](https://docs.mau.fi/bridges/py
 - `allow: true` the bridge won't enable encryption on its own, but will work in encrypted rooms
 - `default: true` the bridge will automatically enable encryption in new portals.
 
-**Note**: [Upstream-documentation](https://docs.mau.fi/bridges/python/signal/index.html) mentions to make sure using postgres if enabling the bridge in encrypted rooms.
+**Note**: 
+* [Upstream-documentation](https://docs.mau.fi/bridges/python/signal/index.html) mentions to make sure using postgres if enabling the bridge in encrypted rooms.
+* Careful when setting `matrix_mautrix_signal_configuration_extension_yaml:`: If you already used this item before for setting permissions add the part: 
+```
+    encryption:
+	  allow: true
+      default: true
+```
+below the permission-part.
 
 ## Usage
 

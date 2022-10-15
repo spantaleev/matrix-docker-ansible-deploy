@@ -40,7 +40,12 @@ matrix_bot_postmoogle_password: PASSWORD_FOR_THE_BOT
 You will need to add several DNS records
 See [Configuring DNS](configuring-dns.md).
 
-To be able to get the value for `!pm dkim` for your DNS settings you need to have admin-rights for the bridge:
+To be able to get the value for `!pm dkim` for your DNS settings you need to have admin-rights for the bridge.
+If you didn't set this generally for all bridges with:
+```yaml
+matrix_admin: "@username:{{ matrix_domain }}"
+```
+you need to set one for administering postmoogle with this item in your `vars.yml`:
 ```yaml
 matrix_bot_postmoogle_admins:
   - "@<username>:{{ matrix_domain }}"
@@ -68,6 +73,21 @@ matrix_bot_postmoogle_tls_cert: ""
 matrix_bot_postmoogle_tls_key: ""
 ```
 **Note:** `matrix_bot_postmoogle_ssl_path:` defaults to what you set for `matrix_ssl_config_dir_path:` As seen in [/group_vars/matrix_servers](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/group_vars/matrix_servers#L1213) but it has to be set again to make postmoogle look for it outside the docker-container.
+
+## Open Ports
+If you run a firewall on your server and/or it sits behind a NAT-Router, remember to open/forward the ports `25` (for non-TLS) and `587` (TLS)
+as set [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/roles/matrix-bot-postmoogle/defaults/main.yml#L121)
+
+It's possible to change those ports in `vars.yml` with:
+```yaml
+matrix_bot_postmoogle_smtp_host_bind_port: ""
+matrix_bot_postmoogle_submission_host_bind_port: ""
+```
+
+If you want to enforce TLS on both ports add this to `vars.yml`:
+```yaml
+matrix_bot_postmoogle_tls_required: true
+```
 
 ## Installing
 
