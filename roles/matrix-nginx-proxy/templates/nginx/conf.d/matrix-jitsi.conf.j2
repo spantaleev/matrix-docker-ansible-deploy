@@ -53,13 +53,15 @@
 
 		tcp_nodelay on;
 	}
-
+	{% if matrix_nginx_proxy_proxy_jitsi_additional_jvbs_enabled %}
+	{% for jvb in matrix_nginx_proxy_proxy_jitsi_additional_jvbs %}
+	{% for id in jvb %}
 	# colibri (JVB) websockets for additional JVBs
-	location ~ ^/colibri-ws/([a-zA-Z0-9-\.]+)/(.*) {
-		proxy_pass http://$1:9090/colibri-ws/$1/$2$is_args$args;
+	location ~ ^/colibri-ws/{{ id }}/(.*) {
+		proxy_pass http://{{ jvb[id] }}:9090/colibri-ws/{{ id }}/$2$is_args$args;
 
 		proxy_set_header Host $host;
-		proxy_set_header X-Forwarded-For {{ matrix_nginx_proxy_x_forwarded_for }};		
+		proxy_set_header X-Forwarded-For {{ matrix_nginx_proxy_x_forwarded_for }};
 		proxy_set_header Upgrade $http_upgrade;
 		proxy_set_header Connection "upgrade";
 
@@ -67,6 +69,9 @@
 
 		tcp_nodelay on;
 	}
+	{% endfor %}
+	{% endfor %}
+	{% endif %}
 
 	# XMPP websocket
 	location = /xmpp-websocket {
