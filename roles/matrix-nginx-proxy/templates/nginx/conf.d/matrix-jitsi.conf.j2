@@ -57,7 +57,7 @@
 	{% for jvb in matrix_nginx_proxy_proxy_jitsi_additional_jvbs %}
 	{% for id in jvb %}
 	# colibri (JVB) websockets for additional JVBs
-	location ~ ^/colibri-ws/{{ id }}/(.*) {
+	location ~ ^/colibri-ws/{{ id | regex_escape }}/(.*) {
 		proxy_pass http://{{ jvb[id] }}:9090/colibri-ws/{{ id }}/$2$is_args$args;
 
 		proxy_set_header Host $host;
