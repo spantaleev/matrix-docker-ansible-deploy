@@ -134,19 +134,44 @@ By default a single JVB is deployed on the same hosts as the matrix server. To t
 There is a ansible role that can be run with the following tag:
 ` ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers setup.yml --tags=common,setup-additional-jitsi-jvb `
 
-For this role to work you will need an additional section in the ansible hosts file with the details of the JVB hosts, for example 
+For this role to work you will need an additional section in the ansible hosts file with the details of the JVB hosts, for example:
 ```
 [jitsi_jvb_servers]
 <your jvb hosts> ansible_host=<ip address of the jvb host>
 ```
 
-The followings variables will need to be set in the vars file for each JVB:
+Each JVB will require a server id to be set so that it can be uniquely identify and this allows jitsi to keep track of which conferences are on which JVB.  
+The server id is set with the variable `matrix_jitsi_jvb_server_id` which ends up as the JVB_WS_SERVER_ID environment variables in the JVB docker container. 
+This variable can be set via the host file, a parameter to the ansible command or in the vars.yaml for the host which will have the additional JVB. For example:
 
 ``` yaml
-matrix_jitsi_jvb_server_id: '<ip address of the jvb host>'
+matrix_jitsi_jvb_server_id: 'jvb-2'
 ```
 
-This will provision a single JVB instance to that host which will then register itself with the prosody service and make itself available for jicofo to route conferences too.
+``` INI
+[jitsi_jvb_servers]
+jvb-2.example.com ansible_host=192.168.0.1 matrix_jitsi_jvb_server_id=jvb-2
+jvb-3.example.com ansible_host=192.168.0.1 matrix_jitsi_jvb_server_id=jvb-2
+```
+
+Note that the server id jvb-1 is reserved for JVB instance running on the main host and therefore should not be used as the id of an additional jvb host.
+
+The nginx configuration will also need to be updated in order to deal with the additional jvbs server. This is achieved via its own configuration variable
+`matrix_nginx_proxy_proxy_jitsi_additional_jvbs`, which contains a dictionary of server ids to ip addresses.
+
+For example,
+
+``` yaml
+matrix_nginx_proxy_proxy_jitsi_additional_jvbs:
+   jvb-2: 192.168.0.1
+   jvb-3: 192.168.0.2
+```
+matrix_nginx_proxy_proxy_jitsi_additional_jvbs: {}
+
+
+Applied together this will allow you to provision a extra JVB instances which will register themselves with the prosody service and be available for jicofo 
+to route conferences too.
+
 
 
 ## Apply changes
