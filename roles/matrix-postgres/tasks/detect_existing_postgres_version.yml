@@ -68,3 +68,8 @@
   ansible.builtin.set_fact:
     matrix_postgres_detected_version_corresponding_docker_image: "{{ matrix_postgres_docker_image_v13 }}"
   when: "matrix_postgres_detected_version == '13' or matrix_postgres_detected_version.startswith('13.')"
+
+- name: Determine corresponding Docker image to detected version (use 14.x, if detected)
+  ansible.builtin.set_fact:
+    matrix_postgres_detected_version_corresponding_docker_image: "{{ matrix_postgres_docker_image_v14 }}"
+  when: "matrix_postgres_detected_version == '14' or matrix_postgres_detected_version.startswith('14.')"
