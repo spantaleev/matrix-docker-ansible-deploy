@@ -169,7 +169,7 @@ matrix_nginx_proxy_proxy_jitsi_additional_jvbs:
 matrix_nginx_proxy_proxy_jitsi_additional_jvbs: {}
 
 
-Applied together this will allow you to provision a extra JVB instances which will register themselves with the prosody service and be available for jicofo 
+Applied together this will allow you to provision extra JVB instances which will register themselves with the prosody service and be available for jicofo 
 to route conferences too.
 
 
