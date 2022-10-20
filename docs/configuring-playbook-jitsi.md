@@ -150,11 +150,24 @@ matrix_jitsi_jvb_server_id: 'jvb-2'
 
 ``` INI
 [jitsi_jvb_servers]
-jvb-2.example.com ansible_host=192.168.0.1 matrix_jitsi_jvb_server_id=jvb-2
-jvb-3.example.com ansible_host=192.168.0.1 matrix_jitsi_jvb_server_id=jvb-2
+jvb-2.example.com ansible_host=192.168.0.2 matrix_jitsi_jvb_server_id=jvb-2
+jvb-3.example.com ansible_host=192.168.0.3 matrix_jitsi_jvb_server_id=jvb-2
 ```
 
 Note that the server id `jvb-1` is reserved for the JVB instance running on the Matrix host and therefore should not be used as the id of an additional jvb host.
+
+The JVB will also need to know where the prosody xmpp server is located, similar to the server id this can be set in the vars for the JVB by using the variable 
+`matrix_jitsi_xmpp_server`. The Jitsi prosody container is deployed on the matrix server by default so the value can be set to the matrix domain. For example:
+
+```yaml
+matrix_jitsi_xmpp_server: "{{  matrix_domain }}"
+```
+
+However, it can also be set the ip address of the matrix server. This can be useful if you wish to use a private ip. For example:
+
+```yaml
+matrix_jitsi_xmpp_server: "192.168.0.1"
+```
 
 The nginx configuration will also need to be updated in order to deal with the additional JVB servers. This is achieved via its own configuration variable
 `matrix_nginx_proxy_proxy_jitsi_additional_jvbs`, which contains a dictionary of server ids to ip addresses.
@@ -163,8 +176,8 @@ For example,
 
 ``` yaml
 matrix_nginx_proxy_proxy_jitsi_additional_jvbs:
-   jvb-2: 192.168.0.1
-   jvb-3: 192.168.0.2
+   jvb-2: 192.168.0.2
+   jvb-3: 192.168.0.3
 ```
 
 
