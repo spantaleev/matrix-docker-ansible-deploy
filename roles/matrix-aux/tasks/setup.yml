@@ -11,8 +11,9 @@
 
 - name: Ensure AUX files are created
   ansible.builtin.copy:
+    src: "{{ item.src if 'src' in item else omit }}"
+    content: "{{ item.content if 'content' in item else omit }}"
     dest: "{{ item.dest }}"
-    content: "{{ item.content }}"
     owner: "{{ item.owner | default(matrix_user_username) }}"
     group: "{{ item.group | default(matrix_user_groupname) }}"
     mode: "{{ item.mode | default(matrix_aux_file_default_mode) }}"
