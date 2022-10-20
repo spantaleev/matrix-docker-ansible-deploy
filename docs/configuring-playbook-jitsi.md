@@ -156,7 +156,7 @@ jvb-3.example.com ansible_host=192.168.0.1 matrix_jitsi_jvb_server_id=jvb-2
 
 Note that the server id `jvb-1` is reserved for the JVB instance running on the Matrix host and therefore should not be used as the id of an additional jvb host.
 
-The nginx configuration will also need to be updated in order to deal with the additional jvbs server. This is achieved via its own configuration variable
+The nginx configuration will also need to be updated in order to deal with the additional JVB servers. This is achieved via its own configuration variable
 `matrix_nginx_proxy_proxy_jitsi_additional_jvbs`, which contains a dictionary of server ids to ip addresses.
 
 For example,
