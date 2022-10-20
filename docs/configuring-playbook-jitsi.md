@@ -142,7 +142,7 @@ For this role to work you will need an additional section in the ansible hosts f
 
 Each JVB will require a server id to be set so that it can be uniquely identified and this allows Jitsi to keep track of which conferences are on which JVB.  
 The server id is set with the variable `matrix_jitsi_jvb_server_id` which ends up as the JVB_WS_SERVER_ID environment variables in the JVB docker container. 
-This variable can be set via the host file, a parameter to the ansible command or in the vars.yaml for the host which will have the additional JVB. For example:
+This variable can be set via the host file, a parameter to the ansible command or in the `vars.yaml` for the host which will have the additional JVB. For example:
 
 ``` yaml
 matrix_jitsi_jvb_server_id: 'jvb-2'
