@@ -45,6 +45,8 @@ If you are using Cloudflare DNS, make sure to disable the proxy and set all reco
 | [Postmoogle](configuring-playbook-bot-postmoogle.md) email bridge                                                       | TXT   | `_dmarc.matrix`                | -        | -      | -    | `v=DMARC1; p=quarantine;`   |
 | [Postmoogle](configuring-playbook-bot-postmoogle.md) email bridge                                                       | TXT   | `postmoogle._domainkey.matrix` | -        | -      | -    | get it from `!pm dkim`      |
 
+When setting up a SRV record, if you are asked for a service and protocol instead of a hostname split the host value from the table where the period is. For example use service as `_matrix-identity` and protocol as `_tcp`.
+
 ## Subdomains setup
 
 As the table above illustrates, you need to create 2 subdomains (`matrix.<your-domain>` and `element.<your-domain>`) and point both of them to your new server's IP address (DNS `A` record or `CNAME` record is fine).
