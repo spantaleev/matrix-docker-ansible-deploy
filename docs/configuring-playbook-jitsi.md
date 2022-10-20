@@ -166,7 +166,6 @@ matrix_nginx_proxy_proxy_jitsi_additional_jvbs:
    jvb-2: 192.168.0.1
    jvb-3: 192.168.0.2
 ```
-matrix_nginx_proxy_proxy_jitsi_additional_jvbs: {}
 
 
 Applied together this will allow you to provision extra JVB instances which will register themselves with the prosody service and be available for jicofo 
