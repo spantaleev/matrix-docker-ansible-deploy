@@ -68,7 +68,12 @@ matrix_postgres_additional_databases: []
 # If a dump file contains the roles and they've also been created beforehand (see `matrix_postgres_additional_databases`),
 # importing would fail.
 # We either need to not create them or to ignore the `CREATE ROLE` statements in the dump.
-matrix_postgres_import_roles_to_ignore: "{{ [matrix_postgres_connection_username] }}"
+matrix_postgres_import_roles_to_ignore: |
+  {{
+    [matrix_postgres_connection_username]
+    +
+    matrix_postgres_additional_databases|map(attribute='username') | list
+  }}
 
 # When importing an existing Postgres database (when restoring a backup) or when doing a Postgres upgrade (which dumps & restores), we'd like to avoid:
 # - creating users (`CREATE ROLE ..`)
@@ -85,7 +90,12 @@ matrix_postgres_import_roles_ignore_regex: "^(CREATE|ALTER) ROLE ({{ matrix_post
 # If a dump file contains the databases and they've also been created beforehand (see `matrix_postgres_additional_databases`),
 # importing would fail.
 # We either need to not create them or to ignore the `CREATE DATABASE` statements in the dump.
-matrix_postgres_import_databases_to_ignore: "{{ [matrix_postgres_db_name] }}"
+matrix_postgres_import_databases_to_ignore: |
+  {{
+    [matrix_postgres_db_name]
+    +
+    matrix_postgres_additional_databases|map(attribute='name') | list
+  }}
 
 matrix_postgres_import_databases_ignore_regex: "^CREATE DATABASE ({{ matrix_postgres_import_databases_to_ignore | join('|') }})\\s"  # noqa jinja[spacing]
 
