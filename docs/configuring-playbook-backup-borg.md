@@ -73,3 +73,9 @@ After configuring the playbook, run the [installation](installing.md) command ag
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
+
+## Manually start a backup
+
+For testing your setup it can be helpful to not wait until 4am. If you want to run the backup immediately, log onto the server
+and run `systemctl start matrix-backup-borg`. This will not return until the backup is done, so possibly a long time.
+Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.
