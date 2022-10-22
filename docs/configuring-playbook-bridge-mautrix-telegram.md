@@ -64,3 +64,6 @@ If you like to exclude all groups from syncing and use the Telgeram-Bridge only 
 ```yaml
 matrix_mautrix_telegram_filter_mode: whitelist
 ```
+If you like to enable specific Group/Channels use:
+`!filter whitelist <chat ID>` --> only Bot-Admins are able to do that!
+To get the chate ID you can use this [TG-BOT](https://t.me/username_to_id_bot) or options listed [here](https://github.com/GabrielRF/telegram-id).
