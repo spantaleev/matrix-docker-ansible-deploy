@@ -572,6 +572,20 @@ matrix_ssl_log_dir_path: "{{ matrix_ssl_base_path }}/log"
 matrix_ssl_pre_obtaining_required_service_name: ~
 matrix_ssl_pre_obtaining_required_service_start_wait_time_seconds: 60
 
+# matrix_ssl_orphaned_renewal_configs_purging_enabled controls whether the playbook will delete Let's Encryption renewal configuration files (`/matrix/ssl/config/renewal/*.conf)
+# for domains that are not part of the `matrix_ssl_domains_to_obtain_certificates_for` list.
+#
+# As the `matrix_ssl_domains_to_obtain_certificates_for` list changes over time, the playbook obtains certificates for various domains
+# and sets up "renewal" configuration files to keep these certificates fresh.
+# When a domain disappears from the `matrix_ssl_domains_to_obtain_certificates_for` list (because its associated service had gotten disabled),
+# the certificate files and renewal configuration still remain in the filesystem and certbot may try to renewal the certificate for this domain.
+# If there's no DNS record for this domain or it doesn't point to this server anymore, the `matrix-ssl-lets-encrypt-certificates-renew.service` systemd service
+# won't be able to renew the certificate and will generate an error.
+#
+# With `matrix_ssl_orphaned_renewal_configs_purging_enabled` enabled, orphaned renewal configurations will be purged on each playbook run.
+# Some other leftover files will still remain, but we don't bother purging them because they don't cause troubles.
+matrix_ssl_orphaned_renewal_configs_purging_enabled: true
+
 # Nginx Optimize SSL Session
 #
 # ssl_session_cache:
