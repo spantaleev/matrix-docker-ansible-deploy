@@ -28,7 +28,8 @@
 - when: 'postgres_connection_string_variable_name is defined'
   block:
     - name: Fail if postgres_connection_string_variable_name points to an undefined variable
-      ansible.builtin.fail: msg="postgres_connection_string_variable_name is defined, but there is no variable with the name `{{ postgres_connection_string_variable_name }}`"
+      ansible.builtin.fail:
+        msg: "postgres_connection_string_variable_name is defined, but there is no variable with the name `{{ postgres_connection_string_variable_name }}`"
       when: "postgres_connection_string_variable_name not in vars"
 
     - name: Get Postgres connection string from variable

@@ -21,7 +21,8 @@
     register: lsb_release_installation_result
 
   - name: Reread ansible_lsb facts if lsb-release got installed
-    ansible.builtin.setup: filter=ansible_lsb*
+    ansible.builtin.setup:
+      filter: ansible_lsb*
     when: lsb_release_installation_result.changed
 
   - ansible.builtin.include_tasks: "{{ role_path }}/tasks/server_base/setup_debian.yml"

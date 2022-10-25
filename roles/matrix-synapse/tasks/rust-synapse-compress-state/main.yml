@@ -88,7 +88,8 @@
 
 - when: "matrix_synapse_rust_synapse_compress_state_find_rooms_command_result.failed or matrix_synapse_rust_synapse_compress_state_find_rooms_command_result.stdout_lines | length != 4"
   block:
-    - ansible.builtin.debug: var="matrix_synapse_rust_synapse_compress_state_find_rooms_command_result"
+    - ansible.builtin.debug:
+        var: "matrix_synapse_rust_synapse_compress_state_find_rooms_command_result"
 
     - name: Fail if room find result is not what we expect
       ansible.builtin.fail:
