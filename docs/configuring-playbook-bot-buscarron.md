@@ -36,10 +36,10 @@ matrix_bot_buscarron_forms:
     room: "!yourRoomID:DOMAIN" # (mandatory) Room ID where form submission will be posted
     redirect: https://DOMAIN # (mandatory) To what page user will be redirected after the form submission
     ratelimit: 1r/m # (optional) rate limit of the form, format: <max requests>r/<interval:s,m>, eg: 1r/s or 54r/m
+    hasemail: 1 # (optional) form has "email" field that should be validated
     extensions: [] # (optional) list of form extensions (not used yet)
 
-matrix_bot_buscarron_spam_hosts: [] # (optional) list of email domains/hosts that should be rejected automatically
-matrix_bot_buscarron_spam_emails: [] # (optional) list of email addresses that should be rejected automatically
+matrix_bot_buscarron_spamlist: [] # (optional) list of emails/domains/hosts (with wildcards support) that should be rejected automatically
 ```
 
 You will also need to add a DNS record so that buscarron can be accessed.
