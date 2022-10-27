@@ -42,7 +42,10 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Core service adjustments
 
-- [Configuring Synapse](configuring-playbook-synapse.md) (optional)
+- Homeserver configuration:
+  - [Configuring Synapse](configuring-playbook-synapse.md), if you're going with the default/recommended homeserver implementation (optional)
+
+  - [Configuring Conduit](configuring-playbook-conduit.md), if you've switched to the [Conduit](https://conduit.rs) homeserver implementation (optional)
 
 - [Configuring Element](configuring-playbook-client-element.md) (optional)
 
