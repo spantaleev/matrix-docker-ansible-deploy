@@ -67,11 +67,12 @@
 - ansible.builtin.set_fact:
     matrix_postgres_synapse_was_running: "{{ ansible_facts.services['matrix-synapse.service'] | default(none) is not none and ansible_facts.services['matrix-synapse.service'].state == 'running' }}"
 
-- name: Ensure matrix-synapse is stopped
+- name: Ensure services are stopped
   ansible.builtin.service:
-    name: matrix-synapse
+    name: "{{ item }}"
     state: stopped
     daemon_reload: true
+  with_items: "{{ matrix_postgres_systemd_services_to_stop_for_maintenance_list }}"
 
 - name: Run Postgres vacuum command
   ansible.builtin.command: "{{ matrix_postgres_vacuum_command }}"
@@ -85,9 +86,9 @@
 - ansible.builtin.debug:
     var: "matrix_postgres_synapse_vacuum_result"
 
-- name: Ensure matrix-synapse is started, if it previously was
+- name: Ensure services are started
   ansible.builtin.service:
-    name: matrix-synapse
+    name: "{{ item }}"
     state: started
     daemon_reload: true
-  when: "matrix_postgres_synapse_was_running | bool"
+  with_items: "{{ matrix_postgres_systemd_services_to_stop_for_maintenance_list }}"
