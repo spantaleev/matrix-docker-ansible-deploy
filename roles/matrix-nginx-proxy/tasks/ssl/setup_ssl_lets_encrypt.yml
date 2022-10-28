@@ -22,7 +22,7 @@
       ansible.builtin.import_tasks: "{{ role_path }}/tasks/ssl/purge_ssl_lets_encrypt_orphaned_configs.yml"
 
     - name: Ensure certbot Docker image is pulled
-      docker_image:
+      community.docker.docker_image:
         name: "{{ matrix_ssl_lets_encrypt_certbot_docker_image }}"
         source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
         force_source: "{{ matrix_ssl_lets_encrypt_certbot_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"

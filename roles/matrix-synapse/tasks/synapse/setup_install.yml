@@ -51,7 +51,7 @@
       when: "matrix_synapse_git_pull_results.changed | bool or matrix_synapse_docker_image_check_result.stdout == ''"
 
 - name: Ensure Synapse Docker image is pulled
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_synapse_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_synapse_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
@@ -73,7 +73,7 @@
         mode: 0640
 
     - name: Ensure customized Docker image for Synapse is built
-      docker_image:
+      community.docker.docker_image:
         name: "{{ matrix_synapse_docker_image_customized }}"
         source: build
         build:
