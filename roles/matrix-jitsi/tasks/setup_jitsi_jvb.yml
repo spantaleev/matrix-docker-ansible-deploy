@@ -17,7 +17,7 @@
   when: matrix_jitsi_enabled | bool and item.when
 
 - name: Ensure jitsi-jvb Docker image is pulled
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_jitsi_jvb_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_jitsi_jvb_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"

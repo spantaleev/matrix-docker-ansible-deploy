@@ -15,7 +15,7 @@
   when: "item.when | bool"
 
 - name: Ensure Appservice webhooks image is pulled
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_appservice_webhooks_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_appservice_webhooks_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
@@ -39,7 +39,7 @@
       register: matrix_appservice_webhooks_git_pull_results
 
     - name: Ensure Appservice webhooks Docker image is built
-      docker_image:
+      community.docker.docker_image:
         name: "{{ matrix_appservice_webhooks_docker_image }}"
         source: build
         force_source: "{{ matrix_appservice_webhooks_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"

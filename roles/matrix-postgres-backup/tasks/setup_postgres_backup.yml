@@ -17,7 +17,7 @@
   when: matrix_postgres_backup_enabled | bool
 
 - name: Ensure postgres backup Docker image is pulled
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_postgres_backup_docker_image_to_use }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_postgres_backup_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"

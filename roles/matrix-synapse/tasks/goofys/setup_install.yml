@@ -3,7 +3,7 @@
 - ansible.builtin.import_tasks: "{{ role_path }}/../matrix-base/tasks/util/ensure_fuse_installed.yml"
 
 - name: Ensure Goofys Docker image is pulled
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_s3_goofys_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_s3_goofys_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
