@@ -28,7 +28,7 @@ server {
 	location / {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
+			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_nginx_proxy_proxy_dendrite_client_api_addr_with_container }}";
 			proxy_pass http://$backend;
 		{% else %}
@@ -59,7 +59,7 @@ server {
 	location / {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
+			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_nginx_proxy_proxy_dendrite_federation_api_addr_with_container }}";
 			proxy_pass http://$backend;
 		{% else %}
