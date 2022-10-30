@@ -54,14 +54,14 @@
         msg: >-
           Couldn't find GIT on the local machine. Continuing without saving the GIT hash.
           You can disable saving the GIT hash by setting 'matrix_playbook_commit_hash_preservation_enabled: false' in vars.yml
-      when: "git_describe.stderr.find('not found') != -1"
+      when: "git_describe.stderr.find('git: not found') != -1"
 
-    - name: GIT hash error
+    - name: Get GIT hash error
       ansible.builtin.fail:
         msg: >-
           Error when trying to get the GIT hash.
           You can disable saving the GIT hash by setting 'matrix_playbook_commit_hash_preservation_enabled: false' in vars.yml
-      when: "git_describe.stderr.find('not found') == -1"
+      when: "git_describe.stderr.find('git: not found') == -1"
 
   when: "matrix_playbook_commit_hash_preservation_enabled|bool"
 
