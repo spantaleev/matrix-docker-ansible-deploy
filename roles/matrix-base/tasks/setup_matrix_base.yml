@@ -40,16 +40,9 @@
       debug:
         msg: "Git hash: {{ git_hash }}"
     
-    - name: Save git hash in git_hash.yml
-      become: false
-      local_action: 
-        copy
-        content="git_hash_last_run{{ ":" }} {{ git_hash }}\n"
-        dest="{{ matrix_vars_yml_snapshotting_src }}/git_hash.yml"
-
-    - name: Copy git_hash.yml file to target
+    - name: Save git_hash.yml on target
       copy:
-        src: "{{ matrix_vars_yml_snapshotting_src }}/git_hash.yml"
+        content: "{{ git_hash }}"
         dest: "{{ matrix_base_data_path }}/git_hash.yml"
         owner: "{{ matrix_user_username }}"
         group: "{{ matrix_user_groupname }}"
