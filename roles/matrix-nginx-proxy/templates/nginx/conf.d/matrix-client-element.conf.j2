@@ -26,7 +26,7 @@
 	location / {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
+			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 			set $backend "matrix-client-element:8080";
 			proxy_pass http://$backend;
 		{% else %}
@@ -53,7 +53,7 @@ server {
 		location /.well-known/acme-challenge {
 			{% if matrix_nginx_proxy_enabled %}
 				{# Use the embedded DNS resolver in Docker containers to discover the service #}
-				resolver 127.0.0.11 valid=5s;
+				resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 				set $backend "matrix-certbot:8080";
 				proxy_pass http://$backend;
 			{% else %}

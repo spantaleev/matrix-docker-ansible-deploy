@@ -62,7 +62,7 @@
 	location ^~ /_matrix/corporal {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
+			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container }}";
 			proxy_pass http://$backend;
 		{% else %}
@@ -80,7 +80,7 @@
 	location ^~ /_matrix/identity {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
+			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}";
 			proxy_pass http://$backend;
 		{% else %}
@@ -98,7 +98,7 @@
 	location ^~ /_matrix/client/r0/user_directory/search {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
+			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container }}";
 			proxy_pass http://$backend;
 		{% else %}
@@ -115,7 +115,7 @@
 	location ~ ^/_matrix/client/r0/register/(email|msisdn)/requestToken$ {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
+			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_with_container }}";
 			proxy_pass http://$backend;
 		{% else %}
@@ -140,7 +140,7 @@
 	location ~* ^({{ matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_prefix_regexes|join('|') }}) {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
+			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container }}";
 			proxy_pass http://$backend;
 		{% else %}
@@ -185,7 +185,7 @@ server {
 		location /.well-known/acme-challenge {
 			{% if matrix_nginx_proxy_enabled %}
 				{# Use the embedded DNS resolver in Docker containers to discover the service #}
-				resolver 127.0.0.11 valid=5s;
+				resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 				set $backend "matrix-certbot:8080";
 				proxy_pass http://$backend;
 			{% else %}
@@ -288,7 +288,7 @@ server {
 	location / {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
+			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container }}";
 			proxy_pass http://$backend;
 		{% else %}
