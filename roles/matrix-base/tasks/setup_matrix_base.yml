@@ -26,13 +26,14 @@
       delegate_to: 127.0.0.1
       become: false
       register: git_describe
-      ansible.builtin.shell:
-        git describe
-            --always
-            --tags
-            --dirty
-            --long
-            --all
+      ansible.builtin.command:
+        cmd: >-
+          git describe
+          --always
+          --tags
+          --dirty
+          --long
+          --all
 
     - ansible.builtin.set_fact:
         git_hash: "{{ git_describe.stdout }}"
