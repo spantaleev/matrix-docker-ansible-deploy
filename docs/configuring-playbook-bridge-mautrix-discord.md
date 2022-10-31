@@ -12,12 +12,19 @@ See the project's [documentation](https://docs.mau.fi/bridges/go/discord/index.h
 
 ## Prerequisites
 
-For using this bridge, you would need to authenticate by **scanning a QR code** with the Discord app on your phone **or** by using **discord account token**.
+There are 2 ways to link the bridge to discord.
+
+### Method 1: Login using QR code
+
+For using this bridge, you would need to authenticate by **scanning a QR code** with the Discord app on your phone.
 
 You can delete the Discord app after the authentication process.
 
-If this is a dealbreaker for you, consider using one of the other Discord bridges supported by the playbook: [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) or [matrix-appservice-discord](configuring-playbook-bridge-appservice-discord.md). These come with their own complexity and limitations, however, so we recommend that you proceed with this one if possible.
+If this is a dealbreaker for you, consider using the [second method](#method-2-login-using-discord-token) or one of the other Discord bridges supported by the playbook: [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) or [matrix-appservice-discord](configuring-playbook-bridge-appservice-discord.md). These come with their own complexity and limitations, however, so we recommend that you proceed with this one if possible.
 
+### Method 2: Login using Discord token
+
+To acquire the token, open Discord in a private browser window. Then open the developer settings (keybaord shortcut might be "ctrl+shift+i" or by pressing "F12"). Navigate to the "Network" tab then reload the page. In the URL filter or search bar type "/api" and find the response with the file name of "library". Under "Request Headers" you should find a variable called "Authorization", this is the token to your Discord account.
 
 ## Installing
 
