@@ -24,7 +24,7 @@ If this is a dealbreaker for you, consider using the [second method](#method-2-l
 
 ### Method 2: Login using Discord token
 
-To acquire the token, open Discord in a private browser window. Then open the developer settings (keybaord shortcut might be "ctrl+shift+i" or by pressing "F12"). Navigate to the "Network" tab then reload the page. In the URL filter or search bar type "/api" and find the response with the file name of "library". Under "Request Headers" you should find a variable called "Authorization", this is the token to your Discord account.
+To acquire the token, open Discord in a private browser window. Then open the developer settings (keyboard shortcut might be "ctrl+shift+i" or by pressing "F12"). Navigate to the "Network" tab then reload the page. In the URL filter or search bar type "/api" and find the response with the file name of "library". Under the request headers you should find a variable called "Authorization", this is the token to your Discord account.
 
 ## Installing
 
