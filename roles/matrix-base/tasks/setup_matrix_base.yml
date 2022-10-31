@@ -21,11 +21,11 @@
 
 - name: Save current git-repo status on the target to aid with restoring in case of problems
   block:
-    - name: Get local git hash 
+    - name: Get local git hash
       delegate_to: 127.0.0.1
       become: false
       register: git_describe
-      shell:
+      ansible.builtin.shell:
         git describe
             --always
             --tags
@@ -33,15 +33,15 @@
             --long
             --all
 
-    - set_fact: 
+    - ansible.builtin.set_fact:
         git_hash: "{{ git_describe.stdout }}"
 
     - name: Git hash
-      debug:
+      ansible.builtin.debug:
         msg: "Git hash: {{ git_hash }}"
-    
+
     - name: Save git_hash.yml on target
-      copy:
+      ansible.builtin.copy:
         content: "{{ git_hash }}"
         dest: "{{ matrix_base_data_path }}/git_hash.yml"
         owner: "{{ matrix_user_username }}"
