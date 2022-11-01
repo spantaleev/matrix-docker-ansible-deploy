@@ -74,9 +74,11 @@ matrix_postgres_additional_databases: []
 # We either need to not create them or to ignore the `CREATE ROLE` statements in the dump.
 matrix_postgres_import_roles_to_ignore: |
   {{
-    [matrix_postgres_connection_username]
-    +
-    matrix_postgres_additional_databases|map(attribute='username') | list
+    (
+      [matrix_postgres_connection_username]
+      +
+      matrix_postgres_additional_databases|map(attribute='username') | list
+    ) | unique
   }}
 
 # When importing an existing Postgres database (when restoring a backup) or when doing a Postgres upgrade (which dumps & restores), we'd like to avoid:
@@ -98,9 +100,11 @@ matrix_postgres_import_roles_ignore_regex: "^(CREATE|ALTER) ROLE \\\"?({{ matrix
 # We either need to not create them or to ignore the `CREATE DATABASE` statements in the dump.
 matrix_postgres_import_databases_to_ignore: |
   {{
-    [matrix_postgres_db_name]
-    +
-    matrix_postgres_additional_databases|map(attribute='name') | list
+    (
+      [matrix_postgres_db_name]
+      +
+      matrix_postgres_additional_databases|map(attribute='name') | list
+    ) | unique
   }}
 
 # We also allow for the database name to be quoted, which is rare, but might happen for database names which are special keywords (e.g. `default`).
