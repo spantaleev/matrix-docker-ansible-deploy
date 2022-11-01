@@ -1,0 +1,33 @@
+---
+
+- name: Validate Matrix users to create
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/validate_user.yml"
+  with_items: "{{ matrix_user_creator_users }}"
+  loop_control:
+    loop_var: user
+  # Suppress logging to avoid dumping the credentials to the shell
+  no_log: true
+
+- name: Ensure systemd is reloaded before starting the homeserver
+  ansible.builtin.service:
+    daemon_reload: true
+
+- name: Ensure homeserver is started before creating Matrix users
+  ansible.builtin.service:
+    name: "matrix-{{ matrix_homeserver_implementation }}.service"
+    state: started
+    daemon_reload: true
+  register: matrix_user_registrator_homeserver_start_result
+
+- name: Wait a while, so that the homeserver can manage to start before creating Matrix users
+  ansible.builtin.pause:
+    seconds: 7
+  when: matrix_user_registrator_homeserver_start_result.changed | bool
+
+- name: Ensure Matrix users are created
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/ensure_user_registered_{{ matrix_homeserver_implementation }}.yml"
+  with_items: "{{ matrix_user_creator_users }}"
+  loop_control:
+    loop_var: user
+  # Suppress logging to avoid dumping the credentials to the shell
+  no_log: true
