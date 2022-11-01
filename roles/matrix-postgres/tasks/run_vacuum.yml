@@ -79,7 +79,7 @@
   async: "{{ postgres_vacuum_wait_time }}"
   poll: 10
   register: matrix_postgres_synapse_vacuum_result
-  failed_when: not matrix_postgres_synapse_vacuum_result.finished
+  failed_when: not matrix_postgres_synapse_vacuum_result.finished or matrix_postgres_synapse_vacuum_result.rc != 0
   changed_when: matrix_postgres_synapse_vacuum_result.finished and matrix_postgres_synapse_vacuum_result.rc == 0
 
 # Intentionally show the results
