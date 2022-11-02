@@ -22,5 +22,6 @@
     - {'old': 'matrix_appservice_discord_container_expose_client_server_api_port', 'new': '<superseded by matrix_appservice_discord_container_http_host_bind_port>'}
 
 - name: Require a valid database engine
-  ansible.builtin.fail: msg="`matrix_appservice_discord_database_engine` needs to be either 'sqlite' or 'postgres'"
+  ansible.builtin.fail:
+    msg: "`matrix_appservice_discord_database_engine` needs to be either 'sqlite' or 'postgres'"
   when: "matrix_appservice_discord_database_engine not in ['sqlite', 'postgres']"

@@ -26,7 +26,7 @@ If your distro runs within an [LXC container](https://linuxcontainers.org/), you
 
 - Properly configured DNS records for `<your-domain>` (details in [Configuring DNS](configuring-dns.md)).
 
-- Some TCP/UDP ports open. This playbook configures the server's internal firewall for you. In most cases, you don't need to do anything special. But **if your server is running behind another firewall**, you'd need to open these ports:
+- Some TCP/UDP ports open. This playbook (actually [Docker itself](https://docs.docker.com/network/iptables/)) configures the server's internal firewall for you. In most cases, you don't need to do anything special. But **if your server is running behind another firewall**, you'd need to open these ports:
 
   - `80/tcp`: HTTP webserver
   - `443/tcp`: HTTPS webserver

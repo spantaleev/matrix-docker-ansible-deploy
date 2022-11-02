@@ -19,8 +19,54 @@
     mode: '0660'
   when: "matrix_vars_yml_snapshotting_enabled | bool"
 
+- name: Save current git-repo status on the target to aid with restoring in case of problems
+  when: "matrix_playbook_commit_hash_preservation_enabled|bool"
+  block:
+    - name: Get local git hash  # noqa command-instead-of-module
+      delegate_to: 127.0.0.1
+      become: false
+      register: git_describe
+      changed_when: false
+      ansible.builtin.shell:
+        git describe
+            --always
+            --tags
+            --dirty
+            --long
+            --all
+
+    - ansible.builtin.set_fact:
+        git_hash: "{{ git_describe.stdout }}"
+
+    - name: Git hash
+      ansible.builtin.debug:
+        msg: "Git hash: {{ git_hash }}"
+
+    - name: Save git_hash.yml on target
+      ansible.builtin.copy:
+        content: "{{ git_hash }}"
+        dest: "{{ matrix_base_data_path }}/git_hash.yml"
+        owner: "{{ matrix_user_username }}"
+        group: "{{ matrix_user_groupname }}"
+        mode: '0660'
+
+  rescue:
+    - name: GIT not found error
+      ansible.builtin.debug:
+        msg: >-
+          Couldn't find GIT on the local machine. Continuing without saving the GIT hash.
+          You can disable saving the GIT hash by setting 'matrix_playbook_commit_hash_preservation_enabled: false' in vars.yml
+      when: "git_describe.stderr.find('git: not found') != -1"
+
+    - name: Get GIT hash error
+      ansible.builtin.fail:
+        msg: >-
+          Error when trying to get the GIT hash. Please consult the error message above.
+          You can disable saving the GIT hash by setting 'matrix_playbook_commit_hash_preservation_enabled: false' in vars.yml
+      when: "git_describe.stderr.find('git: not found') == -1"
+
 - name: Ensure Matrix network is created in Docker
-  docker_network:
+  community.docker.docker_network:
     name: "{{ matrix_docker_network }}"
     driver: bridge
 

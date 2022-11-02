@@ -28,8 +28,10 @@
     name: matrix-postgres
     state: started
     daemon_reload: true
+  register: matrix_postgres_vacuum_start_result
 
 - name: Wait a bit, so that Postgres can start
+  when: matrix_postgres_vacuum_start_result.changed | bool
   ansible.builtin.wait_for:
     timeout: "{{ postgres_start_wait_time }}"
   delegate_to: 127.0.0.1
@@ -67,26 +69,28 @@
 - ansible.builtin.set_fact:
     matrix_postgres_synapse_was_running: "{{ ansible_facts.services['matrix-synapse.service'] | default(none) is not none and ansible_facts.services['matrix-synapse.service'].state == 'running' }}"
 
-- name: Ensure matrix-synapse is stopped
+- name: Ensure services are stopped
   ansible.builtin.service:
-    name: matrix-synapse
+    name: "{{ item }}"
     state: stopped
     daemon_reload: true
+  with_items: "{{ matrix_postgres_systemd_services_to_stop_for_maintenance_list }}"
 
 - name: Run Postgres vacuum command
   ansible.builtin.command: "{{ matrix_postgres_vacuum_command }}"
   async: "{{ postgres_vacuum_wait_time }}"
   poll: 10
   register: matrix_postgres_synapse_vacuum_result
-  failed_when: not matrix_postgres_synapse_vacuum_result.finished
+  failed_when: not matrix_postgres_synapse_vacuum_result.finished or matrix_postgres_synapse_vacuum_result.rc != 0
   changed_when: matrix_postgres_synapse_vacuum_result.finished and matrix_postgres_synapse_vacuum_result.rc == 0
 
 # Intentionally show the results
-- ansible.builtin.debug: var="matrix_postgres_synapse_vacuum_result"
+- ansible.builtin.debug:
+    var: "matrix_postgres_synapse_vacuum_result"
 
-- name: Ensure matrix-synapse is started, if it previously was
+- name: Ensure services are started
   ansible.builtin.service:
-    name: matrix-synapse
+    name: "{{ item }}"
     state: started
     daemon_reload: true
-  when: "matrix_postgres_synapse_was_running | bool"
+  with_items: "{{ matrix_postgres_systemd_services_to_stop_for_maintenance_list }}"

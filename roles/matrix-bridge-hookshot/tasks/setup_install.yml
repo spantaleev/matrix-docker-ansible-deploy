@@ -15,7 +15,7 @@
   when: item.when | bool
 
 - name: Ensure hookshot image is pulled
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_hookshot_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_hookshot_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
@@ -38,7 +38,7 @@
   when: "matrix_hookshot_container_image_self_build | bool"
 
 - name: Ensure hookshot Docker image is built
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_hookshot_docker_image }}"
     source: build
     force_source: "{{ matrix_hookshot_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"

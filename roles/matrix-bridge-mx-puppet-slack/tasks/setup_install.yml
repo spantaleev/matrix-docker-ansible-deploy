@@ -65,7 +65,7 @@
             matrix_mx_puppet_slack_requires_restart: true
 
 - name: Ensure MX Puppet Slack image is pulled
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_mx_puppet_slack_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mx_puppet_slack_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
@@ -88,7 +88,7 @@
   when: "matrix_mx_puppet_slack_enabled | bool and matrix_mx_puppet_slack_container_image_self_build"
 
 - name: Ensure MX Puppet Slack Docker image is built
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_mx_puppet_slack_docker_image }}"
     source: build
     force_source: "{{ matrix_mx_puppet_slack_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"

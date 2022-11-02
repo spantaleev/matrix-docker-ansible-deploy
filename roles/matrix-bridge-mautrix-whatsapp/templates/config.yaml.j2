@@ -147,6 +147,12 @@ bridge:
         # provisioning endpoint is used or when a message comes in from that
         # chat.
         max_initial_conversations: -1
+        # If this value is greater than 0, then if the conversation's last
+        # message was more than this number of hours ago, then the conversation
+        # will automatically be marked it as read.
+        # Conversations that have a last message that is less than this number
+        # of hours ago will have their unread status synced from WhatsApp.
+        unread_hours_threshold: 0
         # Settings for immediate backfills. These backfills should generally be
         # small and their main purpose is to populate each of the initial chats
         # (as configured by max_initial_conversations) with a few messages so
@@ -228,7 +234,10 @@ bridge:
     # manually.
     login_shared_secret_map: {{ matrix_mautrix_whatsapp_bridge_login_shared_secret_map|to_json }}
     # Should the bridge explicitly set the avatar and room name for private chat portal rooms?
+    # This is implicitly enabled in encrypted rooms.
     private_chat_portal_meta: false
+    # Should group members be synced in parallel? This makes member sync faster
+    parallel_member_sync: false
     # Should Matrix m.notice-type messages be bridged?
     bridge_notices: true
     # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
@@ -281,6 +290,9 @@ bridge:
     # Send captions in the same message as images. This will send data compatible with both MSC2530 and MSC3552.
     # This is currently not supported in most clients.
     caption_in_message: false
+    # Should Matrix edits be bridged to WhatsApp edits?
+    # Official WhatsApp clients don't render edits yet, but once they do, the bridge should work with them right away.
+    send_whatsapp_edits: false
     # Maximum time for handling Matrix events. Duration strings formatted for https://pkg.go.dev/time#ParseDuration
     # Null means there's no enforced timeout.
     message_handling_timeout:

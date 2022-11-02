@@ -1,0 +1,52 @@
+---
+
+# We install this into Synapse by making `matrix_synapse_ext_synapse_s3_storage_provider_enabled` influence other variables:
+# - `matrix_synapse_media_storage_providers` (via `matrix_synapse_media_storage_providers_auto`)
+# - `matrix_synapse_container_image_customizations_enabled`
+# - `matrix_synapse_container_image_customizations_s3_storage_provider_installation_enabled`
+#
+# Below are additional tasks for setting up various helper scripts, etc.
+
+- name: Ensure s3-storage-provider env file installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/synapse/ext/s3-storage-provider/env.j2"
+    dest: "{{ matrix_synapse_ext_s3_storage_provider_path }}/env"
+    mode: 0640
+
+- name: Ensure s3-storage-provider data path exists
+  ansible.builtin.file:
+    path: "{{ matrix_synapse_ext_s3_storage_provider_path }}/data"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure s3-storage-provider database.yaml file installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/synapse/ext/s3-storage-provider/database.yaml.j2"
+    dest: "{{ matrix_synapse_ext_s3_storage_provider_path }}/data/database.yaml"
+    mode: 0640
+
+- name: Ensure s3-storage-provider scripts installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/synapse/ext/s3-storage-provider/usr-local-bin/{{ item }}.j2"
+    dest: "{{ matrix_local_bin_path }}/{{ item }}"
+    mode: 0750
+  with_items:
+    - matrix-synapse-s3-storage-provider-shell
+    - matrix-synapse-s3-storage-provider-migrate
+
+- name: Ensure matrix-synapse-s3-storage-provider-migrate.service and timer are installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/synapse/ext/s3-storage-provider/systemd/{{ item }}.j2"
+    dest: "{{ matrix_systemd_path }}/{{ item }}"
+    mode: 0640
+  with_items:
+    - matrix-synapse-s3-storage-provider-migrate.service
+    - matrix-synapse-s3-storage-provider-migrate.timer
+  register: matrix_synapse_s3_storage_provider_systemd_service_result
+
+- name: Ensure systemd reloaded after matrix-synapse-s3-storage-provider-migrate.service installation
+  ansible.builtin.service:
+    daemon_reload: true
+  when: matrix_synapse_s3_storage_provider_systemd_service_result.changed | bool

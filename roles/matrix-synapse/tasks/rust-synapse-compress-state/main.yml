@@ -43,7 +43,7 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure rust-synapse-compress-state image is pulled
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_synapse_rust_synapse_compress_state_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_synapse_rust_synapse_compress_state_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
@@ -88,7 +88,8 @@
 
 - when: "matrix_synapse_rust_synapse_compress_state_find_rooms_command_result.failed or matrix_synapse_rust_synapse_compress_state_find_rooms_command_result.stdout_lines | length != 4"
   block:
-    - ansible.builtin.debug: var="matrix_synapse_rust_synapse_compress_state_find_rooms_command_result"
+    - ansible.builtin.debug:
+        var: "matrix_synapse_rust_synapse_compress_state_find_rooms_command_result"
 
     - name: Fail if room find result is not what we expect
       ansible.builtin.fail:

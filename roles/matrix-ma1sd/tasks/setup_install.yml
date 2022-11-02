@@ -48,7 +48,7 @@
             matrix_ma1sd_requires_restart: true
 
 - name: Ensure ma1sd image is pulled
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_ma1sd_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_ma1sd_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
@@ -75,7 +75,7 @@
       when: ansible_os_family == 'RedHat'
 
     - name: Ensure gradle is installed for self-building (Archlinux)
-      pacman:
+      community.general.pacman:
         name:
           - gradle
         state: present
@@ -101,7 +101,7 @@
       when: matrix_ma1sd_git_pull_results.changed
 
     - name: Ensure ma1sd Docker image is tagged correctly
-      docker_image:
+      community.docker.docker_image:
         # The build script always tags the image with 2 tags:
         # - based on the branch/version: e.g. `ma1uta/ma1sd:2.4.0` (when on `2.4.0`)
         #   or `ma1uta/ma1sd:2.4.0-19-ga71d32b` (when on a given commit for a pre-release)

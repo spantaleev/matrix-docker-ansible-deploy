@@ -56,7 +56,7 @@ where:
 
 * USER - SSH user of a provider/server
 * HOST - SSH host of a provider/server
-* REPO - borg repository name, it will be initialized on backup start, eg: `matrix`
+* REPO - borg repository name, it will be initialized on backup start, eg: `matrix`, regarding Syntax see [Remote repositories](https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls)
 * PASSPHRASE - passphrase used for encrypting backups, you may generate it with `pwgen -s 64 1` or use any password manager
 * PRIVATE KEY - the content of the **private** part of the SSH key you created before. The whole key (all of its belonging lines) under `matrix_backup_borg_ssh_key_private` needs to be indented with 2 spaces
 
@@ -73,3 +73,9 @@ After configuring the playbook, run the [installation](installing.md) command ag
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
+
+## Manually start a backup
+
+For testing your setup it can be helpful to not wait until 4am. If you want to run the backup immediately, log onto the server
+and run `systemctl start matrix-backup-borg`. This will not return until the backup is done, so possibly a long time.
+Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.

@@ -26,9 +26,12 @@
   when: "matrix_synapse_service_stat.stat.exists"
 
 - name: Ensure Synapse Docker image doesn't exist
-  docker_image:
-    name: "{{ matrix_synapse_docker_image }}"
+  community.docker.docker_image:
+    name: "{{ item }}"
     state: absent
+  with_items:
+    - "{{ matrix_synapse_docker_image_final }}"
+    - "{{ matrix_synapse_docker_image }}"
 
 - name: Ensure sample prometheus.yml for external scraping is deleted
   ansible.builtin.file:

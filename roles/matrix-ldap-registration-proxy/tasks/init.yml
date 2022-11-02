@@ -10,7 +10,10 @@
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-ldap-registration-proxy.service'] }}"
   when: matrix_ldap_registration_proxy_enabled | bool
 
-- block:
+- when: matrix_ldap_registration_proxy_enabled | bool
+  tags:
+    - always
+  block:
     - name: Fail if matrix-nginx-proxy role already executed
       ansible.builtin.fail:
         msg: >-
@@ -52,7 +55,3 @@
           URL endpoint to the matrix-ldap-proxy container.
           You can expose the container's port using the `matrix_ldap_registration_proxy_container_http_host_bind_port` variable.
       when: "not matrix_nginx_proxy_enabled | default(False) | bool"
-
-  tags:
-    - always
-  when: matrix_ldap_registration_proxy_enabled | bool

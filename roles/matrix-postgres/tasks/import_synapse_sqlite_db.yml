@@ -83,7 +83,7 @@
       --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data
       --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/matrix-media-store-parent/media-store
       --mount type=bind,src={{ server_path_homeserver_db }},dst=/{{ server_path_homeserver_db | basename }}
-      {{ matrix_synapse_docker_image }}
+      {{ matrix_synapse_docker_image_final }}
       /usr/local/bin/synapse_port_db --sqlite-database /{{ server_path_homeserver_db | basename }} --postgres-config /data/homeserver.yaml
   register: matrix_postgres_import_synapse_sqlite_db_result
   changed_when: matrix_postgres_import_synapse_sqlite_db_result.rc == 0

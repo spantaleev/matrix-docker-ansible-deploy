@@ -49,8 +49,10 @@
     name: matrix-postgres
     state: started
     daemon_reload: true
+  register: matrix_postgres_import_start_result
 
 - name: Wait a bit, so that Postgres can start
+  when: matrix_postgres_import_start_result.changed | bool
   ansible.builtin.wait_for:
     timeout: "{{ postgres_start_wait_time }}"
   delegate_to: 127.0.0.1
@@ -108,5 +110,5 @@
   async: "{{ postgres_import_wait_time }}"
   poll: 10
   register: matrix_postgres_import_postgres_command_result
-  failed_when: not matrix_postgres_import_postgres_command_result.finished
+  failed_when: not matrix_postgres_import_postgres_command_result.finished or matrix_postgres_import_postgres_command_result.rc != 0
   changed_when: matrix_postgres_import_postgres_command_result.finished and matrix_postgres_import_postgres_command_result.rc == 0

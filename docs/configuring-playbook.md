@@ -34,13 +34,18 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md) (optional)
 
+- [Setting up Etherpad](configuring-playbook-etherpad.md) (optional)
+
 - [Setting up Dynamic DNS](configuring-playbook-dynamic-dns.md) (optional)
 
 - [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md) (optional)
 
 ### Core service adjustments
 
-- [Configuring Synapse](configuring-playbook-synapse.md) (optional)
+- Homeserver configuration:
+  - [Configuring Synapse](configuring-playbook-synapse.md), if you're going with the default/recommended homeserver implementation (optional)
+
+  - [Configuring Conduit](configuring-playbook-conduit.md), if you've switched to the [Conduit](https://conduit.rs) homeserver implementation (optional)
 
 - [Configuring Element](configuring-playbook-client-element.md) (optional)
 

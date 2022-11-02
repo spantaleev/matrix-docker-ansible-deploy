@@ -1,0 +1,16 @@
+---
+
+- name: Fail if invalid username
+  ansible.builtin.fail:
+    msg: "Empty usernames values are not allowed ({{ user }})"
+  when: not (user.username | default(''))
+
+- name: Fail if invalid initial_password for user - {{ user.username }}
+  ansible.builtin.fail:
+    msg: "Empty initial_password values are not allowed"
+  when: not (user.initial_password | default(''))
+
+- name: Fail if invalid initial_type for user - {{ user.username }}
+  ansible.builtin.fail:
+    msg: "User initial_type `{{ user.initial_type | default('undefined') }}` is not supported"
+  when: user.initial_type | default('undefined') not in ['admin', 'user', 'bot', 'support']

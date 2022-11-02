@@ -1,3 +1,38 @@
+# 2022-10-14
+
+## synapse-s3-storage-provider support
+
+**`synapse-s3-storage-provider` support is very new and still relatively untested. Using it may cause data loss.**
+
+You can now store your Synapse media repository files on Amazon S3 (or another S3-compatible object store) using [synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider) - a media provider for Synapse (Python module), which should work faster and more reliably than our previous [Goofys](docs/configuring-playbook-s3-goofys.md) implementation (Goofys will continue to work).
+
+This is not just for initial installations. Users with existing files (stored in the local filesystem) can also migrate their files to `synapse-s3-storage-provider`.
+
+To get started, see our [Storing Synapse media files on Amazon S3 with synapse-s3-storage-provider](docs/configuring-playbook-synapse-s3-storage-provider.md) documentation.
+
+
+## Synapse container image customization support
+
+We now support customizing the Synapse container image by adding additional build steps to its [`Dockerfile`](https://docs.docker.com/engine/reference/builder/).
+
+Our [synapse-s3-storage-provider support](#synapse-s3-storage-provider-support) is actually built on this. When `s3-storage-provider` is enabled, we automatically add additional build steps to install its Python module into the Synapse image.
+
+Besides this kind of auto-added build steps (for components supported by the playbook), we also let you inject your own custom build steps using configuration like this:
+
+```yaml
+matrix_synapse_container_image_customizations_enabled: true
+
+matrix_synapse_container_image_customizations_dockerfile_body_custom: |
+ RUN echo 'This is a custom step for building the customized Docker image for Synapse.'
+ RUN echo 'You can override matrix_synapse_container_image_customizations_dockerfile_body_custom to add your own steps.'
+ RUN echo 'You do NOT need to include a FROM clause yourself.'
+```
+
+People who have needed to customize Synapse previously had to fork the git repository, make their changes to the `Dockerfile` there, point the playbook to the new repository (`matrix_synapse_container_image_self_build_repo`) and enable self-building from scratch (`matrix_synapse_container_image_self_build: true`). This is harder and slower.
+
+With the new Synapse-customization feature in the playbook, we use the original upstream (pre-built, if available) Synapse image and only build on top of it, right on the Matrix server. This is much faster than building all of Synapse from scratch.
+
+
 # 2022-10-02
 
 ## matrix-ldap-registration-proxy support

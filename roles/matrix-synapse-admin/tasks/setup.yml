@@ -5,7 +5,7 @@
 #
 
 - name: Ensure matrix-synapse-admin image is pulled
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_synapse_admin_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_synapse_admin_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
@@ -28,7 +28,7 @@
   when: "matrix_synapse_admin_enabled | bool and matrix_synapse_admin_container_image_self_build | bool"
 
 - name: Ensure matrix-synapse-admin Docker image is built
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_synapse_admin_docker_image }}"
     source: build
     force_source: "{{ matrix_synapse_admin_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
@@ -82,7 +82,7 @@
   when: "not matrix_synapse_admin_enabled | bool and matrix_synapse_admin_service_stat.stat.exists"
 
 - name: Ensure matrix-synapse-admin Docker image doesn't exist
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_synapse_admin_docker_image }}"
     state: absent
   when: "not matrix_synapse_admin_enabled | bool"

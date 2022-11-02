@@ -50,6 +50,9 @@ matrix_aux_file_default_mode: '0640'
 # then you likely need to add `/matrix/some/path` to `matrix_aux_directory_definitions` as well.
 # You don't need to do this for directories that the playbook already creates for you.
 #
+# Use a `content` key for text content and `src` with a location to a file for binary content.
+# The `content` key does not support binary content (see https://github.com/ansible/ansible/issues/11594).
+#
 # Example:
 #
 # matrix_aux_file_definitions:
@@ -66,6 +69,12 @@ matrix_aux_file_default_mode: '0640'
 #
 #   - dest: /matrix/aux/yet-another-file.txt
 #     content: "{{ lookup('template', '/path/to/file.txt.j2') }}"
+#     mode: '0600'
+#     owner: 'some-user'
+#     group: 'some-group'
+#
+#   - dest: /matrix/aux/binary-file.dat
+#     src: "/path/to/binary.dat"
 #     mode: '0600'
 #     owner: 'some-user'
 #     group: 'some-group'

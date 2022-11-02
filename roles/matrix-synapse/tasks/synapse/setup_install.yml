@@ -51,7 +51,7 @@
       when: "matrix_synapse_git_pull_results.changed | bool or matrix_synapse_docker_image_check_result.stdout == ''"
 
 - name: Ensure Synapse Docker image is pulled
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_synapse_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_synapse_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
@@ -61,6 +61,25 @@
   retries: "{{ matrix_container_retries_count }}"
   delay: "{{ matrix_container_retries_delay }}"
   until: result is not failed
+
+- when: "matrix_synapse_container_image_customizations_enabled | bool"
+  block:
+    - name: Ensure customizations Dockerfile is created
+      ansible.builtin.template:
+        src: "{{ role_path }}/templates/synapse/customizations/Dockerfile.j2"
+        dest: "{{ matrix_synapse_customized_docker_src_files_path }}/Dockerfile"
+        owner: "{{ matrix_user_username }}"
+        group: "{{ matrix_user_groupname }}"
+        mode: 0640
+
+    - name: Ensure customized Docker image for Synapse is built
+      community.docker.docker_image:
+        name: "{{ matrix_synapse_docker_image_customized }}"
+        source: build
+        build:
+          dockerfile: Dockerfile
+          path: "{{ matrix_synapse_customized_docker_src_files_path }}"
+          pull: true
 
 - name: Check if a Synapse signing key exists
   ansible.builtin.stat:

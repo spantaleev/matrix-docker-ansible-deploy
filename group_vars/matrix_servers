@@ -769,7 +769,7 @@ matrix_heisenbridge_systemd_wanted_services_list: |
 # We don't enable bridges by default.
 matrix_hookshot_enabled: false
 
-matrix_hookshot_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
+matrix_hookshot_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
 matrix_hookshot_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'hookshot.as.tok') | to_uuid }}"
 
@@ -1167,7 +1167,7 @@ matrix_bot_honoroit_systemd_required_services_list: |
 # Postgres is the default, except if not using `matrix_postgres` (internal postgres)
 matrix_bot_honoroit_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
 matrix_bot_honoroit_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'honoroit.bot.db') | to_uuid }}"
-matrix_bot_honoroit_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
+matrix_bot_honoroit_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 ######################################################################
 #
@@ -1198,7 +1198,7 @@ matrix_bot_buscarron_systemd_required_services_list: |
 # Postgres is the default, except if not using `matrix_postgres` (internal postgres)
 matrix_bot_buscarron_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
 matrix_bot_buscarron_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'buscarron.bot.db') | to_uuid }}"
-matrix_bot_buscarron_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
+matrix_bot_buscarron_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 ######################################################################
 #
@@ -1231,7 +1231,7 @@ matrix_bot_postmoogle_systemd_required_services_list: |
 matrix_bot_postmoogle_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
 matrix_bot_postmoogle_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'postmoogle.db') | to_uuid }}"
 
-matrix_bot_postmoogle_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
+matrix_bot_postmoogle_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 ######################################################################
 #
@@ -2116,18 +2116,9 @@ matrix_postgres_additional_databases: |
 
    }}
 
-matrix_postgres_import_roles_to_ignore: |
+matrix_postgres_systemd_services_to_stop_for_maintenance_list: |
   {{
-    [matrix_postgres_connection_username]
-    +
-    matrix_postgres_additional_databases|map(attribute='username') | list
-  }}
-
-matrix_postgres_import_databases_to_ignore: |
-  {{
-    [matrix_postgres_db_name]
-    +
-    matrix_postgres_additional_databases|map(attribute='name') | list
+    ['matrix-' + matrix_homeserver_implementation + '.service']
   }}
 
 ######################################################################
@@ -2368,7 +2359,7 @@ matrix_synapse_systemd_required_services_list: |
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
     +
-    (['matrix-goofys'] if matrix_s3_media_store_enabled else [])
+    (['matrix-goofys.service'] if matrix_s3_media_store_enabled else [])
   }}
 
 matrix_synapse_systemd_wanted_services_list: |
@@ -2654,7 +2645,7 @@ matrix_dendrite_systemd_required_services_list: |
     +
     (['matrix-postgres.service'] if matrix_postgres_enabled else [])
     +
-    (['matrix-goofys'] if matrix_s3_media_store_enabled else [])
+    (['matrix-goofys.service'] if matrix_s3_media_store_enabled else [])
   }}
 
 matrix_dendrite_systemd_wanted_services_list: |
@@ -2688,5 +2679,45 @@ matrix_conduit_systemd_required_services_list: |
 ######################################################################
 #
 # /matrix-conduit
+#
+######################################################################
+
+
+######################################################################
+#
+# matrix-user-creator
+#
+######################################################################
+
+matrix_user_creator_users_auto: |
+  {{
+    [{
+      'username': matrix_bot_matrix_reminder_bot_matrix_user_id_localpart,
+      'initial_password': matrix_bot_matrix_reminder_bot_matrix_user_password,
+      'initial_type': 'bot',
+    }] if matrix_bot_matrix_reminder_bot_enabled else []
+    +
+    [{
+      'username': matrix_bot_honoroit_login,
+      'initial_password': matrix_bot_honoroit_password,
+      'initial_type': 'bot',
+    }] if matrix_bot_honoroit_enabled else []
+    +
+    [{
+      'username': matrix_bot_postmoogle_login,
+      'initial_password': matrix_bot_postmoogle_password,
+      'initial_type': 'bot',
+    }] if matrix_bot_postmoogle_enabled else []
+    +
+    [{
+      'username': matrix_bot_buscarron_login,
+      'initial_password': matrix_bot_buscarron_password,
+      'initial_type': 'bot',
+    }] if matrix_bot_buscarron_enabled else []
+  }}
+
+######################################################################
+#
+# /matrix-user-creator
 #
 ######################################################################

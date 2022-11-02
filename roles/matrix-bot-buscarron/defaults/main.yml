@@ -9,7 +9,7 @@ matrix_bot_buscarron_docker_repo: "https://gitlab.com/etke.cc/buscarron.git"
 matrix_bot_buscarron_docker_repo_version: "{{ matrix_bot_buscarron_version }}"
 matrix_bot_buscarron_docker_src_files_path: "{{ matrix_base_data_path }}/buscarron/docker-src"
 
-matrix_bot_buscarron_version: v1.2.1
+matrix_bot_buscarron_version: v1.3.0
 matrix_bot_buscarron_docker_image: "{{ matrix_bot_buscarron_docker_image_name_prefix }}buscarron:{{ matrix_bot_buscarron_version }}"
 matrix_bot_buscarron_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_buscarron_container_image_self_build else 'registry.gitlab.com/etke.cc/' }}"
 matrix_bot_buscarron_docker_image_force_pull: "{{ matrix_bot_buscarron_docker_image.endswith(':latest') }}"
@@ -78,37 +78,49 @@ matrix_bot_buscarron_homeserver: "{{ matrix_homeserver_container_url }}"
 matrix_bot_buscarron_forms: []
 
 # Disable encryption
-matrix_bot_buscarron_noencryption:
+matrix_bot_buscarron_noencryption: false
 
 # Sentry DSN
-matrix_bot_buscarron_sentry:
+matrix_bot_buscarron_sentry: ''
 
 # Log level
 matrix_bot_buscarron_loglevel: INFO
 
-# spam hosts/domains
+# list of spammers with wildcards support, eg: *@spam.com spam@*, spam@spam.com
+matrix_bot_buscarron_spamlist: []
+
+# spam hosts/domains.
+# deprecated, use matrix_bot_buscarron_spamlist
 matrix_bot_buscarron_spam_hosts: []
 
 # spam email addresses
+# deprecated, use matrix_bot_buscarron_spamlist
 matrix_bot_buscarron_spam_emails: []
 
 # spam email localparts
+# deprecated, use matrix_bot_buscarron_spamlist
 matrix_bot_buscarron_spam_localparts: []
-
-# Ban duration in hours
-matrix_bot_buscarron_ban_duration: 24
 
 # Banlist size
 matrix_bot_buscarron_ban_size: 10000
 
+# Permanent banlist
+matrix_bot_buscarron_ban_list: []
+
 # Postmark token (confirmation emails)
-matrix_bot_buscarron_pm_token:
+matrix_bot_buscarron_pm_token: ''
 
 # Postmark sender signature
-matrix_bot_buscarron_pm_from:
+matrix_bot_buscarron_pm_from: ''
 
 # Postmark confirmation email's reply-to
-matrix_bot_buscarron_pm_replyto:
+matrix_bot_buscarron_pm_replyto: ''
+
+# email address (from) for SMTP validation. Must be valid email on valid SMTP server, otherwise it will be rejected by other servers
+matrix_bot_buscarron_smtp_from: ''
+
+# enforce SMTP validation
+matrix_bot_buscarron_smtp_validation: false
 
 # Additional environment variables to pass to the buscarron container
 #

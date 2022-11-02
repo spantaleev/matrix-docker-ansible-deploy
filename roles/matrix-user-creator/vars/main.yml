@@ -1,0 +1,34 @@
+---
+
+# matrix_user_creator_users holds a list of users that should be created on the Matrix homeserver.
+#
+# Removing a user from this list will not automatically delete/disable the Matrix user on the homeserver.
+#
+# As the `initial_password` / `initial_type` field names indicate, these are just initial values.
+# Changing the password or type values subsequently will not update the already existing user's details.
+#
+# The known user types are: 'admin', 'user', 'bot', 'support'.
+# These are inspired by Synapse's user types.
+# 'admin' and 'user' types are generally recognized across homeservers.
+# Other homeservers may not support 'bot' and 'support'. Such homeservers will fall back to whatever types they do support.
+#
+# Example:
+# matrix_user_creator_users:
+#   - username: root
+#     initial_password: some-password
+#     initial_type: admin
+#
+#   - username: john
+#     initial_password: some-password
+#     initial_type: user
+#
+#   - username: bot.matrix-reminder-bot
+#     initial_password: some-password
+#     initial_type: bot
+#
+#   - username: bot.matrix-reminder-bot
+#     initial_password: some-password
+#     initial_type: support
+#
+# To create you own users, use the `matrix_user_creator_users_additional` variable.
+matrix_user_creator_users: "{{ matrix_user_creator_users_auto + matrix_user_creator_users_additional }}"

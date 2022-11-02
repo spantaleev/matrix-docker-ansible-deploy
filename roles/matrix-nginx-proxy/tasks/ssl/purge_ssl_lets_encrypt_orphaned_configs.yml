@@ -1,0 +1,27 @@
+---
+
+- name: Check if a Let's Encrypt renewal configuration directory exists
+  ansible.builtin.stat:
+    path: "{{ matrix_ssl_config_dir_path }}/renewal"
+  register: matrix_ssl_config_renewal_directory_stat_result
+
+- when: matrix_ssl_config_renewal_directory_stat_result.stat.exists | bool
+  block:
+    - name: Determine current Let's Encrypt renewal configs
+      ansible.builtin.find:
+        path: "{{ matrix_ssl_config_dir_path }}/renewal"
+        patterns: ".*.conf$"
+        use_regex: true
+      register: matrix_ssl_current_renewal_config_files
+
+    - name: Determine unnecessary Let's Encrypt renewal configs
+      ansible.builtin.set_fact:
+        matrix_ssl_current_renewal_config_files_to_purge: "{{ matrix_ssl_current_renewal_config_files_to_purge | default([]) + [item.path] }}"
+      with_items: "{{ matrix_ssl_current_renewal_config_files.files }}"
+      when: "item.path | basename | replace('.conf', '') not in matrix_ssl_domains_to_obtain_certificates_for"
+
+    - name: Purge unneceessary Let's Encrypt renewal config files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items: "{{ matrix_ssl_current_renewal_config_files_to_purge | default([]) }}"

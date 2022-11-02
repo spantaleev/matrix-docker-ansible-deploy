@@ -27,11 +27,23 @@ No matter which external webserver you decide to go with, you'll need to:
 
 1) Make sure your web server user (something like `http`, `apache`, `www-data`, `nginx`) is part of the `matrix` group. You should run something like this: `usermod -a -G matrix nginx`. This allows your webserver user to access files owned by the `matrix` group. When using an external nginx webserver, this allows it to read configuration files from `/matrix/nginx-proxy/conf.d`. When using another server, it would make other files, such as `/matrix/static-files/.well-known`, accessible to it.
 
-2) Edit your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) to disable the integrated nginx server:
+2) Edit your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`)
+   - to disable the integrated nginx server:
 
-```yaml
-matrix_nginx_proxy_enabled: false
-```
+        ```yaml
+        matrix_nginx_proxy_enabled: false
+        ```
+    - if using an external server on another host, add the `<service>_http_host_bind_port` or `<service>_http_bind_port` variables for the services that will be exposed by the external server on the other host. The actual name of the variable is listed in the `roles/<service>/defaults/vars.yml` file for each service. Most variables follow the `<service>_http_host_bind_port` format.
+       
+      These variables will make Docker expose the ports on all network interfaces instead of localhost only.
+      [Keep in mind that there are some security concerns if you simply proxy everything.](https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md#synapse-administration-endpoints)
+
+      Here are the variables required for the default configuration (Synapse and Element)
+       ```
+        matrix_synapse_container_client_api_host_bind_port: '0.0.0.0:8008'
+        matrix_synapse_container_federation_api_plain_host_bind_port: '0.0.0.0:8048'
+        matrix_client_element_container_http_host_bind_port: "0.0.0.0:8765"
+       ```
 
 3) **If you'll manage SSL certificates by yourself**, edit your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) to disable SSL certificate retrieval:
 
@@ -40,7 +52,6 @@ matrix_ssl_retrieval_method: none
 ```
 
 **Note**: During [installation](installing.md), unless you've disabled SSL certificate management (`matrix_ssl_retrieval_method: none`), the playbook would need 80 to be available, in order to retrieve SSL certificates. **Please manually stop your other webserver while installing**. You can start it back up afterwards.
-
 
 ### Using your own external nginx webserver
 
@@ -59,15 +70,6 @@ matrix_nginx_proxy_ssl_protocols: "TLSv1.2"
 ```
 
 If you are experiencing issues, try updating to a newer version of Nginx. As a data point in May 2021 a user reported that Nginx 1.14.2 was not working for them. They were getting errors about socket leaks. Updating to Nginx 1.19 fixed their issue.
-
-If you are not going to be running your webserver on the same docker network, or the same machine as matrix, these variables can be set to bind synapse to an exposed port. [Keep in mind that there are some security concerns if you simply proxy everything to it](https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md#synapse-administration-endpoints)
-```yaml
-# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8048" or "192.168.1.3:80"), or empty string to not expose.
-matrix_synapse_container_client_api_host_bind_port: ''
-matrix_synapse_container_federation_api_plain_host_bind_port: ''
-```
-
-
 
 ### Using your own external Apache webserver
 

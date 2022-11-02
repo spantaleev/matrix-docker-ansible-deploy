@@ -82,8 +82,9 @@ generic:
 feeds:
   # (Optional) Configure this to enable RSS/Atom feed support
   #
-  enabled: {{ matrix_hookshot_feeds_enabled }}
-  pollIntervalSeconds: {{ matrix_hookshot_feeds_interval }}
+  enabled: {{ matrix_hookshot_feeds_enabled | to_json }}
+  pollIntervalSeconds: {{ matrix_hookshot_feeds_pollIntervalSeconds | to_json }}
+  pollTimeoutSeconds: {{ matrix_hookshot_feeds_pollTimeoutSeconds | to_json }}
 {% endif %}
 {% if matrix_hookshot_provisioning_enabled %}
 provisioning:
@@ -108,7 +109,7 @@ metrics:
 logging:
   # (Optional) Logging settings. You can have a severity debug,info,warn,error
   #
-  level: info
+  level: warn
 {% if matrix_hookshot_widgets_enabled %}
 widgets:
   # (Optional) EXPERIMENTAL support for complimentary widgets
