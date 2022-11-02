@@ -30,8 +30,8 @@
     daemon_reload: true
   register: matrix_postgres_vacuum_start_result
 
-- when: matrix_postgres_vacuum_start_result.changed | bool
-  name: Wait a bit, so that Postgres can start
+- name: Wait a bit, so that Postgres can start
+  when: matrix_postgres_vacuum_start_result.changed | bool
   ansible.builtin.wait_for:
     timeout: "{{ postgres_start_wait_time }}"
   delegate_to: 127.0.0.1
