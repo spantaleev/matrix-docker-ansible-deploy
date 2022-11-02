@@ -156,6 +156,12 @@ jvb-3.example.com ansible_host=192.168.0.3 matrix_jitsi_jvb_server_id=jvb-2
 
 Note that the server id `jvb-1` is reserved for the JVB instance running on the Matrix host and therefore should not be used as the id of an additional jvb host.
 
+The additional JVB will also need to expose the colibri web socket port and this can be done with the following variable:
+
+```yaml
+matrix_jitsi_jvb_container_colibri_ws_host_bind_port: 9090
+```
+
 The JVB will also need to know where the prosody xmpp server is located, similar to the server id this can be set in the vars for the JVB by using the variable 
 `matrix_jitsi_xmpp_server`. The Jitsi prosody container is deployed on the matrix server by default so the value can be set to the matrix domain. For example:
 
