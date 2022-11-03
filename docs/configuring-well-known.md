@@ -192,7 +192,7 @@ Make sure to:
 
 ## Confirming it works
 
-No matter which method you've used to set up the well-known files, if you've done it correctly you should be able to see a JSON file at both of these URLs:
+No matter which method you've used to set up the well-known files, if you've done it correctly you should be able to see a JSON file at these URLs:
 
 - `https://<domain>/.well-known/matrix/server`
 - `https://<domain>/.well-known/matrix/client`

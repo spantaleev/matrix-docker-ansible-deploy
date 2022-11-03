@@ -33,7 +33,7 @@ matrix_ma1sd_matrixorg_forwarding_enabled: true
 ## Customizing email templates
 
 If you'd like to change the default email templates used by ma1sd, take a look at the `matrix_ma1sd_threepid_medium_email_custom_` variables
-(in the `roles/matrix-ma1sd/defaults/main.yml` file.
+(in the `roles/custom/matrix-ma1sd/defaults/main.yml` file.
 
 
 ## ma1sd-controlled Registration
@@ -86,7 +86,7 @@ You can refer to the [ma1sd website](https://github.com/ma1uta/ma1sd) for more d
 
 To use a more custom configuration, you can define a `matrix_ma1sd_configuration_extension_yaml` string variable
 and put your configuration in it.
-To learn more about how to do this, refer to the information about `matrix_ma1sd_configuration_extension_yaml` in the [default variables file](../roles/matrix-ma1sd/defaults/main.yml) of the ma1sd component.
+To learn more about how to do this, refer to the information about `matrix_ma1sd_configuration_extension_yaml` in the [default variables file](../roles/custom/matrix-ma1sd/defaults/main.yml) of the ma1sd component.
 
 ## Example: SMS verification
 

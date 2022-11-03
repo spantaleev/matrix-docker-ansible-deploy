@@ -31,7 +31,7 @@ matrix_mautrix_instagram_configuration_extension_yaml: |
       '@YOUR_USERNAME:YOUR_DOMAIN': admin
 ```
 
-You may wish to look at `roles/matrix-bridge-mautrix-instagram/templates/config.yaml.j2` and `roles/matrix-bridge-mautrix-instagram/defaults/main.yml` to find other things you would like to configure.
+You may wish to look at `roles/custom/matrix-bridge-mautrix-instagram/templates/config.yaml.j2` and `roles/custom/matrix-bridge-mautrix-instagram/defaults/main.yml` to find other things you would like to configure.
 
 
 ## Usage

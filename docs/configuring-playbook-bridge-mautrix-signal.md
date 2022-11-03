@@ -55,7 +55,7 @@ matrix_mautrix_signal_bridge_permissions: |
   '@USER:YOUR_DOMAIN' : user
 ```
 
-You may wish to look at `roles/matrix-bridge-mautrix-signal/templates/config.yaml.j2` to find more information on the permissions settings and other options you would like to configure.
+You may wish to look at `roles/custom/matrix-bridge-mautrix-signal/templates/config.yaml.j2` to find more information on the permissions settings and other options you would like to configure.
 
 ## Set up Double Puppeting
 

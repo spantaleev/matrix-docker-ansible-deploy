@@ -1,25 +1,64 @@
 # Installing
 
-## 1. Installing the Matrix services
-
 If you've [configured your DNS](configuring-dns.md) and have [configured the playbook](configuring-playbook.md), you can start the installation procedure.
 
-Run this command to install the Matrix services:
+## Playbook tags introduction
 
-```bash
+The Ansible playbook's tasks are tagged, so that certain parts of the Ansible playbook can be run without running all other tasks.
+
+The general command syntax is: `ansible-playbook -i inventory/hosts setup.yml --tags=COMMA_SEPARATED_TAGS_GO_HERE`
+
+Here are some playbook tags that you should be familiar with:
+
+- `setup-all` - runs all setup tasks for all components, but does not start/restart services
+
+- `setup-SERVICE` (e.g. `setup-bot-postmoogle`) - runs the setup tasks only for a given role, but does not start/restart services. You can discover these additional tags in each role (`roles/*/main.yml`). Running per-component setup tasks is **not recommended**, as components sometimes depend on each other and running just the setup tasks for a given component may not be enough. For example, setting up the [mautrix-telegram bridge](configuring-playbook-bridge-mautrix-telegram.md), in addition to the `setup-mautrix-telegram` tag, requires database changes (the `setup-postgres` tag) as well as reverse-proxy changes (the `setup-nginx-proxy` tag).
+
+- `start` - starts all systemd services and makes them start automatically in the future
+
+- `stop` - stops all systemd services
+
+- `ensure-matrix-users-created` - a special tag which ensures that all special users needed by the playbook (for bots, etc.) are created
+
+`setup-*` tags **do not start services** automatically, because you may wish to do things before starting services, such as importing a database dump, restoring data from another server, etc.
+
+
+## 1. Installing Matrix
+
+If you **don't** use SSH keys for authentication, but rather a regular password, you may need to add `--ask-pass` to the all Ansible commands
+
+If you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to all Ansible commands
+
+There 2 ways to start the installation process - depending on whether you're [Installing a brand new server (without importing data)](#installing-a-brand-new-server-without-importing-data) or [Installing a server into which you'll import old data](#installing-a-server-into-which-youll-import-old-data).
+
+
+### Installing a brand new server (without importing data)
+
+If this is **a brand new** Matrix server and you **won't be importing old data into it**, run all these tags:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
+```
+
+This will do a full installation and start all Matrix services.
+
+Proceed to [Maintaining your setup in the future](#2-maintaining-your-setup-in-the-future) and [Finalize the installation](#3-finalize-the-installation)
+
+
+### Installing a server into which you'll import old data
+
+If you will be importing data into your newly created Matrix server, install it, but **do not** start its services just yet.
+Starting its services or messing with its database now will affect your data import later on.
+
+To do the installation **without** starting services, run only the `setup-all` tag:
+
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all
 ```
 
-The above command **doesn't start any services just yet** (another step does this later - below). Feel free to **re-run this setup command any time** you think something is off with the server configuration.
+When this command completes, services won't be running yet.
 
-**Notes**:
-- if you **don't** use SSH keys for authentication, but rather a regular password, you may need to add `--ask-pass` to the above (and all other) Ansible commands.
-- if you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to the above (and all other) Ansible commands.
-
-
-## 2. Things you might want to do after installing
-
-**Before starting the services**, you may want to do additional things like:
+You can now:
 
 - [Importing an existing SQLite database (from another Synapse installation)](importing-synapse-sqlite.md) (optional)
 
@@ -27,21 +66,26 @@ The above command **doesn't start any services just yet** (another step does thi
 
 - [Importing `media_store` data files from an existing Synapse installation](importing-synapse-media-store.md) (optional)
 
+.. and then proceed to starting all services:
 
-## 3. Starting the services
-
-When you're ready to start the Matrix services (and set them up to auto-start in the future), run this command:
-
-```bash
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=start
 ```
 
-## 4. Finalize the installation
+Proceed to [Maintaining your setup in the future](#2-maintaining-your-setup-in-the-future) and [Finalize the installation](#3-finalize-the-installation)
+
+
+## 2. Maintaining your setup in the future
+
+Feel free to **re-run the setup command any time** you think something is off with the server configuration. Ansible will take your configuration and update your server to match.
+
+
+## 3. Finalize the installation
 
 Now that services are running, you need to **finalize the installation process** (required for federation to work!) by [Configuring Service Discovery via .well-known](configuring-well-known.md).
 
 
-## 5. Things to do next
+## 4. Things to do next
 
 After you have started the services and **finalized the installation process** (required for federation to work!) by [Configuring Service Discovery via .well-known](configuring-well-known.md), you can:
 
