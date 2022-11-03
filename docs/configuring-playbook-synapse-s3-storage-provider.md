@@ -39,7 +39,7 @@ matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id: access-key-
 matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key: secret-key-goes-here
 matrix_synapse_ext_synapse_s3_storage_provider_config_storage_class: STANDARD # or STANDARD_IA, etc.
 
-# For additional advanced settings, take a look at `roles/matrix-synapse/defaults/main.yml`
+# For additional advanced settings, take a look at `roles/custom/matrix-synapse/defaults/main.yml`
 ```
 
 If you have existing files in Synapse's media repository (`/matrix/synapse/media-store/..`):

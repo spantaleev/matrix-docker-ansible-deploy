@@ -23,7 +23,7 @@ matrix_ntfy_configuration_extension_yaml: |
   log_level: DEBUG
 ```
 
-For a more complete list of variables that you could override, see `roles/matrix-ntfy/defaults/main.yml`.
+For a more complete list of variables that you could override, see `roles/custom/matrix-ntfy/defaults/main.yml`.
 
 For a complete list of ntfy config options that you could put in `matrix_ntfy_configuration_extension_yaml`, see the [ntfy config documentation](https://ntfy.sh/docs/config/#config-options).
 

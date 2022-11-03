@@ -27,7 +27,7 @@ matrix_beeper_linkedin_configuration_extension_yaml: |
       '@YOUR_USERNAME:YOUR_DOMAIN': admin
 ```
 
-You may wish to look at `roles/matrix-bridge-beeper-linkedin/templates/config.yaml.j2` to find other things you would like to configure.
+You may wish to look at `roles/custom/matrix-bridge-beeper-linkedin/templates/config.yaml.j2` to find other things you would like to configure.
 
 
 ## Set up Double Puppeting

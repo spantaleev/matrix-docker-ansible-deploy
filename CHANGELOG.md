@@ -130,7 +130,7 @@ Below we'll discuss **potential backward incompatibilities**.
 
 - **Metric endpoints have also changed** (`/metrics/synapse/worker/generic_worker-18111` -> `/metrics/synapse/worker/generic-worker-0`). If you're [collecting metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server), consider revisiting our [Collecting Synapse worker metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-synapse-worker-metrics-to-an-external-prometheus-server) docs and updating your Prometheus configuration. **If you're collecting metrics to the integrated Prometheus server** (not enabled by default), **your Prometheus configuration will be updated automatically**. Old data (from before this change) may stick around though.
 
-- **the format of `matrix_synapse_workers_enabled_list` has changed**. You were never advised to use this variable for directly creating workers (we advise people to control workers using `matrix_synapse_workers_preset` or by tweaking `matrix_synapse_workers_*_workers_count` variables only), but some people may have started using the `matrix_synapse_workers_enabled_list` variable to gain more control over workers. If you're one of them, you'll need to adjust its value. See `roles/matrix-synapse/defaults/main.yml` for more information on the new format. The playbook will also do basic validation and complain if you got something wrong.
+- **the format of `matrix_synapse_workers_enabled_list` has changed**. You were never advised to use this variable for directly creating workers (we advise people to control workers using `matrix_synapse_workers_preset` or by tweaking `matrix_synapse_workers_*_workers_count` variables only), but some people may have started using the `matrix_synapse_workers_enabled_list` variable to gain more control over workers. If you're one of them, you'll need to adjust its value. See `roles/custom/matrix-synapse/defaults/main.yml` for more information on the new format. The playbook will also do basic validation and complain if you got something wrong.
 
 
 # 2022-09-09
@@ -412,7 +412,7 @@ matrix_ma1sd_enabled: true
 
 We now support installing the [matrix_encryption_disabler](https://github.com/digitalentity/matrix_encryption_disabler) Synapse module, which lets you prevent End-to-End-Encryption from being enabled by users on your homeserver. The popular opinion is that this is dangerous and shouldn't be done, but there are valid use cases for disabling encryption discussed [here](https://github.com/matrix-org/synapse/issues/4401).
 
-To enable this module (and prevent encryption from being used on your homserver), add `matrix_synapse_ext_encryption_disabler_enabled: true` to your configuration. This module provides further customization. Check its other configuration settings (and defaults) in `roles/matrix-synapse/defaults/main.yml`.
+To enable this module (and prevent encryption from being used on your homserver), add `matrix_synapse_ext_encryption_disabler_enabled: true` to your configuration. This module provides further customization. Check its other configuration settings (and defaults) in `roles/custom/matrix-synapse/defaults/main.yml`.
 
 
 # 2022-02-01
@@ -799,7 +799,7 @@ You have 3 ways to proceed:
   - stop the bridge (`systemctl stop matrix-mautrix-facebook`)
   - create a new `matrix_mautrix_facebook` Postgres database for it
   - run [pgloader](https://pgloader.io/) manually (we import this bridge's data using default settings and it works well)
-  - define `matrix_mautrix_facebook_database_*` variables in your `vars.yml` file (credentials, etc.) - you can find their defaults in `roles/matrix-mautrix-facebook/defaults/main.yml`
+  - define `matrix_mautrix_facebook_database_*` variables in your `vars.yml` file (credentials, etc.) - you can find their defaults in `roles/custom/matrix-mautrix-facebook/defaults/main.yml`
   - switch the bridge to Postgres (`matrix_mautrix_facebook_database_engine: 'postgres'` in your `vars.yml` file)
   - re-run the playbook (`--tags=setup-all,start`) and ensure the bridge works (`systemctl status matrix-mautrix-facebook` and `journalctl -fu matrix-mautrix-facebook`)
   - send a `login` message to the Facebook bridge bot again
@@ -1677,7 +1677,7 @@ Having Synapse not be a required component potentially opens the door for instal
 ## Bridges are now separate from the Synapse role
 
 Bridges are no longer part of the `matrix-synapse` role.
-Each bridge now lives in its own separate role (`roles/matrix-bridge-*`).
+Each bridge now lives in its own separate role (`roles/custom/matrix-bridge-*`).
 
 These bridge roles are independent of the `matrix-synapse` role, so it should be possible to use them with a Synapse instance installed another way (not through the playbook).
 
@@ -1971,7 +1971,7 @@ The following variables are no longer supported by this playbook:
 - `matrix_mxisd_template_config`
 
 You are encouraged to use the `matrix_mxisd_configuration_extension_yaml` variable to define your own mxisd configuration additions and overrides.
-Refer to the [default variables file](roles/matrix-mxisd/defaults/main.yml) for more information.
+Refer to the [default variables file](roles/custom/matrix-mxisd/defaults/main.yml) for more information.
 
 This new way of configuring mxisd is beneficial because:
 
@@ -2033,14 +2033,14 @@ Based on feedback from others, running Synapse on Python 3 is supposed to decrea
 ## Riot homepage customization
 
 You can now customize some parts of the Riot homepage (or even completely replace it with your own custom page).
-See the `matrix_riot_web_homepage_` variables in `roles/matrix-riot-web/defaults/main.yml`.
+See the `matrix_riot_web_homepage_` variables in `roles/custom/matrix-riot-web/defaults/main.yml`.
 
 
 # 2018-12-04
 
 ## mxisd extensibility
 
-The [LDAP identity store for mxisd](https://github.com/kamax-matrix/mxisd/blob/master/docs/stores/ldap.md) can now be configured easily using playbook variables (see the `matrix_mxisd_ldap_` variables in `roles/matrix-server/defaults/main.yml`).
+The [LDAP identity store for mxisd](https://github.com/kamax-matrix/mxisd/blob/master/docs/stores/ldap.md) can now be configured easily using playbook variables (see the `matrix_mxisd_ldap_` variables in `roles/custom/matrix-server/defaults/main.yml`).
 
 
 # 2018-11-28
