@@ -22,8 +22,8 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_hookshot_docker_image_force_pull }}"
   when: not matrix_hookshot_container_image_self_build
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 - name: Ensure hookshot repository is present on self-build
@@ -71,7 +71,7 @@
 - name: Validate hookshot config.yml
   ansible.builtin.command:
     cmd: |
-      {{ matrix_host_command_docker }} run
+      {{ devture_systemd_docker_base_host_command_docker }} run
       --rm
       --name={{ matrix_hookshot_container_url }}-validate
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
@@ -106,7 +106,7 @@
 - name: Ensure matrix-hookshot.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-hookshot.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-hookshot.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-hookshot.service"
     mode: 0644
   register: matrix_hookshot_systemd_service_result
 

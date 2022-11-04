@@ -31,7 +31,7 @@
       register: matrix_synapse_git_pull_results
 
     - name: Check if Synapse Docker image exists
-      ansible.builtin.command: "{{ matrix_host_command_docker }} images --quiet --filter 'reference={{ matrix_synapse_docker_image }}'"
+      ansible.builtin.command: "{{ devture_systemd_docker_base_host_command_docker }} images --quiet --filter 'reference={{ matrix_synapse_docker_image }}'"
       register: matrix_synapse_docker_image_check_result
       changed_when: false
 
@@ -42,7 +42,7 @@
       ansible.builtin.shell:
         chdir: "{{ matrix_synapse_docker_src_files_path }}"
         cmd: |
-          {{ matrix_host_command_docker }} build \
+          {{ devture_systemd_docker_base_host_command_docker }} build \
           -t "{{ matrix_synapse_docker_image }}" \
           -f docker/Dockerfile \
           .
@@ -58,8 +58,8 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_synapse_docker_image_force_pull }}"
   when: "not matrix_synapse_container_image_self_build"
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 - when: "matrix_synapse_container_image_customizations_enabled | bool"
@@ -125,7 +125,7 @@
 - name: Ensure matrix-synapse.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/synapse/systemd/matrix-synapse.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-synapse.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse.service"
     mode: 0644
   register: matrix_synapse_systemd_service_result
 

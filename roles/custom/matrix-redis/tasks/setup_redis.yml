@@ -12,8 +12,8 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_redis_docker_image_force_pull }}"
   when: matrix_redis_enabled | bool
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 - name: Ensure redis paths exist
@@ -52,7 +52,7 @@
 - name: Ensure matrix-redis.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-redis.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-redis.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-redis.service"
     mode: 0644
   register: matrix_redis_systemd_service_result
   when: matrix_redis_enabled | bool
@@ -68,7 +68,7 @@
 
 - name: Check existence of matrix-redis service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-redis.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-redis.service"
   register: matrix_redis_service_stat
   when: "not matrix_redis_enabled | bool"
 
@@ -82,7 +82,7 @@
 
 - name: Ensure matrix-redis.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-redis.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-redis.service"
     state: absent
   when: "not matrix_redis_enabled | bool and matrix_redis_service_stat.stat.exists"
 

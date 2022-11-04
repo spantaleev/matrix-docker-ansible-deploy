@@ -25,9 +25,9 @@
 
 - name: Inject warning if on an old version of Postgres
   ansible.builtin.set_fact:
-    matrix_playbook_runtime_results: |
+    devture_playbook_runtime_messages_list: |
       {{
-        matrix_playbook_runtime_results | default([])
+        devture_playbook_runtime_messages_list | default([])
         +
         [
           "NOTE: Your setup is on an old Postgres version ({{ matrix_postgres_docker_image_to_use }}), while {{ matrix_postgres_docker_image_latest }} is supported. You can upgrade using --tags=upgrade-postgres"
@@ -44,8 +44,8 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_postgres_docker_image_force_pull }}"
   when: matrix_postgres_enabled | bool
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 - name: Ensure Postgres paths exist
@@ -121,7 +121,7 @@
 - name: Ensure matrix-postgres.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-postgres.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-postgres.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postgres.service"
     mode: 0644
   register: matrix_postgres_systemd_service_result
   when: matrix_postgres_enabled | bool
@@ -146,9 +146,9 @@
 
 - name: Inject warning if backup data remains
   ansible.builtin.set_fact:
-    matrix_playbook_runtime_results: |
+    devture_playbook_runtime_messages_list: |
       {{
-        matrix_playbook_runtime_results | default([])
+        devture_playbook_runtime_messages_list | default([])
         +
         [
           "NOTE: You have some Postgres backup data in `{{ matrix_postgres_data_path }}-auto-upgrade-backup`, which was created during the last major Postgres update you ran. If your setup works well after this upgrade, feel free to delete this whole directory."
@@ -163,7 +163,7 @@
 
 - name: Check existence of matrix-postgres service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-postgres.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postgres.service"
   register: matrix_postgres_service_stat
   when: "not matrix_postgres_enabled | bool"
 
@@ -176,7 +176,7 @@
 
 - name: Ensure matrix-postgres.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-postgres.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postgres.service"
     state: absent
   when: "not matrix_postgres_enabled | bool and matrix_postgres_service_stat.stat.exists"
 
@@ -194,9 +194,9 @@
 # We just want to notify the user. Deleting data is too destructive.
 - name: Inject warning if matrix-postgres local data remains
   ansible.builtin.set_fact:
-    matrix_playbook_runtime_results: |
+    devture_playbook_runtime_messages_list: |
       {{
-        matrix_playbook_runtime_results | default([])
+        devture_playbook_runtime_messages_list | default([])
         +
         [
           "NOTE: You are not using a local PostgreSQL database, but some old data remains from before in `{{ matrix_postgres_data_path }}`. Feel free to delete it."

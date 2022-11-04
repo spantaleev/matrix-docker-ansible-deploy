@@ -82,7 +82,7 @@
 - name: Perform Postgres database dump
   ansible.builtin.command:
     cmd: >-
-      {{ matrix_host_command_docker }} run --rm --name matrix-postgres-dump
+      {{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-postgres-dump
       --log-driver=none
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --network={{ matrix_docker_network }}
@@ -134,7 +134,7 @@
 - name: Generate Postgres database import command
   ansible.builtin.set_fact:
     matrix_postgres_import_command: >-
-      {{ matrix_host_command_docker }} run --rm --name matrix-postgres-import
+      {{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-postgres-import
       --log-driver=none
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL

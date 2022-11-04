@@ -44,8 +44,8 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_facebook_docker_image_force_pull }}"
   when: not matrix_mautrix_facebook_container_image_self_build
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 - name: Ensure Mautrix Facebook paths exist
@@ -122,7 +122,7 @@
 - name: Ensure matrix-mautrix-facebook.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-facebook.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-mautrix-facebook.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-facebook.service"
     mode: 0644
   register: matrix_mautrix_facebook_systemd_service_result
 

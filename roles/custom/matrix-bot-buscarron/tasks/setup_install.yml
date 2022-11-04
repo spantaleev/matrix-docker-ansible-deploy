@@ -57,8 +57,8 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_buscarron_docker_image_force_pull }}"
   when: "not matrix_bot_buscarron_container_image_self_build | bool"
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 - name: Ensure buscarron repository is present on self-build
@@ -87,7 +87,7 @@
 - name: Ensure matrix-bot-buscarron.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-bot-buscarron.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-bot-buscarron.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-buscarron.service"
     mode: 0644
   register: matrix_bot_buscarron_systemd_service_result
 

@@ -49,14 +49,14 @@
     force_source: "{{ matrix_synapse_rust_synapse_compress_state_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_synapse_rust_synapse_compress_state_docker_image_force_pull }}"
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 - name: Generate rust-synapse-compress-state room find command
   ansible.builtin.set_fact:
     matrix_synapse_rust_synapse_compress_state_find_rooms_command: >-
-      {{ matrix_host_command_docker }} run --rm --name matrix-rust-synapse-compress-state-find-rooms
+      {{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-rust-synapse-compress-state-find-rooms
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
       --network={{ matrix_docker_network }}

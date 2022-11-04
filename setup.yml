@@ -7,6 +7,20 @@
     - roles/custom/matrix-synapse/vars/workers.yml
 
   roles:
+    # This role has no tasks at all
+    - role: galaxy/com.devture.ansible.role.playbook_help
+
+    # This role has no tasks at all
+    - role: galaxy/com.devture.ansible.role.systemd_docker_base
+
+    - role: custom/matrix_playbook_migration
+
+    - when: devture_timesync_installation_enabled | bool
+      role: galaxy/com.devture.ansible.role.timesync
+      tags:
+        - setup-timesync
+        - setup-all
+
     - custom/matrix-base
     - custom/matrix-dynamic-dns
     - custom/matrix-mailer
@@ -74,3 +88,12 @@
     - custom/matrix-backup-borg
     - custom/matrix-user-creator
     - custom/matrix-common-after
+
+    # This is pretty much last, because we want it to better serve as a "last known good configuration".
+    # See: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/2217#issuecomment-1301487601
+    - when: devture_playbook_state_preserver_enabled | bool
+      role: galaxy/com.devture.ansible.role.playbook_state_preserver
+      tags:
+        - setup-all
+
+    - role: galaxy/com.devture.ansible.role.playbook_runtime_messages

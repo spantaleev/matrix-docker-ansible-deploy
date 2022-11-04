@@ -54,14 +54,14 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_docker_image_force_pull }}"
   when: "matrix_mailer_enabled | bool and not matrix_mailer_container_image_self_build | bool"
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 - name: Ensure matrix-mailer.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mailer.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-mailer.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mailer.service"
     mode: 0644
   register: matrix_mailer_systemd_service_result
   when: matrix_mailer_enabled | bool
@@ -77,7 +77,7 @@
 
 - name: Check existence of matrix-mailer service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-mailer.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mailer.service"
   register: matrix_mailer_service_stat
   when: "not matrix_mailer_enabled | bool"
 
@@ -92,7 +92,7 @@
 
 - name: Ensure matrix-mailer.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-mailer.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mailer.service"
     state: absent
   when: "not matrix_mailer_enabled | bool and matrix_mailer_service_stat.stat.exists"
 

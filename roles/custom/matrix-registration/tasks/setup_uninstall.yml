@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-registration service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-registration.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-registration.service"
   register: matrix_registration_service_stat
 
 - name: Ensure matrix-registration is stopped
@@ -16,7 +16,7 @@
 
 - name: Ensure matrix-registration.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-registration.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-registration.service"
     state: absent
   when: "matrix_registration_service_stat.stat.exists | bool"
 

@@ -71,7 +71,7 @@
 - name: Import SQLite database from {{ sqlite_database_path }} into Postgres  # noqa name[template]
   ansible.builtin.command:
     cmd: >-
-      {{ matrix_host_command_docker }} run
+      {{ devture_systemd_docker_base_host_command_docker }} run
       --rm
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
@@ -92,9 +92,9 @@
 
 - name: Inject result
   ansible.builtin.set_fact:
-    matrix_playbook_runtime_results: |
+    devture_playbook_runtime_messages_list: |
       {{
-        matrix_playbook_runtime_results | default([])
+        devture_playbook_runtime_messages_list | default([])
         +
         [
           "NOTE: Your SQLite database file has been imported into Postgres. The original file has been moved from `{{ sqlite_database_path }}` to `{{ sqlite_database_path }}.backup`. When you've confirmed that the import went well and everything works, you should be able to safely delete this file."

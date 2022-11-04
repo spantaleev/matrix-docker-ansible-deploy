@@ -1,7 +1,7 @@
 ---
 - name: Check existence of matrix-backup-borg service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-backup-borg.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-backup-borg.service"
   register: matrix_backup_borg_service_stat
 
 - name: Ensure matrix-backup-borg is stopped
@@ -15,13 +15,13 @@
 
 - name: Ensure matrix-backup-borg.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-backup-borg.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-backup-borg.service"
     state: absent
   when: "matrix_backup_borg_service_stat.stat.exists | bool"
 
 - name: Ensure matrix-backup-borg.timer doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-backup-borg.timer"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-backup-borg.timer"
     state: absent
   when: "matrix_backup_borg_service_stat.stat.exists | bool"
 

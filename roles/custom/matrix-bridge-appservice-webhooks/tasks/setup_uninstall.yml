@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-appservice-webhooks service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-appservice-webhooks.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-webhooks.service"
   register: matrix_appservice_webhooks_service_stat
 
 - name: Ensure matrix-appservice-webhooks is stopped
@@ -15,7 +15,7 @@
 
 - name: Ensure matrix-appservice-webhooks.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-appservice-webhooks.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-webhooks.service"
     state: absent
   when: "matrix_appservice_webhooks_service_stat.stat.exists"
 

@@ -95,14 +95,6 @@ matrix_debian_arch: "{{ 'armhf' if matrix_architecture == 'arm32' else matrix_ar
 
 matrix_container_global_registry_prefix: "docker.io/"
 
-# Each docker pull will retry on failed attempt 10 times with delay of 10 seconds between each attempt.
-matrix_container_retries_count: 10
-matrix_container_retries_delay: 10
-
-# Each get_url will retry on failed attempt 10 times with delay of 10 seconds between each attempt.
-matrix_geturl_retries_count: 10
-matrix_geturl_retries_delay: 10
-
 matrix_user_username: "matrix"
 matrix_user_groupname: "matrix"
 
@@ -116,12 +108,6 @@ matrix_base_data_path: "/matrix"
 matrix_base_data_path_mode: "750"
 
 matrix_static_files_base_path: "{{ matrix_base_data_path }}/static-files"
-matrix_systemd_path: "/etc/systemd/system"
-
-# Specifies the path to use for the `HOME` environment variable for systemd unit files.
-# Docker 20.10 complains with `WARNING: Error loading config file: .dockercfg: $HOME is not defined`
-# if `$HOME` is not defined, so we define something to make it happy.
-matrix_systemd_unit_home_path: /root
 
 # This is now unused. We keep it so that cleanup tasks can use it.
 # To be removed in the future.
@@ -129,16 +115,10 @@ matrix_cron_path: "/etc/cron.d"
 
 matrix_local_bin_path: "/usr/local/bin"
 
-matrix_host_command_docker: "/usr/bin/env docker"
 matrix_host_command_sleep: "/usr/bin/env sleep"
 matrix_host_command_chown: "/usr/bin/env chown"
 matrix_host_command_fusermount: "/usr/bin/env fusermount"
 matrix_host_command_openssl: "/usr/bin/env openssl"
-matrix_host_command_systemctl: "/usr/bin/env systemctl"
-matrix_host_command_sh: "/usr/bin/env sh"
-
-matrix_ntpd_package: "{{ 'systemd-timesyncd' if (ansible_os_family == 'RedHat' and ansible_distribution_major_version | int > 7) or (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version | int > 18) else ('systemd' if ansible_os_family == 'Suse' else 'ntp') }}"
-matrix_ntpd_service: "{{ 'systemd-timesyncd' if (ansible_os_family == 'RedHat' and ansible_distribution_major_version | int > 7) or (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version | int > 18) or ansible_distribution == 'Archlinux' or ansible_os_family == 'Suse' else ('ntpd' if ansible_os_family == 'RedHat' else 'ntp') }}"
 
 matrix_homeserver_url: "https://{{ matrix_server_fqn_matrix }}"
 
@@ -258,12 +238,6 @@ matrix_well_known_matrix_support_configuration: "{{ matrix_well_known_matrix_sup
 # The Docker network that all services would be put into
 matrix_docker_network: "matrix"
 
-# Controls whether we'll preserve the vars.yml file on the Matrix server.
-# If you have a differently organized inventory, you may wish to disable this feature,
-# or to repoint `matrix_vars_yml_snapshotting_src` to the file you'd like to preserve.
-matrix_vars_yml_snapshotting_enabled: true
-matrix_vars_yml_snapshotting_src: "{{ inventory_dir }}/host_vars/{{ inventory_hostname }}/vars.yml"
-
 # Controls whether a `/.well-known/matrix/server` file is generated and used at all.
 #
 # If you wish to rely on DNS SRV records only, you can disable this.
@@ -286,11 +260,6 @@ matrix_docker_installation_enabled: true
 # Controls the Docker package that is installed.
 # Possible values are "docker-ce" (default) and "docker.io" (Debian).
 matrix_docker_package_name: docker-ce
-
-# Controls whether the current playbook's commit hash is saved in `git_hash.yml` on the target
-# Set this to false if GIT is not installed on the local system (the system where the ansible command is run on)
-# to suppress the warning message.
-matrix_playbook_commit_hash_preservation_enabled: true
 
 # Variables to Control which parts of our roles run.
 run_postgres_import: true

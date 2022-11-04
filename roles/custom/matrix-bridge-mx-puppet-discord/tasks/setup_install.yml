@@ -78,8 +78,8 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mx_puppet_discord_docker_image_force_pull }}"
   when: matrix_mx_puppet_discord_enabled | bool and not matrix_mx_puppet_discord_container_image_self_build
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 - name: Ensure MX Puppet Discord repository is present on self build

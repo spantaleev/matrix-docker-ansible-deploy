@@ -13,16 +13,16 @@ Wants={{ service }}
 
 [Service]
 Type=simple
-Environment="HOME={{ matrix_systemd_unit_home_path }}"
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-mautrix-signal-daemon 2>/dev/null || true'
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-mautrix-signal-daemon 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-mautrix-signal-daemon 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-mautrix-signal-daemon 2>/dev/null || true'
 
 # Intentional delay, so that the homeserver (we likely depend on) can manage to start.
 ExecStartPre={{ matrix_host_command_sleep }} 5
 
 # Migration task required by the 0.19.0 upgrade
-ExecStartPre=-{{ matrix_host_command_docker }} run --rm --name matrix-mautrix-signal-daemon \
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-mautrix-signal-daemon \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
@@ -32,7 +32,7 @@ ExecStartPre=-{{ matrix_host_command_docker }} run --rm --name matrix-mautrix-si
 			--migrate-data
 
 # We can't use `--read-only` for this bridge.
-ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-signal-daemon \
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-mautrix-signal-daemon \
 			--log-driver=none \
             --env-file={{ matrix_mautrix_signal_daemon_path }}/env \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
@@ -41,8 +41,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-signal
 			-v {{ matrix_mautrix_signal_daemon_path }}:/signald:z \
 			{{ matrix_mautrix_signal_daemon_docker_image }}
 
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-mautrix-signal-daemon 2>/dev/null || true'
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-mautrix-signal-daemon 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-mautrix-signal-daemon 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-mautrix-signal-daemon 2>/dev/null || true'
 
 Restart=always
 RestartSec=30

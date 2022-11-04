@@ -1,3 +1,24 @@
+# 2022-11-04
+
+## The playbook now uses external roles for some things
+
+**TLDR**: when updating the playbook and before running it, you'll need to run `make roles` to make [ansible-galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html) download dependency roles (see the [`requirements.yml` file](requirements.yml)) to the `roles/galaxy` directory. Without this, the playbook won't work.
+
+We're in the process of trimming the playbook and making it reuse Ansible roles.
+
+Starting now, the playbook is composed of 2 types of Ansible roles:
+
+- those that live within the playbook itself (`roles/custom/*`)
+
+- those downloaded from other sources (using [ansible-galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html) to `roles/galaxy`, based on the [`requirements.yml` file](requirements.yml)). These roles are maintained by us or by other people from the Ansible community.
+
+We're doing this for greater code-reuse (across Ansible playbooks, including our own related playbooks [gitea-docker-ansible-deploy](https://github.com/spantaleev/gitea-docker-ansible-deploy) and [nextcloud-docker-ansible-deploy](https://github.com/spantaleev/nextcloud-docker-ansible-deploy)) and decreased maintenance burden. Until now, certain features were copy-pasted across playbooks or were maintained separately in each one, with improvements often falling behind. We've also tended to do too much by ourselves - installing Docker on the server from our `matrix-base` role, etc. - something that we'd rather not do anymore by switching to the [geerlingguy.docker](https://galaxy.ansible.com/geerlingguy/docker) role.
+
+Some variable names will change during the transition to having more and more external (galaxy) roles. There's a new `custom/matrix_playbook_migration` role added to the playbook which will tell you about these changes each time you run the playbook.
+
+From now on, every time you update the playbook (well, every time the `requirements.yml` file changes), it's best to run `make roles` to update the roles downloaded from other sources.
+
+
 # 2022-10-14
 
 ## synapse-s3-storage-provider support

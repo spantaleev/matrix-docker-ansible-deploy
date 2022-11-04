@@ -20,11 +20,11 @@
       {{ matrix_registration_api_result.json | to_nice_json }}
   check_mode: false
 
-- name: Inject result message into matrix_playbook_runtime_results
+- name: Inject result message into devture_playbook_runtime_messages_list
   ansible.builtin.set_fact:
-    matrix_playbook_runtime_results: |
+    devture_playbook_runtime_messages_list: |
       {{
-        matrix_playbook_runtime_results | default([])
+        devture_playbook_runtime_messages_list | default([])
         +
         [matrix_registration_api_result_message]
       }}

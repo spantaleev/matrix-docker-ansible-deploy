@@ -9,8 +9,8 @@
     force_source: "{{ matrix_s3_goofys_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_s3_goofys_docker_image_force_pull }}"
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 # This will throw a Permission Denied error if already mounted
@@ -39,7 +39,7 @@
 - name: Ensure matrix-goofys.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/goofys/systemd/matrix-goofys.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-goofys.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-goofys.service"
     mode: 0644
   register: matrix_goofys_systemd_service_result
 

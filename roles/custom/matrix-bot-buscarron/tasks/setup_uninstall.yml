@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-buscarron service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-bot-buscarron.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-buscarron.service"
   register: matrix_bot_buscarron_service_stat
 
 - name: Ensure matrix-buscarron is stopped
@@ -16,7 +16,7 @@
 
 - name: Ensure matrix-bot-buscarron.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-bot-buscarron.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-buscarron.service"
     state: absent
   when: "matrix_bot_buscarron_service_stat.stat.exists | bool"
 

@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-matrix_ldap_registration_proxy service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-ldap-registration-proxy.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ldap-registration-proxy.service"
   register: matrix_ldap_registration_proxy_service_stat
 
 - name: Ensure matrix-matrix_ldap_registration_proxy is stopped
@@ -16,7 +16,7 @@
 
 - name: Ensure matrix-ldap-registration-proxy.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-ldap-registration-proxy.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ldap-registration-proxy.service"
     state: absent
   when: "matrix_ldap_registration_proxy_service_stat.stat.exists | bool"
 

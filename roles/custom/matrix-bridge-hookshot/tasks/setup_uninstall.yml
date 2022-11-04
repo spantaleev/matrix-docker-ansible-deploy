@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-hookshot service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-hookshot.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-hookshot.service"
   register: matrix_hookshot_service_stat
 
 - name: Ensure matrix-hookshot is stopped
@@ -15,7 +15,7 @@
 
 - name: Ensure matrix-hookshot.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-hookshot.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-hookshot.service"
     state: absent
   when: "matrix_hookshot_service_stat.stat.exists"
 
