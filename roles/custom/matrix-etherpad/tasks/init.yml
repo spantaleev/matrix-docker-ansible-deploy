@@ -4,7 +4,7 @@
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-etherpad.service'] }}"
   when: matrix_etherpad_enabled | bool
 
-- when: matrix_etherpad_enabled | bool
+- when: matrix_etherpad_enabled | bool and matrix_dimension_enabled | default(False) | bool
   tags:
     - always
   block:
