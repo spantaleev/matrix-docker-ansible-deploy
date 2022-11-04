@@ -15,6 +15,12 @@
 
     - role: custom/matrix_playbook_migration
 
+    - when: devture_timesync_installation_enabled | bool
+      role: galaxy/com.devture.ansible.role.timesync
+      tags:
+        - setup-timesync
+        - setup-all
+
     - custom/matrix-base
     - custom/matrix-dynamic-dns
     - custom/matrix-mailer
