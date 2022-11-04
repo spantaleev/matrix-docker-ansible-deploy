@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-cactus-comments service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-cactus-comments.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-cactus-comments.service"
   register: matrix_cactus_comments_service_stat
 
 - name: Ensure cactus comments is stopped
@@ -16,7 +16,7 @@
 
 - name: Ensure matrix-cactus-comments.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-cactus-comments.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-cactus-comments.service"
     state: absent
   when: "matrix_cactus_comments_service_stat.stat.exists | bool"
 

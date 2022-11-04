@@ -76,7 +76,7 @@
 - name: Ensure matrix-coturn.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-coturn.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-coturn.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-coturn.service"
     mode: 0644
   register: matrix_coturn_systemd_service_change_results
 
@@ -86,7 +86,7 @@
 - name: Ensure reloading systemd units installed, if necessary
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/{{ item }}.j2"
-    dest: "{{ matrix_systemd_path }}/{{ item }}"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ item }}"
     mode: 0644
   register: "matrix_coturn_systemd_service_change_results"
   when: "matrix_coturn_tls_enabled | bool"

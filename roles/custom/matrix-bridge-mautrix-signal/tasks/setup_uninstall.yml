@@ -3,7 +3,7 @@
 # Signal daemon service
 - name: Check existence of matrix-mautrix-signal-daemon service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-mautrix-signal-daemon.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-signal-daemon.service"
   register: matrix_mautrix_signal_daemon_service_stat
 
 - name: Ensure matrix-mautrix-signal-daemon is stopped
@@ -16,14 +16,14 @@
 
 - name: Ensure matrix-mautrix-signal-daemon.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-mautrix-signal-daemon.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-signal-daemon.service"
     state: absent
   when: "matrix_mautrix_signal_daemon_service_stat.stat.exists"
 
 # Bridge service
 - name: Check existence of matrix-mautrix-signal service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-mautrix-signal.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-signal.service"
   register: matrix_mautrix_signal_service_stat
 
 - name: Ensure matrix-mautrix-signal is stopped
@@ -36,7 +36,7 @@
 
 - name: Ensure matrix-mautrix-signal.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-mautrix-signal.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-signal.service"
     state: absent
   when: "matrix_mautrix_signal_service_stat.stat.exists"
 

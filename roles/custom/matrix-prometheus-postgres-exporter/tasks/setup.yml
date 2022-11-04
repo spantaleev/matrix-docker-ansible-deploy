@@ -19,7 +19,7 @@
 - name: Ensure matrix-prometheus-postgres-exporter.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-prometheus-postgres-exporter.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-prometheus-postgres-exporter.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-prometheus-postgres-exporter.service"
     mode: 0644
   register: matrix_prometheus_postgres_exporter_systemd_service_result
   when: matrix_prometheus_postgres_exporter_enabled | bool
@@ -35,7 +35,7 @@
 
 - name: Check existence of matrix-prometheus-postgres-exporter service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-prometheus-postgres-exporter.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-prometheus-postgres-exporter.service"
   register: matrix_prometheus_postgres_exporter_service_stat
 
 - name: Ensure matrix-prometheus-postgres-exporter is stopped
@@ -49,7 +49,7 @@
 
 - name: Ensure matrix-prometheus-postgres-exporter.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-prometheus-postgres-exporter.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-prometheus-postgres-exporter.service"
     state: absent
   when: "not matrix_prometheus_postgres_exporter_enabled | bool and matrix_prometheus_postgres_exporter_service_stat.stat.exists"
 

@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-bot-mjolnir service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-bot-mjolnir.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-mjolnir.service"
   register: matrix_bot_mjolnir_service_stat
 
 - name: Ensure matrix-bot-mjolnir is stopped
@@ -16,7 +16,7 @@
 
 - name: Ensure matrix-bot-mjolnir.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-bot-mjolnir.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-mjolnir.service"
     state: absent
   when: "matrix_bot_mjolnir_service_stat.stat.exists | bool"
 

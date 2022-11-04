@@ -121,7 +121,7 @@
 - name: Ensure matrix-postgres.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-postgres.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-postgres.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postgres.service"
     mode: 0644
   register: matrix_postgres_systemd_service_result
   when: matrix_postgres_enabled | bool
@@ -163,7 +163,7 @@
 
 - name: Check existence of matrix-postgres service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-postgres.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postgres.service"
   register: matrix_postgres_service_stat
   when: "not matrix_postgres_enabled | bool"
 
@@ -176,7 +176,7 @@
 
 - name: Ensure matrix-postgres.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-postgres.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postgres.service"
     state: absent
   when: "not matrix_postgres_enabled | bool and matrix_postgres_service_stat.stat.exists"
 

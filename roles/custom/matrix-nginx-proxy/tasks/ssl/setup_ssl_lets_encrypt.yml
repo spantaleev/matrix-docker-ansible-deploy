@@ -43,7 +43,7 @@
     - name: Ensure SSL renewal systemd units installed
       ansible.builtin.template:
         src: "{{ role_path }}/templates/systemd/{{ item.name }}.j2"
-        dest: "{{ matrix_systemd_path }}/{{ item.name }}"
+        dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ item.name }}"
         mode: 0644
       when: "item.applicable | bool"
       with_items: "{{ matrix_ssl_renewal_systemd_units_list }}"
@@ -56,7 +56,7 @@
   block:
     - name: Ensure matrix-ssl-lets-encrypt-renew cronjob removed
       ansible.builtin.file:
-        path: "{{ matrix_systemd_path }}/{{ item.name }}"
+        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ item.name }}"
         state: absent
       when: "not item.applicable | bool"
       with_items: "{{ matrix_ssl_renewal_systemd_units_list }}"

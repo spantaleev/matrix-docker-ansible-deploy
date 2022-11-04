@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-coturn service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-coturn.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-coturn.service"
   register: matrix_coturn_service_stat
   when: "not matrix_coturn_enabled | bool"
 
@@ -25,7 +25,7 @@
 
 - name: Ensure systemd units don't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/{{ item }}"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ item }}"
     state: absent
   register: matrix_coturn_systemd_unit_uninstallation_result
   with_items:

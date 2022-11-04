@@ -41,7 +41,7 @@
 - name: Ensure matrix-jitsi-prosody.service file is installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/prosody/matrix-jitsi-prosody.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-jitsi-prosody.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-jitsi-prosody.service"
     mode: 0644
   register: matrix_jitsi_prosody_systemd_service_result
   when: matrix_jitsi_enabled | bool
@@ -65,7 +65,7 @@
 
 - name: Ensure matrix-jitsi-prosody.service file exists
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-jitsi-prosody.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-jitsi-prosody.service"
   register: matrix_jitsi_prosody_service_stat
   when: "not matrix_jitsi_enabled | bool"
 
@@ -80,7 +80,7 @@
 
 - name: Ensure matrix-jitsi-prosody.service file doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-jitsi-prosody.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-jitsi-prosody.service"
     state: absent
   when: "not matrix_jitsi_enabled | bool and matrix_jitsi_prosody_service_stat.stat.exists"
 

@@ -64,7 +64,7 @@
 - name: Ensure matrix-corporal.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-corporal.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-corporal.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-corporal.service"
     mode: 0644
   register: matrix_corporal_systemd_service_result
   when: matrix_corporal_enabled | bool
@@ -81,7 +81,7 @@
 
 - name: Check existence of matrix-corporal service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-corporal.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-corporal.service"
   register: matrix_corporal_service_stat
   when: "not matrix_corporal_enabled | bool"
 
@@ -96,7 +96,7 @@
 
 - name: Ensure matrix-corporal.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-corporal.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-corporal.service"
     state: absent
   when: "not matrix_corporal_enabled | bool and matrix_corporal_service_stat.stat.exists"
 
@@ -110,7 +110,7 @@
     path: "{{ item }}"
     state: absent
   with_items:
-    - "{{ matrix_systemd_path }}/matrix-corporal.service"
+    - "{{ devture_systemd_docker_base_systemd_path }}/matrix-corporal.service"
     - "{{ matrix_corporal_config_dir_path }}/config.json"
   when: "not matrix_corporal_enabled | bool"
 

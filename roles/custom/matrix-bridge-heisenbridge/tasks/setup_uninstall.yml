@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-heisenbridge service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-heisenbridge.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-heisenbridge.service"
   register: matrix_heisenbridge_service_stat
 
 - name: Ensure matrix-heisenbridge is stopped
@@ -15,7 +15,7 @@
 
 - name: Ensure matrix-heisenbridge.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-heisenbridge.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-heisenbridge.service"
     state: absent
   when: "matrix_heisenbridge_service_stat.stat.exists"
 
