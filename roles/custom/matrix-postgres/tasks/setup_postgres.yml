@@ -44,8 +44,8 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_postgres_docker_image_force_pull }}"
   when: matrix_postgres_enabled | bool
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 - name: Ensure Postgres paths exist
