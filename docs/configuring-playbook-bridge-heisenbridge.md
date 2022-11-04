@@ -8,7 +8,7 @@ See the project's [README](https://github.com/hifi/heisenbridge/blob/master/READ
 
 ## Configuration
 
-Below are the common configuration options that you may want to set, exhaustive list is in [the bridge's defaults var file](../roles/matrix-bridge-heisenbridge/defaults/main.yml).
+Below are the common configuration options that you may want to set, exhaustive list is in [the bridge's defaults var file](../roles/custom/matrix-bridge-heisenbridge/defaults/main.yml).
 
 At a minimum, you only need to enable the bridge to get it up and running (`inventory/host_vars/matrix.DOMAIN/vars.yml`):
 

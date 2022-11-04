@@ -1,0 +1,152 @@
+---
+# Below is a huge hack for dynamically building a list of workers and finally assigning it to `matrix_synapse_workers_enabled_list`.
+#
+# set_fact within a loop does not work reliably in Ansible (it only executes on the first iteration for some reason),
+# so we're forced to do something much uglier.
+
+- name: Build generic workers
+  ansible.builtin.set_fact:
+    worker:
+      id: "generic-worker-{{ item }}"
+      name: "matrix-synapse-worker-generic-{{ item }}"
+      type: 'generic_worker'
+      app: 'generic_worker'
+      webserving: true
+      port: "{{ matrix_synapse_workers_generic_workers_port_range_start + item }}"
+      metrics_port: "{{ matrix_synapse_workers_generic_workers_metrics_range_start + item }}"
+  register: "matrix_synapse_workers_list_results_generic_workers"
+  loop: "{{ range(0, matrix_synapse_workers_generic_workers_count | int) | list }}"
+
+- name: Build stream writer workers
+  ansible.builtin.set_fact:
+    worker:
+      id: "stream-writer-{{ idx }}-{{ item.stream }}"
+      # Names must not include understores. Certain stream writer streams (to_device, account_data, ..) do, so we fix them up.
+      name: "matrix-synapse-worker-stream-writer-{{ idx }}-{{ item.stream | replace('_', '-') }}"
+      type: 'stream_writer'
+      app: "generic_worker"
+      webserving: "{{ item.stream in matrix_synapse_workers_webserving_stream_writer_types }}"
+      stream_writer_stream: "{{ item.stream }}"
+      port: "{{ matrix_synapse_workers_stream_writer_workers_http_port_range_start + idx }}"
+      replication_port: "{{ matrix_synapse_workers_stream_writer_workers_replication_port_range_start + idx }}"
+      metrics_port: "{{ matrix_synapse_workers_stream_writer_workers_metrics_range_start + idx }}"
+  register: "matrix_synapse_workers_list_results_stream_writer_workers"
+  loop: "{{ matrix_synapse_workers_stream_writers }}"
+  loop_control:
+    index_var: idx
+
+- name: Populate matrix_synapse_stream_writers from enabled stream writer workers list
+  ansible.builtin.set_fact:
+    matrix_synapse_stream_writers: "{{ matrix_synapse_stream_writers | combine({item.ansible_facts.worker.stream_writer_stream: [item.ansible_facts.worker.name]}, list_merge='append') }}"
+  with_items: "{{ matrix_synapse_workers_list_results_stream_writer_workers.results }}"
+
+- name: Build federation sender workers
+  ansible.builtin.set_fact:
+    worker:
+      id: "federation-sender-{{ item }}"
+      name: "matrix-synapse-worker-federation-sender-{{ item }}"
+      type: 'federation_sender'
+      app: 'federation_sender'
+      webserving: false
+      port: 0
+      metrics_port: "{{ matrix_synapse_workers_federation_sender_workers_metrics_range_start + item }}"
+  register: "matrix_synapse_workers_list_results_federation_sender_workers"
+  loop: "{{ range(0, matrix_synapse_workers_federation_sender_workers_count | int) | list }}"
+
+- name: Populate matrix_synapse_federation_sender_instances from enabled federation sender workers list
+  ansible.builtin.set_fact:
+    matrix_synapse_federation_sender_instances: "{{ matrix_synapse_federation_sender_instances + [item.ansible_facts.worker.name] }}"
+  with_items: "{{ matrix_synapse_workers_list_results_federation_sender_workers.results }}"
+
+# This type of worker can only have a count of 1, at most
+- name: Build pusher workers
+  ansible.builtin.set_fact:
+    worker:
+      id: "pusher-{{ item }}"
+      name: "matrix-synapse-worker-pusher-{{ item }}"
+      type: 'pusher'
+      app: 'pusher'
+      webserving: false
+      port: 0
+      metrics_port: "{{ matrix_synapse_workers_pusher_workers_metrics_range_start + item }}"
+  register: "matrix_synapse_workers_list_results_pusher_workers"
+  loop: "{{ range(0, matrix_synapse_workers_pusher_workers_count | int) | list }}"
+
+# This type of worker can only have a count of 1, at most
+- name: Build appservice workers
+  ansible.builtin.set_fact:
+    worker:
+      id: "appservice-{{ item }}"
+      name: "matrix-synapse-worker-appservice-{{ item }}"
+      type: 'appservice'
+      app: 'generic_worker'
+      webserving: false
+      port: 0
+      metrics_port: "{{ matrix_synapse_workers_appservice_workers_metrics_range_start + item }}"
+  register: "matrix_synapse_workers_list_results_appservice_workers"
+  loop: "{{ range(0, matrix_synapse_workers_appservice_workers_count | int) | list }}"
+
+# This type of worker can only have a count of 1, at most
+- name: Build user_dir workers
+  ansible.builtin.set_fact:
+    worker:
+      id: "user-dir-{{ item }}"
+      name: "matrix-synapse-worker-user-dir-{{ item }}"
+      type: 'user_dir'
+      app: 'generic_worker'
+      webserving: true
+      port: "{{ matrix_synapse_workers_user_dir_workers_port_range_start + item }}"
+      metrics_port: "{{ matrix_synapse_workers_user_dir_workers_metrics_range_start + item }}"
+  register: "matrix_synapse_workers_list_results_user_dir_workers"
+  loop: "{{ range(0, matrix_synapse_workers_user_dir_workers_count | int) | list }}"
+
+# This type of worker can only have a count of 1, at most
+- name: Build background workers
+  ansible.builtin.set_fact:
+    worker:
+      id: "background-{{ item }}"
+      name: "matrix-synapse-worker-background-{{ item }}"
+      type: 'background'
+      app: 'generic_worker'
+      webserving: false
+      port: 0
+      metrics_port: "{{ matrix_synapse_workers_background_workers_metrics_range_start + item }}"
+  register: "matrix_synapse_workers_list_results_background_workers"
+  loop: "{{ range(0, matrix_synapse_workers_background_workers_count | int) | list }}"
+
+- name: Build media_repository workers
+  ansible.builtin.set_fact:
+    worker:
+      id: "media-repository-{{ item }}"
+      name: "matrix-synapse-worker-media-repository-{{ item }}"
+      type: 'media_repository'
+      app: 'media_repository'
+      webserving: true
+      port: "{{ matrix_synapse_workers_media_repository_workers_port_range_start + item }}"
+      metrics_port: "{{ matrix_synapse_workers_media_repository_workers_metrics_range_start + item }}"
+  register: "matrix_synapse_workers_list_results_media_repository_workers"
+  loop: "{{ range(0, matrix_synapse_workers_media_repository_workers_count | int) | list }}"
+
+- ansible.builtin.set_fact:
+    matrix_synapse_dynamic_workers_list: "{{ matrix_synapse_dynamic_workers_list | default([]) + [item.ansible_facts.worker] }}"
+  with_items: |
+    {{
+      matrix_synapse_workers_list_results_generic_workers.results
+      +
+      matrix_synapse_workers_list_results_stream_writer_workers.results
+      +
+      matrix_synapse_workers_list_results_federation_sender_workers.results
+      +
+      matrix_synapse_workers_list_results_pusher_workers.results
+      +
+      matrix_synapse_workers_list_results_appservice_workers.results
+      +
+      matrix_synapse_workers_list_results_user_dir_workers.results
+      +
+      matrix_synapse_workers_list_results_media_repository_workers.results
+      +
+      matrix_synapse_workers_list_results_background_workers.results
+    }}
+
+- ansible.builtin.set_fact:
+    matrix_synapse_workers_enabled_list: "{{ matrix_synapse_dynamic_workers_list }}"

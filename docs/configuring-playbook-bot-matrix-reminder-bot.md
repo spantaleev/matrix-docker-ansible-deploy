@@ -7,21 +7,6 @@ It's a bot you can use to **schedule one-off & recurring reminders and alarms**.
 See the project's [documentation](https://github.com/anoadragon453/matrix-reminder-bot#usage) to learn what it does and why it might be useful to you.
 
 
-## Registering the bot user
-
-By default, the playbook will set up the bot with a username like this: `@bot.matrix-reminder-bot:DOMAIN`.
-
-(to use a different username, adjust the `matrix_bot_matrix_reminder_bot_matrix_user_id_localpart` variable).
-
-You **need to register the bot user manually** before setting up the bot. You can use the playbook to [register a new user](registering-users.md):
-
-```
-ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.matrix-reminder-bot password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
-```
-
-Choose a strong password for the bot. You can generate a good password with a command like this: `pwgen -s 64 1`.
-
-
 ## Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
@@ -29,7 +14,10 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 ```yaml
 matrix_bot_matrix_reminder_bot_enabled: true
 
-# Adjust this to whatever password you chose when registering the bot user
+# Uncomment and adjust this part if you'd like to use a username different than the default
+# matrix_bot_matrix_reminder_bot_matrix_user_id_localpart: bot.matrix-reminder-bot
+
+# Generate a strong password here. Consider generating it with `pwgen -s 64 1`
 matrix_bot_matrix_reminder_bot_matrix_user_password: PASSWORD_FOR_THE_BOT
 
 # Adjust this to your timezone
@@ -41,9 +29,15 @@ matrix_bot_matrix_reminder_bot_reminders_timezone: Europe/London
 
 After configuring the playbook, run the [installation](installing.md) command again:
 
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
 ```
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
-```
+
+**Notes**:
+
+- the `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account
+
+- if you change the bot password (`matrix_bot_matrix_reminder_bot_matrix_user_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_matrix_reminder_bot_matrix_user_password` to let the bot know its new password
 
 
 ## Usage

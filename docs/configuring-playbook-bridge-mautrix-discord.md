@@ -1,7 +1,7 @@
 # Setting up Mautrix Discord (optional)
 
-**Note**: bridging to [Discord](https://discordapp.com/) can also happen via the [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) and [matrix-appservice-discord](configuring-playbook-bridge-appservice-discord.md) bridges supported by the playbook.  
-- For using as a Bot we recommend the [Appservice Discord](configuring-playbook-bridge-appservice-discord.md), because it supports plumbing.  
+**Note**: bridging to [Discord](https://discordapp.com/) can also happen via the [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) and [matrix-appservice-discord](configuring-playbook-bridge-appservice-discord.md) bridges supported by the playbook.
+- For using as a Bot we recommend the [Appservice Discord](configuring-playbook-bridge-appservice-discord.md), because it supports plumbing.
 - For personal use with a discord account we recommend the `mautrix-discord` bridge (the one being discussed here), because it is the most fully-featured and stable of the 3 Discord bridges supported by the playbook.
 The `mautrix-discord` bridge (the one being discussed here) is the most fully-featured and stable of the 3 Discord bridges supported by the playbook, so it's the one we recommend.
 
@@ -12,7 +12,7 @@ See the project's [documentation](https://docs.mau.fi/bridges/go/discord/index.h
 
 ## Prerequisites
 
-For using this bridge, you would **need to authenticate by scanning a QR code with the Discord app on your phone**.
+For using this bridge, you would need to authenticate by **scanning a QR code** with the Discord app on your phone **or** by using **discord account token**.
 
 You can delete the Discord app after the authentication process.
 
@@ -40,8 +40,8 @@ There are some additional things you may wish to configure about the bridge.
 
 Take a look at:
 
-- `roles/matrix-bridge-mautrix-discord/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/matrix-bridge-mautrix-discord/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_mautrix_discord_configuration_extension_yaml` variable
+- `roles/custom/matrix-bridge-mautrix-discord/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-bridge-mautrix-discord/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_mautrix_discord_configuration_extension_yaml` variable
 
 
 ### Set up Double Puppeting
@@ -70,7 +70,7 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 ## Usage
 
 1. Start a chat with `@discordbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
-2. Send a `login` command
+2. If you would like to login to Discord using a token, send `login-token` command, otherwise, send `login-qr` command.
 3. You'll see a QR code which you need to scan with the Discord app on your phone. You can scan it with the camera app too, which will open Discord, which will then instruct you to scan it a 2nd time in the Discord app.
 4. After confirming (in the Discord app) that you'd like to allow this login, the bot should respond with "Succcessfully authenticated as ..."
 5. Now that you're logged in, you can send a `help` command to the bot again, to see additional commands you have access to

@@ -1,0 +1,52 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Mautrix Signal daemon
+
+{% for service in matrix_mautrix_signal_daemon_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+
+{% for service in matrix_mautrix_signal_daemon_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-mautrix-signal-daemon 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-mautrix-signal-daemon 2>/dev/null || true'
+
+# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
+ExecStartPre={{ matrix_host_command_sleep }} 5
+
+# Migration task required by the 0.19.0 upgrade
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-mautrix-signal-daemon \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_docker_network }} \
+			-v {{ matrix_mautrix_signal_daemon_path }}:/signald:z \
+			{{ matrix_mautrix_signal_daemon_docker_image }} \
+			--migrate-data
+
+# We can't use `--read-only` for this bridge.
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-mautrix-signal-daemon \
+			--log-driver=none \
+            --env-file={{ matrix_mautrix_signal_daemon_path }}/env \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_docker_network }} \
+			-v {{ matrix_mautrix_signal_daemon_path }}:/signald:z \
+			{{ matrix_mautrix_signal_daemon_docker_image }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-mautrix-signal-daemon 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-mautrix-signal-daemon 2>/dev/null || true'
+
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-mautrix-signal-daemon
+
+[Install]
+WantedBy=multi-user.target

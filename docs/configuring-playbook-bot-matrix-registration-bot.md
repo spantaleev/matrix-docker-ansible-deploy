@@ -16,7 +16,7 @@ By default, the playbook will set use the bot with a username like this: `@bot.m
 
 (to use a different username, adjust the `matrix_bot_matrix_registration_bot_matrix_user_id_localpart` variable).
 
-You **need to register the bot user manually** before setting up the bot. You can use the playbook to [register a new user](registering-users.md):
+For [other bots supported by the playbook](configuring-playbook.md#bots), Matrix bot user accounts are created and put to use automatically. For `matrix-registration-bot`, however, this is not the case - you **need to register the bot user manually** before setting up the bot. You can use the playbook to [register a new user](registering-users.md):
 
 ```
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.matrix-registration-bot password=PASSWORD_FOR_THE_BOT admin=yes' --tags=register-user

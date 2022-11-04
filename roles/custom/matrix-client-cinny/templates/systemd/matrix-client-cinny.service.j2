@@ -1,0 +1,40 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Cinny Client
+{% for service in matrix_client_cinny_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-client-cinny 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-client-cinny 2>/dev/null || true'
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-client-cinny \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_client_cinny_container_http_host_bind_port %}
+			-p {{ matrix_client_cinny_container_http_host_bind_port }}:8080 \
+			{% endif %}
+			--tmpfs=/tmp:rw,noexec,nosuid,size=10m \
+			--mount type=bind,src={{ matrix_client_cinny_data_path }}/nginx.conf,dst=/etc/nginx/nginx.conf,ro \
+			--mount type=bind,src={{ matrix_client_cinny_data_path }}/config.json,dst=/app/config.json,ro \
+			{% for arg in matrix_client_cinny_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_client_cinny_docker_image }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-client-cinny 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-client-cinny 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-client-cinny
+
+[Install]
+WantedBy=multi-user.target

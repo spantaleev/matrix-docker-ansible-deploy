@@ -1,0 +1,52 @@
+---
+
+- name: Fail if playbook called incorrectly
+  ansible.builtin.fail:
+    msg: "The `one_time` variable needs to be provided to this playbook, via --extra-vars"
+  when: "one_time is not defined or one_time not in ['yes', 'no']"
+
+- name: Fail if playbook called incorrectly
+  ansible.builtin.fail:
+    msg: "The `ex_date` variable (expiration date) needs to be provided to this playbook, via --extra-vars"
+  when: "ex_date is not defined or ex_date == '<date>'"
+
+- name: Call matrix-registration token creation API
+  ansible.builtin.uri:
+    url: "{{ matrix_registration_api_token_endpoint }}"
+    follow_redirects: none
+    validate_certs: "{{ matrix_registration_api_validate_certs }}"
+    headers:
+      Content-Type: application/json
+      Authorization: "SharedSecret {{ matrix_registration_admin_secret }}"
+    method: POST
+    body_format: json
+    body: |
+      {
+        "one_time": {{ 'true' if one_time == 'yes' else 'false' }},
+        "ex_date": {{ ex_date | to_json }}
+      }
+  check_mode: false
+  register: matrix_registration_api_result
+
+- ansible.builtin.set_fact:
+    matrix_registration_api_result_message: >-
+      matrix-registration result:
+
+      Direct registration link (with the token prefilled):
+
+      {{ matrix_registration_api_register_endpoint }}?token={{ matrix_registration_api_result.json.name }}
+
+      Full token details are:
+
+      {{ matrix_registration_api_result.json }}
+  check_mode: false
+
+- name: Inject result message into devture_playbook_runtime_messages_list
+  ansible.builtin.set_fact:
+    devture_playbook_runtime_messages_list: |
+      {{
+        devture_playbook_runtime_messages_list | default([])
+        +
+        [matrix_registration_api_result_message]
+      }}
+  check_mode: false
