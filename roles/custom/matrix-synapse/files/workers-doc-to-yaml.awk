@@ -18,7 +18,6 @@ function line_is_endpoint_url(line) {
 
 # Put YAML marker at beginning of file.
 BEGIN {
-    print "---"
     endpoint_conditional_comment = "  # FIXME: ADDITIONAL CONDITIONS REQUIRED: to be enabled manually\n"
 }
 
