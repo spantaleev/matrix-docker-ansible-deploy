@@ -13,13 +13,13 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-mautrix-twitter 2>/dev/null || true'
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-mautrix-twitter 2>/dev/null || true'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-mautrix-twitter 2>/dev/null || true'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-mautrix-twitter 2>/dev/null || true'
 
 # Intentional delay, so that the homeserver (we likely depend on) can manage to start.
 ExecStartPre={{ matrix_host_command_sleep }} 5
 
-ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-twitter \
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-mautrix-twitter \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
@@ -32,8 +32,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-mautrix-twitte
 			{{ matrix_mautrix_twitter_docker_image }} \
 			python3 -m mautrix_twitter -c /config/config.yaml --no-update
 
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-mautrix-twitter 2>/dev/null || true'
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-mautrix-twitter 2>/dev/null || true'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-mautrix-twitter 2>/dev/null || true'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-mautrix-twitter 2>/dev/null || true'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-mautrix-twitter

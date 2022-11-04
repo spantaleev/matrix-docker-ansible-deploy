@@ -13,10 +13,10 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_docker }} kill matrix-heisenbridge
-ExecStartPre=-{{ matrix_host_command_docker }} rm matrix-heisenbridge
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} kill matrix-heisenbridge
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} rm matrix-heisenbridge
 
-ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-heisenbridge \
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-heisenbridge \
           --log-driver=none \
           --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
           --cap-drop=ALL \
@@ -41,8 +41,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-heisenbridge \
           --listen-port 9898 \
           {{ matrix_heisenbridge_homeserver_url }}
 
-ExecStop=-{{ matrix_host_command_docker }} kill matrix-heisenbridge
-ExecStop=-{{ matrix_host_command_docker }} rm matrix-heisenbridge
+ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} kill matrix-heisenbridge
+ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} rm matrix-heisenbridge
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-heisenbridge

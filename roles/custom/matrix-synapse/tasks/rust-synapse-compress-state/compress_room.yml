@@ -6,7 +6,7 @@
 - name: Generate rust-synapse-compress-state room compression command
   ansible.builtin.set_fact:
     matrix_synapse_rust_synapse_compress_state_compress_room_command: >-
-      {{ matrix_host_command_docker }} run --rm --name matrix-rust-synapse-compress-state-compress-room
+      {{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-rust-synapse-compress-state-compress-room
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
       --network={{ matrix_docker_network }}
@@ -30,7 +30,7 @@
 - name: Generate Postgres compression SQL import command
   ansible.builtin.set_fact:
     matrix_synapse_rust_synapse_compress_state_psql_import_command: >-
-      {{ matrix_host_command_docker }} run --rm --name matrix-rust-synapse-compress-state-psql-import
+      {{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-rust-synapse-compress-state-psql-import
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
       --network={{ matrix_docker_network }}

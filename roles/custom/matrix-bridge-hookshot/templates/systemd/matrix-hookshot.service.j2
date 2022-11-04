@@ -13,10 +13,10 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_docker }} kill {{ matrix_hookshot_container_url }}
-ExecStartPre=-{{ matrix_host_command_docker }} rm {{ matrix_hookshot_container_url }}
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} kill {{ matrix_hookshot_container_url }}
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_hookshot_container_url }}
 
-ExecStart={{ matrix_host_command_docker }} run --rm --name {{ matrix_hookshot_container_url }} \
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name {{ matrix_hookshot_container_url }} \
           --log-driver=none \
           --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
           --cap-drop=ALL \
@@ -30,8 +30,8 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name {{ matrix_hookshot_co
           {% endfor %}
           {{ matrix_hookshot_docker_image }}
 
-ExecStop=-{{ matrix_host_command_docker }} kill {{ matrix_hookshot_container_url }}
-ExecStop=-{{ matrix_host_command_docker }} rm {{ matrix_hookshot_container_url }}
+ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} kill {{ matrix_hookshot_container_url }}
+ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_hookshot_container_url }}
 Restart=always
 RestartSec=30
 SyslogIdentifier={{ matrix_hookshot_container_url }}

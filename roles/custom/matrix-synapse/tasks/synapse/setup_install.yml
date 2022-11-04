@@ -31,7 +31,7 @@
       register: matrix_synapse_git_pull_results
 
     - name: Check if Synapse Docker image exists
-      ansible.builtin.command: "{{ matrix_host_command_docker }} images --quiet --filter 'reference={{ matrix_synapse_docker_image }}'"
+      ansible.builtin.command: "{{ devture_systemd_docker_base_host_command_docker }} images --quiet --filter 'reference={{ matrix_synapse_docker_image }}'"
       register: matrix_synapse_docker_image_check_result
       changed_when: false
 
@@ -42,7 +42,7 @@
       ansible.builtin.shell:
         chdir: "{{ matrix_synapse_docker_src_files_path }}"
         cmd: |
-          {{ matrix_host_command_docker }} build \
+          {{ devture_systemd_docker_base_host_command_docker }} build \
           -t "{{ matrix_synapse_docker_image }}" \
           -f docker/Dockerfile \
           .

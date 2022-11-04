@@ -9,10 +9,10 @@ After={{ service }}
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-conduit 2>/dev/null || true'
-ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-conduit 2>/dev/null || true'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-conduit 2>/dev/null || true'
+ExecStartPre=-{{ matrix_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-conduit 2>/dev/null || true'
 
-ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-conduit \
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-conduit \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
@@ -27,9 +27,9 @@ ExecStart={{ matrix_host_command_docker }} run --rm --name matrix-conduit \
 			{% endfor %}
 			{{ matrix_conduit_docker_image }}
 
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} kill matrix-conduit 2>/dev/null || true'
-ExecStop=-{{ matrix_host_command_sh }} -c '{{ matrix_host_command_docker }} rm matrix-conduit 2>/dev/null || true'
-ExecReload={{ matrix_host_command_docker }} exec matrix-conduit /bin/sh -c 'kill -HUP 1'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-conduit 2>/dev/null || true'
+ExecStop=-{{ matrix_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-conduit 2>/dev/null || true'
+ExecReload={{ devture_systemd_docker_base_host_command_docker }} exec matrix-conduit /bin/sh -c 'kill -HUP 1'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-conduit
