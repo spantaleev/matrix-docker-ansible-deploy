@@ -2,6 +2,9 @@
 
 If you've [configured your DNS](configuring-dns.md) and have [configured the playbook](configuring-playbook.md), you can start the installation procedure.
 
+**Before installing** and each time you update the playbook in the future, you will need to update the Ansible roles in this playbook by running `make roles`.
+
+
 ## Playbook tags introduction
 
 The Ansible playbook's tasks are tagged, so that certain parts of the Ansible playbook can be run without running all other tasks.

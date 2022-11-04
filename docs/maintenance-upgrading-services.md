@@ -10,8 +10,8 @@ To upgrade services:
 
 - take a look at [the changelog](../CHANGELOG.md) to see if there have been any backward-incompatible changes that you need to take care of
 
-- re-run the [playbook setup](installing.md): `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all`
+- download the upstream Ansible roles used by the playbook by running `make roles`
 
-- restart the services: `ansible-playbook -i inventory/hosts setup.yml --tags=start`
+- re-run the [playbook setup](installing.md) and restart all serivces: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start`
 
 **Note**: major version upgrades to the internal PostgreSQL database are not done automatically. To upgrade it, refer to the [upgrading PostgreSQL guide](maintenance-postgres.md#upgrading-postgresql).
