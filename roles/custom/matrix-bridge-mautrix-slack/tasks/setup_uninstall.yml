@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-mautrix-slack service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-mautrix-slack.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-slack.service"
   register: matrix_mautrix_slack_service_stat
 
 - name: Ensure matrix-mautrix-slack is stopped
@@ -15,7 +15,7 @@
 
 - name: Ensure matrix-mautrix-slack.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-mautrix-slack.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-slack.service"
     state: absent
   when: "matrix_mautrix_slack_service_stat.stat.exists"
 
