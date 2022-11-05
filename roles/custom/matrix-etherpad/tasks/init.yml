@@ -4,7 +4,7 @@
     matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-etherpad.service'] }}"
   when: matrix_etherpad_enabled | bool
 
-- when: matrix_etherpad_enabled | bool
+- when: matrix_etherpad_enabled | bool and matrix_etherpad_mode == 'dimension'
   tags:
     - always
   block:
@@ -52,13 +52,3 @@
             +
             [matrix_etherpad_matrix_nginx_proxy_configuration]
           }}
-
-- name: Warn about reverse-proxying if matrix-nginx-proxy not used
-  ansible.builtin.debug:
-    msg: >-
-      NOTE: You've enabled the Etherpad tool but are not using the matrix-nginx-proxy
-      reverse proxy.
-      Please make sure that you're proxying the `{{ matrix_etherpad_public_endpoint }}`
-      URL endpoint to the matrix-etherpad container.
-      You can expose the container's port using the `matrix_etherpad_container_http_host_bind_port` variable.
-  when: "matrix_etherpad_enabled | bool and not matrix_nginx_proxy_enabled | default(False) | bool"

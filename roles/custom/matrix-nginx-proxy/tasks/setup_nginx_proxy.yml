@@ -123,6 +123,13 @@
     mode: 0644
   when: matrix_nginx_proxy_proxy_dimension_enabled | bool
 
+- name: Ensure Matrix nginx-proxy configuration for etherpad domain exists
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-etherpad.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-etherpad.conf"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_etherpad_enabled | bool
+
 - name: Ensure Matrix nginx-proxy configuration for goneb domain exists
   ansible.builtin.template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-bot-go-neb.conf.j2"

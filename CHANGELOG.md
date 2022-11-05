@@ -1,3 +1,18 @@
+# 2022-11-05
+
+## (Backward Compatibility Break) A new default standalone mode for Etherpad
+
+Until now, [Etherpad](https://etherpad.org/) (which [the playbook could install for you](docs/configuring-playbook-etherpad.md)) required the [Dimension integration manager](docs/configuring-playbook-dimension.md) to also be installed, because Etherpad was hosted on the Dimension domain (at `dimension.DOMAIN/etherpad`).
+
+From now on, Etherpad can be installed in `standalone` mode on `etherpad.DOMAIN` and used even without Dimension. This is much more versatile, so the playbook now defaults to this new mode (`matrix_etherpad_mode: standalone`).
+
+If you've already got both Etherpad and Dimension in use you could:
+
+- **either** keep hosting Etherpad under the Dimension domain by adding `matrix_etherpad_mode: dimension` to your `vars.yml` file. All your existing room widgets will continue working at the same URLs and no other changes will be necessary.
+
+- **or**, you could change to hosting Etherpad separately on `etherpad.DOMAIN`. You will need to [configure a DNS record](docs/configuring-dns.md) for this new domain. You will also need to reconfigure Dimension to use the new pad URLs (`https://etherpad.DOMAIN/...`) going forward (refer to our [configuring Etherpad documentation](docs/configuring-playbook-etherpad.md)). All your existing room widgets (which still use `https://dimension.DOMAIN/etherpad/...`) will break as Etherpad is not hosted there anymore. You will need to re-add them or to consider not using `standalone` mode
+
+
 # 2022-11-04
 
 ## The playbook now uses external roles for some things
