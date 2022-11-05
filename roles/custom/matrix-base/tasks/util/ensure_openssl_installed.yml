@@ -1,23 +1,12 @@
 ---
+
 # This is for both RedHat 7 and 8
-- name: Ensure openssl installed (RedHat)
-  ansible.builtin.yum:
-    name:
-      - openssl
-    state: present
+- ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/ensure_openssl_installed_redhat.yml"
   when: ansible_os_family == 'RedHat'
 
 # This is for both Debian and Raspbian
-- name: Ensure openssl installed (Debian/Raspbian)
-  ansible.builtin.apt:
-    name:
-      - openssl
-    state: present
+- ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/ensure_openssl_installed_debian.yml"
   when: ansible_os_family == 'Debian'
 
-- name: Ensure openssl installed (Archlinux)
-  community.general.pacman:
-    name:
-      - openssl
-    state: present
-  when: ansible_distribution == 'Archlinux'
+- ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/ensure_openssl_installed_archlinux.yml"
+  when: ansible_os_family == 'Archlinux'
