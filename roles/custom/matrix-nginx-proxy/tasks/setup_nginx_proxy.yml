@@ -321,6 +321,12 @@
     state: absent
   when: "not matrix_nginx_proxy_proxy_ntfy_enabled | bool"
 
+- name: Ensure Matrix nginx-proxy configuration for etherpad domain deleted
+  ansible.builtin.file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-etherpad.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_etherpad_enabled | bool"
+
 - name: Ensure Matrix nginx-proxy homepage for base domain deleted
   ansible.builtin.file:
     path: "{{ matrix_nginx_proxy_data_path }}/matrix-domain/index.html"
