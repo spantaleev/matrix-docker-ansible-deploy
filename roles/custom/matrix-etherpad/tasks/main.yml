@@ -4,6 +4,12 @@
   tags:
     - always
 
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+  when: run_setup | bool and matrix_etherpad_enabled | bool
+  tags:
+    - setup-all
+    - setup-etherpad
+
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_install.yml"
   when: run_setup | bool and matrix_etherpad_enabled | bool
   tags:
@@ -12,12 +18,6 @@
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   when: run_setup | bool and not matrix_etherpad_enabled | bool
-  tags:
-    - setup-all
-    - setup-etherpad
-
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: run_setup | bool and matrix_etherpad_enabled | bool
   tags:
     - setup-all
     - setup-etherpad

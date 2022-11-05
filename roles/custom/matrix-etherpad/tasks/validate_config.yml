@@ -5,3 +5,9 @@
     msg: >-
       Etherpad requires a dedicated Postgres database. Please enable the built in one, or configure an external DB by redefining "matrix_etherpad_database_hostname"
   when: matrix_etherpad_database_hostname == "matrix-postgres" and not matrix_postgres_enabled
+
+- name: Fail if wrong mode selected
+  ansible.builtin.fail:
+    msg: >-
+      You're using Etherpad in 'dimension' mode (`matrix_etherpad_serving_mode: dimension`), which tries to host Etherpad at the Dimension subdomain - `{{ matrix_server_fqn_dimension }}`. However, this isn't possible because Dimension is not enabled. To resolve the problem, either enable Dimension (`matrix_dimension_enabled: true`) or switch Etherpad to standalone mode (`matrix_etherpad_mode: standalone`) and have it served on its own domain (`{{ matrix_server_fqn_etherpad }}`).
+  when: matrix_etherpad_enabled | bool and matrix_etherpad_mode == 'dimension' and not matrix_dimension_enabled | default(False) | bool
