@@ -1526,7 +1526,7 @@ matrix_etherpad_enabled: false
 
 matrix_etherpad_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9001' }}"
 
-matrix_etherpad_base_url: "{{ 'https://'+ matrix_server_fqn_dimension + matrix_etherpad_public_endpoint if matrix_dimension_enabled else 'https://' + matrix_server_fqn_etherpad + '/' }}"
+matrix_etherpad_base_url: "{{ 'https://'+ matrix_server_fqn_dimension + matrix_etherpad_public_endpoint if matrix_etherpad_mode == 'dimension' else 'https://' + matrix_server_fqn_etherpad + '/' }}"
 
 matrix_etherpad_systemd_required_services_list: |
   {{
@@ -1752,7 +1752,7 @@ matrix_nginx_proxy_proxy_hydrogen_enabled: "{{ matrix_client_hydrogen_enabled }}
 matrix_nginx_proxy_proxy_cinny_enabled: "{{ matrix_client_cinny_enabled }}"
 matrix_nginx_proxy_proxy_buscarron_enabled: "{{ matrix_bot_buscarron_enabled }}"
 matrix_nginx_proxy_proxy_dimension_enabled: "{{ matrix_dimension_enabled }}"
-matrix_nginx_proxy_proxy_etherpad_enabled: "{{ matrix_etherpad_enabled }}"
+matrix_nginx_proxy_proxy_etherpad_enabled: "{{ matrix_etherpad_enabled and matrix_etherpad_mode == 'standalone' }}"
 matrix_nginx_proxy_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled }}"
 matrix_nginx_proxy_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
 matrix_nginx_proxy_proxy_grafana_enabled: "{{ matrix_grafana_enabled }}"
@@ -1859,7 +1859,7 @@ matrix_nginx_proxy_systemd_wanted_services_list: |
     +
     (['matrix-bot-go-neb.service'] if matrix_bot_go_neb_enabled else [])
     +
-    (['matrix-etherpad.service'] if matrix_etherpad_enabled and matrix_dimension_enabled else [])
+    (['matrix-etherpad.service'] if matrix_etherpad_enabled else [])
     +
     (['matrix-hookshot.service'] if matrix_hookshot_enabled else [])
   }}
@@ -1880,7 +1880,7 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     +
     ([matrix_server_fqn_dimension] if matrix_dimension_enabled else [])
     +
-    ([matrix_server_fqn_etherpad] if (matrix_etherpad_enabled and not matrix_dimension_enabled) else [])
+    ([matrix_server_fqn_etherpad] if (matrix_etherpad_enabled and matrix_etherpad_mode == 'standalone') else [])
     +
     ([matrix_server_fqn_bot_go_neb] if matrix_bot_go_neb_enabled else [])
     +
