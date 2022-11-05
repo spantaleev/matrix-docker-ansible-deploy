@@ -16,7 +16,7 @@ We're doing this for greater code-reuse (across Ansible playbooks, including our
 
 Some variable names will change during the transition to having more and more external (galaxy) roles. There's a new `custom/matrix_playbook_migration` role added to the playbook which will tell you about these changes each time you run the playbook.
 
-From now on, every time you update the playbook (well, every time the `requirements.yml` file changes), it's best to run `make roles` to update the roles downloaded from other sources.
+**From now on**, every time you update the playbook (well, every time the `requirements.yml` file changes), it's best to run `make roles` to update the roles downloaded from other sources. `make roles` is a shortcut (a `roles` target defined in [`Makefile`](Makefile) and executed by the [`make`](https://www.gnu.org/software/make/) utility) which ultimately runs [ansible-galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html) to download Ansible roles. If you don't have `make`, you can also manually run the commands seen in the `Makefile`.
 
 
 # 2022-10-14
