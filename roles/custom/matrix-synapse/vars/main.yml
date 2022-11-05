@@ -187,6 +187,29 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/join/
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/profile/
 
+  # Start of intentionally-ignored-endpoints
+  #
+  # We ignore these below, because they're better sent to dedicated workers (various stream writers).
+  # If a stream writer is enabled, the endpoint should be routed to the stream writer, not to a generic worker.
+  # If a stream writer of a given type is not enabled, then a generic worker may process it.
+  # Because it's difficult to handle these individually based on which stream writer is enabled and which isn't,
+  # we just disable them here.
+  #
+  # # Account data requests
+  # - ^/_matrix/client/(r0|v3|unstable)/.*/tags
+  # - ^/_matrix/client/(r0|v3|unstable)/.*/account_data
+  #
+  # # Receipts requests
+  # - ^/_matrix/client/(r0|v3|unstable)/rooms/.*/receipt
+  # - ^/_matrix/client/(r0|v3|unstable)/rooms/.*/read_markers
+  #
+  # # Presence requests
+  # - ^/_matrix/client/(api/v1|r0|v3|unstable)/presence/
+  #
+  # # User directory search requests
+  # - ^/_matrix/client/(r0|v3|unstable)/user_directory/search$
+  # End of intentionally-ignored-endpoints
+
 
 matrix_synapse_workers_media_repository_endpoints:
   # Handles the media repository. It can handle all endpoints starting with:
