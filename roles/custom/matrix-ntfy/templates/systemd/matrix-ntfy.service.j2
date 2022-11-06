@@ -16,7 +16,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_syste
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--read-only \
-                        --env NTFY_VISITOR_REQUEST_LIMIT_EXEMPT_HOSTS={{matrix_server_fqn_matrix}},localhost,$(docker network inspect {{matrix_docker_network}} -f "{{"{{"}} (index .IPAM.Config 0).Subnet {{"}}"}}") \
+			--env NTFY_VISITOR_REQUEST_LIMIT_EXEMPT_HOSTS={{matrix_server_fqn_matrix}},localhost,$(docker network inspect {{matrix_docker_network}} -f "{{"{{"}} (index .IPAM.Config 0).Subnet {{"}}"}}") \
 			{% for arg in matrix_ntfy_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
