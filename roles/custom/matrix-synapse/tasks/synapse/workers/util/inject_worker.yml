@@ -63,3 +63,8 @@
 - ansible.builtin.set_fact:
     matrix_synapse_instance_map: "{{ matrix_synapse_instance_map | combine({matrix_synapse_worker_details.name: {'host': matrix_synapse_worker_details.name, 'port': matrix_synapse_worker_details.replication_port}}) }}"
   when: matrix_synapse_worker_details.type in matrix_synapse_known_instance_map_eligible_worker_types
+
+# Inject pusher instances.
+- ansible.builtin.set_fact:
+    matrix_synapse_federation_pusher_instances: "{{ matrix_synapse_federation_pusher_instances + [matrix_synapse_worker_details.name] }}"
+  when: matrix_synapse_worker_details.type == 'pusher'
