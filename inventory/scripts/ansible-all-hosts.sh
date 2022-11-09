@@ -23,6 +23,9 @@ for host in "$root"/inventory/*.yml; do
     echo
 done
 
+# download upstream roles according to 2022-11-04 changelog
+make roles
+
 # run ansible on all captured passwords/hosts
 for host in "${!pws[@]}"; do
     ansible-playbook "$root"/setup.yml \
