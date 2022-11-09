@@ -76,7 +76,9 @@ docker.io/devture/ansible:2.13.6-r0
 Once you execute the above command, you'll be dropped into a `/work` directory inside a Docker container.
 The `/work` directory contains the playbook's code.
 
-You can execute `ansible-playbook ...` (or `ansible-playbook --connection=community.docker.nsenter ...`) commands as per normal now.
+First, consider running `git config --global --add safe.directory /work` to [resolve directory ownership issues](#resolve-directory-ownership-issues).
+
+Finally, you can execute `ansible-playbook ...` (or `ansible-playbook --connection=community.docker.nsenter ...`) commands as per normal now.
 
 
 ### Running Ansible in a container on another computer (not the Matrix server)
@@ -98,7 +100,10 @@ If your SSH key is at a different path (not in `$HOME/.ssh/id_rsa`), adjust that
 Once you execute the above command, you'll be dropped into a `/work` directory inside a Docker container.
 The `/work` directory contains the playbook's code.
 
-You can execute `ansible-playbook ...` commands as per normal now.
+First, consider running `git config --global --add safe.directory /work` to [resolve directory ownership issues](#resolve-directory-ownership-issues).
+
+Finally, you execute `ansible-playbook ...` commands as per normal now.
+
 
 #### If you don't use SSH keys for authentication
 
@@ -109,3 +114,13 @@ apk add sshpass
 ```
 Then, to be asked for the password whenever running an  `ansible-playbook` command add `--ask-pass` to the arguments of the command.
 
+
+#### Resolve directory ownership issues
+
+Because you're `root` in the container running Ansible and this likely differs fom the owner (your regular user account) of the playbook directory outside of the container, certain playbook features which use `git` locally may report warnings such as:
+
+> fatal: unsafe repository ('/work' is owned by someone else)
+> To add an exception for this directory, call:
+>  git config --global --add safe.directory /work
+
+These errors can be resolved by making `git` trust the playbook directory by running `git config --global --add safe.directory /work`
