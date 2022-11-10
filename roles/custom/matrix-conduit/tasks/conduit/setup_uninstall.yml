@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-conduit service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-conduit.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-conduit.service"
   register: matrix_conduit_service_stat
 
 - name: Ensure matrix-conduit is stopped
@@ -15,7 +15,7 @@
 
 - name: Ensure matrix-conduit.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-conduit.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-conduit.service"
     state: absent
   when: "matrix_conduit_service_stat.stat.exists"
 

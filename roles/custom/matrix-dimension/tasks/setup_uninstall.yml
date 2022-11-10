@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-dimension service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-dimension.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-dimension.service"
   register: matrix_dimension_service_stat
 
 - name: Ensure matrix-dimension is stopped
@@ -16,7 +16,7 @@
 
 - name: Ensure matrix-dimension.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-dimension.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-dimension.service"
     state: absent
   when: "matrix_dimension_service_stat.stat.exists | bool"
 

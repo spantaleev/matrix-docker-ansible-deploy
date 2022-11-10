@@ -55,8 +55,8 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_ma1sd_docker_image_force_pull }}"
   when: "not matrix_ma1sd_container_image_self_build | bool"
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 - when: "matrix_ma1sd_container_image_self_build | bool"
@@ -74,13 +74,8 @@
         msg: "Installing gradle on RedHat ({{ ansible_distribution }}) is currently not supported, so self-building ma1sd cannot happen at this time"
       when: ansible_os_family == 'RedHat'
 
-    - name: Ensure gradle is installed for self-building (Archlinux)
-      community.general.pacman:
-        name:
-          - gradle
-        state: present
-        update_cache: true
-      when: ansible_distribution == 'Archlinux'
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/ensure_gradle_installed_archlinux.yml"
+      when: "ansible_distribution == 'Archlinux'"
 
     - name: Ensure ma1sd repository is present on self-build
       ansible.builtin.git:
@@ -162,7 +157,7 @@
 - name: Ensure matrix-ma1sd.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-ma1sd.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-ma1sd.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ma1sd.service"
     mode: 0644
   register: matrix_ma1sd_systemd_service_result
 

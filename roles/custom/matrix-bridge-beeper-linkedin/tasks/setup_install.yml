@@ -30,8 +30,8 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_beeper_linkedin_docker_image_force_pull }}"
   when: "not matrix_beeper_linkedin_container_image_self_build | bool"
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 - when: "matrix_beeper_linkedin_container_image_self_build | bool"
@@ -51,7 +51,7 @@
     - name: Ensure docker-requirements.txt is generated before building Beeper LinkedIn Docker Image
       ansible.builtin.command:
         cmd: |
-          {{ matrix_host_command_docker }} run
+          {{ devture_systemd_docker_base_host_command_docker }} run
           --rm
           --entrypoint=/bin/sh
           --mount type=bind,src={{ matrix_beeper_linkedin_docker_src_files_path }},dst=/work
@@ -93,7 +93,7 @@
 - name: Ensure matrix-beeper-linkedin.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-beeper-linkedin.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-beeper-linkedin.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-beeper-linkedin.service"
     mode: 0644
   register: matrix_beeper_linkedin_systemd_service_result
 

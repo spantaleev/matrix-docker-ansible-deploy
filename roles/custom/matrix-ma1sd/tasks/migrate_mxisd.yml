@@ -16,7 +16,7 @@
 
 - name: Check existence of old matrix-mxisd service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-mxisd.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mxisd.service"
   register: matrix_mxisd_service_stat
 
 - name: Ensure matrix-mxisd is stopped
@@ -29,7 +29,7 @@
 
 - name: Check existence of matrix-ma1sd service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-ma1sd.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ma1sd.service"
   register: matrix_ma1sd_service_stat
   when: "ma1sd_migrate_mxisd_data_dir_stat.stat.exists"
 
@@ -70,7 +70,7 @@
 
 - name: Ensure outdated matrix-mxisd.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-mxisd.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mxisd.service"
     state: absent
   when: "matrix_mxisd_service_stat.stat.exists"
 

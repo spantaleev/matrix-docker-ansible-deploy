@@ -24,8 +24,8 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_postgres_backup_docker_image_force_pull }}"
   when: matrix_postgres_backup_enabled | bool
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 - name: Ensure Postgres backup paths exist
@@ -53,7 +53,7 @@
 - name: Ensure matrix-postgres-backup.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-postgres-backup.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-postgres-backup.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postgres-backup.service"
     mode: 0644
   register: matrix_postgres_backup_systemd_service_result
   when: matrix_postgres_backup_enabled | bool
@@ -69,7 +69,7 @@
 
 - name: Check existence of matrix-postgres-backup service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-postgres-backup.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postgres-backup.service"
   register: matrix_postgres_backup_service_stat
   when: "not matrix_postgres_backup_enabled | bool"
 
@@ -83,7 +83,7 @@
 
 - name: Ensure matrix-postgres-backup.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-postgres-backup.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postgres-backup.service"
     state: absent
   when: "not matrix_postgres_backup_enabled | bool and matrix_postgres_backup_service_stat.stat.exists"
 
@@ -101,9 +101,9 @@
 # We just want to notify the user. Deleting data is too destructive.
 - name: Inject warning if matrix-postgres backup data remains
   ansible.builtin.set_fact:
-    matrix_playbook_runtime_results: |
+    devture_playbook_runtime_messages_list: |
       {{
-        matrix_playbook_runtime_results | default([])
+        devture_playbook_runtime_messages_list | default([])
         +
         [
           "NOTE: You are not using the local backup service to backup the PostgreSQL database, but some old data remains from before in `{{ matrix_postgres_backup_path }}`. Feel free to delete it."

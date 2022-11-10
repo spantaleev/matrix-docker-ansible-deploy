@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-mautrix-googlechat service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-mautrix-googlechat.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-googlechat.service"
   register: matrix_mautrix_googlechat_service_stat
 
 - name: Ensure matrix-mautrix-googlechat is stopped
@@ -15,7 +15,7 @@
 
 - name: Ensure matrix-mautrix-googlechat.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-mautrix-googlechat.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-googlechat.service"
     state: absent
   when: "matrix_mautrix_googlechat_service_stat.stat.exists"
 

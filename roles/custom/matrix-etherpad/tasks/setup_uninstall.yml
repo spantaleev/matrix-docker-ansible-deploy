@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-etherpad service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-etherpad.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-etherpad.service"
   register: matrix_etherpad_service_stat
 
 - name: Ensure matrix-etherpad is stopped
@@ -16,7 +16,7 @@
 
 - name: Ensure matrix-etherpad.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-etherpad.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-etherpad.service"
     state: absent
   when: "matrix_etherpad_service_stat.stat.exists | bool"
 

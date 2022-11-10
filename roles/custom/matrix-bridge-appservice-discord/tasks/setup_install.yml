@@ -35,8 +35,8 @@
     force_source: "{{ matrix_appservice_discord_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_discord_docker_image_force_pull }}"
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 - name: Ensure AppService Discord paths exist
@@ -93,7 +93,7 @@
 # We intentionally suppress Ansible changes.
 - name: Generate AppService Discord invite link
   ansible.builtin.shell: >-
-    {{ matrix_host_command_docker }} run --rm --name matrix-appservice-discord-link-gen
+    {{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-appservice-discord-link-gen
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
     --cap-drop=ALL
     --mount type=bind,src={{ matrix_appservice_discord_config_path }},dst=/cfg
@@ -105,7 +105,7 @@
 - name: Ensure matrix-appservice-discord.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-appservice-discord.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-appservice-discord.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-discord.service"
     mode: 0644
   register: matrix_appservice_discord_systemd_service_result
 

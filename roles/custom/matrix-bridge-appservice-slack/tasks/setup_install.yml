@@ -39,8 +39,8 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_slack_docker_image_force_pull }}"
   when: "not matrix_appservice_slack_container_image_self_build | bool"
   register: result
-  retries: "{{ matrix_container_retries_count }}"
-  delay: "{{ matrix_container_retries_delay }}"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
 - name: Ensure matrix-appservice-slack repository is present when self-building
@@ -85,7 +85,7 @@
 - name: Ensure matrix-appservice-slack.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-appservice-slack.service.j2"
-    dest: "{{ matrix_systemd_path }}/matrix-appservice-slack.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-slack.service"
     mode: 0644
   register: matrix_appservice_slack_systemd_service_result
 

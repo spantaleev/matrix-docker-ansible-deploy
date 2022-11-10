@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-maubot service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-bot-maubot.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-maubot.service"
   register: matrix_bot_maubot_service_stat
 
 - name: Ensure matrix-bot-maubot is stopped
@@ -16,7 +16,7 @@
 
 - name: Ensure matrix-bot-maubot.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-bot-maubot.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-maubot.service"
     state: absent
   when: "matrix_bot_maubot_service_stat.stat.exists | bool"
 

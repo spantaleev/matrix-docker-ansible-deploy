@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-ntfy service
   ansible.builtin.stat:
-    path: "{{ matrix_systemd_path }}/matrix-ntfy.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ntfy.service"
   register: matrix_ntfy_service_stat
 
 - name: Ensure matrix-ntfy is stopped
@@ -16,7 +16,7 @@
 
 - name: Ensure matrix-ntfy.service doesn't exist
   ansible.builtin.file:
-    path: "{{ matrix_systemd_path }}/matrix-ntfy.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ntfy.service"
     state: absent
   when: "matrix_ntfy_service_stat.stat.exists"
 
