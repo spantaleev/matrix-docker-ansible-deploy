@@ -1,6 +1,6 @@
 # Configuring Dendrite (optional)
 
-By default, this playbook configures the [Dendrite](https://github.com/matrix-org/dendrite) Matrix server, but you can also use [Dendrite](https://dendrite.rs).
+By default, this playbook configures the [Synapse](https://github.com/matrix-org/synapse) Matrix server, but you can also use [Dendrite](https://github.com/matrix-org/dendrite).
 
 **NOTES**:
 
