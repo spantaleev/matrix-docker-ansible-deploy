@@ -60,6 +60,8 @@ If you wish to disable the Etherpad chat button, you can do it by appending `?sh
 If your Etherpad widget fails to load, this might be due to Dimension generating a Pad name so long, the Etherpad app rejects it.
 `$roomId_$padName` can end up being longer than 50 characters. You can avoid having this problem by altering the template so it only contains the three word random identifier `$padName`.
 
-## How to use etherpad
+## How to use Etherpad widgets without an Integration Manager (like Dimension)
 
-This is how it works in element. It might work similar in other clients: To integrate a standalone etherpad in a room, create your pad, copy the url and send to the room `/addwidget <url>`. You will then find your integrated etherpad within the right sidebar in the `Widgets` section.
+This is how it works in element, it might work quite similar with other clients:  
+To integrate a standalone etherpad in a room, create your pad by visiting `https://etherpad.DOMAIN` with your favorite browser and let the magic do the work. When the pad opens, copy the url and send it to the room: `/addwidget <url>`.  
+You will then find your integrated etherpad within the right sidebar in the `Widgets` section.
