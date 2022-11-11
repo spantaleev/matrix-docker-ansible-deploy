@@ -27,6 +27,6 @@ Alternatively, **if there is no pre-defined variable** for a Dendrite setting yo
 To use Dendrite, you **generally** need the following additional `vars.yml` configuration:
 
 ```yaml
-matrix_homeserver_implementation: Dendrite
+matrix_homeserver_implementation: dendrite
 ```
 
