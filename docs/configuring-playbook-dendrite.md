@@ -4,7 +4,7 @@ By default, this playbook configures the [Synapse](https://github.com/matrix-org
 
 **NOTES**:
 
-- **You can't switch an existing Matrix server's implementation** (e.g. Dendrite -> Dendrite). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet.
+- **You can't switch an existing Matrix server's implementation** (e.g. Synapse -> Dendrite). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet.
 
 - **homeserver implementations other than Dendrite may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Dendrite). Make yourself familiar with the downsides before proceeding
 
