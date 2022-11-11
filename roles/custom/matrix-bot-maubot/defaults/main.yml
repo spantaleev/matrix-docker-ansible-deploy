@@ -1,0 +1,69 @@
+---
+
+# maubot is a plugin-based Matrix bot system.
+# Project source code URL: https://mau.dev/maubot/maubot
+
+matrix_bot_maubot_enabled: true
+matrix_bot_maubot_container_image_self_build: false
+matrix_bot_maubot_docker_repo: "https://mau.dev/maubot/maubot.git"
+matrix_bot_maubot_docker_src_files_path: "{{ matrix_bot_maubot_base_path }}/docker-src"
+matrix_bot_maubot_docker_repo_version: "{{ 'master' if matrix_bot_maubot_version == 'latest' else matrix_bot_maubot_version }}"
+
+
+matrix_bot_maubot_version: v0.3.1
+matrix_bot_maubot_docker_image: "dock.mau.dev/maubot/maubot:{{ matrix_bot_maubot_version }}"
+matrix_bot_maubot_docker_image_force_pull: "{{ matrix_bot_maubot_docker_image.endswith(':latest') }}"
+
+matrix_bot_maubot_base_path: "{{ matrix_base_data_path }}/maubot"
+matrix_bot_maubot_data_path: "{{ matrix_bot_maubot_base_path }}/data"
+matrix_bot_maubot_config_path: "{{ matrix_bot_maubot_base_path }}/config"
+
+matrix_bot_maubot_bot_server_public_url: "https://{{ matrix_server_fqn_matrix }}"
+matrix_bot_maubot_proxy_management_interface: true
+
+matrix_bot_maubot_database_engine: sqlite
+matrix_bot_maubot_sqlite_database_path_local: "{{ matrix_bot_maubot_data_path }}/maubot.db"
+matrix_bot_maubot_sqlite_database_path_in_container: "/data/maubot.db"
+
+matrix_bot_maubot_database_username: matrix_bot_maubot
+matrix_bot_maubot_database_password: ~
+matrix_bot_maubot_database_hostname: 'matrix-postgres'
+matrix_bot_maubot_database_port: 5432
+matrix_bot_maubot_database_name: matrix_bot_maubot
+
+matrix_bot_maubot_database_connection_string: postgres://{{ matrix_bot_maubot_database_username }}:{{ matrix_bot_maubot_database_password }}@{{ matrix_bot_maubot_database_hostname }}:{{ matrix_bot_maubot_database_port }}/{{ matrix_bot_maubot_database_name }}?sslmode=disable
+
+matrix_bot_maubot_database_uri: "{{
+ 	{
+ 		'sqlite': ('sqlite:///' + matrix_bot_maubot_sqlite_database_path_in_container),
+ 		'postgres': matrix_bot_maubot_database_connection_string,
+ 	}[matrix_bot_maubot_database_engine]
+    }}"
+
+
+# Defines the port number where the management interface is
+# To actually expose the management interface outside of the container, use `matrix_bot_maubot_management_interface_http_bind_port`
+matrix_bot_maubot_management_interface_port: 29316
+
+# Controls whether the maubot container exposes its HTTP management interface port (tcp/29316 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:29316"), or empty string to not expose.
+# If you'll be setting this at all, it should be defined in terms of `matrix_bot_maubot_management_interface_port`.
+# Example:
+# matrix_bot_maubot_management_interface_http_bind_port: "127.0.0.1:{{ matrix_bot_maubot_management_interface_port }}"
+matrix_bot_maubot_management_interface_http_bind_port: ''
+
+
+matrix_bot_maubot_unshared_secret: 'generate'
+
+# Specifies the default log level for all bot loggers.
+matrix_bot_maubot_logging_level: WARNING
+
+# A list of extra arguments to pass to the container
+matrix_bot_maubot_container_extra_arguments: []
+
+# List of systemd services that matrix-bot-maubot.service depends on
+matrix_bot_maubot_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-bot-maubot.service wants
+matrix_bot_maubot_systemd_wanted_services_list: []

@@ -24,22 +24,12 @@ If you would like Mjolnir to be able to deactivate users, move aliases, shutdown
 
 ## 2. Get an access token
 
-If you use curl, you can get an access token like this:
-
-```
-curl -X POST --header 'Content-Type: application/json' -d '{
-    "identifier": { "type": "m.id.user", "user": "bot.mjolnir" },
-    "password": "PASSWORD_FOR_THE_BOT",
-    "type": "m.login.password"
-}' 'https://matrix.DOMAIN/_matrix/client/r0/login'
-```
-
-Alternatively, you can use a full-featured client (such as Element) to log in and get the access token from there (note: don't log out from the client as that will invalidate the token).
+Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
 
 ## 3. Make sure the account is free from rate limiting
 
-You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step Mjolnir will crash. [Currently there is no Synapse config option for this](https://github.com/matrix-org/synapse/issues/6286) so you have to manually edit the Synapse database. Manually editing the Synapse database is rarely a good idea but in this case it is required. Please ask for help if you are uncomfortable with these steps.
+You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step Mjolnir will crash. This can be done using Synapse's [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). This can also be manually done by editing the Synapse database. Manually editing the Synapse database is rarely a good idea. Please ask for help if you are uncomfortable with these steps.
 
 1. Copy the statement below into a text editor. 
 

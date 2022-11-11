@@ -1,0 +1,16 @@
+---
+
+- name: Fail if no configurations specified
+  ansible.builtin.fail:
+    msg: >-
+      You need to define at least one configuration in `matrix_dynamic_dns_domain_configurations` for using matrix-dynamic-dns.
+  when: "matrix_dynamic_dns_domain_configurations | length == 0"
+
+- name: Fail if required settings not defined in configuration blocks
+  ansible.builtin.fail:
+    msg: >-
+      One of the configurations in matrix_dynamic_dns_domain_configurations is missing a required key (domain, provider, protocol).
+  when: "'domain' not in configuration or 'provider' not in configuration or 'protocol' not in configuration"
+  with_items: "{{ matrix_dynamic_dns_domain_configurations }}"
+  loop_control:
+    loop_var: configuration

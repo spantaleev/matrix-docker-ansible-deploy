@@ -1,3 +1,247 @@
+# 2022-11-05
+
+## (Backward Compatibility Break) A new default standalone mode for Etherpad
+
+Until now, [Etherpad](https://etherpad.org/) (which [the playbook could install for you](docs/configuring-playbook-etherpad.md)) required the [Dimension integration manager](docs/configuring-playbook-dimension.md) to also be installed, because Etherpad was hosted on the Dimension domain (at `dimension.DOMAIN/etherpad`).
+
+From now on, Etherpad can be installed in `standalone` mode on `etherpad.DOMAIN` and used even without Dimension. This is much more versatile, so the playbook now defaults to this new mode (`matrix_etherpad_mode: standalone`).
+
+If you've already got both Etherpad and Dimension in use you could:
+
+- **either** keep hosting Etherpad under the Dimension domain by adding `matrix_etherpad_mode: dimension` to your `vars.yml` file. All your existing room widgets will continue working at the same URLs and no other changes will be necessary.
+
+- **or**, you could change to hosting Etherpad separately on `etherpad.DOMAIN`. You will need to [configure a DNS record](docs/configuring-dns.md) for this new domain. You will also need to reconfigure Dimension to use the new pad URLs (`https://etherpad.DOMAIN/...`) going forward (refer to our [configuring Etherpad documentation](docs/configuring-playbook-etherpad.md)). All your existing room widgets (which still use `https://dimension.DOMAIN/etherpad/...`) will break as Etherpad is not hosted there anymore. You will need to re-add them or to consider not using `standalone` mode
+
+
+# 2022-11-04
+
+## The playbook now uses external roles for some things
+
+**TLDR**: when updating the playbook and before running it, you'll need to run `make roles` to make [ansible-galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html) download dependency roles (see the [`requirements.yml` file](requirements.yml)) to the `roles/galaxy` directory. Without this, the playbook won't work.
+
+We're in the process of trimming the playbook and making it reuse Ansible roles.
+
+Starting now, the playbook is composed of 2 types of Ansible roles:
+
+- those that live within the playbook itself (`roles/custom/*`)
+
+- those downloaded from other sources (using [ansible-galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html) to `roles/galaxy`, based on the [`requirements.yml` file](requirements.yml)). These roles are maintained by us or by other people from the Ansible community.
+
+We're doing this for greater code-reuse (across Ansible playbooks, including our own related playbooks [gitea-docker-ansible-deploy](https://github.com/spantaleev/gitea-docker-ansible-deploy) and [nextcloud-docker-ansible-deploy](https://github.com/spantaleev/nextcloud-docker-ansible-deploy)) and decreased maintenance burden. Until now, certain features were copy-pasted across playbooks or were maintained separately in each one, with improvements often falling behind. We've also tended to do too much by ourselves - installing Docker on the server from our `matrix-base` role, etc. - something that we'd rather not do anymore by switching to the [geerlingguy.docker](https://galaxy.ansible.com/geerlingguy/docker) role.
+
+Some variable names will change during the transition to having more and more external (galaxy) roles. There's a new `custom/matrix_playbook_migration` role added to the playbook which will tell you about these changes each time you run the playbook.
+
+**From now on**, every time you update the playbook (well, every time the `requirements.yml` file changes), it's best to run `make roles` to update the roles downloaded from other sources. `make roles` is a shortcut (a `roles` target defined in [`Makefile`](Makefile) and executed by the [`make`](https://www.gnu.org/software/make/) utility) which ultimately runs [ansible-galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html) to download Ansible roles. If you don't have `make`, you can also manually run the commands seen in the `Makefile`.
+
+
+# 2022-10-14
+
+## synapse-s3-storage-provider support
+
+**`synapse-s3-storage-provider` support is very new and still relatively untested. Using it may cause data loss.**
+
+You can now store your Synapse media repository files on Amazon S3 (or another S3-compatible object store) using [synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider) - a media provider for Synapse (Python module), which should work faster and more reliably than our previous [Goofys](docs/configuring-playbook-s3-goofys.md) implementation (Goofys will continue to work).
+
+This is not just for initial installations. Users with existing files (stored in the local filesystem) can also migrate their files to `synapse-s3-storage-provider`.
+
+To get started, see our [Storing Synapse media files on Amazon S3 with synapse-s3-storage-provider](docs/configuring-playbook-synapse-s3-storage-provider.md) documentation.
+
+
+## Synapse container image customization support
+
+We now support customizing the Synapse container image by adding additional build steps to its [`Dockerfile`](https://docs.docker.com/engine/reference/builder/).
+
+Our [synapse-s3-storage-provider support](#synapse-s3-storage-provider-support) is actually built on this. When `s3-storage-provider` is enabled, we automatically add additional build steps to install its Python module into the Synapse image.
+
+Besides this kind of auto-added build steps (for components supported by the playbook), we also let you inject your own custom build steps using configuration like this:
+
+```yaml
+matrix_synapse_container_image_customizations_enabled: true
+
+matrix_synapse_container_image_customizations_dockerfile_body_custom: |
+ RUN echo 'This is a custom step for building the customized Docker image for Synapse.'
+ RUN echo 'You can override matrix_synapse_container_image_customizations_dockerfile_body_custom to add your own steps.'
+ RUN echo 'You do NOT need to include a FROM clause yourself.'
+```
+
+People who have needed to customize Synapse previously had to fork the git repository, make their changes to the `Dockerfile` there, point the playbook to the new repository (`matrix_synapse_container_image_self_build_repo`) and enable self-building from scratch (`matrix_synapse_container_image_self_build: true`). This is harder and slower.
+
+With the new Synapse-customization feature in the playbook, we use the original upstream (pre-built, if available) Synapse image and only build on top of it, right on the Matrix server. This is much faster than building all of Synapse from scratch.
+
+
+# 2022-10-02
+
+## matrix-ldap-registration-proxy support
+
+Thanks to [@TheOneWithTheBraid](https://github.com/TheOneWithTheBraid), we now support installing [matrix-ldap-registration-proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy) - a proxy which handles Matrix registration requests and forwards them to LDAP.
+
+See our [Setting up the ldap-registration-proxy](docs/configuring-playbook-matrix-ldap-registration-proxy.md) documentation to get started.
+
+
+# 2022-09-15
+
+## (Potential Backward Compatibility Break) Major improvements to Synapse workers
+
+People who are interested in running a Synapse worker setup should know that **our Synapse worker implementation is much more powerful now**:
+
+- we've added support for [Stream writers](#stream-writers-support)
+- we've added support for [multiple federation sender workers](#multiple-federation-sender-workers-support)
+- we've added support for [multiple pusher workers](#multiple-pusher-workers-support)
+- we've added support for [running background tasks on a worker](#background-tasks-can-run-on-a-worker)
+- we've restored support for [`appservice` workers](#appservice-worker-support-is-back)
+- we've restored support for [`user_dir` workers](#user-directory-worker-support-is-back)
+- we've made it possible to [reliably use more than 1 `media_repository` worker](#using-more-than-1-media-repository-worker-is-now-more-reliable)
+- see the [Potential Backward Incompatibilities after these Synapse worker changes](#potential-backward-incompatibilities-after-these-synapse-worker-changes)
+
+### Stream writers support
+
+From now on, the playbook lets you easily set up various [stream writer workers](https://matrix-org.github.io/synapse/latest/workers.html#stream-writers) which can handle different streams (`events` stream; `typing` URL endpoints, `to_device` URL endpoints, `account_data` URL endpoints, `receipts` URL endpoints, `presence` URL endpoints). All of this work was previously handled by the main Synapse process, but can now be offloaded to stream writer worker processes.
+
+If you're using `matrix_synapse_workers_preset: one-of-each`, you'll automatically get 6 additional workers (one for each of the above stream types). Our `little-federation-helper` preset (meant to be quite minimal and focusing in improved federation performance) does not include stream writer workers.
+
+If you'd like to customize the number of workers we also make that possible using these variables:
+
+```yaml
+# Synapse only supports more than 1 worker for the `events` stream.
+# All other streams can utilize either 0 or 1 workers, not more than that.
+matrix_synapse_workers_stream_writer_events_stream_workers_count: 5
+matrix_synapse_workers_stream_writer_typing_stream_workers_count: 1
+matrix_synapse_workers_stream_writer_to_device_stream_workers_count: 1
+matrix_synapse_workers_stream_writer_account_data_stream_workers_count: 1
+matrix_synapse_workers_stream_writer_receipts_stream_workers_count: 1
+matrix_synapse_workers_stream_writer_presence_stream_workers_count: 1
+```
+
+### Multiple federation sender workers support
+
+Until now, we only supported a single `federation_sender` worker (`matrix_synapse_workers_federation_sender_workers_count` could either be `0` or `1`).
+From now on, you can have as many as you want to help with your federation traffic.
+
+### Multiple pusher workers support
+
+Until now, we only supported a single `pusher` worker (`matrix_synapse_workers_pusher_workers_count` could either be `0` or `1`).
+From now on, you can have as many as you want to help with pushing notifications out.
+
+### Background tasks can run on a worker
+
+From now on, you can put [background task processing on a worker](https://matrix-org.github.io/synapse/latest/workers.html#background-tasks).
+
+With `matrix_synapse_workers_preset: one-of-each`, you'll get one `background` worker automatically.
+You can also control the `background` workers count with `matrix_synapse_workers_background_workers_count`. Only  `0` or `1` workers of this type are supported by Synapse.
+
+### Appservice worker support is back
+
+We previously had an `appservice` worker type, which [Synapse deprecated in v1.59.0](https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types). So did we, at the time.
+
+The new way to implement such workers is by using a `generic_worker` and dedicating it to the task of talking to Application Services.
+From now on, we have support for this.
+
+With `matrix_synapse_workers_preset: one-of-each`, you'll get one `appservice` worker automatically.
+You can also control the `appservice` workers count with `matrix_synapse_workers_appservice_workers_count`. Only  `0` or `1` workers of this type are supported by Synapse.
+
+### User Directory worker support is back
+
+We previously had a `user_dir` worker type, which [Synapse deprecated in v1.59.0](https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types). So did we, at the time.
+
+The new way to implement such workers is by using a `generic_worker` and dedicating it to the task of serving the user directory.
+From now on, we have support for this.
+
+With `matrix_synapse_workers_preset: one-of-each`, you'll get one `user_dir` worker automatically.
+You can also control the `user_dir` workers count with `matrix_synapse_workers_user_dir_workers_count`. Only  `0` or `1` workers of this type are supported by Synapse.
+
+### Using more than 1 media repository worker is now more reliable
+
+With `matrix_synapse_workers_preset: one-of-each`, we only launch one `media_repository` worker.
+
+If you've been configuring `matrix_synapse_workers_media_repository_workers_count` manually, you may have increased that to more workers.
+When multiple media repository workers are in use, background tasks related to the media repository must always be configured to run on a single `media_repository` worker via `media_instance_running_background_jobs`. Until now, we weren't doing this correctly, but we now are.
+
+### Potential Backward Incompatibilities after these Synapse worker changes
+
+Below we'll discuss **potential backward incompatibilities**.
+
+- **Worker names** (container names, systemd services, worker configuration files) **have changed**. Workers are now labeled sequentially (e.g. `matrix-synapse-worker_generic_worker-18111` -> `matrix-synapse-worker-generic-0`). The playbook will handle these changes automatically.
+
+- Due to increased worker types support above, people who use `matrix_synapse_workers_preset: one-of-each` should be aware that with these changes, **the playbook will deploy 9 additional workers** (6 stream writers, 1 `appservice` worker, 1 `user_dir` worker, 1 background task worker). This **may increase RAM/CPU usage**, etc. If you find your server struggling, consider disabling some workers with the appropriate `matrix_synapse_workers_*_workers_count` variables.
+
+- **Metric endpoints have also changed** (`/metrics/synapse/worker/generic_worker-18111` -> `/metrics/synapse/worker/generic-worker-0`). If you're [collecting metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server), consider revisiting our [Collecting Synapse worker metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-synapse-worker-metrics-to-an-external-prometheus-server) docs and updating your Prometheus configuration. **If you're collecting metrics to the integrated Prometheus server** (not enabled by default), **your Prometheus configuration will be updated automatically**. Old data (from before this change) may stick around though.
+
+- **the format of `matrix_synapse_workers_enabled_list` has changed**. You were never advised to use this variable for directly creating workers (we advise people to control workers using `matrix_synapse_workers_preset` or by tweaking `matrix_synapse_workers_*_workers_count` variables only), but some people may have started using the `matrix_synapse_workers_enabled_list` variable to gain more control over workers. If you're one of them, you'll need to adjust its value. See `roles/custom/matrix-synapse/defaults/main.yml` for more information on the new format. The playbook will also do basic validation and complain if you got something wrong.
+
+
+# 2022-09-09
+
+## Cactus Comments support
+
+Thanks to [Julian-Samuel Gebühr (@moan0s)](https://github.com/moan0s), the playbook can now set up [Cactus Comments](https://cactus.chat) - federated comment system for the web based on Matrix.
+
+See our [Setting up a Cactus Comments server](docs/configuring-playbook-cactus-comments.md) documentation to get started.
+
+
+# 2022-08-23
+
+## Postmoogle email bridge support
+
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up the new [Postmoogle](https://gitlab.com/etke.cc/postmoogle) email bridge/bot. Postmoogle is like the [email2matrix bridge](https://github.com/devture/email2matrix) (also [already supported by the playbook](docs/configuring-playbook-email2matrix.md)), but more capable and with the intention to soon support *sending* emails, not just receiving.
+
+See our [Setting up Postmoogle email bridging](docs/configuring-playbook-bot-postmoogle.md) documentation to get started.
+
+
+# 2022-08-10
+
+## mautrix-whatsapp default configuration changes
+
+In [Pull Request #2012](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/2012), we've made some changes to the default configuration used by the `mautrix-whatsapp` bridge.
+
+If you're using this bridge, you should look into this PR and see if the new configuration suits you. If not, you can always change individual preferences in your `vars.yml` file.
+
+Most notably, spaces support has been enabled by default. The bridge will now group rooms into a Matrix space. **If you've already bridged to Whatsapp** prior to this update, you will need to send `!wa sync space` to the bridge bot to make it create the space and put your existing rooms into it.
+
+
+# 2022-08-09
+
+## Conduit support
+
+Thanks to [Charles Wright](https://github.com/cvwright), we now have optional experimental [Conduit](https://conduit.rs) homeserver support for new installations. This comes as a follow-up to the playbook getting [Dendrite support](#dendrite-support) earlier this year.
+
+Existing Synapse or Dendrite installations do **not** need to be updated. **Synapse is still the default homeserver implementation** installed by the playbook.
+
+To try out Conduit, we recommend that you **use a new server** and the following `vars.yml` configuration:
+
+```yaml
+matrix_homeserver_implementation: conduit
+```
+
+**The homeserver implementation of an existing server cannot be changed** (e.g. from Synapse or Dendrite to Conduit) without data loss.
+
+
+# 2022-07-29
+
+## mautrix-discord support
+
+Thanks to [MdotAmaan](https://github.com/MdotAmaan)'s efforts, the playbook now supports bridging to [Discord](https://discordapp.com/) via the [mautrix-discord](https://mau.dev/mautrix/discord) bridge. See our [Setting up Mautrix Discord bridging](docs/configuring-playbook-bridge-mautrix-discord.md) documentation page for getting started.
+
+**Note**: this is a new Discord bridge. The playbook still retains Discord bridging via [matrix-appservice-discord](docs/configuring-playbook-bridge-appservice-discord.md) and [mx-puppet-discord](docs/configuring-playbook-bridge-mx-puppet-discord.md). You're free too use the bridge that serves you better, or even all three of them (for different users and use-cases).
+
+
+# 2022-07-27
+
+## matrix-appservice-kakaotalk support
+
+The playbook now supports bridging to [Kakaotalk](https://www.kakaocorp.com/page/service/service/KakaoTalk?lang=ENG) via [matrix-appservice-kakaotalk](https://src.miscworks.net/fair/matrix-appservice-kakaotalk) - a bridge based on [node-kakao](https://github.com/storycraft/node-kakao) (now unmaintained) and some [mautrix-facebook](https://github.com/mautrix/facebook) code. Thanks to [hnarjis](https://github.com/hnarjis) for helping us add support for this!
+
+See our [Setting up Appservice Kakaotalk bridging](docs/configuring-playbook-bridge-appservice-kakaotalk.md) documentation to get started.
+
+
+# 2022-07-20
+
+## maubot support
+
+Thanks to [Stuart Mumford (@Cadair)](https://github.com/cadair) for starting ([PR #373](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/373) and [PR #622](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/622)) and to [Julian-Samuel Gebühr (@moan0s)](https://github.com/moan0s) for finishing up (in [PR #1894](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1894)), the playbook can now help you set up [maubot](https://github.com/maubot/maubot) - a plugin-based Matrix bot system.
+
+See our [Setting up maubot](docs/configuring-playbook-bot-maubot.md) documentation to get started.
+
+
 # 2022-07-14
 
 ## mx-puppet-skype removal
@@ -204,7 +448,7 @@ matrix_ma1sd_enabled: true
 
 We now support installing the [matrix_encryption_disabler](https://github.com/digitalentity/matrix_encryption_disabler) Synapse module, which lets you prevent End-to-End-Encryption from being enabled by users on your homeserver. The popular opinion is that this is dangerous and shouldn't be done, but there are valid use cases for disabling encryption discussed [here](https://github.com/matrix-org/synapse/issues/4401).
 
-To enable this module (and prevent encryption from being used on your homserver), add `matrix_synapse_ext_encryption_disabler_enabled: true` to your configuration. This module provides further customization. Check its other configuration settings (and defaults) in `roles/matrix-synapse/defaults/main.yml`.
+To enable this module (and prevent encryption from being used on your homserver), add `matrix_synapse_ext_encryption_disabler_enabled: true` to your configuration. This module provides further customization. Check its other configuration settings (and defaults) in `roles/custom/matrix-synapse/defaults/main.yml`.
 
 
 # 2022-02-01
@@ -591,7 +835,7 @@ You have 3 ways to proceed:
   - stop the bridge (`systemctl stop matrix-mautrix-facebook`)
   - create a new `matrix_mautrix_facebook` Postgres database for it
   - run [pgloader](https://pgloader.io/) manually (we import this bridge's data using default settings and it works well)
-  - define `matrix_mautrix_facebook_database_*` variables in your `vars.yml` file (credentials, etc.) - you can find their defaults in `roles/matrix-mautrix-facebook/defaults/main.yml`
+  - define `matrix_mautrix_facebook_database_*` variables in your `vars.yml` file (credentials, etc.) - you can find their defaults in `roles/custom/matrix-mautrix-facebook/defaults/main.yml`
   - switch the bridge to Postgres (`matrix_mautrix_facebook_database_engine: 'postgres'` in your `vars.yml` file)
   - re-run the playbook (`--tags=setup-all,start`) and ensure the bridge works (`systemctl status matrix-mautrix-facebook` and `journalctl -fu matrix-mautrix-facebook`)
   - send a `login` message to the Facebook bridge bot again
@@ -1469,7 +1713,7 @@ Having Synapse not be a required component potentially opens the door for instal
 ## Bridges are now separate from the Synapse role
 
 Bridges are no longer part of the `matrix-synapse` role.
-Each bridge now lives in its own separate role (`roles/matrix-bridge-*`).
+Each bridge now lives in its own separate role (`roles/custom/matrix-bridge-*`).
 
 These bridge roles are independent of the `matrix-synapse` role, so it should be possible to use them with a Synapse instance installed another way (not through the playbook).
 
@@ -1763,7 +2007,7 @@ The following variables are no longer supported by this playbook:
 - `matrix_mxisd_template_config`
 
 You are encouraged to use the `matrix_mxisd_configuration_extension_yaml` variable to define your own mxisd configuration additions and overrides.
-Refer to the [default variables file](roles/matrix-mxisd/defaults/main.yml) for more information.
+Refer to the [default variables file](roles/custom/matrix-mxisd/defaults/main.yml) for more information.
 
 This new way of configuring mxisd is beneficial because:
 
@@ -1825,14 +2069,14 @@ Based on feedback from others, running Synapse on Python 3 is supposed to decrea
 ## Riot homepage customization
 
 You can now customize some parts of the Riot homepage (or even completely replace it with your own custom page).
-See the `matrix_riot_web_homepage_` variables in `roles/matrix-riot-web/defaults/main.yml`.
+See the `matrix_riot_web_homepage_` variables in `roles/custom/matrix-riot-web/defaults/main.yml`.
 
 
 # 2018-12-04
 
 ## mxisd extensibility
 
-The [LDAP identity store for mxisd](https://github.com/kamax-matrix/mxisd/blob/master/docs/stores/ldap.md) can now be configured easily using playbook variables (see the `matrix_mxisd_ldap_` variables in `roles/matrix-server/defaults/main.yml`).
+The [LDAP identity store for mxisd](https://github.com/kamax-matrix/mxisd/blob/master/docs/stores/ldap.md) can now be configured easily using playbook variables (see the `matrix_mxisd_ldap_` variables in `roles/custom/matrix-server/defaults/main.yml`).
 
 
 # 2018-11-28

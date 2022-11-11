@@ -1,0 +1,36 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Cactus Comments
+{% for service in matrix_bot_cactus_comments_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_bot_cactus_comments_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-cactus-comments 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-cactus-comments 2>/dev/null || true'
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-cactus-comments \
+			--log-driver=none \
+			--cap-drop=ALL \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--read-only \
+			--env-file {{ matrix_cactus_comments_app_service_env_file }} \
+			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_cactus_comments_tmp_directory_size_mb }}m \
+			--network={{ matrix_docker_network }} \
+			{{ matrix_cactus_comments_docker_image }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-cactus-comments 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-cactus-comments 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-cactus-comments
+
+[Install]
+WantedBy=multi-user.target

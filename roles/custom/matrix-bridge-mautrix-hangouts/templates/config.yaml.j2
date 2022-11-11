@@ -1,0 +1,144 @@
+#jinja2: lstrip_blocks: "True"
+# Homeserver details
+homeserver:
+    # The address that this appservice can use to connect to the homeserver.
+    address: {{ matrix_mautrix_hangouts_homeserver_address }}
+    # The domain of the homeserver (for MXIDs, etc).
+    domain: {{ matrix_mautrix_hangouts_homeserver_domain }}
+    # Whether or not to verify the SSL certificate of the homeserver.
+    # Only applies if address starts with https://
+    verify_ssl: true
+
+# Application service host/registration related details
+# Changing these values requires regeneration of the registration.
+appservice:
+    # The address that the homeserver can use to connect to this appservice.
+    address: {{ matrix_mautrix_hangouts_appservice_address }}
+
+    # The hostname and port where this appservice should listen.
+    hostname: 0.0.0.0
+    port: 8080
+    # The maximum body size of appservice API requests (from the homeserver) in mebibytes
+    # Usually 1 is enough, but on high-traffic bridges you might need to increase this to avoid 413s
+    max_body_size: 1
+
+    # The full URI to the database. SQLite and Postgres are fully supported.
+    # Other DBMSes supported by SQLAlchemy may or may not work.
+    # Format examples:
+    #   SQLite:   sqlite:///filename.db
+    #   Postgres: postgres://username:password@hostname/dbname
+    database: {{ matrix_mautrix_hangouts_appservice_database|to_json }}
+
+    # The unique ID of this appservice.
+    id: hangouts
+    # Username of the appservice bot.
+    bot_username: {{ matrix_mautrix_hangouts_appservice_bot_username|to_json }}
+    # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
+    # to leave display name/avatar as-is.
+    bot_displayname: Hangouts bridge bot
+    bot_avatar: mxc://maunium.net/FBXZnpfORkBEruORbikmleAy
+
+    # Authentication tokens for AS <-> HS communication.
+    as_token: "{{ matrix_mautrix_hangouts_appservice_token }}"
+    hs_token: "{{ matrix_mautrix_hangouts_homeserver_token }}"
+
+# Bridge config
+bridge:
+    # Localpart template of MXIDs for Hangouts users.
+    # {userid} is replaced with the user ID of the Hangouts user.
+    username_template: "hangouts_{userid}"
+    # Displayname template for Hangouts users.
+    # {displayname} is replaced with the display name of the Hangouts user
+    #               as defined below in displayname_preference.
+    # Keys available for displayname_preference are also available here.
+    displayname_template: '{full_name} (Hangouts)'
+    # Available keys:
+    # "name" (full name)
+    # "first_name"
+    # "last_name"
+    # "nickname"
+    # "own_nickname" (user-specific!)
+    displayname_preference:
+    - name
+
+    # The prefix for commands. Only required in non-management rooms.
+    command_prefix: "{{ matrix_mautrix_hangouts_command_prefix }}"
+
+    # Number of chats to sync (and create portals for) on startup/login.
+    # Maximum 20, set 0 to disable automatic syncing.
+    initial_chat_sync: 20
+    # Whether or not the Hangouts users of logged in Matrix users should be
+    # invited to private chats when the user sends a message from another client.
+    invite_own_puppet_to_pm: false
+    # Whether or not to use /sync to get presence, read receipts and typing notifications when using
+    # your own Matrix account as the Matrix puppet for your Hangouts account.
+    sync_with_custom_puppets: true
+    # Shared secret for https://github.com/devture/matrix-synapse-shared-secret-auth
+    #
+    # If set, custom puppets will be enabled automatically for local users
+    # instead of users having to find an access token and run `login-matrix`
+    # manually.
+    login_shared_secret: {{ matrix_mautrix_hangouts_login_shared_secret|to_json }}
+    # Whether or not to update avatars when syncing all contacts at startup.
+    update_avatar_initial_sync: true
+    # End-to-bridge encryption support options. These require matrix-nio to be installed with pip
+    # and login_shared_secret to be configured in order to get a device for the bridge bot.
+    #
+    # Additionally, https://github.com/matrix-org/synapse/pull/5758 is required if using a normal
+    # application service.
+    encryption:
+        # Allow encryption, work in group chat rooms with e2ee enabled
+        allow: false
+        # Default to encryption, force-enable encryption in all portals the bridge creates
+        # This will cause the bridge bot to be in private chats for the encryption to work properly.
+        default: false
+
+    # Public website and API configs
+    web:
+        # Auth server config
+        auth:
+            # Publicly accessible base URL for the login endpoints.
+            # The prefix below is not implicitly added. This URL and all subpaths should be proxied
+            # or otherwise pointed to the appservice's webserver to the path specified below (prefix).
+            # This path should usually include a trailing slash.
+            # Internal prefix in the appservice web server for the login endpoints.
+            public: "{{ matrix_homeserver_url }}{{ matrix_mautrix_hangouts_public_endpoint }}/login"
+            prefix: "{{ matrix_mautrix_hangouts_public_endpoint }}/login"
+
+
+    # Permissions for using the bridge.
+    # Permitted values:
+    #       user - Use the bridge with puppeting.
+    #      admin - Use and administrate the bridge.
+    # Permitted keys:
+    #        * - All Matrix users
+    #   domain - All users on that homeserver
+    #     mxid - Specific user
+    permissions: {{ matrix_mautrix_hangouts_bridge_permissions|to_json }}
+
+# Python logging configuration.
+#
+# See section 16.7.2 of the Python documentation for more info:
+# https://docs.python.org/3.6/library/logging.config.html#configuration-dictionary-schema
+logging:
+    version: 1
+    formatters:
+        colored:
+            (): mautrix_hangouts.util.ColorFormatter
+            format: "[%(asctime)s] [%(levelname)s@%(name)s] %(message)s"
+        normal:
+            format: "[%(asctime)s] [%(levelname)s@%(name)s] %(message)s"
+    handlers:
+        console:
+            class: logging.StreamHandler
+            formatter: colored
+    loggers:
+        mau:
+            level: {{ matrix_mautrix_hangouts_logging_level|to_json }}
+        hangups:
+            level: {{ matrix_mautrix_hangouts_logging_level|to_json }}
+        aiohttp:
+            level: {{ matrix_mautrix_hangouts_logging_level|to_json }}
+    root:
+        level: {{ matrix_mautrix_hangouts_logging_level|to_json }}
+        handlers: [console]

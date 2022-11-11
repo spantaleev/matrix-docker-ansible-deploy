@@ -1,8 +1,8 @@
 # Setting up Beeper Linkedin (optional)
 
-The playbook can install and configure [beeper-linkedin](https://gitlab.com/beeper/linkedin) for you, for bridging to [LinkedIn](https://www.linkedin.com/) Messaging. This bridge is based on the mautrix-python framework and can be configured in a similar way to the other mautrix bridges
+The playbook can install and configure [beeper-linkedin](https://github.com/beeper/linkedin) for you, for bridging to [LinkedIn](https://www.linkedin.com/) Messaging. This bridge is based on the mautrix-python framework and can be configured in a similar way to the other mautrix bridges
 
-See the project's [documentation](https://gitlab.com/beeper/linkedin/-/blob/master/README.md) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/beeper/linkedin/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ```yaml
 matrix_beeper_linkedin_enabled: true
@@ -27,7 +27,7 @@ matrix_beeper_linkedin_configuration_extension_yaml: |
       '@YOUR_USERNAME:YOUR_DOMAIN': admin
 ```
 
-You may wish to look at `roles/matrix-bridge-beeper-linkedin/templates/config.yaml.j2` to find other things you would like to configure.
+You may wish to look at `roles/custom/matrix-bridge-beeper-linkedin/templates/config.yaml.j2` to find other things you would like to configure.
 
 
 ## Set up Double Puppeting

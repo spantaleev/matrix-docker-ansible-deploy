@@ -1,0 +1,41 @@
+---
+#
+# Start Necessary Services
+#
+
+- name: Ensure matrix-jitsi-prosody container is running
+  ansible.builtin.systemd:
+    state: started
+    name: matrix-jitsi-prosody
+  register: matrix_jitsi_prosody_start_result
+
+
+#
+# Tasks related to configuring Jitsi internal authentication
+#
+
+- name: Ensure Jitsi internal authentication users are configured
+  ansible.builtin.shell: "{{ devture_systemd_docker_base_host_command_docker }} exec matrix-jitsi-prosody prosodyctl --config /config/prosody.cfg.lua register {{ item.username | quote }} meet.jitsi {{ item.password | quote }}"
+  with_items: "{{ matrix_jitsi_prosody_auth_internal_accounts }}"
+  when:
+    - matrix_jitsi_auth_type == "internal"
+    - matrix_jitsi_prosody_auth_internal_accounts|length > 0
+  register: matrix_jitsi_user_configuration_result
+  changed_when: matrix_jitsi_user_configuration_result.rc == 0
+
+#
+# Tasks related to configuring other Jitsi authentication mechanisms
+#
+
+#
+# Tasks related to cleaning after Jitsi authentication configuration
+#
+
+#
+# Stop Necessary Services
+#
+- name: Ensure matrix-jitsi-prosody container is stopped if necessary
+  ansible.builtin.systemd:
+    state: stopped
+    name: matrix-jitsi-prosody
+  when: matrix_jitsi_prosody_start_result.changed | bool

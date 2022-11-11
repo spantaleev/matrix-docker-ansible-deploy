@@ -1,0 +1,74 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Synapse server
+{% for service in matrix_synapse_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+
+{% endfor %}
+{% for service in matrix_synapse_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+
+{% if matrix_synapse_workers_enabled %}
+{% for matrix_synapse_worker_details in matrix_synapse_workers_enabled_list %}
+Wants={{ matrix_synapse_worker_details.name }}.service
+{% endfor %}
+{% endif %}
+
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-synapse 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-synapse 2>/dev/null || true'
+{% if matrix_s3_media_store_enabled %}
+# Allow for some time before starting, so that media store can mount.
+# Mounting can happen later too, but if we start writing,
+# we'd write files to the local filesystem and fusermount will complain.
+ExecStartPre={{ matrix_host_command_sleep }} 3
+{% endif %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-synapse \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_synapse_tmp_directory_size_mb }}m \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_synapse_container_client_api_host_bind_port %}
+			-p {{ matrix_synapse_container_client_api_host_bind_port }}:{{ matrix_synapse_container_client_api_port }} \
+			{% endif %}
+			{% if matrix_synapse_federation_enabled and matrix_synapse_tls_federation_listener_enabled and matrix_synapse_container_federation_api_tls_host_bind_port %}
+			-p {{ matrix_synapse_container_federation_api_tls_host_bind_port }}:{{ matrix_synapse_container_federation_api_tls_port }} \
+			{% endif %}
+			{% if matrix_synapse_federation_enabled and matrix_synapse_federation_port_enabled and matrix_synapse_container_federation_api_plain_host_bind_port %}
+			-p {{ matrix_synapse_container_federation_api_plain_host_bind_port }}:{{ matrix_synapse_container_federation_api_plain_port }} \
+			{% endif %}
+			{% if matrix_synapse_metrics_enabled and matrix_synapse_container_metrics_api_host_bind_port %}
+			-p {{ matrix_synapse_container_metrics_api_host_bind_port }}:{{ matrix_synapse_metrics_port }} \
+			{% endif %}
+			{% if matrix_synapse_manhole_enabled and matrix_synapse_container_manhole_api_host_bind_port %}
+			-p {{ matrix_synapse_container_manhole_api_host_bind_port }}:9000 \
+			{% endif %}
+			--mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data,ro \
+			--mount type=bind,src={{ matrix_synapse_storage_path }},dst=/matrix-media-store-parent,bind-propagation=slave \
+			{% for volume in matrix_synapse_container_additional_volumes %}
+			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
+			{% endfor %}
+			{% for arg in matrix_synapse_container_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_synapse_docker_image_final }} \
+			run -m synapse.app.homeserver -c /data/homeserver.yaml
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-synapse 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-synapse 2>/dev/null || true'
+ExecReload={{ devture_systemd_docker_base_host_command_docker }} exec matrix-synapse /bin/sh -c 'kill -HUP 1'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-synapse
+
+[Install]
+WantedBy=multi-user.target

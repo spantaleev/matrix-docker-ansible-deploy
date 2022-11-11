@@ -43,22 +43,28 @@ matrix_backup_borg_location_repositories:
  - USER@HOST:REPO
 matrix_backup_borg_storage_encryption_passphrase: "PASSPHRASE"
 matrix_backup_borg_ssh_key_private: |
-	PRIVATE KEY
+  -----BEGIN OPENSSH PRIVATE KEY-----
+  TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZW
+  xpdCwgc2VkIGRvIGVpdXNtb2QgdGVtcG9yIGluY2lkaWR1bnQgdXQgbGFib3JlIGV0IGRv
+  bG9yZSBtYWduYSBhbGlxdWEuIFV0IGVuaW0gYWQgbWluaW0gdmVuaWFtLCBxdWlzIG5vc3
+  RydWQgZXhlcmNpdGF0aW9uIHVsbGFtY28gbGFib3JpcyBuaXNpIHV0IGFsaXF1aXAgZXgg
+  ZWEgY29tbW9kbyBjb25zZXF1YXQuIA==
+  -----END OPENSSH PRIVATE KEY-----
 ```
 
 where:
 
 * USER - SSH user of a provider/server
 * HOST - SSH host of a provider/server
-* REPO - borg repository name, it will be initialized on backup start, eg: `matrix`
+* REPO - borg repository name, it will be initialized on backup start, eg: `matrix`, regarding Syntax see [Remote repositories](https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls)
 * PASSPHRASE - passphrase used for encrypting backups, you may generate it with `pwgen -s 64 1` or use any password manager
-* PRIVATE KEY - the content of the **private** part of the SSH key you created before
+* PRIVATE KEY - the content of the **private** part of the SSH key you created before. The whole key (all of its belonging lines) under `matrix_backup_borg_ssh_key_private` needs to be indented with 2 spaces
 
 To backup without encryption, add `matrix_backup_borg_encryption: 'none'` to your vars. This will also enable the `matrix_backup_borg_unknown_unencrypted_repo_access_is_ok` variable.
 
 `matrix_backup_borg_location_source_directories` defines the list of directories to back up: it's set to `{{ matrix_base_data_path }}` by default, which is the base directory for every service's data, such as Synapse, Postgres and the bridges. You might want to exclude certain directories or file patterns from the backup using the `matrix_backup_borg_location_exclude_patterns` variable.
 
-Check the `roles/matrix-backup-borg/defaults/main.yml` file for the full list of available options.
+Check the `roles/custom/matrix-backup-borg/defaults/main.yml` file for the full list of available options.
 
 ## Installing
 
@@ -67,3 +73,9 @@ After configuring the playbook, run the [installation](installing.md) command ag
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
+
+## Manually start a backup
+
+For testing your setup it can be helpful to not wait until 4am. If you want to run the backup immediately, log onto the server
+and run `systemctl start matrix-backup-borg`. This will not return until the backup is done, so possibly a long time.
+Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.

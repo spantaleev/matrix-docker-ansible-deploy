@@ -1,3 +1,15 @@
+(cors) {
+	@cors_preflight method OPTIONS
+
+	handle @cors_preflight {
+		header Access-Control-Allow-Origin "{args.0}"
+		header Access-Control-Allow-Methods "HEAD, GET, POST, PUT, PATCH, DELETE"
+		header Access-Control-Allow-Headers "Content-Type, Authorization"
+		header Access-Control-Max-Age "3600"
+	}
+}
+
+
 matrix.DOMAIN.tld {
 
   # creates letsencrypt certificate
@@ -81,6 +93,13 @@ matrix.DOMAIN.tld {
         header Access-Control-Allow-Origin *
         file_server
   }
+  
+  # If you have other well-knowns already handled by your base domain, you can replace the above block by this one, along with the replacement suggested in the base domain
+  #handle @wellknown {
+  #  # .well-known is handled by base domain
+  #  reverse_proxy https://DOMAIN.tld {
+  #  header_up Host {http.reverse_proxy.upstream.hostport}
+  #}
 
   handle {
         encode zstd gzip
@@ -114,6 +133,8 @@ element.DOMAIN.tld {
       # creates letsencrypt certificate
       # tls your@email.com
 
+      import cors https://*.DOMAIN.tld
+
       header {
                 # Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
                 Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
@@ -123,6 +144,8 @@ element.DOMAIN.tld {
                 X-Content-Type-Options "nosniff"
                 # Disallow the site to be rendered within a frame (clickjacking protection)
                 X-Frame-Options "DENY"
+                # If using integrations that add frames to Element, such as Dimension and its integrations running on the same domain, it can be a good idea to limit sources allowed to be rendered
+                # Content-Security-Policy frame-src https://*.DOMAIN.tld
                 # X-Robots-Tag
                 X-Robots-Tag "noindex, noarchive, nofollow"
         }
@@ -144,6 +167,8 @@ element.DOMAIN.tld {
 #      # creates letsencrypt certificate
 #      # tls your@email.com
 #
+#      import cors https://*.DOMAIN.tld
+#
 #      header {
 #          # Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
 #          Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
@@ -151,8 +176,8 @@ element.DOMAIN.tld {
 #          X-XSS-Protection "1; mode=block"
 #          # Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
 #          X-Content-Type-Options "nosniff"
-#          # Disallow the site to be rendered within a frame (clickjacking protection)
-#          X-Frame-Options "DENY"
+#          # Only allow same base domain to render this website in a frame; Can be removed if the client (Element for example) is hosted on another domain (clickjacking protection)
+#          Content-Security-Policy frame-ancestors https://*.DOMAIN.tld
 #          # X-Robots-Tag
 #          X-Robots-Tag "noindex, noarchive, nofollow"
 #    }
@@ -176,6 +201,8 @@ element.DOMAIN.tld {
 #  creates letsencrypt certificate
 #  tls your@email.com
 #
+#  import cors https://*.DOMAIN.tld
+#
 #  header {
 #        # Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
 #        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
@@ -185,9 +212,9 @@ element.DOMAIN.tld {
 #
 #        # Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
 #        X-Content-Type-Options "nosniff"
-#
-#        # Disallow the site to be rendered within a frame (clickjacking protection)
-#        X-Frame-Options "SAMEORIGIN"
+
+#        # Only allow same base domain to render this website in a frame; Can be removed if the client (Element for example) is hosted on another domain
+#        Content-Security-Policy frame-ancestors https://*.DOMAIN.tld
 #
 #        # Disable some features
 #        Feature-Policy "accelerometer 'none';ambient-light-sensor 'none'; autoplay 'none';camera 'none';encrypted-media 'none';focus-without-user-activation 'none'; geolocation 'none';gyroscope #'none';magnetometer 'none';microphone 'none';midi 'none';payment 'none';picture-in-picture 'none'; speaker 'none';sync-xhr 'none';usb 'none';vr 'none'"
@@ -225,6 +252,14 @@ element.DOMAIN.tld {
 #            header_up Host {http.reverse_proxy.upstream.hostport}
 #        }
 #    }
+#    # If you have other well-knowns already handled by your base domain, you can replace the above block by this one, along with the replacement suggested in the matrix subdomain
+#      # handle /.well-known/* {
+#	#	encode zstd gzip
+#	#	header Cache-Control max-age=14400
+#	#	header Content-Type application/json
+#	#	header Access-Control-Allow-Origin *
+#	#}
+#
 #    # Configration for the base domain goes here
 #   # handle {
 #   #    header -Server

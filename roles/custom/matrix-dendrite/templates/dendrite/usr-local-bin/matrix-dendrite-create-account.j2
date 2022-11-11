@@ -1,0 +1,17 @@
+#jinja2: lstrip_blocks: "True"
+#!/bin/bash
+
+if [ $# -ne 3 ]; then
+	echo "Usage: "$0" <username> <password> <admin access: 0 or 1>"
+	exit 1
+fi
+
+user=$1
+password=$2
+admin=$3
+
+if [ "$admin" -eq "1" ]; then
+	docker exec matrix-dendrite create-account -config /data/dendrite.yaml -username "$user" -password "$password" -admin -url http://localhost:{{ matrix_dendrite_http_bind_port }}
+else
+	docker exec matrix-dendrite create-account -config /data/dendrite.yaml -username "$user" -password "$password" -url http://localhost:{{ matrix_dendrite_http_bind_port }}
+fi

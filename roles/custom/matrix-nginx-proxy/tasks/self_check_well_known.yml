@@ -1,0 +1,30 @@
+---
+
+- name: Determine well-known files to check (Matrix)
+  ansible.builtin.set_fact:
+    well_known_file_checks:
+      - path: /.well-known/matrix/client
+        purpose: Client Discovery
+        cors: true
+        follow_redirects: "{{ matrix_nginx_proxy_self_check_well_known_matrix_client_follow_redirects }}"
+        validate_certs: "{{ matrix_nginx_proxy_self_check_validate_certificates }}"
+
+- when: matrix_well_known_matrix_server_enabled | bool
+  block:
+    - ansible.builtin.set_fact:
+        well_known_file_check_matrix_server:
+          path: /.well-known/matrix/server
+          purpose: Server Discovery
+          cors: false
+          follow_redirects: safe
+          validate_certs: "{{ matrix_nginx_proxy_self_check_validate_certificates }}"
+
+    - name: Determine domains that we require certificates for (ma1sd)
+      ansible.builtin.set_fact:
+        well_known_file_checks: "{{ well_known_file_checks + [well_known_file_check_matrix_server] }}"
+
+- name: Perform well-known checks
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_well_known_file.yml"
+  with_items: "{{ well_known_file_checks }}"
+  loop_control:
+    loop_var: well_known_file_check

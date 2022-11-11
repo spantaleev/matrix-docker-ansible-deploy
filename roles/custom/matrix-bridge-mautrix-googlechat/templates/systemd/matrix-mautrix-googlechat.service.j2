@@ -1,0 +1,43 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Mautrix googlechat bridge
+{% for service in matrix_mautrix_googlechat_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_mautrix_googlechat_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+
+# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
+ExecStartPre={{ matrix_host_command_sleep }} 5
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-mautrix-googlechat \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_mautrix_googlechat_container_http_host_bind_port %}
+			-p {{ matrix_mautrix_googlechat_container_http_host_bind_port }}:8080 \
+			{% endif %}
+			-v {{ matrix_mautrix_googlechat_config_path }}:/config:z \
+			-v {{ matrix_mautrix_googlechat_data_path }}:/data:z \
+			{% for arg in matrix_mautrix_googlechat_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_mautrix_googlechat_docker_image }} \
+			python3 -m mautrix_googlechat -c /config/config.yaml --no-update
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-mautrix-googlechat 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-mautrix-googlechat 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-mautrix-googlechat
+
+[Install]
+WantedBy=multi-user.target

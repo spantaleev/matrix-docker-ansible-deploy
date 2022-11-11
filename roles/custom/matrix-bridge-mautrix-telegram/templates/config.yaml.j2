@@ -1,0 +1,412 @@
+#jinja2: lstrip_blocks: "True"
+# Homeserver details
+homeserver:
+    # The address that this appservice can use to connect to the homeserver.
+    address: {{ matrix_mautrix_telegram_homeserver_address }}
+    # The domain of the homeserver (for MXIDs, etc).
+    domain: {{ matrix_mautrix_telegram_homeserver_domain }}
+    # Whether or not to verify the SSL certificate of the homeserver.
+    # Only applies if address starts with https://
+    verify_ssl: true
+
+# Application service host/registration related details
+# Changing these values requires regeneration of the registration.
+appservice:
+    # The address that the homeserver can use to connect to this appservice.
+    address: {{ matrix_mautrix_telegram_appservice_address|to_json }}
+
+    # The hostname and port where this appservice should listen.
+    hostname: 0.0.0.0
+    port: 8080
+    # The maximum body size of appservice API requests (from the homeserver) in mebibytes
+    # Usually 1 is enough, but on high-traffic bridges you might need to increase this to avoid 413s
+    max_body_size: 1
+
+    # The full URI to the database. SQLite and Postgres are fully supported.
+    # Other DBMSes supported by SQLAlchemy may or may not work.
+    # Format examples:
+    #   SQLite:   sqlite:///filename.db
+    #   Postgres: postgres://username:password@hostname/dbname
+    database: {{ matrix_mautrix_telegram_appservice_database|to_json }}
+
+    # Public part of web server for out-of-Matrix interaction with the bridge.
+    # Used for things like login if the user wants to make sure the 2FA password isn't stored in
+    # the HS database.
+    public:
+        # Whether or not the public-facing endpoints should be enabled.
+        enabled: {{ matrix_mautrix_telegram_appservice_public_enabled|to_json }}
+        # The prefix to use in the public-facing endpoints.
+        prefix: {{ matrix_mautrix_telegram_public_endpoint|to_json }}
+        # The base URL where the public-facing endpoints are available. The prefix is not added
+        # implicitly.
+        external: {{ matrix_mautrix_telegram_appservice_public_external|to_json }}
+
+    # Provisioning API part of the web server for automated portal creation and fetching information.
+    # Used by things like Dimension (https://dimension.t2bot.io/).
+    provisioning:
+        # Whether or not the provisioning API should be enabled.
+        enabled: false
+        # The prefix to use in the provisioning API endpoints.
+        prefix: /_matrix/provision/v1
+        # The shared secret to authorize users of the API.
+        # Set to "generate" to generate and save a new token.
+        shared_secret: generate
+
+    # The unique ID of this appservice.
+    id: telegram
+    # Username of the appservice bot.
+    bot_username: {{ matrix_mautrix_telegram_appservice_bot_username|to_json }}
+    # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
+    # to leave display name/avatar as-is.
+    bot_displayname: Telegram bridge bot
+    bot_avatar: mxc://maunium.net/tJCRmUyJDsgRNgqhOgoiHWbX
+
+    # Authentication tokens for AS <-> HS communication.
+    as_token: {{ matrix_mautrix_telegram_appservice_token|to_json }}
+    hs_token: {{ matrix_mautrix_telegram_homeserver_token|to_json }}
+
+# Bridge config
+bridge:
+    # Localpart template of MXIDs for Telegram users.
+    # {userid} is replaced with the user ID of the Telegram user.
+    # Default: telegram_{userid}
+    username_template: {{ matrix_mautrix_telegram_username_template|to_json }}
+    # Localpart template of room aliases for Telegram portal rooms.
+    # {groupname} is replaced with the name part of the public channel/group invite link ( https://t.me/{} )
+    # Default: telegram_{groupname}
+    alias_template: {{ matrix_mautrix_telegram_alias_template|to_json }}
+    # Displayname template for Telegram users.
+    # {displayname} is replaced with the display name of the Telegram user.
+    # Default: {displayname} (Telegram)
+    displayname_template: {{ matrix_mautrix_telegram_displayname_template|to_json }}
+
+    # Set the preferred order of user identifiers which to use in the Matrix puppet display name.
+    # In the (hopefully unlikely) scenario that none of the given keys are found, the numeric user
+    # ID is used.
+    #
+    # If the bridge is working properly, a phone number or an username should always be known, but
+    # the other one can very well be empty.
+    #
+    # Valid keys:
+    #   "full name"          (First and/or last name)
+    #   "full name reversed" (Last and/or first name)
+    #   "first name"
+    #   "last name"
+    #   "username"
+    #   "phone number"
+    displayname_preference:
+    - full name
+    - username
+    - phone number
+    # Maximum length of displayname
+    displayname_max_length: 100
+
+    # Maximum number of members to sync per portal when starting up. Other members will be
+    # synced when they send messages. The maximum is 10000, after which the Telegram server
+    # will not send any more members.
+    # Defaults to no local limit (-> limited to 10000 by server)
+    max_initial_member_sync: 10
+    # Whether or not to sync the member list in channels.
+    # If no channel admins have logged into the bridge, the bridge won't be able to sync the member
+    # list regardless of this setting.
+    sync_channel_members: false
+    # Whether or not to skip deleted members when syncing members.
+    skip_deleted_members: true
+    # Whether or not to automatically synchronize contacts and chats of Matrix users logged into
+    # their Telegram account at startup.
+    startup_sync: true
+    # Number of most recently active dialogs to check when syncing chats.
+    # Dialogs include groups and private chats, but only groups are synced.
+    # Set to 0 to remove limit.
+    sync_dialog_limit: 30
+    # Whether or not to sync and create portals for direct chats at startup.
+    sync_direct_chats: false
+    # The maximum number of simultaneous Telegram deletions to handle.
+    # A large number of simultaneous redactions could put strain on your homeserver.
+    max_telegram_delete: 10
+    # Whether or not to automatically sync the Matrix room state (mostly unpuppeted displaynames)
+    # at startup and when creating a bridge.
+    sync_matrix_state: true
+    # Allow logging in within Matrix. If false, users can only log in using login-qr or the
+    # out-of-Matrix login website (see appservice.public config section)
+    allow_matrix_login: true
+    # Whether or not to bridge plaintext highlights.
+    # Only enable this if your displayname_template has some static part that the bridge can use to
+    # reliably identify what is a plaintext highlight.
+    plaintext_highlights: false
+    # Whether or not to make portals of publicly joinable channels/supergroups publicly joinable on Matrix.
+    public_portals: true
+    # Whether or not to use /sync to get presence, read receipts and typing notifications when using
+    # your own Matrix account as the Matrix puppet for your Telegram account.
+    sync_with_custom_puppets: true
+    # Shared secret for https://github.com/devture/matrix-synapse-shared-secret-auth
+    #
+    # If set, custom puppets will be enabled automatically for local users
+    # instead of users having to find an access token and run `login-matrix`
+    # manually.
+    login_shared_secret: {{ matrix_mautrix_telegram_login_shared_secret|to_json }}
+    # Set to false to disable link previews in messages sent to Telegram.
+    telegram_link_preview: true
+    # Use inline images instead of a separate message for the caption.
+    # N.B. Inline images are not supported on all clients (e.g. Element iOS).
+    inline_images: false
+    # Maximum size of image in megabytes before sending to Telegram as a document.
+    image_as_file_size: 10
+    # Maximum size of Telegram documents in megabytes to bridge.
+    max_document_size: 100
+    # Enable experimental parallel file transfer, which makes uploads/downloads much faster by
+    # streaming from/to Matrix and using many connections for Telegram.
+    # Note that generating HQ thumbnails for videos is not possible with streamed transfers.
+    parallel_file_transfer: false
+    # Whether or not created rooms should have federation enabled.
+    # If false, created portal rooms will never be federated.
+    federate_rooms: {{ matrix_mautrix_telegram_federate_rooms|to_json }}
+    # Settings for converting animated stickers.
+    animated_sticker:
+        # Format to which animated stickers should be converted.
+        # disable - No conversion, send as-is (gzipped lottie)
+        # png - converts to non-animated png (fastest),
+        # gif - converts to animated gif, but loses transparency
+        # webm - converts to webm video, requires ffmpeg executable with vp9 codec and webm container support
+        target: gif
+        # Arguments for converter. All converters take width and height.
+        # GIF converter takes background as a hex color.
+        args:
+            width: 256
+            height: 256
+            background: "020202"  # only for gif
+            fps: 30               # only for webm
+    # End-to-bridge encryption support options.
+    #
+    # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
+    encryption:
+        # Allow encryption, work in group chat rooms with e2ee enabled
+        allow: {{ matrix_mautrix_telegram_bridge_encryption_allow|to_json }}
+        # Default to encryption, force-enable encryption in all portals the bridge creates
+        # This will cause the bridge bot to be in private chats for the encryption to work properly.
+        default: {{ matrix_mautrix_telegram_bridge_encryption_default|to_json }}
+        # Database for the encryption data. If set to `default`, will use the appservice database.
+        database: default
+        # Options for automatic key sharing.
+        key_sharing:
+            # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
+            # You must use a client that supports requesting keys from other users to use this feature.
+            allow: {{ matrix_mautrix_telegram_bridge_encryption_key_sharing_allow|to_json }}
+            # Require the requesting device to have a valid cross-signing signature?
+            # This doesn't require that the bridge has verified the device, only that the user has verified it.
+            # Not yet implemented.
+            require_cross_signing: false
+            # Require devices to be verified by the bridge?
+            # Verification by the bridge is not yet implemented.
+            require_verification: true
+    # Whether or not to explicitly set the avatar and room name for private
+    # chat portal rooms. This will be implicitly enabled if encryption.default is true.
+    private_chat_portal_meta: false
+    # Whether or not the bridge should send a read receipt from the bridge bot when a message has
+    # been sent to Telegram.
+    delivery_receipts: false
+    # Whether or not delivery errors should be reported as messages in the Matrix room.
+    delivery_error_reports: true
+    # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
+    # This field will automatically be changed back to false after it,
+    # except if the config file is not writable.
+    resend_bridge_info: false
+
+    # Overrides for base power levels.
+    initial_power_level_overrides:
+        user: {}
+        group: {}
+
+    # Whether to bridge Telegram bot messages as m.notices or m.texts.
+    bot_messages_as_notices: true
+    bridge_notices:
+        # Whether or not Matrix bot messages (type m.notice) should be bridged.
+        default: false
+        # List of user IDs for whom the previous flag is flipped.
+        # e.g. if bridge_notices.default is false, notices from other users will not be bridged, but
+        #      notices from users listed here will be bridged.
+        exceptions: []
+
+    # The formats to use when sending messages to Telegram via the relay bot.
+    #
+    # Telegram doesn't have built-in emotes, so the m.emote format is also used for non-relaybot users.
+    #
+    # Available variables:
+    #   $sender_displayname    - The display name of the sender (e.g. Example User)
+    #   $sender_username       - The username (Matrix ID localpart) of the sender (e.g. exampleuser)
+    #   $sender_mxid           - The Matrix ID of the sender (e.g. @exampleuser:example.com)
+    #   $message               - The message content as HTML
+    message_formats:
+        m.text: "<b>$sender_displayname</b>: $message"
+        m.notice: "<b>$sender_displayname</b>: $message"
+        m.emote: "* <b>$sender_displayname</b> $message"
+        m.file: "<b>$sender_displayname</b> sent a file: $message"
+        m.image: "<b>$sender_displayname</b> sent an image: $message"
+        m.audio: "<b>$sender_displayname</b> sent an audio file: $message"
+        m.video: "<b>$sender_displayname</b> sent a video: $message"
+        m.location: "<b>$sender_displayname</b> sent a location: $message"
+    # Telegram doesn't have built-in emotes, this field specifies how m.emote's from authenticated
+    # users are sent to telegram. All fields in message_formats are supported. Additionally, the
+    # Telegram user info is available in the following variables:
+    #    $displayname - Telegram displayname
+    #    $username    - Telegram username (may not exist)
+    #    $mention     - Telegram @username or displayname mention (depending on which exists)
+    emote_format: "* $mention $formatted_body"
+
+    # The formats to use when sending state events to Telegram via the relay bot.
+    #
+    # Variables from `message_formats` that have the `sender_` prefix are available without the prefix.
+    # In name_change events, `$prev_displayname` is the previous displayname.
+    #
+    # Set format to an empty string to disable the messages for that event.
+    state_event_formats:
+        join: "<b>$displayname</b> joined the room."
+        leave: "<b>$displayname</b> left the room."
+        name_change: "<b>$prev_displayname</b> changed their name to <b>$displayname</b>"
+
+    # Filter rooms that can/can't be bridged. Can also be managed using the `filter` and
+    # `filter-mode` management commands.
+    #
+    # Filters do not affect direct chats.
+    # An empty blacklist will essentially disable the filter.
+    filter:
+        # Filter mode to use. Either "blacklist" or "whitelist".
+        # If the mode is "blacklist", the listed chats will never be bridged.
+        # If the mode is "whitelist", only the listed chats can be bridged.
+        mode: {{ matrix_mautrix_telegram_filter_mode | to_json }}
+        # The list of group/channel IDs to filter.
+        list: []
+
+    # The prefix for commands. Only required in non-management rooms.
+    command_prefix: {{ matrix_mautrix_telegram_command_prefix | to_json }}
+
+    # Permissions for using the bridge.
+    # Permitted values:
+    #   relaybot - Only use the bridge via the relaybot, no access to commands.
+    #       user - Relaybot level + access to commands to create bridges.
+    #  puppeting - User level + logging in with a Telegram account.
+    #       full - Full access to use the bridge, i.e. previous levels + Matrix login.
+    #      admin - Full access to use the bridge and some extra administration commands.
+    # Permitted keys:
+    #        * - All Matrix users
+    #   domain - All users on that homeserver
+    #     mxid - Specific user
+    permissions: {{ matrix_mautrix_telegram_bridge_permissions | to_json }}
+
+    # Options related to the message relay Telegram bot.
+    relaybot:
+        private_chat:
+            # List of users to invite to the portal when someone starts a private chat with the bot.
+            # If empty, private chats with the bot won't create a portal.
+            invite: []
+            # Whether or not to bridge state change messages in relaybot private chats.
+            state_changes: true
+            # When private_chat_invite is empty, this message is sent to users /starting the
+            # relaybot. Telegram's "markdown" is supported.
+            message: This is a Matrix bridge relaybot and does not support direct chats
+        # List of users to invite to all group chat portals created by the bridge.
+        group_chat_invite: []
+        # Whether or not the relaybot should not bridge events in unbridged group chats.
+        # If false, portals will be created when the relaybot receives messages, just like normal
+        # users. This behavior is usually not desirable, as it interferes with manually bridging
+        # the chat to another room.
+        ignore_unbridged_group_chat: true
+        # Whether or not to allow creating portals from Telegram.
+        authless_portals: true
+        # Whether or not to allow Telegram group admins to use the bot commands.
+        whitelist_group_admins: true
+        # Whether or not to ignore incoming events sent by the relay bot.
+        ignore_own_incoming_events: true
+        # List of usernames/user IDs who are also allowed to use the bot commands.
+        whitelist: []
+
+# Telegram config
+telegram:
+    # Get your own API keys at https://my.telegram.org/apps
+    api_id: {{ matrix_mautrix_telegram_api_id|to_json }}
+    api_hash: {{ matrix_mautrix_telegram_api_hash|to_json }}
+    # (Optional) Create your own bot at https://t.me/BotFather
+    bot_token: {{ matrix_mautrix_telegram_bot_token|to_json }}
+
+    # Telethon connection options.
+    connection:
+        # The timeout in seconds to be used when connecting.
+        timeout: 120
+        # How many times the reconnection should retry, either on the initial connection or when
+        # Telegram disconnects us. May be set to a negative or null value for infinite retries, but
+        # this is not recommended, since the program can get stuck in an infinite loop.
+        retries: 5
+        # The delay in seconds to sleep between automatic reconnections.
+        retry_delay: 1
+        # The threshold below which the library should automatically sleep on flood wait errors
+        # (inclusive). For instance, if a FloodWaitError for 17s occurs and flood_sleep_threshold
+        # is 20s, the library will sleep automatically. If the error was for 21s, it would raise
+        # the error instead. Values larger than a day (86400) will be changed to a day.
+        flood_sleep_threshold: 60
+        # How many times a request should be retried. Request are retried when Telegram is having
+        # internal issues, when there is a FloodWaitError less than flood_sleep_threshold, or when
+        # there's a migrate error. May take a negative or null value for infinite retries, but this
+        # is not recommended, since some requests can always trigger a call fail (such as searching
+        # for messages).
+        request_retries: 5
+
+    # Device info sent to Telegram.
+    device_info:
+        # "auto" = OS name+version.
+        device_model: auto
+        # "auto" = Telethon version.
+        system_version: auto
+        # "auto" = mautrix-telegram version.
+        app_version: auto
+        lang_code: en
+        system_lang_code: en
+
+    # Custom server to connect to.
+    server:
+        # Set to true to use these server settings. If false, will automatically
+        # use production server assigned by Telegram. Set to false in production.
+        enabled: false
+        # The DC ID to connect to.
+        dc: 2
+        # The IP to connect to.
+        ip: 149.154.167.40
+        # The port to connect to. 443 may not work, 80 is better and both are equally secure.
+        port: 80
+
+    # Telethon proxy configuration.
+    # You must install PySocks from pip for proxies to work.
+    proxy:
+        # Allowed types: disabled, socks4, socks5, http
+        type: disabled
+        # Proxy IP address and port.
+        address: 127.0.0.1
+        port: 1080
+        # Whether or not to perform DNS resolving remotely.
+        rdns: true
+        # Proxy authentication (optional).
+        username: ""
+        password: ""
+
+# Python logging configuration.
+#
+# See section 16.7.2 of the Python documentation for more info:
+# https://docs.python.org/3.6/library/logging.config.html#configuration-dictionary-schema
+logging:
+    version: 1
+    formatters:
+        precise:
+            format: "[%(asctime)s] [%(levelname)s@%(name)s] %(message)s"
+    handlers:
+        console:
+            class: logging.StreamHandler
+            formatter: precise
+    loggers:
+        mau:
+            level: {{ matrix_mautrix_telegram_logging_level|to_json }}
+        telethon:
+            level: {{ matrix_mautrix_telegram_logging_level|to_json }}
+        aiohttp:
+            level: {{ matrix_mautrix_telegram_logging_level|to_json }}
+    root:
+        level: {{ matrix_mautrix_telegram_logging_level|to_json }}
+        handlers: [console]

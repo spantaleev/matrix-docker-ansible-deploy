@@ -1,7 +1,7 @@
 # Setting up MX Puppet GroupMe (optional)
 
 The playbook can install and configure
-[mx-puppet-groupme](https://gitlab.com/robintown/mx-puppet-groupme) for you.
+[mx-puppet-groupme](https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme) for you.
 
 See the project page to learn what it does and why it might be useful to you.
 

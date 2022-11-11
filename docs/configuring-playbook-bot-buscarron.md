@@ -5,20 +5,6 @@ The playbook can install and configure [buscarron](https://gitlab.com/etke.cc/bu
 It's a bot you can use to setup **your own helpdesk on matrix**
 It's a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) matrix room
 
-## Registering the bot user
-
-By default, the playbook will set up the bot with a username like this: `@bot.buscarron:DOMAIN`.
-
-(to use a different username, adjust the `matrix_bot_buscarron_login` variable).
-
-You **need to register the bot user manually** before setting up the bot. You can use the playbook to [register a new user](registering-users.md):
-
-```
-ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.buscarron password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
-```
-
-Choose a strong password for the bot. You can generate a good password with a command like this: `pwgen -s 64 1`.
-
 
 ## Adjusting the playbook configuration
 
@@ -27,7 +13,10 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 ```yaml
 matrix_bot_buscarron_enabled: true
 
-# Adjust this to whatever password you chose when registering the bot user
+# Uncomment and adjust this part if you'd like to use a username different than the default
+# matrix_bot_buscarron_login: bot.buscarron
+
+# Generate a strong password here. Consider generating it with `pwgen -s 64 1`
 matrix_bot_buscarron_password: PASSWORD_FOR_THE_BOT
 
 # Adjust accepted forms
@@ -36,10 +25,10 @@ matrix_bot_buscarron_forms:
     room: "!yourRoomID:DOMAIN" # (mandatory) Room ID where form submission will be posted
     redirect: https://DOMAIN # (mandatory) To what page user will be redirected after the form submission
     ratelimit: 1r/m # (optional) rate limit of the form, format: <max requests>r/<interval:s,m>, eg: 1r/s or 54r/m
+    hasemail: 1 # (optional) form has "email" field that should be validated
     extensions: [] # (optional) list of form extensions (not used yet)
 
-matrix_bot_buscarron_spam_hosts: [] # (optional) list of email domains/hosts that should be rejected automatically
-matrix_bot_buscarron_spam_emails: [] # (optional) list of email addresses that should be rejected automatically
+matrix_bot_buscarron_spamlist: [] # (optional) list of emails/domains/hosts (with wildcards support) that should be rejected automatically
 ```
 
 You will also need to add a DNS record so that buscarron can be accessed.
@@ -57,9 +46,15 @@ matrix_server_fqn_buscarron: "form.{{ matrix_domain }}"
 
 After configuring the playbook, run the [installation](installing.md) command again:
 
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
 ```
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
-```
+
+**Notes**:
+
+- the `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account
+
+- if you change the bot password (`matrix_bot_buscarron_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_buscarron_password` to let the bot know its new password
 
 
 ## Usage

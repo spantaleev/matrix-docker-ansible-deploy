@@ -1,0 +1,29 @@
+[server]
+root_url = "https://{{ matrix_server_fqn_grafana }}"
+
+[security]
+# default admin user, created on startup
+admin_user = "{{ matrix_grafana_default_admin_user }}"
+
+# default admin password, can be changed before first start of grafana, or in profile settings
+admin_password = """{{ matrix_grafana_default_admin_password }}"""
+
+# specify content_security_policy to add the Content-Security-Policy header to your requests
+content_security_policy = "{{ matrix_grafana_content_security_policy }}"
+
+# specify content security policy template to customized template
+{% if matrix_grafana_content_security_policy_customized %}
+content_security_policy_template = """{{ matrix_grafana_content_security_policy_template }}"""
+{% endif %}
+
+allow_embedding = {{ matrix_grafana_allow_embedding }}
+
+[auth.anonymous]
+# enable anonymous access
+enabled = {{ matrix_grafana_anonymous_access }}
+
+# specify organization name that should be used for unauthenticated users
+org_name = "{{ matrix_grafana_anonymous_access_org_name }}"
+
+[dashboards]
+default_home_dashboard_path = {{ matrix_grafana_default_home_dashboard_path }}

@@ -22,7 +22,7 @@ matrix_dimension_enabled: true
 
 ## Define admin users
 
-These users can modify the integrations this Dimension supports. 
+These users can modify the integrations this Dimension supports.
 Add this to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
@@ -39,27 +39,7 @@ We recommend that you create a dedicated Matrix user for Dimension (`dimension` 
 Follow our [Registering users](registering-users.md) guide to learn how to register **a regular (non-admin) user**.
 
 You are required to specify an access token (belonging to this new user) for Dimension to work.
-To get an access token for the Dimension user, you can follow one of two options:
-
-*Through an interactive login*:
-
-1. In a private browsing session (incognito window), open Element.
-1. Log in with the `dimension` user and its password.
-1. Set the display name and avatar, if required.
-1. In the settings page choose "Help & About", scroll down to the bottom and expand the `Access Token` section.
-1. Copy the access token to your configuration.
-1. Close the private browsing session. **Do not log out**. Logging out will invalidate the token, making it not work.
-
-*With CURL*
-
-```
-curl -X POST --header 'Content-Type: application/json' -d '{
-    "identifier": { "type": "m.id.user", "user": "YourDimensionUsername" },
-    "password": "YourDimensionPassword",
-    "type": "m.login.password"
-}' 'https://matrix.YOURDOMAIN/_matrix/client/r0/login'
-```
-*Change `YourDimensionUsername`, `YourDimensionPassword`, and `YOURDOMAIN` accordingly.*
+To get an access token for the Dimension user, you can follow the documentation on [how to do obtain an access token](obtaining-access-tokens.md).
 
 **Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.**
 
@@ -93,6 +73,6 @@ In the interim until the above limitation is resolved, an admin user needs to co
 ## Additional features
 
 To use a more custom configuration, you can define a `matrix_dimension_configuration_extension_yaml` string variable and put your configuration in it.
-To learn more about how to do this, refer to the information about `matrix_dimension_configuration_extension_yaml` in the [default variables file](../roles/matrix-dimension/defaults/main.yml) of the Dimension component.
+To learn more about how to do this, refer to the information about `matrix_dimension_configuration_extension_yaml` in the [default variables file](../roles/custom/matrix-dimension/defaults/main.yml) of the Dimension component.
 
 You can find all configuration options on [GitHub page of Dimension project](https://github.com/turt2live/matrix-dimension/blob/master/config/default.yaml).

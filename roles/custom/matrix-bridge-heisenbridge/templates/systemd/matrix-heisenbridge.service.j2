@@ -1,0 +1,51 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=a bouncer-style Matrix IRC bridge
+{% for service in matrix_heisenbridge_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_heisenbridge_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} kill matrix-heisenbridge
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} rm matrix-heisenbridge
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-heisenbridge \
+          --log-driver=none \
+          --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+          --cap-drop=ALL \
+          --network={{ matrix_docker_network }} \
+          {% if matrix_heisenbridge_identd_enabled %}
+          -p 113:13113 \
+          {% endif %}
+          -v {{ matrix_heisenbridge_base_path }}:/config:z \
+          {% for arg in matrix_heisenbridge_container_extra_arguments %}
+          {{ arg }} \
+          {% endfor %}
+          {{ matrix_heisenbridge_docker_image }} \
+          {% if matrix_heisenbridge_identd_enabled %}
+          --identd \
+          --identd-port 13113 \
+          {% endif %}
+          {% if matrix_heisenbridge_owner %}
+          -o {{ matrix_heisenbridge_owner }} \
+          {% endif %}
+          --config /config/registration.yaml \
+          --listen-address 0.0.0.0 \
+          --listen-port 9898 \
+          {{ matrix_heisenbridge_homeserver_url }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} kill matrix-heisenbridge
+ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} rm matrix-heisenbridge
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-heisenbridge
+
+[Install]
+WantedBy=multi-user.target

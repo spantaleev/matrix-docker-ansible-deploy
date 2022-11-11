@@ -1,0 +1,43 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix jitsi-jvb server
+{% for service in matrix_jitsi_jvb_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-jitsi-jvb 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-jitsi-jvb 2>/dev/null || true'
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-jitsi-jvb \
+			--log-driver=none \
+			--network={{ matrix_docker_network }} \
+			--network-alias=jvb.meet.jitsi \
+			--env-file={{ matrix_jitsi_jvb_base_path }}/env \
+			{% if matrix_jitsi_jvb_container_rtp_udp_host_bind_port %}
+			-p {{ matrix_jitsi_jvb_container_rtp_udp_host_bind_port }}:{{ matrix_jitsi_jvb_rtp_udp_port }}/udp \
+			{% endif %}
+			{% if matrix_jitsi_jvb_container_rtp_tcp_host_bind_port %}
+			-p {{ matrix_jitsi_jvb_container_rtp_tcp_host_bind_port }}:{{ matrix_jitsi_jvb_rtp_tcp_port }} \
+			{% endif %}
+			{% if matrix_jitsi_jvb_container_colibri_ws_host_bind_port %}
+			-p {{ matrix_jitsi_jvb_container_colibri_ws_host_bind_port }}:9090 \
+			{% endif %}
+			--mount type=bind,src={{ matrix_jitsi_jvb_config_path }},dst=/config \
+			{% for arg in matrix_jitsi_jvb_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_jitsi_jvb_docker_image }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-jitsi-jvb 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-jitsi-jvb 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-jitsi-jvb
+
+[Install]
+WantedBy=multi-user.target

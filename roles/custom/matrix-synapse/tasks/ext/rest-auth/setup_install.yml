@@ -1,0 +1,36 @@
+---
+
+- name: Fail if REST Auth endpoint not configured
+  ansible.builtin.fail:
+    msg: "You have enabled the REST Auth password provider, but have not configured its endpoint in the `matrix_synapse_ext_password_provider_rest_auth_endpoint` variable. Consult the documentation."
+  when: "matrix_synapse_ext_password_provider_rest_auth_endpoint == ''"
+
+- name: Download matrix-synapse-rest-auth
+  ansible.builtin.get_url:
+    url: "{{ matrix_synapse_ext_password_provider_rest_auth_download_url }}"
+    dest: "{{ matrix_synapse_ext_path }}/rest_auth_provider.py"
+    force: true
+    mode: 0440
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  register: result
+  retries: "{{ devture_playbook_help_geturl_retries_count }}"
+  delay: "{{ devture_playbook_help_geturl_retries_delay }}"
+  until: result is not failed
+
+- ansible.builtin.set_fact:
+    matrix_synapse_password_providers_enabled: true
+
+    matrix_synapse_container_extra_arguments: >
+      {{
+        matrix_synapse_container_extra_arguments | default([])
+        +
+        ["--mount type=bind,src={{ matrix_synapse_ext_path }}/rest_auth_provider.py,dst={{ matrix_synapse_in_container_python_packages_path }}/rest_auth_provider.py,ro"]
+      }}
+
+    matrix_synapse_additional_loggers: >
+      {{
+        matrix_synapse_additional_loggers
+        +
+        [{'name': 'rest_auth_provider', 'level': 'INFO'}]
+      }}

@@ -1,0 +1,119 @@
+#jinja2: lstrip_blocks: "True"
+bridge:
+  # Domain part of the bridge, e.g. matrix.org
+  domain: {{ matrix_appservice_discord_bridge_domain|to_json }}
+  # This should be your publically facing URL because Discord may use it to
+  # fetch media from the media store.
+  homeserverUrl: {{ matrix_appservice_discord_bridge_homeserverUrl|to_json }}
+  # Interval at which to process users in the 'presence queue'. If you have
+  # 5 users, one user will be processed every 500 milliseconds according to the
+  # value below. This has a minimum value of 250.
+  # WARNING: This has a high chance of spamming the homeserver with presence
+  # updates since it will send one each time somebody changes state or is online.
+  presenceInterval: 500
+  # Disable setting presence for 'ghost users' which means Discord users on Matrix
+  # will not be shown as away or online.
+  disablePresence: {{ matrix_appservice_discord_bridge_disablePresence|to_json }}
+  # Disable sending typing notifications when somebody on Discord types.
+  disableTypingNotifications: false
+  # Disable deleting messages on Discord if a message is redacted on Matrix.
+  disableDeletionForwarding: false
+  # Disable portal bridging, where Matrix users can search for unbridged Discord
+  # rooms on their Matrix server.
+  disablePortalBridging: {{ matrix_appservice_discord_bridge_disablePortalBridging|to_json }}
+  # Enable users to bridge rooms using !discord commands. See
+  # https://t2bot.io/discord for instructions.
+  enableSelfServiceBridging: {{ matrix_appservice_discord_bridge_enableSelfServiceBridging|to_json }}
+  # Disable sending of read receipts for Matrix events which have been
+  # successfully bridged to Discord.
+  disableReadReceipts: false
+  # Disable Join Leave echos from matrix
+  disableJoinLeaveNotifications: false
+  # Disable Invite echos from matrix
+  disableInviteNotifications: false
+  # Disable Room Topic echos from matrix
+  disableRoomTopicNotifications: false
+  # Auto-determine the language of code blocks (this can be CPU-intensive)
+  determineCodeLanguage: false
+  # MXID of an admin user that will be PMd if the bridge experiences problems. Optional
+  adminMxid: {{ matrix_admin | to_json }}
+  # The message to send to the bridge admin if the Discord token is not valid
+  invalidTokenMessage: 'Your Discord bot token seems to be invalid, and the bridge cannot function. Please update it in your bridge settings and restart the bridge'
+# Authentication configuration for the discord bot.
+auth:
+  clientID: {{ matrix_appservice_discord_client_id | string|to_json }}
+  botToken: {{ matrix_appservice_discord_bot_token|to_json }}
+  # You must enable "Privileged Gateway Intents" in your bot settings on discord.com (e.g. https://discord.com/developers/applications/12345/bot)
+  # for this to work
+  usePrivilegedIntents: {{ matrix_appservice_discord_auth_usePrivilegedIntents|to_json }}
+logging:
+  # What level should the logger output to the console at.
+  console: "warn" #silly, verbose, info, http, warn, error, silent
+  lineDateFormat: "MMM-D HH:mm:ss.SSS" # This is in moment.js format
+  # files:
+  #   - file: "debug.log"
+  #     disable:
+  #       - "PresenceHandler" # Will not capture presence logging
+  #   - file: "warn.log" # Will capture warnings
+  #     level: "warn"
+  #   - file: "botlogs.log" # Will capture logs from DiscordBot
+  #     level: "info"
+  #     enable:
+  #       - "DiscordBot"
+database:
+  # You may either use SQLite or Postgresql for the bridge database, which contains
+  # important mappings for events and user puppeting configurations.
+  # Use the filename option for SQLite, or connString for Postgresql.
+  # If you are migrating, see https://github.com/Half-Shot/matrix-appservice-discord/blob/master/docs/howto.md#migrate-to-postgres-from-sqlite
+  # WARNING: You will almost certainly be fine with sqlite unless your bridge
+  # is in heavy demand and you suffer from IO slowness.
+  {% if matrix_appservice_discord_database_engine == 'sqlite' %}
+  filename: {{ matrix_appservice_discord_database_filename|to_json }}
+  {% else %}
+  connString: {{ matrix_appservice_discord_database_connString|to_json }}
+  {% endif %}
+room:
+  # Set the default visibility of alias rooms, defaults to "public".
+  # One of: "public", "private"
+  defaultVisibility: "public"
+channel:
+    # Pattern of the name given to bridged rooms.
+    # Can use :guild for the guild name and :name for the channel name.
+    namePattern: "[Discord] :guild :name"
+    # Changes made to rooms when a channel is deleted.
+    deleteOptions:
+       # Prefix the room name with a string.
+       #namePrefix: "[Deleted]"
+       # Prefix the room topic with a string.
+       #topicPrefix: "This room has been deleted"
+       # Disable people from talking in the room by raising the event PL to 50
+       disableMessaging: false
+       # Remove the discord alias from the room.
+       unsetRoomAlias: true
+       # Remove the room from the directory.
+       unlistFromDirectory: true
+       # Set the room to be unavailable for joining without an invite.
+       setInviteOnly: true
+       # Make all the discord users leave the room.
+       ghostsLeave: true
+limits:
+    # Delay in milliseconds between discord users joining a room.
+    roomGhostJoinDelay: 6000
+    # Lock timeout in milliseconds before sending messages to discord to avoid
+    # echos. Default is rather high as the lock will most likely time out
+    # before anyways.
+    # echos = (Copies of a sent message may arrive from discord before we've
+    # fininished handling it, causing us to echo it back to the room)
+    discordSendDelay: 1500
+    # Set a maximum of rooms to be bridged.
+    # roomCount: 20
+ghosts:
+    # Pattern for the ghosts nick, available is :nick, :username, :tag and :id
+    nickPattern: ":nick"
+    # Pattern for the ghosts username, available is :username, :tag and :id
+    usernamePattern: ":username#:tag"
+# Prometheus-compatible metrics endpoint
+metrics:
+    enable: false
+    port: 9001
+    host: "127.0.0.1"

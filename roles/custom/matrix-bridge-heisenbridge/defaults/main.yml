@@ -1,0 +1,48 @@
+---
+# heisenbridge is a bouncer-style Matrix IRC bridge
+# Project source code URL: https://github.com/hifi/heisenbridge
+
+matrix_heisenbridge_enabled: true
+
+matrix_heisenbridge_version: 1.14.0
+matrix_heisenbridge_docker_image: "{{ matrix_container_global_registry_prefix }}hif1/heisenbridge:{{ matrix_heisenbridge_version }}"
+matrix_heisenbridge_docker_image_force_pull: "{{ matrix_heisenbridge_docker_image.endswith(':latest') }}"
+
+# Set this to your Matrix ID if you want to enforce the owner, otherwise first _local_ user becomes one
+matrix_heisenbridge_owner: ""
+
+# Enabling identd will bind to host port 113/TCP
+matrix_heisenbridge_identd_enabled: false
+
+matrix_heisenbridge_base_path: "{{ matrix_base_data_path }}/heisenbridge"
+
+# A list of extra arguments to pass to the container
+matrix_heisenbridge_container_extra_arguments: []
+
+# List of systemd services that service depends on.
+matrix_heisenbridge_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that service wants
+matrix_heisenbridge_systemd_wanted_services_list: []
+
+matrix_heisenbridge_homeserver_url: "{{ matrix_homeserver_container_url }}"
+
+matrix_heisenbridge_appservice_token: ''
+matrix_heisenbridge_homeserver_token: ''
+
+# Default registration file
+matrix_heisenbridge_registration_yaml:
+  id: heisenbridge
+  url: http://matrix-heisenbridge:9898
+  as_token: "{{ matrix_heisenbridge_appservice_token }}"
+  hs_token: "{{ matrix_heisenbridge_homeserver_token }}"
+  rate_limited: false
+  sender_localpart: heisenbridge
+  namespaces:
+    users:
+      - regex: '@hbirc_.*'
+        exclusive: true
+    aliases: []
+    rooms: []
+
+matrix_heisenbridge_registration: "{{ matrix_heisenbridge_registration_yaml | from_yaml }}"

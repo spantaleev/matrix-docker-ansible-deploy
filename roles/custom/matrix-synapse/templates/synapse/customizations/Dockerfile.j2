@@ -1,0 +1,7 @@
+FROM {{ matrix_synapse_docker_image }}
+
+{% if matrix_synapse_container_image_customizations_s3_storage_provider_installation_enabled %}
+RUN pip install synapse-s3-storage-provider=={{ matrix_synapse_ext_synapse_s3_storage_provider_version }}
+{% endif %}
+
+{{ matrix_synapse_container_image_customizations_dockerfile_body_custom }}

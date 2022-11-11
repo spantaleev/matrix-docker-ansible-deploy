@@ -18,6 +18,7 @@ You can then follow these steps inside the playbook directory:
 
 1. edit the inventory hosts file (`inventory/hosts`) to your liking
 
+1. (optional, advanced) to run Ansible against multiple servers with different `sudo` credentials, you can copy the sample inventory hosts yaml file for each of your hosts: (`cp examples/host.yml inventory/my_host1.yml` …) and use the [`ansible-all-hosts.sh`](../inventory/scripts/ansible-all-hosts.sh) script [in the installation step](installing.md).
 
 For a basic Matrix installation, that's all you need.
 For a more custom setup, see the [Other configuration options](#other-configuration-options) below.
@@ -33,13 +34,18 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md) (optional)
 
+- [Setting up Etherpad](configuring-playbook-etherpad.md) (optional)
+
 - [Setting up Dynamic DNS](configuring-playbook-dynamic-dns.md) (optional)
 
 - [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md) (optional)
 
 ### Core service adjustments
 
-- [Configuring Synapse](configuring-playbook-synapse.md) (optional)
+- Homeserver configuration:
+  - [Configuring Synapse](configuring-playbook-synapse.md), if you're going with the default/recommended homeserver implementation (optional)
+
+  - [Configuring Conduit](configuring-playbook-conduit.md), if you've switched to the [Conduit](https://conduit.rs) homeserver implementation (optional)
 
 - [Configuring Element](configuring-playbook-client-element.md) (optional)
 
@@ -51,7 +57,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Serving your base domain using this playbook's nginx server](configuring-playbook-base-domain-serving.md) (optional)
 
-- [Configure Nginx (optional, advanced)](configuring-playbook-nginx.md) (optional, advanced)
+- [Configure Nginx](configuring-playbook-nginx.md) (optional, advanced)
 
 - [Using your own webserver, instead of this playbook's nginx proxy](configuring-playbook-own-webserver.md) (optional, advanced)
 
@@ -85,12 +91,16 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up the LDAP password provider module](configuring-playbook-ldap-auth.md) (optional, advanced)
 
+- [Setting up the ldap-registration-proxy](configuring-playbook-matrix-ldap-registration-proxy.md) (optional, advanced)
+
 - [Setting up Synapse Simple Antispam](configuring-playbook-synapse-simple-antispam.md) (optional, advanced)
 
 - [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (optional, advanced)
 
 
 ### Bridging other networks
+
+- [Setting up Mautrix Discord bridging](configuring-playbook-bridge-mautrix-discord.md) (optional)
 
 - [Setting up Mautrix Telegram bridging](configuring-playbook-bridge-mautrix-telegram.md) (optional)
 
@@ -110,13 +120,15 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Appservice IRC bridging](configuring-playbook-bridge-appservice-irc.md) (optional)
 
-- [Setting up Beeper LinkedIn bridging](configuring-playbook-bridge-beeper-linkedin.md) (optional)
-
 - [Setting up Appservice Discord bridging](configuring-playbook-bridge-appservice-discord.md) (optional)
 
 - [Setting up Appservice Slack bridging](configuring-playbook-bridge-appservice-slack.md) (optional)
 
 - [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (optional)
+
+- [Setting up Appservice Kakaotalk bridging](configuring-playbook-bridge-appservice-kakaotalk.md) (optional)
+
+- [Setting up Beeper LinkedIn bridging](configuring-playbook-bridge-beeper-linkedin.md) (optional)
 
 - [Setting up matrix-hookshot](configuring-playbook-bridge-hookshot.md) - a bridge between Matrix and multiple project management services, such as [GitHub](https://github.com), [GitLab](https://about.gitlab.com) and [JIRA](https://www.atlassian.com/software/jira). (optional)
 
@@ -138,6 +150,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (optional)
 
+- [Setting up Postmoogle email bridging](configuring-playbook-bot-postmoogle.md) (optional)
+
 - [Setting up Matrix SMS bridging](configuring-playbook-bridge-matrix-bridge-sms.md) (optional)
 
 - [Setting up Heisenbridge bouncer-style IRC bridging](configuring-playbook-bridge-heisenbridge.md) (optional)
@@ -148,6 +162,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) - a bot to remind you about stuff (optional)
 
 - [Setting up matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md) - a bot to create and manage registration tokens to invite users (optional)
+
+- [Setting up maubot](configuring-playbook-bot-maubot.md) - a plugin-based Matrix bot system (optional)
 
 - [Setting up honoroit](configuring-playbook-bot-honoroit.md) - a helpdesk bot (optional)
 
@@ -170,3 +186,5 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up the Sygnal push gateway](configuring-playbook-sygnal.md) (optional)
 
 - [Setting up the ntfy push notifications server](configuring-playbook-ntfy.md) (optional)
+
+- [Setting up a Cactus Comments server](configuring-playbook-cactus-comments.md) - a federated comment system built on Matrix (optional)

@@ -1,0 +1,22 @@
+---
+
+- name: Ensure Synapse user registered - {{ user.username | quote }}
+  ansible.builtin.command:
+    cmd: |-
+      {{ devture_systemd_docker_base_host_command_docker }} exec matrix-synapse
+      register_new_matrix_user
+      -u  {{ user.username | quote }}
+      -p {{ user.initial_password | quote }}
+      -c /data/homeserver.yaml
+      {% if user.initial_type == 'admin' %}
+        --admin
+      {% else %}
+        --no-admin
+        {% if user.initial_type != 'user' %}
+          --user_type={{ user.initial_type | quote }}
+        {% endif %}
+      {% endif %}
+      http://localhost:{{ matrix_synapse_container_client_api_port }}
+  register: matrix_synapse_register_user_result
+  changed_when: matrix_synapse_register_user_result.rc == 0 and 'User ID already taken' not in matrix_synapse_register_user_result.stdout
+  failed_when: matrix_synapse_register_user_result.rc != 0 and 'User ID already taken' not in matrix_synapse_register_user_result.stdout

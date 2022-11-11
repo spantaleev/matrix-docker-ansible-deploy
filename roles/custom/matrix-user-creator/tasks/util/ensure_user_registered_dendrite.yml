@@ -1,0 +1,17 @@
+---
+
+- name: Ensure Dendrite user registered - {{ user.username | quote }}
+  ansible.builtin.command:
+    cmd: |-
+      {{ devture_systemd_docker_base_host_command_docker }} exec matrix-dendrite
+      create-account
+      -config /data/dendrite.yaml
+      -username {{ user.username | quote }}
+      -password {{ user.initial_password | quote }}
+      {% if user.initial_type == 'admin' %}
+        -admin
+      {% endif %}
+      -url http://localhost:{{ matrix_dendrite_http_bind_port }}
+  register: matrix_dendrite_register_user_result
+  changed_when: matrix_dendrite_register_user_result.rc == 0 and 'Desired user ID is already taken' not in matrix_dendrite_register_user_result.stderr
+  failed_when: matrix_dendrite_register_user_result.rc != 0 and 'Desired user ID is already taken' not in matrix_dendrite_register_user_result.stderr
