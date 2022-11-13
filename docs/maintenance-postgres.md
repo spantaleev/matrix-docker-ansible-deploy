@@ -80,6 +80,10 @@ This playbook can upgrade your existing Postgres setup with the following comman
 
 	ansible-playbook -i inventory/hosts setup.yml --tags=upgrade-postgres
 
+**Warning: If you're using Borg Backup keep in mind that there is no official Postgres 15 support yet.**
+As long as Alpine Linux is missing packages for postgres15, it is possible to use the `latest` or `14` image of borgmatic. Edit your `vars.yml` and add:
+`matrix_backup_borg_version: "latest"`
+
 **The old Postgres data directory is backed up** automatically, by renaming it to `/matrix/postgres/data-auto-upgrade-backup`.
 To rename to a different path, pass some extra flags to the command above, like this: `--extra-vars="postgres_auto_upgrade_backup_data_path=/another/disk/matrix-postgres-before-upgrade"`
 
