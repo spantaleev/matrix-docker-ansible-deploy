@@ -1,0 +1,34 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Email2Matrix
+After=docker.service
+Requires=docker.service
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-email2matrix 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-email2matrix 2>/dev/null || true'
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-email2matrix \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--network={{ matrix_docker_network }} \
+			-p {{ matrix_email2matrix_smtp_host_bind_port }}:2525 \
+			--mount type=bind,src={{ matrix_email2matrix_config_dir_path }}/config.json,dst=/config.json,ro \
+			{% for arg in matrix_email2matrix_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_email2matrix_docker_image }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-email2matrix 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-email2matrix 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-email2matrix
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+---
+
+# This is for both RedHat 7 and 8
+- ansible.builtin.include_tasks: "{{ role_path }}/tasks/ensure_fuse_installed_redhat.yml"
+  when: ansible_os_family == 'RedHat'
+
+# This is for both Debian and Raspbian
+- ansible.builtin.include_tasks: "{{ role_path }}/tasks/ensure_fuse_installed_debian.yml"
+  when: ansible_os_family == 'Debian'
+
+- ansible.builtin.include_tasks: "{{ role_path }}/tasks/ensure_fuse_installed_archlinux.yml"
+  when: ansible_os_family == 'Archlinux'

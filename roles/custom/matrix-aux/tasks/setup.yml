@@ -1,0 +1,20 @@
+---
+
+- name: Ensure AUX directories are created
+  ansible.builtin.file:
+    dest: "{{ item.dest }}"
+    state: directory
+    owner: "{{ item.owner | default(matrix_user_username) }}"
+    group: "{{ item.group | default(matrix_user_groupname) }}"
+    mode: "{{ item.mode | default(matrix_aux_directory_default_mode) }}"
+  with_items: "{{ matrix_aux_directory_definitions }}"
+
+- name: Ensure AUX files are created
+  ansible.builtin.copy:
+    src: "{{ item.src if 'src' in item else omit }}"
+    content: "{{ item.content if 'content' in item else omit }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner | default(matrix_user_username) }}"
+    group: "{{ item.group | default(matrix_user_groupname) }}"
+    mode: "{{ item.mode | default(matrix_aux_file_default_mode) }}"
+  with_items: "{{ matrix_aux_file_definitions }}"

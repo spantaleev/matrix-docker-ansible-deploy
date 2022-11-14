@@ -1,0 +1,26 @@
+---
+
+- name: (Deprecation) Catch and report renamed Matrix playbook settings
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_vars_yml_snapshotting_enabled', 'new': 'devture_playbook_state_preserver_vars_preservation_enabled'}
+    - {'old': 'matrix_vars_yml_snapshotting_src', 'new': 'devture_playbook_state_preserver_vars_preservation_src'}
+    - {'old': 'matrix_playbook_commit_hash_preservation_enabled', 'new': 'devture_playbook_state_preserver_commit_hash_preservation_enabled'}
+
+    - {'old': 'matrix_ntpd_package', 'new': 'devture_timesync_ntpd_package'}
+    - {'old': 'matrix_ntpd_service', 'new': 'devture_timesync_ntpd_service'}
+
+    - {'old': 'matrix_systemd_unit_home_path', 'new': 'devture_systemd_docker_base_systemd_unit_home_path'}
+    - {'old': 'matrix_systemd_path', 'new': 'devture_systemd_docker_base_systemd_path'}
+    - {'old': 'matrix_host_command_docker', 'new': 'devture_systemd_docker_base_host_command_docker'}
+    - {'old': 'matrix_host_command_sh', 'new': 'devture_systemd_docker_base_host_command_sh'}
+    - {'old': 'matrix_host_command_systemctl', 'new': 'devture_systemd_docker_base_host_command_systemctl'}
+
+    - {'old': 'matrix_container_retries_count', 'new': 'devture_playbook_help_container_retries_count'}
+    - {'old': 'matrix_container_retries_delay', 'new': 'devture_playbook_help_container_retries_delay'}
+    - {'old': 'matrix_geturl_retries_count', 'new': 'devture_playbook_help_geturl_retries_count'}
+    - {'old': 'matrix_geturl_retries_delay', 'new': 'devture_playbook_help_geturl_retries_delay'}

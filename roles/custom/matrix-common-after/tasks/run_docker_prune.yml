@@ -1,0 +1,7 @@
+---
+
+- name: Run Docker System Prune
+  ansible.builtin.command:
+    cmd: "{{ devture_systemd_docker_base_host_command_docker }} system prune -a -f"
+  register: matrix_common_after_docker_prune_result
+  changed_when: matrix_common_after_docker_prune_result.rc == 0

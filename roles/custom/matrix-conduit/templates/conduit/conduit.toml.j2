@@ -1,0 +1,55 @@
+# =============================================================================
+#  This is the official example config for Conduit.
+#  If you use it for your server, you will need to adjust it to your own needs.
+#  At the very least, change the server_name field!
+# =============================================================================
+
+
+[global]
+# The server_name is the pretty name of this server. It is used as a suffix for user
+# and room ids. Examples: matrix.org, conduit.rs
+
+# The Conduit server needs all /_matrix/ requests to be reachable at
+# https://your.server.name/ on port 443 (client-server) and 8448 (federation).
+
+# If that's not possible for you, you can create /.well-known files to redirect
+# requests. See
+# https://matrix.org/docs/spec/client_server/latest#get-well-known-matrix-client
+# and
+# https://matrix.org/docs/spec/server_server/r0.1.4#get-well-known-matrix-server
+# for more information
+
+server_name = "{{ matrix_domain }}"
+
+# This is the only directory where Conduit will save its data
+database_path = "/var/lib/matrix-conduit/"
+database_backend = "rocksdb"
+
+# The port Conduit will be running on. You need to set up a reverse proxy in
+# your web server (e.g. apache or nginx), so all requests to /_matrix on port
+# 443 and 8448 will be forwarded to the Conduit instance running on this port
+# Docker users: Don't change this, you'll need to map an external port to this.
+port = {{ matrix_conduit_port_number }}
+
+# Max size for uploads
+max_request_size = {{ matrix_conduit_max_request_size }}
+
+# Max number of open files for the RocksDB database
+rocksdb_max_open_files = {{ matrix_conduit_rocksdb_max_open_files }}
+
+# Enables registration. If set to false, no users can register on this server.
+allow_registration = {{ matrix_conduit_allow_registration | to_json }}
+
+allow_federation = {{ matrix_conduit_allow_federation | to_json }}
+
+# Enable the display name lightning bolt on registration.
+enable_lightning_bolt = {{ matrix_conduit_enable_lightning_bolt | to_json }}
+
+trusted_servers = {{ matrix_conduit_trusted_servers | to_json }}
+
+max_concurrent_requests = {{ matrix_conduit_max_concurrent_requests }}
+
+log = "info,state_res=warn,rocket=off,_=off,sled=off"
+
+address = "0.0.0.0"
+

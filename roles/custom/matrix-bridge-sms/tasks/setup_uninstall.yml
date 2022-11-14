@@ -1,0 +1,20 @@
+---
+
+- name: Check existence of matrix-sms-bridge service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-sms-bridge.service"
+  register: matrix_sms_bridge_service_stat
+
+- name: Ensure matrix-sms-bridge is stopped
+  ansible.builtin.service:
+    name: matrix-sms-bridge
+    state: stopped
+    enabled: false
+    daemon_reload: true
+  when: "matrix_sms_bridge_service_stat.stat.exists"
+
+- name: Ensure matrix-sms-bridge.service doesn't exist
+  ansible.builtin.file:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-sms-bridge.service"
+    state: absent
+  when: "matrix_sms_bridge_service_stat.stat.exists"

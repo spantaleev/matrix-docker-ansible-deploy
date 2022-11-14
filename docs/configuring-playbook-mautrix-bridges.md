@@ -64,7 +64,7 @@ Can be used to set the username for the bridge.
 
 ## Discovering additional configuration options
 
-You may wish to look at `roles/matrix-bridge-mautrix-SERVICENAME/templates/config.yaml.j2` and `roles/matrix-bridge-mautrix-SERVICENAME/defaults/main.yml` to find other things you would like to configure.
+You may wish to look at `roles/custom/matrix-bridge-mautrix-SERVICENAME/templates/config.yaml.j2` and `roles/custom/matrix-bridge-mautrix-SERVICENAME/defaults/main.yml` to find other things you would like to configure.
 
 
 ## Set up Double Puppeting
@@ -97,7 +97,7 @@ If you have issues with a service, and are requesting support, the higher levels
 
 ## Usage
 
-You then need to start a chat with `@SERVICENAMEbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain). 
+You then need to start a chat with `@SERVICENAMEbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
 
 Send `login ` to the bridge bot to get started You can learn more here about authentication from the bridge's official documentation on Authentication https://docs.mau.fi/bridges/python/SERVICENAME/authentication.html  .
 

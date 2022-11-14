@@ -1,0 +1,57 @@
+---
+# Project source code URL: https://github.com/ajbura/cinny
+
+matrix_client_cinny_enabled: true
+
+matrix_client_cinny_container_image_self_build: false
+matrix_client_cinny_container_image_self_build_repo: "https://github.com/ajbura/cinny.git"
+
+matrix_client_cinny_version: v2.2.2
+matrix_client_cinny_docker_image: "{{ matrix_client_cinny_docker_image_name_prefix }}ajbura/cinny:{{ matrix_client_cinny_version }}"
+matrix_client_cinny_docker_image_name_prefix: "{{ 'localhost/' if matrix_client_cinny_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_client_cinny_docker_image_force_pull: "{{ matrix_client_cinny_docker_image.endswith(':latest') }}"
+
+matrix_client_cinny_data_path: "{{ matrix_base_data_path }}/client-cinny"
+matrix_client_cinny_docker_src_files_path: "{{ matrix_client_cinny_data_path }}/docker-src"
+
+# Controls whether the container exposes its HTTP port (tcp/8080 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8768"), or empty string to not expose.
+matrix_client_cinny_container_http_host_bind_port: ''
+
+# A list of extra arguments to pass to the container
+matrix_client_cinny_container_extra_arguments: []
+
+# List of systemd services that matrix-client-cinny.service depends on
+matrix_client_cinny_systemd_required_services_list: ['docker.service']
+
+# Controls whether the self-check feature should validate SSL certificates.
+matrix_client_cinny_self_check_validate_certificates: true
+
+# config.json
+matrix_client_cinny_default_hs_url: ""
+
+# Default cinny configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_client_cinny_configuration_extension_json`)
+# or completely replace this variable with your own template.
+#
+# The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
+# This is unlike what it does when looking up YAML template files (no automatic parsing there).
+matrix_client_cinny_configuration_default: "{{ lookup('template', 'templates/config.json.j2') }}"
+
+# Your custom JSON configuration for cinny should go to `matrix_client_cinny_configuration_extension_json`.
+# This configuration extends the default starting configuration (`matrix_client_cinny_configuration_default`).
+#
+# You can override individual variables from the default configuration, or introduce new ones.
+#
+# If you need something more special, you can take full control by
+# completely redefining `matrix_client_cinny_configuration_default`.
+matrix_client_cinny_configuration_extension_json: '{}'
+
+matrix_client_cinny_configuration_extension: "{{ matrix_client_cinny_configuration_extension_json | from_json if matrix_client_cinny_configuration_extension_json | from_json is mapping else {} }}"
+
+# Holds the final cinny configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_client_cinny_configuration_default`.
+matrix_client_cinny_configuration: "{{ matrix_client_cinny_configuration_default | combine(matrix_client_cinny_configuration_extension, recursive=True) }}"

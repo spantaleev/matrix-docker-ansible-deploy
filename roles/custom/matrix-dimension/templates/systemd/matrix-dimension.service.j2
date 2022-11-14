@@ -1,0 +1,48 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Dimension
+{% for service in matrix_dimension_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_dimension_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-dimension 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-dimension 2>/dev/null || true'
+
+# Fixup database ownership if it got changed somehow (during a server migration, etc.)
+{% if matrix_dimension_database_engine == 'sqlite' %}
+ExecStartPre=-{{ matrix_host_command_chown }} {{ matrix_dimension_user_uid }}:{{ matrix_dimension_user_gid }} {{ matrix_dimension_sqlite_database_path_local }}
+{% endif %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-dimension \
+			--log-driver=none \
+			--user={{ matrix_dimension_user_uid }}:{{ matrix_dimension_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_dimension_widgets_allow_self_signed_ssl_certificates %}
+			-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+			{% endif %}
+			{% if matrix_dimension_container_http_host_bind_port %}
+			-p {{ matrix_dimension_container_http_host_bind_port }}:8184 \
+			{% endif %}
+			--mount type=bind,src={{ matrix_dimension_base_path }},dst=/data \
+			{% for arg in matrix_dimension_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_dimension_docker_image }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-dimension 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-dimension 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-dimension
+
+[Install]
+WantedBy=multi-user.target

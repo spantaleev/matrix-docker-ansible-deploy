@@ -1,0 +1,41 @@
+global:
+  scrape_interval: 5s
+
+  # Attach these labels to any time series or alerts when communicating with
+  # external systems (federation, remote storage, Alertmanager).
+  external_labels:
+    monitor: 'synapse-{{ matrix_domain }}'
+
+rule_files:
+  - /etc/prometheus/synapse-v2.rules
+
+scrape_configs:
+  - job_name: 'synapse'
+    metrics_path: /metrics/synapse/main-process
+    scheme: {{ 'https' if matrix_nginx_proxy_https_enabled|default(true) else 'http' }}
+{% if matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled|default(true) %}
+    basic_auth:
+      username: prometheus
+      password_file: /path/to/your/passwordfile.pwd
+{% endif %}
+    static_configs:
+      - targets: ['{{ matrix_server_fqn_matrix }}:{{ matrix_nginx_proxy_container_https_host_bind_port|default(443) if matrix_nginx_proxy_https_enabled|default(true) else matrix_nginx_proxy_container_http_host_bind_port|default(80) }}']
+        labels:
+          job: "master"
+          index: "0"
+{% for worker in matrix_synapse_workers_enabled_list %}
+  - job_name: '{{ worker.name }}'
+    metrics_path: /metrics/synapse/worker/{{ worker.id }}
+    scheme: {{ 'https' if matrix_nginx_proxy_https_enabled|default(true) else 'http' }}
+{% if matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled|default(true) %}
+    basic_auth:
+      username: prometheus
+      password_file: /path/to/your/passwordfile.pwd
+{% endif %}
+    static_configs:
+      - targets: ['{{ matrix_server_fqn_matrix }}:{{ matrix_nginx_proxy_container_https_host_bind_port|default(443) if matrix_nginx_proxy_https_enabled|default(true) else matrix_nginx_proxy_container_http_host_bind_port|default(80) }}']
+        labels:
+          worker_id: {{ worker.id }}
+          job: "{{ worker.type }}"
+          app: {{ worker.app }}
+{% endfor %}

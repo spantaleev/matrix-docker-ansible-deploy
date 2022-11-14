@@ -1,0 +1,42 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=appservice-kakaotalk bridge
+{% for service in matrix_appservice_kakaotalk_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_appservice_kakaotalk_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-appservice-kakaotalk 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-appservice-kakaotalk 2>/dev/null || true'
+
+# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
+ExecStartPre={{ matrix_host_command_sleep }} 5
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-appservice-kakaotalk \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_docker_network }} \
+			--mount type=bind,src={{ matrix_appservice_kakaotalk_config_path }},dst=/config,ro \
+			--mount type=bind,src={{ matrix_appservice_kakaotalk_data_path }},dst=/data \
+			{% for arg in matrix_appservice_kakaotalk_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_appservice_kakaotalk_docker_image }} \
+			python3 -m matrix_appservice_kakaotalk -c /config/config.yaml --no-update
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-appservice-kakaotalk 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-appservice-kakaotalk 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-appservice-kakaotalk
+
+[Install]
+WantedBy=multi-user.target

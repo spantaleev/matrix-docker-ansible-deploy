@@ -1,0 +1,56 @@
+---
+# Conduit is a simple, fast and reliable chat server powered by Matrix
+# See: https://conduit.rs
+
+matrix_conduit_enabled: true
+
+matrix_conduit_docker_image: "{{ matrix_conduit_docker_image_name_prefix }}matrixconduit/matrix-conduit:{{ matrix_conduit_docker_image_tag }}"
+matrix_conduit_docker_image_name_prefix: "docker.io/"
+matrix_conduit_docker_image_tag: "v0.4.0"
+matrix_conduit_docker_image_force_pull: "{{ matrix_conduit_docker_image.endswith(':latest') }}"
+
+matrix_conduit_base_path: "{{ matrix_base_data_path }}/conduit"
+matrix_conduit_config_path: "{{ matrix_conduit_base_path }}/config"
+matrix_conduit_data_path: "{{ matrix_conduit_base_path }}/data"
+
+matrix_conduit_port_number: 6167
+
+matrix_conduit_tmp_directory_size_mb: 500
+
+# List of systemd services that matrix-conduit.service depends on
+matrix_conduit_systemd_required_services_list: ["docker.service"]
+
+# List of systemd services that matrix-conduit.service wants
+matrix_conduit_systemd_wanted_services_list: []
+
+# Extra arguments for the Docker container
+matrix_conduit_container_extra_arguments: []
+
+# Specifies which template files to use when configuring Conduit.
+# If you'd like to have your own different configuration, feel free to copy and paste
+# the original files into your inventory (e.g. in `inventory/host_vars/<host>/`)
+# and then change the specific host's `vars.yaml` file like this:
+# matrix_conduit_template_conduit_config: "{{ playbook_dir }}/inventory/host_vars/<host>/conduit.yaml.j2"
+matrix_conduit_template_conduit_config: "{{ role_path }}/templates/conduit/conduit.toml.j2"
+
+# Max size for uploads, in bytes
+matrix_conduit_max_request_size: 20_000_000
+
+# Maximum number of open files for Conduit's embedded RocksDB database
+# See https://github.com/facebook/rocksdb/wiki/RocksDB-Tuning-Guide#tuning-other-options
+# By default, Conduit uses a relatively low value of 20.
+matrix_conduit_rocksdb_max_open_files: 64
+
+# Enables registration. If set to false, no users can register on this server.
+matrix_conduit_allow_registration: false
+
+matrix_conduit_allow_federation: true
+
+# Enable the display name lightning bolt on registration.
+matrix_conduit_enable_lightning_bolt: true
+
+matrix_conduit_trusted_servers:
+ - "matrix.org"
+
+# How many requests Conduit sends to other servers at the same time
+matrix_conduit_max_concurrent_requests: 100

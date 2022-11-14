@@ -23,7 +23,7 @@ matrix_ntfy_configuration_extension_yaml: |
   log_level: DEBUG
 ```
 
-For a more complete list of variables that you could override, see `roles/matrix-ntfy/defaults/main.yml`.
+For a more complete list of variables that you could override, see `roles/custom/matrix-ntfy/defaults/main.yml`.
 
 For a complete list of ntfy config options that you could put in `matrix_ntfy_configuration_extension_yaml`, see the [ntfy config documentation](https://ntfy.sh/docs/config/#config-options).
 
@@ -71,7 +71,8 @@ Steps needed for specific matrix apps:
   3. verify `Settings` -> `Notifications` -> `UnifiedPush: Notification targets` as described below in the "Troubleshooting" section.
 
 * Element-android v1.4.26+:
-  - [not yet documented; should auto-detect and use it?]
+  1. choose `Settings` -> `Notifications` -> `Notification method` -> `ntfy`
+  2. verify `Settings` -> `Troubleshoot` -> `Troubleshoot notification settings`
 
 If the matrix app asks, "Choose a distributor: FCM Fallback or ntfy", then choose "ntfy".
 

@@ -1,0 +1,37 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix mailer
+After=docker.service
+Requires=docker.service
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-mailer 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-mailer 2>/dev/null || true'
+
+# --hostname gives us a friendlier hostname than the default.
+# The real hostname is passed via a `HOSTNAME` environment variable though.
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-mailer \
+			--log-driver=none \
+			--user={{ matrix_mailer_container_user_uid }}:{{ matrix_mailer_container_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--tmpfs=/var/spool/exim:rw,noexec,nosuid,size=100m \
+			--network={{ matrix_docker_network }} \
+			--env-file={{ matrix_mailer_base_path }}/env-mailer \
+			--hostname=matrix-mailer \
+			{% for arg in matrix_mailer_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_mailer_docker_image }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-mailer 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-mailer 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-mailer
+
+[Install]
+WantedBy=multi-user.target

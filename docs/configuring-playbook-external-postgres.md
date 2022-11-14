@@ -20,7 +20,7 @@ matrix_synapse_database_database: "your-postgres-server-database-name"
 
 # Rewire any other service (each `matrix-*` role) you may wish to use to use your external Postgres server.
 # Each service expects to have its own dedicated database on the Postgres server
-# and uses its own variable names (see `roles/matrix-*/defaults/main.yml) for configuring Postgres connectivity.
+# and uses its own variable names (see `roles/custom/matrix-*/defaults/main.yml) for configuring Postgres connectivity.
 ```
 
 The database (as specified in `matrix_synapse_database_database`) must exist and be accessible with the given credentials.

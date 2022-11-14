@@ -1,0 +1,246 @@
+# Endpoint URL that Mjolnir uses to interact with the matrix homeserver (client-server API),
+# set this to the pantalaimon URL if you're using that.
+homeserverUrl: "{{ matrix_homeserver_url }}"
+
+# Endpoint URL that Mjolnir could use to fetch events related to reports (client-server API and /_synapse/),
+# only set this to the public-internet homeserver client API URL, do NOT set this to the pantalaimon URL.
+rawHomeserverUrl: "{{ matrix_homeserver_url }}"
+
+# Matrix Access Token to use, Mjolnir will only use this if pantalaimon.use is false.
+accessToken: "{{ matrix_bot_mjolnir_access_token }}"
+
+# Options related to Pantalaimon (https://github.com/matrix-org/pantalaimon)
+#pantalaimon:
+#  # Whether or not Mjolnir will use pantalaimon to access the matrix homeserver,
+#  # set to `true` if you're using pantalaimon.
+#  #
+#  # Be sure to point homeserverUrl to the pantalaimon instance.
+#  #
+#  # Mjolnir will log in using the given username and password once,
+#  # then store the resulting access token in a file under dataPath.
+#  use: false
+#
+#  # The username to login with.
+#  username: mjolnir
+#
+#  # The password Mjolnir will login with.
+#  #
+#  # After successfully logging in once, this will be ignored, so this value can be blanked after first startup.
+#  password: your_password
+
+# The path Mjolnir will store its state/data in, leave default ("/data/storage") when using containers.
+dataPath: "/data"
+
+# If true (the default), Mjolnir will only accept invites from users present in managementRoom.
+autojoinOnlyIfManager: true
+
+# If `autojoinOnlyIfManager` is false, only the members in this space can invite
+# the bot to new rooms.
+#acceptInvitesFromSpace: "!example:example.org"
+
+# Whether Mjolnir should report ignored invites to the management room (if autojoinOnlyIfManager is true).
+recordIgnoredInvites: false
+
+# The room ID (or room alias) of the management room, anyone in this room can issue commands to Mjolnir.
+#
+# Mjolnir has no more granular access controls other than this, be sure you trust everyone in this room - secure it!
+#
+# This should be a room alias or room ID - not a matrix.to URL.
+#
+# Note: By default, Mjolnir is fairly verbose - expect a lot of messages in this room.
+# (see verboseLogging to adjust this a bit.)
+managementRoom: "{{ matrix_bot_mjolnir_management_room }}"
+
+# Whether Mjolnir should log a lot more messages in the room,
+# mainly involves "all-OK" messages, and debugging messages for when mjolnir checks bans in a room.
+verboseLogging: false
+
+# The log level of terminal (or container) output,
+# can be one of DEBUG, INFO, WARN and ERROR, in increasing order of importance and severity.
+#
+# This should be at INFO or DEBUG in order to get support for Mjolnir problems.
+logLevel: "INFO"
+
+# Whether or not Mjolnir should synchronize policy lists immediately after startup.
+# Equivalent to running '!mjolnir sync'.
+syncOnStartup: true
+
+# Whether or not Mjolnir should check moderation permissions in all protected rooms on startup.
+# Equivalent to running `!mjolnir verify`.
+verifyPermissionsOnStartup: true
+
+# Whether or not Mjolnir should actually apply bans and policy lists,
+# turn on to trial some untrusted configuration or lists.
+noop: false
+
+# Whether Mjolnir should check member lists quicker (by using a different endpoint),
+# keep in mind that enabling this will miss invited (but not joined) users.
+#
+# Turn on if your bot is in (very) large rooms, or in large amounts of rooms.
+fasterMembershipChecks: false
+
+# A case-insensitive list of ban reasons to have the bot also automatically redact the user's messages for.
+#
+# If the bot sees you ban a user with a reason that is an (exact case-insensitive) match to this list,
+# it will also remove the user's messages automatically.
+#
+# Typically this is useful to avoid having to give two commands to the bot.
+# Advanced: Use asterisks to have the reason match using "globs"
+# (f.e. "spam*testing" would match "spam for testing" as well as "spamtesting").
+#
+# See here for more info: https://www.digitalocean.com/community/tools/glob
+# Note: Keep in mind that glob is NOT regex!
+automaticallyRedactForReasons:
+  - "spam"
+  - "advertising"
+
+# A list of rooms to protect. Mjolnir will add this to the list it knows from its account data.
+#
+# It won't, however, add it to the account data.
+# Manually add the room via '!mjolnir rooms add' to have it stay protected regardless if this config value changes.
+#
+# Note: These must be matrix.to URLs
+#protectedRooms:
+#  - "https://matrix.to/#/#yourroom:example.org"
+
+# Whether or not to add all joined rooms to the "protected rooms" list
+# (excluding the management room and watched policy list rooms, see below).
+#
+# Note that this effectively makes the protectedRooms and associated commands useless
+# for regular rooms.
+#
+# Note: the management room is *excluded* from this condition.
+# Explicitly add it as a protected room to protect it.
+#
+# Note: Ban list rooms the bot is watching but didn't create will not be protected.
+# Explicitly add these rooms as a protected room list if you want them protected.
+protectAllJoinedRooms: false
+
+# Increase this delay to have Mjölnir wait longer between two consecutive backgrounded
+# operations. The total duration of operations will be longer, but the homeserver won't
+# be affected as much. Conversely, decrease this delay to have Mjölnir chain operations
+# faster. The total duration of operations will generally be shorter, but the performance
+# of the homeserver may be more impacted.
+backgroundDelayMS: 500
+
+# Server administration commands, these commands will only work if Mjolnir is
+# a global server administrator, and the bot's server is a Synapse instance.
+#admin:
+#  # Whether or not Mjolnir can temporarily take control of any eligible account from the local homeserver who's in the room
+#  # (with enough permissions) to "make" a user an admin.
+#  #
+#  # This only works if a local user with enough admin permissions is present in the room.
+#  enableMakeRoomAdminCommand: false
+
+# Misc options for command handling and commands
+commands:
+  # Whether or not the `!mjolnir` prefix is necessary to submit commands.
+  #
+  # If `true`, will allow commands like `!ban`, `!help`, etc.
+  #
+  # Note: Mjolnir can also be pinged by display name instead of having to use
+  # the !mjolnir prefix. For example, "my_moderator_bot: ban @spammer:example.org"
+  # will address only my_moderator_bot.
+  allowNoPrefix: false
+
+  # Any additional bot prefixes that Mjolnir will listen to. i.e. adding `mod` will allow `!mod help`.
+  additionalPrefixes:
+    - "mjolnir_bot"
+
+  # Whether or not commands with a wildcard (*) will require an additional `--force` argument
+  # in the command to be able to be submitted.
+  confirmWildcardBan: true
+
+# Configuration specific to certain toggle-able protections
+#protections:
+#  # Configuration for the wordlist plugin, which can ban users based if they say certain
+#  # blocked words shortly after joining.
+#  wordlist:
+#    # A list of case-insensitive keywords that the WordList protection will watch for from new users.
+#    #
+#    # WordList will ban users who use these words when first joining a room, so take caution when selecting them.
+#    #
+#    # For advanced usage, regex can also be used, see the following links for more information;
+#    #  - https://www.digitalocean.com/community/tutorials/an-introduction-to-regular-expressions
+#    #  - https://regexr.com/
+#    #  - https://regexone.com/
+#    words:
+#      - "LoReM"
+#      - "IpSuM"
+#      - "DoLoR"
+#      - "aMeT"
+#
+#    # For how long (in minutes) the user is "new" to the WordList plugin.
+#    #
+#    # After this time, the user will no longer be banned for using a word in the above wordlist.
+#    #
+#    # Set to zero to disable the timeout and make users *always* appear "new".
+#    # (users will always be banned if they say a bad word)
+#    minutesBeforeTrusting: 20
+
+# Options for advanced monitoring of the health of the bot.
+health:
+  # healthz options. These options are best for use in container environments
+  # like Kubernetes to detect how healthy the service is. The bot will report
+  # that it is unhealthy until it is able to process user requests. Typically
+  # this means that it'll flag itself as unhealthy for a number of minutes
+  # before saying "Now monitoring rooms" and flagging itself healthy.
+  #
+  # Health is flagged through HTTP status codes, defined below.
+  healthz:
+    # Whether the healthz integration should be enabled (default false)
+    enabled: false
+
+    # The port to expose the webserver on. Defaults to 8080.
+    port: 8080
+
+    # The address to listen for requests on. Defaults to all addresses.
+    address: "0.0.0.0"
+
+    # The path to expose the monitoring endpoint at. Defaults to `/healthz`
+    endpoint: "/healthz"
+
+    # The HTTP status code which reports that the bot is healthy/ready to
+    # process requests. Typically this should not be changed. Defaults to
+    # 200.
+    healthyStatus: 200
+
+    # The HTTP status code which reports that the bot is not healthy/ready.
+    # Defaults to 418.
+    unhealthyStatus: 418
+
+# Options for exposing web APIs.
+#web:
+#  # Whether to enable web APIs.
+#  enabled: false
+#
+#  # The port to expose the webserver on. Defaults to 8080.
+#  port: 8080
+#
+#  # The address to listen for requests on. Defaults to only the current
+#  # computer.
+#  address: localhost
+#
+#  # Alternative setting to open to the entire web. Be careful,
+#  # as this will increase your security perimeter:
+#  #
+#  #  address: "0.0.0.0"
+#
+#  # A web API designed to intercept Matrix API
+#  # POST /_matrix/client/r0/rooms/{roomId}/report/{eventId}
+#  # and display readable abuse reports in the moderation room.
+#  #
+#  # If you wish to take advantage of this feature, you will need
+#  # to configure a reverse proxy, see e.g. test/nginx.conf
+#  abuseReporting:
+#    # Whether to enable this feature.
+#    enabled: false
+
+# Whether or not to actively poll synapse for abuse reports, to be used
+# instead of intercepting client calls to synapse's abuse endpoint, when that
+# isn't possible/practical.
+pollReports: false
+
+# Whether or not new reports, received either by webapi or polling,
+# should be printed to our managementRoom.
+displayReports: false

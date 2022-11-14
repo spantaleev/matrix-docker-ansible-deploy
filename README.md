@@ -23,7 +23,7 @@ Using this playbook, you can get the following services configured on your serve
 
 - (optional) a [Dendrite](https://github.com/matrix-org/dendrite) homeserver - storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Dendrite is a second-generation Matrix homeserver written in Go, an alternative to Synapse.
 
-- (optional) [Amazon S3](https://aws.amazon.com/s3/) storage for Synapse's content repository (`media_store`) files using [Goofys](https://github.com/kahing/goofys)
+- (optional) [Amazon S3](https://aws.amazon.com/s3/) (or other S3-compatible object store) storage for Synapse's content repository (`media_store`) files using [Goofys](https://github.com/kahing/goofys) or [`synapse-s3-storage-provider`](https://github.com/matrix-org/synapse-s3-storage-provider)
 
 - (optional, default) [PostgreSQL](https://www.postgresql.org/) database for Synapse. [Using an external PostgreSQL server](docs/configuring-playbook-external-postgres.md) is also possible.
 
@@ -44,6 +44,8 @@ Using this playbook, you can get the following services configured on your serve
 - (optional, advanced) the [matrix-synapse-shared-secret-auth](https://github.com/devture/matrix-synapse-shared-secret-auth) password provider module
 
 - (optional, advanced) the [matrix-synapse-ldap3](https://github.com/matrix-org/matrix-synapse-ldap3) LDAP Auth password provider module
+
+- (optional, advanced) the [matrix-ldap-registration-proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy)  a proxy that handles Matrix registration requests and forwards them to LDAP.
 
 - (optional, advanced) the [synapse-simple-antispam](https://github.com/t2bot/synapse-simple-antispam) spam checker module
 
@@ -136,6 +138,8 @@ Using this playbook, you can get the following services configured on your serve
 - (optional) the [Borg](https://borgbackup.org) backup - see [docs/configuring-playbook-backup-borg.md](docs/configuring-playbook-backup-borg.md) for setup documentation
 
 - (optional) the [Buscarron](https://gitlab.com/etke.cc/buscarron) bot - see [docs/configuring-playbook-bot-buscarron.md](docs/configuring-playbook-bot-buscarron.md) for setup documentation
+
+- (optional) [Cactus Comments](https://cactus.chat), a federated comment system built on matrix - see [docs/configuring-playbook-cactus-comments.md](docs/configuring-playbook-cactus-comments.md) for setup documentation
 
 Basically, this playbook aims to get you up-and-running with all the necessities around Matrix, without you having to do anything else.
 
