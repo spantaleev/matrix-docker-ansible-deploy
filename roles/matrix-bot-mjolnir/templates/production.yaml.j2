@@ -1,0 +1,162 @@
+# Where the homeserver is located (client-server URL). This should point at
+# pantalaimon if you're using that.
+homeserverUrl: "{{ matrix_homeserver_url }}"
+
+# The access token for the bot to use. Do not populate if using Pantalaimon.
+accessToken: "{{ matrix_bot_mjolnir_access_token }}"
+
+# Pantalaimon options (https://github.com/matrix-org/pantalaimon)
+#pantalaimon:
+#  # If true, accessToken above is ignored and the username/password below will be
+#  # used instead. The access token of the bot will be stored in the dataPath.
+#  use: false
+#
+#  # The username to login with.
+#  username: mjolnir
+#
+#  # The password to login with. Can be removed after the bot has logged in once and
+#  # stored the access token.
+#  password: your_password
+
+# The directory the bot should store various bits of information in
+dataPath: "/data"
+
+# If true (the default), only users in the `managementRoom` can invite the bot
+# to new rooms.
+autojoinOnlyIfManager: true
+
+# If `autojoinOnlyIfManager` is false, only the members in this group can invite
+# the bot to new rooms.
+#acceptInvitesFromGroup: '+example:example.org'
+
+# If the bot is invited to a room and it won't accept the invite (due to the
+# conditions above), report it to the management room. Defaults to disabled (no
+# reporting).
+recordIgnoredInvites: false
+
+# The room ID where people can use the bot. The bot has no access controls, so
+# anyone in this room can use the bot - secure your room!
+# This should be a room alias or room ID - not a matrix.to URL.
+# Note: Mjolnir is fairly verbose - expect a lot of messages from it.
+managementRoom: "{{ matrix_bot_mjolnir_management_room }}"
+
+# Set to false to make the management room a bit quieter.
+verboseLogging: false
+
+# The log level for the logs themselves. One of DEBUG, INFO, WARN, and ERROR.
+# This should be at INFO or DEBUG in order to get support for Mjolnir problems.
+logLevel: "INFO"
+
+# Set to false to disable synchronizing the ban lists on startup. If true, this
+# is the same as running !mjolnir sync immediately after startup.
+syncOnStartup: true
+
+# Set to false to prevent Mjolnir from checking its permissions on startup. This
+# is recommended to be left as "true" to catch room permission problems (state
+# resets, etc) before Mjolnir is needed.
+verifyPermissionsOnStartup: true
+
+# If true, Mjolnir won't actually ban users or apply server ACLs, but will
+# think it has. This is useful to see what it does in a scenario where the
+# bot might not be trusted fully, yet. Default false (do bans/ACLs).
+noop: false
+
+# Set to true to use /joined_members instead of /state to figure out who is
+# in the room. Using /state is preferred because it means that users are
+# banned when they are invited instead of just when they join, though if your
+# server struggles with /state requests then set this to true.
+fasterMembershipChecks: false
+
+# A case-insensitive list of ban reasons to automatically redact a user's
+# messages for. Typically this is useful to avoid having to type two commands
+# to the bot. Use asterisks to represent globs (ie: "spam*testing" would match
+# "spam for testing" as well as "spamtesting").
+automaticallyRedactForReasons:
+ - "spam"
+ - "advertising"
+
+# A list of rooms to protect (matrix.to URLs)
+#protectedRooms:
+#  - "https://matrix.to/#/#yourroom:example.org"
+
+# Set this option to true to protect every room the bot is joined to. Note that
+# this effectively makes the protectedRooms and associated commands useless because
+# the bot by nature must be joined to the room to protect it.
+#
+# Note: the management room is *excluded* from this condition. Add it to the
+# protected rooms to protect it.
+#
+# Note: ban list rooms the bot is watching but didn't create will not be protected.
+# Manually add these rooms to the protected rooms list if you want them protected.
+protectAllJoinedRooms: false
+
+# Misc options for command handling and commands
+commands:
+  # If true, Mjolnir will respond to commands like !help and !ban instead of
+  # requiring a prefix. This is useful if Mjolnir is the only bot running in
+  # your management room.
+  #
+  # Note that Mjolnir can be pinged by display name instead of having to use
+  # the !mjolnir prefix. For example, "my_moderator_bot: ban @spammer:example.org"
+  # will ban a user.
+  allowNoPrefix: false
+
+  # In addition to the bot's display name, !mjolnir, and optionally no prefix
+  # above, the bot will respond to these names. The items here can be used either
+  # as display names or prefixed with exclamation points.
+  additionalPrefixes:
+    - "mjolnir_bot"
+
+  # If true, ban commands that use wildcard characters require confirmation with
+  # an extra `--force` argument
+  confirmWildcardBan: true
+
+# Configuration specific to certain toggleable protections
+#protections:
+#  # Configuration for the wordlist plugin, which can ban users based if they say certain
+#  # blocked words shortly after joining.
+#  wordlist:
+#    # A list of words which should be monitored by the bot.  These will match if any part
+#    # of the word is present in the message in any case.  e.g. "hello" also matches
+#    # "HEllO".  Additionally, regular expressions can be used.
+#    words:
+#      - "CaSe"
+#      - "InSeNsAtIve"
+#      - "WoRd"
+#      - "LiSt"
+#
+#    # How long after a user joins the server should the bot monitor their messages.  After
+#    # this time, users can say words from the wordlist without being banned automatically.
+#    # Set to zero to disable (users will always be banned if they say a bad word)
+#    minutesBeforeTrusting: 20
+
+# Options for monitoring the health of the bot
+health:
+  # healthz options. These options are best for use in container environments
+  # like Kubernetes to detect how healthy the service is. The bot will report
+  # that it is unhealthy until it is able to process user requests. Typically
+  # this means that it'll flag itself as unhealthy for a number of minutes
+  # before saying "Now monitoring rooms" and flagging itself healthy.
+  #
+  # Health is flagged through HTTP status codes, defined below.
+  healthz:
+    # Whether the healthz integration should be enabled (default false)
+    enabled: false
+
+    # The port to expose the webserver on. Defaults to 8080.
+    port: 8080
+
+    # The address to listen for requests on. Defaults to all addresses.
+    address: "0.0.0.0"
+
+    # The path to expose the monitoring endpoint at. Defaults to `/healthz`
+    endpoint: "/healthz"
+
+    # The HTTP status code which reports that the bot is healthy/ready to
+    # process requests. Typically this should not be changed. Defaults to
+    # 200.
+    healthyStatus: 200
+
+    # The HTTP status code which reports that the bot is not healthy/ready.
+    # Defaults to 418.
+    unhealthyStatus: 418
