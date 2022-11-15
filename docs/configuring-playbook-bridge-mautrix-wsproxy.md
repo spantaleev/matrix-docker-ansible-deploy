@@ -26,4 +26,5 @@ This is the recommended way of setting up Double Puppeting, as it's easier to ac
 
 ## Usage
 
-Follow the [matrix-imessage documenation](https://docs.mau.fi/bridges/go/imessage/index.html) for running `matrix-imessage` on your iOS/MacOS device.
+Follow the [matrix-imessage documenation](https://docs.mau.fi/bridges/go/imessage/index.html) for running `android-sms` or `matrix-imessage` on your device.
+The name of the bridge bot is androidsms, but the bridge works for either iMessage or Android SMS, though not both at the same time.
