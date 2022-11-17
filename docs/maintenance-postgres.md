@@ -80,6 +80,8 @@ This playbook can upgrade your existing Postgres setup with the following comman
 
 	ansible-playbook -i inventory/hosts setup.yml --tags=upgrade-postgres
 
+**Warning: If you're using Borg Backup keep in mind that there is no official Postgres 15 support yet.**
+
 **The old Postgres data directory is backed up** automatically, by renaming it to `/matrix/postgres/data-auto-upgrade-backup`.
 To rename to a different path, pass some extra flags to the command above, like this: `--extra-vars="postgres_auto_upgrade_backup_data_path=/another/disk/matrix-postgres-before-upgrade"`
 
