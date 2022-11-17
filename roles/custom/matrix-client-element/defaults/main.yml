@@ -135,3 +135,21 @@ matrix_client_element_configuration_extension: "{{ matrix_client_element_configu
 # Holds the final Element configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_client_element_configuration_default`.
 matrix_client_element_configuration: "{{ matrix_client_element_configuration_default | combine(matrix_client_element_configuration_extension, recursive=True) }}"
+
+# Enable Element Location sharing functionality
+# More info: https://element.io/blog/element-launches-e2ee-location-sharing/
+# How to host your own map tile server: https://matrix.org/docs/guides/map-tile-server
+matrix_client_element_location_sharing: false
+matrix_client_element_location_map_style: "{{ lookup('template', 'templates/style.json.j2') }}"
+
+# Example tile servers configuration
+# matrix_client_element_location_map_tile_servers: ["https://tile.example.com/{z}/{x}/{y}.png"]
+# or
+# matrix_client_element_location_map_tile_servers: ["https://s1.example.com/{z}/{x}/{y}.png", "https://s2.example.com/{z}/{x}/{y}.png", "https://s3.example.com/{z}/{x}/{y}.png"]
+matrix_client_element_location_map_tile_servers: []
+
+# Map attribution (optional):
+# Attribution for OpenStreetMap would be like this:
+# matrix_client_element_location_map_attribution: "&copy; <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">OpenStreetMap</a> contributors"
+# Leave blank, if map does not require attribution.
+matrix_client_element_location_map_attribution: ""

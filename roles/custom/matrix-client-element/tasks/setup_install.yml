@@ -69,6 +69,14 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
+- name: Ensure Element map style installed
+  ansible.builtin.copy:
+    content: "{{ matrix_client_element_location_map_style | to_nice_json }}"
+    dest: "{{ matrix_client_element_data_path }}/style.json"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
 - name: Ensure Element config files installed
   ansible.builtin.template:
     src: "{{ item.src }}"
