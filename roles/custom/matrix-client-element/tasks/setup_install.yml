@@ -69,6 +69,15 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
+- name: Ensure Element location sharing map style installed
+  when: matrix_client_element_location_sharing_enabled | bool
+  ansible.builtin.copy:
+    content: "{{ matrix_client_element_location_sharing_map_style | to_nice_json }}"
+    dest: "{{ matrix_client_element_data_path }}/map_style.json"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
 - name: Ensure Element config files installed
   ansible.builtin.template:
     src: "{{ item.src }}"
