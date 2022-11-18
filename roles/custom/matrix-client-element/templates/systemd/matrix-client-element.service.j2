@@ -26,7 +26,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			--mount type=bind,src={{ matrix_client_element_data_path }}/nginx.conf,dst=/etc/nginx/nginx.conf,ro \
 			--mount type=bind,src={{ matrix_client_element_data_path }}/config.json,dst=/app/config.json,ro \
 			--mount type=bind,src={{ matrix_client_element_data_path }}/config.json,dst=/app/config.{{ matrix_server_fqn_element }}.json,ro \
-			{% if matrix_client_element_location_sharing %}
+			{% if matrix_client_element_location_sharing_enabled %}
 			--mount type=bind,src={{ matrix_client_element_data_path }}/style.json,dst=/app/style.json,ro \
 			{% endif %}
 			{% if matrix_client_element_embedded_pages_home_path is not none %}
