@@ -1,18 +1,24 @@
 ---
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/sanity_check.yml"
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/system_check.yml"
   tags:
     - always
+
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/sanity_check.yml"
+  tags:
+    - setup-all
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/clean_up_old_files.yml"
   when: run_setup | bool
   tags:
     - setup-all
+    - common
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/server_base/setup.yml"
   when: run_setup | bool
   tags:
     - setup-all
+    - common
 
 # This needs to always run, because it populates `matrix_user_uid` and `matrix_user_gid`,
 # which are required by many other roles.
@@ -21,11 +27,13 @@
   tags:
     - always
     - setup-system-user
+    - common
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_matrix_base.yml"
   when: run_setup | bool
   tags:
     - setup-all
+    - common
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_well_known.yml"
   when: run_setup | bool

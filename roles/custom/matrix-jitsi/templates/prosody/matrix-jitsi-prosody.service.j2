@@ -20,6 +20,9 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			{% if matrix_jitsi_prosody_container_http_host_bind_port %}
 			-p {{ matrix_jitsi_prosody_container_http_host_bind_port }}:5280 \
 			{% endif %}
+			{% if matrix_jitsi_prosody_container_jvb_host_bind_port %}
+			-p {{ matrix_jitsi_prosody_container_jvb_host_bind_port }}:5222 \
+			{% endif %}
 			--env-file={{ matrix_jitsi_prosody_base_path }}/env \
 			--mount type=bind,src={{ matrix_jitsi_prosody_config_path }},dst=/config \
 			--mount type=bind,src={{ matrix_jitsi_prosody_plugins_path }},dst=/prosody-plugins-custom \

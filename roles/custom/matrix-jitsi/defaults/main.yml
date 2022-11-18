@@ -189,6 +189,8 @@ matrix_jitsi_prosody_systemd_required_services_list: ['docker.service']
 # Neccessary Port binding for those disabling the integrated nginx proxy
 matrix_jitsi_prosody_container_http_host_bind_port: ''
 
+matrix_jitsi_prosody_container_jvb_host_bind_port: 5222
+
 matrix_jitsi_jicofo_docker_image: "{{ matrix_container_global_registry_prefix }}jitsi/jicofo:{{ matrix_jitsi_container_image_tag }}"
 matrix_jitsi_jicofo_docker_image_force_pull: "{{ matrix_jitsi_jicofo_docker_image.endswith(':latest') }}"
 
@@ -218,7 +220,7 @@ matrix_jitsi_jvb_config_path: "{{ matrix_jitsi_jvb_base_path }}/config"
 matrix_jitsi_jvb_container_extra_arguments: []
 
 # List of systemd services that matrix-jitsi-jvb.service depends on
-matrix_jitsi_jvb_systemd_required_services_list: ['docker.service', 'matrix-jitsi-prosody.service']
+matrix_jitsi_jvb_systemd_required_services_list: ['docker.service']
 
 matrix_jitsi_jvb_auth_user: jvb
 matrix_jitsi_jvb_auth_password: ''
@@ -233,6 +235,8 @@ matrix_jitsi_jvb_stun_servers: ['meet-jit-si-turnrelay.jitsi.net:443']
 matrix_jitsi_jvb_brewery_muc: jvbbrewery
 matrix_jitsi_jvb_rtp_udp_port: 10000
 matrix_jitsi_jvb_rtp_tcp_port: 4443
+matrix_jitsi_jvb_server_id: 'jvb-1'
+
 
 # Custom configuration to be injected into `custom-sip-communicator.properties`, passed to Jitsi JVB.
 # This configuration gets appended to the final configuration that Jitsi JVB uses.

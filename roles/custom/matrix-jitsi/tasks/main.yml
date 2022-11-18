@@ -4,17 +4,23 @@
   tags:
     - always
 
+- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init_additional_jvb.yml"
+  tags:
+    - setup-additional-jitsi-jvb
+
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
   when: "run_setup | bool and matrix_jitsi_enabled | bool"
   tags:
     - setup-all
     - setup-jitsi
+    - setup-additional-jitsi-jvb
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_jitsi_base.yml"
   when: run_setup | bool
   tags:
     - setup-all
     - setup-jitsi
+    - setup-additional-jitsi-jvb
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_jitsi_web.yml"
   when: run_setup | bool
@@ -39,3 +45,4 @@
   tags:
     - setup-all
     - setup-jitsi
+    - setup-additional-jitsi-jvb
