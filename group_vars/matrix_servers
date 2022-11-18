@@ -1255,8 +1255,8 @@ matrix_bot_buscarron_container_image_self_build: "{{ matrix_architecture not in 
 # We don't enable bots by default.
 matrix_bot_postmoogle_enabled: false
 matrix_bot_postmoogle_ssl_path: "{{ matrix_ssl_config_dir_path }}"
-matrix_bot_postmoogle_tls_cert: "/ssl/live/{{ matrix_bot_postmoogle_domain }}/fullchain.pem"
-matrix_bot_postmoogle_tls_key: "/ssl/live/{{ matrix_bot_postmoogle_domain }}/privkey.pem"
+matrix_bot_postmoogle_tls_cert: "{% for domain in matrix_bot_postmoogle_domains %}/ssl/live/{{ domain }}/fullchain.pem {% endfor %}"
+matrix_bot_postmoogle_tls_key: "{% for domain in matrix_bot_postmoogle_domains %}/ssl/live/{{ domain }}/privkey.pem {% endfor %}"
 
 matrix_bot_postmoogle_systemd_required_services_list: |
   {{
