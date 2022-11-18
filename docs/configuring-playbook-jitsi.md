@@ -166,7 +166,7 @@ The JVB will also need to know where the prosody xmpp server is located, similar
 `matrix_jitsi_xmpp_server`. The Jitsi prosody container is deployed on the matrix server by default so the value can be set to the matrix domain. For example:
 
 ```yaml
-matrix_jitsi_xmpp_server: "{{  matrix_domain }}"
+matrix_jitsi_xmpp_server: "{{ matrix_domain }}"
 ```
 
 However, it can also be set the ip address of the matrix server. This can be useful if you wish to use a private ip. For example:
