@@ -131,8 +131,8 @@ You may want to **limit the maximum video resolution**, to save up resources on 
 
 By default, a single JVB ([Jitsi VideoBridge](https://github.com/jitsi/jitsi-videobridge)) is deployed on the same host as the Matrix server. To allow more video-conferences to happen at the same time, you may need to provision additional JVB services on other hosts.
 
-There is a ansible role that can be run with the following tag:
-` ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers setup.yml --tags=common,setup-additional-jitsi-jvb,start`
+There is an ansible playbook that can be run with the following tag:
+` ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers jitsi_jvb.yml --tags=common,setup-additional-jitsi-jvb,start`
 
 For this role to work you will need an additional section in the ansible hosts file with the details of the JVB hosts, for example:
 ```
