@@ -187,9 +187,7 @@ matrix_nginx_proxy_container_extra_arguments:
   - '--label "traefik.http.routers.matrix-nginx-proxy-federation.tls.certResolver=default"'
   # The Nginx proxy container uses port `matrix_nginx_proxy_proxy_matrix_federation_port (8448) internally
   - '--label "traefik.http.services.matrix-nginx-proxy-federation.loadbalancer.server.port={{ matrix_nginx_proxy_proxy_matrix_federation_port }}"'
-  - '--label "traefik.http.services.matrix-nginx-proxy-federation.loadbalancer.server.scheme={{ 'https' if matrix_nginx_proxy_https_enabled else 'http' }}"'
-
-matrix_synapse_reverse_proxy_companion_container_labels_traefik_enabled: true
+  - '--label "traefik.http.services.matrix-nginx-proxy-federation.loadbalancer.server.scheme={{ "https" if matrix_nginx_proxy_https_enabled else "http" }}"'
 ```
 
 This method uses labels attached to the Nginx and Synapse containers to provide the Traefik Docker provider with the information it needs to proxy `matrix.DOMAIN`, `element.DOMAIN`, `dimension.DOMAIN` and `jitsi.DOMAIN`. Some [static configuration](https://docs.traefik.io/v2.0/reference/static-configuration/file/) is required in Traefik; namely, having endpoints on ports 443 and 8448 and having a certificate resolver.
