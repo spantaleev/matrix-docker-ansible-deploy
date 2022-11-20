@@ -1,0 +1,13 @@
+#jinja2: lstrip_blocks: "True"
+# The default is aligned to the CPU's cache size,
+# which can sometimes be too low.
+# Thus, we ensure a larger bucket size value is used.
+server_names_hash_bucket_size 64;
+
+{% if matrix_synapse_reverse_proxy_companion_http_level_resolver %}
+resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }};
+{% endif %}
+
+{% for configuration_block in matrix_synapse_reverse_proxy_companion_http_additional_server_configuration_blocks %}
+	{{- configuration_block }}
+{% endfor %}

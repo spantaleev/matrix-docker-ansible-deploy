@@ -1,0 +1,164 @@
+---
+
+# matrix-synapse-reverse-proxy companion is a role which brings up a containerized nginx webserver which helps with reverse-proxying to Synapse.
+#
+# When Synapse is NOT running in worker-mode, reverse-proxying is relatively simple (everything goes to `matrix-synapse:XXXX`).
+#
+# When Synapse workers are enabled, however, the reverse-proxying configuration is much more complicated.
+# Certain requests need to go to certain workers, etc.
+# In the past, the main reverse proxy (`matrix-synapse-reverse-proxy-companion`) was handling request routing to the appropriate workers,
+# but that only worked well for external requests (from outside of the Matrix server itself).
+#
+# Without the help of `matrix-synapse-reverse-proxy-companion`, internal services (like Dimension) that would like to talk to Synapse over the container network
+# did not have an endpoint for Synapse that they could be pointed to and have it just work.
+# If `matrix-synapse-reverse-proxy-companion` was enabled, Dimension could be pointed to its vhost handling Synapse and routing to the appropriate workers,
+# but when `matrix-synapse-reverse-proxy-companion` was disabled, this helpful functionality was not available and the best we could do
+# is point Dimension to the main Synapse process at `matrix-synapse:XXXX` itself.
+# Doing that breaks requests that need to go to specific workers.
+# See: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2090
+#
+# What this role does is, it extracts all the Synapse request routing out of the `matrix-synapse-reverse-proxy-companion` role here,
+# and makes the `matrix-synapse-reverse-proxy-companion` container service represent Synapse and route appropriately,
+# regardless of whether workers are enabled or disabled.
+# All other playbook services can then forget about `matrix-synapse` or `matrix-synapse-whatever-worker`, etc.,
+# and just use `matrix-synapse-reverse-proxy-companion` as their request destination.
+
+matrix_synapse_reverse_proxy_companion_enabled: true
+
+matrix_synapse_reverse_proxy_companion_version: 1.23.2-alpine
+
+matrix_synapse_reverse_proxy_companion_base_path: "{{ matrix_synapse_base_path }}/reverse-proxy-companion"
+matrix_synapse_reverse_proxy_companion_confd_path: "{{ matrix_synapse_reverse_proxy_companion_base_path }}/conf.d"
+
+# List of systemd services that matrix-synapse-reverse-proxy-companion.service depends on
+matrix_synapse_reverse_proxy_companion_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-synapse-reverse-proxy-companion.service wants
+matrix_synapse_reverse_proxy_companion_systemd_wanted_services_list: ['matrix-synapse.service']
+
+# We use an official nginx image, which we fix-up to run unprivileged.
+# An alternative would be an `nginxinc/nginx-unprivileged` image, but
+# that is frequently out of date.
+matrix_synapse_reverse_proxy_companion_container_image: "{{ matrix_container_global_registry_prefix }}nginx:{{ matrix_synapse_reverse_proxy_companion_version }}"
+matrix_synapse_reverse_proxy_companion_container_image_force_pull: "{{ matrix_synapse_reverse_proxy_companion_container_image.endswith(':latest') }}"
+
+matrix_synapse_reverse_proxy_companion_container_network: "{{ matrix_docker_network }}"
+
+# A list of additional container networks that matrix-synapse-reverse-proxy-companion would be connected to.
+# The playbook does not create these networks, so make sure they already exist.
+#
+# Use this to expose matrix-synapse-reverse-proxy-companion to another reverse proxy, which runs in a different container network,
+# without exposing all other Matrix services to that other reverse-proxy.
+#
+# For background, see: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1498
+matrix_synapse_reverse_proxy_companion_container_additional_networks: []
+
+# Controls whether the matrix-synapse-reverse-proxy-companion container exposes its HTTP Client-Server API port (tcp/8008 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8008"), or empty string to not expose.
+matrix_synapse_reverse_proxy_companion_container_client_api_host_bind_port: ''
+
+# Controls whether the matrix-synapse-reverse-proxy-companion container exposes its HTTP Federation (Server-Server) API port (tcp/8048 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8048"), or empty string to not expose.
+matrix_synapse_reverse_proxy_companion_container_federation_api_host_bind_port: ''
+
+# The amount of worker processes and connections
+# Consider increasing these when you are expecting high amounts of traffic
+# http://nginx.org/en/docs/ngx_core_module.html#worker_connections
+matrix_synapse_reverse_proxy_companion_worker_processes: auto
+matrix_synapse_reverse_proxy_companion_worker_connections: 1024
+
+# Option to disable the access log
+matrix_synapse_reverse_proxy_companion_access_log_enabled: true
+
+# The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
+matrix_synapse_reverse_proxy_companion_tmp_directory_size_mb: "{{ (matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb | int) * 50 }}"
+matrix_synapse_reverse_proxy_companion_tmp_cache_directory_size_mb: "{{ (matrix_synapse_reverse_proxy_companion_synapse_cache_max_size_mb | int) * 2 }}"
+
+# A list of strings containing additional configuration blocks to add to the nginx server configuration (nginx.conf).
+# for big matrixservers to enlarge the number of open files to prevent timeouts
+# matrix_synapse_reverse_proxy_companion_additional_configuration_blocks:
+#  - 'worker_rlimit_nofile 30000;'
+matrix_synapse_reverse_proxy_companion_additional_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to the nginx event server configuration (nginx.conf).
+matrix_synapse_reverse_proxy_companion_event_additional_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to the nginx http's server configuration (nginx-http.conf).
+matrix_synapse_reverse_proxy_companion_http_additional_server_configuration_blocks: []
+
+# To increase request timeout in NGINX using proxy_read_timeout, proxy_connect_timeout, proxy_send_timeout, send_timeout directives
+# Nginx Default: proxy_connect_timeout 60s;   #Defines a timeout for establishing a connection with a proxied server
+# Nginx Default: proxy_send_timeout 60s;      #Sets a timeout for transmitting a request to the proxied server.
+# Nginx Default: proxy_read_timeout 60s;      #Defines a timeout for reading a response from the proxied server.
+# Nginx Default: send_timeout 60s;            #Sets a timeout for transmitting a response to the client.
+#
+# For more information visit:
+# http://nginx.org/en/docs/http/ngx_http_proxy_module.html
+# http://nginx.org/en/docs/http/ngx_http_core_module.html#send_timeout
+# https://www.nginx.com/resources/wiki/start/topics/examples/fullexample2/
+#
+# Here we are sticking with nginx default values change this value carefully.
+matrix_synapse_reverse_proxy_companion_proxy_connect_timeout: 60
+matrix_synapse_reverse_proxy_companion_proxy_send_timeout: 60
+matrix_synapse_reverse_proxy_companion_proxy_read_timeout: 60
+matrix_synapse_reverse_proxy_companion_send_timeout: 60
+
+# For OCSP purposes, we need to define a resolver at the `server{}` level or `http{}` level (we do the latter).
+#
+# Otherwise, we get warnings like this:
+# > [warn] 22#22: no resolver defined to resolve r3.o.lencr.org while requesting certificate status, responder: r3.o.lencr.org, certificate: "/matrix/ssl/config/live/.../fullchain.pem"
+#
+# We point it to the internal Docker resolver, which likely delegates to nameservers defined in `/etc/resolv.conf`.
+matrix_synapse_reverse_proxy_companion_http_level_resolver: 127.0.0.11
+
+matrix_synapse_reverse_proxy_companion_hostname: "matrix-synapse-reverse-proxy-companion"
+
+# matrix_synapse_reverse_proxy_companion_client_api_addr specifies the address where the Client-Server API is
+matrix_synapse_reverse_proxy_companion_client_api_addr: 'matrix-synapse:{{ matrix_synapse_container_client_api_port }}'
+# This needs to be equal or higher than the maximum upload size accepted by Synapse.
+matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb: 50
+
+# matrix_synapse_reverse_proxy_companion_federation_api_enabled specifies whether reverse proxying for the Federation (Server-Server) API should be done
+matrix_synapse_reverse_proxy_companion_federation_api_enabled: true
+# matrix_synapse_reverse_proxy_companion_federation_api_addr specifies the address where the Federation (Server-Server) API is
+matrix_synapse_reverse_proxy_companion_federation_api_addr: 'matrix-synapse:{{ matrix_synapse_container_federation_api_plain_port }}'
+matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb: "{{ (matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb | int) * 3 }}"
+
+# A list of strings containing additional configuration blocks to add to the nginx vhost handling the Synapse Client-Server API
+matrix_synapse_reverse_proxy_companion_synapse_client_api_additional_server_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to the nginx vhost handling the Synapse Federation (Server-Server) API
+matrix_synapse_reverse_proxy_companion_synapse_federation_api_additional_server_configuration_blocks: []
+
+
+# synapse worker activation and endpoint mappings
+matrix_synapse_reverse_proxy_companion_synapse_workers_enabled: false
+matrix_synapse_reverse_proxy_companion_synapse_workers_list: []
+matrix_synapse_reverse_proxy_companion_synapse_generic_worker_client_server_locations: []
+matrix_synapse_reverse_proxy_companion_synapse_generic_worker_federation_locations: []
+matrix_synapse_reverse_proxy_companion_synapse_stream_writer_typing_stream_worker_client_server_locations: []
+matrix_synapse_reverse_proxy_companion_synapse_stream_writer_to_device_stream_worker_client_server_locations: []
+matrix_synapse_reverse_proxy_companion_synapse_stream_writer_account_data_stream_worker_client_server_locations: []
+matrix_synapse_reverse_proxy_companion_synapse_stream_writer_receipts_stream_worker_client_server_locations: []
+matrix_synapse_reverse_proxy_companion_synapse_stream_writer_presence_stream_worker_client_server_locations: []
+matrix_synapse_reverse_proxy_companion_synapse_media_repository_locations: []
+matrix_synapse_reverse_proxy_companion_synapse_user_dir_locations: []
+
+
+# synapse content caching
+matrix_synapse_reverse_proxy_companion_synapse_cache_enabled: false
+matrix_synapse_reverse_proxy_companion_synapse_cache_path: /tmp/synapse-cache
+matrix_synapse_reverse_proxy_companion_synapse_cache_keys_zone_name: "STATIC"
+matrix_synapse_reverse_proxy_companion_synapse_cache_keys_zone_size: "10m"
+matrix_synapse_reverse_proxy_companion_synapse_cache_inactive_time: "48h"
+matrix_synapse_reverse_proxy_companion_synapse_cache_max_size_mb: 1024
+matrix_synapse_reverse_proxy_companion_synapse_cache_proxy_cache_valid_time: "24h"
+
+
+# Controls whether matrix-synapse-reverse-proxy-companion trusts an upstream server's X-Forwarded-Proto header.
+# The `matrix-synapse-reverse-proxy-companion` does not terminate SSL and always expects to be fronted by another reverse-proxy server (`matrix-nginx-proxy`, etc.).
+# As such, it trusts the protocol scheme forwarded by the upstream proxy.
+matrix_synapse_reverse_proxy_companion_trust_forwarded_proto: true
+matrix_synapse_reverse_proxy_companion_x_forwarded_proto_value: "{{ '$http_x_forwarded_proto' if matrix_synapse_reverse_proxy_companion_trust_forwarded_proto else '$scheme' }}"

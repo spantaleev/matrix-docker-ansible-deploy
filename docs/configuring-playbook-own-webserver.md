@@ -40,8 +40,8 @@ No matter which external webserver you decide to go with, you'll need to:
 
       Here are the variables required for the default configuration (Synapse and Element)
        ```
-        matrix_synapse_container_client_api_host_bind_port: '0.0.0.0:8008'
-        matrix_synapse_container_federation_api_plain_host_bind_port: '0.0.0.0:8048'
+		matrix_synapse_reverse_proxy_companion_container_client_api_host_bind_port: '0.0.0.0:8008'
+		matrix_synapse_reverse_proxy_companion_container_federation_api_host_bind_port: '0.0.0.0:8048'
         matrix_client_element_container_http_host_bind_port: "0.0.0.0:8765"
        ```
 
@@ -172,31 +172,24 @@ matrix_nginx_proxy_container_extra_arguments:
 
   # The Nginx proxy container will receive traffic from these subdomains
   - '--label "traefik.http.routers.matrix-nginx-proxy.rule=Host(`{{ matrix_server_fqn_matrix }}`,`{{ matrix_server_fqn_element }}`,`{{ matrix_server_fqn_dimension }}`,`{{ matrix_server_fqn_jitsi }}`)"'
-
   # (The 'web-secure' entrypoint must bind to port 443 in Traefik config)
   - '--label "traefik.http.routers.matrix-nginx-proxy.entrypoints=web-secure"'
-
   # (The 'default' certificate resolver must be defined in Traefik config)
   - '--label "traefik.http.routers.matrix-nginx-proxy.tls.certResolver=default"'
-
   # The Nginx proxy container uses port 8080 internally
   - '--label "traefik.http.services.matrix-nginx-proxy.loadbalancer.server.port=8080"'
 
-matrix_synapse_container_extra_arguments:
-  # May be unnecessary depending on Traefik config, but can't hurt
-  - '--label "traefik.enable=true"'
-
-  # The Synapse container will receive traffic from this subdomain
-  - '--label "traefik.http.routers.matrix-synapse.rule=Host(`{{ matrix_server_fqn_matrix }}`)"'
-
-  # (The 'synapse' entrypoint must bind to port 8448 in Traefik config)
-  - '--label "traefik.http.routers.matrix-synapse.entrypoints=synapse"'
-
+  # Federation
+  - '--label "traefik.http.routers.matrix-nginx-proxy-federation.rule=Host(`{{ matrix_server_fqn_matrix }}`)"'
+  # (The 'federation' entrypoint must bind to port 8448 in Traefik config)
+  - '--label "traefik.http.routers.matrix-nginx-proxy-federation.entrypoints=federation"'
   # (The 'default' certificate resolver must be defined in Traefik config)
-  - '--label "traefik.http.routers.matrix-synapse.tls.certResolver=default"'
+  - '--label "traefik.http.routers.matrix-nginx-proxy-federation.tls.certResolver=default"'
+  # The Nginx proxy container uses port `matrix_nginx_proxy_proxy_matrix_federation_port (8448) internally
+  - '--label "traefik.http.services.matrix-nginx-proxy-federation.loadbalancer.server.port={{ matrix_nginx_proxy_proxy_matrix_federation_port }}"'
+  - '--label "traefik.http.services.matrix-nginx-proxy-federation.loadbalancer.server.scheme={{ 'https' if matrix_nginx_proxy_https_enabled else 'http' }}"'
 
-  # The Synapse container uses port 8048 internally
-  - '--label "traefik.http.services.matrix-synapse.loadbalancer.server.port=8048"'
+matrix_synapse_reverse_proxy_companion_container_labels_traefik_enabled: true
 ```
 
 This method uses labels attached to the Nginx and Synapse containers to provide the Traefik Docker provider with the information it needs to proxy `matrix.DOMAIN`, `element.DOMAIN`, `dimension.DOMAIN` and `jitsi.DOMAIN`. Some [static configuration](https://docs.traefik.io/v2.0/reference/static-configuration/file/) is required in Traefik; namely, having endpoints on ports 443 and 8448 and having a certificate resolver.
@@ -240,7 +233,7 @@ services:
       - "--providers.docker.network=traefik"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web-secure.address=:443"
-      - "--entrypoints.synapse.address=:8448"
+      - "--entrypoints.federation.address=:8448"
       - "--certificatesresolvers.default.acme.tlschallenge=true"
       - "--certificatesresolvers.default.acme.email=YOUR EMAIL"
       - "--certificatesresolvers.default.acme.storage=/letsencrypt/acme.json"

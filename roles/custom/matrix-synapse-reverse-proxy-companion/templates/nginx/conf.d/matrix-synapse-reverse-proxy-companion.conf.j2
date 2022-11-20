@@ -1,0 +1,208 @@
+#jinja2: lstrip_blocks: "True"
+
+{% set generic_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'generic_worker') | list %}
+{% set stream_writer_typing_stream_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'stream_writer') | selectattr('stream_writer_stream', 'equalto', 'typing') | list %}
+{% set stream_writer_to_device_stream_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'stream_writer') | selectattr('stream_writer_stream', 'equalto', 'to_device') | list %}
+{% set stream_writer_account_data_stream_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'stream_writer') | selectattr('stream_writer_stream', 'equalto', 'account_data') | list %}
+{% set stream_writer_receipts_stream_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'stream_writer') | selectattr('stream_writer_stream', 'equalto', 'receipts') | list %}
+{% set stream_writer_presence_stream_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'stream_writer') | selectattr('stream_writer_stream', 'equalto', 'presence') | list %}
+{% set media_repository_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'media_repository') | list %}
+{% set user_dir_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'user_dir') | list %}
+
+{% macro render_worker_upstream(name, workers) %}
+{% if workers | length > 0 %}
+	upstream {{ name }} {
+		{% for worker in workers %}
+			server "{{ worker.name }}:{{ worker.port }}";
+		{% endfor %}
+	}
+{% endif %}
+{% endmacro %}
+
+{% macro render_locations_to_upstream(locations, upstream_name) %}
+	{% for location in locations %}
+	location ~ {{ location }} {
+		proxy_pass http://{{ upstream_name }}$request_uri;
+		proxy_set_header Host $host;
+	}
+	{% endfor %}
+{% endmacro %}
+
+{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
+	{% if matrix_synapse_reverse_proxy_companion_synapse_cache_enabled %}
+    	proxy_cache_path  {{ matrix_synapse_reverse_proxy_companion_synapse_cache_path }} levels=1:2 keys_zone={{ matrix_synapse_reverse_proxy_companion_synapse_cache_keys_zone_name }}:{{ matrix_synapse_reverse_proxy_companion_synapse_cache_keys_zone_size }} inactive={{ matrix_synapse_reverse_proxy_companion_synapse_cache_inactive_time }} max_size={{ matrix_synapse_reverse_proxy_companion_synapse_cache_max_size_mb }}m;
+	{% endif %}
+	# Round Robin "upstream" pools for workers
+
+	{% if generic_workers |length > 0 %}
+	upstream generic_workers_upstream {
+		# ensures that requests from the same client will always be passed
+		# to the same server (except when this server is unavailable)
+		hash $http_x_forwarded_for;
+
+		{% for worker in generic_workers %}
+			server "{{ worker.name }}:{{ worker.port }}";
+		{% endfor %}
+	}
+	{% endif %}
+
+	{{ render_worker_upstream('stream_writer_typing_stream_workers_upstream', stream_writer_typing_stream_workers) }}
+	{{ render_worker_upstream('stream_writer_to_device_stream_workers_upstream', stream_writer_to_device_stream_workers) }}
+	{{ render_worker_upstream('stream_writer_account_data_stream_workers_upstream', stream_writer_account_data_stream_workers) }}
+	{{ render_worker_upstream('stream_writer_receipts_stream_workers_upstream', stream_writer_receipts_stream_workers) }}
+	{{ render_worker_upstream('stream_writer_presence_stream_workers_upstream', stream_writer_presence_stream_workers) }}
+
+	{{ render_worker_upstream('media_repository_workers_upstream', media_repository_workers) }}
+
+	{{ render_worker_upstream('user_dir_workers_upstream', user_dir_workers) }}
+{% endif %}
+
+server {
+	listen 8008;
+	server_name {{ matrix_synapse_reverse_proxy_companion_hostname }};
+
+	server_tokens off;
+	root /dev/null;
+
+	gzip on;
+	gzip_types text/plain application/json;
+
+	{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
+		{# Workers redirects BEGIN #}
+
+		{% if generic_workers | length > 0 %}
+			# https://matrix-org.github.io/synapse/latest/workers.html#synapseappgeneric_worker
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_generic_worker_client_server_locations, 'generic_workers_upstream') }}
+		{% endif %}
+
+		{% if stream_writer_typing_stream_workers | length > 0 %}
+			# https://matrix-org.github.io/synapse/latest/workers.html#the-typing-stream
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_stream_writer_typing_stream_worker_client_server_locations, 'stream_writer_typing_stream_workers_upstream') }}
+		{% endif %}
+
+		{% if stream_writer_to_device_stream_workers | length > 0 %}
+			# https://matrix-org.github.io/synapse/latest/workers.html#the-to_device-stream
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_stream_writer_to_device_stream_worker_client_server_locations, 'stream_writer_to_device_stream_workers_upstream') }}
+		{% endif %}
+
+		{% if stream_writer_account_data_stream_workers | length > 0 %}
+			# https://matrix-org.github.io/synapse/latest/workers.html#the-account_data-stream
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_stream_writer_account_data_stream_worker_client_server_locations, 'stream_writer_account_data_stream_workers_upstream') }}
+		{% endif %}
+
+		{% if stream_writer_receipts_stream_workers | length > 0 %}
+			# https://matrix-org.github.io/synapse/latest/workers.html#the-receipts-stream
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_stream_writer_receipts_stream_worker_client_server_locations, 'stream_writer_receipts_stream_workers_upstream') }}
+		{% endif %}
+
+		{% if stream_writer_presence_stream_workers | length > 0 %}
+			# https://matrix-org.github.io/synapse/latest/workers.html#the-presence-stream
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_stream_writer_presence_stream_worker_client_server_locations, 'stream_writer_presence_stream_workers_upstream') }}
+		{% endif %}
+
+		{% if media_repository_workers | length > 0 %}
+			# https://matrix-org.github.io/synapse/latest/workers.html#synapseappmedia_repository
+			{% for location in matrix_synapse_reverse_proxy_companion_synapse_media_repository_locations %}
+			location ~ {{ location }} {
+				proxy_pass http://media_repository_workers_upstream$request_uri;
+				proxy_set_header Host $host;
+
+				client_body_buffer_size 25M;
+				client_max_body_size {{ matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb }}M;
+				proxy_max_temp_file_size 0;
+
+				{% if matrix_synapse_reverse_proxy_companion_synapse_cache_enabled %}
+					proxy_buffering        on;
+					proxy_cache            {{ matrix_synapse_reverse_proxy_companion_synapse_cache_keys_zone_name }};
+					proxy_cache_valid      any {{ matrix_synapse_reverse_proxy_companion_synapse_cache_proxy_cache_valid_time }};
+					proxy_force_ranges on;
+					add_header X-Cache-Status $upstream_cache_status;
+				{% endif %}
+			}
+			{% endfor %}
+		{% endif %}
+
+		{% if user_dir_workers | length > 0 %}
+			# https://matrix-org.github.io/synapse/latest/workers.html#updating-the-user-directory
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_user_dir_locations, 'user_dir_workers_upstream') }}
+		{% endif %}
+		{# Workers redirects END #}
+	{% endif %}
+
+	{% for configuration_block in matrix_synapse_reverse_proxy_companion_synapse_client_api_additional_server_configuration_blocks %}
+		{{- configuration_block }}
+	{% endfor %}
+
+	{# Everything else just goes to the API server ##}
+	location / {
+		{# Use the embedded DNS resolver in Docker containers to discover the service #}
+		resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }} valid=5s;
+		set $backend "{{ matrix_synapse_reverse_proxy_companion_client_api_addr }}";
+		proxy_pass http://$backend;
+
+		proxy_set_header Host $host;
+
+		client_body_buffer_size 25M;
+		client_max_body_size {{ matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb }}M;
+		proxy_max_temp_file_size 0;
+	}
+}
+
+{% if matrix_synapse_reverse_proxy_companion_federation_api_enabled %}
+server {
+	listen 8048;
+	server_name {{ matrix_synapse_reverse_proxy_companion_hostname }};
+
+	server_tokens off;
+
+	root /dev/null;
+
+	gzip on;
+	gzip_types text/plain application/json;
+
+	{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
+		{% if generic_workers | length > 0 %}
+			# https://matrix-org.github.io/synapse/latest/workers.html#synapseappgeneric_worker
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_generic_worker_federation_locations, 'generic_workers_upstream') }}
+		{% endif %}
+		{% if media_repository_workers | length > 0 %}
+			# https://matrix-org.github.io/synapse/latest/workers.html#synapseappmedia_repository
+			{% for location in matrix_synapse_reverse_proxy_companion_synapse_media_repository_locations %}
+			location ~ {{ location }} {
+				proxy_pass http://media_repository_workers_upstream$request_uri;
+				proxy_set_header Host $host;
+
+				client_body_buffer_size 25M;
+				client_max_body_size {{ matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb }}M;
+				proxy_max_temp_file_size 0;
+
+				{% if matrix_synapse_reverse_proxy_companion_synapse_cache_enabled %}
+					proxy_buffering        on;
+					proxy_cache            {{ matrix_synapse_reverse_proxy_companion_synapse_cache_keys_zone_name }};
+					proxy_cache_valid      any  {{ matrix_synapse_reverse_proxy_companion_synapse_cache_proxy_cache_valid_time }};
+					proxy_force_ranges on;
+					add_header X-Cache-Status $upstream_cache_status;
+				{% endif %}
+			}
+			{% endfor %}
+		{% endif %}
+	{% endif %}
+
+	{% for configuration_block in matrix_synapse_reverse_proxy_companion_synapse_federation_api_additional_server_configuration_blocks %}
+		{{- configuration_block }}
+	{% endfor %}
+
+	location / {
+		{# Use the embedded DNS resolver in Docker containers to discover the service #}
+		resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }} valid=5s;
+		set $backend "{{ matrix_synapse_reverse_proxy_companion_federation_api_addr }}";
+		proxy_pass http://$backend;
+
+		proxy_set_header Host $host;
+
+		client_body_buffer_size 25M;
+		client_max_body_size {{ matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb }}M;
+		proxy_max_temp_file_size 0;
+	}
+}
+{% endif %}

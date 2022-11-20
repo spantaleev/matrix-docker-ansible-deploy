@@ -57,12 +57,10 @@ devture_playbook_state_preserver_commit_hash_preservation_dst: "{{ matrix_base_d
 
 matrix_identity_server_url: "{{ ('https://' + matrix_server_fqn_matrix) if matrix_ma1sd_enabled else None }}"
 
-# If Synapse workers are enabled and matrix-nginx-proxy is disabled, certain APIs may not work over 'http://matrix-synapse:{{ matrix_synapse_container_client_api_port }}'.
-# This is because we explicitly disable them for the main Synapse process.
 matrix_homeserver_container_url: |-
   {{
     'http://matrix-nginx-proxy:12080' if matrix_nginx_proxy_enabled else {
-      'synapse': ('http://matrix-synapse:'+ matrix_synapse_container_client_api_port|string),
+      'synapse': ('http://matrix-synapse-reverse-proxy-companion:8008' if matrix_synapse_reverse_proxy_companion_enabled else 'http://matrix-synapse:'+ matrix_synapse_container_client_api_port|string),
       'dendrite': ('http://matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
       'conduit': ('http://matrix-conduit:' + matrix_conduit_port_number|string),
     }[matrix_homeserver_implementation]
@@ -71,7 +69,7 @@ matrix_homeserver_container_url: |-
 matrix_homeserver_container_federation_url: |-
   {{
     'http://matrix-nginx-proxy:12088' if matrix_nginx_proxy_enabled else {
-      'synapse': ('http://matrix-synapse:'+ matrix_synapse_container_federation_api_plain_port|string),
+      'synapse': ('http://matrix-synapse-reverse-proxy-companion:8048' if matrix_synapse_reverse_proxy_companion_enabled else 'http://matrix-synapse:'+ matrix_synapse_container_federation_api_plain_port|string),
       'dendrite': ('http://matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
       'conduit': ('http://matrix-conduit:' + matrix_conduit_port_number|string),
     }[matrix_homeserver_implementation]
@@ -1720,6 +1718,7 @@ matrix_ma1sd_database_password: "{{ '%s' | format(matrix_homeserver_generic_secr
 #
 ######################################################################
 
+
 ######################################################################
 #
 # matrix-nginx-proxy
@@ -1782,10 +1781,10 @@ matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container: "matrix-ngin
 matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "127.0.0.1:12088"
 
 matrix_nginx_proxy_proxy_synapse_enabled: "{{ matrix_synapse_enabled }}"
-matrix_nginx_proxy_proxy_synapse_client_api_addr_with_container: "matrix-synapse:{{ matrix_synapse_container_client_api_port }}"
-matrix_nginx_proxy_proxy_synapse_client_api_addr_sans_container: "127.0.0.1:{{ matrix_synapse_container_client_api_port }}"
-matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container: "matrix-synapse:{{matrix_synapse_container_federation_api_plain_port | string}}"
-matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container: "127.0.0.1:{{matrix_synapse_container_federation_api_plain_port | string}}"
+matrix_nginx_proxy_proxy_synapse_client_api_addr_with_container: "{{ 'matrix-synapse-reverse-proxy-companion:8008' if matrix_synapse_reverse_proxy_companion_enabled else 'matrix-synapse:8008' }}"
+matrix_nginx_proxy_proxy_synapse_client_api_addr_sans_container: "127.0.0.1:8008"
+matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container: "{{ 'matrix-synapse-reverse-proxy-companion:8048' if matrix_synapse_reverse_proxy_companion_enabled else 'matrix-synapse:8048' }}"
+matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container: "127.0.0.1:8048"
 
 matrix_nginx_proxy_proxy_dendrite_enabled: "{{ matrix_dendrite_enabled }}"
 matrix_nginx_proxy_proxy_dendrite_client_api_addr_with_container: "matrix-dendrite:{{ matrix_dendrite_http_bind_port | string }}"
@@ -1815,23 +1814,13 @@ matrix_nginx_proxy_self_check_validate_certificates: "{{ false if matrix_ssl_ret
 # and https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1074
 matrix_nginx_proxy_ocsp_stapling_enabled: "{{ matrix_ssl_retrieval_method != 'self-signed' }}"
 
-matrix_nginx_proxy_synapse_workers_enabled: "{{ matrix_synapse_workers_enabled }}"
-matrix_nginx_proxy_synapse_workers_list: "{{ matrix_synapse_workers_enabled_list }}"
-matrix_nginx_proxy_synapse_generic_worker_client_server_locations: "{{ matrix_synapse_workers_generic_worker_client_server_endpoints }}"
-matrix_nginx_proxy_synapse_generic_worker_federation_locations: "{{ matrix_synapse_workers_generic_worker_federation_endpoints }}"
-matrix_nginx_proxy_synapse_stream_writer_typing_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_typing_stream_worker_client_server_endpoints }}"
-matrix_nginx_proxy_synapse_stream_writer_to_device_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_to_device_stream_worker_client_server_endpoints }}"
-matrix_nginx_proxy_synapse_stream_writer_account_data_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_account_data_stream_worker_client_server_endpoints }}"
-matrix_nginx_proxy_synapse_stream_writer_receipts_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_receipts_stream_worker_client_server_endpoints }}"
-matrix_nginx_proxy_synapse_stream_writer_presence_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_presence_stream_worker_client_server_endpoints }}"
-matrix_nginx_proxy_synapse_media_repository_locations: "{{matrix_synapse_workers_media_repository_endpoints|default([]) }}"
-matrix_nginx_proxy_synapse_user_dir_locations: "{{ matrix_synapse_workers_user_dir_worker_client_server_endpoints|default([]) }}"
-
 matrix_nginx_proxy_systemd_wanted_services_list: |
   {{
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
     (matrix_synapse_webserving_workers_systemd_services_list if matrix_homeserver_implementation == 'synapse' and matrix_synapse_workers_enabled else [])
+    +
+    (['matrix-synapse-reverse-proxy-companion.service'] if matrix_synapse_reverse_proxy_companion_enabled else [])
     +
     (['matrix-corporal.service'] if matrix_corporal_enabled else [])
     +
@@ -2328,16 +2317,6 @@ matrix_synapse_container_image_self_build: "{{ matrix_architecture not in ['arm6
 # When ma1sd is enabled, we can use it to validate phone numbers. It's something that the homeserver cannot do by itself.
 matrix_synapse_account_threepid_delegates_msisdn: "{{ 'http://matrix-ma1sd:' + matrix_ma1sd_container_port | string if matrix_ma1sd_enabled else '' }}"
 
-# Normally, matrix-nginx-proxy is enabled and nginx can reach Synapse over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it,
-# you can expose Synapse's ports to the host.
-#
-# For exposing the Matrix Client API's port (plain HTTP) to the local host.
-matrix_synapse_container_client_api_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:' + matrix_synapse_container_client_api_port | string }}"
-#
-# For exposing the Matrix Federation API's plain port (plain HTTP) to the local host.
-matrix_synapse_container_federation_api_plain_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:' + matrix_synapse_container_federation_api_plain_port | string }}"
-#
 # For exposing the Matrix Federation API's TLS port (HTTPS) to the internet on all network interfaces.
 matrix_synapse_container_federation_api_tls_host_bind_port: "{{ matrix_federation_public_port if (matrix_synapse_federation_enabled and matrix_synapse_tls_federation_listener_enabled) else '' }}"
 #
@@ -2423,6 +2402,37 @@ matrix_synapse_app_service_runtime_injected_config_files: "{{ matrix_homeserver_
 ######################################################################
 #
 # /matrix-synapse
+#
+######################################################################
+
+######################################################################
+#
+# matrix-synapse-reverse-proxy-companion
+#
+######################################################################
+
+matrix_synapse_reverse_proxy_companion_enabled: "{{ matrix_synapse_enabled }}"
+
+matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb: "{{ matrix_synapse_max_upload_size_mb }}"
+
+matrix_synapse_reverse_proxy_companion_container_client_api_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8008' }}"
+matrix_synapse_reverse_proxy_companion_container_federation_api_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8048' }}"
+
+matrix_synapse_reverse_proxy_companion_synapse_workers_enabled: "{{ matrix_synapse_workers_enabled }}"
+matrix_synapse_reverse_proxy_companion_synapse_workers_list: "{{ matrix_synapse_workers_enabled_list }}"
+matrix_synapse_reverse_proxy_companion_synapse_generic_worker_client_server_locations: "{{ matrix_synapse_workers_generic_worker_client_server_endpoints }}"
+matrix_synapse_reverse_proxy_companion_synapse_generic_worker_federation_locations: "{{ matrix_synapse_workers_generic_worker_federation_endpoints }}"
+matrix_synapse_reverse_proxy_companion_synapse_stream_writer_typing_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_typing_stream_worker_client_server_endpoints }}"
+matrix_synapse_reverse_proxy_companion_synapse_stream_writer_to_device_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_to_device_stream_worker_client_server_endpoints }}"
+matrix_synapse_reverse_proxy_companion_synapse_stream_writer_account_data_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_account_data_stream_worker_client_server_endpoints }}"
+matrix_synapse_reverse_proxy_companion_synapse_stream_writer_receipts_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_receipts_stream_worker_client_server_endpoints }}"
+matrix_synapse_reverse_proxy_companion_synapse_stream_writer_presence_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_presence_stream_worker_client_server_endpoints }}"
+matrix_synapse_reverse_proxy_companion_synapse_media_repository_locations: "{{matrix_synapse_workers_media_repository_endpoints|default([]) }}"
+matrix_synapse_reverse_proxy_companion_synapse_user_dir_locations: "{{ matrix_synapse_workers_user_dir_worker_client_server_endpoints|default([]) }}"
+
+######################################################################
+#
+# /matrix-synapse-reverse-proxy-companion
 #
 ######################################################################
 

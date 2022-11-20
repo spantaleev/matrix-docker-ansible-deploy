@@ -8,16 +8,16 @@
 # - various temp paths are changed to `/tmp`, so that a non-root user can write to them
 # - the `user` directive was removed, as we don't want nginx to switch users
 
-worker_processes {{ matrix_nginx_proxy_worker_processes }};
+worker_processes {{ matrix_synapse_reverse_proxy_companion_worker_processes }};
 error_log /var/log/nginx/error.log warn;
 pid /tmp/nginx.pid;
-{% for configuration_block in matrix_nginx_proxy_proxy_additional_configuration_blocks %}
+{% for configuration_block in matrix_synapse_reverse_proxy_companion_additional_configuration_blocks %}
 	{{- configuration_block }}
 {% endfor %}
 
 events {
-	worker_connections {{ matrix_nginx_proxy_worker_connections }};
-{% for configuration_block in matrix_nginx_proxy_proxy_event_additional_configuration_blocks %}
+	worker_connections {{ matrix_synapse_reverse_proxy_companion_worker_connections }};
+{% for configuration_block in matrix_synapse_reverse_proxy_companion_event_additional_configuration_blocks %}
 	{{- configuration_block }}
 {% endfor %}
 }
@@ -37,16 +37,16 @@ http {
 					'$status $body_bytes_sent "$http_referer" '
 					'"$http_user_agent" "$http_x_forwarded_for"';
 
-	{% if matrix_nginx_proxy_access_log_enabled %}
+	{% if matrix_synapse_reverse_proxy_companion_access_log_enabled %}
 	access_log /var/log/nginx/access.log main;
 	{% else %}
 	access_log off;
 	{% endif %}
 
-	proxy_connect_timeout       {{ matrix_nginx_proxy_connect_timeout }};
-	proxy_send_timeout          {{ matrix_nginx_proxy_send_timeout }};
-	proxy_read_timeout          {{ matrix_nginx_proxy_read_timeout }};
-	send_timeout                {{ matrix_nginx_send_timeout }};
+	proxy_connect_timeout       {{ matrix_synapse_reverse_proxy_companion_proxy_connect_timeout }};
+	proxy_send_timeout          {{ matrix_synapse_reverse_proxy_companion_proxy_send_timeout }};
+	proxy_read_timeout          {{ matrix_synapse_reverse_proxy_companion_proxy_read_timeout }};
+	send_timeout                {{ matrix_synapse_reverse_proxy_companion_send_timeout }};
 
 	sendfile on;
 	#tcp_nopush on;
