@@ -12,7 +12,9 @@ growth of the Matrix community, and helps to make Matrix a success.
 If you'd like to **help by enabling submission of general usage statistics** for your homeserver, add this to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
-matrix_synapse_report_stats: true
+matrix_synapse_report_stats: true # for synapse 
+
+matrix_dendrite_report_stats: true # for dendrite 
 ```
 
 
