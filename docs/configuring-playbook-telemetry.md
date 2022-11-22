@@ -20,7 +20,7 @@ matrix_dendrite_report_stats: true # for dendrite
 
 ## Usage statistics being submitted
 
-When enabled, your homeserver e will regularly upload a few dozen statistics about your server.
+When enabled, your homeserver will regularly upload a few dozen statistics about your server.
 This data includes your homeserver's domain, the total number of users, the number of active
 users, the total number of rooms, and the number of messages sent per day on your homeserver.
 
