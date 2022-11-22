@@ -1,26 +1,18 @@
 # Alternative architectures
 
-As stated in the [Prerequisites](prerequisites.md), currently only `x86_64` is fully supported. However, it is possible to set the target architecture, and some tools can be built on the host or other measures can be used.
+As stated in the [Prerequisites](prerequisites.md), currently only `amd64` (`x86_64`) is fully supported.
 
-To that end add the following variable to your `vars.yml` file (see [Configuring playbook](configuring-playbook.md)):
+The playbook automatically determines the target server's architecture (the `matrix_architecture` variable) to be one of the following:
 
-```yaml
-matrix_architecture: <your-matrix-server-architecture>
-```
-
-Currently supported architectures are the following:
-- `amd64` (the default)
-- `arm64`
+- `amd64` (`x86_64`)
 - `arm32`
+- `arm64`
 
-so for the Raspberry Pi, the following should be in your `vars.yml` file:
+Some tools and container images can be built on the host or other measures can be used to install on that architecture.
 
-```yaml
-matrix_architecture: "arm32"
-```
 
 ## Implementation details
 
 For `amd64`, prebuilt container images (see the [container images we use](container-images.md)) are used for all components (except [Hydrogen](configuring-playbook-client-hydrogen.md), which goes through self-building).
 
-For other architectures, components which have a prebuilt image make use of it. If the component is not available for the specific architecture, [self-building](self-building.md) will be used. Not all components support self-building though, so your mileage may vary.
+For other architecture (`arm64`, `arm32`), components which have a prebuilt image make use of it. If the component is not available for the specific architecture, [self-building](self-building.md) will be used. Not all components support self-building though, so your mileage may vary.
