@@ -8,12 +8,6 @@
   tags:
     - setup-all
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/clean_up_old_files.yml"
-  when: run_setup | bool
-  tags:
-    - setup-all
-    - common
-
 # This needs to always run, because it populates `matrix_user_uid` and `matrix_user_gid`,
 # which are required by many other roles.
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_matrix_user.yml"
