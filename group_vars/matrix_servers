@@ -19,6 +19,254 @@
 # Also see `devture_docker_sdk_for_python_installation_enabled`.
 matrix_playbook_docker_installation_enabled: true
 
+# This list is not exhaustive and final.
+# Synapse workers are still injected into the list at runtime.
+# Additional JVB workers (playbooks/jitsi_jvb.yml -- roles/custom/matrix-jitsi/tasks/init_additional_jvb.yml) override this variable at runtime as well.
+matrix_systemd_services_list: |
+  {{
+    (['matrix-backup-borg.timer'] if matrix_backup_borg_enabled else [])
+    +
+    (['matrix-bot-buscarron.service'] if matrix_bot_buscarron_enabled else [])
+    +
+    (['matrix-bot-go-neb.service'] if matrix_bot_go_neb_enabled else [])
+    +
+    (['matrix-bot-honoroit.service'] if matrix_bot_honoroit_enabled else [])
+    +
+    (['matrix-bot-matrix-registration-bot.service'] if matrix_bot_matrix_registration_bot_enabled else [])
+    +
+    (['matrix-bot-matrix-reminder-bot.service'] if matrix_bot_matrix_reminder_bot_enabled else [])
+    +
+    (['matrix-bot-maubot.service'] if matrix_bot_maubot_enabled else [])
+    +
+    (['matrix-bot-mjolnir.service'] if matrix_bot_mjolnir_enabled else [])
+    +
+    (['matrix-bot-postmoogle.service'] if matrix_bot_postmoogle_enabled else [])
+    +
+    (['matrix-appservice-discord.service'] if matrix_appservice_discord_enabled else [])
+    +
+    (['matrix-appservice-irc.service'] if matrix_appservice_irc_enabled else [])
+    +
+    (['matrix-appservice-kakaotalk.service', 'matrix-appservice-kakaotalk-node.service'] if matrix_appservice_kakaotalk_enabled else [])
+    +
+    (['matrix-appservice-slack.service'] if matrix_appservice_slack_enabled else [])
+    +
+    (['matrix-appservice-webhooks.service'] if matrix_appservice_webhooks_enabled else [])
+    +
+    (['matrix-beeper-linkedin.service'] if matrix_beeper_linkedin_enabled else [])
+    +
+    (['matrix-go-skype-bridge.service'] if matrix_go_skype_bridge_enabled else [])
+    +
+    (['matrix-heisenbridge.service'] if matrix_heisenbridge_enabled else [])
+    +
+    (['matrix-hookshot.service'] if matrix_hookshot_enabled else [])
+    +
+    (['matrix-mautrix-discord.service'] if matrix_mautrix_discord_enabled else [])
+    +
+    (['matrix-mautrix-facebook.service'] if matrix_mautrix_facebook_enabled else [])
+    +
+    (['matrix-mautrix-googlechat.service'] if matrix_mautrix_googlechat_enabled else [])
+    +
+    (['matrix-mautrix-hangouts.service'] if matrix_mautrix_hangouts_enabled else [])
+    +
+    (['matrix-mautrix-instagram.service'] if matrix_mautrix_instagram_enabled else [])
+    +
+    (['matrix-mautrix-signal.service', 'matrix-mautrix-signal-daemon.service'] if matrix_mautrix_signal_enabled else [])
+    +
+    (['matrix-mautrix-telegram.service'] if matrix_mautrix_telegram_enabled else [])
+    +
+    (['matrix-mautrix-twitter.service'] if matrix_mautrix_twitter_enabled else [])
+    +
+    (['matrix-mautrix-whatsapp.service'] if matrix_mautrix_whatsapp_enabled else [])
+    +
+    (['matrix-mx-puppet-discord.service'] if matrix_mx_puppet_discord_enabled else [])
+    +
+    (['matrix-mx-puppet-groupme.service'] if matrix_mx_puppet_groupme_enabled else [])
+    +
+    (['matrix-mx-puppet-instagram.service'] if matrix_mx_puppet_instagram_enabled else [])
+    +
+    (['matrix-mx-puppet-slack.service'] if matrix_mx_puppet_slack_enabled else [])
+    +
+    (['matrix-mx-puppet-steam.service'] if matrix_mx_puppet_steam_enabled else [])
+    +
+    (['matrix-mx-puppet-twitter.service'] if matrix_mx_puppet_twitter_enabled else [])
+    +
+    (['matrix-sms-bridge.service'] if matrix_sms_bridge_enabled else [])
+    +
+    (['matrix-cactus-comments.service'] if matrix_cactus_comments_enabled else [])
+    +
+    (['matrix-client-cinny.service'] if matrix_client_cinny_enabled else [])
+    +
+    (['matrix-client-element.service'] if matrix_client_element_enabled else [])
+    +
+    (['matrix-client-hydrogen.service'] if matrix_client_hydrogen_enabled else [])
+    +
+    (['matrix-' + matrix_homeserver_implementation + '.service'])
+    +
+    (['matrix-corporal.service'] if matrix_corporal_enabled else [])
+    +
+    (['matrix-coturn.service'] if matrix_coturn_enabled else [])
+    +
+    (['matrix-coturn-reload.timer'] if (matrix_coturn_enabled and matrix_coturn_tls_enabled) else [])
+    +
+    (['matrix-dimension.service'] if matrix_dimension_enabled else [])
+    +
+    (['matrix-dynamic-dns.service'] if matrix_dynamic_dns_enabled else [])
+    +
+    (['matrix-email2matrix.service'] if matrix_email2matrix_enabled else [])
+    +
+    (['matrix-etherpad.service'] if matrix_etherpad_enabled else [])
+    +
+    (['matrix-grafana.service'] if matrix_grafana_enabled else [])
+    +
+    (['matrix-jitsi-web.service', 'matrix-jitsi-prosody.service', 'matrix-jitsi-jicofo.service', 'matrix-jitsi-jvb.service'] if matrix_jitsi_enabled else [])
+    +
+    (['matrix-ldap-registration-proxy.service'] if matrix_ldap_registration_proxy_enabled else [])
+    +
+    (['matrix-ma1sd.service'] if matrix_ma1sd_enabled else [])
+    +
+    (['matrix-mailer.service'] if matrix_mailer_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+    +
+    (matrix_ssl_renewal_systemd_units_list | selectattr('applicable') | map(attribute='name'))
+    +
+    (['matrix-ntfy.service'] if matrix_ntfy_enabled else [])
+    +
+    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    +
+    (['matrix-postgres-backup.service'] if matrix_postgres_backup_enabled else [])
+    +
+    (['matrix-prometheus.service'] if matrix_prometheus_enabled else [])
+    +
+    (['matrix-prometheus-node-exporter.service'] if matrix_prometheus_node_exporter_enabled else [])
+    +
+    (['matrix-prometheus-postgres-exporter.service'] if matrix_prometheus_postgres_exporter_enabled else [])
+    +
+    (['matrix-redis'] if matrix_redis_enabled else [])
+    +
+    (['matrix-registration.service'] if matrix_registration_enabled else [])
+    +
+    (['matrix-sygnal.service'] if matrix_sygnal_enabled else [])
+    +
+    (['matrix-goofys.service'] if matrix_s3_media_store_enabled else [])
+    +
+    (['matrix-synapse-s3-storage-provider-migrate.timer'] if matrix_synapse_ext_synapse_s3_storage_provider_enabled else [])
+    +
+    (['matrix-synapse-admin.service'] if matrix_synapse_admin_enabled else [])
+    +
+    (['matrix-synapse-reverse-proxy-companion.service'] if matrix_synapse_reverse_proxy_companion_enabled else [])
+  }}
+
+matrix_homeserver_app_service_config_files_auto: |
+  {{
+    (['--mount type=bind,src=' + matrix_appservice_discord_config_path + '/registration.yaml,dst=/matrix-appservice-discord-registration.yaml,ro'] if matrix_appservice_discord_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_appservice_irc_config_path + '/registration.yaml,dst=/matrix-appservice-irc-registration.yaml,ro'] if matrix_appservice_irc_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_appservice_kakaotalk_config_path + '/registration.yaml,dst=/matrix-appservice-kakaotalk-registration.yaml,ro'] if matrix_appservice_kakaotalk_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_appservice_slack_config_path + '/slack-registration.yaml,dst=/matrix-appservice-slack-registration.yaml,ro'] if matrix_appservice_slack_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_appservice_webhooks_config_path + '/webhooks-registration.yaml,dst=/matrix-appservice-webhooks-registration.yaml,ro'] if matrix_appservice_webhooks_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_beeper_linkedin_config_path + '/registration.yaml,dst=/matrix-beeper-linkedin-registration.yaml,ro'] if matrix_beeper_linkedin_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_go_skype_bridge_config_path + '/registration.yaml,dst=/matrix-go-skype-bridge-registration.yaml,ro'] if matrix_go_skype_bridge_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_heisenbridge_base_path + '/registration.yaml,dst=/heisenbridge-registration.yaml,ro'] if matrix_heisenbridge_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_hookshot_base_path + '/registration.yml,dst=/hookshot-registration.yml,ro'] if matrix_hookshot_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_discord_config_path + '/registration.yaml,dst=/matrix-mautrix-discord-registration.yaml,ro'] if matrix_mautrix_discord_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_facebook_config_path + '/registration.yaml,dst=/matrix-mautrix-facebook-registration.yaml,ro'] if matrix_mautrix_facebook_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_googlechat_config_path + '/registration.yaml,dst=/matrix-mautrix-googlechat-registration.yaml,ro'] if matrix_mautrix_googlechat_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_hangouts_config_path + '/registration.yaml,dst=/matrix-mautrix-hangouts-registration.yaml,ro'] if matrix_mautrix_hangouts_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_instagram_config_path + '/registration.yaml,dst=/matrix-mautrix-instagram-registration.yaml,ro'] if matrix_mautrix_instagram_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_signal_config_path + '/registration.yaml,dst=/matrix-mautrix-signal-registration.yaml,ro'] if matrix_mautrix_signal_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_telegram_config_path + '/registration.yaml,dst=/matrix-mautrix-telegram-registration.yaml,ro'] if matrix_mautrix_telegram_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_twitter_config_path + '/registration.yaml,dst=/matrix-mautrix-twitter-registration.yaml,ro'] if matrix_mautrix_twitter_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_whatsapp_config_path + '/registration.yaml,dst=/matrix-mautrix-whatsapp-registration.yaml,ro'] if matrix_mautrix_whatsapp_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mx_puppet_discord_config_path + '/registration.yaml,dst=/matrix-mx-puppet-discord-registration.yaml,ro'] if matrix_mx_puppet_discord_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mx_puppet_groupme_config_path + '/registration.yaml,dst=/matrix-mx-puppet-groupme-registration.yaml,ro'] if matrix_mx_puppet_groupme_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mx_puppet_instagram_config_path + '/registration.yaml,dst=/matrix-mx-puppet-instagram-registration.yaml,ro'] if matrix_mx_puppet_instagram_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mx_puppet_slack_config_path + '/registration.yaml,dst=/matrix-mx-puppet-slack-registration.yaml,ro'] if matrix_mx_puppet_slack_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mx_puppet_steam_config_path + '/registration.yaml,dst=/matrix-mx-puppet-steam-registration.yaml,ro'] if matrix_mx_puppet_steam_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mx_puppet_twitter_config_path + '/registration.yaml,dst=/matrix-mx-puppet-twitter-registration.yaml,ro'] if matrix_mx_puppet_twitter_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_sms_bridge_config_path + '/registration.yaml,dst=/matrix-sms-bridge-registration.yaml,ro'] if matrix_sms_bridge_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_cactus_comments_app_service_config_file + ',dst=/matrix-cactus-comments.yaml,ro'] if matrix_cactus_comments_enabled else [])
+  }}
+
+matrix_homeserver_additional_config_files_auto: |
+  {{
+    (['/matrix-appservice-discord-registration.yaml'] if matrix_appservice_discord_enabled else [])
+    +
+    (['/matrix-appservice-irc-registration.yaml'] if matrix_appservice_irc_enabled else [])
+    +
+    (['/matrix-appservice-kakaotalk-registration.yaml'] if matrix_appservice_kakaotalk_enabled else [])
+    +
+    (['/matrix-appservice-slack-registration.yaml'] if matrix_appservice_slack_enabled else [])
+    +
+    (['/matrix-appservice-webhooks-registration.yaml'] if matrix_appservice_webhooks_enabled else [])
+    +
+    (['/matrix-beeper-linkedin-registration.yaml'] if matrix_beeper_linkedin_enabled else [])
+    +
+    (['/matrix-go-skype-bridge-registration.yaml'] if matrix_go_skype_bridge_enabled else [])
+    +
+    (['/heisenbridge-registration.yaml'] if matrix_heisenbridge_enabled else [])
+    +
+    (['/hookshot-registration.yml'] if matrix_hookshot_enabled else [])
+    +
+    (['/matrix-mautrix-discord-registration.yaml'] if matrix_mautrix_discord_enabled else [])
+    +
+    (['/matrix-mautrix-facebook-registration.yaml'] if matrix_mautrix_facebook_enabled else [])
+    +
+    (['/matrix-mautrix-googlechat-registration.yaml'] if matrix_mautrix_googlechat_enabled else [])
+    +
+    (['/matrix-mautrix-hangouts-registration.yaml'] if matrix_mautrix_hangouts_enabled else [])
+    +
+    (['/matrix-mautrix-instagram-registration.yaml'] if matrix_mautrix_instagram_enabled else [])
+    +
+    (['/matrix-mautrix-signal-registration.yaml'] if matrix_mautrix_signal_enabled else [])
+    +
+    (['/matrix-mautrix-telegram-registration.yaml'] if matrix_mautrix_telegram_enabled else [])
+    +
+    (['/matrix-mautrix-twitter-registration.yaml'] if matrix_mautrix_twitter_enabled else [])
+    +
+    (['/matrix-mautrix-whatsapp-registration.yaml'] if matrix_mautrix_whatsapp_enabled else [])
+    +
+    (['/matrix-mx-puppet-discord-registration.yaml'] if matrix_mx_puppet_discord_enabled else [])
+    +
+    (['/matrix-mx-puppet-groupme-registration.yaml'] if matrix_mx_puppet_groupme_enabled else [])
+    +
+    (['/matrix-mx-puppet-instagram-registration.yaml'] if matrix_mx_puppet_instagram_enabled else [])
+    +
+    (['/matrix-mx-puppet-slack-registration.yaml'] if matrix_mx_puppet_slack_enabled else [])
+    +
+    (['/matrix-mx-puppet-steam-registration.yaml'] if matrix_mx_puppet_steam_enabled else [])
+    +
+    (['/matrix-mx-puppet-twitter-registration.yaml'] if matrix_mx_puppet_twitter_enabled else [])
+    +
+    (['/matrix-sms-bridge-registration.yaml'] if matrix_sms_bridge_enabled else [])
+    +
+    (['/matrix-cactus-comments.yaml'] if matrix_cactus_comments_enabled else [])
+  }}
+
 ########################################################################
 #                                                                      #
 # /Playbook                                                            #
@@ -2413,8 +2661,8 @@ matrix_synapse_redis_enabled: "{{ matrix_redis_enabled }}"
 matrix_synapse_redis_host: "{{ 'matrix-redis' if matrix_redis_enabled else '' }}"
 matrix_synapse_redis_password: "{{ matrix_redis_connection_password if matrix_redis_enabled else '' }}"
 
-matrix_synapse_container_runtime_injected_arguments: "{{ matrix_homeserver_container_runtime_injected_arguments }}"
-matrix_synapse_app_service_runtime_injected_config_files: "{{ matrix_homeserver_app_service_runtime_injected_config_files }}"
+matrix_synapse_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
+matrix_synapse_app_service_config_files_auto: "{{ matrix_homeserver_app_service_config_files_auto }}"
 
 ######################################################################
 #
@@ -2723,8 +2971,8 @@ matrix_dendrite_systemd_wanted_services_list: |
     (['matrix-coturn.service'] if matrix_coturn_enabled else [])
   }}
 
-matrix_dendrite_container_runtime_injected_arguments: "{{ matrix_homeserver_container_runtime_injected_arguments }}"
-matrix_dendrite_app_service_runtime_injected_config_files: "{{ matrix_homeserver_app_service_runtime_injected_config_files }}"
+matrix_dendrite_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
+matrix_dendrite_app_service_config_files_auto: "{{ matrix_homeserver_app_service_config_files_auto }}"
 
 ######################################################################
 #

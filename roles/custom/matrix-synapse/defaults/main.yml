@@ -101,15 +101,15 @@ matrix_synapse_container_manhole_api_host_bind_port: ''
 # Also see `matrix_synapse_container_arguments`
 matrix_synapse_container_extra_arguments: []
 
-# matrix_synapse_container_runtime_injected_arguments is a list of extra arguments to pass to the container.
-# This list is built during runtime. You're not meant to override this variable.
+# matrix_synapse_container_extra_arguments_auto is a list of extra arguments to pass to the container.
+# This list is managed by the playbook. You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_synapse_container_extra_arguments`.
-matrix_synapse_container_runtime_injected_arguments: []
+matrix_synapse_container_extra_arguments_auto: []
 
 # matrix_synapse_container_arguments holds the final list of extra arguments to pass to the container.
 # You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_synapse_container_extra_arguments`.
-matrix_synapse_container_arguments: "{{ matrix_synapse_container_extra_arguments + matrix_synapse_container_runtime_injected_arguments }}"
+matrix_synapse_container_arguments: "{{ matrix_synapse_container_extra_arguments + matrix_synapse_container_extra_arguments_auto }}"
 
 # List of systemd services that matrix-synapse.service depends on
 matrix_synapse_systemd_required_services_list: ['docker.service']
@@ -371,15 +371,15 @@ matrix_synapse_additional_loggers: []
 # Also see `matrix_synapse_app_service_config_files_final`
 matrix_synapse_app_service_config_files: []
 
-# matrix_synapse_app_service_runtime_injected_config_files is a list of appservice config files.
-# This list is built during runtime. You're not meant to override this variable.
+# matrix_synapse_app_service_config_files_auto is a list of appservice config files.
+# This list is managed by the playbook. You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_synapse_app_service_config_files`.
-matrix_synapse_app_service_runtime_injected_config_files: []
+matrix_synapse_app_service_config_files_auto: []
 
 # matrix_synapse_app_service_config_files_final holds the final list of config files to pass to the container.
 # You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_synapse_app_service_config_files`.
-matrix_synapse_app_service_config_files_final: "{{ matrix_synapse_app_service_config_files + matrix_synapse_app_service_runtime_injected_config_files }}"
+matrix_synapse_app_service_config_files_final: "{{ matrix_synapse_app_service_config_files + matrix_synapse_app_service_config_files_auto }}"
 
 # This is set dynamically during execution depending on whether
 # any password providers have been enabled or not.

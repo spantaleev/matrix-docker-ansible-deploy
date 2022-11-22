@@ -46,15 +46,15 @@ matrix_dendrite_container_https_host_bind_address: ""
 # Also see `matrix_dendrite_container_arguments`
 matrix_dendrite_container_extra_arguments: []
 
-# matrix_dendrite_container_runtime_injected_arguments is a list of extra arguments to pass to the container.
-# This list is built during runtime. You're not meant to override this variable.
+# matrix_dendrite_container_extra_arguments_auto is a list of extra arguments to pass to the container.
+# This list is managed by the playbook. You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_dendrite_container_extra_arguments`.
-matrix_dendrite_container_runtime_injected_arguments: []
+matrix_dendrite_container_extra_arguments_auto: []
 
 # matrix_dendrite_container_arguments holds the final list of extra arguments to pass to the container.
 # You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_dendrite_container_extra_arguments`.
-matrix_dendrite_container_arguments: "{{ matrix_dendrite_container_extra_arguments + matrix_dendrite_container_runtime_injected_arguments }}"
+matrix_dendrite_container_arguments: "{{ matrix_dendrite_container_extra_arguments + matrix_dendrite_container_extra_arguments_auto }}"
 
 # A list of extra arguments to pass to the container process (`dendrite-monolith` command)
 # Example:
@@ -118,15 +118,15 @@ matrix_dendrite_container_additional_volumes: []
 # Also see `matrix_dendrite_app_service_config_files_final`
 matrix_dendrite_app_service_config_files: []
 
-# matrix_dendrite_app_service_runtime_injected_config_files is a list of appservice config files.
-# This list is built during runtime. You're not meant to override this variable.
+# matrix_dendrite_app_service_config_files_auto is a list of appservice config files.
+# This list is managed by the playbook. You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_dendrite_app_service_config_files`.
-matrix_dendrite_app_service_runtime_injected_config_files: []
+matrix_dendrite_app_service_config_files_auto: []
 
 # matrix_dendrite_app_service_config_files_final holds the final list of config files to pass to the container.
 # You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_dendrite_app_service_config_files`.
-matrix_dendrite_app_service_config_files_final: "{{ matrix_dendrite_app_service_config_files + matrix_dendrite_app_service_runtime_injected_config_files }}"
+matrix_dendrite_app_service_config_files_final: "{{ matrix_dendrite_app_service_config_files + matrix_dendrite_app_service_config_files_auto }}"
 
 # Enable exposure of metrics
 matrix_dendrite_metrics_enabled: false
