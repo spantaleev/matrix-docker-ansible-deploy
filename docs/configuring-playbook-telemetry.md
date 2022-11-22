@@ -20,9 +20,9 @@ matrix_dendrite_report_stats: true # for dendrite
 
 ## Usage statistics being submitted
 
-When enabled, Synapse will regularly upload a few dozen statistics about your server.
+When enabled, your homeserver e will regularly upload a few dozen statistics about your server.
 This data includes your homeserver's domain, the total number of users, the number of active
 users, the total number of rooms, and the number of messages sent per day on your homeserver.
 
-See [Synapse's documentation](https://github.com/matrix-org/synapse/blob/develop/docs/usage/administration/monitoring/reporting_homeserver_usage_statistics.md#available-statistics)
+See [Synapse's documentation](https://github.com/matrix-org/synapse/blob/develop/docs/usage/administration/monitoring/reporting_homeserver_usage_statistics.md#available-statistics) or [Dendrite's documentation](https://github.com/matrix-org/dendrite/blob/main/docs/FAQ.md#what-is-being-reported-when-enabling-phone-home-statistics)
 for the full list of statistics that are reported.
