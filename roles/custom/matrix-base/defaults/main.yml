@@ -253,9 +253,26 @@ matrix_well_known_matrix_server_enabled: true
 # See `matrix_homeserver_admin_contacts`, `matrix_homeserver_support_url`, etc.
 matrix_well_known_matrix_support_enabled: false
 
-# This will contain a list of enabled services that the playbook is managing.
-# Each component is expected to append its service name to this list.
-matrix_systemd_services_list: []
+# matrix_systemd_services_list_auto contains a list of systemd services and their priorities.
+# This list is managed by the playbook. You're not meant to override this variable.
+# To add your own items to the list, use `matrix_systemd_services_list_additional`
+matrix_systemd_services_list_auto: []
+
+# matrix_systemd_services_list_additional contains your own list of systemd services and their priorities.
+#
+# Example:
+# matrix_systemd_services_list_additional:
+#   - name: some-service.service
+#     priority: 1250
+#   - name: another-service.service
+#     priority: 3500
+matrix_systemd_services_list_additional: []
+
+# matrix_systemd_services_list contains a list of systemd services and their priorities.
+matrix_systemd_services_list: "{{ matrix_systemd_services_list_auto + matrix_systemd_services_list_additional }}"
+
+# matrix_systemd_services_autostart_enabled controls whether systemd services should auto-start when the system reboots
+matrix_systemd_services_autostart_enabled: true
 
 matrix_homeserver_container_extra_arguments_auto: []
 matrix_homeserver_app_service_config_files_auto: []

@@ -1,26 +1,22 @@
 ---
 
-- name: Determine whether we should make services autostart
-  ansible.builtin.set_fact:
-    matrix_services_autostart_enabled_bool: "{{ true if matrix_services_autostart_enabled | default('') == '' else matrix_services_autostart_enabled | bool }}"
-
 - name: Ensure systemd is reloaded
   ansible.builtin.service:
     daemon_reload: true
 
 - name: Ensure Matrix services are stopped
   ansible.builtin.service:
-    name: "{{ item }}"
+    name: "{{ item.name }}"
     state: stopped
-  with_items: "{{ matrix_systemd_services_list }}"
+  with_items: "{{ matrix_systemd_services_list | sort (attribute='priority,name', reverse=true) }}"
   when: not ansible_check_mode
 
 - name: Ensure Matrix services are started
   ansible.builtin.service:
-    name: "{{ item }}"
-    enabled: "{{ matrix_services_autostart_enabled_bool }}"
+    name: "{{ item.name }}"
     state: started
-  with_items: "{{ matrix_systemd_services_list }}"
+    enabled: "{{ matrix_systemd_services_autostart_enabled }}"
+  with_items: "{{ matrix_systemd_services_list | sort (attribute='priority,name') }}"
   when: not ansible_check_mode
 
 # If we check service state immediately, we may succeed,
@@ -48,7 +44,7 @@
           If you're on a slow or overloaded server, it may be that services take a longer time to start and that this error is a false-positive.
           You can consider raising the value of the `matrix_common_after_systemd_service_start_wait_for_timeout_seconds` variable.
           See `roles/custom/matrix-common-after/defaults/main.yml` for more details about that.
-      with_items: "{{ matrix_systemd_services_list }}"
+      with_items: "{{ matrix_systemd_services_list | map(attribute='name') }}"
       when:
         - "item.endswith('.service') and (ansible_facts.services[item] | default(none) is none or ansible_facts.services[item].state != 'running')"
 
@@ -59,7 +55,7 @@
     # Therefore iterating here manually
     - name: Fetch systemd information
       ansible.builtin.systemd:
-        name: "{{ item }}"
+        name: "{{ item.name }}"
       register: systemdstatus
       with_items: "{{ matrix_systemd_services_list }}"
 

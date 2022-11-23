@@ -27,7 +27,7 @@
     state: stopped
     enabled: false
   with_items: "{{ matrix_synapse_workers_current_systemd_services.files }}"
-  when: "not ansible_check_mode and item.path | basename not in matrix_systemd_services_list"
+  when: "not ansible_check_mode and item.path | basename not in matrix_systemd_services_list | map(attribute='name')"
 
 - name: Ensure unnecessary worker systemd services are cleaned
   ansible.builtin.file:
