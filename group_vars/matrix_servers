@@ -169,147 +169,147 @@ matrix_homeserver_additional_config_files_auto: |
 # - services which aren't time-sensitive (various crons and timers) get a level of 5000 - they can start later than all-of-Matrix
 devture_systemd_service_manager_services_list_auto: |
   {{
-    ([{'name': 'matrix-backup-borg.timer', 'priority': 5000}] if matrix_backup_borg_enabled else [])
+    ([{'name': 'matrix-backup-borg.timer', 'priority': 5000, 'groups': ['matrix', 'backup', 'borg']}] if matrix_backup_borg_enabled else [])
     +
-    ([{'name': 'matrix-bot-buscarron.service', 'priority': 2200}] if matrix_bot_buscarron_enabled else [])
+    ([{'name': 'matrix-bot-buscarron.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'buscarron']}] if matrix_bot_buscarron_enabled else [])
     +
-    ([{'name': 'matrix-bot-go-neb.service', 'priority': 2200}] if matrix_bot_go_neb_enabled else [])
+    ([{'name': 'matrix-bot-go-neb.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'go-neb']}] if matrix_bot_go_neb_enabled else [])
     +
-    ([{'name': 'matrix-bot-honoroit.service', 'priority': 2200}] if matrix_bot_honoroit_enabled else [])
+    ([{'name': 'matrix-bot-honoroit.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'honoroit']}] if matrix_bot_honoroit_enabled else [])
     +
-    ([{'name': 'matrix-bot-matrix-registration-bot.service', 'priority': 2200}] if matrix_bot_matrix_registration_bot_enabled else [])
+    ([{'name': 'matrix-bot-matrix-registration-bot.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'registration-bot']}] if matrix_bot_matrix_registration_bot_enabled else [])
     +
-    ([{'name': 'matrix-bot-matrix-reminder-bot.service', 'priority': 2200}] if matrix_bot_matrix_reminder_bot_enabled else [])
+    ([{'name': 'matrix-bot-matrix-reminder-bot.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'reminder-bot']}] if matrix_bot_matrix_reminder_bot_enabled else [])
     +
-    ([{'name': 'matrix-bot-maubot.service', 'priority': 2200}] if matrix_bot_maubot_enabled else [])
+    ([{'name': 'matrix-bot-maubot.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'maubot']}] if matrix_bot_maubot_enabled else [])
     +
-    ([{'name': 'matrix-bot-mjolnir.service', 'priority': 2200}] if matrix_bot_mjolnir_enabled else [])
+    ([{'name': 'matrix-bot-mjolnir.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'mjolnir']}] if matrix_bot_mjolnir_enabled else [])
     +
-    ([{'name': 'matrix-bot-postmoogle.service', 'priority': 2200}] if matrix_bot_postmoogle_enabled else [])
+    ([{'name': 'matrix-bot-postmoogle.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'postmoogle']}] if matrix_bot_postmoogle_enabled else [])
     +
-    ([{'name': 'matrix-appservice-discord.service', 'priority': 2000}] if matrix_appservice_discord_enabled else [])
+    ([{'name': 'matrix-appservice-discord.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'appservice-discord']}] if matrix_appservice_discord_enabled else [])
     +
-    ([{'name': 'matrix-appservice-irc.service', 'priority': 2000}] if matrix_appservice_irc_enabled else [])
+    ([{'name': 'matrix-appservice-irc.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'appservice-irc']}] if matrix_appservice_irc_enabled else [])
     +
-    ([{'name': 'matrix-appservice-kakaotalk.service', 'priority': 2000}] if matrix_appservice_kakaotalk_enabled else [])
+    ([{'name': 'matrix-appservice-kakaotalk.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'appservice-kakaotalk']}] if matrix_appservice_kakaotalk_enabled else [])
     +
-    ([{'name': 'matrix-appservice-kakaotalk-node.service', 'priority': 1900}] if matrix_appservice_kakaotalk_enabled else [])
+    ([{'name': 'matrix-appservice-kakaotalk-node.service', 'priority': 1900, 'groups': ['matrix', 'bridges', 'appservice-kakaotalk', 'appservice-kakaotalk-node']}] if matrix_appservice_kakaotalk_enabled else [])
     +
-    ([{'name': 'matrix-appservice-slack.service', 'priority': 2000}] if matrix_appservice_slack_enabled else [])
+    ([{'name': 'matrix-appservice-slack.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'appservice-slack']}] if matrix_appservice_slack_enabled else [])
     +
-    ([{'name': 'matrix-appservice-webhooks.service', 'priority': 2000}] if matrix_appservice_webhooks_enabled else [])
+    ([{'name': 'matrix-appservice-webhooks.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'appservice-webhooks']}] if matrix_appservice_webhooks_enabled else [])
     +
-    ([{'name': 'matrix-beeper-linkedin.service', 'priority': 2000}] if matrix_beeper_linkedin_enabled else [])
+    ([{'name': 'matrix-beeper-linkedin.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'beeper-linkedin']}] if matrix_beeper_linkedin_enabled else [])
     +
-    ([{'name': 'matrix-go-skype-bridge.service', 'priority': 2000}] if matrix_go_skype_bridge_enabled else [])
+    ([{'name': 'matrix-go-skype-bridge.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'go-skype']}] if matrix_go_skype_bridge_enabled else [])
     +
-    ([{'name': 'matrix-heisenbridge.service', 'priority': 2000}] if matrix_heisenbridge_enabled else [])
+    ([{'name': 'matrix-heisenbridge.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'heisenbridge']}] if matrix_heisenbridge_enabled else [])
     +
-    ([{'name': 'matrix-hookshot.service', 'priority': 2000}] if matrix_hookshot_enabled else [])
+    ([{'name': 'matrix-hookshot.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'hookshot']}] if matrix_hookshot_enabled else [])
     +
-    ([{'name': 'matrix-mautrix-discord.service', 'priority': 2000}] if matrix_mautrix_discord_enabled else [])
+    ([{'name': 'matrix-mautrix-discord.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-discord']}] if matrix_mautrix_discord_enabled else [])
     +
-    ([{'name': 'matrix-mautrix-facebook.service', 'priority': 2000}] if matrix_mautrix_facebook_enabled else [])
+    ([{'name': 'matrix-mautrix-facebook.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-facebook']}] if matrix_mautrix_facebook_enabled else [])
     +
-    ([{'name': 'matrix-mautrix-googlechat.service', 'priority': 2000}] if matrix_mautrix_googlechat_enabled else [])
+    ([{'name': 'matrix-mautrix-googlechat.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-googlechat']}] if matrix_mautrix_googlechat_enabled else [])
     +
-    ([{'name': 'matrix-mautrix-hangouts.service', 'priority': 2000}] if matrix_mautrix_hangouts_enabled else [])
+    ([{'name': 'matrix-mautrix-hangouts.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-hangouts']}] if matrix_mautrix_hangouts_enabled else [])
     +
-    ([{'name': 'matrix-mautrix-instagram.service', 'priority': 2000}] if matrix_mautrix_instagram_enabled else [])
+    ([{'name': 'matrix-mautrix-instagram.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-instagram']}] if matrix_mautrix_instagram_enabled else [])
     +
-    ([{'name': 'matrix-mautrix-signal.service', 'priority': 2000}] if matrix_mautrix_signal_enabled else [])
+    ([{'name': 'matrix-mautrix-signal.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-signal']}] if matrix_mautrix_signal_enabled else [])
     +
-    ([{'name': 'matrix-mautrix-signal-daemon.service', 'priority': 1900}] if matrix_mautrix_signal_enabled else [])
+    ([{'name': 'matrix-mautrix-signal-daemon.service', 'priority': 1900, 'groups': ['matrix', 'bridges', 'mautrix-signal', 'mautrix-signal-daemon']}] if matrix_mautrix_signal_enabled else [])
     +
-    ([{'name': 'matrix-mautrix-telegram.service', 'priority': 2000}] if matrix_mautrix_telegram_enabled else [])
+    ([{'name': 'matrix-mautrix-telegram.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-telegram']}] if matrix_mautrix_telegram_enabled else [])
     +
-    ([{'name': 'matrix-mautrix-twitter.service', 'priority': 2000}] if matrix_mautrix_twitter_enabled else [])
+    ([{'name': 'matrix-mautrix-twitter.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-twitter']}] if matrix_mautrix_twitter_enabled else [])
     +
-    ([{'name': 'matrix-mautrix-whatsapp.service', 'priority': 2000}] if matrix_mautrix_whatsapp_enabled else [])
+    ([{'name': 'matrix-mautrix-whatsapp.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-whatsapp']}] if matrix_mautrix_whatsapp_enabled else [])
     +
-    ([{'name': 'matrix-mx-puppet-discord.service', 'priority': 2000}] if matrix_mx_puppet_discord_enabled else [])
+    ([{'name': 'matrix-mx-puppet-discord.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-discord']}] if matrix_mx_puppet_discord_enabled else [])
     +
-    ([{'name': 'matrix-mx-puppet-groupme.service', 'priority': 2000}] if matrix_mx_puppet_groupme_enabled else [])
+    ([{'name': 'matrix-mx-puppet-groupme.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-groupme']}] if matrix_mx_puppet_groupme_enabled else [])
     +
-    ([{'name': 'matrix-mx-puppet-instagram.service', 'priority': 2000}] if matrix_mx_puppet_instagram_enabled else [])
+    ([{'name': 'matrix-mx-puppet-instagram.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-instagram']}] if matrix_mx_puppet_instagram_enabled else [])
     +
-    ([{'name': 'matrix-mx-puppet-slack.service', 'priority': 2000}] if matrix_mx_puppet_slack_enabled else [])
+    ([{'name': 'matrix-mx-puppet-slack.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-slack']}] if matrix_mx_puppet_slack_enabled else [])
     +
-    ([{'name': 'matrix-mx-puppet-steam.service', 'priority': 2000}] if matrix_mx_puppet_steam_enabled else [])
+    ([{'name': 'matrix-mx-puppet-steam.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-steam']}] if matrix_mx_puppet_steam_enabled else [])
     +
-    ([{'name': 'matrix-mx-puppet-twitter.service', 'priority': 2000}] if matrix_mx_puppet_twitter_enabled else [])
+    ([{'name': 'matrix-mx-puppet-twitter.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-twitter']}] if matrix_mx_puppet_twitter_enabled else [])
     +
-    ([{'name': 'matrix-sms-bridge.service', 'priority': 2000}] if matrix_sms_bridge_enabled else [])
+    ([{'name': 'matrix-sms-bridge.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'sms']}] if matrix_sms_bridge_enabled else [])
     +
-    ([{'name': 'matrix-cactus-comments.service', 'priority': 2000}] if matrix_cactus_comments_enabled else [])
+    ([{'name': 'matrix-cactus-comments.service', 'priority': 2000, 'groups': ['matrix', 'cactus-comments']}] if matrix_cactus_comments_enabled else [])
     +
-    ([{'name': 'matrix-client-cinny.service', 'priority': 2000}] if matrix_client_cinny_enabled else [])
+    ([{'name': 'matrix-client-cinny.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'cinny']}] if matrix_client_cinny_enabled else [])
     +
-    ([{'name': 'matrix-client-element.service', 'priority': 2000}] if matrix_client_element_enabled else [])
+    ([{'name': 'matrix-client-element.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'element']}] if matrix_client_element_enabled else [])
     +
-    ([{'name': 'matrix-client-hydrogen.service', 'priority': 2000}] if matrix_client_hydrogen_enabled else [])
+    ([{'name': 'matrix-client-hydrogen.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'hydrogen']}] if matrix_client_hydrogen_enabled else [])
     +
-    ([{'name': ('matrix-' + matrix_homeserver_implementation + '.service'), 'priority': 1000}])
+    ([{'name': ('matrix-' + matrix_homeserver_implementation + '.service'), 'priority': 1000, 'groups': ['matrix', 'homeservers', matrix_homeserver_implementation]}])
     +
-    ([{'name': 'matrix-corporal.service', 'priority': 1500}] if matrix_corporal_enabled else [])
+    ([{'name': 'matrix-corporal.service', 'priority': 1500, 'groups': ['matrix', 'corporal']}] if matrix_corporal_enabled else [])
     +
-    ([{'name': 'matrix-coturn.service', 'priority': 4000}] if matrix_coturn_enabled else [])
+    ([{'name': 'matrix-coturn.service', 'priority': 4000, 'groups': ['matrix', 'coturn']}] if matrix_coturn_enabled else [])
     +
-    ([{'name': 'matrix-coturn-reload.timer', 'priority': 5000}] if (matrix_coturn_enabled and matrix_coturn_tls_enabled) else [])
+    ([{'name': 'matrix-coturn-reload.timer', 'priority': 5000, 'groups': ['matrix', 'coturn']}] if (matrix_coturn_enabled and matrix_coturn_tls_enabled) else [])
     +
-    ([{'name': 'matrix-dimension.service', 'priority': 2500}] if matrix_dimension_enabled else [])
+    ([{'name': 'matrix-dimension.service', 'priority': 2500, 'groups': ['matrix', 'integration-managers', 'dimension']}] if matrix_dimension_enabled else [])
     +
-    ([{'name': 'matrix-dynamic-dns.service', 'priority': 5000}] if matrix_dynamic_dns_enabled else [])
+    ([{'name': 'matrix-dynamic-dns.service', 'priority': 5000, 'groups': ['matrix', 'dynamic-dns']}] if matrix_dynamic_dns_enabled else [])
     +
-    ([{'name': 'matrix-email2matrix.service', 'priority': 2000}] if matrix_email2matrix_enabled else [])
+    ([{'name': 'matrix-email2matrix.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'email2matrix']}] if matrix_email2matrix_enabled else [])
     +
-    ([{'name': 'matrix-etherpad.service', 'priority': 4000}] if matrix_etherpad_enabled else [])
+    ([{'name': 'matrix-etherpad.service', 'priority': 4000, 'groups': ['matrix', 'etherpad']}] if matrix_etherpad_enabled else [])
     +
-    ([{'name': 'matrix-grafana.service', 'priority': 4000}] if matrix_grafana_enabled else [])
+    ([{'name': 'matrix-grafana.service', 'priority': 4000, 'groups': ['matrix', 'monitoring', 'grafana']}] if matrix_grafana_enabled else [])
     +
-    ([{'name': 'matrix-jitsi-web.service', 'priority': 4200}] if matrix_jitsi_enabled else [])
+    ([{'name': 'matrix-jitsi-web.service', 'priority': 4200, 'groups': ['matrix', 'jitsi', 'jitsi-web']}] if matrix_jitsi_enabled else [])
     +
-    ([{'name': 'matrix-jitsi-prosody.service', 'priority': 4000}] if matrix_jitsi_enabled else [])
+    ([{'name': 'matrix-jitsi-prosody.service', 'priority': 4000, 'groups': ['matrix', 'jitsi', 'jitsi-prosody']}] if matrix_jitsi_enabled else [])
     +
-    ([{'name': 'matrix-jitsi-jicofo.service', 'priority': 4100}] if matrix_jitsi_enabled else [])
+    ([{'name': 'matrix-jitsi-jicofo.service', 'priority': 4100, 'groups': ['matrix', 'jitsi', 'jitsi-jicofo']}] if matrix_jitsi_enabled else [])
     +
-    ([{'name': 'matrix-jitsi-jvb.service', 'priority': 4100}] if matrix_jitsi_enabled else [])
+    ([{'name': 'matrix-jitsi-jvb.service', 'priority': 4100, 'groups': ['matrix', 'jitsi', 'jitsi-jvb']}] if matrix_jitsi_enabled else [])
     +
-    ([{'name': 'matrix-ldap-registration-proxy.service', 'priority': 2000}] if matrix_ldap_registration_proxy_enabled else [])
+    ([{'name': 'matrix-ldap-registration-proxy.service', 'priority': 2000, 'groups': ['matrix', 'ldap-registration-proxy']}] if matrix_ldap_registration_proxy_enabled else [])
     +
-    ([{'name': 'matrix-ma1sd.service', 'priority': 2000}] if matrix_ma1sd_enabled else [])
+    ([{'name': 'matrix-ma1sd.service', 'priority': 2000, 'groups': ['matrix', 'ma1sd']}] if matrix_ma1sd_enabled else [])
     +
-    ([{'name': 'matrix-mailer.service', 'priority': 2000}] if matrix_mailer_enabled else [])
+    ([{'name': 'matrix-mailer.service', 'priority': 2000, 'groups': ['matrix', 'mailer']}] if matrix_mailer_enabled else [])
     +
-    ([{'name': 'matrix-nginx-proxy.service', 'priority': 3000}] if matrix_nginx_proxy_enabled else [])
+    ([{'name': 'matrix-nginx-proxy.service', 'priority': 3000, 'groups': ['matrix', 'nginx', 'reverse-proxies']}] if matrix_nginx_proxy_enabled else [])
     +
     (matrix_ssl_renewal_systemd_units_list | selectattr('applicable'))
     +
-    ([{'name': 'matrix-ntfy.service', 'priority': 800}] if matrix_ntfy_enabled else [])
+    ([{'name': 'matrix-ntfy.service', 'priority': 800, 'groups': ['matrix', 'ntfy']}] if matrix_ntfy_enabled else [])
     +
-    ([{'name': 'matrix-postgres.service', 'priority': 500}] if matrix_postgres_enabled else [])
+    ([{'name': 'matrix-postgres.service', 'priority': 500, 'groups': ['matrix', 'postgres']}] if matrix_postgres_enabled else [])
     +
-    ([{'name': 'matrix-postgres-backup.service', 'priority': 3000}] if matrix_postgres_backup_enabled else [])
+    ([{'name': 'matrix-postgres-backup.service', 'priority': 3000, 'groups': ['matrix', 'backup', 'postgres-backup']}] if matrix_postgres_backup_enabled else [])
     +
-    ([{'name': 'matrix-prometheus.service', 'priority': 4000}] if matrix_prometheus_enabled else [])
+    ([{'name': 'matrix-prometheus.service', 'priority': 4000, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-core']}] if matrix_prometheus_enabled else [])
     +
-    ([{'name': 'matrix-prometheus-node-exporter.service', 'priority': 3900}] if matrix_prometheus_node_exporter_enabled else [])
+    ([{'name': 'matrix-prometheus-node-exporter.service', 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-node-exporters']}] if matrix_prometheus_node_exporter_enabled else [])
     +
-    ([{'name': 'matrix-prometheus-postgres-exporter.service', 'priority': 3900}] if matrix_prometheus_postgres_exporter_enabled else [])
+    ([{'name': 'matrix-prometheus-postgres-exporter.service', 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-node-exporters']}] if matrix_prometheus_postgres_exporter_enabled else [])
     +
-    ([{'name': 'matrix-redis', 'priority': 750}] if matrix_redis_enabled else [])
+    ([{'name': 'matrix-redis', 'priority': 750, 'groups': ['matrix', 'redis']}] if matrix_redis_enabled else [])
     +
-    ([{'name': 'matrix-registration.service', 'priority': 4000}] if matrix_registration_enabled else [])
+    ([{'name': 'matrix-registration.service', 'priority': 4000, 'groups': ['matrix', 'registration']}] if matrix_registration_enabled else [])
     +
-    ([{'name': 'matrix-sygnal.service', 'priority': 800}] if matrix_sygnal_enabled else [])
+    ([{'name': 'matrix-sygnal.service', 'priority': 800, 'groups': ['matrix', 'sygnal']}] if matrix_sygnal_enabled else [])
     +
-    ([{'name': 'matrix-goofys.service', 'priority': 800}] if matrix_s3_media_store_enabled else [])
+    ([{'name': 'matrix-goofys.service', 'priority': 800, 'groups': ['matrix', 'goofys']}] if matrix_s3_media_store_enabled else [])
     +
-    ([{'name': 'matrix-synapse-s3-storage-provider-migrate.timer', 'priority': 5000}] if matrix_synapse_ext_synapse_s3_storage_provider_enabled else [])
+    ([{'name': 'matrix-synapse-s3-storage-provider-migrate.timer', 'priority': 5000, 'groups': ['matrix']}] if matrix_synapse_ext_synapse_s3_storage_provider_enabled else [])
     +
-    ([{'name': 'matrix-synapse-admin.service', 'priority': 4000}] if matrix_synapse_admin_enabled else [])
+    ([{'name': 'matrix-synapse-admin.service', 'priority': 4000, 'groups': ['matrix', 'synapse-admin']}] if matrix_synapse_admin_enabled else [])
     +
-    ([{'name': 'matrix-synapse-reverse-proxy-companion.service', 'priority': 1500}] if matrix_synapse_reverse_proxy_companion_enabled else [])
+    ([{'name': 'matrix-synapse-reverse-proxy-companion.service', 'priority': 1500, 'groups': ['matrix', 'homeservers', 'synapse', 'reverse-proxies']}] if matrix_synapse_reverse_proxy_companion_enabled else [])
   }}
 
 ########################################################################
