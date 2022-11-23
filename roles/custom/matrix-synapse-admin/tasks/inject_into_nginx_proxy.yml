@@ -1,0 +1,46 @@
+---
+
+- name: Fail if matrix-nginx-proxy role already executed
+  ansible.builtin.fail:
+    msg: >-
+      Trying to append Synapse Admin's reverse-proxying configuration to matrix-nginx-proxy,
+      but it's pointless since the matrix-nginx-proxy role had already executed.
+      To fix this, please change the order of roles in your playbook,
+      so that the matrix-nginx-proxy role would run after the matrix-synapse-admin role.
+  when: matrix_nginx_proxy_role_executed | default(False) | bool
+
+- name: Generate Synapse Admin proxying configuration for matrix-nginx-proxy
+  ansible.builtin.set_fact:
+    matrix_synapse_admin_matrix_nginx_proxy_configuration: |
+      rewrite ^{{ matrix_synapse_admin_public_endpoint }}$ {{ matrix_nginx_proxy_x_forwarded_proto_value }}://$server_name{{ matrix_synapse_admin_public_endpoint }}/ permanent;
+
+      location ~ ^{{ matrix_synapse_admin_public_endpoint }}/(.*) {
+      {% if matrix_nginx_proxy_enabled | default(False) %}
+        {# Use the embedded DNS resolver in Docker containers to discover the service #}
+        resolver 127.0.0.11 valid=5s;
+        set $backend "matrix-synapse-admin:80";
+        proxy_pass http://$backend/$1;
+      {% else %}
+        {# Generic configuration for use outside of our container setup #}
+        proxy_pass http://127.0.0.1:8766/$1;
+      {% endif %}
+      }
+
+- name: Register Synapse Admin proxying configuration with matrix-nginx-proxy
+  ansible.builtin.set_fact:
+    matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: |
+      {{
+        matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks | default([])
+        +
+        [matrix_synapse_admin_matrix_nginx_proxy_configuration]
+      }}
+
+- name: Warn about reverse-proxying if matrix-nginx-proxy not used
+  ansible.builtin.debug:
+    msg: >-
+      NOTE: You've enabled the Synapse Admin tool but are not using the matrix-nginx-proxy
+      reverse proxy.
+      Please make sure that you're proxying the `{{ matrix_synapse_admin_public_endpoint }}`
+      URL endpoint to the matrix-synapse-admin container.
+      You can expose the container's port using the `matrix_synapse_admin_container_http_host_bind_port` variable.
+  when: "not matrix_nginx_proxy_enabled | default(False) | bool"

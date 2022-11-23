@@ -1,8 +1,10 @@
 ---
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
+- when: matrix_prometheus_node_exporter_enabled | bool and matrix_prometheus_node_exporter_metrics_proxying_enabled | bool
+  ansible.builtin.import_tasks: "{{ role_path }}/tasks/inject_into_nginx_proxy.yml"
   tags:
-    - always
+    - setup-all
+    - setup-nginx-proxy
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup.yml"
   tags:

@@ -2,17 +2,17 @@
 
 # Unless `matrix_synapse_workers_enabled_list` is explicitly defined,
 # we'll generate it dynamically.
-- ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/init.yml"
-  when: "matrix_synapse_enabled and matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list | length == 0"
+- ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/inject_into_nginx_proxy.yml"
+  when: "matrix_synapse_workers_enabled | bool and matrix_synapse_workers_enabled_list | length == 0"
 
 - name: Ensure workers are injected into various places
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/util/inject_worker.yml"
   with_items: "{{ matrix_synapse_workers_enabled_list }}"
   loop_control:
     loop_var: matrix_synapse_worker_details
-  when: matrix_synapse_enabled | bool and matrix_synapse_workers_enabled | bool
+  when: matrix_synapse_workers_enabled | bool
 
-- when: matrix_synapse_enabled | bool and matrix_synapse_metrics_proxying_enabled | bool
+- when: matrix_synapse_metrics_proxying_enabled | bool
   block:
     - name: Fail if matrix-nginx-proxy role already executed
       ansible.builtin.fail:

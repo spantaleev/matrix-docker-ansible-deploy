@@ -1,8 +1,19 @@
 ---
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
+- when: matrix_synapse_enabled | bool
+  ansible.builtin.import_tasks: "{{ role_path }}/tasks/inject_into_nginx_proxy.yml"
   tags:
-    - always
+    - setup-all
+    - setup-synapse
+    - start
+    - start-all
+    - start-group
+    - restart
+    - restart-all
+    - restart-group
+    - stop
+    - stop-all
+    - stop-group
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
   when: run_setup | bool and matrix_synapse_enabled | bool
