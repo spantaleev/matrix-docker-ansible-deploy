@@ -1,4 +1,5 @@
 ---
+
 # The bare domain name which represents your Matrix identity.
 # Matrix user ids for your server will be of the form (`@user:<matrix-domain>`).
 #
@@ -11,6 +12,15 @@ matrix_domain: ~
 # The optional matrix admin MXID, used in bridges' configs to set bridge admin user
 # Example value: "@someone:{{ matrix_domain }}"
 matrix_admin: ''
+
+# matrix_homeserver_enabled controls whether to enable the homeserver systemd service, etc.
+#
+# Unless you're wrapping this playbook in another one
+# where you optionally wish to disable homeserver integration, you don't need to use this.
+#
+# Note: disabling this does not mean that a homeserver won't get installed.
+# Whether homeserver software is installed depends on other (`matrix_HOMESERVER_enabled`) variables - see `group_vars/matrix_servers`.
+matrix_homeserver_enabled: true
 
 # Homeserver admin contacts and support page as per MSC 1929
 # See: https://github.com/matrix-org/matrix-spec-proposals/pull/1929
