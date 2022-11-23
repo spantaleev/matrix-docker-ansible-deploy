@@ -36,7 +36,7 @@ matrix_dendrite_recaptcha_private_key: 'YOUR_SECRET_KEY'
 
 Requires a site/secret key pair from:
 
-<https://dashboard.hcaptcha.com/welcome>
+<https://dashboard.hcaptcha.com/sites/new>
 
 ### Setting hCaptcha keys
 
