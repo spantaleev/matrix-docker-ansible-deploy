@@ -19,6 +19,141 @@
 # Also see `devture_docker_sdk_for_python_installation_enabled`.
 matrix_playbook_docker_installation_enabled: true
 
+########################################################################
+#                                                                      #
+# /Playbook                                                            #
+#                                                                      #
+########################################################################
+
+########################################################################
+#                                                                      #
+# base                                                                 #
+#                                                                      #
+########################################################################
+
+matrix_homeserver_app_service_config_files_auto: |
+  {{
+    (['--mount type=bind,src=' + matrix_appservice_discord_config_path + '/registration.yaml,dst=/matrix-appservice-discord-registration.yaml,ro'] if matrix_appservice_discord_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_appservice_irc_config_path + '/registration.yaml,dst=/matrix-appservice-irc-registration.yaml,ro'] if matrix_appservice_irc_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_appservice_kakaotalk_config_path + '/registration.yaml,dst=/matrix-appservice-kakaotalk-registration.yaml,ro'] if matrix_appservice_kakaotalk_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_appservice_slack_config_path + '/slack-registration.yaml,dst=/matrix-appservice-slack-registration.yaml,ro'] if matrix_appservice_slack_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_appservice_webhooks_config_path + '/webhooks-registration.yaml,dst=/matrix-appservice-webhooks-registration.yaml,ro'] if matrix_appservice_webhooks_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_beeper_linkedin_config_path + '/registration.yaml,dst=/matrix-beeper-linkedin-registration.yaml,ro'] if matrix_beeper_linkedin_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_go_skype_bridge_config_path + '/registration.yaml,dst=/matrix-go-skype-bridge-registration.yaml,ro'] if matrix_go_skype_bridge_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_heisenbridge_base_path + '/registration.yaml,dst=/heisenbridge-registration.yaml,ro'] if matrix_heisenbridge_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_hookshot_base_path + '/registration.yml,dst=/hookshot-registration.yml,ro'] if matrix_hookshot_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_discord_config_path + '/registration.yaml,dst=/matrix-mautrix-discord-registration.yaml,ro'] if matrix_mautrix_discord_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_facebook_config_path + '/registration.yaml,dst=/matrix-mautrix-facebook-registration.yaml,ro'] if matrix_mautrix_facebook_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_googlechat_config_path + '/registration.yaml,dst=/matrix-mautrix-googlechat-registration.yaml,ro'] if matrix_mautrix_googlechat_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_hangouts_config_path + '/registration.yaml,dst=/matrix-mautrix-hangouts-registration.yaml,ro'] if matrix_mautrix_hangouts_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_instagram_config_path + '/registration.yaml,dst=/matrix-mautrix-instagram-registration.yaml,ro'] if matrix_mautrix_instagram_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_signal_config_path + '/registration.yaml,dst=/matrix-mautrix-signal-registration.yaml,ro'] if matrix_mautrix_signal_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_telegram_config_path + '/registration.yaml,dst=/matrix-mautrix-telegram-registration.yaml,ro'] if matrix_mautrix_telegram_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_twitter_config_path + '/registration.yaml,dst=/matrix-mautrix-twitter-registration.yaml,ro'] if matrix_mautrix_twitter_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_whatsapp_config_path + '/registration.yaml,dst=/matrix-mautrix-whatsapp-registration.yaml,ro'] if matrix_mautrix_whatsapp_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mx_puppet_discord_config_path + '/registration.yaml,dst=/matrix-mx-puppet-discord-registration.yaml,ro'] if matrix_mx_puppet_discord_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mx_puppet_groupme_config_path + '/registration.yaml,dst=/matrix-mx-puppet-groupme-registration.yaml,ro'] if matrix_mx_puppet_groupme_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mx_puppet_instagram_config_path + '/registration.yaml,dst=/matrix-mx-puppet-instagram-registration.yaml,ro'] if matrix_mx_puppet_instagram_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mx_puppet_slack_config_path + '/registration.yaml,dst=/matrix-mx-puppet-slack-registration.yaml,ro'] if matrix_mx_puppet_slack_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mx_puppet_steam_config_path + '/registration.yaml,dst=/matrix-mx-puppet-steam-registration.yaml,ro'] if matrix_mx_puppet_steam_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mx_puppet_twitter_config_path + '/registration.yaml,dst=/matrix-mx-puppet-twitter-registration.yaml,ro'] if matrix_mx_puppet_twitter_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_sms_bridge_config_path + '/registration.yaml,dst=/matrix-sms-bridge-registration.yaml,ro'] if matrix_sms_bridge_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_cactus_comments_app_service_config_file + ',dst=/matrix-cactus-comments.yaml,ro'] if matrix_cactus_comments_enabled else [])
+  }}
+
+matrix_homeserver_additional_config_files_auto: |
+  {{
+    (['/matrix-appservice-discord-registration.yaml'] if matrix_appservice_discord_enabled else [])
+    +
+    (['/matrix-appservice-irc-registration.yaml'] if matrix_appservice_irc_enabled else [])
+    +
+    (['/matrix-appservice-kakaotalk-registration.yaml'] if matrix_appservice_kakaotalk_enabled else [])
+    +
+    (['/matrix-appservice-slack-registration.yaml'] if matrix_appservice_slack_enabled else [])
+    +
+    (['/matrix-appservice-webhooks-registration.yaml'] if matrix_appservice_webhooks_enabled else [])
+    +
+    (['/matrix-beeper-linkedin-registration.yaml'] if matrix_beeper_linkedin_enabled else [])
+    +
+    (['/matrix-go-skype-bridge-registration.yaml'] if matrix_go_skype_bridge_enabled else [])
+    +
+    (['/heisenbridge-registration.yaml'] if matrix_heisenbridge_enabled else [])
+    +
+    (['/hookshot-registration.yml'] if matrix_hookshot_enabled else [])
+    +
+    (['/matrix-mautrix-discord-registration.yaml'] if matrix_mautrix_discord_enabled else [])
+    +
+    (['/matrix-mautrix-facebook-registration.yaml'] if matrix_mautrix_facebook_enabled else [])
+    +
+    (['/matrix-mautrix-googlechat-registration.yaml'] if matrix_mautrix_googlechat_enabled else [])
+    +
+    (['/matrix-mautrix-hangouts-registration.yaml'] if matrix_mautrix_hangouts_enabled else [])
+    +
+    (['/matrix-mautrix-instagram-registration.yaml'] if matrix_mautrix_instagram_enabled else [])
+    +
+    (['/matrix-mautrix-signal-registration.yaml'] if matrix_mautrix_signal_enabled else [])
+    +
+    (['/matrix-mautrix-telegram-registration.yaml'] if matrix_mautrix_telegram_enabled else [])
+    +
+    (['/matrix-mautrix-twitter-registration.yaml'] if matrix_mautrix_twitter_enabled else [])
+    +
+    (['/matrix-mautrix-whatsapp-registration.yaml'] if matrix_mautrix_whatsapp_enabled else [])
+    +
+    (['/matrix-mx-puppet-discord-registration.yaml'] if matrix_mx_puppet_discord_enabled else [])
+    +
+    (['/matrix-mx-puppet-groupme-registration.yaml'] if matrix_mx_puppet_groupme_enabled else [])
+    +
+    (['/matrix-mx-puppet-instagram-registration.yaml'] if matrix_mx_puppet_instagram_enabled else [])
+    +
+    (['/matrix-mx-puppet-slack-registration.yaml'] if matrix_mx_puppet_slack_enabled else [])
+    +
+    (['/matrix-mx-puppet-steam-registration.yaml'] if matrix_mx_puppet_steam_enabled else [])
+    +
+    (['/matrix-mx-puppet-twitter-registration.yaml'] if matrix_mx_puppet_twitter_enabled else [])
+    +
+    (['/matrix-sms-bridge-registration.yaml'] if matrix_sms_bridge_enabled else [])
+    +
+    (['/matrix-cactus-comments.yaml'] if matrix_cactus_comments_enabled else [])
+  }}
+
+########################################################################
+#                                                                      #
+# /base                                                                #
+#                                                                      #
+########################################################################
+
+
+########################################################################
+#                                                                      #
+# com.devture.ansible.role.systemd_service_manager                     #
+#                                                                      #
+########################################################################
+
 # This list is not exhaustive and final.
 # Synapse workers are still injected into the list at runtime.
 # Additional JVB workers (playbooks/jitsi_jvb.yml -- roles/custom/matrix-jitsi/tasks/init_additional_jvb.yml) override this variable at runtime as well.
@@ -32,7 +167,7 @@ matrix_playbook_docker_installation_enabled: true
 #   - so that, when the reverse-proxy is up (Matrix is up), all bots and bridges can be interacted with
 # - monitoring services (Prometheus, Grafana, ..) get a level of 4000 - they can start later than all-of-Matrix
 # - services which aren't time-sensitive (various crons and timers) get a level of 5000 - they can start later than all-of-Matrix
-matrix_systemd_services_list_auto: |
+devture_systemd_service_manager_services_list_auto: |
   {{
     ([{'name': 'matrix-backup-borg.timer', 'priority': 5000}] if matrix_backup_borg_enabled else [])
     +
@@ -177,122 +312,11 @@ matrix_systemd_services_list_auto: |
     ([{'name': 'matrix-synapse-reverse-proxy-companion.service', 'priority': 1500}] if matrix_synapse_reverse_proxy_companion_enabled else [])
   }}
 
-matrix_homeserver_app_service_config_files_auto: |
-  {{
-    (['--mount type=bind,src=' + matrix_appservice_discord_config_path + '/registration.yaml,dst=/matrix-appservice-discord-registration.yaml,ro'] if matrix_appservice_discord_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_appservice_irc_config_path + '/registration.yaml,dst=/matrix-appservice-irc-registration.yaml,ro'] if matrix_appservice_irc_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_appservice_kakaotalk_config_path + '/registration.yaml,dst=/matrix-appservice-kakaotalk-registration.yaml,ro'] if matrix_appservice_kakaotalk_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_appservice_slack_config_path + '/slack-registration.yaml,dst=/matrix-appservice-slack-registration.yaml,ro'] if matrix_appservice_slack_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_appservice_webhooks_config_path + '/webhooks-registration.yaml,dst=/matrix-appservice-webhooks-registration.yaml,ro'] if matrix_appservice_webhooks_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_beeper_linkedin_config_path + '/registration.yaml,dst=/matrix-beeper-linkedin-registration.yaml,ro'] if matrix_beeper_linkedin_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_go_skype_bridge_config_path + '/registration.yaml,dst=/matrix-go-skype-bridge-registration.yaml,ro'] if matrix_go_skype_bridge_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_heisenbridge_base_path + '/registration.yaml,dst=/heisenbridge-registration.yaml,ro'] if matrix_heisenbridge_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_hookshot_base_path + '/registration.yml,dst=/hookshot-registration.yml,ro'] if matrix_hookshot_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mautrix_discord_config_path + '/registration.yaml,dst=/matrix-mautrix-discord-registration.yaml,ro'] if matrix_mautrix_discord_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mautrix_facebook_config_path + '/registration.yaml,dst=/matrix-mautrix-facebook-registration.yaml,ro'] if matrix_mautrix_facebook_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mautrix_googlechat_config_path + '/registration.yaml,dst=/matrix-mautrix-googlechat-registration.yaml,ro'] if matrix_mautrix_googlechat_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mautrix_hangouts_config_path + '/registration.yaml,dst=/matrix-mautrix-hangouts-registration.yaml,ro'] if matrix_mautrix_hangouts_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mautrix_instagram_config_path + '/registration.yaml,dst=/matrix-mautrix-instagram-registration.yaml,ro'] if matrix_mautrix_instagram_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mautrix_signal_config_path + '/registration.yaml,dst=/matrix-mautrix-signal-registration.yaml,ro'] if matrix_mautrix_signal_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mautrix_telegram_config_path + '/registration.yaml,dst=/matrix-mautrix-telegram-registration.yaml,ro'] if matrix_mautrix_telegram_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mautrix_twitter_config_path + '/registration.yaml,dst=/matrix-mautrix-twitter-registration.yaml,ro'] if matrix_mautrix_twitter_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mautrix_whatsapp_config_path + '/registration.yaml,dst=/matrix-mautrix-whatsapp-registration.yaml,ro'] if matrix_mautrix_whatsapp_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mx_puppet_discord_config_path + '/registration.yaml,dst=/matrix-mx-puppet-discord-registration.yaml,ro'] if matrix_mx_puppet_discord_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mx_puppet_groupme_config_path + '/registration.yaml,dst=/matrix-mx-puppet-groupme-registration.yaml,ro'] if matrix_mx_puppet_groupme_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mx_puppet_instagram_config_path + '/registration.yaml,dst=/matrix-mx-puppet-instagram-registration.yaml,ro'] if matrix_mx_puppet_instagram_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mx_puppet_slack_config_path + '/registration.yaml,dst=/matrix-mx-puppet-slack-registration.yaml,ro'] if matrix_mx_puppet_slack_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mx_puppet_steam_config_path + '/registration.yaml,dst=/matrix-mx-puppet-steam-registration.yaml,ro'] if matrix_mx_puppet_steam_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mx_puppet_twitter_config_path + '/registration.yaml,dst=/matrix-mx-puppet-twitter-registration.yaml,ro'] if matrix_mx_puppet_twitter_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_sms_bridge_config_path + '/registration.yaml,dst=/matrix-sms-bridge-registration.yaml,ro'] if matrix_sms_bridge_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_cactus_comments_app_service_config_file + ',dst=/matrix-cactus-comments.yaml,ro'] if matrix_cactus_comments_enabled else [])
-  }}
-
-matrix_homeserver_additional_config_files_auto: |
-  {{
-    (['/matrix-appservice-discord-registration.yaml'] if matrix_appservice_discord_enabled else [])
-    +
-    (['/matrix-appservice-irc-registration.yaml'] if matrix_appservice_irc_enabled else [])
-    +
-    (['/matrix-appservice-kakaotalk-registration.yaml'] if matrix_appservice_kakaotalk_enabled else [])
-    +
-    (['/matrix-appservice-slack-registration.yaml'] if matrix_appservice_slack_enabled else [])
-    +
-    (['/matrix-appservice-webhooks-registration.yaml'] if matrix_appservice_webhooks_enabled else [])
-    +
-    (['/matrix-beeper-linkedin-registration.yaml'] if matrix_beeper_linkedin_enabled else [])
-    +
-    (['/matrix-go-skype-bridge-registration.yaml'] if matrix_go_skype_bridge_enabled else [])
-    +
-    (['/heisenbridge-registration.yaml'] if matrix_heisenbridge_enabled else [])
-    +
-    (['/hookshot-registration.yml'] if matrix_hookshot_enabled else [])
-    +
-    (['/matrix-mautrix-discord-registration.yaml'] if matrix_mautrix_discord_enabled else [])
-    +
-    (['/matrix-mautrix-facebook-registration.yaml'] if matrix_mautrix_facebook_enabled else [])
-    +
-    (['/matrix-mautrix-googlechat-registration.yaml'] if matrix_mautrix_googlechat_enabled else [])
-    +
-    (['/matrix-mautrix-hangouts-registration.yaml'] if matrix_mautrix_hangouts_enabled else [])
-    +
-    (['/matrix-mautrix-instagram-registration.yaml'] if matrix_mautrix_instagram_enabled else [])
-    +
-    (['/matrix-mautrix-signal-registration.yaml'] if matrix_mautrix_signal_enabled else [])
-    +
-    (['/matrix-mautrix-telegram-registration.yaml'] if matrix_mautrix_telegram_enabled else [])
-    +
-    (['/matrix-mautrix-twitter-registration.yaml'] if matrix_mautrix_twitter_enabled else [])
-    +
-    (['/matrix-mautrix-whatsapp-registration.yaml'] if matrix_mautrix_whatsapp_enabled else [])
-    +
-    (['/matrix-mx-puppet-discord-registration.yaml'] if matrix_mx_puppet_discord_enabled else [])
-    +
-    (['/matrix-mx-puppet-groupme-registration.yaml'] if matrix_mx_puppet_groupme_enabled else [])
-    +
-    (['/matrix-mx-puppet-instagram-registration.yaml'] if matrix_mx_puppet_instagram_enabled else [])
-    +
-    (['/matrix-mx-puppet-slack-registration.yaml'] if matrix_mx_puppet_slack_enabled else [])
-    +
-    (['/matrix-mx-puppet-steam-registration.yaml'] if matrix_mx_puppet_steam_enabled else [])
-    +
-    (['/matrix-mx-puppet-twitter-registration.yaml'] if matrix_mx_puppet_twitter_enabled else [])
-    +
-    (['/matrix-sms-bridge-registration.yaml'] if matrix_sms_bridge_enabled else [])
-    +
-    (['/matrix-cactus-comments.yaml'] if matrix_cactus_comments_enabled else [])
-  }}
-
 ########################################################################
 #                                                                      #
-# /Playbook                                                            #
+# /com.devture.ansible.role.systemd_service_manager                    #
 #                                                                      #
 ########################################################################
-
 
 
 ########################################################################
