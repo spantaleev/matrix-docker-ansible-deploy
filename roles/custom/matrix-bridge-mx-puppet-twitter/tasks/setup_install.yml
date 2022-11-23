@@ -1,13 +1,5 @@
 ---
 
-# If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
-# We don't want to fail in such cases.
-- name: Fail if matrix-synapse role already executed
-  ansible.builtin.fail:
-    msg: >-
-      The matrix-bridge-mx-puppet-twitter role needs to execute before the matrix-synapse role.
-  when: "matrix_synapse_role_executed | default(False)"
-
 - name: Ensure MX Puppet Twitter paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
