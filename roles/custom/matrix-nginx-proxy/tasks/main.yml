@@ -22,10 +22,8 @@
     - setup-all
     - setup-nginx-proxy
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/self_check_well_known.yml"
-  delegate_to: 127.0.0.1
-  become: false
-  when: run_self_check | bool
+- block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_well_known.yml"
   tags:
     - self-check
 

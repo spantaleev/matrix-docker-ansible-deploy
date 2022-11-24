@@ -1,9 +1,5 @@
 ---
 
-#
-# Tasks related to setting up matrix-corporal
-#
-
 - name: Ensure Matrix Corporal paths exist
   ansible.builtin.file:
     path: "{{ item }}"
@@ -15,7 +11,6 @@
     - "{{ matrix_corporal_config_dir_path }}"
     - "{{ matrix_corporal_cache_dir_path }}"
     - "{{ matrix_corporal_var_dir_path }}"
-  when: matrix_corporal_enabled | bool
 
 - name: Ensure Matrix Corporal repository is present on self-build
   ansible.builtin.git:
@@ -26,7 +21,7 @@
   become: true
   become_user: "{{ matrix_user_username }}"
   register: matrix_corporal_git_pull_results
-  when: "matrix_corporal_enabled | bool and matrix_corporal_container_image_self_build | bool"
+  when: matrix_corporal_container_image_self_build | bool
 
 - name: Ensure Matrix Corporal Docker image is built
   community.docker.docker_image:
@@ -38,7 +33,7 @@
       dockerfile: etc/docker/Dockerfile
       path: "{{ matrix_corporal_container_src_files_path }}"
       pull: true
-  when: "matrix_corporal_enabled | bool and matrix_corporal_container_image_self_build | bool"
+  when: matrix_corporal_container_image_self_build | bool
 
 - name: Ensure Matrix Corporal Docker image is pulled
   community.docker.docker_image:
@@ -46,7 +41,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_corporal_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_corporal_docker_image_force_pull }}"
-  when: "matrix_corporal_enabled | bool and not matrix_corporal_container_image_self_build | bool"
+  when: not matrix_corporal_container_image_self_build | bool
   register: result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
@@ -59,7 +54,6 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: matrix_corporal_enabled | bool
 
 - name: Ensure matrix-corporal.service installed
   ansible.builtin.template:
@@ -67,55 +61,3 @@
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-corporal.service"
     mode: 0644
   register: matrix_corporal_systemd_service_result
-  when: matrix_corporal_enabled | bool
-
-- name: Ensure systemd reloaded after matrix-corporal.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_corporal_enabled | bool and matrix_corporal_systemd_service_result.changed"
-
-
-#
-# Tasks related to getting rid of matrix-corporal (if it was previously enabled)
-#
-
-- name: Check existence of matrix-corporal service
-  ansible.builtin.stat:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-corporal.service"
-  register: matrix_corporal_service_stat
-  when: "not matrix_corporal_enabled | bool"
-
-- name: Ensure matrix-corporal is stopped
-  ansible.builtin.service:
-    name: matrix-corporal
-    state: stopped
-    enabled: false
-    daemon_reload: true
-  register: stopping_result
-  when: "not matrix_corporal_enabled | bool and matrix_corporal_service_stat.stat.exists"
-
-- name: Ensure matrix-corporal.service doesn't exist
-  ansible.builtin.file:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-corporal.service"
-    state: absent
-  when: "not matrix_corporal_enabled | bool and matrix_corporal_service_stat.stat.exists"
-
-- name: Ensure systemd reloaded after matrix-corporal.service removal
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "not matrix_corporal_enabled | bool and matrix_corporal_service_stat.stat.exists"
-
-- name: Ensure matrix-corporal files don't exist
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - "{{ devture_systemd_docker_base_systemd_path }}/matrix-corporal.service"
-    - "{{ matrix_corporal_config_dir_path }}/config.json"
-  when: "not matrix_corporal_enabled | bool"
-
-- name: Ensure Matrix Corporal Docker image doesn't exist
-  community.docker.docker_image:
-    name: "{{ matrix_corporal_docker_image }}"
-    state: absent
-  when: "not matrix_corporal_enabled | bool"

@@ -1,13 +1,11 @@
 ---
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  when: "run_setup | bool and matrix_heisenbridge_enabled | bool"
-  tags:
-    - setup-all
-    - setup-heisenbridge
+- block:
+    - when: matrix_heisenbridge_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  when: "run_setup | bool and not matrix_heisenbridge_enabled | bool"
+    - when: not matrix_heisenbridge_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:
     - setup-all
     - setup-heisenbridge

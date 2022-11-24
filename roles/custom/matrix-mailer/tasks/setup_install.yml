@@ -1,9 +1,5 @@
 ---
 
-#
-# Tasks related to setting up the mailer
-#
-
 - name: Ensure mailer base path exists
   ansible.builtin.file:
     path: "{{ item.path }}"
@@ -14,14 +10,13 @@
   with_items:
     - {path: "{{ matrix_mailer_base_path }}", when: true}
     - {path: "{{ matrix_mailer_container_image_self_build_src_files_path }}", when: "{{ matrix_mailer_container_image_self_build }}"}
-  when: "matrix_mailer_enabled | bool and item.when"
+  when: item.when | bool
 
 - name: Ensure mailer environment variables file created
   ansible.builtin.template:
     src: "{{ role_path }}/templates/env-mailer.j2"
     dest: "{{ matrix_mailer_base_path }}/env-mailer"
     mode: 0640
-  when: matrix_mailer_enabled | bool
 
 - name: Ensure exim-relay repository is present on self-build
   ansible.builtin.git:
@@ -32,7 +27,7 @@
   become: true
   become_user: "{{ matrix_user_username }}"
   register: matrix_mailer_git_pull_results
-  when: "matrix_mailer_enabled | bool and matrix_mailer_container_image_self_build | bool"
+  when: matrix_mailer_container_image_self_build | bool
 
 - name: Ensure exim-relay Docker image is built
   community.docker.docker_image:
@@ -44,7 +39,7 @@
       dockerfile: Dockerfile
       path: "{{ matrix_mailer_container_image_self_build_src_files_path }}"
       pull: true
-  when: "matrix_mailer_enabled | bool and matrix_mailer_container_image_self_build | bool"
+  when: matrix_mailer_container_image_self_build | bool
 
 - name: Ensure exim-relay image is pulled
   community.docker.docker_image:
@@ -52,7 +47,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mailer_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_docker_image_force_pull }}"
-  when: "matrix_mailer_enabled | bool and not matrix_mailer_container_image_self_build | bool"
+  when: "not matrix_mailer_container_image_self_build | bool"
   register: result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
@@ -64,51 +59,8 @@
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mailer.service"
     mode: 0644
   register: matrix_mailer_systemd_service_result
-  when: matrix_mailer_enabled | bool
 
 - name: Ensure systemd reloaded after matrix-mailer.service installation
   ansible.builtin.service:
     daemon_reload: true
-  when: "matrix_mailer_enabled | bool and matrix_mailer_systemd_service_result.changed"
-
-#
-# Tasks related to getting rid of the mailer (if it was previously enabled)
-#
-
-- name: Check existence of matrix-mailer service
-  ansible.builtin.stat:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mailer.service"
-  register: matrix_mailer_service_stat
-  when: "not matrix_mailer_enabled | bool"
-
-- name: Ensure matrix-mailer is stopped
-  ansible.builtin.service:
-    name: matrix-mailer
-    state: stopped
-    enabled: false
-    daemon_reload: true
-  register: stopping_result
-  when: "not matrix_mailer_enabled | bool and matrix_mailer_service_stat.stat.exists"
-
-- name: Ensure matrix-mailer.service doesn't exist
-  ansible.builtin.file:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mailer.service"
-    state: absent
-  when: "not matrix_mailer_enabled | bool and matrix_mailer_service_stat.stat.exists"
-
-- name: Ensure systemd reloaded after matrix-mailer.service removal
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "not matrix_mailer_enabled | bool and matrix_mailer_service_stat.stat.exists"
-
-- name: Ensure Matrix mailer environment variables path doesn't exist
-  ansible.builtin.file:
-    path: "{{ matrix_mailer_base_path }}"
-    state: absent
-  when: "not matrix_mailer_enabled | bool"
-
-- name: Ensure mailer Docker image doesn't exist
-  community.docker.docker_image:
-    name: "{{ matrix_mailer_docker_image }}"
-    state: absent
-  when: "not matrix_mailer_enabled | bool"
+  when: matrix_mailer_systemd_service_result.changed | bool

@@ -1,19 +1,21 @@
 ---
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: "run_setup | bool and matrix_dynamic_dns_enabled | bool"
+- block:
+    - when: matrix_appservice_slack_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/inject_into_nginx_proxy.yml"
   tags:
     - setup-all
-    - setup-dynamic-dns
+    - setup-nginx-proxy
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/install.yml"
-  when: "run_setup | bool and matrix_dynamic_dns_enabled | bool"
-  tags:
-    - setup-all
-    - setup-dynamic-dns
+- block:
+    - when: matrix_dynamic_dns_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/uninstall.yml"
-  when: "run_setup | bool and not matrix_dynamic_dns_enabled | bool"
+    - when: matrix_dynamic_dns_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+    - when: not matrix_dynamic_dns_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:
     - setup-all
     - setup-dynamic-dns

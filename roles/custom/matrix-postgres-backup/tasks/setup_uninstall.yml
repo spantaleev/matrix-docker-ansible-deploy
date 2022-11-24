@@ -1,0 +1,43 @@
+---
+
+- name: Check existence of matrix-postgres-backup service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postgres-backup.service"
+  register: matrix_postgres_backup_service_stat
+
+
+- when: matrix_postgres_backup_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-postgres-backup is stopped
+      ansible.builtin.service:
+        name: matrix-postgres-backup
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-postgres-backup.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postgres-backup.service"
+        state: absent
+
+    - name: Ensure systemd reloaded after matrix-postgres-backup.service removal
+      ansible.builtin.service:
+        daemon_reload: true
+
+- name: Check existence of matrix-postgres-backup backup path
+  ansible.builtin.stat:
+    path: "{{ matrix_postgres_backup_path }}"
+  register: matrix_postgres_backup_path_stat
+
+# We just want to notify the user. Deleting data is too destructive.
+- name: Inject warning if matrix-postgres backup data remains
+  ansible.builtin.set_fact:
+    devture_playbook_runtime_messages_list: |
+      {{
+        devture_playbook_runtime_messages_list | default([])
+        +
+        [
+          "NOTE: You are not using the local backup service to backup the PostgreSQL database, but some old data remains from before in `{{ matrix_postgres_backup_path }}`. Feel free to delete it."
+        ]
+      }}
+  when: matrix_postgres_backup_path_stat.stat.exists | bool
