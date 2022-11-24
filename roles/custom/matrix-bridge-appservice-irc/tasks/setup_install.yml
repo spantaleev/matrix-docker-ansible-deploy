@@ -60,7 +60,7 @@
 
     - when: "matrix_appservice_irc_nedb_database_path_local_stat_result.stat.exists | bool"
       block:
-        - ansible.builtin.import_tasks: "{{ role_path }}/tasks/migrate_nedb_to_postgres.yml"
+        - ansible.builtin.include_tasks: "{{ role_path }}/tasks/migrate_nedb_to_postgres.yml"
 
         - ansible.builtin.set_fact:
             matrix_appservice_irc_requires_restart: true

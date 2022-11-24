@@ -13,9 +13,6 @@
     - {path: "{{ matrix_ma1sd_docker_src_files_path }}", when: "{{ matrix_ma1sd_container_image_self_build }}"}
   when: "item.when | bool"
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/migrate_mxisd.yml"
-
-
 # These (SQLite -> Postgres) migration tasks are usually at the top,
 # but we'd like to run them after `migrate_mxisd.yml`, which requires the ma1sd paths to exist.
 - ansible.builtin.set_fact:

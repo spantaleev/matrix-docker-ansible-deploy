@@ -20,11 +20,8 @@
     - when: matrix_synapse_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
-    - when: matrix_synapse_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_synapse.yml"
-
-    - when: not matrix_synapse_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+    # This handles both install and uninstal. It's quite messy and should be reworked.
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_synapse.yml"
   tags:
     - setup-all
     - setup-synapse

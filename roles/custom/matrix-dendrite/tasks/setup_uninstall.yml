@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-dendrite service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-dendrite.service"
+  register: matrix_dendrite_service_stat
+
+- when: matrix_dendrite_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-dendrite is stopped
+      ansible.builtin.service:
+        name: matrix-dendrite
+        state: stopped
+        daemon_reload: true
+      register: stopping_result
+
+    - name: Ensure matrix-dendrite.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-dendrite.service"
+        state: absent
+
+    - name: Ensure Dendrite Docker image doesn't exist
+      community.docker.docker_image:
+        name: "{{ matrix_dendrite_docker_image }}"
+        state: absent
