@@ -176,6 +176,8 @@ matrix_nginx_proxy_container_extra_arguments:
   - '--label "traefik.http.routers.matrix-nginx-proxy.entrypoints=web-secure"'
   # (The 'default' certificate resolver must be defined in Traefik config)
   - '--label "traefik.http.routers.matrix-nginx-proxy.tls.certResolver=default"'
+  # Traefik requires that we declare which service this router is using
+  - '--label "traefik.http.routers.matrix-nginx-proxy.service=matrix-nginx-proxy"'
   # The Nginx proxy container uses port 8080 internally
   - '--label "traefik.http.services.matrix-nginx-proxy.loadbalancer.server.port=8080"'
 
@@ -185,6 +187,8 @@ matrix_nginx_proxy_container_extra_arguments:
   - '--label "traefik.http.routers.matrix-nginx-proxy-federation.entrypoints=federation"'
   # (The 'default' certificate resolver must be defined in Traefik config)
   - '--label "traefik.http.routers.matrix-nginx-proxy-federation.tls.certResolver=default"'
+  # Traefik requires that we declare which service this router is using
+  - '--label "traefik.http.routers.matrix-nginx-proxy-federation.service=matrix-nginx-proxy-federation"'
   # The Nginx proxy container uses port `matrix_nginx_proxy_proxy_matrix_federation_port (8448) internally
   - '--label "traefik.http.services.matrix-nginx-proxy-federation.loadbalancer.server.port={{ matrix_nginx_proxy_proxy_matrix_federation_port }}"'
   - '--label "traefik.http.services.matrix-nginx-proxy-federation.loadbalancer.server.scheme={{ "https" if matrix_nginx_proxy_https_enabled else "http" }}"'
