@@ -39,7 +39,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run \
 			{{ matrix_synapse_reverse_proxy_companion_container_image }}
 
 {% for network in matrix_synapse_reverse_proxy_companion_container_additional_networks %}
-ExecStartPost={{ devture_systemd_docker_base_host_command_sh }} -c 'attempt=0; while [ $attempt -le 29 ]; do attempt=$(( $attempt + 1 )); if [ "`docker inspect -f {{ '{{.State.Running}}' }} matrix-synapse-reverse-proxy-companion 2> /dev/null`" = "true" ]; then break; fi; sleep 1; done; {{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-synapse-reverse-proxy-companion'
+ExecStartPost={{ devture_systemd_docker_base_host_command_sh }} -c 'container_name=matrix-synapse-reverse-proxy-companion; network_name={{ network }}; attempt=0; while [ $attempt -le 29 ]; do attempt=$(( $attempt + 1 )); if [ "`{{ devture_systemd_docker_base_host_command_docker }} inspect -f {{ '{{.State.Running}}' }} $container_name 2> /dev/null`" = "true" ]; then break; fi; sleep 1; done; {{ devture_systemd_docker_base_host_command_docker }} network connect $network_name $container_name'
 {% endfor %}
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-synapse-reverse-proxy-companion 2>/dev/null || true'
