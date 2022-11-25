@@ -25,9 +25,9 @@ matrix_synapse_recaptcha_public_key: 'YOUR_SITE_KEY'
 matrix_synapse_recaptcha_private_key: 'YOUR_SECRET_KEY'
 
 # for Dendrite
-matrix_dendrite_enable_registration_captcha: true
-matrix_dendrite_recaptcha_public_key: 'YOUR_SITE_KEY'
-matrix_dendrite_recaptcha_private_key: 'YOUR_SECRET_KEY'
+matrix_dendrite_client_api_enable_registration_captcha: true
+matrix_dendrite_client_api_recaptcha_public_key: 'YOUR_SITE_KEY'
+matrix_dendrite_client_api_recaptcha_private_key: 'YOUR_SECRET_KEY'
 ```
 
 ## hCaptcha
@@ -41,12 +41,12 @@ Requires a site/secret key pair from:
 ### Setting hCaptcha keys
 
 ```yaml
-matrix_dendrite_enable_registration_captcha: true
-matrix_dendrite_recaptcha_public_key: 'YOUR_SITE_KEY'
-matrix_dendrite_recaptcha_private_key: 'YOUR_SECRET_KEY'
+matrix_dendrite_client_api_enable_registration_captcha: true
+matrix_dendrite_client_api_recaptcha_public_key: 'YOUR_SITE_KEY'
+matrix_dendrite_client_api_recaptcha_private_key: 'YOUR_SECRET_KEY'
 
-matrix_dendrite_recaptcha_siteverify_api: 'https://hcaptcha.com/siteverify'
-matrix_dendrite_recaptcha_api_js_url: 'https://js.hcaptcha.com/1/api.js'
-matrix_dendrite_recaptcha_form_field: 'h-captcha-response'
-matrix_dendrite_recaptcha_sitekey_class: 'h-captcha'
+matrix_dendrite_client_api_recaptcha_siteverify_api: 'https://hcaptcha.com/siteverify'
+matrix_dendrite_client_api_recaptcha_api_js_url: 'https://js.hcaptcha.com/1/api.js'
+matrix_dendrite_client_api_recaptcha_form_field: 'h-captcha-response'
+matrix_dendrite_client_api_recaptcha_sitekey_class: 'h-captcha'
 ```
