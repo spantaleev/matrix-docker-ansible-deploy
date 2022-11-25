@@ -76,7 +76,7 @@ matrix_dendrite_systemd_wanted_services_list: []
 # matrix_dendrite_template_dendrite_config: "{{ playbook_dir }}/inventory/host_vars/<host>/dendrite.yaml.j2"
 matrix_dendrite_template_dendrite_config: "{{ role_path }}/templates/dendrite/dendrite.yaml.j2"
 
-matrix_dendrite_registration_shared_secret: ''
+matrix_dendrite_client_api_registration_shared_secret: ''
 matrix_dendrite_allow_guest_access: false
 
 matrix_dendrite_max_file_size_bytes: 10485760
@@ -89,12 +89,12 @@ matrix_dendrite_sync_api_real_ip_header: ''
 matrix_dendrite_tmp_directory_size_mb: 500
 
 # Rate limits
-matrix_dendrite_rate_limiting_enabled: true
-matrix_dendrite_rate_limiting_threshold: 20
-matrix_dendrite_rate_limiting_cooloff_ms: 500
+matrix_dendrite_client_api_rate_limiting_enabled: true
+matrix_dendrite_client_api_rate_limiting_threshold: 20
+matrix_dendrite_client_api_rate_limiting_cooloff_ms: 500
 
 # Controls whether people with access to the homeserver can register by themselves.
-matrix_dendrite_registration_disabled: true
+matrix_dendrite_client_api_registration_disabled: true
 
 # reCAPTCHA API for validating registration attempts
 matrix_dendrite_client_api_enable_registration_captcha: false
@@ -137,12 +137,12 @@ matrix_dendrite_metrics_username: "metrics"
 matrix_dendrite_metrics_password: "metrics"
 
 # Postgres database information
-matrix_dendrite_database_str: "postgresql://{{ matrix_dendrite_database_user }}:{{ matrix_dendrite_database_password }}@{{ matrix_dendrite_database_hostname }}"
+matrix_dendrite_client_api_database_str: "postgresql://{{ matrix_dendrite_database_user }}:{{ matrix_dendrite_database_password }}@{{ matrix_dendrite_database_hostname }}"
 matrix_dendrite_database_hostname: "matrix-postgres"
 matrix_dendrite_database_user: "dendrite"
 matrix_dendrite_database_password: "itsasecret"
-matrix_dendrite_federationapi_database: "dendrite_federationapi"
-matrix_dendrite_keyserver_database: "dendrite_keyserver"
+matrix_dendrite_client_api_federationapi_database: "dendrite_federationapi"
+matrix_dendrite_client_api_keyserver_database: "dendrite_keyserver"
 matrix_dendrite_mediaapi_database: "dendrite_mediaapi"
 matrix_dendrite_room_database: "dendrite_room"
 matrix_dendrite_syncapi_database: "dendrite_syncapi"
@@ -151,11 +151,11 @@ matrix_dendrite_pushserver_database: "dendrite_pushserver"
 matrix_dendrite_mscs_database: "dendrite_mscs"
 
 matrix_dendrite_turn_uris: []
-matrix_dendrite_turn_shared_secret: ""
+matrix_dendrite_turn_client_api_shared_secret: ""
 matrix_dendrite_turn_allow_guests: false
 
 # Controls whether the self-check feature should validate TLS certificates.
-matrix_dendrite_disable_tls_validation: false
+matrix_dendrite_client_api_disable_tls_validation: false
 
 matrix_dendrite_trusted_id_servers:
   - "matrix.org"

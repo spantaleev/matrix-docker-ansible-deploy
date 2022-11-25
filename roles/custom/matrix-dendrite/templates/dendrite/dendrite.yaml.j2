@@ -160,7 +160,7 @@ app_service_api:
   # Disable the validation of TLS certificates of appservices. This is
   # not recommended in production since it may allow appservice traffic
   # to be sent to an unverified endpoint.
-  disable_tls_validation: {{ matrix_dendrite_disable_tls_validation|to_json }}
+  disable_tls_validation: {{ matrix_dendrite_client_api_disable_tls_validation|to_json }}
 
   # Appservice configuration files to load into this homeserver.
   config_files: {{ matrix_dendrite_app_service_config_files_final|to_json }}
@@ -175,7 +175,7 @@ client_api:
 
   # Prevents new users from being able to register on this homeserver, except when
   # using the registration shared secret below.
-  registration_disabled: {{ matrix_dendrite_registration_disabled|to_json }}
+  registration_disabled: {{ matrix_dendrite_client_api_registration_disabled|to_json }}
 
   # Prevents new guest accounts from being created. Guest registration is also
   # disabled implicitly by setting 'registration_disabled' above.
@@ -183,10 +183,10 @@ client_api:
 
   # If set, allows registration by anyone who knows the shared secret, regardless of
   # whether registration is otherwise disabled.
-  registration_shared_secret: {{ matrix_dendrite_registration_shared_secret | string|to_json }}
+  registration_shared_secret: {{ matrix_dendrite_client_api_registration_shared_secret | string|to_json }}
 
   # Whether to require reCAPTCHA for registration.
-  enable_registration_captcha: {{ matrix_dendrite_enable_registration_captcha|to_json }}
+  enable_registration_captcha: {{ matrix_dendrite_client_api_enable_registration_captcha|to_json }}
 
   # Settings for ReCAPTCHA.
   recaptcha_public_key: {{ matrix_dendrite_client_api_recaptcha_public_key|to_json }}
@@ -200,8 +200,8 @@ client_api:
   # TURN server information that this homeserver should send to clients.
   turn:
     turn_user_lifetime: ""
-    turn_uris: {{ matrix_dendrite_turn_uris|to_json }}
-    turn_shared_secret: {{ matrix_dendrite_turn_shared_secret|to_json }}
+    turn_uris: {{ matrix_dendrite_client_api_turn_uris|to_json }}
+    turn_shared_secret: {{ matrix_dendrite_client_api_turn_shared_secret|to_json }}
     turn_username: ""
     turn_password: ""
 
@@ -209,9 +209,9 @@ client_api:
   # threshold number of "slots" have been taken by requests from a specific
   # host. Each "slot" will be released after the cooloff time in milliseconds.
   rate_limiting:
-    enabled: {{ matrix_dendrite_rate_limiting_enabled|to_json }}
-    threshold: {{ matrix_dendrite_rate_limiting_threshold|to_json }}
-    cooloff_ms: {{ matrix_dendrite_rate_limiting_cooloff_ms|to_json }}
+    enabled: {{ matrix_dendrite_client_api_rate_limiting_enabled|to_json }}
+    threshold: {{ matrix_dendrite_client_api_rate_limiting_threshold|to_json }}
+    cooloff_ms: {{ matrix_dendrite_client_api_rate_limiting_cooloff_ms|to_json }}
     exempt_user_ids:
     #  - "@user:domain.com"
 
@@ -223,7 +223,7 @@ federation_api:
   external_api:
     listen: http://0.0.0.0:8072
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_federationapi_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_client_api_database_str }}/{{ matrix_dendrite_client_api_federationapi_database }}?sslmode=disable
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -234,7 +234,7 @@ federation_api:
 
   # Disable the validation of TLS certificates of remote federated homeservers. Do not
   # enable this option in production as it presents a security risk!
-  disable_tls_validation: {{ matrix_dendrite_disable_tls_validation|to_json }}
+  disable_tls_validation: {{ matrix_dendrite_client_api_disable_tls_validation|to_json }}
 
   # Not in dendrite-config.yaml, but is in build/docker/config/dendrite.yaml
   # Use the following proxy server for outbound federation traffic.
@@ -266,7 +266,7 @@ key_server:
     listen: http://0.0.0.0:7779
     connect: http://key_server:7779
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_keyserver_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_client_api_database_str }}/{{ matrix_dendrite_client_api_keyserver_database }}?sslmode=disable
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -279,7 +279,7 @@ media_api:
   external_api:
     listen: http://0.0.0.0:8074
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_mediaapi_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_client_api_database_str }}/{{ matrix_dendrite_mediaapi_database }}?sslmode=disable
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -318,7 +318,7 @@ mscs:
   # - msc2946    (Spaces Summary, see https://github.com/matrix-org/matrix-doc/pull/2946)
   mscs: []
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_mscs_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_client_api_database_str }}/{{ matrix_dendrite_mscs_database }}?sslmode=disable
     max_open_conns: 5
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -329,7 +329,7 @@ room_server:
     listen: http://0.0.0.0:7770
     connect: http://room_server:7770
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_room_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_client_api_database_str }}/{{ matrix_dendrite_room_database }}?sslmode=disable
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -342,7 +342,7 @@ sync_api:
   external_api:
     listen: http://0.0.0.0:8073
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_syncapi_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_client_api_database_str }}/{{ matrix_dendrite_syncapi_database }}?sslmode=disable
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -376,7 +376,7 @@ user_api:
     listen: http://0.0.0.0:7781
     connect: http://user_api:7781
   account_database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_userapi_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_client_api_database_str }}/{{ matrix_dendrite_userapi_database }}?sslmode=disable
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -394,7 +394,7 @@ push_server:
     listen: http://localhost:7782
     connect: http://localhost:7782
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_pushserver_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_client_api_database_str }}/{{ matrix_dendrite_pushserver_database }}?sslmode=disable
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
