@@ -5,32 +5,21 @@
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-mjolnir.service"
   register: matrix_bot_mjolnir_service_stat
 
-- name: Ensure matrix-bot-mjolnir is stopped
-  ansible.builtin.service:
-    name: matrix-bot-mjolnir
-    state: stopped
-    enabled: false
-    daemon_reload: true
-  register: stopping_result
-  when: "matrix_bot_mjolnir_service_stat.stat.exists | bool"
+- when: matrix_bot_mjolnir_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-bot-mjolnir is stopped
+      ansible.builtin.service:
+        name: matrix-bot-mjolnir
+        state: stopped
+        enabled: false
+        daemon_reload: true
 
-- name: Ensure matrix-bot-mjolnir.service doesn't exist
-  ansible.builtin.file:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-mjolnir.service"
-    state: absent
-  when: "matrix_bot_mjolnir_service_stat.stat.exists | bool"
+    - name: Ensure matrix-bot-mjolnir.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-mjolnir.service"
+        state: absent
 
-- name: Ensure systemd reloaded after matrix-bot-mjolnir.service removal
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_bot_mjolnir_service_stat.stat.exists | bool"
-
-- name: Ensure matrix-bot-mjolnir paths don't exist
-  ansible.builtin.file:
-    path: "{{ matrix_bot_mjolnir_base_path }}"
-    state: absent
-
-- name: Ensure mjolnir Docker image doesn't exist
-  community.docker.docker_image:
-    name: "{{ matrix_bot_mjolnir_docker_image }}"
-    state: absent
+    - name: Ensure matrix-bot-mjolnir paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_bot_mjolnir_base_path }}"
+        state: absent

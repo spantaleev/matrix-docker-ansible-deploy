@@ -20,10 +20,6 @@
         path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postgres-backup.service"
         state: absent
 
-    - name: Ensure systemd reloaded after matrix-postgres-backup.service removal
-      ansible.builtin.service:
-        daemon_reload: true
-
 - name: Check existence of matrix-postgres-backup backup path
   ansible.builtin.stat:
     path: "{{ matrix_postgres_backup_path }}"

@@ -5,32 +5,21 @@
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-sygnal.service"
   register: matrix_sygnal_service_stat
 
-- name: Ensure matrix-sygnal is stopped
-  ansible.builtin.service:
-    name: matrix-sygnal
-    state: stopped
-    enabled: false
-    daemon_reload: true
-  register: stopping_result
-  when: "matrix_sygnal_service_stat.stat.exists | bool"
+- when: matrix_sygnal_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-sygnal is stopped
+      ansible.builtin.service:
+        name: matrix-sygnal
+        state: stopped
+        enabled: false
+        daemon_reload: true
 
-- name: Ensure matrix-sygnal.service doesn't exist
-  ansible.builtin.file:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-sygnal.service"
-    state: absent
-  when: "matrix_sygnal_service_stat.stat.exists | bool"
+    - name: Ensure matrix-sygnal.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-sygnal.service"
+        state: absent
 
-- name: Ensure systemd reloaded after matrix-sygnal.service removal
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_sygnal_service_stat.stat.exists | bool"
-
-- name: Ensure Sygnal base directory doesn't exist
-  ansible.builtin.file:
-    path: "{{ matrix_sygnal_base_path }}"
-    state: absent
-
-- name: Ensure Sygnal Docker image doesn't exist
-  community.docker.docker_image:
-    name: "{{ matrix_sygnal_docker_image }}"
-    state: absent
+    - name: Ensure Sygnal base directory doesn't exist
+      ansible.builtin.file:
+        path: "{{ matrix_sygnal_base_path }}"
+        state: absent

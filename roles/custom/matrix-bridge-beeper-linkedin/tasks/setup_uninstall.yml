@@ -5,21 +5,16 @@
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-beeper-linkedin.service"
   register: matrix_beeper_linkedin_service_stat
 
-- name: Ensure matrix-beeper-linkedin is stopped
-  ansible.builtin.service:
-    name: matrix-beeper-linkedin
-    state: stopped
-    enabled: false
-    daemon_reload: true
-  when: "matrix_beeper_linkedin_service_stat.stat.exists"
+- when: matrix_beeper_linkedin_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-beeper-linkedin is stopped
+      ansible.builtin.service:
+        name: matrix-beeper-linkedin
+        state: stopped
+        enabled: false
+        daemon_reload: true
 
-- name: Ensure matrix-beeper-linkedin.service doesn't exist
-  ansible.builtin.file:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-beeper-linkedin.service"
-    state: absent
-  when: "matrix_beeper_linkedin_service_stat.stat.exists"
-
-- name: Ensure systemd reloaded after matrix-beeper-linkedin.service removal
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_beeper_linkedin_service_stat.stat.exists"
+    - name: Ensure matrix-beeper-linkedin.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-beeper-linkedin.service"
+        state: absent

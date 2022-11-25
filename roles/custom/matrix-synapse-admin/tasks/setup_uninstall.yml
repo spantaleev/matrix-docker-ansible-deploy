@@ -13,15 +13,8 @@
         state: stopped
         enabled: false
         daemon_reload: true
-      register: stopping_result
 
     - name: Ensure matrix-synapse-admin.service doesn't exist
       ansible.builtin.file:
         path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse-admin.service"
         state: absent
-
-    - name: Ensure matrix-synapse-admin Docker image doesn't exist
-      community.docker.docker_image:
-        name: "{{ matrix_synapse_admin_docker_image }}"
-        state: absent
-      when: "not matrix_synapse_admin_enabled | bool"

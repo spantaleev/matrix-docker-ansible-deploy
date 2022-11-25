@@ -5,20 +5,15 @@
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-twitter.service"
   register: matrix_mautrix_twitter_service_stat
 
-- name: Ensure matrix-mautrix-twitter is stopped
-  ansible.builtin.service:
-    name: matrix-mautrix-twitter
-    state: stopped
-    daemon_reload: true
-  when: "matrix_mautrix_twitter_service_stat.stat.exists"
+- when: matrix_mautrix_twitter_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-mautrix-twitter is stopped
+      ansible.builtin.service:
+        name: matrix-mautrix-twitter
+        state: stopped
+        daemon_reload: true
 
-- name: Ensure matrix-mautrix-twitter.service doesn't exist
-  ansible.builtin.file:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-twitter.service"
-    state: absent
-  when: "matrix_mautrix_twitter_service_stat.stat.exists"
-
-- name: Ensure systemd reloaded after matrix-mautrix-twitter.service removal
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_mautrix_twitter_service_stat.stat.exists"
+    - name: Ensure matrix-mautrix-twitter.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-twitter.service"
+        state: absent

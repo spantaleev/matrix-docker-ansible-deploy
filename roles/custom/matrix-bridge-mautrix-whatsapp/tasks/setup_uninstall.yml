@@ -5,21 +5,16 @@
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-whatsapp.service"
   register: matrix_mautrix_whatsapp_service_stat
 
-- name: Ensure matrix-mautrix-whatsapp is stopped
-  ansible.builtin.service:
-    name: matrix-mautrix-whatsapp
-    state: stopped
-    enabled: false
-    daemon_reload: true
-  when: "matrix_mautrix_whatsapp_service_stat.stat.exists"
+- when: matrix_mautrix_whatsapp_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-mautrix-whatsapp is stopped
+      ansible.builtin.service:
+        name: matrix-mautrix-whatsapp
+        state: stopped
+        enabled: false
+        daemon_reload: true
 
-- name: Ensure matrix-mautrix-whatsapp.service doesn't exist
-  ansible.builtin.file:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-whatsapp.service"
-    state: absent
-  when: "matrix_mautrix_whatsapp_service_stat.stat.exists"
-
-- name: Ensure systemd reloaded after matrix-mautrix-whatsapp.service removal
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_mautrix_whatsapp_service_stat.stat.exists"
+    - name: Ensure matrix-mautrix-whatsapp.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-whatsapp.service"
+        state: absent

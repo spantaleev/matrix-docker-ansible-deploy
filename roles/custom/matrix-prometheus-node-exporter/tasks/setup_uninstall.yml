@@ -13,13 +13,8 @@
         state: stopped
         enabled: false
         daemon_reload: true
-      register: stopping_result
 
     - name: Ensure matrix-prometheus-node-exporter.service doesn't exist
       ansible.builtin.file:
         path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-prometheus-node-exporter.service"
         state: absent
-
-    - name: Ensure systemd reloaded after matrix-prometheus-node-exporter.service removal
-      ansible.builtin.service:
-        daemon_reload: true

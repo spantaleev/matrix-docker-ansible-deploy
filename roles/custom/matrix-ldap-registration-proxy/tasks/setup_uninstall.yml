@@ -5,32 +5,21 @@
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ldap-registration-proxy.service"
   register: matrix_ldap_registration_proxy_service_stat
 
-- name: Ensure matrix-matrix_ldap_registration_proxy is stopped
-  ansible.builtin.service:
-    name: matrix-matrix_ldap_registration_proxy
-    state: stopped
-    enabled: false
-    daemon_reload: true
-  register: stopping_result
-  when: "matrix_ldap_registration_proxy_service_stat.stat.exists | bool"
+- when: matrix_ldap_registration_proxy_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-matrix_ldap_registration_proxy is stopped
+      ansible.builtin.service:
+        name: matrix-matrix_ldap_registration_proxy
+        state: stopped
+        enabled: false
+        daemon_reload: true
 
-- name: Ensure matrix-ldap-registration-proxy.service doesn't exist
-  ansible.builtin.file:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ldap-registration-proxy.service"
-    state: absent
-  when: "matrix_ldap_registration_proxy_service_stat.stat.exists | bool"
+    - name: Ensure matrix-ldap-registration-proxy.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ldap-registration-proxy.service"
+        state: absent
 
-- name: Ensure systemd reloaded after matrix-ldap-registration-proxy.service removal
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_ldap_registration_proxy_service_stat.stat.exists | bool"
-
-- name: Ensure Matrix matrix_ldap_registration_proxy paths don't exist
-  ansible.builtin.file:
-    path: "{{ matrix_ldap_registration_proxy_base_path }}"
-    state: absent
-
-- name: Ensure matrix_ldap_registration_proxy Docker image doesn't exist
-  community.docker.docker_image:
-    name: "{{ matrix_ldap_registration_proxy_docker_image }}"
-    state: absent
+    - name: Ensure Matrix matrix_ldap_registration_proxy paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_ldap_registration_proxy_base_path }}"
+        state: absent
