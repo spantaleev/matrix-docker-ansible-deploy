@@ -1,13 +1,6 @@
 ---
 
 - block:
-    - when: matrix_appservice_slack_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/inject_into_nginx_proxy.yml"
-  tags:
-    - setup-all
-    - setup-nginx-proxy
-
-- block:
     - when: matrix_dynamic_dns_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
