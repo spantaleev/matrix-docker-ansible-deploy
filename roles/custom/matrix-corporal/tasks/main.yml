@@ -6,7 +6,13 @@
 
     - when: matrix_corporal_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-corporal
+    - install-all
+    - install-corporal
 
+- block:
     - when: not matrix_corporal_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:

@@ -6,7 +6,13 @@
 
     - when: matrix_postgres_backup_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-postgres-backup
+    - install-all
+    - install-postgres-backup
 
+- block:
     - when: not matrix_postgres_backup_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:

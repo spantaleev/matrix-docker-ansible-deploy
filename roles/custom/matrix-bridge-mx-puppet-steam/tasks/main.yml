@@ -6,7 +6,13 @@
 
     - when: matrix_mx_puppet_steam_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-mx-puppet-steam
+    - install-all
+    - install-mx-puppet-steam
 
+- block:
     - when: not matrix_mx_puppet_steam_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:

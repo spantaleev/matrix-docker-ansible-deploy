@@ -6,7 +6,13 @@
 
     - when: matrix_coturn_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-coturn
+    - install-all
+    - install-coturn
 
+- block:
     - when: not matrix_coturn_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:

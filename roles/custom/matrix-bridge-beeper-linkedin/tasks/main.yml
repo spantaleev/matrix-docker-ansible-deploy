@@ -6,7 +6,13 @@
 
     - when: matrix_beeper_linkedin_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-beeper-linkedin
+    - install-all
+    - install-beeper-linkedin
 
+- block:
     - when: not matrix_beeper_linkedin_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:

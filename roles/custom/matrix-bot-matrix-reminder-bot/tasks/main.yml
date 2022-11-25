@@ -6,7 +6,13 @@
 
     - when: matrix_bot_matrix_reminder_bot_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-bot-matrix-reminder-bot
+    - install-all
+    - install-bot-matrix-reminder-bot
 
+- block:
     - when: not matrix_bot_matrix_reminder_bot_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:

@@ -6,7 +6,13 @@
 
     - when: matrix_sms_bridge_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-matrix-sms-bridge
+    - install-all
+    - install-matrix-sms-bridge
 
+- block:
     - when: not matrix_sms_bridge_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:

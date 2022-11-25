@@ -6,6 +6,8 @@
   tags:
     - setup-all
     - setup-nginx-proxy
+    - install-all
+    - install-nginx-proxy
 
 - block:
     - when: matrix_mautrix_facebook_enabled | bool
@@ -13,7 +15,13 @@
 
     - when: matrix_mautrix_facebook_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-mautrix-facebook
+    - install-all
+    - install-mautrix-facebook
 
+- block:
     - when: not matrix_mautrix_facebook_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:

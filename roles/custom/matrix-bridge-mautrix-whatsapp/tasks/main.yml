@@ -6,7 +6,13 @@
 
     - when: matrix_mautrix_whatsapp_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-mautrix-whatsapp
+    - install-all
+    - install-mautrix-whatsapp
 
+- block:
     - when: not matrix_mautrix_whatsapp_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:

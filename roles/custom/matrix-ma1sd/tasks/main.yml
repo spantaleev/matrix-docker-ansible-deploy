@@ -6,7 +6,13 @@
 
     - when: matrix_ma1sd_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-ma1sd
+    - install-all
+    - install-ma1sd
 
+- block:
     - when: not matrix_ma1sd_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:

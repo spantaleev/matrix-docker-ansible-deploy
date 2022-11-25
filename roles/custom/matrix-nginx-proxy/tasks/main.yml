@@ -8,6 +8,8 @@
   tags:
     - setup-all
     - setup-nginx-proxy
+    - install-all
+    - install-nginx-proxy
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/ssl/main.yml"
   when: run_setup | bool
@@ -15,12 +17,17 @@
     - setup-all
     - setup-nginx-proxy
     - setup-ssl
+    - install-all
+    - install-nginx-proxy
+    - install-ssl
 
 - ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_nginx_proxy.yml"
   when: run_setup | bool
   tags:
     - setup-all
     - setup-nginx-proxy
+    - install-all
+    - install-nginx-proxy
 
 - block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_well_known.yml"

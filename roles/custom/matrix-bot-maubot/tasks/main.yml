@@ -6,7 +6,8 @@
   tags:
     - setup-all
     - setup-nginx-proxy
-
+    - install-all
+    - install-nginx-proxy
 
 - block:
     - when: matrix_bot_maubot_enabled | bool
@@ -14,7 +15,13 @@
 
     - when: matrix_bot_maubot_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-bot-maubot
+    - install-all
+    - install-bot-maubot
 
+- block:
     - when: not matrix_bot_maubot_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:

@@ -6,7 +6,13 @@
 
     - when: matrix_bot_postmoogle_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-bot-postmoogle
+    - install-all
+    - install-bot-postmoogle
 
+- block:
     - when: not matrix_bot_postmoogle_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:

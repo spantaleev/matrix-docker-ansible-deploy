@@ -6,7 +6,13 @@
 
     - when: matrix_mautrix_signal_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-mautrix-signal
+    - install-all
+    - install-mautrix-signal
 
+- block:
     - when: not matrix_mautrix_signal_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:

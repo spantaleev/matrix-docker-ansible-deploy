@@ -5,6 +5,7 @@
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/init_additional_jvb.yml"
   tags:
     - setup-additional-jitsi-jvb
+    - install-additional-jitsi-jvb
 
 - block:
     - when: matrix_jitsi_enabled | bool
@@ -16,22 +17,31 @@
     - setup-all
     - setup-jitsi
     - setup-additional-jitsi-jvb
+    - install-all
+    - install-jitsi
+    - install-additional-jitsi-jvb
 
 - block:
     - when: matrix_jitsi_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_jitsi_web_install.yml"
 
-    - when: not matrix_jitsi_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_jitsi_web_uninstall.yml"
-
     - when: matrix_jitsi_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_jitsi_prosody_install.yml"
 
-    - when: not matrix_jitsi_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_jitsi_prosody_uninstall.yml"
-
     - when: matrix_jitsi_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_jitsi_jicofo_install.yml"
+  tags:
+    - setup-all
+    - setup-jitsi
+    - install-all
+    - install-jitsi
+
+- block:
+    - when: not matrix_jitsi_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_jitsi_web_uninstall.yml"
+
+    - when: not matrix_jitsi_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_jitsi_prosody_uninstall.yml"
 
     - when: not matrix_jitsi_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_jitsi_jicofo_uninstall.yml"
@@ -42,7 +52,15 @@
 - block:
     - when: matrix_jitsi_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_jitsi_jvb_install.yml"
+  tags:
+    - setup-all
+    - setup-jitsi
+    - setup-additional-jitsi-jvb
+    - install-all
+    - install-jitsi
+    - install-additional-jitsi-jvb
 
+- block:
     - when: not matrix_jitsi_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_jitsi_jvb_uninstall.yml"
   tags:

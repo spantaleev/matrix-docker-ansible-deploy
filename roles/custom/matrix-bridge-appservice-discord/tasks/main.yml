@@ -6,7 +6,13 @@
 
     - when: matrix_appservice_discord_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-appservice-discord
+    - install-all
+    - install-appservice-discord
 
+- block:
     - when: not matrix_appservice_discord_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:
