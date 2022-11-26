@@ -2932,15 +2932,7 @@ matrix_postgres_backup_connection_password: "{{ matrix_postgres_connection_passw
 
 matrix_postgres_backup_postgres_data_path: "{{ matrix_postgres_data_path if matrix_postgres_enabled else '' }}"
 
-# the default matrix synapse databse is not always part of the matrix_postgres_additional_databases variable thus we have to add it if the default database is used
-matrix_postgres_backup_databases: |
-  {{
-    (([{
-        'name': matrix_synapse_database_database
-    }] if (matrix_synapse_enabled and matrix_synapse_database_database == matrix_postgres_db_name and matrix_synapse_database_host == 'matrix-postgres') else [])
-    +
-    matrix_postgres_additional_databases)|map(attribute='name') | list
-  }}
+matrix_postgres_backup_databases: "{{ matrix_postgres_additional_databases | map(attribute='name') if matrix_postgres_enabled else [] }}"
 
 ######################################################################
 #
