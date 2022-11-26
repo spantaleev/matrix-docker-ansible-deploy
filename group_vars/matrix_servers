@@ -1474,7 +1474,7 @@ matrix_bot_maubot_registration_shared_secret: |-
   {{
     {
       'synapse': matrix_synapse_registration_shared_secret,
-      'dendrite': matrix_dendrite_registration_shared_secret,
+      'dendrite': matrix_dendrite_client_api_registration_shared_secret,
     }[matrix_homeserver_implementation]
   }}
 
@@ -2898,7 +2898,7 @@ matrix_registration_shared_secret: |-
   {{
     {
       'synapse': matrix_synapse_registration_shared_secret,
-      'dendrite': matrix_dendrite_registration_shared_secret,
+      'dendrite': matrix_dendrite_client_api_registration_shared_secret,
       'conduit': '',
     }[matrix_homeserver_implementation]
   }}
@@ -2975,13 +2975,13 @@ matrix_dendrite_container_https_host_bind_address: "{{ '' if matrix_nginx_proxy_
 
 matrix_dendrite_sync_api_real_ip_header: "{{ 'X-Forwarded-For' if matrix_nginx_proxy_enabled else '' }}"
 
-matrix_dendrite_registration_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.rss', rounds=655555) | to_uuid }}"
+matrix_dendrite_client_api_registration_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.rss', rounds=655555) | to_uuid }}"
 
 matrix_dendrite_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.db', rounds=655555) | to_uuid }}"
 
 # Even if TURN doesn't support TLS (it does by default),
 # it doesn't hurt to try a secure connection anyway.
-matrix_dendrite_turn_uris: |
+matrix_dendrite_client_api_turn_uris: |
   {{
     [
       'turns:' + matrix_server_fqn_matrix + '?transport=udp',
