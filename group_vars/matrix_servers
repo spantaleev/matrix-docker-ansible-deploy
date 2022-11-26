@@ -1655,14 +1655,7 @@ matrix_backup_borg_postgresql_databases_hostname: "{{ matrix_postgres_connection
 matrix_backup_borg_postgresql_databases_username: "{{ matrix_postgres_connection_username }}"
 matrix_backup_borg_postgresql_databases_password: "{{ matrix_postgres_connection_password }}"
 matrix_backup_borg_postgresql_databases_port: "{{ matrix_postgres_connection_port }}"
-matrix_backup_borg_postgresql_databases: |
-  {{
-    (([{
-        'name': matrix_synapse_database_database
-    }] if (matrix_synapse_enabled and matrix_synapse_database_database == matrix_postgres_db_name and matrix_synapse_database_host == 'matrix-postgres') else [])
-    +
-    matrix_postgres_additional_databases)|map(attribute='name') | list
-  }}
+matrix_backup_borg_postgresql_databases: "{{ matrix_postgres_additional_databases | map(attribute='name') if matrix_postgres_enabled else [] }}"
 matrix_backup_borg_location_source_directories:
   - "{{ matrix_base_data_path }}"
 matrix_backup_borg_location_exclude_patterns: |
