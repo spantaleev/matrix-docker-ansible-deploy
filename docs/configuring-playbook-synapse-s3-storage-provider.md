@@ -62,7 +62,7 @@ Migrating your existing data can happen in multiple ways:
 
 Instead of using `s3_media_upload` directly, which is very slow and painful for an initial data migration, we recommend [using another tool in combination with `s3_media_upload`](#using-another-tool-in-combination-with-s3_media_upload).
 
-To copy your existing files, SSH into the server and run `/usr/local/bin/matrix-synapse-s3-storage-provider-shell`.
+To copy your existing files, SSH into the server and run `/matrix/synapse/ext/s3-storage-provider/bin/shell`.
 
 This launches a Synapse container, which has access to the local media store, Postgres database, S3 store and has some convenient environment variables configured for you to use (`MEDIA_PATH`, `BUCKET`, `ENDPOINT`, `UPDATE_DB_DAYS`, etc).
 
@@ -76,12 +76,12 @@ Then use the following commands (`$` values come from environment variables - th
 
 The `s3_media_upload upload` command may take a lot of time to complete.
 
-Instead of running the above commands manually in the shell, you can also run the `/usr/local/bin/matrix-synapse-s3-storage-provider-migrate` script which will run the same commands automatically. We demonstrate how to do it manually, because:
+Instead of running the above commands manually in the shell, you can also run the `/matrix/synapse/ext/s3-storage-provider/bin/migrate` script which will run the same commands automatically. We demonstrate how to do it manually, because:
 
 - it's what the upstream project demonstrates and it teaches you how to use the `s3_media_upload` tool
 - allows you to check and verify the output of each command, to catch mistakes
 - includes progress bars and detailed output for each command
-- allows you to easily interrupt slow-running commands, etc. (the `/usr/local/bin/matrix-synapse-s3-storage-provider-migrate` starts a container without interactive TTY support, so `Ctrl+C` may not work and you and require killing via `docker kill ..`)
+- allows you to easily interrupt slow-running commands, etc. (the `/matrix/synapse/ext/s3-storage-provider/bin/migrate` starts a container without interactive TTY support, so `Ctrl+C` may not work and you and require killing via `docker kill ..`)
 
 ### Using another tool in combination with `s3_media_upload`
 
@@ -119,7 +119,7 @@ As described in [How it works?](#how-it-works) above, when new media is uploaded
 
 By default, we periodically ensure that all local files are uploaded to S3 and are then removed from the local filesystem. This is done automatically using:
 
-- the `/usr/local/bin/matrix-synapse-s3-storage-provider-migrate` script
+- the `/matrix/synapse/ext/s3-storage-provider/bin/migrate` script
 - .. invoked via the `matrix-synapse-s3-storage-provider-migrate.service` service
 - .. triggered by the `matrix-synapse-s3-storage-provider-migrate.timer` timer, every day at 05:00
 
