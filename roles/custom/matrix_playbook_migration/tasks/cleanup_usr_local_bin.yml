@@ -1,0 +1,14 @@
+---
+
+- name: Find leftover matrix scripts in /usr/local/bin
+  ansible.builtin.find:
+    path: "/usr/local/bin"
+    patterns: "^matrix-.*"
+    use_regex: true
+  register: matrix_usr_local_bin_files_result
+
+- name: Ensure /usr/local/bin does not contain matrix scripts
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ matrix_usr_local_bin_files_result.files }}"
