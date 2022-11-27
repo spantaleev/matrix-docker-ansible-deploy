@@ -1188,6 +1188,7 @@ matrix_mx_puppet_slack_login_shared_secret: "{{ matrix_synapse_ext_password_prov
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_mx_puppet_slack_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
+matrix_mx_puppet_slack_database_hostname: "{{ devture_postgres_identifier if devture_postgres_enabled else '' }}"
 matrix_mx_puppet_slack_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.slack.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1228,6 +1229,7 @@ matrix_mx_puppet_twitter_container_http_host_bind_port: "{{ '' if matrix_nginx_p
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_mx_puppet_twitter_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
+matrix_mx_puppet_twitter_database_hostname: "{{ devture_postgres_identifier if devture_postgres_enabled else '' }}"
 matrix_mx_puppet_twitter_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.twitter.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1267,6 +1269,7 @@ matrix_mx_puppet_instagram_login_shared_secret: "{{ matrix_synapse_ext_password_
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_mx_puppet_instagram_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
+matrix_mx_puppet_instagram_database_hostname: "{{ devture_postgres_identifier if devture_postgres_enabled else '' }}"
 matrix_mx_puppet_instagram_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.ig.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1305,6 +1308,7 @@ matrix_mx_puppet_discord_login_shared_secret: "{{ matrix_synapse_ext_password_pr
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_mx_puppet_discord_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
+matrix_mx_puppet_discord_database_hostname: "{{ devture_postgres_identifier if devture_postgres_enabled else '' }}"
 matrix_mx_puppet_discord_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.dsc.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1343,6 +1347,7 @@ matrix_mx_puppet_steam_login_shared_secret: "{{ matrix_synapse_ext_password_prov
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_mx_puppet_steam_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
+matrix_mx_puppet_steam_database_hostname: "{{ devture_postgres_identifier if devture_postgres_enabled else '' }}"
 matrix_mx_puppet_steam_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.steam.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1381,6 +1386,7 @@ matrix_mx_puppet_groupme_login_shared_secret: "{{ matrix_synapse_ext_password_pr
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_mx_puppet_groupme_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
+matrix_mx_puppet_groupme_database_hostname: "{{ devture_postgres_identifier if devture_postgres_enabled else '' }}"
 matrix_mx_puppet_groupme_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.groupme.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1411,6 +1417,7 @@ matrix_bot_matrix_reminder_bot_systemd_required_services_list: |
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_bot_matrix_reminder_bot_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
+matrix_bot_matrix_reminder_bot_database_hostname: "{{ devture_postgres_identifier if devture_postgres_enabled else '' }}"
 matrix_bot_matrix_reminder_bot_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'reminder.bot.db', rounds=655555) | to_uuid }}"
 matrix_bot_matrix_reminder_bot_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
@@ -1482,6 +1489,7 @@ matrix_bot_maubot_management_interface_http_bind_port: "{{ '' if matrix_nginx_pr
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_bot_maubot_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
+matrix_bot_maubot_database_hostname: "{{ devture_postgres_identifier if devture_postgres_enabled else '' }}"
 matrix_bot_maubot_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.dsc.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1513,6 +1521,7 @@ matrix_bot_honoroit_systemd_required_services_list: |
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_bot_honoroit_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
+matrix_bot_honoroit_database_hostname: "{{ devture_postgres_identifier if devture_postgres_enabled else '' }}"
 matrix_bot_honoroit_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'honoroit.bot.db', rounds=655555) | to_uuid }}"
 matrix_bot_honoroit_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
@@ -2983,6 +2992,8 @@ matrix_dendrite_container_https_host_bind_address: "{{ '' if matrix_nginx_proxy_
 matrix_dendrite_sync_api_real_ip_header: "{{ 'X-Forwarded-For' if matrix_nginx_proxy_enabled else '' }}"
 
 matrix_dendrite_client_api_registration_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.rss', rounds=655555) | to_uuid }}"
+
+matrix_dendrite_database_hostname: "{{ devture_postgres_identifier if devture_postgres_enabled else '' }}"
 
 matrix_dendrite_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.db', rounds=655555) | to_uuid }}"
 

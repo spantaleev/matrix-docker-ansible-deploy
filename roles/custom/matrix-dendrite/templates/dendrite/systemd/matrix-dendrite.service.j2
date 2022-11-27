@@ -16,8 +16,8 @@ Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-dendrite 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-dendrite 2>/dev/null || true'
 
-{% if 'matrix-postgres.service' in matrix_dendrite_systemd_required_services_list %}
-# Dendrite is too quick to start in relation to its matrix-postgres dependency.
+{% if (devture_postgres_identifier + '.service') in matrix_dendrite_systemd_required_services_list %}
+# Dendrite is too quick to start in relation to its Postgres dependency.
 # Delay Dendrite startup to avoid failing with: "failed to connect to accounts db" ("pq: the database system is starting up").
 ExecStartPre={{ matrix_host_command_sleep }} 5
 {% endif %}
