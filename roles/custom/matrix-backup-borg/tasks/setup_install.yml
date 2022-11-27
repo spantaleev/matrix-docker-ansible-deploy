@@ -105,19 +105,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-backup-borg.timer.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-backup-borg.timer"
     mode: 0644
-  register: matrix_backup_borg_systemd_timer_result
-
-- name: Ensure systemd reloaded after matrix-backup-borg.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_backup_borg_systemd_service_result.changed | bool"
-
-- name: Ensure matrix-backup-borg.service enabled
-  ansible.builtin.service:
-    enabled: true
-    name: matrix-backup-borg.service
-
-- name: Ensure matrix-backup-borg.timer enabled
-  ansible.builtin.service:
-    enabled: true
-    name: matrix-backup-borg.timer
