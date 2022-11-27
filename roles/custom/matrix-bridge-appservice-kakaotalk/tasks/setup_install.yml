@@ -109,9 +109,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-appservice-kakaotalk.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-kakaotalk.service"
     mode: 0644
-  register: matrix_appservice_kakaotalk_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-appservice-kakaotalk.service or matrix-appservice-kakaotalk-node.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: matrix_appservice_kakaotalk_node_systemd_service_result.changed or matrix_appservice_kakaotalk_systemd_service_result.changed

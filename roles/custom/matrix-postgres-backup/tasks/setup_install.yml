@@ -49,9 +49,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-postgres-backup.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postgres-backup.service"
     mode: 0644
-  register: matrix_postgres_backup_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-postgres-backup.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: matrix_postgres_backup_systemd_service_result.changed | bool

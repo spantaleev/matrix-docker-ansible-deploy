@@ -42,13 +42,9 @@
     mode: 0644
   register: matrix_bot_go_neb_systemd_service_result
 
-- name: Ensure systemd reloaded after matrix-bot-go-neb.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_bot_go_neb_systemd_service_result.changed | bool"
-
 - name: Ensure matrix-bot-go-neb.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-bot-go-neb.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_bot_go_neb_requires_restart | bool"

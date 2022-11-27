@@ -39,9 +39,3 @@
     src: "{{ role_path }}/templates/conduit/systemd/matrix-conduit.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-conduit.service"
     mode: 0644
-  register: matrix_conduit_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-conduit.service installation
-  ansible.builtin.systemd:
-    daemon_reload: true
-  when: "matrix_conduit_systemd_service_result.changed | bool"

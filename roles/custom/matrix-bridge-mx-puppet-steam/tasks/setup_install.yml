@@ -116,15 +116,10 @@
     src: "{{ role_path }}/templates/systemd/matrix-mx-puppet-steam.service.j2"
     dest: "/etc/systemd/system/matrix-mx-puppet-steam.service"
     mode: 0644
-  register: matrix_mx_puppet_steam_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-mx-puppet-steam.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_mx_puppet_steam_systemd_service_result.changed"
 
 - name: Ensure matrix-mx-puppet-steam.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-mx-puppet-steam.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_mx_puppet_steam_requires_restart | bool"

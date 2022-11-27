@@ -65,9 +65,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-bot-maubot.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-maubot.service"
     mode: 0644
-  register: matrix_bot_maubot_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-bot-maubot.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_bot_maubot_systemd_service_result.changed|bool"

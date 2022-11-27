@@ -116,15 +116,10 @@
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-googlechat.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-googlechat.service"
     mode: 0644
-  register: matrix_mautrix_googlechat_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-mautrix-googlechat.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_mautrix_googlechat_systemd_service_result.changed"
 
 - name: Ensure matrix-mautrix-googlechat.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-mautrix-googlechat.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_mautrix_googlechat_requires_restart | bool"

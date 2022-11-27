@@ -98,15 +98,10 @@
     src: "{{ role_path }}/templates/systemd/matrix-mx-puppet-instagram.service.j2"
     dest: "/etc/systemd/system/matrix-mx-puppet-instagram.service"
     mode: 0644
-  register: matrix_mx_puppet_instagram_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-mx-puppet-instagram.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_mx_puppet_instagram_systemd_service_result.changed"
 
 - name: Ensure matrix-mx-puppet-instagram.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-mx-puppet-instagram.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_mx_puppet_instagram_requires_restart | bool"

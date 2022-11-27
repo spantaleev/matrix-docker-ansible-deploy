@@ -70,9 +70,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-instagram.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-instagram.service"
     mode: 0644
-  register: matrix_mautrix_instagram_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-mautrix-instagram.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_mautrix_instagram_systemd_service_result.changed"

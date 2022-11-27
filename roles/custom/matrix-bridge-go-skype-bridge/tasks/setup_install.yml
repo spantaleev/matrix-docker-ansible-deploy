@@ -128,13 +128,9 @@
     mode: 0644
   register: matrix_go_skype_bridge_systemd_service_result
 
-- name: Ensure systemd reloaded after matrix-go-skype-bridge.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_go_skype_bridge_systemd_service_result.changed"
-
 - name: Ensure matrix-go-skype-bridge.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-go-skype-bridge.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_go_skype_bridge_requires_restart | bool"

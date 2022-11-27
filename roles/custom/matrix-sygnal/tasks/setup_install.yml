@@ -36,9 +36,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-sygnal.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-sygnal.service"
     mode: 0644
-  register: matrix_sygnal_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-sygnal.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_sygnal_systemd_service_result.changed | bool"

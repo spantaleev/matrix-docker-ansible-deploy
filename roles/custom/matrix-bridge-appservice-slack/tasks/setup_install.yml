@@ -87,15 +87,10 @@
     src: "{{ role_path }}/templates/systemd/matrix-appservice-slack.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-slack.service"
     mode: 0644
-  register: matrix_appservice_slack_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-appservice-slack.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_appservice_slack_systemd_service_result.changed"
 
 - name: Ensure matrix-appservice-slack.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-appservice-slack.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_appservice_slack_requires_restart | bool"

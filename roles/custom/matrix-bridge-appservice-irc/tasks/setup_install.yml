@@ -199,13 +199,9 @@
     mode: 0644
   register: matrix_appservice_irc_systemd_service_result
 
-- name: Ensure systemd reloaded after matrix-appservice-irc.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_appservice_irc_systemd_service_result.changed"
-
 - name: Ensure matrix-appservice-irc.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-appservice-irc.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_appservice_irc_requires_restart | bool"

@@ -116,15 +116,10 @@
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-hangouts.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-hangouts.service"
     mode: 0644
-  register: matrix_mautrix_hangouts_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-mautrix-hangouts.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_mautrix_hangouts_systemd_service_result.changed"
 
 - name: Ensure matrix-mautrix-hangouts.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-mautrix-hangouts.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_mautrix_hangouts_requires_restart | bool"

@@ -86,8 +86,3 @@
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-postmoogle.service"
     mode: 0644
   register: matrix_bot_postmoogle_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-bot-postmoogle.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_bot_postmoogle_systemd_service_result.changed | bool"

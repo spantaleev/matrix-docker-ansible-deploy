@@ -101,13 +101,9 @@
     mode: 0644
   register: matrix_mautrix_discord_systemd_service_result
 
-- name: Ensure systemd reloaded after matrix-mautrix-discord.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_mautrix_discord_systemd_service_result.changed"
-
 - name: Ensure matrix-mautrix-discord.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-mautrix-discord.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_mautrix_discord_requires_restart | bool"
