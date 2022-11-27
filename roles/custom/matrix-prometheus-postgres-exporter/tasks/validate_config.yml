@@ -1,0 +1,9 @@
+---
+
+- name: Fail if required prometheus-postgres-exporter settings not defined
+  ansible.builtin.fail:
+    msg: >
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - matrix_prometheus_postgres_exporter_database_hostname

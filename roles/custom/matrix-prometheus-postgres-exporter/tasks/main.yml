@@ -11,6 +11,9 @@
 
 - block:
     - when: matrix_prometheus_postgres_exporter_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_prometheus_postgres_exporter_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
   tags:
     - setup-all

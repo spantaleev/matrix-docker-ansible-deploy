@@ -1,12 +1,13 @@
 ---
-- name: Fail if required settings not defined
+- name: Fail if required backup-borg settings not defined
   ansible.builtin.fail:
     msg: >-
-      You need to define a required configuration setting (`{{ item }}`).
-  when: "vars[item] == ''"
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
   with_items:
-    - "matrix_backup_borg_ssh_key_private"
-    - "matrix_backup_borg_location_repositories"
+    - {'name': 'matrix_backup_borg_ssh_key_private', when: true}
+    - {'name': 'matrix_backup_borg_location_repositories', when: true}
+    - {'name': 'matrix_backup_borg_postgresql_databases_hostname', when: "{{ matrix_backup_borg_postgresql_enabled }}"}
 
 - name: Fail if encryption passphrase is undefined unless repository is unencrypted
   ansible.builtin.fail:

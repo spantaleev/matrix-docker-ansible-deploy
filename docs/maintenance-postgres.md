@@ -16,7 +16,7 @@ Table of contents:
 
 ## Getting a database terminal
 
-You can use the `/usr/local/bin/matrix-postgres-cli` tool to get interactive terminal access ([psql](https://www.postgresql.org/docs/11/app-psql.html)) to the PostgreSQL server.
+You can use the `/matrix/postgres/bin/cli` tool to get interactive terminal access ([psql](https://www.postgresql.org/docs/11/app-psql.html)) to the PostgreSQL server.
 
 If you are using an [external Postgres server](configuring-playbook-external-postgres.md), the above tool will not be available.
 

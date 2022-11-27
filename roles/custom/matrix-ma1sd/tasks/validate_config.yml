@@ -42,11 +42,12 @@
 - name: Fail if required ma1sd settings not defined
   ansible.builtin.fail:
     msg: >
-      You need to define a required configuration setting (`{{ item }}`) for using ma1sd.
-  when: "vars[item] == ''"
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
   with_items:
-    - "matrix_ma1sd_threepid_medium_email_connectors_smtp_host"
-    - "matrix_ma1sd_dns_overwrite_homeserver_client_value"
+    - {'name': 'matrix_ma1sd_threepid_medium_email_connectors_smtp_host', when: true}
+    - {'name': 'matrix_ma1sd_dns_overwrite_homeserver_client_value', when: true}
+    - {'name': 'matrix_ma1sd_database_hostname', when: "{{ matrix_ma1sd_database_engine == 'postgres' }}"}
 
 - name: (Deprecation) Catch and report renamed ma1sd variables
   ansible.builtin.fail:
