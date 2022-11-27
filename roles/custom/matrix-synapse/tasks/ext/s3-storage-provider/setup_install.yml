@@ -10,12 +10,12 @@
 - name: Ensure s3-storage-provider env file installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/synapse/ext/s3-storage-provider/env.j2"
-    dest: "{{ matrix_synapse_ext_s3_storage_provider_path }}/env"
+    dest: "{{ matrix_synapse_ext_s3_storage_provider_base_path }}/env"
     mode: 0640
 
 - name: Ensure s3-storage-provider data path exists
   ansible.builtin.file:
-    path: "{{ matrix_synapse_ext_s3_storage_provider_path }}/data"
+    path: "{{ matrix_synapse_ext_s3_storage_provider_base_path }}/data"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
@@ -24,7 +24,7 @@
 - name: Ensure s3-storage-provider database.yaml file installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/synapse/ext/s3-storage-provider/database.yaml.j2"
-    dest: "{{ matrix_synapse_ext_s3_storage_provider_path }}/data/database.yaml"
+    dest: "{{ matrix_synapse_ext_s3_storage_provider_base_path }}/data/database.yaml"
     mode: 0640
 
 - name: Ensure s3-storage-provider scripts installed
