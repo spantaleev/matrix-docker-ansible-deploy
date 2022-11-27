@@ -14,10 +14,13 @@
         enabled: false
         daemon_reload: true
 
-    - name: Ensure matrix-synapse.service doesn't exist
+    - name: Ensure Synapse paths don't exist
       ansible.builtin.file:
-        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse.service"
+        path: "{{ item }}"
         state: absent
+      with_items:
+        - "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse.service"
+        - "{{ matrix_synapse_bin_path }}"
 
     - name: Ensure sample prometheus.yml for external scraping is deleted
       ansible.builtin.file:
