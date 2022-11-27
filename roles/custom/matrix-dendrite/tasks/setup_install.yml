@@ -9,6 +9,7 @@
     group: "{{ matrix_user_groupname }}"
   with_items:
     - "{{ matrix_dendrite_config_dir_path }}"
+    - "{{ matrix_dendrite_bin_path }}"
     - "{{ matrix_dendrite_ext_path }}"
     - "{{ matrix_dendrite_nats_storage_path }}"
 
@@ -81,8 +82,10 @@
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-dendrite.service"
     mode: 0644
 
-- name: Ensure matrix-dendrite-create-account script created
+- name: Ensure Dendrite scripts created
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/dendrite/usr-local-bin/matrix-dendrite-create-account.j2"
-    dest: "{{ matrix_local_bin_path }}/matrix-dendrite-create-account"
+    src: "{{ role_path }}/templates/dendrite/bin/{{ item }}.j2"
+    dest: "{{ matrix_dendrite_bin_path }}/{{ item }}"
     mode: 0750
+  with_items:
+    - create-account
