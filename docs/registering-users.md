@@ -23,7 +23,7 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-usern
 **or** using the command-line after **SSH**-ing to your server (requires that [all services have been started](#starting-the-services)):
 
 ```
-/usr/local/bin/matrix-synapse-register-user <your-username> <your-password> <admin access: 0 or 1>
+/matrix/synapse/bin/register-user <your-username> <your-password> <admin access: 0 or 1>
 ```
 
 **Note**: `<your-username>` is just a plain username (like `john`), not your full `@<username>:<your-domain>` identifier.
