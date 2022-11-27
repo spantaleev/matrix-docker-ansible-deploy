@@ -45,7 +45,7 @@
     - when: "matrix_mx_puppet_steam_sqlite_database_path_local_stat_result.stat.exists | bool"
       block:
         - ansible.builtin.set_fact:
-            matrix_postgres_db_migration_request:
+            devture_postgres_db_migration_request:
               src: "{{ matrix_mx_puppet_steam_sqlite_database_path_local }}"
               dst: "{{ matrix_mx_puppet_steam_database_connection_string }}"
               caller: "{{ role_path | basename }}"
@@ -54,7 +54,7 @@
               systemd_services_to_stop: ['matrix-mx-puppet-steam.service']
 
         - ansible.builtin.import_role:
-            name: custom/matrix-postgres
+            name: galaxy/com.devture.ansible.role.postgres
             tasks_from: migrate_db_to_postgres
 
         - ansible.builtin.set_fact:

@@ -287,7 +287,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-ntfy.service', 'priority': 800, 'groups': ['matrix', 'ntfy']}] if matrix_ntfy_enabled else [])
     +
-    ([{'name': 'matrix-postgres.service', 'priority': 500, 'groups': ['matrix', 'postgres']}] if matrix_postgres_enabled else [])
+    ([{'name': (devture_postgres_identifier + '.service'), 'priority': 500, 'groups': ['matrix', 'postgres']}] if devture_postgres_enabled else [])
     +
     ([{'name': 'matrix-postgres-backup.service', 'priority': 3000, 'groups': ['matrix', 'backup', 'postgres-backup']}] if matrix_postgres_backup_enabled else [])
     +
@@ -417,7 +417,7 @@ matrix_appservice_discord_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -428,7 +428,7 @@ matrix_appservice_discord_homeserver_token: "{{ '%s' | format(matrix_homeserver_
 
 # We only make this use Postgres if our own Postgres server is enabled.
 # It's only then (for now) that we can automatically create the necessary database and user for this service.
-matrix_appservice_discord_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_appservice_discord_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_appservice_discord_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.discord.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -509,8 +509,8 @@ matrix_appservice_slack_systemd_required_services_list: |
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_appservice_slack_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'nedb' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_appservice_slack_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'nedb' }}"
 matrix_appservice_slack_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.slack.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -552,7 +552,7 @@ matrix_appservice_irc_appservice_token: "{{ '%s' | format(matrix_homeserver_gene
 
 matrix_appservice_irc_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'irc.hs.token', rounds=655555) | to_uuid }}"
 
-matrix_appservice_irc_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'nedb' }}"
+matrix_appservice_irc_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'nedb' }}"
 matrix_appservice_irc_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.irc.db', rounds=655555) | to_uuid }}"
 
 
@@ -581,7 +581,7 @@ matrix_appservice_kakaotalk_systemd_required_services_list: |
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
   }}
 
 matrix_appservice_kakaotalk_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.kakao.hs', rounds=655555) | to_uuid }}"
@@ -590,7 +590,7 @@ matrix_appservice_kakaotalk_homeserver_token: "{{ '%s' | format(matrix_homeserve
 
 matrix_appservice_kakaotalk_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_appservice_kakaotalk_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_appservice_kakaotalk_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_appservice_kakaotalk_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.kakao.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -617,7 +617,7 @@ matrix_beeper_linkedin_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -655,7 +655,7 @@ matrix_go_skype_bridge_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -666,8 +666,8 @@ matrix_go_skype_bridge_homeserver_token: "{{ '%s' | format(matrix_homeserver_gen
 
 matrix_go_skype_bridge_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_go_skype_bridge_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_go_skype_bridge_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_go_skype_bridge_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'goskype.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -693,7 +693,7 @@ matrix_mautrix_facebook_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -712,7 +712,7 @@ matrix_mautrix_facebook_bridge_presence: "{{ matrix_synapse_presence_enabled if 
 
 # We'd like to force-set people with external Postgres to SQLite, so the bridge role can complain
 # and point them to a migration path.
-matrix_mautrix_facebook_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_mautrix_facebook_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mautrix_facebook_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.fb.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -739,7 +739,7 @@ matrix_mautrix_hangouts_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -752,8 +752,8 @@ matrix_mautrix_hangouts_container_http_host_bind_port: "{{ '' if matrix_nginx_pr
 
 matrix_mautrix_hangouts_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_mautrix_hangouts_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_mautrix_hangouts_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mautrix_hangouts_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.hangouts.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -780,7 +780,7 @@ matrix_mautrix_googlechat_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -793,8 +793,8 @@ matrix_mautrix_googlechat_container_http_host_bind_port: "{{ '' if matrix_nginx_
 
 matrix_mautrix_googlechat_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_mautrix_googlechat_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_mautrix_googlechat_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mautrix_googlechat_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.gc.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -821,7 +821,7 @@ matrix_mautrix_instagram_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -836,7 +836,7 @@ matrix_mautrix_instagram_bridge_presence: "{{ matrix_synapse_presence_enabled if
 
 # We'd like to force-set people with external Postgres to SQLite, so the bridge role can complain
 # and point them to a migration path.
-matrix_mautrix_instagram_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+matrix_mautrix_instagram_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mautrix_instagram_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.ig.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -861,7 +861,7 @@ matrix_mautrix_signal_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
     +
@@ -910,7 +910,7 @@ matrix_mautrix_telegram_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -925,8 +925,8 @@ matrix_mautrix_telegram_container_http_host_bind_port: "{{ '' if matrix_nginx_pr
 
 matrix_mautrix_telegram_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_mautrix_telegram_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_mautrix_telegram_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mautrix_telegram_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.telegram.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -952,7 +952,7 @@ matrix_mautrix_twitter_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -963,8 +963,8 @@ matrix_mautrix_twitter_homeserver_token: "{{ '%s' | format(matrix_homeserver_gen
 
 matrix_mautrix_twitter_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_mautrix_twitter_database_hostname: "{{ 'matrix-postgres' if matrix_postgres_enabled else '' }}"
-matrix_mautrix_twitter_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.twt.db', rounds=655555) | to_uuid if matrix_postgres_enabled else '' }}"
+matrix_mautrix_twitter_database_hostname: "{{ devture_postgres_identifier if devture_postgres_enabled else '' }}"
+matrix_mautrix_twitter_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.twt.db', rounds=655555) | to_uuid if devture_postgres_enabled else '' }}"
 
 ######################################################################
 #
@@ -989,7 +989,7 @@ matrix_mautrix_whatsapp_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -1000,8 +1000,8 @@ matrix_mautrix_whatsapp_homeserver_token: "{{ '%s' | format(matrix_homeserver_ge
 
 matrix_mautrix_whatsapp_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_mautrix_whatsapp_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_mautrix_whatsapp_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mautrix_whatsapp_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mauwhatsapp.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1027,7 +1027,7 @@ matrix_mautrix_discord_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -1038,8 +1038,8 @@ matrix_mautrix_discord_homeserver_token: "{{ '%s' | format(matrix_homeserver_gen
 
 matrix_mautrix_discord_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_mautrix_discord_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_mautrix_discord_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mautrix_discord_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudiscord.db', rounds=655555) | to_uuid }}"
 
 # Enabling bridge.restricted_rooms for this bridge does not work well with Conduit, so we disable it by default.
@@ -1175,7 +1175,7 @@ matrix_mx_puppet_slack_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -1186,8 +1186,8 @@ matrix_mx_puppet_slack_homeserver_token: "{{ '%s' | format(matrix_homeserver_gen
 
 matrix_mx_puppet_slack_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_mx_puppet_slack_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_mx_puppet_slack_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mx_puppet_slack_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.slack.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1213,7 +1213,7 @@ matrix_mx_puppet_twitter_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -1226,8 +1226,8 @@ matrix_mx_puppet_twitter_login_shared_secret: "{{ matrix_synapse_ext_password_pr
 
 matrix_mx_puppet_twitter_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else ('127.0.0.1:' ~ matrix_mx_puppet_twitter_appservice_port) }}"
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_mx_puppet_twitter_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_mx_puppet_twitter_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mx_puppet_twitter_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.twitter.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1254,7 +1254,7 @@ matrix_mx_puppet_instagram_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -1265,8 +1265,8 @@ matrix_mx_puppet_instagram_homeserver_token: "{{ '%s' | format(matrix_homeserver
 
 matrix_mx_puppet_instagram_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_mx_puppet_instagram_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_mx_puppet_instagram_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mx_puppet_instagram_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.ig.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1292,7 +1292,7 @@ matrix_mx_puppet_discord_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -1303,8 +1303,8 @@ matrix_mx_puppet_discord_homeserver_token: "{{ '%s' | format(matrix_homeserver_g
 
 matrix_mx_puppet_discord_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_mx_puppet_discord_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_mx_puppet_discord_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mx_puppet_discord_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.dsc.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1330,7 +1330,7 @@ matrix_mx_puppet_steam_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -1341,8 +1341,8 @@ matrix_mx_puppet_steam_homeserver_token: "{{ '%s' | format(matrix_homeserver_gen
 
 matrix_mx_puppet_steam_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_mx_puppet_steam_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_mx_puppet_steam_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mx_puppet_steam_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.steam.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1368,7 +1368,7 @@ matrix_mx_puppet_groupme_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -1379,8 +1379,8 @@ matrix_mx_puppet_groupme_homeserver_token: "{{ '%s' | format(matrix_homeserver_g
 
 matrix_mx_puppet_groupme_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_mx_puppet_groupme_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_mx_puppet_groupme_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mx_puppet_groupme_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.groupme.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1404,13 +1404,13 @@ matrix_bot_matrix_reminder_bot_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_bot_matrix_reminder_bot_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_bot_matrix_reminder_bot_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_bot_matrix_reminder_bot_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'reminder.bot.db', rounds=655555) | to_uuid }}"
 matrix_bot_matrix_reminder_bot_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
@@ -1465,7 +1465,7 @@ matrix_bot_maubot_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -1480,8 +1480,8 @@ matrix_bot_maubot_registration_shared_secret: |-
 
 matrix_bot_maubot_management_interface_http_bind_port: "{{ '' if matrix_nginx_proxy_enabled else ('127.0.0.1:' + matrix_bot_maubot_management_interface_port | string) }}"
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_bot_maubot_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_bot_maubot_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_bot_maubot_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.dsc.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1504,15 +1504,15 @@ matrix_bot_honoroit_systemd_required_services_list: |
   {{
     ['docker.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_bot_honoroit_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_bot_honoroit_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_bot_honoroit_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'honoroit.bot.db', rounds=655555) | to_uuid }}"
 matrix_bot_honoroit_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
@@ -1535,15 +1535,15 @@ matrix_bot_buscarron_systemd_required_services_list: |
   {{
     ['docker.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_bot_buscarron_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_bot_buscarron_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_bot_buscarron_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'buscarron.bot.db', rounds=655555) | to_uuid }}"
 matrix_bot_buscarron_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
@@ -1569,13 +1569,13 @@ matrix_bot_postmoogle_systemd_required_services_list: |
   {{
     ['docker.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
   }}
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_bot_postmoogle_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_bot_postmoogle_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_bot_postmoogle_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'postmoogle.db', rounds=655555) | to_uuid }}"
 
 matrix_bot_postmoogle_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
@@ -1631,7 +1631,7 @@ matrix_bot_mjolnir_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
@@ -1649,26 +1649,31 @@ matrix_bot_mjolnir_systemd_required_services_list: |
 ######################################################################
 
 matrix_backup_borg_enabled: false
+
 matrix_backup_borg_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
-matrix_backup_borg_postgresql_enabled: "{{ matrix_postgres_enabled }}"
-matrix_backup_borg_postgresql_databases_hostname: "{{ matrix_postgres_connection_hostname }}"
-matrix_backup_borg_postgresql_databases_username: "{{ matrix_postgres_connection_username }}"
-matrix_backup_borg_postgresql_databases_password: "{{ matrix_postgres_connection_password }}"
-matrix_backup_borg_postgresql_databases_port: "{{ matrix_postgres_connection_port }}"
-matrix_backup_borg_postgresql_databases: "{{ matrix_postgres_additional_databases | map(attribute='name') if matrix_postgres_enabled else [] }}"
+
+matrix_backup_borg_postgresql_enabled: "{{ devture_postgres_enabled }}"
+matrix_backup_borg_postgresql_databases_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
+matrix_backup_borg_postgresql_databases_username: "{{ devture_postgres_connection_username if devture_postgres_enabled else '' }}"
+matrix_backup_borg_postgresql_databases_password: "{{ devture_postgres_connection_password if devture_postgres_enabled else '' }}"
+matrix_backup_borg_postgresql_databases_port: "{{ devture_postgres_connection_port if devture_postgres_enabled else 5432 }}"
+matrix_backup_borg_postgresql_databases: "{{ devture_postgres_additional_databases | map(attribute='name') if devture_postgres_enabled else [] }}"
+
 matrix_backup_borg_location_source_directories:
   - "{{ matrix_base_data_path }}"
+
 matrix_backup_borg_location_exclude_patterns: |
   {{
     ([matrix_synapse_media_store_path + '/local_thumbnails', matrix_synapse_media_store_path + '/remote_thumbnail', matrix_synapse_media_store_path + '/url_cache', matrix_synapse_media_store_path + '/url_cache_thumbnails'] if matrix_homeserver_implementation == 'synapse' else [])
     +
-    ([matrix_postgres_data_path] if matrix_postgres_enabled else [])
+    ([devture_postgres_data_path] if devture_postgres_enabled else [])
   }}
+
 matrix_backup_borg_systemd_required_services_list: |
   {{
     ['docker.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
   }}
 
 ######################################################################
@@ -1801,13 +1806,13 @@ matrix_dimension_systemd_required_services_list: |
     +
     ['matrix-' + matrix_homeserver_implementation + '.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_dimension_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_dimension_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_dimension_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dimension.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -1826,14 +1831,16 @@ matrix_etherpad_enabled: false
 
 matrix_etherpad_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9001' }}"
 
-matrix_etherpad_base_url: "{{ 'https://'+ matrix_server_fqn_dimension + matrix_etherpad_public_endpoint if matrix_etherpad_mode == 'dimension' else 'https://' + matrix_server_fqn_etherpad + '/' }}"
+matrix_etherpad_base_url: "{{ 'https://' + matrix_server_fqn_dimension + matrix_etherpad_public_endpoint if matrix_etherpad_mode == 'dimension' else 'https://' + matrix_server_fqn_etherpad + '/' }}"
 
 matrix_etherpad_systemd_required_services_list: |
   {{
     ['docker.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
   }}
+
+matrix_etherpad_database_hostname: "{{ devture_postgres_identifier if devture_postgres_enabled else '' }}"
 
 matrix_etherpad_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'etherpad.db', rounds=655555) | to_uuid }}"
 
@@ -1998,20 +2005,20 @@ matrix_ma1sd_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval
 
 matrix_ma1sd_systemd_required_services_list: |
   {{
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
   }}
 
 matrix_ma1sd_systemd_wanted_services_list: |
   {{
     (['matrix-corporal.service'] if matrix_corporal_enabled else ['matrix-' + matrix_homeserver_implementation + '.service'])
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-mailer.service'] if matrix_mailer_enabled else [])
   }}
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_ma1sd_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_ma1sd_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_ma1sd_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'ma1sd.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -2204,29 +2211,49 @@ matrix_ssl_pre_obtaining_required_service_name: "{{ 'matrix-dynamic-dns' if matr
 #
 ######################################################################
 
-######################################################################
-#
-# matrix-postgres
-#
-######################################################################
+########################################################################
+#                                                                      #
+# com.devture.ansible.role.postgres                                    #
+#                                                                      #
+########################################################################
 
-matrix_postgres_enabled: true
+# To completely disable installing Postgres, use `devture_postgres_enabled: false`.
 
-matrix_postgres_architecture: "{{ matrix_architecture }}"
+devture_postgres_identifier: matrix-postgres
 
-# We unset this if internal Postgres disabled, which will cascade to some other variables
-# and tell users they need to set it (either here or in those variables).
-matrix_postgres_connection_hostname: "{{ 'matrix-postgres' if matrix_postgres_enabled else '' }}"
+devture_postgres_architecture: "{{ matrix_architecture }}"
 
-matrix_postgres_pgloader_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+devture_postgres_base_path: "{{ matrix_base_data_path }}/postgres"
 
-matrix_postgres_additional_databases: |
+devture_postgres_container_network: "{{ matrix_docker_network }}"
+
+devture_postgres_uid: "{{ matrix_user_uid }}"
+devture_postgres_gid: "{{ matrix_user_gid }}"
+
+devture_postgres_connection_username: matrix
+devture_postgres_db_name: matrix
+
+devture_postgres_vacuum_default_databases_list: |
+  {{
+    (
+        ([devture_postgres_db_name])
+        +
+        (devture_postgres_additional_databases | map(attribute='name'))
+    ) | unique
+  }}
+
+devture_postgres_systemd_services_to_stop_for_maintenance_list: |
+  {{
+    ['matrix-' + matrix_homeserver_implementation + '.service']
+  }}
+
+devture_postgres_additional_databases: |
   {{
     ([{
       'name': matrix_synapse_database_database,
       'username': matrix_synapse_database_user,
       'password': matrix_synapse_database_password,
-    }] if (matrix_synapse_enabled and matrix_synapse_database_database != matrix_postgres_db_name and matrix_synapse_database_host == 'matrix-postgres') else [])
+    }] if (matrix_synapse_enabled and matrix_synapse_database_host == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_dendrite_federationapi_database,
@@ -2260,206 +2287,201 @@ matrix_postgres_additional_databases: |
       'name': matrix_dendrite_mscs_database,
       'username': matrix_dendrite_database_user,
       'password': matrix_dendrite_database_password,
-    }] if (matrix_dendrite_enabled and matrix_dendrite_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_dendrite_enabled and matrix_dendrite_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_ma1sd_database_name,
       'username': matrix_ma1sd_database_username,
       'password': matrix_ma1sd_database_password,
-    }] if (matrix_ma1sd_enabled and matrix_ma1sd_database_engine == 'postgres' and matrix_ma1sd_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_ma1sd_enabled and matrix_ma1sd_database_engine == 'postgres' and matrix_ma1sd_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_bot_matrix_reminder_bot_database_name,
       'username': matrix_bot_matrix_reminder_bot_database_username,
       'password': matrix_bot_matrix_reminder_bot_database_password,
-    }] if (matrix_bot_matrix_reminder_bot_enabled and matrix_bot_matrix_reminder_bot_database_engine == 'postgres' and matrix_bot_matrix_reminder_bot_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_bot_matrix_reminder_bot_enabled and matrix_bot_matrix_reminder_bot_database_engine == 'postgres' and matrix_bot_matrix_reminder_bot_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_bot_honoroit_database_name,
       'username': matrix_bot_honoroit_database_username,
       'password': matrix_bot_honoroit_database_password,
-    }] if (matrix_bot_honoroit_enabled and matrix_bot_honoroit_database_engine == 'postgres' and matrix_bot_honoroit_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_bot_honoroit_enabled and matrix_bot_honoroit_database_engine == 'postgres' and matrix_bot_honoroit_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_bot_postmoogle_database_name,
       'username': matrix_bot_postmoogle_database_username,
       'password': matrix_bot_postmoogle_database_password,
-    }] if (matrix_bot_postmoogle_enabled and matrix_bot_postmoogle_database_engine == 'postgres' and matrix_bot_postmoogle_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_bot_postmoogle_enabled and matrix_bot_postmoogle_database_engine == 'postgres' and matrix_bot_postmoogle_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_bot_maubot_database_name,
       'username': matrix_bot_maubot_database_username,
       'password': matrix_bot_maubot_database_password,
-    }] if (matrix_bot_maubot_enabled  and matrix_bot_maubot_database_engine == 'postgres' and matrix_bot_maubot_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_bot_maubot_enabled  and matrix_bot_maubot_database_engine == 'postgres' and matrix_bot_maubot_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_bot_buscarron_database_name,
       'username': matrix_bot_buscarron_database_username,
       'password': matrix_bot_buscarron_database_password,
-    }] if (matrix_bot_buscarron_enabled and matrix_bot_buscarron_database_engine == 'postgres' and matrix_bot_buscarron_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_bot_buscarron_enabled and matrix_bot_buscarron_database_engine == 'postgres' and matrix_bot_buscarron_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_registration_database_name,
       'username': matrix_registration_database_username,
       'password': matrix_registration_database_password,
-    }] if (matrix_registration_enabled and matrix_registration_database_engine == 'postgres' and matrix_registration_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_registration_enabled and matrix_registration_database_engine == 'postgres' and matrix_registration_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_appservice_discord_database_name,
       'username': matrix_appservice_discord_database_username,
       'password': matrix_appservice_discord_database_password,
-    }] if (matrix_appservice_discord_enabled and matrix_appservice_discord_database_engine == 'postgres' and matrix_appservice_discord_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_appservice_discord_enabled and matrix_appservice_discord_database_engine == 'postgres' and matrix_appservice_discord_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_appservice_slack_database_name,
       'username': matrix_appservice_slack_database_username,
       'password': matrix_appservice_slack_database_password,
-    }] if (matrix_appservice_slack_enabled and matrix_appservice_slack_database_engine == 'postgres' and matrix_appservice_slack_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_appservice_slack_enabled and matrix_appservice_slack_database_engine == 'postgres' and matrix_appservice_slack_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_appservice_irc_database_name,
       'username': matrix_appservice_irc_database_username,
       'password': matrix_appservice_irc_database_password,
-    }] if (matrix_appservice_irc_enabled and matrix_appservice_irc_database_engine == 'postgres' and matrix_appservice_irc_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_appservice_irc_enabled and matrix_appservice_irc_database_engine == 'postgres' and matrix_appservice_irc_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_appservice_kakaotalk_database_name,
       'username': matrix_appservice_kakaotalk_database_username,
       'password': matrix_appservice_kakaotalk_database_password,
-    }] if (matrix_appservice_kakaotalk_enabled and matrix_appservice_kakaotalk_database_engine == 'postgres' and matrix_appservice_kakaotalk_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_appservice_kakaotalk_enabled and matrix_appservice_kakaotalk_database_engine == 'postgres' and matrix_appservice_kakaotalk_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_beeper_linkedin_database_name,
       'username': matrix_beeper_linkedin_database_username,
       'password': matrix_beeper_linkedin_database_password,
-    }] if (matrix_beeper_linkedin_enabled and matrix_beeper_linkedin_database_engine == 'postgres' and matrix_beeper_linkedin_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_beeper_linkedin_enabled and matrix_beeper_linkedin_database_engine == 'postgres' and matrix_beeper_linkedin_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_go_skype_bridge_database_name,
       'username': matrix_go_skype_bridge_database_username,
       'password': matrix_go_skype_bridge_database_password,
-    }] if (matrix_go_skype_bridge_enabled and matrix_go_skype_bridge_database_engine == 'postgres' and matrix_go_skype_bridge_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_go_skype_bridge_enabled and matrix_go_skype_bridge_database_engine == 'postgres' and matrix_go_skype_bridge_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_mautrix_facebook_database_name,
       'username': matrix_mautrix_facebook_database_username,
       'password': matrix_mautrix_facebook_database_password,
-    }] if (matrix_mautrix_facebook_enabled and matrix_mautrix_facebook_database_engine == 'postgres' and matrix_mautrix_facebook_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_mautrix_facebook_enabled and matrix_mautrix_facebook_database_engine == 'postgres' and matrix_mautrix_facebook_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_mautrix_hangouts_database_name,
       'username': matrix_mautrix_hangouts_database_username,
       'password': matrix_mautrix_hangouts_database_password,
-    }] if (matrix_mautrix_hangouts_enabled and matrix_mautrix_hangouts_database_engine == 'postgres' and matrix_mautrix_hangouts_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_mautrix_hangouts_enabled and matrix_mautrix_hangouts_database_engine == 'postgres' and matrix_mautrix_hangouts_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_mautrix_googlechat_database_name,
       'username': matrix_mautrix_googlechat_database_username,
       'password': matrix_mautrix_googlechat_database_password,
-    }] if (matrix_mautrix_googlechat_enabled and matrix_mautrix_googlechat_database_engine == 'postgres' and matrix_mautrix_googlechat_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_mautrix_googlechat_enabled and matrix_mautrix_googlechat_database_engine == 'postgres' and matrix_mautrix_googlechat_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_mautrix_instagram_database_name,
       'username': matrix_mautrix_instagram_database_username,
       'password': matrix_mautrix_instagram_database_password,
-    }] if (matrix_mautrix_instagram_enabled and matrix_mautrix_instagram_database_engine == 'postgres' and matrix_mautrix_instagram_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_mautrix_instagram_enabled and matrix_mautrix_instagram_database_engine == 'postgres' and matrix_mautrix_instagram_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_mautrix_signal_database_name,
       'username': matrix_mautrix_signal_database_username,
       'password': matrix_mautrix_signal_database_password,
-    }] if (matrix_mautrix_signal_enabled and matrix_mautrix_signal_database_engine == 'postgres' and matrix_mautrix_signal_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_mautrix_signal_enabled and matrix_mautrix_signal_database_engine == 'postgres' and matrix_mautrix_signal_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_mautrix_telegram_database_name,
       'username': matrix_mautrix_telegram_database_username,
       'password': matrix_mautrix_telegram_database_password,
-    }] if (matrix_mautrix_telegram_enabled and matrix_mautrix_telegram_database_engine == 'postgres' and matrix_mautrix_telegram_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_mautrix_telegram_enabled and matrix_mautrix_telegram_database_engine == 'postgres' and matrix_mautrix_telegram_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_mautrix_twitter_database_name,
       'username': matrix_mautrix_twitter_database_username,
       'password': matrix_mautrix_twitter_database_password,
-    }] if (matrix_mautrix_twitter_enabled and matrix_mautrix_twitter_database_engine == 'postgres' and matrix_mautrix_twitter_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_mautrix_twitter_enabled and matrix_mautrix_twitter_database_engine == 'postgres' and matrix_mautrix_twitter_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_mautrix_whatsapp_database_name,
       'username': matrix_mautrix_whatsapp_database_username,
       'password': matrix_mautrix_whatsapp_database_password,
-    }] if (matrix_mautrix_whatsapp_enabled and matrix_mautrix_whatsapp_database_engine == 'postgres' and matrix_mautrix_whatsapp_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_mautrix_whatsapp_enabled and matrix_mautrix_whatsapp_database_engine == 'postgres' and matrix_mautrix_whatsapp_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_mautrix_discord_database_name,
       'username': matrix_mautrix_discord_database_username,
       'password': matrix_mautrix_discord_database_password,
-    }] if (matrix_mautrix_discord_enabled and matrix_mautrix_discord_database_engine == 'postgres' and matrix_mautrix_discord_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_mautrix_discord_enabled and matrix_mautrix_discord_database_engine == 'postgres' and matrix_mautrix_discord_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_mx_puppet_slack_database_name,
       'username': matrix_mx_puppet_slack_database_username,
       'password': matrix_mx_puppet_slack_database_password,
-    }] if (matrix_mx_puppet_slack_enabled and matrix_mx_puppet_slack_database_engine == 'postgres' and matrix_mx_puppet_slack_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_mx_puppet_slack_enabled and matrix_mx_puppet_slack_database_engine == 'postgres' and matrix_mx_puppet_slack_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_mx_puppet_twitter_database_name,
       'username': matrix_mx_puppet_twitter_database_username,
       'password': matrix_mx_puppet_twitter_database_password,
-    }] if (matrix_mx_puppet_twitter_enabled and matrix_mx_puppet_twitter_database_engine == 'postgres' and matrix_mx_puppet_twitter_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_mx_puppet_twitter_enabled and matrix_mx_puppet_twitter_database_engine == 'postgres' and matrix_mx_puppet_twitter_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_mx_puppet_instagram_database_name,
       'username': matrix_mx_puppet_instagram_database_username,
       'password': matrix_mx_puppet_instagram_database_password,
-    }] if (matrix_mx_puppet_instagram_enabled and matrix_mx_puppet_instagram_database_engine == 'postgres' and matrix_mx_puppet_instagram_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_mx_puppet_instagram_enabled and matrix_mx_puppet_instagram_database_engine == 'postgres' and matrix_mx_puppet_instagram_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_mx_puppet_discord_database_name,
       'username': matrix_mx_puppet_discord_database_username,
       'password': matrix_mx_puppet_discord_database_password,
-    }] if (matrix_mx_puppet_discord_enabled  and matrix_mx_puppet_discord_database_engine == 'postgres' and matrix_mx_puppet_discord_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_mx_puppet_discord_enabled  and matrix_mx_puppet_discord_database_engine == 'postgres' and matrix_mx_puppet_discord_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_mx_puppet_steam_database_name,
       'username': matrix_mx_puppet_steam_database_username,
       'password': matrix_mx_puppet_steam_database_password,
-    }] if (matrix_mx_puppet_steam_enabled and matrix_mx_puppet_steam_database_engine == 'postgres' and matrix_mx_puppet_steam_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_mx_puppet_steam_enabled and matrix_mx_puppet_steam_database_engine == 'postgres' and matrix_mx_puppet_steam_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_mx_puppet_groupme_database_name,
       'username': matrix_mx_puppet_groupme_database_username,
       'password': matrix_mx_puppet_groupme_database_password,
-    }] if (matrix_mx_puppet_groupme_enabled and matrix_mx_puppet_groupme_database_engine == 'postgres' and matrix_mx_puppet_groupme_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_mx_puppet_groupme_enabled and matrix_mx_puppet_groupme_database_engine == 'postgres' and matrix_mx_puppet_groupme_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_dimension_database_name,
       'username': matrix_dimension_database_username,
       'password': matrix_dimension_database_password,
-    }] if (matrix_dimension_enabled and matrix_dimension_database_engine == 'postgres' and matrix_dimension_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_dimension_enabled and matrix_dimension_database_engine == 'postgres' and matrix_dimension_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_etherpad_database_name,
       'username': matrix_etherpad_database_username,
       'password': matrix_etherpad_database_password,
-    }] if (matrix_etherpad_enabled and matrix_etherpad_database_engine == 'postgres' and matrix_etherpad_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_etherpad_enabled and matrix_etherpad_database_engine == 'postgres' and matrix_etherpad_database_hostname == devture_postgres_identifier) else [])
     +
     ([{
       'name': matrix_prometheus_postgres_exporter_database_name,
       'username': matrix_prometheus_postgres_exporter_database_username,
       'password': matrix_prometheus_postgres_exporter_database_password,
-    }] if (matrix_prometheus_postgres_exporter_enabled and matrix_prometheus_postgres_exporter_database_hostname == 'matrix-postgres') else [])
+    }] if (matrix_prometheus_postgres_exporter_enabled and matrix_prometheus_postgres_exporter_database_hostname == devture_postgres_identifier) else [])
 
    }}
 
-matrix_postgres_systemd_services_to_stop_for_maintenance_list: |
-  {{
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-  }}
-
-######################################################################
-#
-# /matrix-postgres
-#
-######################################################################
+########################################################################
+#                                                                      #
+# /com.devture.ansible.role.postgres                                   #
+#                                                                      #
+########################################################################
 
 ######################################################################
 #
@@ -2681,7 +2703,7 @@ matrix_synapse_systemd_required_services_list: |
   {{
     (['docker.service'])
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-goofys.service'] if matrix_s3_media_store_enabled else [])
   }}
@@ -2819,7 +2841,7 @@ matrix_prometheus_postgres_exporter_systemd_required_services_list: |
   {{
     ['docker.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
   }}
 
 ######################################################################
@@ -2906,11 +2928,11 @@ matrix_registration_systemd_required_services_list: |
   {{
     ['docker.service']
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
   }}
 
-# Postgres is the default, except if not using `matrix_postgres` (internal postgres)
-matrix_registration_database_engine: "{{ 'postgres' if matrix_postgres_enabled else 'sqlite' }}"
+# Postgres is the default, except if not using internal Postgres server
+matrix_registration_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_registration_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mx.registr.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
@@ -2925,14 +2947,14 @@ matrix_registration_database_password: "{{ '%s' | format(matrix_homeserver_gener
 #
 ######################################################################
 
-matrix_postgres_backup_connection_hostname: "{{ matrix_postgres_connection_hostname }}"
-matrix_postgres_backup_connection_port: "{{ matrix_postgres_connection_port }}"
-matrix_postgres_backup_connection_username: "{{ matrix_postgres_connection_username }}"
-matrix_postgres_backup_connection_password: "{{ matrix_postgres_connection_password }}"
+matrix_postgres_backup_connection_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
+matrix_postgres_backup_connection_port: "{{ devture_postgres_connection_port if devture_postgres_enabled else 5432 }}"
+matrix_postgres_backup_connection_username: "{{ devture_postgres_connection_username if devture_postgres_enabled else '' }}"
+matrix_postgres_backup_connection_password: "{{ devture_postgres_connection_password if devture_postgres_enabled else '' }}"
 
-matrix_postgres_backup_postgres_data_path: "{{ matrix_postgres_data_path if matrix_postgres_enabled else '' }}"
+matrix_postgres_backup_postgres_data_path: "{{ devture_postgres_data_path if devture_postgres_enabled else '' }}"
 
-matrix_postgres_backup_databases: "{{ matrix_postgres_additional_databases | map(attribute='name') if matrix_postgres_enabled else [] }}"
+matrix_postgres_backup_databases: "{{ devture_postgres_additional_databases | map(attribute='name') if devture_postgres_enabled else [] }}"
 
 ######################################################################
 #
@@ -2990,7 +3012,7 @@ matrix_dendrite_systemd_required_services_list: |
   {{
     (['docker.service'])
     +
-    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-goofys.service'] if matrix_s3_media_store_enabled else [])
   }}
