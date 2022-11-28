@@ -2263,15 +2263,6 @@ devture_postgres_gid: "{{ matrix_user_gid }}"
 devture_postgres_connection_username: matrix
 devture_postgres_db_name: matrix
 
-devture_postgres_vacuum_default_databases_list: |
-  {{
-    (
-        ([devture_postgres_db_name])
-        +
-        (devture_postgres_additional_databases | map(attribute='name'))
-    ) | unique
-  }}
-
 devture_postgres_systemd_services_to_stop_for_maintenance_list: |
   {{
     ['matrix-' + matrix_homeserver_implementation + '.service']
