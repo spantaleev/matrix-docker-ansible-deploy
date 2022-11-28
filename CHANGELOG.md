@@ -1,3 +1,34 @@
+# 2022-11-28
+
+## matrix-postgres has been replaced by the com.devture.ansible.role.postgres external role
+
+**TLDR**: the tasks that install the integrated Postgres server now live in an external role - [com.devture.ansible.role.postgres](https://github.com/devture/com.devture.ansible.role.postgres). You'll need to run `make roles` to install it, and to also rename your `matrix_postgres`-prefixed variables to use a `devture_postgres` prefix (e.g. `matrix_postgres_connection_password` -> `devture_postgres_connection_password`). All your data will still be there! Some scripts have moved (`/usr/local/bin/matrix-postgres-cli` -> `/matrix/postgres/bin/cli`).
+
+The `matrix-postgres` role that has been part of the playbook for a long time has been replaced with the [com.devture.ansible.role.postgres](https://github.com/devture/com.devture.ansible.role.postgres) role. This was done as part of our work to [use external roles for some things](#the-playbook-now-uses-external-roles-for-some-things) for better code re-use and maintainability.
+
+The new role is an upgraded version of the old `matrix-postgres` role with these notable differences:
+
+- it uses different names for its variables (`matrix_postgres` -> `devture_postgres`)
+- when [Vacuuming PostgreSQL](docs/maintenance-postgres.md#vacuuming-postgresql), it will vacuum all your databases, not just the Synapse one
+
+You'll need to run `make roles` to install the new role. You would also need to rename your `matrix_postgres`-prefixed variables to use a `devture_postgres` prefix.
+
+Note: the systemd service still remains the same - `matrix-postgres.service`. Your data will still be in `/matrix/postgres`, etc.
+Postgres-related scripts will be moved to `/matrix/postgres/bin` (`/usr/local/bin/matrix-postgres-cli` -> `/matrix/postgres/bin/cli`, etc). Also see [The playbook no longer installs scripts in /usr/local/bin](#the-playbook-no-longer-installs-scripts-in-usrlocalbin).
+
+## The playbook no longer installs scripts to /usr/local/bin
+
+The locations of various scripts installed by the playbook have changed.
+
+The playbook no longer contaminates your `/usr/local/bin` directory.
+All scripts installed by the playbook now live in `bin/` directories under `/matrix`. Some examples are below:
+
+- `/usr/local/bin/matrix-remove-all` -> `/matrix/bin/remove-all`
+- `/usr/local/bin/matrix-postgres-cli` -> `/matrix/postgres/bin/cli`
+- `/usr/local/bin/matrix-ssl-lets-encrypt-certificates-renew` -> `/matrix/ssl/bin/lets-encrypt-certificates-renew`
+- `/usr/local/bin/matrix-synapse-register-user` -> `/matrix/synapse/bin/register-user`
+
+
 # 2022-11-25
 
 ## 2x-5x performance improvements in playbook runtime
