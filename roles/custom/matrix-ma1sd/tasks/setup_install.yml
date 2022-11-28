@@ -27,7 +27,10 @@
 
     - when: "matrix_ma1sd_sqlite_database_path_local_stat_result.stat.exists | bool"
       block:
-        - ansible.builtin.set_fact:
+        - ansible.builtin.include_role:
+            name: galaxy/com.devture.ansible.role.postgres
+            tasks_from: migrate_db_to_postgres
+          vars:
             devture_postgres_db_migration_request:
               src: "{{ matrix_ma1sd_sqlite_database_path_local }}"
               dst: "{{ matrix_ma1sd_database_connection_string }}"
@@ -36,10 +39,6 @@
               engine_old: 'sqlite'
               systemd_services_to_stop: ['matrix-ma1sd.service']
               pgloader_options: ['--with "quote identifiers"']
-
-        - ansible.builtin.include_role:
-            name: galaxy/com.devture.ansible.role.postgres
-            tasks_from: migrate_db_to_postgres
 
         - ansible.builtin.set_fact:
             matrix_ma1sd_requires_restart: true
