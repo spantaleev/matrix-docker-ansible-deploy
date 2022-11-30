@@ -289,7 +289,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': (devture_postgres_identifier + '.service'), 'priority': 500, 'groups': ['matrix', 'postgres']}] if devture_postgres_enabled else [])
     +
-    ([{'name': 'matrix-postgres-backup.service', 'priority': 3000, 'groups': ['matrix', 'backup', 'postgres-backup']}] if matrix_postgres_backup_enabled else [])
+    ([{'name': (devture_postgres_backup_identifier + '.service'), 'priority': 3000, 'groups': ['matrix', 'backup', 'postgres-backup']}] if devture_postgres_backup_enabled else [])
     +
     ([{'name': 'matrix-prometheus.service', 'priority': 4000, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-core']}] if matrix_prometheus_enabled else [])
     +
@@ -2241,6 +2241,7 @@ matrix_ssl_pre_obtaining_required_service_name: "{{ 'matrix-dynamic-dns' if matr
 #
 ######################################################################
 
+
 ########################################################################
 #                                                                      #
 # com.devture.ansible.role.postgres                                    #
@@ -2503,6 +2504,42 @@ devture_postgres_managed_databases_auto: |
 # /com.devture.ansible.role.postgres                                   #
 #                                                                      #
 ########################################################################
+
+
+########################################################################
+#                                                                      #
+# com.devture.ansible.role.postgres_backup                             #
+#                                                                      #
+########################################################################
+
+devture_postgres_backup_enabled: false
+
+devture_postgres_backup_identifier: matrix-postgres-backup
+
+devture_postgres_backup_architecture: "{{ matrix_architecture }}"
+
+devture_postgres_backup_base_path: "{{ matrix_base_data_path }}/postgres-backup"
+
+devture_postgres_backup_container_network: "{{ matrix_docker_network }}"
+
+devture_postgres_backup_uid: "{{ matrix_user_uid }}"
+devture_postgres_backup_gid: "{{ matrix_user_gid }}"
+
+devture_postgres_backup_connection_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
+devture_postgres_backup_connection_port: "{{ devture_postgres_connection_port if devture_postgres_enabled else 5432 }}"
+devture_postgres_backup_connection_username: "{{ devture_postgres_connection_username if devture_postgres_enabled else '' }}"
+devture_postgres_backup_connection_password: "{{ devture_postgres_connection_password if devture_postgres_enabled else '' }}"
+
+devture_postgres_backup_postgres_data_path: "{{ devture_postgres_data_path if devture_postgres_enabled else '' }}"
+
+devture_postgres_backup_databases: "{{ devture_postgres_managed_databases | map(attribute='name') if devture_postgres_enabled else [] }}"
+
+########################################################################
+#                                                                      #
+# /com.devture.ansible.role.postgres_backup                            #
+#                                                                      #
+########################################################################
+
 
 ######################################################################
 #
@@ -2965,26 +3002,6 @@ matrix_registration_database_password: "{{ '%s' | format(matrix_homeserver_gener
 #
 ######################################################################
 
-######################################################################
-#
-# matrix-postgres-backup
-#
-######################################################################
-
-matrix_postgres_backup_connection_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
-matrix_postgres_backup_connection_port: "{{ devture_postgres_connection_port if devture_postgres_enabled else 5432 }}"
-matrix_postgres_backup_connection_username: "{{ devture_postgres_connection_username if devture_postgres_enabled else '' }}"
-matrix_postgres_backup_connection_password: "{{ devture_postgres_connection_password if devture_postgres_enabled else '' }}"
-
-matrix_postgres_backup_postgres_data_path: "{{ devture_postgres_data_path if devture_postgres_enabled else '' }}"
-
-matrix_postgres_backup_databases: "{{ devture_postgres_managed_databases | map(attribute='name') if devture_postgres_enabled else [] }}"
-
-######################################################################
-#
-# /matrix-postgres-backup
-#
-######################################################################
 
 ######################################################################
 #

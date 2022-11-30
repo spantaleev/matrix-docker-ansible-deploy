@@ -1,3 +1,12 @@
+# 2022-11-30
+
+## matrix-postgres-backup has been replaced by the com.devture.ansible.role.postgres_backup external role
+
+Just like we've [replaced Postgres with an external role](#matrix-postgres-has-been-replaced-by-the-comdevtureansiblerolepostgres-external-role) on 2022-11-28, we're now replacing `matrix-postgres-backup` with an external role - [com.devture.ansible.role.postgres_backup](https://github.com/devture/com.devture.ansible.role.postgres_backup).
+
+You'll need to rename your `matrix_postgres_backup`-prefixed variables such that they use a `devture_postgres_backup` prefix.
+
+
 # 2022-11-28
 
 ## matrix-postgres has been replaced by the com.devture.ansible.role.postgres external role
