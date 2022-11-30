@@ -2520,6 +2520,13 @@ devture_postgres_backup_architecture: "{{ matrix_architecture }}"
 
 devture_postgres_backup_base_path: "{{ matrix_base_data_path }}/postgres-backup"
 
+devture_postgres_backup_systemd_required_services_list: |
+  {{
+    (['docker.service'])
+    +
+    ([(devture_postgres_identifier + '.service')] if devture_postgres_enabled else [])
+  }}
+
 devture_postgres_backup_container_network: "{{ matrix_docker_network }}"
 
 devture_postgres_backup_uid: "{{ matrix_user_uid }}"
