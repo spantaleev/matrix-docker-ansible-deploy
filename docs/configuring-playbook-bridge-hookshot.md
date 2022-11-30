@@ -93,4 +93,4 @@ To explicitly enable metrics, use `matrix_hookshot_metrics_enabled: true`. This 
 
 ### Collision with matrix-appservice-webhooks
 
-If you are also running [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), it reserves its namespace by the default setting `matrix_appservice_webhooks_user_prefix: '_webhook_'`. You should take care if you modify its or hookshot's prefix that they do not collide with each other's namespace (default `matrix_hookshot_generic_user_id_prefix: '_webhooks_'`).
+If you are also running [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), it reserves its namespace by the default setting `matrix_appservice_webhooks_user_prefix: '_webhook_'`. You should take care if you modify its or hookshot's prefix that they do not collide with each other's namespace (default `matrix_hookshot_generic_userIdPrefix: '_webhooks_'`).

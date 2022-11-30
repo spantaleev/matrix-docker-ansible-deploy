@@ -52,7 +52,7 @@ matrix_hookshot_webhook_endpoint: "{{ matrix_hookshot_public_endpoint }}/webhook
 # You need to create a GitHub app to enable this and fill in the empty variables below
 # https://matrix-org.github.io/matrix-hookshot/setup/github.html
 matrix_hookshot_github_enabled: false
-matrix_hookshot_github_appid: ''
+matrix_hookshot_github_auth_id: ''
 # Set this variable to the contents of the generated and downloaded GitHub private key:
 # matrix_hookshot_github_private_key: |
 #   -----BEGIN RSA PRIVATE KEY-----
@@ -61,7 +61,7 @@ matrix_hookshot_github_appid: ''
 # Alternatively, leave it empty and do it manually or use matrix-aux instead, see docs/matrix-bridge-hookshot.md for info.
 matrix_hookshot_github_private_key: ''
 matrix_hookshot_github_private_key_file: 'private-key.pem'
-matrix_hookshot_github_secret: ''  # "Webhook secret" on the GitHub App page
+matrix_hookshot_github_webhook_secret: ''  # "Webhook secret" on the GitHub App page
 matrix_hookshot_github_oauth_enabled: false
 # You need to configure oauth settings only when you have enabled oauth (optional)
 matrix_hookshot_github_oauth_id: ''  # "Client ID" on the GitHub App page
@@ -69,14 +69,17 @@ matrix_hookshot_github_oauth_secret: ''  # "Client Secret" on the GitHub App pag
 # Default value of matrix_hookshot_github_oauth_endpoint: "/hookshot/webhooks/oauth"
 matrix_hookshot_github_oauth_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/oauth"
 matrix_hookshot_github_oauth_uri: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_github_oauth_endpoint }}"
+
 # These are the default settings mentioned here and don't need to be modified: https://matrix-org.github.io/matrix-hookshot/usage/room_configuration/github_repo.html#configuration
-matrix_hookshot_github_ignore_hooks: "{}"
-matrix_hookshot_github_command_prefix: '!gh'
-matrix_hookshot_github_showIssueRoomLink: false  # noqa var-naming
-matrix_hookshot_github_pr_diff: "{enabled: false, maxLines: 5}"
-matrix_hookshot_github_including_labels: ''
-matrix_hookshot_github_excluding_labels: ''
-matrix_hookshot_github_hotlink_prefix: "#"
+matrix_hookshot_github_defaultOptions_ignoreHooks: {}  # noqa var-naming
+matrix_hookshot_github_defaultOptions_commandPrefix: '!gh'  # noqa var-naming
+matrix_hookshot_github_defaultOptions_showIssueRoomLink: false   # noqa var-naming
+matrix_hookshot_github_defaultOptions_prDiff:   # noqa var-naming
+  enabled: false
+  maxLines: 5
+matrix_hookshot_github_defaultOptions_includingLabels: ''  # noqa var-naming
+matrix_hookshot_github_defaultOptions_excludingLabels: ''  # noqa var-naming
+matrix_hookshot_github_defaultOptions_hotlinkIssues_prefix: "#"  # noqa var-naming
 
 
 matrix_hookshot_gitlab_enabled: true
@@ -91,7 +94,7 @@ matrix_hookshot_gitlab_instances:
     url: https://gitlab.com
 
 # This will be the "Secret token" you have to enter into all GitLab instances for authentication
-matrix_hookshot_gitlab_secret: ''
+matrix_hookshot_gitlab_webhook_secret: ''
 
 
 matrix_hookshot_figma_enabled: false
@@ -104,17 +107,17 @@ matrix_hookshot_figma_publicUrl: "{{ matrix_hookshot_urlprefix }}{{ matrix_hooks
 #       teamId: your-team-id
 #       accessToken: your-personal-access-token
 #       passcode: your-webhook-passcode
-
+matrix_hookshot_figma_instances: {}
 
 matrix_hookshot_jira_enabled: false
 # Get the these values from https://matrix-org.github.io/matrix-hookshot/setup/jira.html#jira-oauth
-matrix_hookshot_jira_secret: ''
+matrix_hookshot_jira_webhook_secret: ''
 matrix_hookshot_jira_oauth_enabled: false
-matrix_hookshot_jira_oauth_id: ''
-matrix_hookshot_jira_oauth_secret: ''
+matrix_hookshot_jira_oauth_client_id: ''
+matrix_hookshot_jira_oauth_client_secret: ''
 # Default value of matrix_hookshot_jira_oauth_endpoint: "/hookshot/webhooks/jira/oauth"
 matrix_hookshot_jira_oauth_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/jira/oauth"
-matrix_hookshot_jira_oauth_uri: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_jira_oauth_endpoint }}"
+matrix_hookshot_jira_oauth_redirect_uri: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_jira_oauth_endpoint }}"
 
 
 # No need to change these
@@ -122,10 +125,10 @@ matrix_hookshot_generic_enabled: true
 # Default value of matrix_hookshot_generic_endpoint: "/hookshot/webhooks"
 matrix_hookshot_generic_endpoint: "{{ matrix_hookshot_webhook_endpoint }}"
 # urlprefix gets updated with protocol & port in group_vars/matrix_servers
-matrix_hookshot_generic_urlprefix: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_generic_endpoint }}"
-matrix_hookshot_generic_allow_js_transformation_functions: false
+matrix_hookshot_generic_urlPrefix: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_generic_endpoint }}"
+matrix_hookshot_generic_allowJsTransformationFunctions: false
 # If you're also using matrix-appservice-webhooks, take care that these prefixes don't overlap
-matrix_hookshot_generic_user_id_prefix: '_webhooks_'
+matrix_hookshot_generic_userIdPrefix: '_webhooks_'
 
 
 matrix_hookshot_feeds_enabled: true
