@@ -1686,7 +1686,7 @@ matrix_backup_borg_postgresql_databases_hostname: "{{ devture_postgres_connectio
 matrix_backup_borg_postgresql_databases_username: "{{ devture_postgres_connection_username if devture_postgres_enabled else '' }}"
 matrix_backup_borg_postgresql_databases_password: "{{ devture_postgres_connection_password if devture_postgres_enabled else '' }}"
 matrix_backup_borg_postgresql_databases_port: "{{ devture_postgres_connection_port if devture_postgres_enabled else 5432 }}"
-matrix_backup_borg_postgresql_databases: "{{ devture_postgres_additional_databases | map(attribute='name') if devture_postgres_enabled else [] }}"
+matrix_backup_borg_postgresql_databases: "{{ devture_postgres_managed_databases | map(attribute='name') if devture_postgres_enabled else [] }}"
 
 matrix_backup_borg_location_source_directories:
   - "{{ matrix_base_data_path }}"
@@ -2268,7 +2268,7 @@ devture_postgres_systemd_services_to_stop_for_maintenance_list: |
     ['matrix-' + matrix_homeserver_implementation + '.service']
   }}
 
-devture_postgres_additional_databases: |
+devture_postgres_managed_databases_auto: |
   {{
     ([{
       'name': matrix_synapse_database_database,
@@ -2978,7 +2978,7 @@ matrix_postgres_backup_connection_password: "{{ devture_postgres_connection_pass
 
 matrix_postgres_backup_postgres_data_path: "{{ devture_postgres_data_path if devture_postgres_enabled else '' }}"
 
-matrix_postgres_backup_databases: "{{ devture_postgres_additional_databases | map(attribute='name') if devture_postgres_enabled else [] }}"
+matrix_postgres_backup_databases: "{{ devture_postgres_managed_databases | map(attribute='name') if devture_postgres_enabled else [] }}"
 
 ######################################################################
 #
