@@ -27,7 +27,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			-p {{ matrix_prometheus_nginxlog_exporter_container_http_host_bind_port }}:{{ matrix_prometheus_nginxlog_exporter_container_metrics_port }} \
 			{% endif %}
 			{% if matrix_prometheus_nginxlog_exporter_container_syslog_host_bind_port %}
-			-p {{ matrix_prometheus_nginxlog_exporter_container_syslog_host_bind_port }}:6514/udp \
+			-p {{ matrix_prometheus_nginxlog_exporter_container_syslog_host_bind_port }}:{{ matrix_prometheus_nginxlog_exporter_container_syslog_port }}/udp \
 			{% endif %}
 			-v {{ matrix_prometheus_nginxlog_exporter_config_path }}:/etc/prometheus-nginxlog-exporter:z \
 			{% for arg in matrix_prometheus_nginxlog_exporter_container_extra_arguments %}

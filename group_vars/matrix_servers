@@ -2237,6 +2237,9 @@ matrix_ssl_architecture: "{{
 
 matrix_ssl_pre_obtaining_required_service_name: "{{ 'matrix-dynamic-dns' if matrix_dynamic_dns_enabled else '' }}"
 
+matrix_nginx_proxy_access_log_syslog_integration_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
+matrix_nginx_proxy_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_container_hostname | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
+
 ######################################################################
 #
 # /matrix-nginx-proxy
@@ -2822,6 +2825,9 @@ matrix_synapse_reverse_proxy_companion_synapse_stream_writer_presence_stream_wor
 matrix_synapse_reverse_proxy_companion_synapse_media_repository_locations: "{{matrix_synapse_workers_media_repository_endpoints|default([]) }}"
 matrix_synapse_reverse_proxy_companion_synapse_user_dir_locations: "{{ matrix_synapse_workers_user_dir_worker_client_server_endpoints|default([]) }}"
 
+matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
+matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_container_hostname | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
+
 ######################################################################
 #
 # /matrix-synapse-reverse-proxy-companion
@@ -2903,6 +2909,10 @@ matrix_prometheus_scraper_postgres_targets: "{{ ['matrix-prometheus-postgres-exp
 
 matrix_prometheus_scraper_hookshot_enabled: "{{ matrix_hookshot_metrics_enabled|default(false) }}"
 matrix_prometheus_scraper_hookshot_targets: "{{ [matrix_hookshot_container_url | string +':'+ matrix_hookshot_metrics_port | string] if matrix_hookshot_metrics_enabled else [] }}"
+
+matrix_prometheus_scraper_nginxlog_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
+matrix_prometheus_scraper_nginxlog_server_port: "{{ (matrix_prometheus_nginxlog_exporter_container_hostname | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string)
+| default('') }}"
 
 ######################################################################
 #
