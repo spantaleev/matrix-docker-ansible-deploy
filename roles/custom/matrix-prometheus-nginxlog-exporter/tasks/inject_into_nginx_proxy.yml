@@ -15,7 +15,7 @@
       location /metrics/nginxlog {
           {# Use the embedded DNS resolver in Docker containers to discover the service #}
           resolver 127.0.0.11 valid=5s;
-          set $backend "{{ matrix_prometheus_nginxlog_exporter_container_url }}:{{ matrix_prometheus_nginxlog_exporter_container_metrics_port }}";
+          set $backend "{{ matrix_prometheus_nginxlog_exporter_container_hostname }}:{{ matrix_prometheus_nginxlog_exporter_container_metrics_port }}";
           proxy_pass http://$backend/metrics;
       }
   when: matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled | bool and matrix_nginx_proxy_enabled | bool
