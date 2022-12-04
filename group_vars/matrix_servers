@@ -297,6 +297,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-prometheus-postgres-exporter.service', 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-node-exporters']}] if matrix_prometheus_postgres_exporter_enabled else [])
     +
+    ([{'name': (matrix_prometheus_nginxlog_exporter_container_url + '.service'), 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-node-exporters']}] if matrix_prometheus_postgres_exporter_enabled else [])
+    +
     ([{'name': 'matrix-redis', 'priority': 750, 'groups': ['matrix', 'redis']}] if matrix_redis_enabled else [])
     +
     ([{'name': 'matrix-registration.service', 'priority': 4000, 'groups': ['matrix', 'registration']}] if matrix_registration_enabled else [])
@@ -2863,6 +2865,20 @@ matrix_prometheus_node_exporter_enabled: false
 
 ######################################################################
 #
+# matrix-prometheus-nginxlog-exporter
+#
+######################################################################
+
+matrix_prometheus_nginxlog_exporter_enabled: false
+
+######################################################################
+#
+# /matrix-prometheus-nginxlog-exporter
+#
+######################################################################
+
+######################################################################
+#
 # matrix-prometheus
 #
 ######################################################################
@@ -2937,6 +2953,8 @@ matrix_grafana_dashboard_download_urls: |
     (matrix_prometheus_node_exporter_dashboard_urls if matrix_prometheus_node_exporter_enabled else [])
     +
     (matrix_prometheus_postgres_exporter_dashboard_urls if matrix_prometheus_postgres_exporter_enabled else [])
+    +
+    (matrix_prometheus_nginxlog_exporter_dashboard_urls if matrix_prometheus_nginxlog_exporter_enabled else [])
   }}
 
 matrix_grafana_default_home_dashboard_path: |-
