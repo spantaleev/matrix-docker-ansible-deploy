@@ -1,13 +1,15 @@
 ---
-# prometheus-nginxlog-exporter exports nginx logs into a prometheus usable format on a `/metrics/ endpoint
+# prometheus-nginxlog-exporter exports nginx logs in a prometheus usable format on a `/metrics/ endpoint
 # See: https://github.com/martin-helmich/prometheus-nginxlog-exporter/
 
 matrix_prometheus_nginxlog_exporter_enabled: true
+matrix_prometheus_nginxlog_exporter_version: v1.10.0
+
 matrix_prometheus_nginxlog_exporter_container_hostname: 'matrix-prometheus-nginxlog-exporter'
 matrix_prometheus_nginxlog_exporter_container_metrics_port: '4040'
 matrix_prometheus_nginxlog_exporter_container_syslog_port: '6514'
 
-matrix_prometheus_nginxlog_exporter_version: v1.10.0
+matrix_prometheus_nginxlog_exporter_docker_image_arch: ['amd64', 'arm64']
 matrix_prometheus_nginxlog_exporter_docker_image_name_prefix: "{{ 'ghcr.io/martin-helmich/' }}"
 matrix_prometheus_nginxlog_exporter_docker_image_tag: "{{ 'latest' if matrix_prometheus_nginxlog_exporter_version == 'master' else matrix_prometheus_nginxlog_exporter_version }}-{{ matrix_architecture }}"
 matrix_prometheus_nginxlog_exporter_docker_image: "{{ matrix_prometheus_nginxlog_exporter_docker_image_name_prefix }}prometheus-nginxlog-exporter/exporter:{{ matrix_prometheus_nginxlog_exporter_docker_image_tag }}"
@@ -15,7 +17,7 @@ matrix_prometheus_nginxlog_exporter_docker_image_force_pull: "{{ matrix_promethe
 matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled: true
 
 # Controls whether prometheus-nginxlog-exporter metrics should be proxied (exposed) on `matrix.DOMAIN/metrics/nginxlog`.
-# This will only work take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
+# This will only take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
 # See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
 matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled: false
 
