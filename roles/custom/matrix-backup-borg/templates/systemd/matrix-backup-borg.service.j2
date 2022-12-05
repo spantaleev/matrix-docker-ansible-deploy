@@ -31,7 +31,7 @@ ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} run --rm --n
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_backup_borg_docker_image }} \
-			sh -c "borgmatic --init --encryption {{ matrix_backup_borg_encryption }}"
+			sh -c "borgmatic rcreate --encryption {{ matrix_backup_borg_encryption }}"
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-backup-borg \
 			--log-driver=none \
