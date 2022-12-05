@@ -50,16 +50,13 @@
   when: "matrix_client_element_container_image_self_build | bool and matrix_client_element_container_image_self_build_low_memory_system_patch_enabled | bool"
 
 - name: Ensure Element Docker image is built
-  community.docker.docker_image:
-    name: "{{ matrix_client_element_docker_image }}"
-    source: build
-    force_source: "{{ matrix_client_element_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_element_git_pull_results.changed }}"
-    build:
-      dockerfile: Dockerfile
-      path: "{{ matrix_client_element_docker_src_files_path }}"
-      pull: true
-  when: "matrix_client_element_container_image_self_build | bool"
+  ansible.builtin.command:
+    cmd: |-
+      {{ devture_systemd_docker_base_host_command_docker }} buildx build
+      --tag={{ matrix_client_element_docker_image }}
+      --file={{ matrix_client_element_docker_src_files_path }}/Dockerfile
+      {{ matrix_client_element_docker_src_files_path }}
+  when: matrix_client_element_container_image_self_build | bool
 
 - name: Ensure Element configuration installed
   ansible.builtin.copy:
