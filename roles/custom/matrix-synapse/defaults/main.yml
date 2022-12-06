@@ -554,11 +554,6 @@ matrix_synapse_workers_pusher_workers_metrics_range_start: 19200
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_federation_pusher_instances: []
 
-# matrix_synapse_start_pushers controls if the main Synapse process should push out notifications or if it should be left to pusher workers (see `matrix_synapse_federation_pusher_instances`).
-# This is enabled if workers are disabled, or if they are enabled, but there are no pusher workers.
-# Adjusting this value manually is generally not necessary.
-matrix_synapse_start_pushers: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'pusher') | list | length == 0) }}"
-
 # matrix_synapse_workers_federation_sender_workers_count controls the number of federation sender workers to spawn.
 # See https://matrix-org.github.io/synapse/latest/workers.html#synapseappfederation_sender
 matrix_synapse_workers_federation_sender_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['federation_sender_workers_count'] }}"
