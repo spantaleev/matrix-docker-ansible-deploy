@@ -569,11 +569,6 @@ matrix_synapse_workers_federation_sender_workers_metrics_range_start: 19400
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_federation_sender_instances: []
 
-# matrix_synapse_send_federation controls if the main Synapse process should send federation traffic or if it should be left to federation_sender workers (see `matrix_synapse_federation_sender_instances`).
-# This is allowed if workers are disabled, or they are enabled, but there are no federation sender workers.
-# Adjusting this value manually is generally not necessary.
-matrix_synapse_send_federation: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'federation_sender') | list | length == 0) }}"
-
 matrix_synapse_workers_media_repository_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['media_repository_workers_count'] }}"
 matrix_synapse_workers_media_repository_workers_port_range_start: 18551
 matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
