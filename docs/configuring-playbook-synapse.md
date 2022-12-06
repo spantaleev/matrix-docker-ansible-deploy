@@ -37,7 +37,7 @@ If you'd like more customization power, you can start with one of the presets an
 If you increase worker counts too much, you may need to increase the maximum number of Postgres connections too (example):
 
 ```yaml
-matrix_postgres_process_extra_arguments: [
+devture_postgres_process_extra_arguments: [
   "-c 'max_connections=200'"
 ]
 ```
