@@ -134,7 +134,7 @@ The playbook allows a user to set a max number of participants allowed to join a
 In order to set the max number of participants add the following variable to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
 
 ```
-jitsi_max_participants: <INTEGER OF MAX PARTICPANTS>
+matrix_prosody_jitsi_max_participants: <INTEGER OF MAX PARTICPANTS>
 ```
 
 ## (Optional) Additional JVBs
