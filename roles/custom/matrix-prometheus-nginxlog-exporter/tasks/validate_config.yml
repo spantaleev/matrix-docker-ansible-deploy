@@ -1,0 +1,32 @@
+---
+
+- name: Fail if Prometheus not enabled
+  ansible.builtin.fail:
+    msg: >
+      You need to set `matrix_prometheus_enabled: true` or configure an external Prometheus database
+      as this roles requires Prometheus for data storage.
+  when: not matrix_prometheus_enabled and not matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled
+
+- name: Fail if docker image not availble for arch
+  ansible.builtin.fail:
+    msg: >
+      'prometheus-nginxlog-exporter' docker image is not available for your arch '{{ matrix_architecture }}'.
+
+      We currently do not support building an image using this playbook.
+
+      You can use a custom-build image by setting
+          'matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled: false'
+          'matrix_prometheus_nginxlog_exporter_docker_image: path/to/docker/image:tag'
+
+      or disable 'prometheus-nginxlog-exporter' by setting
+          'matrix_prometheus_nginxlog_exporter: false'
+
+      in vars.yml
+  when: matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled and matrix_architecture not in matrix_prometheus_nginxlog_exporter_docker_image_arch
+
+
+- name: Fail if nginx-proxy is not set to proxy metrics while prometheus-nginxlog-exporter is
+  ansible.builtin.fail:
+    msg: >
+      'matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled' is set but 'matrix_nginx_proxy_proxy_matrix_metrics_enabled' is not
+  when: matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled | bool and not matrix_nginx_proxy_proxy_matrix_metrics_enabled | bool

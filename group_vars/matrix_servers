@@ -297,6 +297,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-prometheus-postgres-exporter.service', 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-node-exporters']}] if matrix_prometheus_postgres_exporter_enabled else [])
     +
+    ([{'name': (matrix_prometheus_nginxlog_exporter_container_hostname + '.service'), 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-node-exporters']}] if matrix_prometheus_postgres_exporter_enabled else [])
+    +
     ([{'name': 'matrix-redis', 'priority': 750, 'groups': ['matrix', 'redis']}] if matrix_redis_enabled else [])
     +
     ([{'name': 'matrix-registration.service', 'priority': 4000, 'groups': ['matrix', 'registration']}] if matrix_registration_enabled else [])
@@ -2235,6 +2237,9 @@ matrix_ssl_architecture: "{{
 
 matrix_ssl_pre_obtaining_required_service_name: "{{ 'matrix-dynamic-dns' if matrix_dynamic_dns_enabled else '' }}"
 
+matrix_nginx_proxy_access_log_syslog_integration_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
+matrix_nginx_proxy_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_container_hostname | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
+
 ######################################################################
 #
 # /matrix-nginx-proxy
@@ -2820,6 +2825,9 @@ matrix_synapse_reverse_proxy_companion_synapse_stream_writer_presence_stream_wor
 matrix_synapse_reverse_proxy_companion_synapse_media_repository_locations: "{{matrix_synapse_workers_media_repository_endpoints|default([]) }}"
 matrix_synapse_reverse_proxy_companion_synapse_user_dir_locations: "{{ matrix_synapse_workers_user_dir_worker_client_server_endpoints|default([]) }}"
 
+matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
+matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_container_hostname | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
+
 ######################################################################
 #
 # /matrix-synapse-reverse-proxy-companion
@@ -2863,6 +2871,20 @@ matrix_prometheus_node_exporter_enabled: false
 
 ######################################################################
 #
+# matrix-prometheus-nginxlog-exporter
+#
+######################################################################
+
+matrix_prometheus_nginxlog_exporter_enabled: false
+
+######################################################################
+#
+# /matrix-prometheus-nginxlog-exporter
+#
+######################################################################
+
+######################################################################
+#
 # matrix-prometheus
 #
 ######################################################################
@@ -2887,6 +2909,10 @@ matrix_prometheus_scraper_postgres_targets: "{{ ['matrix-prometheus-postgres-exp
 
 matrix_prometheus_scraper_hookshot_enabled: "{{ matrix_hookshot_metrics_enabled|default(false) }}"
 matrix_prometheus_scraper_hookshot_targets: "{{ [matrix_hookshot_container_url | string +':'+ matrix_hookshot_metrics_port | string] if matrix_hookshot_metrics_enabled else [] }}"
+
+matrix_prometheus_scraper_nginxlog_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
+matrix_prometheus_scraper_nginxlog_server_port: "{{ (matrix_prometheus_nginxlog_exporter_container_hostname | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string)
+| default('') }}"
 
 ######################################################################
 #
@@ -2937,6 +2963,8 @@ matrix_grafana_dashboard_download_urls: |
     (matrix_prometheus_node_exporter_dashboard_urls if matrix_prometheus_node_exporter_enabled else [])
     +
     (matrix_prometheus_postgres_exporter_dashboard_urls if matrix_prometheus_postgres_exporter_enabled else [])
+    +
+    (matrix_prometheus_nginxlog_exporter_dashboard_urls if matrix_prometheus_nginxlog_exporter_enabled else [])
   }}
 
 matrix_grafana_default_home_dashboard_path: |-

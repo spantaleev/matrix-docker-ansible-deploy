@@ -15,6 +15,9 @@ matrix_prometheus_node_exporter_enabled: true
 # You can remove this, if unnecessary.
 matrix_prometheus_postgres_exporter_enabled: true
 
+# You can remove this, if unnecessary.
+matrix_prometheus_nginxlog_exporter_enabled: true
+
 matrix_grafana_enabled: true
 
 matrix_grafana_anonymous_access: false
@@ -39,6 +42,7 @@ Name | Description
 `matrix_prometheus_enabled`|[Prometheus](https://prometheus.io) is a time series database. It holds all the data we're going to talk about.
 `matrix_prometheus_node_exporter_enabled`|[Node Exporter](https://prometheus.io/docs/guides/node-exporter/) is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures
 `matrix_prometheus_postgres_exporter_enabled`|[Postgres Exporter](configuring-playbook-prometheus-postgres.md) is an addon of sorts to expose Postgres database metrics to Prometheus.
+`matrix_prometheus_nginxlog_exporter_enabled`|[NGINX Log Exporter](configuring-playbook-prometheus-nginxlog.md) is an addon of sorts to expose NGINX logs to Prometheus.
 `matrix_grafana_enabled`|[Grafana](https://grafana.com/) is the visual component. It shows (on the `stats.<your-domain>` subdomain) the dashboards with the graphs that we're interested in
 `matrix_grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
 `matrix_grafana_default_admin_user`<br>`matrix_grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. If you feel this is insecure and you want to change it beforehand, you can do that here
@@ -73,6 +77,7 @@ Name | Description
 `matrix_prometheus_node_exporter_enabled`|Set this to `true` to enable the node (general system stats) exporter (locally, on the container network)
 `matrix_prometheus_node_exporter_metrics_proxying_enabled`|Set this to `true` to expose the node (general system stats) metrics on `https://matrix.DOMAIN/metrics/node-exporter` (only takes effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`)
 `matrix_prometheus_postgres_exporter_enabled`|Set this to `true` to enable the [Postgres exporter](configuring-playbook-prometheus-postgres.md) (locally, on the container network)
+`matrix_prometheus_nginxlog_exporter_enabled`|Set this to `true` to enable the [NGINX Log exporter](configuring-playbook-prometheus-nginxlog.md) (locally, on the container network)
 `matrix_prometheus_postgres_exporter_metrics_proxying_enabled`|Set this to `true` to expose the [Postgres exporter](configuring-playbook-prometheus-postgres.md) metrics on `https://matrix.DOMAIN/metrics/postgres-exporter` (only takes effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`)
 `matrix_bridge_hookshot_metrics_enabled`|Set this to `true` to make [Hookshot](configuring-playbook-bridge-hookshot.md) expose metrics (locally, on the container network)
 `matrix_bridge_hookshot_metrics_proxying_enabled`|Set this to `true` to expose the [Hookshot](configuring-playbook-bridge-hookshot.md) metrics on `https://matrix.DOMAIN/metrics/hookshot` (only takes effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`)

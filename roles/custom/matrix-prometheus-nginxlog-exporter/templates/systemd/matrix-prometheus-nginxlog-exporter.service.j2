@@ -1,0 +1,46 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description={{ matrix_prometheus_nginxlog_exporter_container_hostname }}
+{% for service in matrix_prometheus_nginxlog_exporter_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_prometheus_nginxlog_exporter_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill {{ matrix_prometheus_nginxlog_exporter_container_hostname }} 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_prometheus_nginxlog_exporter_container_hostname }} 2>/dev/null || true'
+
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name {{ matrix_prometheus_nginxlog_exporter_container_hostname }} \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_prometheus_nginxlog_exporter_container_http_host_bind_port %}
+			-p {{ matrix_prometheus_nginxlog_exporter_container_http_host_bind_port }}:{{ matrix_prometheus_nginxlog_exporter_container_metrics_port }} \
+			{% endif %}
+			{% if matrix_prometheus_nginxlog_exporter_container_syslog_host_bind_port %}
+			-p {{ matrix_prometheus_nginxlog_exporter_container_syslog_host_bind_port }}:{{ matrix_prometheus_nginxlog_exporter_container_syslog_port }}/udp \
+			{% endif %}
+			-v {{ matrix_prometheus_nginxlog_exporter_config_path }}:/etc/prometheus-nginxlog-exporter:z \
+			{% for arg in matrix_prometheus_nginxlog_exporter_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_prometheus_nginxlog_exporter_docker_image }} \
+			-config-file /etc/prometheus-nginxlog-exporter/prometheus-nginxlog-exporter.yaml
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill {{ matrix_prometheus_nginxlog_exporter_container_hostname }} 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_prometheus_nginxlog_exporter_container_hostname }} 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier={{ matrix_prometheus_nginxlog_exporter_container_hostname }}
+
+[Install]
+WantedBy=multi-user.target
