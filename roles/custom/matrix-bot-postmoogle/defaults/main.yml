@@ -9,7 +9,7 @@ matrix_bot_postmoogle_docker_repo: "https://gitlab.com/etke.cc/postmoogle.git"
 matrix_bot_postmoogle_docker_repo_version: "{{ 'main' if matrix_bot_postmoogle_version == 'latest' else matrix_bot_postmoogle_version }}"
 matrix_bot_postmoogle_docker_src_files_path: "{{ matrix_base_data_path }}/postmoogle/docker-src"
 
-matrix_bot_postmoogle_version: v0.9.9
+matrix_bot_postmoogle_version: v0.9.10
 matrix_bot_postmoogle_docker_image: "{{ matrix_bot_postmoogle_docker_image_name_prefix }}postmoogle:{{ matrix_bot_postmoogle_version }}"
 matrix_bot_postmoogle_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_postmoogle_container_image_self_build else 'registry.gitlab.com/etke.cc/' }}"
 matrix_bot_postmoogle_docker_image_force_pull: "{{ matrix_bot_postmoogle_docker_image.endswith(':latest') }}"
@@ -78,18 +78,6 @@ matrix_bot_postmoogle_prefix: '!pm'
 # Max email size in megabytes, including attachments
 matrix_bot_postmoogle_maxsize: '1024'
 
-# DEPRECATED, use !pm users instead
-# A list of whitelisted users allowed to use the bridge.
-# If not defined, everyone is allowed.
-# Example set of rules:
-# matrix_bot_postmoogle_users:
-# - @someone:example.com
-# - @another:example.com
-# - @bot.*:example.com
-# - @*:another.com
-matrix_bot_postmoogle_users:
-  - "@*:{{ matrix_domain }}"
-
 # A list of admins
 # Example set of rules:
 # matrix_bot_postmoogle_admins:
@@ -99,8 +87,16 @@ matrix_bot_postmoogle_users:
 # - @*:another.com
 matrix_bot_postmoogle_admins: "{{ [matrix_admin] if matrix_admin else [] }}"
 
-# Sentry DSN
+# Sentry DSN. Deprecated, use matrix_bot_postmoogle_monitoring_sentry_dsn
 matrix_bot_postmoogle_sentry: ''
+
+# Sentry integration
+matrix_bot_postmoogle_monitoring_sentry_dsn: "{{ matrix_bot_postmoogle_sentry }}"
+matrix_bot_postmoogle_monitoring_sentry_rate: 20
+
+# healthchecks.io integration
+matrix_bot_postmoogle_monitoring_healthchecks_uuid: ''
+matrix_bot_postmoogle_monitoring_healthchecks_duration: 60
 
 # Log level
 matrix_bot_postmoogle_loglevel: 'INFO'
@@ -146,6 +142,15 @@ matrix_bot_postmoogle_tls_key: ""
 
 # Mandatory TLS, even on plain SMTP port
 matrix_bot_postmoogle_tls_required: false
+
+# trusted proxies
+matrix_bot_postmoogle_proxies: []
+
+# reserved mailboxes
+matrix_bot_postmoogle_mailboxes_reserved: []
+
+# mailbox activation flow
+matrix_bot_postmoogle_mailboxes_activation: none
 
 # Additional environment variables to pass to the postmoogle container
 #
