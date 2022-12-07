@@ -127,6 +127,16 @@ Read how it works [here](https://github.com/jitsi/jitsi-videobridge/blob/master/
 
 You may want to **limit the maximum video resolution**, to save up resources on both server and clients.
 
+## (Optional) Specify a Max number of participants on a Jitsi conference
+
+The playbook allows a user to set a max number of participants allowed to join a Jitsi conference. By default there is no limit.
+
+In order to set the max number of participants add the following variable to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
+
+```
+matrix_prosody_jitsi_max_participants: <INTEGER OF MAX PARTICPANTS>
+```
+
 ## (Optional) Additional JVBs
 
 By default, a single JVB ([Jitsi VideoBridge](https://github.com/jitsi/jitsi-videobridge)) is deployed on the same host as the Matrix server. To allow more video-conferences to happen at the same time, you may need to provision additional JVB services on other hosts.
