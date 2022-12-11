@@ -38,11 +38,10 @@
 - name: Ensure Hydrogen configuration installed
   ansible.builtin.copy:
     content: "{{ matrix_client_hydrogen_configuration | to_nice_json }}"
-    dest: "{{ matrix_client_hydrogen_docker_src_files_path }}/src/platform/web/assets/config.json"
+    dest: "{{ matrix_client_hydrogen_data_path }}/config.json"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: "matrix_client_hydrogen_container_image_self_build | bool"
 
 - name: Ensure Hydrogen additional config files installed
   ansible.builtin.template:
@@ -55,8 +54,6 @@
     - {src: "{{ role_path }}/templates/nginx.conf.j2", name: "nginx.conf"}
   when: "item.src is not none"
 
-# This step MUST come after the steps to install the configuration files because the config files
-# are currently only read at build time, not at run time like most other components in the playbook
 - name: Ensure Hydrogen Docker image is built
   community.docker.docker_image:
     name: "{{ matrix_client_hydrogen_docker_image }}"
