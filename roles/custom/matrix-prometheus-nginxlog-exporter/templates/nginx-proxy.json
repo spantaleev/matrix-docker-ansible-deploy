@@ -56,7 +56,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 5,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -132,7 +132,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 17
+            "y": 1
           },
           "id": 20,
           "options": {
@@ -154,14 +154,14 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "builder",
-              "expr": "sum by(remote_addr) (rate(http_response_count_total{status=~\"1.*\", request_host=~\"$request_host\"}[$__rate_interval]))",
+              "expr": "sum by(http_x_forwarded_for) (rate(http_response_count_total{status=~\"1.*\", request_host=~\"$request_host\"}[$__rate_interval]))",
               "hide": false,
               "legendFormat": "__auto",
               "range": true,
               "refId": "B"
             }
           ],
-          "title": "1xx by remote addr [$request_host]",
+          "title": "1xx by upstream addr[$request_host]",
           "type": "timeseries"
         },
         {
@@ -226,7 +226,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 17
+            "y": 1
           },
           "id": 21,
           "options": {
@@ -323,7 +323,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 25
+            "y": 9
           },
           "id": 18,
           "options": {
@@ -345,14 +345,14 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "builder",
-              "expr": "sum by(remote_addr) (rate(http_response_count_total{status=~\"2.*\", request_host=~\"$request_host\"}[$__rate_interval]))",
+              "expr": "sum by(http_x_forwarded_for) (rate(http_response_count_total{status=~\"2.*\", request_host=~\"$request_host\"}[$__rate_interval]))",
               "hide": false,
               "legendFormat": "__auto",
               "range": true,
               "refId": "B"
             }
           ],
-          "title": "2xx by remote addr [$request_host]",
+          "title": "2xx by upstream addr[$request_host]",
           "type": "timeseries"
         },
         {
@@ -417,7 +417,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 25
+            "y": 9
           },
           "id": 19,
           "options": {
@@ -514,7 +514,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 33
+            "y": 17
           },
           "id": 16,
           "options": {
@@ -536,14 +536,14 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "builder",
-              "expr": "sum by(remote_addr) (rate(http_response_count_total{status=~\"3.*\", request_host=~\"$request_host\"}[$__rate_interval]))",
+              "expr": "sum by(http_x_forwarded_for) (rate(http_response_count_total{status=~\"3.*\", request_host=~\"$request_host\"}[$__rate_interval]))",
               "hide": false,
               "legendFormat": "__auto",
               "range": true,
               "refId": "B"
             }
           ],
-          "title": "3xx by remote addr [$request_host]",
+          "title": "3xx by upstream addr[$request_host]",
           "type": "timeseries"
         },
         {
@@ -608,7 +608,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 33
+            "y": 17
           },
           "id": 17,
           "options": {
@@ -644,7 +644,7 @@
           "type": "timeseries"
         }
       ],
-      "title": "1xx - 3xx - 2xx Status Code .....................................................",
+      "title": "1xx - 2xx - 3xx Status Code .....................................................",
       "type": "row"
     },
     {
@@ -744,14 +744,14 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "builder",
-          "expr": "sum by(remote_addr) (rate(http_response_count_total{status=~\"404\", request_host=~\"$request_host\"}[$__rate_interval]))",
+          "expr": "sum by(http_x_forwarded_for) (rate(http_response_count_total{status=~\"404\", request_host=~\"$request_host\"}[$__rate_interval]))",
           "hide": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "B"
         }
       ],
-      "title": "404 by remote addr [$request_host]",
+      "title": "404 by upstream addr[$request_host]",
       "type": "timeseries"
     },
     {
@@ -935,14 +935,14 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "builder",
-          "expr": "sum by(remote_addr) (rate(http_response_count_total{status=~\"4.*\", request_host=~\"$request_host\"}[$__rate_interval]))",
+          "expr": "sum by(http_x_forwarded_for) (rate(http_response_count_total{status=~\"4.*\", request_host=~\"$request_host\"}[$__rate_interval]))",
           "hide": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "B"
         }
       ],
-      "title": "4xx by remote addr [$request_host]",
+      "title": "4xx by upstream addr[$request_host]",
       "type": "timeseries"
     },
     {
@@ -1114,7 +1114,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 11
+            "y": 3
           },
           "id": 10,
           "options": {
@@ -1136,14 +1136,14 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "builder",
-              "expr": "sum by(remote_addr, status) (rate(http_response_count_total{status=~\"504|502\", request_host=~\"$request_host\"}[$__rate_interval]))",
+              "expr": "sum by(http_x_forwarded_for, status) (rate(http_response_count_total{status=~\"504|502\", request_host=~\"$request_host\"}[$__rate_interval]))",
               "hide": false,
               "legendFormat": "__auto",
               "range": true,
               "refId": "B"
             }
           ],
-          "title": "502-504 by remote addr [$request_host]",
+          "title": "502-504 by upstream addr[$request_host]",
           "type": "timeseries"
         },
         {
@@ -1208,7 +1208,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 11
+            "y": 3
           },
           "id": 11,
           "options": {
@@ -1305,7 +1305,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 19
+            "y": 11
           },
           "id": 12,
           "options": {
@@ -1327,14 +1327,14 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "builder",
-              "expr": "sum by(remote_addr) (rate(http_response_count_total{status=~\"5.*\", request_host=~\"$request_host\"}[$__rate_interval]))",
+              "expr": "sum by(http_x_forwarded_for) (rate(http_response_count_total{status=~\"5.*\", request_host=~\"$request_host\"}[$__rate_interval]))",
               "hide": false,
               "legendFormat": "__auto",
               "range": true,
               "refId": "B"
             }
           ],
-          "title": "5xx by remote addr [$request_host]",
+          "title": "5xx by upstream addr[$request_host]",
           "type": "timeseries"
         },
         {
@@ -1399,7 +1399,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 19
+            "y": 11
           },
           "id": 13,
           "options": {
@@ -1532,14 +1532,14 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "builder",
-              "expr": "sum by(remote_addr) (rate(http_response_count_total{status=~\"[6-9]{1}.*\", request_host=~\"$request_host\"}[$__rate_interval]))",
+              "expr": "sum by(http_x_forwarded_for) (rate(http_response_count_total{status=~\"[6-9]{1}.*\", request_host=~\"$request_host\"}[$__rate_interval]))",
               "hide": false,
               "legendFormat": "__auto",
               "range": true,
               "refId": "B"
             }
           ],
-          "title": "6xx > by remote addr [$request_host]",
+          "title": "6xx > by upstream addr[$request_host]",
           "type": "timeseries"
         },
         {
@@ -1700,6 +1700,6 @@
   "timezone": "",
   "title": "NGINX PROXY",
   "uid": "x2_jWNF4k",
-  "version": 11,
+  "version": 12,
   "weekStart": ""
 }
