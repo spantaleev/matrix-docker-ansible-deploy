@@ -23,6 +23,26 @@ namespaces:
         split: 2
         separator: ' '
         matches:
+        - regexp: "^([^\\?]+)/(public|bundles|fonts|img|themes|vector-icons|element-icons|d|media).*"
+          replacement: "$1/$2/"
+        - regexp: "^([^\\?]+).*/rooms/.*/(event|read_markers|messages|receipt|state|typing|members).*"
+          replacement: "$1/rooms/:roomid:/$2"
+        - regexp: "^([^\\?]+).*/(r0|v3)/(sync|pushers|keys|devices|download|sendtodevice).*"
+          replacement: "$1/:v:/$3"
+        - regexp: "^([^\\?]+).*/rooms/(.*)/send/(.*)"
+          replacement: "$1/rooms/:roomid:/send/:command:/:id:"
+        - regexp: "^([^\\?]+).*/client/unstable/.*"
+          replacement: "$1/client/unstable/:matrixspec:"
+        - regexp: "^([^\\?]+).*/presence/.*"
+          replacement: "$1/presence/:userid:"
+        - regexp: "^([^\\?]+).*/user/.*"
+          replacement: "$1/user/:userid:"
+        - regexp: "^([^\\?]+).*/profile/.*"
+          replacement: "$1/profile/:userid:"
+        - regexp: "^([^\\?]+).*/directory/room/.*"
+          replacement: "$1/directory/room/:roomid:"
+        - regexp: "^([^\\?]+).*/thumbnail/.*"
+          replacement: "$1/thumbnail/:domain:/:mxid:"
         - regexp: "^([^\\?]+)(.*)"
           replacement: "$1"
       - target_label: remote_addr
