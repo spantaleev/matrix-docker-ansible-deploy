@@ -250,3 +250,98 @@ networks:
   traefik:
     external: true
 ```
+
+### Sample Configuration behind nginx
+
+Put this into your hostvars 
+```yaml
+# setup proxy
+matrix_ssl_retrieval_method: none
+matrix_nginx_proxy_https_enabled: false
+matrix_nginx_proxy_trust_forwarded_proto: true
+matrix_nginx_proxy_x_forwarded_for: '$proxy_add_x_forwarded_for'
+
+matrix_nginx_proxy_container_http_host_bind_port: '127.0.0.1:8181' # ->:443
+matrix_nginx_proxy_container_federation_host_bind_port: '127.0.0.1:8449' # -> 8449
+
+# Coturn relies on SSL certificates that have already been obtained and is not proxied.
+matrix_coturn_enabled: true
+matrix_coturn_tls_enabled: true
+matrix_coturn_tls_cert_path: /etc/letsencrypt/live/<your server name>/fullchain.pem
+matrix_coturn_tls_key_path: /etc/letsencrypt/live/<your server name>/privkey.pem
+
+```
+And use this configuration for your own reverse proxy in `/etc/nginx/conf.d/`. This assumes you have certbot running for your domain.
+```
+map $http_upgrade $connection_upgrade {  
+    default upgrade;
+    ''      close;
+}
+server {
+    listen 80;
+    listen [::]:80;            # comment to disable IPv6
+
+    if ($scheme = "http") {
+        return 301 https://$host$request_uri;
+    }
+
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2; # comment to disable IPv6
+
+    server_name <your server name>;
+
+    location / {
+        resolver localhost;
+        proxy_pass http://127.0.0.1:8181$request_uri;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        client_max_body_size 0;
+
+        # Websocket
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+    }
+
+    ssl_certificate /etc/letsencrypt/live/<your server name>/fullchain.pem;   #certbot
+    ssl_certificate_key /etc/letsencrypt/live/<your server name>/privkey.pem; # certbot
+
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:MozSSL:10m; # about 40000 sessions
+    ssl_session_tickets off;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+}
+
+server {
+        listen 8448 ssl http2;
+        listen [::]:8448 ssl http2;
+
+        server_name <your server name>;
+        server_tokens off;
+
+        gzip on;
+        gzip_types text/plain application/json;
+
+        ssl_certificate /etc/letsencrypt/live/<your server name>/fullchain.pem; #managed by certbot
+        ssl_certificate_key /etc/letsencrypt/live/<your server name>/privkey.pem; # managed by certbot
+		ssl_protocols TLSv1.2 TLSv1.3;
+		ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+		ssl_prefer_server_ciphers off;
+
+        location / {
+                proxy_pass http://127.0.0.1:8449;
+
+                proxy_set_header Host $host;
+                proxy_set_header X-Forwarded-For $remote_addr;
+
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection $connection_upgrade;
+        }
+}
+```
