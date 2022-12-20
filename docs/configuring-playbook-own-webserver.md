@@ -6,9 +6,6 @@ If that's alright, you can skip this.
 If you don't want this playbook's nginx webserver to take over your server's 80/443 ports like that,
 and you'd like to use your own webserver (be it nginx, Apache, Varnish Cache, etc.), you can.
 
-You should note, however, that the playbook's services work best when you keep using the integrated `matrix-nginx-proxy` webserver.
-For example, disabling `matrix-nginx-proxy` when running a [Synapse worker setup for load-balancing](configuring-playbook-synapse.md#load-balancing-with-workers) (a more advanced, non-default configuration) is likely to cause various troubles (see [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2090)). If you need a such more scalable setup, disabling `matrix-nginx-proxy` will be a bad idea. If yours will be a simple (default, non-worker-load-balancing) deployment, disabling `matrix-nginx-proxy` may be fine.
-
 There are **2 ways you can go about it**, if you'd like to use your own webserver:
 
 - [Method 1: Disabling the integrated nginx reverse-proxy webserver](#method-1-disabling-the-integrated-nginx-reverse-proxy-webserver)
