@@ -65,7 +65,7 @@ docker run -it --rm \
 -w /work \
 -v `pwd`:/work \
 --entrypoint=/bin/sh \
-docker.io/devture/ansible:2.13.6-r0
+docker.io/devture/ansible:2.13.6-r0-1
 ```
 
 Once you execute the above command, you'll be dropped into a `/work` directory inside a Docker container.
