@@ -718,10 +718,6 @@ matrix_mautrix_discord_database_engine: "{{ 'postgres' if devture_postgres_enabl
 matrix_mautrix_discord_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_mautrix_discord_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudiscord.db', rounds=655555) | to_uuid }}"
 
-# Enabling bridge.restricted_rooms for this bridge does not work well with Conduit, so we disable it by default.
-# This will be fixed in the upcoming `0.5.0` release of conduit.
-matrix_mautrix_discord_bridge_restricted_rooms: "{{ false if matrix_homeserver_implementation == 'conduit' else true }}"
-
 ######################################################################
 #
 # /matrix-bridge-mautrix-discord
