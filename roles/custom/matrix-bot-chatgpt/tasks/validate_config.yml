@@ -1,0 +1,12 @@
+---
+
+- name: Fail if required Chatgpt settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
+  with_items:
+    - {'name': 'matrix_bot_chatgpt_openai_email', when: true}
+    - {'name': 'matrix_bot_chatgpt_openai_password', when: true}
+    - {'name': 'matrix_bot_chatgpt_openai_login_type', when: true}
+    - {'name': 'matrix_bot_chatgpt_matrix_bot_username', when: true}

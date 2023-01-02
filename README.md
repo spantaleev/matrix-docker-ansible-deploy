@@ -130,6 +130,7 @@ Bots provide various additional functionality to your installation.
 | [Go-NEB](https://github.com/matrix-org/go-neb) | x | A multi functional bot written in Go | [Link](docs/configuring-playbook-bot-go-neb.md) |
 | [Mjolnir](https://github.com/matrix-org/mjolnir) | x | A moderation tool for Matrix | [Link](docs/configuring-playbook-bot-mjolnir.md) |
 | [Buscarron](https://gitlab.com/etke.cc/buscarron) | x | Web forms (HTTP POST) to matrix | [Link](docs/configuring-playbook-bot-buscarron.md) |
+| [matrix-chatgpt-bot](https://github.com/matrixgpt/matrix-chatgpt-bot) | x | ChatGPT from matrix | [Link](docs/configuring-playbook-bot-chatgpt.md) |
 
 ### Administration
 
