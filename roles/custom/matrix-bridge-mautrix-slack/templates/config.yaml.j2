@@ -5,8 +5,10 @@ homeserver:
     address: {{ matrix_mautrix_slack_homeserver_address | to_json }}
     # The domain of the homeserver (for MXIDs, etc).
     domain: {{ matrix_mautrix_slack_homeserver_domain | to_json }}
-    # Is the homeserver actually mautrix-asmux?
-    asmux: false
+
+    # What software is the homeserver running?
+    # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
+    software: standard
     # The URL to push real-time bridge status to.
     # If set, the bridge will make POST requests to this URL whenever a user's slack connection state changes.
     # The bridge will use the appservice as_token to authorize requests.
@@ -56,6 +58,7 @@ appservice:
         avatar: mxc://maunium.net/pVtzLmChZejGxLqmXtQjFxem
     # Whether or not to receive ephemeral events via appservice transactions.
     # Requires MSC2409 support (i.e. Synapse 1.22+).
+    # You should disable bridge -> sync_with_custom_puppets when this is enabled.
     ephemeral_events: true
 
     # Should incoming events be handled asynchronously?
