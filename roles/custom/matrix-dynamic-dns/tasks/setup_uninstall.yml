@@ -1,0 +1,20 @@
+---
+
+- name: Check existence of matrix-dynamic-dns service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-dynamic-dns.service"
+  register: matrix_dynamic_dns_service_stat
+
+- when: matrix_dynamic_dns_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-dynamic-dns is stopped
+      ansible.builtin.service:
+        name: matrix-dynamic-dns
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-dynamic-dns.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-dynamic-dns.service"
+        state: absent

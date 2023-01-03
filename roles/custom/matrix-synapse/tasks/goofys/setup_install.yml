@@ -1,6 +1,6 @@
 ---
 
-- ansible.builtin.import_role:
+- ansible.builtin.include_role:
     name: custom/matrix-base
     tasks_from: ensure_fuse_installed
 
@@ -43,9 +43,3 @@
     src: "{{ role_path }}/templates/goofys/systemd/matrix-goofys.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-goofys.service"
     mode: 0644
-  register: matrix_goofys_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-goofys.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_goofys_systemd_service_result.changed"

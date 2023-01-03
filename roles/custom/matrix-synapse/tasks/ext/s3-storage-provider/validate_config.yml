@@ -10,9 +10,10 @@
     - "matrix_synapse_ext_synapse_s3_storage_provider_config_region_name"
     - "matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id"
     - "matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key"
+    - "matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url"
 
 - name: Fail if required matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url looks invalid
   ansible.builtin.fail:
     msg: >-
       `matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url` needs to look like a URL (`http://` or `https://` prefix).
-  when: "matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url != '' and not matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url.startswith('http')"
+  when: "not matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url.startswith('http')"

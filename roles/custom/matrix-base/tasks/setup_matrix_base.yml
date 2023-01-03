@@ -1,6 +1,6 @@
 ---
 
-- name: Ensure Matrix base path exists
+- name: Ensure Matrix base paths exists
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -9,14 +9,15 @@
     group: "{{ matrix_user_groupname }}"
   with_items:
     - "{{ matrix_base_data_path }}"
+    - "{{ matrix_bin_path }}"
 
 - name: Ensure Matrix network is created in Docker
   community.docker.docker_network:
     name: "{{ matrix_docker_network }}"
     driver: bridge
 
-- name: Ensure matrix-remove-all script created
+- name: Ensure remove-all script created
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/usr-local-bin/matrix-remove-all.j2"
-    dest: "{{ matrix_local_bin_path }}/matrix-remove-all"
+    src: "{{ role_path }}/templates/bin/remove-all.j2"
+    dest: "{{ matrix_bin_path }}/remove-all"
     mode: 0750

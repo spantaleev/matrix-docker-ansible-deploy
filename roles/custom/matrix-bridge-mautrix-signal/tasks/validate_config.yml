@@ -1,15 +1,16 @@
 ---
 
-- name: Fail if required settings not defined
+- name: Fail if required mautrix-signal settings not defined
   ansible.builtin.fail:
     msg: >-
-      You need to define a required configuration setting (`{{ item }}`).
-  when: "vars[item] == ''"
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
   with_items:
-    - "matrix_mautrix_signal_homeserver_domain"
-    - "matrix_mautrix_signal_homeserver_address"
-    - "matrix_mautrix_signal_homeserver_token"
-    - "matrix_mautrix_signal_appservice_token"
+    - {'name': 'matrix_mautrix_signal_homeserver_domain', when: true}
+    - {'name': 'matrix_mautrix_signal_homeserver_address', when: true}
+    - {'name': 'matrix_mautrix_signal_homeserver_token', when: true}
+    - {'name': 'matrix_mautrix_signal_appservice_token', when: true}
+    - {'name': 'matrix_mautrix_signal_database_hostname', when: "{{ matrix_mautrix_signal_database_engine == 'postgres' }}"}
 
 - name: (Deprecation) Fail if matrix_mautrix_signal_bridge_permissions specified as YAML string, instead of a dictionary
   ansible.builtin.fail:

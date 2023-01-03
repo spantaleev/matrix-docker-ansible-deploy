@@ -1,0 +1,31 @@
+---
+
+- name: Check existence of matrix-redis service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-redis.service"
+  register: matrix_redis_service_stat
+
+- when: matrix_redis_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-redis is stopped
+      ansible.builtin.service:
+        name: matrix-redis
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-redis.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-redis.service"
+        state: absent
+
+- name: Check existence of matrix-redis local data path
+  ansible.builtin.stat:
+    path: "{{ matrix_redis_data_path }}"
+  register: matrix_redis_data_path_stat
+
+# We just want to notify the user. Deleting data is too destructive.
+- name: Notify if matrix-redis local data remains
+  ansible.builtin.debug:
+    msg: "Note: You are not using a local redis instance, but some old data remains from before in `{{ matrix_redis_data_path }}`. Feel free to delete it."
+  when: matrix_redis_data_path_stat.stat.exists | bool

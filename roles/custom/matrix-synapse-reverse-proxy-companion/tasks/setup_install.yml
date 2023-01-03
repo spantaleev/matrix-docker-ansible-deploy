@@ -1,0 +1,44 @@
+---
+
+- name: Ensure matrix-synapse-reverse-proxy-companion paths exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_synapse_reverse_proxy_companion_base_path }}"
+    - "{{ matrix_synapse_reverse_proxy_companion_confd_path }}"
+
+- name: Ensure matrix-synapse-reverse-proxy-companion configured
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0644
+  with_items:
+    - src: "{{ role_path }}/templates/nginx/nginx.conf.j2"
+      dest: "{{ matrix_synapse_reverse_proxy_companion_base_path }}/nginx.conf"
+    - src: "{{ role_path }}/templates/nginx/conf.d/nginx-http.conf.j2"
+      dest: "{{ matrix_synapse_reverse_proxy_companion_confd_path }}/nginx-http.conf"
+    - src: "{{ role_path }}/templates/nginx/conf.d/matrix-synapse-reverse-proxy-companion.conf.j2"
+      dest: "{{ matrix_synapse_reverse_proxy_companion_confd_path }}/matrix-synapse-reverse-proxy-companion.conf"
+
+- name: Ensure matrix-synapse-reverse-proxy-companion nginx container image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_synapse_reverse_proxy_companion_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_synapse_reverse_proxy_companion_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_synapse_reverse_proxy_companion_container_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure matrix-synapse-reverse-proxy-companion.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-synapse-reverse-proxy-companion.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse-reverse-proxy-companion.service"
+    mode: 0644

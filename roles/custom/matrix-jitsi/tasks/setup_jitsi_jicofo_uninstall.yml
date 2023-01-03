@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-jitsi-jicofo service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-jitsi-jicofo.service"
+  register: matrix_jitsi_jicofo_service_stat
+
+- when: matrix_jitsi_jicofo_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-jitsi-jicofo is stopped
+      ansible.builtin.service:
+        name: matrix-jitsi-jicofo
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-jitsi-jicofo.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-jitsi-jicofo.service"
+        state: absent
+
+    - name: Ensure Matrix jitsi-jicofo paths doesn't exist
+      ansible.builtin.file:
+        path: "{{ matrix_jitsi_jicofo_base_path }}"
+        state: absent

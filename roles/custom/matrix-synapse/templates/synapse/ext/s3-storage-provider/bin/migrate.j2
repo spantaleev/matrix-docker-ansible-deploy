@@ -1,0 +1,13 @@
+#jinja2: lstrip_blocks: "True"
+#!/bin/bash
+
+{{ devture_systemd_docker_base_host_command_docker }} run \
+	--rm \
+	--env-file={{ matrix_synapse_ext_s3_storage_provider_base_path }}/env \
+	--mount type=bind,src={{ matrix_synapse_storage_path }},dst=/matrix-media-store-parent,bind-propagation=slave \
+	--mount type=bind,src={{ matrix_synapse_ext_s3_storage_provider_data_path }},dst=/data \
+	--workdir=/data \
+	--network={{ matrix_docker_network }} \
+	--entrypoint=/bin/bash \
+	{{ matrix_synapse_docker_image_final }} \
+	-c 's3_media_upload update-db $UPDATE_DB_DURATION && s3_media_upload --no-progress check-deleted $MEDIA_PATH && s3_media_upload --no-progress upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT {% if matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_enabled %}--sse-customer-algo $SSE_CUSTOMER_ALGO --sse-customer-key $SSE_CUSTOMER_KEY{% endif %}'

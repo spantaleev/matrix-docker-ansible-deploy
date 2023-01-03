@@ -1,6 +1,6 @@
 ---
 
-- ansible.builtin.import_role:
+- ansible.builtin.include_role:
     name: custom/matrix-base
     tasks_from: ensure_openssl_installed
 
@@ -60,7 +60,7 @@
 
     - when: "matrix_appservice_irc_nedb_database_path_local_stat_result.stat.exists | bool"
       block:
-        - ansible.builtin.import_tasks: "{{ role_path }}/tasks/migrate_nedb_to_postgres.yml"
+        - ansible.builtin.include_tasks: "{{ role_path }}/tasks/migrate_nedb_to_postgres.yml"
 
         - ansible.builtin.set_fact:
             matrix_appservice_irc_requires_restart: true
@@ -199,13 +199,9 @@
     mode: 0644
   register: matrix_appservice_irc_systemd_service_result
 
-- name: Ensure systemd reloaded after matrix-appservice-irc.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_appservice_irc_systemd_service_result.changed"
-
 - name: Ensure matrix-appservice-irc.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-appservice-irc.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_appservice_irc_requires_restart | bool"

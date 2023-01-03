@@ -12,9 +12,6 @@
     - {path: "{{ matrix_ldap_registration_proxy_docker_src_files_path }}", when: true}
   when: "item.when | bool"
 
-- ansible.builtin.set_fact:
-    matrix_ldap_registration_proxy_requires_restart: false
-
 - name: Ensure matrix_ldap_registration_proxy repository is present on self-build
   ansible.builtin.git:
     repo: "{{ matrix_ldap_registration_proxy_container_image_self_build_repo }}"
@@ -49,15 +46,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-ldap-registration-proxy.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ldap-registration-proxy.service"
     mode: 0644
-  register: matrix_ldap_registration_proxy_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-ldap-registration-proxy.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_ldap_registration_proxy_systemd_service_result.changed | bool"
-
-- name: Ensure matrix-ldap-registration-proxy.service restarted, if necessary
-  ansible.builtin.service:
-    name: "matrix-ldap-registration-proxy.service"
-    state: restarted
-  when: "matrix_ldap_registration_proxy_requires_restart | bool"

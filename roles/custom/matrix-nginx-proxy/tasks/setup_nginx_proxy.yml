@@ -12,17 +12,15 @@
 #
 - name: Ensure Matrix nginx-proxy paths exist
   ansible.builtin.file:
-    path: "{{ item.path }}"
+    path: "{{ item }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - {path: "{{ matrix_nginx_proxy_base_path }}", when: true}
-    - {path: "{{ matrix_nginx_proxy_data_path }}", when: true}
-    - {path: "{{ matrix_nginx_proxy_confd_path }}", when: true}
-    - {path: "{{ matrix_nginx_proxy_synapse_cache_path }}", when: "{{ matrix_nginx_proxy_synapse_cache_enabled and not matrix_nginx_proxy_enabled }}"}
-  when: item.when | bool
+    - "{{ matrix_nginx_proxy_base_path }}"
+    - "{{ matrix_nginx_proxy_data_path }}"
+    - "{{ matrix_nginx_proxy_confd_path }}"
 
 - name: Ensure Matrix nginx-proxy configured (main config override)
   ansible.builtin.template:
@@ -216,13 +214,7 @@
     src: "{{ role_path }}/templates/systemd/matrix-nginx-proxy.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-nginx-proxy.service"
     mode: 0644
-  register: matrix_nginx_proxy_systemd_service_result
   when: matrix_nginx_proxy_enabled | bool
-
-- name: Ensure systemd reloaded after matrix-nginx-proxy.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_nginx_proxy_enabled and matrix_nginx_proxy_systemd_service_result.changed"
 
 
 #
@@ -241,18 +233,12 @@
     state: stopped
     enabled: false
     daemon_reload: true
-  register: stopping_result
   when: "not matrix_nginx_proxy_enabled | bool and matrix_nginx_proxy_service_stat.stat.exists"
 
 - name: Ensure matrix-nginx-proxy.service doesn't exist
   ansible.builtin.file:
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-nginx-proxy.service"
     state: absent
-  when: "not matrix_nginx_proxy_enabled | bool and matrix_nginx_proxy_service_stat.stat.exists"
-
-- name: Ensure systemd reloaded after matrix-nginx-proxy.service removal
-  ansible.builtin.service:
-    daemon_reload: true
   when: "not matrix_nginx_proxy_enabled | bool and matrix_nginx_proxy_service_stat.stat.exists"
 
 - name: Ensure Matrix nginx-proxy configuration for matrix domain deleted

@@ -1,0 +1,60 @@
+---
+
+# encryption-disabler
+- block:
+    - when: matrix_synapse_ext_encryption_disabler_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/encryption-disabler/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-synapse
+
+# rest-auth
+- block:
+    - when: matrix_synapse_ext_password_provider_rest_auth_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/rest-auth/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-synapse
+
+# shared-secret-auth
+- block:
+    - when: matrix_synapse_ext_password_provider_shared_secret_auth_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/shared-secret-auth/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-synapse
+
+# ldap-auth
+- block:
+    - when: matrix_synapse_ext_password_provider_ldap_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/ldap-auth/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-synapse
+
+# synapse-simple-antispam
+- block:
+    - when: matrix_synapse_ext_spam_checker_synapse_simple_antispam_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/synapse-simple-antispam/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-synapse
+
+# mjolnir-antispam
+- block:
+    - when: matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/mjolnir-antispam/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-synapse
+
+# s3-storage-provider
+- block:
+    - when: matrix_synapse_ext_synapse_s3_storage_provider_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/s3-storage-provider/validate_config.yml"
+
+    - when: matrix_synapse_ext_synapse_s3_storage_provider_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/s3-storage-provider/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-synapse

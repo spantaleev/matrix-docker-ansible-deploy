@@ -9,7 +9,7 @@ matrix_bot_postmoogle_docker_repo: "https://gitlab.com/etke.cc/postmoogle.git"
 matrix_bot_postmoogle_docker_repo_version: "{{ 'main' if matrix_bot_postmoogle_version == 'latest' else matrix_bot_postmoogle_version }}"
 matrix_bot_postmoogle_docker_src_files_path: "{{ matrix_base_data_path }}/postmoogle/docker-src"
 
-matrix_bot_postmoogle_version: v0.9.8
+matrix_bot_postmoogle_version: v0.9.10
 matrix_bot_postmoogle_docker_image: "{{ matrix_bot_postmoogle_docker_image_name_prefix }}postmoogle:{{ matrix_bot_postmoogle_version }}"
 matrix_bot_postmoogle_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_postmoogle_container_image_self_build else 'registry.gitlab.com/etke.cc/' }}"
 matrix_bot_postmoogle_docker_image_force_pull: "{{ matrix_bot_postmoogle_docker_image.endswith(':latest') }}"
@@ -42,7 +42,7 @@ matrix_bot_postmoogle_sqlite_database_path_in_container: "/data/bot.db"
 
 matrix_bot_postmoogle_database_username: 'postmoogle'
 matrix_bot_postmoogle_database_password: 'some-password'
-matrix_bot_postmoogle_database_hostname: 'matrix-postgres'
+matrix_bot_postmoogle_database_hostname: ''
 matrix_bot_postmoogle_database_port: 5432
 matrix_bot_postmoogle_database_name: 'postmoogle'
 
@@ -78,18 +78,6 @@ matrix_bot_postmoogle_prefix: '!pm'
 # Max email size in megabytes, including attachments
 matrix_bot_postmoogle_maxsize: '1024'
 
-# DEPRECATED, use !pm users instead
-# A list of whitelisted users allowed to use the bridge.
-# If not defined, everyone is allowed.
-# Example set of rules:
-# matrix_bot_postmoogle_users:
-# - @someone:example.com
-# - @another:example.com
-# - @bot.*:example.com
-# - @*:another.com
-matrix_bot_postmoogle_users:
-  - "@*:{{ matrix_domain }}"
-
 # A list of admins
 # Example set of rules:
 # matrix_bot_postmoogle_admins:
@@ -99,8 +87,16 @@ matrix_bot_postmoogle_users:
 # - @*:another.com
 matrix_bot_postmoogle_admins: "{{ [matrix_admin] if matrix_admin else [] }}"
 
-# Sentry DSN
+# Sentry DSN. Deprecated, use matrix_bot_postmoogle_monitoring_sentry_dsn
 matrix_bot_postmoogle_sentry: ''
+
+# Sentry integration
+matrix_bot_postmoogle_monitoring_sentry_dsn: "{{ matrix_bot_postmoogle_sentry }}"
+matrix_bot_postmoogle_monitoring_sentry_rate: 20
+
+# healthchecks.io integration
+matrix_bot_postmoogle_monitoring_healthchecks_uuid: ''
+matrix_bot_postmoogle_monitoring_healthchecks_duration: 60
 
 # Log level
 matrix_bot_postmoogle_loglevel: 'INFO'
@@ -108,7 +104,11 @@ matrix_bot_postmoogle_loglevel: 'INFO'
 # Disable encryption
 matrix_bot_postmoogle_noencryption: false
 
+# deprecated, use matrix_bot_postmoogle_domains
 matrix_bot_postmoogle_domain: "{{ matrix_server_fqn_matrix }}"
+
+matrix_bot_postmoogle_domains:
+  - "{{ matrix_bot_postmoogle_domain }}"  # backward compatibility
 
 # Password (passphrase) to encrypt account data
 matrix_bot_postmoogle_data_secret: ""
@@ -126,15 +126,15 @@ matrix_bot_postmoogle_submission_host_bind_port: '587'
 matrix_bot_postmoogle_ssl_path: ""
 
 ## in-container SSL paths
-# matrix_bot_postmoogle_tls_cert is the SSL certificate's certificate.
-# This is likely set via group_vars/matrix_servers, so you don't need to set it.
+# matrix_bot_postmoogle_tls_cert is the SSL certificates' certificates.
+# This var is likely set via group_vars/matrix_servers, so you don't need to set certs manually.
 # If you do need to set it manually, note that this is an in-container path.
 # To mount a certificates volumes into the container, use matrix_bot_postmoogle_ssl_path
 # Example value: /ssl/live/{{ matrix_bot_postmoogle_domain }}/fullchain.pem
 matrix_bot_postmoogle_tls_cert: ""
 
-# matrix_bot_postmoogle_tls_key is the SSL certificate's key.
-# This is likely set via group_vars/matrix_servers, so you don't need to set it.
+# matrix_bot_postmoogle_tls_key is the SSL certificates' keys.
+# This var is likely set via group_vars/matrix_servers, so you don't need to set keys manually.
 # If you do need to set it manually, note that this is an in-container path.
 # To mount a certificates volumes into the container, use matrix_bot_postmoogle_ssl_path
 # Example value: /ssl/live/{{ matrix_bot_postmoogle_domain }}/privkey.pem
@@ -142,6 +142,15 @@ matrix_bot_postmoogle_tls_key: ""
 
 # Mandatory TLS, even on plain SMTP port
 matrix_bot_postmoogle_tls_required: false
+
+# trusted proxies
+matrix_bot_postmoogle_proxies: []
+
+# reserved mailboxes
+matrix_bot_postmoogle_mailboxes_reserved: []
+
+# mailbox activation flow
+matrix_bot_postmoogle_mailboxes_activation: none
 
 # Additional environment variables to pass to the postmoogle container
 #

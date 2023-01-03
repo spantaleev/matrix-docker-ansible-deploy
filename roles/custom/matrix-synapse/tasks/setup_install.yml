@@ -1,0 +1,55 @@
+---
+
+- name: Ensure Synapse paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_synapse_config_dir_path }}", when: true}
+    - {path: "{{ matrix_synapse_ext_path }}", when: true}
+    - {path: "{{ matrix_synapse_bin_path }}", when: true}
+    - {path: "{{ matrix_synapse_docker_src_files_path }}", when: "{{ matrix_synapse_container_image_self_build }}"}
+    - {path: "{{ matrix_synapse_customized_docker_src_files_path }}", when: "{{ matrix_synapse_container_image_customizations_enabled }}"}
+
+    - {path: "{{ matrix_synapse_ext_s3_storage_provider_base_path }}", when: "{{ matrix_synapse_ext_synapse_s3_storage_provider_enabled }}"}
+    - {path: "{{ matrix_synapse_ext_s3_storage_provider_bin_path }}", when: "{{ matrix_synapse_ext_synapse_s3_storage_provider_enabled }}"}
+    - {path: "{{ matrix_synapse_ext_s3_storage_provider_data_path }}", when: "{{ matrix_synapse_ext_synapse_s3_storage_provider_enabled }}"}
+
+    # We handle matrix_synapse_media_store_path elsewhere (in ./synapse/setup_install.yml),
+    # because if it's using Goofys and it's already mounted (from before),
+    # trying to chown/chmod it here will cause trouble.
+  when: item.when | bool
+
+- block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/setup_install.yml"
+
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/setup_uninstall.yml"
+  tags:
+    - setup-all
+    - setup-synapse
+
+- block:
+    - when: matrix_synapse_workers_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-synapse
+
+- block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-synapse
+
+- block:
+    - when: matrix_s3_media_store_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/goofys/setup_install.yml"
+
+    - when: not matrix_s3_media_store_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/goofys/setup_uninstall.yml"
+  tags:
+    - setup-all
+    - setup-synapse

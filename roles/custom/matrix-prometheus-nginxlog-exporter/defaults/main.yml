@@ -1,0 +1,49 @@
+---
+# prometheus-nginxlog-exporter exports nginx logs in a prometheus usable format on a `/metrics/ endpoint
+# See: https://github.com/martin-helmich/prometheus-nginxlog-exporter/
+
+matrix_prometheus_nginxlog_exporter_enabled: true
+matrix_prometheus_nginxlog_exporter_version: v1.10.0
+
+matrix_prometheus_nginxlog_exporter_container_hostname: 'matrix-prometheus-nginxlog-exporter'
+matrix_prometheus_nginxlog_exporter_container_metrics_port: '4040'
+matrix_prometheus_nginxlog_exporter_container_syslog_port: '6514'
+
+matrix_prometheus_nginxlog_exporter_docker_image_arch: ['amd64', 'arm64']
+matrix_prometheus_nginxlog_exporter_docker_image_name_prefix: "{{ 'ghcr.io/martin-helmich/' }}"
+matrix_prometheus_nginxlog_exporter_docker_image_tag: "{{ 'latest' if matrix_prometheus_nginxlog_exporter_version == 'master' else matrix_prometheus_nginxlog_exporter_version }}-{{ matrix_architecture }}"
+matrix_prometheus_nginxlog_exporter_docker_image: "{{ matrix_prometheus_nginxlog_exporter_docker_image_name_prefix }}prometheus-nginxlog-exporter/exporter:{{ matrix_prometheus_nginxlog_exporter_docker_image_tag }}"
+matrix_prometheus_nginxlog_exporter_docker_image_force_pull: "{{ matrix_prometheus_nginxlog_exporter_docker_image.endswith(':latest') }}"
+matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled: true
+
+# Controls whether prometheus-nginxlog-exporter metrics should be proxied (exposed) on `matrix.DOMAIN/metrics/nginxlog`.
+# This will only take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
+# See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
+matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled: false
+
+# matrix_prometheus_nginxlog_exporter_dashboard_urls contains a list of URLs with Grafana dashboard definitions.
+# If the Grafana role is enabled, these dashboards will be downloaded.
+matrix_prometheus_nginxlog_exporter_dashboard_urls: []
+
+matrix_prometheus_nginxlog_exporter_base_path: "{{ matrix_base_data_path }}/prometheus-nginxlog-exporter"
+matrix_prometheus_nginxlog_exporter_config_path: "{{ matrix_prometheus_nginxlog_exporter_base_path }}/config"
+
+# A list of extra docker arguments to pass to the container
+matrix_prometheus_nginxlog_exporter_container_extra_arguments: []
+
+# List of systemd services that matrix-prometheus_nginxlog_exporter.service depends on
+matrix_prometheus_nginxlog_exporter_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-prometheus_nginxlog_exporter.service wants
+matrix_prometheus_nginxlog_exporter_systemd_wanted_services_list: []
+
+# Controls whether the matrix-prometheus_nginxlog_exporter container exposes its HTTP port (tcp/4040 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:4040"), or empty string to not expose.
+matrix_prometheus_nginxlog_exporter_container_http_host_bind_port: ''
+
+# Controls whether the matrix-prometheus_nginxlog_exporter container exposes its SYSLOG port (udp/6514 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:6514"), or empty string to not expose.
+# NOTE: is an UDP connection!
+matrix_prometheus_nginxlog_exporter_container_syslog_host_bind_port: ''

@@ -64,3 +64,10 @@ scrape_configs:
     static_configs:
       - targets: {{ matrix_prometheus_scraper_hookshot_targets|to_json }}
   {% endif %}
+
+  {% if matrix_prometheus_scraper_nginxlog_enabled %}
+  - job_name: nginxlog
+    static_configs:
+      - targets:
+        - {{ matrix_prometheus_scraper_nginxlog_server_port}}
+  {% endif %}

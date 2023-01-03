@@ -1,11 +1,17 @@
 ---
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
+- block:
+    - when: matrix_mailer_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
   tags:
-    - always
+    - setup-all
+    - setup-mailer
+    - install-all
+    - install-mailer
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_mailer.yml"
-  when: run_setup | bool
+- block:
+    - when: not matrix_mailer_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:
     - setup-all
     - setup-mailer

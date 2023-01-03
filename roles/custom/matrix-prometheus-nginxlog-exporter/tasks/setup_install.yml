@@ -1,0 +1,47 @@
+---
+
+- name: Ensure matrix-prometheus-nginxlog-exporter image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_prometheus_nginxlog_exporter_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_prometheus_nginxlog_exporter_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_prometheus_nginxlog_exporter_docker_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure prometheus-nginxlog-exporter paths exists
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_prometheus_nginxlog_exporter_base_path }}"
+    - "{{ matrix_prometheus_nginxlog_exporter_config_path }}"
+
+- name: Ensure prometheus-nginxlog-exporter.yaml present
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/prometheus-nginxlog-exporter.yaml.j2"
+    dest: "{{ matrix_prometheus_nginxlog_exporter_config_path }}/prometheus-nginxlog-exporter.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure grafana dashboard is installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/nginx-proxy.json"
+    dest: "{{ matrix_grafana_config_path }}/dashboards/"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  when: matrix_grafana_enabled
+
+- name: Ensure matrix-prometheus-nginxlog-exporter.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-prometheus-nginxlog-exporter.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-prometheus-nginxlog-exporter.service"
+    mode: 0644
+  register: matrix_prometheus_nginxlog_exporter_systemd_service_result

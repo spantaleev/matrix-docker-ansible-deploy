@@ -1,13 +1,5 @@
 ---
 
-# If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
-# We don't want to fail in such cases.
-- name: Fail if matrix-synapse role already executed
-  ansible.builtin.fail:
-    msg: >-
-      The matrix-bridge-mautrix-facebook role needs to execute before the matrix-synapse role.
-  when: "matrix_synapse_role_executed | default(False)"
-
 - ansible.builtin.set_fact:
     matrix_mautrix_facebook_requires_restart: false
 
@@ -20,18 +12,17 @@
 
     - when: "matrix_mautrix_facebook_sqlite_database_path_local_stat_result.stat.exists | bool"
       block:
-        - ansible.builtin.set_fact:
-            matrix_postgres_db_migration_request:
+        - ansible.builtin.include_role:
+            name: galaxy/com.devture.ansible.role.postgres
+            tasks_from: migrate_db_to_postgres
+          vars:
+            devture_postgres_db_migration_request:
               src: "{{ matrix_mautrix_facebook_sqlite_database_path_local }}"
               dst: "{{ matrix_mautrix_facebook_database_connection_string }}"
               caller: "{{ role_path | basename }}"
               engine_variable_name: 'matrix_mautrix_facebook_database_engine'
               engine_old: 'sqlite'
               systemd_services_to_stop: ['matrix-mautrix-facebook.service']
-
-        - ansible.builtin.import_role:
-            name: custom/matrix-postgres
-            tasks_from: migrate_db_to_postgres
 
         - ansible.builtin.set_fact:
             matrix_mautrix_facebook_requires_restart: true
@@ -124,15 +115,10 @@
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-facebook.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-facebook.service"
     mode: 0644
-  register: matrix_mautrix_facebook_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-mautrix-facebook.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_mautrix_facebook_systemd_service_result.changed"
 
 - name: Ensure matrix-mautrix-facebook.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-mautrix-facebook.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_mautrix_facebook_requires_restart | bool"

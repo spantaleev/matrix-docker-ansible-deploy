@@ -50,21 +50,27 @@
   when: "matrix_client_element_container_image_self_build | bool and matrix_client_element_container_image_self_build_low_memory_system_patch_enabled | bool"
 
 - name: Ensure Element Docker image is built
-  community.docker.docker_image:
-    name: "{{ matrix_client_element_docker_image }}"
-    source: build
-    force_source: "{{ matrix_client_element_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_element_git_pull_results.changed }}"
-    build:
-      dockerfile: Dockerfile
-      path: "{{ matrix_client_element_docker_src_files_path }}"
-      pull: true
-  when: "matrix_client_element_container_image_self_build | bool"
+  ansible.builtin.command:
+    cmd: |-
+      {{ devture_systemd_docker_base_host_command_docker }} buildx build
+      --tag={{ matrix_client_element_docker_image }}
+      --file={{ matrix_client_element_docker_src_files_path }}/Dockerfile
+      {{ matrix_client_element_docker_src_files_path }}
+  when: matrix_client_element_container_image_self_build | bool
 
 - name: Ensure Element configuration installed
   ansible.builtin.copy:
     content: "{{ matrix_client_element_configuration | to_nice_json }}"
     dest: "{{ matrix_client_element_data_path }}/config.json"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Element location sharing map style installed
+  when: matrix_client_element_location_sharing_enabled | bool
+  ansible.builtin.copy:
+    content: "{{ matrix_client_element_location_sharing_map_style | to_nice_json }}"
+    dest: "{{ matrix_client_element_data_path }}/map_style.json"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
@@ -95,9 +101,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-client-element.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-element.service"
     mode: 0644
-  register: matrix_client_element_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-client-element.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_client_element_systemd_service_result.changed | bool"

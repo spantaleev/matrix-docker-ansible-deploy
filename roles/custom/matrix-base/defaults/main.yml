@@ -1,4 +1,5 @@
 ---
+
 # The bare domain name which represents your Matrix identity.
 # Matrix user ids for your server will be of the form (`@user:<matrix-domain>`).
 #
@@ -11,6 +12,15 @@ matrix_domain: ~
 # The optional matrix admin MXID, used in bridges' configs to set bridge admin user
 # Example value: "@someone:{{ matrix_domain }}"
 matrix_admin: ''
+
+# matrix_homeserver_enabled controls whether to enable the homeserver systemd service, etc.
+#
+# Unless you're wrapping this playbook in another one
+# where you optionally wish to disable homeserver integration, you don't need to use this.
+#
+# Note: disabling this does not mean that a homeserver won't get installed.
+# Whether homeserver software is installed depends on other (`matrix_HOMESERVER_enabled`) variables - see `group_vars/matrix_servers`.
+matrix_homeserver_enabled: true
 
 # Homeserver admin contacts and support page as per MSC 1929
 # See: https://github.com/matrix-org/matrix-spec-proposals/pull/1929
@@ -86,7 +96,7 @@ matrix_federation_public_port: 8448
 # Recognized values by us are 'amd64', 'arm32' and 'arm64'.
 # Not all architectures support all services, so your experience (on non-amd64) may vary.
 # See docs/alternative-architectures.md
-matrix_architecture: amd64
+matrix_architecture: "{{ 'amd64' if ansible_architecture == 'x86_64' else ('arm64' if ansible_architecture == 'aarch64' else ('arm32' if ansible_architecture.startswith('armv') else '')) }}"
 
 # The architecture for Debian packages.
 # See: https://wiki.debian.org/SupportedArchitectures
@@ -107,13 +117,9 @@ matrix_user_gid: ~
 matrix_base_data_path: "/matrix"
 matrix_base_data_path_mode: "750"
 
+matrix_bin_path: "{{ matrix_base_data_path }}/bin"
+
 matrix_static_files_base_path: "{{ matrix_base_data_path }}/static-files"
-
-# This is now unused. We keep it so that cleanup tasks can use it.
-# To be removed in the future.
-matrix_cron_path: "/etc/cron.d"
-
-matrix_local_bin_path: "/usr/local/bin"
 
 matrix_host_command_sleep: "/usr/bin/env sleep"
 matrix_host_command_chown: "/usr/bin/env chown"
@@ -253,13 +259,8 @@ matrix_well_known_matrix_server_enabled: true
 # See `matrix_homeserver_admin_contacts`, `matrix_homeserver_support_url`, etc.
 matrix_well_known_matrix_support_enabled: false
 
-# Controls whether Docker is automatically installed.
-# If you change this to false you must install and update Docker manually. You also need to install the docker (https://pypi.org/project/docker/) Python package.
-matrix_docker_installation_enabled: true
-
-# Controls the Docker package that is installed.
-# Possible values are "docker-ce" (default) and "docker.io" (Debian).
-matrix_docker_package_name: docker-ce
+matrix_homeserver_container_extra_arguments_auto: []
+matrix_homeserver_app_service_config_files_auto: []
 
 # Variables to Control which parts of our roles run.
 run_postgres_import: true

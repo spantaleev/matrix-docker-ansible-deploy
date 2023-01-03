@@ -5,21 +5,16 @@
     path: "/etc/systemd/system/matrix-mx-puppet-groupme.service"
   register: matrix_mx_puppet_groupme_service_stat
 
-- name: Ensure matrix-mx-puppet-groupme is stopped
-  ansible.builtin.service:
-    name: matrix-mx-puppet-groupme
-    state: stopped
-    enabled: false
-    daemon_reload: true
-  when: "matrix_mx_puppet_groupme_service_stat.stat.exists"
+- when: matrix_mx_puppet_groupme_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-mx-puppet-groupme is stopped
+      ansible.builtin.service:
+        name: matrix-mx-puppet-groupme
+        state: stopped
+        enabled: false
+        daemon_reload: true
 
-- name: Ensure matrix-mx-puppet-groupme.service doesn't exist
-  ansible.builtin.file:
-    path: "/etc/systemd/system/matrix-mx-puppet-groupme.service"
-    state: absent
-  when: "matrix_mx_puppet_groupme_service_stat.stat.exists"
-
-- name: Ensure systemd reloaded after matrix-mx-puppet-groupme.service removal
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_mx_puppet_groupme_service_stat.stat.exists"
+    - name: Ensure matrix-mx-puppet-groupme.service doesn't exist
+      ansible.builtin.file:
+        path: "/etc/systemd/system/matrix-mx-puppet-groupme.service"
+        state: absent

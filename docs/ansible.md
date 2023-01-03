@@ -9,19 +9,14 @@ If your local computer cannot run Ansible, you can also run Ansible on some serv
 
 ## Supported Ansible versions
 
-Ansible 2.7.1 or newer is required ([last discussion about Ansible versions](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/743)).
-
-Note: Ubuntu 20.04 ships with Ansible 2.9.6 which is a buggy version (see this [bug](https://bugs.launchpad.net/ubuntu/+source/ansible/+bug/1880359)), which can't be used in combination with a host running new systemd (more details in [#517](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/517), [#669](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/669)). If this problem affects you, you can: avoid running Ubuntu 20.04 on your host; run Ansible from another machine targeting your host; or try to upgrade to a newer Ansible version (see below).
-
-
-## Checking your Ansible version
-
-In most cases, you won't need to worry about the Ansible version.
-The playbook will try to detect it and tell you if you're on an unsupported version.
-
 To manually check which version of Ansible you're on, run: `ansible --version`.
 
-If you're on an old version of Ansible, you should [upgrade Ansible to a newer version](#upgrading-ansible) or [use Ansible via Docker](#using-ansible-via-docker).
+For the **best experience**, we recommend getting the **latest version of Ansible available**.
+
+We're not sure what's the minimum version of Ansible that can run this playbook successfully.
+The lowest version that we've confirmed (on 2022-11-26) to be working fine is: `ansible-core` (`2.11.7`) combined with `ansible` (`4.10.0`).
+
+If your distro ships with an Ansible version older than this, you may run into issues. Consider [Upgrading Ansible](#upgrading-ansible) or [using Ansible via Docker](#using-ansible-via-docker).
 
 
 ## Upgrading Ansible
@@ -53,7 +48,7 @@ You can either [run Ansible in a container on the Matrix server itself](#running
 To run Ansible in a (Docker) container on the Matrix server itself, you need to have a working Docker installation.
 Docker is normally installed by the playbook, so this may be a bit of a chicken and egg problem. To solve it:
 
-- you **either** need to install Docker manually first. Follow [the upstream instructions](https://docs.docker.com/engine/install/) for your distribution and consider setting `matrix_docker_installation_enabled: false` in your `vars.yml` file, to prevent the playbook from installing Docker
+- you **either** need to install Docker manually first. Follow [the upstream instructions](https://docs.docker.com/engine/install/) for your distribution and consider setting `matrix_playbook_docker_installation_enabled: false` in your `vars.yml` file, to prevent the playbook from installing Docker
 - **or** you need to run the playbook in another way (e.g. [Running Ansible in a container on another computer (not the Matrix server)](#running-ansible-in-a-container-on-another-computer-not-the-matrix-server)) at least the first time around
 
 Once you have a working Docker installation on the server, **clone the playbook** somewhere on the server and configure it as per usual (`inventory/hosts`, `inventory/host_vars/..`, etc.), as described in [configuring the playbook](configuring-playbook.md).
@@ -70,7 +65,7 @@ docker run -it --rm \
 -w /work \
 -v `pwd`:/work \
 --entrypoint=/bin/sh \
-docker.io/devture/ansible:2.13.6-r0
+docker.io/devture/ansible:2.13.6-r0-1
 ```
 
 Once you execute the above command, you'll be dropped into a `/work` directory inside a Docker container.

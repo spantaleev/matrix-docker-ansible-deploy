@@ -1,7 +1,8 @@
 ---
 
-- when: matrix_user_creator_users | length > 0
-  ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup.yml"
+- block:
+    - when: matrix_user_creator_users | length > 0
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup.yml"
   tags:
     # This role intentionally doesn't do work on a `setup-all` tag.
     # If it did, the initial installation (`--tags=setup-all`) would also potentially polute the database with data,

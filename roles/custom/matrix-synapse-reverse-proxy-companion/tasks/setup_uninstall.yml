@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-synapse-reverse-proxy-companion service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse-reverse-proxy-companion.service"
+  register: matrix_synapse_reverse_proxy_companion_service_stat
+
+- when: matrix_synapse_reverse_proxy_companion_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-synapse-reverse-proxy-companion.service is stopped
+      ansible.builtin.service:
+        name: matrix_synapse_reverse_proxy_companion_service_stat
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-synapse-reverse-proxy-companion.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse-reverse-proxy-companion.service"
+        state: absent
+
+    - name: Ensure matrix-synapse-reverse-proxy-companion data deleted
+      ansible.builtin.file:
+        path: "{{ matrix_synapse_reverse_proxy_companion_base_path }}"
+        state: absent

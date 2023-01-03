@@ -34,7 +34,7 @@
 	}
 
 	# colibri (JVB) websockets
-	location ~ ^/colibri-ws/([a-zA-Z0-9-\.]+)/(.*) {
+	location ~ ^/colibri-ws/jvb-1/(.*) {
 		{% if matrix_nginx_proxy_enabled %}
 			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 			set $backend "matrix-jitsi-jvb:9090";
@@ -53,6 +53,22 @@
 
 		tcp_nodelay on;
 	}
+	{% for id, ip_address in matrix_nginx_proxy_proxy_jitsi_additional_jvbs.items() %}
+	# colibri (JVB) websockets for additional JVBs
+	location ~ ^/colibri-ws/{{ id | regex_escape }}/(.*) {
+		proxy_pass http://{{ ip_address }}:9090/colibri-ws/{{ id }}/$1$is_args$args;
+
+		proxy_set_header Host $host;
+		proxy_set_header X-Forwarded-For {{ matrix_nginx_proxy_x_forwarded_for }};
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+
+		proxy_http_version 1.1;
+
+		tcp_nodelay on;
+	}
+	{% endfor %}
+
 
 	# XMPP websocket
 	location = /xmpp-websocket {

@@ -1,0 +1,35 @@
+---
+
+- name: Fail if matrix-nginx-proxy role already executed
+  ansible.builtin.fail:
+    msg: >-
+      Trying to append node-exporter's reverse-proxying configuration to matrix-nginx-proxy,
+      but it's pointless since the matrix-nginx-proxy role had already executed.
+      To fix this, please change the order of roles in your playbook,
+      so that the matrix-nginx-proxy role would run after the matrix-prometheus-node-exporter role.
+  when: matrix_nginx_proxy_role_executed | default(False) | bool
+
+- name: Generate node-exporter metrics proxying configuration for matrix-nginx-proxy (matrix.DOMAIN/metrics/node-exporter)
+  ansible.builtin.set_fact:
+    matrix_prometheus_node_exporter_nginx_metrics_configuration_block: |
+      location /metrics/node-exporter {
+        {% if matrix_nginx_proxy_enabled | default(False) %}
+          {# Use the embedded DNS resolver in Docker containers to discover the service #}
+          resolver 127.0.0.11 valid=5s;
+          set $backend "matrix-prometheus-node-exporter:9100";
+          proxy_pass http://$backend/metrics;
+        {% elif matrix_prometheus_node_exporter_matrix_nginx_proxy_not_enabled_proxy_pass_host != '' %}
+          proxy_pass http://{{ matrix_prometheus_node_exporter_matrix_nginx_proxy_not_enabled_proxy_pass_host }}/metrics;
+        {% else %}
+          return 404 "matrix-nginx-proxy is disabled and no host port was bound to the container, so metrics are unavailable";
+        {% endif %}
+      }
+
+- name: Register node-exporter metrics proxying configuration with matrix-nginx-proxy (matrix.DOMAIN/metrics/node-exporter)
+  ansible.builtin.set_fact:
+    matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks: |
+      {{
+        matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks | default([])
+        +
+        [matrix_prometheus_node_exporter_nginx_metrics_configuration_block]
+      }}

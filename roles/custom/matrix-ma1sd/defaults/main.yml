@@ -35,6 +35,13 @@ matrix_ma1sd_systemd_required_services_list: ['docker.service']
 # List of systemd services that matrix-ma1sd.service wants
 matrix_ma1sd_systemd_wanted_services_list: []
 
+# A list of additional container networks that matrix-ma1sd would be connected to.
+# The playbook does not create these networks, so make sure they already exist.
+#
+# Use this to expose matrix-ma1sd to another docker network, that matrix-ma1sd might have to reach for authentication (e.g. an ldap instance)
+#
+matrix_ma1sd_container_additional_networks: []
+
 # Your identity server is private by default.
 # To ensure maximum discovery, you can make your identity server
 # also forward lookups to the central matrix.org Identity server
@@ -57,7 +64,7 @@ matrix_ma1sd_sqlite_database_path_in_container: "/var/ma1sd/ma1sd.db"
 
 matrix_ma1sd_database_username: 'matrix_ma1sd'
 matrix_ma1sd_database_password: 'some-password'
-matrix_ma1sd_database_hostname: 'matrix-postgres'
+matrix_ma1sd_database_hostname: ''
 matrix_ma1sd_database_port: 5432
 matrix_ma1sd_database_name: 'matrix_ma1sd'
 

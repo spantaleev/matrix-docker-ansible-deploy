@@ -12,7 +12,7 @@
 
 ## Uninstalling using a script
 
-Installing places a `/usr/local/bin/matrix-remove-all` script on the server.
+Installing places a `/matrix/bin/remove-all` script on the server.
 
 You can run it to to have it uninstall things for you automatically (see below). **Use with caution!**
 
@@ -24,8 +24,6 @@ If you prefer to uninstall manually, run these commands (most are meant to be ex
 - ensure all Matrix services are stopped: `ansible-playbook -i inventory/hosts setup.yml --tags=stop` (if you can't get Ansible working to run this command, you can run `systemctl stop 'matrix*'` manually on the server)
 
 - delete the Matrix-related systemd `.service` and `.timer` files (`rm -f /etc/systemd/system/matrix*.{service,timer}`) and reload systemd (`systemctl daemon-reload`)
-
-- delete some helper scripts (`rm -f /usr/local/bin/matrix*`)
 
 - delete some cached Docker images (`docker system prune -a`) or just delete them all (`docker rmi $(docker images -aq)`)
 

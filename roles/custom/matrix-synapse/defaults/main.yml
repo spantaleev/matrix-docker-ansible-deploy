@@ -36,7 +36,7 @@ matrix_synapse_container_image_customizations_dockerfile_body_custom: ''
 
 matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_container_global_registry_prefix }}"
-matrix_synapse_version: v1.71.0
+matrix_synapse_version: v1.74.0
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -49,13 +49,19 @@ matrix_synapse_docker_image_customized: "localhost/matrixdotorg/synapse:{{ matri
 matrix_synapse_docker_image_final: "{{ matrix_synapse_docker_image_customized if matrix_synapse_container_image_customizations_enabled else matrix_synapse_docker_image }} "
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
+
 matrix_synapse_docker_src_files_path: "{{ matrix_synapse_base_path }}/docker-src"
 matrix_synapse_customized_docker_src_files_path: "{{ matrix_synapse_base_path }}/customized-docker-src"
 matrix_synapse_config_dir_path: "{{ matrix_synapse_base_path }}/config"
 matrix_synapse_storage_path: "{{ matrix_synapse_base_path }}/storage"
 matrix_synapse_media_store_path: "{{ matrix_synapse_storage_path }}/media-store"
+matrix_synapse_bin_path: "{{ matrix_synapse_base_path }}/bin"
+
 matrix_synapse_ext_path: "{{ matrix_synapse_base_path }}/ext"
-matrix_synapse_ext_s3_storage_provider_path: "{{ matrix_synapse_base_path }}/ext/s3-storage-provider"
+
+matrix_synapse_ext_s3_storage_provider_base_path: "{{ matrix_synapse_base_path }}/ext/s3-storage-provider"
+matrix_synapse_ext_s3_storage_provider_bin_path: "{{ matrix_synapse_ext_s3_storage_provider_base_path }}/bin"
+matrix_synapse_ext_s3_storage_provider_data_path: "{{ matrix_synapse_ext_s3_storage_provider_base_path }}/data"
 
 matrix_synapse_container_client_api_port: 8008
 
@@ -101,15 +107,15 @@ matrix_synapse_container_manhole_api_host_bind_port: ''
 # Also see `matrix_synapse_container_arguments`
 matrix_synapse_container_extra_arguments: []
 
-# matrix_synapse_container_runtime_injected_arguments is a list of extra arguments to pass to the container.
-# This list is built during runtime. You're not meant to override this variable.
+# matrix_synapse_container_extra_arguments_auto is a list of extra arguments to pass to the container.
+# This list is managed by the playbook. You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_synapse_container_extra_arguments`.
-matrix_synapse_container_runtime_injected_arguments: []
+matrix_synapse_container_extra_arguments_auto: []
 
 # matrix_synapse_container_arguments holds the final list of extra arguments to pass to the container.
 # You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_synapse_container_extra_arguments`.
-matrix_synapse_container_arguments: "{{ matrix_synapse_container_extra_arguments + matrix_synapse_container_runtime_injected_arguments }}"
+matrix_synapse_container_arguments: "{{ matrix_synapse_container_extra_arguments + matrix_synapse_container_extra_arguments_auto }}"
 
 # List of systemd services that matrix-synapse.service depends on
 matrix_synapse_systemd_required_services_list: ['docker.service']
@@ -371,15 +377,15 @@ matrix_synapse_additional_loggers: []
 # Also see `matrix_synapse_app_service_config_files_final`
 matrix_synapse_app_service_config_files: []
 
-# matrix_synapse_app_service_runtime_injected_config_files is a list of appservice config files.
-# This list is built during runtime. You're not meant to override this variable.
+# matrix_synapse_app_service_config_files_auto is a list of appservice config files.
+# This list is managed by the playbook. You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_synapse_app_service_config_files`.
-matrix_synapse_app_service_runtime_injected_config_files: []
+matrix_synapse_app_service_config_files_auto: []
 
 # matrix_synapse_app_service_config_files_final holds the final list of config files to pass to the container.
 # You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_synapse_app_service_config_files`.
-matrix_synapse_app_service_config_files_final: "{{ matrix_synapse_app_service_config_files + matrix_synapse_app_service_runtime_injected_config_files }}"
+matrix_synapse_app_service_config_files_final: "{{ matrix_synapse_app_service_config_files + matrix_synapse_app_service_config_files_auto }}"
 
 # This is set dynamically during execution depending on whether
 # any password providers have been enabled or not.
@@ -548,11 +554,6 @@ matrix_synapse_workers_pusher_workers_metrics_range_start: 19200
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_federation_pusher_instances: []
 
-# matrix_synapse_start_pushers controls if the main Synapse process should push out notifications or if it should be left to pusher workers (see `matrix_synapse_federation_pusher_instances`).
-# This is enabled if workers are disabled, or if they are enabled, but there are no pusher workers.
-# Adjusting this value manually is generally not necessary.
-matrix_synapse_start_pushers: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'pusher') | list | length == 0) }}"
-
 # matrix_synapse_workers_federation_sender_workers_count controls the number of federation sender workers to spawn.
 # See https://matrix-org.github.io/synapse/latest/workers.html#synapseappfederation_sender
 matrix_synapse_workers_federation_sender_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['federation_sender_workers_count'] }}"
@@ -562,11 +563,6 @@ matrix_synapse_workers_federation_sender_workers_metrics_range_start: 19400
 # What you see below is an initial default value which will be adjusted at runtime based on the value of `matrix_synapse_workers_federation_sender_workers_count` or `matrix_synapse_workers_enabled_list`.
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_federation_sender_instances: []
-
-# matrix_synapse_send_federation controls if the main Synapse process should send federation traffic or if it should be left to federation_sender workers (see `matrix_synapse_federation_sender_instances`).
-# This is allowed if workers are disabled, or they are enabled, but there are no federation sender workers.
-# Adjusting this value manually is generally not necessary.
-matrix_synapse_send_federation: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'federation_sender') | list | length == 0) }}"
 
 matrix_synapse_workers_media_repository_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['media_repository_workers_count'] }}"
 matrix_synapse_workers_media_repository_workers_port_range_start: 18551
@@ -681,7 +677,7 @@ matrix_synapse_sentry_dsn: ""
 
 # Postgres database information
 matrix_synapse_database_txn_limit: 0
-matrix_synapse_database_host: "matrix-postgres"
+matrix_synapse_database_host: ''
 matrix_synapse_database_port: 5432
 matrix_synapse_database_user: "synapse"
 matrix_synapse_database_password: ""

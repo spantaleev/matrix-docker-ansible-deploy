@@ -1,7 +1,9 @@
 ---
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup.yml"
-  when: run_stop | bool
+- block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup.yml"
   tags:
     - setup-all
     - setup-aux-files
+    - install-all
+    - install-aux-files

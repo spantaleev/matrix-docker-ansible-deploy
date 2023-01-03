@@ -1,0 +1,29 @@
+---
+
+- block:
+    - when: matrix_prometheus_nginxlog_exporter_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/inject_into_nginx_proxy.yml"
+  tags:
+    - setup-all
+    - setup-prometheus-nginxlog-exporter
+    - install-all
+    - install-prometheus-nginxlog-exporter
+
+- block:
+    - when: matrix_prometheus_nginxlog_exporter_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_prometheus_nginxlog_exporter_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-prometheus-nginxlog-exporter
+    - install-all
+    - install-prometheus-nginxlog-exporter
+
+- block:
+    - when: not matrix_prometheus_nginxlog_exporter_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+  tags:
+    - setup-all
+    - setup-prometheus-nginxlog-exporter

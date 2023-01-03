@@ -36,9 +36,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-ntfy.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ntfy.service"
     mode: 0644
-  register: matrix_ntfy_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-ntfy.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_ntfy_systemd_service_result.changed"

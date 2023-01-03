@@ -1,13 +1,5 @@
 ---
 
-# If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
-# We don't want to fail in such cases.
-- name: Fail if matrix-synapse role already executed
-  ansible.builtin.fail:
-    msg: >-
-      The matrix-bridge-matrix-appservice-kakaotalk role needs to execute before the matrix-synapse role.
-  when: "matrix_synapse_role_executed | default(False)"
-
 - name: Ensure matrix-appservice-kakaotalk image is pulled
   community.docker.docker_image:
     name: "{{ matrix_appservice_kakaotalk_docker_image }}"
@@ -117,9 +109,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-appservice-kakaotalk.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-kakaotalk.service"
     mode: 0644
-  register: matrix_appservice_kakaotalk_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-appservice-kakaotalk.service or matrix-appservice-kakaotalk-node.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: matrix_appservice_kakaotalk_node_systemd_service_result.changed or matrix_appservice_kakaotalk_systemd_service_result.changed

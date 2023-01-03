@@ -1,6 +1,6 @@
 ---
 
-- ansible.builtin.import_role:
+- ansible.builtin.include_role:
     name: custom/matrix-base
     tasks_from: ensure_openssl_installed
 
@@ -110,9 +110,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-hookshot.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-hookshot.service"
     mode: 0644
-  register: matrix_hookshot_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-hookshot.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: matrix_hookshot_systemd_service_result.changed

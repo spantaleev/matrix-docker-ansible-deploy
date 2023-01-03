@@ -1,0 +1,126 @@
+---
+- name: "Set up a Matrix server"
+  hosts: "{{ target if target is defined else 'matrix_servers' }}"
+  become: true
+
+  roles:
+    # Most of the roles below are not distributed with the playbook, but downloaded separately using `ansible-galaxy` via the `make roles` command (see `Makefile`).
+    - role: galaxy/com.devture.ansible.role.playbook_help
+
+    - role: galaxy/com.devture.ansible.role.systemd_docker_base
+
+    - role: custom/matrix_playbook_migration
+
+    - when: matrix_playbook_docker_installation_enabled | bool
+      role: galaxy/geerlingguy.docker
+      vars:
+        docker_install_compose: false
+      tags:
+        - setup-docker
+        - setup-all
+        - install-docker
+        - install-all
+
+    - when: devture_docker_sdk_for_python_installation_enabled | bool
+      role: galaxy/com.devture.ansible.role.docker_sdk_for_python
+      tags:
+        - setup-docker
+        - setup-all
+        - install-docker
+        - install-all
+
+    - when: devture_timesync_installation_enabled | bool
+      role: galaxy/com.devture.ansible.role.timesync
+      tags:
+        - setup-timesync
+        - setup-all
+        - install-timesync
+        - install-all
+
+    - custom/matrix-base
+    - custom/matrix-dynamic-dns
+    - custom/matrix-mailer
+
+    - role: galaxy/com.devture.ansible.role.postgres
+
+    - custom/matrix-redis
+    - custom/matrix-corporal
+    - custom/matrix-bridge-appservice-discord
+    - custom/matrix-bridge-appservice-slack
+    - custom/matrix-bridge-appservice-webhooks
+    - custom/matrix-bridge-appservice-irc
+    - custom/matrix-bridge-appservice-kakaotalk
+    - custom/matrix-bridge-beeper-linkedin
+    - custom/matrix-bridge-go-skype-bridge
+    - custom/matrix-bridge-mautrix-facebook
+    - custom/matrix-bridge-mautrix-twitter
+    - custom/matrix-bridge-mautrix-hangouts
+    - custom/matrix-bridge-mautrix-googlechat
+    - custom/matrix-bridge-mautrix-instagram
+    - custom/matrix-bridge-mautrix-signal
+    - custom/matrix-bridge-mautrix-telegram
+    - custom/matrix-bridge-mautrix-whatsapp
+    - custom/matrix-bridge-mautrix-discord
+    - custom/matrix-bridge-mx-puppet-discord
+    - custom/matrix-bridge-mx-puppet-groupme
+    - custom/matrix-bridge-mx-puppet-steam
+    - custom/matrix-bridge-mx-puppet-slack
+    - custom/matrix-bridge-mx-puppet-twitter
+    - custom/matrix-bridge-mx-puppet-instagram
+    - custom/matrix-bridge-sms
+    - custom/matrix-bridge-heisenbridge
+    - custom/matrix-bridge-hookshot
+    - custom/matrix-bot-matrix-reminder-bot
+    - custom/matrix-bot-matrix-registration-bot
+    - custom/matrix-bot-maubot
+    - custom/matrix-bot-buscarron
+    - custom/matrix-bot-honoroit
+    - custom/matrix-bot-postmoogle
+    - custom/matrix-bot-go-neb
+    - custom/matrix-bot-mjolnir
+    - custom/matrix-cactus-comments
+    - custom/matrix-synapse
+    - custom/matrix-synapse-reverse-proxy-companion
+    - custom/matrix-dendrite
+    - custom/matrix-conduit
+    - custom/matrix-synapse-admin
+    - custom/matrix-prometheus-node-exporter
+    - custom/matrix-prometheus-postgres-exporter
+    - custom/matrix-prometheus-nginxlog-exporter
+    - custom/matrix-prometheus
+    - custom/matrix-grafana
+    - custom/matrix-registration
+    - custom/matrix-client-element
+    - custom/matrix-client-hydrogen
+    - custom/matrix-client-cinny
+    - custom/matrix-jitsi
+    - custom/matrix-ldap-registration-proxy
+    - custom/matrix-ma1sd
+    - custom/matrix-dimension
+    - custom/matrix-etherpad
+    - custom/matrix-email2matrix
+    - custom/matrix-sygnal
+    - custom/matrix-ntfy
+    - custom/matrix-nginx-proxy
+    - custom/matrix-coturn
+    - custom/matrix-aux
+
+    - role: galaxy/com.devture.ansible.role.postgres_backup
+
+    - custom/matrix-backup-borg
+
+    - custom/matrix-user-creator
+    - custom/matrix-common-after
+
+    - when: devture_systemd_service_manager_enabled | bool
+      role: galaxy/com.devture.ansible.role.systemd_service_manager
+
+    # This is pretty much last, because we want it to better serve as a "last known good configuration".
+    # See: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/2217#issuecomment-1301487601
+    - when: devture_playbook_state_preserver_enabled | bool
+      role: galaxy/com.devture.ansible.role.playbook_state_preserver
+      tags:
+        - setup-all
+        - install-all
+
+    - role: galaxy/com.devture.ansible.role.playbook_runtime_messages

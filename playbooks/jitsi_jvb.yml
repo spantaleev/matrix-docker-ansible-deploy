@@ -1,0 +1,12 @@
+---
+- name: "Set up additional Jitsi JVB servers"
+  hosts: "jitsi_jvb_servers"
+  become: true
+
+  roles:
+    - role: galaxy/com.devture.ansible.role.playbook_help
+    - role: galaxy/com.devture.ansible.role.systemd_docker_base
+
+    - custom/matrix-base
+    - custom/matrix-jitsi
+    - custom/matrix-common-after

@@ -1,0 +1,73 @@
+---
+
+- name: Ensure matrix-grafana image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_grafana_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_grafana_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_grafana_docker_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure grafana paths exists
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_grafana_base_path }}"
+    - "{{ matrix_grafana_config_path }}"
+    - "{{ matrix_grafana_config_path }}/provisioning"
+    - "{{ matrix_grafana_config_path }}/provisioning/datasources"
+    - "{{ matrix_grafana_config_path }}/provisioning/dashboards"
+    - "{{ matrix_grafana_config_path }}/dashboards"
+    - "{{ matrix_grafana_data_path }}"
+
+- name: Ensure grafana.ini present
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/grafana.ini.j2"
+    dest: "{{ matrix_grafana_config_path }}/grafana.ini"
+    mode: 0440
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure provisioning/datasources/default.yaml present
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/datasources.yaml.j2"
+    dest: "{{ matrix_grafana_config_path }}/provisioning/datasources/default.yaml"
+    mode: 0440
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure provisioning/dashboards/default.yaml present
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/dashboards.yaml.j2"
+    dest: "{{ matrix_grafana_config_path }}/provisioning/dashboards/default.yaml"
+    mode: 0440
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure dashboard(s) downloaded
+  ansible.builtin.get_url:
+    url: "{{ item }}"
+    dest: "{{ matrix_grafana_config_path }}/dashboards/"
+    force: true
+    mode: 0440
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items: "{{ matrix_grafana_dashboard_download_urls }}"
+  register: result
+  retries: "{{ devture_playbook_help_geturl_retries_count }}"
+  delay: "{{ devture_playbook_help_geturl_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure matrix-grafana.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-grafana.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-grafana.service"
+    mode: 0644
+  register: matrix_grafana_systemd_service_result

@@ -9,7 +9,7 @@ Table of contents:
 	- [Managing users via a Web UI](#managing-users-via-a-web-ui)
 	- [Letting certain users register on your private server](#letting-certain-users-register-on-your-private-server)
 	- [Enabling public user registration](#enabling-public-user-registration)
-	- [Adding/Removing Administrator privileges to an existing user](#addingremoving-administrator-privileges-to-an-existing-user)
+	- [Adding/Removing Administrator privileges to an existing Synapse user](#addingremoving-administrator-privileges-to-an-existing-synapse-user)
 
 
 ## Registering users manually
@@ -23,7 +23,7 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-usern
 **or** using the command-line after **SSH**-ing to your server (requires that [all services have been started](#starting-the-services)):
 
 ```
-/usr/local/bin/matrix-synapse-register-user <your-username> <your-password> <admin access: 0 or 1>
+/matrix/synapse/bin/register-user <your-username> <your-password> <admin access: 0 or 1>
 ```
 
 **Note**: `<your-username>` is just a plain username (like `john`), not your full `@<username>:<your-domain>` identifier.
@@ -58,13 +58,24 @@ and running the [installation](installing.md) procedure once again.
 If you're opening up registrations publicly like this, you might also wish to [configure CAPTCHA protection](configuring-captcha.md).
 
 
-## Adding/Removing Administrator privileges to an existing user
+## Adding/Removing Administrator privileges to an existing Synapse user
 
-The script `/usr/local/bin/matrix-change-user-admin-status` may be used to change a user's admin privileges.
+To change the admin privileges for a user, you need to run an SQL query like this against the `synapse` database:
 
-* log on to your server with ssh
-* execute with the username and 0/1 (0 = non-admin | 1 = admin)
-
+```sql
+UPDATE users SET admin=ADMIN_VALUE WHERE name = '@USER:DOMAIN'
 ```
-/usr/local/bin/matrix-change-user-admin-status <username> <0/1>
-```
+
+where:
+
+- `ADMIN_VALUE` being either `0` (regular user) or `1` (admin)
+- `USER` and `DOMAIN` pointing to a valid user on your server
+
+If you're using the integrated Postgres server and not an [external Postgres server](configuring-playbook-external-postgres.md), you can launch a Postgres into the `synapse` database by:
+
+- running `/matrix/postgres/bin/cli` - to launch [`psql`](https://www.postgresql.org/docs/current/app-psql.html)
+- running `\c synapse` - to change to the `synapse` database
+
+You can then proceed to run the query above.
+
+**Note**: directly modifying the raw data of Synapse (or any other software) could cause the software to break. You've been warned!

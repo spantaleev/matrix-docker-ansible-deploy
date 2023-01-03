@@ -1,0 +1,41 @@
+---
+- name: Ensure Conduit Docker image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_conduit_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_conduit_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_conduit_docker_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure Conduit config path exists
+  ansible.builtin.file:
+    path: "{{ matrix_conduit_config_path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Conduit data path exists
+  ansible.builtin.file:
+    path: "{{ matrix_conduit_data_path }}"
+    state: directory
+    mode: 0770
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Conduit configuration installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/conduit/conduit.toml.j2"
+    dest: "{{ matrix_conduit_config_path }}/conduit.toml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-conduit.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/conduit/systemd/matrix-conduit.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-conduit.service"
+    mode: 0644

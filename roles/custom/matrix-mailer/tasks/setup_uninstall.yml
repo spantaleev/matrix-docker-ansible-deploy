@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-mailer service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mailer.service"
+  register: matrix_mailer_service_stat
+
+- when: matrix_mailer_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-mailer is stopped
+      ansible.builtin.service:
+        name: matrix-mailer
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-mailer.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mailer.service"
+        state: absent
+
+    - name: Ensure Matrix mailer path doesn't exist
+      ansible.builtin.file:
+        path: "{{ matrix_mailer_base_path }}"
+        state: absent

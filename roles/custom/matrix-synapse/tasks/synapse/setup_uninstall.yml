@@ -5,36 +5,25 @@
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse.service"
   register: matrix_synapse_service_stat
 
-- name: Ensure matrix-synapse is stopped
-  ansible.builtin.service:
-    name: matrix-synapse
-    state: stopped
-    enabled: false
-    daemon_reload: true
-  register: stopping_result
-  when: "matrix_synapse_service_stat.stat.exists"
+- when: matrix_synapse_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-synapse is stopped
+      ansible.builtin.service:
+        name: matrix-synapse
+        state: stopped
+        enabled: false
+        daemon_reload: true
 
-- name: Ensure matrix-synapse.service doesn't exist
-  ansible.builtin.file:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse.service"
-    state: absent
-  when: "matrix_synapse_service_stat.stat.exists"
+    - name: Ensure Synapse paths don't exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse.service"
+        - "{{ matrix_synapse_bin_path }}"
 
-- name: Ensure systemd reloaded after matrix-synapse.service removal
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_synapse_service_stat.stat.exists"
-
-- name: Ensure Synapse Docker image doesn't exist
-  community.docker.docker_image:
-    name: "{{ item }}"
-    state: absent
-  with_items:
-    - "{{ matrix_synapse_docker_image_final }}"
-    - "{{ matrix_synapse_docker_image }}"
-
-- name: Ensure sample prometheus.yml for external scraping is deleted
-  ansible.builtin.file:
-    path: "{{ matrix_synapse_base_path }}/external_prometheus.yml.example"
-    state: absent
-  when: "not matrix_synapse_metrics_proxying_enabled | bool"
+    - name: Ensure sample prometheus.yml for external scraping is deleted
+      ansible.builtin.file:
+        path: "{{ matrix_synapse_base_path }}/external_prometheus.yml.example"
+        state: absent
+      when: "not matrix_synapse_metrics_proxying_enabled | bool"

@@ -72,7 +72,7 @@ matrix_jitsi_jibri_recorder_password: ''
 
 matrix_jitsi_enable_lobby: false
 
-matrix_jitsi_version: stable-7882
+matrix_jitsi_version: stable-8138-1
 matrix_jitsi_container_image_tag: "{{ matrix_jitsi_version }}"  # for backward-compatibility
 
 matrix_jitsi_web_docker_image: "{{ matrix_container_global_registry_prefix }}jitsi/web:{{ matrix_jitsi_container_image_tag }}"
@@ -96,6 +96,7 @@ matrix_jitsi_turn_host: "turn.{{ matrix_server_fqn_matrix }}"
 matrix_jitsi_turns_host: "turn.{{ matrix_server_fqn_matrix }}"
 matrix_jitsi_turn_port: "{{ matrix_coturn_container_stun_plain_host_bind_port }}"
 matrix_jitsi_turns_port: "{{ matrix_coturn_container_stun_tls_host_bind_port }}"
+matrix_jitsi_turn_transport: tcp
 
 # Controls whether Etherpad will be available within Jitsi
 matrix_jitsi_etherpad_enabled: false
@@ -189,6 +190,8 @@ matrix_jitsi_prosody_systemd_required_services_list: ['docker.service']
 # Neccessary Port binding for those disabling the integrated nginx proxy
 matrix_jitsi_prosody_container_http_host_bind_port: ''
 
+matrix_jitsi_prosody_container_jvb_host_bind_port: 5222
+
 matrix_jitsi_jicofo_docker_image: "{{ matrix_container_global_registry_prefix }}jitsi/jicofo:{{ matrix_jitsi_container_image_tag }}"
 matrix_jitsi_jicofo_docker_image_force_pull: "{{ matrix_jitsi_jicofo_docker_image.endswith(':latest') }}"
 
@@ -205,6 +208,9 @@ matrix_jitsi_jicofo_component_secret: ''
 matrix_jitsi_jicofo_auth_user: focus
 matrix_jitsi_jicofo_auth_password: ''
 
+# To enable Sentry integration for Jicofo, specify a valid DSN connection string
+matrix_jitsi_jicofo_sentry_dsn: ''
+
 matrix_jitsi_jvb_docker_image: "{{ matrix_container_global_registry_prefix }}jitsi/jvb:{{ matrix_jitsi_container_image_tag }}"
 matrix_jitsi_jvb_docker_image_force_pull: "{{ matrix_jitsi_jvb_docker_image.endswith(':latest') }}"
 
@@ -215,10 +221,13 @@ matrix_jitsi_jvb_config_path: "{{ matrix_jitsi_jvb_base_path }}/config"
 matrix_jitsi_jvb_container_extra_arguments: []
 
 # List of systemd services that matrix-jitsi-jvb.service depends on
-matrix_jitsi_jvb_systemd_required_services_list: ['docker.service', 'matrix-jitsi-prosody.service']
+matrix_jitsi_jvb_systemd_required_services_list: ['docker.service']
 
 matrix_jitsi_jvb_auth_user: jvb
 matrix_jitsi_jvb_auth_password: ''
+
+# To enable Sentry integration for JVB, specify a valid DSN connection string
+matrix_jitsi_jvb_sentry_dsn: ''
 
 # STUN servers used by JVB on the server-side, so it can discover its own external IP address.
 # Pointing this to a STUN server running on the same Docker network may lead to incorrect IP address discovery.
@@ -227,6 +236,8 @@ matrix_jitsi_jvb_stun_servers: ['meet-jit-si-turnrelay.jitsi.net:443']
 matrix_jitsi_jvb_brewery_muc: jvbbrewery
 matrix_jitsi_jvb_rtp_udp_port: 10000
 matrix_jitsi_jvb_rtp_tcp_port: 4443
+matrix_jitsi_jvb_server_id: 'jvb-1'
+
 
 # Custom configuration to be injected into `custom-sip-communicator.properties`, passed to Jitsi JVB.
 # This configuration gets appended to the final configuration that Jitsi JVB uses.
@@ -267,3 +278,8 @@ matrix_jitsi_jvb_container_rtp_tcp_host_bind_port: "{{ matrix_jitsi_jvb_rtp_tcp_
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:12090"), or empty string to not expose.
 matrix_jitsi_jvb_container_colibri_ws_host_bind_port: ''
+
+# Default max participants to the empty string
+#
+# The setting requires an integer to be set for usage and allows a user to specify the max number of particpants on a conference.
+matrix_prosody_jitsi_max_participants: ''

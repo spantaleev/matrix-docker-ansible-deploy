@@ -1,57 +1,73 @@
 ---
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
+- block:
+    - when: matrix_synapse_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/init.yml"
   tags:
-    - always
+    - setup-all
+    - setup-synapse
+    - install-all
+    - install-synapse
+    - setup-synapse-reverse-proxy-companion
+    - install-synapse-reverse-proxy-companion
+    - start
+    - start-all
+    - start-group
+    - restart
+    - restart-all
+    - restart-group
+    - stop
+    - stop-all
+    - stop-group
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: run_setup | bool and matrix_synapse_enabled | bool
+- block:
+    - when: matrix_synapse_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_synapse_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-synapse
+    - install-all
+    - install-synapse
+
+- block:
+    - when: not matrix_synapse_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:
     - setup-all
     - setup-synapse
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_synapse.yml"
-  when: run_setup | bool
-  tags:
-    - setup-all
-    - setup-synapse
-
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/import_media_store.yml"
-  when: run_synapse_import_media_store | bool
+- block:
+    - when: matrix_synapse_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/import_media_store.yml"
   tags:
     - import-synapse-media-store
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/register_user.yml"
-  when: run_synapse_register_user | bool and matrix_synapse_enabled | bool
+- block:
+    - when: matrix_synapse_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/register_user.yml"
   tags:
     - register-user
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/self_check_client_api.yml"
-  delegate_to: 127.0.0.1
-  become: false
-  when: run_self_check | bool
-  tags:
-    - self-check
-
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/self_check_federation_api.yml"
-  delegate_to: 127.0.0.1
-  become: false
-  when: run_self_check | bool
-  tags:
-    - self-check
-
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/update_user_password.yml"
-  when: run_synapse_update_user_password | bool and matrix_synapse_enabled | bool
+- block:
+    - when: matrix_synapse_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/update_user_password.yml"
   tags:
     - update-user-password
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/rust-synapse-compress-state/main.yml"
-  when: run_synapse_rust_synapse_compress_state | bool
+- block:
+    - when: matrix_synapse_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/rust-synapse-compress-state/main.yml"
   tags:
     - rust-synapse-compress-state
 
-- name: Mark matrix-synapse role as executed
-  ansible.builtin.set_fact:
-    matrix_synapse_role_executed: true
+- block:
+    - when: matrix_synapse_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_client_api.yml"
+
+    - when: matrix_synapse_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_federation_api.yml"
   tags:
-    - always
+    - self-check

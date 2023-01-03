@@ -8,6 +8,14 @@
   with_items:
     - "matrix_client_element_default_hs_url"
 
+- name: Fail if Element location sharing enabled, but no tile server defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define at least one map tile server in matrix_client_element_location_sharing_map_style_content_sources_localsource_tiles list
+  when:
+    - matrix_client_element_location_sharing_enabled | bool
+    - matrix_client_element_location_sharing_map_style_content_sources_localsource_tiles | length == 0
+
 - name: (Deprecation) Catch and report riot-web variables
   ansible.builtin.fail:
     msg: >-

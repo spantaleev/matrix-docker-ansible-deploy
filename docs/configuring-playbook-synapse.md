@@ -37,7 +37,7 @@ If you'd like more customization power, you can start with one of the presets an
 If you increase worker counts too much, you may need to increase the maximum number of Postgres connections too (example):
 
 ```yaml
-matrix_postgres_process_extra_arguments: [
+devture_postgres_process_extra_arguments: [
   "-c 'max_connections=200'"
 ]
 ```
@@ -56,21 +56,27 @@ Certain Synapse administration tasks (managing users and rooms, etc.) can be per
 
 If you'd like to use OpenID Connect authentication with Synapse, you'll need some additional reverse-proxy configuration (see [our nginx reverse-proxy doc page](configuring-playbook-nginx.md#synapse-openid-connect-for-single-sign-on)).
 
+This example configuration is for [keycloak](https://www.keycloak.org/), an opensource Identity Provider maintained by Red Hat.
+
+For more detailed documentation on available options and how to setup keycloak, see the [Synapse documentation on OpenID Connect with keycloak](https://github.com/matrix-org/synapse/blob/develop/docs/openid.md#keycloak).
+
 In case you encounter errors regarding the parsing of the variables, you can try to add `{% raw %}` and `{% endraw %}` blocks around them. For example ;
 
 ```
- - idp_id: keycloak
-        idp_name: "Keycloak"
-        issuer: "https://url.ix/auth/realms/x"
-        client_id: "matrix"
-        client_secret: "{{ vault_synapse_keycloak }}"
-        scopes: ["openid", "profile"]
-        authorization_endpoint: "https://url.ix/auth/realms/x/protocol/openid-connect/auth"
-        token_endpoint: "https://url.ix/auth/realms/x/protocol/openid-connect/token"
-        userinfo_endpoint: "https://url.ix/auth/realms/x/protocol/openid-connect/userinfo"
-        user_mapping_provider:
-          config:
-            display_name_template: "{% raw %}{{ user.given_name }}{% endraw %} {% raw %}{{ user.family_name }}{% endraw %}"
-            email_template: "{% raw %}{{ user.email }}{% endraw %}"
+matrix_synapse_configuration_extension_yaml: |
+  oidc_providers:
+    - idp_id: keycloak
+      idp_name: "My KeyCloak server"
+      issuer: "https://url.ix/auth/realms/{realm_name}"
+      client_id: "matrix"
+      client_secret: "{{ vault_synapse_keycloak }}"
+      scopes: ["openid", "profile"]
+      user_mapping_provider:
+        config:
+          localpart_template: "{% raw %}{{ user.preferred_username }}{% endraw %}"
+          display_name_template: "{% raw %}{{ user.name }}{% endraw %}"
+          email_template: "{% raw %}{{ user.email }}{% endraw %}"
+      allow_existing_users: true # Optional
+      backchannel_logout_enabled: true # Optional
 ```
 

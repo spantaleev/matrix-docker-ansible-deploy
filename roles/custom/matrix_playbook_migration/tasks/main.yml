@@ -1,5 +1,13 @@
 ---
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+- block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
   tags:
     - setup-all
+    - install-all
+
+- block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/cleanup_usr_local_bin.yml"
+  tags:
+    - setup-all
+    - install-all

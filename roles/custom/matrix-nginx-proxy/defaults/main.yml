@@ -1,7 +1,7 @@
 ---
 # Project source code URL: https://github.com/nginx/nginx
 matrix_nginx_proxy_enabled: true
-matrix_nginx_proxy_version: 1.23.2-alpine
+matrix_nginx_proxy_version: 1.23.3-alpine
 
 # We use an official nginx image, which we fix-up to run unprivileged.
 # An alternative would be an `nginxinc/nginx-unprivileged` image, but
@@ -554,7 +554,7 @@ matrix_ssl_lets_encrypt_staging: false
 # Learn more here: https://eff-certbot.readthedocs.io/en/stable/using.html#changing-the-acme-server
 matrix_ssl_lets_encrypt_server: ''
 
-matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v1.31.0"
+matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v2.0.0"
 matrix_ssl_lets_encrypt_certbot_docker_image_force_pull: "{{ matrix_ssl_lets_encrypt_certbot_docker_image.endswith(':latest') }}"
 matrix_ssl_lets_encrypt_certbot_standalone_http_port: 2402
 matrix_ssl_lets_encrypt_support_email: ~
@@ -567,12 +567,13 @@ matrix_ssl_lets_encrypt_support_email: ~
 matrix_ssl_lets_encrypt_container_standalone_http_host_bind_port: '80'
 
 # Specify key type of the private key algorithm.
-# Learn more here: https://eff-certbot.readthedocs.io/en/stable/using.html#using-ecdsa-keys
-matrix_ssl_lets_encrypt_key_type: rsa
+# Learn more here: https://eff-certbot.readthedocs.io/en/stable/using.html#rsa-and-ecdsa-keys
+matrix_ssl_lets_encrypt_key_type: ecdsa
 
 matrix_ssl_base_path: "{{ matrix_base_data_path }}/ssl"
 matrix_ssl_config_dir_path: "{{ matrix_ssl_base_path }}/config"
 matrix_ssl_log_dir_path: "{{ matrix_ssl_base_path }}/log"
+matrix_ssl_bin_dir_path: "{{ matrix_ssl_base_path }}/bin"
 
 # If you'd like to start some service before a certificate is obtained, specify it here.
 # This could be something like `matrix-dynamic-dns`, etc.
@@ -639,31 +640,17 @@ matrix_nginx_proxy_proxy_matrix_nginx_status_enabled: false
 matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses: ['{{ ansible_default_ipv4.address }}']
 
 
-# synapse worker activation and endpoint mappings
-matrix_nginx_proxy_synapse_workers_enabled: false
-matrix_nginx_proxy_synapse_workers_list: []
-matrix_nginx_proxy_synapse_generic_worker_client_server_locations: []
-matrix_nginx_proxy_synapse_generic_worker_federation_locations: []
-matrix_nginx_proxy_synapse_stream_writer_typing_stream_worker_client_server_locations: []
-matrix_nginx_proxy_synapse_stream_writer_to_device_stream_worker_client_server_locations: []
-matrix_nginx_proxy_synapse_stream_writer_account_data_stream_worker_client_server_locations: []
-matrix_nginx_proxy_synapse_stream_writer_receipts_stream_worker_client_server_locations: []
-matrix_nginx_proxy_synapse_stream_writer_presence_stream_worker_client_server_locations: []
-matrix_nginx_proxy_synapse_media_repository_locations: []
-matrix_nginx_proxy_synapse_user_dir_locations: []
-
-# synapse content caching
-matrix_nginx_proxy_synapse_cache_enabled: false
-matrix_nginx_proxy_synapse_cache_path: "{{ '/tmp/synapse-cache' if matrix_nginx_proxy_enabled else matrix_nginx_proxy_data_path + '/synapse-cache' }}"
-matrix_nginx_proxy_synapse_cache_keys_zone_name: "STATIC"
-matrix_nginx_proxy_synapse_cache_keys_zone_size: "10m"
-matrix_nginx_proxy_synapse_cache_inactive_time: "48h"
-matrix_nginx_proxy_synapse_cache_max_size_mb: 1024
-matrix_nginx_proxy_synapse_cache_proxy_cache_valid_time: "24h"
-
-
 # The amount of worker processes and connections
 # Consider increasing these when you are expecting high amounts of traffic
 # http://nginx.org/en/docs/ngx_core_module.html#worker_connections
 matrix_nginx_proxy_worker_processes: auto
 matrix_nginx_proxy_worker_connections: 1024
+
+# A mapping of JVB server ids to hostname/ipa addresses used to add additional jvb blocks
+# to the Jitsi's server configuration (matrix-jitsi.conf)
+# Note: avoid using the JVB server id  "jvb-1" as this is reserved for the main host.
+# Example:
+# matrix_nginx_proxy_proxy_jitsi_additional_jvbs:
+#   jvb-2: 192.168.0.1
+#   jvb-3: 192.168.0.2
+matrix_nginx_proxy_proxy_jitsi_additional_jvbs: {}

@@ -1,0 +1,13 @@
+#jinja2: lstrip_blocks: "True"
+#!/bin/bash
+
+{{ devture_systemd_docker_base_host_command_docker }} run \
+	-it \
+	--rm \
+	--env-file={{ matrix_synapse_ext_s3_storage_provider_base_path }}/env \
+	--mount type=bind,src={{ matrix_synapse_storage_path }},dst=/matrix-media-store-parent,bind-propagation=slave \
+	--mount type=bind,src={{ matrix_synapse_ext_s3_storage_provider_data_path }},dst=/data \
+	--workdir=/data \
+	--network={{ matrix_docker_network }} \
+	--entrypoint=/bin/bash \
+	{{ matrix_synapse_docker_image_final }}

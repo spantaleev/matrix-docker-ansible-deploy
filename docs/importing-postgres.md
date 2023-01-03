@@ -97,9 +97,9 @@ Once the database is clear and the ownership of the tables has been fixed in the
 Check, if `--dbname` is set to `synapse` (not `matrix`) and replace paths (or even better, copy this line from your terminal)
 
 ```
-/usr/bin/env docker run --rm --name matrix-postgres-import --log-driver=none --user=998:1001 --cap-drop=ALL --network=matrix --env-file=/matrix/postgres/env-postgres-psql --mount type=bind,src=/migration/synapse_dump.sql,dst=/synapse_dump.sql,ro --entrypoint=/bin/sh docker.io/postgres:14.1-alpine -c "cat /synapse_dump.sql | grep -vE '^(CREATE|ALTER) ROLE (matrix)(;| WITH)' | grep -vE '^CREATE DATABASE (matrix)\s' | psql -v ON_ERROR_STOP=1 -h matrix-postgres --dbname=synapse"
+/usr/bin/env docker run --rm --name matrix-postgres-import --log-driver=none --user=998:1001 --cap-drop=ALL --network=matrix --env-file=/matrix/postgres/env-postgres-psql --mount type=bind,src=/migration/synapse_dump.sql,dst=/synapse_dump.sql,ro --entrypoint=/bin/sh docker.io/postgres:15.0-alpine -c "cat /synapse_dump.sql | grep -vE '^(CREATE|ALTER) ROLE (matrix)(;| WITH)' | grep -vE '^CREATE DATABASE (matrix)\s' | psql -v ON_ERROR_STOP=1 -h matrix-postgres --dbname=synapse"
 ```
 
 ### Hints
 
-To open psql terminal run `/usr/local/bin/matrix-postgres-cli`
+To open psql terminal run `/matrix/postgres/bin/cli`

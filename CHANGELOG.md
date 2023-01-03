@@ -1,3 +1,135 @@
+# 2022-11-30
+
+## matrix-postgres-backup has been replaced by the com.devture.ansible.role.postgres_backup external role
+
+Just like we've [replaced Postgres with an external role](#matrix-postgres-has-been-replaced-by-the-comdevtureansiblerolepostgres-external-role) on 2022-11-28, we're now replacing `matrix-postgres-backup` with an external role - [com.devture.ansible.role.postgres_backup](https://github.com/devture/com.devture.ansible.role.postgres_backup).
+
+You'll need to rename your `matrix_postgres_backup`-prefixed variables such that they use a `devture_postgres_backup` prefix.
+
+
+# 2022-11-28
+
+## matrix-postgres has been replaced by the com.devture.ansible.role.postgres external role
+
+**TLDR**: the tasks that install the integrated Postgres server now live in an external role - [com.devture.ansible.role.postgres](https://github.com/devture/com.devture.ansible.role.postgres). You'll need to run `make roles` to install it, and to also rename your `matrix_postgres`-prefixed variables to use a `devture_postgres` prefix (e.g. `matrix_postgres_connection_password` -> `devture_postgres_connection_password`). All your data will still be there! Some scripts have moved (`/usr/local/bin/matrix-postgres-cli` -> `/matrix/postgres/bin/cli`).
+
+The `matrix-postgres` role that has been part of the playbook for a long time has been replaced with the [com.devture.ansible.role.postgres](https://github.com/devture/com.devture.ansible.role.postgres) role. This was done as part of our work to [use external roles for some things](#the-playbook-now-uses-external-roles-for-some-things) for better code re-use and maintainability.
+
+The new role is an upgraded version of the old `matrix-postgres` role with these notable differences:
+
+- it uses different names for its variables (`matrix_postgres` -> `devture_postgres`)
+- when [Vacuuming PostgreSQL](docs/maintenance-postgres.md#vacuuming-postgresql), it will vacuum all your databases, not just the Synapse one
+
+You'll need to run `make roles` to install the new role. You would also need to rename your `matrix_postgres`-prefixed variables to use a `devture_postgres` prefix.
+
+Note: the systemd service still remains the same - `matrix-postgres.service`. Your data will still be in `/matrix/postgres`, etc.
+Postgres-related scripts will be moved to `/matrix/postgres/bin` (`/usr/local/bin/matrix-postgres-cli` -> `/matrix/postgres/bin/cli`, etc). Also see [The playbook no longer installs scripts in /usr/local/bin](#the-playbook-no-longer-installs-scripts-in-usrlocalbin).
+
+## The playbook no longer installs scripts to /usr/local/bin
+
+The locations of various scripts installed by the playbook have changed.
+
+The playbook no longer contaminates your `/usr/local/bin` directory.
+All scripts installed by the playbook now live in `bin/` directories under `/matrix`. Some examples are below:
+
+- `/usr/local/bin/matrix-remove-all` -> `/matrix/bin/remove-all`
+- `/usr/local/bin/matrix-postgres-cli` -> `/matrix/postgres/bin/cli`
+- `/usr/local/bin/matrix-ssl-lets-encrypt-certificates-renew` -> `/matrix/ssl/bin/lets-encrypt-certificates-renew`
+- `/usr/local/bin/matrix-synapse-register-user` -> `/matrix/synapse/bin/register-user`
+
+
+# 2022-11-25
+
+## 2x-5x performance improvements in playbook runtime
+
+**TLDR**: the playbook is 2x faster for running `--tags=setup-all` (and various other tags). It also has new `--tags=install-*` tags (like `--tags=install-all`), which skip uninstallation tasks and bring an additional 2.5x speedup. In total, the playbook can maintain your server 5 times faster.
+
+Our [etke.cc managed Matrix hosting service](https://etke.cc) runs maintenance against hundreds of servers, so the playbook being fast means a lot.
+The [etke.cc Ansible playbook](https://gitlab.com/etke.cc/ansible) (which is an extension of this one) is growing to support more and more services (besides just Matrix), so the Matrix playbook being leaner prevents runtimes from becoming too slow and improves the customer experience.
+
+Even when running `ansible-playbook` manually (as most of us here do), it's beneficial not to waste time and CPU resources.
+
+Recently, a few large optimizations have been done to this playbook and its external roles (see [The playbook now uses external roles for some things](#the-playbook-now-uses-external-roles-for-some-things) and don't forget to run `make roles`):
+
+1. Replacing Ansible `import_tasks` calls with `include_tasks`, which decreased runtime in half. Using `import_tasks` is slower and causes Ansible to go through and skip way too many tasks (tasks which could have been skipped altogether by not having Ansible include them in the first place). On an experimental VM, **deployment time was decreased from ~530 seconds to ~250 seconds**.
+
+2. Introducing new `install-*` tags (`install-all` and `install-COMPONENT`, e.g. `install-synapse`, `install-bot-postmoogle`), which only run Ansible tasks pertaining to installation, while skipping uninstallation tasks. In most cases, people are maintaining the same setup or they're *adding* new components. Removing components is rare. Running thousands of uninstallation tasks each time is wasteful. On an experimental VM, **deployment time was decreased from ~250 seconds (`--tags=setup-all`) to ~100 seconds (`--tags=install-all`)**.
+
+You can still use `--tags=setup-all`. In fact, that's the best way to ensure your server is reconciled with the `vars.yml` configuration.
+
+If you know you haven't uninstalled any services since the last time you ran the playbook, you could run `--tags=install-all` instead and benefit from quicker runtimes.
+It should be noted that a service may become "eligible for uninstallation" even if your `vars.yml` file remains the same. In rare cases, we toggle services from being auto-installed to being optional, like we did on the 17th of March 2022 when we made [ma1sd not get installed by default](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#compatibility-break-ma1sd-identity-server-no-longer-installed-by-default). In such rare cases, you'd also need to run `--tags=setup-all`.
+
+
+# 2022-11-22
+
+# Automatic `matrix_architecture` determination
+
+From now on, the playbook automatically determines your server's architecture and sets the `matrix_architecture` variable accordingly.
+You no longer need to set this variable manually in your `vars.yml` file.
+
+# Docker and the Docker SDK for Python are now installed via external roles
+
+We're continuing our effort to make [the playbook use external roles for some things](#the-playbook-now-uses-external-roles-for-some-things), so as to avoid doing everything ourselves and to facilitate code re-use.
+
+Docker will now be installed on the server via the [geerlingguy.docker](https://github.com/geerlingguy/ansible-role-docker) Ansible role.
+If you'd like to manage the Docker installation yourself, you can disable the playbook's installation of Docker by setting `matrix_playbook_docker_installation_enabled: false`.
+
+The Docker SDK for Python (named `docker-python`, `python-docker`, etc. on the different platforms) is now also installed by another role ([com.devture.ansible.role.docker_sdk_for_python](https://github.com/devture/com.devture.ansible.role.docker_sdk_for_python)). To disable this role and install the necessary tools yourself, use `devture_docker_sdk_for_python_installation_enabled: false`.
+
+If you're hitting issues with Docker installation or Docker SDK for Python installation, consider reporting bugs or contributing to these other projects.
+
+These additional roles are downloaded into the playbook directory (to `roles/galaxy`) via an `ansible-galaxy ..` command. `make roles` is an easy shortcut for invoking the `ansible-galaxy` command to download these roles.
+
+
+# 2022-11-20
+
+## (Backward Compatibility Break) Changing how reverse-proxying to Synapse works - now via a `matrix-synapse-reverse-proxy-companion` service
+
+**TLDR**: There's now a `matrix-synapse-reverse-proxy-companion` nginx service, which helps with reverse-proxying to Synapse and its various worker processes (if workers are enabled), so that `matrix-nginx-proxy` can be relieved of this role. `matrix-nginx-proxy` still remains as the public SSL-terminating reverse-proxy in the playbook. `matrix-synapse-reverse-proxy-companion` is just one more reverse-proxy thrown into the mix for convenience. People with a more custom reverse-proxying configuration may be affected - see [Webserver configuration](#webserver-configuration) below.
+
+### Background
+
+Previously, `matrix-nginx-proxy` forwarded requests to Synapse directly. When Synapse is running in worker mode, the reverse-proxying configuration is more complicated (different requests need to go to different Synapse worker processes). `matrix-nginx-proxy` had configuration for sending each URL endpoint to the correct Synapse worker responsible for handling it. However, sometimes people like to disable `matrix-nginx-proxy` (for whatever reason) as detailed in [Using your own webserver, instead of this playbook's nginx proxy](docs/configuring-playbook-own-webserver.md).
+
+Because `matrix-nginx-proxy` was so central to request forwarding, when it was disabled and Synapse was running with workers enabled, there was nothing which could forward requests to the correct place anymore.. which caused [problems such as this one affecting Dimension](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2090).
+
+### Solution
+
+From now on, `matrix-nginx-proxy` is relieved of its function of reverse-proxying to Synapse and its various worker processes.
+This role is now handled by the new `matrix-synapse-reverse-proxy-companion` nginx service and works even if `matrix-nginx-proxy` is disabled.
+The purpose of the new `matrix-synapse-reverse-proxy-companion` service is to:
+
+- serve as a companion to Synapse and know how to reverse-proxy to Synapse correctly (no matter if workers are enabled or not)
+
+- provide a unified container address for reaching Synapse (no matter if workers are enabled or not)
+  - `matrix-synapse-reverse-proxy-companion:8008` for Synapse Client-Server API traffic
+  - `matrix-synapse-reverse-proxy-companion:8048` for Synapse Server-Server (Federation) API traffic
+
+- simplify `matrix-nginx-proxy` configuration - it now only needs to send requests to `matrix-synapse-reverse-proxy-companion` or `matrix-dendrite`, etc., without having to worry about workers
+
+- allow reverse-proxying to Synapse, even if `matrix-nginx-proxy` is disabled
+
+`matrix-nginx-proxy` still remains as the public SSL-terminating reverse-proxy in the playbook. All traffic goes through it before reaching any of the services.
+It's just that now the Synapse traffic is routed through `matrix-synapse-reverse-proxy-companion` like this:
+
+(`matrix-nginx-proxy` -> `matrix-synapse-reverse-proxy-companion` -> (`matrix-synapse` or some Synapse worker)).
+
+Various services (like Dimension, etc.) still talk to Synapse via `matrix-nginx-proxy` (e.g. `http://matrix-nginx-proxy:12080`) preferentially. They only talk to Synapse via the reverse-proxy companion (e.g. `http://matrix-synapse-reverse-proxy-companion:8008`) if `matrix-nginx-proxy` is disabled. Services should not be talking to Synapse (e.g. `https://matrix-synapse:8008` directly anymore), because when workers are enabled, that's the Synapse `master` process and may not be serving all URL endpoints needed by the service.
+
+### Webserver configuration
+
+- if you're using `matrix-nginx-proxy` (`matrix_nginx_proxy_enabled: true`, which is the default for the playbook), you don't need to do anything
+
+- if you're using your own `nginx` webserver running on the server, you shouldn't be affected. The `/matrix/nginx/conf.d` configuration and exposed ports that you're relying on will automatically be updated in a way that should work
+
+- if you're using another local webserver (e.g. Apache, etc.) and haven't changed any ports (`matrix_*_host_bind_port` definitions), you shouldn't be affected. You're likely sending Matrix traffic to `127.0.0.1:8008` and `127.0.0.1:8048`. These ports (`8008` and `8048`) will still be exposed on `127.0.0.1` by default - just not by the `matrix-synapse` container from now on, but by the `matrix-synapse-reverse-proxy-companion` container instead
+
+- if you've been exposing `matrix-synapse` ports (`matrix_synapse_container_client_api_host_bind_port`, etc.) manually, you should consider exposing `matrix-synapse-reverse-proxy-companion` ports instead
+
+- if you're running Traefik and reverse-proxying directly to the `matrix-synapse` container, you should start reverse-proxying to the `matrix-synapse-reverse-proxy-companion` container instead. See [our updated Traefik example configuration](docs/configuring-playbook-own-webserver.md#sample-configuration-for-running-behind-traefik-20). Note: we now recommend calling the federation entry point `federation` (instead of `synapse`) and reverse-proxying the federation traffic via `matrix-nginx-proxy`, instead of sending it directly to Synapse (or `matrix-synapse-reverse-proxy-companion`). This makes the configuration simpler.
+
+
 # 2022-11-05
 
 ## (Backward Compatibility Break) A new default standalone mode for Etherpad

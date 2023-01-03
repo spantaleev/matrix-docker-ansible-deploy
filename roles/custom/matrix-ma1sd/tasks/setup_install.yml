@@ -13,9 +13,6 @@
     - {path: "{{ matrix_ma1sd_docker_src_files_path }}", when: "{{ matrix_ma1sd_container_image_self_build }}"}
   when: "item.when | bool"
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/migrate_mxisd.yml"
-
-
 # These (SQLite -> Postgres) migration tasks are usually at the top,
 # but we'd like to run them after `migrate_mxisd.yml`, which requires the ma1sd paths to exist.
 - ansible.builtin.set_fact:
@@ -30,8 +27,11 @@
 
     - when: "matrix_ma1sd_sqlite_database_path_local_stat_result.stat.exists | bool"
       block:
-        - ansible.builtin.set_fact:
-            matrix_postgres_db_migration_request:
+        - ansible.builtin.include_role:
+            name: galaxy/com.devture.ansible.role.postgres
+            tasks_from: migrate_db_to_postgres
+          vars:
+            devture_postgres_db_migration_request:
               src: "{{ matrix_ma1sd_sqlite_database_path_local }}"
               dst: "{{ matrix_ma1sd_database_connection_string }}"
               caller: "{{ role_path | basename }}"
@@ -39,10 +39,6 @@
               engine_old: 'sqlite'
               systemd_services_to_stop: ['matrix-ma1sd.service']
               pgloader_options: ['--with "quote identifiers"']
-
-        - ansible.builtin.import_role:
-            name: custom/matrix-postgres
-            tasks_from: migrate_db_to_postgres
 
         - ansible.builtin.set_fact:
             matrix_ma1sd_requires_restart: true
@@ -159,15 +155,10 @@
     src: "{{ role_path }}/templates/systemd/matrix-ma1sd.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ma1sd.service"
     mode: 0644
-  register: matrix_ma1sd_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-ma1sd.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_ma1sd_systemd_service_result.changed | bool"
 
 - name: Ensure matrix-ma1sd.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-ma1sd.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_ma1sd_requires_restart | bool"

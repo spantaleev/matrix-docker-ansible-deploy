@@ -51,8 +51,11 @@
             - {'table': 'dimension_bridges', 'column': 'isEnabled', 'default': ''}
             - {'table': 'dimension_bridges', 'column': 'isPublic', 'default': ''}
 
-        - ansible.builtin.set_fact:
-            matrix_postgres_db_migration_request:
+        - ansible.builtin.include_role:
+            name: galaxy/com.devture.ansible.role.postgres
+            tasks_from: migrate_db_to_postgres
+          vars:
+            devture_postgres_db_migration_request:
               src: "{{ matrix_dimension_sqlite_database_path_local }}"
               dst: "{{ matrix_dimension_database_connection_string }}"
               caller: "{{ role_path | basename }}"
@@ -62,10 +65,6 @@
               pgloader_options: ['--with "quote identifiers"']
               additional_psql_statements_list: "{{ matrix_dimension_pgloader_additional_psql_statements_list }}"
               additional_psql_statements_db_name: "{{ matrix_dimension_database_name }}"
-
-        - ansible.builtin.import_role:
-            name: custom/matrix-postgres
-            tasks_from: migrate_db_to_postgres
 
         - ansible.builtin.set_fact:
             matrix_dimension_requires_restart: true
@@ -126,15 +125,10 @@
     src: "{{ role_path }}/templates/systemd/matrix-dimension.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-dimension.service"
     mode: 0644
-  register: matrix_dimension_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-dimension.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_dimension_systemd_service_result.changed | bool"
 
 - name: Ensure matrix-dimension.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-dimension.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_dimension_requires_restart | bool"

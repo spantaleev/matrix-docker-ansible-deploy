@@ -31,14 +31,21 @@ ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} run --rm --n
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_backup_borg_docker_image }} \
-			sh -c "borgmatic --init --encryption {{ matrix_backup_borg_encryption }}"
+			sh -c "borgmatic rcreate --encryption {{ matrix_backup_borg_encryption }}"
 
+# The `CAP_DAC_OVERRIDE` capability is required, so that `root` in the container
+# can read the `/etc/borgmatic.d/config.yaml` (`{{ matrix_backup_borg_config_path }}/config.yaml`) file,
+# owned by `matrix:matrix` on the filesystem.
+#
+# `/root` is mountes as temporary filesystem, because we're using `--read-only` and because
+# Borgmatic tries to write to at least a few paths under `/root` (`.config`, `.ssh`, `.borgmatic`).
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-backup-borg \
 			--log-driver=none \
 			--cap-drop=ALL \
+			--cap-add=CAP_DAC_OVERRIDE \
 			--read-only \
-			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--network={{ matrix_docker_network }} \
+			--tmpfs=/root:rw,noexec,nosuid,size=100m \
 			--tmpfs=/tmp:rw,noexec,nosuid,size=100m \
 			--mount type=bind,src={{ matrix_backup_borg_config_path }}/passwd,dst=/etc/passwd,ro \
 			--mount type=bind,src={{ matrix_backup_borg_config_path }},dst=/etc/borgmatic.d,ro \

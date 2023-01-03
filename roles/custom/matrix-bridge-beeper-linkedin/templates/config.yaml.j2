@@ -88,15 +88,15 @@ manhole:
 # Bridge config
 bridge:
     # Localpart template of MXIDs for LinkedIn  users.
+    # {userid} is replaced with the user ID of the LinkedIn user
     username_template: "linkedin_{userid}"
-    # Displayname template for LinkedIn users.
-    # Localpart template for per-user room grouping community IDs.
-    # The bridge will create these communities and add all of the specific user's portals to the community.
-    # {localpart} is the MXID localpart and {server} is the MXID server part of the user.
-    # (Note that, by default, non-admins might not have your homeserver's permission to create
-    # communities. You should set `enable_group_creation: true` in homeserver.yaml to fix this.)
-    # `linkedin_{localpart}={server}` is a good value.
-    community_template: null
+    # Settings for creating a space for every user.
+    space_support:
+        # Whether or not to enable creating a space per user and inviting the
+        # user (as well as all of the puppets) to that space.
+        enable: {{ matrix_beeper_linkedin_bridge_space_support_enable|to_json }}
+        # The name of the space
+        name: "LinkedIn"
 
     # Displayname template for LinkedIn users.
     # {displayname} is replaced with the display name of the LinkedIn user

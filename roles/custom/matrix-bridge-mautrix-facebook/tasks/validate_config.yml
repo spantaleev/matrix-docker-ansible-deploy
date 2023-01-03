@@ -1,14 +1,15 @@
 ---
 
-- name: Fail if required settings not defined
+- name: Fail if required mautrix-facebook settings not defined
   ansible.builtin.fail:
     msg: >-
-      You need to define a required configuration setting (`{{ item }}`).
-  when: "vars[item] == ''"
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
   with_items:
-    - "matrix_mautrix_facebook_public_endpoint"
-    - "matrix_mautrix_facebook_appservice_token"
-    - "matrix_mautrix_facebook_homeserver_token"
+    - {'name': 'matrix_mautrix_facebook_public_endpoint', when: true}
+    - {'name': 'matrix_mautrix_facebook_appservice_token', when: true}
+    - {'name': 'matrix_mautrix_facebook_homeserver_token', when: true}
+    - {'name': 'matrix_mautrix_facebook_database_hostname', when: "{{ matrix_mautrix_facebook_database_engine == 'postgres' }}"}
 
 - when: "matrix_mautrix_facebook_database_engine == 'sqlite' and matrix_mautrix_facebook_docker_image.endswith(':da1b4ec596e334325a1589e70829dea46e73064b')"
   block:

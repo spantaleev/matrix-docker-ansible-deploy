@@ -53,7 +53,7 @@
       when: "'replication_port' not in matrix_synapse_worker_details"
 
 - ansible.builtin.set_fact:
-    matrix_systemd_services_list: "{{ matrix_systemd_services_list + [matrix_synapse_worker_details.name + '.service'] }}"
+    devture_systemd_service_manager_services_list_auto: "{{ devture_systemd_service_manager_services_list_auto + [{'name': (matrix_synapse_worker_details.name + '.service'), 'priority': 1100, 'groups': ['matrix', 'homeservers', 'synapse']}] }}"
 
 - ansible.builtin.set_fact:
     matrix_synapse_webserving_workers_systemd_services_list: "{{ matrix_synapse_webserving_workers_systemd_services_list + [matrix_synapse_worker_details.name + '.service'] }}"

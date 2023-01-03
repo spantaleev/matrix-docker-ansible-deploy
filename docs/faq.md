@@ -317,7 +317,7 @@ If you've installed [Jitsi](configuring-playbook-jitsi.md) (not installed by def
 Yes, we can stop installing Docker ourselves. Just use this in your `vars.yml` file:
 
 ```yaml
-matrix_docker_installation_enabled: true
+matrix_playbook_docker_installation_enabled: false
 ```
 
 ### I run another webserver on the same server where I wish to install Matrix. What now?

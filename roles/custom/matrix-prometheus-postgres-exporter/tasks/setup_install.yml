@@ -1,0 +1,19 @@
+---
+
+- name: Ensure matrix-prometheus-postgres-exporter image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_prometheus_postgres_exporter_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_prometheus_postgres_exporter_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_prometheus_postgres_exporter_docker_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure matrix-prometheus-postgres-exporter.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-prometheus-postgres-exporter.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-prometheus-postgres-exporter.service"
+    mode: 0644
+  register: matrix_prometheus_postgres_exporter_systemd_service_result

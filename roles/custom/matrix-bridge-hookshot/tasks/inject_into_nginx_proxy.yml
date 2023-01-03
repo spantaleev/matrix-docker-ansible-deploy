@@ -1,0 +1,111 @@
+---
+
+- name: Fail if matrix-nginx-proxy role already executed
+  ansible.builtin.fail:
+    msg: >-
+      Trying to append hookshot's reverse-proxying configuration to matrix-nginx-proxy,
+      but it's pointless since the matrix-nginx-proxy role had already executed.
+      To fix this, please change the order of roles in your playbook,
+      so that the matrix-nginx-proxy role would run after the matrix-bridge-hookshot role.
+  when: matrix_nginx_proxy_role_executed | default(False) | bool
+
+- name: Generate Matrix hookshot proxying configuration for matrix-nginx-proxy
+  ansible.builtin.set_fact:
+    matrix_hookshot_matrix_nginx_proxy_configuration: |
+      location ~ ^{{ matrix_hookshot_appservice_endpoint }}/(.*)$ {
+        {% if matrix_nginx_proxy_enabled | default(False) %}
+          {# Use the embedded DNS resolver in Docker containers to discover the service #}
+          resolver 127.0.0.11 valid=5s;
+          set $backend "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_appservice_port }}";
+          proxy_pass http://$backend/$1;
+        {% else %}
+          {# Generic configuration for use outside of our container setup #}
+          proxy_pass http://127.0.0.1:{{ matrix_hookshot_appservice_port }}/$1;
+        {% endif %}
+        proxy_set_header Host $host;
+      }
+      {% if matrix_hookshot_provisioning_enabled %}
+      location ~ ^{{ matrix_hookshot_provisioning_endpoint }}/(.*)$ {
+        {% if matrix_nginx_proxy_enabled | default(False) %}
+          {# Use the embedded DNS resolver in Docker containers to discover the service #}
+          resolver 127.0.0.11 valid=5s;
+          set $backend "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_provisioning_port }}";
+          proxy_pass http://$backend{{ matrix_hookshot_provisioning_internal }}/$1$is_args$args;
+        {% else %}
+          {# Generic configuration for use outside of our container setup #}
+          proxy_pass http://127.0.0.1:{{ matrix_hookshot_provisioning_port }}{{ matrix_hookshot_provisioning_internal }}/$1$is_args$args;
+        {% endif %}
+        proxy_set_header Host $host;
+      }
+      {% endif %}
+      {% if matrix_hookshot_widgets_enabled %}
+      location ~ ^{{ matrix_hookshot_widgets_endpoint }}/(.*)$ {
+        {% if matrix_nginx_proxy_enabled | default(False) %}
+          {# Use the embedded DNS resolver in Docker containers to discover the service #}
+          resolver 127.0.0.11 valid=5s;
+          set $backend "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_widgets_port }}";
+          proxy_pass http://$backend{{ matrix_hookshot_widgets_internal }}/$1$is_args$args;
+        {% else %}
+          {# Generic configuration for use outside of our container setup #}
+          proxy_pass http://127.0.0.1:{{ matrix_hookshot_widgets_port }}{{ matrix_hookshot_widgets_internal }}/$1$is_args$args;
+        {% endif %}
+        proxy_set_header Host $host;
+      }
+      {% endif %}
+      location ~ ^{{ matrix_hookshot_webhook_endpoint }}/(.*)$ {
+        {% if matrix_nginx_proxy_enabled | default(False) %}
+          {# Use the embedded DNS resolver in Docker containers to discover the service #}
+          resolver 127.0.0.11 valid=5s;
+          set $backend "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_webhook_port }}";
+          proxy_pass http://$backend/$1$is_args$args;
+        {% else %}
+          {# Generic configuration for use outside of our container setup #}
+          proxy_pass http://127.0.0.1:{{ matrix_hookshot_webhook_port }}/$1$is_args$args;
+        {% endif %}
+        proxy_set_header Host $host;
+      }
+
+- name: Register hookshot proxying configuration with matrix-nginx-proxy
+  ansible.builtin.set_fact:
+    matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks: |
+      {{
+        matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks | default([])
+        +
+        [matrix_hookshot_matrix_nginx_proxy_configuration]
+      }}
+
+- name: Generate hookshot metrics proxying configuration for matrix-nginx-proxy (matrix.DOMAIN/metrics/hookshot)
+  ansible.builtin.set_fact:
+    matrix_hookshot_matrix_nginx_proxy_metrics_configuration_matrix_domain: |
+      location /metrics/hookshot {
+        {% if matrix_nginx_proxy_enabled | default(False) %}
+          {# Use the embedded DNS resolver in Docker containers to discover the service #}
+          resolver 127.0.0.11 valid=5s;
+          set $backend "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_metrics_port }}";
+          proxy_pass http://$backend/metrics;
+        {% else %}
+          {# Generic configuration for use outside of our container setup #}
+          proxy_pass http://127.0.0.1:{{ matrix_hookshot_metrics_port }}/metrics;
+        {% endif %}
+      }
+  when: matrix_hookshot_metrics_enabled | bool and matrix_hookshot_metrics_proxying_enabled | bool
+
+- name: Register hookshot metrics proxying configuration with matrix-nginx-proxy (matrix.DOMAIN/metrics/hookshot)
+  ansible.builtin.set_fact:
+    matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks: |
+      {{
+        matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks | default([])
+        +
+        [matrix_hookshot_matrix_nginx_proxy_metrics_configuration_matrix_domain]
+      }}
+  when: matrix_hookshot_metrics_enabled | bool and matrix_hookshot_metrics_proxying_enabled | bool
+
+- name: Warn about reverse-proxying if matrix-nginx-proxy not used
+  ansible.builtin.debug:
+    msg: >-
+      NOTE: You've enabled the hookshot bridge but are not using the matrix-nginx-proxy
+      reverse proxy.
+      Please make sure that you're proxying the `{{ matrix_hookshot_public_endpoint }}`
+      URL endpoint to the matrix-hookshot container.
+      You can expose the container's ports using the `matrix_hookshot_container_http_host_bind_ports` variable.
+  when: "not matrix_nginx_proxy_enabled | default(False) | bool"

@@ -1,0 +1,39 @@
+---
+
+- name: Check existence of matrix-prometheus-nginxlog-exporter service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-prometheus-nginxlog-exporter.service"
+  register: matrix_prometheus_nginxlog_exporter_service_stat
+
+- when: matrix_prometheus_nginxlog_exporter_service_stat.stat.exists | bool
+  block:
+    - name: Fail when not cleaning up nginx and prometheus configs
+      ansible.builtin.fail:
+        msg: >
+          This role has added to configs in 'matrix-nginx-proxy', 'matrix-synapse-reverse-proxy-companion' and 'matrix-prometheus'.
+          Running 'setup-synapse-reverse-proxy-companion' WILL NOT remove those settings from those roles.
+          Run the playbook again with the `setup-all` tag or all three 'setup-nginx-proxy,setup-synapse-reverse-proxy-companion,setup-prometheus' tags while
+          'matrix_prometheus_enabled: false' to rebuild their configs.
+      when: not ('setup-all' in ansible_run_tags or ('setup-nginx-proxy' in ansible_run_tags and 'setup-synapse-reverse-proxy-companion' in ansible_run_tags and 'setup-prometheus' in ansible_run_tags))
+
+    - name: Ensure matrix-prometheus-nginxlog-exporter is stopped
+      ansible.builtin.service:
+        name: matrix-prometheus-nginxlog-exporter
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-prometheus-nginxlog-exporter.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-prometheus-nginxlog-exporter.service"
+        state: absent
+
+    - name: Ensure matrix-prometheus-nginxlog-exporter paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_prometheus_nginxlog_exporter_base_path }}"
+        state: absent
+
+    - name: Ensure matrix-prometheus-nginxlog-exporter grafana dashboard doesn't exist
+      ansible.builtin.file:
+        path: "{{ matrix_grafana_config_path }}/dashboards/nginx-proxy.json"
+        state: absent

@@ -66,13 +66,9 @@
     mode: 0644
   register: matrix_bot_mjolnir_systemd_service_result
 
-- name: Ensure systemd reloaded after matrix-bot-mjolnir.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_bot_mjolnir_systemd_service_result.changed | bool"
-
 - name: Ensure matrix-bot-mjolnir.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-bot-mjolnir.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_bot_mjolnir_requires_restart | bool"

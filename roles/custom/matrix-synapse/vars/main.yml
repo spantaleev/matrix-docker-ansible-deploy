@@ -3,9 +3,6 @@
 matrix_synapse_client_api_url_endpoint_public: "https://{{ matrix_server_fqn_matrix }}/_matrix/client/versions"
 matrix_synapse_federation_api_url_endpoint_public: "https://{{ matrix_server_fqn_matrix }}:{{ matrix_federation_public_port }}/_matrix/federation/v1/version"
 
-# Tells whether this role had executed or not. Toggled to `true` during runtime.
-matrix_synapse_role_executed: false
-
 matrix_synapse_media_store_directory_name: "{{ matrix_synapse_media_store_path | basename }}"
 
 # A Synapse generic worker can handle both federation and client-server API endpoints.
@@ -137,6 +134,7 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/federation/(v1|v2)/send_leave/
   - ^/_matrix/federation/(v1|v2)/invite/
   - ^/_matrix/federation/v1/event_auth/
+  - ^/_matrix/federation/v1/timestamp_to_event/
   - ^/_matrix/federation/v1/exchange_third_party_invite/
   - ^/_matrix/federation/v1/user/devices/
   - ^/_matrix/key/v2/query
@@ -164,6 +162,7 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/voip/turnServer$
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/rooms/.*/event/
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/joined_rooms$
+  - ^/_matrix/client/v1/rooms/.*/timestamp_to_event$
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/search$
 
   # Encryption requests

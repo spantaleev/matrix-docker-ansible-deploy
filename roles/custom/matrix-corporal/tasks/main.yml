@@ -1,24 +1,26 @@
 ---
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
-  tags:
-    - always
+- block:
+    - when: matrix_corporal_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: "run_setup | bool and matrix_corporal_enabled | bool"
+    - when: matrix_corporal_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-corporal
+    - install-all
+    - install-corporal
+
+- block:
+    - when: not matrix_corporal_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:
     - setup-all
     - setup-corporal
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_corporal.yml"
-  when: run_setup | bool
-  tags:
-    - setup-all
-    - setup-corporal
-
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/self_check_corporal.yml"
-  delegate_to: 127.0.0.1
-  become: false
-  when: "run_self_check | bool and matrix_corporal_enabled | bool"
+- block:
+    - when: matrix_corporal_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check.yml"
   tags:
     - self-check

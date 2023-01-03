@@ -41,6 +41,13 @@ If you want to manage and remove old unused pads from Etherpad, you will first n
 Then from the plugin manager page (`https://etherpad.<your-domain>/admin/plugins` or `https://dimension.<your-domain>/etherpad/admin/plugins`), install the `adminpads2` plugin. Once installed, you should have a "Manage pads" section in the Admin web-UI.
 
 
+## How to use Etherpad widgets without an Integration Manager (like Dimension)
+
+This is how it works in Element, it might work quite similar with other clients:
+
+To integrate a standalone etherpad in a room, create your pad by visiting `https://etherpad.DOMAIN`. When the pad opens, copy the URL and send a command like this to the room: `/addwidget URL`. You will then find your integrated Etherpad within the right sidebar in the `Widgets` section.
+
+
 ## Set Dimension default to the self-hosted Etherpad (optional)
 
 If you decided to install [Dimension integration manager](configuring-playbook-dimension.md) alongside Etherpad, the Dimension administrator users can configure the default URL template.

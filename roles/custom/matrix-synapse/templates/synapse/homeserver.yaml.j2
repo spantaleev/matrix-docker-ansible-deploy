@@ -2532,6 +2532,8 @@ password_providers:
 ## Push ##
 
 push:
+  # enabled: false
+
   # Clients requesting push notifications can either have the body of
   # the message sent in the notification poke along with other details
   # like the sender, or just the event ID and room ID (`event_id_only`).
@@ -2836,12 +2838,6 @@ opentracing:
 
 ## Workers ##
 
-# Disables sending of outbound federation transactions on the main process.
-# Uncomment if using a federation sender worker.
-#
-#send_federation: false
-send_federation: {{ matrix_synapse_send_federation | to_json }}
-
 # It is possible to run multiple federation sender workers, in which case the
 # work is balanced across them.
 #
@@ -2859,7 +2855,6 @@ federation_sender_instances: {{ matrix_synapse_federation_sender_instances | to_
 {% if matrix_synapse_federation_pusher_instances | length > 0 %}
 pusher_instances: {{ matrix_synapse_federation_pusher_instances | to_json }}
 {% endif %}
-start_pushers: {{ matrix_synapse_start_pushers | to_json }}
 
 # When using workers this should be a map from `worker_name` to the
 # HTTP replication listener of the worker, if configured.

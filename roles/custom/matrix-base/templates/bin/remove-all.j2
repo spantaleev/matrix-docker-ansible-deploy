@@ -1,0 +1,34 @@
+#jinja2: lstrip_blocks: "True"
+#!/bin/bash
+
+if [ "$(id -u)" != "0" ]; then
+	echo "This script must be executed as root! Aborting."
+	exit 1
+fi
+
+echo "WARNING! You are about to remove everything the playbook installs for {{ matrix_server_fqn_matrix }}: matrix, docker images,..."
+echo -n "If you're sure you want to do this, type: 'Yes, I really want to remove everything!'"
+read sure
+
+if [ "$sure" != "Yes, I really want to remove everything!" ]; then
+	echo "Good thing I asked, exiting"
+	exit 0
+else
+	echo "Stop and remove matrix services"
+
+	for s in $(find {{ devture_systemd_docker_base_systemd_path }}/ -type f -name "matrix-*" -printf "%f\n"); do
+		systemctl disable --now $s
+		rm -f {{ devture_systemd_docker_base_systemd_path }}/$s
+	done
+
+	systemctl daemon-reload
+
+	echo "Remove unused Docker images and resources"
+	docker system prune -af
+	echo "Remove Docker matrix network (should be gone already, but ..)"
+	docker network rm {{ matrix_docker_network }}
+	echo "Remove {{ matrix_base_data_path }} directory"
+	rm -fr "{{ matrix_base_data_path }}"
+	exit 0
+fi
+

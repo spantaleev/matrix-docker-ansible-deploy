@@ -1,10 +1,12 @@
 ---
 
-- name: Fail if no database is configured for Etherpad
+- name: Fail if required Etherpad settings not defined
   ansible.builtin.fail:
-    msg: >-
-      Etherpad requires a dedicated Postgres database. Please enable the built in one, or configure an external DB by redefining "matrix_etherpad_database_hostname"
-  when: matrix_etherpad_database_hostname == "matrix-postgres" and not matrix_postgres_enabled
+    msg: >
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
+  with_items:
+    - {'name': 'matrix_etherpad_database_hostname', when: true}
 
 - name: Fail if wrong mode selected
   ansible.builtin.fail:

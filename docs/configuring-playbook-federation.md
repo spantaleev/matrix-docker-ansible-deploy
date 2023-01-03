@@ -46,6 +46,9 @@ matrix_synapse_federation_port_enabled: false
 
 # This removes the `8448` virtual host from the matrix-nginx-proxy reverse-proxy server.
 matrix_nginx_proxy_proxy_matrix_federation_api_enabled: false
+
+# This stops the federation port on the synapse-reverse-proxy-companion side (normally `matrix-synapse-reverse-proxy-companion:8048` on the container network).
+matrix_synapse_reverse_proxy_companion_federation_api_enabled: false
 ```
 
 ## Changing the federation port from 8448 to a different port to use a CDN that only accepts 443/80 ports

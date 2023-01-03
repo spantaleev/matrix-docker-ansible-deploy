@@ -1,42 +1,29 @@
 ---
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
-  tags:
-    - always
+- block:
+    - when: matrix_client_element_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: "run_setup | bool and matrix_client_element_enabled | bool"
+    - when: matrix_client_element_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/prepare_themes.yml"
+
+    - when: matrix_client_element_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-client-element
+    - install-all
+    - install-client-element
+
+- block:
+    - when: not matrix_client_element_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
   tags:
     - setup-all
     - setup-client-element
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/prepare_themes.yml"
-  when: run_setup | bool
-  tags:
-    - setup-all
-    - setup-client-element
-
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/migrate_riot_web.yml"
-  when: run_setup | bool
-  tags:
-    - setup-all
-    - setup-client-element
-
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  when: "run_setup | bool and matrix_client_element_enabled | bool"
-  tags:
-    - setup-all
-    - setup-client-element
-
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  when: "run_setup | bool and not matrix_client_element_enabled | bool"
-  tags:
-    - setup-all
-    - setup-client-element
-
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/self_check.yml"
-  delegate_to: 127.0.0.1
-  become: false
-  when: "run_self_check | bool and matrix_client_element_enabled | bool"
+- block:
+    - when: matrix_client_element_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check.yml"
   tags:
     - self-check

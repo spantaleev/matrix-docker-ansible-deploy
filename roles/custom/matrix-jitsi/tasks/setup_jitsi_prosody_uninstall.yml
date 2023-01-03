@@ -1,0 +1,25 @@
+---
+
+- name: Check if matrix-jitsi-prosody.service file exists
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-jitsi-prosody.service"
+  register: matrix_jitsi_prosody_service_stat
+
+- when: matrix_jitsi_prosody_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-jitsi-prosody is stopped
+      ansible.builtin.service:
+        name: matrix-jitsi-prosody
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-jitsi-prosody.service file doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-jitsi-prosody.service"
+        state: absent
+
+    - name: Ensure Matrix jitsi-prosody paths doesn't exist
+      ansible.builtin.file:
+        path: "{{ matrix_jitsi_prosody_base_path }}"
+        state: absent

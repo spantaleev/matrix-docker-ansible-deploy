@@ -1,0 +1,20 @@
+---
+
+- name: Check existence of matrix-prometheus-node-exporter service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-prometheus-node-exporter.service"
+  register: matrix_prometheus_node_exporter_service_stat
+
+- when: matrix_prometheus_node_exporter_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-prometheus-node-exporter is stopped
+      ansible.builtin.service:
+        name: matrix-prometheus-node-exporter
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-prometheus-node-exporter.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-prometheus-node-exporter.service"
+        state: absent

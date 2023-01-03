@@ -1,13 +1,5 @@
 ---
 
-# If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
-# We don't want to fail in such cases.
-- name: Fail if matrix-synapse role already executed
-  ansible.builtin.fail:
-    msg: >-
-      The matrix-bridge-mx-puppet-groupme role needs to execute before the matrix-synapse role.
-  when: "matrix_synapse_role_executed | default(False)"
-
 - name: Ensure MX Puppet Groupme paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
@@ -52,18 +44,17 @@
 
     - when: "matrix_mx_puppet_groupme_sqlite_database_path_local_stat_result.stat.exists | bool"
       block:
-        - ansible.builtin.set_fact:
-            matrix_postgres_db_migration_request:
+        - ansible.builtin.include_role:
+            name: galaxy/com.devture.ansible.role.postgres
+            tasks_from: migrate_db_to_postgres
+          vars:
+            devture_postgres_db_migration_request:
               src: "{{ matrix_mx_puppet_groupme_sqlite_database_path_local }}"
               dst: "{{ matrix_mx_puppet_groupme_database_connection_string }}"
               caller: "{{ role_path | basename }}"
               engine_variable_name: 'matrix_mx_puppet_groupme_database_engine'
               engine_old: 'sqlite'
               systemd_services_to_stop: ['matrix-mx-puppet-groupme.service']
-
-        - ansible.builtin.import_role:
-            name: custom/matrix-postgres
-            tasks_from: migrate_db_to_postgres
 
         - ansible.builtin.set_fact:
             matrix_mx_puppet_groupme_requires_restart: true
@@ -124,15 +115,10 @@
     src: "{{ role_path }}/templates/systemd/matrix-mx-puppet-groupme.service.j2"
     dest: "/etc/systemd/system/matrix-mx-puppet-groupme.service"
     mode: 0644
-  register: matrix_mx_puppet_groupme_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-mx-puppet-groupme.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_mx_puppet_groupme_systemd_service_result.changed"
 
 - name: Ensure matrix-mx-puppet-groupme.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-mx-puppet-groupme.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_mx_puppet_groupme_requires_restart | bool"

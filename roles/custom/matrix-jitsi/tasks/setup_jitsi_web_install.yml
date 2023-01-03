@@ -1,0 +1,52 @@
+---
+
+- name: Ensure Matrix jitsi-web path exists
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0777
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_jitsi_web_base_path }}", when: true}
+    - {path: "{{ matrix_jitsi_web_config_path }}", when: true}
+    - {path: "{{ matrix_jitsi_web_transcripts_path }}", when: true}
+    - {path: "{{ matrix_jitsi_web_crontabs_path }}", when: true}
+  when: item.when | bool
+
+- name: Ensure jitsi-web Docker image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_jitsi_web_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_jitsi_web_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_jitsi_web_docker_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure jitsi-web environment variables file created
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/web/env.j2"
+    dest: "{{ matrix_jitsi_web_base_path }}/env"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0640
+
+- name: Ensure jitsi-web configuration files created
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/web/{{ item }}.j2"
+    dest: "{{ matrix_jitsi_web_config_path }}/{{ item }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0644
+  with_items:
+    - custom-config.js
+    - custom-interface_config.js
+
+- name: Ensure matrix-jitsi-web.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/web/matrix-jitsi-web.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-jitsi-web.service"
+    mode: 0644
+  register: matrix_jitsi_web_systemd_service_result

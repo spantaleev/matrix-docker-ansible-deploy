@@ -1,17 +1,4 @@
 ---
-
-# This is a cleanup/migration task, because of to the new way we manage cronjobs (`cron` module) and the new script name.
-# This migration task can be removed some time in the future.
-- name: (Migration) Remove deprecated Let's Encrypt SSL certificate management files
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - "{{ matrix_local_bin_path }}/matrix-ssl-certificates-renew"
-    - "{{ matrix_cron_path }}/matrix-ssl-certificate-renewal"
-    - "{{ matrix_cron_path }}/matrix-nginx-proxy-periodic-restarter"
-    - "/etc/cron.d/matrix-ssl-lets-encrypt"
-
 #
 # Tasks related to setting up Let's Encrypt's management of certificates
 #
@@ -36,8 +23,8 @@
 
     - name: Ensure Let's Encrypt SSL renewal script installed
       ansible.builtin.template:
-        src: "{{ role_path }}/templates/usr-local-bin/matrix-ssl-lets-encrypt-certificates-renew.j2"
-        dest: "{{ matrix_local_bin_path }}/matrix-ssl-lets-encrypt-certificates-renew"
+        src: "{{ role_path }}/templates/bin/lets-encrypt-certificates-renew.j2"
+        dest: "{{ matrix_ssl_bin_dir_path }}/lets-encrypt-certificates-renew"
         mode: 0755
 
     - name: Ensure SSL renewal systemd units installed
@@ -63,5 +50,5 @@
 
     - name: Ensure Let's Encrypt SSL renewal script removed
       ansible.builtin.file:
-        path: "{{ matrix_local_bin_path }}/matrix-ssl-lets-encrypt-certificates-renew"
+        path: "{{ matrix_ssl_bin_dir_path }}/lets-encrypt-certificates-renew"
         state: absent

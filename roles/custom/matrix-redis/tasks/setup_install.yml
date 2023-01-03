@@ -1,0 +1,49 @@
+---
+
+- name: Ensure redis Docker image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_redis_docker_image_to_use }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_redis_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_redis_docker_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure redis paths exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0700
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+  with_items:
+    - "{{ matrix_redis_base_path }}"
+    - "{{ matrix_redis_data_path }}"
+
+# We do this as a separate task, because:
+# - we'd like to do it for the data path only, not for the base path (which contains root-owned environment variable files we'd like to leave as-is)
+# - we need to do it without `mode`, or we risk making certain `.conf` and other files's executable bit to flip to true
+- name: Ensure redis data path ownership is correct
+  ansible.builtin.file:
+    path: "{{ matrix_redis_data_path }}"
+    state: directory
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_username }}"
+    recurse: true
+
+- name: Ensure redis environment variables file created
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_redis_base_path }}/{{ item }}"
+    mode: 0644
+  with_items:
+    - "redis.conf"
+
+- name: Ensure matrix-redis.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-redis.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-redis.service"
+    mode: 0644
+  register: matrix_redis_systemd_service_result

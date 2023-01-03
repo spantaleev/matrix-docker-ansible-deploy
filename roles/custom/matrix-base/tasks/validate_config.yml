@@ -1,0 +1,71 @@
+---
+
+- name: Fail if invalid homeserver implementation
+  ansible.builtin.fail:
+    msg: "You need to set a valid homeserver implementation in `matrix_homeserver_implementation`"
+  when: "matrix_homeserver_implementation not in ['synapse', 'dendrite', 'conduit']"
+
+- name: (Deprecation) Catch and report renamed settings
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'host_specific_hostname_identity', 'new': 'matrix_domain'}
+    - {'old': 'hostname_identity', 'new': 'matrix_domain'}
+    - {'old': 'hostname_matrix', 'new': 'matrix_server_fqn_matrix'}
+    - {'old': 'hostname_riot', 'new': 'matrix_server_fqn_element'}
+    - {'old': 'matrix_server_fqn_riot', 'new': 'matrix_server_fqn_element'}
+    - {'old': 'matrix_local_bin_path', 'new': '<there is no global bin path anymore - each role has its own>'}
+
+# We have a dedicated check for this variable, because we'd like to have a custom (friendlier) message.
+- name: Fail if matrix_homeserver_generic_secret_key is undefined
+  ansible.builtin.fail:
+    msg: |
+      The `matrix_homeserver_generic_secret_key` variable must be defined and have a non-null and non-empty value.
+
+      If you're observing this error on a new installation, you should ensure that the `matrix_homeserver_generic_secret_key` is defined.
+      If you think you've defined it, but are still getting this error, then it's likely that you have a typo
+      in your domain name in `inventory/hosts` or in one of the directories leading up to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file.
+
+      If you're observing this error on an existing homeserver installation, you can fix it easily and in a backward-compatible way by adding
+      `{% raw %}matrix_homeserver_generic_secret_key: "{{ matrix_synapse_macaroon_secret_key }}"{% endraw %}`
+      to your `vars.yml` file. Using another secret value for the new variable is also possible and shouldn't cause any trouble.
+  when: "matrix_homeserver_generic_secret_key is none or matrix_homeserver_generic_secret_key == ''"
+
+- name: Fail if required variables are undefined
+  ansible.builtin.fail:
+    msg: "The `{{ item.var }}` variable must be defined and have a non-null and non-empty value"
+  with_items:
+    - {'var': matrix_domain, 'value': "{{ matrix_domain | default('') }}"}
+    - {'var': matrix_server_fqn_matrix, 'value': "{{ matrix_server_fqn_matrix | default('') }}"}
+    - {'var': matrix_server_fqn_element, 'value': "{{ matrix_server_fqn_element | default('') }}"}
+    - {'var': matrix_homeserver_container_url, 'value': "{{ matrix_homeserver_container_url | default('') }}"}
+    - {'var': matrix_homeserver_container_federation_url, 'value': "{{ matrix_homeserver_container_federation_url | default('') }}"}
+    - {'var': matrix_architecture, 'value': "{{ matrix_architecture | default('') }}"}
+  when: "item.value is none or item.value == ''"
+
+- name: Fail if matrix_architecture is set incorrectly
+  ansible.builtin.fail:
+    msg: "Detected that variable matrix_architecture {{ matrix_architecture }} appears to be set incorrectly. See docs/alternative-architectures.md. Server appears to be {{ ansible_architecture }}."
+  when: matrix_architecture not in ['amd64', 'arm32', 'arm64']
+
+- name: Fail if uppercase domain used
+  ansible.builtin.fail:
+    msg: "Detected that you're using an uppercase domain name - `{{ item }}`. This will cause trouble. Please use all-lowercase!"
+  with_items:
+    - "{{ matrix_domain }}"
+    - "{{ matrix_server_fqn_matrix }}"
+    - "{{ matrix_server_fqn_element }}"
+  when: "item != item | lower"
+
+- name: Fail if encountering usage of removed role (mx-puppet-skype)
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration seems to include a reference to `matrix_mx_puppet_skype_enabled`. Are you trying to install the mx-puppet-skype bridge?
+      The playbook no longer includes a role for installing mx-puppet-skype, because the mx-puppet-bridge is unmaintained and has been reported as broken for a long time.
+      To get rid of this error, remove all `matrix_mx_puppet_*` references from your configuration.
+      To clean up your server from mx-puppet-skype's presence, see this changelog entry: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#mx-puppet-skype-removal.
+      If you still need bridging to Skype, consider switching to the go-skype bridge instead. See `docs/configuring-playbook-bridge-go-skype-bridge.md`.
+  when: "'matrix_mx_puppet_skype_enabled' in vars"

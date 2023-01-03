@@ -1,0 +1,91 @@
+---
+
+- name: Ensure Dendrite paths exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_dendrite_config_dir_path }}"
+    - "{{ matrix_dendrite_bin_path }}"
+    - "{{ matrix_dendrite_ext_path }}"
+    - "{{ matrix_dendrite_nats_storage_path }}"
+
+# This will throw a Permission Denied error if already mounted using fuse
+- name: Check Dendrite media store path
+  ansible.builtin.stat:
+    path: "{{ matrix_dendrite_media_store_path }}"
+  register: local_path_media_store_stat
+  ignore_errors: true
+
+# This is separate and conditional, to ensure we don't execute it
+# if the path already exists or we failed to check, because it's mounted using fuse.
+- name: Ensure Dendrite media store path exists
+  ansible.builtin.file:
+    path: "{{ matrix_dendrite_media_store_path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  when: "not local_path_media_store_stat.failed and not local_path_media_store_stat.stat.exists"
+
+- name: Ensure Dendrite Docker image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_dendrite_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_dendrite_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_dendrite_docker_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Check if a Dendrite signing key exists
+  ansible.builtin.stat:
+    path: "{{ matrix_dendrite_config_dir_path }}/{{ matrix_server_fqn_matrix }}.signing.pem"
+  register: matrix_dendrite_signing_key_stat
+
+# We do this so that the signing key would get generated.
+# We don't use the `docker_container` module, because using it with `cap_drop` requires
+# a very recent version, which is not available for a lot of people yet.
+- name: Generate Dendrite signing key
+  ansible.builtin.command: |
+    docker run
+    --rm
+    --name=matrix-dendrite-config
+    --entrypoint=generate-keys
+    --mount type=bind,src={{ matrix_dendrite_config_dir_path }},dst=/data
+    {{ matrix_dendrite_docker_image }} --private-key=/data/{{ matrix_server_fqn_matrix }}.signing.pem
+    generate
+  when: "not matrix_dendrite_signing_key_stat.stat.exists"
+
+- name: Ensure Dendrite server key exists
+  ansible.builtin.file:
+    path: "{{ matrix_dendrite_config_dir_path }}/{{ matrix_server_fqn_matrix }}.signing.pem"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Dendrite configuration installed
+  ansible.builtin.copy:
+    content: "{{ matrix_dendrite_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_dendrite_config_dir_path }}/dendrite.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-dendrite.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/dendrite/systemd/matrix-dendrite.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-dendrite.service"
+    mode: 0644
+
+- name: Ensure Dendrite scripts created
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/dendrite/bin/{{ item }}.j2"
+    dest: "{{ matrix_dendrite_bin_path }}/{{ item }}"
+    mode: 0750
+  with_items:
+    - create-account

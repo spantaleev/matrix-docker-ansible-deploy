@@ -175,7 +175,7 @@ client_api:
 
   # Prevents new users from being able to register on this homeserver, except when
   # using the registration shared secret below.
-  registration_disabled: {{ matrix_dendrite_registration_disabled|to_json }}
+  registration_disabled: {{ matrix_dendrite_client_api_registration_disabled | to_json }}
 
   # Prevents new guest accounts from being created. Guest registration is also
   # disabled implicitly by setting 'registration_disabled' above.
@@ -183,22 +183,25 @@ client_api:
 
   # If set, allows registration by anyone who knows the shared secret, regardless of
   # whether registration is otherwise disabled.
-  registration_shared_secret: {{ matrix_dendrite_registration_shared_secret | string|to_json }}
+  registration_shared_secret: {{ matrix_dendrite_client_api_registration_shared_secret | string | to_json }}
 
   # Whether to require reCAPTCHA for registration.
-  enable_registration_captcha: {{ matrix_dendrite_enable_registration_captcha|to_json }}
+  enable_registration_captcha: {{ matrix_dendrite_client_api_enable_registration_captcha | to_json }}
 
   # Settings for ReCAPTCHA.
-  recaptcha_public_key: {{ matrix_dendrite_recaptcha_public_key|to_json }}
-  recaptcha_private_key: {{ matrix_dendrite_recaptcha_private_key|to_json }}
+  recaptcha_public_key: {{ matrix_dendrite_client_api_recaptcha_public_key | to_json }}
+  recaptcha_private_key: {{ matrix_dendrite_client_api_recaptcha_private_key | to_json }}
   recaptcha_bypass_secret: ""
-  recaptcha_siteverify_api: {{ matrix_dendrite_recaptcha_siteverify_api|to_json }}
+  recaptcha_siteverify_api: {{ matrix_dendrite_client_api_recaptcha_siteverify_api | to_json }}
+  recaptcha_api_js_url: {{ matrix_dendrite_client_api_recaptcha_api_js_url | to_json }}
+  recaptcha_form_field: {{ matrix_dendrite_client_api_recaptcha_form_field | to_json }}
+  recaptcha_sitekey_class: {{ matrix_dendrite_client_api_recaptcha_sitekey_class | to_json }}
 
   # TURN server information that this homeserver should send to clients.
   turn:
     turn_user_lifetime: ""
-    turn_uris: {{ matrix_dendrite_turn_uris|to_json }}
-    turn_shared_secret: {{ matrix_dendrite_turn_shared_secret|to_json }}
+    turn_uris: {{ matrix_dendrite_client_api_turn_uris | to_json }}
+    turn_shared_secret: {{ matrix_dendrite_client_api_turn_shared_secret | to_json }}
     turn_username: ""
     turn_password: ""
 
@@ -206,9 +209,9 @@ client_api:
   # threshold number of "slots" have been taken by requests from a specific
   # host. Each "slot" will be released after the cooloff time in milliseconds.
   rate_limiting:
-    enabled: {{ matrix_dendrite_rate_limiting_enabled|to_json }}
-    threshold: {{ matrix_dendrite_rate_limiting_threshold|to_json }}
-    cooloff_ms: {{ matrix_dendrite_rate_limiting_cooloff_ms|to_json }}
+    enabled: {{ matrix_dendrite_client_api_rate_limiting_enabled | to_json }}
+    threshold: {{ matrix_dendrite_client_api_rate_limiting_threshold | to_json }}
+    cooloff_ms: {{ matrix_dendrite_client_api_rate_limiting_cooloff_ms | to_json }}
     exempt_user_ids:
     #  - "@user:domain.com"
 
@@ -382,6 +385,7 @@ user_api:
   # is considered to be valid in milliseconds.
   # The default lifetime is 3600000ms (60 minutes).
   # openid_token_lifetime_ms: 3600000
+  auto_join_rooms: {{ matrix_dendrite_userapi_auto_join_rooms | to_json }}
 
 # Not in dendrite-config.yaml, but is in build/docker/config/dendrite.yaml
 # Configuration for the Push Server API.
@@ -414,3 +418,7 @@ tracing:
 # Logging configuration, in addition to the standard logging that is sent to
 # stdout by Dendrite.
 logging: []
+
+# statistics reporting configuration. These statistics contain the server
+# name, number of active users and some information on your deployment config.
+report_stats: {{ matrix_dendrite_report_stats|to_json }}

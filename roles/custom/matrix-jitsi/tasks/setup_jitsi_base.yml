@@ -1,12 +1,8 @@
 ---
 
-- ansible.builtin.import_role:
+- ansible.builtin.include_role:
     name: custom/matrix-base
     tasks_from: ensure_openssl_installed
-
-#
-# Tasks related to setting up jitsi
-#
 
 - name: Ensure Matrix jitsi base path exists
   ansible.builtin.file:
@@ -17,8 +13,4 @@
     group: "{{ matrix_user_groupname }}"
   with_items:
     - {path: "{{ matrix_jitsi_base_path }}", when: true}
-  when: matrix_jitsi_enabled | bool and item.when
-
-#
-# Tasks related to getting rid of jitsi (if it was previously enabled)
-#
+  when: item.when | bool

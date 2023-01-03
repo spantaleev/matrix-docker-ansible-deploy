@@ -31,15 +31,15 @@
   ansible.builtin.set_fact:
     matrix_synapse_rust_synapse_compress_state_psql_import_command: >-
       {{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-rust-synapse-compress-state-psql-import
-      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+      --user={{ devture_postgres_uid }}:{{ devture_postgres_gid }}
       --cap-drop=ALL
-      --network={{ matrix_docker_network }}
-      --env-file={{ matrix_postgres_base_path }}/env-postgres-psql
+      --network={{ devture_postgres_container_network }}
+      --env-file={{ devture_postgres_base_path }}/env-postgres-psql
       --mount type=bind,src={{ matrix_synapse_rust_synapse_compress_state_base_path }},dst=/work,ro
       --entrypoint=/bin/sh
-      {{ matrix_postgres_docker_image_latest }}
+      {{ devture_postgres_container_image_latest }}
       -c "cat /work/state-compressor.sql |
-      psql -v ON_ERROR_STOP=1 -h matrix-postgres -d {{ matrix_synapse_database_database }}"
+      psql -v ON_ERROR_STOP=1 -h {{ devture_postgres_connection_hostname }} -d {{ matrix_synapse_database_database }}"
 
 - name: Import compression SQL into Postgres
   ansible.builtin.command: "{{ matrix_synapse_rust_synapse_compress_state_psql_import_command }}"

@@ -1,5 +1,10 @@
 ---
 
+- name: Fail if on an unsupported architecture
+  ansible.builtin.fail:
+    msg: "Jitsi only supports the amd64 architecture right now. See https://github.com/jitsi/docker-jitsi-meet/issues/1069 and https://github.com/jitsi/docker-jitsi-meet/issues/1214"
+  when: matrix_jitsi_enabled | bool and matrix_architecture not in ['amd64', 'arm64']
+
 - name: Fail if required Jitsi settings not defined
   ansible.builtin.fail:
     msg: >-

@@ -22,9 +22,6 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			--cap-drop=ALL \
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_nginx_proxy_tmp_directory_size_mb }}m \
-			{% if matrix_nginx_proxy_synapse_cache_enabled %}
-			--tmpfs=/tmp/synapse-cache:rw,noexec,nosuid,size={{ matrix_nginx_proxy_tmp_cache_directory_size_mb }}m\
-			{% endif %}
 			--network={{ matrix_docker_network }} \
 			{% if matrix_nginx_proxy_container_http_host_bind_port %}
 			-p {{ matrix_nginx_proxy_container_http_host_bind_port }}:8080 \
@@ -51,7 +48,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			{{ matrix_nginx_proxy_docker_image }}
 
 {% for network in matrix_nginx_proxy_container_additional_networks %}
-ExecStartPost={{ devture_systemd_docker_base_host_command_sh }} -c 'attempt=0; while [ $attempt -le 29 ]; do attempt=$(( $attempt + 1 )); if [ "`docker inspect -f {{ '{{.State.Running}}' }} matrix-nginx-proxy 2> /dev/null`" = "true" ]; then break; fi; sleep 1; done; {{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-nginx-proxy'
+ExecStartPost={{ devture_systemd_docker_base_host_command_sh }} -c 'container_name=matrix-nginx-proxy; network_name={{ network }}; attempt=0; while [ $attempt -le 29 ]; do attempt=$(( $attempt + 1 )); if [ "`{{ devture_systemd_docker_base_host_command_docker }} inspect -f {{ '{{.State.Running}}' }} $container_name 2> /dev/null`" = "true" ]; then break; fi; sleep 1; done; {{ devture_systemd_docker_base_host_command_docker }} network connect $network_name $container_name'
 {% endfor %}
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-nginx-proxy 2>/dev/null || true'

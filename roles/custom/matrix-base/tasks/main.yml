@@ -1,37 +1,39 @@
 ---
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/sanity_check.yml"
-  tags:
-    - always
-
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/clean_up_old_files.yml"
-  when: run_setup | bool
+- block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
   tags:
     - setup-all
-
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/server_base/setup.yml"
-  when: run_setup | bool
-  tags:
-    - setup-all
+    - install-all
 
 # This needs to always run, because it populates `matrix_user_uid` and `matrix_user_gid`,
 # which are required by many other roles.
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_matrix_user.yml"
-  when: run_setup | bool
+- block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_matrix_user.yml"
   tags:
     - always
     - setup-system-user
+    - common
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_matrix_base.yml"
-  when: run_setup | bool
+- block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_matrix_base.yml"
   tags:
     - setup-all
+    - install-all
+    - common
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_well_known.yml"
-  when: run_setup | bool
+- block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_well_known.yml"
   tags:
     - setup-all
     - setup-ma1sd
     - setup-synapse
     - setup-dendrite
+    - setup-conduit
     - setup-nginx-proxy
+    - install-all
+    - install-ma1sd
+    - install-synapse
+    - install-dendrite
+    - install-conduit
+    - install-nginx-proxy

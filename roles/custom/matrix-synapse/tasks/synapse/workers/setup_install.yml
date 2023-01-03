@@ -7,12 +7,16 @@
     use_regex: true
   register: matrix_synapse_workers_current_config_files
 
+- ansible.builtin.set_fact:
+    matrix_synapse_enabled_worker_names: "{{ matrix_synapse_workers_enabled_list | map(attribute='name') }}"
+
 # This also deletes some things which we need. They will be recreated below.
-- name: Ensure previous worker configs are cleaned
+- name: Ensure unnecessary worker configs are cleaned
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: absent
   with_items: "{{ matrix_synapse_workers_current_config_files.files }}"
+  when: "not ansible_check_mode and (item.path | basename | replace ('worker.', '') | replace('.yaml', '')) not in matrix_synapse_enabled_worker_names"
 
 - name: Determine current worker systemd services
   ansible.builtin.find:
@@ -27,13 +31,14 @@
     state: stopped
     enabled: false
   with_items: "{{ matrix_synapse_workers_current_systemd_services.files }}"
-  when: "not ansible_check_mode and item.path | basename not in matrix_systemd_services_list"
+  when: "not ansible_check_mode and (item.path | basename | replace('.service', '')) not in matrix_synapse_enabled_worker_names"
 
 - name: Ensure unnecessary worker systemd services are cleaned
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: absent
   with_items: "{{ matrix_synapse_workers_current_systemd_services.files }}"
+  when: "not ansible_check_mode and (item.path | basename | replace('.service', '')) not in matrix_synapse_enabled_worker_names"
 
 - name: Ensure creation of worker systemd service files and configuration files
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/util/setup_files_for_worker.yml"

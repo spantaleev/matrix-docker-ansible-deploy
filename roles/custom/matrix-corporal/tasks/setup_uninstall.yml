@@ -1,0 +1,28 @@
+---
+
+- name: Check existence of matrix-corporal service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-corporal.service"
+  register: matrix_corporal_service_stat
+
+- when: matrix_corporal_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-corporal is stopped
+      ansible.builtin.service:
+        name: matrix-corporal
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-corporal.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-corporal.service"
+        state: absent
+
+    - name: Ensure matrix-corporal files don't exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ devture_systemd_docker_base_systemd_path }}/matrix-corporal.service"
+        - "{{ matrix_corporal_config_dir_path }}/config.json"

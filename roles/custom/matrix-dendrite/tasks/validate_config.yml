@@ -5,7 +5,8 @@
       You need to define a required configuration setting (`{{ item }}`) for using Dendrite.
   when: "vars[item] == ''"
   with_items:
-    - "matrix_dendrite_registration_shared_secret"
+    - matrix_dendrite_client_api_registration_shared_secret
+    - matrix_dendrite_database_hostname
 
 - name: (Deprecation) Catch and report renamed settings
   ansible.builtin.fail:
@@ -13,4 +14,16 @@
       Your configuration contains a variable, which now has a different name.
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
   when: "item.old in vars"
-  with_items: []
+  with_items:
+    - {'old': 'matrix_dendrite_enable_registration_captcha', 'new': 'matrix_dendrite_client_api_enable_registration_captcha'}
+    - {'old': 'matrix_dendrite_recaptcha_public_key', 'new': 'matrix_dendrite_client_api_recaptcha_public_key'}
+    - {'old': 'matrix_dendrite_recaptcha_private_key', 'new': 'matrix_dendrite_client_api_recaptcha_private_key'}
+    - {'old': 'matrix_dendrite_registration_disabled', 'new': 'matrix_dendrite_client_api_registration_disabled'}
+    - {'old': 'matrix_dendrite_registration_shared_secret', 'new': 'matrix_dendrite_client_api_registration_shared_secret'}
+    - {'old': 'matrix_dendrite_turn_uris', 'new': 'matrix_dendrite_client_api_turn_uris'}
+    - {'old': 'matrix_dendrite_turn_client_api_shared_secret', 'new': 'matrix_dendrite_client_api_turn_shared_secret'}
+    - {'old': 'matrix_dendrite_client_api_turn_client_api_shared_secret', 'new': 'matrix_dendrite_client_api_turn_shared_secret'}
+    - {'old': 'matrix_dendrite_turn_allow_guests', 'new': 'matrix_dendrite_client_api_turn_allow_guests'}
+    - {'old': 'matrix_dendrite_rate_limiting_enabled', 'new': 'matrix_dendrite_client_api_rate_limiting_enabled'}
+    - {'old': 'matrix_dendrite_rate_limiting_threshold', 'new': 'matrix_dendrite_client_api_rate_limiting_threshold'}
+    - {'old': 'matrix_dendrite_rate_limiting_cooloff_ms', 'new': 'matrix_dendrite_client_api_rate_limiting_cooloff_ms'}
