@@ -3,7 +3,6 @@
 **Note**: bridging to [Slack](https://slack.com/) can also happen via the [mx-puppet-slack](configuring-playbook-bridge-mx-puppet-slack.md) and [matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md) bridges supported by the playbook.
 - For using as a Bot we recommend the [Appservice Slack](configuring-playbook-bridge-appservice-slack.md), because it supports plumbing.
 - For personal use with a slack account we recommend the `mautrix-slack` bridge (the one being discussed here), because it is the most fully-featured and stable of the 3 Slack bridges supported by the playbook.
-The `mautrix-slack` bridge (the one being discussed here) is the most fully-featured and stable of the 3 Slack bridges supported by the playbook, so it's the one we recommend.
 
 The playbook can install and configure [mautrix-slack](https://github.com/mautrix/slack) for you.
 
@@ -18,7 +17,7 @@ See the [features and roadmap](https://github.com/mautrix/slack/blob/main/ROADMA
 
 For using this bridge, you would need to authenticate by **providing your username and password** (legacy) or by using a **token login**. See more information in the [docs](https://docs.mau.fi/bridges/go/slack/authentication.html).
 
-Note that neither of these methods are officially supported by Slack. [matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md) uses a Slack bot account which is the only Slack officially supported method for bridging a channel.
+Note that neither of these methods are officially supported by Slack. [matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md) uses a Slack bot account which is the only officially supported method for bridging a Slack channel.
 
 
 ## Installing
@@ -38,7 +37,7 @@ To make use of the bridge, see [Usage](#usage) below.
 
 ### Additional configuration
 
-There are some additional things you may wish to configure about the bridge.
+There are some additional options you may wish to configure with the bridge.
 
 Take a look at:
 
@@ -72,7 +71,7 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 ## Usage
 
 1. Start a chat with `@slackbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
-2. If you would like to login to Slack using a token, send the `login-token` command, otherwise, send the `login-password` command.
+2. If you would like to login to Slack using a token, send the `login-token` command, otherwise, send the `login-password` command. Read [here](https://docs.mau.fi/bridges/go/slack/authentication.html) on how to retrieve your token and cookie token.
 3. The bot should respond with "Successfully logged into <email> for team <workspace>"
 4. Now that you're logged in, you can send a `help` command to the bot again, to see additional commands you have access to.
 5. Slack channels should automatically begin bridging if you authenticated using a token. Otherwise, you must wait to receive a message in the channel if you used password authentication.
