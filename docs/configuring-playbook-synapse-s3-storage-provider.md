@@ -43,7 +43,7 @@ matrix_synapse_ext_synapse_s3_storage_provider_config_storage_class: STANDARD # 
 # This is not recommended unless you understand what you are doing, and may make restoring from backups additionally challenging
 # You can read more about SSE-C here: https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html
 matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_enabled: true
-matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_key: ssec-key-goes-here # Generate with: cat /dev/urandom | head -c 32 | base64 -
+matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_key: ssec-key-goes-here # Generate with: cat /dev/urandom | base64 | head -c 32
 matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_algo: AES256
 # Using the git version is also required until > v1.1.2 is released
 matrix_synapse_ext_synapse_s3_storage_provider_version: git
