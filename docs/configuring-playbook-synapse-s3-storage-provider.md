@@ -39,6 +39,13 @@ matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id: access-key-
 matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key: secret-key-goes-here
 matrix_synapse_ext_synapse_s3_storage_provider_config_storage_class: STANDARD # or STANDARD_IA, etc.
 
+# S3 Server Side Encryption with a Customer provided key (SSE-C) can also be configured as follows
+# This is not recommended unless you understand what you are doing, and may make restoring from backups additionally challenging
+# You can read more about SSE-C here: https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html
+matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_enabled: true
+matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_key: ssec-key-goes-here # Generate with: cat /dev/urandom | head -c 32 | base64 -
+matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_algo: AES256
+
 # For additional advanced settings, take a look at `roles/custom/matrix-synapse/defaults/main.yml`
 ```
 
