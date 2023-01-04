@@ -1,0 +1,24 @@
+---
+
+- name: verify all necessary variables are present
+  assert:
+    that:
+      - matrix_user_verification_service_uvs_access_token is defined and matrix_user_verification_service_uvs_access_token|length
+      - matrix_user_verification_service_uvs_homeserver_url is defined and matrix_user_verification_service_uvs_homeserver_url|length
+    fail_msg: "Missing variable in {{ matrix_user_verification_service_ansible_name }} role"
+
+- block:
+    - when: run_setup | bool and matrix_user_verification_service_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-user-verification-service
+    - install-all
+    - install-user-verification-service
+
+- block:
+    - when: run_setup | bool and not matrix_user_verification_service_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+  tags:
+    - setup-all
+    - setup-user-verification-service

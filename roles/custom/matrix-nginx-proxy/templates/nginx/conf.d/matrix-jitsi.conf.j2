@@ -18,6 +18,15 @@
 	{{- configuration_block }}
 {% endfor %}
 
+	{% if matrix_nginx_proxy_proxy_jitsi_manage_wellknown %}
+	location /.well-known {
+		root {{ matrix_static_files_base_path  }};
+		expires 4h;
+		default_type application/json;
+		add_header Access-Control-Allow-Origin *;
+	}
+	{% endif %}
+
 	location / {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
@@ -75,7 +84,7 @@
 		{% if matrix_nginx_proxy_enabled %}
 			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 			set $backend {{ matrix_jitsi_xmpp_bosh_url_base }};
-			proxy_pass $backend/xmpp-websocket;
+			proxy_pass $backend$request_uri;
 		{% else %}
 			{# Generic configuration for use outside of our container setup #}
 			proxy_pass http://127.0.0.1:5280;

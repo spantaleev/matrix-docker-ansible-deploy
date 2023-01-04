@@ -1,0 +1,81 @@
+---
+# Set this to the display name for ansible used in Output e.g. fail_msg
+matrix_user_verification_service_ansible_name: "Matrix User Verification Service"
+
+# Enable by default. This is overwritten in provided group vars.
+matrix_user_verification_service_enabled: true
+
+# Fix version tag
+matrix_user_verification_service_version: "v2.0.0"
+
+# Paths
+matrix_user_verification_service_base_path: "{{ matrix_base_data_path }}/user-verification-service"
+# We need the docker src directory to be named user_verification_service. See: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/588
+matrix_user_verification_service_docker_src_files_path: "{{ matrix_user_verification_service_base_path }}/docker-src/user-verification-service"
+matrix_user_verification_service_config_path: "{{ matrix_user_verification_service_base_path }}/config"
+matrix_user_verification_service_config_env_file: "{{ matrix_user_verification_service_config_path }}/.env"
+
+# Set this to true in order to not use the docker image from docker hub, but rather build locally
+matrix_user_verification_service_container_image_self_build: false
+matrix_user_verification_service_container_image_self_build_repo: "https://github.com/matrix-org/matrix-user-verification-service.git"
+matrix_user_verification_service_container_image_self_build_branch: "{{ matrix_user_verification_service_version }}"
+
+# Docker
+matrix_user_verification_service_docker_image_name_prefix: "{{ 'localhost/' if matrix_user_verification_service_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_user_verification_service_docker_image: "{{ matrix_user_verification_service_docker_image_name_prefix }}matrixdotorg/matrix-user-verification-service:{{ matrix_user_verification_service_version }}"
+matrix_user_verification_service_docker_image_force_pull: "{{ matrix_user_verification_service_docker_image.endswith(':latest') }}"
+
+matrix_user_verification_service_container_name: "matrix-user-verification-service"
+# Normally this would run on port 3000 however that may conflict with grafana. It is thus advised to change this port.
+#matrix_user_verification_service_container_http_host_bind_port:
+matrix_user_verification_service_container_extra_arguments: []
+# Systemd
+matrix_user_verification_service_systemd_required_services_list: []
+matrix_user_verification_service_systemd_wanted_services_list: []
+matrix_user_verification_service_systemd_service_basename: "matrix-user-verification-service"
+matrix_user_verification_service_systemd_service_name: "{{ matrix_user_verification_service_systemd_service_basename }}.service"
+
+# Matrix User Verification Service Configuration
+## REQUIRED
+
+# Homeserver client API admin token (synapse only)-  Required for the service to verify room membership
+# matrix_user_verification_service_uvs_access_token:
+
+# homeserver client api url
+# matrix_user_verification_service_uvs_homeserver_url: ""
+# disable check for non private ip range of homeserver. e.g. set to `true` if your homeserver domain resolves to a private ip.
+matrix_user_verification_service_uvs_disable_ip_blacklist: false
+
+## OPTIONAL
+
+# Auth token to protect the API
+# If this is set any calls to the provided API endpoints
+# need have the header "Authorization: Bearer changeme".
+# matrix_user_verification_service_uvs_auth_token: changeme
+
+# Matrix server name to verify OpenID tokens against. See below section.
+# Defaults to empty value which means verification is made against
+# whatever Matrix server name passed in with the token
+# matrix_user_verification_service_uvs_openid_verify_server_name: matrix.org
+
+# Log level, defaults to 'info'
+# See choices here: https://github.com/winstonjs/winston#logging-levels
+# matrix_user_verification_service_uvs_log_level: info
+
+
+######################################################################
+#####                                                            #####
+##### Variables used in this role which are not set by this role #####
+#####                                                            #####
+######################################################################
+
+# matrix_user_username
+# matrix_user_groupname
+# matrix_user_uid
+# matrix_user_gid
+# matrix_container_global_registry_prefix
+# matrix_docker_network
+# devture_systemd_docker_base_systemd_path
+# devture_systemd_docker_base_systemd_unit_home_path
+# devture_systemd_docker_base_host_command_sh
+# devture_systemd_docker_base_host_command_docker
