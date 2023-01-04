@@ -15,7 +15,11 @@ ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_s
 ExecStartPre={{ matrix_host_command_sleep }} 5
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name {{ matrix_synapse_worker_container_name }} \
+			{% if matrix_synapse_log_driver %}
+			--log-driver={{ matrix_synapse_log_driver }} \
+			{% else %}
 			--log-driver=none \
+			{% endif %}
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--read-only \
