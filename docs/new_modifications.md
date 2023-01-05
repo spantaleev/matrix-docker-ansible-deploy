@@ -1,4 +1,4 @@
-# Endpoint update
+# Endpoint 
 
 https://github.com/yassineaouam/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-synapse/templates/synapse/ext/s3-storage-provider/env.j2
 
@@ -6,11 +6,17 @@ https://github.com/yassineaouam/matrix-docker-ansible-deploy/blob/master/roles/c
     ENDPOINT={{ matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url }}
     {% endif %}
 
+https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-synapse/templates/synapse/ext/s3-storage-provider/media_storage_provider.yaml.j2
+
+    {% if matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url %}
+    endpoint_url: {{ matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url | to_json }}
+    {% endif %}
+
 - there is a condition on the matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url variable so that if we set a value in the vars file, it's going to be affected to it.
-If not, there won't be any need for the variable endpoints_url: '' to be shown with an empty field. 
+If not, there won't be any need for the variable endpoint_url: '' to be shown with an empty field. 
 
 
-# Serching users update
+# Serching users 
 
 https://github.com/yassineaouam/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2
 
@@ -22,7 +28,7 @@ https://github.com/yassineaouam/matrix-docker-ansible-deploy/blob/master/roles/c
 Once you write the first character, options starting with that character begin to appear.
 
 
-# log drive update
+# log driver 
 
 https://github.com/yassineaouam/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-synapse/templates/synapse/systemd/matrix-synapse-worker.service.j2
 
