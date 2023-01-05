@@ -2622,7 +2622,9 @@ user_directory:
     # Uncomment to return search results containing all known users, even if that
     # user does not share a room with the requester.
     #
-    search_all_users: true
+    {% if matrix_synapse_config_search_all_users %}
+    search_all_users: {{ matrix_synapse_config_search_all_users  }}
+    {% endif %}
 
     # Defines whether to prefer local users in search query results.
     # If True, local users are more likely to appear above remote users
