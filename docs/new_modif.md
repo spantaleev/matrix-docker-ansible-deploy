@@ -1,6 +1,6 @@
 # Endpoint update
 
-https://github.com/yassineaouam/matrix-docker-ansible-deploy/roles/custom/matrix-synapse/templates/synapse/ext/s3-storage-provider/env.j2
+https://github.com/yassineaouam/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-synapse/templates/synapse/ext/s3-storage-provider/env.j2
 
     {% if matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url %}
     ENDPOINT={{ matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url }}
@@ -12,7 +12,7 @@ If not, there won't be any need for the variable endpoints_url: '' to be shown w
 
 # Serching users update
 
-https://github.com/yassineaouam/matrix-docker-ansible-deploy/roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2
+https://github.com/yassineaouam/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2
 
     {% if matrix_synapse_config_search_all_users %}
     search_all_users: {{ matrix_synapse_config_search_all_users  }}
@@ -24,9 +24,9 @@ Once you write the first character, options starting with that character begin t
 
 # log drive update
 
-https://github.com/yassineaouam/matrix-docker-ansible-deploy/roles/custom/matrix-synapse/templates/synapse/systemd/matrix-synapse-worker.service.j2
+https://github.com/yassineaouam/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-synapse/templates/synapse/systemd/matrix-synapse-worker.service.j2
 
-https://github.com/yassineaouam/matrix-docker-ansible-deploy/roles/custom/matrix-synapse/templates/goofys/systemd/matrix-goofys.service.j2
+https://github.com/yassineaouam/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-synapse/templates/goofys/systemd/matrix-goofys.service.j2
 
 	{% if matrix_synapse_log_driver %}
 	--log-driver={{ matrix_synapse_log_driver }} \
