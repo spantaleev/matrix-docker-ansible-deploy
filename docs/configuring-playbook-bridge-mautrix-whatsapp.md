@@ -13,12 +13,12 @@ Whatsapp multidevice beta is required, now it is enough if Whatsapp is connected
 
 The relay bot functionality is off by default. If you would like to enable the relay bot, add the following to your `vars.yml` file:
 ```yaml
-matrix_mautrix_whatsapp_relaybot_enabled: true
+matrix_mautrix_whatsapp_bridge_relay_enabled: true
 ```
 
 By default, only admins are allowed to set themselves as relay users. To allow anyone on your homeserver to set themselves as relay users add this to your `vars.yml` file:
 ```yaml
-matrix_mautrix_whatsapp_relaybot_admin_only: false
+matrix_mautrix_whatsapp_bridge_relay_admin_only: false
 ```
 
 If you want to activate the relay bot in a room, use `!whatsapp set-relay`.
