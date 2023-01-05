@@ -12,7 +12,11 @@ ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} kill %n
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} rm %n
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name %n \
-			--log-driver=json-file \
+			{% if matrix_synapse_log_driver %}
+			--log-driver={{ matrix_synapse_log_driver }} \
+			{% else %}
+			--log-driver=none \
+			{% endif %}
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--mount type=bind,src=/etc/passwd,dst=/etc/passwd,ro \
 			--mount type=bind,src=/etc/group,dst=/etc/group,ro \

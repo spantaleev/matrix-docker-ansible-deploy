@@ -24,6 +24,7 @@ Once you write the first character, options starting with that character begin t
 # log drive update
 
 matrix-docker-ansible-deploy/roles/custom/matrix-synapse/templates/synapse/systemd/matrix-synapse-worker.service.j2
+matrix-docker-ansible-deploy/roles/custom/matrix-synapse/templates/goofys/systemd/matrix-goofys.service.j2
 
 	{% if matrix_synapse_log_driver %}
 	--log-driver={{ matrix_synapse_log_driver }} \
