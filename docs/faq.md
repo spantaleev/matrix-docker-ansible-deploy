@@ -390,6 +390,12 @@ See [How can I see the logs?](#how-can-i-see-the-logs).
 
 ### How can I see the logs?
 
+By default, we're configuring containers to use "none" as the logging driver, meaning that the output is simply discarded. By using 
+
+`matrix_synapse_log_driver=json-file`
+
+in your host vars, you can set it to something else (in this case, "json-file").
+
 We utilize [systemd/journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html#Description) for logging.
 
 To see logs for Synapse, run `journalctl -fu matrix-synapse.service`. You may wish to see the [manual page for journalctl](https://www.commandlinux.com/man-page/man1/journalctl.1.html).
