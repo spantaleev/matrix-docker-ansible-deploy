@@ -45,8 +45,6 @@ matrix_synapse_ext_synapse_s3_storage_provider_config_storage_class: STANDARD # 
 matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_enabled: true
 matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_key: ssec-key-goes-here # Generate with: cat /dev/urandom | base64 | head -c 32
 matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_algo: AES256
-# Using the git version is also required for SSE-C until > v1.1.2 is released
-matrix_synapse_ext_synapse_s3_storage_provider_version: git
 
 # For additional advanced settings, take a look at `roles/custom/matrix-synapse/defaults/main.yml`
 ```
