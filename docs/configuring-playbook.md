@@ -161,6 +161,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Bots
 
+- [Setting up matrix-bot-chatgpt](configuring-playbook-bot-chatgpt.md) - talk to [ChatGPT](https://openai.com/blog/chatgpt/) via your favourite Matrix client (optional)
+
 - [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) - a bot to remind you about stuff (optional)
 
 - [Setting up matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md) - a bot to create and manage registration tokens to invite users (optional)

@@ -187,6 +187,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-bot-postmoogle.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'postmoogle']}] if matrix_bot_postmoogle_enabled else [])
     +
+    ([{'name': 'matrix-bot-chatgpt.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'chatgpt']}] if matrix_bot_chatgpt_enabled else [])
+    +
     ([{'name': 'matrix-appservice-discord.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'appservice-discord']}] if matrix_appservice_discord_enabled else [])
     +
     ([{'name': 'matrix-appservice-irc.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'appservice-irc']}] if matrix_appservice_irc_enabled else [])
@@ -1610,6 +1612,24 @@ matrix_bot_postmoogle_database_password: "{{ '%s' | format(matrix_homeserver_gen
 ######################################################################
 #
 # /matrix-bot-postmoogle
+#
+######################################################################
+
+
+######################################################################
+#
+# matrix-bot-chatgpt
+#
+######################################################################
+
+# We don't enable bots by default.
+matrix_bot_chatgpt_enabled: false
+
+matrix_bot_chatgpt_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
+
+######################################################################
+#
+# /matrix-bot-chatgpt
 #
 ######################################################################
 
