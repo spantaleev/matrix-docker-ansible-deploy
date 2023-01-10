@@ -2,7 +2,7 @@
 
 The playbook can install and configure [matrix-chatgpt-bot](https://github.com/matrixgpt/matrix-chatgpt-bot) for you.
 
-Talk to ChatGPT via your favourite Matrix client!
+Talk to [ChatGPT](https://openai.com/blog/chatgpt/) via your favourite Matrix client!
 
 
 ## 1. Register the bot account
