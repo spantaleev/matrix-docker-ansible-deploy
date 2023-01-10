@@ -1,3 +1,12 @@
+# 2023-01-10
+
+## ChatGPT support
+
+Thanks to [@bertybuttface](https://github.com/bertybuttface), the playbook can now help you set up [matrix-chatgpt-bot](https://github.com/matrixgpt/matrix-chatgpt-bot) - a bot through which you can talk to the [ChatGPT](https://openai.com/blog/chatgpt/) model.
+
+See our [Setting up matrix-bot-chatgpt](docs/configuring-playbook-bot-chatgpt.md) documentation to get started.
+
+
 # 2022-11-30
 
 ## matrix-postgres-backup has been replaced by the com.devture.ansible.role.postgres_backup external role
