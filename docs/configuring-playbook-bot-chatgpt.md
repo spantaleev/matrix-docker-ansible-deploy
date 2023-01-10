@@ -31,19 +31,19 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 
 ```yaml
 matrix_bot_chatgpt_enabled: true
+
 # See instructions on
 # https://www.npmjs.com/package/chatgpt
 matrix_bot_chatgpt_openai_email: ''
 matrix_bot_chatgpt_openai_password: ''
 matrix_bot_chatgpt_openai_login_type: google
-# With the @ and :DOMAIN, ie @SOMETHING:DOMAIN
-matrix_bot_chatgpt_matrix_bot_username: '@bot.chatgpt:{{ matrix_domain }}'
+
+# This is the default username
+# matrix_bot_chatgpt_matrix_bot_username_localpart: 'bot.chatgpt'
+
 # Matrix access token (from bot user above)
 # see: https://webapps.stackexchange.com/questions/131056/how-to-get-an-access-token-for-element-riot-matrix
 matrix_bot_chatgpt_matrix_access_token: ''
-matrix_bot_chatgpt_matrix_default_prefix: '!chatgpt '
-matrix_bot_chatgpt_matrix_default_prefix_reply: false
-matrix_bot_chatgpt_matrix_whitelist: ':{{ matrix_domain }}'
 ```
 
 You will need to get tokens for ChatGPT.
@@ -54,12 +54,8 @@ You will need to get tokens for ChatGPT.
 After configuring the playbook, run the [installation](installing.md) command again:
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
 ```
-
-**Notes**:
-
-- if you change the bot password (`matrix_bot_chatgpt_matrix_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_chatgpt_matrix_password` to let the bot know its new password
 
 
 ## Usage
