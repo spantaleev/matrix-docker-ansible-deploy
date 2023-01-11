@@ -53,6 +53,8 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_mautrix_discord_config_path + '/registration.yaml,dst=/matrix-mautrix-discord-registration.yaml,ro'] if matrix_mautrix_discord_enabled else [])
     +
+    (['--mount type=bind,src=' + matrix_mautrix_slack_config_path + '/registration.yaml,dst=/matrix-mautrix-slack-registration.yaml,ro'] if matrix_mautrix_slack_enabled else [])
+    +
     (['--mount type=bind,src=' + matrix_mautrix_facebook_config_path + '/registration.yaml,dst=/matrix-mautrix-facebook-registration.yaml,ro'] if matrix_mautrix_facebook_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_mautrix_googlechat_config_path + '/registration.yaml,dst=/matrix-mautrix-googlechat-registration.yaml,ro'] if matrix_mautrix_googlechat_enabled else [])
@@ -107,6 +109,8 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/hookshot-registration.yml'] if matrix_hookshot_enabled else [])
     +
     (['/matrix-mautrix-discord-registration.yaml'] if matrix_mautrix_discord_enabled else [])
+    +
+    (['/matrix-mautrix-slack-registration.yaml'] if matrix_mautrix_slack_enabled else [])
     +
     (['/matrix-mautrix-facebook-registration.yaml'] if matrix_mautrix_facebook_enabled else [])
     +
@@ -210,6 +214,8 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-hookshot.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'hookshot']}] if matrix_hookshot_enabled else [])
     +
     ([{'name': 'matrix-mautrix-discord.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-discord']}] if matrix_mautrix_discord_enabled else [])
+    +
+    ([{'name': 'matrix-mautrix-slack.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-slack']}] if matrix_mautrix_slack_enabled else [])
     +
     ([{'name': 'matrix-mautrix-facebook.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-facebook']}] if matrix_mautrix_facebook_enabled else [])
     +
@@ -723,6 +729,46 @@ matrix_mautrix_discord_database_password: "{{ '%s' | format(matrix_homeserver_ge
 ######################################################################
 #
 # /matrix-bridge-mautrix-discord
+#
+######################################################################
+
+
+######################################################################
+#
+# matrix-bridge-mautrix-slack
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_mautrix_slack_enabled: false
+
+matrix_mautrix_slack_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+
+matrix_mautrix_slack_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    ['matrix-' + matrix_homeserver_implementation + '.service']
+    +
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+  }}
+
+matrix_mautrix_slack_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mauslack.as.tok', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_slack_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mauslack.hs.tok', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_slack_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
+# Postgres is the default, except if not using internal Postgres server
+matrix_mautrix_slack_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
+matrix_mautrix_slack_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
+matrix_mautrix_slack_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mauslack.db', rounds=655555) | to_uuid }}"
+
+######################################################################
+#
+# /matrix-bridge-mautrix-slack
 #
 ######################################################################
 
@@ -2463,6 +2509,12 @@ devture_postgres_managed_databases_auto: |
       'username': matrix_mautrix_discord_database_username,
       'password': matrix_mautrix_discord_database_password,
     }] if (matrix_mautrix_discord_enabled and matrix_mautrix_discord_database_engine == 'postgres' and matrix_mautrix_discord_database_hostname == devture_postgres_connection_hostname) else [])
+    +
+    ([{
+      'name': matrix_mautrix_slack_database_name,
+      'username': matrix_mautrix_slack_database_username,
+      'password': matrix_mautrix_slack_database_password,
+    }] if (matrix_mautrix_slack_enabled and matrix_mautrix_slack_database_engine == 'postgres' and matrix_mautrix_slack_database_hostname == devture_postgres_connection_hostname) else [])
     +
     ([{
       'name': matrix_mx_puppet_slack_database_name,
