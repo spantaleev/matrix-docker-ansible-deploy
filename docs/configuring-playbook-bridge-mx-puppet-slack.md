@@ -1,8 +1,7 @@
 # Setting up MX Puppet Slack (optional)
 
 **Note**: bridging to [Slack](https://slack.com) can also happen via the
-[matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md)
-bridge supported by the playbook.
+[matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md) and [mautrix-slack](configuring-playbook-bridge-mautrix-slack.md) bridges supported by the playbook.
 
 The playbook can install and configure [Beeper](https://www.beeper.com/)-maintained fork of
 [mx-puppet-slack](https://gitlab.com/beeper/mx-puppet-monorepo) for you.

@@ -1,3 +1,12 @@
+# 2023-01-11
+
+## mautrix-slack support
+
+Thanks to [Cody Neiman](https://github.com/xangelix)'s efforts, the playbook now supports bridging to [Slack](https://slack.com/) via the [mautrix-slack](https://mau.dev/mautrix/slack) bridge. See our [Setting up Mautrix Slack bridging](docs/configuring-playbook-bridge-mautrix-slack.md) documentation page for getting started.
+
+**Note**: this is a new Slack bridge. The playbook still retains Slack bridging via [matrix-appservice-slack](docs/configuring-playbook-bridge-appservice-slack.md) and [mx-puppet-slack](docs/configuring-playbook-bridge-mx-puppet-slack.md). You're free too use the bridge that serves you better, or even all three of them (for different users and use-cases).
+
+
 # 2023-01-10
 
 ## ChatGPT support
