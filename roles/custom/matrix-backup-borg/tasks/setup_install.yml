@@ -2,25 +2,25 @@
 
 - when: matrix_backup_borg_postgresql_enabled | bool and matrix_backup_borg_version == ''
   block:
-  - name: Fail with matrix_backup_borg_version advice if Postgres not enabled
-    ansible.builtin.fail:
-      msg: >-
-        You are not running a built-in Postgres server (`devture_postgres_enabled: false`), so auto-detecting its version and setting `matrix_backup_borg_version` automatically based on that cannot happen.
-        Consider setting `matrix_backup_borg_version` to your Postgres version manually.
-    when: not devture_postgres_enabled
+    - name: Fail with matrix_backup_borg_version advice if Postgres not enabled
+      ansible.builtin.fail:
+        msg: >-
+          You are not running a built-in Postgres server (`devture_postgres_enabled: false`), so auto-detecting its version and setting `matrix_backup_borg_version` automatically based on that cannot happen.
+          Consider setting `matrix_backup_borg_version` to your Postgres version manually.
+      when: not devture_postgres_enabled
 
-  - ansible.builtin.include_role:
-      name: galaxy/com.devture.ansible.role.postgres
-      tasks_from: detect_existing_postgres_version
+    - ansible.builtin.include_role:
+        name: galaxy/com.devture.ansible.role.postgres
+        tasks_from: detect_existing_postgres_version
 
-  - name: Fail if detected Postgres version is unsupported
-    ansible.builtin.fail:
-      msg: "You cannot use borg backup with such an old version ({{ devture_postgres_detected_version }}) of Postgres. Consider upgrading - link to docs for upgrading Postgres: docs/maintenance-postgres.md#upgrading-postgresql"
-    when: "devture_postgres_detected_version not in matrix_backup_borg_supported_postgres_versions"
+    - name: Fail if detected Postgres version is unsupported
+      ansible.builtin.fail:
+        msg: "You cannot use borg backup with such an old version ({{ devture_postgres_detected_version }}) of Postgres. Consider upgrading - link to docs for upgrading Postgres: docs/maintenance-postgres.md#upgrading-postgresql"
+      when: "devture_postgres_detected_version not in matrix_backup_borg_supported_postgres_versions"
 
-  - name: Set the correct borg backup version to use
-    ansible.builtin.set_fact:
-      matrix_backup_borg_version: "{{ devture_postgres_detected_version }}"
+    - name: Set the correct borg backup version to use
+      ansible.builtin.set_fact:
+        matrix_backup_borg_version: "{{ devture_postgres_detected_version }}"
 
 - name: Ensure borg paths exist
   ansible.builtin.file:
