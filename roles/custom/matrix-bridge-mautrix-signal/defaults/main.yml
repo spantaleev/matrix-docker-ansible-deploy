@@ -12,7 +12,8 @@ matrix_mautrix_signal_docker_src_files_path: "{{ matrix_base_data_path }}/mautri
 matrix_mautrix_signal_version: v0.4.2
 matrix_mautrix_signal_daemon_version: 0.23.1
 # See: https://mau.dev/mautrix/signal/container_registry
-matrix_mautrix_signal_docker_image: "dock.mau.dev/mautrix/signal:{{ matrix_mautrix_signal_version }}"
+matrix_mautrix_signal_docker_image: "{{ matrix_mautrix_signal_docker_image_name_prefix }}mautrix/signal:{{ matrix_mautrix_signal_version }}"
+matrix_mautrix_signal_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_signal_container_image_self_build else 'dock.mau.dev/' }}"
 matrix_mautrix_signal_docker_image_force_pull: "{{ matrix_mautrix_signal_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_signal_daemon_container_image_self_build: false
@@ -20,7 +21,8 @@ matrix_mautrix_signal_daemon_docker_repo: "https://gitlab.com/signald/signald"
 matrix_mautrix_signal_daemon_docker_repo_version: "{{ 'master' if matrix_mautrix_signal_daemon_version == 'latest' else matrix_mautrix_signal_daemon_version }}"
 matrix_mautrix_signal_daemon_docker_src_files_path: "{{ matrix_base_data_path }}/mautrix-signald/docker-src"
 
-matrix_mautrix_signal_daemon_docker_image: "docker.io/signald/signald:{{ matrix_mautrix_signal_daemon_docker_image_tag }}"
+matrix_mautrix_signal_daemon_docker_image: "{{ matrix_mautrix_signal_daemon_docker_image_name_prefix }}signald/signald:{{ matrix_mautrix_signal_daemon_docker_image_tag }}"
+matrix_mautrix_signal_daemon_docker_image_name_prefix: "docker.io/"
 matrix_mautrix_signal_daemon_docker_image_force_pull: "{{ matrix_mautrix_signal_daemon_docker_image_tag.endswith(':latest') }}"
 matrix_mautrix_signal_daemon_docker_image_tag: "{{ matrix_mautrix_signal_daemon_version }}"
 
