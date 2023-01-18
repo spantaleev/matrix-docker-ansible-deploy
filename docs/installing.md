@@ -2,7 +2,7 @@
 
 If you've [configured your DNS](configuring-dns.md) and have [configured the playbook](configuring-playbook.md), you can start the installation procedure.
 
-**Before installing** and each time you update the playbook in the future, you will need to update the Ansible roles in this playbook by running `just roles`. `just roles` is a shortcut (a `roles` target defined in [`justfile`](justfile) and executed by the [`just`](https://github.com/casey/just) utility) which ultimately runs [ansible-galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html) to download Ansible roles. If you don't have `just`, you can also manually run the `roles` commands seen in the `justfile`.
+**Before installing** and each time you update the playbook in the future, you will need to update the Ansible roles in this playbook by running `just roles`. `just roles` is a shortcut (a `roles` target defined in [`justfile`](../justfile) and executed by the [`just`](https://github.com/casey/just) utility) which ultimately runs [ansible-galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html) to download Ansible roles. If you don't have `just`, you can also manually run the `roles` commands seen in the `justfile`.
 
 
 ## Playbook tags introduction
@@ -88,7 +88,7 @@ Feel free to **re-run the setup command any time** you think something is off wi
 
 Note that if you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with `--tags=setup-all` instead of `--tags=install-all`. See [Playbook tags introduction](#playbook-tags-introduction)
 
-A way to invoke these `ansible-playbook` commands with less typing in the future is to use [just](https://github.com/casey/just) to run them: `just install-all` or `just setup-all`. See [our `justfile`](../../justfile) for more information.
+A way to invoke these `ansible-playbook` commands with less typing in the future is to use [just](https://github.com/casey/just) to run them: `just install-all` or `just setup-all`. See [our `justfile`](../justfile) for more information.
 
 
 ## 3. Finalize the installation
