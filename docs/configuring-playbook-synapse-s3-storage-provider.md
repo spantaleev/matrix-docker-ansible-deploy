@@ -93,13 +93,21 @@ To migrate your existing local data to S3, we recommend to:
 
 #### Copying data to Amazon S3
 
-Generally, you need to use the `aws s3` tool.
+To copy to AWS S3, start a container on the Matrix server like this:
 
-This documentation section could use an improvement. Ideally, we'd come up with a guide like the one used in [Copying data to Backblaze B2](#copying-data-to-backblaze-b2) - running `aws s3` in a container, etc.
+```sh
+docker run -it --rm \
+-w /work \
+--env-file=/matrix/synapse/ext/s3-storage-provider/env \
+--mount type=bind,src=/matrix/synapse/storage/media-store,dst=/work,ro \
+--entrypoint=/bin/sh \
+docker.io/amazon/aws-cli:2.9.16 \
+-c 'aws s3 sync /work/. s3://$BUCKET/'
+```
 
 #### Copying data to Backblaze B2
 
-To copy to Backblaze B2, start a container like this:
+To copy to Backblaze B2, start a container on the Matrix server like this:
 
 ```sh
 docker run -it --rm \
@@ -109,7 +117,7 @@ docker run -it --rm \
 --env='B2_BUCKET_NAME=YOUR_BUCKET_NAME_GOES_HERE' \
 --mount type=bind,src=/matrix/synapse/storage/media-store,dst=/work,ro \
 --entrypoint=/bin/sh \
-tianon/backblaze-b2:3.6.0 \
+docker.io/tianon/backblaze-b2:3.6.0 \
 -c 'b2 authorize-account $B2_KEY_ID $B2_KEY_SECRET && b2 sync /work b2://$B2_BUCKET_NAME --skipNewer'
 ```
 
