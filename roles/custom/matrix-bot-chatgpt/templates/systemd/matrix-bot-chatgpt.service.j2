@@ -25,6 +25,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			--network={{ matrix_docker_network }} \
 			--env-file={{ matrix_bot_chatgpt_config_path }}/env \
 			--mount type=bind,src={{ matrix_bot_chatgpt_data_path }},dst=/data \
+			--env HOME=/data/home \
 			{% for arg in matrix_bot_chatgpt_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
