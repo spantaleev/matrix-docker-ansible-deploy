@@ -66,11 +66,11 @@ This launches a Synapse container, which has access to the local media store, Po
 
 Then use the following commands (`$` values come from environment variables - they're **not placeholders** that you need to substitute):
 
-- `s3_media_upload update-db $UPDATE_DB_DURATION` - create a local SQLite database (`cache.db`) with a list of media repository files (from the `synapse` Postgres database) eligible for operating on
+1. `s3_media_upload update-db $UPDATE_DB_DURATION` - create a local SQLite database (`cache.db`) with a list of media repository files (from the `synapse` Postgres database) eligible for operating on
   - `$UPDATE_DB_DURATION` is influenced by the `matrix_synapse_ext_synapse_s3_storage_provider_update_db_day_count` variable (defaults to `0`)
   - `$UPDATE_DB_DURATION` defaults to `0d` (0 days), which means **include files which haven't been accessed for more than 0 days** (that is, **all files will be included**).
-- `s3_media_upload check-deleted $MEDIA_PATH` - check whether files in the local cache still exist in the local media repository directory
-- `s3_media_upload upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT` - uploads locally-stored files to S3 and deletes them from the local media repository directory
+2. `s3_media_upload check-deleted $MEDIA_PATH` - check whether files in the local cache still exist in the local media repository directory
+3. `s3_media_upload upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT` - uploads locally-stored files to S3 and deletes them from the local media repository directory
 
 The `s3_media_upload upload` command may take a lot of time to complete.
 
