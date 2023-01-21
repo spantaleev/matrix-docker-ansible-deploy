@@ -301,7 +301,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-prometheus.service', 'priority': 4000, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-core']}] if matrix_prometheus_enabled else [])
     +
-    ([{'name': 'matrix-prometheus-node-exporter.service', 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-node-exporters']}] if matrix_prometheus_node_exporter_enabled else [])
+    ([{'name': (prometheus_node_exporter_identifier + '.service'), 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-node-exporters']}] if prometheus_node_exporter_enabled else [])
     +
     ([{'name': 'matrix-prometheus-postgres-exporter.service', 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-node-exporters']}] if matrix_prometheus_postgres_exporter_enabled else [])
     +
@@ -2927,15 +2927,28 @@ matrix_synapse_admin_container_image_self_build: "{{ matrix_architecture not in 
 
 ######################################################################
 #
-# matrix-prometheus-node-exporter
+# etke/prometheus_node_exporter
 #
 ######################################################################
 
-matrix_prometheus_node_exporter_enabled: false
+prometheus_node_exporter_enabled: false
+
+prometheus_node_exporter_identifier: matrix-prometheus-node-exporter
+
+prometheus_node_exporter_base_path: "{{ matrix_base_data_path }}/prometheus-node-exporter"
+
+prometheus_node_exporter_uid: "{{ matrix_user_uid }}"
+prometheus_node_exporter_gid: "{{ matrix_user_gid }}"
+
+prometheus_node_exporter_server_fqn: "{{ matrix_server_fqn_matrix }}"
+
+prometheus_node_exporter_container_network: "{{ matrix_docker_network }}"
+
+prometheus_node_exporter_container_labels_traefik_enabled: false
 
 ######################################################################
 #
-# /matrix-prometheus-node-exporter
+# /etke/prometheus_node_exporter
 #
 ######################################################################
 
@@ -2971,8 +2984,8 @@ matrix_prometheus_scraper_synapse_targets: ['matrix-synapse:{{ matrix_synapse_me
 matrix_prometheus_scraper_synapse_workers_enabled_list: "{{ matrix_synapse_workers_enabled_list }}"
 matrix_prometheus_scraper_synapse_rules_synapse_tag: "{{ matrix_synapse_docker_image_tag }}"
 
-matrix_prometheus_scraper_node_enabled: "{{ matrix_prometheus_node_exporter_enabled }}"
-matrix_prometheus_scraper_node_targets: "{{ ['matrix-prometheus-node-exporter:9100'] if matrix_prometheus_node_exporter_enabled else [] }}"
+matrix_prometheus_scraper_node_enabled: "{{ prometheus_node_exporter_enabled }}"
+matrix_prometheus_scraper_node_targets: "{{ [prometheus_node_exporter_identifier + ':9100'] if prometheus_node_exporter_enabled else [] }}"
 
 matrix_prometheus_scraper_postgres_enabled: "{{ matrix_prometheus_postgres_exporter_enabled }}"
 matrix_prometheus_scraper_postgres_targets: "{{ ['matrix-prometheus-postgres-exporter:'+ matrix_prometheus_postgres_exporter_port | string] if matrix_prometheus_scraper_postgres_enabled else [] }}"
@@ -3030,7 +3043,7 @@ matrix_grafana_dashboard_download_urls: |
   {{
     (matrix_synapse_grafana_dashboard_urls if matrix_homeserver_implementation == 'synapse' and matrix_synapse_metrics_enabled else [])
     +
-    (matrix_prometheus_node_exporter_dashboard_urls if matrix_prometheus_node_exporter_enabled else [])
+    (prometheus_node_exporter_dashboard_urls if prometheus_node_exporter_enabled else [])
     +
     (matrix_prometheus_postgres_exporter_dashboard_urls if matrix_prometheus_postgres_exporter_enabled else [])
     +

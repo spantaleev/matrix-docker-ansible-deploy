@@ -10,7 +10,7 @@ Remember to add `stats.<your-domain>` to DNS as described in [Configuring DNS](c
 matrix_prometheus_enabled: true
 
 # You can remove this, if unnecessary.
-matrix_prometheus_node_exporter_enabled: true
+prometheus_node_exporter_enabled: true
 
 # You can remove this, if unnecessary.
 matrix_prometheus_postgres_exporter_enabled: true
@@ -40,7 +40,7 @@ The retention policy of Prometheus metrics is [15 days by default](https://prome
 Name | Description
 -----|----------
 `matrix_prometheus_enabled`|[Prometheus](https://prometheus.io) is a time series database. It holds all the data we're going to talk about.
-`matrix_prometheus_node_exporter_enabled`|[Node Exporter](https://prometheus.io/docs/guides/node-exporter/) is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures
+`prometheus_node_exporter_enabled`|[Node Exporter](https://prometheus.io/docs/guides/node-exporter/) is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures
 `matrix_prometheus_postgres_exporter_enabled`|[Postgres Exporter](configuring-playbook-prometheus-postgres.md) is an addon of sorts to expose Postgres database metrics to Prometheus.
 `matrix_prometheus_nginxlog_exporter_enabled`|[NGINX Log Exporter](configuring-playbook-prometheus-nginxlog.md) is an addon of sorts to expose NGINX logs to Prometheus.
 `matrix_grafana_enabled`|[Grafana](https://grafana.com/) is the visual component. It shows (on the `stats.<your-domain>` subdomain) the dashboards with the graphs that we're interested in
@@ -52,7 +52,7 @@ Name | Description
 
 Metrics and resulting graphs can contain a lot of information. This includes system specs but also usage patterns. This applies especially to small personal/family scale homeservers. Someone might be able to figure out when you wake up and go to sleep by looking at the graphs over time. Think about this before enabling anonymous access. And you should really not forget to change your Grafana password.
 
-Most of our docker containers run with limited system access, but the `prometheus-node-exporter` has access to the host network stack and (readonly) root filesystem. This is required to report on them. If you don't like that, you can set `matrix_prometheus_node_exporter_enabled: false` (which is actually the default). You will still get Synapse metrics with this container disabled. Both of the dashboards will always be enabled, so you can still look at historical data after disabling either source.
+Most of our docker containers run with limited system access, but the `prometheus-node-exporter` has access to the host network stack and (readonly) root filesystem. This is required to report on them. If you don't like that, you can set `prometheus_node_exporter_enabled: false` (which is actually the default). You will still get Synapse metrics with this container disabled. Both of the dashboards will always be enabled, so you can still look at historical data after disabling either source.
 
 
 ## Collecting metrics to an external Prometheus server
@@ -74,8 +74,8 @@ Name | Description
 `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content`|Set this to the Basic Authentication credentials (raw `htpasswd` file content) used to protect `/metrics/*`. This htpasswd-file needs to be generated with the `htpasswd` tool and can include multiple username/password pairs. If you only need one credential, use `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username` and `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_password` instead.
 `matrix_synapse_metrics_enabled`|Set this to `true` to make Synapse expose metrics (locally, on the container network)
 `matrix_synapse_metrics_proxying_enabled`|Set this to `true` to expose Synapse's metrics on `https://matrix.DOMAIN/metrics/synapse/main-process` and `https://matrix.DOMAIN/metrics/synapse/worker/TYPE-ID` (only takes effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`). Read [below](#collecting-synapse-worker-metrics-to-an-external-prometheus-server) if you're running a Synapse worker setup (`matrix_synapse_workers_enabled: true`).
-`matrix_prometheus_node_exporter_enabled`|Set this to `true` to enable the node (general system stats) exporter (locally, on the container network)
-`matrix_prometheus_node_exporter_metrics_proxying_enabled`|Set this to `true` to expose the node (general system stats) metrics on `https://matrix.DOMAIN/metrics/node-exporter` (only takes effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`)
+`prometheus_node_exporter_enabled`|Set this to `true` to enable the node (general system stats) exporter (locally, on the container network)
+`matrix_prometheus_services_proxy_connect_prometheus_node_exporter_metrics_proxying_enabled`|Set this to `true` to expose the node (general system stats) metrics on `https://matrix.DOMAIN/metrics/node-exporter` (only takes effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`)
 `matrix_prometheus_postgres_exporter_enabled`|Set this to `true` to enable the [Postgres exporter](configuring-playbook-prometheus-postgres.md) (locally, on the container network)
 `matrix_prometheus_nginxlog_exporter_enabled`|Set this to `true` to enable the [NGINX Log exporter](configuring-playbook-prometheus-nginxlog.md) (locally, on the container network)
 `matrix_prometheus_postgres_exporter_metrics_proxying_enabled`|Set this to `true` to expose the [Postgres exporter](configuring-playbook-prometheus-postgres.md) metrics on `https://matrix.DOMAIN/metrics/postgres-exporter` (only takes effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`)

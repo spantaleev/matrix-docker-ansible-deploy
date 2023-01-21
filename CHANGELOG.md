@@ -1,3 +1,18 @@
+# 2023-01-21
+
+## The matrix-prometheus-node-exporter role lives independently now
+
+**TLDR**: the `matrix-prometheus-node-exporter` role is now included from another repository. Some variables have been renamed. All functionality remains intact.
+
+The `matrix-prometheus-node-exporter` role (which configures [Prometheus node exporter](https://github.com/prometheus/node_exporter)) has been extracted from the playbook and now lives in its own repository at https://gitlab.com/etke.cc/roles/prometheus_node_exporter.
+
+It's still part of the playbook, but is now installed via `ansible-galaxy` (by running `just roles` / `make roles`). Some variables have been renamed (`matrix_prometheus_node_exporter_` -> `prometheus_node_exporter_`, etc.). The playbook will report all variables that you need to rename to get upgraded. All functionality remains intact.
+
+A new `matrix-prometheus-services-proxy-connect` role was added to the playbook to help integrate the new `prometheus_node_exporter` role with our own services (`matrix-nginx-proxy`)
+
+Other roles which aren't strictly related to Matrix are likely to follow this fate of moving to their own repositories. Extracting them out allows other Ansible playbooks to make use of these roles easily.
+
+
 # 2023-01-13
 
 ## Support for running commands via just
