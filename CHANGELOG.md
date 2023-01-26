@@ -24,6 +24,8 @@ Inspired by [this security article](https://www.rtcsec.com/article/cve-2020-2626
 
 If you access your Matrix server from a local network and need Coturn to relay to private IP addresses, you may observe that relaying is now blocked due to our new default `denied-peer-ip` lists (specified in `matrix_coturn_denied_peer_ips`). If you experience such connectivity problems, consider overriding this setting in your `vars.yml` file and removing certain networks from it.
 
+We've also added `no-multicast-peers` to the default Coturn configuration, but we don't expect this to cause trouble for most people.
+
 
 # 2023-01-21
 
