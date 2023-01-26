@@ -69,7 +69,37 @@ matrix_coturn_turn_external_ip_address: ''
 matrix_coturn_turn_external_ip_addresses: ["{{ matrix_coturn_turn_external_ip_address }}"]
 
 matrix_coturn_allowed_peer_ips: []
-matrix_coturn_denied_peer_ips: []
+
+# We block loopback interfaces and private networks by default to prevent private resources from being accessible.
+# This is especially important when Coturn does not run within a container network (e.g. `matrix_coturn_docker_network: host`).
+#
+# Learn more: https://www.rtcsec.com/article/cve-2020-26262-bypass-of-coturns-access-control-protection/
+#
+# If you're running Coturn for local network peers, you may wish to override these rules.
+matrix_coturn_denied_peer_ips:
+  - 0.0.0.0-0.255.255.255
+  - 10.0.0.0-10.255.255.255
+  - 100.64.0.0-100.127.255.255
+  - 127.0.0.0-127.255.255.255
+  - 169.254.0.0-169.254.255.255
+  - 172.16.0.0-172.31.255.255
+  - 192.0.0.0-192.0.0.255
+  - 192.0.2.0-192.0.2.255
+  - 192.88.99.0-192.88.99.255
+  - 192.168.0.0-192.168.255.255
+  - 198.18.0.0-198.19.255.255
+  - 198.51.100.0-198.51.100.255
+  - 203.0.113.0-203.0.113.255
+  - 240.0.0.0-255.255.255.255
+  - ::1
+  - 64:ff9b::-64:ff9b::ffff:ffff
+  - ::ffff:0.0.0.0-::ffff:255.255.255.255
+  - 100::-100::ffff:ffff:ffff:ffff
+  - 2001::-2001:1ff:ffff:ffff:ffff:ffff:ffff:ffff
+  - 2002::-2002:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+  - fc00::-fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+  - fe80::-febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+
 matrix_coturn_user_quota: null
 matrix_coturn_total_quota: null
 

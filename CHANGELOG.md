@@ -1,3 +1,14 @@
+# 2023-01-26
+
+## (Backward Compatibility) Tightening Coturn security can lead to connectivity issues
+
+**TLDR**: users who run and access their Matrix server on a private network (likely a small minority of users) may experience connectivity issues with our new default Coturn blocklists. They may need to override `matrix_coturn_denied_peer_ips` and remove some IP ranges from it.
+
+Inspired by [this security article](https://www.rtcsec.com/article/cve-2020-26262-bypass-of-coturns-access-control-protection/), we've decided to make use of Coturn's `denied-peer-ip` functionality to prevent relaying network traffic to certain private IP subnets. This ensures that your Coturn server won't accidentally try to forward traffic to certain services running on your local networks. We run Coturn in a container and in a private container network by default, which should prevent such access anyway, but having additional block layers in place is better.
+
+If you access your Matrix server from a local network and need Coturn to relay to private IP addresses, you may observe that relaying is now blocked due to our new default `denied-peer-ip` lists (specified in `matrix_coturn_denied_peer_ips`). If you experience such connectivity problems, consider overriding this setting in your `vars.yml` file and removing certain networks from it.
+
+
 # 2023-01-21
 
 ## The matrix-prometheus-node-exporter role lives independently now
