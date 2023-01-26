@@ -1,5 +1,21 @@
 # 2023-01-26
 
+## Coturn can now use host-networking
+
+Large Coturn deployments (with a huge range of ports specified via `matrix_coturn_turn_udp_min_port` and `matrix_coturn_turn_udp_max_port`) experience a huge slowdown with how Docker publishes all these ports (setting up firewall forwarding rules), which leads to a very slow Coturn service startup and shutdown.
+
+Such deployments don't need to run Coturn within a private container network anymore. Coturn can now run with host-networking by using configuration like this:
+
+```yaml
+matrix_coturn_docker_network: host
+```
+
+With such a configuration, Docker no longer needs to configure thousands of firewall forwarding rules each time Coturn starts and stops.
+You may, however, need to allow these ports in your firewall configuration yourself.
+
+Thanks to us [tightening Coturn security](#backward-compatibility-tightening-coturn-security-can-lead-to-connectivity-issues), running Coturn with host-networking should be safe and not expose neither other services running on the host, nor other services running on the local network.
+
+
 ## (Backward Compatibility) Tightening Coturn security can lead to connectivity issues
 
 **TLDR**: users who run and access their Matrix server on a private network (likely a small minority of users) may experience connectivity issues with our new default Coturn blocklists. They may need to override `matrix_coturn_denied_peer_ips` and remove some IP ranges from it.
