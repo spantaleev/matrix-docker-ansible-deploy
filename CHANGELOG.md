@@ -10,8 +10,8 @@ Such deployments don't need to run Coturn within a private container network any
 matrix_coturn_docker_network: host
 ```
 
-With such a configuration, Docker no longer needs to configure thousands of firewall forwarding rules each time Coturn starts and stops.
-You may, however, need to allow these ports in your firewall configuration yourself.
+With such a configuration, **Docker no longer needs to configure thousands of firewall forwarding rules** each time Coturn starts and stops.
+This, however, means that **you will need to ensure these ports are open** in your firewall yourself.
 
 Thanks to us [tightening Coturn security](#backward-compatibility-tightening-coturn-security-can-lead-to-connectivity-issues), running Coturn with host-networking should be safe and not expose neither other services running on the host, nor other services running on the local network.
 
