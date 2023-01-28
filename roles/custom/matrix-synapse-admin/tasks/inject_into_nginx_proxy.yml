@@ -24,6 +24,14 @@
         {# Generic configuration for use outside of our container setup #}
         proxy_pass http://127.0.0.1:8766/$1;
       {% endif %}
+
+        {#
+          Workaround synapse-admin serving all assets at /static.
+          See: https://github.com/Awesome-Technologies/synapse-admin/issues/322
+        #}
+        sub_filter_once off;
+        sub_filter_types text/css;
+        sub_filter "/static/" "{{ matrix_synapse_admin_public_endpoint }}/static/";
       }
 
 - name: Register Synapse Admin proxying configuration with matrix-nginx-proxy
