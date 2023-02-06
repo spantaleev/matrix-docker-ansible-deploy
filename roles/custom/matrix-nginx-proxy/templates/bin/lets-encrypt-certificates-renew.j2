@@ -12,7 +12,7 @@ docker run \
 	--name=matrix-certbot \
 	--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 	--cap-drop=ALL \
-	--network="{{ matrix_docker_network }}" \
+	--network="{{ matrix_nginx_proxy_container_network }}" \
 	-p 127.0.0.1:{{ matrix_ssl_lets_encrypt_certbot_standalone_http_port }}:8080 \
 	--mount type=bind,src={{ matrix_ssl_config_dir_path }},dst=/etc/letsencrypt \
 	--mount type=bind,src={{ matrix_ssl_log_dir_path }},dst=/var/log/letsencrypt \
