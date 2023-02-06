@@ -63,9 +63,9 @@ To get an access token for the UVS user, you can follow the documentation on [ho
 matrix_user_verification_service_uvs_access_token: "YOUR ACCESS TOKEN HERE"
 ```
 
-### (Optional) Auth Token
+### (Optional) Custom Auth Token
 
-It is possible to set an API Auth Token to restrict access to the UVS. If this is set, anyone making a request to UVS must provide it via the header "Authorization: Bearer TOKEN"
+It is possible to set an API Auth Token to restrict access to the UVS. If this is enabled, anyone making a request to UVS must provide it via the header "Authorization: Bearer TOKEN"
 
 By default, the token will be derived from `matrix_homeserver_generic_secret_key` in `group_vars/matrix_servers`.
 To set your own Token, simply put the following in your host_vars.
@@ -76,12 +76,21 @@ matrix_user_verification_service_uvs_auth_token: "TOKEN"
 
 In case Jitsi is also managed by this playbook and 'matrix' authentication in Jitsi is enabled, this collection will automatically configure Jitsi to use the configured auth token.
 
+###  (Optional) Disable Auth
+Authorization is enabled by default. To disable set
+
+```yaml
+matrix_user_verification_service_uvs_require_auth: false
+```
+
+in your host_vars.
+
 ### (Optional) Federation
 
 In theory (however currently untested), UVS can handle federation. Simply set:
 
 ```yaml
-matrix_user_verification_service_uvs_openid_verify_server_name: ""
+matrix_user_verification_service_uvs_pin_openid_verify_server_name: false
 ```
 
 in your host_vars.

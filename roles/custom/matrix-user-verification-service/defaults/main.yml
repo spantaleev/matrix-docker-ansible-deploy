@@ -43,13 +43,17 @@ matrix_user_verification_service_uvs_disable_ip_blacklist: false
 
 ## OPTIONAL
 
+# Require an Auth-Token with API calls. If set to false, UVS will reply to any API call.
+# The Auth-Token is defined via: matrix_user_verification_service_uvs_auth_token
+matrix_user_verification_service_uvs_require_auth: true
 # Auth token to protect the API
-# If this is set any calls to the provided API endpoints
-# need have the header "Authorization: Bearer changeme".
-# matrix_user_verification_service_uvs_auth_token: changeme
+# If enabled any calls to the provided API endpoints need have the header "Authorization: Bearer TOKEN".
+# A Token will be derived from matrix_homeserver_generic_secret_key in group_vars/matrix_servers
+matrix_user_verification_service_uvs_auth_token: ''
 
-# Matrix server name to verify OpenID tokens against.
 # Pin UVS to only check openId Tokens for the matrix_server_name configured by this playbook.
+matrix_user_verification_service_uvs_pin_openid_verify_server_name: true
+# Matrix server name to verify OpenID tokens against.
 # This is not the homeserverURL, but rather the domain in the matrix "user ID"
 # UVS can also be instructed to verify against the Matrix server name passed in the token, to enable set to ""
 matrix_user_verification_service_uvs_openid_verify_server_name: "{{ matrix_domain }}"
