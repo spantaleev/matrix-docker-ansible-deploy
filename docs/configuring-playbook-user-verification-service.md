@@ -7,7 +7,7 @@ Currently, the main purpose of this role is to allow Jitsi to authenticate matri
 
 **Note**: enabling Matrix User Verification Service, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled.
 
-If the Jitsi server is also configured by this collection, all plugging of variables and secrets is handled in `group_vars/matrix_servers`.
+If the Jitsi server is also configured by this playbook, all plugging of variables and secrets is handled in `group_vars/matrix_servers`.
 
 __Some general concepts of UVS may be helpful to understand the rest, so here they are:__
 
@@ -18,7 +18,7 @@ UVS can be used to verify two claims:
 
 Verifying an OpenID token id done by finding the corresponding Homeserver via  '.well-known/matrix/server' for the given domain.
 The configured `matrix_user_verification_service_uvs_homeserver_url` does **not** factor into this.
-By default, this collection only checks against `matrix_server_fqn_matrix`.
+By default, this playbook only checks against `matrix_server_fqn_matrix`.
 Therefore, the request will be made against the public openid API for `matrix_server_fqn_matrix`.
 
 Verifying RoomMembership and PowerLevel is done against `matrix_user_verification_service_uvs_homeserver_url` which is by default done via the docker network.
@@ -74,7 +74,7 @@ To set your own Token, simply put the following in your host_vars.
 matrix_user_verification_service_uvs_auth_token: "TOKEN"
 ```
 
-In case Jitsi is also managed by this collection and 'matrix' authentication in Jitsi is enabled, this collection will automatically configure Jitsi to use the configured auth token.
+In case Jitsi is also managed by this playbook and 'matrix' authentication in Jitsi is enabled, this collection will automatically configure Jitsi to use the configured auth token.
 
 ### (Optional) Federation
 

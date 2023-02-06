@@ -3207,15 +3207,15 @@ matrix_user_verification_service_container_http_host_bind_port: "{{  '' if (matr
 # URL exposed in the docker network
 matrix_user_verification_service_container_url: "http://{{  matrix_user_verification_service_container_name }}:3000"
 
-# Set the homeserver URL to the container name if synapse is managed by this collection
+# Set the homeserver URL to the container name if synapse is managed by this playbook
 matrix_user_verification_service_uvs_homeserver_url: "{{ matrix_homeserver_container_url if matrix_synapse_enabled }}"
-# If synapse is managed by this collection, we will connect via docker network, which is a private ip.
+# If synapse is managed by this playbook, we will connect via docker network, which is a private ip.
 # Therefore we need to disable IP checks
 matrix_user_verification_service_uvs_disable_ip_blacklist: "{{'true' if matrix_synapse_enabled else 'false'}}"
 
 matrix_user_verification_service_uvs_auth_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'uvs.auth.token', rounds=655555) | to_uuid }}"
 
-# Pin UVS to only check openId Tokens for the matrix_server_name configured by this collection.
+# Pin UVS to only check openId Tokens for the matrix_server_name configured by this playbook.
 # This is not the homeserverURL, but rather the domain in the matrix "user ID"
 matrix_user_verification_service_uvs_openid_verify_server_name: "{{ matrix_domain }}"
 matrix_user_verification_service_uvs_log_level: warning
