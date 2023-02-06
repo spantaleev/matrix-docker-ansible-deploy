@@ -30,7 +30,7 @@ In order to use UVS, an admin token for the configured homeserver must be suppli
 
 ## Enable
 
-[Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) installation is disabled by default unless required by Jitsi (see group_vars/matrix_servers). 
+[Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) installation is disabled by default.
 You can enable it in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml

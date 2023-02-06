@@ -79,6 +79,7 @@ To enable set this configuration at host level:
 ```yaml
 matrix_jitsi_enable_auth: true
 matrix_jitsi_auth_type: "matrix"
+matrix_user_verification_service_enabled: true
 ```
 
 For more information see also [https://github.com/matrix-org/prosody-mod-auth-matrix-user-verification](https://github.com/matrix-org/prosody-mod-auth-matrix-user-verification).
