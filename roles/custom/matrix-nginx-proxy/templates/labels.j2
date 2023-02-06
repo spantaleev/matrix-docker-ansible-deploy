@@ -6,6 +6,27 @@ traefik.docker.network={{ matrix_nginx_proxy_container_labels_traefik_docker_net
 {% endif %}
 
 
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_matrix_enabled %}
+# Matrix Client
+traefik.http.routers.matrix-nginx-proxy-matrix-client.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_matrix_rule }}
+traefik.http.routers.matrix-nginx-proxy-matrix-client.service=matrix-nginx-proxy-web
+traefik.http.routers.matrix-nginx-proxy-matrix-client.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_matrix_tls | to_json }}
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_matrix_tls %}
+traefik.http.routers.matrix-nginx-proxy-matrix-client.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.routers.matrix-nginx-proxy-matrix-client.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
+
+# Matrix Federation
+traefik.http.routers.matrix-nginx-proxy-matrix-federation.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_matrix_rule }}
+traefik.http.routers.matrix-nginx-proxy-matrix-federation.service=matrix-nginx-proxy-federation
+traefik.http.routers.matrix-nginx-proxy-matrix-federation.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_matrix_tls | to_json }}
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_matrix_tls %}
+traefik.http.routers.matrix-nginx-proxy-matrix-federation.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.routers.matrix-nginx-proxy-matrix-federation.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_entrypoints }}
+{% endif %}
+
+
 {% if matrix_nginx_proxy_container_labels_traefik_proxy_element_enabled %}
 # Element
 traefik.http.routers.matrix-nginx-proxy-element.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_element_rule }}
@@ -139,6 +160,11 @@ traefik.http.routers.matrix-nginx-proxy-ntfy.entrypoints={{ matrix_nginx_proxy_c
 
 
 traefik.http.services.matrix-nginx-proxy-web.loadbalancer.server.port=8080
+
+{% if matrix_nginx_proxy_proxy_matrix_federation_api_enabled %}
+traefik.http.services.matrix-nginx-proxy-federation.loadbalancer.server.port={{ matrix_nginx_proxy_proxy_matrix_federation_port }}
+{% endif %}
+
 {% endif %}
 
 {{ matrix_nginx_proxy_container_labels_additional_labels }}
