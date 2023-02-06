@@ -3200,9 +3200,9 @@ matrix_user_verification_service_systemd_required_services_list: |
 
 # If Jitsi is managed by this playbook we can use the docker network - no need to expose a port.
 # If Jitsi is not managed by this playbook, or you otherwise have a need for it, you can expose
-# matrix-user-verfification-services's client-server port to the local host.
-# Note: If grafana is also enabled, the exposed port is changed to 3003.
-matrix_user_verification_service_container_http_host_bind_port: "{{  '' if (matrix_jitsi_enabled | bool and matrix_jitsi_enable_auth | bool and matrix_jitsi_auth_type == 'matrix') else '127.0.0.1:' + ('3003' if matrix_nginx_proxy_proxy_grafana_enabled else '3000') }}"
+# matrix-user-verfification-services's client-server port to the local host port 3003.
+# By default Matrix-User-Verification-Service binds to port 3000, which collides with grafana, therefore this uses port 3003.
+matrix_user_verification_service_container_http_host_bind_port: "{{  '' if (matrix_jitsi_enabled | bool and matrix_jitsi_enable_auth | bool and matrix_jitsi_auth_type == 'matrix') else '127.0.0.1:3003' }}"
 
 # URL exposed in the docker network
 matrix_user_verification_service_container_url: "http://{{  matrix_user_verification_service_container_name }}:3000"

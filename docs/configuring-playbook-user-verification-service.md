@@ -45,7 +45,7 @@ For a list of all configuration options see the role defaults [`roles/matrix-use
 But be aware of all the plugging happening in `group_vars/matrix_servers`.
 
 In the default configuration, the UVS Server is only reachable via the docker network, which is fine if e.g. Jitsi is also running in a container on the host.
-However, it is possible to expose UVS via setting `matrix_user_verification_service_container_http_host_bind_port`. Be aware that the normally used port (3000) may collide with Grafana.
+However, it is possible to expose UVS via setting `matrix_user_verification_service_container_http_host_bind_port`.
 
 ### Access token
 
