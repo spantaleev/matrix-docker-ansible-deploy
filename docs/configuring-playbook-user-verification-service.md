@@ -49,7 +49,7 @@ However, it is possible to expose UVS via setting `matrix_user_verification_serv
 
 ### Access token
 
-The Synapse Access Token is used to verify RoomMembership and PowerLevel against the configured homeserver_url (which is plugged in group_vars).
+The Synapse Access Token is used to verify RoomMembership and PowerLevel against `matrix_user_verification_service_uvs_homeserver_url`.
 
 We recommend that you create a dedicated Matrix user for uvs (`uvs` is a good username).
 Follow our [Registering users](registering-users.md) guide to register a user with administration privileges.
