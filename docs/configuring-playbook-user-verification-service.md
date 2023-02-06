@@ -81,10 +81,10 @@ In case Jitsi is also managed by this playbook and 'matrix' authentication in Ji
 In theory (however currently untested), UVS can handle federation. Simply set:
 
 ```yaml
-matrix_user_verification_service_uvs_openid_verify_server_name: ~
+matrix_user_verification_service_uvs_openid_verify_server_name: ""
 ```
 
-using host_vars to override the group_vars.
+in your host_vars.
 
 This will instruct UVS to verify the OpenID token against any domain given in a request. 
 Homeserver discovery is done via '.well-known/matrix/server' of the given domain.

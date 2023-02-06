@@ -48,14 +48,15 @@ matrix_user_verification_service_uvs_disable_ip_blacklist: false
 # need have the header "Authorization: Bearer changeme".
 # matrix_user_verification_service_uvs_auth_token: changeme
 
-# Matrix server name to verify OpenID tokens against. See below section.
-# Defaults to empty value which means verification is made against
-# whatever Matrix server name passed in with the token
-# matrix_user_verification_service_uvs_openid_verify_server_name: matrix.org
+# Matrix server name to verify OpenID tokens against.
+# Pin UVS to only check openId Tokens for the matrix_server_name configured by this playbook.
+# This is not the homeserverURL, but rather the domain in the matrix "user ID"
+# UVS can also be instructed to verify against the Matrix server name passed in the token, to enable set to ""
+matrix_user_verification_service_uvs_openid_verify_server_name: "{{ matrix_domain }}"
 
-# Log level, defaults to 'info'
+# Log level
 # See choices here: https://github.com/winstonjs/winston#logging-levels
-matrix_user_verification_service_uvs_log_level: warning
+matrix_user_verification_service_uvs_log_level: info
 
 
 ######################################################################
