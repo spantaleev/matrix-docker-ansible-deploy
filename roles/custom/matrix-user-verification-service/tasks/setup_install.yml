@@ -9,7 +9,6 @@
     group: "{{ matrix_user_groupname }}"
   with_items:
     - { path: "{{ matrix_user_verification_service_config_path }}", when: true }
-    - { path: "{{ matrix_user_verification_service_docker_src_files_path }}", when: "{{ matrix_user_verification_service_container_image_self_build }}" }
   when: item.when | bool
 
 - name: Ensure Matrix User Verification Service image is pulled
@@ -18,15 +17,10 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_user_verification_service_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_user_verification_service_docker_image_force_pull }}"
-  when: "not matrix_user_verification_service_container_image_self_build | bool"
   register: result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
-
-#- block:
-# TODO
-#  when: "matrix_user_verification_service_container_image_self_build|bool"
 
 - name: Ensure Matrix User Verification Service env file installed
   ansible.builtin.template:

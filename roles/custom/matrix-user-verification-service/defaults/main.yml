@@ -15,13 +15,8 @@ matrix_user_verification_service_docker_src_files_path: "{{ matrix_user_verifica
 matrix_user_verification_service_config_path: "{{ matrix_user_verification_service_base_path }}/config"
 matrix_user_verification_service_config_env_file: "{{ matrix_user_verification_service_config_path }}/.env"
 
-# Set this to true in order to not use the docker image from docker hub, but rather build locally
-matrix_user_verification_service_container_image_self_build: false
-matrix_user_verification_service_container_image_self_build_repo: "https://github.com/matrix-org/matrix-user-verification-service.git"
-matrix_user_verification_service_container_image_self_build_branch: "{{ matrix_user_verification_service_version }}"
-
 # Docker
-matrix_user_verification_service_docker_image_name_prefix: "{{ 'localhost/' if matrix_user_verification_service_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_user_verification_service_docker_image_name_prefix: "{{ matrix_container_global_registry_prefix }}"
 matrix_user_verification_service_docker_image: "{{ matrix_user_verification_service_docker_image_name_prefix }}matrixdotorg/matrix-user-verification-service:{{ matrix_user_verification_service_version }}"
 matrix_user_verification_service_docker_image_force_pull: "{{ matrix_user_verification_service_docker_image.endswith(':latest') }}"
 
