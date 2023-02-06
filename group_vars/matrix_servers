@@ -3209,8 +3209,7 @@ matrix_user_verification_service_container_url: "http://{{  matrix_user_verifica
 
 # Set the homeserver URL to the container name if synapse is managed by this playbook
 matrix_user_verification_service_uvs_homeserver_url: "{{ matrix_homeserver_container_url if matrix_synapse_enabled }}"
-# If synapse is managed by this playbook, we will connect via docker network, which is a private ip.
-# Therefore we need to disable IP checks
+# We connect via the container network (private IPs), so we need to disable IP checks
 matrix_user_verification_service_uvs_disable_ip_blacklist: "{{'true' if matrix_synapse_enabled else 'false'}}"
 
 matrix_user_verification_service_uvs_auth_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'uvs.auth.token', rounds=655555) | to_uuid }}"
