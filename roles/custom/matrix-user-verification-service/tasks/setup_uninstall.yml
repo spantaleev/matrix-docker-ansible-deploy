@@ -5,31 +5,21 @@
     path: "{{ matrix_systemd_path }}/{{ matrix_user_verification_service_systemd_service_name }}"
   register: matrix_user_verification_service_service_stat
 
-- name: Ensure matrix-user-verification-service is stopped
-  service:
-    name: "{{ matrix_user_verification_service_systemd_service_basename }}"
-    state: stopped
-    daemon_reload: yes
-  register: stopping_result
-  when: "matrix_user_verification_service_service_stat.stat.exists|bool"
+- when: matrix_user_verification_service_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-user-verification-service is stopped
+      service:
+        name: "{{ matrix_user_verification_service_systemd_service_basename }}"
+        state: stopped
+        daemon_reload: yes
+      register: stopping_result
 
-- name: Ensure matrix-user-verification-service.service doesn't exist
-  file:
-    path: "{{ matrix_systemd_path }}/{{ matrix_user_verification_service_systemd_service_name }}"
-    state: absent
-  when: "matrix_user_verification_service_service_stat.stat.exists|bool"
+    - name: Ensure matrix-user-verification-service.service doesn't exist
+      file:
+        path: "{{ matrix_systemd_path }}/{{ matrix_user_verification_service_systemd_service_name }}"
+        state: absent
 
-- name: Ensure systemd reloaded after matrix-user-verification-service.service removal
-  service:
-    daemon_reload: yes
-  when: "matrix_user_verification_service_service_stat.stat.exists|bool"
-
-- name: Ensure Matrix user-verification-service paths don't exist
-  file:
-    path: "{{ matrix_user_verification_service_base_path }}"
-    state: absent
-
-- name: Ensure user-verification-service Docker image doesn't exist
-  docker_image:
-    name: "{{ matrix_user_verification_service_docker_image }}"
-    state: absent
+    - name: Ensure Matrix user-verification-service paths don't exist
+      file:
+        path: "{{ matrix_user_verification_service_base_path }}"
+        state: absent
