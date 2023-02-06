@@ -2,7 +2,7 @@
 
 - name: Check existence of matrix-user-verification-service service
   stat:
-    path: "{{ matrix_systemd_path }}/{{ matrix_user_verification_service_systemd_service_name }}"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_user_verification_service_systemd_service_name }}"
   register: matrix_user_verification_service_service_stat
 
 - when: matrix_user_verification_service_service_stat.stat.exists | bool
@@ -16,7 +16,7 @@
 
     - name: Ensure matrix-user-verification-service.service doesn't exist
       file:
-        path: "{{ matrix_systemd_path }}/{{ matrix_user_verification_service_systemd_service_name }}"
+        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_user_verification_service_systemd_service_name }}"
         state: absent
 
     - name: Ensure Matrix user-verification-service paths don't exist
