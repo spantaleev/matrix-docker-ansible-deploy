@@ -28,10 +28,12 @@
 # TODO
 #  when: "matrix_user_verification_service_container_image_self_build|bool"
 
-- name: write env file
+- name: Ensure Matrix User Verification Service env file installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/.env.j2"
     dest: "{{ matrix_user_verification_service_config_env_file }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
     mode: 0644
 
 - name: Ensure matrix-user-verification-service.service installed
