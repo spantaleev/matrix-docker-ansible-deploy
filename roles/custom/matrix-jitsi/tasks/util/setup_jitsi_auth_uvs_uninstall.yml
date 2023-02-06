@@ -1,3 +1,5 @@
+---
+
 - name: Remove all files regarding prosody mod auth_matrix_user_verification and .well-known/element/jitsi
   ansible.builtin.file:
     path: "{{ item }}"
@@ -11,10 +13,10 @@
 - name: Remove .well-known/element directory if empty
   ansible.builtin.command:
     argv:
-     - rmdir
-     - "{{ matrix_static_files_base_path }}/.well-known/element"
+      - rmdir
+      - "{{ matrix_static_files_base_path }}/.well-known/element"
     removes: "{{matrix_static_files_base_path}}/.well-known/element"
-  ignore_errors: yes
+  ignore_errors: true
 
 - when: matrix_jitsi_prosody_auth_matrix_user_verification_uninstalled.changed
   block:
