@@ -19,6 +19,28 @@
 # Also see `devture_docker_sdk_for_python_installation_enabled`.
 matrix_playbook_docker_installation_enabled: true
 
+# Controls whether to run the Traefik role or not
+# See the `com.devture.ansible.role.traefik` section below for role configuration.
+#
+# There's a difference between `devture_traefik_enabled` and `matrix_playbook_traefik_role_enabled`.
+# `devture_traefik_enabled` controls what the Traefik role would do - when not enabled, it will run uninstall tasks, etc.
+# `matrix_playbook_traefik_role_enabled` controls if the Traefik role would even run at all.
+#
+# Sometimes, you're installing Traefik via a different (related playbook) which uses the same role.
+# In such cases, you'd like to disable the role in this playbook from bothering with Traefik at all (`matrix_playbook_traefik_role_enabled: false`).
+# If you used `devture_traefik_enabled: false` + `matrix_playbook_traefik_role_enabled: true` instead, you'd see the Treafik role here
+# try to delete Traefik data (`/devture-traefik`) installed by the other playbook.
+matrix_playbook_traefik_role_enabled: false
+
+# Controls whether to attach Traefik labels to services.
+# This is separate from `devture_traefik_enabled` and `matrix_playbook_traefik_role_enabled`,
+# because you may wish to disable Traefik installation by the playbook, yet still use Traefik
+# installed in another way.
+matrix_playbook_traefik_labels_enabled: false
+
+# Controls the additional network that reverse-proxyable services will be connected to.
+matrix_playbook_reverse_proxyable_services_additional_network: "{{ devture_traefik_container_network if devture_traefik_enabled else '' }}"
+
 ########################################################################
 #                                                                      #
 # /Playbook                                                            #
@@ -320,6 +342,8 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-synapse-admin.service', 'priority': 4000, 'groups': ['matrix', 'synapse-admin']}] if matrix_synapse_admin_enabled else [])
     +
     ([{'name': 'matrix-synapse-reverse-proxy-companion.service', 'priority': 1500, 'groups': ['matrix', 'homeservers', 'synapse', 'reverse-proxies']}] if matrix_synapse_reverse_proxy_companion_enabled else [])
+    +
+    ([{'name': 'devture-traefik.service', 'priority': 3000, 'groups': ['matrix', 'traefik', 'reverse-proxies']}] if matrix_playbook_traefik_role_enabled else [])
   }}
 
 ########################################################################
@@ -2157,6 +2181,8 @@ matrix_ma1sd_database_password: "{{ '%s' | format(matrix_homeserver_generic_secr
 # If that's not the case, you may wish to disable this and take care of proxying yourself.
 matrix_nginx_proxy_enabled: true
 
+matrix_nginx_proxy_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
+
 matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "{{ 'matrix-corporal:41080' if matrix_corporal_enabled else 'matrix-nginx-proxy:12080' }}"
 matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "{{ '127.0.0.1:41080' if matrix_corporal_enabled else '127.0.0.1:12080' }}"
 matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: |-
@@ -2184,6 +2210,22 @@ matrix_nginx_proxy_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
 matrix_nginx_proxy_proxy_grafana_enabled: "{{ matrix_grafana_enabled }}"
 matrix_nginx_proxy_proxy_sygnal_enabled: "{{ matrix_sygnal_enabled }}"
 matrix_nginx_proxy_proxy_ntfy_enabled: "{{ matrix_ntfy_enabled }}"
+
+matrix_nginx_proxy_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
+matrix_nginx_proxy_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_nginx_proxy_container_labels_traefik_entrypoints: "{{ devture_traefik_config_entrypoint_primary }}"
+
+matrix_nginx_proxy_container_labels_traefik_proxy_element_enabled: "{{ matrix_client_element_enabled }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_hydrogen_enabled: "{{ matrix_client_hydrogen_enabled }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_cinny_enabled: "{{ matrix_client_cinny_enabled }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_buscarron_enabled: "{{ matrix_bot_buscarron_enabled }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_dimension_enabled: "{{ matrix_dimension_enabled }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_enabled: "{{ matrix_etherpad_enabled and matrix_etherpad_mode == 'standalone' }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_grafana_enabled: "{{ matrix_grafana_enabled }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_sygnal_enabled: "{{ matrix_sygnal_enabled }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_ntfy_enabled: "{{ matrix_ntfy_enabled }}"
 
 matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: "{{ matrix_corporal_enabled and matrix_corporal_http_api_enabled }}"
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
@@ -2968,7 +3010,11 @@ prometheus_node_exporter_server_fqn: "{{ matrix_server_fqn_matrix }}"
 
 prometheus_node_exporter_container_network: "{{ matrix_docker_network }}"
 
+prometheus_node_exporter_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
+
 prometheus_node_exporter_container_labels_traefik_enabled: false
+prometheus_node_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+prometheus_node_exporter_container_labels_traefik_entrypoints: "{{ devture_traefik_config_entrypoint_primary }}"
 
 ######################################################################
 #
@@ -2995,7 +3041,11 @@ prometheus_postgres_exporter_server_fqn: "{{ matrix_server_fqn_matrix }}"
 
 prometheus_postgres_exporter_container_network: "{{ matrix_docker_network }}"
 
+prometheus_postgres_exporter_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
+
 prometheus_postgres_exporter_container_labels_traefik_enabled: false
+prometheus_postgres_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+prometheus_postgres_exporter_container_labels_traefik_entrypoints: "{{ devture_traefik_config_entrypoint_primary }}"
 
 prometheus_postgres_exporter_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 prometheus_postgres_exporter_database_username: matrix_prometheus_postgres_exporter
@@ -3284,3 +3334,23 @@ matrix_user_creator_users_auto: |
 # /matrix-user-creator
 #
 ######################################################################
+
+
+########################################################################
+#                                                                      #
+# com.devture.ansible.role.traefik                                     #
+#                                                                      #
+########################################################################
+
+# To completely disable the Traefik role from running, use `matrix_playbook_traefik_role_enabled: false`.
+# See the comment there for more details about why we have both `devture_traefik_enabled` and `matrix_playbook_traefik_role_enabled`.
+devture_traefik_enabled: "{{ matrix_playbook_traefik_role_enabled }}"
+
+devture_traefik_uid: "{{ matrix_user_uid }}"
+devture_traefik_gid: "{{ matrix_user_gid }}"
+
+########################################################################
+#                                                                      #
+# /com.devture.ansible.role.traefik                                    #
+#                                                                      #
+########################################################################

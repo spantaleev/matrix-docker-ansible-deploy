@@ -1,0 +1,144 @@
+{% if matrix_nginx_proxy_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_nginx_proxy_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_nginx_proxy_container_labels_traefik_docker_network }}
+{% endif %}
+
+
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_element_enabled %}
+# Element
+traefik.http.routers.matrix-nginx-proxy-element.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_element_rule }}
+traefik.http.routers.matrix-nginx-proxy-element.service=matrix-nginx-proxy-web
+traefik.http.routers.matrix-nginx-proxy-element.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_element_tls | to_json }}
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_element_tls %}
+traefik.http.routers.matrix-nginx-proxy-element.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.routers.matrix-nginx-proxy-element.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
+{% endif %}
+
+
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_hydrogen_enabled %}
+# Hydrogen
+traefik.http.routers.matrix-nginx-proxy-hydrogen.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_hydrogen_rule }}
+traefik.http.routers.matrix-nginx-proxy-hydrogen.service=matrix-nginx-proxy-web
+traefik.http.routers.matrix-nginx-proxy-hydrogen.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_hydrogen_tls | to_json }}
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_hydrogen_tls %}
+traefik.http.routers.matrix-nginx-proxy-hydrogen.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.routers.matrix-nginx-proxy-hydrogen.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
+{% endif %}
+
+
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_cinny_enabled %}
+# Cinny
+traefik.http.routers.matrix-nginx-proxy-cinny.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_cinny_rule }}
+traefik.http.routers.matrix-nginx-proxy-cinny.service=matrix-nginx-proxy-web
+traefik.http.routers.matrix-nginx-proxy-cinny.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_cinny_tls | to_json }}
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_cinny_tls %}
+traefik.http.routers.matrix-nginx-proxy-cinny.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.routers.matrix-nginx-proxy-cinny.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
+{% endif %}
+
+
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_buscarron_enabled %}
+# Buscarron
+traefik.http.routers.matrix-nginx-proxy-buscarron.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_buscarron_rule }}
+traefik.http.routers.matrix-nginx-proxy-buscarron.service=matrix-nginx-proxy-web
+traefik.http.routers.matrix-nginx-proxy-buscarron.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_buscarron_tls | to_json }}
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_buscarron_tls %}
+traefik.http.routers.matrix-nginx-proxy-buscarron.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.routers.matrix-nginx-proxy-buscarron.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
+{% endif %}
+
+
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_dimension_enabled %}
+# Dimension
+traefik.http.routers.matrix-nginx-proxy-dimension.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_dimension_rule }}
+traefik.http.routers.matrix-nginx-proxy-dimension.service=matrix-nginx-proxy-web
+traefik.http.routers.matrix-nginx-proxy-dimension.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_dimension_tls | to_json }}
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_dimension_tls %}
+traefik.http.routers.matrix-nginx-proxy-dimension.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.routers.matrix-nginx-proxy-dimension.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
+{% endif %}
+
+
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_enabled %}
+# Etherpad
+traefik.http.routers.matrix-nginx-proxy-etherpad.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_rule }}
+traefik.http.routers.matrix-nginx-proxy-etherpad.service=matrix-nginx-proxy-web
+traefik.http.routers.matrix-nginx-proxy-etherpad.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_tls | to_json }}
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_tls %}
+traefik.http.routers.matrix-nginx-proxy-etherpad.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.routers.matrix-nginx-proxy-etherpad.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
+{% endif %}
+
+
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_bot_go_neb_enabled %}
+# Go NEB bot
+traefik.http.routers.matrix-nginx-proxy-bot_go_neb.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_bot_go_neb_rule }}
+traefik.http.routers.matrix-nginx-proxy-bot_go_neb.service=matrix-nginx-proxy-web
+traefik.http.routers.matrix-nginx-proxy-bot_go_neb.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_bot_go_neb_tls | to_json }}
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_bot_go_neb_tls %}
+traefik.http.routers.matrix-nginx-proxy-bot_go_neb.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.routers.matrix-nginx-proxy-bot_go_neb.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
+{% endif %}
+
+
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_jitsi_enabled %}
+# Jitsi
+traefik.http.routers.matrix-nginx-proxy-jitsi.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_jitsi_rule }}
+traefik.http.routers.matrix-nginx-proxy-jitsi.service=matrix-nginx-proxy-web
+traefik.http.routers.matrix-nginx-proxy-jitsi.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_jitsi_tls | to_json }}
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_jitsi_tls %}
+traefik.http.routers.matrix-nginx-proxy-jitsi.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.routers.matrix-nginx-proxy-jitsi.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
+{% endif %}
+
+
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_grafana_enabled %}
+# Grafana
+traefik.http.routers.matrix-nginx-proxy-grafana.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_grafana_rule }}
+traefik.http.routers.matrix-nginx-proxy-grafana.service=matrix-nginx-proxy-web
+traefik.http.routers.matrix-nginx-proxy-grafana.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_grafana_tls | to_json }}
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_grafana_tls %}
+traefik.http.routers.matrix-nginx-proxy-grafana.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.routers.matrix-nginx-proxy-grafana.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
+{% endif %}
+
+
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_sygnal_enabled %}
+# Sygnal
+traefik.http.routers.matrix-nginx-proxy-sygnal.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_sygnal_rule }}
+traefik.http.routers.matrix-nginx-proxy-sygnal.service=matrix-nginx-proxy-web
+traefik.http.routers.matrix-nginx-proxy-sygnal.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_sygnal_tls | to_json }}
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_sygnal_tls %}
+traefik.http.routers.matrix-nginx-proxy-sygnal.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.routers.matrix-nginx-proxy-sygnal.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
+{% endif %}
+
+
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_ntfy_enabled %}
+# ntfy
+traefik.http.routers.matrix-nginx-proxy-ntfy.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_ntfy_rule }}
+traefik.http.routers.matrix-nginx-proxy-ntfy.service=matrix-nginx-proxy-web
+traefik.http.routers.matrix-nginx-proxy-ntfy.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_ntfy_tls | to_json }}
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_ntfy_tls %}
+traefik.http.routers.matrix-nginx-proxy-ntfy.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.routers.matrix-nginx-proxy-ntfy.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
+{% endif %}
+
+
+traefik.http.services.matrix-nginx-proxy-web.loadbalancer.server.port=8080
+{% endif %}
+
+{{ matrix_nginx_proxy_container_labels_additional_labels }}
