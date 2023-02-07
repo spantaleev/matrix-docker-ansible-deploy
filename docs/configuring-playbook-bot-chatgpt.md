@@ -35,7 +35,7 @@ matrix_bot_chatgpt_enabled: true
 # See instructions on
 # https://www.npmjs.com/package/chatgpt
 # Get OpenAI API Key : https://platform.openai.com/account/api-keys
-matrix_bot_chatgpt_openai_apikey: ''
+matrix_bot_chatgpt_openai_api_key: ''
 
 # This is the default username
 # matrix_bot_chatgpt_matrix_bot_username_localpart: 'bot.chatgpt'
