@@ -38,6 +38,8 @@ matrix_playbook_traefik_role_enabled: false
 # installed in another way.
 matrix_playbook_traefik_labels_enabled: false
 
+matrix_playbook_traefik_certs_dumper_role_enabled: "{{ matrix_playbook_traefik_role_enabled }}"
+
 # Controls the additional network that reverse-proxyable services will be connected to.
 matrix_playbook_reverse_proxyable_services_additional_network: "{{ devture_traefik_container_network if devture_traefik_enabled else '' }}"
 
@@ -344,6 +346,8 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-synapse-reverse-proxy-companion.service', 'priority': 1500, 'groups': ['matrix', 'homeservers', 'synapse', 'reverse-proxies']}] if matrix_synapse_reverse_proxy_companion_enabled else [])
     +
     ([{'name': 'devture-traefik.service', 'priority': 3000, 'groups': ['matrix', 'traefik', 'reverse-proxies']}] if matrix_playbook_traefik_role_enabled else [])
+    +
+    ([{'name': (devture_traefik_certs_dumper_identifier + '.service'), 'priority': 3500, 'groups': ['matrix', 'traefik-certs-dumper']}] if matrix_playbook_traefik_certs_dumper_role_enabled else [])
   }}
 
 ########################################################################
@@ -3359,5 +3363,31 @@ devture_traefik_additional_entrypoints_auto:
 ########################################################################
 #                                                                      #
 # /com.devture.ansible.role.traefik                                    #
+#                                                                      #
+########################################################################
+
+
+########################################################################
+#                                                                      #
+# com.devture.ansible.role.traefik_certs_dumper                        #
+#                                                                      #
+########################################################################
+
+# To completely disable the Traefik certs dumper role from running, use `matrix_playbook_traefik_certs_dumper_role_enabled: false`.
+# See the comment there for more details about why we have both `devture_traefik_certs_dumper_enabled` and `matrix_playbook_traefik_certs_dumper_role_enabled`.
+devture_traefik_certs_dumper_enabled: "{{ matrix_playbook_traefik_certs_dumper_role_enabled and devture_traefik_enabled }}"
+
+devture_traefik_certs_dumper_identifier: matrix-traefik-certs-dumper
+
+devture_traefik_certs_dumper_base_path: "{{ matrix_base_data_path }}/traefik-certs-dumper"
+
+devture_traefik_certs_dumper_uid: "{{ matrix_user_uid }}"
+devture_traefik_certs_dumper_gid: "{{ matrix_user_gid }}"
+
+devture_traefik_certs_dumper_ssl_dir_path: "{{ devture_traefik_ssl_dir_path }}"
+
+########################################################################
+#                                                                      #
+# /com.devture.ansible.role.traefik_certs_dumper                       #
 #                                                                      #
 ########################################################################
