@@ -43,6 +43,10 @@ matrix_playbook_traefik_certs_dumper_role_enabled: "{{ matrix_playbook_traefik_r
 # Controls the additional network that reverse-proxyable services will be connected to.
 matrix_playbook_reverse_proxyable_services_additional_network: "{{ devture_traefik_container_network if devture_traefik_enabled else '' }}"
 
+matrix_playbook_reverse_proxy_type: "{{ 'traefik' if matrix_playbook_traefik_role_enabled else ('nginx-proxy' if matrix_nginx_proxy_enabled else 'none') }}"
+
+matrix_playbook_ssl_retrieval_method: "{{ 'lets-encrypt' if matrix_playbook_traefik_certs_dumper_role_enabled else matrix_ssl_retrieval_method }}"
+
 ########################################################################
 #                                                                      #
 # /Playbook                                                            #
@@ -1908,18 +1912,62 @@ matrix_coturn_turn_external_ip_address: "{{ ansible_host }}"
 
 matrix_coturn_turn_static_auth_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'coturn.sas', rounds=655555) | to_uuid }}"
 
-matrix_coturn_tls_enabled: "{{ matrix_ssl_retrieval_method != 'none' }}"
-matrix_coturn_tls_cert_path: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_matrix }}/fullchain.pem"
-matrix_coturn_tls_key_path: "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_matrix }}/privkey.pem"
+matrix_coturn_tls_enabled: "{{ matrix_playbook_ssl_retrieval_method != 'none' }}"
+
+matrix_coturn_tls_cert_path: |-
+  {{
+    {
+      'nginx-proxy': '/fullchain.pem',
+      'traefik': '/certificate.crt',
+    }[matrix_playbook_reverse_proxy_type]
+  }}
+
+matrix_coturn_tls_key_path: |-
+  {{
+    {
+      'nginx-proxy': '/privkey.pem',
+      'traefik': '/privatekey.key',
+    }[matrix_playbook_reverse_proxy_type]
+  }}
+
 matrix_coturn_container_additional_volumes: |
   {{
-    ([] if matrix_ssl_retrieval_method == 'none' else [
-        {
-            'src': matrix_ssl_config_dir_path,
-            'dst': matrix_ssl_config_dir_path,
-            'options': 'ro',
-        }
-    ])
+    (
+      [
+       {
+         'src': (matrix_ssl_config_dir_path + '/live/' + matrix_server_fqn_matrix + '/fullchain.pem'),
+         'dst': '/fullchain.pem',
+         'options': 'ro',
+       },
+       {
+         'src': (matrix_ssl_config_dir_path + '/live/' + matrix_server_fqn_matrix + '/privkey.pem'),
+         'dst': '/privkey.pem',
+         'options': 'ro',
+       },
+      ] if matrix_playbook_reverse_proxy_type == 'nginx-proxy' else []
+    )
+    +
+    (
+      [
+       {
+         'src': (devture_traefik_certs_dumper_dumped_certificates_dir_path +  '/' + matrix_server_fqn_matrix + '/certificate.crt'),
+         'dst': '/certificate.crt',
+         'options': 'ro',
+       },
+       {
+         'src': (devture_traefik_certs_dumper_dumped_certificates_dir_path +  '/' + matrix_server_fqn_matrix + '/privatekey.key'),
+         'dst': '/privatekey.key',
+         'options': 'ro',
+       },
+      ] if matrix_playbook_reverse_proxy_type == 'traefik' and matrix_playbook_traefik_certs_dumper_role_enabled else []
+    )
+  }}
+
+matrix_coturn_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    ([devture_traefik_certs_dumper_identifier + '-wait-for-domain@' + matrix_server_fqn_matrix + '.service'] if matrix_playbook_reverse_proxy_type == 'traefik' and matrix_playbook_traefik_certs_dumper_role_enabled else [])
   }}
 
 ######################################################################
@@ -2146,7 +2194,7 @@ matrix_ma1sd_threepid_medium_email_connectors_smtp_host: "matrix-mailer"
 matrix_ma1sd_threepid_medium_email_connectors_smtp_port: 8025
 matrix_ma1sd_threepid_medium_email_connectors_smtp_tls: 0
 
-matrix_ma1sd_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_ma1sd_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
 
 matrix_ma1sd_systemd_required_services_list: |
   {{
@@ -2281,12 +2329,12 @@ matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_ma1sd_
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}"
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container }}"
 
-matrix_nginx_proxy_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_nginx_proxy_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
 
 # OCSP stapling does not make sense when self-signed certificates are used.
 # See https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1073
 # and https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1074
-matrix_nginx_proxy_ocsp_stapling_enabled: "{{ matrix_ssl_retrieval_method != 'self-signed' }}"
+matrix_nginx_proxy_ocsp_stapling_enabled: "{{ matrix_playbook_ssl_retrieval_method != 'self-signed' }}"
 
 matrix_nginx_proxy_systemd_wanted_services_list: |
   {{
@@ -2768,7 +2816,7 @@ matrix_client_element_integrations_rest_url: "{{ matrix_dimension_integrations_r
 matrix_client_element_integrations_widgets_urls: "{{ matrix_dimension_integrations_widgets_urls if matrix_dimension_enabled else ['https://scalar.vector.im/api'] }}"
 matrix_client_element_integrations_jitsi_widget_url: "{{ matrix_dimension_integrations_jitsi_widget_url if matrix_dimension_enabled else 'https://scalar.vector.im/api/widgets/jitsi.html' }}"
 
-matrix_client_element_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_client_element_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
 
 matrix_client_element_registration_enabled: "{{ matrix_synapse_enable_registration }}"
 
@@ -2806,7 +2854,7 @@ matrix_client_hydrogen_container_http_host_bind_port: "{{ '' if matrix_nginx_pro
 
 matrix_client_hydrogen_default_hs_url: "{{ matrix_homeserver_url }}"
 
-matrix_client_hydrogen_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_client_hydrogen_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
 
 ######################################################################
 #
@@ -2831,7 +2879,7 @@ matrix_client_cinny_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_
 
 matrix_client_cinny_default_hs_url: "{{ matrix_homeserver_url }}"
 
-matrix_client_cinny_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_client_cinny_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
 
 ######################################################################
 #
@@ -2899,7 +2947,7 @@ matrix_synapse_turn_uris: |
     [
       'turns:' + matrix_server_fqn_matrix + '?transport=udp',
       'turns:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled and matrix_ssl_retrieval_method != 'lets-encrypt' else []
+    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled and matrix_playbook_ssl_retrieval_method != 'lets-encrypt' else []
     +
     [
       'turn:' + matrix_server_fqn_matrix + '?transport=udp',
@@ -2909,7 +2957,7 @@ matrix_synapse_turn_uris: |
 
 matrix_synapse_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
 
-matrix_synapse_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_synapse_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
 
 matrix_synapse_systemd_required_services_list: |
   {{
@@ -3186,7 +3234,7 @@ matrix_registration_shared_secret: |-
 
 matrix_registration_server_location: "{{ matrix_homeserver_container_url }}"
 
-matrix_registration_api_validate_certs: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_registration_api_validate_certs: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
 
 matrix_registration_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
@@ -3251,9 +3299,9 @@ matrix_dendrite_client_api_turn_uris: |
 
 matrix_dendrite_client_api_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
 
-matrix_dendrite_disable_tls_validation: "{{ true if matrix_ssl_retrieval_method == 'self-signed' else false }}"
+matrix_dendrite_disable_tls_validation: "{{ true if matrix_playbook_ssl_retrieval_method == 'self-signed' else false }}"
 
-matrix_dendrite_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_dendrite_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
 
 matrix_dendrite_trusted_id_servers: "{{ [matrix_server_fqn_matrix] if matrix_ma1sd_enabled else ['matrix.org', 'vector.im'] }}"
 

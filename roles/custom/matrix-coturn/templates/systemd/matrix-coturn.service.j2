@@ -35,7 +35,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			{% endif %}
 			--mount type=bind,src={{ matrix_coturn_config_path }},dst=/turnserver.conf,ro \
 			{% for volume in matrix_coturn_container_additional_volumes %}
-			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
+			--mount type=bind,src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options else '' }} \
 			{% endfor %}
 			{% for arg in matrix_coturn_container_extra_arguments %}
 			{{ arg }} \
