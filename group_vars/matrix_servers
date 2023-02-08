@@ -1693,9 +1693,40 @@ matrix_bot_postmoogle_enabled: false
 
 matrix_bot_postmoogle_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
-matrix_bot_postmoogle_ssl_path: "{{ matrix_ssl_config_dir_path }}"
-matrix_bot_postmoogle_tls_cert: "{% for domain in matrix_bot_postmoogle_domains %}/ssl/live/{{ domain }}/fullchain.pem {% endfor %}"
-matrix_bot_postmoogle_tls_key: "{% for domain in matrix_bot_postmoogle_domains %}/ssl/live/{{ domain }}/privkey.pem {% endfor %}"
+matrix_bot_postmoogle_ssl_path: |-
+  {{
+    {
+      'nginx-proxy': (matrix_ssl_config_dir_path if matrix_playbook_ssl_retrieval_method != 'none' else ''),
+      'traefik': devture_traefik_certs_dumper_dumped_certificates_dir_path,
+      'none': '',
+    }[matrix_playbook_reverse_proxy_type]
+  }}
+
+matrix_playbook_bot_postmoogle_nginx_proxy_tls_cert: "{% for domain in matrix_bot_postmoogle_domains %}/ssl/live/{{ domain }}/fullchain.pem {% endfor %}"
+matrix_playbook_bot_postmoogle_nginx_proxy_key: "{% for domain in matrix_bot_postmoogle_domains %}/ssl/live/{{ domain }}/privkey.pem {% endfor %}"
+
+matrix_playbook_bot_postmoogle_traefik_tls_cert: "{% for domain in matrix_bot_postmoogle_domains %}/ssl/{{ domain }}/certificate.crt {% endfor %}"
+matrix_playbook_bot_postmoogle_traefik_key: "{% for domain in matrix_bot_postmoogle_domains %}/ssl/{{ domain }}/privatekey.key {% endfor %}"
+
+matrix_bot_postmoogle_tls_cert: |-
+  {{
+    {
+      'nginx-proxy': (matrix_playbook_bot_postmoogle_nginx_proxy_tls_cert if matrix_playbook_ssl_retrieval_method != 'none' else ''),
+      'traefik': matrix_playbook_bot_postmoogle_traefik_tls_cert,
+      'none': '',
+    }[matrix_playbook_reverse_proxy_type]
+  }}
+
+matrix_bot_postmoogle_tls_key: |-
+  {{
+    {
+      'nginx-proxy': (matrix_playbook_bot_postmoogle_nginx_proxy_key if matrix_playbook_ssl_retrieval_method != 'none' else ''),
+      'traefik': matrix_playbook_bot_postmoogle_traefik_key,
+      'none': '',
+    }[matrix_playbook_reverse_proxy_type]
+  }}
+
+matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services: "{% for domain in matrix_bot_postmoogle_domains %}{{ devture_traefik_certs_dumper_identifier }}-wait-for-domain@{{ domain }}.service {% endfor %}"
 
 matrix_bot_postmoogle_systemd_required_services_list: |
   {{
@@ -1704,6 +1735,8 @@ matrix_bot_postmoogle_systemd_required_services_list: |
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    +
+    (matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services | trim | split(' ') if matrix_playbook_reverse_proxy_type == 'traefik' and matrix_playbook_traefik_certs_dumper_role_enabled else [])
   }}
 
 # Postgres is the default, except if not using internal Postgres server
