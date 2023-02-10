@@ -25,16 +25,24 @@
     - "matrix_jitsi_jvb_auth_password"
 
 
-- name: Fail if a Jitsi internal authentication account is not defined
+- name: Fail if authentication is enabled, but not properly configured.
   ansible.builtin.fail:
     msg: >-
+      You have enabled authentication, but the configured auth type is missing required configuration.
+
+      Auth type 'internal':
       At least one Jitsi user needs to be defined in `matrix_jitsi_prosody_auth_internal_accounts` when using internal authentication.
       If you're setting up Jitsi for the first time, you may have missed a step.
       Refer to our setup instructions (docs/configuring-playbook-jitsi.md).
+
+      Auth type 'matrix':
+      If you want to enable matrix_user_verification in jitsi,
+      please provide an auth token for the user verification service (uvs) using `matrix_jitsi_prosody_auth_matrix_uvs_auth_token`.
+      If the user-verfication-service is also managed by this playbook the token is derived from `matrix_homeserver_generic_secret_key` in the group vars.
   when:
     - matrix_jitsi_enable_auth | bool
-    - matrix_jitsi_auth_type == 'internal'
-    - matrix_jitsi_prosody_auth_internal_accounts|length == 0
+    - ((matrix_jitsi_auth_type == 'internal' and matrix_jitsi_prosody_auth_internal_accounts|length == 0)
+      or (matrix_jitsi_auth_type == 'matrix' and matrix_jitsi_prosody_auth_matrix_uvs_auth_token|length == 0))
 
 
 - name: (Deprecation) Catch and report renamed settings

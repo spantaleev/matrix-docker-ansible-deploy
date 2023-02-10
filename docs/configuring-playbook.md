@@ -99,6 +99,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (optional, advanced)
 
+- [Matrix User Verification Service](docs/configuring-playbook-user-verification-service.md) (optional, advanced)
+
 
 ### Bridging other networks
 
@@ -176,6 +178,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) - an extensible multifunctional bot (optional)
 
 - [Setting up Mjolnir](configuring-playbook-bot-mjolnir.md) - a moderation tool/bot (optional)
+
+- [Setting up Draupnir](configuring-playbook-bot-draupnir.md) - a moderation tool/bot, forked from Mjolnir and maintained by its former leader developer (optional)
 
 - [Setting up Buscarron](configuring-playbook-bot-buscarron.md) - a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room (optional)
 

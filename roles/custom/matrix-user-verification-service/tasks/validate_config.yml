@@ -1,0 +1,25 @@
+---
+
+- name: Verify homeserver_url is not empty
+  ansible.builtin.assert:
+    that:
+      - matrix_user_verification_service_uvs_homeserver_url|length > 0
+    fail_msg: "Missing variable in {{ matrix_user_verification_service_ansible_name }} role"
+
+- name: Verify Auth is configured properly or disabled
+  ansible.builtin.assert:
+    that:
+      - matrix_user_verification_service_uvs_access_token|length > 0 or not matrix_user_verification_service_uvs_require_auth|bool
+    fail_msg: "If Auth is enabled, a valid (non empty) TOKEN must be given in 'matrix_user_verification_service_uvs_access_token'."
+
+- name: Verify server_name for openid verification is given, if pinning a single server_name is enabled.
+  ansible.builtin.assert:
+    that:
+      - matrix_user_verification_service_uvs_openid_verify_server_name|length > 0 or not matrix_user_verification_service_uvs_pin_openid_verify_server_name|bool
+    fail_msg: "If pinning a single server_name is enabled, a valid (non empty) server_name must be given in 'matrix_user_verification_service_uvs_openid_verify_server_name'."
+
+- name: Verify the homeserver implementation is synapse
+  ansible.builtin.assert:
+    that:
+      - matrix_homeserver_implementation == 'synapse'
+    fail_msg: "The User-Verification-Service requires Synapse as homeserver implementation"

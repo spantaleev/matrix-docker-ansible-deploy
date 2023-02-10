@@ -1,0 +1,49 @@
+---
+#####
+#
+# This tasks file starts and stops (if state before was stopped) a prosody container during setup to run commands,
+# that require a running prosody container.
+# The task is called in ../setup_jitsi_prosody_install.yml.
+#
+# Important: The task is called conditionally, as to only start if really needed.
+# So if you add or change anything - remember to also change the 'when' in:  ../setup_jitsi_prosody_install.yml
+#
+#####
+
+#
+# Start Necessary Services
+#
+
+- name: Ensure matrix-jitsi-prosody container is running
+  ansible.builtin.systemd:
+    state: "{{ 'restarted' if matrix_jitsi_prosody_require_restart | default(false) | bool else 'started' }}"
+    name: matrix-jitsi-prosody
+  register: matrix_jitsi_prosody_start_result
+
+# If the flag was set, we can safely disable now.
+- name: Disable require restart flag
+  ansible.builtin.set_fact:
+    matrix_jitsi_prosody_require_restart: false
+
+#
+# Tasks related to configuring Jitsi internal authentication
+#
+
+- name: Ensure internal authentication is properly configured
+  ansible.builtin.include_tasks:
+    file: "{{ role_path }}/tasks/util/prosody_post_setup_hooks/setup_jitsi_auth_internal.yml"
+  when: matrix_jitsi_enable_auth | bool and matrix_jitsi_auth_type == "internal"
+
+#
+# Tasks related to ...
+#
+
+
+#
+# Stop Necessary Services
+#
+- name: Ensure matrix-jitsi-prosody container is stopped if necessary
+  ansible.builtin.systemd:
+    state: stopped
+    name: matrix-jitsi-prosody
+  when: matrix_jitsi_prosody_start_result.changed | bool

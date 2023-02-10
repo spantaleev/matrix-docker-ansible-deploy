@@ -39,7 +39,17 @@ By default the Jitsi Meet instance does not require any kind of login and is ope
 
 If you're fine with such an open Jitsi instance, please skip to [Apply changes](#apply-changes).
 
-If you would like to control who is allowed to open meetings on your new Jitsi instance, then please follow this step to enable Jitsi's authentication and guests mode. With authentication enabled, all meeting rooms have to be opened by a registered user, after which guests are free to join. If a registered host is not yet present, guests are put on hold in individual waiting rooms.
+If you would like to control who is allowed to open meetings on your new Jitsi instance, then please follow the following steps to enable Jitsi's authentication and optionally guests mode.
+Currently, there are three supported authentication modes: 'internal' (default), 'matrix' and 'ldap'.
+
+**Note:** Authentication is not tested via the playbook's self-checks.
+We therefore recommend that you manually verify if authentication is required by jitsi.
+For this, try to manually create a conference on jitsi.DOMAIN in your browser. 
+
+### Authenticate using Jitsi accounts (Auth-Type 'internal')
+The default authentication mechanism is 'internal' auth, which requires jitsi-accounts to be setup and is the recommended setup, as it also works in federated rooms. 
+With authentication enabled, all meeting rooms have to be opened by a registered user, after which guests are free to join.
+If a registered host is not yet present, guests are put on hold in individual waiting rooms.
 
 Add these lines to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
 
@@ -53,20 +63,36 @@ matrix_jitsi_prosody_auth_internal_accounts:
     password: "another-password"
 ```
 
-**Caution:** Accounts added here and subsquently removed will not be automatically removed from the Prosody server until user account cleaning is integrated into the playbook.
+**Caution:** Accounts added here and subsequently removed will not be automatically removed from the Prosody server until user account cleaning is integrated into the playbook.
 
 **If you get an error** like this: "Error: Account creation/modification not supported.", it's likely that you had previously installed Jitsi without auth/guest support. In such a case, you should look into [Rebuilding your Jitsi installation](#rebuilding-your-jitsi-installation).
 
+### Authenticate using Matrix OpenID (Auth-Type 'matrix')
 
-### (Optional) LDAP authentication
+**Attention: Probably breaks jitsi in federated rooms and does not allow sharing conference links with guests.**
 
-The default authentication mode of Jitsi is `internal`, however LDAP is also supported. An example LDAP configuration could be:
+Using this authentication type require a [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service).
+By default, this playbook creates and configures a user-verification-service to run locally, see [configuring-user-verification-service](configuring-playbook-user-verification-service.md).
+
+To enable set this configuration at host level:
+
+```yaml
+matrix_jitsi_enable_auth: true
+matrix_jitsi_auth_type: "matrix"
+matrix_user_verification_service_enabled: true
+```
+
+For more information see also [https://github.com/matrix-org/prosody-mod-auth-matrix-user-verification](https://github.com/matrix-org/prosody-mod-auth-matrix-user-verification).
+
+### Authenticate using LDAP (Auth-Type 'ldap')
+
+An example LDAP configuration could be:
 
 ```yaml
 matrix_jitsi_enable_auth: true
 matrix_jitsi_auth_type: ldap
 matrix_jitsi_ldap_url: "ldap://ldap.DOMAIN"
-matrix_jitsi_ldap_base: "OU=People,DC=DOMAIN
+matrix_jitsi_ldap_base: "OU=People,DC=DOMAIN"
 #matrix_jitsi_ldap_binddn: ""
 #matrix_jitsi_ldap_bindpw: ""
 matrix_jitsi_ldap_filter: "uid=%u"
@@ -200,7 +226,19 @@ matrix_nginx_proxy_proxy_jitsi_additional_jvbs:
 Applied together this will allow you to provision extra JVB instances which will register themselves with the prosody service and be available for jicofo 
 to route conferences too.
 
+## (Optional) Enable Gravatar
 
+In the default Jisti Meet configuration, gravatar.com is enabled as an avatar service. This results in third party request leaking data to gravatar.
+Since element already sends the url of configured Matrix avatars to Jitsi, we disabled gravatar.
+
+To enable Gravatar set:
+
+```yaml
+matrix_jitsi_disable_gravatar: false
+```
+
+**Beware:** This leaks information to a third party, namely the Gravatar-Service (unless configured otherwise: gravatar.com).
+Besides metadata, this includes the matrix user_id and possibly the room identifier (via `referrer` header).
 
 ## Apply changes
 

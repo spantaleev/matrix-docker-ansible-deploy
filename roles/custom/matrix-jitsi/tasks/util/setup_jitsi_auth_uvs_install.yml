@@ -1,0 +1,15 @@
+---
+
+- name: Checkout Prosody Auth Matrix User Verification Plugin Repo
+  ansible.builtin.git:
+    repo: "{{ matrix_jitsi_prosody_auth_matrix_user_verification_repo_location }}"
+    dest: "{{ matrix_jitsi_prosody_auth_matrix_user_verification_repo_target }}"
+    version: "{{ matrix_jitsi_prosody_auth_matrix_user_verification_repo_version }}"
+
+- name: Install Prosody Auth Matrix User Verification Plugin
+  ansible.builtin.copy:
+    remote_src: true
+    src: "{{ matrix_jitsi_prosody_auth_matrix_user_verification_repo_target }}/{{ item.path }}"
+    dest: "{{ matrix_jitsi_prosody_plugins_path }}/{{ item.path }}"
+  with_items: "{{ matrix_jitsi_prosody_auth_matrix_files }}"
+  when: item.when | bool

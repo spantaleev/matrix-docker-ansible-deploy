@@ -1,0 +1,37 @@
+---
+
+- name: "Ensure Matrix User Verification Service paths exist"
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_user_verification_service_config_path }}", when: true}
+  when: item.when | bool
+
+- name: Ensure Matrix User Verification Service image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_user_verification_service_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_user_verification_service_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_user_verification_service_docker_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure Matrix User Verification Service env file installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/.env.j2"
+    dest: "{{ matrix_user_verification_service_config_env_file }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0644
+
+- name: Ensure matrix-user-verification-service.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-user-verification-service.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_user_verification_service_systemd_service_name }}"
+    mode: 0644

@@ -217,6 +217,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-bot-mjolnir.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'mjolnir']}] if matrix_bot_mjolnir_enabled else [])
     +
+    ([{'name': 'matrix-bot-draupnir.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'draupnir']}] if matrix_bot_draupnir_enabled else [])
+    +
     ([{'name': 'matrix-bot-postmoogle.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'postmoogle']}] if matrix_bot_postmoogle_enabled else [])
     +
     ([{'name': 'matrix-bot-chatgpt.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'chatgpt']}] if matrix_bot_chatgpt_enabled else [])
@@ -348,6 +350,8 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-synapse-admin.service', 'priority': 4000, 'groups': ['matrix', 'synapse-admin']}] if matrix_synapse_admin_enabled else [])
     +
     ([{'name': 'matrix-synapse-reverse-proxy-companion.service', 'priority': 1500, 'groups': ['matrix', 'homeservers', 'synapse', 'reverse-proxies']}] if matrix_synapse_reverse_proxy_companion_enabled else [])
+    +
+    ([{'name': 'matrix-user-verification-service.service', 'priority': 800, 'groups': ['matrix', 'matrix-user-verification-service']}] if matrix_user_verification_service_enabled else [])
     +
     ([{'name': 'devture-traefik.service', 'priority': 3000, 'groups': ['matrix', 'traefik', 'reverse-proxies']}] if matrix_playbook_traefik_role_enabled else [])
     +
@@ -1826,6 +1830,34 @@ matrix_bot_mjolnir_systemd_required_services_list: |
 
 ######################################################################
 #
+# matrix-bot-draupnir
+#
+######################################################################
+
+# We don't enable bots by default.
+matrix_bot_draupnir_enabled: false
+
+matrix_bot_draupnir_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+
+matrix_bot_draupnir_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    ['matrix-' + matrix_homeserver_implementation + '.service']
+    +
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+  }}
+
+######################################################################
+#
+# /matrix-bot-draupnir
+#
+######################################################################
+
+######################################################################
+#
 # matrix-backup-borg
 #
 ######################################################################
@@ -2146,6 +2178,12 @@ matrix_jitsi_web_stun_servers: |
 matrix_jitsi_etherpad_enabled: "{{ matrix_etherpad_enabled }}"
 matrix_jitsi_etherpad_base: "{{ matrix_etherpad_base_url if matrix_etherpad_enabled else 'https://scalar.vector.im/etherpad' }}"
 
+# Allow verification using JWT and matrix-UVS
+matrix_jitsi_prosody_auth_matrix_uvs_auth_token: "{{ matrix_user_verification_service_uvs_auth_token }}"
+matrix_jitsi_prosody_auth_matrix_uvs_location: "{{ matrix_user_verification_service_container_url }}"
+
+matrix_jitsi_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
+
 ######################################################################
 #
 # /matrix-jitsi
@@ -2293,7 +2331,10 @@ matrix_nginx_proxy_proxy_buscarron_enabled: "{{ matrix_bot_buscarron_enabled }}"
 matrix_nginx_proxy_proxy_dimension_enabled: "{{ matrix_dimension_enabled }}"
 matrix_nginx_proxy_proxy_etherpad_enabled: "{{ matrix_etherpad_enabled and matrix_etherpad_mode == 'standalone' }}"
 matrix_nginx_proxy_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled }}"
+
 matrix_nginx_proxy_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
+matrix_nginx_proxy_proxy_jitsi_manage_wellknown: "{{ matrix_jitsi_require_well_known }}"
+
 matrix_nginx_proxy_proxy_grafana_enabled: "{{ matrix_grafana_enabled }}"
 matrix_nginx_proxy_proxy_sygnal_enabled: "{{ matrix_sygnal_enabled }}"
 matrix_nginx_proxy_proxy_ntfy_enabled: "{{ matrix_ntfy_enabled }}"
@@ -2958,7 +2999,7 @@ matrix_synapse_tls_federation_listener_enabled: false
 matrix_synapse_tls_certificate_path: ~
 matrix_synapse_tls_private_key_path: ~
 
-matrix_synapse_federation_port_openid_resource_required: "{{ not matrix_synapse_federation_enabled and (matrix_dimension_enabled or matrix_ma1sd_enabled) }}"
+matrix_synapse_federation_port_openid_resource_required: "{{ not matrix_synapse_federation_enabled and (matrix_dimension_enabled or matrix_ma1sd_enabled or matrix_user_verification_service_enabled) }}"
 
 # If someone instals Prometheus via the playbook, they most likely wish to monitor Synapse.
 matrix_synapse_metrics_enabled: "{{ matrix_prometheus_enabled }}"
@@ -3420,6 +3461,46 @@ matrix_user_creator_users_auto: |
 ######################################################################
 #
 # /matrix-user-creator
+#
+######################################################################
+
+
+######################################################################
+#
+# matrix-user-verification-service
+#
+######################################################################
+
+## FIXME: Needs to be updated when there is a proper release by upstream.
+matrix_user_verification_service_docker_image: "{{ matrix_user_verification_service_docker_image_name_prefix }}matrixdotorg/matrix-user-verification-service@sha256:d2aabc984dd69d258c91900c36928972d7aaef19d776caa3cd6a0fbc0e307270"
+
+matrix_user_verification_service_enabled: false
+matrix_user_verification_service_systemd_required_services_list: |
+      {{
+        ['docker.service']
+        +
+        (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+        +
+        ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+      }}
+
+# If Jitsi is managed by this playbook we can use the docker network - no need to expose a port.
+# If Jitsi is not managed by this playbook, or you otherwise have a need for it, you can expose
+# matrix-user-verfification-services's client-server port to the local host port 3003.
+# By default Matrix-User-Verification-Service binds to port 3000, which collides with grafana, therefore this uses port 3003.
+matrix_user_verification_service_container_http_host_bind_port: "{{  '' if (matrix_jitsi_enabled | bool and matrix_jitsi_enable_auth | bool and matrix_jitsi_auth_type == 'matrix') else '127.0.0.1:3003' }}"
+
+# URL exposed in the docker network
+matrix_user_verification_service_container_url: "http://{{  matrix_user_verification_service_container_name }}:3000"
+
+# We connect via the container network (private IPs), so we need to disable IP checks
+matrix_user_verification_service_uvs_disable_ip_blacklist: "{{'true' if matrix_synapse_enabled else 'false'}}"
+
+matrix_user_verification_service_uvs_auth_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'uvs.auth.token', rounds=655555) | to_uuid }}"
+
+######################################################################
+#
+# /matrix-user-verification-service
 #
 ######################################################################
 

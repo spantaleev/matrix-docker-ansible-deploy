@@ -67,3 +67,9 @@
     - setup-all
     - setup-jitsi
     - setup-additional-jitsi-jvb
+
+- block:
+    - when: matrix_jitsi_enable_auth | bool and matrix_jitsi_auth_type == 'matrix'
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_matrix_auth.yml"
+  tags:
+    - self-check

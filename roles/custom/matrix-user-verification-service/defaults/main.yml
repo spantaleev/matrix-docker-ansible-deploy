@@ -1,0 +1,61 @@
+---
+# Set this to the display name for ansible used in Output e.g. fail_msg
+matrix_user_verification_service_ansible_name: "Matrix User Verification Service"
+
+# Enable by default. This is overwritten in provided group vars.
+matrix_user_verification_service_enabled: true
+
+# Fix version tag
+matrix_user_verification_service_version: "v2.0.0"
+
+# Paths
+matrix_user_verification_service_base_path: "{{ matrix_base_data_path }}/user-verification-service"
+matrix_user_verification_service_config_path: "{{ matrix_user_verification_service_base_path }}/config"
+matrix_user_verification_service_config_env_file: "{{ matrix_user_verification_service_config_path }}/.env"
+
+# Docker
+matrix_user_verification_service_docker_image_name_prefix: "{{ matrix_container_global_registry_prefix }}"
+matrix_user_verification_service_docker_image: "{{ matrix_user_verification_service_docker_image_name_prefix }}matrixdotorg/matrix-user-verification-service:{{ matrix_user_verification_service_version }}"
+matrix_user_verification_service_docker_image_force_pull: "{{ matrix_user_verification_service_docker_image.endswith(':latest') }}"
+
+matrix_user_verification_service_container_name: "matrix-user-verification-service"
+# This will be set in group vars
+matrix_user_verification_service_container_http_host_bind_port: ''
+matrix_user_verification_service_container_extra_arguments: []
+# Systemd
+matrix_user_verification_service_systemd_required_services_list: []
+matrix_user_verification_service_systemd_wanted_services_list: []
+matrix_user_verification_service_systemd_service_basename: "matrix-user-verification-service"
+matrix_user_verification_service_systemd_service_name: "{{ matrix_user_verification_service_systemd_service_basename }}.service"
+
+# Matrix User Verification Service Configuration
+## REQUIRED
+
+# Homeserver client API admin token (synapse only)-  Required for the service to verify room membership
+# matrix_user_verification_service_uvs_access_token:
+
+# homeserver client api url
+matrix_user_verification_service_uvs_homeserver_url: "{{ matrix_homeserver_container_url }}"
+# disable check for non private ip range of homeserver. e.g. set to `true` if your homeserver domain resolves to a private ip.
+matrix_user_verification_service_uvs_disable_ip_blacklist: false
+
+## OPTIONAL
+
+# Require an Auth-Token with API calls. If set to false, UVS will reply to any API call.
+# The Auth-Token is defined via: matrix_user_verification_service_uvs_auth_token
+matrix_user_verification_service_uvs_require_auth: true
+# Auth token to protect the API
+# If enabled any calls to the provided API endpoints need have the header "Authorization: Bearer TOKEN".
+# A Token will be derived from matrix_homeserver_generic_secret_key in group_vars/matrix_servers
+matrix_user_verification_service_uvs_auth_token: ''
+
+# Pin UVS to only check openId Tokens for the matrix_server_name configured by this playbook.
+matrix_user_verification_service_uvs_pin_openid_verify_server_name: true
+# Matrix server name to verify OpenID tokens against.
+# This is not the homeserverURL, but rather the domain in the matrix "user ID"
+# UVS can also be instructed to verify against the Matrix server name passed in the token, to enable set to ""
+matrix_user_verification_service_uvs_openid_verify_server_name: "{{ matrix_domain }}"
+
+# Log level
+# See choices here: https://github.com/winstonjs/winston#logging-levels
+matrix_user_verification_service_uvs_log_level: info

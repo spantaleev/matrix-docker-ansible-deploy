@@ -1,0 +1,42 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description={{ matrix_user_verification_service_ansible_name }}
+{% for service in matrix_user_verification_service_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_user_verification_service_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill {{ matrix_user_verification_service_container_name }} 2>/dev/null'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_user_verification_service_container_name }} 2>/dev/null'
+
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name  {{ matrix_user_verification_service_container_name }}\
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--network={{ matrix_docker_network }} \
+			{% if matrix_user_verification_service_container_http_host_bind_port %}
+			-p {{ matrix_user_verification_service_container_http_host_bind_port }}:3000 \
+			{% endif %}
+			--mount type=bind,src={{ matrix_user_verification_service_config_env_file }},dst=/app/.env,ro \
+			{% for arg in matrix_user_verification_service_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_user_verification_service_docker_image }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill {{ matrix_user_verification_service_container_name }} 2>/dev/null'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_user_verification_service_container_name }} 2>/dev/null'
+Restart=always
+RestartSec=30
+SyslogIdentifier={{ matrix_user_verification_service_systemd_service_basename }}
+
+[Install]
+WantedBy=multi-user.target
