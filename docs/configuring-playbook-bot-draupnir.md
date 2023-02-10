@@ -81,7 +81,7 @@ matrix_bot_draupnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 
 ## 5b. Migrating from Mjolnir (Only required if migrating.)
 
-Replace your matrix_bot_mjolnir config with matrix_bot_draupnir config. Also disable mjolnir if your doing migration. 
+Replace your matrix_bot_mjolnir config with matrix_bot_draupnir config. Also disable mjolnir if you're doing migration. 
 That is all you need to do due to that Draupnir can complete migration on its own. 
 
 ## 6. Installing
