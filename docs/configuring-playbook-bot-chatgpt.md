@@ -32,11 +32,8 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 ```yaml
 matrix_bot_chatgpt_enabled: true
 
-# See instructions on
-# https://www.npmjs.com/package/chatgpt
-matrix_bot_chatgpt_openai_email: ''
-matrix_bot_chatgpt_openai_password: ''
-matrix_bot_chatgpt_openai_login_type: google
+# Obtain a new API key from https://platform.openai.com/account/api-keys
+matrix_bot_chatgpt_openai_api_key: ''
 
 # This is the default username
 # matrix_bot_chatgpt_matrix_bot_username_localpart: 'bot.chatgpt'
