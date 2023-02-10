@@ -10,14 +10,6 @@
     - "{{ matrix_jitsi_prosody_auth_matrix_files | map(attribute='path') | map('regex_replace', '^', matrix_jitsi_prosody_plugins_path+'/') | list }}"
   register: matrix_jitsi_prosody_auth_matrix_user_verification_uninstalled
 
-- name: Remove .well-known/element directory if empty
-  ansible.builtin.command:
-    argv:
-      - rmdir
-      - "{{ matrix_static_files_base_path }}/.well-known/element"
-    removes: "{{matrix_static_files_base_path}}/.well-known/element"
-  ignore_errors: true
-
 - when: matrix_jitsi_prosody_auth_matrix_user_verification_uninstalled.changed
   block:
     - name: Populate service facts
