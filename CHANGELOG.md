@@ -1,5 +1,12 @@
 # 2023-02-10
 
+## Matrix Authentication Support for Jitsi
+
+Thanks to [Jakob S.](https://github.com/jakicoll) ([zakk gGmbH](https://github.com/zakk-it)), Jitsi can now use Matrix for authentication (via [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service)).
+
+Additional details are available in the [Authenticate using Matrix OpenID (Auth-Type 'matrix')](docs/configuring-playbook-jitsi.md#authenticate-using-matrix-openid-auth-type-matrix).
+
+
 ## Draupnir moderation tool (bot) support
 
 Thanks to [FSG-Cat](https://github.com/FSG-Cat), the playbook can now install and configure the [Draupnir](https://github.com/Gnuxie/Draupnir) moderation tool (bot). Draupnir is a fork of [Mjolnir](docs/configuring-playbook-bot-mjolnir.md) (which the playbook has supported for a long time) maintained by Mjolnir's former lead developer.
