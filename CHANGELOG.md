@@ -1,3 +1,12 @@
+# 2023-02-10
+
+## Draupnir moderation tool (bot) support
+
+Thanks to [FSG-Cat](https://github.com/FSG-Cat), the playbook can now install and configure the [Draupnir](https://github.com/Gnuxie/Draupnir) moderation tool (bot). Draupnir is a fork of [Mjolnir](docs/configuring-playbook-bot-mjolnir.md) (which the playbook has supported for a long time) maintained by Mjolnir's former lead developer.
+
+Additional details are available in [Setting up Draupnir](docs/configuring-playbook-bot-draupnir.md).
+
+
 # 2023-02-05
 
 ## The matrix-prometheus-postgres-exporter role lives independently now

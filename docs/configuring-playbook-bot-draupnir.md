@@ -32,7 +32,7 @@ Refer to the documentation on [how to obtain an access token](obtaining-access-t
 
 You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step draupnir will crash. This can be done using Synapse's [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). This can also be manually done by editing the Synapse database. Manually editing the Synapse database is rarely a good idea. Please ask for help if you are uncomfortable with these steps.
 
-1. Copy the statement below into a text editor. 
+1. Copy the statement below into a text editor.
 
 	```
 	INSERT INTO ratelimit_override VALUES ('@bot.draupnir:DOMAIN', 0, 0);
@@ -81,8 +81,8 @@ matrix_bot_draupnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 
 ## 5b. Migrating from Mjolnir (Only required if migrating.)
 
-Replace your matrix_bot_mjolnir config with matrix_bot_draupnir config. Also disable mjolnir if you're doing migration. 
-That is all you need to do due to that Draupnir can complete migration on its own. 
+Replace your matrix_bot_mjolnir config with matrix_bot_draupnir config. Also disable mjolnir if you're doing migration.
+That is all you need to do due to that Draupnir can complete migration on its own.
 
 ## 6. Installing
 

@@ -177,6 +177,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Mjolnir](configuring-playbook-bot-mjolnir.md) - a moderation tool/bot (optional)
 
+- [Setting up Draupnir](configuring-playbook-bot-draupnir.md) - a moderation tool/bot (optional), forked from Mjolnir and maintained by its former leader developer
+
 - [Setting up Buscarron](configuring-playbook-bot-buscarron.md) - a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room (optional)
 
 
