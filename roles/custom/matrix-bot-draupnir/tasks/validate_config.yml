@@ -1,0 +1,9 @@
+---
+
+- name: Fail if required variables are undefined
+  ansible.builtin.fail:
+    msg: "The `{{ item }}` variable must be defined and have a non-null value."
+  with_items:
+    - "matrix_bot_draupnir_access_token"
+    - "matrix_bot_draupnir_management_room"
+  when: "vars[item] == '' or vars[item] is none"

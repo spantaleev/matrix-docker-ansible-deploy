@@ -189,6 +189,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-bot-mjolnir.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'mjolnir']}] if matrix_bot_mjolnir_enabled else [])
     +
+    ([{'name': 'matrix-bot-draupnir.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'draupnir']}] if matrix_bot_draupnir_enabled else [])
+    +
     ([{'name': 'matrix-bot-postmoogle.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'postmoogle']}] if matrix_bot_postmoogle_enabled else [])
     +
     ([{'name': 'matrix-bot-chatgpt.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'chatgpt']}] if matrix_bot_chatgpt_enabled else [])
@@ -1756,6 +1758,34 @@ matrix_bot_mjolnir_systemd_required_services_list: |
 ######################################################################
 #
 # /matrix-bot-mjolnir
+#
+######################################################################
+
+######################################################################
+#
+# matrix-bot-draupnir
+#
+######################################################################
+
+# We don't enable bots by default.
+matrix_bot_draupnir_enabled: false
+
+matrix_bot_draupnir_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+
+matrix_bot_draupnir_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    ['matrix-' + matrix_homeserver_implementation + '.service']
+    +
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+  }}
+
+######################################################################
+#
+# /matrix-bot-draupnir
 #
 ######################################################################
 
