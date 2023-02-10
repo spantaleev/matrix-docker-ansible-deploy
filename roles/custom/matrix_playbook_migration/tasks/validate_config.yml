@@ -34,6 +34,8 @@
     - {'old': 'matrix_systemd_services_list', 'new': 'devture_systemd_service_manager_services_list_additional'}
     - {'old': 'matrix_common_after_systemd_service_start_wait_for_timeout_seconds', 'new': 'devture_systemd_service_manager_up_verification_delay_seconds'}
     - {'old': 'matrix_systemd_services_autostart_enabled', 'new': 'devture_systemd_service_manager_services_autostart_enabled'}
+    - {'old': 'matrix_prometheus_node_exporter_metrics_proxying_enabled', 'new': 'matrix_prometheus_services_proxy_connect_prometheus_node_exporter_metrics_proxying_enabled'}
+    - {'old': 'matrix_prometheus_postgres_exporter_metrics_proxying_enabled', 'new': 'matrix_prometheus_services_proxy_connect_prometheus_postgres_exporter_metrics_proxying_enabled'}
 
 - name: (Deprecation) Catch and report matrix_postgres variables
   ansible.builtin.fail:
@@ -48,3 +50,33 @@
 
       The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'matrix_postgres_.*') | map (attribute='key') | join(', ') }}
   when: "vars | dict2items | selectattr('key', 'match', 'matrix_postgres_.*') | list | items2dict"
+
+- when: matrix_playbook_migration_matrix_prometheus_node_exporter_migration_validation_enabled | bool
+  block:
+    - ansible.builtin.set_fact:
+        matrix_playbook_migration_matrix_prometheus_node_exporter_migration_vars: |-
+          {{ vars | dict2items | selectattr('key', 'match', 'matrix_prometheus_node_exporter_.*') | list | items2dict }}
+
+    - name: (Deprecation) Catch and report matrix_prometheus_node_exporter variables
+      ansible.builtin.fail:
+        msg: >-
+          The matrix-prometheus-node-exporter role that used to be part of this playbook has been replaced by https://gitlab.com/etke.cc/roles/prometheus_node_exporter.
+          The new role is compatible with the old one, but uses different names for its variables.
+          Please change your configuration (vars.yml) to rename all variables (`matrix_prometheus_node_exporter_` -> `prometheus_node_exporter_`).
+          We found usage of the following variables: {{ matrix_playbook_migration_matrix_prometheus_node_exporter_migration_vars.keys() | join(', ') }}
+      when: "matrix_playbook_migration_matrix_prometheus_node_exporter_migration_vars | length > 0"
+
+- when: matrix_playbook_migration_matrix_prometheus_postgres_exporter_migration_validation_enabled | bool
+  block:
+    - ansible.builtin.set_fact:
+        matrix_playbook_migration_matrix_prometheus_postgres_exporter_migration_vars: |-
+          {{ vars | dict2items | selectattr('key', 'match', 'matrix_prometheus_postgres_exporter_.*') | list | items2dict }}
+
+    - name: (Deprecation) Catch and report matrix_prometheus_postgres_exporter variables
+      ansible.builtin.fail:
+        msg: >-
+          The matrix-prometheus-postgres-exporter role that used to be part of this playbook has been replaced by https://gitlab.com/etke.cc/roles/prometheus_postgres_exporter.
+          The new role is compatible with the old one, but uses different names for its variables.
+          Please change your configuration (vars.yml) to rename all variables (`matrix_prometheus_postgres_exporter_` -> `prometheus_postgres_exporter_`).
+          We found usage of the following variables: {{ matrix_playbook_migration_matrix_prometheus_postgres_exporter_migration_vars.keys() | join(', ') }}
+      when: "matrix_playbook_migration_matrix_prometheus_postgres_exporter_migration_vars | length > 0"

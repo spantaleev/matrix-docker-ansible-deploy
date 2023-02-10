@@ -46,7 +46,7 @@
       id: "federation-sender-{{ item }}"
       name: "matrix-synapse-worker-federation-sender-{{ item }}"
       type: 'federation_sender'
-      app: 'federation_sender'
+      app: 'generic_worker'
       webserving: false
       port: 0
       metrics_port: "{{ matrix_synapse_workers_federation_sender_workers_metrics_range_start + item }}"
@@ -58,14 +58,13 @@
     matrix_synapse_federation_sender_instances: "{{ matrix_synapse_federation_sender_instances + [item.ansible_facts.worker.name] }}"
   with_items: "{{ matrix_synapse_workers_list_results_federation_sender_workers.results }}"
 
-# This type of worker can only have a count of 1, at most
 - name: Build pusher workers
   ansible.builtin.set_fact:
     worker:
       id: "pusher-{{ item }}"
       name: "matrix-synapse-worker-pusher-{{ item }}"
       type: 'pusher'
-      app: 'pusher'
+      app: 'generic_worker'
       webserving: false
       port: 0
       metrics_port: "{{ matrix_synapse_workers_pusher_workers_metrics_range_start + item }}"

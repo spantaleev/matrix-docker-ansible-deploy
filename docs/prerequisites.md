@@ -22,7 +22,7 @@ If your distro runs within an [LXC container](https://linuxcontainers.org/), you
 
 - [`git`](https://git-scm.com/) is the recommended way to download the playbook to your computer. `git` may also be required on the server if you will be [self-building](self-building.md) components.
 
-- [`make`](https://www.gnu.org/software/make/) for running `make roles`, etc. (see [`Makefile`](../Makefile)), although you can also run these commands manually (without `make`)
+- [`just`](https://github.com/casey/just) for running `just roles`, etc. (see [`justfile`](../justfile)), although you can also run these commands manually
 
 - An HTTPS-capable web server at the base domain name (`<your-domain>`) which is capable of serving static files. Unless you decide to [Serve the base domain from the Matrix server](configuring-playbook-base-domain-serving.md) or alternatively, to use DNS SRV records for [Server Delegation](howto-server-delegation.md).
 

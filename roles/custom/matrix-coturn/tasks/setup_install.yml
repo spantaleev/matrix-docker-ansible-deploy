@@ -62,7 +62,8 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure Coturn network is created in Docker
+- when: matrix_coturn_docker_network not in ['', 'host']
+  name: Ensure Coturn network is created in Docker
   community.docker.docker_network:
     name: "{{ matrix_coturn_docker_network }}"
     driver: bridge

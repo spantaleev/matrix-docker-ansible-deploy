@@ -1,0 +1,28 @@
+---
+
+- name: Fail if matrix-nginx-proxy role executed before matrix-prometheus-services-proxy-connect
+  ansible.builtin.fail:
+    msg: >-
+      Trying to append node-exporter's reverse-proxying configuration to matrix-nginx-proxy,
+      but it's pointless since the matrix-nginx-proxy role had already executed.
+      To fix this, please change the order of roles in your playbook,
+      so that the matrix-nginx-proxy role would run after the matrix-prometheus-services-proxy-connect role.
+  when: matrix_nginx_proxy_role_executed | default(False) | bool
+
+- block:
+    - when: prometheus_node_exporter_enabled | bool and matrix_prometheus_services_proxy_connect_prometheus_node_exporter_metrics_proxying_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/prometheus-node-exporter/inject_into_nginx_proxy.yml"
+  tags:
+    - setup-all
+    - setup-nginx-proxy
+    - install-all
+    - install-nginx-proxy
+
+- block:
+    - when: prometheus_node_exporter_enabled | bool and matrix_prometheus_services_proxy_connect_prometheus_postgres_exporter_metrics_proxying_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/prometheus-postgres-exporter/inject_into_nginx_proxy.yml"
+  tags:
+    - setup-all
+    - setup-nginx-proxy
+    - install-all
+    - install-nginx-proxy

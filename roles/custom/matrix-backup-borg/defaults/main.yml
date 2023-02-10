@@ -11,8 +11,11 @@ matrix_backup_borg_docker_repo: "https://gitlab.com/etke.cc/borgmatic"
 matrix_backup_borg_docker_repo_version: main
 matrix_backup_borg_docker_src_files_path: "{{ matrix_backup_borg_base_path }}/docker-src"
 
-# version determined automatically, based on postgres server version (if enabled), otherwise latest is used
+# image and postgres version determined automatically, based on detected postgres server version (if enabled), otherwise latest is used
 matrix_backup_borg_version: ""
+matrix_backup_borg_postgres_version: ""
+matrix_backup_borg_borg_version: 1.2.3
+matrix_backup_borg_borgmatic_version: 1.7.6
 matrix_backup_borg_docker_image: "{{ matrix_backup_borg_docker_image_name_prefix }}etke.cc/borgmatic:{{ matrix_backup_borg_version }}"
 matrix_backup_borg_docker_image_name_prefix: "{{ 'localhost/' if matrix_backup_borg_container_image_self_build else 'registry.gitlab.com/' }}"
 matrix_backup_borg_docker_image_force_pull: "{{ matrix_backup_borg_docker_image.endswith(':latest') or matrix_backup_borg_version | default('') == '' }}"

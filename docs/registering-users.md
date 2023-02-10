@@ -16,13 +16,21 @@ Table of contents:
 
 You can do it via this Ansible playbook (make sure to edit the `<your-username>` and `<your-password>` part below):
 
+```sh
+just register-user <your-username> <your-password> <admin access: yes or no>
+
+# Example: `just register-user john secret-password yes`
 ```
+
+**or** by invoking `ansible-playbook` manually:
+
+```sh
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-username> password=<your-password> admin=<yes|no>' --tags=register-user
 ```
 
 **or** using the command-line after **SSH**-ing to your server (requires that [all services have been started](#starting-the-services)):
 
-```
+```sh
 /matrix/synapse/bin/register-user <your-username> <your-password> <admin access: 0 or 1>
 ```
 

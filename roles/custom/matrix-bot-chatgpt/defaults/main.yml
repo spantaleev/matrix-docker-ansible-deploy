@@ -1,0 +1,83 @@
+---
+# chatgpt is a bot for chatting to openAI chatgpt matrix bot
+# Project source code URL: https://github.com/matrixgpt/matrix-chatgpt-bot
+
+matrix_bot_chatgpt_enabled: true
+
+matrix_bot_chatgpt_container_image_self_build: false
+matrix_bot_chatgpt_docker_repo: "https://github.com/matrixgpt/matrix-chatgpt-bot"
+matrix_bot_chatgpt_docker_repo_version: "{{ 'latest' if matrix_bot_chatgpt_version == 'latest' else matrix_bot_chatgpt_version }}"
+matrix_bot_chatgpt_docker_src_files_path: "{{ matrix_base_data_path }}/chatgpt/docker-src"
+
+matrix_bot_chatgpt_version: 2.2.1
+matrix_bot_chatgpt_docker_image: "{{ matrix_bot_chatgpt_docker_image_name_prefix }}matrixgpt/matrix-chatgpt-bot:{{ matrix_bot_chatgpt_version }}"
+matrix_bot_chatgpt_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_chatgpt_container_image_self_build else 'ghcr.io/' }}"
+matrix_bot_chatgpt_docker_image_force_pull: "{{ matrix_bot_chatgpt_docker_image.endswith(':latest') }}"
+
+matrix_bot_chatgpt_base_path: "{{ matrix_base_data_path }}/chatgpt"
+matrix_bot_chatgpt_config_path: "{{ matrix_bot_chatgpt_base_path }}/config"
+matrix_bot_chatgpt_data_path: "{{ matrix_bot_chatgpt_base_path }}/data"
+
+# A list of extra arguments to pass to the container
+matrix_bot_chatgpt_container_extra_arguments: []
+
+# List of systemd services that matrix-bot-chatgpt.service depends on
+matrix_bot_chatgpt_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-bot-chatgpt.service wants
+matrix_bot_chatgpt_systemd_wanted_services_list: []
+
+# ChatGPT Settings
+matrix_bot_chatgpt_openai_api_key: ''
+matrix_bot_chatgpt_context: 'thread'  # CHATGPT_CONTEXT="thread"
+
+matrix_bot_chatgpt_keyv_backend: 'file'
+matrix_bot_chatgpt_keyv_url: ''
+matrix_bot_chatgpt_keyv_bot_encryption: false
+matrix_bot_chatgpt_keyv_bot_storage: true
+
+# Matrix Static Settings (required, see notes)
+# Defaults to "https://matrix.org"
+matrix_bot_chatgpt_matrix_homeserver_url: "{{ matrix_homeserver_container_url }}"  # MATRIX_HOMESERVER_URL=
+# With the @ and :DOMAIN, ie @SOMETHING:DOMAIN, needs to be set, created manually beforehand.
+matrix_bot_chatgpt_matrix_bot_username_localpart: 'bot.chatgpt'
+matrix_bot_chatgpt_matrix_bot_username: "@{{ matrix_bot_chatgpt_matrix_bot_username_localpart }}:{{ matrix_domain }}"  # MATRIX_BOT_USERNAME=
+# Set `MATRIX_BOT_PASSWORD` the bot will print an `MATRIX_ACCESS_TOKEN` to the terminal
+# or https://webapps.stackexchange.com/questions/131056/how-to-get-an-access-token-for-element-riot-matrix
+matrix_bot_chatgpt_matrix_access_token: ''  # MATRIX_ACCESS_TOKEN=
+# Once `MATRIX_BOT_ACCESS_TOKEN` is set this is no longer used.
+matrix_bot_chatgpt_matrix_bot_password: ''  # MATRIX_BOT_PASSWORD=
+
+# Matrix Configurable Settings Defaults (optional)
+matrix_bot_chatgpt_matrix_default_prefix: "!chatgpt "  # MATRIX_DEFAULT_PREFIX= Leave prefix blank to reply to all messages, trailing space matters
+matrix_bot_chatgpt_matrix_default_prefix_reply: false  # MATRIX_DEFAULT_PREFIX_REPLY=
+
+# Matrix Access Control (optional)
+matrix_bot_chatgpt_matrix_blacklist: ''
+matrix_bot_chatgpt_matrix_whitelist: ':{{ matrix_domain }}'
+
+# Matrix Feature Flags (optional)
+matrix_bot_chatgpt_matrix_autojoin: true  # MATRIX_AUTOJOIN=true
+matrix_bot_chatgpt_matrix_encryption: true  # MATRIX_ENCRYPTION=true
+matrix_bot_chatgpt_matrix_threads: true  # MATRIX_THREADS=true
+matrix_bot_chatgpt_matrix_rich_text: true  # MATRIX_RICH_TEXT=true
+
+
+# A list of admins
+# Example set of rules:
+# matrix_bot_chatgpt_admins:
+# - @someone:example.com
+# - @another:example.com
+# - @bot.*:example.com
+# - @*:another.com
+# matrix_bot_chatgpt_admins: "{{ [matrix_admin] if matrix_admin else [] }}"
+
+# Log level
+# matrix_bot_chatgpt_loglevel: 'INFO'
+
+# Additional environment variables to pass to the chatgpt container
+#
+# Example:
+# matrix_bot_chatgpt_environment_variables_extension: |
+#   chatgpt_TEXT_DONE=Done
+matrix_bot_chatgpt_environment_variables_extension: ''

@@ -3,8 +3,6 @@
 If you'd like to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service),
 you can use the [synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider) media provider module for Synapse.
 
-**`synapse-s3-storage-provider` support is very new and still relatively untested. Using it may cause data loss.**
-
 An alternative (which has worse performance) is to use [Goofys to mount the S3 store to the local filesystem](configuring-playbook-s3-goofys.md).
 
 
@@ -68,11 +66,11 @@ This launches a Synapse container, which has access to the local media store, Po
 
 Then use the following commands (`$` values come from environment variables - they're **not placeholders** that you need to substitute):
 
-- `s3_media_upload update-db $UPDATE_DB_DURATION` - create a local SQLite database (`cache.db`) with a list of media repository files (from the `synapse` Postgres database) eligible for operating on
+1. `s3_media_upload update-db $UPDATE_DB_DURATION` - create a local SQLite database (`cache.db`) with a list of media repository files (from the `synapse` Postgres database) eligible for operating on
   - `$UPDATE_DB_DURATION` is influenced by the `matrix_synapse_ext_synapse_s3_storage_provider_update_db_day_count` variable (defaults to `0`)
   - `$UPDATE_DB_DURATION` defaults to `0d` (0 days), which means **include files which haven't been accessed for more than 0 days** (that is, **all files will be included**).
-- `s3_media_upload check-deleted $MEDIA_PATH` - check whether files in the local cache still exist in the local media repository directory
-- `s3_media_upload upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT` - uploads locally-stored files to S3 and deletes them from the local media repository directory
+2. `s3_media_upload check-deleted $MEDIA_PATH` - check whether files in the local cache still exist in the local media repository directory
+3. `s3_media_upload upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT` - uploads locally-stored files to S3 and deletes them from the local media repository directory
 
 The `s3_media_upload upload` command may take a lot of time to complete.
 
@@ -93,13 +91,21 @@ To migrate your existing local data to S3, we recommend to:
 
 #### Copying data to Amazon S3
 
-Generally, you need to use the `aws s3` tool.
+To copy to AWS S3, start a container on the Matrix server like this:
 
-This documentation section could use an improvement. Ideally, we'd come up with a guide like the one used in [Copying data to Backblaze B2](#copying-data-to-backblaze-b2) - running `aws s3` in a container, etc.
+```sh
+docker run -it --rm \
+-w /work \
+--env-file=/matrix/synapse/ext/s3-storage-provider/env \
+--mount type=bind,src=/matrix/synapse/storage/media-store,dst=/work,ro \
+--entrypoint=/bin/sh \
+docker.io/amazon/aws-cli:2.9.16 \
+-c 'aws s3 sync /work/. s3://$BUCKET/'
+```
 
 #### Copying data to Backblaze B2
 
-To copy to Backblaze B2, start a container like this:
+To copy to Backblaze B2, start a container on the Matrix server like this:
 
 ```sh
 docker run -it --rm \
@@ -109,7 +115,7 @@ docker run -it --rm \
 --env='B2_BUCKET_NAME=YOUR_BUCKET_NAME_GOES_HERE' \
 --mount type=bind,src=/matrix/synapse/storage/media-store,dst=/work,ro \
 --entrypoint=/bin/sh \
-tianon/backblaze-b2:3.6.0 \
+docker.io/tianon/backblaze-b2:3.6.0 \
 -c 'b2 authorize-account $B2_KEY_ID $B2_KEY_SECRET && b2 sync /work b2://$B2_BUCKET_NAME --skipNewer'
 ```
 

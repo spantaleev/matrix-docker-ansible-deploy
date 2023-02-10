@@ -12,7 +12,8 @@ matrix_mautrix_signal_docker_src_files_path: "{{ matrix_base_data_path }}/mautri
 matrix_mautrix_signal_version: v0.4.2
 matrix_mautrix_signal_daemon_version: 0.23.1
 # See: https://mau.dev/mautrix/signal/container_registry
-matrix_mautrix_signal_docker_image: "dock.mau.dev/mautrix/signal:{{ matrix_mautrix_signal_version }}"
+matrix_mautrix_signal_docker_image: "{{ matrix_mautrix_signal_docker_image_name_prefix }}mautrix/signal:{{ matrix_mautrix_signal_version }}"
+matrix_mautrix_signal_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_signal_container_image_self_build else 'dock.mau.dev/' }}"
 matrix_mautrix_signal_docker_image_force_pull: "{{ matrix_mautrix_signal_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_signal_daemon_container_image_self_build: false
@@ -20,7 +21,8 @@ matrix_mautrix_signal_daemon_docker_repo: "https://gitlab.com/signald/signald"
 matrix_mautrix_signal_daemon_docker_repo_version: "{{ 'master' if matrix_mautrix_signal_daemon_version == 'latest' else matrix_mautrix_signal_daemon_version }}"
 matrix_mautrix_signal_daemon_docker_src_files_path: "{{ matrix_base_data_path }}/mautrix-signald/docker-src"
 
-matrix_mautrix_signal_daemon_docker_image: "docker.io/signald/signald:{{ matrix_mautrix_signal_daemon_docker_image_tag }}"
+matrix_mautrix_signal_daemon_docker_image: "{{ matrix_mautrix_signal_daemon_docker_image_name_prefix }}signald/signald:{{ matrix_mautrix_signal_daemon_docker_image_tag }}"
+matrix_mautrix_signal_daemon_docker_image_name_prefix: "docker.io/"
 matrix_mautrix_signal_daemon_docker_image_force_pull: "{{ matrix_mautrix_signal_daemon_docker_image_tag.endswith(':latest') }}"
 matrix_mautrix_signal_daemon_docker_image_tag: "{{ matrix_mautrix_signal_daemon_version }}"
 
@@ -67,6 +69,16 @@ matrix_mautrix_signal_logging_level: WARNING
 # Whether or not created rooms should have federation enabled.
 # If false, created portal rooms will never be federated.
 matrix_mautrix_signal_federate_rooms: true
+
+# Whether or not metrics endpoint should be enabled.
+# Enabling them is usually enough for a local (in-container) Prometheus to consume them.
+# If metrics need to be consumed by another (external) Prometheus server, consider exposing them via `matrix_mautrix_signal_metrics_proxying_enabled`.
+matrix_mautrix_signal_metrics_enabled: false
+
+# Controls whether metrics should be proxied (exposed) on `matrix.DOMAIN/metrics/mautrix-signal`.
+# This will only work take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
+# See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
+matrix_mautrix_signal_metrics_proxying_enabled: false
 
 # Database-related configuration fields
 #

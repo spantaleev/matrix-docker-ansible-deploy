@@ -53,6 +53,8 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_mautrix_discord_config_path + '/registration.yaml,dst=/matrix-mautrix-discord-registration.yaml,ro'] if matrix_mautrix_discord_enabled else [])
     +
+    (['--mount type=bind,src=' + matrix_mautrix_slack_config_path + '/registration.yaml,dst=/matrix-mautrix-slack-registration.yaml,ro'] if matrix_mautrix_slack_enabled else [])
+    +
     (['--mount type=bind,src=' + matrix_mautrix_facebook_config_path + '/registration.yaml,dst=/matrix-mautrix-facebook-registration.yaml,ro'] if matrix_mautrix_facebook_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_mautrix_googlechat_config_path + '/registration.yaml,dst=/matrix-mautrix-googlechat-registration.yaml,ro'] if matrix_mautrix_googlechat_enabled else [])
@@ -107,6 +109,8 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/hookshot-registration.yml'] if matrix_hookshot_enabled else [])
     +
     (['/matrix-mautrix-discord-registration.yaml'] if matrix_mautrix_discord_enabled else [])
+    +
+    (['/matrix-mautrix-slack-registration.yaml'] if matrix_mautrix_slack_enabled else [])
     +
     (['/matrix-mautrix-facebook-registration.yaml'] if matrix_mautrix_facebook_enabled else [])
     +
@@ -185,7 +189,11 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-bot-mjolnir.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'mjolnir']}] if matrix_bot_mjolnir_enabled else [])
     +
+    ([{'name': 'matrix-bot-draupnir.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'draupnir']}] if matrix_bot_draupnir_enabled else [])
+    +
     ([{'name': 'matrix-bot-postmoogle.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'postmoogle']}] if matrix_bot_postmoogle_enabled else [])
+    +
+    ([{'name': 'matrix-bot-chatgpt.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'chatgpt']}] if matrix_bot_chatgpt_enabled else [])
     +
     ([{'name': 'matrix-appservice-discord.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'appservice-discord']}] if matrix_appservice_discord_enabled else [])
     +
@@ -208,6 +216,8 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-hookshot.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'hookshot']}] if matrix_hookshot_enabled else [])
     +
     ([{'name': 'matrix-mautrix-discord.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-discord']}] if matrix_mautrix_discord_enabled else [])
+    +
+    ([{'name': 'matrix-mautrix-slack.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-slack']}] if matrix_mautrix_slack_enabled else [])
     +
     ([{'name': 'matrix-mautrix-facebook.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-facebook']}] if matrix_mautrix_facebook_enabled else [])
     +
@@ -283,7 +293,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-nginx-proxy.service', 'priority': 3000, 'groups': ['matrix', 'nginx', 'reverse-proxies']}] if matrix_nginx_proxy_enabled else [])
     +
-    (matrix_ssl_renewal_systemd_units_list | selectattr('applicable') | selectattr('enableable'))
+    (matrix_ssl_renewal_systemd_units_list | selectattr('applicable') | selectattr('enableable') | list )
     +
     ([{'name': 'matrix-ntfy.service', 'priority': 800, 'groups': ['matrix', 'ntfy']}] if matrix_ntfy_enabled else [])
     +
@@ -293,11 +303,11 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-prometheus.service', 'priority': 4000, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-core']}] if matrix_prometheus_enabled else [])
     +
-    ([{'name': 'matrix-prometheus-node-exporter.service', 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-node-exporters']}] if matrix_prometheus_node_exporter_enabled else [])
+    ([{'name': (prometheus_node_exporter_identifier + '.service'), 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-exporters']}] if prometheus_node_exporter_enabled else [])
     +
-    ([{'name': 'matrix-prometheus-postgres-exporter.service', 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-node-exporters']}] if matrix_prometheus_postgres_exporter_enabled else [])
+    ([{'name': (prometheus_postgres_exporter_identifier + '.service'), 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-exporters']}] if prometheus_postgres_exporter_enabled else [])
     +
-    ([{'name': 'matrix-prometheus-nginxlog-exporter.service', 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-node-exporters']}] if matrix_prometheus_nginxlog_exporter_enabled else [])
+    ([{'name': 'matrix-prometheus-nginxlog-exporter.service', 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus', 'prometheus-exporters']}] if matrix_prometheus_nginxlog_exporter_enabled else [])
     +
     ([{'name': 'matrix-redis', 'priority': 750, 'groups': ['matrix', 'redis']}] if matrix_redis_enabled else [])
     +
@@ -729,6 +739,46 @@ matrix_mautrix_discord_database_password: "{{ '%s' | format(matrix_homeserver_ge
 
 ######################################################################
 #
+# matrix-bridge-mautrix-slack
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_mautrix_slack_enabled: false
+
+matrix_mautrix_slack_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+
+matrix_mautrix_slack_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    ['matrix-' + matrix_homeserver_implementation + '.service']
+    +
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+  }}
+
+matrix_mautrix_slack_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mauslack.as.tok', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_slack_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mauslack.hs.tok', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_slack_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
+# Postgres is the default, except if not using internal Postgres server
+matrix_mautrix_slack_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
+matrix_mautrix_slack_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
+matrix_mautrix_slack_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mauslack.db', rounds=655555) | to_uuid }}"
+
+######################################################################
+#
+# /matrix-bridge-mautrix-slack
+#
+######################################################################
+
+
+######################################################################
+#
 # matrix-bridge-mautrix-facebook
 #
 ######################################################################
@@ -760,6 +810,12 @@ matrix_mautrix_facebook_container_http_host_bind_port: "{{ '' if matrix_nginx_pr
 matrix_mautrix_facebook_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
 matrix_mautrix_facebook_bridge_presence: "{{ matrix_synapse_presence_enabled if matrix_synapse_enabled else true }}"
+
+# People using an external Prometheus server will need to toggle all of these to be able to consume metrics remotely:
+# - `matrix_mautrix_facebook_metrics_enabled`
+# - `matrix_mautrix_facebook_proxying_metrics_enabled`
+# - `matrix_nginx_proxy_proxy_matrix_metrics_enabled`
+matrix_mautrix_facebook_metrics_enabled: "{{ matrix_prometheus_enabled }}"
 
 # We'd like to force-set people with external Postgres to SQLite, so the bridge role can complain
 # and point them to a migration path.
@@ -888,6 +944,12 @@ matrix_mautrix_instagram_login_shared_secret: "{{ matrix_synapse_ext_password_pr
 
 matrix_mautrix_instagram_bridge_presence: "{{ matrix_synapse_presence_enabled if matrix_synapse_enabled else true }}"
 
+# People using an external Prometheus server will need to toggle all of these to be able to consume metrics remotely:
+# - `matrix_mautrix_instagram_metrics_enabled`
+# - `matrix_mautrix_instagram_proxying_metrics_enabled`
+# - `matrix_nginx_proxy_proxy_matrix_metrics_enabled`
+matrix_mautrix_instagram_metrics_enabled: "{{ matrix_prometheus_enabled }}"
+
 # We'd like to force-set people with external Postgres to SQLite, so the bridge role can complain
 # and point them to a migration path.
 matrix_mautrix_instagram_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
@@ -932,6 +994,12 @@ matrix_mautrix_signal_homeserver_token: "{{ '%s' | format(matrix_homeserver_gene
 matrix_mautrix_signal_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'si.as.token', rounds=655555) | to_uuid }}"
 
 matrix_mautrix_signal_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
+# People using an external Prometheus server will need to toggle all of these to be able to consume metrics remotely:
+# - `matrix_mautrix_signal_metrics_enabled`
+# - `matrix_mautrix_signal_proxying_metrics_enabled`
+# - `matrix_nginx_proxy_proxy_matrix_metrics_enabled`
+matrix_mautrix_signal_metrics_enabled: "{{ matrix_prometheus_enabled }}"
 
 matrix_mautrix_signal_database_engine: 'postgres'
 matrix_mautrix_signal_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
@@ -1056,6 +1124,12 @@ matrix_mautrix_whatsapp_appservice_token: "{{ '%s' | format(matrix_homeserver_ge
 matrix_mautrix_whatsapp_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'whats.hs.token', rounds=655555) | to_uuid }}"
 
 matrix_mautrix_whatsapp_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
+# People using an external Prometheus server will need to toggle all of these to be able to consume metrics remotely:
+# - `matrix_mautrix_twitter_metrics_enabled`
+# - `matrix_mautrix_twitter_proxying_metrics_enabled`
+# - `matrix_nginx_proxy_proxy_matrix_metrics_enabled`
+matrix_mautrix_twitter_metrics_enabled: "{{ matrix_prometheus_enabled }}"
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_mautrix_whatsapp_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
@@ -1618,6 +1692,24 @@ matrix_bot_postmoogle_database_password: "{{ '%s' | format(matrix_homeserver_gen
 
 ######################################################################
 #
+# matrix-bot-chatgpt
+#
+######################################################################
+
+# We don't enable bots by default.
+matrix_bot_chatgpt_enabled: false
+
+matrix_bot_chatgpt_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
+
+######################################################################
+#
+# /matrix-bot-chatgpt
+#
+######################################################################
+
+
+######################################################################
+#
 # matrix-bot-go-neb
 #
 ######################################################################
@@ -1668,6 +1760,34 @@ matrix_bot_mjolnir_systemd_required_services_list: |
 ######################################################################
 #
 # /matrix-bot-mjolnir
+#
+######################################################################
+
+######################################################################
+#
+# matrix-bot-draupnir
+#
+######################################################################
+
+# We don't enable bots by default.
+matrix_bot_draupnir_enabled: false
+
+matrix_bot_draupnir_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+
+matrix_bot_draupnir_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    ['matrix-' + matrix_homeserver_implementation + '.service']
+    +
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+  }}
+
+######################################################################
+#
+# /matrix-bot-draupnir
 #
 ######################################################################
 
@@ -2227,7 +2347,7 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     +
     ([matrix_server_fqn_ntfy] if matrix_ntfy_enabled else [])
     +
-    ([matrix_bot_postmoogle_domain] if matrix_bot_postmoogle_enabled else [])
+    (matrix_bot_postmoogle_domains if matrix_bot_postmoogle_enabled else [])
     +
     ([matrix_domain] if matrix_nginx_proxy_base_domain_serving_enabled else [])
     +
@@ -2456,6 +2576,12 @@ devture_postgres_managed_databases_auto: |
     }] if (matrix_mautrix_discord_enabled and matrix_mautrix_discord_database_engine == 'postgres' and matrix_mautrix_discord_database_hostname == devture_postgres_connection_hostname) else [])
     +
     ([{
+      'name': matrix_mautrix_slack_database_name,
+      'username': matrix_mautrix_slack_database_username,
+      'password': matrix_mautrix_slack_database_password,
+    }] if (matrix_mautrix_slack_enabled and matrix_mautrix_slack_database_engine == 'postgres' and matrix_mautrix_slack_database_hostname == devture_postgres_connection_hostname) else [])
+    +
+    ([{
       'name': matrix_mx_puppet_slack_database_name,
       'username': matrix_mx_puppet_slack_database_username,
       'password': matrix_mx_puppet_slack_database_password,
@@ -2504,10 +2630,10 @@ devture_postgres_managed_databases_auto: |
     }] if (matrix_etherpad_enabled and matrix_etherpad_database_engine == 'postgres' and matrix_etherpad_database_hostname == devture_postgres_connection_hostname) else [])
     +
     ([{
-      'name': matrix_prometheus_postgres_exporter_database_name,
-      'username': matrix_prometheus_postgres_exporter_database_username,
-      'password': matrix_prometheus_postgres_exporter_database_password,
-    }] if (matrix_prometheus_postgres_exporter_enabled and matrix_prometheus_postgres_exporter_database_hostname == devture_postgres_connection_hostname) else [])
+      'name': prometheus_postgres_exporter_database_name,
+      'username': prometheus_postgres_exporter_database_username,
+      'password': prometheus_postgres_exporter_database_password,
+    }] if (prometheus_postgres_exporter_enabled and prometheus_postgres_exporter_database_hostname == devture_postgres_connection_hostname) else [])
 
    }}
 
@@ -2866,15 +2992,67 @@ matrix_synapse_admin_container_image_self_build: "{{ matrix_architecture not in 
 
 ######################################################################
 #
-# matrix-prometheus-node-exporter
+# etke/prometheus_node_exporter
 #
 ######################################################################
 
-matrix_prometheus_node_exporter_enabled: false
+prometheus_node_exporter_enabled: false
+
+prometheus_node_exporter_identifier: matrix-prometheus-node-exporter
+
+prometheus_node_exporter_base_path: "{{ matrix_base_data_path }}/prometheus-node-exporter"
+
+prometheus_node_exporter_uid: "{{ matrix_user_uid }}"
+prometheus_node_exporter_gid: "{{ matrix_user_gid }}"
+
+prometheus_node_exporter_server_fqn: "{{ matrix_server_fqn_matrix }}"
+
+prometheus_node_exporter_container_network: "{{ matrix_docker_network }}"
+
+prometheus_node_exporter_container_labels_traefik_enabled: false
 
 ######################################################################
 #
-# /matrix-prometheus-node-exporter
+# /etke/prometheus_node_exporter
+#
+######################################################################
+
+######################################################################
+#
+# etke/prometheus_postgres_exporter
+#
+######################################################################
+
+prometheus_postgres_exporter_enabled: false
+
+prometheus_postgres_exporter_identifier: matrix-prometheus-postgres-exporter
+
+prometheus_postgres_exporter_base_path: "{{ matrix_base_data_path }}/prometheus-postgres-exporter"
+
+prometheus_postgres_exporter_uid: "{{ matrix_user_uid }}"
+prometheus_postgres_exporter_gid: "{{ matrix_user_gid }}"
+
+prometheus_postgres_exporter_server_fqn: "{{ matrix_server_fqn_matrix }}"
+
+prometheus_postgres_exporter_container_network: "{{ matrix_docker_network }}"
+
+prometheus_postgres_exporter_container_labels_traefik_enabled: false
+
+prometheus_postgres_exporter_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
+prometheus_postgres_exporter_database_username: matrix_prometheus_postgres_exporter
+prometheus_postgres_exporter_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'prometheus.pg.db', rounds=655555) | to_uuid }}"
+prometheus_postgres_exporter_database_name: matrix_prometheus_postgres_exporter
+
+prometheus_postgres_exporter_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+  }}
+
+######################################################################
+#
+# /etke/prometheus_postgres_exporter
 #
 ######################################################################
 
@@ -2910,11 +3088,11 @@ matrix_prometheus_scraper_synapse_targets: ['matrix-synapse:{{ matrix_synapse_me
 matrix_prometheus_scraper_synapse_workers_enabled_list: "{{ matrix_synapse_workers_enabled_list }}"
 matrix_prometheus_scraper_synapse_rules_synapse_tag: "{{ matrix_synapse_docker_image_tag }}"
 
-matrix_prometheus_scraper_node_enabled: "{{ matrix_prometheus_node_exporter_enabled }}"
-matrix_prometheus_scraper_node_targets: "{{ ['matrix-prometheus-node-exporter:9100'] if matrix_prometheus_node_exporter_enabled else [] }}"
+matrix_prometheus_scraper_node_enabled: "{{ prometheus_node_exporter_enabled }}"
+matrix_prometheus_scraper_node_targets: "{{ [prometheus_node_exporter_identifier + ':9100'] if prometheus_node_exporter_enabled else [] }}"
 
-matrix_prometheus_scraper_postgres_enabled: "{{ matrix_prometheus_postgres_exporter_enabled }}"
-matrix_prometheus_scraper_postgres_targets: "{{ ['matrix-prometheus-postgres-exporter:'+ matrix_prometheus_postgres_exporter_port | string] if matrix_prometheus_scraper_postgres_enabled else [] }}"
+matrix_prometheus_scraper_postgres_enabled: "{{ prometheus_postgres_exporter_enabled }}"
+matrix_prometheus_scraper_postgres_targets: "{{ [prometheus_postgres_exporter_identifier + ':' + prometheus_postgres_exporter_port | string] if matrix_prometheus_scraper_postgres_enabled else [] }}"
 
 matrix_prometheus_scraper_hookshot_enabled: "{{ matrix_hookshot_metrics_enabled|default(false) }}"
 matrix_prometheus_scraper_hookshot_targets: "{{ [matrix_hookshot_container_url | string +':'+ matrix_hookshot_metrics_port | string] if matrix_hookshot_metrics_enabled else [] }}"
@@ -2926,29 +3104,6 @@ matrix_prometheus_scraper_nginxlog_server_port: "{{ (matrix_prometheus_nginxlog_
 ######################################################################
 #
 # /matrix-prometheus
-#
-######################################################################
-
-######################################################################
-#
-# matrix-prometheus-postgres-exporter
-#
-######################################################################
-
-matrix_prometheus_postgres_exporter_enabled: false
-matrix_prometheus_postgres_exporter_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
-matrix_prometheus_postgres_exporter_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'prometheus.pg.db', rounds=655555) | to_uuid }}"
-
-matrix_prometheus_postgres_exporter_systemd_required_services_list: |
-  {{
-    ['docker.service']
-    +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
-  }}
-
-######################################################################
-#
-# /matrix-prometheus-postgres-exporter
 #
 ######################################################################
 
@@ -2969,9 +3124,9 @@ matrix_grafana_dashboard_download_urls: |
   {{
     (matrix_synapse_grafana_dashboard_urls if matrix_homeserver_implementation == 'synapse' and matrix_synapse_metrics_enabled else [])
     +
-    (matrix_prometheus_node_exporter_dashboard_urls if matrix_prometheus_node_exporter_enabled else [])
+    (prometheus_node_exporter_dashboard_urls if prometheus_node_exporter_enabled else [])
     +
-    (matrix_prometheus_postgres_exporter_dashboard_urls if matrix_prometheus_postgres_exporter_enabled else [])
+    (prometheus_postgres_exporter_dashboard_urls if prometheus_postgres_exporter_enabled else [])
     +
     (matrix_prometheus_nginxlog_exporter_dashboard_urls if matrix_prometheus_nginxlog_exporter_enabled else [])
   }}
@@ -2983,13 +3138,6 @@ matrix_grafana_default_home_dashboard_path: |-
       'dendrite': '/etc/grafana/dashboards/node-exporter-full.json',
       'conduit': '/etc/grafana/dashboards/node-exporter-full.json',
     }[matrix_homeserver_implementation]
-  }}
-
-matrix_grafana_systemd_wanted_services_list: |
-  {{
-    []
-    +
-    (['matrix-prometheus-postgres-exporter.service'] if matrix_prometheus_postgres_exporter_enabled else [])
   }}
 
 ######################################################################

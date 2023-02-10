@@ -42,3 +42,28 @@
       URL endpoint to the matrix-mautrix-facebook container.
       You can expose the container's port using the `matrix_mautrix_facebook_container_http_host_bind_port` variable.
   when: "not matrix_nginx_proxy_enabled | default(False) | bool"
+
+- when: matrix_mautrix_facebook_metrics_proxying_enabled | bool
+  block:
+    - name: Generate mautrix-facebook metrics proxying configuration for matrix-nginx-proxy (matrix.DOMAIN/metrics/mautrix-facebook)
+      ansible.builtin.set_fact:
+        matrix_mautrix_facebook_nginx_metrics_configuration_block: |
+          location /metrics/mautrix-facebook {
+            {% if matrix_nginx_proxy_enabled | default(False) %}
+              {# Use the embedded DNS resolver in Docker containers to discover the service #}
+              resolver 127.0.0.11 valid=5s;
+              set $backend "matrix-mautrix-facebook:8000";
+              proxy_pass http://$backend/metrics;
+            {% else %}
+              return 404 "matrix-nginx-proxy is disabled and no host port was bound to the container, so metrics are unavailable";
+            {% endif %}
+          }
+
+    - name: Register mautrix-facebook metrics proxying configuration with matrix-nginx-proxy (matrix.DOMAIN/metrics/mautrix-facebook)
+      ansible.builtin.set_fact:
+        matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks: |
+          {{
+            matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks | default([])
+            +
+            [matrix_mautrix_facebook_nginx_metrics_configuration_block]
+          }}

@@ -18,7 +18,9 @@ ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_s
 
 # ma1sd writes an SQLite shared library (libsqlitejdbc.so) to /tmp and executes it from there,
 # so /tmp needs to be mounted with an exec option.
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-ma1sd \
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-ma1sd \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
@@ -39,8 +41,10 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			{{ matrix_ma1sd_docker_image }}
 
 {% for network in matrix_ma1sd_container_additional_networks %}
-ExecStartPost={{ devture_systemd_docker_base_host_command_sh }} -c 'container_name=matrix-ma1sd; network_name={{ network }}; attempt=0; while [ $attempt -le 29 ]; do attempt=$(( $attempt + 1 )); if [ "`{{ devture_systemd_docker_base_host_command_docker }} inspect -f {{ '{{.State.Running}}' }} $container_name 2> /dev/null`" = "true" ]; then break; fi; sleep 1; done; {{ devture_systemd_docker_base_host_command_docker }} network connect $network_name $container_name'
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-ma1sd
 {% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-ma1sd
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-ma1sd 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-ma1sd 2>/dev/null || true'

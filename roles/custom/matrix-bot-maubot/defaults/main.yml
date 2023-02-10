@@ -10,8 +10,9 @@ matrix_bot_maubot_docker_src_files_path: "{{ matrix_bot_maubot_base_path }}/dock
 matrix_bot_maubot_docker_repo_version: "{{ 'master' if matrix_bot_maubot_version == 'latest' else matrix_bot_maubot_version }}"
 
 
-matrix_bot_maubot_version: v0.3.1
-matrix_bot_maubot_docker_image: "dock.mau.dev/maubot/maubot:{{ matrix_bot_maubot_version }}"
+matrix_bot_maubot_version: v0.4.0
+matrix_bot_maubot_docker_image: "{{ matrix_bot_maubot_docker_image_name_prefix }}maubot/maubot:{{ matrix_bot_maubot_version }}"
+matrix_bot_maubot_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_maubot_container_image_self_build else 'dock.mau.dev/' }}"
 matrix_bot_maubot_docker_image_force_pull: "{{ matrix_bot_maubot_docker_image.endswith(':latest') }}"
 
 matrix_bot_maubot_base_path: "{{ matrix_base_data_path }}/maubot"

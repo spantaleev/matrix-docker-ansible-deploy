@@ -67,37 +67,16 @@
 
 - when: matrix_cactus_comments_client_local_dir | length == 0
   block:
-    - name: Download client binary to local folder
+    - name: Download web client js
       ansible.builtin.get_url:
-        url: "https://gitlab.com/cactus-comments/cactus-client/-/archive/v{{ matrix_cactus_comments_client_version }}/cactus-client-v{{ matrix_cactus_comments_client_version }}.tar.gz"
-        dest: "/tmp/cactus-comments-{{ matrix_cactus_comments_client_version }}.tar.gz"
-        mode: '0644'
-      register: _download_client
-      until: _download_client is succeeded
-      retries: 5
-      delay: 2
-      check_mode: false
-
-    - name: Unpack client
-      ansible.builtin.unarchive:
-        src: "/tmp/cactus-comments-{{ matrix_cactus_comments_client_version }}.tar.gz"
-        dest: "/tmp/"
-        remote_src: true
-        mode: 0600
-      check_mode: false
-
-    - name: Propagate client javascript file
-      ansible.builtin.copy:
-        src: "/tmp/cactus-client-v{{ matrix_cactus_comments_client_version }}/src/cactus.js"
-        remote_src: true
+        url: "{{ matrix_cactus_comments_webclient_js_url }}"
         dest: "{{ matrix_cactus_comments_client_path }}/cactus.js"
         mode: "{{ matrix_cactus_comments_client_file_permissions }}"
         owner: "{{ matrix_user_username }}"
         group: "{{ matrix_user_groupname }}"
-    - name: Propagate client style file
-      ansible.builtin.copy:
-        src: "/tmp/cactus-client-v{{ matrix_cactus_comments_client_version }}/src/style.css"
-        remote_src: true
+    - name: Download web client css
+      ansible.builtin.get_url:
+        url: "{{ matrix_cactus_comments_webclient_css_url }}"
         dest: "{{ matrix_cactus_comments_client_path }}/style.css"
         mode: "{{ matrix_cactus_comments_client_file_permissions }}"
         owner: "{{ matrix_user_username }}"

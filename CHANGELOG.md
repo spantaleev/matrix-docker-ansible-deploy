@@ -1,3 +1,112 @@
+# 2023-02-10
+
+## Draupnir moderation tool (bot) support
+
+Thanks to [FSG-Cat](https://github.com/FSG-Cat), the playbook can now install and configure the [Draupnir](https://github.com/Gnuxie/Draupnir) moderation tool (bot). Draupnir is a fork of [Mjolnir](docs/configuring-playbook-bot-mjolnir.md) (which the playbook has supported for a long time) maintained by Mjolnir's former lead developer.
+
+Additional details are available in [Setting up Draupnir](docs/configuring-playbook-bot-draupnir.md).
+
+
+# 2023-02-05
+
+## The matrix-prometheus-postgres-exporter role lives independently now
+
+**TLDR**: the `matrix-prometheus-postgres-exporter` role is now included from another repository. Some variables have been renamed. All functionality remains intact.
+
+The `matrix-prometheus-postgres-exporter` role (which configures [Prometheus Postgres Exporter](https://github.com/prometheus-community/postgres_exporter)) has been extracted from the playbook and now lives in its own repository at https://gitlab.com/etke.cc/roles/prometheus_postgres_exporter.
+
+It's still part of the playbook, but is now installed via `ansible-galaxy` (by running `just roles` / `make roles`). Some variables have been renamed (`matrix_prometheus_postgres_exporter_` -> `prometheus_postgres_exporter_`, etc.). The playbook will report all variables that you need to rename to get upgraded. All functionality remains intact.
+
+The `matrix-prometheus-services-proxy-connect` role has bee adjusted to help integrate the new `prometheus_postgres_exporter` role with our own services (`matrix-nginx-proxy`)
+
+Other roles which aren't strictly related to Matrix are likely to follow this fate of moving to their own repositories. Extracting them out allows other Ansible playbooks to make use of these roles easily.
+
+
+# 2023-01-26
+
+## Coturn can now use host-networking
+
+Large Coturn deployments (with a huge range of ports specified via `matrix_coturn_turn_udp_min_port` and `matrix_coturn_turn_udp_max_port`) experience a huge slowdown with how Docker publishes all these ports (setting up firewall forwarding rules), which leads to a very slow Coturn service startup and shutdown.
+
+Such deployments don't need to run Coturn within a private container network anymore. Coturn can now run with host-networking by using configuration like this:
+
+```yaml
+matrix_coturn_docker_network: host
+```
+
+With such a configuration, **Docker no longer needs to configure thousands of firewall forwarding rules** each time Coturn starts and stops.
+This, however, means that **you will need to ensure these ports are open** in your firewall yourself.
+
+Thanks to us [tightening Coturn security](#backward-compatibility-tightening-coturn-security-can-lead-to-connectivity-issues), running Coturn with host-networking should be safe and not expose neither other services running on the host, nor other services running on the local network.
+
+
+## (Backward Compatibility) Tightening Coturn security can lead to connectivity issues
+
+**TLDR**: users who run and access their Matrix server on a private network (likely a small minority of users) may experience connectivity issues with our new default Coturn blocklists. They may need to override `matrix_coturn_denied_peer_ips` and remove some IP ranges from it.
+
+Inspired by [this security article](https://www.rtcsec.com/article/cve-2020-26262-bypass-of-coturns-access-control-protection/), we've decided to make use of Coturn's `denied-peer-ip` functionality to prevent relaying network traffic to certain private IP subnets. This ensures that your Coturn server won't accidentally try to forward traffic to certain services running on your local networks. We run Coturn in a container and in a private container network by default, which should prevent such access anyway, but having additional block layers in place is better.
+
+If you access your Matrix server from a local network and need Coturn to relay to private IP addresses, you may observe that relaying is now blocked due to our new default `denied-peer-ip` lists (specified in `matrix_coturn_denied_peer_ips`). If you experience such connectivity problems, consider overriding this setting in your `vars.yml` file and removing certain networks from it.
+
+We've also added `no-multicast-peers` to the default Coturn configuration, but we don't expect this to cause trouble for most people.
+
+
+# 2023-01-21
+
+## The matrix-prometheus-node-exporter role lives independently now
+
+**TLDR**: the `matrix-prometheus-node-exporter` role is now included from another repository. Some variables have been renamed. All functionality remains intact.
+
+The `matrix-prometheus-node-exporter` role (which configures [Prometheus node exporter](https://github.com/prometheus/node_exporter)) has been extracted from the playbook and now lives in its own repository at https://gitlab.com/etke.cc/roles/prometheus_node_exporter.
+
+It's still part of the playbook, but is now installed via `ansible-galaxy` (by running `just roles` / `make roles`). Some variables have been renamed (`matrix_prometheus_node_exporter_` -> `prometheus_node_exporter_`, etc.). The playbook will report all variables that you need to rename to get upgraded. All functionality remains intact.
+
+A new `matrix-prometheus-services-proxy-connect` role was added to the playbook to help integrate the new `prometheus_node_exporter` role with our own services (`matrix-nginx-proxy`)
+
+Other roles which aren't strictly related to Matrix are likely to follow this fate of moving to their own repositories. Extracting them out allows other Ansible playbooks to make use of these roles easily.
+
+
+# 2023-01-13
+
+## Support for running commands via just
+
+We've previously used [make](https://www.gnu.org/software/make/) for easily running some playbook commands (e.g. `make roles` which triggers `ansible-galaxy`, see [Makefile](Makefile)).
+Our `Makefile` is still around and you can still run these commands.
+
+In addition, we've added support for running commands via [just](https://github.com/casey/just) - a more modern command-runner alternative to `make`. Instead of `make roles`, you can now run `just roles` to accomplish the same.
+
+Our [justfile](justfile) already defines some additional helpful **shortcut** commands that weren't part of our `Makefile`. Here are some examples:
+
+- `just install-all` to trigger the much longer `ansible-playbook -i inventory/hosts setup.yml --tags=install-all,ensure-matrix-users-created,start` command
+- `just install-all --ask-vault-pass` - commands also support additional arguments (`--ask-vault-pass` will be appended to the above installation command)
+- `just run-tags install-mautrix-slack,start` - to run specific playbook tags
+- `just start-all` - (re-)starts all services
+- `just stop-group postgres` - to stop only the Postgres service
+- `just register-user john secret-password yes` - registers a `john` user with the `secret-password` password and admin access (admin = `yes`)
+
+Additional helpful commands and shortcuts may be defined in the future.
+
+This is all completely optional. If you find it difficult to [install `just`](https://github.com/casey/just#installation) or don't find any of this convenient, feel free to run all commands manually.
+
+
+# 2023-01-11
+
+## mautrix-slack support
+
+Thanks to [Cody Neiman](https://github.com/xangelix)'s efforts, the playbook now supports bridging to [Slack](https://slack.com/) via the [mautrix-slack](https://mau.dev/mautrix/slack) bridge. See our [Setting up Mautrix Slack bridging](docs/configuring-playbook-bridge-mautrix-slack.md) documentation page for getting started.
+
+**Note**: this is a new Slack bridge. The playbook still retains Slack bridging via [matrix-appservice-slack](docs/configuring-playbook-bridge-appservice-slack.md) and [mx-puppet-slack](docs/configuring-playbook-bridge-mx-puppet-slack.md). You're free to use the bridge that serves you better, or even all three of them (for different users and use-cases).
+
+
+# 2023-01-10
+
+## ChatGPT support
+
+Thanks to [@bertybuttface](https://github.com/bertybuttface), the playbook can now help you set up [matrix-chatgpt-bot](https://github.com/matrixgpt/matrix-chatgpt-bot) - a bot through which you can talk to the [ChatGPT](https://openai.com/blog/chatgpt/) model.
+
+See our [Setting up matrix-bot-chatgpt](docs/configuring-playbook-bot-chatgpt.md) documentation to get started.
+
+
 # 2022-11-30
 
 ## matrix-postgres-backup has been replaced by the com.devture.ansible.role.postgres_backup external role
@@ -353,7 +462,7 @@ matrix_homeserver_implementation: conduit
 
 Thanks to [MdotAmaan](https://github.com/MdotAmaan)'s efforts, the playbook now supports bridging to [Discord](https://discordapp.com/) via the [mautrix-discord](https://mau.dev/mautrix/discord) bridge. See our [Setting up Mautrix Discord bridging](docs/configuring-playbook-bridge-mautrix-discord.md) documentation page for getting started.
 
-**Note**: this is a new Discord bridge. The playbook still retains Discord bridging via [matrix-appservice-discord](docs/configuring-playbook-bridge-appservice-discord.md) and [mx-puppet-discord](docs/configuring-playbook-bridge-mx-puppet-discord.md). You're free too use the bridge that serves you better, or even all three of them (for different users and use-cases).
+**Note**: this is a new Discord bridge. The playbook still retains Discord bridging via [matrix-appservice-discord](docs/configuring-playbook-bridge-appservice-discord.md) and [mx-puppet-discord](docs/configuring-playbook-bridge-mx-puppet-discord.md). You're free to use the bridge that serves you better, or even all three of them (for different users and use-cases).
 
 
 # 2022-07-27
@@ -434,7 +543,7 @@ See our [Setting up the ntfy push notifications server](docs/configuring-playboo
 
 **If you're using node-exporter** (`matrix_prometheus_node_exporter_enabled: true`) and would like to collect its metrics from an external Prometheus server, see `matrix_prometheus_node_exporter_metrics_proxying_enabled` described in our [Collecting metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) documentation. You will be able to collect its metrics from `https://matrix.DOMAIN/metrics/node-exporter`.
 
-**If you're using [postgres-exporter](docs/configuring-playbook-prometheus-postgres.md)** (`matrix_prometheus_postgres_exporter_enabled: true`) and would like to collect its metrics from an external Prometheus server, see `matrix_prometheus_postgres_exporter_metrics_proxying_enabled` described in our [Collecting metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) documentation. You will be able to collect its metrics from `https://matrix.DOMAIN/metrics/postgres-exporter`.
+**If you're using [postgres-exporter](docs/configuring-playbook-prometheus-postgres.md)** (`prometheus_postgres_exporter_enabled: true`) and would like to collect its metrics from an external Prometheus server, see `matrix_prometheus_services_proxy_connect_prometheus_postgres_exporter_metrics_proxying_enabled` described in our [Collecting metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) documentation. You will be able to collect its metrics from `https://matrix.DOMAIN/metrics/postgres-exporter`.
 
 **If you're using Synapse** and would like to collect its metrics from an external Prometheus server, you may find that:
 

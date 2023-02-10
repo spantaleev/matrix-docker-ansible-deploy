@@ -67,9 +67,9 @@ segment_key: null
 # Prometheus config.
 metrics:
     # Enable prometheus metrics?
-    enabled: false
+    enabled: {{ matrix_mautrix_whatsapp_metrics_enabled | to_json }}
     # IP and port where the metrics listener should be. The path is always /metrics
-    listen: 127.0.0.1:8001
+    listen: 0.0.0.0:8001
 
 # Config for things that are directly sent to WhatsApp.
 whatsapp:
@@ -396,9 +396,9 @@ bridge:
     relay:
         # Whether relay mode should be allowed. If allowed, `!wa set-relay` can be used to turn any
         # authenticated user into a relaybot for that chat.
-        enabled: false
+        enabled: {{ matrix_mautrix_whatsapp_bridge_relay_enabled | to_json }}
         # Should only admins be allowed to set themselves as relay users?
-        admin_only: true
+        admin_only: {{ matrix_mautrix_whatsapp_bridge_relay_admin_only | to_json }}
         # The formats to use when sending messages to WhatsApp via the relaybot.
         message_formats:
             m.text: "<b>{{ '{{ .Sender.Displayname }}' }}</b>: {{ '{{ .Message }}' }}"

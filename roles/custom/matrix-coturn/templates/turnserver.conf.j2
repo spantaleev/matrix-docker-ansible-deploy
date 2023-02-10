@@ -30,7 +30,10 @@ no-dtls
 {% endif %}
 
 prod
+
+{% if matrix_coturn_no_tcp_relay_enabled %}
 no-tcp-relay
+{% endif %}
 
 {% if matrix_coturn_user_quota != None %}
 user-quota={{ matrix_coturn_user_quota }}
@@ -39,9 +42,15 @@ user-quota={{ matrix_coturn_user_quota }}
 total-quota={{ matrix_coturn_total_quota }}
 {% endif %}
 
+{% if matrix_coturn_no_multicast_peers_enabled %}
+no-multicast-peers
+{% endif %}
+
 {% for ip_range in matrix_coturn_denied_peer_ips %}
 denied-peer-ip={{ ip_range }}
 {% endfor %}
 {% for ip_range in matrix_coturn_allowed_peer_ips %}
 allowed-peer-ip={{ ip_range }}
 {% endfor %}
+
+{{ matrix_coturn_additional_configuration }}
