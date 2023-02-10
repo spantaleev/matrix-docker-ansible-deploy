@@ -30,20 +30,18 @@ matrix_playbook_docker_installation_enabled: true
 # In such cases, you'd like to disable the role in this playbook from bothering with Traefik at all (`matrix_playbook_traefik_role_enabled: false`).
 # If you used `devture_traefik_enabled: false` + `matrix_playbook_traefik_role_enabled: true` instead, you'd see the Treafik role here
 # try to delete Traefik data (`/devture-traefik`) installed by the other playbook.
-matrix_playbook_traefik_role_enabled: false
+matrix_playbook_traefik_role_enabled: true
 
 # Controls whether to attach Traefik labels to services.
 # This is separate from `devture_traefik_enabled` and `matrix_playbook_traefik_role_enabled`,
 # because you may wish to disable Traefik installation by the playbook, yet still use Traefik
 # installed in another way.
-matrix_playbook_traefik_labels_enabled: false
+matrix_playbook_traefik_labels_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-installed-traefik', 'other-traefik-container'] }}"
 
-matrix_playbook_traefik_certs_dumper_role_enabled: "{{ matrix_playbook_traefik_role_enabled }}"
+matrix_playbook_traefik_certs_dumper_role_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-installed-traefik', 'other-traefik-container'] }}"
 
 # Controls the additional network that reverse-proxyable services will be connected to.
 matrix_playbook_reverse_proxyable_services_additional_network: "{{ devture_traefik_container_network if devture_traefik_enabled else '' }}"
-
-matrix_playbook_reverse_proxy_type: "{{ 'traefik' if matrix_playbook_traefik_role_enabled else ('nginx-proxy' if matrix_nginx_proxy_enabled else 'none') }}"
 
 matrix_playbook_ssl_retrieval_method: "{{ 'lets-encrypt' if matrix_playbook_traefik_certs_dumper_role_enabled else matrix_ssl_retrieval_method }}"
 
@@ -452,7 +450,7 @@ matrix_appservice_discord_enabled: false
 # Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-discord over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # matrix-appservice-discord's client-server port to the local host.
-matrix_appservice_discord_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9005' }}"
+matrix_appservice_discord_container_http_host_bind_port: "{{ matrix_playbook_service_host_bind_interface_prefix + ':9005' if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 # If the homeserver disables presence, it's likely better (less wasteful) to also disable presence on the bridge side.
 matrix_appservice_discord_bridge_disablePresence: "{{ not matrix_synapse_presence_enabled }}"
@@ -499,7 +497,7 @@ matrix_appservice_webhooks_container_image_self_build: "{{ matrix_architecture !
 # Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-webhooks over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # matrix-appservice-webhooks' client-server port to the local host.
-matrix_appservice_webhooks_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else ('127.0.0.1:' ~ matrix_appservice_webhooks_matrix_port) }}"
+matrix_appservice_webhooks_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':' ~ matrix_appservice_webhooks_matrix_port) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_appservice_webhooks_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'webhook.as.token', rounds=655555) | to_uuid }}"
 
@@ -538,7 +536,7 @@ matrix_appservice_slack_container_image_self_build: "{{ matrix_architecture not 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-slack over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # matrix-appservice-slack's client-server port to the local host.
-matrix_appservice_slack_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else ('127.0.0.1:' ~ matrix_appservice_slack_slack_port) }}"
+matrix_appservice_slack_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix + ':' ~ matrix_appservice_slack_slack_port) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_appservice_slack_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'slack.as.token', rounds=655555) | to_uuid }}"
 
@@ -581,7 +579,7 @@ matrix_appservice_irc_container_image_self_build: "{{ matrix_architecture != 'am
 # Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-irc over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # matrix-appservice-irc's client-server port to the local host.
-matrix_appservice_irc_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9999' }}"
+matrix_appservice_irc_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':9999') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 # The IRC bridge docs say that if homeserver presence is disabled, it's better to also disable
 # IRC bridge presence, for performance reasons.
@@ -837,7 +835,7 @@ matrix_mautrix_facebook_homeserver_token: "{{ '%s' | format(matrix_homeserver_ge
 
 matrix_mautrix_facebook_public_endpoint: "/{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'facebook', rounds=655555) | to_uuid }}"
 
-matrix_mautrix_facebook_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9008' }}"
+matrix_mautrix_facebook_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':9008') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_mautrix_facebook_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
@@ -888,7 +886,7 @@ matrix_mautrix_googlechat_appservice_token: "{{ '%s' | format(matrix_homeserver_
 
 matrix_mautrix_googlechat_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'gc.hs.token', rounds=655555) | to_uuid }}"
 
-matrix_mautrix_googlechat_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9007' }}"
+matrix_mautrix_googlechat_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':9007') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_mautrix_googlechat_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
@@ -930,7 +928,7 @@ matrix_mautrix_hangouts_appservice_token: "{{ '%s' | format(matrix_homeserver_ge
 
 matrix_mautrix_hangouts_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'ho.hs.token', rounds=655555) | to_uuid }}"
 
-matrix_mautrix_hangouts_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9007' }}"
+matrix_mautrix_hangouts_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':9007') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_mautrix_hangouts_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
@@ -1077,7 +1075,7 @@ matrix_mautrix_telegram_homeserver_token: "{{ '%s' | format(matrix_homeserver_ge
 
 matrix_mautrix_telegram_public_endpoint: "/{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'telegram', rounds=655555) | to_uuid }}"
 
-matrix_mautrix_telegram_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9006' }}"
+matrix_mautrix_telegram_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':9006') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_mautrix_telegram_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
@@ -1252,12 +1250,12 @@ matrix_hookshot_systemd_wanted_services_list: |
   }}
 
 matrix_hookshot_container_http_host_bind_ports_defaultmapping:
-  - "127.0.0.1:{{ matrix_hookshot_appservice_port }}:{{ matrix_hookshot_appservice_port }}"
-  - "127.0.0.1:{{ matrix_hookshot_metrics_port }}:{{ matrix_hookshot_metrics_port }}"
-  - "127.0.0.1:{{ matrix_hookshot_webhook_port }}:{{ matrix_hookshot_webhook_port }}"
-  - "127.0.0.1:{{ matrix_hookshot_provisioning_port }}:{{ matrix_hookshot_provisioning_port }}"
+  - "{{ matrix_playbook_service_host_bind_interface_prefix }}{{ matrix_hookshot_appservice_port }}:{{ matrix_hookshot_appservice_port }}"
+  - "{{ matrix_playbook_service_host_bind_interface_prefix }}{{ matrix_hookshot_metrics_port }}:{{ matrix_hookshot_metrics_port }}"
+  - "{{ matrix_playbook_service_host_bind_interface_prefix }}{{ matrix_hookshot_webhook_port }}:{{ matrix_hookshot_webhook_port }}"
+  - "{{ matrix_playbook_service_host_bind_interface_prefix }}{{ matrix_hookshot_provisioning_port }}:{{ matrix_hookshot_provisioning_port }}"
 
-matrix_hookshot_container_http_host_bind_ports: "{{ [] if matrix_nginx_proxy_enabled else matrix_hookshot_container_http_host_bind_ports_defaultmapping }}"
+matrix_hookshot_container_http_host_bind_ports: "{{ matrix_hookshot_container_http_host_bind_ports_defaultmapping if matrix_playbook_service_host_bind_interface_prefix else [] }}"
 
 matrix_hookshot_provisioning_enabled: "{{ matrix_hookshot_provisioning_secret and matrix_dimension_enabled }}"
 
@@ -1347,7 +1345,7 @@ matrix_mx_puppet_twitter_homeserver_token: "{{ '%s' | format(matrix_homeserver_g
 
 matrix_mx_puppet_twitter_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_mx_puppet_twitter_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else ('127.0.0.1:' ~ matrix_mx_puppet_twitter_appservice_port) }}"
+matrix_mx_puppet_twitter_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':' ~ matrix_mx_puppet_twitter_appservice_port) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_mx_puppet_twitter_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
@@ -1607,7 +1605,7 @@ matrix_bot_maubot_registration_shared_secret: |-
     }[matrix_homeserver_implementation]
   }}
 
-matrix_bot_maubot_management_interface_http_bind_port: "{{ '' if matrix_nginx_proxy_enabled else ('127.0.0.1:' + matrix_bot_maubot_management_interface_port | string) }}"
+matrix_bot_maubot_management_interface_http_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':' ~ matrix_bot_maubot_management_interface_port | string) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_bot_maubot_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
@@ -1700,8 +1698,12 @@ matrix_bot_postmoogle_container_image_self_build: "{{ matrix_architecture not in
 matrix_bot_postmoogle_ssl_path: |-
   {{
     {
-      'nginx-proxy': (matrix_ssl_config_dir_path if matrix_playbook_ssl_retrieval_method != 'none' else ''),
-      'traefik': devture_traefik_certs_dumper_dumped_certificates_dir_path,
+      'playbook-installed-traefik': devture_traefik_certs_dumper_dumped_certificates_dir_path,
+      'other-traefik-container': devture_traefik_certs_dumper_dumped_certificates_dir_path,
+      'playbook-installed-nginx': (matrix_ssl_config_dir_path if matrix_playbook_ssl_retrieval_method != 'none' else ''),
+      'other-nginx-non-container': (matrix_ssl_config_dir_path if matrix_playbook_ssl_retrieval_method != 'none' else ''),
+      'other-on-same-host': '',
+      'other-on-another-host': '',
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -1715,8 +1717,12 @@ matrix_playbook_bot_postmoogle_traefik_key: "{% for domain in matrix_bot_postmoo
 matrix_bot_postmoogle_tls_cert: |-
   {{
     {
-      'nginx-proxy': (matrix_playbook_bot_postmoogle_nginx_proxy_tls_cert if matrix_playbook_ssl_retrieval_method != 'none' else ''),
-      'traefik': matrix_playbook_bot_postmoogle_traefik_tls_cert,
+      'playbook-installed-traefik': matrix_playbook_bot_postmoogle_traefik_tls_cert,
+      'other-traefik-container': matrix_playbook_bot_postmoogle_traefik_tls_cert,
+      'playbook-installed-nginx': (matrix_playbook_bot_postmoogle_nginx_proxy_tls_cert if matrix_playbook_ssl_retrieval_method != 'none' else ''),
+      'other-nginx-non-container': (matrix_playbook_bot_postmoogle_nginx_proxy_tls_cert if matrix_playbook_ssl_retrieval_method != 'none' else ''),
+      'other-on-same-host': '',
+      'other-on-another-host': '',
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -1724,8 +1730,12 @@ matrix_bot_postmoogle_tls_cert: |-
 matrix_bot_postmoogle_tls_key: |-
   {{
     {
-      'nginx-proxy': (matrix_playbook_bot_postmoogle_nginx_proxy_key if matrix_playbook_ssl_retrieval_method != 'none' else ''),
-      'traefik': matrix_playbook_bot_postmoogle_traefik_key,
+      'playbook-installed-traefik': matrix_playbook_bot_postmoogle_traefik_key,
+      'other-traefik-container': matrix_playbook_bot_postmoogle_traefik_key,
+      'playbook-installed-nginx': (matrix_playbook_bot_postmoogle_nginx_proxy_key if matrix_playbook_ssl_retrieval_method != 'none' else ''),
+      'other-nginx-non-container': (matrix_playbook_bot_postmoogle_nginx_proxy_key if matrix_playbook_ssl_retrieval_method != 'none' else ''),
+      'other-on-same-host': '',
+      'other-on-another-host': '',
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -1740,7 +1750,7 @@ matrix_bot_postmoogle_systemd_required_services_list: |
     +
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
-    (matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services | trim | split(' ') if matrix_playbook_reverse_proxy_type == 'traefik' and matrix_playbook_traefik_certs_dumper_role_enabled else [])
+    (matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services | trim | split(' ') if matrix_playbook_reverse_proxy_type in ['playbook-installed-traefik', 'other-traefik-container'] and matrix_playbook_traefik_certs_dumper_role_enabled else [])
   }}
 
 # Postgres is the default, except if not using internal Postgres server
@@ -1791,7 +1801,7 @@ matrix_bot_go_neb_systemd_required_services_list: |
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
-matrix_bot_go_neb_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:4050' }}"
+matrix_bot_go_neb_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':4050') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 ######################################################################
 #
@@ -1938,8 +1948,8 @@ matrix_corporal_container_image_self_build: "{{ matrix_architecture not in ['amd
 # Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-corporal over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # matrix-corporal's web-server ports to the local host.
-matrix_corporal_container_http_gateway_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:41080' }}"
-matrix_corporal_container_http_api_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:41081' }}"
+matrix_corporal_container_http_gateway_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':41080') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+matrix_corporal_container_http_api_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':41081') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_corporal_systemd_required_services_list: |
   {{
@@ -1982,8 +1992,12 @@ matrix_coturn_tls_enabled: "{{ matrix_playbook_ssl_retrieval_method != 'none' }}
 matrix_coturn_tls_cert_path: |-
   {{
     {
-      'nginx-proxy': '/fullchain.pem',
-      'traefik': '/certificate.crt',
+      'playbook-installed-traefik': '/certificate.crt',
+      'other-traefik-container': '/certificate.crt',
+      'playbook-installed-nginx': '/fullchain.pem',
+      'other-nginx-non-container': '/fullchain.pem',
+      'other-on-same-host': '',
+      'other-on-another-host': '',
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -1991,8 +2005,12 @@ matrix_coturn_tls_cert_path: |-
 matrix_coturn_tls_key_path: |-
   {{
     {
-      'nginx-proxy': '/privkey.pem',
-      'traefik': '/privatekey.key',
+      'playbook-installed-traefik': '/privatekey.key',
+      'other-traefik-container': '/privatekey.key',
+      'playbook-installed-nginx': '/privkey.pem',
+      'other-nginx-non-container': '/privkey.pem',
+      'other-on-same-host': '',
+      'other-on-another-host': '',
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -2011,7 +2029,7 @@ matrix_coturn_container_additional_volumes: |
          'dst': '/privkey.pem',
          'options': 'ro',
        },
-      ] if matrix_playbook_reverse_proxy_type == 'nginx-proxy' else []
+      ] if matrix_playbook_reverse_proxy_type in ['playbook-installed-nginx', 'other-nginx-non-container'] else []
     )
     +
     (
@@ -2026,7 +2044,7 @@ matrix_coturn_container_additional_volumes: |
          'dst': '/privatekey.key',
          'options': 'ro',
        },
-      ] if matrix_playbook_reverse_proxy_type == 'traefik' and matrix_playbook_traefik_certs_dumper_role_enabled else []
+      ] if matrix_playbook_reverse_proxy_type in ['playbook-installed-traefik', 'other-traefik-container'] and matrix_playbook_traefik_certs_dumper_role_enabled else []
     )
   }}
 
@@ -2034,7 +2052,7 @@ matrix_coturn_systemd_required_services_list: |
   {{
     ['docker.service']
     +
-    ([devture_traefik_certs_dumper_identifier + '-wait-for-domain@' + matrix_server_fqn_matrix + '.service'] if matrix_playbook_reverse_proxy_type == 'traefik' and matrix_playbook_traefik_certs_dumper_role_enabled else [])
+    ([devture_traefik_certs_dumper_identifier + '-wait-for-domain@' + matrix_server_fqn_matrix + '.service'] if matrix_playbook_reverse_proxy_type in ['playbook-installed-traefik', 'other-traefik-container'] and matrix_playbook_traefik_certs_dumper_role_enabled else [])
   }}
 
 ######################################################################
@@ -2056,7 +2074,7 @@ matrix_dimension_container_image_self_build: "{{ matrix_architecture != 'amd64' 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Dimension over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # the Dimension HTTP port to the local host.
-matrix_dimension_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8184' }}"
+matrix_dimension_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':8184') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_dimension_homeserver_federationUrl: "{{ matrix_homeserver_container_federation_url }}"
 
@@ -2090,7 +2108,7 @@ matrix_dimension_database_password: "{{ '%s' | format(matrix_homeserver_generic_
 
 matrix_etherpad_enabled: false
 
-matrix_etherpad_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9001' }}"
+matrix_etherpad_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':9001') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_etherpad_base_url: "{{ 'https://' + matrix_server_fqn_dimension + matrix_etherpad_public_endpoint if matrix_etherpad_mode == 'dimension' else 'https://' + matrix_server_fqn_etherpad + '/' }}"
 
@@ -2151,11 +2169,11 @@ matrix_jitsi_enabled: false
 # Normally, matrix-nginx-proxy is enabled and nginx can reach jitsi/web over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # the Jitsi HTTP port to the local host.
-matrix_jitsi_web_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:13080' }}"
+matrix_jitsi_web_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':13080') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
-matrix_jitsi_jvb_container_colibri_ws_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:13090' }}"
+matrix_jitsi_jvb_container_colibri_ws_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':13090') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
-matrix_jitsi_prosody_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:5280' }}"
+matrix_jitsi_prosody_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':5280') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_jitsi_jibri_xmpp_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'jibri', rounds=655555) | to_uuid }}"
 matrix_jitsi_jicofo_auth_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'jicofo', rounds=655555) | to_uuid }}"
@@ -2245,7 +2263,7 @@ matrix_ma1sd_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 # Normally, matrix-nginx-proxy is enabled and nginx can reach ma1sd over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # ma1sd's web-server port.
-matrix_ma1sd_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:' + matrix_ma1sd_container_port | string }}"
+matrix_ma1sd_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':' ~ matrix_ma1sd_container_port | string) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 
 # We enable Synapse integration via its Postgres database by default.
@@ -2259,7 +2277,7 @@ matrix_ma1sd_dns_overwrite_enabled: true
 matrix_ma1sd_dns_overwrite_homeserver_client_name: "{{ matrix_server_fqn_matrix }}"
 # The `matrix_ma1sd_dns_overwrite_homeserver_client_value` value when matrix_nginx_proxy_enabled is false covers the general case,
 # but may be inaccurate if matrix-corporal is enabled.
-matrix_ma1sd_dns_overwrite_homeserver_client_value: "{{ ('http://' + matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container) if matrix_nginx_proxy_enabled else matrix_homeserver_container_url }}"
+matrix_ma1sd_dns_overwrite_homeserver_client_value: "{{ matrix_homeserver_container_url }}"
 
 # By default, we send mail through the `matrix-mailer` service.
 matrix_ma1sd_threepid_medium_email_identity_from: "{{ matrix_mailer_sender_address }}"
@@ -2301,10 +2319,24 @@ matrix_ma1sd_database_password: "{{ '%s' | format(matrix_homeserver_generic_secr
 #
 ######################################################################
 
-# By default, this playbook sets up a reverse-proxy nginx proxy server on TCP ports 80, 443 and 8448.
-# This is fine if you're dedicating the whole server to Matrix.
-# If that's not the case, you may wish to disable this and take care of proxying yourself.
-matrix_nginx_proxy_enabled: true
+# This playbook installs its own nginx if
+# - it's explicitly enabled
+# - Traefik is in use. Not all services are Traefik-native yet, so we use reverse-proxy to some via a local-only matrix-nginx-proxy
+matrix_nginx_proxy_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-installed-nginx', 'playbook-installed-traefik', 'other-traefik-container'] }}"
+
+# matrix-nginx-proxy is only to handle HTTPS only if it's the chosen reverse-proxy.
+# It may be enabled even if it's not chosen. See `matrix_nginx_proxy_enabled`.
+matrix_ssl_retrieval_method: "{{ 'lets-encrypt' if matrix_playbook_reverse_proxy_type == 'playbook-installed-nginx' else 'none' }}"
+matrix_nginx_proxy_https_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-installed-nginx' }}"
+
+# matrix-nginx-proxy is to publish ports only if it's the chosen reverse-proxy.
+# It may be enabled even if it's not chosen. See `matrix_nginx_proxy_enabled`.
+matrix_nginx_proxy_container_http_host_bind_port: "{{ '80' if matrix_playbook_reverse_proxy_type == 'playbook-installed-nginx' else '' }}"
+matrix_nginx_proxy_container_federation_host_bind_port: "{{ matrix_federation_public_port if matrix_playbook_reverse_proxy_type == 'playbook-installed-nginx' else '' }}"
+
+# matrix-nginx-proxy is to trust reverse-proxy forwarded protocol and headers, unless it's the "main" (chosen) reverse-proxy
+matrix_nginx_proxy_trust_forwarded_proto: "{{ matrix_playbook_reverse_proxy_type != 'playbook-installed-nginx' }}"
+matrix_nginx_proxy_x_forwarded_for: "{{ '$remote_addr' if matrix_playbook_reverse_proxy_type == 'playbook-installed-nginx' else '$proxy_add_x_forwarded_for' }}"
 
 matrix_nginx_proxy_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
 
@@ -2398,8 +2430,6 @@ matrix_nginx_proxy_proxy_conduit_federation_api_addr_sans_container: "127.0.0.1:
 
 # When matrix-nginx-proxy is disabled, the actual port number that the vhost uses may begin to matter.
 matrix_nginx_proxy_proxy_matrix_federation_port: "{{ matrix_federation_public_port }}"
-
-matrix_nginx_proxy_container_federation_host_bind_port: "{{ matrix_federation_public_port }}"
 
 matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_ma1sd_enabled }}"
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}"
@@ -2828,7 +2858,7 @@ matrix_sygnal_enabled: false
 # If someone instals Prometheus via the playbook, they most likely wish to monitor Sygnal.
 matrix_sygnal_metrics_prometheus_enabled: "{{ matrix_prometheus_enabled }}"
 
-matrix_sygnal_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:6000' }}"
+matrix_sygnal_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':6000') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 ######################################################################
 #
@@ -2844,7 +2874,7 @@ matrix_sygnal_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enable
 
 matrix_ntfy_enabled: false
 
-matrix_ntfy_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:2586' }}"
+matrix_ntfy_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':2586') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 ######################################################################
 #
@@ -2881,7 +2911,7 @@ matrix_client_element_container_image_self_build: "{{ matrix_architecture not in
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Element over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # the Element HTTP port to the local host.
-matrix_client_element_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8765' }}"
+matrix_client_element_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':8765') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_client_element_default_hs_url: "{{ matrix_homeserver_url }}"
 matrix_client_element_default_is_url: "{{ matrix_identity_server_url }}"
@@ -2926,7 +2956,7 @@ matrix_client_hydrogen_container_image_self_build: "{{ matrix_architecture not i
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Hydrogen over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # the HTTP port to the local host.
-matrix_client_hydrogen_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8768' }}"
+matrix_client_hydrogen_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':8768') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_client_hydrogen_default_hs_url: "{{ matrix_homeserver_url }}"
 
@@ -2951,7 +2981,7 @@ matrix_client_cinny_container_image_self_build: "{{ matrix_architecture not in [
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Cinny over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # the HTTP port to the local host.
-matrix_client_cinny_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8080' }}"
+matrix_client_cinny_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':8080') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_client_cinny_default_hs_url: "{{ matrix_homeserver_url }}"
 
@@ -2980,13 +3010,13 @@ matrix_synapse_account_threepid_delegates_msisdn: "{{ 'http://matrix-ma1sd:' + m
 matrix_synapse_container_federation_api_tls_host_bind_port: "{{ matrix_federation_public_port if (matrix_synapse_federation_enabled and matrix_synapse_tls_federation_listener_enabled) else '' }}"
 #
 # For exposing the Synapse Metrics API's port (plain HTTP) to the local host.
-matrix_synapse_container_metrics_api_host_bind_port: "{{ '127.0.0.1:9100' if (matrix_synapse_metrics_enabled and not matrix_nginx_proxy_enabled) else '' }}"
+matrix_synapse_container_metrics_api_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':9100') if matrix_synapse_metrics_enabled and matrix_playbook_service_host_bind_interface_prefix else '' }}"
 #
 # For exposing the Synapse Manhole port (plain HTTP) to the local host.
-matrix_synapse_container_manhole_api_host_bind_port: "{{ '127.0.0.1:9000' if matrix_synapse_manhole_enabled else '' }}"
+matrix_synapse_container_manhole_api_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':9000') if matrix_synapse_metrics_enabled and matrix_playbook_service_host_bind_interface_prefix else '' }}"
 #
 # For exposing the Synapse worker (and metrics) ports to the local host.
-matrix_synapse_workers_container_host_bind_address: "{{ '127.0.0.1' if (matrix_synapse_workers_enabled and not matrix_nginx_proxy_enabled) else '' }}"
+matrix_synapse_workers_container_host_bind_address: "{{ matrix_playbook_service_host_bind_interface_prefix[0:-1] if (matrix_synapse_workers_enabled and matrix_playbook_service_host_bind_interface_prefix) else '' }}"
 
 matrix_synapse_database_host: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_synapse_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'synapse.db', rounds=655555) | to_uuid }}"
@@ -3075,8 +3105,8 @@ matrix_synapse_reverse_proxy_companion_enabled: "{{ matrix_synapse_enabled }}"
 
 matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb: "{{ matrix_synapse_max_upload_size_mb }}"
 
-matrix_synapse_reverse_proxy_companion_container_client_api_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8008' }}"
-matrix_synapse_reverse_proxy_companion_container_federation_api_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8048' }}"
+matrix_synapse_reverse_proxy_companion_container_client_api_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':8008') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+matrix_synapse_reverse_proxy_companion_container_federation_api_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':8048') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_synapse_reverse_proxy_companion_synapse_workers_enabled: "{{ matrix_synapse_workers_enabled }}"
 matrix_synapse_reverse_proxy_companion_synapse_workers_list: "{{ matrix_synapse_workers_enabled_list }}"
@@ -3110,7 +3140,7 @@ matrix_synapse_admin_enabled: false
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Synapse Admin over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # Synapse Admin's HTTP port to the local host.
-matrix_synapse_admin_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8766' }}"
+matrix_synapse_admin_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':8766') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_synapse_admin_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
@@ -3219,7 +3249,7 @@ matrix_prometheus_enabled: false
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Prometheus over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # Prometheus' HTTP port to the local host.
-matrix_prometheus_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:9090' }}"
+matrix_prometheus_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':99090005') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_prometheus_scraper_synapse_enabled: "{{ matrix_synapse_enabled and matrix_synapse_metrics_enabled }}"
 matrix_prometheus_scraper_synapse_targets: ['matrix-synapse:{{ matrix_synapse_metrics_port }}']
@@ -3256,7 +3286,7 @@ matrix_grafana_enabled: false
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Grafana over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # Grafana's HTTP port to the local host.
-matrix_grafana_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:3000' }}"
+matrix_grafana_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':3000') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_grafana_dashboard_download_urls: |
   {{
@@ -3295,7 +3325,7 @@ matrix_registration_enabled: false
 # Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-registration over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # matrix-registration's HTTP port to the local host.
-matrix_registration_container_http_host_bind_port: "{{ '' if matrix_nginx_proxy_enabled else '127.0.0.1:8767' }}"
+matrix_registration_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':8767') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_registration_riot_instance: "{{ ('https://' + matrix_server_fqn_element) if matrix_client_element_enabled else 'https://riot.im/app/' }}"
 
@@ -3346,12 +3376,10 @@ matrix_dendrite_enabled: "{{ matrix_homeserver_implementation == 'dendrite' }}"
 # you can expose Dendrite's ports to the host.
 #
 # For exposing Dendrite's plain HTTP server to the local host.
-matrix_dendrite_container_http_host_bind_address: "{{ '' if matrix_nginx_proxy_enabled else ('127.0.0.1:' + matrix_dendrite_http_bind_port | string) }}"
+matrix_dendrite_container_http_host_bind_address: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':' ~ matrix_dendrite_http_bind_port | string) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 #
 # For exposing Dendrite's HTTPS server to the local host.
-matrix_dendrite_container_https_host_bind_address: "{{ '' if matrix_nginx_proxy_enabled or not matrix_dendrite_https_bind_port else ('127.0.0.1:' + matrix_dendrite_https_bind_port | string) }}"
-
-matrix_dendrite_sync_api_real_ip_header: "{{ 'X-Forwarded-For' if matrix_nginx_proxy_enabled else '' }}"
+matrix_dendrite_container_https_host_bind_address: "{{ '' if not matrix_dendrite_https_bind_port or not matrix_playbook_service_host_bind_interface_prefix else (matrix_playbook_service_host_bind_interface_prefix + matrix_dendrite_https_bind_port | string) }}"
 
 matrix_dendrite_client_api_registration_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.rss', rounds=655555) | to_uuid }}"
 
@@ -3486,9 +3514,9 @@ matrix_user_verification_service_systemd_required_services_list: |
 
 # If Jitsi is managed by this playbook we can use the docker network - no need to expose a port.
 # If Jitsi is not managed by this playbook, or you otherwise have a need for it, you can expose
-# matrix-user-verfification-services's client-server port to the local host port 3003.
+# matrix-user-verfification-services's client-server port to port 3003.
 # By default Matrix-User-Verification-Service binds to port 3000, which collides with grafana, therefore this uses port 3003.
-matrix_user_verification_service_container_http_host_bind_port: "{{  '' if (matrix_jitsi_enabled | bool and matrix_jitsi_enable_auth | bool and matrix_jitsi_auth_type == 'matrix') else '127.0.0.1:3003' }}"
+matrix_user_verification_service_container_http_host_bind_port: "{{  '' if (matrix_jitsi_enabled | bool and matrix_jitsi_enable_auth | bool and matrix_jitsi_auth_type == 'matrix') else matrix_playbook_service_host_bind_interface_prefix ~ ':3003' }}"
 
 # URL exposed in the docker network
 matrix_user_verification_service_container_url: "http://{{  matrix_user_verification_service_container_name }}:3000"
@@ -3513,7 +3541,7 @@ matrix_user_verification_service_uvs_auth_token: "{{ '%s' | format(matrix_homese
 
 # To completely disable the Traefik role from running, use `matrix_playbook_traefik_role_enabled: false`.
 # See the comment there for more details about why we have both `devture_traefik_enabled` and `matrix_playbook_traefik_role_enabled`.
-devture_traefik_enabled: "{{ matrix_playbook_traefik_role_enabled }}"
+devture_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-installed-traefik' }}"
 
 devture_traefik_uid: "{{ matrix_user_uid }}"
 devture_traefik_gid: "{{ matrix_user_gid }}"
