@@ -36,14 +36,16 @@ matrix_playbook_traefik_role_enabled: true
 # This is separate from `devture_traefik_enabled` and `matrix_playbook_traefik_role_enabled`,
 # because you may wish to disable Traefik installation by the playbook, yet still use Traefik
 # installed in another way.
-matrix_playbook_traefik_labels_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-installed-traefik', 'other-traefik-container'] }}"
+matrix_playbook_traefik_labels_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 
-matrix_playbook_traefik_certs_dumper_role_enabled: "{{ (matrix_playbook_reverse_proxy_type == 'playbook-installed-traefik' and devture_traefik_config_entrypoint_web_secure_enabled) or matrix_playbook_reverse_proxy_type == 'other-traefik-container' }}"
+matrix_playbook_traefik_certs_dumper_role_enabled: "{{ (matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' and devture_traefik_config_entrypoint_web_secure_enabled) or matrix_playbook_reverse_proxy_type == 'other-traefik-container' }}"
 
 # Controls the additional network that reverse-proxyable services will be connected to.
 matrix_playbook_reverse_proxyable_services_additional_network: "{{ devture_traefik_container_network if devture_traefik_enabled else '' }}"
 
 matrix_playbook_ssl_retrieval_method: "{{ 'lets-encrypt' if matrix_playbook_traefik_certs_dumper_role_enabled else matrix_ssl_retrieval_method }}"
+
+matrix_playbook_ssl_enabled: "{{ matrix_playbook_ssl_retrieval_method in ['lets-encrypt', 'self-signed', 'manually-managed'] }}"
 
 ########################################################################
 #                                                                      #
@@ -1269,7 +1271,7 @@ matrix_hookshot_metrics_enabled: "{{ matrix_prometheus_enabled }}"
 
 matrix_hookshot_urlprefix_port_enabled: "{{ matrix_nginx_proxy_container_https_host_bind_port == 443 if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_https_host_bind_port == 80 }}"
 matrix_hookshot_urlprefix_port: ":{{ matrix_nginx_proxy_container_https_host_bind_port if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_http_host_bind_port }}"
-matrix_hookshot_urlprefix: "http{{ 's' if matrix_nginx_proxy_https_enabled else '' }}://{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_urlprefix_port if matrix_hookshot_urlprefix_port_enabled else '' }}"
+matrix_hookshot_urlprefix: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}://{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_urlprefix_port if matrix_hookshot_urlprefix_port_enabled else '' }}"
 
 ######################################################################
 #
@@ -1698,9 +1700,9 @@ matrix_bot_postmoogle_container_image_self_build: "{{ matrix_architecture not in
 matrix_bot_postmoogle_ssl_path: |-
   {{
     {
-      'playbook-installed-traefik': devture_traefik_certs_dumper_dumped_certificates_dir_path,
+      'playbook-managed-traefik': devture_traefik_certs_dumper_dumped_certificates_dir_path,
       'other-traefik-container': devture_traefik_certs_dumper_dumped_certificates_dir_path,
-      'playbook-installed-nginx': (matrix_ssl_config_dir_path if matrix_playbook_ssl_retrieval_method != 'none' else ''),
+      'playbook-managed-nginx': (matrix_ssl_config_dir_path if matrix_playbook_ssl_retrieval_method != 'none' else ''),
       'other-nginx-non-container': (matrix_ssl_config_dir_path if matrix_playbook_ssl_retrieval_method != 'none' else ''),
       'other-on-same-host': '',
       'other-on-another-host': '',
@@ -1717,9 +1719,9 @@ matrix_playbook_bot_postmoogle_traefik_key: "{% for domain in matrix_bot_postmoo
 matrix_bot_postmoogle_tls_cert: |-
   {{
     {
-      'playbook-installed-traefik': matrix_playbook_bot_postmoogle_traefik_tls_cert,
+      'playbook-managed-traefik': matrix_playbook_bot_postmoogle_traefik_tls_cert,
       'other-traefik-container': matrix_playbook_bot_postmoogle_traefik_tls_cert,
-      'playbook-installed-nginx': (matrix_playbook_bot_postmoogle_nginx_proxy_tls_cert if matrix_playbook_ssl_retrieval_method != 'none' else ''),
+      'playbook-managed-nginx': (matrix_playbook_bot_postmoogle_nginx_proxy_tls_cert if matrix_playbook_ssl_retrieval_method != 'none' else ''),
       'other-nginx-non-container': (matrix_playbook_bot_postmoogle_nginx_proxy_tls_cert if matrix_playbook_ssl_retrieval_method != 'none' else ''),
       'other-on-same-host': '',
       'other-on-another-host': '',
@@ -1730,9 +1732,9 @@ matrix_bot_postmoogle_tls_cert: |-
 matrix_bot_postmoogle_tls_key: |-
   {{
     {
-      'playbook-installed-traefik': matrix_playbook_bot_postmoogle_traefik_key,
+      'playbook-managed-traefik': matrix_playbook_bot_postmoogle_traefik_key,
       'other-traefik-container': matrix_playbook_bot_postmoogle_traefik_key,
-      'playbook-installed-nginx': (matrix_playbook_bot_postmoogle_nginx_proxy_key if matrix_playbook_ssl_retrieval_method != 'none' else ''),
+      'playbook-managed-nginx': (matrix_playbook_bot_postmoogle_nginx_proxy_key if matrix_playbook_ssl_retrieval_method != 'none' else ''),
       'other-nginx-non-container': (matrix_playbook_bot_postmoogle_nginx_proxy_key if matrix_playbook_ssl_retrieval_method != 'none' else ''),
       'other-on-same-host': '',
       'other-on-another-host': '',
@@ -1750,7 +1752,7 @@ matrix_bot_postmoogle_systemd_required_services_list: |
     +
     (['matrix-synapse.service'] if matrix_synapse_enabled else [])
     +
-    (matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services | trim | split(' ') if matrix_playbook_reverse_proxy_type in ['playbook-installed-traefik', 'other-traefik-container'] and matrix_playbook_traefik_certs_dumper_role_enabled else [])
+    (matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services | trim | split(' ') if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and matrix_playbook_traefik_certs_dumper_role_enabled else [])
   }}
 
 # Postgres is the default, except if not using internal Postgres server
@@ -1992,9 +1994,9 @@ matrix_coturn_tls_enabled: "{{ matrix_playbook_ssl_retrieval_method != 'none' }}
 matrix_coturn_tls_cert_path: |-
   {{
     {
-      'playbook-installed-traefik': '/certificate.crt',
+      'playbook-managed-traefik': '/certificate.crt',
       'other-traefik-container': '/certificate.crt',
-      'playbook-installed-nginx': '/fullchain.pem',
+      'playbook-managed-nginx': '/fullchain.pem',
       'other-nginx-non-container': '/fullchain.pem',
       'other-on-same-host': '',
       'other-on-another-host': '',
@@ -2005,9 +2007,9 @@ matrix_coturn_tls_cert_path: |-
 matrix_coturn_tls_key_path: |-
   {{
     {
-      'playbook-installed-traefik': '/privatekey.key',
+      'playbook-managed-traefik': '/privatekey.key',
       'other-traefik-container': '/privatekey.key',
-      'playbook-installed-nginx': '/privkey.pem',
+      'playbook-managed-nginx': '/privkey.pem',
       'other-nginx-non-container': '/privkey.pem',
       'other-on-same-host': '',
       'other-on-another-host': '',
@@ -2029,7 +2031,7 @@ matrix_coturn_container_additional_volumes: |
          'dst': '/privkey.pem',
          'options': 'ro',
        },
-      ] if matrix_playbook_reverse_proxy_type in ['playbook-installed-nginx', 'other-nginx-non-container'] else []
+      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else []
     )
     +
     (
@@ -2044,7 +2046,7 @@ matrix_coturn_container_additional_volumes: |
          'dst': '/privatekey.key',
          'options': 'ro',
        },
-      ] if matrix_playbook_reverse_proxy_type in ['playbook-installed-traefik', 'other-traefik-container'] and matrix_playbook_traefik_certs_dumper_role_enabled else []
+      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and matrix_playbook_traefik_certs_dumper_role_enabled else []
     )
   }}
 
@@ -2052,7 +2054,7 @@ matrix_coturn_systemd_required_services_list: |
   {{
     ['docker.service']
     +
-    ([devture_traefik_certs_dumper_identifier + '-wait-for-domain@' + matrix_server_fqn_matrix + '.service'] if matrix_playbook_reverse_proxy_type in ['playbook-installed-traefik', 'other-traefik-container'] and matrix_playbook_traefik_certs_dumper_role_enabled else [])
+    ([devture_traefik_certs_dumper_identifier + '-wait-for-domain@' + matrix_server_fqn_matrix + '.service'] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and matrix_playbook_traefik_certs_dumper_role_enabled else [])
   }}
 
 ######################################################################
@@ -2322,21 +2324,21 @@ matrix_ma1sd_database_password: "{{ '%s' | format(matrix_homeserver_generic_secr
 # This playbook installs its own nginx if
 # - it's explicitly enabled
 # - Traefik is in use. Not all services are Traefik-native yet, so we use reverse-proxy to some via a local-only matrix-nginx-proxy
-matrix_nginx_proxy_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-installed-nginx', 'playbook-installed-traefik', 'other-traefik-container'] }}"
+matrix_nginx_proxy_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'playbook-managed-traefik', 'other-traefik-container'] }}"
 
 # matrix-nginx-proxy is only to handle HTTPS only if it's the chosen reverse-proxy.
 # It may be enabled even if it's not chosen. See `matrix_nginx_proxy_enabled`.
-matrix_ssl_retrieval_method: "{{ 'lets-encrypt' if matrix_playbook_reverse_proxy_type == 'playbook-installed-nginx' else 'none' }}"
-matrix_nginx_proxy_https_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-installed-nginx' }}"
+matrix_ssl_retrieval_method: "{{ 'lets-encrypt' if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else 'none' }}"
+matrix_nginx_proxy_https_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' }}"
 
 # matrix-nginx-proxy is to publish ports only if it's the chosen reverse-proxy.
 # It may be enabled even if it's not chosen. See `matrix_nginx_proxy_enabled`.
-matrix_nginx_proxy_container_http_host_bind_port: "{{ '80' if matrix_playbook_reverse_proxy_type == 'playbook-installed-nginx' else '' }}"
-matrix_nginx_proxy_container_federation_host_bind_port: "{{ matrix_federation_public_port if matrix_playbook_reverse_proxy_type == 'playbook-installed-nginx' else '' }}"
+matrix_nginx_proxy_container_http_host_bind_port: "{{ '80' if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else '' }}"
+matrix_nginx_proxy_container_federation_host_bind_port: "{{ matrix_federation_public_port if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else '' }}"
 
 # matrix-nginx-proxy is to trust reverse-proxy forwarded protocol and headers, unless it's the "main" (chosen) reverse-proxy
-matrix_nginx_proxy_trust_forwarded_proto: "{{ matrix_playbook_reverse_proxy_type != 'playbook-installed-nginx' }}"
-matrix_nginx_proxy_x_forwarded_for: "{{ '$remote_addr' if matrix_playbook_reverse_proxy_type == 'playbook-installed-nginx' else '$proxy_add_x_forwarded_for' }}"
+matrix_nginx_proxy_trust_forwarded_proto: "{{ matrix_playbook_reverse_proxy_type != 'playbook-managed-nginx' }}"
+matrix_nginx_proxy_x_forwarded_for: "{{ '$remote_addr' if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else '$proxy_add_x_forwarded_for' }}"
 
 matrix_nginx_proxy_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
 
@@ -3541,7 +3543,7 @@ matrix_user_verification_service_uvs_auth_token: "{{ '%s' | format(matrix_homese
 
 # To completely disable the Traefik role from running, use `matrix_playbook_traefik_role_enabled: false`.
 # See the comment there for more details about why we have both `devture_traefik_enabled` and `matrix_playbook_traefik_role_enabled`.
-devture_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-installed-traefik' }}"
+devture_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' }}"
 
 devture_traefik_uid: "{{ matrix_user_uid }}"
 devture_traefik_gid: "{{ matrix_user_gid }}"
