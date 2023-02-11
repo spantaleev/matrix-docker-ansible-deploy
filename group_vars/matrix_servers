@@ -199,6 +199,9 @@ matrix_homeserver_app_service_config_files_auto: |
 #   - so that, when the reverse-proxy is up (Matrix is up), all bots and bridges can be interacted with
 # - monitoring services (Prometheus, Grafana, ..) get a level of 4000 - they can start later than all-of-Matrix
 # - services which aren't time-sensitive (various crons and timers) get a level of 5000 - they can start later than all-of-Matrix
+#
+# `matrix-bot-postmoogle.service` has a higher priority number (4000), unlike other bots' priority (2200),
+# because it requires SSL certificates. If Traefik is used, then Postmoogle needs to start at least after Traefik (3500) and Traefik certs dumper (3500).
 devture_systemd_service_manager_services_list_auto: |
   {{
     ([{'name': 'matrix-backup-borg.timer', 'priority': 5000, 'groups': ['matrix', 'backup', 'borg']}] if matrix_backup_borg_enabled else [])
@@ -219,7 +222,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-bot-draupnir.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'draupnir']}] if matrix_bot_draupnir_enabled else [])
     +
-    ([{'name': 'matrix-bot-postmoogle.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'postmoogle']}] if matrix_bot_postmoogle_enabled else [])
+    ([{'name': 'matrix-bot-postmoogle.service', 'priority': 4000, 'groups': ['matrix', 'bots', 'postmoogle']}] if matrix_bot_postmoogle_enabled else [])
     +
     ([{'name': 'matrix-bot-chatgpt.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'chatgpt']}] if matrix_bot_chatgpt_enabled else [])
     +
