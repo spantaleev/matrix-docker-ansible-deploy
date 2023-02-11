@@ -3574,7 +3574,7 @@ devture_traefik_additional_domains_to_obtain_certificates_for: "{{ matrix_ssl_ad
 
 # To completely disable the Traefik certs dumper role from running, use `matrix_playbook_traefik_certs_dumper_role_enabled: false`.
 # See the comment there for more details about why we have both `devture_traefik_certs_dumper_enabled` and `matrix_playbook_traefik_certs_dumper_role_enabled`.
-devture_traefik_certs_dumper_enabled: "{{ matrix_playbook_traefik_certs_dumper_role_enabled and devture_traefik_enabled }}"
+devture_traefik_certs_dumper_enabled: "{{ matrix_playbook_traefik_certs_dumper_role_enabled }}"
 
 devture_traefik_certs_dumper_identifier: matrix-traefik-certs-dumper
 
@@ -3583,7 +3583,7 @@ devture_traefik_certs_dumper_base_path: "{{ matrix_base_data_path }}/traefik-cer
 devture_traefik_certs_dumper_uid: "{{ matrix_user_uid }}"
 devture_traefik_certs_dumper_gid: "{{ matrix_user_gid }}"
 
-devture_traefik_certs_dumper_ssl_dir_path: "{{ devture_traefik_ssl_dir_path }}"
+devture_traefik_certs_dumper_ssl_dir_path: "{{ devture_traefik_ssl_dir_path if devture_traefik_enabled else '' }}"
 
 ########################################################################
 #                                                                      #
