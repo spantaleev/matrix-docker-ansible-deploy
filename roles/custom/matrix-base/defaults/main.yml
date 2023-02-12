@@ -92,6 +92,9 @@ matrix_server_fqn_ntfy: "ntfy.{{ matrix_domain }}"
 
 matrix_federation_public_port: 8448
 
+# The name of the Traefik entrypoint for handling Matrix Federation
+matrix_federation_traefik_entrypoint: matrix-federation
+
 # The architecture that your server runs.
 # Recognized values by us are 'amd64', 'arm32' and 'arm64'.
 # Not all architectures support all services, so your experience (on non-amd64) may vary.
@@ -261,6 +264,53 @@ matrix_well_known_matrix_support_enabled: false
 
 matrix_homeserver_container_extra_arguments_auto: []
 matrix_homeserver_app_service_config_files_auto: []
+
+# Specifies the type of reverse-proxy used by the playbook.
+#
+# Changing this has an effect on whether a reverse-proxy is installed at all and what its type is,
+# as well as how all other services are configured.
+#
+# Valid options and a description of their behavior:
+#
+# - `playbook-managed-traefik`
+#     - the playbook will install devture-traefik
+#     - Traefik will do SSL termination, unless you disable it (e.g. `devture_traefik_config_entrypoint_web_secure_enabled: false`)
+#     - if SSL termination is enabled (as it is by default), you need to populate: `devture_traefik_ssl_email_address`
+#     - it will also install matrix-nginx-proxy in local-only mode, while we migrate the rest of the services to a Traefik-native mode of working
+#
+# - `playbook-managed-nginx`
+#     - the playbook will install matrix-nginx-proxy
+#     - matrix-nginx-proxy will do SSL termination with Certbot, unless you change that (see `matrix_ssl_retrieval_method`)
+#     - if SSL termination is enabled (as it is by default), you need to populate: `matrix_ssl_lets_encrypt_support_email`
+#
+# - `other-traefik-container`
+#     - this playbook will not install Traefik
+#     - nevertheless, the playbook expects that you would install Traefik yourself via other means
+#     - you should make sure your Traefik configuration is compatible with what the playbook would have configured (web, web-secure, matrix-federation entrypoints, etc.)
+#     - you need to set `matrix_playbook_reverse_proxyable_services_additional_network` to the name of your Traefik network
+#     - Traefik certs dumper will be enabled by default (`devture_traefik_certs_dumper_enabled`). You need to point it to your Traefik's SSL certificates (`devture_traefik_certs_dumper_ssl_dir_path`)
+#
+# - `other-nginx-non-container`
+#     - the playbook will not install matrix-nginx-proxy
+#     - however, it will still dump some nginx configuration in /matrix/nginx/conf.d
+#     - these configs are meant to be included into a locally-installed (without a container) nginx server
+#     - all container services are exposed locally (e.g. `-p 127.0.0.1:8080:8080`)
+#
+# - `other-on-same-host`
+#     - like other-nginx-non-container, but supposedly won't generate useless configuration in /matrix/nginx/conf.d in the future
+#
+# - `other-on-another-host`
+#     - like other-on-same-host, but services are exposed on all interfaces (e.g. `-p 0.0.0.0:8080:8080`)
+#     - configurable via `matrix_playbook_service_host_bind_interface_prefix`
+#
+# - `none`
+#     - no reverse-proxy will be installed
+#     - no nginx configuration will be dumped in /matrix/nginx/conf.d
+#     - no port exposure will be done for any of the container services
+#     - it's up to you to expose the ports you want, etc.
+matrix_playbook_reverse_proxy_type: playbook-managed-nginx
+
+matrix_playbook_service_host_bind_interface_prefix: "{{ '' if matrix_playbook_reverse_proxy_type not in ['other-nginx-non-container', 'other-on-same-host', 'other-on-another-host'] else ('0.0.0.0:' if matrix_playbook_reverse_proxy_type == 'other-on-another-host' else '127.0.0.1:') }}"
 
 # Variables to Control which parts of our roles run.
 run_postgres_import: true

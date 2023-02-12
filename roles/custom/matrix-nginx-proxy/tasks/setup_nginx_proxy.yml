@@ -22,6 +22,14 @@
     - "{{ matrix_nginx_proxy_data_path }}"
     - "{{ matrix_nginx_proxy_confd_path }}"
 
+- name: Ensure Matrix nginx-proxy labels file is created
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/labels.j2"
+    dest: "{{ matrix_nginx_proxy_base_path }}/labels"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0640
+
 - name: Ensure Matrix nginx-proxy configured (main config override)
   ansible.builtin.template:
     src: "{{ role_path }}/templates/nginx/nginx.conf.j2"
