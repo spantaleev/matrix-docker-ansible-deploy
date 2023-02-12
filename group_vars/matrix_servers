@@ -30,7 +30,7 @@ matrix_playbook_docker_installation_enabled: true
 # In such cases, you'd like to disable the role in this playbook from bothering with Traefik at all (`matrix_playbook_traefik_role_enabled: false`).
 # If you used `devture_traefik_enabled: false` + `matrix_playbook_traefik_role_enabled: true` instead, you'd see the Treafik role here
 # try to delete Traefik data (`/devture-traefik`) installed by the other playbook.
-matrix_playbook_traefik_role_enabled: true
+matrix_playbook_traefik_role_enabled: "{{ matrix_playbook_reverse_proxy_type != 'other-traefik-container' }}"
 
 # Controls whether to attach Traefik labels to services.
 # This is separate from `devture_traefik_enabled` and `matrix_playbook_traefik_role_enabled`,
