@@ -1,5 +1,7 @@
 # Using your own webserver, instead of this playbook's nginx proxy (optional, advanced)
 
+**Note**: the playbook is [in the process of moving to Traefik](../CHANGELOG.md#reverse-proxy-configuration-changes-and-initial-traefik-support). The documentation below should be correct, but things will change soon.
+
 By default, this playbook installs its own nginx webserver (called `matrix-nginx-proxy`, in a Docker container) which listens on ports 80 and 443.
 If that's alright, you can skip this.
 
