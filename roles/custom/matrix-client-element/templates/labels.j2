@@ -5,8 +5,20 @@ traefik.enable=true
 traefik.docker.network={{ matrix_client_element_container_labels_traefik_docker_network }}
 {% endif %}
 
+{% set middlewares = [] %}
+
+{% if matrix_client_element_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in matrix_client_element_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.matrix-client-element-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + ['matrix-client-element-add-headers'] %}
+{% endif %}
+
 traefik.http.routers.matrix-client-element.rule={{ matrix_client_element_container_labels_traefik_rule }}
 traefik.http.routers.matrix-client-element.service=matrix-client-element
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-client-element.middlewares={{ middlewares | join(',') }}
+{% endif %}
 traefik.http.routers.matrix-client-element.entrypoints={{ matrix_client_element_container_labels_traefik_entrypoints }}
 traefik.http.routers.matrix-client-element.tls={{ matrix_client_element_container_labels_traefik_tls | to_json }}
 {% if matrix_client_element_container_labels_traefik_tls %}
