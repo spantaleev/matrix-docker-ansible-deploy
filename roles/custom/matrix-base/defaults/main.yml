@@ -154,17 +154,25 @@ matrix_client_element_jitsi_preferredDomain: ''  # noqa var-naming
 # Controls whether Element should use End-to-End Encryption by default.
 # Setting this to false will update `/.well-known/matrix/client` and tell Element clients to avoid E2EE.
 # See: https://github.com/vector-im/element-web/blob/develop/docs/e2ee.md
-matrix_client_element_e2ee_default: true
+matrix_well_known_matrix_client_io_element_e2ee_default: true
 
 # Controls whether Element should require a secure backup set up before Element can be used.
 # Setting this to true will update `/.well-known/matrix/client` and tell Element require a secure backup.
 # See: https://github.com/vector-im/element-web/blob/develop/docs/e2ee.md
-matrix_client_element_e2ee_secure_backup_required: false
+matrix_well_known_matrix_client_io_element_e2ee_secure_backup_required: false
 
 # Controls which backup methods from ["key", "passphrase"] should be used, both is the default.
 # Setting this to other then empty will update `/.well-known/matrix/client` and tell Element which method to use
 # See: https://github.com/vector-im/element-web/blob/develop/docs/e2ee.md
-matrix_client_element_e2ee_secure_backup_setup_methods: []
+matrix_well_known_matrix_client_io_element_e2ee_secure_backup_setup_methods: []
+
+# Controls whether element related entries should be added to the client well-known. Override this to false to hide
+# element related well-known entries.
+# By default if any of the following change from their default this is set to true:
+# `matrix_well_known_matrix_client_io_element_e2ee_default`
+# `matrix_well_known_matrix_client_io_element_e2ee_secure_backup_required`
+# `matrix_well_known_matrix_client_io_element_e2ee_secure_backup_setup_methods`
+matrix_well_known_matrix_client_io_element_e2ee_entries_enabled: "{{ not matrix_well_known_matrix_client_io_element_e2ee_default or matrix_well_known_matrix_client_io_element_e2ee_secure_backup_required or matrix_well_known_matrix_client_io_element_e2ee_secure_backup_setup_methods | length > 0 }}"
 
 # Default `/.well-known/matrix/client` configuration - it covers the generic use case.
 # You can customize it by controlling the various variables inside the template file that it references.

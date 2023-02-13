@@ -31,13 +31,14 @@
         "map_style_url": "https://{{ matrix_server_fqn_element }}/map_style.json"
     }
 	{% endif %}
-	,
+	{% if matrix_well_known_matrix_client_io_element_e2ee_entries_enabled %},
 	"io.element.e2ee": {
-		"default": {{ matrix_client_element_e2ee_default|to_json }},
-		"secure_backup_required": {{ matrix_client_element_e2ee_secure_backup_required|to_json }},
-		"secure_backup_setup_methods": {{ matrix_client_element_e2ee_secure_backup_setup_methods|to_json }}
+		"default": {{ matrix_well_known_matrix_client_io_element_e2ee_default|to_json }},
+		"secure_backup_required": {{ matrix_well_known_matrix_client_io_element_e2ee_secure_backup_required|to_json }},
+		"secure_backup_setup_methods": {{ matrix_well_known_matrix_client_io_element_e2ee_secure_backup_setup_methods|to_json }}
 	},
+	{% if matrix_well_known_matrix_client_io_element_e2ee_entries_enabled %},
 	"im.vector.riot.e2ee": {
-		"default": {{ matrix_client_element_e2ee_default|to_json }}
+		"default": {{ matrix_well_known_matrix_client_io_element_e2ee_default|to_json }}
 	}
 }
