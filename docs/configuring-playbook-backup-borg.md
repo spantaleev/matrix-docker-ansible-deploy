@@ -6,9 +6,9 @@ That means your daily incremental backups can be stored in a fraction of the spa
 
 You will need a remote server where borg will store the backups. There are hosted, borg compatible solutions available, such as [BorgBase](https://www.borgbase.com).
 
-The backup will run based on `matrix_backup_borg_schedule` var (systemd timer calendar), default: 4am every day.
+The backup will run based on `backup_borg_schedule` var (systemd timer calendar), default: 4am every day.
 
-By default, if you're using the integrated Postgres database server (as opposed to [an external Postgres server](configuring-playbook-external-postgres.md)), Borg backups will also include dumps of your Postgres database. An alternative solution for backing up the Postgres database is [postgres backup](configuring-playbook-postgres-backup.md). If you decide to go with another solution, you can disable Postgres-backup support for Borg using the `matrix_backup_borg_postgresql_enabled` variable.
+By default, if you're using the integrated Postgres database server (as opposed to [an external Postgres server](configuring-playbook-external-postgres.md)), Borg backups will also include dumps of your Postgres database. An alternative solution for backing up the Postgres database is [postgres backup](configuring-playbook-postgres-backup.md). If you decide to go with another solution, you can disable Postgres-backup support for Borg using the `backup_borg_postgresql_enabled` variable.
 
 
 ## Prerequisites
@@ -38,11 +38,11 @@ cat PUBKEY | ssh USER@HOST 'dd of=.ssh/authorized_keys oflag=append conv=notrunc
 Minimal working configuration (`inventory/host_vars/matrix.DOMAIN/vars.yml`) to enable borg backup:
 
 ```yaml
-matrix_backup_borg_enabled: true
-matrix_backup_borg_location_repositories:
+backup_borg_enabled: true
+backup_borg_location_repositories:
  - ssh://USER@HOST/./REPO
-matrix_backup_borg_storage_encryption_passphrase: "PASSPHRASE"
-matrix_backup_borg_ssh_key_private: |
+backup_borg_storage_encryption_passphrase: "PASSPHRASE"
+backup_borg_ssh_key_private: |
   -----BEGIN OPENSSH PRIVATE KEY-----
   TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZW
   xpdCwgc2VkIGRvIGVpdXNtb2QgdGVtcG9yIGluY2lkaWR1bnQgdXQgbGFib3JlIGV0IGRv
@@ -58,11 +58,11 @@ where:
 * HOST - SSH host of a provider/server
 * REPO - borg repository name, it will be initialized on backup start, eg: `matrix`, regarding Syntax see [Remote repositories](https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls)
 * PASSPHRASE - passphrase used for encrypting backups, you may generate it with `pwgen -s 64 1` or use any password manager
-* PRIVATE KEY - the content of the **private** part of the SSH key you created before. The whole key (all of its belonging lines) under `matrix_backup_borg_ssh_key_private` needs to be indented with 2 spaces
+* PRIVATE KEY - the content of the **private** part of the SSH key you created before. The whole key (all of its belonging lines) under `backup_borg_ssh_key_private` needs to be indented with 2 spaces
 
-To backup without encryption, add `matrix_backup_borg_encryption: 'none'` to your vars. This will also enable the `matrix_backup_borg_unknown_unencrypted_repo_access_is_ok` variable.
+To backup without encryption, add `backup_borg_encryption: 'none'` to your vars. This will also enable the `backup_borg_unknown_unencrypted_repo_access_is_ok` variable.
 
-`matrix_backup_borg_location_source_directories` defines the list of directories to back up: it's set to `{{ matrix_base_data_path }}` by default, which is the base directory for every service's data, such as Synapse, Postgres and the bridges. You might want to exclude certain directories or file patterns from the backup using the `matrix_backup_borg_location_exclude_patterns` variable.
+`backup_borg_location_source_directories` defines the list of directories to back up: it's set to `{{ matrix_base_data_path }}` by default, which is the base directory for every service's data, such as Synapse, Postgres and the bridges. You might want to exclude certain directories or file patterns from the backup using the `backup_borg_location_exclude_patterns` variable.
 
 Check the `roles/custom/matrix-backup-borg/defaults/main.yml` file for the full list of available options.
 
