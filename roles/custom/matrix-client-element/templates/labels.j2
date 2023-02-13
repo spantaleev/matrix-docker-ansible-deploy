@@ -1,0 +1,19 @@
+{% if matrix_client_element_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_client_element_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_client_element_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.routers.matrix-client-element.rule={{ matrix_client_element_container_labels_traefik_rule }}
+traefik.http.routers.matrix-client-element.service=matrix-client-element
+traefik.http.routers.matrix-client-element.entrypoints={{ matrix_client_element_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-client-element.tls={{ matrix_client_element_container_labels_traefik_tls | to_json }}
+{% if matrix_client_element_container_labels_traefik_tls %}
+traefik.http.routers.matrix-client-element.tls.certResolver={{ matrix_client_element_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.matrix-client-element.loadbalancer.server.port=8080
+{% endif %}
+
+{{ matrix_client_element_container_labels_additional_labels }}

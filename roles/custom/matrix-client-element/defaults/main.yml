@@ -18,10 +18,39 @@ matrix_client_element_docker_image_force_pull: "{{ matrix_client_element_docker_
 matrix_client_element_data_path: "{{ matrix_base_data_path }}/client-element"
 matrix_client_element_docker_src_files_path: "{{ matrix_client_element_data_path }}/docker-src"
 
+# The base container network
+matrix_client_element_container_network: matrix-client-element
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to a reverse proxy, which runs in a different container network.
+matrix_client_element_container_additional_networks: []
+
 # Controls whether the matrix-client-element container exposes its HTTP port (tcp/8080 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8765"), or empty string to not expose.
 matrix_client_element_container_http_host_bind_port: ''
+
+# matrix_client_element_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_client_element_container_labels_additional_labels`.
+matrix_client_element_container_labels_traefik_enabled: true
+matrix_client_element_container_labels_traefik_docker_network: "{{ matrix_client_element_container_network }}"
+matrix_client_element_container_labels_traefik_hostname: "{{ matrix_server_fqn_element }}"
+matrix_client_element_container_labels_traefik_rule: "Host(`{{ matrix_client_element_container_labels_traefik_hostname }}`)"
+matrix_client_element_container_labels_traefik_entrypoints: web-secure
+matrix_client_element_container_labels_traefik_tls: "{{ matrix_client_element_container_labels_traefik_entrypoints != 'web' }}"
+matrix_client_element_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# matrix_client_element_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_client_element_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_client_element_container_labels_additional_labels: ''
 
 # A list of extra arguments to pass to the container
 matrix_client_element_container_extra_arguments: []

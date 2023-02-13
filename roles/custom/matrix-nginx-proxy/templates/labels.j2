@@ -39,18 +39,6 @@ traefik.http.routers.matrix-nginx-proxy-matrix-federation.entrypoints={{ matrix_
 {% endif %}
 
 
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_element_enabled %}
-# Element
-traefik.http.routers.matrix-nginx-proxy-element.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_element_rule }}
-traefik.http.routers.matrix-nginx-proxy-element.service=matrix-nginx-proxy-web
-traefik.http.routers.matrix-nginx-proxy-element.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_element_tls | to_json }}
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_element_tls %}
-traefik.http.routers.matrix-nginx-proxy-element.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
-{% endif %}
-traefik.http.routers.matrix-nginx-proxy-element.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
-{% endif %}
-
-
 {% if matrix_nginx_proxy_container_labels_traefik_proxy_hydrogen_enabled %}
 # Hydrogen
 traefik.http.routers.matrix-nginx-proxy-hydrogen.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_hydrogen_rule }}
