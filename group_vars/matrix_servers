@@ -3159,12 +3159,17 @@ matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_server_port
 
 matrix_synapse_admin_enabled: false
 
-# Normally, matrix-nginx-proxy is enabled and nginx can reach Synapse Admin over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# Synapse Admin's HTTP port to the local host.
+matrix_synapse_admin_nginx_proxy_integration_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
+
 matrix_synapse_admin_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ ':8766') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_synapse_admin_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+
+matrix_synapse_admin_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
+
+matrix_synapse_admin_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_synapse_admin_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_synapse_admin_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary if devture_traefik_enabled else '' }}"
 
 ######################################################################
 #

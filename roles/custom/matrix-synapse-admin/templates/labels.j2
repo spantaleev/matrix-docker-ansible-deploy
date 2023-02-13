@@ -1,0 +1,25 @@
+{% if matrix_synapse_admin_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_synapse_admin_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_synapse_admin_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.middlewares.matrix-synapse-admin-slashless-redirect.redirectregex.regex=({{ matrix_synapse_admin_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.matrix-synapse-admin-slashless-redirect.redirectregex.replacement=${1}/
+
+traefik.http.middlewares.matrix-synapse-admin-replacepath.replacepath.path=/
+
+traefik.http.routers.matrix-synapse-admin.rule={{ matrix_synapse_admin_container_labels_traefik_rule }}
+traefik.http.routers.matrix-synapse-admin.middlewares=matrix-synapse-admin-slashless-redirect,matrix-synapse-admin-replacepath
+traefik.http.routers.matrix-synapse-admin.service=matrix-synapse-admin
+traefik.http.routers.matrix-synapse-admin.entrypoints={{ matrix_synapse_admin_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-synapse-admin.tls={{ matrix_synapse_admin_container_labels_traefik_tls | to_json }}
+{% if matrix_synapse_admin_container_labels_traefik_tls %}
+traefik.http.routers.matrix-synapse-admin.tls.certResolver={{ matrix_synapse_admin_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.matrix-synapse-admin.loadbalancer.server.port=80
+{% endif %}
+
+{{ matrix_synapse_admin_container_labels_additional_labels }}

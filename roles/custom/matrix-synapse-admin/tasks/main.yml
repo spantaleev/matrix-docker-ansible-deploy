@@ -1,7 +1,7 @@
 ---
 
 - block:
-    - when: matrix_synapse_admin_enabled | bool
+    - when: matrix_synapse_admin_enabled | bool and matrix_synapse_admin_nginx_proxy_integration_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/inject_into_nginx_proxy.yml"
   tags:
     - setup-all

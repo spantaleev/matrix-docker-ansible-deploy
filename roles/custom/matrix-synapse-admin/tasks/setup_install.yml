@@ -1,5 +1,21 @@
 ---
 
+- name: Ensure matrix-synapse-admin path exist
+  ansible.builtin.file:
+    path: "{{ matrix_synapse_admin_base_path }}"
+    state: directory
+    mode: 0700
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-synapse-admin labels file is created
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/labels.j2"
+    dest: "{{ matrix_synapse_admin_base_path }}/labels"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0640
+
 - name: Ensure matrix-synapse-admin image is pulled
   community.docker.docker_image:
     name: "{{ matrix_synapse_admin_docker_image }}"
@@ -35,9 +51,13 @@
       pull: true
   when: matrix_synapse_admin_container_image_self_build | bool
 
+- name: Ensure matrix-synapse-admin container network is created
+  community.general.docker_network:
+    name: "{{ matrix_synapse_admin_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-synapse-admin.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-synapse-admin.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse-admin.service"
     mode: 0644
-  register: matrix_synapse_admin_systemd_service_result
