@@ -3165,6 +3165,8 @@ matrix_synapse_admin_container_http_host_bind_port: "{{ (matrix_playbook_service
 
 matrix_synapse_admin_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
+matrix_synapse_admin_container_network: "{{ matrix_nginx_proxy_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else 'matrix-synapse-admin' }}"
+
 matrix_synapse_admin_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
 
 matrix_synapse_admin_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
