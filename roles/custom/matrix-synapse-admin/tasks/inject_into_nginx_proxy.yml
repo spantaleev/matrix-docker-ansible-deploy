@@ -12,9 +12,9 @@
 - name: Generate Synapse Admin proxying configuration for matrix-nginx-proxy
   ansible.builtin.set_fact:
     matrix_synapse_admin_matrix_nginx_proxy_configuration: |
-      rewrite ^{{ matrix_synapse_admin_public_endpoint }}$ {{ matrix_nginx_proxy_x_forwarded_proto_value }}://$server_name{{ matrix_synapse_admin_public_endpoint }}/ permanent;
+      rewrite ^{{ matrix_synapse_admin_path_prefix }}$ {{ matrix_nginx_proxy_x_forwarded_proto_value }}://$server_name{{ matrix_synapse_admin_path_prefix }}/ permanent;
 
-      location ~ ^{{ matrix_synapse_admin_public_endpoint }}/(.*) {
+      location ~ ^{{ matrix_synapse_admin_path_prefix }}/(.*) {
       {% if matrix_nginx_proxy_enabled | default(False) %}
         {# Use the embedded DNS resolver in Docker containers to discover the service #}
         resolver 127.0.0.11 valid=5s;
@@ -40,7 +40,7 @@
     msg: >-
       NOTE: You've enabled the Synapse Admin tool but are not using the matrix-nginx-proxy
       reverse proxy.
-      Please make sure that you're proxying the `{{ matrix_synapse_admin_public_endpoint }}`
+      Please make sure that you're proxying the `{{ matrix_synapse_admin_path_prefix }}`
       URL endpoint to the matrix-synapse-admin container.
       You can expose the container's port using the `matrix_synapse_admin_container_http_host_bind_port` variable.
   when: "not matrix_nginx_proxy_enabled | default(False) | bool"
