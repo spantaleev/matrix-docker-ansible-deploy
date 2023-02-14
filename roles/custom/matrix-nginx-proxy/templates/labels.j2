@@ -38,31 +38,6 @@ traefik.http.routers.matrix-nginx-proxy-matrix-federation.tls.certResolver={{ ma
 traefik.http.routers.matrix-nginx-proxy-matrix-federation.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_entrypoints }}
 {% endif %}
 
-
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_hydrogen_enabled %}
-# Hydrogen
-traefik.http.routers.matrix-nginx-proxy-hydrogen.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_hydrogen_rule }}
-traefik.http.routers.matrix-nginx-proxy-hydrogen.service=matrix-nginx-proxy-web
-traefik.http.routers.matrix-nginx-proxy-hydrogen.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_hydrogen_tls | to_json }}
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_hydrogen_tls %}
-traefik.http.routers.matrix-nginx-proxy-hydrogen.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
-{% endif %}
-traefik.http.routers.matrix-nginx-proxy-hydrogen.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
-{% endif %}
-
-
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_cinny_enabled %}
-# Cinny
-traefik.http.routers.matrix-nginx-proxy-cinny.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_cinny_rule }}
-traefik.http.routers.matrix-nginx-proxy-cinny.service=matrix-nginx-proxy-web
-traefik.http.routers.matrix-nginx-proxy-cinny.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_cinny_tls | to_json }}
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_cinny_tls %}
-traefik.http.routers.matrix-nginx-proxy-cinny.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
-{% endif %}
-traefik.http.routers.matrix-nginx-proxy-cinny.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
-{% endif %}
-
-
 {% if matrix_nginx_proxy_container_labels_traefik_proxy_buscarron_enabled %}
 # Buscarron
 traefik.http.routers.matrix-nginx-proxy-buscarron.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_buscarron_rule }}
