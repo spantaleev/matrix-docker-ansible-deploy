@@ -26,6 +26,9 @@ traefik.http.middlewares.matrix-client-element-add-headers.headers.customrespons
 {% endif %}
 
 traefik.http.routers.matrix-client-element.rule={{ matrix_client_element_container_labels_traefik_rule }}
+{% if matrix_client_element_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-client-element.priority={{ matrix_client_element_container_labels_traefik_priority }}
+{% endif %}
 traefik.http.routers.matrix-client-element.service=matrix-client-element
 {% if middlewares | length > 0 %}
 traefik.http.routers.matrix-client-element.middlewares={{ middlewares | join(',') }}

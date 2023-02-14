@@ -26,6 +26,9 @@ traefik.http.middlewares.matrix-synapse-admin-add-headers.headers.customresponse
 {% endif %}
 
 traefik.http.routers.matrix-synapse-admin.rule={{ matrix_synapse_admin_container_labels_traefik_rule }}
+{% if matrix_synapse_admin_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-admin.priority={{ matrix_synapse_admin_container_labels_traefik_priority }}
+{% endif %}
 {% if middlewares | length > 0 %}
 traefik.http.routers.matrix-synapse-admin.middlewares={{ middlewares | join(',') }}
 {% endif %}
