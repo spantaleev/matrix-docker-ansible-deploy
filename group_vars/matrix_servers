@@ -3020,6 +3020,14 @@ matrix_client_cinny_container_image_self_build: "{{ matrix_architecture not in [
 # the HTTP port to the local host.
 matrix_client_cinny_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8080') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
+matrix_client_cinny_container_network: "{{ matrix_nginx_proxy_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else 'matrix-client-cinny' }}"
+
+matrix_client_cinny_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
+
+matrix_client_cinny_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_client_cinny_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_client_cinny_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary if devture_traefik_enabled else '' }}"
+
 matrix_client_cinny_default_hs_url: "{{ matrix_homeserver_url }}"
 
 matrix_client_cinny_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
