@@ -60,6 +60,21 @@ matrix_client_element_container_labels_traefik_additional_response_headers_auto:
   }}
 matrix_client_element_container_labels_traefik_additional_response_headers_custom: {}
 
+# matrix_client_element_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_client_element_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_client_element_container_labels_additional_labels: ''
+
+# A list of extra arguments to pass to the container
+matrix_client_element_container_extra_arguments: []
+
+# List of systemd services that matrix-client-element.service depends on
+matrix_client_element_systemd_required_services_list: ['docker.service']
+
 # Specifies the value of the `X-XSS-Protection` header
 # Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
 #
@@ -110,21 +125,6 @@ matrix_client_element_floc_optout_enabled: true
 # - https://hstspreload.org/#opt-in
 # See: `matrix_client_element_http_header_strict_transport_security`
 matrix_client_element_hsts_preload_enabled: false
-
-# matrix_client_element_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
-# See `../templates/labels.j2` for details.
-#
-# Example:
-# matrix_client_element_container_labels_additional_labels: |
-#   my.label=1
-#   another.label="here"
-matrix_client_element_container_labels_additional_labels: ''
-
-# A list of extra arguments to pass to the container
-matrix_client_element_container_extra_arguments: []
-
-# List of systemd services that matrix-client-element.service depends on
-matrix_client_element_systemd_required_services_list: ['docker.service']
 
 # Element config.json customizations
 matrix_client_element_default_server_name: "{{ matrix_domain }}"
