@@ -52,7 +52,7 @@
     group: "{{ matrix_user_groupname }}"
   with_items:
     - {src: "{{ role_path }}/templates/nginx.conf.j2", name: "nginx.conf"}
-  when: "item.src is not none"
+    - {src: "{{ role_path }}/templates/labels.j2", name: "labels"}
 
 - name: Ensure Hydrogen Docker image is built
   community.docker.docker_image:
@@ -64,6 +64,11 @@
       path: "{{ matrix_client_hydrogen_docker_src_files_path }}"
       pull: true
   when: "matrix_client_hydrogen_container_image_self_build | bool"
+
+- name: Ensure Hydrogen container network is created
+  community.general.docker_network:
+    name: "{{ matrix_client_hydrogen_container_network }}"
+    driver: bridge
 
 - name: Ensure matrix-client-hydrogen.service installed
   ansible.builtin.template:
