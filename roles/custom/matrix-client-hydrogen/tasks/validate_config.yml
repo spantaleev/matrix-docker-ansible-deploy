@@ -27,14 +27,3 @@
         msg: >-
           matrix_client_hydrogen_container_labels_traefik_path_prefix (`{{ matrix_client_hydrogen_container_labels_traefik_path_prefix }}`) must either be `/` or not end with a slash (e.g. `/hydrogen`).
       when: "matrix_client_hydrogen_container_labels_traefik_path_prefix != '/' and matrix_client_hydrogen_container_labels_traefik_path_prefix[-1] == '/'"
-
-    # For example, we're getting errors like this:
-    # > main.js:51 Failed to load stylesheet from https://DOMAIN/assets/theme-element-light.5316e268.css:
-    # despite having set a prefix of `/hydrogen`.
-    # This is yet to be investigated and workaround around.
-    - name: Fail if matrix_client_hydrogen_container_labels_traefik_path_prefix is not /
-      ansible.builtin.fail:
-        msg: >-
-          matrix_client_hydrogen_container_labels_traefik_path_prefix can only be set to `/` right now.
-          Serving Hydrogen from another path doesn't work just yet.
-      when: "matrix_client_hydrogen_container_labels_traefik_path_prefix != '/'"
