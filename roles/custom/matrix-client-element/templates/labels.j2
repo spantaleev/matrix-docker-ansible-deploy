@@ -7,6 +7,17 @@ traefik.docker.network={{ matrix_client_element_container_labels_traefik_docker_
 
 {% set middlewares = [] %}
 
+{% if matrix_client_element_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-client-element-slashless-redirect.redirectregex.regex=({{ matrix_client_element_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.matrix-client-element-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-client-element-slashless-redirect'] %}
+{% endif %}
+
+{% if matrix_client_element_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-client-element-strip-prefix.stripprefix.prefixes={{ matrix_client_element_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + ['matrix-client-element-strip-prefix'] %}
+{% endif %}
+
 {% if matrix_client_element_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
 {% for name, value in matrix_client_element_container_labels_traefik_additional_response_headers.items() %}
 traefik.http.middlewares.matrix-client-element-add-headers.headers.customresponseheaders.{{ name }}={{ value }}

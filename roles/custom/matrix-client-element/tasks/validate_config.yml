@@ -26,3 +26,23 @@
   when: "vars | dict2items | selectattr('key', 'match', item.old) | list | items2dict"
   with_items:
     - {'old': 'matrix_riot_web_.*', 'new': 'matrix_client_element_.*'}
+
+- when: matrix_client_element_container_labels_traefik_enabled | bool
+  block:
+    - name: Fail if required matrix-client-element Traefik settings not defined
+      ansible.builtin.fail:
+        msg: >-
+          You need to define a required configuration setting (`{{ item }}`).
+      when: "vars[item] == ''"
+      with_items:
+        - matrix_synapse_admin_container_labels_traefik_hostname
+        - matrix_client_element_container_labels_traefik_path_prefix
+
+    # We ensure it doesn't end with a slash, because we handle both (slash and no-slash).
+    # Knowing that `matrix_client_element_container_labels_traefik_path_prefix` does not end with a slash
+    # ensures we know how to set these routes up without having to do "does it end with a slash" checks elsewhere.
+    - name: Fail if matrix_client_element_container_labels_traefik_path_prefix ends with a slash
+      ansible.builtin.fail:
+        msg: >-
+          matrix_client_element_container_labels_traefik_path_prefix (`{{ matrix_client_element_container_labels_traefik_path_prefix }}`) must either be `/` or not end with a slash (e.g. `/element`).
+      when: "matrix_client_element_container_labels_traefik_path_prefix != '/' and matrix_client_element_container_labels_traefik_path_prefix[-1] == '/'"

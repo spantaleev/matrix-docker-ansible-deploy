@@ -38,7 +38,9 @@ matrix_client_element_container_http_host_bind_port: ''
 matrix_client_element_container_labels_traefik_enabled: true
 matrix_client_element_container_labels_traefik_docker_network: "{{ matrix_client_element_container_network }}"
 matrix_client_element_container_labels_traefik_hostname: "{{ matrix_server_fqn_element }}"
-matrix_client_element_container_labels_traefik_rule: "Host(`{{ matrix_client_element_container_labels_traefik_hostname }}`)"
+# The path prefix must either be `/` or not end with a slash (e.g. `/element`).
+matrix_client_element_container_labels_traefik_path_prefix: /
+matrix_client_element_container_labels_traefik_rule: "Host(`{{ matrix_client_element_container_labels_traefik_hostname }}`){% if matrix_client_element_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_client_element_container_labels_traefik_path_prefix }}`){% endif %}"
 matrix_client_element_container_labels_traefik_entrypoints: web-secure
 matrix_client_element_container_labels_traefik_tls: "{{ matrix_client_element_container_labels_traefik_entrypoints != 'web' }}"
 matrix_client_element_container_labels_traefik_tls_certResolver: default  # noqa var-naming
