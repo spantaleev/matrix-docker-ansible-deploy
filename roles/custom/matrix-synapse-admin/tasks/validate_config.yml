@@ -28,6 +28,5 @@
     - name: Fail if matrix_synapse_admin_container_labels_traefik_path_prefix ends with a slash
       ansible.builtin.fail:
         msg: >-
-          matrix_synapse_admin_container_labels_traefik_path_prefix (`{{ matrix_synapse_admin_container_labels_traefik_path_prefix }}`) must not end with a slash.
-          Example: `/synapse-admin`.
-      when: "matrix_synapse_admin_container_labels_traefik_path_prefix[-1] == '/'"
+          matrix_synapse_admin_container_labels_traefik_path_prefix (`{{ matrix_synapse_admin_container_labels_traefik_path_prefix }}`) must either be `/` or not end with a slash (e.g. `/synapse-admin`).
+      when: "matrix_synapse_admin_container_labels_traefik_path_prefix != '/' and matrix_synapse_admin_container_labels_traefik_path_prefix[-1] == '/'"

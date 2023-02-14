@@ -5,13 +5,23 @@ traefik.enable=true
 traefik.docker.network={{ matrix_synapse_admin_container_labels_traefik_docker_network }}
 {% endif %}
 
+{% set middlewares = [] %}
+
+{% if matrix_synapse_admin_container_labels_traefik_path_prefix != '/' %}
 traefik.http.middlewares.matrix-synapse-admin-slashless-redirect.redirectregex.regex=({{ matrix_synapse_admin_container_labels_traefik_path_prefix | quote }})$
 traefik.http.middlewares.matrix-synapse-admin-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-synapse-admin-slashless-redirect'] %}
+{% endif %}
 
-traefik.http.middlewares.matrix-synapse-admin-replacepath.replacepath.path=/
+{% if matrix_synapse_admin_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-synapse-admin-strip-prefix.stripprefix.prefixes={{ matrix_synapse_admin_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + ['matrix-synapse-admin-strip-prefix'] %}
+{% endif %}
 
 traefik.http.routers.matrix-synapse-admin.rule={{ matrix_synapse_admin_container_labels_traefik_rule }}
-traefik.http.routers.matrix-synapse-admin.middlewares=matrix-synapse-admin-slashless-redirect,matrix-synapse-admin-replacepath
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-synapse-admin.middlewares={{ middlewares | join(',') }}
+{% endif %}
 traefik.http.routers.matrix-synapse-admin.service=matrix-synapse-admin
 traefik.http.routers.matrix-synapse-admin.entrypoints={{ matrix_synapse_admin_container_labels_traefik_entrypoints }}
 traefik.http.routers.matrix-synapse-admin.tls={{ matrix_synapse_admin_container_labels_traefik_tls | to_json }}
