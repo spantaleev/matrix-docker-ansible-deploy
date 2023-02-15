@@ -55,7 +55,7 @@ Services that run on the server to make the various parts of your installation w
 | [nginx](http://nginx.org/) | ✓ | Web server, listening on ports 80 and 443 - standing in front of all the other services. Using your own webserver [is possible](docs/configuring-playbook-own-webserver.md) | [Link](docs/configuring-playbook-nginx.md) |
 | [Let's Encrypt](https://letsencrypt.org/) | ✓ | Free  SSL certificate, which secures the connection to the Synapse server and the Element web UI | [Link](docs/configuring-playbook-ssl-certificates.md) |
 | [ma1sd](https://github.com/ma1uta/ma1sd) | x | Matrix Identity Server | [Link](docs/configuring-playbook-ma1sd.md)
-| [Exim](https://www.exim.org/) | ✓ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) | - |
+| [Exim](https://www.exim.org/) | ✓ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) | [Link](docs/configuring-playbook-email.md) |
 | [Dimension](https://github.com/turt2live/matrix-dimension) | x | An open source integrations manager for matrix clients | [Link](docs/configuring-playbook-dimension.md) |
 | [Sygnal](https://github.com/matrix-org/sygnal) | x | Push gateway | [Link](docs/configuring-playbook-sygnal.md) |
 | [ntfy](https://ntfy.sh) | x | Push notifications server | [Link](docs/configuring-playbook-ntfy.md) |
