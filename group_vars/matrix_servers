@@ -3384,6 +3384,14 @@ grafana_dashboard_download_urls: |
     (matrix_prometheus_nginxlog_exporter_dashboard_urls if matrix_prometheus_nginxlog_exporter_enabled else [])
   }}
 
+grafana_provisioning_dashboard_template_files: |
+  {{
+    ([{
+        'path': 'roles/custom/matrix-prometheus-nginxlog-exporter/templates/grafana/nginx-proxy.json',
+        'name': 'nginx-proxy.json',
+    }] if matrix_prometheus_nginxlog_exporter_enabled else [])
+  }}
+
 grafana_default_home_dashboard_path: |-
   {{
     {

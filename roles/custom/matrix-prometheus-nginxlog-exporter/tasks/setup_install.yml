@@ -30,18 +30,8 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure grafana dashboard is installed
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/nginx-proxy.json"
-    dest: "{{ grafana_config_path }}/dashboards/"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-  when: grafana_enabled
-
 - name: Ensure matrix-prometheus-nginxlog-exporter.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-prometheus-nginxlog-exporter.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-prometheus-nginxlog-exporter.service"
     mode: 0644
-  register: matrix_prometheus_nginxlog_exporter_systemd_service_result
