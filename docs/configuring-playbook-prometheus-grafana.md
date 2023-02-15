@@ -18,16 +18,16 @@ prometheus_postgres_exporter_enabled: true
 # You can remove this, if unnecessary.
 matrix_prometheus_nginxlog_exporter_enabled: true
 
-matrix_grafana_enabled: true
+grafana_enabled: true
 
-matrix_grafana_anonymous_access: false
+grafana_anonymous_access: false
 
 # This has no relation to your Matrix user id. It can be any username you'd like.
 # Changing the username subsequently won't work.
-matrix_grafana_default_admin_user: "some_username_chosen_by_you"
+grafana_default_admin_user: "some_username_chosen_by_you"
 
 # Changing the password subsequently won't work.
-matrix_grafana_default_admin_password: "some_strong_password_chosen_by_you"
+grafana_default_admin_password: "some_strong_password_chosen_by_you"
 ```
 
 By default, a [Grafana](https://grafana.com/) web user-interface will be available at `https://stats.<your-domain>`.
@@ -43,9 +43,9 @@ Name | Description
 `prometheus_node_exporter_enabled`|[Node Exporter](https://prometheus.io/docs/guides/node-exporter/) is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures
 `prometheus_postgres_exporter_enabled`|[Postgres Exporter](configuring-playbook-prometheus-postgres.md) is an addon of sorts to expose Postgres database metrics to Prometheus.
 `matrix_prometheus_nginxlog_exporter_enabled`|[NGINX Log Exporter](configuring-playbook-prometheus-nginxlog.md) is an addon of sorts to expose NGINX logs to Prometheus.
-`matrix_grafana_enabled`|[Grafana](https://grafana.com/) is the visual component. It shows (on the `stats.<your-domain>` subdomain) the dashboards with the graphs that we're interested in
-`matrix_grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
-`matrix_grafana_default_admin_user`<br>`matrix_grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. If you feel this is insecure and you want to change it beforehand, you can do that here
+`grafana_enabled`|[Grafana](https://grafana.com/) is the visual component. It shows (on the `stats.<your-domain>` subdomain) the dashboards with the graphs that we're interested in
+`grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
+`grafana_default_admin_user`<br>`grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. If you feel this is insecure and you want to change it beforehand, you can do that here
 
 
 ## Security and privacy

@@ -1,3 +1,14 @@
+# 2023-02-15
+
+## The matrix-grafana role lives independently now
+
+**TLDR**: the `matrix-grafana` role is now included from another repository. Some variables have been renamed. All functionality remains intact.
+
+The `matrix-grafana` role (which configures [Grafana](docs/configuring-playbook-prometheus-grafana.md)) has been extracted from the playbook and now lives in its [own repository](https://gitlab.com/etke.cc/roles/grafana). This makes it possible to easily use it in other Ansible playbooks.
+
+You need to **update you roles** (`just roles` or `make roles`) regardless of whether you're enabling Grafana or not. If you're making use of Grafana via this playbook, you will need to update variable references in your `vars.yml` file (`matrix_grafana_` -> `grafana_`).
+
+
 # 2023-02-13
 
 ## The matrix-backup-borg role lives independently now

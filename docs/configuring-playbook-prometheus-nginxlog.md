@@ -15,13 +15,13 @@ matrix_prometheus_nginxlog_exporter_enabled: true
 matrix_prometheus_enabled: true
 
 # optional for visualization
-matrix_grafana_enabled: true
+grafana_enabled: true
 ```
 
 x | Prerequisites | Variable | Description
 |:--:|:--:|:--:|:--|
 **REQUIRED** | `matrix-prometheus`| `matrix_prometheus_enabled`|[Prometheus](https://prometheus.io) is a time series database. It holds all the data we're going to talk about.
-_Optional_ | [`matrix-grafana`](configuring-playbook-prometheus-grafana.md) | [`matrix_grafana_enabled`](configuring-playbook-prometheus-grafana.md)|[Grafana](https://grafana.com) is the visual component. It shows (on the `stats.<your-domain>` subdomain) graphs that we're interested in. When enabled the `NGINX PROXY` dashboard is automatically added.
+_Optional_ | [`matrix-grafana`](configuring-playbook-prometheus-grafana.md) | [`grafana_enabled`](configuring-playbook-prometheus-grafana.md)|[Grafana](https://grafana.com) is the visual component. It shows (on the `stats.<your-domain>` subdomain) graphs that we're interested in. When enabled the `NGINX PROXY` dashboard is automatically added.
 
 ## Docker Image Compatibility
 

@@ -306,7 +306,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-etherpad.service', 'priority': 4000, 'groups': ['matrix', 'etherpad']}] if matrix_etherpad_enabled else [])
     +
-    ([{'name': 'matrix-grafana.service', 'priority': 4000, 'groups': ['matrix', 'monitoring', 'grafana']}] if matrix_grafana_enabled else [])
+    ([{'name': (grafana_identifier + '.service'), 'priority': 4000, 'groups': ['matrix', 'monitoring', 'grafana']}] if grafana_enabled else [])
     +
     ([{'name': 'matrix-jitsi-web.service', 'priority': 4200, 'groups': ['matrix', 'jitsi', 'jitsi-web']}] if matrix_jitsi_enabled else [])
     +
@@ -2389,7 +2389,7 @@ matrix_nginx_proxy_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled }}"
 matrix_nginx_proxy_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
 matrix_nginx_proxy_proxy_jitsi_manage_wellknown: "{{ matrix_jitsi_require_well_known }}"
 
-matrix_nginx_proxy_proxy_grafana_enabled: "{{ matrix_grafana_enabled }}"
+matrix_nginx_proxy_proxy_grafana_enabled: "{{ grafana_enabled }}"
 matrix_nginx_proxy_proxy_sygnal_enabled: "{{ matrix_sygnal_enabled }}"
 matrix_nginx_proxy_proxy_ntfy_enabled: "{{ matrix_ntfy_enabled }}"
 
@@ -2403,7 +2403,6 @@ matrix_nginx_proxy_container_labels_traefik_proxy_dimension_enabled: "{{ matrix_
 matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_enabled: "{{ matrix_etherpad_enabled and matrix_etherpad_mode == 'standalone' }}"
 matrix_nginx_proxy_container_labels_traefik_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled }}"
 matrix_nginx_proxy_container_labels_traefik_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
-matrix_nginx_proxy_container_labels_traefik_proxy_grafana_enabled: "{{ matrix_grafana_enabled }}"
 matrix_nginx_proxy_container_labels_traefik_proxy_sygnal_enabled: "{{ matrix_sygnal_enabled }}"
 matrix_nginx_proxy_container_labels_traefik_proxy_ntfy_enabled: "{{ matrix_ntfy_enabled }}"
 
@@ -2481,7 +2480,7 @@ matrix_nginx_proxy_systemd_wanted_services_list: |
     +
     (['matrix-client-hydrogen.service'] if matrix_client_hydrogen_enabled else [])
     +
-    (['matrix-grafana.service'] if matrix_grafana_enabled else [])
+    ([(grafana_idenifier + '.service')] if grafana_enabled else [])
     +
     (['matrix-dimension.service'] if matrix_dimension_enabled else [])
     +
@@ -2520,7 +2519,7 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     +
     ([matrix_server_fqn_jitsi] if matrix_jitsi_enabled else [])
     +
-    ([matrix_server_fqn_grafana] if matrix_grafana_enabled else [])
+    ([matrix_server_fqn_grafana] if grafana_enabled else [])
     +
     ([matrix_server_fqn_sygnal] if matrix_sygnal_enabled else [])
     +
@@ -2938,7 +2937,7 @@ matrix_client_element_container_additional_networks: "{{ [matrix_playbook_revers
 
 matrix_client_element_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_client_element_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_client_element_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary if devture_traefik_enabled else '' }}"
+matrix_client_element_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 
 matrix_client_element_default_hs_url: "{{ matrix_homeserver_url }}"
 matrix_client_element_default_is_url: "{{ matrix_identity_server_url }}"
@@ -2991,7 +2990,7 @@ matrix_client_hydrogen_container_additional_networks: "{{ [matrix_playbook_rever
 
 matrix_client_hydrogen_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_client_hydrogen_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_client_hydrogen_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary if devture_traefik_enabled else '' }}"
+matrix_client_hydrogen_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 
 matrix_client_hydrogen_default_hs_url: "{{ matrix_homeserver_url }}"
 
@@ -3024,7 +3023,7 @@ matrix_client_cinny_container_additional_networks: "{{ [matrix_playbook_reverse_
 
 matrix_client_cinny_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_client_cinny_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_client_cinny_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary if devture_traefik_enabled else '' }}"
+matrix_client_cinny_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 
 matrix_client_cinny_default_hs_url: "{{ matrix_homeserver_url }}"
 
@@ -3192,7 +3191,7 @@ matrix_synapse_admin_container_additional_networks: "{{ [matrix_playbook_reverse
 
 matrix_synapse_admin_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_synapse_admin_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_synapse_admin_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary if devture_traefik_enabled else '' }}"
+matrix_synapse_admin_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 
 ######################################################################
 #
@@ -3329,18 +3328,52 @@ matrix_prometheus_scraper_nginxlog_server_port: "{{ (matrix_prometheus_nginxlog_
 
 ######################################################################
 #
-# matrix-grafana
+# etke/grafana
 #
 ######################################################################
 
-matrix_grafana_enabled: false
+grafana_enabled: false
+
+grafana_identifier: matrix-grafana
+
+grafana_uid: "{{ matrix_user_uid }}"
+grafana_gid: "{{ matrix_user_gid }}"
+
+grafana_hostname: "{{ matrix_server_fqn_grafana }}"
+
+grafana_base_path: "{{ matrix_base_data_path }}/grafana"
+
+grafana_container_network: "{{ matrix_nginx_proxy_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else grafana_identifier }}"
+
+grafana_container_additional_networks: |
+  {{
+    (
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
+      +
+      ([matrix_prometheus_container_network] if matrix_prometheus_enabled and matrix_prometheus_container_network != grafana_container_network else [])
+    ) | unique
+  }}
+
+grafana_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
+grafana_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+grafana_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Grafana over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # Grafana's HTTP port to the local host.
-matrix_grafana_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '3000') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+grafana_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '3000') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
-matrix_grafana_dashboard_download_urls: |
+grafana_provisioning_datasources: |
+  {{
+    ([{
+      'name': (matrix_server_fqn_matrix + ' - Prometheus'),
+      'type': 'prometheus',
+      'access': 'proxy',
+      'url': 'http://matrix-prometheus:9090',
+    }] if matrix_prometheus_enabled else [])
+  }}
+
+grafana_dashboard_download_urls: |
   {{
     (matrix_synapse_grafana_dashboard_urls if matrix_homeserver_implementation == 'synapse' and matrix_synapse_metrics_enabled else [])
     +
@@ -3351,18 +3384,18 @@ matrix_grafana_dashboard_download_urls: |
     (matrix_prometheus_nginxlog_exporter_dashboard_urls if matrix_prometheus_nginxlog_exporter_enabled else [])
   }}
 
-matrix_grafana_default_home_dashboard_path: |-
+grafana_default_home_dashboard_path: |-
   {{
     {
-      'synapse': ('/etc/grafana/dashboards/synapse.json' if matrix_synapse_metrics_enabled else '/etc/grafana/dashboards/node-exporter-full.json'),
-      'dendrite': '/etc/grafana/dashboards/node-exporter-full.json',
-      'conduit': '/etc/grafana/dashboards/node-exporter-full.json',
+      'synapse': ('/etc/grafana/dashboards/synapse.json' if matrix_synapse_metrics_enabled and matrix_synapse_metrics_enabled else ('/etc/grafana/dashboards/node-exporter-full.json' if prometheus_node_exporter_enabled else '')),
+      'dendrite': ('/etc/grafana/dashboards/node-exporter-full.json' if prometheus_node_exporter_enabled else ''),
+      'conduit': ('/etc/grafana/dashboards/node-exporter-full.json' if prometheus_node_exporter_enabled else ''),
     }[matrix_homeserver_implementation]
   }}
 
 ######################################################################
 #
-# /matrix-grafana
+# /etke/grafana
 #
 ######################################################################
 
