@@ -8,8 +8,6 @@ The playbook can install and configure [mautrix-slack](https://github.com/mautri
 
 See the project's [documentation](https://docs.mau.fi/bridges/go/slack/index.html) to learn what it does and why it might be useful to you.
 
-Note that as of Oct 2022, support for multiple Matrix users using the bot is incomplete. Different users do not yet share the bridged channels. Everyone gets their own copy.
-
 See the [features and roadmap](https://github.com/mautrix/slack/blob/main/ROADMAP.md) for more information.
 
 
