@@ -22,6 +22,14 @@ matrix_prometheus_systemd_required_services_list: ['docker.service']
 # List of systemd services that matrix-prometheus.service wants
 matrix_prometheus_systemd_wanted_services_list: []
 
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_prometheus_container_network: ''
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_prometheus_container_additional_networks: []
+
 # Controls whether the matrix-prometheus container exposes its HTTP port (tcp/9090 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9090"), or empty string to not expose.

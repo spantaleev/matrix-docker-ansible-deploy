@@ -45,6 +45,11 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
+- name: Ensure Prometheus container network is created
+  community.general.docker_network:
+    name: "{{ matrix_prometheus_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-prometheus.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-prometheus.service.j2"
