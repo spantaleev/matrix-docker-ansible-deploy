@@ -74,13 +74,15 @@ Unless we have some regression, **existing users should be able to update their 
 
 #### How do I explicitly switch to Traefik right now?
 
-**Users who want to migrate to Traefik** today, can do so by using configuration like this:
+**Users who wish to migrate to Traefik** today, can do so by **adding** this to their configuration:
 
 ```yaml
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
 
 devture_traefik_ssl_email_address: YOUR_EMAIL_ADDRESS
 ```
+
+You may still need to keep certain old `matrix_nginx_proxy_*` variables (like `matrix_nginx_proxy_base_domain_serving_enabled`), even when using Traefik. For now, we recommend keeping all `matrix_nginx_proxy_*` variables just in case. In the future, reliance on `matrix-nginx-proxy` will be removed.
 
 Switching to Traefik will obtain new SSL certificates from Let's Encrypt (stored in `/devture-traefik/ssl/acme.json`). **The switch is reversible**. You can always go back to `playbook-managed-nginx` if Traefik is causing you trouble.
 
