@@ -22,12 +22,13 @@ You need to **update you roles** (`just roles` or `make roles`) regardless of wh
 
 # 2023-02-12
 
-## Reverse-proxy configuration changes and initial Traefik support
+## (Backward Compatibility) Reverse-proxy configuration changes and initial Traefik support
 
 **TLDR**:
 
 - there's a new `matrix_playbook_reverse_proxy_type` variable (see [roles/custom/matrix-base/defaults/main.yml](roles/custom/matrix-base/defaults/main.yml)), which lets you tell the playbook what reverse-proxy setup you'd like to have. This makes it easier for people who want to do reverse-proxying in other ways.
-- the default reverse-proxy (`matrix_playbook_reverse_proxy_type`) is still `playbook-managed-nginx` (via `matrix-nginx-proxy`), for now. **Existing users should not observe any changes** and can stay on this for now.
+- the default reverse-proxy (`matrix_playbook_reverse_proxy_type`) is still `playbook-managed-nginx` (via `matrix-nginx-proxy`), for now. **Existing `matrix-nginx-proxy` users should not observe any changes** and can stay on this for now.
+- **Users who use their [own other webserver](docs/configuring-playbook-own-webserver.md) (e.g. Apache, etc.) need to change** `matrix_playbook_reverse_proxy_type` to something like `other-on-same-host`, `other-on-another-host` or `other-nginx-non-container`
 - we now have **optional [Traefik](https://traefik.io/) support**, so you could easily host Matrix and other Traefik-native services in containers on the same server. Traefik support is still experimental (albeit, good enough) and will improve over time. It does work, but certain esoteric features may not be there yet.
 - **Traefik will become the default reverse-proxy in the near future**. `matrix-nginx-proxy` will either remain as an option, or be completely removed to simplify the playbook
 
@@ -81,7 +82,9 @@ Traefik does not lock important functionality we'd like to use into [plus packag
 
 `matrix_playbook_reverse_proxy_type` still defaults to a value of `playbook-managed-nginx`.
 
-Unless we have some regression, **existing users should be able to update their Matrix server and not observe any changes**. Their setup should still remain on nginx and everything should still work as expected.
+Unless we have some regression, **existing `matrix-nginx-proxy` users should be able to update their Matrix server and not observe any changes**. Their setup should still remain on nginx and everything should still work as expected.
+
+**Users using [their own webservers](docs/configuring-playbook-own-webserver.md) will need to change `matrix_playbook_reverse_proxy_type`** to something like `other-on-same-host`, `other-on-another-host` or `other-nginx-non-container`. Previously, they could toggle `matrix_nginx_proxy_enabled` to `false`, and that made the playbook automatically expose services locally. Currently, we only do this if you change the reverse-proxy type to `other-on-same-host`, `other-on-another-host` or `other-nginx-non-container`.
 
 #### How do I explicitly switch to Traefik right now?
 
