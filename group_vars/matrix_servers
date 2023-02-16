@@ -2051,7 +2051,7 @@ matrix_coturn_container_additional_volumes: |
          'dst': '/privkey.pem',
          'options': 'ro',
        },
-      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else []
+      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] and matrix_coturn_tls_enabled else []
     )
     +
     (
@@ -2066,7 +2066,7 @@ matrix_coturn_container_additional_volumes: |
          'dst': '/privatekey.key',
          'options': 'ro',
        },
-      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and matrix_playbook_traefik_certs_dumper_role_enabled else []
+      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and matrix_playbook_traefik_certs_dumper_role_enabled and matrix_coturn_tls_enabled else []
     )
   }}
 
@@ -2074,7 +2074,7 @@ matrix_coturn_systemd_required_services_list: |
   {{
     ['docker.service']
     +
-    ([devture_traefik_certs_dumper_identifier + '-wait-for-domain@' + matrix_server_fqn_matrix + '.service'] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and matrix_playbook_traefik_certs_dumper_role_enabled else [])
+    ([devture_traefik_certs_dumper_identifier + '-wait-for-domain@' + matrix_server_fqn_matrix + '.service'] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and matrix_playbook_traefik_certs_dumper_role_enabled and matrix_coturn_tls_enabled else [])
   }}
 
 ######################################################################
