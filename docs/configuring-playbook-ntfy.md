@@ -15,17 +15,20 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 
 ```yaml
 # Enabling it is the only required setting
-matrix_ntfy_enabled: true
+ntfy_enabled: true
 
-# Some other options
-matrix_server_fqn_ntfy: "ntfy.{{ matrix_domain }}"
-matrix_ntfy_configuration_extension_yaml: |
-  log_level: DEBUG
+# This is the default hostname.
+# Uncomment the line below and change it, if you'd like.
+# matrix_server_fqn_ntfy: "ntfy.{{ matrix_domain }}"
+
+# Uncomment and change to inject additional configuration options.
+# ntfy_configuration_extension_yaml: |
+#   log_level: DEBUG
 ```
 
-For a more complete list of variables that you could override, see `roles/custom/matrix-ntfy/defaults/main.yml`.
+For a more complete list of variables that you could override, see the [`defaults/main.yml` file](https://gitlab.com/etke.cc/roles/ntfy/-/blob/main/defaults/main.yml) of the ntfy Ansible role.
 
-For a complete list of ntfy config options that you could put in `matrix_ntfy_configuration_extension_yaml`, see the [ntfy config documentation](https://ntfy.sh/docs/config/#config-options).
+For a complete list of ntfy config options that you could put in `ntfy_configuration_extension_yaml`, see the [ntfy config documentation](https://ntfy.sh/docs/config/#config-options).
 
 
 ## Installing

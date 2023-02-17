@@ -109,18 +109,6 @@ traefik.http.routers.matrix-nginx-proxy-sygnal.entrypoints={{ matrix_nginx_proxy
 {% endif %}
 
 
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_ntfy_enabled %}
-# ntfy
-traefik.http.routers.matrix-nginx-proxy-ntfy.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_ntfy_rule }}
-traefik.http.routers.matrix-nginx-proxy-ntfy.service=matrix-nginx-proxy-web
-traefik.http.routers.matrix-nginx-proxy-ntfy.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_ntfy_tls | to_json }}
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_ntfy_tls %}
-traefik.http.routers.matrix-nginx-proxy-ntfy.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
-{% endif %}
-traefik.http.routers.matrix-nginx-proxy-ntfy.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
-{% endif %}
-
-
 traefik.http.services.matrix-nginx-proxy-web.loadbalancer.server.port=8080
 
 {% if matrix_nginx_proxy_proxy_matrix_federation_api_enabled %}
