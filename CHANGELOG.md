@@ -1,5 +1,13 @@
 # 2023-02-17
 
+## The matrix-redis role lives independently now
+
+**TLDR**: the `matrix-redis` role is now included from another repository. Some variables have been renamed. All functionality remains intact.
+
+The `matrix-redis` role (which configures [Redis](https://redis.io/)) has been extracted from the playbook and now lives in its [own repository](https://gitlab.com/etke.cc/roles/redis). This makes it possible to easily use it in other Ansible playbooks.
+
+You need to **update you roles** (`just roles` or `make roles`) regardless of whether you're enabling Ntfy or not. If you're making use of Ntfy via this playbook, you will need to update variable references in your `vars.yml` file (`matrix_redis_` -> `redis_`).
+
 ## The matrix-ntfy role lives independently now
 
 **TLDR**: the `matrix-ntfy` role is now included from another repository. Some variables have been renamed. All functionality remains intact.
