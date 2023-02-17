@@ -82,7 +82,7 @@
       when: "matrix_playbook_migration_matrix_prometheus_postgres_exporter_migration_vars | length > 0"
 
 - when: matrix_playbook_migration_matrix_backup_borg_migration_validation_enabled | bool
-  block:ntfy
+  block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_backup_borg_migration_vars: |-
           {{ vars | dict2items | selectattr('key', 'match', 'matrix_backup_borg_.*') | list | items2dict }}
