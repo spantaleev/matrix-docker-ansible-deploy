@@ -76,10 +76,11 @@
       community.docker.docker_image:
         name: "{{ matrix_synapse_docker_image_customized }}"
         source: build
+        force_source: "{{ matrix_synapse_docker_image_customized_force_source }}"
         build:
           dockerfile: Dockerfile
           path: "{{ matrix_synapse_customized_docker_src_files_path }}"
-          pull: true
+          nocache: "{{ matrix_synapse_docker_image_customized_build_nocache }}"
 
 - name: Check if a Synapse signing key exists
   ansible.builtin.stat:

@@ -21,11 +21,40 @@ matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/s
 # - `matrix_synapse_container_image_customizations_dockerfile_body_custom`
 # - `matrix_synapse_docker_image_customized`
 # - `matrix_synapse_docker_image_final`
-matrix_synapse_container_image_customizations_enabled: "{{ matrix_synapse_ext_synapse_s3_storage_provider_enabled }}"
+matrix_synapse_container_image_customizations_enabled: |-
+  {{
+    matrix_synapse_container_image_customizations_s3_storage_provider_installation_enabled
+    or
+    matrix_synapse_container_image_customizations_templates_enabled
+  }}
 
 # Controls whether custom build steps will be added to the Dockerfile for installing s3-storage-provider.
 # The version that will be installed is specified in `matrix_synapse_ext_synapse_s3_storage_provider_version`.
 matrix_synapse_container_image_customizations_s3_storage_provider_installation_enabled: "{{ matrix_synapse_ext_synapse_s3_storage_provider_enabled }}"
+
+# Controls whether custom build steps will be added to the Dockerfile for customizing the email templates used by Synapse.
+#
+# Example usage:
+#
+# ```yml
+# matrix_synapse_container_image_customizations_templates_enabled: true
+# # The templates are expected to be in a `templates/` subdirectory in
+# matrix_synapse_container_image_customizations_templates_in_container_template_files_relative_path: templates/
+# matrix_synapse_container_image_customizations_templates_git_repository_url: git@github.com:organization/repository.git
+# matrix_synapse_container_image_customizations_templates_git_repository_branch: main
+# matrix_synapse_container_image_customizations_templates_git_repository_keyscan_enabled: true
+# matrix_synapse_container_image_customizations_templates_git_repository_keyscan_hostname: github.com
+# ```
+#
+# See: https://github.com/matrix-org/synapse/blob/develop/docs/templates.md
+matrix_synapse_container_image_customizations_templates_enabled: false
+matrix_synapse_container_image_customizations_templates_in_container_base_path: /custom-templates
+matrix_synapse_container_image_customizations_templates_in_container_template_files_relative_path: ''
+matrix_synapse_container_image_customizations_templates_in_container_full_path: "{{ matrix_synapse_container_image_customizations_templates_in_container_base_path }}/{{ matrix_synapse_container_image_customizations_templates_in_container_template_files_relative_path }}"
+matrix_synapse_container_image_customizations_templates_git_repository_url: ''
+matrix_synapse_container_image_customizations_templates_git_repository_branch: main
+matrix_synapse_container_image_customizations_templates_git_repository_keyscan_enabled: false
+matrix_synapse_container_image_customizations_templates_git_repository_keyscan_hostname: ''
 
 # matrix_synapse_container_image_customizations_dockerfile_body contains your custom Dockerfile steps
 # for building your customized Synapse image based on the original (upstream) image (`matrix_synapse_docker_image`).
@@ -48,6 +77,15 @@ matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith
 # which adds various customizations on top of the original (upstream) Synapse image.
 # This image will be based on the upstream `matrix_synapse_docker_image` image, only if `matrix_synapse_container_image_customizations_enabled: true`.
 matrix_synapse_docker_image_customized: "localhost/matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}-customized"
+
+# Controls whether the customized image (`matrix_synapse_docker_image_customized`) is to be force-built without layer caching enabled.
+# This is useful if you've enabled customizations (e.g. `matrix_synapse_container_image_customizations_templates_enabled`),
+# which clone some branch of some repository, and you'd like for each Ansible run to pull new revisions from that branch.
+matrix_synapse_docker_image_customized_build_nocache: false
+
+# Controls whether the customized image (`matrix_synapse_docker_image_customized`) is to be built, even if it already exists.
+# Related to: matrix_synapse_docker_image_customized_build_nocache
+matrix_synapse_docker_image_customized_force_source: "{{ matrix_synapse_docker_image_customized_build_nocache }}"
 
 # matrix_synapse_docker_image_final holds the name of the Synapse image to run depending on whether or not customizations are enabled.
 matrix_synapse_docker_image_final: "{{ matrix_synapse_docker_image_customized if matrix_synapse_container_image_customizations_enabled else matrix_synapse_docker_image }} "
@@ -229,6 +267,13 @@ matrix_synapse_rc_federation:
   concurrent: 3
 
 matrix_synapse_federation_rr_transactions_per_room_per_second: 50
+
+# Controls the templates directory setting.
+#
+# See:
+# - `matrix_synapse_container_image_customizations_templates_enabled`
+# - https://github.com/matrix-org/synapse/blob/develop/docs/templates.md
+matrix_synapse_templates_custom_template_directory: "{{ matrix_synapse_container_image_customizations_templates_in_container_full_path if matrix_synapse_container_image_customizations_templates_enabled else '' }}"
 
 # Controls whether the TLS federation listener is enabled (tcp/8448).
 # Only makes sense if federation is enabled (`matrix_synapse_federation_enabled`).

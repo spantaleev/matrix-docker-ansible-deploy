@@ -76,3 +76,22 @@
   when: "item.old in matrix_synapse_configuration_extension"
   with_items:
     - {'old': 'federation_ip_range_blacklist', 'new': 'ip_range_blacklist'}
+
+- when: matrix_synapse_container_image_customizations_templates_enabled | bool
+  block:
+    - name: Fail if required `matrix_synapse_container_image_customizations_templates_*` settings not defined
+      ansible.builtin.fail:
+        msg: >-
+          You need to define a required configuration setting (`{{ item }}`) when enabling `matrix_synapse_container_image_customizations_templates_enabled`.
+      when: "vars[item] == ''"
+      with_items:
+        - matrix_synapse_container_image_customizations_templates_git_repository_url
+        - matrix_synapse_container_image_customizations_templates_git_repository_branch
+
+    - name: Fail if required `matrix_synapse_container_image_customizations_templates_git_repository_keyscan_*` settings not defined
+      ansible.builtin.fail:
+        msg: >-
+          You need to define a required configuration setting (`{{ item }}`) when enabling `matrix_synapse_container_image_customizations_templates_git_repository_keyscan`.
+      when: "matrix_synapse_container_image_customizations_templates_git_repository_keyscan_enabled | bool and vars[item] == ''"
+      with_items:
+        - matrix_synapse_container_image_customizations_templates_git_repository_keyscan_hostname

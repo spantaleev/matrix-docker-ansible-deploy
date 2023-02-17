@@ -1,5 +1,11 @@
 # 2023-02-17
 
+## Synapse templates customization support
+
+The playbook can now help you customize Synapse's templates.
+
+Additional details are available in the [Customizing templates](docs/configuring-playbook-synapse.md#customizing-templates) section of our Synapse documentation.
+
 ## The matrix-redis role lives independently now
 
 **TLDR**: the `matrix-redis` role is now included from another repository. Some variables have been renamed. All functionality remains intact.

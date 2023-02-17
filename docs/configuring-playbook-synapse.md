@@ -80,3 +80,42 @@ matrix_synapse_configuration_extension_yaml: |
       backchannel_logout_enabled: true # Optional
 ```
 
+
+## Customizing templates
+
+[Templates](https://github.com/matrix-org/synapse/blob/develop/docs/templates.md) are used by Synapse for showing **certain web pages** handled by the server, as well as for **email notifications**.
+
+This playbook allows you to customize the default templates (see the [`synapse/res/templates` directory](https://github.com/matrix-org/synapse/tree/develop/synapse/res/templates)).
+
+If template customization is enabled, the playbook will build a custom container image based on the official one.
+
+Your custom templates need to live in a public or private git repository. This repository will be cloned during Synapse image customization (during the playbook run).
+
+To enable template customizations, use a configuration (`inventory/host_vars/matrix.DOMAIN/vars.yml`) like this:
+
+```yaml
+# If you'd like to ensure that the customized image is built each time the playbook runs, enable this.
+# Otherwise, the customized image will only be rebuilt whenever the Synapse version changes (once every ~2 weeks).
+# matrix_synapse_docker_image_customized_build_nocache: true
+
+matrix_synapse_container_image_customizations_templates_enabled: true
+
+# Our templates live in a templates/ directory within the repository.
+# If they're at the root path, delete this line.
+matrix_synapse_container_image_customizations_templates_in_container_template_files_relative_path: templates
+
+matrix_synapse_container_image_customizations_templates_git_repository_url: git@github.com:organization/repository.git
+matrix_synapse_container_image_customizations_templates_git_repository_branch: main
+
+matrix_synapse_container_image_customizations_templates_git_repository_keyscan_enabled: true
+matrix_synapse_container_image_customizations_templates_git_repository_keyscan_hostname: github.com
+
+# If your git repository is public, do not define the private key (remove the variable).
+matrix_synapse_container_image_customizations_templates_git_repository_ssh_private_key: |
+  -----BEGIN OPENSSH PRIVATE KEY-----
+  ....
+  -----END OPENSSH PRIVATE KEY-----
+```
+
+As mentioned in Synapse's Templates documentation, Synapse will fall back to its own templates if a template is not found in that directory.
+Due to this, it's recommended to only store and maintain template files in your repository if you need to make custom changes. Other files (which you don't need to change), should not be duplicated, so that you don't need to worry about getting out-of-sync with the original Synapse templates.
