@@ -148,7 +148,6 @@ matrix_nginx_proxy_container_federation_host_bind_port: '127.0.0.1:8449'
 **For Traefik** fronted by another reverse-proxy, you would need some configuration like this:
 
 ```yaml
-# playbook-managed-proxy is the default right now, so we can keep this commented out.
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
 
 # Disable the web-secure (port 443) endpoint, which also disables SSL certificate retrieval
