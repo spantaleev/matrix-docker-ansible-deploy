@@ -1,7 +1,7 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_client_hydrogen_url_endpoint_public: "https://{{ matrix_server_fqn_hydrogen }}/config.json"
+    matrix_client_hydrogen_url_endpoint_public: "https://{{ matrix_client_hydrogen_hostname }}{{ matrix_client_hydrogen_path_prefix }}/config.json"
 
 - name: Check Hydrogen
   ansible.builtin.uri:
@@ -16,9 +16,9 @@
 
 - name: Fail if Hydrogen not working
   ansible.builtin.fail:
-    msg: "Failed checking Hydrogen is up at `{{ matrix_server_fqn_hydrogen }}` (checked endpoint: `{{ matrix_client_hydrogen_url_endpoint_public }}`). Is Hydrogen running? Is port 443 open in your firewall? Full error: {{ matrix_client_hydrogen_self_check_result }}"
+    msg: "Failed checking Hydrogen is up at `{{ matrix_client_hydrogen_hostname }}` (checked endpoint: `{{ matrix_client_hydrogen_url_endpoint_public }}`). Is Hydrogen running? Is port 443 open in your firewall? Full error: {{ matrix_client_hydrogen_self_check_result }}"
   when: "matrix_client_hydrogen_self_check_result.failed or 'json' not in matrix_client_hydrogen_self_check_result"
 
 - name: Report working Hydrogen
   ansible.builtin.debug:
-    msg: "Hydrogen at `{{ matrix_server_fqn_hydrogen }}` is working (checked endpoint: `{{ matrix_client_hydrogen_url_endpoint_public }}`)"
+    msg: "Hydrogen at `{{ matrix_client_hydrogen_hostname }}` is working (checked endpoint: `{{ matrix_client_hydrogen_url_endpoint_public }}`)"
