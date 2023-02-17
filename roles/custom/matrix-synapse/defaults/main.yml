@@ -69,6 +69,14 @@ matrix_synapse_container_federation_api_tls_port: 8448
 
 matrix_synapse_container_federation_api_plain_port: 8048
 
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_synapse_container_network: "{{ matrix_docker_network }}"
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_synapse_container_additional_networks: []
+
 # Controls whether the matrix-synapse container exposes the Client/Server API port (tcp/{{ matrix_synapse_container_client_api_port }} in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8008"), or empty string to not expose.
@@ -661,7 +669,7 @@ matrix_synapse_redis_password: ""
 #
 # If Redis is available, we prefer to use that, instead of talking over Synapse's custom replication protocol.
 #
-# matrix_synapse_replication_listener_enabled: "{{ matrix_synapse_workers_enabled and not matrix_redis_enabled }}"
+# matrix_synapse_replication_listener_enabled: "{{ matrix_synapse_workers_enabled and not redis_enabled }}"
 # We force-enable this listener for now until we debug why communication via Redis fails.
 matrix_synapse_replication_listener_enabled: true
 

@@ -30,7 +30,9 @@ ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_s
 ExecStartPre={{ matrix_host_command_sleep }} 3
 {% endif %}
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-synapse \
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-synapse \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
@@ -63,8 +65,15 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			{{ matrix_synapse_docker_image_final }} \
 			run -m synapse.app.homeserver -c /data/homeserver.yaml
 
+{% for network in matrix_synapse_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-synapse
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-synapse
+
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-synapse 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-synapse 2>/dev/null || true'
+
 ExecReload={{ devture_systemd_docker_base_host_command_docker }} exec matrix-synapse /bin/sh -c 'kill -HUP 1'
 Restart=always
 RestartSec=30
