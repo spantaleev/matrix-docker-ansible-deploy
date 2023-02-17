@@ -27,8 +27,8 @@
     path: "{{ matrix_s3_media_store_path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_synapse_uid }}"
+    group: "{{ matrix_synapse_gid }}"
   when: "not local_path_matrix_s3_media_store_path_stat.failed and not local_path_matrix_s3_media_store_path_stat.stat.exists"
 
 - name: Ensure goofys environment variables file created

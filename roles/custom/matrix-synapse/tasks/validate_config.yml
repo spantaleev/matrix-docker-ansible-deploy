@@ -6,11 +6,15 @@
       You need to define a required configuration setting (`{{ item }}`) for using Synapse.
   when: "vars[item] == ''"
   with_items:
-    - "matrix_synapse_macaroon_secret_key"
-    - "matrix_synapse_database_host"
-    - "matrix_synapse_database_user"
-    - "matrix_synapse_database_password"
-    - "matrix_synapse_database_database"
+    - matrix_synapse_username
+    - matrix_synapse_uid
+    - matrix_synapse_gid
+    - matrix_synapse_container_network
+    - matrix_synapse_macaroon_secret_key
+    - matrix_synapse_database_host
+    - matrix_synapse_database_user
+    - matrix_synapse_database_password
+    - matrix_synapse_database_database
 
 - name: Fail if asking for more than 1 instance of single-instance workers
   ansible.builtin.fail:

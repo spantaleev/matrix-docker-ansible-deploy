@@ -14,8 +14,8 @@
     path: "{{ matrix_synapse_media_store_path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_synapse_uid }}"
+    group: "{{ matrix_synapse_gid }}"
   when: "not local_path_media_store_stat.failed and not local_path_media_store_stat.stat.exists"
 
 - when: "matrix_synapse_container_image_self_build | bool"
@@ -27,7 +27,7 @@
         version: "{{ matrix_synapse_docker_image.split(':')[1] }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_synapse_username }}"
       register: matrix_synapse_git_pull_results
 
     - name: Check if Synapse Docker image exists
@@ -68,8 +68,8 @@
       ansible.builtin.template:
         src: "{{ role_path }}/templates/synapse/customizations/Dockerfile.j2"
         dest: "{{ matrix_synapse_customized_docker_src_files_path }}/Dockerfile"
-        owner: "{{ matrix_user_username }}"
-        group: "{{ matrix_user_groupname }}"
+        owner: "{{ matrix_synapse_uid }}"
+        group: "{{ matrix_synapse_gid }}"
         mode: 0640
 
     - name: Ensure customized Docker image for Synapse is built
@@ -98,7 +98,7 @@
     docker run
     --rm
     --name=matrix-config
-    --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+    --user={{ matrix_synapse_uid }}:{{ matrix_synapse_gid }}
     --cap-drop=ALL
     --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data
     -e SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
@@ -113,8 +113,8 @@
     content: "{{ matrix_synapse_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_synapse_config_dir_path }}/homeserver.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_synapse_uid }}"
+    group: "{{ matrix_synapse_gid }}"
 
 - name: Ensure Synapse log config installed
   ansible.builtin.template:
@@ -143,7 +143,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/synapse/prometheus/external_prometheus.yml.example.j2"
     dest: "{{ matrix_synapse_base_path }}/external_prometheus.yml.example"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_synapse_uid }}"
+    group: "{{ matrix_synapse_gid }}"
     mode: 0644
   when: matrix_synapse_metrics_proxying_enabled | bool

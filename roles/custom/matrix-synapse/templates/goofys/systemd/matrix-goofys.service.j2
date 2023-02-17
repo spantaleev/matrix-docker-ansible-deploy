@@ -13,7 +13,7 @@ ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} rm %n
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name %n \
 			--log-driver=none \
-			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--user={{ matrix_synapse_uid }}:{{ matrix_synapse_gid }} \
 			--mount type=bind,src=/etc/passwd,dst=/etc/passwd,ro \
 			--mount type=bind,src=/etc/group,dst=/etc/group,ro \
 			--mount type=bind,src={{ matrix_s3_media_store_path }},dst=/s3,bind-propagation=shared \
