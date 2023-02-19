@@ -20,7 +20,7 @@ To switch to Traefik now, use configuration like this:
 ```yaml
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
 
-devture_traefik_ssl_email_address: YOUR_EMAIL_ADDRESS
+devture_traefik_config_certificatesResolvers_acme_email: YOUR_EMAIL_ADDRESS
 ```
 
 This will install Traefik in the place of `matrix-nginx-proxy`. Traefik will manage SSL certificates for all services seamlessly.
