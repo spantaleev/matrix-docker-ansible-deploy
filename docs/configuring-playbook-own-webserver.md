@@ -127,6 +127,9 @@ This is the recommended way for using another reverse-proxy, because the integra
 # playbook-managed-proxy is the default right now, so we can keep this commented out.
 # matrix_playbook_reverse_proxy_type: playbook-managed-nginx
 
+# Ensure that public urls use https
+matrix_playbook_ssl_enabled: true
+
 # Disable SSL certificate retrieval
 matrix_ssl_retrieval_method: none
 
@@ -149,6 +152,9 @@ matrix_nginx_proxy_container_federation_host_bind_port: '127.0.0.1:8449'
 
 ```yaml
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
+
+# Ensure that public urls use https
+matrix_playbook_ssl_enabled: true
 
 # Disable the web-secure (port 443) endpoint, which also disables SSL certificate retrieval
 devture_traefik_config_entrypoint_web_secure_enabled: false
