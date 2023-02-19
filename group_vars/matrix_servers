@@ -455,7 +455,7 @@ matrix_appservice_discord_enabled: false
 # Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-discord over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # matrix-appservice-discord's client-server port to the local host.
-matrix_appservice_discord_container_http_host_bind_port: "{{ matrix_playbook_service_host_bind_interface_prefix + ':9005' if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+matrix_appservice_discord_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9005') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 # If the homeserver disables presence, it's likely better (less wasteful) to also disable presence on the bridge side.
 matrix_appservice_discord_bridge_disablePresence: "{{ not matrix_synapse_presence_enabled }}"
@@ -502,7 +502,7 @@ matrix_appservice_webhooks_container_image_self_build: "{{ matrix_architecture !
 # Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-webhooks over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # matrix-appservice-webhooks' client-server port to the local host.
-matrix_appservice_webhooks_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '' ~ matrix_appservice_webhooks_matrix_port) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+matrix_appservice_webhooks_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ matrix_appservice_webhooks_matrix_port) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_appservice_webhooks_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'webhook.as.token', rounds=655555) | to_uuid }}"
 
@@ -541,7 +541,7 @@ matrix_appservice_slack_container_image_self_build: "{{ matrix_architecture not 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-slack over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # matrix-appservice-slack's client-server port to the local host.
-matrix_appservice_slack_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix + ':' ~ matrix_appservice_slack_slack_port) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+matrix_appservice_slack_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ matrix_appservice_slack_slack_port) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_appservice_slack_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'slack.as.token', rounds=655555) | to_uuid }}"
 
