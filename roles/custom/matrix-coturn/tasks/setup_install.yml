@@ -66,6 +66,7 @@
   community.docker.docker_network:
     name: "{{ matrix_coturn_docker_network }}"
     driver: bridge
+  when: "'host' not in matrix_coturn_docker_network"
 
 - name: Ensure matrix-coturn.service installed
   ansible.builtin.template:
