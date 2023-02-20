@@ -1,0 +1,38 @@
+---
+# rageshake is a issue submission service from matrix.org
+# Project source code URL: https://github.com/matrix-org/rageshake/
+
+matrix_rageshake_enabled: false
+
+matrix_rageshake_container_image_self_build: false
+matrix_rageshake_docker_repo: "https://github.com/matrix-org/rageshake/"
+matrix_rageshake_docker_repo_version: "{{ 'master' if matrix_rageshake_version == 'master' else matrix_rageshake_version }}"
+matrix_rageshake_docker_src_files_path: "{{ matrix_base_data_path }}/Dockerfile"
+
+matrix_rageshake_version: "master"
+matrix_rageshake_docker_image: "{{ matrix_rageshake_docker_image_name_prefix }}matrix-org/rageshake:{{ matrix_rageshake_version }}"
+matrix_rageshake_docker_image_name_prefix: "{{ 'localhost/' if matrix_rageshake_container_image_self_build else 'ghcr.io/' }}"
+matrix_rageshake_docker_image_force_pull: "{{ matrix_rageshake_docker_image.endswith(':master') }}"
+
+matrix_rageshake_base_path: "{{ matrix_base_data_path }}/rageshake"
+matrix_rageshake_config_path: "{{ matrix_rageshake_base_path }}/config"
+matrix_rageshake_data_path: "{{ matrix_rageshake_base_path }}/data"
+
+# A list of extra arguments to pass to the container
+matrix_rageshake_container_extra_arguments: []
+
+# List of systemd services that matrix-rageshake.service depends on
+matrix_rageshake_systemd_required_services_list: ["docker.service"]
+
+# List of systemd services that matrix-rageshake.service wants
+matrix_rageshake_systemd_wanted_services_list: []
+
+# Rageshake Settings
+
+# Additional config  to pass to the rageshake.
+# See https://github.com/matrix-org/rageshake/blob/master/rageshake.sample.yaml
+#
+# Example:
+# matrix_rageshake_config: |
+#   github_token: secrettoken
+matrix_rageshake_config: ""

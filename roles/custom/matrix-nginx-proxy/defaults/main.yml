@@ -71,6 +71,11 @@ matrix_nginx_proxy_container_labels_traefik_proxy_dimension_hostname: "{{ matrix
 matrix_nginx_proxy_container_labels_traefik_proxy_dimension_tls: "{{ matrix_nginx_proxy_container_labels_traefik_entrypoints != 'web' }}"
 matrix_nginx_proxy_container_labels_traefik_proxy_dimension_rule: "Host(`{{ matrix_nginx_proxy_container_labels_traefik_proxy_dimension_hostname }}`)"
 
+matrix_nginx_proxy_container_labels_traefik_proxy_rageshake_enabled: false
+matrix_nginx_proxy_container_labels_traefik_proxy_rageshake_hostname: "{{ matrix_server_fqn_rageshake }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_rageshake_tls: "{{ matrix_nginx_proxy_container_labels_traefik_entrypoints != 'web' }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_rageshake_rule: "Host(`{{ matrix_nginx_proxy_container_labels_traefik_proxy_rageshake_hostname }}`)"
+
 matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_enabled: false
 matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_hostname: "{{ matrix_server_fqn_etherpad }}"
 matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_tls: "{{ matrix_nginx_proxy_container_labels_traefik_entrypoints != 'web' }}"
@@ -256,6 +261,10 @@ matrix_nginx_proxy_proxy_matrix_federation_port: 8448
 # Controls whether proxying the dimension domain should be done.
 matrix_nginx_proxy_proxy_dimension_enabled: false
 matrix_nginx_proxy_proxy_dimension_hostname: "{{ matrix_server_fqn_dimension }}"
+
+# Controls whether proxying the rageshake domain should be done.
+matrix_nginx_proxy_proxy_rageshake_enabled: false
+matrix_nginx_proxy_proxy_rageshake_hostname: "{{ matrix_server_fqn_rageshake }}"
 
 # Controls whether proxying the etherpad domain should be done.
 matrix_nginx_proxy_proxy_etherpad_enabled: false
@@ -443,6 +452,9 @@ matrix_nginx_proxy_proxy_buscarron_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to Dimension's server configuration (matrix-dimension.conf).
 matrix_nginx_proxy_proxy_dimension_additional_server_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to Rageshake's server configuration (matrix-rageshake.conf).
+matrix_nginx_proxy_proxy_rageshake_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to etherpad's server configuration (matrix-etherpad.conf).
 matrix_nginx_proxy_proxy_etherpad_additional_server_configuration_blocks: []
