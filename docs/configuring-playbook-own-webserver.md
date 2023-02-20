@@ -185,6 +185,9 @@ If you'll be using `nginx` running on the same machine (not in a container), you
 ```yaml
 matrix_playbook_reverse_proxy_type: other-nginx-non-container
 
+# If you want https configured in /matrix/nginx-proxy/conf.d/
+matrix_nginx_proxy_https_enabled: true
+
 # If you will manage SSL certificates yourself, uncomment the line below
 # matrix_ssl_retrieval_method: none
 
