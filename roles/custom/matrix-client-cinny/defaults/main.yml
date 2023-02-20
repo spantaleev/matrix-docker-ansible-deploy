@@ -95,11 +95,11 @@ matrix_client_cinny_http_header_content_security_policy: frame-ancestors 'self'
 
 # Specifies the value of the `Permission-Policy` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
-matrix_client_cinny_http_header_content_permission_policy: "{{ 'interest-cohort=() always' if matrix_client_cinny_floc_optout_enabled else '' }}"
+matrix_client_cinny_http_header_content_permission_policy: "{{ 'interest-cohort=()' if matrix_client_cinny_floc_optout_enabled else '' }}"
 
 # Specifies the value of the `Strict-Transport-Security` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
-matrix_client_cinny_http_header_strict_transport_security: "{{ '\"max-age=31536000; includeSubDomains; preload\" always' if matrix_client_cinny_hsts_preload_enabled else '\"max-age=31536000; includeSubDomains\" always' }}"
+matrix_client_cinny_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if matrix_client_cinny_hsts_preload_enabled else '' }}"
 
 # Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
 #
