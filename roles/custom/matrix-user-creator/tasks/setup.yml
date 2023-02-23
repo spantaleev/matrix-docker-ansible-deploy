@@ -8,10 +8,6 @@
   # Suppress logging to avoid dumping the credentials to the shell
   no_log: true
 
-- name: Ensure systemd is reloaded before starting the homeserver
-  ansible.builtin.service:
-    daemon_reload: true
-
 - name: Ensure homeserver is started before creating Matrix users
   ansible.builtin.service:
     name: "matrix-{{ matrix_homeserver_implementation }}.service"
