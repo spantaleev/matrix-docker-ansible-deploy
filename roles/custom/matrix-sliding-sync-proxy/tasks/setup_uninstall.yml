@@ -1,0 +1,24 @@
+---
+- name: Check existence of matrix-sliding-sync-proxy service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-sliding-sync-proxy.service"
+  register: matrix_sliding_sync_proxy_service_stat
+
+- when: matrix_sliding_sync_proxy_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-sliding-sync-proxy is stopped
+      ansible.builtin.service:
+        name: matrix-sliding-sync-proxy
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-sliding-sync-proxy.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-sliding-sync-proxy.service"
+        state: absent
+
+    - name: Ensure matrix-sliding-sync-proxy paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_sliding_sync_proxy_base_path }}"
+        state: absent

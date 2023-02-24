@@ -1,0 +1,43 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix sliding_sync_proxy Service
+{% for service in matrix_sliding_sync_proxy_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_sliding_sync_proxy_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-sliding-sync-proxy 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-sliding-sync-proxy 2>/dev/null || true'
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-sliding-sync-proxy \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--tmpfs /tmp \
+			-e "SYNCV3_SERVER={{matrix_homeserver_url}}" \
+			-e "SYNCV3_SECRET={{matrix_sliding_sync_proxy_secret}}" \
+			-e "SYNCV3_BINDADDR=:8008" \
+			-e "SYNCV3_DB={{matrix_sliding_sync_proxy_database_connection_string}}" \
+			--network={{ matrix_docker_network }} \
+			{% for arg in matrix_sliding_sync_proxy_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_sliding_sync_proxy_docker_image }} \
+			--config /config/config.yml
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-sliding-sync-proxy 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-sliding-sync-proxy 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-sliding-sync-proxy
+
+[Install]
+WantedBy=multi-user.target

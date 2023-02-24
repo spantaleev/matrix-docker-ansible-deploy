@@ -1,0 +1,19 @@
+---
+- block:
+    - when: matrix_sliding_sync_proxy_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_sliding_sync_proxy_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+  tags:
+    - setup-all
+    - setup-sliding_sync_proxy
+    - install-all
+    - install-sliding_sync_proxy
+
+- block:
+    - when: not matrix_sliding_sync_proxy_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+  tags:
+    - setup-all
+    - setup-sliding_sync_proxy

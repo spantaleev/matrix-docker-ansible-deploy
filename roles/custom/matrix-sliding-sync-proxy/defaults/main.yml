@@ -1,0 +1,40 @@
+---
+# Sliding Sync Proxy is an implementation of MSC3575 for the new sliding sync
+
+matrix_sliding_sync_proxy_enabled: false
+
+matrix_sliding_sync_proxy_container_image_self_build: false
+matrix_sliding_sync_proxy_docker_repo: "https://github.com/matrix-org/sliding_sync_proxy/"
+matrix_sliding_sync_proxy_docker_repo_version: "{{ 'main' if matrix_sliding_sync_proxy_version == 'main' else matrix_sliding_sync_proxy_version }}"
+matrix_sliding_sync_proxy_docker_src_files_path: "{{ matrix_base_data_path }}/Dockerfile"
+
+matrix_sliding_sync_proxy_version: "v0.99.1"
+matrix_sliding_sync_proxy_docker_image: "{{ matrix_sliding_sync_proxy_docker_image_name_prefix }}matrix-org/sliding-sync:{{ matrix_sliding_sync_proxy_version }}"
+matrix_sliding_sync_proxy_docker_image_name_prefix: "{{ 'localhost/' if matrix_sliding_sync_proxy_container_image_self_build else 'ghcr.io/' }}"
+matrix_sliding_sync_proxy_docker_image_force_pull: "{{ matrix_sliding_sync_proxy_docker_image.endswith(':main') }}"
+
+# A list of extra arguments to pass to the container
+matrix_sliding_sync_proxy_container_extra_arguments: []
+
+# List of systemd services that matrix-sliding-sync-proxy.service depends on
+matrix_sliding_sync_proxy_systemd_required_services_list: ["docker.service"]
+
+# List of systemd services that matrix-sliding-sync-proxy.service wants
+matrix_sliding_sync_proxy_systemd_wanted_services_list: []
+
+# these must be set for sliding sync to properly start
+
+# custom secret used in the proxy
+matrix_sliding_sync_proxy_secret: ''
+
+# Database-related configuration fields.
+# Only Postgres is supported.
+matrix_sliding_sync_proxy_database_engine: "postgres"
+
+matrix_sliding_sync_proxy_database_username: 'matrix_sliding_sync'
+matrix_sliding_sync_proxy_database_password: 'not-a-real-password'
+matrix_sliding_sync_proxy_database_hostname: ''
+matrix_sliding_sync_proxy_database_port: 5432
+matrix_sliding_sync_proxy_database_name: 'matrix_sliding_sync'
+
+matrix_sliding_sync_proxy_database_connection_string: 'user={{ matrix_sliding_sync_proxy_database_username }} password={{ matrix_sliding_sync_proxy_database_password }} host={{ matrix_sliding_sync_proxy_database_hostname }} port={{ matrix_sliding_sync_proxy_database_port }} dbname={{ matrix_sliding_sync_proxy_database_name }} sslmode=disable'

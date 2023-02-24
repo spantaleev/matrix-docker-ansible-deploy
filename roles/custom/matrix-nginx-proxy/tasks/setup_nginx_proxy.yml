@@ -122,6 +122,14 @@
     mode: 0644
   when: matrix_nginx_proxy_proxy_buscarron_enabled | bool
 
+- name: Ensure Matrix nginx-proxy configuration for sliding-sync-proxy domain exists
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-sliding-sync-proxy.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-sliding-sync-proxy.conf"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_sliding_sync_proxy_enabled | bool
+
+
 - name: Ensure Matrix nginx-proxy configuration for dimension domain exists
   ansible.builtin.template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-dimension.conf.j2"
@@ -284,6 +292,12 @@
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-bot-buscarron.conf"
     state: absent
   when: "not matrix_nginx_proxy_proxy_buscarron_enabled | bool"
+
+- name: Ensure Matrix nginx-proxy configuration for sliding-sync-proxy domain deleted
+  ansible.builtin.file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-sliding-sync-proxy.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_sliding_sync_proxy_enabled | bool"
 
 - name: Ensure Matrix nginx-proxy configuration for dimension domain deleted
   ansible.builtin.file:

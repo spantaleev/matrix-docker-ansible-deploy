@@ -1,0 +1,9 @@
+---
+- name: Fail if required matrix-sliding-sync-proxy settings not defined
+  ansible.builtin.fail:
+    msg: >
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
+  with_items:
+    - {'name': 'matrix_sliding_sync_proxy_secret', when: true}
+    - {'name': 'matrix_sliding_sync_proxy_database_hostname', when: "{{ matrix_sliding_sync_proxy_database_engine == 'postgres' }}"}

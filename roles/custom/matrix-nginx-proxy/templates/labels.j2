@@ -50,6 +50,18 @@ traefik.http.routers.matrix-nginx-proxy-buscarron.entrypoints={{ matrix_nginx_pr
 {% endif %}
 
 
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_sliding_sync_proxy_enabled %}
+# Sliding Sync Proxy
+traefik.http.routers.matrix-nginx-proxy-sliding-sync-proxy.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_sliding_sync_proxy_rule }}
+traefik.http.routers.matrix-nginx-proxy-sliding-sync-proxy.service=matrix-nginx-proxy-web
+traefik.http.routers.matrix-nginx-proxy-sliding-sync-proxy.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_sliding_sync_proxy_tls | to_json }}
+{% if matrix_nginx_proxy_container_labels_traefik_proxy_sliding_sync_proxy_tls %}
+traefik.http.routers.matrix-nginx-proxy-sliding-sync-proxy.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.routers.matrix-nginx-proxy-sliding-sync-proxy.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
+{% endif %}
+
+
 {% if matrix_nginx_proxy_container_labels_traefik_proxy_dimension_enabled %}
 # Dimension
 traefik.http.routers.matrix-nginx-proxy-dimension.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_dimension_rule }}
