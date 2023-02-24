@@ -33,6 +33,8 @@ This will install Traefik in the place of `matrix-nginx-proxy`. Traefik will man
 matrix_playbook_reverse_proxy_type: other-traefik-container
 
 matrix_playbook_reverse_proxyable_services_additional_network: your-traefik-network
+
+devture_traefik_certs_dumper_ssl_dir_path: "/path/to/your/traefiks/acme.json/directory"
 ```
 
 In this mode all roles will still have Traefik labels attached. You will, however, need to configure your Traefik instance and its entrypoints.
