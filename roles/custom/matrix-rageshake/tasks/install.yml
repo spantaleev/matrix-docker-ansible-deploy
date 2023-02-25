@@ -7,12 +7,12 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_rageshake_config_path }}", when: true }
-    - { path: "{{ matrix_rageshake_data_path }}", when: true }
-    - {
-        path: "{{ matrix_rageshake_container_src_files_path }}",
-        when: matrix_rageshake_container_image_self_build,
-      }
+    - path: "{{ matrix_rageshake_config_path }}"
+      when: true
+    - path: "{{ matrix_rageshake_data_path }}"
+      when: true
+    - path: "{{ matrix_rageshake_container_src_files_path }}"
+      when: matrix_rageshake_container_image_self_build | bool
   when: "item.when | bool"
 
 - name: Ensure rageshake config file created
@@ -46,17 +46,14 @@
   register: matrix_rageshake_git_pull_results
   when: "matrix_rageshake_container_image_self_build | bool"
 
-- name: Ensure rageshake image is built
-  community.docker.docker_image:
-    name: "{{ matrix_rageshake_container_image }}"
-    source: build
-    force_source: "{{ matrix_rageshake_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_git_pull_results.changed }}"
-    build:
-      dockerfile: Dockerfile
-      path: "{{ matrix_rageshake_container_src_files_path }}"
-      pull: true
-  when: "matrix_rageshake_container_image_self_build | bool"
+- name: Ensure rageshake container image is built
+  ansible.builtin.command:
+    cmd: |-
+      {{ devture_systemd_docker_base_host_command_docker }} buildx build
+      --tag={{ matrix_rageshake_container_image }}
+      --file={{ matrix_rageshake_container_src_files_path }}/Dockerfile
+      {{ matrix_rageshake_container_src_files_path }}
+  when: matrix_rageshake_container_image_self_build | bool
 
 - name: Ensure matrix-rageshake.service installed
   ansible.builtin.template:
