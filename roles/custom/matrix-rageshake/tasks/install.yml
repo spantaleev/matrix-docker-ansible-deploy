@@ -10,7 +10,7 @@
     - { path: "{{ matrix_rageshake_config_path }}", when: true }
     - { path: "{{ matrix_rageshake_data_path }}", when: true }
     - {
-        path: "{{ matrix_rageshake_docker_src_files_path }}",
+        path: "{{ matrix_rageshake_container_src_files_path }}",
         when: matrix_rageshake_container_image_self_build,
       }
   when: "item.when | bool"
@@ -25,10 +25,10 @@
 
 - name: Ensure rageshake image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_rageshake_docker_image }}"
+    name: "{{ matrix_rageshake_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_rageshake_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_rageshake_docker_image_force_pull }}"
+    force_source: "{{ matrix_rageshake_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_rageshake_container_image_force_pull }}"
   when: "not matrix_rageshake_container_image_self_build | bool"
   register: result
   retries: "{{ devture_playbook_help_container_retries_count }}"
@@ -37,9 +37,9 @@
 
 - name: Ensure rageshake repository is present on self-build
   ansible.builtin.git:
-    repo: "{{ matrix_rageshake_docker_repo }}"
-    version: "{{ matrix_rageshake_docker_repo_version }}"
-    dest: "{{ matrix_rageshake_docker_src_files_path }}"
+    repo: "{{ matrix_rageshake_container_repo }}"
+    version: "{{ matrix_rageshake_container_repo_version }}"
+    dest: "{{ matrix_rageshake_container_src_files_path }}"
     force: "yes"
   become: true
   become_user: "{{ matrix_user_username }}"
@@ -48,13 +48,13 @@
 
 - name: Ensure rageshake image is built
   community.docker.docker_image:
-    name: "{{ matrix_rageshake_docker_image }}"
+    name: "{{ matrix_rageshake_container_image }}"
     source: build
     force_source: "{{ matrix_rageshake_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
-      path: "{{ matrix_rageshake_docker_src_files_path }}"
+      path: "{{ matrix_rageshake_container_src_files_path }}"
       pull: true
   when: "matrix_rageshake_container_image_self_build | bool"
 

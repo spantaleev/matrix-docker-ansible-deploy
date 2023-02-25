@@ -7,18 +7,18 @@ matrix_rageshake_enabled: true
 # There are no stable container image tags yet.
 # See: https://github.com/matrix-org/rageshake/issues/69
 matrix_rageshake_version: "master"
-matrix_rageshake_docker_image: "{{ matrix_rageshake_docker_image_name_prefix }}matrix-org/rageshake:{{ matrix_rageshake_version }}"
-matrix_rageshake_docker_image_name_prefix: "{{ 'localhost/' if matrix_rageshake_container_image_self_build else 'ghcr.io/' }}"
-matrix_rageshake_docker_image_force_pull: "{{ matrix_rageshake_docker_image.endswith(':master') }}"
+matrix_rageshake_container_image: "{{ matrix_rageshake_container_image_name_prefix }}matrix-org/rageshake:{{ matrix_rageshake_version }}"
+matrix_rageshake_container_image_name_prefix: "{{ 'localhost/' if matrix_rageshake_container_image_self_build else 'ghcr.io/' }}"
+matrix_rageshake_container_image_force_pull: "{{ matrix_rageshake_container_image.endswith(':master') }}"
 
 matrix_rageshake_base_path: "{{ matrix_base_data_path }}/rageshake"
 matrix_rageshake_config_path: "{{ matrix_rageshake_base_path }}/config"
 matrix_rageshake_data_path: "{{ matrix_rageshake_base_path }}/data"
 
 matrix_rageshake_container_image_self_build: false
-matrix_rageshake_docker_repo: "https://github.com/matrix-org/rageshake/"
-matrix_rageshake_docker_repo_version: "{{ 'master' if matrix_rageshake_version == 'master' else matrix_rageshake_version }}"
-matrix_rageshake_docker_src_files_path: "{{ matrix_base_data_path }}/Dockerfile"
+matrix_rageshake_container_repo: "https://github.com/matrix-org/rageshake/"
+matrix_rageshake_container_repo_version: "{{ 'master' if matrix_rageshake_version == 'master' else matrix_rageshake_version }}"
+matrix_rageshake_container_src_files_path: "{{ matrix_base_data_path }}/Dockerfile"
 
 # A list of extra arguments to pass to the container
 matrix_rageshake_container_extra_arguments: []
