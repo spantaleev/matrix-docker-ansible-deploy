@@ -31,12 +31,29 @@ matrix_rageshake_systemd_wanted_services_list: []
 
 matrix_rageshake_config_api_prefix: "https://{{ matrix_server_fqn_rageshake }}/api/"
 
-# Rageshake Settings
-
-# Additional config  to pass to the rageshake.
-# See https://github.com/matrix-org/rageshake/blob/master/rageshake.sample.yaml
+# Default Rageshake configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
 #
-# Example:
-# matrix_rageshake_config: |
-#   github_token: secrettoken
-matrix_rageshake_config: ""
+# For a more advanced customization, you can extend the default (see `matrix_rageshake_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_rageshake_configuration_yaml: "{{ lookup('template', 'templates/config.yml.j2') }}"
+
+matrix_rageshake_configuration_extension_yaml: |
+  # Your custom YAML configuration for Synapse goes here.
+  # This configuration extends the default starting configuration (`matrix_rageshake_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_rageshake_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  # github_project_mappings:
+  #   my-app: octocat/HelloWorld
+
+matrix_rageshake_configuration_extension: "{{ matrix_rageshake_configuration_extension_yaml | from_yaml if matrix_rageshake_configuration_extension_yaml | from_yaml is mapping else {} }}"
+
+# Holds the final Synapse configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_rageshake_configuration_yaml`.
+matrix_rageshake_configuration: "{{ matrix_rageshake_configuration_yaml | from_yaml | combine(matrix_rageshake_configuration_extension, recursive=True) }}"

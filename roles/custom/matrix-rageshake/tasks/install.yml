@@ -16,8 +16,8 @@
   when: "item.when | bool"
 
 - name: Ensure rageshake config file created
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/config.j2"
+  ansible.builtin.copy:
+    content: "{{ matrix_rageshake_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_rageshake_config_path }}/config.yml"
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
@@ -63,4 +63,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-rageshake.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-rageshake.service"
     mode: 0644
-  register: matrix_rageshake_systemd_service_result
