@@ -62,17 +62,6 @@ traefik.http.routers.matrix-nginx-proxy-dimension.entrypoints={{ matrix_nginx_pr
 {% endif %}
 
 
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_rageshake_enabled %}
-# Rageshake
-traefik.http.routers.matrix-nginx-proxy-rageshake.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_rageshake_rule }}
-traefik.http.routers.matrix-nginx-proxy-rageshake.service=matrix-nginx-proxy-web
-traefik.http.routers.matrix-nginx-proxy-rageshake.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_rageshake_tls | to_json }}
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_rageshake_tls %}
-traefik.http.routers.matrix-nginx-proxy-rageshake.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
-{% endif %}
-traefik.http.routers.matrix-nginx-proxy-rageshake.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
-{% endif %}
-
 {% if matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_enabled %}
 # Etherpad
 traefik.http.routers.matrix-nginx-proxy-etherpad.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_rule }}

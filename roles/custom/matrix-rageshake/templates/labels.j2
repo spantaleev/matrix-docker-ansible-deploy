@@ -1,0 +1,45 @@
+{% if matrix_rageshake_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_rageshake_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_rageshake_container_labels_traefik_docker_network }}
+{% endif %}
+
+{% set middlewares = [] %}
+
+{% if matrix_rageshake_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-rageshake-slashless-redirect.redirectregex.regex=({{ matrix_rageshake_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.matrix-rageshake-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-rageshake-slashless-redirect'] %}
+{% endif %}
+
+{% if matrix_rageshake_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-rageshake-strip-prefix.stripprefix.prefixes={{ matrix_rageshake_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + ['matrix-rageshake-strip-prefix'] %}
+{% endif %}
+
+{% if matrix_rageshake_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in matrix_rageshake_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.matrix-rageshake-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + ['matrix-rageshake-add-headers'] %}
+{% endif %}
+
+traefik.http.routers.matrix-rageshake.rule={{ matrix_rageshake_container_labels_traefik_rule }}
+{% if matrix_rageshake_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-rageshake.priority={{ matrix_rageshake_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.matrix-rageshake.service=matrix-rageshake
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-rageshake.middlewares={{ middlewares | join(',') }}
+{% endif %}
+traefik.http.routers.matrix-rageshake.entrypoints={{ matrix_rageshake_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-rageshake.tls={{ matrix_rageshake_container_labels_traefik_tls | to_json }}
+{% if matrix_rageshake_container_labels_traefik_tls %}
+traefik.http.routers.matrix-rageshake.tls.certResolver={{ matrix_rageshake_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.matrix-rageshake.loadbalancer.server.port=9110
+{% endif %}
+
+{{ matrix_rageshake_container_labels_additional_labels }}

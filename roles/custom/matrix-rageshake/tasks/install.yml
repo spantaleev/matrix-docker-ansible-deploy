@@ -1,4 +1,5 @@
 ---
+
 - name: Ensure rageshake paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
@@ -23,6 +24,14 @@
     group: "{{ matrix_user_groupname }}"
     mode: 0640
 
+- name: Ensure rageshake labels installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/labels.j2"
+    dest: "{{ matrix_rageshake_base_path }}/labels"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
 - name: Ensure rageshake image is pulled
   community.docker.docker_image:
     name: "{{ matrix_rageshake_container_image }}"
@@ -37,8 +46,8 @@
 
 - name: Ensure rageshake repository is present on self-build
   ansible.builtin.git:
-    repo: "{{ matrix_rageshake_container_repo }}"
-    version: "{{ matrix_rageshake_container_repo_version }}"
+    repo: "{{ matrix_rageshake_container_image_self_build_repo }}"
+    version: "{{ matrix_rageshake_container_image_self_build_version }}"
     dest: "{{ matrix_rageshake_container_src_files_path }}"
     force: "yes"
   become: true
@@ -54,6 +63,11 @@
       --file={{ matrix_rageshake_container_src_files_path }}/Dockerfile
       {{ matrix_rageshake_container_src_files_path }}
   when: matrix_rageshake_container_image_self_build | bool
+
+- name: Ensure rageshake container network is created
+  community.general.docker_network:
+    name: "{{ matrix_rageshake_container_network }}"
+    driver: bridge
 
 - name: Ensure matrix-rageshake.service installed
   ansible.builtin.template:
