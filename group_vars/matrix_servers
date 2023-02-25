@@ -296,6 +296,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-coturn.service', 'priority': 4000, 'groups': ['matrix', 'coturn']}] if matrix_coturn_enabled else [])
     +
+    ([{'name': 'matrix-rageshake.service', 'priority': 4000, 'groups': ['matrix', 'rageshake']}] if matrix_rageshake_enabled else [])
+    +
     ([{'name': 'matrix-coturn-reload.timer', 'priority': 5000, 'groups': ['matrix', 'coturn']}] if (matrix_coturn_enabled and matrix_coturn_tls_enabled) else [])
     +
     ([{'name': 'matrix-dimension.service', 'priority': 4000, 'groups': ['matrix', 'integration-managers', 'dimension']}] if matrix_dimension_enabled else [])
@@ -1995,6 +1997,36 @@ matrix_corporal_matrix_registration_shared_secret: "{{ matrix_synapse_registrati
 #
 ######################################################################
 
+
+######################################################################
+#
+# matrix-rageshake
+#
+######################################################################
+
+# We don't enable rageshake by default.
+matrix_rageshake_enabled: false
+
+matrix_rageshake_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
+
+matrix_rageshake_hostname: "{{ matrix_server_fqn_rageshake }}"
+
+matrix_rageshake_container_network: "{{ matrix_docker_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else 'matrix-rageshake' }}"
+
+matrix_rageshake_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
+
+matrix_rageshake_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9110') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+
+matrix_rageshake_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
+matrix_rageshake_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_rageshake_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+
+######################################################################
+#
+# /matrix-rageshake
+#
+######################################################################
+
 ######################################################################
 #
 # matrix-coturn
@@ -2383,6 +2415,7 @@ matrix_nginx_proxy_proxy_hydrogen_enabled: "{{ matrix_client_hydrogen_enabled an
 matrix_nginx_proxy_proxy_cinny_enabled: "{{ matrix_client_cinny_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_buscarron_enabled: "{{ matrix_bot_buscarron_enabled }}"
 matrix_nginx_proxy_proxy_dimension_enabled: "{{ matrix_dimension_enabled }}"
+matrix_nginx_proxy_proxy_rageshake_enabled: "{{ matrix_rageshake_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_etherpad_enabled: "{{ matrix_etherpad_enabled and matrix_etherpad_mode == 'standalone' }}"
 matrix_nginx_proxy_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled }}"
 
@@ -2483,6 +2516,8 @@ matrix_nginx_proxy_systemd_wanted_services_list: |
     +
     (['matrix-dimension.service'] if matrix_dimension_enabled else [])
     +
+    (['matrix-rageshake.service'] if matrix_rageshake_enabled else [])
+    +
     (['matrix-sygnal.service'] if matrix_sygnal_enabled else [])
     +
     ([(ntfy_identifier + '.service')] if ntfy_enabled else [])
@@ -2523,6 +2558,8 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     ([matrix_server_fqn_sygnal] if matrix_sygnal_enabled else [])
     +
     ([ntfy_hostname] if ntfy_enabled else [])
+    +
+    ([matrix_server_fqn_rageshake] if matrix_rageshake_enabled else [])
     +
     (matrix_bot_postmoogle_domains if matrix_bot_postmoogle_enabled else [])
     +
