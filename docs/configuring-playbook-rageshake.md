@@ -13,7 +13,7 @@ You can override the domain and path like this:
 
 ```yaml
 # Switch to the domain used for Matrix services (`matrix.DOMAIN`),
-# so we won't need to an additional DNS records for Rageshake.
+# so we won't need to add additional DNS records for Rageshake.
 matrix_rageshake_hostname: "{{ matrix_server_fqn_matrix }}"
 
 # Expose under the /rageshake subpath
