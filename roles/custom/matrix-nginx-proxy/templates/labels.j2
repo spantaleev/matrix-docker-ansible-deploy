@@ -38,17 +38,6 @@ traefik.http.routers.matrix-nginx-proxy-matrix-federation.tls.certResolver={{ ma
 traefik.http.routers.matrix-nginx-proxy-matrix-federation.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_entrypoints }}
 {% endif %}
 
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_buscarron_enabled %}
-# Buscarron
-traefik.http.routers.matrix-nginx-proxy-buscarron.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_buscarron_rule }}
-traefik.http.routers.matrix-nginx-proxy-buscarron.service=matrix-nginx-proxy-web
-traefik.http.routers.matrix-nginx-proxy-buscarron.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_buscarron_tls | to_json }}
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_buscarron_tls %}
-traefik.http.routers.matrix-nginx-proxy-buscarron.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
-{% endif %}
-traefik.http.routers.matrix-nginx-proxy-buscarron.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
-{% endif %}
-
 
 {% if matrix_nginx_proxy_container_labels_traefik_proxy_dimension_enabled %}
 # Dimension

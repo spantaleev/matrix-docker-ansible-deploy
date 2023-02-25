@@ -5,6 +5,31 @@ The playbook can install and configure [buscarron](https://gitlab.com/etke.cc/bu
 Buscarron is bot that receives HTTP POST submissions of web forms and forwards them to a Matrix room.
 
 
+## Decide on a domain and path
+
+By default, Rageshake is configured to use its own dedicated domain (`buscarron.DOMAIN`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+
+You can override the domain and path like this:
+
+```yaml
+# Switch to the domain used for Matrix services (`matrix.DOMAIN`),
+# so we won't need to add additional DNS records for Rageshake.
+matrix_bot_buscarron_hostname: "{{ matrix_server_fqn_matrix }}"
+
+# Expose under the /buscarron subpath
+matrix_bot_buscarron_path_prefix: /buscarron
+```
+
+**NOTE**: When using `matrix-nginx-proxy` instead of Traefik, you won't be able to override the path prefix. You can only override the domain, but that needs to happen using another variable: `matrix_server_fqn_buscarron` (e.g. `matrix_server_fqn_buscarron: "form.{{ matrix_domain }}"`).
+
+
+## Adjusting DNS records
+
+Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Buscarron domain to the Matrix server.
+
+If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
+
+
 ## Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
@@ -28,16 +53,6 @@ matrix_bot_buscarron_forms:
     extensions: [] # (optional) list of form extensions (not used yet)
 
 matrix_bot_buscarron_spamlist: [] # (optional) list of emails/domains/hosts (with wildcards support) that should be rejected automatically
-```
-
-You will also need to add a DNS record so that buscarron can be accessed.
-By default buscarron will use https://buscarron.DOMAIN so you will need to create an CNAME record for `buscarron`.
-See [Configuring DNS](configuring-dns.md).
-
-If you would like to use a different domain, add the following to your configuration file (changing it to use your preferred domain):
-
-```yaml
-matrix_server_fqn_buscarron: "form.{{ matrix_domain }}"
 ```
 
 

@@ -25,6 +25,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--read-only \
 			--network={{ matrix_bot_buscarron_container_network }} \
 			--env-file={{ matrix_bot_buscarron_config_path }}/env \
+			--label-file={{ matrix_bot_buscarron_config_path }}/labels \
 			--mount type=bind,src={{ matrix_bot_buscarron_data_path }},dst=/data \
 			{% for arg in matrix_bot_buscarron_container_extra_arguments %}
 			{{ arg }} \

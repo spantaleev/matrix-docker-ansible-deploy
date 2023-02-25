@@ -1,0 +1,45 @@
+{% if matrix_bot_buscarron_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_bot_buscarron_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_bot_buscarron_container_labels_traefik_docker_network }}
+{% endif %}
+
+{% set middlewares = [] %}
+
+{% if matrix_bot_buscarron_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-bot-buscarron-slashless-redirect.redirectregex.regex=({{ matrix_bot_buscarron_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.matrix-bot-buscarron-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-bot-buscarron-slashless-redirect'] %}
+{% endif %}
+
+{% if matrix_bot_buscarron_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-bot-buscarron-strip-prefix.stripprefix.prefixes={{ matrix_bot_buscarron_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + ['matrix-bot-buscarron-strip-prefix'] %}
+{% endif %}
+
+{% if matrix_bot_buscarron_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in matrix_bot_buscarron_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.matrix-bot-buscarron-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + ['matrix-bot-buscarron-add-headers'] %}
+{% endif %}
+
+traefik.http.routers.matrix-bot-buscarron.rule={{ matrix_bot_buscarron_container_labels_traefik_rule }}
+{% if matrix_bot_buscarron_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-bot-buscarron.priority={{ matrix_bot_buscarron_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.matrix-bot-buscarron.service=matrix-bot-buscarron
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-bot-buscarron.middlewares={{ middlewares | join(',') }}
+{% endif %}
+traefik.http.routers.matrix-bot-buscarron.entrypoints={{ matrix_bot_buscarron_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-bot-buscarron.tls={{ matrix_bot_buscarron_container_labels_traefik_tls | to_json }}
+{% if matrix_bot_buscarron_container_labels_traefik_tls %}
+traefik.http.routers.matrix-bot-buscarron.tls.certResolver={{ matrix_bot_buscarron_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.matrix-bot-buscarron.loadbalancer.server.port=8080
+{% endif %}
+
+{{ matrix_bot_buscarron_container_labels_additional_labels }}
