@@ -89,6 +89,11 @@
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-buscarron.service"
     mode: 0644
 
+- name: Ensure buscarron container network is created
+  community.general.docker_network:
+    name: "{{ matrix_bot_buscarron_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-bot-buscarron.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-bot-buscarron.service"
