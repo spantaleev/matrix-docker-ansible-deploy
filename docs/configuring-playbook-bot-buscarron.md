@@ -2,8 +2,7 @@
 
 The playbook can install and configure [buscarron](https://gitlab.com/etke.cc/buscarron) for you.
 
-It's a bot you can use to setup **your own helpdesk on matrix**
-It's a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) matrix room
+Buscarron is bot that receives HTTP POST submissions of web forms and forwards them to a Matrix room.
 
 
 ## Adjusting the playbook configuration
