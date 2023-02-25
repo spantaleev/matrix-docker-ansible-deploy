@@ -66,4 +66,12 @@ To use the bot, invite the `@bot.buscarron:DOMAIN` to the room you specified in 
 </form>
 ```
 
+**NOTE**: to fight against spam, Buscarron is **very aggressive when it comes to banning** and will ban you if:
+
+- if you hit the homepage (HTTP `GET` request to `/`)
+- if you submit a form to the wrong URL (`POST` request to `/non-existing-form`)
+- if `hasemail` is enabled for the form (like in the example above) and you don't submit an `email` field
+
+If you get banned, you'd need to restart the process by running the playbook with `--tags=start` or running `systemctl restart matrix-bot-buscarron` on the server.
+
 You can also refer to the upstream [documentation](https://gitlab.com/etke.cc/buscarron).
