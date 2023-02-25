@@ -7,13 +7,13 @@ Buscarron is bot that receives HTTP POST submissions of web forms and forwards t
 
 ## Decide on a domain and path
 
-By default, Rageshake is configured to use its own dedicated domain (`buscarron.DOMAIN`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+By default, Buscarron is configured to use its own dedicated domain (`buscarron.DOMAIN`) and requires you to [adjust your DNS records](#adjusting-dns-records).
 
 You can override the domain and path like this:
 
 ```yaml
 # Switch to the domain used for Matrix services (`matrix.DOMAIN`),
-# so we won't need to add additional DNS records for Rageshake.
+# so we won't need to add additional DNS records for Buscarron.
 matrix_bot_buscarron_hostname: "{{ matrix_server_fqn_matrix }}"
 
 # Expose under the /buscarron subpath
