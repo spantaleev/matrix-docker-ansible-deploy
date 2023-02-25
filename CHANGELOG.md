@@ -1,3 +1,12 @@
+# 2023-02-25
+
+## Rageshake support
+
+Thanks to [Benjamin Kampmann](https://github.com/gnunicorn), the playbook can now install and configure the [Rageshake](https://github.com/matrix-org/rageshake) bug report server.
+
+Additional details are available in [Setting up Rageshake](docs/configuring-playbook-rageshake.md).
+
+
 # 2023-02-17
 
 ## Synapse templates customization support

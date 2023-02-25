@@ -27,7 +27,7 @@ You can always re-run the playbook later to add or remove components.
 The homeserver is the backbone of your matrix system. Choose one from the following list.
 
 | Name | Default? | Description | Documentation |
-| ---- | -------- | ----------- | ------------- | 
+| ---- | -------- | ----------- | ------------- |
 | [Synapse](https://github.com/matrix-org/synapse) | ✓ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network | [Link](docs/configuring-playbook-synapse.md) |
 | [Conduit](https://conduit.rs) | x | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Conduit is a lightweight open-source server implementation of the Matrix Specification with a focus on easy setup and low system requirements | [Link](docs/configuring-playbook-conduit.md) |
 | [Dendrite](https://github.com/matrix-org/dendrite) | x | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Dendrite is a second-generation Matrix homeserver written in Go, an alternative to Synapse. | [Link](docs/configuring-playbook-dendrite.md) |
@@ -66,7 +66,7 @@ Services that run on the server to make the various parts of your installation w
 Extend and modify how users are authenticated on your homeserver.
 
 | Name | Default? | Description | Documentation |
-| ---- | -------- | ----------- | ------------- | 
+| ---- | -------- | ----------- | ------------- |
 | [matrix-synapse-rest-auth](https://github.com/ma1uta/matrix-synapse-rest-password-provider) (advanced) | x | REST authentication password provider module | [Link](docs/configuring-playbook-rest-auth.md) |
 |[matrix-synapse-shared-secret-auth](https://github.com/devture/matrix-synapse-shared-secret-auth) (advanced) | x | Password provider module | [Link](docs/configuring-playbook-shared-secret-auth.md) |
 | [matrix-synapse-ldap3](https://github.com/matrix-org/matrix-synapse-ldap3) (advanced) | x | LDAP Auth password provider module | [Link](configuring-playbook-ldap-auth.md) |
@@ -144,6 +144,7 @@ Services that help you in administrating and monitoring your matrix installation
 | [synapse-admin](https://github.com/Awesome-Technologies/synapse-admin) | x | A web UI tool for administrating users and rooms on your Matrix server | [Link](docs/configuring-playbook-synapse-admin.md) |
 | Metrics and Graphs | x | Consists of the [Prometheus](https://prometheus.io) time-series database server, the Prometheus [node-exporter](https://prometheus.io/docs/guides/node-exporter/) host metrics exporter, and the [Grafana](https://grafana.com/) web UI | [Link](docs/configuring-playbook-prometheus-grafana.md) |
 | [Borg](https://borgbackup.org) | x | Backups | [Link](docs/configuring-playbook-backup-borg.md) |
+| [Rageshake](https://github.com/matrix-org/rageshake) | x | Bug report server | [Link](docs/configuring-playbook-rageshake.md) |
 
 ### Misc
 
