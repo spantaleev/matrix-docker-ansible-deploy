@@ -2443,7 +2443,7 @@ matrix_nginx_proxy_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
 matrix_nginx_proxy_proxy_jitsi_manage_wellknown: "{{ matrix_jitsi_require_well_known }}"
 
 matrix_nginx_proxy_proxy_grafana_enabled: "{{ grafana_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-matrix_nginx_proxy_proxy_sygnal_enabled: "{{ matrix_sygnal_enabled }}"
+matrix_nginx_proxy_proxy_sygnal_enabled: "{{ matrix_sygnal_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_ntfy_enabled: "{{ ntfy_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 
 matrix_nginx_proxy_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
@@ -2455,7 +2455,6 @@ matrix_nginx_proxy_container_labels_traefik_proxy_dimension_enabled: "{{ matrix_
 matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_enabled: "{{ matrix_etherpad_enabled and matrix_etherpad_mode == 'standalone' }}"
 matrix_nginx_proxy_container_labels_traefik_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled }}"
 matrix_nginx_proxy_container_labels_traefik_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
-matrix_nginx_proxy_container_labels_traefik_proxy_sygnal_enabled: "{{ matrix_sygnal_enabled }}"
 
 matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: "{{ matrix_corporal_enabled and matrix_corporal_http_api_enabled }}"
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
@@ -2931,7 +2930,17 @@ matrix_sygnal_enabled: false
 # If someone instals Prometheus via the playbook, they most likely wish to monitor Sygnal.
 matrix_sygnal_metrics_prometheus_enabled: "{{ matrix_prometheus_enabled }}"
 
+matrix_sygnal_hostname: "{{ matrix_server_fqn_sygnal }}"
+
+matrix_sygnal_container_network: "{{ matrix_nginx_proxy_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else 'matrix-sygnal' }}"
+
+matrix_sygnal_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
+
 matrix_sygnal_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '6000') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+
+matrix_sygnal_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
+matrix_sygnal_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_sygnal_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 
 ######################################################################
 #

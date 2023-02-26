@@ -86,17 +86,6 @@ traefik.http.routers.matrix-nginx-proxy-jitsi.tls.certResolver={{ matrix_nginx_p
 traefik.http.routers.matrix-nginx-proxy-jitsi.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
 {% endif %}
 
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_sygnal_enabled %}
-# Sygnal
-traefik.http.routers.matrix-nginx-proxy-sygnal.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_sygnal_rule }}
-traefik.http.routers.matrix-nginx-proxy-sygnal.service=matrix-nginx-proxy-web
-traefik.http.routers.matrix-nginx-proxy-sygnal.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_sygnal_tls | to_json }}
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_sygnal_tls %}
-traefik.http.routers.matrix-nginx-proxy-sygnal.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
-{% endif %}
-traefik.http.routers.matrix-nginx-proxy-sygnal.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
-{% endif %}
-
 
 traefik.http.services.matrix-nginx-proxy-web.loadbalancer.server.port=8080
 

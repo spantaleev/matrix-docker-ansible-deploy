@@ -1,0 +1,45 @@
+{% if matrix_sygnal_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_sygnal_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_sygnal_container_labels_traefik_docker_network }}
+{% endif %}
+
+{% set middlewares = [] %}
+
+{% if matrix_sygnal_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-sygnal-slashless-redirect.redirectregex.regex=({{ matrix_sygnal_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.matrix-sygnal-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-sygnal-slashless-redirect'] %}
+{% endif %}
+
+{% if matrix_sygnal_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-sygnal-strip-prefix.stripprefix.prefixes={{ matrix_sygnal_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + ['matrix-sygnal-strip-prefix'] %}
+{% endif %}
+
+{% if matrix_sygnal_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in matrix_sygnal_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.matrix-sygnal-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + ['matrix-sygnal-add-headers'] %}
+{% endif %}
+
+traefik.http.routers.matrix-sygnal.rule={{ matrix_sygnal_container_labels_traefik_rule }}
+{% if matrix_sygnal_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-sygnal.priority={{ matrix_sygnal_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.matrix-sygnal.service=matrix-sygnal
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-sygnal.middlewares={{ middlewares | join(',') }}
+{% endif %}
+traefik.http.routers.matrix-sygnal.entrypoints={{ matrix_sygnal_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-sygnal.tls={{ matrix_sygnal_container_labels_traefik_tls | to_json }}
+{% if matrix_sygnal_container_labels_traefik_tls %}
+traefik.http.routers.matrix-sygnal.tls.certResolver={{ matrix_sygnal_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.matrix-sygnal.loadbalancer.server.port=6000
+{% endif %}
+
+{{ matrix_sygnal_container_labels_additional_labels }}
