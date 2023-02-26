@@ -3,6 +3,15 @@
 
 matrix_dimension_enabled: false
 
+matrix_dimension_scheme: https
+
+# The hostname at which Dimension is served.
+matrix_dimension_hostname: ''
+
+# The path at which Dimension is exposed.
+# This value must either be `/` or not end with a slash (e.g. `/dimension`).
+matrix_dimension_path_prefix: /
+
 # You are required to specify an access token for Dimension to work.
 # For information on how to acquire an access token, visit https://t2bot.io/docs/access_tokens
 matrix_dimension_access_token: ""
@@ -35,21 +44,129 @@ matrix_dimension_systemd_wanted_services_list: []
 matrix_dimension_user_uid: '1000'
 matrix_dimension_user_gid: '1000'
 
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_dimension_container_network: matrix-dimension
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_dimension_container_additional_networks: []
+
 # Controls whether the matrix-dimension container exposes its HTTP port (tcp/8184 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8184"), or empty string to not expose.
 matrix_dimension_container_http_host_bind_port: ''
 
+
+# matrix_dimension_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_dimension_container_labels_additional_labels`.
+matrix_dimension_container_labels_traefik_enabled: true
+matrix_dimension_container_labels_traefik_docker_network: "{{ matrix_dimension_container_network }}"
+matrix_dimension_container_labels_traefik_hostname: "{{ matrix_dimension_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/dimension`).
+matrix_dimension_container_labels_traefik_path_prefix: "{{ matrix_dimension_path_prefix }}"
+matrix_dimension_container_labels_traefik_rule: "Host(`{{ matrix_dimension_container_labels_traefik_hostname }}`){% if matrix_dimension_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_dimension_container_labels_traefik_path_prefix }}`){% endif %}"
+matrix_dimension_container_labels_traefik_priority: 0
+matrix_dimension_container_labels_traefik_entrypoints: web-secure
+matrix_dimension_container_labels_traefik_tls: "{{ matrix_dimension_container_labels_traefik_entrypoints != 'web' }}"
+matrix_dimension_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own headers, use `matrix_dimension_container_labels_traefik_additional_response_headers_custom`
+matrix_dimension_container_labels_traefik_additional_response_headers: "{{ matrix_dimension_container_labels_traefik_additional_response_headers_auto | combine(matrix_dimension_container_labels_traefik_additional_response_headers_custom) }}"
+matrix_dimension_container_labels_traefik_additional_response_headers_auto: |
+  {{
+    {}
+    | combine ({'X-XSS-Protection': matrix_dimension_http_header_xss_protection} if matrix_dimension_http_header_xss_protection else {})
+    | combine ({'X-Frame-Options': matrix_dimension_http_header_frame_options} if matrix_dimension_http_header_frame_options else {})
+    | combine ({'X-Content-Type-Options': matrix_dimension_http_header_content_type_options} if matrix_dimension_http_header_content_type_options else {})
+    | combine ({'Content-Security-Policy': matrix_dimension_http_header_content_security_policy} if matrix_dimension_http_header_content_security_policy else {})
+    | combine ({'Permission-Policy': matrix_dimension_http_header_content_permission_policy} if matrix_dimension_http_header_content_permission_policy else {})
+    | combine ({'Strict-Transport-Security': matrix_dimension_http_header_strict_transport_security} if matrix_dimension_http_header_strict_transport_security and matrix_dimension_container_labels_traefik_tls else {})
+  }}
+matrix_dimension_container_labels_traefik_additional_response_headers_custom: {}
+
+# matrix_dimension_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_dimension_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_dimension_container_labels_additional_labels: ''
+
+
 # A list of extra arguments to pass to the container
 matrix_dimension_container_extra_arguments: []
 
-matrix_dimension_integrations_ui_url: "https://{{ matrix_server_fqn_dimension }}/element"
-matrix_dimension_integrations_rest_url: "https://{{ matrix_server_fqn_dimension }}/api/v1/scalar"
-matrix_dimension_integrations_widgets_urls: ["https://{{ matrix_server_fqn_dimension }}/widgets"]
-matrix_dimension_integrations_jitsi_widget_url: "https://{{ matrix_server_fqn_dimension }}/widgets/jitsi"
+# Public facing base URL of the Dimension service.
+# It should not end with a slash.
+matrix_dimension_base_url: "{{ matrix_dimension_scheme }}://{{ matrix_dimension_hostname }}{{ '' if matrix_dimension_path_prefix == '/' else matrix_dimension_path_prefix }}"
 
-matrix_dimension_homeserver_federationUrl: ""  # noqa var-naming
+matrix_dimension_integrations_ui_url: "{{ matrix_dimension_base_url }}/element"
+matrix_dimension_integrations_rest_url: "{{ matrix_dimension_base_url }}/api/v1/scalar"
+matrix_dimension_integrations_widgets_urls: ["{{ matrix_dimension_base_url }}/widgets"]
+matrix_dimension_integrations_jitsi_widget_url: "{{ matrix_dimension_base_url }}/widgets/jitsi"
 
+matrix_dimension_homeserver_clientServerUrl: ''  # noqa var-naming
+matrix_dimension_homeserver_federationUrl: ''  # noqa var-naming
+matrix_dimension_homeserver_mediaUrl: ''  # noqa var-naming
+
+# Controls the dimension.publicUrl configuration option
+matrix_dimension_dimension_publicUrl: "{{ matrix_dimension_base_url }}"  # noqa var-naming
+
+# Specifies the value of the `X-XSS-Protection` header
+# Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
+#
+# Learn more about it is here:
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+# - https://portswigger.net/web-security/cross-site-scripting/reflected
+matrix_dimension_http_header_xss_protection: "1; mode=block"
+
+# Specifies the value of the `X-Frame-Options` header which controls whether framing can happen.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+matrix_dimension_http_header_frame_options: ''
+
+# Specifies the value of the `X-Content-Type-Options` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+matrix_dimension_http_header_content_type_options: nosniff
+
+# Specifies the value of the `Content-Security-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+matrix_dimension_http_header_content_security_policy: ''
+
+# Specifies the value of the `Permission-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
+matrix_dimension_http_header_content_permission_policy: "{{ 'interest-cohort=()' if matrix_dimension_floc_optout_enabled else '' }}"
+
+# Specifies the value of the `Strict-Transport-Security` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+matrix_dimension_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if matrix_dimension_hsts_preload_enabled else '' }}"
+
+# Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
+#
+# Learn more about what it is here:
+# - https://www.eff.org/deeplinks/2021/03/googles-floc-terrible-idea
+# - https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network
+# - https://amifloced.org/
+#
+# Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
+# See: `matrix_dimension_content_permission_policy`
+matrix_dimension_floc_optout_enabled: true
+
+# Controls if HSTS preloading is enabled
+#
+# In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
+# indicates a willingness to be "preloaded" into browsers:
+# `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+# For more information visit:
+# - https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+# - https://hstspreload.org/#opt-in
+# See: `matrix_dimension_http_header_strict_transport_security`
+matrix_dimension_hsts_preload_enabled: false
 
 # Database-related configuration fields.
 #

@@ -39,18 +39,6 @@ traefik.http.routers.matrix-nginx-proxy-matrix-federation.entrypoints={{ matrix_
 {% endif %}
 
 
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_dimension_enabled %}
-# Dimension
-traefik.http.routers.matrix-nginx-proxy-dimension.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_dimension_rule }}
-traefik.http.routers.matrix-nginx-proxy-dimension.service=matrix-nginx-proxy-web
-traefik.http.routers.matrix-nginx-proxy-dimension.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_dimension_tls | to_json }}
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_dimension_tls %}
-traefik.http.routers.matrix-nginx-proxy-dimension.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
-{% endif %}
-traefik.http.routers.matrix-nginx-proxy-dimension.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
-{% endif %}
-
-
 {% if matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_enabled %}
 # Etherpad
 traefik.http.routers.matrix-nginx-proxy-etherpad.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_rule }}

@@ -85,6 +85,14 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_dimension_user_gid }}"
 
+- name: Ensure Dimension labels installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/labels.j2"
+    dest: "{{ matrix_dimension_base_path }}/labels"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
 - name: Ensure Dimension image is pulled
   community.docker.docker_image:
     name: "{{ matrix_dimension_docker_image }}"
@@ -119,6 +127,11 @@
       path: "{{ matrix_dimension_docker_src_files_path }}"
       pull: true
   when: "matrix_dimension_container_image_self_build | bool"
+
+- name: Ensure Dimension container network is created
+  community.general.docker_network:
+    name: "{{ matrix_dimension_container_network }}"
+    driver: bridge
 
 - name: Ensure matrix-dimension.service installed
   ansible.builtin.template:

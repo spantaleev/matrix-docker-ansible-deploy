@@ -6,7 +6,12 @@
       You need to define a required configuration setting (`{{ item.name }}`).
   when: "item.when | bool and vars[item.name] == ''"
   with_items:
+    - {'name': 'matrix_dimension_hostname', when: true}
+    - {'name': 'matrix_dimension_container_network', when: true}
     - {'name': 'matrix_dimension_access_token', when: true}
+    - {'name': 'matrix_dimension_homeserver_clientServerUrl', when: true}
+    - {'name': 'matrix_dimension_homeserver_federationUrl', when: true}
+    - {'name': 'matrix_dimension_homeserver_mediaUrl', when: true}
     - {'name': 'matrix_dimension_database_hostname', when: "{{ matrix_dimension_database_engine == 'postgres' }}"}
 
 - name: (Deprecation) Catch and report renamed Dimension variables
@@ -17,3 +22,31 @@
   when: "item.old in vars"
   with_items:
     - {'old': 'matrix_dimension_container_expose_port', 'new': '<superseded by matrix_dimension_container_http_host_bind_port>'}
+
+- when: matrix_dimension_container_labels_traefik_enabled | bool
+  block:
+    - name: Fail if required Dimension Traefik settings not defined
+      ansible.builtin.fail:
+        msg: >-
+          You need to define a required configuration setting (`{{ item }}`).
+      when: "vars[item] == ''"
+      with_items:
+        - matrix_dimension_container_labels_traefik_hostname
+        - matrix_dimension_container_labels_traefik_path_prefix
+
+    # We ensure it doesn't end with a slash, because we handle both (slash and no-slash).
+    # Knowing that `matrix_dimension_container_labels_traefik_path_prefix` does not end with a slash
+    # ensures we know how to set these routes up without having to do "does it end with a slash" checks elsewhere.
+    - name: Fail if matrix_dimension_container_labels_traefik_path_prefix ends with a slash
+      ansible.builtin.fail:
+        msg: >-
+          matrix_dimension_container_labels_traefik_path_prefix (`{{ matrix_dimension_container_labels_traefik_path_prefix }}`) must either be `/` or not end with a slash (e.g. `/dimension`).
+      when: "matrix_dimension_container_labels_traefik_path_prefix != '/' and matrix_dimension_container_labels_traefik_path_prefix[-1] == '/'"
+
+    - name: Fail if matrix_dimension_container_labels_traefik_path_prefix is not /
+      ansible.builtin.fail:
+        msg: >-
+          matrix_dimension_container_labels_traefik_path_prefix (`{{ matrix_dimension_container_labels_traefik_path_prefix }}`) must currently be set to `/`.
+          Other values are not supported.
+          See: https://github.com/turt2live/matrix-dimension/issues/510
+      when: "matrix_dimension_container_labels_traefik_path_prefix != '/' and matrix_dimension_container_labels_traefik_path_prefix[-1] == '/'"
