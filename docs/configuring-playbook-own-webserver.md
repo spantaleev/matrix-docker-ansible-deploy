@@ -138,8 +138,8 @@ devture_traefik_container_web_host_bind_port: '127.0.0.1:81'
 
 devture_traefik_additional_entrypoints_auto:
   - name: matrix-federation
-    port: "{{ matrix_federation_public_port }}"
-    host_bind_port: "127.0.0.1:{{ matrix_federation_public_port }}"
+    port: 8449
+    host_bind_port: '127.0.0.1:8449'
     config: {}
 ```
 
