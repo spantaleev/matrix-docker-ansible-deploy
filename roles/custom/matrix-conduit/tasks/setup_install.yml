@@ -1,14 +1,4 @@
 ---
-- name: Ensure Conduit Docker image is pulled
-  community.docker.docker_image:
-    name: "{{ matrix_conduit_docker_image }}"
-    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_conduit_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_conduit_docker_image_force_pull }}"
-  register: result
-  retries: "{{ devture_playbook_help_container_retries_count }}"
-  delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
 
 - name: Ensure Conduit config path exists
   ansible.builtin.file:
@@ -33,6 +23,22 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Conduit container network is created
+  community.general.docker_network:
+    name: "{{ matrix_conduit_container_network }}"
+    driver: bridge
+
+- name: Ensure Conduit container image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_conduit_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_conduit_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_conduit_docker_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
 
 - name: Ensure matrix-conduit.service installed
   ansible.builtin.template:

@@ -23,6 +23,14 @@ matrix_conduit_systemd_required_services_list: ["docker.service"]
 # List of systemd services that matrix-conduit.service wants
 matrix_conduit_systemd_wanted_services_list: []
 
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_conduit_container_network: "{{ matrix_docker_network }}"
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_conduit_container_additional_networks: []
+
 # Extra arguments for the Docker container
 matrix_conduit_container_extra_arguments: []
 
