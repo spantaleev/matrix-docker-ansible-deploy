@@ -21,6 +21,11 @@ matrix_homeserver_implementation: synapse
 # You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
 matrix_homeserver_generic_secret_key: ''
 
+# By default, the playbook manages its own Traefik (https://doc.traefik.io/traefik/) reverse-proxy server.
+# It will retrieve SSL certificates for you on-demand and forward requests to all other components.
+# For alternatives, see `docs/configuring-playbook-own-webserver.md`.
+matrix_playbook_reverse_proxy_type: playbook-managed-traefik
+
 # This is something which is provided to Let's Encrypt when retrieving SSL certificates for domains.
 #
 # In case SSL renewal fails at some point, you'll also get an email notification there.
@@ -29,7 +34,7 @@ matrix_homeserver_generic_secret_key: ''
 # you won't be required to define this variable (see `docs/configuring-playbook-ssl-certificates.md`).
 #
 # Example value: someone@example.com
-matrix_ssl_lets_encrypt_support_email: ''
+devture_traefik_config_certificatesResolvers_acme_email: ''
 
 # A Postgres password to use for the superuser Postgres user (called `matrix` by default).
 #

@@ -1,3 +1,65 @@
+# 2023-02-26
+
+## Traefik is the default reverse-proxy now
+
+**TLDR**: new installations will now default to Traefik as their reverse-proxy. Existing users need to explicitly choose their reverse-proxy type. [Switching to Traefik](#how-do-i-switch-my-existing-setup-to-traefik) is strongly encouraged. `matrix-nginx-proxy` may break over time and will ultimately be removed.
+
+As mentioned 2 weeks ago in [(Backward Compatibility) Reverse-proxy configuration changes and initial Traefik support](#backward-compatibility-reverse-proxy-configuration-changes-and-initial-traefik-support), the playbook is moving to Traefik as its default SSL-terminating reverse-proxy.
+
+Until now, we've been doing the migration gradually and keeping full backward compatibility. New installations were defaulting to `matrix-nginx-proxy` (just like before), while existing installations were allowed to remain on `matrix-nginx-proxy` as well. This makes things very difficult for us, because we need to maintain and think about lots of different setups:
+
+- Traefik managed by the playbook
+- Traefik managed by the user in another way
+- another reverse-proxy on the same host (`127.0.0.1` port exposure)
+- another reverse-proxy on another host (`0.0.0.0` port exposure)
+- `matrix-nginx-proxy` - an `nginx` container managed by the playbook
+- `nginx` webserver operated by the user, running without a container on the same server
+
+Each change we do and each new feature that comes in needs to support all these different ways of reverse-proxying. Because `matrix-nginx-proxy` was the default and pretty much everyone was (and still is) using it, means that new PRs also come with `matrix-nginx-proxy` as their main focus and Traefik as an afterthought, which means we need to spend hours fixing up Traefik support.
+
+We can't spend all this time maintaining so many different configurations anymore. Traefik support has been an option for 2 weeks and lots of people have  already migrated their server and have tested things out. Traefik is what we use and preferentially test for.
+
+It's time for the **next step in our migration process** to Traefik and elimination of `matrix-nginx-proxy`:
+
+- Traefik is now the default reverse-proxy for new installations
+- All existing users need to explicitly choose their reverse-proxy type by defining the `matrix_playbook_reverse_proxy_type` variable in their `vars.yml` configuration file. We strongly encourage existing users to [switch the Traefik](#how-to-switch-an-existing-setup-to-traefik), as the nginx setup is bound to become more and more broken over time until it's ultimately removed
+
+### How do I switch my existing setup to Traefik?
+
+**For users who are on `matrix-nginx-proxy`** (the default reverse-proxy provided by the playbook), switching to Traefik can happen with a simple configuration change. Follow this section from 2 weeks ago: [How do I explicitly switch to Traefik right now?](#how-do-i-explicitly-switch-to-traefik-right-now).
+
+If you experience trouble:
+
+1. Follow [How do I remain on matrix-nginx-proxy?](#how-do-i-remain-on-matrix-nginx-proxy) to bring your server back online using the old reverse-proxy
+2. Ask for help in our [support channels](README.md#support)
+3. Try switching to Traefik again later
+
+**For users with a more special reverse-proxying setup** (another nginx server, Apache, Caddy, etc.), the migration may not be so smooth. Follow the [Using your own webserver](docs/configuring-playbook-own-webserver.md) guide. Ideally, your custom reverse-proxy will be configured in such a way that it **fronts the Traefik reverse-proxy** provided by the playbook. Other means of reverse-proxying are more fragile and may be deprecated in the future.
+
+### I already use my own Traefik server. How do I plug that in?
+
+See the [Traefik managed by the playbook](docs/configuring-playbook-own-webserver.md#traefik-managed-by-the-playbook) section.
+
+### Why is matrix-nginx-proxy used even after switching to Traefik?
+
+This playbook manages many different services. All these services were initially integrated with `matrix-nginx-proxy`.
+
+While we migrate all these components to have native Traefik support, some still go through nginx internally (Traefik -> local `matrix-nginx-proxy` -> component).
+As time goes on, internal reliance on `matrix-nginx-proxy` will gradually decrease until it's completely removed.
+
+### How do I remain on matrix-nginx-proxy?
+
+Most new work and testing targets Traefik, so remaining on nginx is **not** "the good old stable" option, but rather the "still available, but largely untested and likely to be broken very soon" option.
+
+To proceed regardless of this warning, add `matrix_playbook_reverse_proxy_type: playbook-managed-nginx` to your configuration.
+
+At some point in the **near** future (days, or even weeks at most), we hope to completely get rid of `matrix-nginx-proxy` (or break it enough to make it unusable), so you **will soon be forced to migrate** anyway. Plan your migration accordingly.
+
+### How do I keep using my own other reverse-proxy?
+
+We recommend that you follow the guide for [Fronting the integraed reverse-proxy webserver with another reverse-proxy](docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy).
+
+
 # 2023-02-25
 
 ## Rageshake support

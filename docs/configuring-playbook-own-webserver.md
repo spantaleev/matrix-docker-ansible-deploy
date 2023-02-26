@@ -1,4 +1,4 @@
-# Using your own webserver, instead of this playbook's nginx proxy (optional, advanced)
+# Using your own webserver, instead of this playbook's Traefik reverse-proxy (optional, advanced)
 
 **Note**: the playbook is [in the process of moving to Traefik](../CHANGELOG.md#reverse-proxy-configuration-changes-and-initial-traefik-support). The **documentation below may be incomplete or misleading**.
 
@@ -117,17 +117,36 @@ There are 2 ways to go about it:
 
 This method is about leaving the integrated reverse-proxy webserver be, but making it not get in the way (using up important ports, trying to retrieve SSL certificates, etc.).
 
-If you wish to use another webserver, the integrated nginx reverse-proxy webserver usually gets in the way because it attempts to fetch SSL certificates and binds to ports 80, 443 and 8448 (if Matrix Federation is enabled).
+If you wish to use another webserver, the integrated reverse-proxy webserver usually gets in the way because it attempts to fetch SSL certificates and binds to ports 80, 443 and 8448 (if Matrix Federation is enabled).
 
 You can disable such behavior and make the integrated reverse-proxy webserver only serve traffic locally (or over a local network).
 
 This is the recommended way for using another reverse-proxy, because the integrated one would act as a black box and wire all Matrix services correctly. You would only need to reverse-proxy a few individual domains and ports over to it.
 
-**For `matrix-nginx-proxy`** fronted by another reverse-proxy, you would need some configuration like this:
+**For Traefik** fronted by another reverse-proxy, you would need some configuration like this:
 
 ```yaml
-# playbook-managed-proxy is the default right now, so we can keep this commented out.
-# matrix_playbook_reverse_proxy_type: playbook-managed-nginx
+matrix_playbook_reverse_proxy_type: playbook-managed-traefik
+
+# Ensure that public urls use https
+matrix_playbook_ssl_enabled: true
+
+# Disable the web-secure (port 443) endpoint, which also disables SSL certificate retrieval
+devture_traefik_config_entrypoint_web_secure_enabled: false
+
+devture_traefik_container_web_host_bind_port: '127.0.0.1:81'
+
+devture_traefik_additional_entrypoints_auto:
+  - name: matrix-federation
+    port: "{{ matrix_federation_public_port }}"
+    host_bind_port: "127.0.0.1:{{ matrix_federation_public_port }}"
+    config: {}
+```
+
+(Deprecated) **For `matrix-nginx-proxy`** fronted by another reverse-proxy, you would need some configuration like this:
+
+```yaml
+matrix_playbook_reverse_proxy_type: playbook-managed-nginx
 
 # Ensure that public urls use https
 matrix_playbook_ssl_enabled: true
@@ -150,27 +169,8 @@ matrix_nginx_proxy_container_http_host_bind_port: '127.0.0.1:81'
 matrix_nginx_proxy_container_federation_host_bind_port: '127.0.0.1:8449'
 ```
 
-**For Traefik** fronted by another reverse-proxy, you would need some configuration like this:
-
-```yaml
-matrix_playbook_reverse_proxy_type: playbook-managed-traefik
-
-# Ensure that public urls use https
-matrix_playbook_ssl_enabled: true
-
-# Disable the web-secure (port 443) endpoint, which also disables SSL certificate retrieval
-devture_traefik_config_entrypoint_web_secure_enabled: false
-
-devture_traefik_container_web_host_bind_port: '127.0.0.1:81'
-
-devture_traefik_additional_entrypoints_auto:
-  - name: matrix-federation
-    port: "{{ matrix_federation_public_port }}"
-    host_bind_port: "127.0.0.1:{{ matrix_federation_public_port }}"
-    config: {}
-```
-
 If you'll be fronting with a reverse-proxy that lives on another machine (not on the same one as Matrix), you need to replace `127.0.0.1` in the above configurations with `0.0.0.0` or another network interface.
+
 
 ### Using no reverse-proxy on the Matrix side at all
 
@@ -181,6 +181,8 @@ This is more difficult, as you would need to handle the configuration for each s
 If your webserver is on the same machine, sure your web server user (something like `http`, `apache`, `www-data`, `nginx`) is part of the `matrix` group. You should run something like this: `usermod -a -G matrix nginx`. This allows your webserver user to access files owned by the `matrix` group. When using an external nginx webserver, this allows it to read configuration files from `/matrix/nginx-proxy/conf.d`. When using another server, it would make other files, such as `/matrix/static-files/.well-known`, accessible to it.
 
 #### Using your own nginx reverse-proxy running on the same machine
+
+**WARNING**: this type of setup is not maintained and will be removed in the future. We recommend that you go for [Fronting the integrated reverse-proxy webserver with another reverse-proxy](#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) instead.
 
 If you'll be using `nginx` running on the same machine (not in a container), you can make the playbook help you generate configuration for `nginx` with this configuration:
 
@@ -201,6 +203,8 @@ matrix_nginx_proxy_https_enabled: true
 You can most likely directly use the config files installed by this playbook at: `/matrix/nginx-proxy/conf.d`. Just include them in your own `nginx.conf` like this: `include /matrix/nginx-proxy/conf.d/*.conf;`
 
 #### Using your own reverse-proxy running on the same machine or elsewhere
+
+**WARNING**: this is difficult to set up, likely not very well supported and will be removed in the future. We recommend that you go for [Fronting the integrated reverse-proxy webserver with another reverse-proxy](#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) instead.
 
 To reverse-proxy manually for each service, use configuration like this:
 

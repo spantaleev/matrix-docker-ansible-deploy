@@ -56,6 +56,14 @@
 
 - name: Fail if matrix_playbook_reverse_proxy_type is set incorrectly
   ansible.builtin.fail:
+    msg: |
+      You have not explicitly specified the type of reverse-proxy you'd like to use (with a `matrix_playbook_reverse_proxy_type` variable in your configuration).
+      The playbook used to default to nginx (matrix-nginx-proxy), but things are changing with Traefik being the new default reverse-proxy.
+      Learn more here: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#traefik-is-the-default-reverse-proxy-now
+  when: matrix_playbook_reverse_proxy_type == ''
+
+- name: Fail if matrix_playbook_reverse_proxy_type is set incorrectly
+  ansible.builtin.fail:
     msg: "Detected that variable matrix_playbook_reverse_proxy_type (current value: `{{ matrix_playbook_reverse_proxy_type }}`) appears to be set incorrectly. See roles/custom/matrix-base/defaults/main.yml for valid choices."
   when: matrix_playbook_reverse_proxy_type not in ['playbook-managed-traefik', 'playbook-managed-nginx', 'other-traefik-container', 'other-nginx-non-container', 'other-on-same-host', 'other-on-another-host', 'none']
 

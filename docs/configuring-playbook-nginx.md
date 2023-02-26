@@ -1,7 +1,6 @@
 # Configure Nginx (optional, advanced)
 
-By default, this playbook installs its own nginx webserver (in a Docker container) which listens on ports 80 and 443.
-If that's alright, you can skip this.
+**Note**: the playbook is [in the process of moving to Traefik](../CHANGELOG.md#reverse-proxy-configuration-changes-and-initial-traefik-support). Traefik is already the default reverse-proxy for new installations and existing users are also strongly encouraged to switch to Traefik. As such, this **nginx documentation below may be incomplete or misleading**.
 
 
 ## Using Nginx status
