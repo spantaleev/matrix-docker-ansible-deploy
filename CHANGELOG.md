@@ -57,7 +57,7 @@ At some point in the **near** future (days, or even weeks at most), we hope to c
 
 ### How do I keep using my own other reverse-proxy?
 
-We recommend that you follow the guide for [Fronting the integraed reverse-proxy webserver with another reverse-proxy](docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy).
+We recommend that you follow the guide for [Fronting the integrated reverse-proxy webserver with another reverse-proxy](docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy).
 
 
 # 2023-02-25
