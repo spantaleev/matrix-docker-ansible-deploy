@@ -33,6 +33,14 @@ matrix_dendrite_http_bind_address: "{{ (':' + matrix_dendrite_http_bind_port | s
 # This is passed as an `-https-bind-address` flag to the Dendrite server in the container
 matrix_dendrite_https_bind_address: "{{ (':' + matrix_dendrite_https_bind_port | string) if matrix_dendrite_https_bind_port else '' }}"
 
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_dendrite_container_network: "{{ matrix_docker_network }}"
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_dendrite_container_additional_networks: []
+
 # Controls whether the matrix-dendrite container exposes the HTTP port (tcp/{{ matrix_dendrite_http_bind_port }} in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8008"), or empty string to not expose.

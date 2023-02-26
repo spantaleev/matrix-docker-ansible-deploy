@@ -22,13 +22,15 @@ ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_s
 ExecStartPre={{ matrix_host_command_sleep }} 5
 {% endif %}
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-dendrite \
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-dendrite \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_dendrite_tmp_directory_size_mb }}m \
-			--network={{ matrix_docker_network }} \
+			--network={{ matrix_dendrite_container_network }} \
 			{% if matrix_dendrite_container_http_host_bind_address and matrix_dendrite_http_bind_port %}
 			-p {{ matrix_dendrite_container_http_host_bind_address }}:{{ matrix_dendrite_http_bind_port }} \
 			{% endif %}
@@ -53,6 +55,12 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			{% if matrix_dendrite_https_bind_address %}
 			-https-bind-address {{ matrix_dendrite_https_bind_address }}
 			{% endif %}
+
+{% for network in matrix_dendrite_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-dendrite
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-dendrite
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-dendrite 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-dendrite 2>/dev/null || true'

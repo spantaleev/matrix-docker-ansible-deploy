@@ -76,6 +76,11 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
+- name: Ensure Dendrite container network is created
+  community.general.docker_network:
+    name: "{{ matrix_dendrite_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-dendrite.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/dendrite/systemd/matrix-dendrite.service.j2"
