@@ -188,3 +188,18 @@ When updating the playbook, refer to [the changelog](CHANGELOG.md) to catch up w
 - IRC channel: `#matrix-docker-ansible-deploy` on the [Libera Chat](https://libera.chat/) IRC network (irc.libera.chat:6697)
 
 - GitHub issues: [spantaleev/matrix-docker-ansible-deploy/issues](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues)
+
+
+## Related
+
+You may also be interested in these other Ansible playbooks:
+
+- [gitea-docker-ansible-deploy](https://github.com/spantaleev/gitea-docker-ansible-deploy) - for deploying a [Gitea](https://gitea.io/) git version-control server
+
+- [nextcloud-docker-ansible-deploy](https://github.com/spantaleev/nextcloud-docker-ansible-deploy) - for deploying a [Nextcloud](https://nextcloud.com/) server
+
+- [peertube-docker-ansible-deploy](https://github.com/spantaleev/peertube-docker-ansible-deploy) - for deploying a [PeerTube](https://joinpeertube.org/) video-platform server
+
+- [vaultwarden-docker-ansible-deploy](https://github.com/spantaleev/vaultwarden-docker-ansible-deploy) - for deploying a [Vaultwarden](https://github.com/dani-garcia/vaultwarden) password manager server (unofficial [Bitwarden](https://bitwarden.com/) compatible server)
+
+They're all making use of Traefik as their reverse-proxy, so it should be easy to host all these services on the same server. Follow the `docs/configuring-playbook-interoperability.md` documentation in each playbook.
