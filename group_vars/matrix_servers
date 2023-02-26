@@ -435,6 +435,15 @@ matrix_homeserver_container_federation_url: |-
     }[matrix_homeserver_implementation]
   }}
 
+matrix_homeserver_container_network: |-
+  {{
+    matrix_nginx_proxy_container_network if matrix_nginx_proxy_enabled else {
+      'synapse': matrix_synapse_container_network,
+      'dendrite': matrix_dendrite_container_network,
+      'conduit': matrix_conduit_container_network,
+    }[matrix_homeserver_implementation]
+  }}
+
 matrix_integration_manager_rest_url: "{{ matrix_dimension_integrations_rest_url if matrix_dimension_enabled else None }}"
 matrix_integration_manager_ui_url: "{{ matrix_dimension_integrations_ui_url if matrix_dimension_enabled else None }}"
 
