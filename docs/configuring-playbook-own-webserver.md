@@ -232,4 +232,4 @@ Some of these services are configured with certain default expecations with rega
 
 For each new playbook service that you enable, you'll need special handling.
 
-The [`examples/`](../examples/) directory contains examples for various servers: Caddy, Apache, HAproxy, etc.
+The [`examples/`](../examples/) directory contains examples for various servers: Caddy, Apache, HAproxy, Nginx, etc.
