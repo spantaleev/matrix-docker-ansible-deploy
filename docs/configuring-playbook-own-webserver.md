@@ -123,7 +123,7 @@ You can disable such behavior and make the integrated reverse-proxy webserver on
 
 This is the recommended way for using another reverse-proxy, because the integrated one would act as a black box and wire all Matrix services correctly. You would only need to reverse-proxy a few individual domains and ports over to it.
 
-**For Traefik** fronted by another reverse-proxy, you would need some configuration like this:
+To front Traefik with another reverse-proxy, you would need some configuration like this:
 
 ```yaml
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
@@ -143,35 +143,9 @@ devture_traefik_additional_entrypoints_auto:
     config: {}
 ```
 
-For an example where the playbook's Traefik reverse-proxy is fronted by [Nginx](https://nginx.org/) running on the same server, see [Nginx reverse-proxy fronting the playbook's Traefik](../examples/nginx/README.md).
-
-(Deprecated) **For `matrix-nginx-proxy`** fronted by another reverse-proxy, you would need some configuration like this:
-
-```yaml
-matrix_playbook_reverse_proxy_type: playbook-managed-nginx
-
-# Ensure that public urls use https
-matrix_playbook_ssl_enabled: true
-
-# Disable SSL certificate retrieval
-matrix_ssl_retrieval_method: none
-
-# Given that we won't be obtaining SSL certificates here, disable HTTPS
-matrix_nginx_proxy_https_enabled: false
-
-# Do not listen for HTTP on port 80 globally (default), listen on the loopback interface.
-# If you'd like, you can make it use the local network as well and reverse-proxy from another local machine.
-matrix_nginx_proxy_container_http_host_bind_port: '127.0.0.1:81'
-
-# Likewise, expose the Matrix Federation port on the loopback interface.
-# Since `matrix_nginx_proxy_https_enabled` is set to `false`, this federation port will serve HTTP traffic.
-# If you'd like, you can make it use the local network as well and reverse-proxy from another local machine.
-#
-# You'd most likely need to expose it publicly on port 8448 (8449 was chosen for the local port to prevent overlap).
-matrix_nginx_proxy_container_federation_host_bind_port: '127.0.0.1:8449'
-```
-
 If you'll be fronting with a reverse-proxy that lives on another machine (not on the same one as Matrix), you need to replace `127.0.0.1` in the above configurations with `0.0.0.0` or another network interface.
+
+For an example where the playbook's Traefik reverse-proxy is fronted by [Nginx](https://nginx.org/) running on the same server, see [Nginx reverse-proxy fronting the playbook's Traefik](../examples/nginx/README.md).
 
 
 ### Using no reverse-proxy on the Matrix side at all
