@@ -1715,6 +1715,7 @@ matrix_bot_buscarron_container_additional_networks: |
 matrix_bot_buscarron_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_bot_buscarron_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 matrix_bot_buscarron_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_bot_buscarron_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 ######################################################################
 #
@@ -2051,6 +2052,7 @@ matrix_rageshake_container_http_host_bind_port: "{{ (matrix_playbook_service_hos
 matrix_rageshake_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_rageshake_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 matrix_rageshake_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_rageshake_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 ######################################################################
 #
@@ -2178,6 +2180,7 @@ matrix_dimension_container_http_host_bind_port: "{{ (matrix_playbook_service_hos
 matrix_dimension_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_dimension_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 matrix_dimension_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_dimension_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 matrix_dimension_homeserver_clientServerUrl: "{{ matrix_homeserver_container_url }}"
 matrix_dimension_homeserver_federationUrl: "{{ matrix_homeserver_container_federation_url }}"
@@ -2480,6 +2483,7 @@ matrix_nginx_proxy_proxy_ntfy_enabled: "{{ ntfy_enabled and matrix_playbook_reve
 matrix_nginx_proxy_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_nginx_proxy_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 matrix_nginx_proxy_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_nginx_proxy_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 matrix_nginx_proxy_container_labels_traefik_proxy_matrix_enabled: true
 matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_enabled: "{{ matrix_etherpad_enabled and matrix_etherpad_mode == 'standalone' }}"
@@ -2971,6 +2975,7 @@ matrix_sygnal_container_http_host_bind_port: "{{ (matrix_playbook_service_host_b
 matrix_sygnal_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_sygnal_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 matrix_sygnal_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_sygnal_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 ######################################################################
 #
@@ -3004,6 +3009,7 @@ ntfy_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_inter
 ntfy_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 ntfy_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 ntfy_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+ntfy_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 ntfy_visitor_request_limit_exempt_hosts_hostnames_auto: |
   {{
@@ -3061,6 +3067,7 @@ matrix_client_element_container_additional_networks: "{{ [matrix_playbook_revers
 matrix_client_element_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_client_element_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 matrix_client_element_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_client_element_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 matrix_client_element_default_hs_url: "{{ matrix_homeserver_url }}"
 matrix_client_element_default_is_url: "{{ matrix_identity_server_url }}"
@@ -3114,6 +3121,7 @@ matrix_client_hydrogen_container_additional_networks: "{{ [matrix_playbook_rever
 matrix_client_hydrogen_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_client_hydrogen_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 matrix_client_hydrogen_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_client_hydrogen_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 matrix_client_hydrogen_default_hs_url: "{{ matrix_homeserver_url }}"
 
@@ -3147,6 +3155,7 @@ matrix_client_cinny_container_additional_networks: "{{ [matrix_playbook_reverse_
 matrix_client_cinny_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_client_cinny_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 matrix_client_cinny_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_client_cinny_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 matrix_client_cinny_default_hs_url: "{{ matrix_homeserver_url }}"
 
@@ -3326,6 +3335,7 @@ matrix_synapse_admin_container_additional_networks: "{{ [matrix_playbook_reverse
 matrix_synapse_admin_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_synapse_admin_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 matrix_synapse_admin_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_synapse_admin_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 ######################################################################
 #
@@ -3357,6 +3367,7 @@ prometheus_node_exporter_container_additional_networks: "{{ [matrix_playbook_rev
 prometheus_node_exporter_container_labels_traefik_enabled: false
 prometheus_node_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 prometheus_node_exporter_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+prometheus_node_exporter_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 ######################################################################
 #
@@ -3388,6 +3399,7 @@ prometheus_postgres_exporter_container_additional_networks: "{{ [matrix_playbook
 prometheus_postgres_exporter_container_labels_traefik_enabled: false
 prometheus_postgres_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 prometheus_postgres_exporter_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+prometheus_postgres_exporter_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 prometheus_postgres_exporter_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 prometheus_postgres_exporter_database_username: matrix_prometheus_postgres_exporter
@@ -3491,6 +3503,7 @@ grafana_container_additional_networks: |
 grafana_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 grafana_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 grafana_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+grafana_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach Grafana over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
