@@ -143,6 +143,8 @@ devture_traefik_additional_entrypoints_auto:
     config: {}
 ```
 
+For an example where the playbook's Traefik reverse-proxy is fronted by [Nginx](https://nginx.org/) running on the same server, see [Nginx reverse-proxy fronting the playbook's Traefik](../examples/nginx/README.md).
+
 (Deprecated) **For `matrix-nginx-proxy`** fronted by another reverse-proxy, you would need some configuration like this:
 
 ```yaml
@@ -232,4 +234,4 @@ Some of these services are configured with certain default expecations with rega
 
 For each new playbook service that you enable, you'll need special handling.
 
-The [`examples/`](../examples/) directory contains examples for various servers: Caddy, Apache, HAproxy, etc.
+The [`examples/`](../examples/) directory contains examples for various servers: Caddy, Apache, HAproxy, Nginx, etc.
