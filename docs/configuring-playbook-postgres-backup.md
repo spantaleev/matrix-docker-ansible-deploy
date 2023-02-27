@@ -23,8 +23,8 @@ Refer to the table below for additional configuration variables and their defaul
 |`devture_postgres_backup_keep_days`|`7`|Number of daily backups to keep|
 |`devture_postgres_backup_keep_weeks`|`4`|Number of weekly backups to keep|
 |`devture_postgres_backup_keep_months`|`12`|Number of monthly backups to keep|
-|`devture_postgres_base_path` | `"{{ matrix_base_data_path }}/postgres-backup"` | Base path for postgres-backup. Also see `devture_postgres_data_path` |
-|`devture_postgres_data_path` | `"{{ devture_postgres_base_path }}/data"` | Storage path for postgres-backup database backups |
+|`devture_postgres_backup_base_path` | `"{{ matrix_base_data_path }}/postgres-backup"` | Base path for postgres-backup. Also see `devture_postgres_backup_data_path` |
+|`devture_postgres_backup_data_path` | `"{{ devture_postgres_backup_base_path }}/data"` | Storage path for postgres-backup database backups |
 
 
 ## Installing
