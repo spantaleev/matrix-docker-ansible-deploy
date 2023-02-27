@@ -143,7 +143,7 @@ devture_traefik_additional_entrypoints_auto:
     config: {}
 ```
 
-For an example where the playbook's traefik is fronted by Nginx running on the same server, see [Nginx reverse-proxy fronting playbook's Traefik](../examples/nginx/README.md).
+For an example where the playbook's Traefik reverse-proxy is fronted by [Nginx](https://nginx.org/) running on the same server, see [Nginx reverse-proxy fronting the playbook's Traefik](../examples/nginx/README.md).
 
 (Deprecated) **For `matrix-nginx-proxy`** fronted by another reverse-proxy, you would need some configuration like this:
 
