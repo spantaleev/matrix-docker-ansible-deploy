@@ -31,6 +31,7 @@ devture_traefik_config_entrypoint_web_secure_enabled: false
 
 To use self-signed SSL certificates, you need to disable the certResolvers and the traefik-certs-dumper tool. 
 You also need to override the providers.file setting in the Traefik configs. 
+
 Create a file 'certificates.yml' in /devture-traefik/config/ with the following content:
 
 ```yaml
@@ -46,6 +47,7 @@ tls:
 ```
 
 Place the key and your certificate in /devture-traefik/ssl/
+
 You can use the matrix-aux role for this:
 
 ```yaml
