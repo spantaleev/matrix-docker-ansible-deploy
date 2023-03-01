@@ -29,27 +29,32 @@ devture_traefik_config_entrypoint_web_secure_enabled: false
 
 ## Using self-signed SSL certificates
 
-To use self-signed SSL certificates, you need to:
+If you'd like to use your own SSL certificates, instead of the default (SSL certificates obtained automatically via [ACME](https://en.wikipedia.org/wiki/Automatic_Certificate_Management_Environment) from [Let's Encrypt](https://letsencrypt.org/)):
 
-- disable `certResolvers` in Traefik, so it won't attempt to retrieve SSL certificates using the default certificate resolver (using [ACME](https://en.wikipedia.org/wiki/Automatic_Certificate_Management_Environment) / [Let's Encrypt](https://letsencrypt.org/))
+- generate your self-signed certificate files
+- follow the [Using your own SSL certificates](#using-your-own-ssl-certificates) documentation below
+
+
+## Using your own SSL certificates
+
+To use your own SSL certificates with Traefik, you need to:
+
+- disable [ACME](https://en.wikipedia.org/wiki/Automatic_Certificate_Management_Environment) / [Let's Encrypt](https://letsencrypt.org/) support
 - put a custom Traefik configuration file on the server, with the help of this Ansible playbook (via the `matrix-aux` role) or manually
 - register your custom configuration file with Traefik, by adding an extra provider of type [file](https://doc.traefik.io/traefik/providers/file/)
 - put the SSL files on the server, with the help of this Ansible playbook (via the `matrix-aux` role) or manually
 
 ```yaml
-# Disable ACME / Let's Encrypt support
+# Disable ACME / Let's Encrypt support.
 devture_traefik_config_certificatesResolvers_acme_enabled: false
 
-# Unset the default certificate resolver
-devture_traefik_certResolver_primary: ''
-
-# Keep the SSL directory normally used for ACME / Let's Encrypt certificates.
-# We need to explicitly enable this, because disabling ACME support (above) automatically disables it otherwise.
+# Disabling ACME support (above) automatically disables the creation of the SSL directory.
+# Force-enable it here, because we'll add our certificate files there.
 devture_traefik_ssl_dir_enabled: true
 
 # Tell Traefik to load our custom configuration file (certificates.yml).
-# The file is created below. See `matrix_aux_file_definitions`.
-# The `/config/..` path is an in-container path, not a path on the host. Do not change it!
+# The file is created below, in `matrix_aux_file_definitions`.
+# The `/config/..` path is an in-container path, not a path on the host (like `/devture-traefik/config`). Do not change it!
 devture_traefik_configuration_extension_yaml: |
   providers:
     file:
@@ -63,14 +68,24 @@ matrix_aux_file_definitions:
   # uploading a file from the computer where Ansible is running.
   - dest: "{{ devture_traefik_ssl_dir_path }}/privkey.pem"
     src: /path/on/your/Ansible/computer/to/privkey.pem
+	# Alternatively, comment out `src` above and uncomment the lines below to provide the certificate content inline.
+	# Note the indentation level.
+	# content: |
+	#   FILE CONTENT
+	#   HERE
 
   # Create the cert.pem file on the server
   # uploading a file from the computer where Ansible is running.
   - dest: "{{ devture_traefik_ssl_dir_path }}/cert.pem"
     src: /path/on/your/Ansible/computer/to/cert.pem
+	# Alternatively, comment out `src` above and uncomment the lines below to provide the certificate content inline.
+	# Note the indentation level.
+	# content: |
+	#   FILE CONTENT
+	#   HERE
 
   # Create the custom Traefik configuration.
-  # The `/ssl/..` paths below are in-container paths, not paths on the host. Do not change them!
+  # The `/ssl/..` paths below are in-container paths, not paths on the host (/`devture-traefik/ssl/..`). Do not change them!
   - dest: "{{ devture_traefik_config_dir_path }}/certificates.yml"
     content: |
       tls:
