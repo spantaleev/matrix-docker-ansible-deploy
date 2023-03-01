@@ -21,6 +21,13 @@ else
 		rm -f {{ devture_systemd_docker_base_systemd_path }}/$s
 	done
 
+    echo "Stop and remove devture services"
+
+	for s in $(find {{ devture_systemd_docker_base_systemd_path }}/ -type f -name "devture-*" -printf "%f\n"); do
+		systemctl disable --now $s
+		rm -f {{ devture_systemd_docker_base_systemd_path }}/$s
+	done
+
 	systemctl daemon-reload
 
 	echo "Remove unused Docker images and resources"
