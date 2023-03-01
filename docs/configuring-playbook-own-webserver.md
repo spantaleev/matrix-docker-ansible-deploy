@@ -134,16 +134,31 @@ matrix_playbook_ssl_enabled: true
 # Disable the web-secure (port 443) endpoint, which also disables SSL certificate retrieval
 devture_traefik_config_entrypoint_web_secure_enabled: false
 
+# If your reverse-proxy runs on another machine, consider using `0.0.0.0:81`, just `81` or `SOME_IP_ADDRESS_OF_THIS_MACHINE:81`
 devture_traefik_container_web_host_bind_port: '127.0.0.1:81'
 
+# We bind to `127.0.0.1` by default (see above), so trusting `X-Forwarded-*` headers from
+# a reverse-proxy running on the local machine is safe enough.
+devture_traefik_config_entrypoint_web_forwardedHeaders_insecure: true
+
+# Or, if you're publishing the port (`devture_traefik_container_web_host_bind_port` above) to a public network interfaces:
+# - remove the `devture_traefik_config_entrypoint_web_forwardedHeaders_insecure` variable definition above
+# - uncomment and adjust the line below
+# devture_traefik_config_entrypoint_web_forwardedHeaders_trustedIPs: ['IP-ADDRESS-OF-YOUR-REVERSE-PROXY']
+
+# Likewise (to `devture_traefik_container_web_host_bind_port` above),
+# if your reverse-proxy runs on another machine, consider changing the `host_bind_port` setting below.
 devture_traefik_additional_entrypoints_auto:
   - name: matrix-federation
     port: 8449
     host_bind_port: '127.0.0.1:8449'
     config: {}
+	# If your reverse-proxy runs on another machine, remove the config above and use this config instead:
+	# config:
+	#   forwardedHeaders:
+	#     insecure: true
+	#     # trustedIPs: ['IP-ADDRESS-OF-YOUR-REVERSE-PROXY']
 ```
-
-If you'll be fronting with a reverse-proxy that lives on another machine (not on the same one as Matrix), you need to replace `127.0.0.1` in the above configurations with `0.0.0.0` or another network interface.
 
 For an example where the playbook's Traefik reverse-proxy is fronted by [Nginx](https://nginx.org/) running on the same server, see [Nginx reverse-proxy fronting the playbook's Traefik](../examples/nginx/README.md).
 
