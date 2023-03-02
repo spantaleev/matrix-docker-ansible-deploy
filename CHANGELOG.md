@@ -1,3 +1,32 @@
+# 2023-03-02
+
+## The matrix-etherpad role lives independently now
+
+**TLDR**: the `matrix-etherpad` role is now included from [another repository](https://gitlab.com/etke.cc/roles/etherpad). Some variables have been renamed. All functionality remains intact.
+
+You need to **update you roles** (`just roles` or `make roles`) regardless of whether you're using Etherpad or not.
+
+If you're making use of Etherpad via this playbook, you will need to update variable references in your `vars.yml` file:
+
+- Rename `matrix_etherpad_public_endpoint` to `etherpad_path_prefix`
+
+- Replace `matrix_etherpad_mode: dimension` with:
+  - for `matrix-nginx-proxy` users:
+    - `etherpad_nginx_proxy_dimension_integration_enabled: true`
+    - `etherpad_hostname: "{{ matrix_server_fqn_dimension }}"`
+  - for Traefik users:
+    - define your own `etherpad_hostname` and `etherpad_path_prefix` as you see fit
+
+- Rename all other variables:
+  - `matrix_etherpad_docker_image_` -> `matrix_etherpad_container_image_`
+  - `matrix_etherpad_` -> `etherpad_`
+
+Along with this relocation, the new role also:
+
+- supports [self-building](docs/self-building.md), so it should work on `arm32` and `arm64` architectures
+- has native Traefik reverse-proxy support (Etherpad requests no longer go through `matrix-nginx-proxy` when using Traefik)
+
+
 # 2023-02-26
 
 ## Traefik is the default reverse-proxy now
@@ -483,11 +512,11 @@ Various services (like Dimension, etc.) still talk to Synapse via `matrix-nginx-
 
 Until now, [Etherpad](https://etherpad.org/) (which [the playbook could install for you](docs/configuring-playbook-etherpad.md)) required the [Dimension integration manager](docs/configuring-playbook-dimension.md) to also be installed, because Etherpad was hosted on the Dimension domain (at `dimension.DOMAIN/etherpad`).
 
-From now on, Etherpad can be installed in `standalone` mode on `etherpad.DOMAIN` and used even without Dimension. This is much more versatile, so the playbook now defaults to this new mode (`matrix_etherpad_mode: standalone`).
+From now on, Etherpad can be installed in `standalone` mode on `etherpad.DOMAIN` and used even without Dimension. This is much more versatile, so the playbook now defaults to this new mode (`etherpad_mode: standalone`).
 
 If you've already got both Etherpad and Dimension in use you could:
 
-- **either** keep hosting Etherpad under the Dimension domain by adding `matrix_etherpad_mode: dimension` to your `vars.yml` file. All your existing room widgets will continue working at the same URLs and no other changes will be necessary.
+- **either** keep hosting Etherpad under the Dimension domain by adding `etherpad_mode: dimension` to your `vars.yml` file. All your existing room widgets will continue working at the same URLs and no other changes will be necessary.
 
 - **or**, you could change to hosting Etherpad separately on `etherpad.DOMAIN`. You will need to [configure a DNS record](docs/configuring-dns.md) for this new domain. You will also need to reconfigure Dimension to use the new pad URLs (`https://etherpad.DOMAIN/...`) going forward (refer to our [configuring Etherpad documentation](docs/configuring-playbook-etherpad.md)). All your existing room widgets (which still use `https://dimension.DOMAIN/etherpad/...`) will break as Etherpad is not hosted there anymore. You will need to re-add them or to consider not using `standalone` mode
 

@@ -304,7 +304,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-email2matrix.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'email2matrix']}] if matrix_email2matrix_enabled else [])
     +
-    ([{'name': 'matrix-etherpad.service', 'priority': 4000, 'groups': ['matrix', 'etherpad']}] if matrix_etherpad_enabled else [])
+    ([{'name': (etherpad_identifier + '.service'), 'priority': 4000, 'groups': ['matrix', 'etherpad']}] if etherpad_enabled else [])
     +
     ([{'name': (grafana_identifier + '.service'), 'priority': 4000, 'groups': ['matrix', 'monitoring', 'grafana']}] if grafana_enabled else [])
     +
@@ -2208,29 +2208,55 @@ matrix_dimension_database_password: "{{ '%s' | format(matrix_homeserver_generic_
 
 ######################################################################
 #
-# matrix-etherpad
+# etke/etherpad
 #
 ######################################################################
 
-matrix_etherpad_enabled: false
+etherpad_enabled: false
 
-matrix_etherpad_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9001') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+etherpad_identifier: matrix-etherpad
 
-matrix_etherpad_base_url: "{{ 'https://' + matrix_server_fqn_dimension + matrix_etherpad_public_endpoint if matrix_etherpad_mode == 'dimension' else 'https://' + matrix_server_fqn_etherpad + '/' }}"
+etherpad_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 
-matrix_etherpad_systemd_required_services_list: |
+etherpad_base_path: "{{ matrix_base_data_path }}/etherpad"
+
+etherpad_framing_enabled: "{{ matrix_dimension_enabled or matrix_jitsi_enabled }}"
+
+etherpad_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
+
+etherpad_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9001') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+
+etherpad_container_network: "{{ matrix_nginx_proxy_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else etherpad_identifier }}"
+
+etherpad_container_additional_networks: |
+  {{
+    (
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
+      +
+      ([devture_postgres_container_network] if devture_postgres_enabled and devture_postgres_container_network != etherpad_container_network else [])
+    ) | unique
+  }}
+
+etherpad_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+etherpad_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+etherpad_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+etherpad_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+etherpad_systemd_required_services_list: |
   {{
     ['docker.service']
     +
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
   }}
 
-matrix_etherpad_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
-matrix_etherpad_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'etherpad.db', rounds=655555) | to_uuid }}"
+etherpad_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
+etherpad_database_name: matrix_etherpad
+etherpad_database_username: matrix_etherpad
+etherpad_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'etherpad.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
 #
-# /matrix-etherpad
+# /etke/etherpad
 #
 ######################################################################
 
@@ -2298,9 +2324,9 @@ matrix_jitsi_web_stun_servers: |
 # If the self-hosted Etherpad instance is available, it will also show up in Jitsi conferences,
 # unless explicitly disabled by setting `matrix_jitsi_etherpad_enabled` to false.
 # Falls back to the scalar.vector.im etherpad in case someone sets `matrix_jitsi_etherpad_enabled` to true,
-# while also setting `matrix_etherpad_enabled` to false.
-matrix_jitsi_etherpad_enabled: "{{ matrix_etherpad_enabled }}"
-matrix_jitsi_etherpad_base: "{{ matrix_etherpad_base_url if matrix_etherpad_enabled else 'https://scalar.vector.im/etherpad' }}"
+# while also setting `etherpad_enabled` to false.
+matrix_jitsi_etherpad_enabled: "{{ etherpad_enabled }}"
+matrix_jitsi_etherpad_base: "{{ etherpad_base_url if etherpad_enabled else 'https://scalar.vector.im/etherpad' }}"
 
 # Allow verification using JWT and matrix-UVS
 matrix_jitsi_prosody_auth_matrix_uvs_auth_token: "{{ matrix_user_verification_service_uvs_auth_token }}"
@@ -2468,7 +2494,7 @@ matrix_nginx_proxy_proxy_cinny_enabled: "{{ matrix_client_cinny_enabled and matr
 matrix_nginx_proxy_proxy_buscarron_enabled: "{{ matrix_bot_buscarron_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_dimension_enabled: "{{ matrix_dimension_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_rageshake_enabled: "{{ matrix_rageshake_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-matrix_nginx_proxy_proxy_etherpad_enabled: "{{ matrix_etherpad_enabled and matrix_etherpad_mode == 'standalone' }}"
+matrix_nginx_proxy_proxy_etherpad_enabled: "{{ etherpad_enabled and not etherpad_nginx_proxy_dimension_integration_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled }}"
 
 matrix_nginx_proxy_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
@@ -2484,7 +2510,6 @@ matrix_nginx_proxy_container_labels_traefik_entrypoints: "{{ devture_traefik_ent
 matrix_nginx_proxy_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 matrix_nginx_proxy_container_labels_traefik_proxy_matrix_enabled: true
-matrix_nginx_proxy_container_labels_traefik_proxy_etherpad_enabled: "{{ matrix_etherpad_enabled and matrix_etherpad_mode == 'standalone' }}"
 matrix_nginx_proxy_container_labels_traefik_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled }}"
 matrix_nginx_proxy_container_labels_traefik_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
 
@@ -2576,7 +2601,7 @@ matrix_nginx_proxy_systemd_wanted_services_list: |
     +
     (['matrix-bot-go-neb.service'] if matrix_bot_go_neb_enabled else [])
     +
-    (['matrix-etherpad.service'] if matrix_etherpad_enabled else [])
+    ([etherpad_identifier + '.service'] if etherpad_enabled else [])
     +
     (['matrix-hookshot.service'] if matrix_hookshot_enabled else [])
   }}
@@ -2597,7 +2622,7 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     +
     ([matrix_server_fqn_dimension] if matrix_dimension_enabled else [])
     +
-    ([matrix_server_fqn_etherpad] if (matrix_etherpad_enabled and matrix_etherpad_mode == 'standalone') else [])
+    ([matrix_server_fqn_etherpad] if (etherpad_enabled and not etherpad_nginx_proxy_dimension_integration_enabled) else [])
     +
     ([matrix_server_fqn_bot_go_neb] if matrix_bot_go_neb_enabled else [])
     +
@@ -2888,10 +2913,10 @@ devture_postgres_managed_databases_auto: |
     }] if (matrix_dimension_enabled and matrix_dimension_database_engine == 'postgres' and matrix_dimension_database_hostname == devture_postgres_connection_hostname) else [])
     +
     ([{
-      'name': matrix_etherpad_database_name,
-      'username': matrix_etherpad_database_username,
-      'password': matrix_etherpad_database_password,
-    }] if (matrix_etherpad_enabled and matrix_etherpad_database_engine == 'postgres' and matrix_etherpad_database_hostname == devture_postgres_connection_hostname) else [])
+      'name': etherpad_database_name,
+      'username': etherpad_database_username,
+      'password': etherpad_database_password,
+    }] if (etherpad_enabled and etherpad_database_engine == 'postgres' and etherpad_database_hostname == devture_postgres_connection_hostname) else [])
     +
     ([{
       'name': prometheus_postgres_exporter_database_name,

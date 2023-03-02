@@ -1,19 +1,41 @@
 # Setting up Etherpad (optional)
 
-[Etherpad](https://etherpad.org) is is an open source collaborative text editor that can be embedded in a Matrix chat room using the [Dimension integrations manager](https://dimension.t2bot.io) or used as standalone web app.
+[Etherpad](https://etherpad.org) is an open source collaborative text editor that can be embedded in a Matrix chat room using the [Dimension integrations manager](https://dimension.t2bot.io) or used as standalone web app.
 
 When enabled together with the Jitsi audio/video conferencing system (see [our docs on Jitsi](configuring-playbook-jitsi.md)), it will be made available as an option during the conferences.
 
 
-## Prerequisites
+## Decide on a domain and path
 
-Etherpad can be installed in 2 modes:
+By default, Etherpad is configured to use its own dedicated domain (`etherpad.DOMAIN`) and requires you to [adjust your DNS records](#adjusting-dns-records).
 
-- (default) `standalone` mode (`matrix_etherpad_mode: standalone`) - Etherpad will be hosted on `etherpad.<your-domain>` (`matrix_server_fqn_etherpad`), so the DNS record for this domian must be created. See [Configuring your DNS server](configuring-dns.md) on how to set up the `etherpad` DNS record correctly
+You can override the domain and path like this:
 
-- `dimension` mode (`matrix_etherpad_mode: dimension`) - Etherpad will be hosted on `dimension.<your-domain>/etherpad` (`matrix_server_fqn_dimension`). This requires that you **first** configure the **Dimension integrations manager** as described in [the playbook documentation](configuring-playbook-dimension.md)
+```yaml
+# Switch to the domain used for Matrix services (`matrix.DOMAIN`),
+# so we won't need to add additional DNS records for Etherpad.
+etherpad_hostname: "{{ matrix_server_fqn_matrix }}"
 
-We recomend that you go with the default (`standalone`) mode, which makes Etherpad independent and allows it to be used with or without Dimension.
+# Expose under the /etherpad subpath
+etherpad_path_prefix: /etherpad
+```
+
+**NOTE**: When using the old `matrix-nginx-proxy` reverse-proxy instead of Traefik, you have only 2 choices:
+
+- serving Etherpad at its own dedicated domain:
+  - you need to set the domain using the `matrix_server_fqn_etherpad` variable (not `etherpad_hostname`)
+  - you must use `etherpad_path_prefix: /`
+- serving Etherpad at the [Dimension](configuring-playbook-dimension.md) integration manager's domain (`matrix_server_fqn_dimension`)
+  - you need to have Dimension enabled
+  - you need to add `etherpad_path_prefix: /etherpad` or another prefix (different than `/`)
+  - you need to add `etherpad_nginx_proxy_dimension_integration_enabled: true` to enable this integration
+
+
+## Adjusting DNS records
+
+Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Etherpad domain to the Matrix server.
+
+If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
 
 ## Installing
@@ -21,48 +43,51 @@ We recomend that you go with the default (`standalone`) mode, which makes Etherp
 [Etherpad](https://etherpad.org) installation is disabled by default. You can enable it in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
-matrix_etherpad_enabled: true
-
-# Uncomment below if you'd like to install Etherpad on the Dimension domain (not recommended)
-# matrix_etherpad_mode: dimension
+etherpad_enabled: true
 
 # Uncomment below to enable the admin web UI
-# matrix_etherpad_admin_username: admin
-# matrix_etherpad_admin_password: some-password
+# etherpad_admin_username: admin
+# etherpad_admin_password: some-password
 ```
 
-If enabled, the admin web-UI should then be available on `https://etherpad.<your-domain>/admin` (or `https://dimension.<your-domain>/etherpad/admin`, if `matrix_etherpad_mode: dimension`)
+Then, [run the installation process](installing.md) again (e.g. `just install-all`).
 
 
-## Managing / Deleting old pads
+## Usage
+
+The Etherpad UI should be available at `https://etherpad.<your-domain>`, while the admin UI (if enabled) should then be available at `https://etherpad.<your-domain>/admin`.
+
+If you've [decided on another hostname or path-prefix](#decide-on-a-domain-and-path) (e.g. `https://matrix.DOMAIN/etherpad`), adjust these URLs accordingly before usage.
+
+
+### Managing / Deleting old pads
 
 If you want to manage and remove old unused pads from Etherpad, you will first need to able Admin access as described above.
 
-Then from the plugin manager page (`https://etherpad.<your-domain>/admin/plugins` or `https://dimension.<your-domain>/etherpad/admin/plugins`), install the `adminpads2` plugin. Once installed, you should have a "Manage pads" section in the Admin web-UI.
+Then from the plugin manager page (`https://etherpad.<your-domain>/admin/plugins`, install the `adminpads2` plugin. Once installed, you should have a "Manage pads" section in the Admin web-UI.
 
 
-## How to use Etherpad widgets without an Integration Manager (like Dimension)
+### How to use Etherpad widgets without an Integration Manager (like Dimension)
 
 This is how it works in Element, it might work quite similar with other clients:
 
 To integrate a standalone etherpad in a room, create your pad by visiting `https://etherpad.DOMAIN`. When the pad opens, copy the URL and send a command like this to the room: `/addwidget URL`. You will then find your integrated Etherpad within the right sidebar in the `Widgets` section.
 
 
-## Set Dimension default to the self-hosted Etherpad (optional)
+### Set Dimension default to the self-hosted Etherpad (optional)
 
 If you decided to install [Dimension integration manager](configuring-playbook-dimension.md) alongside Etherpad, the Dimension administrator users can configure the default URL template.
 The Dimension configuration menu can be accessed with the sprocket icon as you begin to add a widget to a room in Element. There you will find the Etherpad Widget Configuration action beneath the _Widgets_ tab.
 
 
-### Removing the integrated Etherpad chat
+#### Removing the integrated Etherpad chat
 
-If you wish to disable the Etherpad chat button, you can do it by appending `?showChat=false` to the end of the pad URL, or the template. Examples:
-- `https://etherpad.<your-domain>/p/$roomId_$padName?showChat=false` (for the default - `matrix_etherpad_mode: standalone`)
+If you wish to disable the Etherpad chat button, you can do it by appending `?showChat=false` to the end of the pad URL, or the template.
 
-- `https://dimension.<your-domain>/etherpad/p/$roomId_$padName?showChat=false` (for `matrix_etherpad_mode: dimension`)
+Example: `https://etherpad.<your-domain>/p/$roomId_$padName?showChat=false`
 
 
-### Known issues
+## Known issues
 
 If your Etherpad widget fails to load, this might be due to Dimension generating a Pad name so long, the Etherpad app rejects it.
 `$roomId_$padName` can end up being longer than 50 characters. You can avoid having this problem by altering the template so it only contains the three word random identifier `$padName`.
