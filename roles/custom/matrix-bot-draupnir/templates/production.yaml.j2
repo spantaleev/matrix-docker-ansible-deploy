@@ -36,7 +36,7 @@ autojoinOnlyIfManager: true
 
 # If `autojoinOnlyIfManager` is false, only the members in this space can invite
 # the bot to new rooms.
-acceptInvitesFromSpace: "!example:example.org"
+#acceptInvitesFromSpace: "!example:example.org"
 
 # Whether Draupnir should report ignored invites to the management room (if autojoinOnlyIfManager is true).
 recordIgnoredInvites: false
@@ -49,11 +49,11 @@ recordIgnoredInvites: false
 #
 # Note: By default, Draupnir is fairly verbose - expect a lot of messages in this room.
 # (see verboseLogging to adjust this a bit.)
-managementRoom: "#moderators:example.org"
+managementRoom: "{{ matrix_bot_draupnir_management_room }}"
 
 # Whether Draupnir should log a lot more messages in the room,
 # mainly involves "all-OK" messages, and debugging messages for when Draupnir checks bans in a room.
-verboseLogging: true
+verboseLogging: false
 
 # The log level of terminal (or container) output,
 # can be one of DEBUG, INFO, WARN and ERROR, in increasing order of importance and severity.
@@ -130,7 +130,7 @@ admin:
   # (with enough permissions) to "make" a user an admin.
   #
   # This only works if a local user with enough admin permissions is present in the room.
-  enableMakeRoomAdminCommand: true
+  enableMakeRoomAdminCommand: false
 
 # Misc options for command handling and commands
 commands:
@@ -146,6 +146,7 @@ commands:
   # Any additional bot prefixes that Draupnir will listen to. i.e. adding `mod` will allow `!mod help`.
   additionalPrefixes:
     - "draupnir-bot"
+    - "draupnir_bot"
     - "draupnir"
 
   # Whether or not commands with a wildcard (*) will require an additional `--force` argument
