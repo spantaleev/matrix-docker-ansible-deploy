@@ -4,7 +4,7 @@
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
       when: "run_setup | bool and matrix_bot_go_neb_enabled | bool"
 
-    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
       when: "run_setup | bool and matrix_bot_go_neb_enabled | bool"
   tags:
     - setup-all
@@ -13,7 +13,7 @@
     - install-bot-go-neb
 
 - block:
-    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
       when: "run_setup | bool and not matrix_bot_go_neb_enabled | bool"
   tags:
     - setup-all

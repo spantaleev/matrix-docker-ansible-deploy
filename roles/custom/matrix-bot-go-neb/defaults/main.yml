@@ -1,11 +1,22 @@
 ---
+
 # Go-NEB is a Matrix bot written in Go. It is the successor to Matrix-NEB, the original Matrix bot written in Python.
 # Project source code URL: https://github.com/matrix-org/go-neb
 
 matrix_bot_go_neb_enabled: true
+
 matrix_bot_go_neb_version: latest
-matrix_bot_go_neb_docker_image: "matrixdotorg/go-neb:{{ matrix_bot_go_neb_version }}"
-matrix_bot_go_neb_docker_image_force_pull: "{{ matrix_bot_go_neb_docker_image.endswith(':latest') }}"
+
+matrix_bot_go_neb_scheme: https
+
+# The hostname at which Go-NEB is served.
+matrix_bot_go_neb_hostname: ''
+
+# The path at which Go-NEB is exposed.
+# This value must either be `/` or not end with a slash (e.g. `/go-neb`).
+matrix_bot_go_neb_path_prefix: /
+
+matrix_bot_go_neb_base_url: "{{ matrix_bot_go_neb_scheme }}://{{ matrix_bot_go_neb_hostname }}{{ matrix_bot_go_neb_path_prefix }}{{ '' if matrix_bot_go_neb_path_prefix == '/' else '/' }}"
 
 matrix_bot_go_neb_base_path: "{{ matrix_base_data_path }}/go-neb"
 matrix_bot_go_neb_config_path: "{{ matrix_bot_go_neb_base_path }}/config"
@@ -13,10 +24,62 @@ matrix_bot_go_neb_config_path_in_container: "/config/config.yaml"
 matrix_bot_go_neb_data_path: "{{ matrix_bot_go_neb_base_path }}/data"
 matrix_bot_go_neb_data_store_path: "{{ matrix_bot_go_neb_data_path }}/store"
 
+matrix_bot_go_neb_container_image: "{{ matrix_bot_go_neb_container_image_registry_prefix }}matrixdotorg/go-neb:{{ matrix_bot_go_neb_container_image_tag }}"
+matrix_bot_go_neb_container_image_tag: "{{ matrix_bot_go_neb_version }}"
+matrix_bot_go_neb_container_image_force_pull: "{{ matrix_bot_go_neb_container_image.endswith(':latest') }}"
+matrix_bot_go_neb_container_image_registry_prefix: docker.io/
+
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_bot_go_neb_container_network: matrix-bot-go-neb
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_bot_go_neb_container_additional_networks: []
+
 # Controls whether the matrix-bot-go-neb container exposes its HTTP port (tcp/4050 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:4050"), or empty string to not expose.
 matrix_bot_go_neb_container_http_host_bind_port: ''
+
+# matrix_bot_go_neb_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_bot_go_neb_container_labels_additional_labels`.
+matrix_bot_go_neb_container_labels_traefik_enabled: true
+matrix_bot_go_neb_container_labels_traefik_docker_network: "{{ matrix_bot_go_neb_container_network }}"
+matrix_bot_go_neb_container_labels_traefik_hostname: "{{ matrix_bot_go_neb_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/go-neb`).
+matrix_bot_go_neb_container_labels_traefik_path_prefix: "{{ matrix_bot_go_neb_path_prefix }}"
+matrix_bot_go_neb_container_labels_traefik_rule: "Host(`{{ matrix_bot_go_neb_container_labels_traefik_hostname }}`){% if matrix_bot_go_neb_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_bot_go_neb_container_labels_traefik_path_prefix }}`){% endif %}"
+matrix_bot_go_neb_container_labels_traefik_priority: 0
+matrix_bot_go_neb_container_labels_traefik_entrypoints: web-secure
+matrix_bot_go_neb_container_labels_traefik_tls: "{{ matrix_bot_go_neb_container_labels_traefik_entrypoints != 'web' }}"
+matrix_bot_go_neb_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own headers, use `matrix_bot_go_neb_container_labels_traefik_additional_response_headers_custom`
+matrix_bot_go_neb_container_labels_traefik_additional_response_headers: "{{ matrix_bot_go_neb_container_labels_traefik_additional_response_headers_auto | combine(matrix_bot_go_neb_container_labels_traefik_additional_response_headers_custom) }}"
+matrix_bot_go_neb_container_labels_traefik_additional_response_headers_auto: |
+  {{
+    {}
+    | combine ({'X-XSS-Protection': matrix_bot_go_neb_http_header_xss_protection} if matrix_bot_go_neb_http_header_xss_protection else {})
+    | combine ({'X-Frame-Options': matrix_bot_go_neb_http_header_frame_options} if matrix_bot_go_neb_http_header_frame_options else {})
+    | combine ({'X-Content-Type-Options': matrix_bot_go_neb_http_header_content_type_options} if matrix_bot_go_neb_http_header_content_type_options else {})
+    | combine ({'Content-Security-Policy': matrix_bot_go_neb_http_header_content_security_policy} if matrix_bot_go_neb_http_header_content_security_policy else {})
+    | combine ({'Permission-Policy': matrix_bot_go_neb_http_header_content_permission_policy} if matrix_bot_go_neb_http_header_content_permission_policy else {})
+    | combine ({'Strict-Transport-Security': matrix_bot_go_neb_http_header_strict_transport_security} if matrix_bot_go_neb_http_header_strict_transport_security and matrix_bot_go_neb_container_labels_traefik_tls else {})
+  }}
+matrix_bot_go_neb_container_labels_traefik_additional_response_headers_custom: {}
+
+# matrix_bot_go_neb_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_bot_go_neb_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_bot_go_neb_container_labels_additional_labels: ''
 
 # A list of extra arguments to pass to the container
 matrix_bot_go_neb_container_extra_arguments: []
@@ -26,6 +89,57 @@ matrix_bot_go_neb_systemd_required_services_list: ['docker.service']
 
 # List of systemd services that matrix-bot-go-neb.service wants
 matrix_bot_go_neb_systemd_wanted_services_list: []
+
+# Specifies the value of the `X-XSS-Protection` header
+# Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
+#
+# Learn more about it is here:
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+# - https://portswigger.net/web-security/cross-site-scripting/reflected
+matrix_bot_go_neb_http_header_xss_protection: "1; mode=block"
+
+# Specifies the value of the `X-Frame-Options` header which controls whether framing can happen.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+matrix_bot_go_neb_http_header_frame_options: SAMEORIGIN
+
+# Specifies the value of the `X-Content-Type-Options` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+matrix_bot_go_neb_http_header_content_type_options: nosniff
+
+# Specifies the value of the `Content-Security-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+matrix_bot_go_neb_http_header_content_security_policy: frame-ancestors 'self'
+
+# Specifies the value of the `Permission-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
+matrix_bot_go_neb_http_header_content_permission_policy: "{{ 'interest-cohort=()' if matrix_bot_go_neb_floc_optout_enabled else '' }}"
+
+# Specifies the value of the `Strict-Transport-Security` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+matrix_bot_go_neb_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if matrix_bot_go_neb_hsts_preload_enabled else '' }}"
+
+# Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
+#
+# Learn more about what it is here:
+# - https://www.eff.org/deeplinks/2021/03/googles-floc-terrible-idea
+# - https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network
+# - https://amifloced.org/
+#
+# Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
+# See: `matrix_bot_go_neb_content_permission_policy`
+matrix_bot_go_neb_floc_optout_enabled: true
+
+# Controls if HSTS preloading is enabled
+#
+# In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
+# indicates a willingness to be "preloaded" into browsers:
+# `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+# For more information visit:
+# - https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+# - https://hstspreload.org/#opt-in
+# See: `matrix_bot_go_neb_http_header_strict_transport_security`
+matrix_bot_go_neb_hsts_preload_enabled: false
 
 # Database-related configuration fields.
 #

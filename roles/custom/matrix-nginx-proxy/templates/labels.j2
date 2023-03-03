@@ -39,18 +39,6 @@ traefik.http.routers.matrix-nginx-proxy-matrix-federation.entrypoints={{ matrix_
 {% endif %}
 
 
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_bot_go_neb_enabled %}
-# Go NEB bot
-traefik.http.routers.matrix-nginx-proxy-bot_go_neb.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_bot_go_neb_rule }}
-traefik.http.routers.matrix-nginx-proxy-bot_go_neb.service=matrix-nginx-proxy-web
-traefik.http.routers.matrix-nginx-proxy-bot_go_neb.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_bot_go_neb_tls | to_json }}
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_bot_go_neb_tls %}
-traefik.http.routers.matrix-nginx-proxy-bot_go_neb.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
-{% endif %}
-traefik.http.routers.matrix-nginx-proxy-bot_go_neb.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
-{% endif %}
-
-
 {% if matrix_nginx_proxy_container_labels_traefik_proxy_jitsi_enabled %}
 # Jitsi
 traefik.http.routers.matrix-nginx-proxy-jitsi.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_jitsi_rule }}
