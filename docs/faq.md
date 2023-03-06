@@ -336,11 +336,13 @@ Configuration variables are defined in multiple places in this playbook and are 
 
 ### What configuration variables are available?
 
-You can discover the variables you can override in each role (`role/matrix*/defaults/main.yml`).
+You can discover the variables you can override in each role (`roles/*/*/defaults/main.yml`).
 
 As described in [How is the effective configuration determined?](#how-is-the-effective-configuration-determined), these role-defaults may be overriden by values defined in `group_vars/matrix_servers`.
 
 Refer to both of these for inspiration. Still, as mentioned in [Configuring the playbook](configuring-playbook.md), you're only ever supposed to edit your own `inventory/host_vars/matrix.DOMAIN/vars.yml` file and nothing else inside the playbook (unless you're meaning to contribute new features).
+
+**Note**: some of the roles (`roles/galaxy/*`) live in separate repositories and are only installed after your run `just roles` (or `make roles`).
 
 ### I'd like to adjust some configuration which doesn't have a corresponding variable. How do I do it?
 
@@ -352,7 +354,9 @@ See [What configuration variables are available?](#what-configuration-variables-
 
 Besides that, each role (component) aims to provide a `matrix_SOME_COMPONENT_configuration_extension_yaml` (or `matrix_SOME_COMPONENT_configuration_extension_json`) variable, which can be used to override the configuration.
 
-Check each role's `role/matrix*/defaults/main.yml` for the corresponding variable and an example for how use it.
+Check each role's `roles/*/*/defaults/main.yml` for the corresponding variable and an example for how use it.
+
+**Note**: some of the roles (`roles/galaxy/*`) live in separate repositories and are only installed after your run `just roles` (or `make roles`).
 
 
 ## Installation
