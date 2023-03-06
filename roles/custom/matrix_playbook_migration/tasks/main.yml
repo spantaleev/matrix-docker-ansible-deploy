@@ -11,3 +11,12 @@
   tags:
     - setup-all
     - install-all
+
+- when: matrix_playbook_traefik_role_enabled | bool
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/devture_traefik_to_matrix_traefik.yml"
+  tags:
+    - setup-all
+    - install-all
+    - setup-traefik
+    - install-traefik

@@ -21,19 +21,16 @@ else
 		rm -f {{ devture_systemd_docker_base_systemd_path }}/$s
 	done
 
-    echo "Stop and remove devture services"
-
-	for s in $(find {{ devture_systemd_docker_base_systemd_path }}/ -type f -name "devture-*" -printf "%f\n"); do
-		systemctl disable --now $s
-		rm -f {{ devture_systemd_docker_base_systemd_path }}/$s
-	done
-
 	systemctl daemon-reload
 
 	echo "Remove unused Docker images and resources"
 	docker system prune -af
+
 	echo "Remove Docker matrix network (should be gone already, but ..)"
 	docker network rm {{ matrix_docker_network }}
+
+	echo "This playbook creates a lot of matrix-* networks. Consider removing them manually ('docker network ls', followed by 'docker network rm NETWORK_NAME')"
+
 	echo "Remove {{ matrix_base_data_path }} directory"
 	rm -fr "{{ matrix_base_data_path }}"
 	exit 0
