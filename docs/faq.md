@@ -125,7 +125,7 @@ This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EM
 
 - this one installs everything in a single directory (`/matrix` by default) and **doesn't "contaminate" your server** with files all over the place
 
-- this one **doesn't necessarily take over** ports 80 and 443. By default, it sets up nginx for you there, but you can also [use your own webserver](configuring-playbook-own-webserver.md)
+- this one **doesn't necessarily take over** ports 80 and 443. By default, it sets up [Traefik](https://doc.traefik.io/traefik/) for you there, but you can also [use your own webserver](configuring-playbook-own-webserver.md)
 
 - this one **runs everything in Docker containers**, so it's likely more predictable and less fragile (see [Docker images used by this playbook](container-images.md))
 
@@ -322,7 +322,7 @@ matrix_playbook_docker_installation_enabled: false
 
 ### I run another webserver on the same server where I wish to install Matrix. What now?
 
-By default, we install a webserver for you (nginx), but you can also use [your own webserver](configuring-playbook-own-webserver.md).
+By default, we install a webserver for you ([Traefik](https://doc.traefik.io/traefik/)), but you can also use [your own webserver](configuring-playbook-own-webserver.md).
 
 ### How is the effective configuration determined?
 
@@ -461,15 +461,8 @@ After verifying that everything still works after the Postgres upgrade, you can 
 
 ### How do I debug or force SSL certificate renewal?
 
-SSL certificate renewal normally happens automatically via [systemd timers](https://wiki.archlinux.org/index.php/Systemd/Timers).
+SSL certificates are managed automatically by the [Traefik](https://doc.traefik.io/traefik/) reverse-proxy server.
 
-If you're having trouble with SSL certificate renewal, you can inspect the renewal logs using:
+If you're having trouble with SSL certificate renewal, check the Traefik logs (`journalctl -fu matrix-traefik`).
 
-- `journalctl -fu matrix-ssl-lets-encrypt-certificates-renew.service`
-- *or* by looking at the log files in `/matrix/ssl/log/`
-
-To trigger renewal, run: `systemctl start matrix-ssl-lets-encrypt-certificates-renew.service`. You can then take a look at the logs again.
-
-If you're using the integrated webserver (`matrix-nginx-proxy`), you can reload it manually like this: `systemctl reload matrix-nginx-proxy`. Reloading also happens periodically via a systemd timer.
-
-If you're [using your own webserver](configuring-playbook-own-webserver.md) instead of the integrated one (`matrix-nginx-proxy`) you may also need to reload/restart it, to make it pick up the renewed SSL certificate files.
+If you're [using your own webserver](configuring-playbook-own-webserver.md) instead of the integrated one (Traefik), you should investigate in another way.
