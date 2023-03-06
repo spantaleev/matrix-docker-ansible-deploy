@@ -23,13 +23,13 @@
             enabled: false
             daemon_reload: true
 
-        - name: Ensure Traefik systemd service doesn't exist
-          ansible.builtin.file:
-            path: "{{ devture_systemd_docker_base_systemd_path }}/devture-traefik.service"
-            state: absent
-
         - name: Ensure Traefik directory relocated
           ansible.builtin.command:
             cmd: "mv /devture-traefik {{ devture_traefik_base_path }}"
             creates: "{{ devture_traefik_base_path }}"
             removes: "/devture-traefik"
+
+        - name: Ensure Traefik systemd service doesn't exist
+          ansible.builtin.file:
+            path: "{{ devture_systemd_docker_base_systemd_path }}/devture-traefik.service"
+            state: absent
