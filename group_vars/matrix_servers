@@ -19,23 +19,9 @@
 # Also see `devture_docker_sdk_for_python_installation_enabled`.
 matrix_playbook_docker_installation_enabled: true
 
-# Controls whether to run the Traefik role or not
-# See the `com.devture.ansible.role.traefik` section below for role configuration.
-#
-# There's a difference between `devture_traefik_enabled` and `matrix_playbook_traefik_role_enabled`.
-# `devture_traefik_enabled` controls what the Traefik role would do - when not enabled, it will run uninstall tasks, etc.
-# `matrix_playbook_traefik_role_enabled` controls if the Traefik role would even run at all.
-#
-# Sometimes, you're installing Traefik via a different (related playbook) which uses the same role.
-# In such cases, you'd like to disable the role in this playbook from bothering with Traefik at all (`matrix_playbook_traefik_role_enabled: false`).
-# If you used `devture_traefik_enabled: false` + `matrix_playbook_traefik_role_enabled: true` instead, you'd see the Treafik role here
-# try to delete Traefik data (`/devture-traefik`) installed by the other playbook.
-matrix_playbook_traefik_role_enabled: "{{ matrix_playbook_reverse_proxy_type != 'other-traefik-container' }}"
-
 # Controls whether to attach Traefik labels to services.
-# This is separate from `devture_traefik_enabled` and `matrix_playbook_traefik_role_enabled`,
-# because you may wish to disable Traefik installation by the playbook, yet still use Traefik
-# installed in another way.
+# This is separate from `devture_traefik_enabled`, because you may wish to disable Traefik installation by the playbook,
+# yet still use Traefik installed in another way.
 matrix_playbook_traefik_labels_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 
 # Controls the additional network that reverse-proxyable services will be connected to.
@@ -3854,8 +3840,6 @@ devture_container_socket_proxy_api_containers_enabled: true
 #                                                                      #
 ########################################################################
 
-# To completely disable the Traefik role from running, use `matrix_playbook_traefik_role_enabled: false`.
-# See the comment there for more details about why we have both `devture_traefik_enabled` and `matrix_playbook_traefik_role_enabled`.
 devture_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' }}"
 
 devture_traefik_identifier: matrix-traefik

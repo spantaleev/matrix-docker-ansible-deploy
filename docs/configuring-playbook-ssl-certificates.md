@@ -54,7 +54,7 @@ devture_traefik_ssl_dir_enabled: true
 
 # Tell Traefik to load our custom configuration file (certificates.yml).
 # The file is created below, in `matrix_aux_file_definitions`.
-# The `/config/..` path is an in-container path, not a path on the host (like `/devture-traefik/config`). Do not change it!
+# The `/config/..` path is an in-container path, not a path on the host (like `/matrix/traefik/config`). Do not change it!
 devture_traefik_configuration_extension_yaml: |
   providers:
     file:
@@ -85,7 +85,7 @@ matrix_aux_file_definitions:
 	#   HERE
 
   # Create the custom Traefik configuration.
-  # The `/ssl/..` paths below are in-container paths, not paths on the host (/`devture-traefik/ssl/..`). Do not change them!
+  # The `/ssl/..` paths below are in-container paths, not paths on the host (/`matrix/traefik/ssl/..`). Do not change them!
   - dest: "{{ devture_traefik_config_dir_path }}/certificates.yml"
     content: |
       tls:

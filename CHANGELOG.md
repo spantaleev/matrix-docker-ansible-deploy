@@ -223,9 +223,9 @@ devture_traefik_config_certificatesResolvers_acme_email: YOUR_EMAIL_ADDRESS
 
 You may still need to keep certain old `matrix_nginx_proxy_*` variables (like `matrix_nginx_proxy_base_domain_serving_enabled`), even when using Traefik. For now, we recommend keeping all `matrix_nginx_proxy_*` variables just in case. In the future, reliance on `matrix-nginx-proxy` will be removed.
 
-Switching to Traefik will obtain new SSL certificates from Let's Encrypt (stored in `/devture-traefik/ssl/acme.json`). **The switch is reversible**. You can always go back to `playbook-managed-nginx` if Traefik is causing you trouble.
+Switching to Traefik will obtain new SSL certificates from Let's Encrypt (stored in `/matrix/traefik/ssl/acme.json`). **The switch is reversible**. You can always go back to `playbook-managed-nginx` if Traefik is causing you trouble.
 
-**Note**: toggling `matrix_playbook_reverse_proxy_type` between Traefik and nginx will uninstall the Traefik role and all of its data (under `/devture-traefik`), so you may run into a Let's Encrypt rate limit if you do it often.
+**Note**: toggling `matrix_playbook_reverse_proxy_type` between Traefik and nginx will uninstall the Traefik role and all of its data (under `/matrix/traefik`), so you may run into a Let's Encrypt rate limit if you do it often.
 
 Treafik directly reverse-proxies to **some** services right now, but for most other services it goes through `matrix-nginx-proxy` (e.g. Traefik -> `matrix-nginx-proxy` -> [Ntfy](docs/configuring-playbook-ntfy.md)). So, even if you opt into Traefik, you'll still see `matrix-nginx-proxy` being installed in local-only mode. This will improve with time.
 
