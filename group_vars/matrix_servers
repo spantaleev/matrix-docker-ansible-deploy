@@ -356,7 +356,9 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-user-verification-service.service', 'priority': 800, 'groups': ['matrix', 'matrix-user-verification-service']}] if matrix_user_verification_service_enabled else [])
     +
-    ([{'name': 'devture-traefik.service', 'priority': 3000, 'groups': ['matrix', 'traefik', 'reverse-proxies']}] if devture_traefik_enabled else [])
+    ([{'name': (devture_container_socket_proxy_identifier + '.service'), 'priority': 2900, 'groups': ['matrix', 'reverse-proxies', 'container-socket-proxy']}] if devture_container_socket_proxy_enabled else [])
+    +
+    ([{'name': (devture_traefik_identifier + '.service'), 'priority': 3000, 'groups': ['matrix', 'traefik', 'reverse-proxies']}] if devture_traefik_enabled else [])
     +
     ([{'name': (devture_traefik_certs_dumper_identifier + '.service'), 'priority': 3500, 'groups': ['matrix', 'traefik-certs-dumper']}] if devture_traefik_certs_dumper_enabled else [])
   }}
@@ -3823,6 +3825,31 @@ matrix_user_verification_service_uvs_auth_token: "{{ '%s' | format(matrix_homese
 
 ########################################################################
 #                                                                      #
+# com.devture.ansible.role.container_socket_proxy                      #
+#                                                                      #
+########################################################################
+
+devture_container_socket_proxy_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' }}"
+
+devture_container_socket_proxy_identifier: matrix-container-socket-proxy
+
+devture_container_socket_proxy_base_path: "{{ matrix_base_data_path }}/container-socket-proxy"
+
+devture_container_socket_proxy_uid: "{{ matrix_user_uid }}"
+devture_container_socket_proxy_gid: "{{ matrix_user_gid }}"
+
+# Traefik requires read access to the containers APIs to do its job
+devture_container_socket_proxy_api_containers_enabled: true
+
+########################################################################
+#                                                                      #
+# /com.devture.ansible.role.container_socket_proxy                     #
+#                                                                      #
+########################################################################
+
+
+########################################################################
+#                                                                      #
 # com.devture.ansible.role.traefik                                     #
 #                                                                      #
 ########################################################################
@@ -3841,6 +3868,20 @@ devture_traefik_additional_entrypoints_auto:
     config: {}
 
 devture_traefik_additional_domains_to_obtain_certificates_for: "{{ matrix_ssl_additional_domains_to_obtain_certificates_for }}"
+
+devture_traefik_config_providers_docker_endpoint: "{{ devture_container_socket_proxy_endpoint if devture_container_socket_proxy_enabled else 'unix:///var/run/docker.sock' }}"
+
+devture_traefik_container_additional_networks: |
+  {{
+    ([devture_container_socket_proxy_container_network] if devture_container_socket_proxy_enabled else [])
+  }}
+
+devture_traefik_systemd_required_services_list: |
+  {{
+    (['docker.service'])
+    +
+    ([devture_container_socket_proxy_identifier + '.service'] if devture_container_socket_proxy_enabled else [])
+  }}
 
 ########################################################################
 #                                                                      #
