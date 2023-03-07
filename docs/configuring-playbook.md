@@ -195,6 +195,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Other specialized services
 
+- [Setting up the Sliding Sync Proxy](configuring-playbook-sliding-sync-proxy.md) for clients which require Sliding Sync support (like Element X) (optional)
+
 - [Setting up the Sygnal push gateway](configuring-playbook-sygnal.md) (optional)
 
 - [Setting up the ntfy push notifications server](configuring-playbook-ntfy.md) (optional)
