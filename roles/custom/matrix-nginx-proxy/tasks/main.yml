@@ -29,13 +29,13 @@
     - install-all
     - install-nginx-proxy
 
-- block:
-    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_well_known.yml"
-  tags:
+- tags:
     - self-check
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_well_known.yml"
 
 - name: Mark matrix-nginx-proxy role as executed
-  ansible.builtin.set_fact:
-    matrix_nginx_proxy_role_executed: true
   tags:
     - always
+  ansible.builtin.set_fact:
+    matrix_nginx_proxy_role_executed: true

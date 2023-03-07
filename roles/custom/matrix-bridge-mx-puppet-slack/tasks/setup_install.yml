@@ -91,7 +91,10 @@
   when: "matrix_mx_puppet_slack_enabled | bool and matrix_mx_puppet_slack_container_image_self_build"
 
 - name: (Data relocation) Move mx-puppet-slack database file to ./data directory
-  ansible.builtin.command: "mv {{ matrix_mx_puppet_slack_base_path }}/database.db {{ matrix_mx_puppet_slack_data_path }}/database.db"
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_mx_puppet_slack_base_path }}/database.db {{ matrix_mx_puppet_slack_data_path }}/database.db"
+    creates: "{{ matrix_mx_puppet_slack_data_path }}/database.db"
+    removes: "{{ matrix_mx_puppet_slack_base_path }}/database.db"
   when: "matrix_mx_puppet_slack_stat_database.stat.exists"
 
 - name: Ensure mx-puppet-slack config.yaml installed

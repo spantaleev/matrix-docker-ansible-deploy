@@ -1,20 +1,20 @@
 ---
 
-- block:
+- tags:
+    - setup-all
+    - setup-appservice-irc
+    - install-all
+    - install-appservice-irc
+  block:
     - when: matrix_appservice_irc_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
     - when: matrix_appservice_irc_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+
+- tags:
     - setup-all
     - setup-appservice-irc
-    - install-all
-    - install-appservice-irc
-
-- block:
+  block:
     - when: not matrix_appservice_irc_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  tags:
-    - setup-all
-    - setup-appservice-irc

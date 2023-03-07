@@ -1,30 +1,30 @@
 ---
 
-- when: matrix_playbook_reverse_proxy_type not in ['playbook-managed-nginx', 'other-nginx-non-container']
-  name: Fail if reverse-proxy is not nginx
+- name: Fail if reverse-proxy is not nginx
+  when: matrix_playbook_reverse_proxy_type not in ['playbook-managed-nginx', 'other-nginx-non-container']
   ansible.builtin.fail:
     msg: >
       Etherpad's integration into matrix-nginx-proxy's Dimension server only makes sense if you're using matrix-nginx-proxy.
       `matrix_playbook_reverse_proxy_type` ({{ matrix_playbook_reverse_proxy_type }}) indicates that you're using another reverse-proxy.
       If you're using Traefik, you should configure `etherpad_hostname` and `etherpad_path_prefix` instead.
 
-- when: not matrix_dimension_enabled
-  name: Fail if Dimension not enabled
+- name: Fail if Dimension not enabled
+  when: not matrix_dimension_enabled
   ansible.builtin.fail:
     msg: >
       Etherpad's integration into matrix-nginx-proxy's Dimension server only makes sense if you're using Dimension.
       Looks like Dimension is not enabled in your configuration (judging by `matrix_dimension_enabled`).
       Consider configuring `etherpad_hostname` and `etherpad_path_prefix` instead.
 
-- when: etherpad_hostname != matrix_server_fqn_dimension
-  name: Fail if Etherpad hostname does not match Dimension hostname
+- name: Fail if Etherpad hostname does not match Dimension hostname
+  when: etherpad_hostname != matrix_server_fqn_dimension
   ansible.builtin.fail:
     msg: >
       Etherpad's integration into matrix-nginx-proxy's Dimension server requires that you set `etherpad_hostname` to `matrix_server_fqn_dimension`.
       Consider adding this to your configuration: `{% raw %}etherpad_hostname: "{{ matrix_server_fqn_dimension }}"{% endraw %}`
 
-- when: etherpad_nginx_proxy_dimension_integration_path_prefix == '/'
-  name: Fail if / path prefix used for Etherpad
+- name: Fail if / path prefix used for Etherpad
+  when: etherpad_nginx_proxy_dimension_integration_path_prefix == '/'
   ansible.builtin.fail:
     msg: >
       Etherpad's integration into matrix-nginx-proxy's Dimension server only makes sense if you're using a non-`/` path for Etherpad.

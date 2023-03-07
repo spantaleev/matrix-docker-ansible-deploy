@@ -97,11 +97,17 @@
   when: "matrix_go_skype_bridge_stat_database.stat.exists"
 
 - name: (Data relocation) Move go-skype-bridge database file to ./data directory
-  ansible.builtin.command: "mv {{ matrix_go_skype_bridge_base_path }}/go-skype-bridge.db {{ matrix_go_skype_bridge_data_path }}/go-skype-bridge.db"
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_go_skype_bridge_base_path }}/go-skype-bridge.db {{ matrix_go_skype_bridge_data_path }}/go-skype-bridge.db"
+    creates: "{{ matrix_go_skype_bridge_data_path }}/go-skype-bridge.db"
+    removes: "{{ matrix_go_skype_bridge_base_path }}/go-skype-bridge.db"
   when: "matrix_go_skype_bridge_stat_database.stat.exists"
 
 - name: (Data relocation) Move go-skype-bridge mx-state file to ./data directory
-  ansible.builtin.command: "mv {{ matrix_go_skype_bridge_base_path }}/mx-state.json {{ matrix_go_skype_bridge_data_path }}/mx-state.json"
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_go_skype_bridge_base_path }}/mx-state.json {{ matrix_go_skype_bridge_data_path }}/mx-state.json"
+    creates: "{{ matrix_go_skype_bridge_data_path }}/mx-state.json"
+    removes: "{{ matrix_go_skype_bridge_base_path }}/mx-state.json"
   when: "matrix_go_skype_bridge_stat_mx_state.stat.exists"
 
 - name: Ensure go-skype-bridge config.yaml installed

@@ -108,16 +108,12 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Check if Appservice IRC passkey exists
-  ansible.builtin.stat:
-    path: "{{ matrix_appservice_irc_data_path }}/passkey.pem"
-  register: irc_passkey_file
-
 - name: Generate Appservice IRC passkey if it doesn't exist
-  ansible.builtin.shell: "{{ matrix_host_command_openssl }} genpkey -out {{ matrix_appservice_irc_data_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048"
+  ansible.builtin.shell:
+    cmd: "{{ matrix_host_command_openssl }} genpkey -out {{ matrix_appservice_irc_data_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048"
+    creates: "{{ matrix_appservice_irc_data_path }}/passkey.pem"
   become: true
   become_user: "{{ matrix_user_username }}"
-  when: "not irc_passkey_file.stat.exists"
 
 # In the past, we used to generate the passkey.pem file with root, so permissions may not be okay.
 # Fix it.

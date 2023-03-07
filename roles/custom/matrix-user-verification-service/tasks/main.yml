@@ -1,19 +1,19 @@
 ---
 
-- block:
-    - when: run_setup | bool and matrix_user_verification_service_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
-    - when: run_setup | bool and matrix_user_verification_service_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+- tags:
     - setup-all
     - setup-user-verification-service
     - install-all
     - install-user-verification-service
+  block:
+    - when: run_setup | bool and matrix_user_verification_service_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+    - when: run_setup | bool and matrix_user_verification_service_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
 
-- block:
-    - when: run_setup | bool and not matrix_user_verification_service_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  tags:
+- tags:
     - setup-all
     - setup-user-verification-service
+  block:
+    - when: run_setup | bool and not matrix_user_verification_service_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"

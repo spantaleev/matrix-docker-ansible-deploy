@@ -1,17 +1,17 @@
 ---
 
-- block:
-    - when: matrix_conduit_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+- tags:
     - setup-all
     - setup-conduit
     - install-all
     - install-conduit
+  block:
+    - when: matrix_conduit_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
 
-- block:
-    - when: not matrix_conduit_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  tags:
+- tags:
     - setup-all
     - setup-conduit
+  block:
+    - when: not matrix_conduit_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"

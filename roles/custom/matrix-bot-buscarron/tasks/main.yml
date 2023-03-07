@@ -1,20 +1,20 @@
 ---
 
-- block:
+- tags:
+    - setup-all
+    - setup-bot-buscarron
+    - install-all
+    - install-bot-buscarron
+  block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
       when: "run_setup | bool and matrix_bot_buscarron_enabled | bool"
 
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
       when: "run_setup | bool and matrix_bot_buscarron_enabled | bool"
-  tags:
+
+- tags:
     - setup-all
     - setup-bot-buscarron
-    - install-all
-    - install-bot-buscarron
-
-- block:
+  block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
       when: "run_setup | bool and not matrix_bot_buscarron_enabled | bool"
-  tags:
-    - setup-all
-    - setup-bot-buscarron

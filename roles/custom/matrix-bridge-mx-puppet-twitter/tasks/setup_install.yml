@@ -29,7 +29,10 @@
   when: "matrix_mx_puppet_twitter_stat_database.stat.exists"
 
 - name: (Data relocation) Move mx-puppet-twitter database file to ./data directory
-  ansible.builtin.command: "mv {{ matrix_mx_puppet_twitter_base_path }}/database.db {{ matrix_mx_puppet_twitter_data_path }}/database.db"
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_mx_puppet_twitter_base_path }}/database.db {{ matrix_mx_puppet_twitter_data_path }}/database.db"
+    creates: "{{ matrix_mx_puppet_twitter_data_path }}/database.db"
+    removes: "{{ matrix_mx_puppet_twitter_base_path }}/database.db"
   when: "matrix_mx_puppet_twitter_stat_database.stat.exists"
 
 - ansible.builtin.set_fact:

@@ -1,35 +1,35 @@
 ---
 
-- block:
+- tags:
+    - setup-all
+    - setup-dendrite
+    - install-all
+    - install-dendrite
+  block:
     - when: matrix_dendrite_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
     - when: matrix_dendrite_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+
+- tags:
     - setup-all
     - setup-dendrite
-    - install-all
-    - install-dendrite
-
-- block:
+  block:
     - when: not matrix_dendrite_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  tags:
-    - setup-all
-    - setup-dendrite
 
-- block:
+- tags:
+    - self-check
+  block:
     - when: matrix_dendrite_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_client_api.yml"
 
     - when: matrix_dendrite_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_federation_api.yml"
-  tags:
-    - self-check
 
-- block:
+- tags:
+    - register-user
+  block:
     - when: matrix_dendrite_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/register_user.yml"
-  tags:
-    - register-user

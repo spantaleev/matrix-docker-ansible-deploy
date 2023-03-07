@@ -48,6 +48,7 @@
           .
       environment:
         DOCKER_BUILDKIT: 1
+      changed_when: true
       when: "matrix_synapse_git_pull_results.changed | bool or matrix_synapse_docker_image_check_result.stdout == ''"
 
 - name: Ensure Synapse Docker image is pulled
@@ -82,11 +83,6 @@
           path: "{{ matrix_synapse_customized_docker_src_files_path }}"
           nocache: "{{ matrix_synapse_docker_image_customized_build_nocache }}"
 
-- name: Check if a Synapse signing key exists
-  ansible.builtin.stat:
-    path: "{{ matrix_synapse_config_dir_path }}/{{ matrix_server_fqn_matrix }}.signing.key"
-  register: matrix_synapse_signing_key_stat
-
 # We do this so that the signing key would get generated.
 #
 # This will also generate a default homeserver.yaml configuration file and a log configuration file.
@@ -95,19 +91,20 @@
 # We don't use the `docker_container` module, because using it with `cap_drop` requires
 # a very recent docker-py version, which is not available for a lot of people yet.
 - name: Generate initial Synapse config and signing key
-  ansible.builtin.command: |
-    docker run
-    --rm
-    --name=matrix-config
-    --user={{ matrix_synapse_uid }}:{{ matrix_synapse_gid }}
-    --cap-drop=ALL
-    --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data
-    -e SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
-    -e SYNAPSE_SERVER_NAME={{ matrix_server_fqn_matrix }}
-    -e SYNAPSE_REPORT_STATS=no
-    {{ matrix_synapse_docker_image }}
-    generate
-  when: "not matrix_synapse_signing_key_stat.stat.exists"
+  ansible.builtin.command:
+    cmd: |
+      docker run
+      --rm
+      --name=matrix-config
+      --user={{ matrix_synapse_uid }}:{{ matrix_synapse_gid }}
+      --cap-drop=ALL
+      --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data
+      -e SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
+      -e SYNAPSE_SERVER_NAME={{ matrix_server_fqn_matrix }}
+      -e SYNAPSE_REPORT_STATS=no
+      {{ matrix_synapse_docker_image }}
+      generate
+    creates: "{{ matrix_synapse_config_dir_path }}/{{ matrix_server_fqn_matrix }}.signing.key"
 
 - name: Ensure Synapse homeserver config installed
   ansible.builtin.copy:

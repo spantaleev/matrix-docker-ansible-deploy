@@ -1,20 +1,20 @@
 ---
 
-- block:
+- tags:
+    - setup-all
+    - setup-mautrix-slack
+    - install-all
+    - install-mautrix-slack
+  block:
     - when: matrix_mautrix_slack_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
     - when: matrix_mautrix_slack_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+
+- tags:
     - setup-all
     - setup-mautrix-slack
-    - install-all
-    - install-mautrix-slack
-
-- block:
+  block:
     - when: not matrix_mautrix_slack_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  tags:
-    - setup-all
-    - setup-mautrix-slack

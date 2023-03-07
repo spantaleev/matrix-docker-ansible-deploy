@@ -57,7 +57,9 @@
   register: hookshot_passkey_file
 
 - name: Generate hookshot passkey if it doesn't exist
-  ansible.builtin.shell: "{{ matrix_host_command_openssl }} genpkey -out {{ matrix_hookshot_base_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096"
+  ansible.builtin.shell:
+    cmd: "{{ matrix_host_command_openssl }} genpkey -out {{ matrix_hookshot_base_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096"
+    creates: "{{ matrix_hookshot_base_path }}/passkey.pem"
   become: true
   become_user: "{{ matrix_user_username }}"
   when: "not hookshot_passkey_file.stat.exists"

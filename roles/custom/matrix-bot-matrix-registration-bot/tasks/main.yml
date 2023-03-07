@@ -1,20 +1,20 @@
 ---
 
-- block:
+- tags:
+    - setup-all
+    - setup-bot-matrix-registration-bot
+    - install-all
+    - install-bot-matrix-registration-bot
+  block:
     - when: matrix_bot_matrix_registration_bot_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
     - when: matrix_bot_matrix_registration_bot_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+
+- tags:
     - setup-all
     - setup-bot-matrix-registration-bot
-    - install-all
-    - install-bot-matrix-registration-bot
-
-- block:
+  block:
     - when: not matrix_bot_matrix_registration_bot_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  tags:
-    - setup-all
-    - setup-bot-matrix-registration-bot

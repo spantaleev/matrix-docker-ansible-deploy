@@ -1,17 +1,17 @@
 ---
 
-- block:
-    - when: matrix_heisenbridge_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+- tags:
     - setup-all
     - setup-heisenbridge
     - install-all
     - install-heisenbridge
+  block:
+    - when: matrix_heisenbridge_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
 
-- block:
-    - when: not matrix_heisenbridge_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  tags:
+- tags:
     - setup-all
     - setup-heisenbridge
+  block:
+    - when: not matrix_heisenbridge_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"

@@ -116,7 +116,10 @@
   when: "matrix_mautrix_telegram_stat_database.stat.exists"
 
 - name: (Data relocation) Move mautrix-telegram database file to ./data directory
-  ansible.builtin.command: "mv {{ matrix_mautrix_telegram_base_path }}/mautrix-telegram.db {{ matrix_mautrix_telegram_data_path }}/mautrix-telegram.db"
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_mautrix_telegram_base_path }}/mautrix-telegram.db {{ matrix_mautrix_telegram_data_path }}/mautrix-telegram.db"
+    creates: "{{ matrix_mautrix_telegram_data_path }}/mautrix-telegram.db"
+    removes: "{{ matrix_mautrix_telegram_base_path }}/mautrix-telegram.db"
   when: "matrix_mautrix_telegram_stat_database.stat.exists"
 
 - name: Ensure mautrix-telegram config.yaml installed

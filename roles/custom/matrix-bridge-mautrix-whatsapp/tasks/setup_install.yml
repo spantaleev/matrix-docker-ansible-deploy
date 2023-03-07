@@ -97,11 +97,17 @@
   when: "matrix_mautrix_whatsapp_stat_database.stat.exists"
 
 - name: (Data relocation) Move mautrix-whatsapp database file to ./data directory
-  ansible.builtin.command: "mv {{ matrix_mautrix_whatsapp_base_path }}/mautrix-whatsapp.db {{ matrix_mautrix_whatsapp_data_path }}/mautrix-whatsapp.db"
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_mautrix_whatsapp_base_path }}/mautrix-whatsapp.db {{ matrix_mautrix_whatsapp_data_path }}/mautrix-whatsapp.db"
+    creates: "{{ matrix_mautrix_whatsapp_data_path }}/mautrix-whatsapp.db"
+    removes: "{{ matrix_mautrix_whatsapp_base_path }}/mautrix-whatsapp.db"
   when: "matrix_mautrix_whatsapp_stat_database.stat.exists"
 
 - name: (Data relocation) Move mautrix-whatsapp mx-state file to ./data directory
-  ansible.builtin.command: "mv {{ matrix_mautrix_whatsapp_base_path }}/mx-state.json {{ matrix_mautrix_whatsapp_data_path }}/mx-state.json"
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_mautrix_whatsapp_base_path }}/mx-state.json {{ matrix_mautrix_whatsapp_data_path }}/mx-state.json"
+    creates: "{{ matrix_mautrix_whatsapp_data_path }}/mx-state.json"
+    removes: "{{ matrix_mautrix_whatsapp_base_path }}/mx-state.json"
   when: "matrix_mautrix_whatsapp_stat_mx_state.stat.exists"
 
 - name: Ensure mautrix-whatsapp config.yaml installed

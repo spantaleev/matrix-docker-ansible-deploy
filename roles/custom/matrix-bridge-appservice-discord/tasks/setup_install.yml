@@ -65,7 +65,10 @@
   when: "matrix_appservice_discord_stat_db.stat.exists"
 
 - name: (Data relocation) Move AppService Discord discord.db file to ./data directory
-  ansible.builtin.command: "mv {{ matrix_appservice_discord_base_path }}/{{ item }} {{ matrix_appservice_discord_data_path }}/{{ item }}"
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_appservice_discord_base_path }}/{{ item }} {{ matrix_appservice_discord_data_path }}/{{ item }}"
+    creates: "{{ matrix_appservice_discord_data_path }}/{{ item }}"
+    removes: "{{ matrix_appservice_discord_base_path }}/{{ item }}"
   with_items:
     - discord.db
     - user-store.db

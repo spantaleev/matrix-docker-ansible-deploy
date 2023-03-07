@@ -91,7 +91,10 @@
   when: "matrix_mautrix_googlechat_stat_database.stat.exists"
 
 - name: (Data relocation) Move mautrix-googlechat database file to ./data directory
-  ansible.builtin.command: "mv {{ matrix_mautrix_googlechat_base_path }}/mautrix-googlechat.db {{ matrix_mautrix_googlechat_data_path }}/mautrix-googlechat.db"
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_mautrix_googlechat_base_path }}/mautrix-googlechat.db {{ matrix_mautrix_googlechat_data_path }}/mautrix-googlechat.db"
+    creates: "{{ matrix_mautrix_googlechat_data_path }}/mautrix-googlechat.db"
+    removes: "{{ matrix_mautrix_googlechat_base_path }}/mautrix-googlechat.db"
   when: "matrix_mautrix_googlechat_stat_database.stat.exists"
 
 - name: Ensure mautrix-googlechat config.yaml installed

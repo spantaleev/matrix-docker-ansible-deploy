@@ -91,7 +91,10 @@
   when: "matrix_mautrix_facebook_stat_database.stat.exists"
 
 - name: (Data relocation) Move mautrix-facebook database file to ./data directory
-  ansible.builtin.command: "mv {{ matrix_mautrix_facebook_base_path }}/mautrix-facebook.db {{ matrix_mautrix_facebook_data_path }}/mautrix-facebook.db"
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_mautrix_facebook_base_path }}/mautrix-facebook.db {{ matrix_mautrix_facebook_data_path }}/mautrix-facebook.db"
+    creates: "{{ matrix_mautrix_facebook_data_path }}/mautrix-facebook.db"
+    removes: "{{ matrix_mautrix_facebook_base_path }}/mautrix-facebook.db"
   when: "matrix_mautrix_facebook_stat_database.stat.exists"
 
 - name: Ensure mautrix-facebook config.yaml installed

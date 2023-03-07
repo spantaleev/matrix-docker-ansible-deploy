@@ -1,29 +1,29 @@
 ---
 
-- block:
-    - when: matrix_cactus_comments_enabled | bool and matrix_cactus_comments_serve_client_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/inject_into_nginx_proxy.yml"
-  tags:
+- tags:
     - setup-all
     - setup-nginx-proxy
     - install-all
     - install-nginx-proxy
+  block:
+    - when: matrix_cactus_comments_enabled | bool and matrix_cactus_comments_serve_client_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/inject_into_nginx_proxy.yml"
 
-- block:
+- tags:
+    - setup-all
+    - setup-cactus-comments
+    - install-all
+    - install-cactus-comments
+  block:
     - when: matrix_cactus_comments_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
     - when: matrix_cactus_comments_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+
+- tags:
     - setup-all
     - setup-cactus-comments
-    - install-all
-    - install-cactus-comments
-
-- block:
+  block:
     - when: not matrix_cactus_comments_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  tags:
-    - setup-all
-    - setup-cactus-comments

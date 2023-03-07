@@ -1,17 +1,17 @@
 ---
 
-- block:
-    - when: matrix_mailer_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+- tags:
     - setup-all
     - setup-mailer
     - install-all
     - install-mailer
+  block:
+    - when: matrix_mailer_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
 
-- block:
-    - when: not matrix_mailer_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  tags:
+- tags:
     - setup-all
     - setup-mailer
+  block:
+    - when: not matrix_mailer_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"

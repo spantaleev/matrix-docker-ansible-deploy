@@ -1,20 +1,20 @@
 ---
 
-- block:
+- tags:
+    - setup-all
+    - setup-mautrix-discord
+    - install-all
+    - install-mautrix-discord
+  block:
     - when: matrix_mautrix_discord_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
     - when: matrix_mautrix_discord_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+
+- tags:
     - setup-all
     - setup-mautrix-discord
-    - install-all
-    - install-mautrix-discord
-
-- block:
+  block:
     - when: not matrix_mautrix_discord_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  tags:
-    - setup-all
-    - setup-mautrix-discord

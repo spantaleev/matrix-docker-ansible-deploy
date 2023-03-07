@@ -1,20 +1,20 @@
 ---
 
-- block:
+- tags:
+    - setup-all
+    - setup-dynamic-dns
+    - install-all
+    - install-dynamic-dns
+  block:
     - when: matrix_dynamic_dns_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
     - when: matrix_dynamic_dns_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+
+- tags:
     - setup-all
     - setup-dynamic-dns
-    - install-all
-    - install-dynamic-dns
-
-- block:
+  block:
     - when: not matrix_dynamic_dns_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  tags:
-    - setup-all
-    - setup-dynamic-dns

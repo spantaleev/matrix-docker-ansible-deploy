@@ -1,20 +1,20 @@
 ---
 
-- block:
+- tags:
+    - setup-all
+    - setup-appservice-kakaotalk
+    - install-all
+    - install-appservice-kakaotalk
+  block:
     - when: matrix_appservice_kakaotalk_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
     - when: matrix_appservice_kakaotalk_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+
+- tags:
     - setup-all
     - setup-appservice-kakaotalk
-    - install-all
-    - install-appservice-kakaotalk
-
-- block:
+  block:
     - when: not matrix_appservice_kakaotalk_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  tags:
-    - setup-all
-    - setup-appservice-kakaotalk

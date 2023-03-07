@@ -1,20 +1,20 @@
 ---
 
-- block:
+- tags:
+    - setup-all
+    - setup-sygnal
+    - install-all
+    - install-sygnal
+  block:
     - when: matrix_sygnal_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
     - when: matrix_sygnal_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
-  tags:
+
+- tags:
     - setup-all
     - setup-sygnal
-    - install-all
-    - install-sygnal
-
-- block:
+  block:
     - when: not matrix_sygnal_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
-  tags:
-    - setup-all
-    - setup-sygnal

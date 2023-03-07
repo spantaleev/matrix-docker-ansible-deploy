@@ -91,7 +91,10 @@
   when: "matrix_mautrix_hangouts_stat_database.stat.exists"
 
 - name: (Data relocation) Move mautrix-hangouts database file to ./data directory
-  ansible.builtin.command: "mv {{ matrix_mautrix_hangouts_base_path }}/mautrix-hangouts.db {{ matrix_mautrix_hangouts_data_path }}/mautrix-hangouts.db"
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_mautrix_hangouts_base_path }}/mautrix-hangouts.db {{ matrix_mautrix_hangouts_data_path }}/mautrix-hangouts.db"
+    creates: "{{ matrix_mautrix_hangouts_data_path }}/mautrix-hangouts.db"
+    removes: "{{ matrix_mautrix_hangouts_base_path }}/mautrix-hangouts.db"
   when: "matrix_mautrix_hangouts_stat_database.stat.exists"
 
 - name: Ensure mautrix-hangouts config.yaml installed

@@ -1,29 +1,29 @@
 ---
 
-- block:
-    - when: matrix_hookshot_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/inject_into_nginx_proxy.yml"
-  tags:
+- tags:
     - setup-all
     - setup-nginx-proxy
     - install-all
     - install-nginx-proxy
+  block:
+    - when: matrix_hookshot_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/inject_into_nginx_proxy.yml"
 
-- block:
+- tags:
+    - setup-all
+    - setup-hookshot
+    - install-all
+    - install-hookshot
+  block:
     - when: matrix_hookshot_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
     - when: matrix_hookshot_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+
+- tags:
     - setup-all
     - setup-hookshot
-    - install-all
-    - install-hookshot
-
-- block:
+  block:
     - when: not matrix_hookshot_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  tags:
-    - setup-all
-    - setup-hookshot

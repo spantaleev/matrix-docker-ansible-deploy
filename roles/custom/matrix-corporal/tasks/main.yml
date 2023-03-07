@@ -1,26 +1,26 @@
 ---
 
-- block:
+- tags:
+    - setup-all
+    - setup-corporal
+    - install-all
+    - install-corporal
+  block:
     - when: matrix_corporal_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
     - when: matrix_corporal_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+
+- tags:
     - setup-all
     - setup-corporal
-    - install-all
-    - install-corporal
-
-- block:
+  block:
     - when: not matrix_corporal_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  tags:
-    - setup-all
-    - setup-corporal
 
-- block:
+- tags:
+    - self-check
+  block:
     - when: matrix_corporal_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check.yml"
-  tags:
-    - self-check

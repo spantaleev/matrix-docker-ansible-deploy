@@ -1,41 +1,41 @@
 ---
 
-- block:
-    - when: matrix_registration_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/inject_into_nginx_proxy.yml"
-  tags:
+- tags:
     - setup-all
     - setup-nginx-proxy
     - install-all
     - install-nginx-proxy
+  block:
+    - when: matrix_registration_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/inject_into_nginx_proxy.yml"
 
-- block:
+- tags:
+    - setup-all
+    - setup-matrix-registration
+    - install-all
+    - install-matrix-registration
+  block:
     - when: matrix_registration_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
     - when: matrix_registration_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+
+- tags:
     - setup-all
     - setup-matrix-registration
-    - install-all
-    - install-matrix-registration
-
-- block:
+  block:
     - when: not matrix_registration_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  tags:
-    - setup-all
-    - setup-matrix-registration
 
-- block:
+- tags:
+    - generate-matrix-registration-token
+  block:
     - when: matrix_registration_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/generate_token.yml"
-  tags:
-    - generate-matrix-registration-token
 
-- block:
+- tags:
+    - list-matrix-registration-tokens
+  block:
     - when: matrix_registration_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/list_tokens.yml"
-  tags:
-    - list-matrix-registration-tokens

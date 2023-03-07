@@ -29,7 +29,10 @@
   when: "matrix_mx_puppet_groupme_stat_database.stat.exists"
 
 - name: (Data relocation) Move mx-puppet-groupme database file to ./data directory
-  ansible.builtin.command: "mv {{ matrix_mx_puppet_groupme_base_path }}/database.db {{ matrix_mx_puppet_groupme_data_path }}/database.db"
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_mx_puppet_groupme_base_path }}/database.db {{ matrix_mx_puppet_groupme_data_path }}/database.db"
+    creates: "{{ matrix_mx_puppet_groupme_data_path }}/database.db"
+    removes: "{{ matrix_mx_puppet_groupme_base_path }}/database.db"
   when: "matrix_mx_puppet_groupme_stat_database.stat.exists"
 
 - ansible.builtin.set_fact:
