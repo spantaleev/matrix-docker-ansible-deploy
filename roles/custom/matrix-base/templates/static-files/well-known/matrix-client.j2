@@ -26,6 +26,11 @@
 		"preferredDomain": {{ matrix_client_element_jitsi_preferredDomain|to_json }}
 	}
 	{% endif %}
+	{% if matrix_sliding_sync_enabled %},
+	"org.matrix.msc3575.proxy": {
+		"url": "{{ matrix_sliding_sync_base_url }}"
+	}
+	{% endif %}
 	{% if matrix_client_element_location_sharing_enabled %},
 	"m.tile_server": {
         "map_style_url": "https://{{ matrix_server_fqn_element }}/map_style.json"

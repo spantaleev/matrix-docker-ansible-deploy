@@ -1,0 +1,91 @@
+---
+
+# Sliding Sync Proxy is an implementation of MSC3575 for the new sliding sync
+
+matrix_sliding_sync_enabled: true
+
+matrix_sliding_sync_version: v0.99.1
+
+matrix_sliding_sync_scheme: https
+
+# The hostname at which sliding-sync is served.
+matrix_sliding_sync_hostname: ''
+
+# The path at which sliding-sync is served.
+# This value must either be `/` or not end with a slash (e.g. `/sliding-sync`).
+matrix_sliding_sync_path_prefix: /
+
+matrix_sliding_sync_base_path: "{{ matrix_base_data_path }}/sliding-sync"
+
+matrix_sliding_sync_container_image_self_build: false
+matrix_sliding_sync_container_image_self_build_repo: https://github.com/matrix-org/sliding-sync
+matrix_sliding_sync_container_image_self_build_repo_version: "{{ 'main' if matrix_sliding_sync_version == 'main' else matrix_sliding_sync_version }}"
+matrix_sliding_sync_container_src_path: "{{ matrix_sliding_sync_base_path }}/container-src"
+
+matrix_sliding_sync_container_image: "{{ matrix_sliding_sync_container_image_name_prefix }}matrix-org/sliding-sync:{{ matrix_sliding_sync_container_image_tag }}"
+matrix_sliding_sync_container_image_name_prefix: "{{ 'localhost/' if matrix_sliding_sync_container_image_self_build else matrix_sliding_sync_container_image_registry_prefix }}"
+matrix_sliding_sync_container_image_tag: "{{ matrix_sliding_sync_version }}"
+matrix_sliding_sync_container_image_force_pull: "{{ matrix_sliding_sync_container_image.endswith(':main') }}"
+matrix_sliding_sync_container_image_registry_prefix: ghcr.io/
+
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_sliding_sync_container_network: matrix-sliding-sync
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_sliding_sync_container_additional_networks: []
+
+# matrix_sliding_sync_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_sliding_sync_container_labels_additional_labels`.
+matrix_sliding_sync_container_labels_traefik_enabled: true
+matrix_sliding_sync_container_labels_traefik_docker_network: "{{ matrix_sliding_sync_container_network }}"
+matrix_sliding_sync_container_labels_traefik_hostname: "{{ matrix_sliding_sync_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/sliding-sync`).
+matrix_sliding_sync_container_labels_traefik_path_prefix: "{{ matrix_sliding_sync_path_prefix }}"
+matrix_sliding_sync_container_labels_traefik_rule: "Host(`{{ matrix_sliding_sync_container_labels_traefik_hostname }}`){% if matrix_sliding_sync_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_sliding_sync_container_labels_traefik_path_prefix }}`){% endif %}"
+matrix_sliding_sync_container_labels_traefik_priority: 0
+matrix_sliding_sync_container_labels_traefik_entrypoints: web-secure
+matrix_sliding_sync_container_labels_traefik_tls: "{{ matrix_sliding_sync_container_labels_traefik_entrypoints != 'web' }}"
+matrix_sliding_sync_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own headers, use `matrix_sliding_sync_container_labels_traefik_additional_response_headers_custom`
+matrix_sliding_sync_container_labels_traefik_additional_response_headers: "{{ matrix_sliding_sync_container_labels_traefik_additional_response_headers_auto | combine(matrix_sliding_sync_container_labels_traefik_additional_response_headers_custom) }}"
+matrix_sliding_sync_container_labels_traefik_additional_response_headers_auto: {}
+matrix_sliding_sync_container_labels_traefik_additional_response_headers_custom: {}
+
+# matrix_sliding_sync_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_sliding_sync_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_sliding_sync_container_labels_additional_labels: ''
+
+# A list of extra arguments to pass to the container
+matrix_sliding_sync_container_extra_arguments: []
+
+# List of systemd services that matrix-sliding-sync-proxy.service depends on
+matrix_sliding_sync_systemd_required_services_list: ["docker.service"]
+
+# List of systemd services that matrix-sliding-sync-proxy.service wants
+matrix_sliding_sync_systemd_wanted_services_list: []
+
+# Controls the SYNCV3_SERVER environment variable
+matrix_sliding_sync_environment_variable_syncv3_server: "{{ matrix_homeserver_container_url }}"
+
+# Controls the SYNCV3_SECRET environment variable
+matrix_sliding_sync_environment_variable_syncv3_secret: ''
+
+# Controls the SYNCV3_DB environment variable
+matrix_sliding_sync_environment_variable_syncv3_db: 'user={{ matrix_sliding_sync_database_username }} password={{ matrix_sliding_sync_database_password }} host={{ matrix_sliding_sync_database_hostname }} port={{ matrix_sliding_sync_database_port }} dbname={{ matrix_sliding_sync_database_name }} sslmode=disable'
+
+matrix_sliding_sync_database_username: 'matrix_sliding_sync'
+matrix_sliding_sync_database_password: ''
+matrix_sliding_sync_database_hostname: ''
+matrix_sliding_sync_database_port: 5432
+matrix_sliding_sync_database_name: 'matrix_sliding_sync'
