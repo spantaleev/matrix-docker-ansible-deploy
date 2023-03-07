@@ -2,9 +2,13 @@
 
 The playbook can install and configure [sliding-sync](https://github.com/matrix-org/sliding-sync) proxy for you.
 
-Sliding Sync is an implementation of [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/blob/kegan/sync-v3/proposals/3575-sync.md) and a prerequisite for running the new (still beta) Element X clients ([Element X iOS](https://github.com/vector-im/element-x-ios) and [Element X Android](https://github.com/vector-im/element-x-android)).
+Sliding Sync is an implementation of [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/blob/kegan/sync-v3/proposals/3575-sync.md) and a prerequisite for running the new (**still beta**) Element X clients ([Element X iOS](https://github.com/vector-im/element-x-ios) and [Element X Android](https://github.com/vector-im/element-x-android)).
 
-See the project's [documentation](https://github.com/matrix-org/sliding-syncb) to learn more.
+See the project's [documentation](https://github.com/matrix-org/sliding-sync) to learn more.
+
+Element X iOS is [available on TestFlight](https://testflight.apple.com/join/uZbeZCOi).
+
+Element X Android requires manual compilation to get it working with a non-`matrix.org` homeseserver. It's also less feature-complete than the iOS version.
 
 **NOTE**: The Sliding Sync proxy **only works with the Traefik reverse-proxy**. If you have an old server installation (from the time `matrix-nginx-proxy` was our default reverse-proxy - `matrix_playbook_reverse_proxy_type: playbook-managed-nginx`), you won't be able to use Sliding Sync.
 
