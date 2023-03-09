@@ -24,7 +24,7 @@ matrix_cactus_comments_enabled: true
 # To do this you need to uncomment one of the following lines (depending if you are using synapse or dentrite as a homeserver)
 # If you don't know which one you use: The default is synapse ;)
 # matrix_synapse_allow_guest_access: true
-# matrix_dentrite_allow_guest_access
+# matrix_dentrite_allow_guest_access: true
 ```
 
 ## Installing
