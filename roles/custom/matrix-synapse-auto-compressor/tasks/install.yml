@@ -1,0 +1,53 @@
+---
+- name: Ensure synapse-auto-compressor paths exist
+  ansible.builtin.file:
+    path: "{{ matrix_synapse_auto_compressor_container_src_files_path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  when: matrix_synapse_auto_compressor_container_image_self_build | bool
+
+- name: Ensure synapse-auto-compressor image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_synapse_auto_compressor_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_synapse_auto_compressor_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_synapse_auto_compressor_container_image_force_pull }}"
+  when: "not matrix_synapse_auto_compressor_container_image_self_build | bool"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure synapse-auto-compressor repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_synapse_auto_compressor_container_repo }}"
+    version: "{{ matrix_synapse_auto_compressor_container_repo_version }}"
+    dest: "{{ matrix_synapse_auto_compressor_container_src_files_path }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
+  register: matrix_synapse_auto_compressor_git_pull_results
+  when: "matrix_synapse_auto_compressor_container_image_self_build | bool"
+
+- name: Ensure synapse-auto-compressor image is built
+  community.docker.docker_image:
+    name: "{{ matrix_synapse_auto_compressor_container_image }}"
+    source: build
+    force_source: "{{ matrix_synapse_auto_compressor_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_synapse_auto_compressor_container_src_files_path }}"
+      pull: true
+  when: "matrix_synapse_auto_compressor_container_image_self_build | bool"
+
+- name: Ensure matrix-synapse-auto-compressor systemd service and timer are installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/matrix-synapse-auto-compressor.{{ item }}.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse-auto-compressor.{{ item }}"
+    mode: 0644
+  with_items:
+    - service
+    - timer
