@@ -338,6 +338,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-synapse-s3-storage-provider-migrate.timer', 'priority': 5000, 'groups': ['matrix']}] if matrix_synapse_ext_synapse_s3_storage_provider_enabled else [])
     +
+    ([{'name': 'matrix-synapse-auto-compressor.timer', 'priority': 5000, 'groups': ['matrix', 'synapse-auto-compressor']}] if matrix_synapse_auto_compressor_enabled else [])
+    +
     ([{'name': 'matrix-synapse-admin.service', 'priority': 4000, 'groups': ['matrix', 'synapse-admin']}] if matrix_synapse_admin_enabled else [])
     +
     ([{'name': 'matrix-synapse-reverse-proxy-companion.service', 'priority': 1500, 'groups': ['matrix', 'homeservers', 'synapse', 'reverse-proxies']}] if matrix_synapse_reverse_proxy_companion_enabled else [])
@@ -3325,6 +3327,43 @@ matrix_synapse_app_service_config_files_auto: "{{ matrix_homeserver_app_service_
 # /matrix-synapse
 #
 ######################################################################
+
+
+######################################################################
+#
+# matrix-synapse-auto-compressor
+#
+######################################################################
+
+# Not enabled by default, for now
+matrix_synapse_auto_compressor_enabled: false
+
+matrix_synapse_auto_compressor_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
+
+matrix_synapse_auto_compressor_container_additional_networks: |
+  {{
+    ([devture_postgres_container_network] if devture_postgres_enabled and devture_postgres_container_network != matrix_synapse_auto_compressor_container_network else [])
+  }}
+
+matrix_synapse_auto_compressor_database_username: "{{ matrix_synapse_database_user if matrix_synapse_enabled else '' }}"
+matrix_synapse_auto_compressor_database_password: "{{ matrix_synapse_database_password if matrix_synapse_enabled else '' }}"
+matrix_synapse_auto_compressor_database_hostname: "{{ matrix_synapse_database_host if matrix_synapse_enabled else '' }}"
+matrix_synapse_auto_compressor_database_port: "{{ matrix_synapse_database_port if matrix_synapse_enabled else '5432' }}"
+matrix_synapse_auto_compressor_database_name: "{{ matrix_synapse_database_database if matrix_synapse_enabled else '' }}"
+
+matrix_synapse_auto_compressor_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+  }}
+
+######################################################################
+#
+# /matrix-synapse-auto-compressor
+#
+######################################################################
+
 
 ######################################################################
 #
