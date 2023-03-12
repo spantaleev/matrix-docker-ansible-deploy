@@ -3333,9 +3333,23 @@ matrix_synapse_app_service_config_files_auto: "{{ matrix_homeserver_app_service_
 #
 ######################################################################
 
+# Not enabled by default, for now
 matrix_synapse_auto_compressor_enabled: false
 
-matrix_synapse_auto_compressor_container_image_self_build: "{{ matrix_architecture not in ['arm32', 'arm64', 'amd64'] }}"
+matrix_synapse_auto_compressor_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
+
+matrix_synapse_auto_compressor_database_username: "{{ matrix_synapse_database_user if matrix_synapse_enabled else '' }}"
+matrix_synapse_auto_compressor_database_password: "{{ matrix_synapse_database_password if matrix_synapse_enabled else '' }}"
+matrix_synapse_auto_compressor_database_hostname: "{{ matrix_synapse_database_host if matrix_synapse_enabled else '' }}"
+matrix_synapse_auto_compressor_database_port: "{{ matrix_synapse_database_port if matrix_synapse_enabled else '5432' }}"
+matrix_synapse_auto_compressor_database_name: "{{ matrix_synapse_database_database if matrix_synapse_enabled else '' }}"
+
+matrix_synapse_auto_compressor_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+  }}
 
 ######################################################################
 #
