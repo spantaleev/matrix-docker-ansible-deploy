@@ -24,11 +24,13 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--read-only \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--network={{ matrix_synapse_auto_compressor_container_network }} \
+			--env-file={{ matrix_synapse_auto_compressor_base_path }}/env \
+			--entrypoint=/bin/sh \
 			{% for arg in matrix_synapse_auto_compressor_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_synapse_auto_compressor_container_image }} \
-			{{ matrix_synapse_auto_compressor_command }}
+			-c '{{ matrix_synapse_auto_compressor_command }}'
 
 {% for network in matrix_synapse_auto_compressor_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-synapse-auto-compressor
