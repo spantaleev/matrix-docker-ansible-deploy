@@ -2,6 +2,9 @@
 
 - block:
     - when: matrix_synapse_auto_compressor_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_synapse_auto_compressor_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
   tags:
     - setup-all
