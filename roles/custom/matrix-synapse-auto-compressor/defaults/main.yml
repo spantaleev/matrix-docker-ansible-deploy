@@ -17,6 +17,14 @@ matrix_synapse_auto_compressor_container_image_force_pull: "{{ matrix_synapse_au
 
 matrix_synapse_auto_compressor_base_path: "{{ matrix_base_data_path }}/synapse-auto-compressor"
 
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_synapse_auto_compressor_container_network: matrix-synapse-auto-compressor
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_synapse_auto_compressor_container_additional_networks: []
+
 # A list of extra arguments to pass to the container
 matrix_synapse_auto_compressor_container_extra_arguments: []
 

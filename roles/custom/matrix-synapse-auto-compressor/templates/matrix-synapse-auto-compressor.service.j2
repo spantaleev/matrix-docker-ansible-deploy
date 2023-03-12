@@ -15,17 +15,26 @@ Type=oneshot
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-synapse-auto-compressor 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-synapse-auto-compressor 2>/dev/null || true'
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-synapse-auto-compressor \
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-synapse-auto-compressor \
 			--log-driver=none \
 			--cap-drop=ALL \
 			--read-only \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
-			--network={{ matrix_docker_network }} \
+			--network={{ matrix_synapse_auto_compressor_container_network }} \
 			{% for arg in matrix_synapse_auto_compressor_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_synapse_auto_compressor_container_image }} \
 			{{ matrix_synapse_auto_compressor_command }}
+
+{% for network in matrix_synapse_auto_compressor_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-synapse-auto-compressor
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-synapse-auto-compressor
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-synapse-auto-compressor 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-synapse-auto-compressor 2>/dev/null || true'

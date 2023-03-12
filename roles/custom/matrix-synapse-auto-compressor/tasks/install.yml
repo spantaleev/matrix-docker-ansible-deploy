@@ -43,6 +43,11 @@
       pull: true
   when: "matrix_synapse_auto_compressor_container_image_self_build | bool"
 
+- name: Ensure matrix-synapse-auto-compressor container network is created
+  community.general.docker_network:
+    name: "{{ matrix_synapse_auto_compressor_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-synapse-auto-compressor systemd service and timer are installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/matrix-synapse-auto-compressor.{{ item }}.j2"
