@@ -1,3 +1,19 @@
+# 2023-03-12
+
+## synapse-auto-compressor support
+
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up [rust-synapse-compress-state](https://github.com/matrix-org/rust-synapse-compress-state)'s `synapse_auto_compressor` tool to run periodically.
+
+If enabled, `synapse_auto_compressor` runs on a schedule and compresses your Synapse database's `state_groups` table. It was possible to run `rust-synapse-compress-state` manually via the playbook even before - see [Compressing state with rust-synapse-compress-state](docs/maintenance-synapse.md#compressing-state-with-rust-synapse-compress-state). However, using `synapse_auto_compressor` is better, because:
+
+- it runs on a more up-to-date version of `rust-synapse-compress-state`
+- it's a set-it-and-forget-it tool that you can enable and never have to deal with manual compression anymore
+
+This tool needs to be enabled manually, for now. In the future, we're considering enabling it by default for all Synapse installations.
+
+See our [Setting up synapse-auto-compressor](docs/configuring-playbook-synapse-auto-compressor.md) documentation to get started.
+
+
 # 2023-03-07
 
 ## Sliding Sync Proxy (Element X) support

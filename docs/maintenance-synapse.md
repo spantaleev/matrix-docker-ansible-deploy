@@ -29,7 +29,9 @@ After deleting data, you may wish to run a [`FULL` Postgres `VACUUM`](./maintena
 
 [rust-synapse-compress-state](https://github.com/matrix-org/rust-synapse-compress-state) can be used to optimize some `_state` tables used by Synapse. If your server participates in large rooms this is the most effective way to reduce the size of your database.
 
-This tool should be safe to use (even when Synapse is running), but it's always a good idea to [make Postgres backups](./maintenance-postgres.md#backing-up-postgresql) first.
+**Note**: besides running the `rust-synapse-compress-state` tool manually, you can also enable its `synapse-auto-compressor` tool by [Setting up synapse-auto-compressor](configuring-playbook-synapse-auto-compressor.md). The automatic tool will run on a schedule every day and you won't have to compress state manually ever again.
+
+`rust-synapse-compress-state` should be safe to use (even when Synapse is running), but it's always a good idea to [make Postgres backups](./maintenance-postgres.md#backing-up-postgresql) first.
 
 To ask the playbook to run rust-synapse-compress-state, execute:
 
