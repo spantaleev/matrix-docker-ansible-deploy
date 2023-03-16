@@ -41,7 +41,7 @@ To perform a `FULL` Postgres [VACUUM](https://www.postgresql.org/docs/current/sq
 Example:
 
 ```bash
-ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-vacuum,start
+just run-tags run-postgres-vacuum,start
 ```
 
 **Note**: this will automatically stop Synapse temporarily and restart it later. You'll also need plenty of available disk space in your Postgres data directory (usually `/matrix/postgres/data`).
@@ -78,7 +78,9 @@ Upgrades must be performed manually.
 
 This playbook can upgrade your existing Postgres setup with the following command:
 
-	ansible-playbook -i inventory/hosts setup.yml --tags=upgrade-postgres
+```sh
+just run-tags upgrade-postgres
+```
 
 **Warning: If you're using Borg Backup keep in mind that there is no official Postgres 15 support yet.**
 
