@@ -16,7 +16,9 @@ Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-bot-chatgpt 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-bot-chatgpt 2>/dev/null || true'
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-bot-chatgpt \
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} run \
+			--rm \
+			--name=matrix-bot-chatgpt \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
@@ -29,7 +31,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			{% for arg in matrix_bot_chatgpt_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_bot_chatgpt_docker_image }}
+			{{ matrix_bot_chatgpt_container_image }}
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-bot-chatgpt 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-bot-chatgpt 2>/dev/null || true'

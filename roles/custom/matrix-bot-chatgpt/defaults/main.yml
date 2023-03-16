@@ -4,19 +4,22 @@
 
 matrix_bot_chatgpt_enabled: true
 
-matrix_bot_chatgpt_container_image_self_build: false
-matrix_bot_chatgpt_docker_repo: "https://github.com/matrixgpt/matrix-chatgpt-bot"
-matrix_bot_chatgpt_docker_repo_version: "{{ 'latest' if matrix_bot_chatgpt_version == 'latest' else matrix_bot_chatgpt_version }}"
-matrix_bot_chatgpt_docker_src_files_path: "{{ matrix_base_data_path }}/chatgpt/docker-src"
-
 matrix_bot_chatgpt_version: 3.0.0
-matrix_bot_chatgpt_docker_image: "{{ matrix_bot_chatgpt_docker_image_name_prefix }}matrixgpt/matrix-chatgpt-bot:{{ matrix_bot_chatgpt_version }}"
-matrix_bot_chatgpt_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_chatgpt_container_image_self_build else 'ghcr.io/' }}"
-matrix_bot_chatgpt_docker_image_force_pull: "{{ matrix_bot_chatgpt_docker_image.endswith(':latest') }}"
+
+matrix_bot_chatgpt_container_image_self_build: false
+matrix_bot_chatgpt_container_image_self_build_repo: "https://github.com/matrixgpt/matrix-chatgpt-bot"
+matrix_bot_chatgpt_container_image_self_build_repo_version: "{{ 'main' if matrix_bot_chatgpt_version == 'latest' else matrix_bot_chatgpt_version }}"
+
+matrix_bot_chatgpt_container_image: "{{ matrix_bot_chatgpt_container_image_name_prefix }}matrixgpt/matrix-chatgpt-bot:{{ matrix_bot_chatgpt_container_image_tag }}"
+matrix_bot_chatgpt_container_image_name_prefix: "{{ 'localhost/' if matrix_bot_chatgpt_container_image_self_build else matrix_bot_chatgpt_container_image_registry_prefix }}"
+matrix_bot_chatgpt_container_image_tag: "{{ matrix_bot_chatgpt_version }}"
+matrix_bot_chatgpt_container_image_force_pull: "{{ matrix_bot_chatgpt_container_image.endswith(':latest') }}"
+matrix_bot_chatgpt_container_image_registry_prefix: ghcr.io/
 
 matrix_bot_chatgpt_base_path: "{{ matrix_base_data_path }}/chatgpt"
 matrix_bot_chatgpt_config_path: "{{ matrix_bot_chatgpt_base_path }}/config"
 matrix_bot_chatgpt_data_path: "{{ matrix_bot_chatgpt_base_path }}/data"
+matrix_bot_chatgpt_container_src_path: "{{ matrix_bot_chatgpt_base_path }}/container-src"
 
 # A list of extra arguments to pass to the container
 matrix_bot_chatgpt_container_extra_arguments: []
@@ -77,6 +80,9 @@ matrix_bot_chatgpt_matrix_rich_text: true  # MATRIX_RICH_TEXT=true
 # matrix_bot_chatgpt_admins: "{{ [matrix_admin] if matrix_admin else [] }}"
 
 # Additional environment variables to pass to the chatgpt container
+#
+# You can discover additional environment variables from:
+# https://github.com/matrixgpt/matrix-chatgpt-bot/blob/main/src/env.ts
 #
 # Example:
 # matrix_bot_chatgpt_environment_variables_extension: |
