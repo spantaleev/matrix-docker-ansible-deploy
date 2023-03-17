@@ -25,13 +25,13 @@ To import, run this command (make sure to replace `SERVER_PATH_TO_POSTGRES_DUMP_
 ```sh
 just run-tags import-postgres \
 --extra-vars=server_path_postgres_dump=SERVER_PATH_TO_POSTGRES_DUMP_FILE \
---extra-vars=postgres_default_import_database=main
+--extra-vars=postgres_default_import_database=matrix
 ```
 
 **Notes**:
 
 - `SERVER_PATH_TO_POSTGRES_DUMP_FILE` must be a file path to a Postgres dump file on the server (not on your local machine!)
-- `postgres_default_import_database` defaults to `main`, which is useful for importing multiple databases (for dumps made with `pg_dumpall`). If you're importing a single database (e.g. `synapse`), consider changing `postgres_default_import_database` accordingly
+- `postgres_default_import_database` defaults to `matrix`, which is useful for importing multiple databases (for dumps made with `pg_dumpall`). If you're importing a single database (e.g. `synapse`), consider changing `postgres_default_import_database` accordingly
 
 
 ## Troubleshooting
