@@ -14,6 +14,10 @@ lint:
 # Runs the playbook with --tags=install-all,ensure-matrix-users-created,start and optional arguments
 install-all *extra_args: (run-tags "install-all,ensure-matrix-users-created,start" extra_args)
 
+# Runs installation tasks for a single service
+install-service service:
+	just --justfile {{ justfile() }} run --tags=install-{{ service }},start-group --extra-vars=group={{ service }}
+
 # Runs the playbook with --tags=setup-all,ensure-matrix-users-created,start and optional arguments
 setup-all *extra_args: (run-tags "setup-all,ensure-matrix-users-created,start" extra_args)
 
