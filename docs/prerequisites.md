@@ -20,6 +20,8 @@ If your distro runs within an [LXC container](https://linuxcontainers.org/), you
 
 - The [Ansible](http://ansible.com/) program being installed on your own computer. It's used to run this playbook and configures your server for you. Take a look at [our guide about Ansible](ansible.md) for more information, as well as [version requirements](ansible.md#supported-ansible-versions) and alternative ways to run Ansible.
 
+- the [passlib](https://passlib.readthedocs.io/en/stable/index.html) Python library installed on the computer you run Ansible. On most distros, you need to install some `python-passlib` or `py3-passlib` package, etc.
+
 - [`git`](https://git-scm.com/) is the recommended way to download the playbook to your computer. `git` may also be required on the server if you will be [self-building](self-building.md) components.
 
 - [`just`](https://github.com/casey/just) for running `just roles`, etc. (see [`justfile`](../justfile)), although you can also run these commands manually
