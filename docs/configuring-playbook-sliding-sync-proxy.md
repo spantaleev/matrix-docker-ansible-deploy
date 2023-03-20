@@ -40,6 +40,17 @@ matrix_sliding_sync_enabled: true
 
 After potentially [adjusting DNS records](#adjusting-dns-records) and configuring the playbook, run the [installation](installing.md) command again: `just install-all`.
 
+### External databases
+
+Please note that, if your setup utilizes an external database, you must also establish configuration for the sliding sync proxy. Alter the defaults below to suit your configuration:
+
+```yaml
+matrix_sliding_sync_database_username: 'matrix_sliding_sync'
+matrix_sliding_sync_database_password: ''
+matrix_sliding_sync_database_hostname: ''
+matrix_sliding_sync_database_port: 5432
+matrix_sliding_sync_database_name: 'matrix_sliding_sync'
+```
 
 ## Usage
 
