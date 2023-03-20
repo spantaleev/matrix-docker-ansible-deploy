@@ -107,6 +107,11 @@
     group: "{{ matrix_user_groupname }}"
   when: matrix_hookshot_github_enabled | bool and matrix_hookshot_github_private_key|length > 0
 
+- name: Ensure matrix-hookshot container network is created
+  community.general.docker_network:
+    name: "{{ matrix_hookshot_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-hookshot.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-hookshot.service.j2"
