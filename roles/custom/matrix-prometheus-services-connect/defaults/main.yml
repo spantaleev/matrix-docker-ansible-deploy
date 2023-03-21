@@ -1,0 +1,144 @@
+---
+
+# matrix-prometheus-services-connect is a role which helps integrate
+# the various Matrix services with the Prometheus role.
+
+# Controls whether Synapse integration should be done
+matrix_prometheus_services_connect_synapse_enabled: false
+
+# Controls whether the synapse rules shall be loaded into Prometheus
+matrix_prometheus_services_connect_synapse_rules_enabled: "{{ matrix_prometheus_services_connect_synapse_enabled }}"
+
+# Controls whether the synapse rules shall be downloaded
+matrix_prometheus_services_connect_synapse_rules_download_enabled: "{{ matrix_prometheus_services_connect_synapse_rules_enabled }}"
+matrix_prometheus_services_connect_synapse_rules_download_synapse_tag: master
+matrix_prometheus_services_connect_synapse_rules_download_src_url: "https://raw.githubusercontent.com/matrix-org/synapse/{{ matrix_prometheus_services_connect_synapse_rules_download_synapse_tag }}/contrib/prometheus/synapse-v2.rules"
+matrix_prometheus_services_connect_synapse_rules_download_dir_path: ''
+matrix_prometheus_services_connect_synapse_rules_download_owner: ''
+matrix_prometheus_services_connect_synapse_rules_download_group: ''
+
+# Controls whether Synapse shall be scraped
+matrix_prometheus_services_connect_scraper_synapse_enabled: false
+
+# Controls scraping the Synapse processes
+matrix_prometheus_services_connect_scraper_synapse_job_name: synapse
+matrix_prometheus_services_connect_scraper_synapse_metrics_path: /_synapse/metrics
+matrix_prometheus_services_connect_scraper_synapse_scrape_interval: 15s
+matrix_prometheus_services_connect_scraper_synapse_scrape_timeout: 15s
+
+matrix_prometheus_services_connect_scraper_synapse_configs: |
+  {{
+    [{
+      'job_name': matrix_prometheus_services_connect_scraper_synapse_job_name,
+      'metrics_path': matrix_prometheus_services_connect_scraper_synapse_metrics_path,
+      'scrape_interval': matrix_prometheus_services_connect_scraper_synapse_scrape_interval,
+      'scrape_timeout': matrix_prometheus_services_connect_scraper_synapse_scrape_timeout,
+      'static_configs': matrix_prometheus_services_connect_scraper_synapse_static_configs,
+    }]
+  }}
+
+matrix_prometheus_services_connect_scraper_synapse_static_configs: |
+  {{
+    (matrix_prometheus_services_connect_scraper_synapse_main_process_static_configs if matrix_prometheus_services_connect_scraper_synapse_main_process_enabled else [])
+    +
+    (matrix_prometheus_services_connect_scraper_synapse_workers_static_configs if matrix_prometheus_services_connect_scraper_synapse_workers_enabled else [])
+  }}
+
+# Controls whether the Synapse main process shall be scraped
+matrix_prometheus_services_connect_scraper_synapse_main_process_enabled: "{{ matrix_prometheus_services_connect_scraper_synapse_enabled }}"
+
+matrix_prometheus_services_connect_scraper_synapse_main_process_static_configs: |
+  {{
+    [{
+      'targets': [matrix_prometheus_services_connect_scraper_synapse_main_process_static_configs_target],
+      'labels': {
+        'instance': matrix_prometheus_services_connect_scraper_synapse_main_process_static_configs_instance,
+        'job': matrix_prometheus_services_connect_scraper_synapse_main_process_static_configs_job,
+        'index': 0,
+      }
+    }]
+  }}
+matrix_prometheus_services_connect_scraper_synapse_main_process_static_configs_target: ''
+matrix_prometheus_services_connect_scraper_synapse_main_process_static_configs_instance: "{{ matrix_domain }}"
+matrix_prometheus_services_connect_scraper_synapse_main_process_static_configs_job: master
+
+# Controls whether Synapse workers shall be scraped
+matrix_prometheus_services_connect_scraper_synapse_workers_enabled: "{{ matrix_prometheus_services_connect_scraper_synapse_enabled and matrix_prometheus_services_connect_scraper_synapse_workers_enabled_list | length > 0 }}"
+
+matrix_prometheus_services_connect_scraper_synapse_workers_enabled_list: []
+
+matrix_prometheus_services_connect_scraper_synapse_workers_static_configs_as_yaml: |
+  {% for worker in matrix_prometheus_services_connect_scraper_synapse_workers_enabled_list %}
+  {% if worker.metrics_port != 0 %}
+    - targets: ['{{ worker.name }}:{{ worker.metrics_port }}']
+      labels:
+        instance: {{ matrix_prometheus_services_connect_scraper_synapse_workers_static_configs_instance | to_json }}
+        worker_id: {{ worker.id | to_json }}
+        job: {{ worker.type | to_json }}
+        app: {{ worker.app | to_json }}
+  {% endif %}
+  {% endfor %}
+
+matrix_prometheus_services_connect_scraper_synapse_workers_static_configs_instance: "{{ matrix_domain }}"
+
+matrix_prometheus_services_connect_scraper_synapse_workers_static_configs: "{{ [] if matrix_prometheus_services_connect_scraper_synapse_workers_enabled_list | length == 0 else matrix_prometheus_services_connect_scraper_synapse_workers_static_configs_as_yaml | from_yaml }}"
+
+# Controls whether Postgres (postgres-exporter) shall be scraped
+matrix_prometheus_services_connect_scraper_postgres_enabled: false
+matrix_prometheus_services_connect_scraper_postgres_job_name: postgres
+matrix_prometheus_services_connect_scraper_postgres_metrics_path: /metrics
+matrix_prometheus_services_connect_scraper_postgres_scrape_interval: 15s
+matrix_prometheus_services_connect_scraper_postgres_scrape_timeout: 15s
+matrix_prometheus_services_connect_scraper_postgres_static_configs: "{{ [{'targets': [matrix_prometheus_services_connect_scraper_postgres_static_configs_target]}] }}"
+matrix_prometheus_services_connect_scraper_postgres_static_configs_target: ''
+# The final scrape config for the Postgers scraper
+matrix_prometheus_services_connect_scraper_postgres_scrape_configs: |
+  {{
+    [{
+      'job_name': matrix_prometheus_services_connect_scraper_postgres_job_name,
+      'metrics_path': matrix_prometheus_services_connect_scraper_postgres_metrics_path,
+      'scrape_interval': matrix_prometheus_services_connect_scraper_postgres_scrape_interval,
+      'scrape_timeout': matrix_prometheus_services_connect_scraper_postgres_scrape_timeout,
+      'static_configs': matrix_prometheus_services_connect_scraper_postgres_static_configs,
+    }]
+  }}
+
+# Controls whether Hookshot shall be scraped
+matrix_prometheus_services_connect_scraper_hookshot_enabled: false
+matrix_prometheus_services_connect_scraper_hookshot_job_name: hookshot
+matrix_prometheus_services_connect_scraper_hookshot_metrics_path: /metrics
+matrix_prometheus_services_connect_scraper_hookshot_scrape_interval: 15s
+matrix_prometheus_services_connect_scraper_hookshot_scrape_timeout: 15s
+matrix_prometheus_services_connect_scraper_hookshot_static_configs: "{{ [{'targets': [matrix_prometheus_services_connect_scraper_hookshot_static_configs_target]}] }}"
+matrix_prometheus_services_connect_scraper_hookshot_static_configs_target: ''
+# The final scrape config for the Hookshot scraper
+matrix_prometheus_services_connect_scraper_hookshot_scrape_configs: |
+  {{
+    [{
+      'job_name': matrix_prometheus_services_connect_scraper_hookshot_job_name,
+      'metrics_path': matrix_prometheus_services_connect_scraper_hookshot_metrics_path,
+      'scrape_interval': matrix_prometheus_services_connect_scraper_hookshot_scrape_interval,
+      'scrape_timeout': matrix_prometheus_services_connect_scraper_hookshot_scrape_timeout,
+      'static_configs': matrix_prometheus_services_connect_scraper_hookshot_static_configs,
+    }]
+  }}
+
+# Controls whether nginxlog shall be scraped
+matrix_prometheus_services_connect_scraper_nginxlog_enabled: false
+matrix_prometheus_services_connect_scraper_nginxlog_job_name: nginxlog
+matrix_prometheus_services_connect_scraper_nginxlog_metrics_path: /metrics
+matrix_prometheus_services_connect_scraper_nginxlog_scrape_interval: 15s
+matrix_prometheus_services_connect_scraper_nginxlog_scrape_timeout: 15s
+matrix_prometheus_services_connect_scraper_nginxlog_static_configs: "{{ [{'targets': [matrix_prometheus_services_connect_scraper_nginxlog_static_configs_target]}] }}"
+matrix_prometheus_services_connect_scraper_nginxlog_static_configs_target: ''
+# The final scrape config for the nginxlog scraper
+matrix_prometheus_services_connect_scraper_nginxlog_scrape_configs: |
+  {{
+    [{
+      'job_name': matrix_prometheus_services_connect_scraper_nginxlog_job_name,
+      'metrics_path': matrix_prometheus_services_connect_scraper_nginxlog_metrics_path,
+      'scrape_interval': matrix_prometheus_services_connect_scraper_nginxlog_scrape_interval,
+      'scrape_timeout': matrix_prometheus_services_connect_scraper_nginxlog_scrape_timeout,
+      'static_configs': matrix_prometheus_services_connect_scraper_nginxlog_static_configs,
+    }]
+  }}
