@@ -21,6 +21,9 @@ ntfy_enabled: true
 # Uncomment the line below and change it, if you'd like.
 # matrix_server_fqn_ntfy: "ntfy.{{ matrix_domain }}"
 
+# Uncomment to enable the ntfy web app (disabled by default)
+# ntfy_web_root: app  # defaults to "disable"
+
 # Uncomment and change to inject additional configuration options.
 # ntfy_configuration_extension_yaml: |
 #   log_level: DEBUG
@@ -80,6 +83,12 @@ Steps needed for specific matrix apps:
 If the matrix app asks, "Choose a distributor: FCM Fallback or ntfy", then choose "ntfy".
 
 If the matrix app doesn't seem to pick it up, try restarting it and try the Troubleshooting section below.
+
+### Web App
+
+ntfy also has a web app to subscribe to and push to topics from the browser. This may be helpful to further troubleshoot UnifiedPush problems or to use ntfy for other purposes. The web app only runs in the browser locally (after downloading the JavaScript).
+
+The web app is disabled in this playbook by default as the expectation is that most users won't use it. You can either use the [official hosted one](https://ntfy.sh/app) (it supports using other public reachable ntfy instances) or host it yourself by setting `ntfy_web_root: "app"` and re-running Ansible.
 
 
 ## Troubleshooting

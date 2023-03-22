@@ -1,3 +1,12 @@
+# 2023-03-22
+
+## ntfy Web App is disabled by default
+
+ntfy provides a web app, which is now disabled by default, because it may be unknown to and unused by most users of this playbook. You can enable it by setting `ntfy_web_root: "app"` (see [ntfy documentation](docs/configuring-playbook-ntfy.md)).
+
+This change was already applied a while before this entry, but as some users were reporting the missing web app, this entry was added (see [#2529](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2529)).
+
+
 # 2023-03-21
 
 ## The matrix-prometheus role lives independently now
