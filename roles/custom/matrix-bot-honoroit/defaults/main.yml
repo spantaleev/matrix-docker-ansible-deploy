@@ -4,6 +4,13 @@
 
 matrix_bot_honoroit_enabled: true
 
+# The hostname at which honoroit is served.
+matrix_bot_honoroit_hostname: ''
+
+# The path at which honoroit is exposed.
+# This value must either be `/` or not end with a slash (e.g. `/honoroit`).
+matrix_bot_honoroit_path_prefix: /
+
 matrix_bot_honoroit_container_image_self_build: false
 matrix_bot_honoroit_docker_repo: "https://gitlab.com/etke.cc/honoroit.git"
 matrix_bot_honoroit_docker_repo_version: "{{ matrix_bot_honoroit_version }}"
@@ -18,6 +25,44 @@ matrix_bot_honoroit_base_path: "{{ matrix_base_data_path }}/honoroit"
 matrix_bot_honoroit_config_path: "{{ matrix_bot_honoroit_base_path }}/config"
 matrix_bot_honoroit_data_path: "{{ matrix_bot_honoroit_base_path }}/data"
 matrix_bot_honoroit_data_store_path: "{{ matrix_bot_honoroit_data_path }}/store"
+
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_bot_honoroit_container_network: matrix-bot-honoroit
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_bot_honoroit_container_additional_networks: []
+
+# matrix_bot_honoroit_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_bot_honoroit_container_labels_additional_labels`.
+matrix_bot_honoroit_container_labels_traefik_enabled: true
+matrix_bot_honoroit_container_labels_traefik_docker_network: "{{ matrix_bot_honoroit_container_network }}"
+matrix_bot_honoroit_container_labels_traefik_hostname: "{{ matrix_bot_honoroit_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/honoroit`).
+matrix_bot_honoroit_container_labels_traefik_path_prefix: "{{ matrix_bot_honoroit_path_prefix }}"
+matrix_bot_honoroit_container_labels_traefik_rule: "Host(`{{ matrix_bot_honoroit_container_labels_traefik_hostname }}`){% if matrix_bot_honoroit_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_bot_honoroit_container_labels_traefik_path_prefix }}`){% endif %}"
+matrix_bot_honoroit_container_labels_traefik_priority: 0
+matrix_bot_honoroit_container_labels_traefik_entrypoints: web-secure
+matrix_bot_honoroit_container_labels_traefik_tls: "{{ matrix_bot_honoroit_container_labels_traefik_entrypoints != 'web' }}"
+matrix_bot_honoroit_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own headers, use `matrix_bot_honoroit_container_labels_traefik_additional_response_headers_custom`
+matrix_bot_honoroit_container_labels_traefik_additional_response_headers: "{{ matrix_bot_honoroit_container_labels_traefik_additional_response_headers_auto | combine(matrix_bot_honoroit_container_labels_traefik_additional_response_headers_custom) }}"
+matrix_bot_honoroit_container_labels_traefik_additional_response_headers_auto: {}
+matrix_bot_honoroit_container_labels_traefik_additional_response_headers_custom: {}
+
+# matrix_bot_buscarron_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_bot_buscarron_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_bot_buscarron_container_labels_additional_labels: ''
 
 # A list of extra arguments to pass to the container
 matrix_bot_honoroit_container_extra_arguments: []
