@@ -5,7 +5,6 @@ default:
 # Pulls external Ansible roles
 roles:
     #!/usr/bin/env sh
-    set -euo pipefail
     if [ -x "$(command -v agru)" ]; then
     	agru
     else
