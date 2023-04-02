@@ -23,13 +23,6 @@ Add this to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
 
 ```yaml
 matrix_jitsi_enabled: true
-
-# Run `bash inventory/scripts/jitsi-generate-passwords.sh` to generate these passwords,
-# or define your own strong passwords manually.
-matrix_jitsi_jicofo_auth_password: ""
-matrix_jitsi_jvb_auth_password: ""
-matrix_jitsi_jibri_recorder_password: ""
-matrix_jitsi_jibri_xmpp_password: ""
 ```
 
 
