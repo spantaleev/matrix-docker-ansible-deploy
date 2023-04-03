@@ -11,7 +11,7 @@ As part of the extraction process of this role out of the Matrix playbook, a few
 - **native Traefik support** has been added
 - **support for hosting under a subpath** has been added, although it suffers from a few minor issues listed [here](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/jitsi.md#url)
 
-You need to **update you roles** (`just roles` or `make roles`) regardless of whether you're using Jitsi or not.
+You need to **update your roles** (`just roles` or `make roles`) regardless of whether you're using Jitsi or not.
 
 If you're making use of Jitsi via this playbook, you will need to update variable references in your `vars.yml` file:
 
