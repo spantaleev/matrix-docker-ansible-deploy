@@ -38,7 +38,7 @@ The `matrix-prometheus` role has been relocated in its own repository, part of t
 
 Extracting the Prometheus role out of this Matrix playbook required huge internal refactoring to the way the Prometheus configuration (scraping jobs) is generated. If you notice any breakage after upgrading, let us know.
 
-You need to **update you roles** (`just roles` or `make roles`) regardless of whether you're using Prometheus or not.
+You need to **update your roles** (`just roles` or `make roles`) regardless of whether you're using Prometheus or not.
 
 If you're making use of Prometheus via this playbook, you will need to update variable references in your `vars.yml` file:
 
@@ -80,7 +80,7 @@ To get started, see our [Setting up Sliding Sync Proxy](docs/configuring-playboo
 
 **TLDR**: the `matrix-etherpad` role is now included from [another repository](https://gitlab.com/etke.cc/roles/etherpad). Some variables have been renamed. All functionality remains intact.
 
-You need to **update you roles** (`just roles` or `make roles`) regardless of whether you're using Etherpad or not.
+You need to **update your roles** (`just roles` or `make roles`) regardless of whether you're using Etherpad or not.
 
 If you're making use of Etherpad via this playbook, you will need to update variable references in your `vars.yml` file:
 
@@ -188,7 +188,7 @@ Additional details are available in the [Customizing templates](docs/configuring
 
 The `matrix-redis` role (which configures [Redis](https://redis.io/)) has been extracted from the playbook and now lives in its [own repository](https://gitlab.com/etke.cc/roles/redis). This makes it possible to easily use it in other Ansible playbooks.
 
-You need to **update you roles** (`just roles` or `make roles`) regardless of whether you're enabling Ntfy or not. If you're making use of Ntfy via this playbook, you will need to update variable references in your `vars.yml` file (`matrix_redis_` -> `redis_`).
+You need to **update your roles** (`just roles` or `make roles`) regardless of whether you're enabling Ntfy or not. If you're making use of Ntfy via this playbook, you will need to update variable references in your `vars.yml` file (`matrix_redis_` -> `redis_`).
 
 ## The matrix-ntfy role lives independently now
 
@@ -196,7 +196,7 @@ You need to **update you roles** (`just roles` or `make roles`) regardless of wh
 
 The `matrix-ntfy` role (which configures [Ntfy](https://ntfy.sh/)) has been extracted from the playbook and now lives in its [own repository](https://gitlab.com/etke.cc/roles/ntfy). This makes it possible to easily use it in other Ansible playbooks.
 
-You need to **update you roles** (`just roles` or `make roles`) regardless of whether you're enabling Ntfy or not. If you're making use of Ntfy via this playbook, you will need to update variable references in your `vars.yml` file (`matrix_ntfy_` -> `ntfy_`).
+You need to **update your roles** (`just roles` or `make roles`) regardless of whether you're enabling Ntfy or not. If you're making use of Ntfy via this playbook, you will need to update variable references in your `vars.yml` file (`matrix_ntfy_` -> `ntfy_`).
 
 
 # 2023-02-15
@@ -207,7 +207,7 @@ You need to **update you roles** (`just roles` or `make roles`) regardless of wh
 
 The `matrix-grafana` role (which configures [Grafana](docs/configuring-playbook-prometheus-grafana.md)) has been extracted from the playbook and now lives in its [own repository](https://gitlab.com/etke.cc/roles/grafana). This makes it possible to easily use it in other Ansible playbooks.
 
-You need to **update you roles** (`just roles` or `make roles`) regardless of whether you're enabling Grafana or not. If you're making use of Grafana via this playbook, you will need to update variable references in your `vars.yml` file (`matrix_grafana_` -> `grafana_`).
+You need to **update your roles** (`just roles` or `make roles`) regardless of whether you're enabling Grafana or not. If you're making use of Grafana via this playbook, you will need to update variable references in your `vars.yml` file (`matrix_grafana_` -> `grafana_`).
 
 
 # 2023-02-13
@@ -218,7 +218,7 @@ You need to **update you roles** (`just roles` or `make roles`) regardless of wh
 
 Thanks to [moan0s](https://github.com/moan0s), the `matrix-backup-borg` role (which configures [Borg backups](docs/configuring-playbook-backup-borg.md)) has been extracted from the playbook and now lives in its [own repository](https://gitlab.com/etke.cc/roles/backup_borg). This makes it possible to easily use it in other Ansible playbooks and will become part of [nextcloud-docker-ansible-deploy](https://github.com/spantaleev/nextcloud-docker-ansible-deploy) soon.
 
-You need to **update you roles** (`just roles` or `make roles`) regardless of whether you're enabling Borg backup functionality or not. If you're making use of Borg backups via this playbook, you will need to update variable references in your `vars.yml` file (`matrix_backup_borg_` -> `backup_borg_`).
+You need to **update your roles** (`just roles` or `make roles`) regardless of whether you're enabling Borg backup functionality or not. If you're making use of Borg backups via this playbook, you will need to update variable references in your `vars.yml` file (`matrix_backup_borg_` -> `backup_borg_`).
 
 
 # 2023-02-12
