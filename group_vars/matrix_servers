@@ -2682,33 +2682,31 @@ matrix_nginx_proxy_systemd_wanted_services_list: |
     +
     (['matrix-ma1sd.service'] if matrix_ma1sd_enabled else [])
     +
-    (['matrix-client-cinny.service'] if matrix_client_cinny_enabled else [])
+    (['matrix-client-cinny.service'] if matrix_client_cinny_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
     +
-    (['matrix-bot-buscarron.service'] if matrix_bot_buscarron_enabled else [])
+    (['matrix-bot-buscarron.service'] if matrix_bot_buscarron_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
     +
-    (['matrix-client-element.service'] if matrix_client_element_enabled else [])
+    (['matrix-client-element.service'] if matrix_client_element_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
     +
-    (['matrix-client-hydrogen.service'] if matrix_client_hydrogen_enabled else [])
+    (['matrix-client-hydrogen.service'] if matrix_client_hydrogen_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
     +
-    ([(grafana_identifier + '.service')] if grafana_enabled else [])
+    ([(grafana_identifier + '.service')] if grafana_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
     +
-    (['matrix-dimension.service'] if matrix_dimension_enabled else [])
+    (['matrix-dimension.service'] if matrix_dimension_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
     +
-    (['matrix-rageshake.service'] if matrix_rageshake_enabled else [])
+    (['matrix-rageshake.service'] if matrix_rageshake_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
     +
-    (['matrix-sygnal.service'] if matrix_sygnal_enabled else [])
+    (['matrix-sygnal.service'] if matrix_sygnal_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
     +
-    ([(ntfy_identifier + '.service')] if ntfy_enabled else [])
+    ([(ntfy_identifier + '.service')] if ntfy_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
     +
-    ([(jitsi_identifier + '-web.service')] if jitsi_enabled else [])
+    ([(jitsi_identifier + '-web.service')] if jitsi_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
     +
-    (['matrix-sliding-sync-proxy.service'] if matrix_sliding_sync_enabled else [])
+    (['matrix-bot-go-neb.service'] if matrix_bot_go_neb_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
     +
-    (['matrix-bot-go-neb.service'] if matrix_bot_go_neb_enabled else [])
+    ([etherpad_identifier + '.service'] if etherpad_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
     +
-    ([etherpad_identifier + '.service'] if etherpad_enabled else [])
-    +
-    (['matrix-hookshot.service'] if matrix_hookshot_enabled else [])
+    (['matrix-hookshot.service'] if matrix_hookshot_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
   }}
 
 matrix_ssl_domains_to_obtain_certificates_for: |
