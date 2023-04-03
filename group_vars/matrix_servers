@@ -192,7 +192,7 @@ matrix_homeserver_app_service_config_files_auto: |
 
 # This list is not exhaustive and final.
 # Synapse workers are still injected into the list at runtime.
-# Additional JVB workers (playbooks/jitsi_jvb.yml -- roles/custom/matrix-jitsi/tasks/init_additional_jvb.yml) override this variable at runtime as well.
+# Additional JVB workers (playbooks/jitsi_jvb.yml -- roles/galaxy/jitsi/tasks/init_additional_jvb.yml) override this variable at runtime as well.
 #
 # Priority levels are like this:
 # - core services (the homeserver) get a level of ~1000
@@ -314,13 +314,13 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': (grafana_identifier + '.service'), 'priority': 4000, 'groups': ['matrix', 'monitoring', 'grafana']}] if grafana_enabled else [])
     +
-    ([{'name': 'matrix-jitsi-web.service', 'priority': 4200, 'groups': ['matrix', 'jitsi', 'jitsi-web']}] if matrix_jitsi_enabled else [])
+    ([{'name': (jitsi_identifier + '-web.service'), 'priority': 4200, 'groups': ['matrix', 'jitsi', 'jitsi-web']}] if jitsi_enabled else [])
     +
-    ([{'name': 'matrix-jitsi-prosody.service', 'priority': 4000, 'groups': ['matrix', 'jitsi', 'jitsi-prosody']}] if matrix_jitsi_enabled else [])
+    ([{'name': (jitsi_identifier + '-prosody.service'), 'priority': 4000, 'groups': ['matrix', 'jitsi', 'jitsi-prosody']}] if jitsi_enabled else [])
     +
-    ([{'name': 'matrix-jitsi-jicofo.service', 'priority': 4100, 'groups': ['matrix', 'jitsi', 'jitsi-jicofo']}] if matrix_jitsi_enabled else [])
+    ([{'name': (jitsi_identifier + '-jicofo.service'), 'priority': 4100, 'groups': ['matrix', 'jitsi', 'jitsi-jicofo']}] if jitsi_enabled else [])
     +
-    ([{'name': 'matrix-jitsi-jvb.service', 'priority': 4100, 'groups': ['matrix', 'jitsi', 'jitsi-jvb']}] if matrix_jitsi_enabled else [])
+    ([{'name': (jitsi_identifier + '-jvb.service'), 'priority': 4100, 'groups': ['matrix', 'jitsi', 'jitsi-jvb']}] if jitsi_enabled else [])
     +
     ([{'name': 'matrix-ldap-registration-proxy.service', 'priority': 2000, 'groups': ['matrix', 'ldap-registration-proxy']}] if matrix_ldap_registration_proxy_enabled else [])
     +
@@ -2278,7 +2278,7 @@ etherpad_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 
 etherpad_base_path: "{{ matrix_base_data_path }}/etherpad"
 
-etherpad_framing_enabled: "{{ matrix_dimension_enabled or matrix_jitsi_enabled }}"
+etherpad_framing_enabled: "{{ matrix_dimension_enabled or jitsi_enabled }}"
 
 etherpad_hostname: "{{ matrix_server_fqn_etherpad }}"
 
@@ -2352,26 +2352,57 @@ matrix_email2matrix_container_image_self_build: "{{ matrix_architecture not in [
 
 ######################################################################
 #
-# matrix-jitsi
+# jitsi
 #
 ######################################################################
 
-matrix_jitsi_enabled: false
+jitsi_enabled: false
+
+jitsi_architecture: "{{ matrix_architecture }}"
+
+jitsi_hostname: "{{ matrix_server_fqn_jitsi }}"
+
+jitsi_identifier: matrix-jitsi
+
+jitsi_base_path: "{{ matrix_base_data_path }}/jitsi"
+
+jitsi_uid: "{{ matrix_user_uid }}"
+jitsi_gid: "{{ matrix_user_gid }}"
 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach jitsi/web over the container network.
 # If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
 # the Jitsi HTTP port to the local host.
-matrix_jitsi_web_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '13080') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+jitsi_web_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '13080') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
-matrix_jitsi_jvb_container_colibri_ws_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '13090') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+jitsi_web_container_additional_networks_auto: |
+  {{
+    ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
+  }}
 
-matrix_jitsi_prosody_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '5280') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+jitsi_jvb_container_colibri_ws_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '13090') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
-matrix_jitsi_jibri_xmpp_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'jibri', rounds=655555) | to_uuid }}"
-matrix_jitsi_jicofo_auth_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'jicofo', rounds=655555) | to_uuid }}"
-matrix_jitsi_jvb_auth_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'jvb', rounds=655555) | to_uuid }}"
+jitsi_jvb_container_additional_networks_auto: |
+  {{
+    ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
+  }}
 
-matrix_jitsi_web_stun_servers: |
+jitsi_prosody_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '5280') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+
+jitsi_prosody_container_additional_networks_auto: |
+  {{
+    ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
+  }}
+
+jitsi_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
+jitsi_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+jitsi_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+jitsi_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+jitsi_jibri_xmpp_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'jibri', rounds=655555) | to_uuid }}"
+jitsi_jicofo_auth_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'jicofo', rounds=655555) | to_uuid }}"
+jitsi_jvb_auth_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'jvb', rounds=655555) | to_uuid }}"
+
+jitsi_web_stun_servers: |
   {{
     [
       'stun:' + matrix_server_fqn_matrix + ':5349',
@@ -2381,24 +2412,39 @@ matrix_jitsi_web_stun_servers: |
     else [ 'stun:meet-jit-si-turnrelay.jitsi.net:443']
   }}
 
+# The Jitsi instance installed by this playbook is meant for embedding into Matrix clients, so framing is allowed.
+jitsi_web_framing_enabled: true
+
+jitsi_turn_credentials: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
+jitsi_turn_host: "{{ ('turn.' + matrix_server_fqn_matrix) if matrix_coturn_enabled else '' }}"
+jitsi_turns_host: "{{ ('turn.' + matrix_server_fqn_matrix) if matrix_coturn_enabled else '' }}"
+jitsi_turn_port: "{{ matrix_coturn_container_stun_plain_host_bind_port if matrix_coturn_enabled else '' }}"
+jitsi_turns_port: "{{ matrix_coturn_container_stun_tls_host_bind_port if matrix_coturn_enabled else '' }}"
+
 # If the self-hosted Etherpad instance is available, it will also show up in Jitsi conferences,
-# unless explicitly disabled by setting `matrix_jitsi_etherpad_enabled` to false.
-# Falls back to the scalar.vector.im etherpad in case someone sets `matrix_jitsi_etherpad_enabled` to true,
+# unless explicitly disabled by setting `jitsi_etherpad_enabled` to false.
+# Falls back to the scalar.vector.im etherpad in case someone sets `jitsi_etherpad_enabled` to true,
 # while also setting `etherpad_enabled` to false.
-matrix_jitsi_etherpad_enabled: "{{ etherpad_enabled }}"
-matrix_jitsi_etherpad_base: "{{ etherpad_base_url if etherpad_enabled else 'https://scalar.vector.im/etherpad' }}"
+jitsi_etherpad_enabled: "{{ etherpad_enabled }}"
+jitsi_etherpad_base: "{{ etherpad_base_url if etherpad_enabled else 'https://scalar.vector.im/etherpad' }}"
 
 # Allow verification using JWT and matrix-UVS
-matrix_jitsi_prosody_auth_matrix_uvs_auth_token: "{{ matrix_user_verification_service_uvs_auth_token }}"
-matrix_jitsi_prosody_auth_matrix_uvs_location: "{{ matrix_user_verification_service_container_url }}"
+jitsi_prosody_auth_matrix_uvs_auth_token: "{{ matrix_user_verification_service_uvs_auth_token }}"
+jitsi_prosody_auth_matrix_uvs_location: "{{ matrix_user_verification_service_container_url }}"
 
-matrix_jitsi_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
+jitsi_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
+
+# Gravatar is enabled by default upstream, but there's no need to leak data there needlessly
+# when embedding Jitsi in Matrix rooms.
+jitsi_disable_gravatar: true
 
 ######################################################################
 #
-# /matrix-jitsi
+# /jitsi
 #
 ######################################################################
+
+
 ######################################################################
 #
 # matrix-ldap-registration-proxy
@@ -2557,8 +2603,7 @@ matrix_nginx_proxy_proxy_rageshake_enabled: "{{ matrix_rageshake_enabled and mat
 matrix_nginx_proxy_proxy_etherpad_enabled: "{{ etherpad_enabled and not etherpad_nginx_proxy_dimension_integration_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 
-matrix_nginx_proxy_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
-matrix_nginx_proxy_proxy_jitsi_manage_wellknown: "{{ matrix_jitsi_require_well_known }}"
+matrix_nginx_proxy_proxy_jitsi_enabled: "{{ jitsi_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 
 matrix_nginx_proxy_proxy_grafana_enabled: "{{ grafana_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_sygnal_enabled: "{{ matrix_sygnal_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
@@ -2570,7 +2615,6 @@ matrix_nginx_proxy_container_labels_traefik_entrypoints: "{{ devture_traefik_ent
 matrix_nginx_proxy_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 matrix_nginx_proxy_container_labels_traefik_proxy_matrix_enabled: true
-matrix_nginx_proxy_container_labels_traefik_proxy_jitsi_enabled: "{{ matrix_jitsi_enabled }}"
 
 matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: "{{ matrix_corporal_enabled and matrix_corporal_http_api_enabled }}"
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
@@ -2656,7 +2700,7 @@ matrix_nginx_proxy_systemd_wanted_services_list: |
     +
     ([(ntfy_identifier + '.service')] if ntfy_enabled else [])
     +
-    (['matrix-jitsi.service'] if matrix_jitsi_enabled else [])
+    ([(jitsi_identifier + '-web.service')] if jitsi_enabled else [])
     +
     (['matrix-sliding-sync-proxy.service'] if matrix_sliding_sync_enabled else [])
     +
@@ -2687,7 +2731,7 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     +
     ([matrix_server_fqn_bot_go_neb] if matrix_bot_go_neb_enabled else [])
     +
-    ([matrix_server_fqn_jitsi] if matrix_jitsi_enabled else [])
+    ([matrix_server_fqn_jitsi] if jitsi_enabled else [])
     +
     ([matrix_server_fqn_grafana] if grafana_enabled else [])
     +
@@ -3185,7 +3229,7 @@ matrix_client_element_enable_presence_by_hs_url: |
 
 matrix_client_element_welcome_user_id: ~
 
-matrix_client_element_jitsi_preferredDomain: "{{ matrix_server_fqn_jitsi if matrix_jitsi_enabled else '' }}"
+matrix_client_element_jitsi_preferredDomain: "{{ matrix_server_fqn_jitsi if jitsi_enabled else '' }}"
 
 ######################################################################
 #
@@ -4007,7 +4051,7 @@ matrix_user_verification_service_systemd_required_services_list: |
 # If Jitsi is not managed by this playbook, or you otherwise have a need for it, you can expose
 # matrix-user-verfification-services's client-server port to port 3003.
 # By default Matrix-User-Verification-Service binds to port 3000, which collides with grafana, therefore this uses port 3003.
-matrix_user_verification_service_container_http_host_bind_port: "{{  '' if (matrix_jitsi_enabled | bool and matrix_jitsi_enable_auth | bool and matrix_jitsi_auth_type == 'matrix') else matrix_playbook_service_host_bind_interface_prefix ~ '3003' }}"
+matrix_user_verification_service_container_http_host_bind_port: "{{  '' if (jitsi_enabled | bool and jitsi_enable_auth | bool and jitsi_auth_type == 'matrix') else matrix_playbook_service_host_bind_interface_prefix ~ '3003' }}"
 
 # URL exposed in the docker network
 matrix_user_verification_service_container_url: "http://{{  matrix_user_verification_service_container_name }}:3000"

@@ -1,3 +1,24 @@
+# 2023-04-03
+
+## The matrix-jitsi role lives independently now
+
+**TLDR**: the `matrix-jitsi` role is now included from the [ansible-role-jitsi](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi) repository, part of the [MASH playbook](https://github.com/mother-of-all-self-hosting/mash-playbook). Some variables have been renamed. All functionality remains intact.
+
+The `matrix-jitsi` role has been relocated in its own repository, part of the [MASH playbook](https://github.com/mother-of-all-self-hosting/mash-playbook) project - an Ansible playbook for self-hosting [a growing list of FOSS software](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/supported-services.md). If hosting a Jitsi stack on the Matrix server itself did not stand right with you or you always wanted to host most stuff, you can now use this new playbook to do so.
+
+As part of the extraction process of this role out of the Matrix playbook, a few other things improved:
+
+- **native Traefik support** has been added
+- **support for hosting under a subpath** has been added, although it suffers from a few minor issues listed [here](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/jitsi.md#url)
+
+You need to **update you roles** (`just roles` or `make roles`) regardless of whether you're using Jitsi or not.
+
+If you're making use of Jitsi via this playbook, you will need to update variable references in your `vars.yml` file:
+
+  - `matrix_jitsi_*_docker_image_` -> `matrix_jitsi_*_container_image_`
+  - `matrix_jitsi_` -> `jitsi_`
+  - some other internal variables have changed, but the playbook will tell you about them
+
 # 2023-03-22
 
 ## ntfy Web App is disabled by default
@@ -1556,7 +1577,7 @@ People who have [fine-tuned Jitsi](docs/configuring-playbook-jitsi.md#optional-f
 
 The next time you run the playbook [installation](docs/installing.md) command, our validation logic will tell you if you're using some variables like that and will recommend a migration path for each one.
 
-Additionally, we've recently disabled transcriptions (`matrix_jitsi_enable_transcriptions: false`) and recording (`matrix_jitsi_enable_recording: false`) by default. These features did not work anyway, because we don't install the required dependencies for them (Jigasi and Jibri, respectively). If you've been somehow pointing your Jitsi installation to some manually installed Jigasi/Jibri service, you may need to toggle these flags back to enabled to have transcriptions and recordings working.
+Additionally, we've recently disabled transcriptions (`jitsi_enable_transcriptions: false`) and recording (`jitsi_enable_recording: false`) by default. These features did not work anyway, because we don't install the required dependencies for them (Jigasi and Jibri, respectively). If you've been somehow pointing your Jitsi installation to some manually installed Jigasi/Jibri service, you may need to toggle these flags back to enabled to have transcriptions and recordings working.
 
 
 # 2020-11-23

@@ -56,7 +56,9 @@
     - {'old': 'matrix_prometheus_scraper_hookshot_targets', 'new': '<superseded by matrix_prometheus_services_connect_scraper_hookshot_static_configs_target>'}
     - {'old': 'matrix_prometheus_scraper_nginxlog_enabled', 'new': 'matrix_prometheus_services_connect_scraper_nginxlog_enabled'}
     - {'old': 'matrix_prometheus_scraper_nginxlog_server_port', 'new': 'matrix_prometheus_services_connect_scraper_nginxlog_static_configs_target'}
-    - {'old': 'XXXXX', 'new': 'XXXXX'}
+    - {'old': 'matrix_prosody_jitsi_max_participants', 'new': 'jitsi_prosody_max_participants'}
+    - {'old': 'jitsi_require_well_known', 'new': 'jitsi_web_well_known_element_jitsi_enabled'}
+    - {'old': 'jitsi_wellknown_element_jitsi_json', 'new': 'jitsi_web_well_known_element_jitsi_json'}
 
 - name: (Deprecation) Catch and report matrix_postgres variables
   ansible.builtin.fail:
@@ -191,3 +193,18 @@
           Please change your configuration (vars.yml) to rename all variables (`matrix_aux_` -> `aux_`).
           We found usage of the following variables: {{ matrix_playbook_migration_aux_migration_vars.keys() | join(', ') }}
       when: "matrix_playbook_migration_aux_migration_vars | length > 0"
+
+- when: matrix_playbook_migration_matrix_jitsi_migration_validation_enabled | bool
+  block:
+    - ansible.builtin.set_fact:
+        matrix_playbook_migration_jitsi_migration_vars: |-
+          {{ vars | dict2items | selectattr('key', 'match', 'matrix_jitsi_.*') | list | items2dict }}
+
+    - name: (Deprecation) Catch and report matrix_jitsi variables
+      ansible.builtin.fail:
+        msg: >-
+          The matrix-jitsi role that used to be part of this playbook has been replaced by https://github.com/mother-of-all-self-hosting/ansible-role-jitsi.
+          The new role is compatible with the old one, but uses different names for its variables.
+          Please change your configuration (vars.yml) to rename all variables (`matrix_jitsi_` -> `jitsi_`).
+          We found usage of the following variables: {{ matrix_playbook_migration_jitsi_migration_vars.keys() | join(', ') }}
+      when: "matrix_playbook_migration_jitsi_migration_vars | length > 0"
