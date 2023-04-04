@@ -4106,11 +4106,16 @@ devture_traefik_base_path: "{{ matrix_base_data_path }}/traefik"
 devture_traefik_uid: "{{ matrix_user_uid }}"
 devture_traefik_gid: "{{ matrix_user_gid }}"
 
-devture_traefik_additional_entrypoints_auto:
-  - name: matrix-federation
-    port: "{{ matrix_federation_public_port }}"
-    host_bind_port: "{{ matrix_federation_public_port }}"
-    config: {}
+devture_traefik_federation_entrypoint:
+  name: matrix-federation
+  port: "{{ matrix_federation_public_port }}"
+  host_bind_port: "{{ matrix_federation_public_port }}"
+  config: {}
+
+devture_traefik_additional_entrypoints_auto: |
+  {{
+    ([devture_traefik_federation_entrypoint] if (matrix_federation_public_port != devture_traefik_config_entrypoint_web_port) and (matrix_federation_public_port != devture_traefik_config_entrypoint_web_secure_port) else [])
+  }}
 
 devture_traefik_additional_domains_to_obtain_certificates_for: "{{ matrix_ssl_additional_domains_to_obtain_certificates_for }}"
 
