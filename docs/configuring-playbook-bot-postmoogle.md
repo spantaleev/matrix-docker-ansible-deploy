@@ -21,6 +21,16 @@ matrix_bot_postmoogle_enabled: true
 
 # Generate a strong password here. Consider generating it with `pwgen -s 64 1`
 matrix_bot_postmoogle_password: PASSWORD_FOR_THE_BOT
+
+# Custom domains configuration for Postmoogle (optional)
+matrix_bot_postmoogle_domains:
+  - "other.domain"
+  - "{{ matrix_server_fqn_matrix }}"
+
+# SSL certificates configuration for custom domains
+# Optional configuration, required if custom domains for postmoogle are used
+matrix_ssl_additional_domains_to_obtain_certificates_for:
+  - "other.domain"
 ```
 
 You will also need to add several DNS records so that postmoogle can send emails.
