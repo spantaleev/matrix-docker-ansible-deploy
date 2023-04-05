@@ -36,7 +36,7 @@ If you have or want to enable [Jitsi](configuring-playbook-jitsi.md), you might 
 If you do not do it, Jitsi will fall back to an upstream service.
 
 ```yaml
-matrix_jitsi_web_stun_servers:
+jitsi_web_stun_servers:
 - stun:HOSTNAME_OR_IP:PORT
 ```
 You can put multiple host/port combinations if you like.

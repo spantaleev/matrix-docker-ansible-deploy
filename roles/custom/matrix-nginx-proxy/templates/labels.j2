@@ -38,19 +38,6 @@ traefik.http.routers.matrix-nginx-proxy-matrix-federation.tls.certResolver={{ ma
 traefik.http.routers.matrix-nginx-proxy-matrix-federation.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_entrypoints }}
 {% endif %}
 
-
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_jitsi_enabled %}
-# Jitsi
-traefik.http.routers.matrix-nginx-proxy-jitsi.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_jitsi_rule }}
-traefik.http.routers.matrix-nginx-proxy-jitsi.service=matrix-nginx-proxy-web
-traefik.http.routers.matrix-nginx-proxy-jitsi.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_jitsi_tls | to_json }}
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_jitsi_tls %}
-traefik.http.routers.matrix-nginx-proxy-jitsi.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
-{% endif %}
-traefik.http.routers.matrix-nginx-proxy-jitsi.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
-{% endif %}
-
-
 traefik.http.services.matrix-nginx-proxy-web.loadbalancer.server.port=8080
 
 {% if matrix_nginx_proxy_proxy_matrix_federation_api_enabled %}

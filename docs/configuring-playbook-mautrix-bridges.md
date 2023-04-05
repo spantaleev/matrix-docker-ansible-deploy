@@ -33,6 +33,13 @@ matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
 ```
 
 Encryption support is off by default. If you would like to enable encryption, add the following to your `vars.yml` file:
+
+**for all bridges with encryption support**:
+```yaml
+matrix_bridges_encryption_enabled: true
+```
+
+**Alternatively**, for a specific bridge:
 ```yaml
 matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
   bridge:

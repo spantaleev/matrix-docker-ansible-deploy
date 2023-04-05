@@ -262,7 +262,7 @@ matrix_server_fqn_element: "element.YOUR_BASE_DOMAIN"
 # Feel free to use `dimension.matrix.YOUR_BASE_DOMAIN`, if you'd prefer that.
 matrix_server_fqn_dimension: "dimension.YOUR_BASE_DOMAIN"
 
-# This is where you access Jitsi (if enabled via `matrix_jitsi_enabled: true`; NOT enabled by default).
+# This is where you access Jitsi (if enabled via `jitsi_enabled: true`; NOT enabled by default).
 #
 # Feel free to use `jitsi.matrix.YOUR_BASE_DOMAIN`, if you'd prefer that.
 matrix_server_fqn_jitsi: "jitsi.YOUR_BASE_DOMAIN"
