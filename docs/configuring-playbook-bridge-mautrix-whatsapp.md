@@ -1,4 +1,4 @@
-# Setting up Mautrix Whatsapp (optional)
+# Setting up Matrix Whatsapp (optional)
 
 The playbook can install and configure [mautrix-whatsapp](https://github.com/mautrix/whatsapp) for you.
 
