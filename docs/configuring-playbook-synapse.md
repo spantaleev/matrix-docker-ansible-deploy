@@ -42,8 +42,6 @@ devture_postgres_process_extra_arguments: [
 ]
 ```
 
-**NOTE**: Disabling `matrix-nginx-proxy` (`matrix_nginx_proxy_enabled: false`) (that is, [using your own other webserver](configuring-playbook-own-webserver.md) when running a Synapse worker setup is likely to cause various troubles (see [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2090)).
-
 In case any problems occur, make sure to have a look at the [list of synapse issues about workers](https://github.com/matrix-org/synapse/issues?q=workers+in%3Atitle) and your `journalctl --unit 'matrix-*'`.
 
 
