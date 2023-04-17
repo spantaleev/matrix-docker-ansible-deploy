@@ -8,7 +8,9 @@ If you decide that you'd like to let this playbook install it for you, you need 
 
 ```yaml
 matrix_synapse_ext_password_provider_ldap_enabled: true
-matrix_synapse_ext_password_provider_ldap_uri: "ldap://ldap.mydomain.tld:389"
+matrix_synapse_ext_password_provider_ldap_uri: 
+  - "ldap://ldap-01.mydomain.tld:389"
+  - "ldap://ldap-02.mydomain.tld:389"
 matrix_synapse_ext_password_provider_ldap_start_tls: true
 matrix_synapse_ext_password_provider_ldap_base: "ou=users,dc=example,dc=com"
 matrix_synapse_ext_password_provider_ldap_attributes_uid: "uid"
