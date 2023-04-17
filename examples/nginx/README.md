@@ -10,7 +10,7 @@ To get started, first follow the [front the integrated reverse-proxy webserver w
 
 ## Using the nginx configuration
 
-Copy the [matrix.conf](matrix.conf) file to your nginx server's filesystem, modify it to your needs and include it your nginx configuration (e.g. `include /path/to/matrix.conf;`).
+Copy the [matrix.conf](matrix.conf) file to your nginx server's filesystem, modify it to your needs and include it in your nginx configuration (e.g. `include /path/to/matrix.conf;`).
 
 This configuration **disables SSL certificate retrieval**, so you will **need to obtain SSL certificates manually** (e.g. by using [certbot](https://certbot.eff.org/)) and set the appropriate path in `matrix.conf`. In the example nginx configuration, a single certificate is used for all subdomains (`matrix.DOMAIN`, `element.DOMAIN`, etc.). For your setup, may wish to change this and use separate `server` blocks and separate certificate files for each host.
 
