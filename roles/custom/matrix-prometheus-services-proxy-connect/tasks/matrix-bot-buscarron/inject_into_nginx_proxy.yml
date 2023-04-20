@@ -1,0 +1,24 @@
+---
+
+- name: Generate buscarron metrics proxying configuration for matrix-nginx-proxy (matrix.DOMAIN/metrics/buscarron)
+  ansible.builtin.set_fact:
+    matrix_prometheus_services_proxy_connect_matrix_bot_buscarron_nginx_metrics_configuration_block: |
+      location /metrics/buscarron {
+        {% if matrix_nginx_proxy_enabled | default(False) %}
+          {# Use the embedded DNS resolver in Docker containers to discover the service #}
+          resolver 127.0.0.11 valid=5s;
+          set $backend "matrix-bot-buscarron:8080";
+          proxy_pass http://$backend/metrics;
+        {% else %}
+          return 404 "matrix-nginx-proxy is disabled and no host port was bound to the container, so metrics are unavailable";
+        {% endif %}
+      }
+
+- name: Register buscarron metrics proxying configuration with matrix-nginx-proxy (matrix.DOMAIN/metrics/buscarron)
+  ansible.builtin.set_fact:
+    matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks: |
+      {{
+        matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks | default([])
+        +
+        [matrix_prometheus_services_proxy_connect_matrix_bot_buscarron_nginx_metrics_configuration_block]
+      }}

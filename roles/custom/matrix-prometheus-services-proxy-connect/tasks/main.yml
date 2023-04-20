@@ -17,12 +17,9 @@
   block:
     - when: prometheus_node_exporter_enabled | bool and matrix_prometheus_services_proxy_connect_prometheus_node_exporter_metrics_proxying_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/prometheus-node-exporter/inject_into_nginx_proxy.yml"
-
-- tags:
-    - setup-all
-    - setup-nginx-proxy
-    - install-all
-    - install-nginx-proxy
-  block:
     - when: prometheus_node_exporter_enabled | bool and matrix_prometheus_services_proxy_connect_prometheus_postgres_exporter_metrics_proxying_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/prometheus-postgres-exporter/inject_into_nginx_proxy.yml"
+    - when: matrix_bot_buscarron_enabled | bool and matrix_prometheus_services_proxy_connect_matrix_bot_buscarron_metrics_proxying_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/matrix-bot-buscarron/inject_into_nginx_proxy.yml"
+    - when: matrix_bot_honoroit_enabled | bool and matrix_prometheus_services_proxy_connect_matrix_bot_honoroit_metrics_proxying_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/matrix-bot-honoroit/inject_into_nginx_proxy.yml"
