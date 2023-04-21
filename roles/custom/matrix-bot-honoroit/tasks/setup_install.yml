@@ -108,6 +108,11 @@
       pull: true
   when: "matrix_bot_honoroit_container_image_self_build | bool"
 
+- name: Ensure honoroit container network is created
+  community.general.docker_network:
+    name: "{{ matrix_bot_honoroit_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-bot-honoroit.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-bot-honoroit.service.j2"
