@@ -41,7 +41,7 @@
   when: "item.when | bool"
 
 - name: Determine basicauth filename
-  set_fact:
+  ansible.builtin.set_fact:
     matrix_bot_buscarron_basicauth_file_tmp: "{{ matrix_bot_buscarron_basicauth_file }}_{{ inventory_hostname }}"
   when: matrix_bot_buscarron_basicauth_enabled | bool
 
@@ -50,6 +50,7 @@
     path: "{{ matrix_bot_buscarron_basicauth_file }}"
     name: "{{ matrix_bot_buscarron_basicauth_user }}"
     password: "{{ matrix_bot_buscarron_basicauth_password }}"
+    mode: 0640
   become: false
   delegate_to: 127.0.0.1
   when: matrix_bot_buscarron_basicauth_enabled | bool
