@@ -53,10 +53,18 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure mautrix-wsproxy registration.yaml installed
+- name: Ensure mautrix-androidsms registration.yaml installed
   ansible.builtin.copy:
-    content: "{{ matrix_mautrix_wsproxy_registration|to_nice_yaml }}"
-    dest: "{{ matrix_mautrix_wsproxy_config_path }}/registration.yaml"
+    content: "{{ matrix_mautrix_androidsms_registration|to_nice_yaml }}"
+    dest: "{{ matrix_mautrix_wsproxy_config_path }}/androidsms-registration.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure mautrix-imessage registration.yaml installed
+  ansible.builtin.copy:
+    content: "{{ matrix_mautrix_imessage_registration|to_nice_yaml }}"
+    dest: "{{ matrix_mautrix_wsproxy_config_path }}/imessage-registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"

@@ -30,10 +30,14 @@ matrix_mautrix_wsproxy_systemd_required_services_list: ['docker.service']
 # List of systemd services that matrix-mautrix-wsproxy.service wants
 matrix_mautrix_wsproxy_systemd_wanted_services_list: []
 
-matrix_mautrix_wsproxy_appservice_token: ''
-matrix_mautrix_wsproxy_homeserver_token: ''
+matrix_mautrix_androidsms_appservice_token: ''
+matrix_mautrix_androidsms_homeserver_token: ''
 
-matrix_mautrix_wsproxy_appservice_bot_username: androidsmsbot
+matrix_mautrix_imessage_appservice_token: ''
+matrix_mautrix_imessage_homeserver_token: ''
+
+matrix_mautrix_androidsms_appservice_bot_username: androidsmsbot
+matrix_mautrix_imessage_appservice_bot_username: imessagebot
 
 # Default mautrix-wsproxy configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
@@ -57,21 +61,37 @@ matrix_mautrix_wsproxy_configuration_extension: "{{ matrix_mautrix_wsproxy_confi
 # You most likely don't need to touch this variable. Instead, see `matrix_mautrix_wsproxy_configuration_yaml`.
 matrix_mautrix_wsproxy_configuration: "{{ matrix_mautrix_wsproxy_configuration_yaml|from_yaml|combine(matrix_mautrix_wsproxy_configuration_extension, recursive=True) }}"
 
-matrix_mautrix_wsproxy_registration_yaml: |
+matrix_mautrix_androidsms_registration_yaml: |
   id: androidsms
   url: {{ matrix_mautrix_wsproxy_appservice_address }}
-  as_token: "{{ matrix_mautrix_wsproxy_appservice_token }}"
-  hs_token: "{{ matrix_mautrix_wsproxy_homeserver_token }}"
-  sender_localpart: _bot_{{ matrix_mautrix_wsproxy_appservice_bot_username }}
+  as_token: "{{ matrix_mautrix_androidsms_appservice_token }}"
+  hs_token: "{{ matrix_mautrix_androidsms_homeserver_token }}"
+  sender_localpart: _bot_{{ matrix_mautrix_androidsms_appservice_bot_username }}
   rate_limited: false
   namespaces:
       users:
       - regex: '@androidsms_.+:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
         exclusive: true
       - exclusive: true
-        regex: '^@{{ matrix_mautrix_wsproxy_appservice_bot_username|regex_escape }}:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
+        regex: '^@{{ matrix_mautrix_androidsms_appservice_bot_username|regex_escape }}:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
 
-matrix_mautrix_wsproxy_registration: "{{ matrix_mautrix_wsproxy_registration_yaml|from_yaml }}"
+matrix_mautrix_androidsms_registration: "{{ matrix_mautrix_androidsms_registration_yaml|from_yaml }}"
+
+matrix_mautrix_imessage_registration_yaml: |
+  id: imessage
+  url: {{ matrix_mautrix_wsproxy_appservice_address }}
+  as_token: "{{ matrix_mautrix_imessage_appservice_token }}"
+  hs_token: "{{ matrix_mautrix_imessage_homeserver_token }}"
+  sender_localpart: _bot_{{ matrix_mautrix_imessage_appservice_bot_username }}
+  rate_limited: false
+  namespaces:
+      users:
+      - regex: '@imessage_.+:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
+        exclusive: true
+      - exclusive: true
+        regex: '^@{{ matrix_mautrix_imessage_appservice_bot_username|regex_escape }}:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
+
+matrix_mautrix_imessage_registration: "{{ matrix_mautrix_imessage_registration_yaml|from_yaml }}"
 
 # Syncproxy-related configuration fields
 matrix_mautrix_wsproxy_syncproxy_version: latest

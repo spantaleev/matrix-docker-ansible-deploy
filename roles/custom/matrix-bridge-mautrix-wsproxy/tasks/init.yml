@@ -9,14 +9,18 @@
       {{
         matrix_synapse_container_extra_arguments | default([])
         +
-        ["--mount type=bind,src={{ matrix_mautrix_wsproxy_config_path }}/registration.yaml,dst=/matrix-mautrix-wsproxy-registration.yaml,ro"]
+        ["--mount type=bind,src={{ matrix_mautrix_wsproxy_config_path }}/androidsms-registration.yaml,dst=/matrix-mautrix-androidsms-registration.yaml,ro"]
+        +
+        ["--mount type=bind,src={{ matrix_mautrix_wsproxy_config_path }}/imessage-registration.yaml,dst=/matrix-mautrix-imessage-registration.yaml,ro"]
       }}
 
     matrix_synapse_app_service_config_files: >
       {{
         matrix_synapse_app_service_config_files | default([])
         +
-        ["/matrix-mautrix-wsproxy-registration.yaml"]
+        ["/matrix-mautrix-androidsms-registration.yaml"]
+        +
+        ["/matrix-mautrix-imessage-registration.yaml"]
       }}
   when: matrix_mautrix_wsproxy_enabled|bool
 

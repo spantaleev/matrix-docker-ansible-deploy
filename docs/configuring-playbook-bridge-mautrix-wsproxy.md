@@ -8,23 +8,15 @@ Use the following playbook configuration:
 
 ```yaml
 matrix_mautrix_wsproxy_enabled: true
-matrix_mautrix_wsproxy_appservice_token: 'random string'
-matrix_mautrix_wsproxy_homeserver_token: 'random string'
+matrix_mautrix_androidsms_appservice_token: 'random string'
+matrix_mautrix_androidsms_homeserver_token: 'random string'
+matrix_mautrix_imessage_appservice_token: 'random string'
+matrix_mautrix_imessage_homeserver_token: 'random string'
 matrix_mautrix_wsproxy_syncproxy_shared_secret: 'random string'
 ```
 
-
-## Set up Double Puppeting
-
-If you'd like to use [Double Puppeting](https://github.com/tulir/mautrix-hangouts/wiki/Authentication#double-puppeting) (hint: you most likely do), you have 1 way of going about it.
-
-### Method 1: automatically, by enabling Shared Secret Auth
-
-The bridge will automatically perform Double Puppeting if you enable [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) for this playbook.
-
-This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
+Note that the tokens must match what is compiled into the `mautrix-imessage` bridge running on Mac and Android.
 
 ## Usage
 
-Follow the [matrix-imessage documenation](https://docs.mau.fi/bridges/go/imessage/index.html) for running `android-sms` or `matrix-imessage` on your device.
-The name of the bridge bot is androidsms, but the bridge works for either iMessage or Android SMS, though not both at the same time.
+Follow the [matrix-imessage documenation](https://docs.mau.fi/bridges/go/imessage/index.html) for running `android-sms` and/or `matrix-imessage` on your device(s).
