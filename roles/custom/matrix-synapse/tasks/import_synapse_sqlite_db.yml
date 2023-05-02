@@ -1,0 +1,40 @@
+---
+
+- name: Fail if playbook called incorrectly
+  ansible.builtin.fail:
+    msg: "The `server_path_homeserver_db` variable needs to be provided to this playbook, via --extra-vars"
+  when: "server_path_homeserver_db is not defined or server_path_homeserver_db.startswith('<')"
+
+- name: Check if the provided SQLite homeserver.db file exists
+  ansible.builtin.stat:
+    path: "{{ server_path_homeserver_db }}"
+  register: result_server_path_homeserver_db_stat
+
+- name: Fail if provided SQLite homeserver.db file doesn't exist
+  ansible.builtin.fail:
+    msg: "File cannot be found on the server at {{ server_path_homeserver_db }}"
+  when: "not result_server_path_homeserver_db_stat.stat.exists"
+
+# We don't use the `docker_container` module, because using it with `cap_drop` requires
+# a very recent version, which is not available for a lot of people yet.
+#
+# Also, some old `docker_container` versions were buggy and would leave containers behind
+# on failure, which we had to work around to allow retries (by re-running the playbook).
+- name: Import SQLite database into Postgres
+  ansible.builtin.command:
+    cmd: |
+      docker run
+      --rm
+      --name=matrix-synapse-migrate
+      --log-driver=none
+      --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
+      --cap-drop=ALL
+      --network={{ matrix_synapse_container_network }}
+      --entrypoint=python
+      --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data
+      --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/matrix-media-store-parent/media-store
+      --mount type=bind,src={{ server_path_homeserver_db }},dst=/{{ server_path_homeserver_db | basename }}
+      {{ matrix_synapse_docker_image_final }}
+      /usr/local/bin/synapse_port_db --sqlite-database /{{ server_path_homeserver_db | basename }} --postgres-config /data/homeserver.yaml
+  register: matrix_postgres_import_synapse_sqlite_db_result
+  changed_when: matrix_postgres_import_synapse_sqlite_db_result.rc == 0
