@@ -1,7 +1,10 @@
 #jinja2: lstrip_blocks: "True"
 
 {% macro render_vhost_directives() %}
+	absolute_redirect off;
 	root {{ matrix_nginx_proxy_data_path_in_container if matrix_nginx_proxy_enabled else matrix_nginx_proxy_data_path }}{{ matrix_nginx_proxy_data_path_extension }};
+	index index.html index.htm;
+	try_files $uri $uri/ =404;
 
 	gzip on;
 	gzip_types text/plain application/json;
