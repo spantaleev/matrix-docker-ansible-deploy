@@ -22,7 +22,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--cap-drop=ALL \
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_synapse_tmp_directory_size_mb }}m \
-			--network={{ matrix_docker_network }} \
+			--network={{ matrix_synapse_container_network }} \
 			{% if matrix_synapse_worker_details.port != 0 %}
 			--health-cmd 'curl -fSs http://localhost:{{ matrix_synapse_worker_details.port }}/health || exit 1' \
 			{% else %}

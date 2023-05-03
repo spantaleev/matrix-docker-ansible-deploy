@@ -46,6 +46,12 @@
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/import_media_store.yml"
 
 - tags:
+    - import-synapse-sqlite-db
+  block:
+    - when: matrix_synapse_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/import_synapse_sqlite_db.yml"
+
+- tags:
     - register-user
   block:
     - when: matrix_synapse_enabled | bool

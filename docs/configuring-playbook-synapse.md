@@ -42,8 +42,6 @@ devture_postgres_process_extra_arguments: [
 ]
 ```
 
-**NOTE**: Disabling `matrix-nginx-proxy` (`matrix_nginx_proxy_enabled: false`) (that is, [using your own other webserver](configuring-playbook-own-webserver.md) when running a Synapse worker setup is likely to cause various troubles (see [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2090)).
-
 In case any problems occur, make sure to have a look at the [list of synapse issues about workers](https://github.com/matrix-org/synapse/issues?q=workers+in%3Atitle) and your `journalctl --unit 'matrix-*'`.
 
 
@@ -119,3 +117,10 @@ matrix_synapse_container_image_customizations_templates_git_repository_ssh_priva
 
 As mentioned in Synapse's Templates documentation, Synapse will fall back to its own templates if a template is not found in that directory.
 Due to this, it's recommended to only store and maintain template files in your repository if you need to make custom changes. Other files (which you don't need to change), should not be duplicated, so that you don't need to worry about getting out-of-sync with the original Synapse templates.
+
+
+## Monitoring Synapse Metrics with Prometheus and Grafana
+
+This playbook allows you to enable Synapse metrics, which can provide insight into the performance and activity of Synapse.
+
+To enable Synapse metrics see [`configuring-playbook-prometheus-grafana.md`](./configuring-playbook-prometheus-grafana.md)

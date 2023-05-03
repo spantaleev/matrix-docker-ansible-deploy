@@ -2576,7 +2576,14 @@ matrix_nginx_proxy_container_federation_host_bind_port: "{{ matrix_federation_pu
 matrix_nginx_proxy_trust_forwarded_proto: "{{ matrix_playbook_reverse_proxy_type != 'playbook-managed-nginx' }}"
 matrix_nginx_proxy_x_forwarded_for: "{{ '$remote_addr' if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else '$proxy_add_x_forwarded_for' }}"
 
-matrix_nginx_proxy_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
+matrix_nginx_proxy_container_additional_networks: |
+  {{
+    (
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
+      +
+      ([jitsi_container_network] if jitsi_enabled and matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' and jitsi_container_network != matrix_nginx_proxy_container_network else [])
+    ) | unique
+  }}
 
 matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "{{ 'matrix-corporal:41080' if matrix_corporal_enabled else 'matrix-nginx-proxy:12080' }}"
 matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "{{ '127.0.0.1:41080' if matrix_corporal_enabled else '127.0.0.1:12080' }}"

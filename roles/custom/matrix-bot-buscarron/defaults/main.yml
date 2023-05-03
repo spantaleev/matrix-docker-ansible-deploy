@@ -14,6 +14,10 @@ matrix_bot_buscarron_hostname: ''
 # This value must either be `/` or not end with a slash (e.g. `/buscarron`).
 matrix_bot_buscarron_path_prefix: /
 
+# The path at which Buscarron will expose metrics
+# This value must either be `/` or not end with a slash (e.g. `/metrics`).
+matrix_bot_buscarron_metrics_path: /metrics
+
 matrix_bot_buscarron_base_path: "{{ matrix_base_data_path }}/buscarron"
 matrix_bot_buscarron_config_path: "{{ matrix_bot_buscarron_base_path }}/config"
 matrix_bot_buscarron_data_path: "{{ matrix_bot_buscarron_base_path }}/data"
@@ -36,6 +40,15 @@ matrix_bot_buscarron_container_network: matrix-bot-buscarron
 # Use this to expose this container to another reverse proxy, which runs in a different container network.
 matrix_bot_buscarron_container_additional_networks: []
 
+# enable basic auth for metrics
+matrix_bot_buscarron_basicauth_enabled: false
+# temporary file name on the host that runs ansible
+matrix_bot_buscarron_basicauth_file: "/tmp/matrix_bot_buscarron_htpasswd"
+# username
+matrix_bot_buscarron_basicauth_user: ''
+# password
+matrix_bot_buscarron_basicauth_password: ''
+
 # matrix_bot_buscarron_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
 # See `../templates/labels.j2` for details.
 #
@@ -46,6 +59,8 @@ matrix_bot_buscarron_container_labels_traefik_hostname: "{{ matrix_bot_buscarron
 # The path prefix must either be `/` or not end with a slash (e.g. `/buscarron`).
 matrix_bot_buscarron_container_labels_traefik_path_prefix: "{{ matrix_bot_buscarron_path_prefix }}"
 matrix_bot_buscarron_container_labels_traefik_rule: "Host(`{{ matrix_bot_buscarron_container_labels_traefik_hostname }}`){% if matrix_bot_buscarron_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_bot_buscarron_container_labels_traefik_path_prefix }}`){% endif %}"
+matrix_bot_buscarron_container_labels_traefik_metrics_path: "{{ matrix_bot_buscarron_metrics_path }}"
+matrix_bot_buscarron_container_labels_traefik_metrics_rule: "Host(`{{ matrix_bot_buscarron_container_labels_traefik_hostname }}`) && Path(`{{ matrix_bot_buscarron_container_labels_traefik_metrics_path }}`)"
 matrix_bot_buscarron_container_labels_traefik_priority: 0
 matrix_bot_buscarron_container_labels_traefik_entrypoints: web-secure
 matrix_bot_buscarron_container_labels_traefik_tls: "{{ matrix_bot_buscarron_container_labels_traefik_entrypoints != 'web' }}"

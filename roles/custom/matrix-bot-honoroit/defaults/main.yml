@@ -11,6 +11,10 @@ matrix_bot_honoroit_hostname: ''
 # This value must either be `/` or not end with a slash (e.g. `/honoroit`).
 matrix_bot_honoroit_path_prefix: /
 
+# The path at which honoroit will expose metrics
+# This value must either be `/` or not end with a slash (e.g. `/metrics`).
+matrix_bot_honoroit_metrics_path: /metrics
+
 matrix_bot_honoroit_container_image_self_build: false
 matrix_bot_honoroit_docker_repo: "https://gitlab.com/etke.cc/honoroit.git"
 matrix_bot_honoroit_docker_repo_version: "{{ matrix_bot_honoroit_version }}"
@@ -34,6 +38,15 @@ matrix_bot_honoroit_container_network: matrix-bot-honoroit
 # Use this to expose this container to another reverse proxy, which runs in a different container network.
 matrix_bot_honoroit_container_additional_networks: []
 
+# enable basic auth for metrics
+matrix_bot_honoroit_basicauth_enabled: false
+# temporary file name on the host that runs ansible
+matrix_bot_honoroit_basicauth_file: "/tmp/matrix_bot_honoroit_htpasswd"
+# username
+matrix_bot_honoroit_basicauth_user: ''
+# password
+matrix_bot_honoroit_basicauth_password: ''
+
 # matrix_bot_honoroit_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
 # See `../templates/labels.j2` for details.
 #
@@ -44,6 +57,8 @@ matrix_bot_honoroit_container_labels_traefik_hostname: "{{ matrix_bot_honoroit_h
 # The path prefix must either be `/` or not end with a slash (e.g. `/honoroit`).
 matrix_bot_honoroit_container_labels_traefik_path_prefix: "{{ matrix_bot_honoroit_path_prefix }}"
 matrix_bot_honoroit_container_labels_traefik_rule: "Host(`{{ matrix_bot_honoroit_container_labels_traefik_hostname }}`){% if matrix_bot_honoroit_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_bot_honoroit_container_labels_traefik_path_prefix }}`){% endif %}"
+matrix_bot_honoroit_container_labels_traefik_metrics_path: "{{ matrix_bot_honoroit_metrics_path }}"
+matrix_bot_honoroit_container_labels_traefik_metrics_rule: "Host(`{{ matrix_bot_honoroit_container_labels_traefik_hostname }}`) && Path(`{{ matrix_bot_honoroit_container_labels_traefik_metrics_path }}`)"
 matrix_bot_honoroit_container_labels_traefik_priority: 0
 matrix_bot_honoroit_container_labels_traefik_entrypoints: web-secure
 matrix_bot_honoroit_container_labels_traefik_tls: "{{ matrix_bot_honoroit_container_labels_traefik_entrypoints != 'web' }}"

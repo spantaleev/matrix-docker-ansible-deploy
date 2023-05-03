@@ -9,7 +9,7 @@
       {{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-rust-synapse-compress-state-compress-room
       --user={{ matrix_synapse_uid }}:{{ matrix_synapse_gid }}
       --cap-drop=ALL
-      --network={{ matrix_docker_network }}
+      --network={{ matrix_synapse_container_network }}
       --mount type=bind,src={{ matrix_synapse_rust_synapse_compress_state_base_path }},dst=/work
       {{ matrix_synapse_rust_synapse_compress_state_docker_image }}
       {{ matrix_synapse_rust_synapse_compress_state_synapse_compress_state_in_container_path }} -t -o /work/state-compressor.sql

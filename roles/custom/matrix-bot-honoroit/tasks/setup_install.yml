@@ -40,6 +40,21 @@
     - {path: "{{ matrix_bot_honoroit_docker_src_files_path }}", when: true}
   when: "item.when | bool"
 
+- name: Determine basicauth filename
+  ansible.builtin.set_fact:
+    matrix_bot_honoroit_basicauth_file_tmp: "{{ matrix_bot_honoroit_basicauth_file }}_{{ inventory_hostname }}"
+  when: matrix_bot_honoroit_basicauth_enabled | bool
+
+- name: Generate basic auth file
+  community.general.htpasswd:
+    path: "{{ matrix_bot_honoroit_basicauth_file }}"
+    name: "{{ matrix_bot_honoroit_basicauth_user }}"
+    password: "{{ matrix_bot_honoroit_basicauth_password }}"
+    mode: 0640
+  become: false
+  delegate_to: 127.0.0.1
+  when: matrix_bot_honoroit_basicauth_enabled | bool
+
 - name: Ensure honoroit support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
@@ -50,6 +65,14 @@
   with_items:
     - env
     - labels
+
+- name: Ensure temporary basic auth file is removed
+  ansible.builtin.file:
+    path: "{{ matrix_bot_honoroit_basicauth_file }}"
+    state: absent
+  become: false
+  delegate_to: 127.0.0.1
+  when: matrix_bot_honoroit_basicauth_enabled | bool
 
 - name: Ensure honoroit image is pulled
   community.docker.docker_image:
@@ -85,6 +108,11 @@
       path: "{{ matrix_bot_honoroit_docker_src_files_path }}"
       pull: true
   when: "matrix_bot_honoroit_container_image_self_build | bool"
+
+- name: Ensure honoroit container network is created
+  community.general.docker_network:
+    name: "{{ matrix_bot_honoroit_container_network }}"
+    driver: bridge
 
 - name: Ensure matrix-bot-honoroit.service installed
   ansible.builtin.template:

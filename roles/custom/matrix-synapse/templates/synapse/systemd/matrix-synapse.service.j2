@@ -38,7 +38,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--cap-drop=ALL \
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_synapse_tmp_directory_size_mb }}m \
-			--network={{ matrix_docker_network }} \
+			--network={{ matrix_synapse_container_network }} \
 			{% if matrix_synapse_container_client_api_host_bind_port %}
 			-p {{ matrix_synapse_container_client_api_host_bind_port }}:{{ matrix_synapse_container_client_api_port }} \
 			{% endif %}
