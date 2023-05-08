@@ -1,17 +1,21 @@
 ---
-
 - name: Ensure Dendrite paths exist
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - "{{ matrix_dendrite_config_dir_path }}"
-    - "{{ matrix_dendrite_bin_path }}"
-    - "{{ matrix_dendrite_ext_path }}"
-    - "{{ matrix_dendrite_nats_storage_path }}"
+    - { path: "{{ matrix_dendrite_config_dir_path }}", when: true }
+    - { path: "{{ matrix_dendrite_bin_path }}", when: true }
+    - { path: "{{ matrix_dendrite_ext_path }}", when: true }
+    - { path: "{{ matrix_dendrite_nats_storage_path }}", when: true }
+    - {
+        path: "{{ matrix_dendrite_docker_src_files_path }}",
+        when: "{{ matrix_dendrite_container_image_self_build }}",
+      }
+  when: "item.when | bool"
 
 # This will throw a Permission Denied error if already mounted using fuse
 - name: Check Dendrite media store path
@@ -37,10 +41,22 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_dendrite_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_dendrite_docker_image_force_pull }}"
+  when: "not matrix_dendrite_container_image_self_build | bool"
   register: result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
+
+- name: Ensure Dendrite repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_dendrite_container_image_self_build_repo }}"
+    dest: "{{ matrix_dendrite_docker_src_files_path }}"
+    version: "{{ matrix_dendrite_docker_image.split(':')[1] }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
+  register: matrix_dendrite_git_pull_results
+  when: "matrix_dendrite_container_image_self_build | bool"
 
 # We do this so that the signing key would get generated.
 # We don't use the `docker_container` module, because using it with `cap_drop` requires
@@ -71,6 +87,11 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Dendrite Docker image is built
+  ansible.builtin.command:
+    cmd: "{{ devture_systemd_docker_base_host_command_docker }} build -t {{ matrix_dendrite_docker_image }} {{ matrix_dendrite_docker_src_files_path }}"
+  when: "matrix_dendrite_container_image_self_build | bool"
 
 - name: Ensure Dendrite container network is created
   community.general.docker_network:

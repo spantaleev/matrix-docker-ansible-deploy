@@ -4,8 +4,12 @@
 
 matrix_dendrite_enabled: true
 
-matrix_dendrite_docker_image: "{{ matrix_dendrite_docker_image_name_prefix }}matrixdotorg/dendrite-monolith:{{ matrix_dendrite_docker_image_tag }}"
-matrix_dendrite_docker_image_name_prefix: "docker.io/"
+matrix_dendrite_container_image_self_build: false
+matrix_dendrite_container_image_self_build_repo: "https://github.com/matrix-org/dendrite.git"
+
+matrix_dendrite_docker_image_path: "matrixdotorg/dendrite-monolith"
+matrix_dendrite_docker_image: "{{ matrix_dendrite_docker_image_name_prefix }}{{ matrix_dendrite_docker_image_path }}:{{ matrix_dendrite_docker_image_tag }}"
+matrix_dendrite_docker_image_name_prefix: "{{ 'localhost/' if matrix_dendrite_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_dendrite_docker_image_tag: "v0.12.0"
 matrix_dendrite_docker_image_force_pull: "{{ matrix_dendrite_docker_image.endswith(':latest') }}"
 
@@ -16,6 +20,8 @@ matrix_dendrite_media_store_path: "{{ matrix_dendrite_storage_path }}/media-stor
 matrix_dendrite_nats_storage_path: "{{ matrix_dendrite_base_path }}/nats"
 matrix_dendrite_bin_path: "{{ matrix_dendrite_base_path }}/bin"
 matrix_dendrite_ext_path: "{{ matrix_dendrite_base_path }}/ext"
+
+matrix_dendrite_docker_src_files_path: "{{ matrix_dendrite_base_path }}/docker-src"
 
 # By default, we make Dendrite only serve HTTP (not HTTPS).
 # HTTPS is usually served at the reverse-proxy side (usually via `matrix-nginx-proxy`).
@@ -85,14 +91,14 @@ matrix_dendrite_systemd_wanted_services_list: []
 # matrix_dendrite_template_dendrite_config: "{{ playbook_dir }}/inventory/host_vars/<host>/dendrite.yaml.j2"
 matrix_dendrite_template_dendrite_config: "{{ role_path }}/templates/dendrite/dendrite.yaml.j2"
 
-matrix_dendrite_client_api_registration_shared_secret: ''
+matrix_dendrite_client_api_registration_shared_secret: ""
 matrix_dendrite_allow_guest_access: false
 
 matrix_dendrite_max_file_size_bytes: 10485760
 
 # Controls which HTTP header (e.g. 'X-Forwarded-For', 'X-Real-IP') to inspect to find the real remote IP address of the client.
 # This is likely required if Dendrite is running behind a reverse proxy server.
-matrix_dendrite_sync_api_real_ip_header: 'X-Forwarded-For'
+matrix_dendrite_sync_api_real_ip_header: "X-Forwarded-For"
 
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_dendrite_tmp_directory_size_mb: 500
@@ -147,7 +153,7 @@ matrix_dendrite_metrics_password: "metrics"
 
 # Postgres database information
 matrix_dendrite_database_str: "postgresql://{{ matrix_dendrite_database_user }}:{{ matrix_dendrite_database_password }}@{{ matrix_dendrite_database_hostname }}"
-matrix_dendrite_database_hostname: ''
+matrix_dendrite_database_hostname: ""
 matrix_dendrite_database_user: "dendrite"
 matrix_dendrite_database_password: "itsasecret"
 matrix_dendrite_federation_api_database: "dendrite_federationapi"
