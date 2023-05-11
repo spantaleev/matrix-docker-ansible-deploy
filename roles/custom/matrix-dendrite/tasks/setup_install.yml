@@ -1,17 +1,23 @@
 ---
-
 - name: Ensure Dendrite paths exist
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - "{{ matrix_dendrite_config_dir_path }}"
-    - "{{ matrix_dendrite_bin_path }}"
-    - "{{ matrix_dendrite_ext_path }}"
-    - "{{ matrix_dendrite_nats_storage_path }}"
+    - path: "{{ matrix_dendrite_config_dir_path }}"
+      when: true
+    - path: "{{ matrix_dendrite_bin_path }}"
+      when: true
+    - path: "{{ matrix_dendrite_ext_path }}"
+      when: true
+    - path: "{{ matrix_dendrite_nats_storage_path }}"
+      when: true
+    - path: "{{ matrix_dendrite_docker_src_files_path }}"
+      when: "{{ matrix_dendrite_container_image_self_build }}"
+  when: "item.when | bool"
 
 # This will throw a Permission Denied error if already mounted using fuse
 - name: Check Dendrite media store path
@@ -37,6 +43,7 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_dendrite_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_dendrite_docker_image_force_pull }}"
+  when: "not matrix_dendrite_container_image_self_build | bool"
   register: result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
@@ -71,6 +78,34 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
+
+- when: "matrix_dendrite_container_image_self_build | bool"
+  block:
+    - name: Ensure Dendrite repository is present on self-build
+      ansible.builtin.git:
+        repo: "{{ matrix_dendrite_container_image_self_build_repo }}"
+        dest: "{{ matrix_dendrite_docker_src_files_path }}"
+        version: "{{ matrix_dendrite_docker_image.split(':')[1] }}"
+        force: "yes"
+      become: true
+      become_user: "{{ matrix_user_username }}"
+      register: matrix_dendrite_git_pull_results
+
+    - name: Check if Dendrite Docker image exists
+      ansible.builtin.command: "{{ devture_systemd_docker_base_host_command_docker }} images --quiet --filter 'reference={{ matrix_dendrite_docker_image }}'"
+      register: matrix_dendrite_docker_image_check_result
+      changed_when: false
+
+    # Invoking the `docker build` command here, instead of calling the `docker_image` Ansible module,
+    # because the latter does not support BuildKit.
+    # See: https://github.com/ansible-collections/community.general/issues/514
+    - name: Ensure Dendrite Docker image is built
+      ansible.builtin.command:
+        cmd: "{{ devture_systemd_docker_base_host_command_docker }} build -t {{ matrix_dendrite_docker_image }} {{ matrix_dendrite_docker_src_files_path }}"
+      environment:
+        DOCKER_BUILDKIT: 1
+      changed_when: true
+      when: "matrix_dendrite_git_pull_results.changed | bool or matrix_dendrite_docker_image_check_result.stdout == ''"
 
 - name: Ensure Dendrite container network is created
   community.general.docker_network:
