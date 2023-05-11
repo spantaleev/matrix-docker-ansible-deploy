@@ -7,14 +7,16 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - { path: "{{ matrix_dendrite_config_dir_path }}", when: true }
-    - { path: "{{ matrix_dendrite_bin_path }}", when: true }
-    - { path: "{{ matrix_dendrite_ext_path }}", when: true }
-    - { path: "{{ matrix_dendrite_nats_storage_path }}", when: true }
-    - {
-        path: "{{ matrix_dendrite_docker_src_files_path }}",
-        when: "{{ matrix_dendrite_container_image_self_build }}",
-      }
+    - path: "{{ matrix_dendrite_config_dir_path }}"
+      when: true
+    - path: "{{ matrix_dendrite_bin_path }}"
+      when: true
+    - path: "{{ matrix_dendrite_ext_path }}"
+      when: true
+    - path: "{{ matrix_dendrite_nats_storage_path }}"
+      when: true
+    - path: "{{ matrix_dendrite_docker_src_files_path }}"
+      when: "{{ matrix_dendrite_container_image_self_build }}"
   when: "item.when | bool"
 
 # This will throw a Permission Denied error if already mounted using fuse
