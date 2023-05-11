@@ -104,6 +104,7 @@
         cmd: "{{ devture_systemd_docker_base_host_command_docker }} build -t {{ matrix_dendrite_docker_image }} {{ matrix_dendrite_docker_src_files_path }}"
       environment:
         DOCKER_BUILDKIT: 1
+      changed_when: true
       when: "matrix_dendrite_git_pull_results.changed | bool or matrix_dendrite_docker_image_check_result.stdout == ''"
 
 - name: Ensure Dendrite container network is created
