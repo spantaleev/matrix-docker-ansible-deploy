@@ -711,9 +711,18 @@ matrix_synapse_run_background_tasks_on: "{{ (matrix_synapse_workers_enabled_list
 #   - { 'id': 'media-repository-0', 'name': 'matrix-synapse-worker-media-repository-0', 'type': 'media_repository', 'port': 18551, 'metrics_port': 19551, 'webserving': true }
 matrix_synapse_workers_enabled_list: []
 
-# matrix_synapse_instance_map holds the instance map used for mapping worker names (for certain generic workers only!) to where they live (host, port which handles replication traffic).
-# This is populated automatically based on `matrix_synapse_workers_enabled_list` during runtime, so you're not required to tweak it manually.
-matrix_synapse_instance_map: {}
+# matrix_synapse_instance_map holds the instance map used for mapping worker names (for the main process and certain generic workers only!) to where they live (host, port which handles replication traffic).
+# This map starts off being populated with the Synapse main (master) process,
+# but will be populated with workers automatically during runtime, based on `matrix_synapse_workers_enabled_list`.
+matrix_synapse_instance_map: |
+  {{
+    {
+      'main': {
+        'host': 'matrix-synapse',
+        'port': matrix_synapse_replication_http_port,
+      },
+    }
+  }}
 
 # Redis information
 matrix_synapse_redis_enabled: false
