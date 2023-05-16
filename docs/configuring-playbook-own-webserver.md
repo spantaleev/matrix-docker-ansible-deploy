@@ -153,11 +153,11 @@ devture_traefik_additional_entrypoints_auto:
     port: 8449
     host_bind_port: '127.0.0.1:8449'
     config: {}
-	# If your reverse-proxy runs on another machine, remove the config above and use this config instead:
-	# config:
-	#   forwardedHeaders:
-	#     insecure: true
-	#     # trustedIPs: ['IP-ADDRESS-OF-YOUR-REVERSE-PROXY']
+    # If your reverse-proxy runs on another machine, remove the config above and use this config instead:
+    # config:
+    #   forwardedHeaders:
+    #     insecure: true
+    #     # trustedIPs: ['IP-ADDRESS-OF-YOUR-REVERSE-PROXY']
 ```
 
 For an example where the playbook's Traefik reverse-proxy is fronted by [Nginx](https://nginx.org/) running on the same server, see [Nginx reverse-proxy fronting the playbook's Traefik](../examples/nginx/README.md).
