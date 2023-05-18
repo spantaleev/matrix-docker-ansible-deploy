@@ -56,7 +56,7 @@ matrix_bot_honoroit_container_labels_traefik_docker_network: "{{ matrix_bot_hono
 matrix_bot_honoroit_container_labels_traefik_hostname: "{{ matrix_bot_honoroit_hostname }}"
 # The path prefix must either be `/` or not end with a slash (e.g. `/honoroit`).
 matrix_bot_honoroit_container_labels_traefik_path_prefix: "{{ matrix_bot_honoroit_path_prefix }}"
-matrix_bot_honoroit_container_labels_traefik_metrics_path: "{{ matrix_bot_honoroit_metrics_path }}"
+matrix_bot_honoroit_container_labels_traefik_metrics_path: "{{ '' if matrix_bot_honoroit_path_prefix = '/' else matrix_bot_honoroit_path_prefix }}{{ matrix_bot_honoroit_metrics_path }}"
 matrix_bot_honoroit_container_labels_traefik_metrics_rule: "Host(`{{ matrix_bot_honoroit_container_labels_traefik_hostname }}`) && Path(`{{ matrix_bot_honoroit_container_labels_traefik_metrics_path }}`)"
 matrix_bot_honoroit_container_labels_traefik_priority: 0
 matrix_bot_honoroit_container_labels_traefik_entrypoints: web-secure
