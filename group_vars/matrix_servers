@@ -1655,7 +1655,12 @@ matrix_bot_maubot_database_password: "{{ '%s' | format(matrix_homeserver_generic
 matrix_bot_honoroit_enabled: false
 
 matrix_bot_honoroit_hostname: "{{ matrix_server_fqn_matrix }}"
+
 matrix_bot_honoroit_path_prefix: /honoroit
+
+# For consistency with other things hosted at the matrix FQN, we adjust the metrics endpoint
+# so that metrics would be served at `/metrics/SERVICE_NAME`, and not at the default path for the role (`PREFIX/metrics`).
+matrix_bot_honoroit_container_labels_traefik_metrics_path: /metrics/honoroit
 
 matrix_bot_honoroit_systemd_required_services_list: |
   {{
