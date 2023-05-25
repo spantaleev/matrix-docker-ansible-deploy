@@ -1,12 +1,20 @@
-# Caddyfile
+# Caddy reverse-proxy fronting the playbook's integrated Traefik reverse-proxy
 
-This directory contains sample files that show you how to do reverse-proxying using Caddy2.
+This directory contains a sample config that shows you how to front the integrated [Traefik](https://traefik.io/) reverse-proxy webserver with your own [Caddy](https://caddyserver.com/) reverse-proxy.
 
-## Config
 
-| Variable           | Function |
-| ------------------ | -------- |
-| tls your@email.com | Specify an email address for your [ACME account](https://caddyserver.com/docs/caddyfile/directives/tls) (but if only one email is used for all sites, we recommend the email [global option](https://caddyserver.com/docs/caddyfile/options) instead) | 
-| tls                | To enable [tls](https://caddyserver.com/docs/caddyfile/directives/tls) support uncomment the lines for tls |
-| Dimension         | To enable Dimension support uncomment the lines for Dimension and set your data |
-| Jitsi              | To enable Jitsi support uncomment the lines for Jitsi and set your data |
+## Prerequisite configuration
+
+To get started, first follow the [front the integrated reverse-proxy webserver with another reverse-proxy](../../docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) instructions and update your playbook's configuration (`inventory/host_vars/matrix.<your-domain>/vars.yml`).
+
+
+## Using the Caddyfile
+
+You can either just use the [Caddyfile](Caddyfile) directly or append its content to your own Caddyfile.
+In both cases make sure to replace all the `example.tld` domains with your own domain.
+
+This example does  not include additional services like element, but you should be able copy the first block and replace the matrix subdomain with the additional services subdomain. I have not tested this though.
+
+# Caddyfile.deprecated
+
+This can be used as a [Caddy](https://caddyserver.com/) reverse-proxy without intermediary playbook managed reverse proxy. However, this setup is not supported by the playbook anymore. Instead [front the integrated reverse-proxy webserver with another reverse-proxy](../../docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) as described above.
