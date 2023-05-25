@@ -1,3 +1,17 @@
+# 2023-05-25
+
+## Enabling `forget_rooms_on_leave` by default for Synapse
+
+With the [Synapse v1.84.0 update](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/2698), we've also **changed the default value** of the `forget_rooms_on_leave` setting of Synapse to a value of `true`.
+This way, **when you leave a room, Synapse will now forget it automatically**.
+
+The upstream Synapse default is `false` (disabled), so that you must forget rooms manually after leaving.
+
+**We go against the upstream default** ([somewhat controversially](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/2700)) in an effort to make Synapse leaner and potentially do what we believe most users would expect their homeserver to be doing.
+
+If you'd like to go back to the old behavior, add the following to your configuration: `matrix_synapse_forget_rooms_on_leave: false`
+
+
 # 2023-04-03
 
 ## The matrix-jitsi role lives independently now
