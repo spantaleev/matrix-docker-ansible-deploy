@@ -31,6 +31,7 @@ matrix_synapse_turn_uris:
 - turn:HOSTNAME_OR_IP?transport=udp
 - turn:HOSTNAME_OR_IP?transport=tcp
 ```
+**Note:** Add this item to your `vars.yml` file, even when you have the default Coturn-Server via the playbook if you have `matrix_ssl_retrieval_method: manually-managed` BUT still use Let's-Encrypt for your certificates. There is a known [upstream-bug](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1145#issuecomment-874346433) in Elements and its forks (e.g. Schildichat) not beeing able to use a coturn-server with those certificates and the playbook only takes care of it with this [commit](https://github.com/spantaleev/matrix-docker-ansible-deploy/commit/8b146f083ef3bf78c0bf0cc27658631d96ea30dd) when SSL-certificates are managed by the playbook `matrix_ssl_retrieval_method: "lets-encrypt"` (which is the default).
 
 If you have or want to enable [Jitsi](configuring-playbook-jitsi.md), you might want to enable the TURN server there too.
 If you do not do it, Jitsi will fall back to an upstream service.
