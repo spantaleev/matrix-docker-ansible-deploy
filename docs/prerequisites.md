@@ -40,6 +40,8 @@ If your distro runs within an [LXC container](https://linuxcontainers.org/), you
   - `5349/udp`: TURN over UDP (used by Coturn)
   - `8448/tcp`: Matrix Federation API HTTPS webserver. In some cases, this **may necessary even with federation disabled**. Integration Servers (like Dimension) and Identity Servers (like ma1sd) may need to access `openid` APIs on the federation port.
   - the range `49152-49172/udp`: TURN over UDP
+  - `25/tcp`: SMTP over TCP (used by Postmoogle)
+  - `587/tcp`: TLS over TCP (used by Postmoogle)
   - potentially some other ports, depending on the additional (non-default) services that you enable in the **configuring the playbook** step (later on). Consult each service's documentation page in `docs/` for that.
 
 When ready to proceed, continue with [Configuring DNS](configuring-dns.md).
