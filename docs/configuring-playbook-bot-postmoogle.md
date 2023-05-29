@@ -4,12 +4,29 @@
 
 The playbook can install and configure [Postmoogle](https://gitlab.com/etke.cc/postmoogle) for you.
 
-It's a bot/bridge you can use to forward emails to Matrix rooms
+It's a bot/bridge you can use to forward emails to Matrix rooms. 
+Postmoogle runs an email server through SMTP and allaws you to create mailboxes to the domain you define in the DNS settings.
 
 See the project's [documentation](https://gitlab.com/etke.cc/postmoogle) to learn what it does and why it might be useful to you.
 
+## Prerequisites
 
-## Adjusting the playbook configuration
+### Ports
+
+Open the following ports to your server (without it you will not recive email, but you can still send):
+  - `25/tcp`: SMTP
+  - `587/tcp`: TLS-encrypted SMTP
+
+You can change the above default ports through the following variables in the playbook:
+
+```yaml
+# on-host ports
+matrix_bot_postmoogle_smtp_host_bind_port: '25'
+matrix_bot_postmoogle_submission_host_bind_port: '587'
+```
+
+
+### Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
@@ -23,6 +40,13 @@ matrix_bot_postmoogle_enabled: true
 matrix_bot_postmoogle_password: PASSWORD_FOR_THE_BOT
 ```
 
+Add an admin to Postmoogle with:
+```yaml
+matrix_bot_postmoogle_admins:
+  - '@yourAdminAccount:domain.com'
+```
+
+### DNS
 You will also need to add several DNS records so that postmoogle can send emails.
 See [Configuring DNS](configuring-dns.md).
 
@@ -51,3 +75,12 @@ Then send `!pm mailbox NAME` to expose this Matrix room as an inbox with the ema
 Send `!pm help` to the room to see the bot's help menu for additional commands.
 
 You can also refer to the upstream [documentation](https://gitlab.com/etke.cc/postmoogle).
+
+### Debug/Logs
+In case you need to debug declare:
+
+```yaml
+matrix_bot_postmoogle_loglevel: 'DEBUG'
+```
+
+And access it through `journalctl -fu matrix-bot-postmoogle`
