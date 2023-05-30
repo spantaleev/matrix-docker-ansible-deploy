@@ -20,9 +20,11 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.chatgpt
 ```
 
 
-## 2. Get an access token
+## 2. Get an access token and create encryption keys
 
 Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
+
+To make sure the bot can read encrypted messages, it will need an encryption key, just like any other new user. While obtaining the access token, follow the prompts to setup a backup key. More information can be found in the [element documentation](https://element.io/help#encryption6).
 
 
 ## 3. Adjusting the playbook configuration
