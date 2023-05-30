@@ -5,25 +5,22 @@
 The playbook can install and configure [Postmoogle](https://gitlab.com/etke.cc/postmoogle) for you.
 
 It's a bot/bridge you can use to forward emails to Matrix rooms. 
-Postmoogle runs an email server through SMTP and allaws you to create mailboxes to the domain you define in the DNS settings.
+Postmoogle runs an SMTP email server and allows you to assign mailbox addresses to Matrix rooms.
 
 See the project's [documentation](https://gitlab.com/etke.cc/postmoogle) to learn what it does and why it might be useful to you.
 
 ## Prerequisites
 
-### Ports
+### Networking
 
-Open the following ports to your server (without it you will not recive email, but you can still send):
+Open the following ports on your server to be able to receive incoming emails:
+
   - `25/tcp`: SMTP
-  - `587/tcp`: TLS-encrypted SMTP
+  - `587/tcp`: Submission (TLS-encrypted SMTP)
 
-You can change the above default ports through the following variables in the playbook:
+If you don't open these ports, you will still be able to send emails, but not receive any.
 
-```yaml
-# on-host ports
-matrix_bot_postmoogle_smtp_host_bind_port: '25'
-matrix_bot_postmoogle_submission_host_bind_port: '587'
-```
+These port numbers are configurable via the `matrix_bot_postmoogle_smtp_host_bind_port` and `matrix_bot_postmoogle_submission_host_bind_port` variables, but other email servers will try to deliver on these default (standard) ports, so changing them is of little use.
 
 
 ### Adjusting the playbook configuration
@@ -38,16 +35,20 @@ matrix_bot_postmoogle_enabled: true
 
 # Generate a strong password here. Consider generating it with `pwgen -s 64 1`
 matrix_bot_postmoogle_password: PASSWORD_FOR_THE_BOT
-```
 
-Add an admin to Postmoogle with:
-```yaml
-matrix_bot_postmoogle_admins:
-  - '@yourAdminAccount:domain.com'
+# Uncomment to add one or more admins to this bridge:
+#
+# matrix_bot_postmoogle_admins:
+#  - '@yourAdminAccount:domain.com'
+#
+# .. unless you've made yourself an admin of all bridges like this:
+#
+# matrix_admin: '@yourAdminAccount:domain.com'
 ```
 
 ### DNS
-You will also need to add several DNS records so that postmoogle can send emails.
+
+You will also need to add several DNS records so that Postmoogle can send emails.
 See [Configuring DNS](configuring-dns.md).
 
 
@@ -77,10 +78,11 @@ Send `!pm help` to the room to see the bot's help menu for additional commands.
 You can also refer to the upstream [documentation](https://gitlab.com/etke.cc/postmoogle).
 
 ### Debug/Logs
-In case you need to debug declare:
+
+As with all other services, you can find their logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by running something like `journalctl -fu matrix-bot-postmoogle`
+
+The default logging level for this bridge is `INFO`, but you can increase it to `DEBUG` with the following additional configuration: 
 
 ```yaml
 matrix_bot_postmoogle_loglevel: 'DEBUG'
 ```
-
-And access it through `journalctl -fu matrix-bot-postmoogle`
