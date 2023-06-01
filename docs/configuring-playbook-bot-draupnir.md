@@ -30,30 +30,12 @@ Refer to the documentation on [how to obtain an access token](obtaining-access-t
 
 ## 3. Make sure the account is free from rate limiting
 
-You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step draupnir will crash. This can be done using Synapse's [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). This can also be manually done by editing the Synapse database. Manually editing the Synapse database is rarely a good idea. Please ask for help if you are uncomfortable with these steps.
+You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step draupnir will crash. This can be done using Synapse's [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). Please ask for help if you are uncomfortable with these steps or run into issues.
 
-1. Copy the statement below into a text editor.
+If your Synapse Admin API is exposed to the internet for some reason like running the Synapse Admin Role [Link](docs/configuring-playbook-synapse-admin.md) or running `matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled: true` in your playbook config. If your API is not externally exposed you should still be able to on the local host for your synapse run these commands. 
 
-	```
-	INSERT INTO ratelimit_override VALUES ('@bot.draupnir:DOMAIN', 0, 0);
-	```
+The following command works on semi up to date Windows 10 installs and All Windows 11 installations and other systems that ship curl. `curl --header "Authorization: Bearer <access_token>" -X DELETE https://matrix.example.com/_synapse/admin/v1/users/@example:example.com/override_ratelimit` Replace `@example:example.com` with the MXID of your Draupnir and example.com with your homeserver domain. You can easily obtain an access token for a homeserver admin account the same way you can obtain an access token for Draupnir it self. If you made Draupnir Admin you can just use the Draupnir token.
 
-1. Change the username (`@bot.draupnir:DOMAIN`) to the username you used when you registered the bot's account. You must change `DOMAIN` to your server's domain.
-
-1. Get a database terminal by following these steps: [maintenance-postgres.md#getting-a-database-terminal](maintenance-postgres.md#getting-a-database-terminal)
-
-1. Connect to Synapse's database by typing `\connect synapse` into the database terminal
-
-1. Paste in the `INSERT INTO` command that you edited and press enter.
-
-You can run `SELECT * FROM ratelimit_override;` to see if it worked. If the output looks like this:
-
-```
-      user_id          | messages_per_second | burst_count
------------------------+---------------------+-------------
- @bot.draupnir:raim.ist |                   0 |           0`
-```
-then you did it correctly.
 
 
 ## 4. Create a management room

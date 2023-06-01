@@ -40,9 +40,9 @@ If you'd like to use your own SSL certificates, instead of the default (SSL cert
 To use your own SSL certificates with Traefik, you need to:
 
 - disable [ACME](https://en.wikipedia.org/wiki/Automatic_Certificate_Management_Environment) / [Let's Encrypt](https://letsencrypt.org/) support
-- put a custom Traefik configuration file on the server, with the help of this Ansible playbook (via the `matrix-aux` role) or manually
+- put a custom Traefik configuration file on the server, with the help of this Ansible playbook (via the [`aux` role](https://github.com/mother-of-all-self-hosting/ansible-role-aux)) or manually
 - register your custom configuration file with Traefik, by adding an extra provider of type [file](https://doc.traefik.io/traefik/providers/file/)
-- put the SSL files on the server, with the help of this Ansible playbook (via the `matrix-aux` role) or manually
+- put the SSL files on the server, with the help of this Ansible playbook (via the [`aux` role](https://github.com/mother-of-all-self-hosting/ansible-role-aux)) or manually
 
 ```yaml
 # Disable ACME / Let's Encrypt support.
@@ -53,7 +53,7 @@ devture_traefik_config_certificatesResolvers_acme_enabled: false
 devture_traefik_ssl_dir_enabled: true
 
 # Tell Traefik to load our custom configuration file (certificates.yml).
-# The file is created below, in `matrix_aux_file_definitions`.
+# The file is created below, in `aux_file_definitions`.
 # The `/config/..` path is an in-container path, not a path on the host (like `/matrix/traefik/config`). Do not change it!
 devture_traefik_configuration_extension_yaml: |
   providers:
@@ -61,9 +61,9 @@ devture_traefik_configuration_extension_yaml: |
       filename: /config/certificates.yml
       watch: true
 
-# Use the matrix-aux role to create our custom files on the server.
-# If you'd like to do this manually, you remove this `matrix_aux_file_definitions` variable.
-matrix_aux_file_definitions:
+# Use the aux role to create our custom files on the server.
+# If you'd like to do this manually, you remove this `aux_file_definitions` variable.
+aux_file_definitions:
   # Create the privkey.pem file on the server by
   # uploading a file from the computer where Ansible is running.
   - dest: "{{ devture_traefik_ssl_dir_path }}/privkey.pem"

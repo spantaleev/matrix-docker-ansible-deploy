@@ -16,7 +16,7 @@ Refer to the [official instructions](https://matrix-org.github.io/matrix-hooksho
 1. Enable the bridge by adding `matrix_hookshot_enabled: true` to your `vars.yml` file
 2. For each of the services (GitHub, GitLab, Jira, Figma, generic webhooks) fill in the respective variables `matrix_hookshot_service_*` listed in [main.yml](/roles/custom/matrix-bridge-hookshot/defaults/main.yml) as required.
 3. Take special note of the `matrix_hookshot_*_enabled` variables. Services that need no further configuration are enabled by default (GitLab, Generic), while you must first add the required configuration and enable the others (GitHub, Jira, Figma).
-4. If you're setting up the GitHub bridge, you'll need to generate and download a private key file after you created your GitHub app. Copy the contents of that file to the variable `matrix_hookshot_github_private_key` so the playbook can install it for you, or use one of the [other methods](#manage-github-private-key-with-matrix-aux-role) explained below.
+4. If you're setting up the GitHub bridge, you'll need to generate and download a private key file after you created your GitHub app. Copy the contents of that file to the variable `matrix_hookshot_github_private_key` so the playbook can install it for you, or use one of the [other methods](#manage-github-private-key-with-aux-role) explained below.
 5. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready. Hookshot can be set up individually using the tag `setup-hookshot`.
 
 Other configuration options are available via the `matrix_hookshot_configuration_extension_yaml` and `matrix_hookshot_registration_extension_yaml` variables, see the comments in [main.yml](/roles/custom/matrix-bridge-hookshot/defaults/main.yml) for how to use them.
@@ -58,23 +58,23 @@ See also `matrix_hookshot_matrix_nginx_proxy_configuration` in [init.yml](/roles
 
 The different listeners are also reachable *internally* in the docker-network via the container's name (configured by `matrix_hookshot_container_url`) and on different ports (e.g. `matrix_hookshot_appservice_port`). Read [main.yml](/roles/custom/matrix-bridge-hookshot/defaults/main.yml) in detail for more info.
 
-### Manage GitHub Private Key with matrix-aux role
+### Manage GitHub Private Key with aux role
 
 The GitHub bridge requires you to install a private key file. This can be done in multiple ways:
 - copy the *contents* of the downloaded file and set the variable `matrix_hookshot_github_private_key` to the contents (see example in [main.yml](/roles/custom/matrix-bridge-hookshot/defaults/main.yml)).
 - somehow copy the file to the path `{{ matrix_hookshot_base_path }}/{{ matrix_hookshot_github_private_key_file }}` (default: `/matrix/hookshot/private-key.pem`) on the server manually.
-- use the `matrix-aux` role to copy the file from an arbitrary path on your ansible client to the correct path on the server.
+- use the [`aux` role](https://github.com/mother-of-all-self-hosting/ansible-role-aux) to copy the file from an arbitrary path on your ansible client to the correct path on the server.
 
-To use `matrix-aux`, make sure the `matrix_hookshot_github_private_key` variable is empty. Then add to `matrix-aux` configuration like this:
+To use the `aux` role, make sure the `matrix_hookshot_github_private_key` variable is empty. Then add the following additional configuration:
 ```yaml
-matrix_aux_file_definitions:
+aux_file_definitions:
   - dest: "{{ matrix_hookshot_base_path }}/{{ matrix_hookshot_github_private_key_file }}"
     content: "{{ lookup('file', '/path/to/your-github-private-key.pem') }}"
     mode: '0400'
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 ```
-For more info see the documentation in the [matrix-aux base configuration file](/roles/custom/matrix-aux/defaults/main.yml).
+For more information, see the documentation in the [default configuration of the aux role](https://github.com/mother-of-all-self-hosting/ansible-role-aux/blob/main/defaults/main.yml).
 
 ### Provisioning API
 
