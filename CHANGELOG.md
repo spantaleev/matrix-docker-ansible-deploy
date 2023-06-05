@@ -1,3 +1,11 @@
+# 2023-06-05
+
+## matrix-registration-bot usage changed
+
+The matrix registration bot got some updates and supports password-based login. This means automatic registration is now possible and done by default.
+
+**For existing users** You need to set `matrix_bot_matrix_registration_bot_bot_password`. If previously only used `matrix_bot_matrix_registration_bot_bot_access_token` this was also used as `matrix_bot_matrix_registration_bot_api_token`. You now need to define the `api_token` explicitly while the `bot_access_token` is depreacted. You can therefore rename `matrix_bot_matrix_registration_bot_bot_access_token` -> `matrix_bot_matrix_registration_bot_api_token`.
+
 # 2023-04-03
 
 ## The matrix-jitsi role lives independently now

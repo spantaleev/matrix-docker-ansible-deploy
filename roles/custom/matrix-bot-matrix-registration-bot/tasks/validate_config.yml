@@ -7,9 +7,12 @@
   when: "vars[item] == ''"
   with_items:
     - "matrix_bot_matrix_registration_bot_api_token"
+    - "matrix_bot_matrix_registration_bot_bot_password"
 
-- name: Fail if now bot secret is defined
+- name: (Deprecation) Catch and report old settings
   ansible.builtin.fail:
     msg: >-
-      You need to define the bot secret to login.
-  when: "matrix_bot_matrix_registration_bot_bot_password == '' and matrix_bot_matrix_registration_bot_api_token ==''"
+      Your configuration contains a variable, which is deprecated - Please check the documentation on how to configure the matrix-registration-bot.
+  when: "item in vars"
+  with_items:
+    - "matrix_bot_matrix_registration_bot_bot_access_token"
