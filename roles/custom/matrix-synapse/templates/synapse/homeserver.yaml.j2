@@ -141,6 +141,10 @@ allow_public_rooms_over_federation: {{ matrix_synapse_allow_public_rooms_over_fe
 #
 default_room_version: {{ matrix_synapse_default_room_version|to_json }}
 
+# Set to true to automatically forget rooms for users when they leave them, either
+# normally or via a kick or ban. Defaults to false.
+forget_rooms_on_leave: {{ matrix_synapse_forget_rooms_on_leave | to_json }}
+
 # The GC threshold parameters to pass to `gc.set_threshold`, if defined
 #
 #gc_thresholds: [700, 10, 10]
@@ -2626,7 +2630,7 @@ user_directory:
     # Uncomment to return search results containing all known users, even if that
     # user does not share a room with the requester.
     #
-    #search_all_users: true
+    search_all_users: {{ matrix_synapse_user_directory_search_all_users | to_json }}
 
     # Defines whether to prefer local users in search query results.
     # If True, local users are more likely to appear above remote users
@@ -2635,7 +2639,7 @@ user_directory:
     # Uncomment to prefer local over remote users in user directory search
     # results.
     #
-    #prefer_local_users: true
+    prefer_local_users: {{ matrix_synapse_user_directory_prefer_local_users | to_json }}
 
 
 # User Consent configuration
