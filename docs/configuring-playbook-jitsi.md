@@ -208,6 +208,16 @@ However, it can also be set the ip address of the matrix server. This can be use
 jitsi_xmpp_server: "192.168.0.1"
 ```
 
+For the JVB to be able ito contact the XMPP server, the latter must expose the XMPP port (5222).  By default, the Matrix server does not expose the
+port; only the XMPP container exposes it internally inside the host, which means that the first JVB (which runs on the Matrix server) can reach it but
+the additional JVB cannot. The port is exposed by setting `jitsi_prosody_container_jvb_host_bind_port` like this:
+
+```yaml
+jitsi_prosody_container_jvb_host_bind_port: 5222
+```
+
+(The default is empty; if it's set then docker forwards the port.)
+
 The nginx configuration will also need to be updated in order to deal with the additional JVB servers. This is achieved via its own configuration variable
 `matrix_nginx_proxy_proxy_jitsi_additional_jvbs`, which contains a dictionary of server ids to ip addresses.
 
