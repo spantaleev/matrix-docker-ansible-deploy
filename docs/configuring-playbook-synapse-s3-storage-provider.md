@@ -37,6 +37,10 @@ matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id: access-key-
 matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key: secret-key-goes-here
 matrix_synapse_ext_synapse_s3_storage_provider_config_storage_class: STANDARD # or STANDARD_IA, etc.
 
+# If you're using an EC2 instance with an instance profile that grants it permissions to access S3, set the following variable to true
+# Defaulted to false, when this is enabled you do not need to provide the access_key_id or secret_access_key.
+matrix_synapse_ext_synapse_s3_storage_provider_config_ec2_instance_profile: true
+
 # For additional advanced settings, take a look at `roles/custom/matrix-synapse/defaults/main.yml`
 ```
 
