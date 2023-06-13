@@ -1,27 +1,22 @@
 ---
-- name: Set base required s3-storage-provider settings
-  set_fact:
-    base_s3_storage_provider_config:
-      - "matrix_synapse_ext_synapse_s3_storage_provider_config_bucket"
-      - "matrix_synapse_ext_synapse_s3_storage_provider_config_region_name"
-      - "matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url"
-
-- name: Set optional required s3-storage-provider settings
-  set_fact:
-    optional_s3_storage_provider_config:
-      - "matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id"
-      - "matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key"
-
-- name: Prepare a list of required s3-storage-provider settings
-  set_fact:
-    required_s3_settings: "{{ base_s3_storage_provider_config + (optional_s3_storage_provider_config if not matrix_synapse_ext_synapse_s3_storage_provider_config_ec2_instance_profile|default(false)|bool else []) }}"
-
 - name: Fail if required s3-storage-provider settings not defined
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) for using s3-storage-provider.
   when: "vars[item] == ''"
-  with_items: "{{ required_s3_settings }}"
+  with_items:
+    - "matrix_synapse_ext_synapse_s3_storage_provider_config_bucket"
+    - "matrix_synapse_ext_synapse_s3_storage_provider_config_region_name"
+    - "matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url"
+
+- name: Fail if required s3-storage-provider auth settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) for using s3-storage-provider.
+  when: "not matrix_synapse_ext_synapse_s3_storage_provider_config_ec2_instance_profile|default(false)|bool and vars[item] == ''"
+  with_items:
+    - "matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id"
+    - "matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key"
 
 - name: Fail if required matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url looks invalid
   ansible.builtin.fail:
