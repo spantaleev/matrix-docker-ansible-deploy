@@ -30,16 +30,22 @@ After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#buc
 
 ```yaml
 matrix_synapse_ext_synapse_s3_storage_provider_enabled: true
+
 matrix_synapse_ext_synapse_s3_storage_provider_config_bucket: your-bucket-name
 matrix_synapse_ext_synapse_s3_storage_provider_config_region_name: some-region-name # e.g. eu-central-1
 matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url: https://s3.REGION_NAME.amazonaws.com # adjust this
-matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id: access-key-goes-here
-matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key: secret-key-goes-here
 matrix_synapse_ext_synapse_s3_storage_provider_config_storage_class: STANDARD # or STANDARD_IA, etc.
 
-# If you're using an EC2 instance with an instance profile that grants it permissions to access S3, set the following variable to true
-# Defaulted to false, when this is enabled you do not need to provide the access_key_id or secret_access_key.
-matrix_synapse_ext_synapse_s3_storage_provider_config_ec2_instance_profile: true
+# Authentication Method 1 - (access key id + secret)
+# This works on all providers (AWS and other compatible systems).
+# Uncomment the variables below to use it.
+# matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id: access-key-goes-here
+# matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key: secret-key-goes-here
+
+# Authentication Method 2 - EC2 instance profile which grants permission to access S3
+# This only works on AWS when your server is hosted on an EC2 instance with the correct instance profile set.
+# Uncomment the variable below to use it.
+# matrix_synapse_ext_synapse_s3_storage_provider_config_ec2_instance_profile: true
 
 # For additional advanced settings, take a look at `roles/custom/matrix-synapse/defaults/main.yml`
 ```
