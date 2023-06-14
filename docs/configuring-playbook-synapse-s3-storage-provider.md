@@ -112,6 +112,19 @@ docker run -it --rm \
 docker.io/amazon/aws-cli:2.9.16 \
 -c 'aws s3 sync /work/. s3://$BUCKET/'
 ```
+#### Copying data to Wasabi
+
+To copy to Wasabi, start a container on the Matrix server like this:
+
+```sh
+docker run -it --rm \
+-w /work \
+--env-file=/matrix/synapse/ext/s3-storage-provider/env \
+--mount type=bind,src=/matrix/synapse/storage/media-store,dst=/work,ro \
+--entrypoint=/bin/sh \
+docker.io/amazon/aws-cli:2.9.16 \
+-c 'aws s3 sync /work/. s3://$BUCKET/ --endpoint-url=$ENDPOINT'
+```
 
 #### Copying data to Backblaze B2
 
