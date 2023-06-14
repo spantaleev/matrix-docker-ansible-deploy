@@ -6,8 +6,10 @@ config:
   bucket: {{ matrix_synapse_ext_synapse_s3_storage_provider_config_bucket | to_json }}
   region_name: {{ matrix_synapse_ext_synapse_s3_storage_provider_config_region_name | to_json }}
   endpoint_url: {{ matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url | to_json }}
+{% if not matrix_synapse_ext_synapse_s3_storage_provider_config_ec2_instance_profile | bool %}
   access_key_id: {{ matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id | to_json }}
   secret_access_key: {{ matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key | to_json }}
+{% endif %}
 
 {% if matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_enabled %}
   sse_customer_key: {{ matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_key | to_json }}

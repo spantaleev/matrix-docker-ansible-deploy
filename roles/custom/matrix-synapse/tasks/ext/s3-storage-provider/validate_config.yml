@@ -1,5 +1,4 @@
 ---
-
 - name: Fail if required s3-storage-provider settings not defined
   ansible.builtin.fail:
     msg: >-
@@ -8,9 +7,16 @@
   with_items:
     - "matrix_synapse_ext_synapse_s3_storage_provider_config_bucket"
     - "matrix_synapse_ext_synapse_s3_storage_provider_config_region_name"
+    - "matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url"
+
+- name: Fail if required s3-storage-provider auth settings not defined when not using an EC2 profile
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) for using s3-storage-provider.
+  when: "not matrix_synapse_ext_synapse_s3_storage_provider_config_ec2_instance_profile | bool and vars[item] == ''"
+  with_items:
     - "matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id"
     - "matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key"
-    - "matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url"
 
 - name: Fail if required matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url looks invalid
   ansible.builtin.fail:
