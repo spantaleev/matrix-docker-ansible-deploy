@@ -112,23 +112,18 @@ docker run -it --rm \
 docker.io/amazon/aws-cli:2.9.16 \
 -c 'aws s3 sync /work/. s3://$BUCKET/'
 ```
-#### Copying data to Wasabi
 
-To copy to Wasabi, start a container on the Matrix server like this:
+#### Copying data to an S3 alternative using the aws-s3 tool
 
-```sh
-docker run -it --rm \
--w /work \
---env-file=/matrix/synapse/ext/s3-storage-provider/env \
---mount type=bind,src=/matrix/synapse/storage/media-store,dst=/work,ro \
---entrypoint=/bin/sh \
-docker.io/amazon/aws-cli:2.9.16 \
--c 'aws s3 sync /work/. s3://$BUCKET/ --endpoint-url=$ENDPOINT'
-```
+To copy to a provider other than AWS S3 (e.g. Wasabi, Digital Ocean Spaces, etc.), you can use the command for [Copying data to Amazon S3](#copying-data-to-amazon-s3) with an added `--endpoint-url=$ENDPOINT` argument.
+
+Add this argument to the command **as-is** (`$ENDPOINT` is an environment variable corresponding to `matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url`, so you don't need to touch it). Make sure to add the argument **before** the final quote (`'`) of the command.
 
 #### Copying data to Backblaze B2
 
-To copy to Backblaze B2, start a container on the Matrix server like this:
+You can copy files to Backblaze B2 either by following the [Copying data to an S3 alternative using the aws-s3 tool](#copying-data-to-an-s3-alternative-using-the-aws-s3-tool) or by using the B2-specific [b2 command-line tool](https://www.backblaze.com/b2/docs/quick_command_line.html) as described below.
+
+To copy the data using the `b2` tool, start a container on the Matrix server like this:
 
 ```sh
 docker run -it --rm \
