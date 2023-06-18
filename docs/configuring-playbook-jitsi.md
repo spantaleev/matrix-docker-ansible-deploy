@@ -208,7 +208,7 @@ However, it can also be set the ip address of the matrix server. This can be use
 jitsi_xmpp_server: "192.168.0.1"
 ```
 
-For the JVB to be able ito contact the XMPP server, the latter must expose the XMPP port (5222).  By default, the Matrix server does not expose the
+For the JVB to be able to contact the XMPP server, the latter must expose the XMPP port (5222). By default, the Matrix server does not expose the
 port; only the XMPP container exposes it internally inside the host, which means that the first JVB (which runs on the Matrix server) can reach it but
 the additional JVB cannot. The port is exposed by setting `jitsi_prosody_container_jvb_host_bind_port` like this:
 
