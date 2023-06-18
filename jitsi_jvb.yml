@@ -1,0 +1,35 @@
+---
+- name: "Set up additional Jitsi JVB servers"
+  hosts: "jitsi_jvb_servers"
+  become: true
+
+  roles:
+    - role: galaxy/com.devture.ansible.role.playbook_help
+    - role: galaxy/com.devture.ansible.role.systemd_docker_base
+
+    - when: matrix_playbook_docker_installation_enabled | bool
+      role: galaxy/geerlingguy.docker
+      vars:
+        docker_install_compose: false
+      tags:
+        - setup-docker
+        - setup-all
+        - setup-additional-jitsi-jvb
+        - install-docker
+        - install-all
+
+    - when: devture_docker_sdk_for_python_installation_enabled | bool
+      role: galaxy/com.devture.ansible.role.docker_sdk_for_python
+      tags:
+        - setup-docker
+        - setup-all
+        - setup-additional-jitsi-jvb
+        - install-docker
+        - install-all
+
+    - custom/matrix-base
+    - galaxy/jitsi
+    - custom/matrix-common-after
+
+    - when: devture_systemd_service_manager_enabled | bool
+      role: galaxy/com.devture.ansible.role.systemd_service_manager

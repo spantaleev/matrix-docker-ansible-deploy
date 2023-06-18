@@ -165,7 +165,7 @@ jitsi_prosody_max_participants: 4 # example value
 By default, a single JVB ([Jitsi VideoBridge](https://github.com/jitsi/jitsi-videobridge)) is deployed on the same host as the Matrix server. To allow more video-conferences to happen at the same time, you may need to provision additional JVB services on other hosts.
 
 There is an ansible playbook that can be run with the following tag:
-` ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers jitsi_jvb.yml --tags=common,setup-additional-jitsi-jvb,start`
+`ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers jitsi_jvb.yml --tags=common,setup-additional-jitsi-jvb,start`
 
 For this role to work you will need an additional section in the ansible hosts file with the details of the JVB hosts, for example:
 ```
@@ -207,6 +207,16 @@ However, it can also be set the ip address of the matrix server. This can be use
 ```yaml
 jitsi_xmpp_server: "192.168.0.1"
 ```
+
+For the JVB to be able to contact the XMPP server, the latter must expose the XMPP port (5222). By default, the Matrix server does not expose the
+port; only the XMPP container exposes it internally inside the host, which means that the first JVB (which runs on the Matrix server) can reach it but
+the additional JVB cannot. The port is exposed by setting `jitsi_prosody_container_jvb_host_bind_port` like this:
+
+```yaml
+jitsi_prosody_container_jvb_host_bind_port: 5222
+```
+
+(The default is empty; if it's set then docker forwards the port.)
 
 The nginx configuration will also need to be updated in order to deal with the additional JVB servers. This is achieved via its own configuration variable
 `matrix_nginx_proxy_proxy_jitsi_additional_jvbs`, which contains a dictionary of server ids to ip addresses.
