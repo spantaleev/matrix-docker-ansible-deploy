@@ -1,6 +1,6 @@
 # Server Delegation via a DNS SRV record (advanced)
 
-**Reminder** : unless you are affected by the [Downsides of well-known-based Server Delegation](#downsides-of-well-known-based-server-delegation), we suggest you stay on the simple/default path : [Server Delegation](howto-server-delegation.md)
+**Reminder** : unless you are affected by the [Downsides of well-known-based Server Delegation](howto-server-delegation.md#downsides-of-well-known-based-server-delegation), we suggest you stay on the simple/default path : [Server Delegation](howto-server-delegation.md)
 
 ## Prerequisites
 
