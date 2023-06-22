@@ -5,16 +5,70 @@
     matrix_synapse_worker_container_name: "{{ matrix_synapse_worker_details.name }}"
     matrix_synapse_worker_config_file_name: "worker.{{ matrix_synapse_worker_details.name }}.yaml"
 
+# ansible.builtin.template does not support async, so instead run async commands
+# that launch ad hoc template tasks on the controller.
 - name: Ensure configuration exists for {{ matrix_synapse_worker_systemd_service_name }}
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/synapse/worker.yaml.j2"
-    dest: "{{ matrix_synapse_config_dir_path }}/{{ matrix_synapse_worker_config_file_name }}"
-    mode: 0644
-    owner: "{{ matrix_synapse_uid }}"
-    group: "{{ matrix_synapse_gid }}"
+  ansible.builtin.command: >
+    ansible matrix_servers -i inventory/hosts -m template --become
+    -e "{
+    'matrix_synapse_worker_details':{{ matrix_synapse_worker_details }},
+    'matrix_server_fqn_matrix':'{{ matrix_server_fqn_matrix }}',
+    'matrix_synapse_replication_listener_enabled':'{{ matrix_synapse_replication_listener_enabled }}',
+    'matrix_synapse_replication_http_port':'{{ matrix_synapse_replication_http_port }}',
+    'matrix_synapse_metrics_enabled':'{{ matrix_synapse_metrics_enabled }}'
+    }"
+    -a "
+    src={{ role_path }}/templates/synapse/worker.yaml.j2
+    dest={{ matrix_synapse_config_dir_path }}/{{ matrix_synapse_worker_config_file_name }}
+    mode=0644
+    owner={{ matrix_synapse_uid }}
+    group={{ matrix_synapse_gid }}
+    "
+  register: "configuration_result"
+  delegate_to: localhost
+  become: false
+  async: 60
+  poll: 0
 
 - name: Ensure systemd service exists for {{ matrix_synapse_worker_systemd_service_name }}
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/synapse/systemd/matrix-synapse-worker.service.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_synapse_worker_systemd_service_name }}.service"
-    mode: 0644
+  ansible.builtin.command: >
+    ansible matrix_servers -i inventory/hosts -m template --become
+    -e "{
+    'matrix_synapse_worker_details':{{ matrix_synapse_worker_details }},
+    'matrix_synapse_worker_container_name':'{{ matrix_synapse_worker_container_name }}',
+    'matrix_synapse_config_dir_path':'{{ matrix_synapse_config_dir_path }}',
+    'matrix_synapse_worker_config_file_name':'{{ matrix_synapse_worker_config_file_name }}',
+    'devture_systemd_docker_base_systemd_unit_home_path':'{{ devture_systemd_docker_base_systemd_unit_home_path }}',
+    'devture_systemd_docker_base_host_command_sh':'{{ devture_systemd_docker_base_host_command_sh }}',
+    'devture_systemd_docker_base_host_command_docker':'{{ devture_systemd_docker_base_host_command_docker }}',
+    'matrix_host_command_sleep':'{{ matrix_host_command_sleep }}',
+    'matrix_synapse_uid':'{{ matrix_synapse_uid }}',
+    'matrix_synapse_gid':'{{ matrix_synapse_gid }}',
+    'matrix_synapse_tmp_directory_size_mb':'{{ matrix_synapse_tmp_directory_size_mb }}',
+    'matrix_synapse_container_network':'{{ matrix_synapse_container_network }}',
+    'matrix_synapse_workers_enabled':'{{ matrix_synapse_workers_enabled }}',
+    'matrix_synapse_workers_container_host_bind_address':'{{ matrix_synapse_workers_container_host_bind_address }}',
+    'matrix_synapse_storage_path':'{{ matrix_synapse_storage_path }}',
+    'matrix_synapse_container_additional_volumes':{{ matrix_synapse_container_additional_volumes }},
+    'matrix_synapse_container_arguments':{{ matrix_synapse_container_arguments }},
+    'matrix_synapse_docker_image_final':'{{ matrix_synapse_docker_image_final }}',
+    'matrix_synapse_container_additional_networks':{{ matrix_synapse_container_additional_networks }}
+    }"
+    -a "
+    src={{ role_path }}/templates/synapse/systemd/matrix-synapse-worker.service.j2
+    dest={{ devture_systemd_docker_base_systemd_path }}/{{ matrix_synapse_worker_systemd_service_name }}.service
+    mode=0644
+    "
+  register: "service_result"
+  delegate_to: localhost
+  become: false
+  async: 60
+  poll: 0
+
+# Create unique variable identifiers for checking job status later
+- ansible.builtin.set_fact:
+    "{{ item.name }}": "{{ item.val }}"
+  when: item.name not in vars
+  with_items:
+    - { name: "configuration_result_{{ worker_template_creation_index }}", val: "{{ configuration_result }}" }
+    - { name: "service_result_{{ worker_template_creation_index }}", val: "{{ service_result }}" }

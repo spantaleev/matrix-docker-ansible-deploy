@@ -45,3 +45,11 @@
   with_items: "{{ matrix_synapse_workers_enabled_list }}"
   loop_control:
     loop_var: matrix_synapse_worker_details
+    index_var: worker_template_creation_index
+
+- name: Check status of worker systemd service files and configuration files creation
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/util/worker_setup_job_cleanup.yml"
+  with_items: "{{ matrix_synapse_workers_enabled_list }}"
+  loop_control:
+    loop_var: matrix_synapse_worker_details
+    index_var: worker_template_job_status_index

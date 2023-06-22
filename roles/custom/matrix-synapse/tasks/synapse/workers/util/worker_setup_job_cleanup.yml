@@ -1,0 +1,44 @@
+---
+
+# Clean up Ansible controller temp files as a result of spawning async tasks
+- name: Check job status for configuration file {{ matrix_synapse_worker_details.name }}
+  vars:
+    worker_configuration_result: "{{ lookup('ansible.builtin.vars', 'configuration_result_' + worker_template_job_status_index|string) }}"
+  ansible.builtin.async_status:
+    jid: "{{ worker_configuration_result.ansible_job_id }}"
+  register: configuration_status
+  until: configuration_status.finished
+  retries: 60
+  delay: 1
+  delegate_to: localhost
+  become: false
+
+- name: Check job status for service file {{ matrix_synapse_worker_details.name }}
+  vars:
+    worker_service_result: "{{ lookup('ansible.builtin.vars', 'service_result_' + worker_template_job_status_index|string) }}"
+  ansible.builtin.async_status:
+    jid: "{{ worker_service_result.ansible_job_id }}"
+  register: service_status
+  until: service_status.finished
+  retries: 60
+  delay: 1
+  delegate_to: localhost
+  become: false
+
+- name: Cleanup job result for configuration file
+  vars:
+    worker_configuration_result: "{{ lookup('ansible.builtin.vars', 'configuration_result_' + worker_template_job_status_index|string) }}"
+  ansible.builtin.async_status:
+    jid: "{{ worker_configuration_result.ansible_job_id }}"
+    mode: "cleanup"
+  delegate_to: localhost
+  become: false
+
+- name: Cleanup job result for service file
+  vars:
+    worker_service_result: "{{ lookup('ansible.builtin.vars', 'service_result_' + worker_template_job_status_index|string) }}"
+  ansible.builtin.async_status:
+    jid: "{{ worker_service_result.ansible_job_id }}"
+    mode: "cleanup"
+  delegate_to: localhost
+  become: false
