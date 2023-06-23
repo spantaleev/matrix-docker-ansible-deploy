@@ -29,6 +29,7 @@
   become: false
   async: 60
   poll: 0
+  changed_when: false
 
 - name: Ensure systemd service exists for {{ matrix_synapse_worker_systemd_service_name }}
   ansible.builtin.command: >
@@ -64,11 +65,13 @@
   become: false
   async: 60
   poll: 0
+  changed_when: false
 
-# Create unique variable identifiers for checking job status later
+# Store job status results for checking later
 - ansible.builtin.set_fact:
-    "{{ item.name }}": "{{ item.val }}"
-  when: item.name not in vars
+    matrix_synapse_worker_template_job_status_result_list: "{{ matrix_synapse_worker_template_job_status_result_list + [item] }}"
   with_items:
-    - { name: "configuration_result_{{ worker_template_creation_index }}", val: "{{ configuration_result }}" }
-    - { name: "service_result_{{ worker_template_creation_index }}", val: "{{ service_result }}" }
+    - result:
+        name: "{{ matrix_synapse_worker_details.name }}"
+        configuration: "{{ configuration_result }}"
+        service: "{{ service_result }}"

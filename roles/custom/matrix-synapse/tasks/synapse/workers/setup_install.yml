@@ -9,6 +9,7 @@
 
 - ansible.builtin.set_fact:
     matrix_synapse_enabled_worker_names: "{{ matrix_synapse_workers_enabled_list | map(attribute='name') }}"
+    matrix_synapse_worker_template_job_status_result_list: []
 
 # This also deletes some things which we need. They will be recreated below.
 - name: Ensure unnecessary worker configs are cleaned
@@ -45,11 +46,9 @@
   with_items: "{{ matrix_synapse_workers_enabled_list }}"
   loop_control:
     loop_var: matrix_synapse_worker_details
-    index_var: worker_template_creation_index
 
 - name: Check status of worker systemd service files and configuration files creation
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/util/worker_setup_job_cleanup.yml"
-  with_items: "{{ matrix_synapse_workers_enabled_list }}"
+  with_items: "{{ matrix_synapse_worker_template_job_status_result_list }}"
   loop_control:
-    loop_var: matrix_synapse_worker_details
-    index_var: worker_template_job_status_index
+    loop_var: matrix_synapse_worker_template_job_status
