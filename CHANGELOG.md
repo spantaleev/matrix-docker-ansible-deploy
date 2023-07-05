@@ -2,9 +2,15 @@
 
 ## matrix-registration-bot usage changed
 
-The matrix registration bot got some updates and supports password-based login. This means automatic registration is now possible and done by default.
+The [matrix-registration-bot](docs/configuring-playbook-bot-matrix-registration-bot.md) got some updates and supports password-based login. Therefore the bot is now
 
-**For existing users** You need to set `matrix_bot_matrix_registration_bot_bot_password`. If previously only used `matrix_bot_matrix_registration_bot_bot_access_token` this was also used as `matrix_bot_matrix_registration_bot_api_token`. You now need to define the `api_token` explicitly while the `bot_access_token` is depreacted. You can therefore rename `matrix_bot_matrix_registration_bot_bot_access_token` -> `matrix_bot_matrix_registration_bot_api_token`.
+* automatically registered as user
+* doesn't need any manual configuration except setting a password at the start
+
+**For existing users** You need to set `matrix_bot_matrix_registration_bot_bot_password` if you previously only used `matrix_bot_matrix_registration_bot_bot_access_token`. Please also remove the following deprecated settings as the bot will now autonatically be admin and use it's own access token for registering users
+
+* `matrix_bot_matrix_registration_bot_bot_access_token`
+* `matrix_bot_matrix_registration_bot_api_token`
 
 # 2023-05-25
 

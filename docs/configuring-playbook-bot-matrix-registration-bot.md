@@ -2,8 +2,9 @@
 
 The playbook can install and configure [matrix-registration-bot](https://github.com/moan0s/matrix-registration-bot) for you.
 
-The bot allows you to easily **create and manage registration tokens**. It can be used for an invitation-based server,
-where you invite someone by sending them a registration token. They can register as normal but have to provide a valid registration token in a final step  of the registration.
+The bot allows you to easily **create and manage registration tokens** aka. invitation codes.
+It can be used for an invitation-based server,
+where you invite someone by sending them a registration token (loook like this: `rbalQ0zkaDSRQCOp`). They can register as normal but have to provide a valid registration token in a final step of the registration.
 
 See the project's [documentation](https://github.com/moan0s/matrix-registration-bot#supported-commands) to learn what it
 does and why it might be useful to you.
@@ -18,14 +19,8 @@ For `matrix_bot_matrix_registration_bot_api_token`you need an access token with 
 ```yaml
 matrix_bot_matrix_registration_bot_enabled: true
 
-# An access token with the permission to access the admin api. Access to the API is needed
-# for all restricted actions of the bot (list, create etc..)
-# Refer to the documentation on obtaining-access-tokens.
-matrix_bot_matrix_registration_bot_api_token: "syt..."
-
 #By default, the playbook will set use the bot with a username like 
 ## this: `@bot.matrix-registration-bot:DOMAIN`.
-
 # To use a different username, uncomment & adjust the variable.
 # matrix_bot_matrix_registration_bot_matrix_user_id_localpart: bot.matrix-registration-bot
 

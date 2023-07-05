@@ -1,5 +1,24 @@
 ---
 
+
+- name: Get an access token for the bot
+  ansible.builtin.uri:
+    url: "{{ matrix_bot_matrix_registration_bot_api_base_url }}/_matrix/client/r0/login"
+    return_content: true
+    method: POST
+    body_format: json
+    body: '{"identifier": { "type": "m.id.user", "user": "{{ matrix_bot_matrix_registration_bot_matrix_user_id_localpart }}" }, "password": "{{ matrix_bot_matrix_registration_bot_bot_password }}", "type": "m.login.password", "device_id": "matrix-docker-ansible-deploy"}'
+  register: login_result
+  #failed_when: login_result is failed or "'access_token' not in login_result.content"
+
+- name: Parse login result to json
+  ansible.builtin.set_fact:
+    login_result_json: "{{ login_result.content | from_json }}"
+
+- name: Parsing the access token
+  ansible.builtin.set_fact:
+    matrix_bot_matrix_registration_bot_api_token: "{{ login_result_json.access_token }}"
+
 - name: Ensure matrix-registration-bot paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
