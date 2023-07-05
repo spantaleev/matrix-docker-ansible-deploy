@@ -1,0 +1,11 @@
+jitsi_architecture: "{{ matrix_architecture }}"
+jitsi_hostname: "{{ matrix_server_fqn_jitsi }}"
+jitsi_uid: "{{ matrix_user_uid }}"
+jitsi_gid: "{{ matrix_user_gid }}"
+
+devture_systemd_service_manager_services_list_auto: |
+  {{
+    ([{'name': (jitsi_identifier + '-jvb.service'), 'priority': 4100, 'groups': ['matrix', 'jitsi', 'jitsi-jvb']}] if jitsi_enabled else [])
+  }}
+
+matrix_playbook_docker_installation_enabled: true
