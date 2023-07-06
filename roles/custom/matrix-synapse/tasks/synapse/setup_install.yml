@@ -72,12 +72,13 @@
         owner: "{{ matrix_synapse_uid }}"
         group: "{{ matrix_synapse_gid }}"
         mode: 0640
+      register: matrix_synapse_container_image_customizations_dockerfile_result
 
     - name: Ensure customized Docker image for Synapse is built
       community.docker.docker_image:
         name: "{{ matrix_synapse_docker_image_customized }}"
         source: build
-        force_source: "{{ matrix_synapse_docker_image_customized_force_source }}"
+        force_source: "{{ matrix_synapse_container_image_customizations_dockerfile_result.changed or matrix_synapse_docker_image_customized_force_source }}"
         build:
           dockerfile: Dockerfile
           path: "{{ matrix_synapse_customized_docker_src_files_path }}"
