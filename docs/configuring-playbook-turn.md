@@ -47,3 +47,6 @@ jitsi_web_stun_servers:
 - stun:HOSTNAME_OR_IP:PORT
 ```
 You can put multiple host/port combinations if you like.
+
+## Further variables and configuration options
+To see all the available configuration options, check roles/custom/matrix-coturn/defaults/main.yml 
