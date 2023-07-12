@@ -1,0 +1,19 @@
+---
+
+- name: Check existence of matrix-media-repo service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-media-repo.service"
+  register: matrix_media_repo_service_stat
+
+- when: matrix_media_repo_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-media-repo is stopped
+      ansible.builtin.systemd:
+        name: matrix-media-repo
+        state: stopped
+        daemon_reload: true
+
+    - name: Ensure matrix-media-repo.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-media-repo.service"
+        state: absent

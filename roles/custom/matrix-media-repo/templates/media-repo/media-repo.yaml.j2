@@ -1,0 +1,359 @@
+# General repo configuration
+repo:
+  bindAddress: {{ matrix_media_repo_bind_address }}
+  port: {{ matrix_media_repo_port }}
+
+  # Where to store the logs, relative to where the repo is started from. Logs will be automatically
+  # rotated every day and held for 14 days. To disable the repo logging to files, set this to
+  # "-" (including quotation marks).
+  #
+  # Note: to change the log directory you'll have to restart the repository. This setting cannot be
+  # live reloaded.
+  logDirectory: {{ matrix_media_repo_log_directory }}
+
+  # Set to true to enable color coding in your logs. Note that this may cause escape sequences to
+  # appear in logs which render them unreadable, which is why colors are disabled by default.
+  logColors: {{ matrix_media_repo_log_colors }}
+
+  # Set to true to enable JSON logging for consumption by things like logstash. Note that this is
+  # incompatible with the log color option and will always render without colors.
+  jsonLogs: {{ matrix_media_repo_json_logs }}
+
+  # The log level to log at. Note that this will need to be at least "info" to receive support.
+  #
+  # Values (in increasing spam): panic | fatal | error | warn | info | debug | trace
+  logLevel: {{ matrix_media_repo_log_level }}
+
+  # If true, the media repo will accept any X-Forwarded-For header without validation. In most cases
+  # this option should be left as "false". Note that the media repo already expects an X-Forwarded-For
+  # header, but validates it to ensure the IP being given makes sense.
+  trustAnyForwardedAddress: {{ matrix_media_repo_trust_any_forwarded_address }}
+
+  # If false, the media repo will not use the X-Forwarded-Host header commonly added by reverse proxies.
+  # Typically this should remain as true, though in some circumstances it may need to be disabled.
+  # See https://github.com/turt2live/matrix-media-repo/issues/202 for more information.
+  useForwardedHost: {{ matrix_media_repo_use_forwarded_host }}
+
+# Options for dealing with federation
+federation:
+  # On a per-host basis, the number of consecutive failures in calling the host before the
+  # media repo will back off. This defaults to 20 if not given. Note that 404 errors from
+  # the remote server do not count towards this.
+  backoffAt: {{ matrix_media_repo_federation_backoff_at }}
+
+# The database configuration for the media repository
+# Do NOT put your homeserver's existing database credentials here. Create a new database and
+# user instead. Using the same server is fine, just not the same username and database.
+database:
+  # Currently only "postgres" is supported.
+  postgres: {{ matrix_media_repo_database_postgres }}
+
+  # The database pooling options
+  pool:
+    # The maximum number of connects to hold open. More of these allow for more concurrent
+    # processes to happen.
+    maxConnections: {{ matrix_media_repo_database_max_connections }}
+
+    # The maximum number of connects to leave idle. More of these reduces the time it takes
+    # to serve requests in low-traffic scenarios.
+    maxIdleConnections: {{ matrix_media_repo_database_max_idle_connections }}
+
+# The configuration for the homeservers this media repository is known to control. Servers
+# not listed here will not be able to upload media.
+{#
+homeservers:
+  - name: example.org # This should match the server_name of your homeserver, and the Host header
+                      # provided to the media repo.
+    csApi: "https://example.org/" # The base URL to where the homeserver can actually be reached
+    backoffAt: 10 # The number of consecutive failures in calling this homeserver before the
+                  # media repository will start backing off. This defaults to 10 if not given.
+    adminApiKind: "matrix" # The kind of admin API the homeserver supports. If set to "matrix",
+                           # the media repo will use the Synapse-defined endpoints under the
+                           # unstable client-server API. When this is "synapse", the new /_synapse
+                           # endpoints will be used instead. Unknown values are treated as the
+                           # default, "matrix".
+#}
+{{ matrix_media_repo_homeservers | to_nice_yaml(indent=2, sort_keys=false) }}
+
+# Options for controlling how access tokens work with the media repo. It is recommended that if
+# you are going to use these options that the `/logout` and `/logout/all` client-server endpoints
+# be proxied through this process. They will also be called on the homeserver, and the response
+# sent straight through the client - they are simply used to invalidate the cache faster for
+# a particular user. Without these, the access tokens might still work for a short period of time
+# after the user has already invalidated them.
+#
+# This will also cache errors from the homeserver.
+#
+# Note that when this config block is used outside of a per-domain config, all hosts will be
+# subject to the same cache. This also means that application services on limited homeservers
+# could be authorized on the wrong domain.
+#
+# ***************************************************************************
+# *  IT IS HIGHLY RECOMMENDED TO USE PER-DOMAIN CONFIGS WITH THIS FEATURE.  *
+# ***************************************************************************
+{{ matrix_media_repo_access_tokens | to_nice_yaml(indent=2, sort_keys=false) }}
+
+# These users have full access to the administrative functions of the media repository.
+# See docs/admin.md for information on what these people can do. They must belong to one of the
+# configured homeservers above.
+{{ matrix_media_repo_admins | to_nice_yaml(indent=2, sort_keys=false) }}
+
+# Shared secret auth is useful for applications building on top of the media repository, such
+# as a management interface. The `token` provided here is treated as a repository administrator
+# when shared secret auth is enabled: if the `token` is used in place of an access token, the'
+# request will be authorized. This is not limited to any particular domain, giving applications
+# the ability to use it on any configured hostname.
+sharedSecretAuth:
+  # Set this to true to enable shared secret auth.
+  enabled: {{ matrix_media_repo_shared_secret_auth_enabled }}
+
+  # Use a secure value here to prevent unauthorized access to the media repository.
+  token: {{ matrix_media_repo_shared_secret_auth_token }}
+
+# Datastores are places where media should be persisted. This isn't dedicated for just uploads:
+# thumbnails and other misc data is also stored in these places. The media repo, when looking
+# for a datastore to use, will always use the smallest datastore first.
+{#
+datastores:
+  - type: file
+    enabled: false # Enable this to set up data storage.
+    # Datastores can be split into many areas when handling uploads. Media is still de-duplicated
+    # across all datastores (local content which duplicates remote content will re-use the remote
+    # content's location). This option is useful if your datastore is becoming very large, or if
+    # you want faster storage for a particular kind of media.
+    #
+    # The kinds available are:
+    #   thumbnails    - Used to store thumbnails of media (local and remote).
+    #   remote_media  - Original copies of remote media (servers not configured by this repo).
+    #   local_media   - Original uploads for local media.
+    #   archives      - Archives of content (GDPR and similar requests).
+    forKinds: ["thumbnails"]
+    opts:
+      path: /var/matrix/media
+
+  - type: s3
+    enabled: false # Enable this to set up s3 uploads
+    forKinds: ["thumbnails", "remote_media", "local_media", "archives"]
+    opts:
+      # The s3 uploader needs a temporary location to buffer files to reduce memory usage on
+      # small file uploads. If the file size is unknown, the file is written to this location
+      # before being uploaded to s3 (then the file is deleted). If you aren't concerned about
+      # memory usage, set this to an empty string.
+      tempPath: "/tmp/mediarepo_s3_upload"
+      endpoint: sfo2.digitaloceanspaces.com
+      accessKeyId: ""
+      accessSecret: ""
+      ssl: true
+      bucketName: "your-media-bucket"
+      # An optional region for where this S3 endpoint is located. Typically not needed, though
+      # some providers will need this (like Scaleway). Uncomment to use.
+      #region: "sfo2"
+
+  # The media repo does support an IPFS datastore, but only if the IPFS feature is enabled. If
+  # the feature is not enabled, this will not work. Note that IPFS support is experimental at
+  # the moment and not recommended for general use.
+  #
+  # NOTE: Everything you upload to IPFS will be publicly accessible, even when the media repo
+  # puts authentication on the download endpoints. Only use this option for cases where you
+  # expect your media to be publicly accessible.
+  - type: ipfs
+    enabled: false # Enable this to use IPFS support
+    forKinds: ["local_media"]
+    # The IPFS datastore currently has no options. It will use the daemon or HTTP API configured
+    # in the IPFS section of your main config.
+    opts: {}
+#}
+{{ matrix_media_repo_datastores | to_nice_yaml(indent=2, sort_keys=false) }}
+
+# Options for controlling archives. Archives are exports of a particular user's content for
+# the purpose of GDPR or moving media to a different server.
+archiving:
+  # Whether archiving is enabled or not. Default enabled.
+  enabled: {{ matrix_media_repo_archiving_enabled }}
+  # If true, users can request a copy of their own data. By default, only repository administrators
+  # can request a copy.
+  # This includes the ability for homeserver admins to request a copy of their own server's
+  # data, as known to the repo.
+  selfService: {{ matrix_media_repo_archiving_self_service }}
+  # The number of bytes to target per archive before breaking up the files. This is independent
+  # of any file upload limits and will require a similar amount of memory when performing an export.
+  # The file size is also a target, not a guarantee - it is possible to have files that are smaller
+  # or larger than the target. This is recommended to be approximately double the size of your
+  # file upload limit, provided there is enough memory available for the demand of exporting.
+  targetBytesPerPart: {{ matrix_media_repo_archiving_target_bytes_per_part }} # 200mb default
+
+# The file upload settings for the media repository
+{{ matrix_media_repo_uploads | to_nice_yaml(indent=2, sort_keys=false) }}
+
+# Settings related to downloading files from the media repository
+downloads:
+  # The maximum number of bytes to download from other servers
+  maxBytes: {{ matrix_media_repo_downloads_max_bytes }} # 100MB default, 0 to disable
+
+  # The number of workers to use when downloading remote media. Raise this number if remote
+  # media is downloading slowly or timing out.
+  #
+  # Maximum memory usage = numWorkers multiplied by the maximum download size
+  # Average memory usage is dependent on how many concurrent downloads your users are doing.
+  numWorkers: {{ matrix_media_repo_downloads_num_workers }}
+
+  # How long, in minutes, to cache errors related to downloading remote media. Once this time
+  # has passed, the media is able to be re-requested.
+  failureCacheMinutes: {{ matrix_media_repo_downloads_failure_cache_minutes }}
+
+  # The cache control settings for downloads. This can help speed up downloads for users by
+  # keeping popular media in the cache. This cache is also used for thumbnails.
+  cache:
+    enabled: {{ matrix_media_repo_downloads_cache_enabled }}
+
+    # The maximum size of cache to have. Higher numbers are better.
+    maxSizeBytes: {{ matrix_media_repo_downloads_cache_max_size_bytes }} # 1GB default
+
+    # The maximum file size to cache. This should normally be the same size as your maximum
+    # upload size.
+    maxFileSizeBytes: {{ matrix_media_repo_downloads_cache_max_file_size_bytes }} # 100MB default
+
+    # The number of minutes to track how many downloads a file gets
+    trackedMinutes: {{ matrix_media_repo_downloads_cache_tracked_minutes }}
+
+    # The number of downloads a file must receive in the window above (trackedMinutes) in
+    # order to be cached.
+    minDownloads: {{ matrix_media_repo_downloads_cache_min_downloads }}
+
+    # The minimum amount of time an item should remain in the cache. This prevents the cache
+    # from cycling out the file if it needs more room during this time. Note that the media
+    # repo regularly cleans out media which is past this point from the cache, so this number
+    # may need increasing depending on your use case. If the maxSizeBytes is reached for the
+    # media repo, and some cached items are still under this timer, new items will not be able
+    # to enter the cache. When this happens, consider raising maxSizeBytes or lowering this
+    # timer.
+    minCacheTimeSeconds: {{ matrix_media_repo_downloads_cache_min_cache_time_seconds }}
+
+    # The minimum amount of time an item should remain outside the cache once it is removed.
+    minEvictedTimeSeconds: {{ matrix_media_repo_downloads_cache_min_evicted_time_seconds }}
+
+  # How many days after a piece of remote content is downloaded before it expires. It can be
+  # re-downloaded on demand, this just helps free up space in your datastore. Set to zero or
+  # negative to disable. Defaults to disabled.
+  expireAfterDays: {{ matrix_media_repo_downloads_expire_after_days }}
+
+# URL Preview settings
+{{ matrix_media_repo_url_previews | to_nice_yaml(indent=2) }}
+
+# The thumbnail configuration for the media repository.
+{{ matrix_media_repo_thumbnails | to_nice_yaml(indent=2) }}
+
+# Controls for the rate limit functionality
+rateLimit:
+  # Set this to false if rate limiting is handled at a higher level or you don't want it enabled.
+  enabled: {{ matrix_media_repo_rate_limit_enabled }}
+
+  # The number of requests per second before an IP will be rate limited. Must be a whole number.
+  requestsPerSecond: {{ matrix_media_repo_rate_limit_requests_per_second }}
+
+  # The number of requests an IP can send at once before the rate limit is actually considered.
+  burst: {{ matrix_media_repo_rate_limit_burst }}
+
+# Identicons are generated avatars for a given username. Some clients use these to give users a
+# default avatar after signing up. Identicons are not part of the official matrix spec, therefore
+# this feature is completely optional.
+identicons:
+  enabled: {{ matrix_media_repo_identicons_enabled }}
+
+# The quarantine media settings.
+quarantine:
+  # If true, when a thumbnail of quarantined media is requested an image will be returned. If no
+  # image is given in the thumbnailPath below then a generated image will be provided. This does
+  # not affect regular downloads of files.
+  replaceThumbnails: {{ matrix_media_repo_quarantine_replace_thumbnails }}
+
+  # If true, when media which has been quarantined is requested an image will be returned. If
+  # no image is given in the thumbnailPath below then a generated image will be provided. This
+  # will replace media which is not an image (ie: quarantining a PDF will replace the PDF with
+  # an image).
+  replaceDownloads: {{ matrix_media_repo_quarantine_replace_downloads }}
+
+  # If provided, the given image will be returned as a thumbnail for media that is quarantined.
+  #thumbnailPath: "/path/to/thumbnail.png"
+  thumbnailPath: {{ "" if matrix_media_repo_quarantine_thumbnail_path == "" else matrix_media_repo_quarantine_thumbnail_path }}
+
+  # If true, administrators of the configured homeservers may quarantine media for their server
+  # only. Global administrators can quarantine any media (local or remote) regardless of this
+  # flag.
+  allowLocalAdmins: {{ matrix_media_repo_quarantine_allow_local_admins }}
+
+# The various timeouts that the media repo will use.
+timeouts:
+  # The maximum amount of time the media repo should spend trying to fetch a resource that is
+  # being previewed.
+  urlPreviewTimeoutSeconds: {{ matrix_media_repo_timeouts_url_preview_timeout_seconds }}
+
+  # The maximum amount of time the media repo will spend making remote requests to other repos
+  # or homeservers. This is primarily used to download media.
+  federationTimeoutSeconds: {{ matrix_media_repo_timeouts_federation_timeout_seconds }}
+
+  # The maximum amount of time the media repo will spend talking to your configured homeservers.
+  # This is usually used to verify a user's identity.
+  clientServerTimeoutSeconds: {{ matrix_media_repo_timeouts_client_server_timeout_seconds }}
+
+# Prometheus metrics configuration
+# For an example Grafana dashboard, import the following JSON:
+# https://github.com/turt2live/matrix-media-repo/blob/master/docs/grafana.json
+metrics:
+  # If true, the bindAddress and port below will serve GET /metrics for Prometheus to scrape.
+  enabled: {{ matrix_media_repo_metrics_enabled }}
+
+  # The address to listen on. Typically "127.0.0.1" or "0.0.0.0" for all interfaces.
+  bindAddress: {{ matrix_media_repo_metrics_bind_address }}
+
+  # The port to listen on. Cannot be the same as the general web server port.
+  port: {{ matrix_media_repo_metrics_port }}
+
+# Plugins are optional pieces of the media repo used to extend the functionality offered.
+# Currently there are only antispam plugins, but in future there should be more options.
+# Plugins are not supported on per-domain paths and are instead repo-wide. For more
+# information on writing plugins, please visit #matrix-media-repo:t2bot.io on Matrix.
+{{ matrix_media_repo_plugins | to_nice_yaml(indent=2) }}
+
+  # An example OCR plugin to block images with certain text. Note that the Docker image
+  # for the media repo automatically ships this at /plugins/plugin_antispam_ocr
+#  - exec: /plugins/plugin_antispam_ocr
+#    config:
+#      # The URL to your OCR server (https://github.com/otiai10/ocrserver)
+#      ocrServer: "http://localhost:8080"
+#      # The keywords to scan for. The image must contain at least one of the keywords
+#      # from each list to qualify for spam.
+#      keywordGroups:
+#        - - elon
+#          - musk
+#          - elonmusk
+#        - - bitcoin
+#      # The minimum (and maximum) sizes of images to process.
+#      minSizeBytes: 20000
+#      maxSizeBytes: 200000
+#      # The types of files to process
+#      types: ["image/png", "image/jpeg", "image/jpg"]
+#      # The user ID regex to check against
+#      userIds: "@telegram_.*"
+#      # How much of the image's height, starting from the top, to consider before
+#      # discarding the rest. Set to 1.0 to consider the whole image.
+#      percentageOfHeight: 0.35
+
+# Options for controlling various MSCs/unstable features of the media repo
+# Sections of this config might disappear or be added over time. By default all
+# features are disabled in here and must be explicitly enabled to be used.
+{{ matrix_media_repo_feature_support | to_nice_yaml(indent=2) }}
+
+# Optional sentry (https://sentry.io/) configuration for the media repo
+sentry:
+  # Whether or not to set up error reporting. Defaults to off.
+  enabled: {{ matrix_media_repo_sentry_enabled }}
+
+  # Get this value from the setup instructions in Sentry
+  dsn: {{ matrix_media_repo_sentry_dsn }}
+
+  # Optional environment flag. Defaults to an empty string.
+  environment: {{ "" if matrix_media_repo_sentry_environment == "" else matrix_media_repo_sentry_environment }}
+
+  # Whether or not to turn on sentry's built in debugging. This will increase log output.
+  debug: {{ matrix_media_repo_sentry_debug }}
