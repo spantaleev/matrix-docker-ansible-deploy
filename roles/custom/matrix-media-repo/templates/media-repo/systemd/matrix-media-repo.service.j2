@@ -23,9 +23,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
-			-p {{ matrix_media_repo_port }}:{{ matrix_media_repo_port }} \
-			{% if matrix_media_repo_metrics_enabled %}
-			-p {{ matrix_media_repo_metrics_port }}:{{ matrix_media_repo_metrics_port }} \
+			{% if matrix_media_repo_container_http_host_bind_port %}
+			-p {{ matrix_media_repo_container_http_host_bind_port }}:{{ matrix_media_repo_port }} \
+			{% endif %}
+			{% if matrix_media_repo_metrics_enabled and matrix_media_repo_container_metrics_host_bind_port %}
+			-p {{ matrix_media_repo_container_metrics_host_bind_port }}:{{ matrix_media_repo_metrics_port }} \
 			{% endif %}
 			-v {{ matrix_media_repo_base_path }}:/data:z \
 			--workdir='/data' \
