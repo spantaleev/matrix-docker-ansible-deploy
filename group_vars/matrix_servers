@@ -326,7 +326,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-ma1sd.service', 'priority': 2000, 'groups': ['matrix', 'ma1sd']}] if matrix_ma1sd_enabled else [])
     +
-    ([{'name': 'matrix-media-repo.service', 'priority': 4000, 'groups': ['matrix', 'media_store']}] if matrix_media_repo_enabled else [])
+    ([{'name': (matrix_media_repo_identifier + '.service'), 'priority': 4000, 'groups': ['matrix', 'media_store']}] if matrix_media_repo_enabled else [])
     +
     ([{'name': 'matrix-mailer.service', 'priority': 2000, 'groups': ['matrix', 'mailer']}] if matrix_mailer_enabled else [])
     +
@@ -2731,7 +2731,7 @@ matrix_nginx_proxy_systemd_wanted_services_list: |
     +
     (['matrix-ma1sd.service'] if matrix_ma1sd_enabled else [])
     +
-    (['matrix-media-repo.service'] if matrix_media_repo_enabled else [])
+    ([(matrix_media_repo_identifier + '.service')] if matrix_media_repo_enabled else [])
     +
     (['matrix-client-cinny.service'] if matrix_client_cinny_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
     +
