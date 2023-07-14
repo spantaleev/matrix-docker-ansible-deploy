@@ -72,7 +72,7 @@ matrix_media_repo_port: 8000
 #
 # Note: to change the log directory you'll have to restart the repository. This setting cannot be
 # live reloaded.
-matrix_media_repo_log_directory: "{{ '\"-\"' }}"
+matrix_media_repo_log_directory: "-"
 
 # Set to true to enable color coding in your logs. Note that this may cause escape sequences to
 # appear in logs which render them unreadable, which is why colors are disabled by default.
@@ -146,7 +146,7 @@ matrix_media_repo_homeservers:
       # unstable client-server API. When this is "synapse", the new /_synapse
       # endpoints will be used instead. Unknown values are treated as the
       # default, "matrix".
-      adminApiKind: "matrix"
+      adminApiKind: "{{ 'synapse' if matrix_homeserver_implementation == 'synapse' else 'matrix' }}"
 
 # Options for controlling how access tokens work with the media repo. It is recommended that if
 # you are going to use these options that the `/logout` and `/logout/all` client-server endpoints
