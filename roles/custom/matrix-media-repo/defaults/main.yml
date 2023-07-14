@@ -7,6 +7,11 @@
 
 matrix_media_repo_enabled: false
 
+# matrix_media_repo_identifier controls the identifier of this media-repo instance, which influences:
+# - the default storage path
+# - the names of systemd services
+matrix_media_repo_identifier: matrix-media-repo
+
 matrix_media_repo_container_image_self_build: false
 matrix_media_repo_container_image_self_build_repo: "https://github.com/turt2live/matrix-media-repo.git"
 
@@ -16,7 +21,7 @@ matrix_media_repo_docker_image_name_prefix: "{{ 'localhost/' if matrix_media_rep
 matrix_media_repo_docker_image_tag: "v1.2.13"
 matrix_media_repo_docker_image_force_pull: "{{ matrix_media_repo_docker_image.endswith(':latest') }}"
 
-matrix_media_repo_base_path: "{{ matrix_base_data_path }}/media-repo"
+matrix_media_repo_base_path: "{{ matrix_base_data_path }}/{{ matrix_media_repo_identifier }}"
 matrix_media_repo_config_path: "{{ matrix_media_repo_base_path }}/config"
 matrix_media_repo_data_path: "{{ matrix_media_repo_base_path }}/data"
 matrix_media_repo_docker_src_files_path: "{{ matrix_media_repo_base_path }}/docker-src"
@@ -104,7 +109,7 @@ matrix_media_repo_federation_backoff_at: 20
 # user instead. Using the same server is fine, just not the same username and database.
 matrix_media_repo_database_username: "matrix_media_repo"
 matrix_media_repo_database_password: "your_password"
-matrix_media_repo_database_hostname: "matrix-postgres"
+matrix_media_repo_database_hostname: "{{ devture_postgres_identifier }}"
 matrix_media_repo_database_port: 5432
 matrix_media_repo_database_name: "matrix_media_repo"
 
