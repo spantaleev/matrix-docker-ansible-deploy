@@ -5,6 +5,8 @@ If that's alright, you can skip this.
 
 As an alternative to storing media files on the local filesystem, you can store them on [Amazon S3](https://aws.amazon.com/s3/) or another S3-compatible object store.
 
+You can do this either by sticking to Synapse's media repository and making that use S3 (read below for this method), or by switching to an external media storage implementation like [matrix-media-repo](configuring-playbook-matrix-media-repo.md).
+
 First, [choose an Object Storage provider](#choosing-an-object-storage-provider).
 
 Then, [create the S3 bucket](#bucket-creation-and-security-configuration).

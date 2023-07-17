@@ -1,3 +1,12 @@
+# 2023-07-17
+
+## matrix-media-repo support
+
+Thanks to [Michael Hollister](https://github.com/Michael-Hollister) from [FUTO](https://www.futo.org/), the creators of the [Circles app](https://circu.li/), the playbook can now set up [matrix-media-repo](https://github.com/turt2live/matrix-media-repo) - an alternative way to store homeserver media files, powered by a homeserver-independent implementation which supports S3 storage, IPFS, deduplication and other advanced features.
+
+To learn more see our [Storing Matrix media files using matrix-media-repo](docs/configuring-playbook-matrix-media-repo.md) documentation page.
+
+
 # 2023-05-25
 
 ## Enabling `forget_rooms_on_leave` by default for Synapse
