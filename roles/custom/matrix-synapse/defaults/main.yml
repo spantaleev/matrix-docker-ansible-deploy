@@ -633,14 +633,14 @@ matrix_synapse_workers_federation_sender_workers_metrics_range_start: 19400
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_federation_sender_instances: []
 
-matrix_synapse_workers_media_repository_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['media_repository_workers_count'] }}"
+matrix_synapse_workers_media_repository_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['media_repository_workers_count'] if not matrix_synapse_ext_media_repo_enabled else 0 }}"
 matrix_synapse_workers_media_repository_workers_port_range_start: 18551
 matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
 
 # matrix_synapse_enable_media_repo controls if the main Synapse process should serve media repository endpoints or if it should be left to media_repository workers (see `matrix_synapse_workers_media_repository_workers_count`).
 # This is enabled if workers are disabled, or if they are enabled, but there are no media repository workers.
 # Adjusting this value manually is generally not necessary.
-matrix_synapse_enable_media_repo: "{{ not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length == 0) }}"
+matrix_synapse_enable_media_repo: "{{ not matrix_synapse_ext_media_repo_enabled and (not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length == 0)) }}"
 
 # matrix_synapse_media_instance_running_background_jobs populates the `media_instance_running_background_jobs` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # `media_instance_running_background_jobs` is meant to point to a single media-repository worker, which is dedicated to running background tasks that maintain the media repository.
@@ -900,6 +900,10 @@ matrix_synapse_ext_synapse_s3_storage_provider_update_db_day_count: 0
 # Specifies how often periodic migration (`matrix-synapse-s3-storage-provider-migrate.timer`) will run.
 # This is a systemd timer OnCalendar definition. Learn more here: https://man.archlinux.org/man/systemd.time.7#CALENDAR_EVENTS
 matrix_synapse_ext_synapse_s3_storage_provider_periodic_migration_schedule: '*-*-* 05:00:00'
+
+# Specifies whether an external media repository is enabled.
+# If it is, the Synapse media repo and media-repo workers will be disabled automatically.
+matrix_synapse_ext_media_repo_enabled: false
 
 matrix_s3_media_store_enabled: false
 matrix_s3_media_store_custom_endpoint_enabled: false

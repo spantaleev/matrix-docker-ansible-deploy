@@ -1,0 +1,619 @@
+# General repo configuration
+repo:
+  bindAddress: {{ matrix_media_repo_bind_address | to_json }}
+  port: {{ matrix_media_repo_port | to_json }}
+
+  # Where to store the logs, relative to where the repo is started from. Logs will be automatically
+  # rotated every day and held for 14 days. To disable the repo logging to files, set this to
+  # "-" (including quotation marks).
+  #
+  # Note: to change the log directory you'll have to restart the repository. This setting cannot be
+  # live reloaded.
+  logDirectory: {{ matrix_media_repo_log_directory | to_json }}
+
+  # Set to true to enable color coding in your logs. Note that this may cause escape sequences to
+  # appear in logs which render them unreadable, which is why colors are disabled by default.
+  logColors: {{ matrix_media_repo_log_colors | to_json }}
+
+  # Set to true to enable JSON logging for consumption by things like logstash. Note that this is
+  # incompatible with the log color option and will always render without colors.
+  jsonLogs: {{ matrix_media_repo_json_logs | to_json }}
+
+  # The log level to log at. Note that this will need to be at least "info" to receive support.
+  #
+  # Values (in increasing spam): panic | fatal | error | warn | info | debug | trace
+  logLevel: {{ matrix_media_repo_log_level | to_json }}
+
+  # If true, the media repo will accept any X-Forwarded-For header without validation. In most cases
+  # this option should be left as "false". Note that the media repo already expects an X-Forwarded-For
+  # header, but validates it to ensure the IP being given makes sense.
+  trustAnyForwardedAddress: {{ matrix_media_repo_trust_any_forwarded_address | to_json }}
+
+  # If false, the media repo will not use the X-Forwarded-Host header commonly added by reverse proxies.
+  # Typically this should remain as true, though in some circumstances it may need to be disabled.
+  # See https://github.com/turt2live/matrix-media-repo/issues/202 for more information.
+  useForwardedHost: {{ matrix_media_repo_use_forwarded_host | to_json }}
+
+# Options for dealing with federation
+federation:
+  # On a per-host basis, the number of consecutive failures in calling the host before the
+  # media repo will back off. This defaults to 20 if not given. Note that 404 errors from
+  # the remote server do not count towards this.
+  backoffAt: {{ matrix_media_repo_federation_backoff_at | to_json }}
+
+# The database configuration for the media repository
+# Do NOT put your homeserver's existing database credentials here. Create a new database and
+# user instead. Using the same server is fine, just not the same username and database.
+database:
+  # Currently only "postgres" is supported.
+  postgres: {{ matrix_media_repo_database_postgres | to_json }}
+
+  # The database pooling options
+  pool:
+    # The maximum number of connects to hold open. More of these allow for more concurrent
+    # processes to happen.
+    maxConnections: {{ matrix_media_repo_database_max_connections | to_json }}
+
+    # The maximum number of connects to leave idle. More of these reduces the time it takes
+    # to serve requests in low-traffic scenarios.
+    maxIdleConnections: {{ matrix_media_repo_database_max_idle_connections | to_json }}
+
+# The configuration for the homeservers this media repository is known to control. Servers
+# not listed here will not be able to upload media.
+#homeservers:
+#  - name: example.org # This should match the server_name of your homeserver, and the Host header
+#                      # provided to the media repo.
+#    csApi: "https://example.org/" # The base URL to where the homeserver can actually be reached
+#    backoffAt: 10 # The number of consecutive failures in calling this homeserver before the
+#                  # media repository will start backing off. This defaults to 10 if not given.
+#    adminApiKind: "matrix" # The kind of admin API the homeserver supports. If set to "matrix",
+#                           # the media repo will use the Synapse-defined endpoints under the
+#                           # unstable client-server API. When this is "synapse", the new /_synapse
+#                           # endpoints will be used instead. Unknown values are treated as the
+#                           # default, "matrix".
+{{ matrix_media_repo_homeservers | to_json | from_json | to_nice_yaml(indent=2, width=999999, sort_keys=false) }}
+
+# Options for controlling how access tokens work with the media repo. It is recommended that if
+# you are going to use these options that the `/logout` and `/logout/all` client-server endpoints
+# be proxied through this process. They will also be called on the homeserver, and the response
+# sent straight through the client - they are simply used to invalidate the cache faster for
+# a particular user. Without these, the access tokens might still work for a short period of time
+# after the user has already invalidated them.
+#
+# This will also cache errors from the homeserver.
+#
+# Note that when this config block is used outside of a per-domain config, all hosts will be
+# subject to the same cache. This also means that application services on limited homeservers
+# could be authorized on the wrong domain.
+#
+# ***************************************************************************
+# *  IT IS HIGHLY RECOMMENDED TO USE PER-DOMAIN CONFIGS WITH THIS FEATURE.  *
+# ***************************************************************************
+# accessTokens:
+#   # The maximum time a cached access token will be considered valid. Set to zero (the default)
+#   # to disable the cache and constantly hit the homeserver. This is recommended to be set to
+#   # 43200 (12 hours) on servers with the logout endpoints proxied through the media repo, and
+#   # zero for servers who do not proxy the endpoints through.
+#   maxCacheTimeSeconds: 0
+#
+#   # Whether or not to use the `appservices` config option below. If disabled (the default),
+#   # the regular access token cache will be used for each user, potentially leading to high
+#   # memory usage.
+#   useLocalAppserviceConfig: false
+#
+#   # The application services (and their namespaces) registered on the homeserver. Only used
+#   # if `useLocalAppserviceConfig` is enabled (recommended).
+#   #
+#   # Usually the appservice will provide you with these config details - they'll just need
+#   # translating from the appservice registration to here. Note that this does not require
+#   # all options from the registration, and only requires the bare minimum required to run
+#   # the media repo.
+#   appservices:
+#     - id: Name_of_appservice_for_your_reference
+#       asToken: Secret_token_for_appservices_to_use
+#       senderUserId: "@_example_bridge:yourdomain.com"
+#       userNamespaces:
+#         - regex: "@_example_bridge_.+:yourdomain.com"
+#           # A note about regexes: it is best to suffix *all* namespaces with the homeserver
+#           # domain users are valid for, as otherwise the appservice can use any user with
+#           # any domain name it feels like, even if that domain is not configured with the
+#           # media repo. This will lead to inaccurate reporting in the case of the media
+#           # repo, and potentially leading to media being considered "remote".
+{{ matrix_media_repo_access_tokens | to_json | from_json | to_nice_yaml(indent=2, width=999999, sort_keys=false) }}
+
+# These users have full access to the administrative functions of the media repository.
+# See docs/admin.md for information on what these people can do. They must belong to one of the
+# configured homeservers above.
+{{ matrix_media_repo_admins | to_json | from_json | to_nice_yaml(indent=2, width=999999, sort_keys=false) }}
+
+# Shared secret auth is useful for applications building on top of the media repository, such
+# as a management interface. The `token` provided here is treated as a repository administrator
+# when shared secret auth is enabled: if the `token` is used in place of an access token, the'
+# request will be authorized. This is not limited to any particular domain, giving applications
+# the ability to use it on any configured hostname.
+sharedSecretAuth:
+  # Set this to true to enable shared secret auth.
+  enabled: {{ matrix_media_repo_shared_secret_auth_enabled | to_json }}
+
+  # Use a secure value here to prevent unauthorized access to the media repository.
+  token: {{ matrix_media_repo_shared_secret_auth_token | to_json }}
+
+# Datastores are places where media should be persisted. This isn't dedicated for just uploads:
+# thumbnails and other misc data is also stored in these places. The media repo, when looking
+# for a datastore to use, will always use the smallest datastore first.
+# datastores:
+#   - type: file
+#     enabled: false # Enable this to set up data storage.
+#     # Datastores can be split into many areas when handling uploads. Media is still de-duplicated
+#     # across all datastores (local content which duplicates remote content will re-use the remote
+#     # content's location). This option is useful if your datastore is becoming very large, or if
+#     # you want faster storage for a particular kind of media.
+#     #
+#     # The kinds available are:
+#     #   thumbnails    - Used to store thumbnails of media (local and remote).
+#     #   remote_media  - Original copies of remote media (servers not configured by this repo).
+#     #   local_media   - Original uploads for local media.
+#     #   archives      - Archives of content (GDPR and similar requests).
+#     forKinds: ["thumbnails"]
+#     opts:
+#       path: /var/matrix/media
+#
+#   - type: s3
+#     enabled: false # Enable this to set up s3 uploads
+#     forKinds: ["thumbnails", "remote_media", "local_media", "archives"]
+#     opts:
+#       # The s3 uploader needs a temporary location to buffer files to reduce memory usage on
+#       # small file uploads. If the file size is unknown, the file is written to this location
+#       # before being uploaded to s3 (then the file is deleted). If you aren't concerned about
+#       # memory usage, set this to an empty string.
+#       tempPath: "/tmp/mediarepo_s3_upload"
+#       endpoint: sfo2.digitaloceanspaces.com
+#       accessKeyId: ""
+#       accessSecret: ""
+#       ssl: true
+#       bucketName: "your-media-bucket"
+#       # An optional region for where this S3 endpoint is located. Typically not needed, though
+#       # some providers will need this (like Scaleway). Uncomment to use.
+#       #region: "sfo2"
+#
+#   # The media repo does support an IPFS datastore, but only if the IPFS feature is enabled. If
+#   # the feature is not enabled, this will not work. Note that IPFS support is experimental at
+#   # the moment and not recommended for general use.
+#   #
+#   # NOTE: Everything you upload to IPFS will be publicly accessible, even when the media repo
+#   # puts authentication on the download endpoints. Only use this option for cases where you
+#   # expect your media to be publicly accessible.
+#   - type: ipfs
+#     enabled: false # Enable this to use IPFS support
+#     forKinds: ["local_media"]
+#     # The IPFS datastore currently has no options. It will use the daemon or HTTP API configured
+#     # in the IPFS section of your main config.
+#     opts: {}
+{{ matrix_media_repo_datastores | to_json | from_json | to_nice_yaml(indent=2, width=999999, sort_keys=false) }}
+
+# Options for controlling archives. Archives are exports of a particular user's content for
+# the purpose of GDPR or moving media to a different server.
+archiving:
+  # Whether archiving is enabled or not. Default enabled.
+  enabled: {{ matrix_media_repo_archiving_enabled | to_json }}
+  # If true, users can request a copy of their own data. By default, only repository administrators
+  # can request a copy.
+  # This includes the ability for homeserver admins to request a copy of their own server's
+  # data, as known to the repo.
+  selfService: {{ matrix_media_repo_archiving_self_service | to_json }}
+  # The number of bytes to target per archive before breaking up the files. This is independent
+  # of any file upload limits and will require a similar amount of memory when performing an export.
+  # The file size is also a target, not a guarantee - it is possible to have files that are smaller
+  # or larger than the target. This is recommended to be approximately double the size of your
+  # file upload limit, provided there is enough memory available for the demand of exporting.
+  targetBytesPerPart: {{ matrix_media_repo_archiving_target_bytes_per_part | to_json }} # 200mb default
+
+# The file upload settings for the media repository
+# uploads:
+#   # The maximum individual file size a user can upload.
+#   maxBytes: 104857600 # 100MB default, 0 to disable
+#
+#   # The minimum number of bytes to let people upload. This is recommended to be non-zero to
+#   # ensure that the "cost" of running the media repo is worthwhile - small file uploads tend
+#   # to waste more CPU and database resources than small files, thus a default of 100 bytes
+#   # is applied here as an approximate break-even point.
+#   minBytes: 100 # 100 bytes by default
+#
+#   # The number of bytes to claim as the maximum size for uploads for the limits API. If this
+#   # is not provided then the maxBytes setting will be used instead. This is useful to provide
+#   # if the media repo's settings and the reverse proxy do not match for maximum request size.
+#   # This is purely for informational reasons and does not actually limit any functionality.
+#   # Set this to -1 to indicate that there is no limit. Zero will force the use of maxBytes.
+#   #reportedMaxBytes: 104857600
+#
+#   # Options for limiting how much content a user can upload. Quotas are applied to content
+#   # associated with a user regardless of de-duplication. Quotas which affect remote servers
+#   # or users will not take effect. When a user exceeds their quota they will be unable to
+#   # upload any more media.
+#   quotas:
+#     # Whether or not quotas are enabled/enforced. Note that even when disabled the media repo
+#     # will track how much media a user has uploaded. This is disabled by default.
+#     enabled: false
+#
+#     # The quota rules that affect users. The first rule to match the uploader will take effect.
+#     # An implied rule which matches all users and has no quota is always last in this list,
+#     # meaning that if no rules are supplied then users will be able to upload anything. Similarly,
+#     # if no rules match a user then the implied rule will match, allowing the user to have no
+#     # quota. The quota will let the user upload to 1 media past their quota, meaning that from
+#     # a statistics perspective the user might exceed their quota however only by a small amount.
+#     users:
+#       - glob: "@*:*"  # Affect all users. Use asterisks (*) to match any character.
+#         maxBytes: 53687063712 # 50GB default, 0 to disable
+{{ matrix_media_repo_uploads | to_json | from_json | to_nice_yaml(indent=2, width=999999, sort_keys=false) }}
+
+# Settings related to downloading files from the media repository
+downloads:
+  # The maximum number of bytes to download from other servers
+  maxBytes: {{ matrix_media_repo_downloads_max_bytes | to_json }} # 100MB default, 0 to disable
+
+  # The number of workers to use when downloading remote media. Raise this number if remote
+  # media is downloading slowly or timing out.
+  #
+  # Maximum memory usage = numWorkers multiplied by the maximum download size
+  # Average memory usage is dependent on how many concurrent downloads your users are doing.
+  numWorkers: {{ matrix_media_repo_downloads_num_workers | to_json }}
+
+  # How long, in minutes, to cache errors related to downloading remote media. Once this time
+  # has passed, the media is able to be re-requested.
+  failureCacheMinutes: {{ matrix_media_repo_downloads_failure_cache_minutes | to_json }}
+
+  # The cache control settings for downloads. This can help speed up downloads for users by
+  # keeping popular media in the cache. This cache is also used for thumbnails.
+  cache:
+    enabled: {{ matrix_media_repo_downloads_cache_enabled | to_json }}
+
+    # The maximum size of cache to have. Higher numbers are better.
+    maxSizeBytes: {{ matrix_media_repo_downloads_cache_max_size_bytes | to_json }} # 1GB default
+
+    # The maximum file size to cache. This should normally be the same size as your maximum
+    # upload size.
+    maxFileSizeBytes: {{ matrix_media_repo_downloads_cache_max_file_size_bytes | to_json }} # 100MB default
+
+    # The number of minutes to track how many downloads a file gets
+    trackedMinutes: {{ matrix_media_repo_downloads_cache_tracked_minutes | to_json }}
+
+    # The number of downloads a file must receive in the window above (trackedMinutes) in
+    # order to be cached.
+    minDownloads: {{ matrix_media_repo_downloads_cache_min_downloads | to_json }}
+
+    # The minimum amount of time an item should remain in the cache. This prevents the cache
+    # from cycling out the file if it needs more room during this time. Note that the media
+    # repo regularly cleans out media which is past this point from the cache, so this number
+    # may need increasing depending on your use case. If the maxSizeBytes is reached for the
+    # media repo, and some cached items are still under this timer, new items will not be able
+    # to enter the cache. When this happens, consider raising maxSizeBytes or lowering this
+    # timer.
+    minCacheTimeSeconds: {{ matrix_media_repo_downloads_cache_min_cache_time_seconds | to_json }}
+
+    # The minimum amount of time an item should remain outside the cache once it is removed.
+    minEvictedTimeSeconds: {{ matrix_media_repo_downloads_cache_min_evicted_time_seconds | to_json }}
+
+  # How many days after a piece of remote content is downloaded before it expires. It can be
+  # re-downloaded on demand, this just helps free up space in your datastore. Set to zero or
+  # negative to disable. Defaults to disabled.
+  expireAfterDays: {{ matrix_media_repo_downloads_expire_after_days | to_json }}
+
+# URL Preview settings
+# urlPreviews:
+#   enabled: true # If enabled, the preview_url routes will be accessible
+#   maxPageSizeBytes: 10485760 # 10MB default, 0 to disable
+#
+#   # If true, the media repository will try to provide previews for URLs with invalid or unsafe
+#   # certificates. If false (the default), the media repo will fail requests to said URLs.
+#   previewUnsafeCertificates: false
+#
+#   # Note: URL previews are limited to a given number of words, which are then limited to a number
+#   # of characters, taking off the last word if it needs to. This also applies for the title.
+#
+#   numWords: 50 # The number of words to include in a preview (maximum)
+#   maxLength: 200 # The maximum number of characters for a description
+#
+#   numTitleWords: 30 # The maximum number of words to include in a preview's title
+#   maxTitleLength: 150 # The maximum number of characters for a title
+#
+#   # The mime types to preview when OpenGraph previews cannot be rendered. OpenGraph previews are
+#   # calculated on anything matching "text/*". To have a thumbnail in the preview the URL must be
+#   # an image and the image's type must be allowed by the thumbnailer.
+#   filePreviewTypes:
+#     - "image/*"
+#
+#   # The number of workers to use when generating url previews. Raise this number if url
+#   # previews are slow or timing out.
+#   #
+#   # Maximum memory usage = numWorkers multiplied by the maximum page size
+#   # Average memory usage is dependent on how many concurrent urls your users are previewing.
+#   numWorkers: 10
+#
+#   # Either allowedNetworks or disallowedNetworks must be provided. If both are provided, they
+#   # will be merged. URL previews will be disabled if neither is supplied. Each entry must be
+#   # a CIDR range.
+#   disallowedNetworks:
+#     - "127.0.0.1/8"
+#     - "10.0.0.0/8"
+#     - "172.16.0.0/12"
+#     - "192.168.0.0/16"
+#     - "100.64.0.0/10"
+#     - "169.254.0.0/16"
+#     - '::1/128'
+#     - 'fe80::/64'
+#     - 'fc00::/7'
+#   allowedNetworks:
+#     - "0.0.0.0/0" # "Everything". The blacklist will help limit this.
+#                   # This is the default value for this field.
+#
+#   # How many days after a preview is generated before it expires and is deleted. The preview
+#   # can be regenerated safely - this just helps free up some space in your database. Set to
+#   # zero or negative to disable. Defaults to disabled.
+#   expireAfterDays: 0
+#
+#   # The default Accept-Language header to supply when generating URL previews when one isn't
+#   # supplied by the client.
+#   # Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language
+#   defaultLanguage: "en-US,en"
+#
+#   # When true, oEmbed previews will be enabled. Typically these kinds of previews are used for
+#   # sites that do not support OpenGraph or page scraping, such as Twitter. For information on
+#   # specifying providers for oEmbed, including your own, see the following documentation:
+#   # https://docs.t2bot.io/matrix-media-repo/url-previews/oembed.html
+#   # Defaults to disabled.
+#   oEmbed: false
+{{ matrix_media_repo_url_previews | to_json | from_json | to_nice_yaml(indent=2, width=999999, sort_keys=false)}}
+
+# The thumbnail configuration for the media repository.
+# thumbnails:
+#   # The maximum number of bytes an image can be before the thumbnailer refuses.
+#   maxSourceBytes: 10485760 # 10MB default, 0 to disable
+#
+#   # The maximum number of pixels an image can have before the thumbnailer refuses. Note that
+#   # this only applies to image types: file types like audio and video are affected solely by
+#   # the maxSourceBytes.
+#   maxPixels: 32000000 # 32M default
+#
+#   # The number of workers to use when generating thumbnails. Raise this number if thumbnails
+#   # are slow to generate or timing out.
+#   #
+#   # Maximum memory usage = numWorkers multiplied by the maximum image source size
+#   # Average memory usage is dependent on how many thumbnails are being generated by your users
+#   numWorkers: 100
+#
+#   # All thumbnails are generated into one of the sizes listed here. The first size is used as
+#   # the default for when no width or height is requested. The media repository will return
+#   # either an exact match or the next largest size of thumbnail.
+#   sizes:
+#     - width: 32
+#       height: 32
+#     - width: 96
+#       height: 96
+#     - width: 320
+#       height: 240
+#     - width: 640
+#       height: 480
+#     - width: 768   # This size is primarily used for audio thumbnailing.
+#       height: 240
+#     - width: 800
+#       height: 600
+#
+#   # To allow for thumbnails to be any size, not just in the sizes specified above, set this to
+#   # true (default false). When enabled, whatever size requested by the client will be generated
+#   # up to a maximum of the largest possible dimensions in the `sizes` list. For best results,
+#   # specify only one size in the `sizes` list when this option is enabled.
+#   dynamicSizing: false
+#
+#   # The content types to thumbnail when requested. Types that are not supported by the media repo
+#   # will not be thumbnailed (adding application/json here won't work). Clients may still not request
+#   # thumbnails for these types - this won't make clients automatically thumbnail these file types.
+#   types:
+#     - "image/jpeg"
+#     - "image/jpg"
+#     - "image/png"
+#     - "image/apng"
+#     - "image/gif"
+#     - "image/heif"
+#     - "image/webp"
+#     #- "image/svg+xml" # Be sure to have ImageMagick installed to thumbnail SVG files
+#     - "audio/mpeg"
+#     - "audio/ogg"
+#     - "audio/wav"
+#     - "audio/flac"
+#     #- "video/mp4" # Be sure to have ffmpeg installed to thumbnail video files
+#
+#   # Animated thumbnails can be CPU intensive to generate. To disable the generation of animated
+#   # thumbnails, set this to false. If disabled, regular thumbnails will be returned.
+#   allowAnimated: true
+#
+#   # Default to animated thumbnails, if available
+#   defaultAnimated: false
+#
+#   # The maximum file size to thumbnail when a capable animated thumbnail is requested. If the image
+#   # is larger than this, the thumbnail will be generated as a static image.
+#   maxAnimateSizeBytes: 10485760 # 10MB default, 0 to disable
+#
+#   # On a scale of 0 (start of animation) to 1 (end of animation), where should the thumbnailer try
+#   # and thumbnail animated content? Defaults to 0.5 (middle of animation).
+#   stillFrame: 0.5
+#
+#   # How many days after a thumbnail is generated before it expires and is deleted. The thumbnail
+#   # can be regenerated safely - this just helps free up some space in your datastores. Set to
+#   # zero or negative to disable. Defaults to disabled.
+#   expireAfterDays: 0
+{{ matrix_media_repo_thumbnails | to_json | from_json | to_nice_yaml(indent=2, width=999999, sort_keys=false) }}
+
+# Controls for the rate limit functionality
+rateLimit:
+  # Set this to false if rate limiting is handled at a higher level or you don't want it enabled.
+  enabled: {{ matrix_media_repo_rate_limit_enabled | to_json }}
+
+  # The number of requests per second before an IP will be rate limited. Must be a whole number.
+  requestsPerSecond: {{ matrix_media_repo_rate_limit_requests_per_second | to_json }}
+
+  # The number of requests an IP can send at once before the rate limit is actually considered.
+  burst: {{ matrix_media_repo_rate_limit_burst | to_json }}
+
+# Identicons are generated avatars for a given username. Some clients use these to give users a
+# default avatar after signing up. Identicons are not part of the official matrix spec, therefore
+# this feature is completely optional.
+identicons:
+  enabled: {{ matrix_media_repo_identicons_enabled | to_json }}
+
+# The quarantine media settings.
+quarantine:
+  # If true, when a thumbnail of quarantined media is requested an image will be returned. If no
+  # image is given in the thumbnailPath below then a generated image will be provided. This does
+  # not affect regular downloads of files.
+  replaceThumbnails: {{ matrix_media_repo_quarantine_replace_thumbnails | to_json }}
+
+  # If true, when media which has been quarantined is requested an image will be returned. If
+  # no image is given in the thumbnailPath below then a generated image will be provided. This
+  # will replace media which is not an image (ie: quarantining a PDF will replace the PDF with
+  # an image).
+  replaceDownloads: {{ matrix_media_repo_quarantine_replace_downloads | to_json }}
+
+  # If provided, the given image will be returned as a thumbnail for media that is quarantined.
+  #thumbnailPath: "/path/to/thumbnail.png"
+  thumbnailPath: {{ "" if matrix_media_repo_quarantine_thumbnail_path == "" else matrix_media_repo_quarantine_thumbnail_path | to_json }}
+
+  # If true, administrators of the configured homeservers may quarantine media for their server
+  # only. Global administrators can quarantine any media (local or remote) regardless of this
+  # flag.
+  allowLocalAdmins: {{ matrix_media_repo_quarantine_allow_local_admins | to_json }}
+
+# The various timeouts that the media repo will use.
+timeouts:
+  # The maximum amount of time the media repo should spend trying to fetch a resource that is
+  # being previewed.
+  urlPreviewTimeoutSeconds: {{ matrix_media_repo_timeouts_url_preview_timeout_seconds | to_json }}
+
+  # The maximum amount of time the media repo will spend making remote requests to other repos
+  # or homeservers. This is primarily used to download media.
+  federationTimeoutSeconds: {{ matrix_media_repo_timeouts_federation_timeout_seconds | to_json }}
+
+  # The maximum amount of time the media repo will spend talking to your configured homeservers.
+  # This is usually used to verify a user's identity.
+  clientServerTimeoutSeconds: {{ matrix_media_repo_timeouts_client_server_timeout_seconds | to_json }}
+
+# Prometheus metrics configuration
+# For an example Grafana dashboard, import the following JSON:
+# https://github.com/turt2live/matrix-media-repo/blob/master/docs/grafana.json
+metrics:
+  # If true, the bindAddress and port below will serve GET /metrics for Prometheus to scrape.
+  enabled: {{ matrix_media_repo_metrics_enabled | to_json }}
+
+  # The address to listen on. Typically "127.0.0.1" or "0.0.0.0" for all interfaces.
+  bindAddress: {{ matrix_media_repo_metrics_bind_address | to_json }}
+
+  # The port to listen on. Cannot be the same as the general web server port.
+  port: {{ matrix_media_repo_metrics_port | to_json }}
+
+# Plugins are optional pieces of the media repo used to extend the functionality offered.
+# Currently there are only antispam plugins, but in future there should be more options.
+# Plugins are not supported on per-domain paths and are instead repo-wide. For more
+# information on writing plugins, please visit #matrix-media-repo:t2bot.io on Matrix.
+
+# An example OCR plugin to block images with certain text. Note that the Docker image
+# for the media repo automatically ships this at /plugins/plugin_antispam_ocr
+#  - exec: /plugins/plugin_antispam_ocr
+#    config:
+#      # The URL to your OCR server (https://github.com/otiai10/ocrserver)
+#      ocrServer: "http://localhost:8080"
+#      # The keywords to scan for. The image must contain at least one of the keywords
+#      # from each list to qualify for spam.
+#      keywordGroups:
+#        - - elon
+#          - musk
+#          - elonmusk
+#        - - bitcoin
+#      # The minimum (and maximum) sizes of images to process.
+#      minSizeBytes: 20000
+#      maxSizeBytes: 200000
+#      # The types of files to process
+#      types: ["image/png", "image/jpeg", "image/jpg"]
+#      # The user ID regex to check against
+#      userIds: "@telegram_.*"
+#      # How much of the image's height, starting from the top, to consider before
+#      # discarding the rest. Set to 1.0 to consider the whole image.
+#      percentageOfHeight: 0.35
+{{ matrix_media_repo_plugins | to_json | from_json | to_nice_yaml(indent=2, width=999999, sort_keys=false) }}
+
+# Options for controlling various MSCs/unstable features of the media repo
+# Sections of this config might disappear or be added over time. By default all
+# features are disabled in here and must be explicitly enabled to be used.
+# featureSupport:
+#   # MSC2248 - Blurhash
+#   MSC2448:
+#     # Whether or not this MSC is enabled for use in the media repo
+#     enabled: false
+#
+#     # Maximum dimensions for converting a blurhash to an image. When no width and
+#     # height options are supplied, the default will be half these values.
+#     maxWidth: 1024
+#     maxHeight: 1024
+#
+#     # Thumbnail size in pixels to use to generate the blurhash string
+#     thumbWidth: 64
+#     thumbHeight: 64
+#
+#     # The X and Y components to use. Higher numbers blur less, lower numbers blur more.
+#     xComponents: 4
+#     yComponents: 3
+#
+#     # The amount of contrast to apply when converting a blurhash to an image. Lower values
+#     # make the effect more subtle, larger values make it stronger.
+#     punch: 1
+#
+#   # IPFS Support
+#   # This is currently experimental and might not work at all.
+#   IPFS:
+#     # Whether or not IPFS support is enabled for use in the media repo.
+#     enabled: false
+#
+#     # Options for the built in IPFS daemon
+#     builtInDaemon:
+#       # Enable this to spawn an in-process IPFS node to use instead of a localhost
+#       # HTTP agent. If this is disabled, the media repo will assume you have an HTTP
+#       # IPFS agent running and accessible. Defaults to using a daemon (true).
+#       enabled: true
+#
+#       # If the Daemon is enabled, set this to the location where the IPFS files should
+#       # be stored. If you're using Docker, this should be something like "/data/ipfs"
+#       # so it can be mapped to a volume.
+#       repoPath: "./ipfs"
+#
+#   # Support for redis as a cache mechanism
+#   #
+#   # Note: Enabling Redis support will mean that the existing cache mechanism will do nothing.
+#   # It can be safely disabled once Redis support is enabled.
+#   #
+#   # See docs/redis.md for more information on how this works and how to set it up.
+#   redis:
+#     # Whether or not use Redis instead of in-process caching.
+#     enabled: false
+#
+#     # The Redis shards that should be used by the media repo in the ring. The names of the
+#     # shards are for your reference and have no bearing on the connection, but must be unique.
+#     shards:
+#       - name: "server1"
+#         addr: ":7000"
+#       - name: "server2"
+#         addr: ":7001"
+#       - name: "server3"
+#         addr: ":7002"
+{{ matrix_media_repo_feature_support | to_json | from_json | to_nice_yaml(indent=2, width=999999, sort_keys=false) }}
+
+# Optional sentry (https://sentry.io/) configuration for the media repo
+sentry:
+  # Whether or not to set up error reporting. Defaults to off.
+  enabled: {{ matrix_media_repo_sentry_enabled | to_json }}
+
+  # Get this value from the setup instructions in Sentry
+  dsn: {{ matrix_media_repo_sentry_dsn | to_json }}
+
+  # Optional environment flag. Defaults to an empty string.
+  environment: {{ "" if matrix_media_repo_sentry_environment == "" else matrix_media_repo_sentry_environment | to_json }}
+
+  # Whether or not to turn on sentry's built in debugging. This will increase log output.
+  debug: {{ matrix_media_repo_sentry_debug | to_json }}

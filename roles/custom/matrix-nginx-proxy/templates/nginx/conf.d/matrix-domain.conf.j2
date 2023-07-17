@@ -94,6 +94,96 @@
 	}
 	{% endif %}
 
+	{% if matrix_nginx_proxy_proxy_media_repo_enabled %}
+	# Redirect all media endpoints to the media-repo
+	location ^~ /_matrix/media {
+		{% if matrix_nginx_proxy_enabled %}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
+			set $backend "{{ matrix_nginx_proxy_proxy_media_repo_addr_with_container }}";
+			proxy_pass http://$backend;
+		{% else %}
+			{# Generic configuration for use outside of our container setup #}
+			proxy_pass http://{{ matrix_nginx_proxy_proxy_media_repo_addr_sans_container }};
+		{% endif %}
+
+		# Make sure this matches your homeserver in media-repo.yaml
+		# You may have to manually specify it if using delegation or the
+		# incoming Host doesn't match.
+		proxy_set_header Host $host;
+
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $remote_addr;
+	}
+
+	# Redirect other endpoints registered by the media-repo to its container
+	# /_matrix/client/r0/logout
+	# /_matrix/client/r0/logout/all
+	location ^~ /_matrix/client/(r0|v1|v3|unstable)/(logout|logout/all) {
+		{% if matrix_nginx_proxy_enabled %}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
+			set $backend "{{ matrix_nginx_proxy_proxy_media_repo_addr_with_container }}";
+			proxy_pass http://$backend;
+		{% else %}
+			{# Generic configuration for use outside of our container setup #}
+			proxy_pass http://{{ matrix_nginx_proxy_proxy_media_repo_addr_sans_container }};
+		{% endif %}
+
+		# Make sure this matches your homeserver in media-repo.yaml
+		# You may have to manually specify it if using delegation or the
+		# incoming Host doesn't match.
+		proxy_set_header Host $host;
+
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $remote_addr;
+	}
+
+	# Redirect other endpoints registered by the media-repo to its container
+	# /_matrix/client/r0/admin/purge_media_cache
+	# /_matrix/client/r0/admin/quarantine_media/{roomId:[^/]+}
+	location ^~ /_matrix/client/(r0|v1|v3|unstable)/admin/(purge_media_cache|quarantine_media/.*) {
+		{% if matrix_nginx_proxy_enabled %}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
+			set $backend "{{ matrix_nginx_proxy_proxy_media_repo_addr_with_container }}";
+			proxy_pass http://$backend;
+		{% else %}
+			{# Generic configuration for use outside of our container setup #}
+			proxy_pass http://{{ matrix_nginx_proxy_proxy_media_repo_addr_sans_container }};
+		{% endif %}
+
+		# Make sure this matches your homeserver in media-repo.yaml
+		# You may have to manually specify it if using delegation or the
+		# incoming Host doesn't match.
+		proxy_set_header Host $host;
+
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $remote_addr;
+	}
+
+	# Redirect other endpoints registered by the media-repo to its container
+	location ^~ /_matrix/client/unstable/io.t2bot.media {
+		{% if matrix_nginx_proxy_enabled %}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
+			set $backend "{{ matrix_nginx_proxy_proxy_media_repo_addr_with_container }}";
+			proxy_pass http://$backend;
+		{% else %}
+			{# Generic configuration for use outside of our container setup #}
+			proxy_pass http://{{ matrix_nginx_proxy_proxy_media_repo_addr_sans_container }};
+		{% endif %}
+
+		# Make sure this matches your homeserver in media-repo.yaml
+		# You may have to manually specify it if using delegation or the
+		# incoming Host doesn't match.
+		proxy_set_header Host $host;
+
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $remote_addr;
+	}
+	{% endif %}
+
 	{% if matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled %}
 	location ^~ /_matrix/client/r0/user_directory/search {
 		{% if matrix_nginx_proxy_enabled %}

@@ -326,6 +326,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-ma1sd.service', 'priority': 2000, 'groups': ['matrix', 'ma1sd']}] if matrix_ma1sd_enabled else [])
     +
+    ([{'name': (matrix_media_repo_identifier + '.service'), 'priority': 4000, 'groups': ['matrix', 'matrix-media-repo']}] if matrix_media_repo_enabled else [])
+    +
     ([{'name': 'matrix-mailer.service', 'priority': 2000, 'groups': ['matrix', 'mailer']}] if matrix_mailer_enabled else [])
     +
     ([{'name': 'matrix-nginx-proxy.service', 'priority': 3000, 'groups': ['matrix', 'nginx', 'reverse-proxies']}] if matrix_nginx_proxy_enabled else [])
@@ -395,7 +397,6 @@ devture_systemd_service_manager_services_list_auto: |
 ########################################################################
 
 
-
 ######################################################################
 #
 # com.devture.ansible.role.playbook_state_preserver
@@ -416,7 +417,6 @@ devture_playbook_state_preserver_commit_hash_preservation_dst: "{{ matrix_base_d
 # /com.devture.ansible.role.playbook_state_preserver
 #
 ######################################################################
-
 
 
 ######################################################################
@@ -2557,6 +2557,37 @@ matrix_ma1sd_database_password: "{{ '%s' | format(matrix_homeserver_generic_secr
 #
 ######################################################################
 
+######################################################################
+#
+# matrix-media-repo
+#
+######################################################################
+
+matrix_media_repo_enabled: false
+matrix_media_repo_container_network: "{{ matrix_docker_network }}"
+
+matrix_media_repo_container_labels_traefik_enabled: false
+matrix_media_repo_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_media_repo_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_media_repo_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+matrix_media_repo_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
+matrix_media_repo_database_username: matrix_media_repo
+matrix_media_repo_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mediarepo.db', rounds=655555) | to_uuid }}"
+matrix_media_repo_database_name: matrix_media_repo
+
+matrix_media_repo_systemd_required_services_list: |
+  {{
+    (['docker.service'])
+    +
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled and matrix_media_repo_database_hostname == devture_postgres_connection_hostname else [])
+  }}
+
+######################################################################
+#
+# /matrix-media-repo
+#
+######################################################################
 
 ######################################################################
 #
@@ -2638,6 +2669,10 @@ matrix_nginx_proxy_proxy_matrix_identity_api_enabled: "{{ matrix_ma1sd_enabled }
 matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-ma1sd:{{ matrix_ma1sd_container_port }}"
 matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "127.0.0.1:{{ matrix_ma1sd_container_port }}"
 
+matrix_nginx_proxy_proxy_media_repo_enabled: "{{ matrix_media_repo_enabled }}"
+matrix_nginx_proxy_proxy_media_repo_addr_with_container: "{{ matrix_media_repo_identifier }}:{{ matrix_media_repo_port }}"
+matrix_nginx_proxy_proxy_media_repo_addr_sans_container: "127.0.0.1:{{ matrix_media_repo_port }}"
+
 # By default, we do TLS termination for the Matrix Federation API (port 8448) at matrix-nginx-proxy.
 # Unless this is handled there OR Synapse's federation listener port is disabled, we'll reverse-proxy.
 matrix_nginx_proxy_proxy_matrix_federation_api_enabled: |-
@@ -2695,6 +2730,8 @@ matrix_nginx_proxy_systemd_wanted_services_list: |
     (['matrix-corporal.service'] if matrix_corporal_enabled else [])
     +
     (['matrix-ma1sd.service'] if matrix_ma1sd_enabled else [])
+    +
+    ([(matrix_media_repo_identifier + '.service')] if matrix_media_repo_enabled else [])
     +
     (['matrix-client-cinny.service'] if matrix_client_cinny_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
     +
@@ -3050,6 +3087,12 @@ devture_postgres_managed_databases_auto: |
       'username': prometheus_postgres_exporter_database_username,
       'password': prometheus_postgres_exporter_database_password,
     }] if (prometheus_postgres_exporter_enabled and prometheus_postgres_exporter_database_hostname == devture_postgres_connection_hostname) else [])
+    +
+    ([{
+      'name': matrix_media_repo_database_name,
+      'username': matrix_media_repo_database_username,
+      'password': matrix_media_repo_database_password,
+    }] if (matrix_media_repo_enabled and matrix_media_repo_database_hostname == devture_postgres_connection_hostname) else [])
 
    }}
 
@@ -3424,6 +3467,9 @@ matrix_synapse_redis_password: "{{ redis_connection_password if redis_enabled el
 matrix_synapse_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
 matrix_synapse_app_service_config_files_auto: "{{ matrix_homeserver_app_service_config_files_auto }}"
 
+# Disable creation of media repository Synapse worker when using media-repo
+matrix_synapse_ext_media_repo_enabled: "{{ matrix_media_repo_enabled }}"
+
 ######################################################################
 #
 # /matrix-synapse
@@ -3653,6 +3699,8 @@ prometheus_container_additional_networks: |
       ([matrix_hookshot_container_network] if matrix_prometheus_services_connect_scraper_hookshot_enabled and matrix_hookshot_container_network != prometheus_container_network else [])
       +
       ([matrix_prometheus_nginxlog_exporter_container_network] if matrix_prometheus_services_connect_scraper_nginxlog_enabled and matrix_prometheus_nginxlog_exporter_container_network != prometheus_container_network else [])
+      +
+      ([matrix_media_repo_container_network] if matrix_prometheus_services_connect_scraper_media_repo_enabled and matrix_media_repo_container_network != prometheus_container_network else [])
     ) | unique
   }}
 
@@ -3678,6 +3726,8 @@ prometheus_config_scrape_configs_auto: |
     (matrix_prometheus_services_connect_scraper_hookshot_scrape_configs if matrix_prometheus_services_connect_scraper_hookshot_enabled else [])
     +
     (matrix_prometheus_services_connect_scraper_nginxlog_scrape_configs if matrix_prometheus_services_connect_scraper_nginxlog_enabled else [])
+    +
+    (matrix_prometheus_services_connect_scraper_media_repo_scrape_configs if matrix_prometheus_services_connect_scraper_media_repo_enabled else [])
   }}
 
 ######################################################################
@@ -3712,6 +3762,9 @@ matrix_prometheus_services_connect_scraper_hookshot_static_configs_target: "{{ m
 
 matrix_prometheus_services_connect_scraper_nginxlog_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
 matrix_prometheus_services_connect_scraper_nginxlog_static_configs_target: "{{ matrix_prometheus_nginxlog_exporter_container_hostname }}:{{ matrix_prometheus_nginxlog_exporter_container_metrics_port | string }}"
+
+matrix_prometheus_services_connect_scraper_media_repo_enabled: "{{ matrix_media_repo_enabled and matrix_media_repo_metrics_enabled }}"
+matrix_prometheus_services_connect_scraper_media_repo_static_configs_target: "{{ matrix_media_repo_identifier }}:{{ matrix_media_repo_metrics_port }}"
 
 ######################################################################
 #
@@ -3777,6 +3830,8 @@ grafana_dashboard_download_urls: |
     (prometheus_postgres_exporter_dashboard_urls if prometheus_postgres_exporter_enabled else [])
     +
     (matrix_prometheus_nginxlog_exporter_dashboard_urls if matrix_prometheus_nginxlog_exporter_enabled else [])
+    +
+    (matrix_media_repo_dashboard_urls if matrix_media_repo_metrics_enabled else [])
   }}
 
 grafana_provisioning_dashboard_template_files: |
@@ -3785,6 +3840,11 @@ grafana_provisioning_dashboard_template_files: |
         'path': 'roles/custom/matrix-prometheus-nginxlog-exporter/templates/grafana/nginx-proxy.json',
         'name': 'nginx-proxy.json',
     }] if matrix_prometheus_nginxlog_exporter_enabled else [])
+    +
+    ([{
+        'path': 'roles/custom/matrix-media-repo/templates/grafana/media-repo.json',
+        'name': 'media-repo.json',
+    }] if matrix_media_repo_metrics_enabled else [])
   }}
 
 grafana_default_home_dashboard_path: |-
@@ -3801,7 +3861,6 @@ grafana_default_home_dashboard_path: |-
 # /etke/grafana
 #
 ######################################################################
-
 
 
 ######################################################################
@@ -3851,7 +3910,6 @@ matrix_registration_database_password: "{{ '%s' | format(matrix_homeserver_gener
 # /matrix-registration
 #
 ######################################################################
-
 
 
 ######################################################################
