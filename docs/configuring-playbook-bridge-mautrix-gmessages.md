@@ -9,20 +9,6 @@ Use the following playbook configuration:
 ```yaml
 matrix_mautrix_gmessages_enabled: true
 ``` 
-gmessages multidevice beta is required, now it is enough if gmessages is connected to the Internet every 2 weeks.
-
-The relay bot functionality is off by default. If you would like to enable the relay bot, add the following to your `vars.yml` file:
-```yaml
-matrix_mautrix_gmessages_bridge_relay_enabled: true
-```
-
-By default, only admins are allowed to set themselves as relay users. To allow anyone on your homeserver to set themselves as relay users add this to your `vars.yml` file:
-```yaml
-matrix_mautrix_gmessages_bridge_relay_admin_only: false
-```
-
-If you want to activate the relay bot in a room, use `!gmessages set-relay`.
-Use `!gmessages unset-relay` to deactivate.
 
 ## Set up Double Puppeting
 
