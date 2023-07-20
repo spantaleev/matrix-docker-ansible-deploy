@@ -46,6 +46,8 @@ These services are not part of our default installation, but can be enabled by [
 
 - [mautrix/telegram](https://mau.dev/mautrix/telegram/container_registry) - the [mautrix-telegram](https://github.com/mautrix/telegram) bridge to [Telegram](https://telegram.org/) (optional)
 
+- [mautrix/gmessages](https://mau.dev/mautrix/gmessages/container_registry) - the [mautrix-gmessages](https://github.com/mautrix/gmessages) bridge to [Google Messages](https://messages.google.com/) (optional)
+
 - [mautrix/whatsapp](https://mau.dev/mautrix/whatsapp/container_registry) - the [mautrix-whatsapp](https://github.com/mautrix/whatsapp) bridge to [Whatsapp](https://www.whatsapp.com/) (optional)
 
 - [mautrix/facebook](https://mau.dev/mautrix/facebook/container_registry) - the [mautrix-facebook](https://github.com/mautrix/facebook) bridge to [Facebook](https://facebook.com/) (optional)

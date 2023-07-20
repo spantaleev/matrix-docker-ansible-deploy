@@ -1,0 +1,20 @@
+---
+
+- name: Check existence of matrix-mautrix-gmessages service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-gmessages.service"
+  register: matrix_mautrix_gmessages_service_stat
+
+- when: matrix_mautrix_gmessages_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-mautrix-gmessages is stopped
+      ansible.builtin.service:
+        name: matrix-mautrix-gmessages
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-mautrix-gmessages.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-gmessages.service"
+        state: absent
