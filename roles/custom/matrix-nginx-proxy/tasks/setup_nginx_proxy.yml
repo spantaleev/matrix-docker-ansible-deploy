@@ -178,6 +178,13 @@
     mode: 0644
   when: matrix_nginx_proxy_proxy_ntfy_enabled | bool
 
+- name: Ensure Matrix nginx-proxy configuration for mautrix wsproxy exists
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-mautrix-wsproxy.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-mautrix-wsproxy.conf"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_mautrix_wsproxy_enabled|bool
+
 - name: Ensure Matrix nginx-proxy configuration for Matrix domain exists
   ansible.builtin.template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-domain.conf.j2"
@@ -333,6 +340,12 @@
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-ntfy.conf"
     state: absent
   when: "not matrix_nginx_proxy_proxy_ntfy_enabled | bool"
+
+- name: Ensure Matrix nginx-proxy configuration for mautrix wsproxy deleted
+  ansible.builtin.file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-mautrix-wsproxy.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_mautrix_wsproxy_enabled|bool"
 
 - name: Ensure Matrix nginx-proxy configuration for etherpad domain deleted
   ansible.builtin.file:

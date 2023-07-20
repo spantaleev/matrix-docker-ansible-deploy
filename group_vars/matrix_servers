@@ -1251,6 +1251,34 @@ matrix_mautrix_whatsapp_database_password: "{{ '%s' | format(matrix_homeserver_g
 
 ######################################################################
 #
+# matrix-bridge-mautrix-wsproxy
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_mautrix_wsproxy_enabled: false
+
+matrix_mautrix_wsproxy_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    +
+    (['matrix-postgres.service'] if matrix_postgres_enabled else [])
+  }}
+
+matrix_mautrix_wsproxy_homeserver_domain: '{{ matrix_domain }}'
+
+matrix_mautrix_wsproxy_homeserver_address: "{{ 'http://matrix-synapse:8008' if matrix_synapse_enabled else '' }}"
+
+######################################################################
+#
+# /matrix-bridge-mautrix-wsproxy
+#
+######################################################################
+
+######################################################################
+#
 # matrix-sms-bridge
 #
 ######################################################################
@@ -2703,6 +2731,7 @@ matrix_nginx_proxy_proxy_jitsi_enabled: "{{ jitsi_enabled and matrix_playbook_re
 
 matrix_nginx_proxy_proxy_grafana_enabled: "{{ grafana_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_sygnal_enabled: "{{ matrix_sygnal_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
+matrix_nginx_proxy_proxy_mautrix_wsproxy_enabled: "{{ matrix_mautrix_wsproxy_enabled }}"
 matrix_nginx_proxy_proxy_ntfy_enabled: "{{ ntfy_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 
 matrix_nginx_proxy_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
@@ -2836,6 +2865,8 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     ([matrix_server_fqn_grafana] if grafana_enabled else [])
     +
     ([matrix_server_fqn_sygnal] if matrix_sygnal_enabled else [])
+    +
+    ([matrix_server_fqn_mautrix_wsproxy] if matrix_mautrix_wsproxy_enabled else [])
     +
     ([ntfy_hostname] if ntfy_enabled else [])
     +
@@ -3054,6 +3085,12 @@ devture_postgres_managed_databases_auto: |
       'username': matrix_mautrix_signal_database_username,
       'password': matrix_mautrix_signal_database_password,
     }] if (matrix_mautrix_signal_enabled and matrix_mautrix_signal_database_engine == 'postgres' and matrix_mautrix_signal_database_hostname == devture_postgres_connection_hostname) else [])
+    +
+    ([{
+      'name': matrix_mautrix_wsproxy_syncproxy_database_name,
+      'username': matrix_mautrix_wsproxy_syncproxy_database_username,
+      'password': matrix_mautrix_wsproxy_syncproxy_database_password,
+    }] if (matrix_mautrix_wsproxy_enabled and matrix_mautrix_wsproxy_syncproxy_database_engine == 'postgres' and matrix_mautrix_wsproxy_syncproxy_database_hostname == 'matrix-postgres') else [])
     +
     ([{
       'name': matrix_mautrix_telegram_database_name,
