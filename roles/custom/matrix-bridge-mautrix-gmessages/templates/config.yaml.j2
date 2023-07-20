@@ -103,13 +103,13 @@ google_messages:
 # Bridge config
 bridge:
     # Localpart template of MXIDs for SMS users.
-    # {{.}} is replaced with an identifier of the recipient.
-    username_template: gmessages_{{.}}
+    # {{ '{{.}}' }} is replaced with an identifier of the recipient.
+    username_template: "{{ 'gmessages_{{.}}' }}"
     # Displayname template for SMS users.
-    # {{.FullName}} - Full name provided by the phone
-    # {{.FirstName}} - First name provided by the phone
-    # {{.PhoneNumber}} - Formatted phone number provided by the phone
-    displayname_template: "{{ '{{if .BusinessName}}{{.BusinessName}}{{else if .PushName}}{{.PushName}}{{else}}{{.JID}}{{end}} (GM)' }}"
+    # {{ '{{.FullName}}' }} - Full name provided by the phone
+    # {{ '{{.FirstName}}' }} - First name provided by the phone
+    # {{ '{{.PhoneNumber}}' }} - Formatted phone number provided by the phone
+    displayname_template: "{{ '{{or .FullName .PhoneNumber}}' }}"
     # Should the bridge create a space for each logged-in user and add bridged rooms to it?
     personal_filtering_spaces: {{ matrix_mautrix_gmessages_bridge_personal_filtering_spaces | to_json }}
     # Should the bridge send a read receipt from the bridge bot when a message has been sent to the phone?
