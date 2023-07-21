@@ -1,6 +1,6 @@
 # Setting up Mautrix gmessages (optional)
 
-The playbook can install and configure [mautrix-gmessages](https://github.com/mautrix/gmessages) for you.
+The playbook can install and configure [mautrix-gmessages](https://github.com/mautrix/gmessages) for you, for bridging to [Google Messages](https://messages.google.com/).
 
 See the project's [documentation](https://docs.mau.fi/bridges/go/gmessages/index.html) to learn what it does and why it might be useful to you.
 
@@ -8,7 +8,7 @@ Use the following playbook configuration:
 
 ```yaml
 matrix_mautrix_gmessages_enabled: true
-``` 
+```
 
 ## Set up Double Puppeting
 
