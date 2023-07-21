@@ -114,6 +114,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Mautrix Slack bridging](configuring-playbook-bridge-mautrix-slack.md) (optional)
 
+- [Setting up Mautrix Google Messages bridging](configuring-playbook-bridge-mautrix-gmessages.md) (optional)
+
 - [Setting up Mautrix Whatsapp bridging](configuring-playbook-bridge-mautrix-whatsapp.md) (optional)
 
 - [Setting up Mautrix Facebook bridging](configuring-playbook-bridge-mautrix-facebook.md) (optional)

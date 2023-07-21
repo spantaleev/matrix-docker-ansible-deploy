@@ -1,0 +1,29 @@
+---
+
+- tags:
+    - setup-all
+    - setup-nginx-proxy
+    - install-all
+    - install-nginx-proxy
+  block:
+    - when: matrix_mautrix_gmessages_enabled | bool and matrix_mautrix_gmessages_metrics_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/inject_into_nginx_proxy.yml"
+
+- tags:
+    - setup-all
+    - setup-mautrix-gmessages
+    - install-all
+    - install-mautrix-gmessages
+  block:
+    - when: matrix_mautrix_gmessages_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_mautrix_gmessages_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+- tags:
+    - setup-all
+    - setup-mautrix-gmessages
+  block:
+    - when: not matrix_mautrix_gmessages_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"

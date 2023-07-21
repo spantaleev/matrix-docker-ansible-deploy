@@ -101,6 +101,8 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_mautrix_twitter_config_path + '/registration.yaml,dst=/matrix-mautrix-twitter-registration.yaml,ro'] if matrix_mautrix_twitter_enabled else [])
     +
+    (['--mount type=bind,src=' + matrix_mautrix_gmessages_config_path + '/registration.yaml,dst=/matrix-mautrix-gmessages-registration.yaml,ro'] if matrix_mautrix_gmessages_enabled else [])
+    +
     (['--mount type=bind,src=' + matrix_mautrix_whatsapp_config_path + '/registration.yaml,dst=/matrix-mautrix-whatsapp-registration.yaml,ro'] if matrix_mautrix_whatsapp_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_mx_puppet_discord_config_path + '/registration.yaml,dst=/matrix-mx-puppet-discord-registration.yaml,ro'] if matrix_mx_puppet_discord_enabled else [])
@@ -157,6 +159,8 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-mautrix-telegram-registration.yaml'] if matrix_mautrix_telegram_enabled else [])
     +
     (['/matrix-mautrix-twitter-registration.yaml'] if matrix_mautrix_twitter_enabled else [])
+    +
+    (['/matrix-mautrix-gmessages-registration.yaml'] if matrix_mautrix_gmessages_enabled else [])
     +
     (['/matrix-mautrix-whatsapp-registration.yaml'] if matrix_mautrix_whatsapp_enabled else [])
     +
@@ -269,6 +273,8 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-mautrix-telegram.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-telegram']}] if matrix_mautrix_telegram_enabled else [])
     +
     ([{'name': 'matrix-mautrix-twitter.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-twitter']}] if matrix_mautrix_twitter_enabled else [])
+    +
+    ([{'name': 'matrix-mautrix-gmessages.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-gmessages']}] if matrix_mautrix_gmessages_enabled else [])
     +
     ([{'name': 'matrix-mautrix-whatsapp.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-whatsapp']}] if matrix_mautrix_whatsapp_enabled else [])
     +
@@ -1155,6 +1161,51 @@ matrix_mautrix_twitter_database_password: "{{ '%s' | format(matrix_homeserver_ge
 
 ######################################################################
 #
+# matrix-bridge-mautrix-gmessages
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_mautrix_gmessages_enabled: false
+
+matrix_mautrix_gmessages_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+
+matrix_mautrix_gmessages_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    ['matrix-' + matrix_homeserver_implementation + '.service']
+    +
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+  }}
+
+matrix_mautrix_gmessages_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'gmessage.as.token', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_gmessages_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'gmessage.hs.token', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_gmessages_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
+# People using an external Prometheus server will need to toggle all of these to be able to consume metrics remotely:
+# - `matrix_mautrix_gmessages_metrics_enabled`
+# - `matrix_mautrix_gmessages_proxying_metrics_enabled`
+# - `matrix_nginx_proxy_proxy_matrix_metrics_enabled`
+matrix_mautrix_gmessages_metrics_enabled: "{{ prometheus_enabled }}"
+
+# Postgres is the default, except if not using internal Postgres server
+matrix_mautrix_gmessages_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
+matrix_mautrix_gmessages_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
+matrix_mautrix_gmessages_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maugmessages.db', rounds=655555) | to_uuid }}"
+
+######################################################################
+#
+# /matrix-bridge-mautrix-gmessages
+#
+######################################################################
+
+######################################################################
+#
 # matrix-bridge-mautrix-whatsapp
 #
 ######################################################################
@@ -1182,10 +1233,10 @@ matrix_mautrix_whatsapp_homeserver_token: "{{ '%s' | format(matrix_homeserver_ge
 matrix_mautrix_whatsapp_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
 # People using an external Prometheus server will need to toggle all of these to be able to consume metrics remotely:
-# - `matrix_mautrix_twitter_metrics_enabled`
-# - `matrix_mautrix_twitter_proxying_metrics_enabled`
+# - `matrix_mautrix_whatsapp_metrics_enabled`
+# - `matrix_mautrix_whatsapp_proxying_metrics_enabled`
 # - `matrix_nginx_proxy_proxy_matrix_metrics_enabled`
-matrix_mautrix_twitter_metrics_enabled: "{{ prometheus_enabled }}"
+matrix_mautrix_whatsapp_metrics_enabled: "{{ prometheus_enabled }}"
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_mautrix_whatsapp_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
@@ -3015,6 +3066,12 @@ devture_postgres_managed_databases_auto: |
       'username': matrix_mautrix_twitter_database_username,
       'password': matrix_mautrix_twitter_database_password,
     }] if (matrix_mautrix_twitter_enabled and matrix_mautrix_twitter_database_engine == 'postgres' and matrix_mautrix_twitter_database_hostname == devture_postgres_connection_hostname) else [])
+    +
+    ([{
+      'name': matrix_mautrix_gmessages_database_name,
+      'username': matrix_mautrix_gmessages_database_username,
+      'password': matrix_mautrix_gmessages_database_password,
+    }] if (matrix_mautrix_gmessages_enabled and matrix_mautrix_gmessages_database_engine == 'postgres' and matrix_mautrix_gmessages_database_hostname == devture_postgres_connection_hostname) else [])
     +
     ([{
       'name': matrix_mautrix_whatsapp_database_name,
