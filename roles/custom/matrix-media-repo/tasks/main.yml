@@ -1,0 +1,17 @@
+---
+
+- tags:
+    - setup-all
+    - setup-matrix-media-repo
+    - install-all
+    - install-matrix-media-repo
+  block:
+    - when: matrix_media_repo_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+- tags:
+    - setup-all
+    - setup-matrix-media-repo
+  block:
+    - when: not matrix_media_repo_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
