@@ -2,7 +2,7 @@
 
 ## matrix-registration-bot usage changed
 
-The [matrix-registration-bot](docs/configuring-playbook-bot-matrix-registration-bot.md) got some updates and now supports password-only-based login. Therefore the bot now doesn't need any manual configuration except setting a password at in your `vars.yml`. The bot will be registered as admin and access tokens will be obtained automatically by the bot.
+[matrix-registration-bot](docs/configuring-playbook-bot-matrix-registration-bot.md) got some updates and now supports password-only-based login. Therefore the bot now doesn't need any manual configuration except setting a password in your `vars.yml`. The bot will be registered as admin and access tokens will be obtained automatically by the bot.
 
 **For existing users** You need to set `matrix_bot_matrix_registration_bot_bot_password` if you previously only used `matrix_bot_matrix_registration_bot_bot_access_token`. Please also remove the following deprecated settings
 
