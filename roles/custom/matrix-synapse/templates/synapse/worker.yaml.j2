@@ -5,11 +5,6 @@ worker_name: {{ matrix_synapse_worker_details.name }}
 worker_daemonize: false
 worker_log_config: /data/{{ matrix_server_fqn_matrix }}.log.config
 
-{% if matrix_synapse_replication_listener_enabled %}
-worker_replication_host: matrix-synapse
-worker_replication_http_port: {{ matrix_synapse_replication_http_port }}
-{% endif %}
-
 {% set http_resources = [] %}
 
 {% if matrix_synapse_worker_details.type == 'user_dir' %}
