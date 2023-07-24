@@ -51,6 +51,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Configuring Element](configuring-playbook-client-element.md) (optional)
 
+- [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md) (optional)
+
 - [Storing Matrix media files on Amazon S3](configuring-playbook-s3.md) (optional)
 
 - [Using an external PostgreSQL server](configuring-playbook-external-postgres.md) (optional)
@@ -111,6 +113,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up Mautrix Telegram bridging](configuring-playbook-bridge-mautrix-telegram.md) (optional)
 
 - [Setting up Mautrix Slack bridging](configuring-playbook-bridge-mautrix-slack.md) (optional)
+
+- [Setting up Mautrix Google Messages bridging](configuring-playbook-bridge-mautrix-gmessages.md) (optional)
 
 - [Setting up Mautrix Whatsapp bridging](configuring-playbook-bridge-mautrix-whatsapp.md) (optional)
 

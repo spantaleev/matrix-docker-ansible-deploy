@@ -142,3 +142,23 @@ matrix_prometheus_services_connect_scraper_nginxlog_scrape_configs: |
       'static_configs': matrix_prometheus_services_connect_scraper_nginxlog_static_configs,
     }]
   }}
+
+# Controls whether media-repo shall be scraped
+matrix_prometheus_services_connect_scraper_media_repo_enabled: false
+matrix_prometheus_services_connect_scraper_media_repo_job_name: media-repo
+matrix_prometheus_services_connect_scraper_media_repo_metrics_path: /metrics
+matrix_prometheus_services_connect_scraper_media_repo_scrape_interval: 15s
+matrix_prometheus_services_connect_scraper_media_repo_scrape_timeout: 15s
+matrix_prometheus_services_connect_scraper_media_repo_static_configs: "{{ [{'targets': [matrix_prometheus_services_connect_scraper_media_repo_static_configs_target]}] }}"
+matrix_prometheus_services_connect_scraper_media_repo_static_configs_target: ''
+# The final scrape config for the media-repo scraper
+matrix_prometheus_services_connect_scraper_media_repo_scrape_configs: |
+  {{
+    [{
+      'job_name': matrix_prometheus_services_connect_scraper_media_repo_job_name,
+      'metrics_path': matrix_prometheus_services_connect_scraper_media_repo_metrics_path,
+      'scrape_interval': matrix_prometheus_services_connect_scraper_media_repo_scrape_interval,
+      'scrape_timeout': matrix_prometheus_services_connect_scraper_media_repo_scrape_timeout,
+      'static_configs': matrix_prometheus_services_connect_scraper_media_repo_static_configs,
+    }]
+  }}

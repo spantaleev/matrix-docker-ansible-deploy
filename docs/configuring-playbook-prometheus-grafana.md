@@ -83,6 +83,7 @@ Name | Description
 `matrix_bridge_hookshot_metrics_proxying_enabled`|Set this to `true` to expose the [Hookshot](configuring-playbook-bridge-hookshot.md) metrics on `https://matrix.DOMAIN/metrics/hookshot` (only takes effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`)
 `matrix_SERVICE_metrics_proxying_enabled`|Various other services/roles may provide similar `_metrics_enabled` and `_metrics_proxying_enabled` variables for exposing their metrics. Refer to each role for details. Only takes effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`
 `matrix_nginx_proxy_proxy_matrix_metrics_additional_user_location_configuration_blocks`|Add nginx `location` blocks to this list if you'd like to expose additional exporters manually (see below)
+`matrix_media_repo_metrics_enabled`|Set this to `true` to make media-repo expose metrics (locally, on the container network)
 
 Example for how to make use of `matrix_nginx_proxy_proxy_matrix_metrics_additional_user_location_configuration_blocks` for exposing additional metrics locations:
 ```nginx

@@ -5,11 +5,13 @@ If that's alright, you can skip this.
 
 As an alternative to storing media files on the local filesystem, you can store them on [Amazon S3](https://aws.amazon.com/s3/) or another S3-compatible object store.
 
+You can do this either by sticking to Synapse's media repository and making that use S3 (read below for this method), or by switching to an external media storage implementation like [matrix-media-repo](configuring-playbook-matrix-media-repo.md).
+
 First, [choose an Object Storage provider](#choosing-an-object-storage-provider).
 
 Then, [create the S3 bucket](#bucket-creation-and-security-configuration).
 
-Finally, [set up S3 storage for Synapse](#setting-up) (with [Goofys](configuring-playbook-s3-goofys.md) or [synapse-s3-storage-provider](configuring-playbook-synapse-s3-storage-provider.md)).
+Finally, [set up S3 storage for Synapse](#setting-up) (with [Goofys](configuring-playbook-s3-goofys.md), [synapse-s3-storage-provider](configuring-playbook-synapse-s3-storage-provider.md), or use s3 datastore with the [matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/configuration/s3-datastore.html)).
 
 
 ## Choosing an Object Storage provider
@@ -105,3 +107,4 @@ To set up Synapse to store files in S3, follow the instructions for the method o
 
 - using [synapse-s3-storage-provider](configuring-playbook-synapse-s3-storage-provider.md) (recommended)
 - using [Goofys to mount the S3 store to the local filesystem](configuring-playbook-s3-goofys.md)
+- using [matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/configuration/s3-datastore.html)

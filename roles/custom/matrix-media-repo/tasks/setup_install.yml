@@ -1,0 +1,88 @@
+---
+
+- name: Ensure media-repo paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - path: "{{ matrix_media_repo_base_path }}"
+      when: true
+    - path: "{{ matrix_media_repo_config_path }}"
+      when: true
+    - path: "{{ matrix_media_repo_data_path }}"
+      when: true
+    - path: "{{ matrix_media_repo_docker_src_files_path }}"
+      when: "{{ matrix_media_repo_container_image_self_build }}"
+  when: "item.when | bool"
+
+- name: Ensure media-repo support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/media-repo/{{ item }}.j2"
+    dest: "{{ matrix_media_repo_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - env
+
+- name: Ensure media-repo configuration installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/media-repo/media-repo.yaml.j2"
+    dest: "{{ matrix_media_repo_config_path }}/media-repo.yaml"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure media-repo Docker image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_media_repo_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_media_repo_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_media_repo_docker_image_force_pull }}"
+  when: "not matrix_media_repo_container_image_self_build | bool"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- when: "matrix_media_repo_container_image_self_build | bool"
+  block:
+    - name: Ensure media-repo repository is present on self-build
+      ansible.builtin.git:
+        repo: "{{ matrix_media_repo_container_image_self_build_repo }}"
+        dest: "{{ matrix_media_repo_docker_src_files_path }}"
+        version: "{{ matrix_media_repo_docker_image.split(':')[1] }}"
+        force: "yes"
+      become: true
+      become_user: "{{ matrix_user_username }}"
+      register: matrix_media_repo_git_pull_results
+
+    - name: Check if media-repo Docker image exists
+      ansible.builtin.command: "{{ devture_systemd_docker_base_host_command_docker }} images --quiet --filter 'reference={{ matrix_media_repo_docker_image }}'"
+      register: matrix_media_repo_docker_image_check_result
+      changed_when: false
+
+    # Invoking the `docker build` command here, instead of calling the `docker_image` Ansible module,
+    # because the latter does not support BuildKit.
+    # See: https://github.com/ansible-collections/community.general/issues/514
+    - name: Ensure media-repo Docker image is built
+      ansible.builtin.command:
+        cmd: "{{ devture_systemd_docker_base_host_command_docker }} build -t {{ matrix_media_repo_docker_image }} {{ matrix_media_repo_docker_src_files_path }}"
+      environment:
+        DOCKER_BUILDKIT: 1
+      changed_when: true
+      when: "matrix_media_repo_git_pull_results.changed | bool or matrix_media_repo_docker_image_check_result.stdout == ''"
+
+- name: Ensure media-repo container network is created
+  community.general.docker_network:
+    name: "{{ matrix_media_repo_container_network }}"
+    driver: bridge
+
+- name: Ensure media-repo service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/media-repo/systemd/matrix-media-repo.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_media_repo_identifier }}.service"
+    mode: 0640
