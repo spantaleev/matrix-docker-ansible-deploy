@@ -18,3 +18,9 @@
   block:
     - when: not matrix_bot_matrix_registration_bot_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+
+- tags:
+    - bot-matrix-registration-bot-clean-cache
+  block:
+    - when: matrix_bot_matrix_registration_bot_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/clean_cache.yml"

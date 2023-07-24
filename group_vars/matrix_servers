@@ -4124,6 +4124,12 @@ matrix_conduit_systemd_required_services_list: |
 matrix_user_creator_users_auto: |
   {{
     ([{
+      'username': matrix_bot_matrix_registration_bot_matrix_user_id_localpart,
+      'initial_password': matrix_bot_matrix_registration_bot_bot_password,
+      'initial_type': 'admin',
+    }] if matrix_bot_matrix_registration_bot_enabled else [])
+    +
+    ([{
       'username': matrix_bot_matrix_reminder_bot_matrix_user_id_localpart,
       'initial_password': matrix_bot_matrix_reminder_bot_matrix_user_password,
       'initial_type': 'bot',
