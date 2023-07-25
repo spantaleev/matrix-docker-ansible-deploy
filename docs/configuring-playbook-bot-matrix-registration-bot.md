@@ -25,7 +25,7 @@ matrix_bot_matrix_registration_bot_enabled: true
 # matrix_bot_matrix_registration_bot_matrix_user_id_localpart: bot.matrix-registration-bot
 
 # Generate a strong password here. Consider generating it with `pwgen -s 64 1`
-matrix_bot_matrix_registration_bot_password: PASSWORD_FOR_THE_BOT
+matrix_bot_matrix_registration_bot_bot_password: PASSWORD_FOR_THE_BOT
 
 # Enables registration
 matrix_synapse_enable_registration: true
