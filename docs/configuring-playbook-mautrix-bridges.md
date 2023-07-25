@@ -32,14 +32,18 @@ matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
       '@YOUR_USERNAME:{{ matrix_domain }}': admin
 ```
 
+## encryption
+
 Encryption support is off by default. If you would like to enable encryption, add the following to your `vars.yml` file:
 
 **for all bridges with encryption support**:
+
 ```yaml
 matrix_bridges_encryption_enabled: true
 ```
 
 **Alternatively**, for a specific bridge:
+
 ```yaml
 matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
   bridge:
@@ -48,6 +52,24 @@ matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
       default: true
 ```
 
+## relay mode
+
+Relay mode is off by default. If you would like to enable relay mode, add the following to your `vars.yml` file:
+
+**for all bridges with relay mode support**:
+
+```yaml
+matrix_bridges_relay_enabled: true
+```
+
+**Alternatively**, for a specific bridge:
+
+```yaml
+matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
+  bridge:
+    relay:
+      enabled: true
+```
 
 You can only have one `matrix_mautrix_SERVICENAME_configuration_extension_yaml` definition in `vars.yml` per bridge, so if you need multiple pieces of configuration there, just merge them like this:
 

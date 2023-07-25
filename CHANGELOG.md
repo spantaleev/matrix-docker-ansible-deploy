@@ -1,3 +1,20 @@
+# 2023-07-24
+
+## matrix-registration-bot usage changed
+
+[matrix-registration-bot](docs/configuring-playbook-bot-matrix-registration-bot.md) got some updates and now supports password-only-based login. Therefore the bot now doesn't need any manual configuration except setting a password in your `vars.yml`. The bot will be registered as admin and access tokens will be obtained automatically by the bot.
+
+**For existing users** You need to set `matrix_bot_matrix_registration_bot_bot_password` if you previously only used `matrix_bot_matrix_registration_bot_bot_access_token`. Please also remove the following deprecated settings
+
+* `matrix_bot_matrix_registration_bot_bot_access_token`
+* `matrix_bot_matrix_registration_bot_api_token`
+
+# 2023-07-21
+
+## mautrix-gmessages support
+
+Thanks to [Shreyas Ajjarapu](https://github.com/shreyasajj)'s efforts, the playbook now supports bridging to [Google Messages](https://messages.google.com/) via the [mautrix-gmessages](https://github.com/mautrix/gmessages) bridge. See our [Setting up Mautrix Google Messages bridging](docs/configuring-playbook-bridge-mautrix-gmessages.md) documentation page for getting started.
+
 # 2023-07-17
 
 ## matrix-media-repo support

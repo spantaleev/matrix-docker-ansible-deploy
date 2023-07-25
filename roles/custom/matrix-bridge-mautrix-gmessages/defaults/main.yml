@@ -1,0 +1,151 @@
+---
+# mautrix-gmessages is a Matrix <-> gmessages bridge
+# Project source code URL: https://github.com/mautrix/gmessages
+
+matrix_mautrix_gmessages_enabled: true
+
+matrix_mautrix_gmessages_container_image_self_build: false
+matrix_mautrix_gmessages_container_image_self_build_repo: "https://github.com/mautrix/gmessages.git"
+matrix_mautrix_gmessages_container_image_self_build_branch: "{{ 'master' if matrix_mautrix_gmessages_version == 'latest' else matrix_mautrix_gmessages_version }}"
+
+matrix_mautrix_gmessages_version: latest
+# See: https://mau.dev/mautrix/gmessages/container_registry
+matrix_mautrix_gmessages_docker_image: "{{ matrix_mautrix_gmessages_docker_image_name_prefix }}mautrix/gmessages:{{ matrix_mautrix_gmessages_version }}"
+matrix_mautrix_gmessages_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_gmessages_container_image_self_build else 'dock.mau.dev/' }}"
+matrix_mautrix_gmessages_docker_image_force_pull: "{{ matrix_mautrix_gmessages_docker_image.endswith(':latest') }}"
+
+matrix_mautrix_gmessages_base_path: "{{ matrix_base_data_path }}/mautrix-gmessages"
+matrix_mautrix_gmessages_config_path: "{{ matrix_mautrix_gmessages_base_path }}/config"
+matrix_mautrix_gmessages_data_path: "{{ matrix_mautrix_gmessages_base_path }}/data"
+matrix_mautrix_gmessages_docker_src_files_path: "{{ matrix_mautrix_gmessages_base_path }}/docker-src"
+
+matrix_mautrix_gmessages_homeserver_address: "{{ matrix_homeserver_container_url }}"
+matrix_mautrix_gmessages_homeserver_domain: "{{ matrix_domain }}"
+matrix_mautrix_gmessages_appservice_address: "http://matrix-mautrix-gmessages:8080"
+
+matrix_mautrix_gmessages_command_prefix: "!gm"
+
+# A list of extra arguments to pass to the container
+matrix_mautrix_gmessages_container_extra_arguments: []
+
+# List of systemd services that matrix-mautrix-gmessages.service depends on.
+matrix_mautrix_gmessages_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-mautrix-gmessages.service wants
+matrix_mautrix_gmessages_systemd_wanted_services_list: []
+
+matrix_mautrix_gmessages_appservice_token: ''
+matrix_mautrix_gmessages_homeserver_token: ''
+
+matrix_mautrix_gmessages_appservice_bot_username: gmessagesbot
+
+# Minimum severity of journal log messages.
+# Options: debug, info, warn, error, fatal
+matrix_mautrix_gmessages_logging_level: 'warn'
+
+# Whether or not created rooms should have federation enabled.
+# If false, created portal rooms will never be federated.
+matrix_mautrix_gmessages_federate_rooms: true
+
+# Whether or not metrics endpoint should be enabled.
+# Enabling them is usually enough for a local (in-container) Prometheus to consume them.
+# If metrics need to be consumed by another (external) Prometheus server, consider exposing them via `matrix_mautrix_gmessages_metrics_proxying_enabled`.
+matrix_mautrix_gmessages_metrics_enabled: false
+
+# Controls whether metrics should be proxied (exposed) on `matrix.DOMAIN/metrics/mautrix-gmessages`.
+# This will only work take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
+# See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
+matrix_mautrix_gmessages_metrics_proxying_enabled: false
+
+# Database-related configuration fields.
+#
+# To use SQLite, stick to these defaults.
+#
+# To use Postgres:
+# - change the engine (`matrix_mautrix_gmessages_database_engine: 'postgres'`)
+# - adjust your database credentials via the `matrix_mautrix_gmessages_database_*` variables
+matrix_mautrix_gmessages_database_engine: 'sqlite'
+
+matrix_mautrix_gmessages_sqlite_database_path_local: "{{ matrix_mautrix_gmessages_data_path }}/mautrix-gmessages.db"
+matrix_mautrix_gmessages_sqlite_database_path_in_container: "/data/mautrix-gmessages.db"
+
+matrix_mautrix_gmessages_database_username: 'matrix_mautrix_gmessages'
+matrix_mautrix_gmessages_database_password: 'some-password'
+matrix_mautrix_gmessages_database_hostname: ''
+matrix_mautrix_gmessages_database_port: 5432
+matrix_mautrix_gmessages_database_name: 'matrix_mautrix_gmessages'
+
+matrix_mautrix_gmessages_database_connection_string: 'postgresql://{{ matrix_mautrix_gmessages_database_username }}:{{ matrix_mautrix_gmessages_database_password }}@{{ matrix_mautrix_gmessages_database_hostname }}:{{ matrix_mautrix_gmessages_database_port }}/{{ matrix_mautrix_gmessages_database_name }}?sslmode=disable'
+
+matrix_mautrix_gmessages_appservice_database_type: "{{
+	{
+		'sqlite': 'sqlite3',
+		'postgres':'postgres',
+	}[matrix_mautrix_gmessages_database_engine]
+}}"
+
+matrix_mautrix_gmessages_appservice_database_uri: "{{
+	{
+		'sqlite': matrix_mautrix_gmessages_sqlite_database_path_in_container,
+		'postgres': matrix_mautrix_gmessages_database_connection_string,
+	}[matrix_mautrix_gmessages_database_engine]
+}}"
+
+# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
+matrix_mautrix_gmessages_login_shared_secret: ''
+matrix_mautrix_gmessages_bridge_login_shared_secret_map:
+  "{{ {matrix_mautrix_gmessages_homeserver_domain: matrix_mautrix_gmessages_login_shared_secret} if matrix_mautrix_gmessages_login_shared_secret else {} }}"
+
+# Enable End-to-bridge encryption
+matrix_mautrix_gmessages_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
+matrix_mautrix_gmessages_bridge_encryption_default: "{{ matrix_mautrix_gmessages_bridge_encryption_allow }}"
+matrix_mautrix_gmessages_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_gmessages_bridge_encryption_allow }}"
+
+matrix_mautrix_gmessages_bridge_personal_filtering_spaces: true
+matrix_mautrix_gmessages_bridge_mute_bridging: true
+
+matrix_mautrix_gmessages_bridge_permissions: |
+  {{
+    {matrix_mautrix_gmessages_homeserver_domain: 'user'}
+    | combine({matrix_admin: 'admin'} if matrix_admin else {})
+  }}
+
+# Default mautrix-gmessages configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_mautrix_gmessages_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_mautrix_gmessages_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_mautrix_gmessages_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_mautrix_gmessages_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_mautrix_gmessages_configuration_yaml`.
+
+matrix_mautrix_gmessages_configuration_extension: "{{ matrix_mautrix_gmessages_configuration_extension_yaml | from_yaml if matrix_mautrix_gmessages_configuration_extension_yaml | from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_mautrix_gmessages_configuration_yaml`.
+matrix_mautrix_gmessages_configuration: "{{ matrix_mautrix_gmessages_configuration_yaml | from_yaml | combine(matrix_mautrix_gmessages_configuration_extension, recursive=True) }}"
+
+matrix_mautrix_gmessages_registration_yaml: |
+  id: gmessages
+  url: {{ matrix_mautrix_gmessages_appservice_address }}
+  as_token: "{{ matrix_mautrix_gmessages_appservice_token }}"
+  hs_token: "{{ matrix_mautrix_gmessages_homeserver_token }}"
+  # See https://github.com/mautrix/signal/issues/43
+  sender_localpart: _bot_{{ matrix_mautrix_gmessages_appservice_bot_username }}
+  rate_limited: false
+  namespaces:
+      users:
+      - regex: '^@gmessages_.+:{{ matrix_mautrix_gmessages_homeserver_domain | regex_escape }}$'
+        exclusive: true
+      - exclusive: true
+        regex: '^@{{ matrix_mautrix_gmessages_appservice_bot_username | regex_escape }}:{{ matrix_mautrix_gmessages_homeserver_domain | regex_escape }}$'
+  de.sorunome.msc2409.push_ephemeral: true
+
+matrix_mautrix_gmessages_registration: "{{ matrix_mautrix_gmessages_registration_yaml | from_yaml }}"

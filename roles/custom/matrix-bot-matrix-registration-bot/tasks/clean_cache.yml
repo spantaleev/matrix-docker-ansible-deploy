@@ -1,0 +1,12 @@
+---
+
+- name: Delete cache files
+  ansible.builtin.file:
+    state: "{{ item }}"
+    path: "{{ matrix_bot_matrix_registration_bot_data_path }}"
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - absent
+    - directory

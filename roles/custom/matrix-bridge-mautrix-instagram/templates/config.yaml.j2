@@ -196,6 +196,23 @@ bridge:
     # The shared secret to authorize users of the API.
     # Set to "generate" to generate and save a new token.
     shared_secret: generate
+  relay:
+    # Whether relay mode should be allowed. If allowed, `!ig set-relay` can be used to turn any
+    # authenticated user into a relaybot for that chat.
+    enabled: {{ matrix_mautrix_instagram_relay_enabled }}
+    # The formats to use when sending messages to Instagram via a relay user.
+    #
+    # Available variables:
+    #   $sender_displayname - The display name of the sender (e.g. Example User)
+    #   $sender_username    - The username (Matrix ID localpart) of the sender (e.g. exampleuser)
+    #   $sender_mxid        - The Matrix ID of the sender (e.g. @exampleuser:example.com)
+    #   $message            - The message content
+    #
+    # Note that Instagram doesn't support captions for images, so images won't include any indication of being relayed.
+    message_formats:
+      m.text: '$sender_displayname: $message'
+      m.notice: '$sender_displayname: $message'
+      m.emote: '* $sender_displayname $message'
 
 # Python logging configuration.
 #
