@@ -90,7 +90,7 @@ matrix_appservice_kakaotalk_sqlite_database_path_in_container: "/data/appservice
 
 matrix_appservice_kakaotalk_database_username: 'matrix_appservice_kakaotalk'
 matrix_appservice_kakaotalk_database_password: 'some-password'
-matrix_appservice_kakaotalk_database_hostname: 'matrix-postgres'
+matrix_appservice_kakaotalk_database_hostname: ''
 matrix_appservice_kakaotalk_database_port: 5432
 matrix_appservice_kakaotalk_database_name: 'matrix_appservice_kakaotalk'
 
@@ -110,6 +110,8 @@ matrix_appservice_kakaotalk_login_shared_secret: ''
 
 matrix_appservice_kakaotalk_bridge_login_shared_secret_map: "{{ {matrix_appservice_kakaotalk_homeserver_domain: matrix_appservice_kakaotalk_login_shared_secret} if matrix_appservice_kakaotalk_login_shared_secret else {} }}"
 
+matrix_appservice_kakaotalk_bridge_relay_enabled: "{{ matrix_bridges_relay_enabled }}"
+
 matrix_appservice_kakaotalk_bridge_permissions: |
   {{
     {matrix_appservice_kakaotalk_homeserver_domain: 'user'}
@@ -120,7 +122,7 @@ matrix_appservice_kakaotalk_appservice_bot_username: kakaotalkbot
 matrix_appservice_kakaotalk_user_prefix: 'kakaotalk_'
 
 # End-to-bridge encryption configuration
-matrix_appservice_kakaotalk_bridge_encryption_allow: false
+matrix_appservice_kakaotalk_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
 matrix_appservice_kakaotalk_bridge_encryption_default: "{{ matrix_appservice_kakaotalk_bridge_encryption_allow }}"
 
 # Specifies the default log level for all bridge loggers.

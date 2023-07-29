@@ -1,0 +1,31 @@
+---
+
+- name: Fail if matrix-nginx-proxy role already executed
+  ansible.builtin.fail:
+    msg: >-
+      Trying to append prometheus-nginxlog-exporter's configuration to matrix-nginx-proxy,
+      but it's pointless since the matrix-nginx-proxy role is already executed.
+      To fix this, please change the order of roles in your playbook to make sure that
+      the matrix-nginx-proxy role is run after the prometheus-nginxlog-exporter role.
+  when: matrix_nginx_proxy_role_executed | default(False) | bool
+
+- name: Generate prometheus-nginxlog-exporter's metrics proxying configuration for matrix-nginx-proxy (matrix.DOMAIN/metrics/nginxlog)
+  ansible.builtin.set_fact:
+    matrix_prometheus_nginxlog_exporter_matrix_nginx_proxy_metrics_configuration_matrix_domain: |
+      location /metrics/nginxlog {
+          {# Use the embedded DNS resolver in Docker containers to discover the service #}
+          resolver 127.0.0.11 valid=5s;
+          set $backend "{{ matrix_prometheus_nginxlog_exporter_container_hostname }}:{{ matrix_prometheus_nginxlog_exporter_container_metrics_port }}";
+          proxy_pass http://$backend/metrics;
+      }
+  when: matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled | bool and matrix_nginx_proxy_enabled | bool
+
+- name: Register prometheus-nginxlog-exporter metrics proxying configuration with matrix-nginx-proxy (matrix.DOMAIN/metrics/nginxlog)
+  ansible.builtin.set_fact:
+    matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks: |
+      {{
+        matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks | default([])
+        +
+        [matrix_prometheus_nginxlog_exporter_matrix_nginx_proxy_metrics_configuration_matrix_domain]
+      }}
+  when: matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled | bool

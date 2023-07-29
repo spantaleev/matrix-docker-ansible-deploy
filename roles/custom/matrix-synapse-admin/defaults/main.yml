@@ -4,18 +4,75 @@
 
 matrix_synapse_admin_enabled: true
 
+# A path on host where all related files will be saved
+matrix_synapse_admin_base_path: "{{ matrix_base_data_path }}/synapse-admin"
+matrix_synapse_admin_docker_src_files_path: "{{ matrix_synapse_admin_base_path }}/docker-src"
+
+# Specifies whether this role will integrate with the matrix-nginx-proxy role
+matrix_synapse_admin_nginx_proxy_integration_enabled: false
+
 matrix_synapse_admin_container_image_self_build: false
 matrix_synapse_admin_container_image_self_build_repo: "https://github.com/Awesome-Technologies/synapse-admin.git"
 
-matrix_synapse_admin_docker_src_files_path: "{{ matrix_base_data_path }}/synapse-admin/docker-src"
-
-matrix_synapse_admin_version: 0.8.5
+matrix_synapse_admin_version: 0.8.7
 matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_name_prefix }}awesometechnologies/synapse-admin:{{ matrix_synapse_admin_version }}"
 matrix_synapse_admin_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_synapse_admin_docker_image_force_pull: "{{ matrix_synapse_admin_docker_image.endswith(':latest') }}"
 
+# The base container network
+matrix_synapse_admin_container_network: matrix-synapse-admin
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to a reverse proxy, which runs in a different container network.
+matrix_synapse_admin_container_additional_networks: []
+
+# Controls whether the matrix-synapse-admin container exposes its HTTP port (tcp/80 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8766"), or empty string to not expose.
+matrix_synapse_admin_container_http_host_bind_port: ''
+
 # A list of extra arguments to pass to the container
 matrix_synapse_admin_container_extra_arguments: []
+
+# matrix_synapse_admin_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_synapse_admin_container_labels_additional_labels`.
+matrix_synapse_admin_container_labels_traefik_enabled: true
+matrix_synapse_admin_container_labels_traefik_docker_network: "{{ matrix_synapse_admin_container_network }}"
+matrix_synapse_admin_container_labels_traefik_hostname: "{{ matrix_synapse_admin_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/synapse-admin`).
+matrix_synapse_admin_container_labels_traefik_path_prefix: "{{ matrix_synapse_admin_path_prefix }}"
+matrix_synapse_admin_container_labels_traefik_rule: "Host(`{{ matrix_synapse_admin_container_labels_traefik_hostname }}`){% if matrix_synapse_admin_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_synapse_admin_container_labels_traefik_path_prefix | quote }}`){% endif %}"
+matrix_synapse_admin_container_labels_traefik_priority: 0
+matrix_synapse_admin_container_labels_traefik_entrypoints: web-secure
+matrix_synapse_admin_container_labels_traefik_tls: "{{ matrix_synapse_admin_container_labels_traefik_entrypoints != 'web' }}"
+matrix_synapse_admin_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own headers, use `matrix_synapse_admin_container_labels_traefik_additional_response_headers_custom`
+matrix_synapse_admin_container_labels_traefik_additional_response_headers: "{{ matrix_synapse_admin_container_labels_traefik_additional_response_headers_auto | combine(matrix_synapse_admin_container_labels_traefik_additional_response_headers_custom) }}"
+matrix_synapse_admin_container_labels_traefik_additional_response_headers_auto: |
+  {{
+    {}
+    | combine ({'X-XSS-Protection': matrix_synapse_admin_http_header_xss_protection} if matrix_synapse_admin_http_header_xss_protection else {})
+    | combine ({'X-Frame-Options': matrix_synapse_admin_http_header_frame_options} if matrix_synapse_admin_http_header_frame_options else {})
+    | combine ({'X-Content-Type-Options': matrix_synapse_admin_http_header_content_type_options} if matrix_synapse_admin_http_header_content_type_options else {})
+    | combine ({'Content-Security-Policy': matrix_synapse_admin_http_header_content_security_policy} if matrix_synapse_admin_http_header_content_security_policy else {})
+    | combine ({'Permission-Policy': matrix_synapse_admin_http_header_content_permission_policy} if matrix_synapse_admin_http_header_content_permission_policy else {})
+    | combine ({'Strict-Transport-Security': matrix_synapse_admin_http_header_strict_transport_security} if matrix_synapse_admin_http_header_strict_transport_security and matrix_synapse_admin_container_labels_traefik_tls else {})
+  }}
+matrix_synapse_admin_container_labels_traefik_additional_response_headers_custom: {}
+
+# matrix_synapse_admin_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_synapse_admin_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_synapse_admin_container_labels_additional_labels: ''
 
 # List of systemd services that matrix-synapse-admin.service depends on
 matrix_synapse_admin_systemd_required_services_list: ['docker.service']
@@ -23,11 +80,65 @@ matrix_synapse_admin_systemd_required_services_list: ['docker.service']
 # List of systemd services that matrix-synapse-admin.service wants
 matrix_synapse_admin_systemd_wanted_services_list: []
 
-# Controls whether the matrix-synapse-admin container exposes its HTTP port (tcp/80 in the container).
+# Specifies the value of the `X-XSS-Protection` header
+# Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
 #
-# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8766"), or empty string to not expose.
-matrix_synapse_admin_container_http_host_bind_port: ''
+# Learn more about it is here:
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+# - https://portswigger.net/web-security/cross-site-scripting/reflected
+matrix_synapse_admin_http_header_xss_protection: "1; mode=block"
 
-# The path at which Synapse Admin will be exposed on `matrix.DOMAIN`
-# (only applies when matrix-nginx-proxy is used).
-matrix_synapse_admin_public_endpoint: /synapse-admin
+# Specifies the value of the `X-Frame-Options` header which controls whether framing can happen.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+matrix_synapse_admin_http_header_frame_options: SAMEORIGIN
+
+# Specifies the value of the `X-Content-Type-Options` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+matrix_synapse_admin_http_header_content_type_options: nosniff
+
+# Specifies the value of the `Content-Security-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+matrix_synapse_admin_http_header_content_security_policy: frame-ancestors 'self'
+
+# Specifies the value of the `Permission-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
+matrix_synapse_admin_http_header_content_permission_policy: "{{ 'interest-cohort=()' if matrix_synapse_admin_floc_optout_enabled else '' }}"
+
+# Specifies the value of the `Strict-Transport-Security` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+matrix_synapse_admin_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if matrix_synapse_admin_hsts_preload_enabled else '' }}"
+
+# Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
+#
+# Learn more about what it is here:
+# - https://www.eff.org/deeplinks/2021/03/googles-floc-terrible-idea
+# - https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network
+# - https://amifloced.org/
+#
+# Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
+# See: `matrix_synapse_admin_content_permission_policy`
+matrix_synapse_admin_floc_optout_enabled: true
+
+# Controls if HSTS preloading is enabled
+#
+# In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
+# indicates a willingness to be "preloaded" into browsers:
+# `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+# For more information visit:
+# - https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+# - https://hstspreload.org/#opt-in
+# See: `matrix_synapse_admin_http_header_strict_transport_security`
+matrix_synapse_admin_hsts_preload_enabled: false
+
+# The hostname at which Synapse Admin is served.
+# Only works with with Traefik reverse-proxying.
+# For matrix-nginx-proxy, `matrix_server_fqn_matrix` is used and this variable has no effect.
+matrix_synapse_admin_hostname: "{{ matrix_server_fqn_matrix }}"
+
+# The path at which Synapse Admin is exposed.
+# When matrix-nginx-proxy is used, setting this to values other than `/` will cause configuration mismatches and trouble.
+#
+# If Traefik is used, the hostname is also configurable - see `matrix_synapse_admin_container_labels_traefik_hostname`.
+# This value must either be `/` or not end with a slash (e.g. `/synapse-admin`).
+matrix_synapse_admin_path_prefix: /synapse-admin

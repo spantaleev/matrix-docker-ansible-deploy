@@ -20,17 +20,17 @@ Before doing the actual import, **you need to upload your Postgres dump file to 
 
 ## Importing
 
-To import, run this command (make sure to replace `<server-path-to-postgres-dump.sql>` with a file path on your server):
+To import, run this command (make sure to replace `SERVER_PATH_TO_POSTGRES_DUMP_FILE` with a file path on your server):
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml \
---extra-vars='server_path_postgres_dump=<server-path-to-postgres-dump.sql> postgres_default_import_database=matrix' \
---tags=import-postgres
+just run-tags import-postgres \
+--extra-vars=server_path_postgres_dump=SERVER_PATH_TO_POSTGRES_DUMP_FILE \
+--extra-vars=postgres_default_import_database=matrix
 ```
 
 **Notes**:
 
-- `<server-path-to-postgres-dump.sql>` must be a file path to a Postgres dump file on the server (not on your local machine!)
+- `SERVER_PATH_TO_POSTGRES_DUMP_FILE` must be a file path to a Postgres dump file on the server (not on your local machine!)
 - `postgres_default_import_database` defaults to `matrix`, which is useful for importing multiple databases (for dumps made with `pg_dumpall`). If you're importing a single database (e.g. `synapse`), consider changing `postgres_default_import_database` accordingly
 
 
@@ -86,7 +86,7 @@ In this case you can use the command suggested in the import task to clear the d
 # systemctl start matrix-postgres
 ```
 
-Now on your local machine run `ansible-playbook -i inventory/hosts setup.yml --tags=setup-postgres` to prepare the database roles etc.
+Now on your local machine run `just run-tags setup-postgres` to prepare the database roles etc.
 
 If not, you probably get this error. `synapse` is the correct table owner, but the role is missing in database.
 ```
@@ -97,9 +97,9 @@ Once the database is clear and the ownership of the tables has been fixed in the
 Check, if `--dbname` is set to `synapse` (not `matrix`) and replace paths (or even better, copy this line from your terminal)
 
 ```
-/usr/bin/env docker run --rm --name matrix-postgres-import --log-driver=none --user=998:1001 --cap-drop=ALL --network=matrix --env-file=/matrix/postgres/env-postgres-psql --mount type=bind,src=/migration/synapse_dump.sql,dst=/synapse_dump.sql,ro --entrypoint=/bin/sh docker.io/postgres:14.1-alpine -c "cat /synapse_dump.sql | grep -vE '^(CREATE|ALTER) ROLE (matrix)(;| WITH)' | grep -vE '^CREATE DATABASE (matrix)\s' | psql -v ON_ERROR_STOP=1 -h matrix-postgres --dbname=synapse"
+/usr/bin/env docker run --rm --name matrix-postgres-import --log-driver=none --user=998:1001 --cap-drop=ALL --network=matrix --env-file=/matrix/postgres/env-postgres-psql --mount type=bind,src=/migration/synapse_dump.sql,dst=/synapse_dump.sql,ro --entrypoint=/bin/sh docker.io/postgres:15.0-alpine -c "cat /synapse_dump.sql | grep -vE '^(CREATE|ALTER) ROLE (matrix)(;| WITH)' | grep -vE '^CREATE DATABASE (matrix)\s' | psql -v ON_ERROR_STOP=1 -h matrix-postgres --dbname=synapse"
 ```
 
 ### Hints
 
-To open psql terminal run `/usr/local/bin/matrix-postgres-cli`
+To open psql terminal run `/matrix/postgres/bin/cli`

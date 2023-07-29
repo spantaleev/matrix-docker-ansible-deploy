@@ -1,11 +1,4 @@
 ---
-# If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
-# We don't want to fail in such cases.
-- name: Fail if matrix-synapse role already executed
-  ansible.builtin.fail:
-    msg: >-
-      The matrix-bridge-mautrix-instagram role needs to execute before the matrix-synapse role.
-  when: "matrix_synapse_role_executed | default(False)"
 
 - name: Ensure Mautrix instagram image is pulled
   community.docker.docker_image:
@@ -77,9 +70,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-instagram.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-instagram.service"
     mode: 0644
-  register: matrix_mautrix_instagram_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-mautrix-instagram.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_mautrix_instagram_systemd_service_result.changed"

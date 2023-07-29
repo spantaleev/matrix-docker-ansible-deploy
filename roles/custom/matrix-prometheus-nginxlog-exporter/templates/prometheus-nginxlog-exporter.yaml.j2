@@ -1,0 +1,57 @@
+listen:
+  port: {{ matrix_prometheus_nginxlog_exporter_container_metrics_port }}
+  address: "0.0.0.0"
+  metrics_endpoint: "/metrics"
+
+namespaces:
+  - name: matrix
+    metrics_override:
+      preffix: "myprefix"
+    namespace_label: "namespace"
+    format: "$log_source $server_name - $upstream_addr - $remote_addr - $remote_user [$time_local] $host \"$request\" $status \"$http_referer\" \"$http_user_agent\" \"$http_x_forwarded_for\""
+    # enable to print to console
+    # print_log: true
+    source:
+      syslog:
+        listen_address: "udp://0.0.0.0:{{ matrix_prometheus_nginxlog_exporter_container_syslog_port }}"
+        # format options: "rfc3164" ,"rfc5424", "rfc6587", "auto"
+        format: auto
+        tags: ["matrix_nginx_proxy", "matrix_nginx_proxy_companion"]
+    relabel_configs:
+      - target_label: request_uri
+        from: request
+        split: 2
+        separator: ' '
+        matches:
+        - regexp: "^([^\\?]+)/(public|bundles|fonts|img|themes|vector-icons|element-icons|d|media).*"
+          replacement: "$1/$2/"
+        - regexp: "^([^\\?]+).*/rooms/.*/(event|read_markers|messages|receipt|state|typing|members).*"
+          replacement: "$1/rooms/:roomid:/$2"
+        - regexp: "^([^\\?]+).*/(r0|v3)/(sync|pushers|keys|devices|download|sendtodevice).*"
+          replacement: "$1/:v:/$3"
+        - regexp: "^([^\\?]+).*/rooms/(.*)/send/(.*)"
+          replacement: "$1/rooms/:roomid:/send/:command:/:id:"
+        - regexp: "^([^\\?]+).*/client/unstable/.*"
+          replacement: "$1/client/unstable/:matrixspec:"
+        - regexp: "^([^\\?]+).*/presence/.*"
+          replacement: "$1/presence/:userid:"
+        - regexp: "^([^\\?]+).*/user/.*"
+          replacement: "$1/user/:userid:"
+        - regexp: "^([^\\?]+).*/profile/.*"
+          replacement: "$1/profile/:userid:"
+        - regexp: "^([^\\?]+).*/directory/room/.*"
+          replacement: "$1/directory/room/:roomid:"
+        - regexp: "^([^\\?]+).*/thumbnail/.*"
+          replacement: "$1/thumbnail/:domain:/:mxid:"
+        - regexp: "^([^\\?]+)(.*)"
+          replacement: "$1"
+      - target_label: remote_addr
+        from: remote_addr
+      - target_label: server_name
+        from: server_name
+      - target_label: http_x_forwarded_for
+        from: http_x_forwarded_for
+      - target_label: request_host
+        from: host
+      - target_label: log_source
+        from: log_source

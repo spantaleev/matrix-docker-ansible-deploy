@@ -14,8 +14,8 @@
     path: "{{ matrix_synapse_media_store_path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_synapse_uid }}"
+    group: "{{ matrix_synapse_gid }}"
   when: "not local_path_media_store_stat.failed and not local_path_media_store_stat.stat.exists"
 
 - when: "matrix_synapse_container_image_self_build | bool"
@@ -27,7 +27,7 @@
         version: "{{ matrix_synapse_docker_image.split(':')[1] }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_synapse_username }}"
       register: matrix_synapse_git_pull_results
 
     - name: Check if Synapse Docker image exists
@@ -48,6 +48,7 @@
           .
       environment:
         DOCKER_BUILDKIT: 1
+      changed_when: true
       when: "matrix_synapse_git_pull_results.changed | bool or matrix_synapse_docker_image_check_result.stdout == ''"
 
 - name: Ensure Synapse Docker image is pulled
@@ -68,23 +69,20 @@
       ansible.builtin.template:
         src: "{{ role_path }}/templates/synapse/customizations/Dockerfile.j2"
         dest: "{{ matrix_synapse_customized_docker_src_files_path }}/Dockerfile"
-        owner: "{{ matrix_user_username }}"
-        group: "{{ matrix_user_groupname }}"
+        owner: "{{ matrix_synapse_uid }}"
+        group: "{{ matrix_synapse_gid }}"
         mode: 0640
+      register: matrix_synapse_container_image_customizations_dockerfile_result
 
     - name: Ensure customized Docker image for Synapse is built
       community.docker.docker_image:
         name: "{{ matrix_synapse_docker_image_customized }}"
         source: build
+        force_source: "{{ matrix_synapse_container_image_customizations_dockerfile_result.changed or matrix_synapse_docker_image_customized_force_source }}"
         build:
           dockerfile: Dockerfile
           path: "{{ matrix_synapse_customized_docker_src_files_path }}"
-          pull: true
-
-- name: Check if a Synapse signing key exists
-  ansible.builtin.stat:
-    path: "{{ matrix_synapse_config_dir_path }}/{{ matrix_server_fqn_matrix }}.signing.key"
-  register: matrix_synapse_signing_key_stat
+          nocache: "{{ matrix_synapse_docker_image_customized_build_nocache }}"
 
 # We do this so that the signing key would get generated.
 #
@@ -94,27 +92,28 @@
 # We don't use the `docker_container` module, because using it with `cap_drop` requires
 # a very recent docker-py version, which is not available for a lot of people yet.
 - name: Generate initial Synapse config and signing key
-  ansible.builtin.command: |
-    docker run
-    --rm
-    --name=matrix-config
-    --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
-    --cap-drop=ALL
-    --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data
-    -e SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
-    -e SYNAPSE_SERVER_NAME={{ matrix_server_fqn_matrix }}
-    -e SYNAPSE_REPORT_STATS=no
-    {{ matrix_synapse_docker_image }}
-    generate
-  when: "not matrix_synapse_signing_key_stat.stat.exists"
+  ansible.builtin.command:
+    cmd: |
+      docker run
+      --rm
+      --name=matrix-config
+      --user={{ matrix_synapse_uid }}:{{ matrix_synapse_gid }}
+      --cap-drop=ALL
+      --mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data
+      -e SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
+      -e SYNAPSE_SERVER_NAME={{ matrix_server_fqn_matrix }}
+      -e SYNAPSE_REPORT_STATS=no
+      {{ matrix_synapse_docker_image }}
+      generate
+    creates: "{{ matrix_synapse_config_dir_path }}/{{ matrix_server_fqn_matrix }}.signing.key"
 
 - name: Ensure Synapse homeserver config installed
   ansible.builtin.copy:
     content: "{{ matrix_synapse_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_synapse_config_dir_path }}/homeserver.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_synapse_uid }}"
+    group: "{{ matrix_synapse_gid }}"
 
 - name: Ensure Synapse log config installed
   ansible.builtin.template:
@@ -122,29 +121,28 @@
     dest: "{{ matrix_synapse_config_dir_path }}/{{ matrix_server_fqn_matrix }}.log.config"
     mode: 0644
 
+- name: Ensure Synapse container network is created
+  community.general.docker_network:
+    name: "{{ matrix_synapse_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-synapse.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/synapse/systemd/matrix-synapse.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse.service"
     mode: 0644
-  register: matrix_synapse_systemd_service_result
 
-- name: Ensure systemd reloaded after matrix-synapse.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_synapse_systemd_service_result.changed"
-
-- name: Ensure matrix-synapse-register-user script created
+- name: Ensure register-user script created
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/synapse/usr-local-bin/matrix-synapse-register-user.j2"
-    dest: "{{ matrix_local_bin_path }}/matrix-synapse-register-user"
+    src: "{{ role_path }}/templates/synapse/bin/register-user.j2"
+    dest: "{{ matrix_synapse_bin_path }}/register-user"
     mode: 0755
 
 - name: Generate sample prometheus.yml for external scraping
   ansible.builtin.template:
     src: "{{ role_path }}/templates/synapse/prometheus/external_prometheus.yml.example.j2"
     dest: "{{ matrix_synapse_base_path }}/external_prometheus.yml.example"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_synapse_uid }}"
+    group: "{{ matrix_synapse_gid }}"
     mode: 0644
   when: matrix_synapse_metrics_proxying_enabled | bool

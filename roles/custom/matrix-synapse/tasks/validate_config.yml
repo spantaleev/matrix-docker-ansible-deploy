@@ -6,11 +6,15 @@
       You need to define a required configuration setting (`{{ item }}`) for using Synapse.
   when: "vars[item] == ''"
   with_items:
-    - "matrix_synapse_macaroon_secret_key"
-    - "matrix_synapse_database_host"
-    - "matrix_synapse_database_user"
-    - "matrix_synapse_database_password"
-    - "matrix_synapse_database_database"
+    - matrix_synapse_username
+    - matrix_synapse_uid
+    - matrix_synapse_gid
+    - matrix_synapse_container_network
+    - matrix_synapse_macaroon_secret_key
+    - matrix_synapse_database_host
+    - matrix_synapse_database_user
+    - matrix_synapse_database_password
+    - matrix_synapse_database_database
 
 - name: Fail if asking for more than 1 instance of single-instance workers
   ansible.builtin.fail:
@@ -59,6 +63,10 @@
     - {'old': 'matrix_synapse_workers_frontend_proxy_workers_count', 'new': '<removed in favor of generic workers - see https://github.com/matrix-org/synapse/pull/13645>'}
     - {'old': 'matrix_synapse_workers_frontend_proxy_workers_port_range_start', 'new': '<removed in favor of generic workers - see https://github.com/matrix-org/synapse/pull/13645>'}
     - {'old': 'matrix_synapse_workers_frontend_proxy_workers_metrics_range_start', 'new': '<removed in favor of generic workers - see https://github.com/matrix-org/synapse/pull/13645>'}
+    - {'old': 'matrix_synapse_ext_s3_storage_provider_path', 'new': 'matrix_synapse_ext_s3_storage_provider_base_path'}
+    - {'old': 'matrix_synapse_send_federation', 'new': '<unnecessary - Synapse relies on federation_sender_instances now>'}
+    - {'old': 'matrix_synapse_start_pushers', 'new': '<unnecessary - Synapse relies on pusher_instances now>'}
+
 
 - name: (Deprecation) Catch and report renamed settings in matrix_synapse_configuration_extension_yaml
   ansible.builtin.fail:
@@ -68,3 +76,22 @@
   when: "item.old in matrix_synapse_configuration_extension"
   with_items:
     - {'old': 'federation_ip_range_blacklist', 'new': 'ip_range_blacklist'}
+
+- when: matrix_synapse_container_image_customizations_templates_enabled | bool
+  block:
+    - name: Fail if required `matrix_synapse_container_image_customizations_templates_*` settings not defined
+      ansible.builtin.fail:
+        msg: >-
+          You need to define a required configuration setting (`{{ item }}`) when enabling `matrix_synapse_container_image_customizations_templates_enabled`.
+      when: "vars[item] == ''"
+      with_items:
+        - matrix_synapse_container_image_customizations_templates_git_repository_url
+        - matrix_synapse_container_image_customizations_templates_git_repository_branch
+
+    - name: Fail if required `matrix_synapse_container_image_customizations_templates_git_repository_keyscan_*` settings not defined
+      ansible.builtin.fail:
+        msg: >-
+          You need to define a required configuration setting (`{{ item }}`) when enabling `matrix_synapse_container_image_customizations_templates_git_repository_keyscan`.
+      when: "matrix_synapse_container_image_customizations_templates_git_repository_keyscan_enabled | bool and vars[item] == ''"
+      with_items:
+        - matrix_synapse_container_image_customizations_templates_git_repository_keyscan_hostname

@@ -12,7 +12,7 @@ You can then follow these steps inside the playbook directory:
 
 1. copy the sample configuration file (`cp examples/vars.yml inventory/host_vars/matrix.<your-domain>/vars.yml`)
 
-1. edit the configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) to your liking. You may also take a look at the various `roles/ROLE_NAME_HERE/defaults/main.yml` files and see if there's something you'd like to copy over and override in your `vars.yml` configuration file.
+1. edit the configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) to your liking. You may also take a look at the various `roles/*/ROLE_NAME_HERE/defaults/main.yml` files and see if there's something you'd like to copy over and override in your `vars.yml` configuration file.
 
 1. copy the sample inventory hosts file (`cp examples/hosts inventory/hosts`)
 
@@ -47,7 +47,11 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
   - [Configuring Conduit](configuring-playbook-conduit.md), if you've switched to the [Conduit](https://conduit.rs) homeserver implementation (optional)
 
+  - [Configuring Dendrite](configuring-playbook-dendrite.md), if you've switched to the [Dendrite](https://matrix-org.github.io/dendrite) homeserver implementation (optional)
+
 - [Configuring Element](configuring-playbook-client-element.md) (optional)
+
+- [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md) (optional)
 
 - [Storing Matrix media files on Amazon S3](configuring-playbook-s3.md) (optional)
 
@@ -57,9 +61,11 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Serving your base domain using this playbook's nginx server](configuring-playbook-base-domain-serving.md) (optional)
 
-- [Configure Nginx](configuring-playbook-nginx.md) (optional, advanced)
+- [Configure the Traefik reverse-proxy](configuring-playbook-traefik.md) (optional, advanced)
 
-- [Using your own webserver, instead of this playbook's nginx proxy](configuring-playbook-own-webserver.md) (optional, advanced)
+- (Deprecated) [Configure the Nginx reverse-proxy](configuring-playbook-nginx.md) (optional, advanced)
+
+- [Using your own webserver, instead of this playbook's default reverse-proxy](configuring-playbook-own-webserver.md) (optional, advanced)
 
 - [Adjusting TURN server configuration](configuring-playbook-turn.md) (optional, advanced)
 
@@ -97,12 +103,18 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (optional, advanced)
 
+- [Matrix User Verification Service](configuring-playbook-user-verification-service.md) (optional, advanced)
+
 
 ### Bridging other networks
 
 - [Setting up Mautrix Discord bridging](configuring-playbook-bridge-mautrix-discord.md) (optional)
 
 - [Setting up Mautrix Telegram bridging](configuring-playbook-bridge-mautrix-telegram.md) (optional)
+
+- [Setting up Mautrix Slack bridging](configuring-playbook-bridge-mautrix-slack.md) (optional)
+
+- [Setting up Mautrix Google Messages bridging](configuring-playbook-bridge-mautrix-gmessages.md) (optional)
 
 - [Setting up Mautrix Whatsapp bridging](configuring-playbook-bridge-mautrix-whatsapp.md) (optional)
 
@@ -159,6 +171,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Bots
 
+- [Setting up matrix-bot-chatgpt](configuring-playbook-bot-chatgpt.md) - a bot through which you can talk to the [ChatGPT](https://openai.com/blog/chatgpt/) model(optional)
+
 - [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) - a bot to remind you about stuff (optional)
 
 - [Setting up matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md) - a bot to create and manage registration tokens to invite users (optional)
@@ -170,6 +184,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) - an extensible multifunctional bot (optional)
 
 - [Setting up Mjolnir](configuring-playbook-bot-mjolnir.md) - a moderation tool/bot (optional)
+
+- [Setting up Draupnir](configuring-playbook-bot-draupnir.md) - a moderation tool/bot, forked from Mjolnir and maintained by its former leader developer (optional)
 
 - [Setting up Buscarron](configuring-playbook-bot-buscarron.md) - a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room (optional)
 
@@ -183,8 +199,14 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Other specialized services
 
+- [Setting up synapse-auto-compressor](configuring-playbook-synapse-auto-compressor.md) for compressing the database on Synapse homeservers (optional)
+
+- [Setting up the Sliding Sync Proxy](configuring-playbook-sliding-sync-proxy.md) for clients which require Sliding Sync support (like Element X) (optional)
+
 - [Setting up the Sygnal push gateway](configuring-playbook-sygnal.md) (optional)
 
 - [Setting up the ntfy push notifications server](configuring-playbook-ntfy.md) (optional)
 
 - [Setting up a Cactus Comments server](configuring-playbook-cactus-comments.md) - a federated comment system built on Matrix (optional)
+
+- [Setting up the Rageshake bug report server](configuring-playbook-rageshake.md) (optional)

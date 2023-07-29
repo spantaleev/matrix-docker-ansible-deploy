@@ -4,9 +4,13 @@
 
 matrix_dendrite_enabled: true
 
-matrix_dendrite_docker_image: "{{ matrix_dendrite_docker_image_name_prefix }}matrixdotorg/dendrite-monolith:{{ matrix_dendrite_docker_image_tag }}"
-matrix_dendrite_docker_image_name_prefix: "docker.io/"
-matrix_dendrite_docker_image_tag: "v0.10.7"
+matrix_dendrite_container_image_self_build: false
+matrix_dendrite_container_image_self_build_repo: "https://github.com/matrix-org/dendrite.git"
+
+matrix_dendrite_docker_image_path: "matrixdotorg/dendrite-monolith"
+matrix_dendrite_docker_image: "{{ matrix_dendrite_docker_image_name_prefix }}{{ matrix_dendrite_docker_image_path }}:{{ matrix_dendrite_docker_image_tag }}"
+matrix_dendrite_docker_image_name_prefix: "{{ 'localhost/' if matrix_dendrite_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_dendrite_docker_image_tag: "v0.13.1"
 matrix_dendrite_docker_image_force_pull: "{{ matrix_dendrite_docker_image.endswith(':latest') }}"
 
 matrix_dendrite_base_path: "{{ matrix_base_data_path }}/dendrite"
@@ -14,7 +18,10 @@ matrix_dendrite_config_dir_path: "{{ matrix_dendrite_base_path }}/config"
 matrix_dendrite_storage_path: "{{ matrix_dendrite_base_path }}/storage"
 matrix_dendrite_media_store_path: "{{ matrix_dendrite_storage_path }}/media-store"
 matrix_dendrite_nats_storage_path: "{{ matrix_dendrite_base_path }}/nats"
+matrix_dendrite_bin_path: "{{ matrix_dendrite_base_path }}/bin"
 matrix_dendrite_ext_path: "{{ matrix_dendrite_base_path }}/ext"
+
+matrix_dendrite_docker_src_files_path: "{{ matrix_dendrite_base_path }}/docker-src"
 
 # By default, we make Dendrite only serve HTTP (not HTTPS).
 # HTTPS is usually served at the reverse-proxy side (usually via `matrix-nginx-proxy`).
@@ -32,6 +39,14 @@ matrix_dendrite_http_bind_address: "{{ (':' + matrix_dendrite_http_bind_port | s
 # This is passed as an `-https-bind-address` flag to the Dendrite server in the container
 matrix_dendrite_https_bind_address: "{{ (':' + matrix_dendrite_https_bind_port | string) if matrix_dendrite_https_bind_port else '' }}"
 
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_dendrite_container_network: "{{ matrix_docker_network }}"
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_dendrite_container_additional_networks: []
+
 # Controls whether the matrix-dendrite container exposes the HTTP port (tcp/{{ matrix_dendrite_http_bind_port }} in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8008"), or empty string to not expose.
@@ -46,15 +61,15 @@ matrix_dendrite_container_https_host_bind_address: ""
 # Also see `matrix_dendrite_container_arguments`
 matrix_dendrite_container_extra_arguments: []
 
-# matrix_dendrite_container_runtime_injected_arguments is a list of extra arguments to pass to the container.
-# This list is built during runtime. You're not meant to override this variable.
+# matrix_dendrite_container_extra_arguments_auto is a list of extra arguments to pass to the container.
+# This list is managed by the playbook. You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_dendrite_container_extra_arguments`.
-matrix_dendrite_container_runtime_injected_arguments: []
+matrix_dendrite_container_extra_arguments_auto: []
 
 # matrix_dendrite_container_arguments holds the final list of extra arguments to pass to the container.
 # You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_dendrite_container_extra_arguments`.
-matrix_dendrite_container_arguments: "{{ matrix_dendrite_container_extra_arguments + matrix_dendrite_container_runtime_injected_arguments }}"
+matrix_dendrite_container_arguments: "{{ matrix_dendrite_container_extra_arguments + matrix_dendrite_container_extra_arguments_auto }}"
 
 # A list of extra arguments to pass to the container process (`dendrite-monolith` command)
 # Example:
@@ -76,31 +91,34 @@ matrix_dendrite_systemd_wanted_services_list: []
 # matrix_dendrite_template_dendrite_config: "{{ playbook_dir }}/inventory/host_vars/<host>/dendrite.yaml.j2"
 matrix_dendrite_template_dendrite_config: "{{ role_path }}/templates/dendrite/dendrite.yaml.j2"
 
-matrix_dendrite_registration_shared_secret: ''
+matrix_dendrite_client_api_registration_shared_secret: ""
 matrix_dendrite_allow_guest_access: false
 
 matrix_dendrite_max_file_size_bytes: 10485760
 
 # Controls which HTTP header (e.g. 'X-Forwarded-For', 'X-Real-IP') to inspect to find the real remote IP address of the client.
 # This is likely required if Dendrite is running behind a reverse proxy server.
-matrix_dendrite_sync_api_real_ip_header: ''
+matrix_dendrite_sync_api_real_ip_header: "X-Forwarded-For"
 
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_dendrite_tmp_directory_size_mb: 500
 
 # Rate limits
-matrix_dendrite_rate_limiting_enabled: true
-matrix_dendrite_rate_limiting_threshold: 20
-matrix_dendrite_rate_limiting_cooloff_ms: 500
+matrix_dendrite_client_api_rate_limiting_enabled: true
+matrix_dendrite_client_api_rate_limiting_threshold: 20
+matrix_dendrite_client_api_rate_limiting_cooloff_ms: 500
 
 # Controls whether people with access to the homeserver can register by themselves.
-matrix_dendrite_registration_disabled: true
+matrix_dendrite_client_api_registration_disabled: true
 
 # reCAPTCHA API for validating registration attempts
-matrix_dendrite_enable_registration_captcha: false
-matrix_dendrite_recaptcha_public_key: ""
-matrix_dendrite_recaptcha_private_key: ""
-matrix_dendrite_recaptcha_siteverify_api: "https://www.google.com/recaptcha/api/siteverify"
+matrix_dendrite_client_api_enable_registration_captcha: false
+matrix_dendrite_client_api_recaptcha_public_key: ""
+matrix_dendrite_client_api_recaptcha_private_key: ""
+matrix_dendrite_client_api_recaptcha_siteverify_api: ""
+matrix_dendrite_client_api_recaptcha_api_js_url: ""
+matrix_dendrite_client_api_recaptcha_form_field: ""
+matrix_dendrite_client_api_recaptcha_sitekey_class: ""
 
 # A list of additional "volumes" to mount in the container.
 # This list gets populated dynamically based on Dendrite extensions that have been enabled.
@@ -118,15 +136,15 @@ matrix_dendrite_container_additional_volumes: []
 # Also see `matrix_dendrite_app_service_config_files_final`
 matrix_dendrite_app_service_config_files: []
 
-# matrix_dendrite_app_service_runtime_injected_config_files is a list of appservice config files.
-# This list is built during runtime. You're not meant to override this variable.
+# matrix_dendrite_app_service_config_files_auto is a list of appservice config files.
+# This list is managed by the playbook. You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_dendrite_app_service_config_files`.
-matrix_dendrite_app_service_runtime_injected_config_files: []
+matrix_dendrite_app_service_config_files_auto: []
 
 # matrix_dendrite_app_service_config_files_final holds the final list of config files to pass to the container.
 # You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_dendrite_app_service_config_files`.
-matrix_dendrite_app_service_config_files_final: "{{ matrix_dendrite_app_service_config_files + matrix_dendrite_app_service_runtime_injected_config_files }}"
+matrix_dendrite_app_service_config_files_final: "{{ matrix_dendrite_app_service_config_files + matrix_dendrite_app_service_config_files_auto }}"
 
 # Enable exposure of metrics
 matrix_dendrite_metrics_enabled: false
@@ -135,23 +153,23 @@ matrix_dendrite_metrics_password: "metrics"
 
 # Postgres database information
 matrix_dendrite_database_str: "postgresql://{{ matrix_dendrite_database_user }}:{{ matrix_dendrite_database_password }}@{{ matrix_dendrite_database_hostname }}"
-matrix_dendrite_database_hostname: "matrix-postgres"
+matrix_dendrite_database_hostname: ""
 matrix_dendrite_database_user: "dendrite"
 matrix_dendrite_database_password: "itsasecret"
-matrix_dendrite_federationapi_database: "dendrite_federationapi"
-matrix_dendrite_keyserver_database: "dendrite_keyserver"
-matrix_dendrite_mediaapi_database: "dendrite_mediaapi"
+matrix_dendrite_federation_api_database: "dendrite_federationapi"
+matrix_dendrite_key_server_database: "dendrite_keyserver"
+matrix_dendrite_media_api_database: "dendrite_mediaapi"
 matrix_dendrite_room_database: "dendrite_room"
-matrix_dendrite_syncapi_database: "dendrite_syncapi"
-matrix_dendrite_userapi_database: "dendrite_userapi"
-matrix_dendrite_pushserver_database: "dendrite_pushserver"
+matrix_dendrite_sync_api_database: "dendrite_syncapi"
+matrix_dendrite_user_api_database: "dendrite_userapi"
+matrix_dendrite_push_server_database: "dendrite_pushserver"
+matrix_dendrite_relay_api_database: "dendrite_relayapi"
 matrix_dendrite_mscs_database: "dendrite_mscs"
 
-matrix_dendrite_turn_uris: []
-matrix_dendrite_turn_shared_secret: ""
-matrix_dendrite_turn_allow_guests: false
+matrix_dendrite_client_api_turn_uris: []
+matrix_dendrite_client_api_turn_shared_secret: ""
+matrix_dendrite_client_api_turn_allow_guests: false
 
-# Controls whether the self-check feature should validate TLS certificates.
 matrix_dendrite_disable_tls_validation: false
 
 matrix_dendrite_trusted_id_servers:
@@ -194,3 +212,16 @@ matrix_dendrite_configuration_extension: "{{ matrix_dendrite_configuration_exten
 # Holds the final Dendrite configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_dendrite_configuration_yaml`.
 matrix_dendrite_configuration: "{{ matrix_dendrite_configuration_yaml | from_yaml | combine(matrix_dendrite_configuration_extension, recursive=True) }}"
+
+matrix_dendrite_user_api_auto_join_rooms: []
+
+# statistics reporting configuration. These statistics contain the server
+# name, number of active users and some information on your deployment config.
+matrix_dendrite_report_stats: false
+
+# Contorls whether thumbnails for media content are generated dynamically
+matrix_dendrite_media_api_dynamic_thumbnails: false
+matrix_dendrite_media_api_max_thumbnail_generators: 10
+
+# Controls whether the full-text search engine is enabled
+matrix_dendrite_sync_api_search_enabled: false

@@ -1,0 +1,35 @@
+---
+
+# This migrates Traefik from the old path (`/devture-traefik`) to the new path (`/matrix/traefik`, controlled by `devture_traefik_base_path`),
+# and from the old hardcoded systemd service name (`devture-traefik.service`) to the new one (`matrix-traefik.service`, controlled by `devture_traefik_identifier`).
+#
+# Here, we merely disable (and stop) the old systemd service and relocate the data (`/devture-traefik` directory).
+# The Traefik role itself (running later) will then ensure this data is up-to-date and will set up the new systemd service.
+
+# It only makes sense to migrate if the identifier or path are different than the default (what we were using before).
+- when: "devture_traefik_identifier != 'devture-postgres' or devture_traefik_base_path != '/devture-traefik'"
+  block:
+    - name: Check existence of devture-traefik.service systemd service
+      ansible.builtin.stat:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/devture-traefik.service"
+      register: devture_traefik_service_stat
+
+    - when: devture_traefik_service_stat.stat.exists | bool
+      block:
+        - name: Ensure devture-traefik.service systemd service is stopped
+          ansible.builtin.systemd:
+            name: devture-traefik
+            state: stopped
+            enabled: false
+            daemon_reload: true
+
+        - name: Ensure Traefik directory relocated
+          ansible.builtin.command:
+            cmd: "mv /devture-traefik {{ devture_traefik_base_path }}"
+            creates: "{{ devture_traefik_base_path }}"
+            removes: "/devture-traefik"
+
+        - name: Ensure Traefik systemd service doesn't exist
+          ansible.builtin.file:
+            path: "{{ devture_systemd_docker_base_systemd_path }}/devture-traefik.service"
+            state: absent

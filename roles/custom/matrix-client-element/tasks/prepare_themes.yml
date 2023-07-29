@@ -9,29 +9,29 @@
   delegate_to: 127.0.0.1
   become: false
   block:
-  - name: Ensure Element themes repository is pulled
-    ansible.builtin.git:
-      repo: "{{ matrix_client_element_themes_repository_url }}"
-      version: "{{ matrix_client_element_themes_repository_version }}"
-      dest: "{{ role_path }}/files/scratchpad/themes"
+    - name: Ensure Element themes repository is pulled
+      ansible.builtin.git:
+        repo: "{{ matrix_client_element_themes_repository_url }}"
+        version: "{{ matrix_client_element_themes_repository_version }}"
+        dest: "{{ role_path }}/files/scratchpad/themes"
 
-  - name: Find all Element theme files
-    ansible.builtin.find:
-      paths: "{{ role_path }}/files/scratchpad/themes"
-      patterns: "*.json"
-      recurse: true
-    register: matrix_client_element_theme_file_list
+    - name: Find all Element theme files
+      ansible.builtin.find:
+        paths: "{{ role_path }}/files/scratchpad/themes"
+        patterns: "*.json"
+        recurse: true
+      register: matrix_client_element_theme_file_list
 
-  - name: Read Element theme
-    ansible.builtin.slurp:
-      path: "{{ item.path }}"
-    register: "matrix_client_element_theme_file_contents"
-    with_items: "{{ matrix_client_element_theme_file_list.files }}"
+    - name: Read Element theme
+      ansible.builtin.slurp:
+        path: "{{ item.path }}"
+      register: "matrix_client_element_theme_file_contents"
+      with_items: "{{ matrix_client_element_theme_file_list.files }}"
 
-  - name: Load Element theme
-    ansible.builtin.set_fact:
-      matrix_client_element_settingDefaults_custom_themes: "{{ matrix_client_element_settingDefaults_custom_themes + [item['content'] | b64decode | from_json] }}"  # noqa var-naming
-    with_items: "{{ matrix_client_element_theme_file_contents.results }}"
+    - name: Load Element theme
+      ansible.builtin.set_fact:
+        matrix_client_element_settingDefaults_custom_themes: "{{ matrix_client_element_settingDefaults_custom_themes + [item['content'] | b64decode | from_json] }}"  # noqa var-naming
+      with_items: "{{ matrix_client_element_theme_file_contents.results }}"
 
 #
 # Tasks related to getting rid of Element themes (if it was previously enabled)

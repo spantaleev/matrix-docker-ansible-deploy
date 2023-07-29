@@ -1,0 +1,14 @@
+---
+
+- name: Download synapse-v2.rules
+  ansible.builtin.get_url:
+    url: "{{ matrix_prometheus_services_connect_synapse_rules_download_src_url }}"
+    dest: "{{ matrix_prometheus_services_connect_synapse_rules_download_dir_path }}/synapse-v2.rules"
+    force: true
+    mode: 0440
+    owner: "{{ matrix_prometheus_services_connect_synapse_rules_download_owner }}"
+    group: "{{ matrix_prometheus_services_connect_synapse_rules_download_group }}"
+  register: result
+  retries: "{{ devture_playbook_help_geturl_retries_count }}"
+  delay: "{{ devture_playbook_help_geturl_retries_delay }}"
+  until: result is not failed

@@ -1,10 +1,11 @@
 ---
 
-- name: Fail if required settings not defined
+- name: Fail if required mautrix-discord settings not defined
   ansible.builtin.fail:
     msg: >-
-      You need to define a required configuration setting (`{{ item }}`).
-  when: "vars[item] == ''"
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
   with_items:
-    - "matrix_mautrix_discord_appservice_token"
-    - "matrix_mautrix_discord_homeserver_token"
+    - {'name': 'matrix_mautrix_discord_appservice_token', when: true}
+    - {'name': 'matrix_mautrix_discord_homeserver_token', when: true}
+    - {'name': 'matrix_mautrix_discord_database_hostname', when: "{{ matrix_mautrix_discord_database_engine == 'postgres' }}"}

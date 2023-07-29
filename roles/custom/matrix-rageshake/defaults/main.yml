@@ -1,0 +1,115 @@
+---
+
+# rageshake is a bug report collection service
+# Project source code URL: https://github.com/matrix-org/rageshake
+
+matrix_rageshake_enabled: true
+
+matrix_rageshake_scheme: https
+
+# The hostname at which rageshake is served.
+matrix_rageshake_hostname: ''
+
+# The path at which rageshake is exposed.
+# This value must either be `/` or not end with a slash (e.g. `/rageshake`).
+matrix_rageshake_path_prefix: /
+
+# There are no stable container image tags yet.
+# See: https://github.com/matrix-org/rageshake/issues/69
+matrix_rageshake_version: 1.9.0
+
+matrix_rageshake_base_path: "{{ matrix_base_data_path }}/rageshake"
+matrix_rageshake_config_path: "{{ matrix_rageshake_base_path }}/config"
+matrix_rageshake_data_path: "{{ matrix_rageshake_base_path }}/data"
+matrix_rageshake_container_src_files_path: "{{ matrix_rageshake_base_path }}/container-src"
+
+matrix_rageshake_container_image: "{{ matrix_rageshake_container_image_name_prefix }}matrix-org/rageshake:{{ matrix_rageshake_container_image_tag }}"
+matrix_rageshake_container_image_name_prefix: "{{ 'localhost/' if matrix_rageshake_container_image_self_build else matrix_rageshake_container_registry_prefix }}"
+matrix_rageshake_container_image_force_pull: "{{ matrix_rageshake_container_image.endswith(':master') }}"
+matrix_rageshake_container_image_tag: "{{ matrix_rageshake_version }}"
+matrix_rageshake_container_registry_prefix: ghcr.io/
+
+matrix_rageshake_container_image_self_build: false
+matrix_rageshake_container_image_self_build_repo: "https://github.com/matrix-org/rageshake/"
+matrix_rageshake_container_image_self_build_repo_version: "{{ matrix_rageshake_version }}"
+
+# Controls whether the container exposes its HTTP port (tcp/9110 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9110"), or empty string to not expose.
+matrix_rageshake_container_http_host_bind_port: ''
+
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_rageshake_container_network: matrix-rageshake
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_rageshake_container_additional_networks: []
+
+# matrix_rageshake_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_rageshake_container_labels_additional_labels`.
+matrix_rageshake_container_labels_traefik_enabled: true
+matrix_rageshake_container_labels_traefik_docker_network: "{{ matrix_rageshake_container_network }}"
+matrix_rageshake_container_labels_traefik_hostname: "{{ matrix_rageshake_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/rageshake`).
+matrix_rageshake_container_labels_traefik_path_prefix: "{{ matrix_rageshake_path_prefix }}"
+matrix_rageshake_container_labels_traefik_rule: "Host(`{{ matrix_rageshake_container_labels_traefik_hostname }}`){% if matrix_rageshake_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_rageshake_container_labels_traefik_path_prefix }}`){% endif %}"
+matrix_rageshake_container_labels_traefik_priority: 0
+matrix_rageshake_container_labels_traefik_entrypoints: web-secure
+matrix_rageshake_container_labels_traefik_tls: "{{ matrix_rageshake_container_labels_traefik_entrypoints != 'web' }}"
+matrix_rageshake_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own headers, use `matrix_rageshake_container_labels_traefik_additional_response_headers_custom`
+matrix_rageshake_container_labels_traefik_additional_response_headers: "{{ matrix_rageshake_container_labels_traefik_additional_response_headers_auto | combine(matrix_rageshake_container_labels_traefik_additional_response_headers_custom) }}"
+matrix_rageshake_container_labels_traefik_additional_response_headers_auto: {}
+matrix_rageshake_container_labels_traefik_additional_response_headers_custom: {}
+
+# matrix_rageshake_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_rageshake_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_rageshake_container_labels_additional_labels: ''
+
+# A list of extra arguments to pass to the container
+matrix_rageshake_container_extra_arguments: []
+
+# List of systemd services that matrix-rageshake.service depends on
+matrix_rageshake_systemd_required_services_list: ["docker.service"]
+
+# List of systemd services that matrix-rageshake.service wants
+matrix_rageshake_systemd_wanted_services_list: []
+
+matrix_rageshake_config_api_prefix: "{{ matrix_rageshake_scheme }}://{{ matrix_rageshake_hostname }}{{ matrix_rageshake_path_prefix }}{{ '' if matrix_rageshake_path_prefix == '/' else '/' }}api/"
+
+# Default Rageshake configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_rageshake_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_rageshake_configuration_yaml: "{{ lookup('template', 'templates/config.yml.j2') }}"
+
+matrix_rageshake_configuration_extension_yaml: |
+  # Your custom YAML configuration for Synapse goes here.
+  # This configuration extends the default starting configuration (`matrix_rageshake_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_rageshake_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  # github_project_mappings:
+  #   my-app: octocat/HelloWorld
+
+matrix_rageshake_configuration_extension: "{{ matrix_rageshake_configuration_extension_yaml | from_yaml if matrix_rageshake_configuration_extension_yaml | from_yaml is mapping else {} }}"
+
+# Holds the final Synapse configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_rageshake_configuration_yaml`.
+matrix_rageshake_configuration: "{{ matrix_rageshake_configuration_yaml | from_yaml | combine(matrix_rageshake_configuration_extension, recursive=True) }}"

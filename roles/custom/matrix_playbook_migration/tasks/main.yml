@@ -1,5 +1,22 @@
 ---
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
+- tags:
+    - setup-all
+    - install-all
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+- tags:
+    - setup-all
+    - install-all
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/cleanup_usr_local_bin.yml"
+
+- when: devture_traefik_enabled | bool
   tags:
     - setup-all
+    - install-all
+    - setup-traefik
+    - install-traefik
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/devture_traefik_to_matrix_traefik.yml"

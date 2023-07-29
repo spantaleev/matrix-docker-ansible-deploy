@@ -51,6 +51,7 @@
     --agree-tos
     --email={{ matrix_ssl_lets_encrypt_support_email }}
     -d {{ domain_name }}
+  changed_when: true
   when: domain_name_needs_cert | bool
   register: result_certbot_direct
   ignore_errors: true
@@ -81,6 +82,7 @@
     --agree-tos
     --email={{ matrix_ssl_lets_encrypt_support_email }}
     -d {{ domain_name }}
+  changed_when: true
   when: "domain_name_needs_cert and result_certbot_direct.failed"
   register: result_certbot_proxy
   ignore_errors: true

@@ -1,13 +1,5 @@
 ---
 
-# If the matrix-synapse role is not used, `matrix_synapse_role_executed` won't exist.
-# We don't want to fail in such cases.
-- name: Fail if matrix-synapse role already executed
-  ansible.builtin.fail:
-    msg: >-
-      The matrix-bridge-mautrix-signal role needs to execute before the matrix-synapse role.
-  when: "matrix_synapse_role_executed | default(False)"
-
 - name: Ensure Mautrix Signal image is pulled
   community.docker.docker_image:
     name: "{{ matrix_mautrix_signal_docker_image }}"
@@ -129,9 +121,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-signal.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-signal.service"
     mode: 0644
-  register: matrix_mautrix_signal_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-mautrix-signal.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_mautrix_signal_systemd_service_result.changed or matrix_mautrix_signal_daemon_systemd_service_result.changed"

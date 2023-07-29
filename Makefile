@@ -8,4 +8,4 @@ roles: ## Pull roles
 	ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force
 
 lint: ## Runs ansible-lint against all roles in the playbook
-	ansible-lint
+	ansible-lint roles/custom

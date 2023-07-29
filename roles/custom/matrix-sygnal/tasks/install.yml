@@ -1,0 +1,51 @@
+---
+
+- name: Ensure Sygnal paths exists
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_sygnal_base_path }}"
+    - "{{ matrix_sygnal_config_path }}"
+    - "{{ matrix_sygnal_data_path }}"
+
+- name: Ensure Sygnal config installed
+  ansible.builtin.copy:
+    content: "{{ matrix_sygnal_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_sygnal_config_path }}/sygnal.yaml"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Sygnal labels installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/labels.j2"
+    dest: "{{ matrix_sygnal_base_path }}/labels"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Sygnal image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_sygnal_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_sygnal_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_sygnal_docker_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure Sygnal container network is created
+  community.general.docker_network:
+    name: "{{ matrix_sygnal_container_network }}"
+    driver: bridge
+
+- name: Ensure matrix-sygnal.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-sygnal.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-sygnal.service"
+    mode: 0644

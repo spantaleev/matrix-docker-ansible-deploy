@@ -3,8 +3,6 @@
 If you'd like to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service),
 you can use the [synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider) media provider module for Synapse.
 
-**`synapse-s3-storage-provider` support is very new and still relatively untested. Using it may cause data loss.**
-
 An alternative (which has worse performance) is to use [Goofys to mount the S3 store to the local filesystem](configuring-playbook-s3-goofys.md).
 
 
@@ -28,16 +26,26 @@ While you will need some local disk space around, it's only to accommodate usage
 
 ## Installing
 
-After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#bucket-creation-and-security-configuration), you can proceed to configure Goofys in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#bucket-creation-and-security-configuration), you can proceed to configure `s3-storage-provider` in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
 matrix_synapse_ext_synapse_s3_storage_provider_enabled: true
+
 matrix_synapse_ext_synapse_s3_storage_provider_config_bucket: your-bucket-name
 matrix_synapse_ext_synapse_s3_storage_provider_config_region_name: some-region-name # e.g. eu-central-1
-matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url: https://.. # delete this whole line for Amazon S3
-matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id: access-key-goes-here
-matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key: secret-key-goes-here
+matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url: https://s3.REGION_NAME.amazonaws.com # adjust this
 matrix_synapse_ext_synapse_s3_storage_provider_config_storage_class: STANDARD # or STANDARD_IA, etc.
+
+# Authentication Method 1 - (access key id + secret)
+# This works on all providers (AWS and other compatible systems).
+# Uncomment the variables below to use it.
+# matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id: access-key-goes-here
+# matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key: secret-key-goes-here
+
+# Authentication Method 2 - EC2 instance profile which grants permission to access S3
+# This only works on AWS when your server is hosted on an EC2 instance with the correct instance profile set.
+# Uncomment the variable below to use it.
+# matrix_synapse_ext_synapse_s3_storage_provider_config_ec2_instance_profile: true
 
 # For additional advanced settings, take a look at `roles/custom/matrix-synapse/defaults/main.yml`
 ```
@@ -62,26 +70,26 @@ Migrating your existing data can happen in multiple ways:
 
 Instead of using `s3_media_upload` directly, which is very slow and painful for an initial data migration, we recommend [using another tool in combination with `s3_media_upload`](#using-another-tool-in-combination-with-s3_media_upload).
 
-To copy your existing files, SSH into the server and run `/usr/local/bin/matrix-synapse-s3-storage-provider-shell`.
+To copy your existing files, SSH into the server and run `/matrix/synapse/ext/s3-storage-provider/bin/shell`.
 
 This launches a Synapse container, which has access to the local media store, Postgres database, S3 store and has some convenient environment variables configured for you to use (`MEDIA_PATH`, `BUCKET`, `ENDPOINT`, `UPDATE_DB_DAYS`, etc).
 
 Then use the following commands (`$` values come from environment variables - they're **not placeholders** that you need to substitute):
 
-- `s3_media_upload update-db $UPDATE_DB_DURATION` - create a local SQLite database (`cache.db`) with a list of media repository files (from the `synapse` Postgres database) eligible for operating on
+1. `s3_media_upload update-db $UPDATE_DB_DURATION` - create a local SQLite database (`cache.db`) with a list of media repository files (from the `synapse` Postgres database) eligible for operating on
   - `$UPDATE_DB_DURATION` is influenced by the `matrix_synapse_ext_synapse_s3_storage_provider_update_db_day_count` variable (defaults to `0`)
   - `$UPDATE_DB_DURATION` defaults to `0d` (0 days), which means **include files which haven't been accessed for more than 0 days** (that is, **all files will be included**).
-- `s3_media_upload check-deleted $MEDIA_PATH` - check whether files in the local cache still exist in the local media repository directory
-- `s3_media_upload upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT` - uploads locally-stored files to S3 and deletes them from the local media repository directory
+2. `s3_media_upload check-deleted $MEDIA_PATH` - check whether files in the local cache still exist in the local media repository directory
+3. `s3_media_upload upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT` - uploads locally-stored files to S3 and deletes them from the local media repository directory
 
 The `s3_media_upload upload` command may take a lot of time to complete.
 
-Instead of running the above commands manually in the shell, you can also run the `/usr/local/bin/matrix-synapse-s3-storage-provider-migrate` script which will run the same commands automatically. We demonstrate how to do it manually, because:
+Instead of running the above commands manually in the shell, you can also run the `/matrix/synapse/ext/s3-storage-provider/bin/migrate` script which will run the same commands automatically. We demonstrate how to do it manually, because:
 
 - it's what the upstream project demonstrates and it teaches you how to use the `s3_media_upload` tool
 - allows you to check and verify the output of each command, to catch mistakes
 - includes progress bars and detailed output for each command
-- allows you to easily interrupt slow-running commands, etc. (the `/usr/local/bin/matrix-synapse-s3-storage-provider-migrate` starts a container without interactive TTY support, so `Ctrl+C` may not work and you and require killing via `docker kill ..`)
+- allows you to easily interrupt slow-running commands, etc. (the `/matrix/synapse/ext/s3-storage-provider/bin/migrate` starts a container without interactive TTY support, so `Ctrl+C` may not work and you and require killing via `docker kill ..`)
 
 ### Using another tool in combination with `s3_media_upload`
 
@@ -93,13 +101,29 @@ To migrate your existing local data to S3, we recommend to:
 
 #### Copying data to Amazon S3
 
-Generally, you need to use the `aws s3` tool.
+To copy to AWS S3, start a container on the Matrix server like this:
 
-This documentation section could use an improvement. Ideally, we'd come up with a guide like the one used in [Copying data to Backblaze B2](#copying-data-to-backblaze-b2) - running `aws s3` in a container, etc.
+```sh
+docker run -it --rm \
+-w /work \
+--env-file=/matrix/synapse/ext/s3-storage-provider/env \
+--mount type=bind,src=/matrix/synapse/storage/media-store,dst=/work,ro \
+--entrypoint=/bin/sh \
+docker.io/amazon/aws-cli:2.9.16 \
+-c 'aws s3 sync /work/. s3://$BUCKET/'
+```
+
+#### Copying data to an S3 alternative using the aws-s3 tool
+
+To copy to a provider other than AWS S3 (e.g. Wasabi, Digital Ocean Spaces, etc.), you can use the command for [Copying data to Amazon S3](#copying-data-to-amazon-s3) with an added `--endpoint-url=$ENDPOINT` argument.
+
+Add this argument to the command **as-is** (`$ENDPOINT` is an environment variable corresponding to `matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url`, so you don't need to touch it). Make sure to add the argument **before** the final quote (`'`) of the command.
 
 #### Copying data to Backblaze B2
 
-To copy to Backblaze B2, start a container like this:
+You can copy files to Backblaze B2 either by following the [Copying data to an S3 alternative using the aws-s3 tool](#copying-data-to-an-s3-alternative-using-the-aws-s3-tool) or by using the B2-specific [b2 command-line tool](https://www.backblaze.com/b2/docs/quick_command_line.html) as described below.
+
+To copy the data using the `b2` tool, start a container on the Matrix server like this:
 
 ```sh
 docker run -it --rm \
@@ -109,7 +133,7 @@ docker run -it --rm \
 --env='B2_BUCKET_NAME=YOUR_BUCKET_NAME_GOES_HERE' \
 --mount type=bind,src=/matrix/synapse/storage/media-store,dst=/work,ro \
 --entrypoint=/bin/sh \
-tianon/backblaze-b2:3.6.0 \
+docker.io/tianon/backblaze-b2:3.6.0 \
 -c 'b2 authorize-account $B2_KEY_ID $B2_KEY_SECRET && b2 sync /work b2://$B2_BUCKET_NAME --skipNewer'
 ```
 
@@ -119,7 +143,7 @@ As described in [How it works?](#how-it-works) above, when new media is uploaded
 
 By default, we periodically ensure that all local files are uploaded to S3 and are then removed from the local filesystem. This is done automatically using:
 
-- the `/usr/local/bin/matrix-synapse-s3-storage-provider-migrate` script
+- the `/matrix/synapse/ext/s3-storage-provider/bin/migrate` script
 - .. invoked via the `matrix-synapse-s3-storage-provider-migrate.service` service
 - .. triggered by the `matrix-synapse-s3-storage-provider-migrate.timer` timer, every day at 05:00
 

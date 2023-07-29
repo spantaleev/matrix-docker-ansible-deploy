@@ -9,16 +9,7 @@
     - matrix-synapse-s3-storage-provider-migrate.service
   register: matrix_synapse_s3_storage_provider_migrate_sevice_removal
 
-- name: Ensure systemd reloaded after matrix-synapse-s3-storage-provider-migrate.service removal
-  ansible.builtin.service:
-    daemon_reload: true
-  when: matrix_synapse_s3_storage_provider_migrate_sevice_removal.changed | bool
-
 - name: Ensure s3-storage-provider files don't exist
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ matrix_synapse_ext_s3_storage_provider_base_path }}"
     state: absent
-  with_items:
-    - "{{ matrix_local_bin_path }}/matrix-synapse-s3-storage-provider-shell"
-    - "{{ matrix_local_bin_path }}/matrix-synapse-s3-storage-provider-migrate"
-    - "{{ matrix_synapse_ext_s3_storage_provider_path }}"

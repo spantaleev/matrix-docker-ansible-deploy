@@ -91,7 +91,7 @@ matrix_corporal_policy_provider_config: |
   }
 
 # Modify the policy below as you see fit
-matrix_aux_file_definitions:
+aux_file_definitions:
   - dest: "{{ matrix_corporal_config_dir_path }}/policy.json"
     content: |
       {

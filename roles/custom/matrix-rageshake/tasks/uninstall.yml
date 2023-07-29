@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-rageshake service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-rageshake.service"
+  register: matrix_rageshake_service_stat
+
+- when: matrix_rageshake_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-rageshake is stopped
+      ansible.builtin.service:
+        name: matrix-rageshake
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-rageshake.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-rageshake.service"
+        state: absent
+
+    - name: Ensure rageshake paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_rageshake_base_path }}"
+        state: absent

@@ -1,0 +1,26 @@
+---
+
+- name: Find leftover matrix scripts in /usr/local/bin
+  ansible.builtin.find:
+    path: "/usr/local/bin"
+    patterns:
+      - matrix-change-user-admin-status
+      - matrix-dendrite-create-account
+      - matrix-make-user-admin
+      - matrix-postgres-cli
+      - matrix-postgres-cli-non-interactive
+      - matrix-postgres-update-user-password-hash
+      - matrix-remove-all
+      - matrix-ssl-certificates-renew
+      - matrix-ssl-lets-encrypt-certificates-renew
+      - matrix-synapse-register-user
+      - matrix-synapse-s3-storage-provider-migrate
+      - matrix-synapse-s3-storage-provider-shell
+      - matrix-synapse-worker-write-pid
+  register: matrix_usr_local_bin_files_result
+
+- name: Ensure /usr/local/bin does not contain matrix scripts
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ matrix_usr_local_bin_files_result.files }}"

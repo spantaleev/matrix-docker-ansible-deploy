@@ -14,6 +14,10 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 ```yaml
 matrix_bot_honoroit_enabled: true
 
+# Uncomment and adjust if you'd like to change the hostname or path
+# matrix_bot_honoroit_hostname: "{{ matrix_server_fqn_matrix }}"
+# matrix_bot_honoroit_path_prefix: /honoroit
+
 # Uncomment and adjust this part if you'd like to use a username different than the default
 # matrix_bot_honoroit_login: honoroit
 

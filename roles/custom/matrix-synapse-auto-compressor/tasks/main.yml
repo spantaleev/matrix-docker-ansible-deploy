@@ -1,0 +1,20 @@
+---
+
+- tags:
+    - setup-all
+    - setup-synapse-auto-compressor
+    - install-all
+    - install-synapse-auto-compressor
+  block:
+    - when: matrix_synapse_auto_compressor_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_synapse_auto_compressor_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-synapse-auto-compressor
+  block:
+    - when: not matrix_synapse_auto_compressor_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

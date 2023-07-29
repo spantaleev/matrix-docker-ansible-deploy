@@ -1,22 +1,29 @@
 ---
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
-  tags:
-    - always
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: "run_setup | bool and matrix_mautrix_whatsapp_enabled | bool"
-  tags:
+- tags:
+    - setup-all
+    - setup-nginx-proxy
+    - install-all
+    - install-nginx-proxy
+  block:
+    - when: matrix_mautrix_whatsapp_enabled | bool and matrix_mautrix_whatsapp_metrics_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/inject_into_nginx_proxy.yml"
+
+- tags:
     - setup-all
     - setup-mautrix-whatsapp
+    - install-all
+    - install-mautrix-whatsapp
+  block:
+    - when: matrix_mautrix_whatsapp_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  when: "run_setup and matrix_mautrix_whatsapp_enabled"
-  tags:
+    - when: matrix_mautrix_whatsapp_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+- tags:
     - setup-all
     - setup-mautrix-whatsapp
-
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  when: "run_setup and not matrix_mautrix_whatsapp_enabled"
-  tags:
-    - setup-all
-    - setup-mautrix-whatsapp
+  block:
+    - when: not matrix_mautrix_whatsapp_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"

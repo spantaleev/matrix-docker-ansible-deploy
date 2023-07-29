@@ -8,7 +8,7 @@ matrix_mautrix_instagram_container_image_self_build: false
 matrix_mautrix_instagram_container_image_self_build_repo: "https://github.com/mautrix/instagram.git"
 matrix_mautrix_instagram_container_image_self_build_repo_version: "{{ 'master' if matrix_mautrix_instagram_version == 'latest' else matrix_mautrix_instagram_version }}"
 
-matrix_mautrix_instagram_version: v0.2.2
+matrix_mautrix_instagram_version: v0.3.0
 # See: https://mau.dev/tulir/mautrix-instagram/container_registry
 matrix_mautrix_instagram_docker_image: "{{ matrix_mautrix_instagram_docker_image_name_prefix }}mautrix/instagram:{{ matrix_mautrix_instagram_version }}"
 matrix_mautrix_instagram_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_instagram_container_image_self_build else 'dock.mau.dev/' }}"
@@ -47,6 +47,16 @@ matrix_mautrix_instagram_homeserver_token: ''
 # If false, created portal rooms will never be federated.
 matrix_mautrix_instagram_federate_rooms: true
 
+# Whether or not metrics endpoint should be enabled.
+# Enabling them is usually enough for a local (in-container) Prometheus to consume them.
+# If metrics need to be consumed by another (external) Prometheus server, consider exposing them via `matrix_mautrix_instagram_metrics_proxying_enabled`.
+matrix_mautrix_instagram_metrics_enabled: false
+
+# Controls whether metrics should be proxied (exposed) on `matrix.DOMAIN/metrics/mautrix-instagram`.
+# This will only work take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
+# See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
+matrix_mautrix_instagram_metrics_proxying_enabled: false
+
 # Database-related configuration fields.
 #
 # To use Postgres:
@@ -55,7 +65,7 @@ matrix_mautrix_instagram_database_engine: 'postgres'
 
 matrix_mautrix_instagram_database_username: 'matrix_mautrix_instagram'
 matrix_mautrix_instagram_database_password: 'some-password'
-matrix_mautrix_instagram_database_hostname: 'matrix-postgres'
+matrix_mautrix_instagram_database_hostname: ''
 matrix_mautrix_instagram_database_port: 5432
 matrix_mautrix_instagram_database_name: 'matrix_mautrix_instagram'
 
@@ -72,6 +82,9 @@ matrix_mautrix_instagram_appservice_database: "{{
 matrix_mautrix_instagram_login_shared_secret: ''
 
 matrix_mautrix_instagram_bridge_login_shared_secret_map: "{{ {matrix_mautrix_instagram_homeserver_domain: matrix_mautrix_instagram_login_shared_secret} if matrix_mautrix_instagram_login_shared_secret else {} }}"
+
+# Enable bridge relay bot functionality
+matrix_mautrix_instagram_relay_enabled: "{{ matrix_bridges_relay_enabled }}"
 
 matrix_mautrix_instagram_appservice_bot_username: instagrambot
 
@@ -119,3 +132,8 @@ matrix_mautrix_instagram_registration_yaml: |
   de.sorunome.msc2409.push_ephemeral: true
 
 matrix_mautrix_instagram_registration: "{{ matrix_mautrix_instagram_registration_yaml | from_yaml }}"
+
+# Enable End-to-bridge encryption
+matrix_mautrix_instagram_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
+matrix_mautrix_instagram_bridge_encryption_default: "{{ matrix_mautrix_instagram_bridge_encryption_allow }}"
+matrix_mautrix_instagram_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_instagram_bridge_encryption_allow }}"

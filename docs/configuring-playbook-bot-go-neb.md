@@ -24,6 +24,31 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.go-neb 
 Once the user is created you can [obtain an access token](obtaining-access-tokens.md).
 
 
+## Decide on a domain and path
+
+By default, Go-NEB is configured to use its own dedicated domain (`goneb.DOMAIN`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+
+You can override the domain and path like this:
+
+```yaml
+# Switch to the domain used for Matrix services (`matrix.DOMAIN`),
+# so we won't need to add additional DNS records for Go-NEB.
+matrix_bot_go_neb_hostname: "{{ matrix_server_fqn_matrix }}"
+
+# Expose under the /go-neb subpath
+matrix_bot_go_neb_path_prefix: /go-neb
+```
+
+**NOTE**: When using `matrix-nginx-proxy` instead of Traefik, you won't be able to override the path prefix. You can only override the domain, but that needs to happen using another variable: `matrix_server_fqn_go_neb` (e.g. `matrix_server_fqn_go_neb: "mybot.{{ matrix_domain }}"`).
+
+
+## Adjusting DNS records
+
+Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Go-NEB domain to the Matrix server.
+
+If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
+
+
 ## Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
@@ -193,9 +218,7 @@ matrix_bot_go_neb_services:
 
 ## Installing
 
-Don't forget to add `goneb.<your-domain>` to DNS as described in [Configuring DNS](configuring-dns.md) before running the playbook.
-
-After configuring the playbook, run the [installation](installing.md) command again:
+After potentially [adjusting DNS records](#adjusting-dns-records) and configuring the playbook, run the [installation](installing.md) command again:
 
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start

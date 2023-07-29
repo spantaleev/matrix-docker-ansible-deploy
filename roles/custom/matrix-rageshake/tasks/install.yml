@@ -1,0 +1,77 @@
+---
+
+- name: Ensure rageshake paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - path: "{{ matrix_rageshake_config_path }}"
+      when: true
+    - path: "{{ matrix_rageshake_data_path }}"
+      when: true
+    - path: "{{ matrix_rageshake_container_src_files_path }}"
+      when: matrix_rageshake_container_image_self_build | bool
+  when: "item.when | bool"
+
+- name: Ensure rageshake config file created
+  ansible.builtin.copy:
+    content: "{{ matrix_rageshake_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_rageshake_config_path }}/config.yml"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0640
+
+- name: Ensure rageshake labels installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/labels.j2"
+    dest: "{{ matrix_rageshake_base_path }}/labels"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure rageshake image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_rageshake_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_rageshake_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_rageshake_container_image_force_pull }}"
+  when: "not matrix_rageshake_container_image_self_build | bool"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure rageshake repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_rageshake_container_image_self_build_repo }}"
+    version: "{{ matrix_rageshake_container_image_self_build_version }}"
+    dest: "{{ matrix_rageshake_container_src_files_path }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
+  register: matrix_rageshake_git_pull_results
+  when: "matrix_rageshake_container_image_self_build | bool"
+
+- name: Ensure rageshake container image is built
+  ansible.builtin.command:
+    cmd: |-
+      {{ devture_systemd_docker_base_host_command_docker }} buildx build
+      --tag={{ matrix_rageshake_container_image }}
+      --file={{ matrix_rageshake_container_src_files_path }}/Dockerfile
+      {{ matrix_rageshake_container_src_files_path }}
+  changed_when: true
+  when: matrix_rageshake_container_image_self_build | bool
+
+- name: Ensure rageshake container network is created
+  community.general.docker_network:
+    name: "{{ matrix_rageshake_container_network }}"
+    driver: bridge
+
+- name: Ensure matrix-rageshake.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-rageshake.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-rageshake.service"
+    mode: 0644

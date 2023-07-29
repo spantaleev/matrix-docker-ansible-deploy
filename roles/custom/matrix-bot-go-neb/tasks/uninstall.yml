@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-go-neb service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-go-neb.service"
+  register: matrix_bot_go_neb_service_stat
+
+- when: matrix_bot_go_neb_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-go-neb is stopped
+      ansible.builtin.service:
+        name: matrix-bot-go-neb
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-bot-go-neb.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-go-neb.service"
+        state: absent
+
+    - name: Ensure Matrix go-neb paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_bot_go_neb_base_path }}"
+        state: absent

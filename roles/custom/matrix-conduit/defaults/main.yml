@@ -6,7 +6,7 @@ matrix_conduit_enabled: true
 
 matrix_conduit_docker_image: "{{ matrix_conduit_docker_image_name_prefix }}matrixconduit/matrix-conduit:{{ matrix_conduit_docker_image_tag }}"
 matrix_conduit_docker_image_name_prefix: "docker.io/"
-matrix_conduit_docker_image_tag: "v0.4.0"
+matrix_conduit_docker_image_tag: "v0.5.0"
 matrix_conduit_docker_image_force_pull: "{{ matrix_conduit_docker_image.endswith(':latest') }}"
 
 matrix_conduit_base_path: "{{ matrix_base_data_path }}/conduit"
@@ -22,6 +22,14 @@ matrix_conduit_systemd_required_services_list: ["docker.service"]
 
 # List of systemd services that matrix-conduit.service wants
 matrix_conduit_systemd_wanted_services_list: []
+
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_conduit_container_network: "{{ matrix_docker_network }}"
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_conduit_container_additional_networks: []
 
 # Extra arguments for the Docker container
 matrix_conduit_container_extra_arguments: []

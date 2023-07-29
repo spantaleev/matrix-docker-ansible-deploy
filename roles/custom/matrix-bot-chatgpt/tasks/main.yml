@@ -1,0 +1,21 @@
+---
+
+-
+  tags:
+    - setup-all
+    - setup-bot-chatgpt
+    - install-all
+    - install-bot-chatgpt
+  block:
+    - when: matrix_bot_chatgpt_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_bot_chatgpt_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-bot-chatgpt
+  block:
+    - when: not matrix_bot_chatgpt_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

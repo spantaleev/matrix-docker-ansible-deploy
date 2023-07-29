@@ -1,0 +1,64 @@
+---
+
+# synapse_auto_compressor tool
+# Project source code URL: https://github.com/matrix-org/rust-synapse-compress-state
+
+matrix_synapse_auto_compressor_enabled: true
+
+matrix_synapse_auto_compressor_version: v0.1.3
+
+matrix_synapse_auto_compressor_base_path: "{{ matrix_base_data_path }}/synapse-auto-compressor"
+matrix_synapse_auto_compressor_container_src_files_path: "{{ matrix_synapse_auto_compressor_base_path }}/container-src"
+
+matrix_synapse_auto_compressor_container_image_self_build: false
+matrix_synapse_auto_compressor_container_image_self_build_repo: "https://github.com/matrix-org/rust-synapse-compress-state.git"
+matrix_synapse_auto_compressor_container_image_self_build_version: "{{ 'main' if matrix_synapse_auto_compressor_version == 'latest' else matrix_synapse_auto_compressor_version }}"
+
+matrix_synapse_auto_compressor_container_image: "{{ matrix_synapse_auto_compressor_container_image_name_prefix }}etke.cc/rust-synapse-compress-state:{{ matrix_synapse_auto_compressor_version }}"
+matrix_synapse_auto_compressor_container_image_name_prefix: "{{ 'localhost/' if matrix_synapse_auto_compressor_container_image_self_build else 'registry.gitlab.com/' }}"
+matrix_synapse_auto_compressor_container_image_force_pull: "{{ matrix_synapse_auto_compressor_container_image.endswith(':latest') }}"
+
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_synapse_auto_compressor_container_network: matrix-synapse-auto-compressor
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_synapse_auto_compressor_container_additional_networks: []
+
+# A list of extra arguments to pass to the container
+matrix_synapse_auto_compressor_container_extra_arguments: []
+
+# List of systemd services that matrix-synapse-auto-compressor.service depends on
+matrix_synapse_auto_compressor_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-synapse-auto-compressor.service wants
+matrix_synapse_auto_compressor_systemd_wanted_services_list: []
+
+matrix_synapse_auto_compressor_database_username: 'synapse'
+matrix_synapse_auto_compressor_database_password: ''
+matrix_synapse_auto_compressor_database_hostname: ''
+matrix_synapse_auto_compressor_database_port: 5432
+matrix_synapse_auto_compressor_database_name: 'synapse'
+
+# connection string to synapse database (postgres only)
+matrix_synapse_auto_compressor_synapse_database: 'postgres://{{ matrix_synapse_auto_compressor_database_username | urlencode() }}:{{ matrix_synapse_auto_compressor_database_password | urlencode() }}@{{ matrix_synapse_auto_compressor_database_hostname }}:{{ matrix_synapse_auto_compressor_database_port }}/{{ matrix_synapse_auto_compressor_database_name }}'
+
+# systemd calendar configuration for the compressor job
+matrix_synapse_auto_compressor_calendar: "*-*-* 00:00:00"
+
+# The number of state groups to work on at once.
+# All of the entries from state_groups_state are requested from the database for state groups that are worked on.
+# Therefore small chunk sizes may be needed on machines with low memory.
+# Note: if the compressor fails to find space savings on the chunk as a whole
+# (which may well happen in rooms with lots of backfill in) then the entire chunk is skipped.
+matrix_synapse_auto_compressor_chunk_size: 500
+
+# CHUNKS_TO_COMPRESS chunks of size CHUNK_SIZE will be compressed.
+# The higher this number is set to, the longer the compressor will run for.
+matrix_synapse_auto_compressor_chunks_to_compress: 100
+
+matrix_synapse_auto_compressor_command: "synapse_auto_compressor -p $POSTGRES_LOCATION -c {{ matrix_synapse_auto_compressor_chunk_size }} -n {{ matrix_synapse_auto_compressor_chunks_to_compress }}"
+
+# Controls the POSTGRES_LOCATION environment variable
+matrix_synapse_auto_compressor_environment_variable_postgres_location: "{{ matrix_synapse_auto_compressor_synapse_database }}"

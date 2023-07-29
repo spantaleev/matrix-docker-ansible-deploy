@@ -5,27 +5,16 @@
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-registration.service"
   register: matrix_registration_service_stat
 
-- name: Ensure matrix-registration is stopped
-  ansible.builtin.service:
-    name: matrix-registration
-    state: stopped
-    enabled: false
-    daemon_reload: true
-  register: stopping_result
-  when: "matrix_registration_service_stat.stat.exists | bool"
+- when: matrix_registration_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-registration is stopped
+      ansible.builtin.service:
+        name: matrix-registration
+        state: stopped
+        enabled: false
+        daemon_reload: true
 
-- name: Ensure matrix-registration.service doesn't exist
-  ansible.builtin.file:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-registration.service"
-    state: absent
-  when: "matrix_registration_service_stat.stat.exists | bool"
-
-- name: Ensure systemd reloaded after matrix-registration.service removal
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_registration_service_stat.stat.exists | bool"
-
-- name: Ensure matrix-registration Docker image doesn't exist
-  community.docker.docker_image:
-    name: "{{ matrix_registration_docker_image }}"
-    state: absent
+    - name: Ensure matrix-registration.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-registration.service"
+        state: absent

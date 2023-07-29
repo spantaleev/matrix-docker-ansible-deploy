@@ -141,6 +141,10 @@ allow_public_rooms_over_federation: {{ matrix_synapse_allow_public_rooms_over_fe
 #
 default_room_version: {{ matrix_synapse_default_room_version|to_json }}
 
+# Set to true to automatically forget rooms for users when they leave them, either
+# normally or via a kick or ban. Defaults to false.
+forget_rooms_on_leave: {{ matrix_synapse_forget_rooms_on_leave | to_json }}
+
 # The GC threshold parameters to pass to `gc.set_threshold`, if defined
 #
 #gc_thresholds: [700, 10, 10]
@@ -555,6 +559,9 @@ templates:
   # information about using custom templates.
   #
   #custom_template_directory: /path/to/custom/templates/
+  {% if matrix_synapse_templates_custom_template_directory %}
+  custom_template_directory: {{ matrix_synapse_templates_custom_template_directory | to_json }}
+  {% endif %}
 
 # List of rooms to exclude from sync responses. This is useful for server
 # administrators wishing to group users into a room without these users being able
@@ -1220,12 +1227,12 @@ oembed:
 # This homeserver's ReCAPTCHA public key. Must be specified if
 # enable_registration_captcha is enabled.
 #
-recaptcha_public_key: {{ matrix_synapse_recaptcha_public_key|to_json }}
+recaptcha_public_key: {{ matrix_synapse_recaptcha_public_key|string|to_json }}
 
 # This homeserver's ReCAPTCHA private key. Must be specified if
 # enable_registration_captcha is enabled.
 #
-recaptcha_private_key: {{ matrix_synapse_recaptcha_private_key|to_json }}
+recaptcha_private_key: {{ matrix_synapse_recaptcha_private_key|string|to_json }}
 
 # Uncomment to enable ReCaptcha checks when registering, preventing signup
 # unless a captcha is answered. Requires a valid ReCaptcha
@@ -2238,7 +2245,7 @@ sso:
 password_config:
    # Uncomment to disable password login
    #
-   #enabled: false
+   enabled: {{ matrix_synapse_password_config_enabled|to_json }}
 
    # Uncomment to disable authentication against the local password
    # database. This is ignored if `enabled` is false, and is only useful
@@ -2344,7 +2351,7 @@ email:
   # must present a certificate that is valid for 'smtp_host'. If this option
   # is set to false, TLS will not be used.
   #
-  #enable_tls: false
+  enable_tls: {{ matrix_synapse_email_smtp_enable_tls|to_json }}
 
   # notif_from defines the "From" address to use when sending emails.
   # It must be set if email sending is enabled.
@@ -2363,7 +2370,7 @@ email:
   # subjects. It defaults to 'Matrix'.
   #
   #app_name: my_branded_matrix_server
-  app_name: Matrix
+  app_name: {{ matrix_synapse_email_app_name | to_json }}
 
   # Uncomment the following to enable sending emails for messages that the user
   # has missed. Disabled by default.
@@ -2511,7 +2518,8 @@ password_providers:
   - module: "ldap_auth_provider.LdapAuthProvider"
     config:
       enabled: true
-      uri: {{ matrix_synapse_ext_password_provider_ldap_uri | string|to_json }}
+      mode: {{ matrix_synapse_ext_password_provider_ldap_mode | string | to_json }}
+      uri: {{ matrix_synapse_ext_password_provider_ldap_uri | to_json }}
       start_tls: {{ matrix_synapse_ext_password_provider_ldap_start_tls|to_json }}
       base: {{ matrix_synapse_ext_password_provider_ldap_base | string|to_json }}
       active_directory: {{ matrix_synapse_ext_password_provider_ldap_active_directory|to_json }}
@@ -2532,6 +2540,8 @@ password_providers:
 ## Push ##
 
 push:
+  # enabled: false
+
   # Clients requesting push notifications can either have the body of
   # the message sent in the notification poke along with other details
   # like the sender, or just the event ID and room ID (`event_id_only`).
@@ -2620,7 +2630,7 @@ user_directory:
     # Uncomment to return search results containing all known users, even if that
     # user does not share a room with the requester.
     #
-    #search_all_users: true
+    search_all_users: {{ matrix_synapse_user_directory_search_all_users | to_json }}
 
     # Defines whether to prefer local users in search query results.
     # If True, local users are more likely to appear above remote users
@@ -2629,7 +2639,7 @@ user_directory:
     # Uncomment to prefer local over remote users in user directory search
     # results.
     #
-    #prefer_local_users: true
+    prefer_local_users: {{ matrix_synapse_user_directory_prefer_local_users | to_json }}
 
 
 # User Consent configuration
@@ -2836,12 +2846,6 @@ opentracing:
 
 ## Workers ##
 
-# Disables sending of outbound federation transactions on the main process.
-# Uncomment if using a federation sender worker.
-#
-#send_federation: false
-send_federation: {{ matrix_synapse_send_federation | to_json }}
-
 # It is possible to run multiple federation sender workers, in which case the
 # work is balanced across them.
 #
@@ -2859,7 +2863,6 @@ federation_sender_instances: {{ matrix_synapse_federation_sender_instances | to_
 {% if matrix_synapse_federation_pusher_instances | length > 0 %}
 pusher_instances: {{ matrix_synapse_federation_pusher_instances | to_json }}
 {% endif %}
-start_pushers: {{ matrix_synapse_start_pushers | to_json }}
 
 # When using workers this should be a map from `worker_name` to the
 # HTTP replication listener of the worker, if configured.

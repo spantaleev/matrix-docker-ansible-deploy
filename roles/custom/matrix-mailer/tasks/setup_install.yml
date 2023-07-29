@@ -1,0 +1,60 @@
+---
+
+- name: Ensure mailer base path exists
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_mailer_base_path }}", when: true}
+    - {path: "{{ matrix_mailer_container_image_self_build_src_files_path }}", when: "{{ matrix_mailer_container_image_self_build }}"}
+  when: item.when | bool
+
+- name: Ensure mailer environment variables file created
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/env-mailer.j2"
+    dest: "{{ matrix_mailer_base_path }}/env-mailer"
+    mode: 0640
+
+- name: Ensure exim-relay repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_mailer_container_image_self_build_repository_url }}"
+    dest: "{{ matrix_mailer_container_image_self_build_src_files_path }}"
+    version: "{{ matrix_mailer_container_image_self_build_version }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
+  register: matrix_mailer_git_pull_results
+  when: matrix_mailer_container_image_self_build | bool
+
+- name: Ensure exim-relay Docker image is built
+  community.docker.docker_image:
+    name: "{{ matrix_mailer_docker_image }}"
+    source: build
+    force_source: "{{ matrix_mailer_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_mailer_container_image_self_build_src_files_path }}"
+      pull: true
+  when: matrix_mailer_container_image_self_build | bool
+
+- name: Ensure exim-relay image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_mailer_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_mailer_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_docker_image_force_pull }}"
+  when: "not matrix_mailer_container_image_self_build | bool"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure matrix-mailer.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-mailer.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mailer.service"
+    mode: 0644

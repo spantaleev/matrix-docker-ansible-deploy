@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-sygnal service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-sygnal.service"
+  register: matrix_sygnal_service_stat
+
+- when: matrix_sygnal_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-sygnal is stopped
+      ansible.builtin.service:
+        name: matrix-sygnal
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-sygnal.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-sygnal.service"
+        state: absent
+
+    - name: Ensure Sygnal base directory doesn't exist
+      ansible.builtin.file:
+        path: "{{ matrix_sygnal_base_path }}"
+        state: absent

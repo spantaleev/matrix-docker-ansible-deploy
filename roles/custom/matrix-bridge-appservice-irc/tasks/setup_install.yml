@@ -1,6 +1,6 @@
 ---
 
-- ansible.builtin.import_role:
+- ansible.builtin.include_role:
     name: custom/matrix-base
     tasks_from: ensure_openssl_installed
 
@@ -60,7 +60,7 @@
 
     - when: "matrix_appservice_irc_nedb_database_path_local_stat_result.stat.exists | bool"
       block:
-        - ansible.builtin.import_tasks: "{{ role_path }}/tasks/migrate_nedb_to_postgres.yml"
+        - ansible.builtin.include_tasks: "{{ role_path }}/tasks/migrate_nedb_to_postgres.yml"
 
         - ansible.builtin.set_fact:
             matrix_appservice_irc_requires_restart: true
@@ -108,16 +108,12 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Check if Appservice IRC passkey exists
-  ansible.builtin.stat:
-    path: "{{ matrix_appservice_irc_data_path }}/passkey.pem"
-  register: irc_passkey_file
-
 - name: Generate Appservice IRC passkey if it doesn't exist
-  ansible.builtin.shell: "{{ matrix_host_command_openssl }} genpkey -out {{ matrix_appservice_irc_data_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048"
+  ansible.builtin.shell:
+    cmd: "{{ matrix_host_command_openssl }} genpkey -out {{ matrix_appservice_irc_data_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048"
+    creates: "{{ matrix_appservice_irc_data_path }}/passkey.pem"
   become: true
   become_user: "{{ matrix_user_username }}"
-  when: "not irc_passkey_file.stat.exists"
 
 # In the past, we used to generate the passkey.pem file with root, so permissions may not be okay.
 # Fix it.
@@ -199,13 +195,9 @@
     mode: 0644
   register: matrix_appservice_irc_systemd_service_result
 
-- name: Ensure systemd reloaded after matrix-appservice-irc.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_appservice_irc_systemd_service_result.changed"
-
 - name: Ensure matrix-appservice-irc.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-appservice-irc.service"
     state: restarted
+    daemon_reload: true
   when: "matrix_appservice_irc_requires_restart | bool"

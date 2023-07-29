@@ -1,0 +1,45 @@
+{% if matrix_sliding_sync_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_sliding_sync_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_sliding_sync_container_labels_traefik_docker_network }}
+{% endif %}
+
+{% set middlewares = [] %}
+
+{% if matrix_sliding_sync_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-sliding-sync-slashless-redirect.redirectregex.regex=({{ matrix_sliding_sync_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.matrix-sliding-sync-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-sliding-sync-slashless-redirect'] %}
+{% endif %}
+
+{% if matrix_sliding_sync_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-sliding-sync-strip-prefix.stripprefix.prefixes={{ matrix_sliding_sync_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + ['matrix-sliding-sync-strip-prefix'] %}
+{% endif %}
+
+{% if matrix_sliding_sync_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in matrix_sliding_sync_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.matrix-sliding-sync-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + ['matrix-sliding-sync-add-headers'] %}
+{% endif %}
+
+traefik.http.routers.matrix-sliding-sync.rule={{ matrix_sliding_sync_container_labels_traefik_rule }}
+{% if matrix_sliding_sync_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-sliding-sync.priority={{ matrix_sliding_sync_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.matrix-sliding-sync.service=matrix-sliding-sync
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-sliding-sync.middlewares={{ middlewares | join(',') }}
+{% endif %}
+traefik.http.routers.matrix-sliding-sync.entrypoints={{ matrix_sliding_sync_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-sliding-sync.tls={{ matrix_sliding_sync_container_labels_traefik_tls | to_json }}
+{% if matrix_sliding_sync_container_labels_traefik_tls %}
+traefik.http.routers.matrix-sliding-sync.tls.certResolver={{ matrix_sliding_sync_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.matrix-sliding-sync.loadbalancer.server.port=8008
+{% endif %}
+
+{{ matrix_sliding_sync_container_labels_additional_labels }}

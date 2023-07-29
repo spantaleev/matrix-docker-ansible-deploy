@@ -1,4 +1,5 @@
 ---
+
 # The bare domain name which represents your Matrix identity.
 # Matrix user ids for your server will be of the form (`@user:<matrix-domain>`).
 #
@@ -11,6 +12,21 @@ matrix_domain: ~
 # The optional matrix admin MXID, used in bridges' configs to set bridge admin user
 # Example value: "@someone:{{ matrix_domain }}"
 matrix_admin: ''
+
+# Global var to enable/disable encryption across all bridges with encryption support
+matrix_bridges_encryption_enabled: false
+
+# Global var to enable/disable relay mode across all bridges with relay mode support
+matrix_bridges_relay_enabled: false
+
+# matrix_homeserver_enabled controls whether to enable the homeserver systemd service, etc.
+#
+# Unless you're wrapping this playbook in another one
+# where you optionally wish to disable homeserver integration, you don't need to use this.
+#
+# Note: disabling this does not mean that a homeserver won't get installed.
+# Whether homeserver software is installed depends on other (`matrix_HOMESERVER_enabled`) variables - see `group_vars/matrix_servers`.
+matrix_homeserver_enabled: true
 
 # Homeserver admin contacts and support page as per MSC 1929
 # See: https://github.com/matrix-org/matrix-spec-proposals/pull/1929
@@ -62,7 +78,7 @@ matrix_server_fqn_buscarron: "buscarron.{{ matrix_domain }}"
 # This is where you access the Dimension.
 matrix_server_fqn_dimension: "dimension.{{ matrix_domain }}"
 
-# This is where you access the etherpad (if enabled via matrix_etherpad_enabled; disabled by default).
+# This is where you access the etherpad (if enabled via etherpad_enabled; disabled by default).
 matrix_server_fqn_etherpad: "etherpad.{{ matrix_domain }}"
 
 # For use with Go-NEB! (github callback url for example)
@@ -83,13 +99,19 @@ matrix_server_fqn_mautrix_wsproxy: "wsproxy.{{ matrix_domain }}"
 # This is where you access the ntfy push notification service.
 matrix_server_fqn_ntfy: "ntfy.{{ matrix_domain }}"
 
+# This is where you access rageshake.
+matrix_server_fqn_rageshake: "rageshake.{{ matrix_domain }}"
+
 matrix_federation_public_port: 8448
+
+# The name of the Traefik entrypoint for handling Matrix Federation
+matrix_federation_traefik_entrypoint: matrix-federation
 
 # The architecture that your server runs.
 # Recognized values by us are 'amd64', 'arm32' and 'arm64'.
 # Not all architectures support all services, so your experience (on non-amd64) may vary.
 # See docs/alternative-architectures.md
-matrix_architecture: amd64
+matrix_architecture: "{{ 'amd64' if ansible_architecture == 'x86_64' else ('arm64' if ansible_architecture == 'aarch64' else ('arm32' if ansible_architecture.startswith('armv') else '')) }}"
 
 # The architecture for Debian packages.
 # See: https://wiki.debian.org/SupportedArchitectures
@@ -110,13 +132,9 @@ matrix_user_gid: ~
 matrix_base_data_path: "/matrix"
 matrix_base_data_path_mode: "750"
 
+matrix_bin_path: "{{ matrix_base_data_path }}/bin"
+
 matrix_static_files_base_path: "{{ matrix_base_data_path }}/static-files"
-
-# This is now unused. We keep it so that cleanup tasks can use it.
-# To be removed in the future.
-matrix_cron_path: "/etc/cron.d"
-
-matrix_local_bin_path: "/usr/local/bin"
 
 matrix_host_command_sleep: "/usr/bin/env sleep"
 matrix_host_command_chown: "/usr/bin/env chown"
@@ -148,17 +166,25 @@ matrix_client_element_jitsi_preferredDomain: ''  # noqa var-naming
 # Controls whether Element should use End-to-End Encryption by default.
 # Setting this to false will update `/.well-known/matrix/client` and tell Element clients to avoid E2EE.
 # See: https://github.com/vector-im/element-web/blob/develop/docs/e2ee.md
-matrix_client_element_e2ee_default: true
+matrix_well_known_matrix_client_io_element_e2ee_default: true
 
 # Controls whether Element should require a secure backup set up before Element can be used.
 # Setting this to true will update `/.well-known/matrix/client` and tell Element require a secure backup.
 # See: https://github.com/vector-im/element-web/blob/develop/docs/e2ee.md
-matrix_client_element_e2ee_secure_backup_required: false
+matrix_well_known_matrix_client_io_element_e2ee_secure_backup_required: false
 
 # Controls which backup methods from ["key", "passphrase"] should be used, both is the default.
 # Setting this to other then empty will update `/.well-known/matrix/client` and tell Element which method to use
 # See: https://github.com/vector-im/element-web/blob/develop/docs/e2ee.md
-matrix_client_element_e2ee_secure_backup_setup_methods: []
+matrix_well_known_matrix_client_io_element_e2ee_secure_backup_setup_methods: []
+
+# Controls whether element related entries should be added to the client well-known. Override this to false to hide
+# element related well-known entries.
+# By default if any of the following change from their default this is set to true:
+# `matrix_well_known_matrix_client_io_element_e2ee_default`
+# `matrix_well_known_matrix_client_io_element_e2ee_secure_backup_required`
+# `matrix_well_known_matrix_client_io_element_e2ee_secure_backup_setup_methods`
+matrix_well_known_matrix_client_io_element_e2ee_entries_enabled: "{{ not matrix_well_known_matrix_client_io_element_e2ee_default or matrix_well_known_matrix_client_io_element_e2ee_secure_backup_required or matrix_well_known_matrix_client_io_element_e2ee_secure_backup_setup_methods | length > 0 }}"
 
 # Default `/.well-known/matrix/client` configuration - it covers the generic use case.
 # You can customize it by controlling the various variables inside the template file that it references.
@@ -256,13 +282,55 @@ matrix_well_known_matrix_server_enabled: true
 # See `matrix_homeserver_admin_contacts`, `matrix_homeserver_support_url`, etc.
 matrix_well_known_matrix_support_enabled: false
 
-# Controls whether Docker is automatically installed.
-# If you change this to false you must install and update Docker manually. You also need to install the docker (https://pypi.org/project/docker/) Python package.
-matrix_docker_installation_enabled: true
+matrix_homeserver_container_extra_arguments_auto: []
+matrix_homeserver_app_service_config_files_auto: []
 
-# Controls the Docker package that is installed.
-# Possible values are "docker-ce" (default) and "docker.io" (Debian).
-matrix_docker_package_name: docker-ce
+# Specifies the type of reverse-proxy used by the playbook.
+#
+# Changing this has an effect on whether a reverse-proxy is installed at all and what its type is,
+# as well as how all other services are configured.
+#
+# Valid options and a description of their behavior:
+#
+# - `playbook-managed-traefik`
+#     - the playbook will run a managed Traefik instance (matrix-traefik)
+#     - Traefik will do SSL termination, unless you disable it (e.g. `devture_traefik_config_entrypoint_web_secure_enabled: false`)
+#     - if SSL termination is enabled (as it is by default), you need to populate: `devture_traefik_config_certificatesResolvers_acme_email`
+#     - it will also install matrix-nginx-proxy in local-only mode, while we migrate the rest of the services to a Traefik-native mode of working
+#
+# - `playbook-managed-nginx`
+#     - the playbook will install matrix-nginx-proxy
+#     - matrix-nginx-proxy will do SSL termination with Certbot, unless you change that (see `matrix_ssl_retrieval_method`)
+#     - if SSL termination is enabled (as it is by default), you need to populate: `matrix_ssl_lets_encrypt_support_email`
+#
+# - `other-traefik-container`
+#     - this playbook will not install Traefik
+#     - nevertheless, the playbook expects that you would install Traefik yourself via other means
+#     - you should make sure your Traefik configuration is compatible with what the playbook would have configured (web, web-secure, matrix-federation entrypoints, etc.)
+#     - you need to set `matrix_playbook_reverse_proxyable_services_additional_network` to the name of your Traefik network
+#     - Traefik certs dumper will be enabled by default (`devture_traefik_certs_dumper_enabled`). You need to point it to your Traefik's SSL certificates (`devture_traefik_certs_dumper_ssl_dir_path`)
+#
+# - `other-nginx-non-container`
+#     - the playbook will not install matrix-nginx-proxy
+#     - however, it will still dump some nginx configuration in /matrix/nginx/conf.d
+#     - these configs are meant to be included into a locally-installed (without a container) nginx server
+#     - all container services are exposed locally (e.g. `-p 127.0.0.1:8080:8080`)
+#
+# - `other-on-same-host`
+#     - like other-nginx-non-container, but supposedly won't generate useless configuration in /matrix/nginx/conf.d in the future
+#
+# - `other-on-another-host`
+#     - like other-on-same-host, but services are exposed on all interfaces (e.g. `-p 0.0.0.0:8080:8080`)
+#     - configurable via `matrix_playbook_service_host_bind_interface_prefix`
+#
+# - `none`
+#     - no reverse-proxy will be installed
+#     - no nginx configuration will be dumped in /matrix/nginx/conf.d
+#     - no port exposure will be done for any of the container services
+#     - it's up to you to expose the ports you want, etc.
+matrix_playbook_reverse_proxy_type: ''
+
+matrix_playbook_service_host_bind_interface_prefix: "{{ '' if matrix_playbook_reverse_proxy_type not in ['other-nginx-non-container', 'other-on-same-host', 'other-on-another-host'] else ('0.0.0.0:' if matrix_playbook_reverse_proxy_type == 'other-on-another-host' else '127.0.0.1:') }}"
 
 # Variables to Control which parts of our roles run.
 run_postgres_import: true

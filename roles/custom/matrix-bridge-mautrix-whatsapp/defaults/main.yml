@@ -8,7 +8,7 @@ matrix_mautrix_whatsapp_container_image_self_build: false
 matrix_mautrix_whatsapp_container_image_self_build_repo: "https://mau.dev/mautrix/whatsapp.git"
 matrix_mautrix_whatsapp_container_image_self_build_branch: "{{ 'master' if matrix_mautrix_whatsapp_version == 'latest' else matrix_mautrix_whatsapp_version }}"
 
-matrix_mautrix_whatsapp_version: v0.7.1
+matrix_mautrix_whatsapp_version: v0.9.0
 # See: https://mau.dev/mautrix/whatsapp/container_registry
 matrix_mautrix_whatsapp_docker_image: "{{ matrix_mautrix_whatsapp_docker_image_name_prefix }}mautrix/whatsapp:{{ matrix_mautrix_whatsapp_version }}"
 matrix_mautrix_whatsapp_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_whatsapp_container_image_self_build else 'dock.mau.dev/' }}"
@@ -47,6 +47,16 @@ matrix_mautrix_whatsapp_logging_level: 'warn'
 # If false, created portal rooms will never be federated.
 matrix_mautrix_whatsapp_federate_rooms: true
 
+# Whether or not metrics endpoint should be enabled.
+# Enabling them is usually enough for a local (in-container) Prometheus to consume them.
+# If metrics need to be consumed by another (external) Prometheus server, consider exposing them via `matrix_mautrix_whatsapp_metrics_proxying_enabled`.
+matrix_mautrix_whatsapp_metrics_enabled: false
+
+# Controls whether metrics should be proxied (exposed) on `matrix.DOMAIN/metrics/mautrix-whatsapp`.
+# This will only work take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
+# See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
+matrix_mautrix_whatsapp_metrics_proxying_enabled: false
+
 # Database-related configuration fields.
 #
 # To use SQLite, stick to these defaults.
@@ -61,7 +71,7 @@ matrix_mautrix_whatsapp_sqlite_database_path_in_container: "/data/mautrix-whatsa
 
 matrix_mautrix_whatsapp_database_username: 'matrix_mautrix_whatsapp'
 matrix_mautrix_whatsapp_database_password: 'some-password'
-matrix_mautrix_whatsapp_database_hostname: 'matrix-postgres'
+matrix_mautrix_whatsapp_database_hostname: ''
 matrix_mautrix_whatsapp_database_port: 5432
 matrix_mautrix_whatsapp_database_name: 'matrix_mautrix_whatsapp'
 
@@ -87,7 +97,7 @@ matrix_mautrix_whatsapp_bridge_login_shared_secret_map:
   "{{ {matrix_mautrix_whatsapp_homeserver_domain: matrix_mautrix_whatsapp_login_shared_secret} if matrix_mautrix_whatsapp_login_shared_secret else {} }}"
 
 # Enable End-to-bridge encryption
-matrix_mautrix_whatsapp_bridge_encryption_allow: false
+matrix_mautrix_whatsapp_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
 matrix_mautrix_whatsapp_bridge_encryption_default: "{{ matrix_mautrix_whatsapp_bridge_encryption_allow }}"
 matrix_mautrix_whatsapp_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_whatsapp_bridge_encryption_allow }}"
 
@@ -101,6 +111,12 @@ matrix_mautrix_whatsapp_bridge_permissions: |
     {matrix_mautrix_whatsapp_homeserver_domain: 'user'}
     | combine({matrix_admin: 'admin'} if matrix_admin else {})
   }}
+
+# Enable bridge relay functionality
+matrix_mautrix_whatsapp_bridge_relay_enabled: "{{ matrix_bridges_relay_enabled }}"
+
+# Only allow admins on this home server to set themselves as a relay user
+matrix_mautrix_whatsapp_bridge_relay_admin_only: true
 
 # Default mautrix-whatsapp configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.

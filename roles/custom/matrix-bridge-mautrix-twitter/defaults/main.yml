@@ -8,7 +8,7 @@ matrix_mautrix_twitter_container_image_self_build: false
 matrix_mautrix_twitter_container_image_self_build_repo: "https://github.com/mautrix/twitter.git"
 matrix_mautrix_twitter_container_image_self_build_repo_version: "{{ 'master' if matrix_mautrix_twitter_version == 'latest' else matrix_mautrix_twitter_version }}"
 
-matrix_mautrix_twitter_version: v0.1.5
+matrix_mautrix_twitter_version: v0.1.6
 # See: https://mau.dev/tulir/mautrix-twitter/container_registry
 matrix_mautrix_twitter_docker_image: "{{ matrix_mautrix_twitter_docker_image_name_prefix }}mautrix/twitter:{{ matrix_mautrix_twitter_version }}"
 matrix_mautrix_twitter_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_twitter_container_image_self_build else 'dock.mau.dev/' }}"
@@ -54,7 +54,7 @@ matrix_mautrix_twitter_federate_rooms: true
 matrix_mautrix_twitter_database_engine: 'postgres'
 
 matrix_mautrix_twitter_database_username: 'matrix_mautrix_twitter'
-matrix_mautrix_twitter_database_password: ''
+matrix_mautrix_twitter_database_password: 'some-password'
 matrix_mautrix_twitter_database_hostname: ''
 matrix_mautrix_twitter_database_port: 5432
 matrix_mautrix_twitter_database_name: 'matrix_mautrix_twitter'
@@ -77,6 +77,16 @@ matrix_mautrix_twitter_appservice_bot_username: twitterbot
 
 # Specifies the default log level for all bridge loggers.
 matrix_mautrix_twitter_logging_level: WARNING
+
+# Whether or not metrics endpoint should be enabled.
+# Enabling them is usually enough for a local (in-container) Prometheus to consume them.
+# If metrics need to be consumed by another (external) Prometheus server, consider exposing them via `matrix_mautrix_twitter_metrics_proxying_enabled`.
+matrix_mautrix_twitter_metrics_enabled: false
+
+# Controls whether metrics should be proxied (exposed) on `matrix.DOMAIN/metrics/mautrix-twitter`.
+# This will only work take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
+# See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
+matrix_mautrix_twitter_metrics_proxying_enabled: false
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
@@ -117,3 +127,8 @@ matrix_mautrix_twitter_registration_yaml: |
   de.sorunome.msc2409.push_ephemeral: true
 
 matrix_mautrix_twitter_registration: "{{ matrix_mautrix_twitter_registration_yaml | from_yaml }}"
+
+# Enable End-to-bridge encryption
+matrix_mautrix_twitter_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
+matrix_mautrix_twitter_bridge_encryption_default: "{{ matrix_mautrix_twitter_bridge_encryption_allow }}"
+matrix_mautrix_twitter_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_twitter_bridge_encryption_allow }}"

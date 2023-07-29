@@ -1,23 +1,26 @@
 ---
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/init.yml"
-  tags:
-    - always
-
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/validate_config.yml"
-  when: "run_setup | bool and matrix_bot_matrix_registration_bot_enabled | bool"
-  tags:
+- tags:
     - setup-all
     - setup-bot-matrix-registration-bot
+    - install-all
+    - install-bot-matrix-registration-bot
+  block:
+    - when: matrix_bot_matrix_registration_bot_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  when: "run_setup | bool and matrix_bot_matrix_registration_bot_enabled | bool"
-  tags:
+    - when: matrix_bot_matrix_registration_bot_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+- tags:
     - setup-all
     - setup-bot-matrix-registration-bot
+  block:
+    - when: not matrix_bot_matrix_registration_bot_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
 
-- ansible.builtin.import_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
-  when: "run_setup | bool and not matrix_bot_matrix_registration_bot_enabled | bool"
-  tags:
-    - setup-all
-    - setup-bot-matrix-registration-bot
+- tags:
+    - bot-matrix-registration-bot-clean-cache
+  block:
+    - when: matrix_bot_matrix_registration_bot_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/clean_cache.yml"

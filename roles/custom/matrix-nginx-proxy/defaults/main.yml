@@ -1,7 +1,7 @@
 ---
 # Project source code URL: https://github.com/nginx/nginx
 matrix_nginx_proxy_enabled: true
-matrix_nginx_proxy_version: 1.23.2-alpine
+matrix_nginx_proxy_version: 1.25.1-alpine
 
 # We use an official nginx image, which we fix-up to run unprivileged.
 # An alternative would be an `nginxinc/nginx-unprivileged` image, but
@@ -21,6 +21,10 @@ matrix_nginx_proxy_systemd_required_services_list: ['docker.service']
 # List of systemd services that matrix-nginx-proxy.service wants
 matrix_nginx_proxy_systemd_wanted_services_list: []
 
+# The base container network.
+# Also see: matrix_nginx_proxy_container_additional_networks
+matrix_nginx_proxy_container_network: "{{ matrix_docker_network }}"
+
 # A list of additional container networks that matrix-nginx-proxy would be connected to.
 # The playbook does not create these networks, so make sure they already exist.
 #
@@ -35,6 +39,39 @@ matrix_nginx_proxy_container_additional_networks: []
 # if you wish to mount your own files into the container.
 # Contains definition objects like this: `{"src": "/outside", "dst": "/inside", "options": "rw|ro|slave|.."}
 matrix_nginx_proxy_container_additional_volumes: []
+
+# matrix_nginx_proxy_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_nginx_proxy_container_labels_additional_labels`.
+matrix_nginx_proxy_container_labels_traefik_enabled: false
+matrix_nginx_proxy_container_labels_traefik_docker_network: "{{ matrix_nginx_proxy_container_network }}"
+matrix_nginx_proxy_container_labels_traefik_entrypoints: web-secure
+matrix_nginx_proxy_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+matrix_nginx_proxy_container_labels_traefik_proxy_base_domain_enabled: "{{ matrix_nginx_proxy_base_domain_serving_enabled }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_base_domain_hostname: "{{ matrix_nginx_proxy_base_domain_hostname }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_base_domain_tls: "{{ matrix_nginx_proxy_container_labels_traefik_entrypoints != 'web' }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_base_domain_rule: "Host(`{{ matrix_nginx_proxy_container_labels_traefik_proxy_base_domain_hostname }}`)"
+
+matrix_nginx_proxy_container_labels_traefik_proxy_matrix_enabled: false
+matrix_nginx_proxy_container_labels_traefik_proxy_matrix_tls: "{{ matrix_nginx_proxy_container_labels_traefik_entrypoints != 'web' }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_matrix_client_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_matrix_client_rule: "Host(`{{ matrix_nginx_proxy_container_labels_traefik_proxy_matrix_client_hostname }}`)"
+matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_rule: "Host(`{{ matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_hostname }}`)"
+matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_entrypoint: "{{ matrix_federation_traefik_entrypoint }}"
+matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_entrypoints: "{{ matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_entrypoint }}"
+
+# matrix_nginx_proxy_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_nginx_proxy_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_nginx_proxy_container_labels_additional_labels: ''
+
 
 # A list of extra arguments to pass to the container
 matrix_nginx_proxy_container_extra_arguments: []
@@ -192,6 +229,10 @@ matrix_nginx_proxy_proxy_matrix_federation_port: 8448
 matrix_nginx_proxy_proxy_dimension_enabled: false
 matrix_nginx_proxy_proxy_dimension_hostname: "{{ matrix_server_fqn_dimension }}"
 
+# Controls whether proxying the rageshake domain should be done.
+matrix_nginx_proxy_proxy_rageshake_enabled: false
+matrix_nginx_proxy_proxy_rageshake_hostname: "{{ matrix_server_fqn_rageshake }}"
+
 # Controls whether proxying the etherpad domain should be done.
 matrix_nginx_proxy_proxy_etherpad_enabled: false
 matrix_nginx_proxy_proxy_etherpad_hostname: "{{ matrix_server_fqn_etherpad }}"
@@ -296,6 +337,11 @@ matrix_nginx_proxy_proxy_matrix_identity_api_enabled: false
 matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-ma1sd:{{ matrix_ma1sd_container_port }}"
 matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "127.0.0.1:{{ matrix_ma1sd_container_port }}"
 
+# Controls whether proxying for the media repo (`/_matrix/media`) should be done (on the matrix domain)
+matrix_nginx_proxy_proxy_media_repo_enabled: false
+matrix_nginx_proxy_proxy_media_repo_addr_with_container: "matrix-media-repo:{{ matrix_media_repo_port }}"
+matrix_nginx_proxy_proxy_media_repo_addr_sans_container: "127.0.0.1:{{ matrix_media_repo_port }}"
+
 # The addresses where the Matrix Client API is.
 # Certain extensions (like matrix-corporal) may override this in order to capture all traffic.
 matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "matrix-nginx-proxy:12080"
@@ -380,6 +426,9 @@ matrix_nginx_proxy_proxy_buscarron_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to Dimension's server configuration (matrix-dimension.conf).
 matrix_nginx_proxy_proxy_dimension_additional_server_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to Rageshake's server configuration (matrix-rageshake.conf).
+matrix_nginx_proxy_proxy_rageshake_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to etherpad's server configuration (matrix-etherpad.conf).
 matrix_nginx_proxy_proxy_etherpad_additional_server_configuration_blocks: []
@@ -561,7 +610,7 @@ matrix_ssl_lets_encrypt_staging: false
 # Learn more here: https://eff-certbot.readthedocs.io/en/stable/using.html#changing-the-acme-server
 matrix_ssl_lets_encrypt_server: ''
 
-matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v1.31.0"
+matrix_ssl_lets_encrypt_certbot_docker_image: "{{ matrix_container_global_registry_prefix }}certbot/certbot:{{ matrix_ssl_architecture }}-v2.0.0"
 matrix_ssl_lets_encrypt_certbot_docker_image_force_pull: "{{ matrix_ssl_lets_encrypt_certbot_docker_image.endswith(':latest') }}"
 matrix_ssl_lets_encrypt_certbot_standalone_http_port: 2402
 matrix_ssl_lets_encrypt_support_email: ~
@@ -574,12 +623,13 @@ matrix_ssl_lets_encrypt_support_email: ~
 matrix_ssl_lets_encrypt_container_standalone_http_host_bind_port: '80'
 
 # Specify key type of the private key algorithm.
-# Learn more here: https://eff-certbot.readthedocs.io/en/stable/using.html#using-ecdsa-keys
-matrix_ssl_lets_encrypt_key_type: rsa
+# Learn more here: https://eff-certbot.readthedocs.io/en/stable/using.html#rsa-and-ecdsa-keys
+matrix_ssl_lets_encrypt_key_type: ecdsa
 
 matrix_ssl_base_path: "{{ matrix_base_data_path }}/ssl"
 matrix_ssl_config_dir_path: "{{ matrix_ssl_base_path }}/config"
 matrix_ssl_log_dir_path: "{{ matrix_ssl_base_path }}/log"
+matrix_ssl_bin_dir_path: "{{ matrix_ssl_base_path }}/bin"
 
 # If you'd like to start some service before a certificate is obtained, specify it here.
 # This could be something like `matrix-dynamic-dns`, etc.
@@ -646,31 +696,17 @@ matrix_nginx_proxy_proxy_matrix_nginx_status_enabled: false
 matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses: ['{{ ansible_default_ipv4.address }}']
 
 
-# synapse worker activation and endpoint mappings
-matrix_nginx_proxy_synapse_workers_enabled: false
-matrix_nginx_proxy_synapse_workers_list: []
-matrix_nginx_proxy_synapse_generic_worker_client_server_locations: []
-matrix_nginx_proxy_synapse_generic_worker_federation_locations: []
-matrix_nginx_proxy_synapse_stream_writer_typing_stream_worker_client_server_locations: []
-matrix_nginx_proxy_synapse_stream_writer_to_device_stream_worker_client_server_locations: []
-matrix_nginx_proxy_synapse_stream_writer_account_data_stream_worker_client_server_locations: []
-matrix_nginx_proxy_synapse_stream_writer_receipts_stream_worker_client_server_locations: []
-matrix_nginx_proxy_synapse_stream_writer_presence_stream_worker_client_server_locations: []
-matrix_nginx_proxy_synapse_media_repository_locations: []
-matrix_nginx_proxy_synapse_user_dir_locations: []
-
-# synapse content caching
-matrix_nginx_proxy_synapse_cache_enabled: false
-matrix_nginx_proxy_synapse_cache_path: "{{ '/tmp/synapse-cache' if matrix_nginx_proxy_enabled else matrix_nginx_proxy_data_path + '/synapse-cache' }}"
-matrix_nginx_proxy_synapse_cache_keys_zone_name: "STATIC"
-matrix_nginx_proxy_synapse_cache_keys_zone_size: "10m"
-matrix_nginx_proxy_synapse_cache_inactive_time: "48h"
-matrix_nginx_proxy_synapse_cache_max_size_mb: 1024
-matrix_nginx_proxy_synapse_cache_proxy_cache_valid_time: "24h"
-
-
 # The amount of worker processes and connections
 # Consider increasing these when you are expecting high amounts of traffic
 # http://nginx.org/en/docs/ngx_core_module.html#worker_connections
 matrix_nginx_proxy_worker_processes: auto
 matrix_nginx_proxy_worker_connections: 1024
+
+# A mapping of JVB server ids to hostname/ipa addresses used to add additional jvb blocks
+# to the Jitsi's server configuration (matrix-jitsi.conf)
+# Note: avoid using the JVB server id  "jvb-1" as this is reserved for the main host.
+# Example:
+# matrix_nginx_proxy_proxy_jitsi_additional_jvbs:
+#   jvb-2: 192.168.0.1
+#   jvb-3: 192.168.0.2
+matrix_nginx_proxy_proxy_jitsi_additional_jvbs: {}

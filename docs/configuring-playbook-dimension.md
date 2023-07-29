@@ -6,14 +6,29 @@ If you're just installing Matrix services for the first time, please continue wi
 **Note**: This playbook now supports running [Dimension](https://dimension.t2bot.io) in both a federated and [unfederated](https://github.com/turt2live/matrix-dimension/blob/master/docs/unfederated.md) environments. This is handled automatically based on the value of `matrix_synapse_federation_enabled`. Enabling Dimension, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. It's something to be aware of, especially in terms of firewall whitelisting (make sure port `8448` is accessible).
 
 
-## Prerequisites
+## Decide on a domain and path
 
-The `dimension.<your-domain>` DNS record must be created. See [Configuring your DNS server](configuring-dns.md) on how to set up DNS record correctly.
+By default, Dimension is configured to use its own dedicated domain (`dimension.DOMAIN`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+
+You can override the domain and path like this:
+
+```yaml
+# Switch to another hostname compared to the default (`dimension.{{ matrix_domain }}`)
+matrix_dimension_hostname: "integrations.{{ matrix_domain }}"
+
+```
+
+While there is a `matrix_dimension_path_prefix` variable for changing the path where Dimension is served, overriding it is not possible right now due to [this Dimension issue](https://github.com/turt2live/matrix-dimension/issues/510). You must serve Dimension at a dedicated subdomain until this issue is solved.
+
+
+## Adjusting DNS records
+
+Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Dimension domain to the Matrix server.
 
 
 ## Enable
 
-[Dimension integrations manager](https://dimension.t2bot.io) installation is disabled by default. You can enable it in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+To enable Dimension, add this to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
 matrix_dimension_enabled: true
@@ -54,7 +69,7 @@ For more information on how to acquire an access token, visit [https://t2bot.io/
 
 ## Installation
 
-After these variables have been set, please run the following command to re-run setup and to restart Dimension:
+After these variables have been set and you have potentially [adjusted your DNS records](#adjusting-dns-records), please run the following command to re-run setup and to restart Dimension:
 
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start

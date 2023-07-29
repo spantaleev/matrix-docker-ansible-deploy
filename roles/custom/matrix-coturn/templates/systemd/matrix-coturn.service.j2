@@ -30,12 +30,12 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			-p {{ matrix_coturn_container_stun_tls_host_bind_port }}:5349 \
 			-p {{ matrix_coturn_container_stun_tls_host_bind_port }}:5349/udp \
 			{% endif %}
-			{% if matrix_coturn_container_turn_range_listen_interface is not none %}
+			{% if matrix_coturn_container_turn_range_listen_interface is not in [none, 'none'] %}
 			-p {{ matrix_coturn_container_turn_range_listen_interface }}{{ ':' if matrix_coturn_container_turn_range_listen_interface else '' }}{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}:{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}/udp \
 			{% endif %}
 			--mount type=bind,src={{ matrix_coturn_config_path }},dst=/turnserver.conf,ro \
 			{% for volume in matrix_coturn_container_additional_volumes %}
-			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
+			--mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options else '' }} \
 			{% endfor %}
 			{% for arg in matrix_coturn_container_extra_arguments %}
 			{{ arg }} \

@@ -1,0 +1,24 @@
+---
+
+- ansible.builtin.set_fact:
+    ma1sd_url_endpoint_public: "https://{{ matrix_server_fqn_matrix }}/_matrix/identity/api/v1"
+
+- name: Check ma1sd Identity Service
+  ansible.builtin.uri:
+    url: "{{ ma1sd_url_endpoint_public }}"
+    follow_redirects: none
+    validate_certs: "{{ matrix_ma1sd_self_check_validate_certificates }}"
+  check_mode: false
+  register: result_ma1sd
+  ignore_errors: true
+  delegate_to: 127.0.0.1
+  become: false
+
+- name: Fail if ma1sd Identity Service not working
+  ansible.builtin.fail:
+    msg: "Failed checking ma1sd is up at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ ma1sd_url_endpoint_public }}`). Is ma1sd running? Is port 443 open in your firewall? Full error: {{ result_ma1sd }}"
+  when: "result_ma1sd.failed or 'json' not in result_ma1sd"
+
+- name: Report working ma1sd Identity Service
+  ansible.builtin.debug:
+    msg: "ma1sd at `{{ matrix_server_fqn_matrix }}` is working (checked endpoint: `{{ ma1sd_url_endpoint_public }}`)"

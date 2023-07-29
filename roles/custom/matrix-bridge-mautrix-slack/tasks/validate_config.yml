@@ -1,0 +1,20 @@
+---
+
+- name: Fail if required mautrix-slack settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
+  with_items:
+    - {'name': 'matrix_mautrix_slack_appservice_token', when: true}
+    - {'name': 'matrix_mautrix_slack_homeserver_token', when: true}
+    - {'name': 'matrix_mautrix_slack_database_hostname', when: "{{ matrix_mautrix_slack_database_engine == 'postgres' }}"}
+
+- name: Fail if appservice-slack and mautrix-slack have conflicting bot usernames
+  when: matrix_appservice_slack_enabled | default(False) | bool and matrix_mautrix_slack_appservice_bot_username == matrix_appservice_slack_bot_name | default ('')
+  ansible.builtin.fail:
+    msg: |
+      The appservice-slack and mautrix-slack components are both enabled and use the same bot username ({{ matrix_mautrix_slack_appservice_bot_username }}), as per their default configuration, which causes a conflcit.
+      To resolve the conflict, make one of these components use a different username.
+      Consider either changing `matrix_mautrix_slack_appservice_bot_username` (the bot username for the mautrix-slack component) or `matrix_appservice_slack_bot_name` (the bot username for the appservice-slack component).
+      We recommend that you change the username for the newly-added (and yet unused) component.

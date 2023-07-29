@@ -5,21 +5,16 @@
     path: "/etc/systemd/system/matrix-mx-puppet-discord.service"
   register: matrix_mx_puppet_discord_service_stat
 
-- name: Ensure matrix-mx-puppet-discord is stopped
-  ansible.builtin.service:
-    name: matrix-mx-puppet-discord
-    state: stopped
-    enabled: false
-    daemon_reload: true
-  when: "matrix_mx_puppet_discord_service_stat.stat.exists"
+- when: matrix_mx_puppet_discord_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-mx-puppet-discord is stopped
+      ansible.builtin.service:
+        name: matrix-mx-puppet-discord
+        state: stopped
+        enabled: false
+        daemon_reload: true
 
-- name: Ensure matrix-mx-puppet-discord.service doesn't exist
-  ansible.builtin.file:
-    path: "/etc/systemd/system/matrix-mx-puppet-discord.service"
-    state: absent
-  when: "matrix_mx_puppet_discord_service_stat.stat.exists"
-
-- name: Ensure systemd reloaded after matrix-mx-puppet-discord.service removal
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_mx_puppet_discord_service_stat.stat.exists"
+    - name: Ensure matrix-mx-puppet-discord.service doesn't exist
+      ansible.builtin.file:
+        path: "/etc/systemd/system/matrix-mx-puppet-discord.service"
+        state: absent

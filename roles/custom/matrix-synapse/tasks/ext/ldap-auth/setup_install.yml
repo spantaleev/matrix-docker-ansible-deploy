@@ -1,0 +1,11 @@
+---
+
+- ansible.builtin.set_fact:
+    matrix_synapse_password_providers_enabled: true
+
+    matrix_synapse_additional_loggers: >
+      {{
+        matrix_synapse_additional_loggers
+       +
+        [{'name': 'ldap_auth_provider', 'level': 'INFO'}]
+      }}

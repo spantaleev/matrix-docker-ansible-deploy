@@ -1,0 +1,12 @@
+---
+
+- when: etherpad_enabled | bool and etherpad_nginx_proxy_dimension_integration_enabled | bool
+  tags:
+    - install-all
+    - setup-all
+    - install-nginx-proxy
+    - setup-nginx-proxy
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/inject_into_nginx_proxy.yml"

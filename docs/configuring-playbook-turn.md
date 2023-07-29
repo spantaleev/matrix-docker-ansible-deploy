@@ -15,6 +15,13 @@ matrix_coturn_enabled: false
 
 In that case, Synapse would not point to any Coturn servers and audio/video call functionality may fail.
 
+## Manually defining your public IP
+In the `hosts` file we explicitly ask for your server's external IP address when defining `ansible_host`, because the same value is used for configuring Coturn.
+If you'd rather use a local IP for `ansible_host`, make sure to set up `matrix_coturn_turn_external_ip_address` replacing `YOUR_PUBLIC_IP` with the pubic IP used by the server.
+
+```yaml
+matrix_coturn_turn_external_ip_address: "YOUR_PUBLIC_IP"
+```
 
 ## Using your own external Coturn server
 
@@ -36,7 +43,10 @@ If you have or want to enable [Jitsi](configuring-playbook-jitsi.md), you might 
 If you do not do it, Jitsi will fall back to an upstream service.
 
 ```yaml
-matrix_jitsi_web_stun_servers:
+jitsi_web_stun_servers:
 - stun:HOSTNAME_OR_IP:PORT
 ```
 You can put multiple host/port combinations if you like.
+
+## Further variables and configuration options
+To see all the available configuration options, check roles/custom/matrix-coturn/defaults/main.yml 

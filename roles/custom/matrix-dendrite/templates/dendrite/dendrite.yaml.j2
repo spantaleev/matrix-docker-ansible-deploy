@@ -175,7 +175,7 @@ client_api:
 
   # Prevents new users from being able to register on this homeserver, except when
   # using the registration shared secret below.
-  registration_disabled: {{ matrix_dendrite_registration_disabled|to_json }}
+  registration_disabled: {{ matrix_dendrite_client_api_registration_disabled | to_json }}
 
   # Prevents new guest accounts from being created. Guest registration is also
   # disabled implicitly by setting 'registration_disabled' above.
@@ -183,22 +183,25 @@ client_api:
 
   # If set, allows registration by anyone who knows the shared secret, regardless of
   # whether registration is otherwise disabled.
-  registration_shared_secret: {{ matrix_dendrite_registration_shared_secret | string|to_json }}
+  registration_shared_secret: {{ matrix_dendrite_client_api_registration_shared_secret | string | to_json }}
 
   # Whether to require reCAPTCHA for registration.
-  enable_registration_captcha: {{ matrix_dendrite_enable_registration_captcha|to_json }}
+  enable_registration_captcha: {{ matrix_dendrite_client_api_enable_registration_captcha | to_json }}
 
   # Settings for ReCAPTCHA.
-  recaptcha_public_key: {{ matrix_dendrite_recaptcha_public_key|to_json }}
-  recaptcha_private_key: {{ matrix_dendrite_recaptcha_private_key|to_json }}
+  recaptcha_public_key: {{ matrix_dendrite_client_api_recaptcha_public_key | to_json }}
+  recaptcha_private_key: {{ matrix_dendrite_client_api_recaptcha_private_key | to_json }}
   recaptcha_bypass_secret: ""
-  recaptcha_siteverify_api: {{ matrix_dendrite_recaptcha_siteverify_api|to_json }}
+  recaptcha_siteverify_api: {{ matrix_dendrite_client_api_recaptcha_siteverify_api | to_json }}
+  recaptcha_api_js_url: {{ matrix_dendrite_client_api_recaptcha_api_js_url | to_json }}
+  recaptcha_form_field: {{ matrix_dendrite_client_api_recaptcha_form_field | to_json }}
+  recaptcha_sitekey_class: {{ matrix_dendrite_client_api_recaptcha_sitekey_class | to_json }}
 
   # TURN server information that this homeserver should send to clients.
   turn:
     turn_user_lifetime: ""
-    turn_uris: {{ matrix_dendrite_turn_uris|to_json }}
-    turn_shared_secret: {{ matrix_dendrite_turn_shared_secret|to_json }}
+    turn_uris: {{ matrix_dendrite_client_api_turn_uris | to_json }}
+    turn_shared_secret: {{ matrix_dendrite_client_api_turn_shared_secret | to_json }}
     turn_username: ""
     turn_password: ""
 
@@ -206,9 +209,9 @@ client_api:
   # threshold number of "slots" have been taken by requests from a specific
   # host. Each "slot" will be released after the cooloff time in milliseconds.
   rate_limiting:
-    enabled: {{ matrix_dendrite_rate_limiting_enabled|to_json }}
-    threshold: {{ matrix_dendrite_rate_limiting_threshold|to_json }}
-    cooloff_ms: {{ matrix_dendrite_rate_limiting_cooloff_ms|to_json }}
+    enabled: {{ matrix_dendrite_client_api_rate_limiting_enabled | to_json }}
+    threshold: {{ matrix_dendrite_client_api_rate_limiting_threshold | to_json }}
+    cooloff_ms: {{ matrix_dendrite_client_api_rate_limiting_cooloff_ms | to_json }}
     exempt_user_ids:
     #  - "@user:domain.com"
 
@@ -220,7 +223,7 @@ federation_api:
   external_api:
     listen: http://0.0.0.0:8072
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_federationapi_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_federation_api_database }}?sslmode=disable
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -263,7 +266,7 @@ key_server:
     listen: http://0.0.0.0:7779
     connect: http://key_server:7779
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_keyserver_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_key_server_database }}?sslmode=disable
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -276,7 +279,7 @@ media_api:
   external_api:
     listen: http://0.0.0.0:8074
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_mediaapi_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_media_api_database }}?sslmode=disable
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -290,10 +293,10 @@ media_api:
   max_file_size_bytes: {{ matrix_dendrite_max_file_size_bytes|to_json }}
 
   # Whether to dynamically generate thumbnails if needed.
-  dynamic_thumbnails: false
+  dynamic_thumbnails: {{ matrix_dendrite_media_api_dynamic_thumbnails|to_json }}
 
   # The maximum number of simultaneous thumbnail generators to run.
-  max_thumbnail_generators: 10
+  max_thumbnail_generators: {{ matrix_dendrite_media_api_max_thumbnail_generators|to_json }}
 
   # A list of thumbnail sizes to be generated for media content.
   thumbnail_sizes:
@@ -339,7 +342,7 @@ sync_api:
   external_api:
     listen: http://0.0.0.0:8073
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_syncapi_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_sync_api_database }}?sslmode=disable
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -352,7 +355,7 @@ sync_api:
   # Configuration for the full-text search engine.
   search:
     # Whether or not search is enabled.
-    enabled: false
+    enabled: {{ matrix_dendrite_sync_api_search_enabled|to_json }}
     # The path where the search index will be created in.
     index_path: "/matrix-media-store-parent/searchindex"
     # The language most likely to be used on the server - used when indexing, to
@@ -373,7 +376,7 @@ user_api:
     listen: http://0.0.0.0:7781
     connect: http://user_api:7781
   account_database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_userapi_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_user_api_database }}?sslmode=disable
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -382,6 +385,7 @@ user_api:
   # is considered to be valid in milliseconds.
   # The default lifetime is 3600000ms (60 minutes).
   # openid_token_lifetime_ms: 3600000
+  auto_join_rooms: {{ matrix_dendrite_user_api_auto_join_rooms | to_json }}
 
 # Not in dendrite-config.yaml, but is in build/docker/config/dendrite.yaml
 # Configuration for the Push Server API.
@@ -390,10 +394,16 @@ push_server:
     listen: http://localhost:7782
     connect: http://localhost:7782
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_pushserver_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_push_server_database }}?sslmode=disable
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
+
+#
+#
+relay_api:
+  database:
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_relay_api_database }}?sslmode=disable
 
 # Configuration for Opentracing.
 # See https://github.com/matrix-org/dendrite/tree/master/docs/tracing for information on
@@ -414,3 +424,7 @@ tracing:
 # Logging configuration, in addition to the standard logging that is sent to
 # stdout by Dendrite.
 logging: []
+
+# statistics reporting configuration. These statistics contain the server
+# name, number of active users and some information on your deployment config.
+report_stats: {{ matrix_dendrite_report_stats|to_json }}

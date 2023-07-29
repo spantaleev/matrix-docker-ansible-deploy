@@ -16,18 +16,27 @@ Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-bot-honoroit 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-bot-honoroit 2>/dev/null || true'
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-bot-honoroit \
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-bot-honoroit \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--read-only \
-			--network={{ matrix_docker_network }} \
+			--network={{ matrix_bot_honoroit_container_network }} \
 			--env-file={{ matrix_bot_honoroit_config_path }}/env \
+			--label-file={{ matrix_bot_honoroit_config_path }}/labels \
 			--mount type=bind,src={{ matrix_bot_honoroit_data_path }},dst=/data \
 			{% for arg in matrix_bot_honoroit_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_bot_honoroit_docker_image }}
+
+{% for network in matrix_bot_honoroit_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-bot-honoroit
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-bot-honoroit
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-bot-honoroit 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-bot-honoroit 2>/dev/null || true'

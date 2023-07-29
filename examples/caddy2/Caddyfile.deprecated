@@ -1,0 +1,269 @@
+(cors) {
+	@cors_preflight method OPTIONS
+
+	handle @cors_preflight {
+		header Access-Control-Allow-Origin "{args.0}"
+		header Access-Control-Allow-Methods "HEAD, GET, POST, PUT, PATCH, DELETE"
+		header Access-Control-Allow-Headers "Content-Type, Authorization"
+		header Access-Control-Max-Age "3600"
+	}
+}
+
+
+matrix.DOMAIN.tld {
+
+  # creates letsencrypt certificate
+  # tls your@email.com
+
+  @identity {
+        path /_matrix/identity/*
+  }
+
+  @noidentity {
+        not path /_matrix/identity/*
+  }
+
+  @search {
+        path /_matrix/client/r0/user_directory/search/*
+  }
+
+  @nosearch {
+        not path /_matrix/client/r0/user_directory/search/*
+  }
+
+  @static {
+        path /matrix/static-files/*
+  }
+
+  @nostatic {
+        not path /matrix/static-files/*
+  }
+
+  @wellknown {
+        path /.well-known/matrix/*
+  }
+
+  header {
+        # Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        # Enable cross-site filter (XSS) and tell browser to block detected attacks
+        X-XSS-Protection "1; mode=block"
+        # Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
+        X-Content-Type-Options "nosniff"
+        # Disallow the site to be rendered within a frame (clickjacking protection)
+        X-Frame-Options "DENY"
+        # X-Robots-Tag
+        X-Robots-Tag "noindex, noarchive, nofollow"
+  }
+
+  # Cache
+  header @static {
+        # Cache
+    Cache-Control "public, max-age=31536000"
+    defer
+  }
+
+  # identity
+  handle @identity {
+        reverse_proxy localhost:8090  {
+               header_up X-Forwarded-Port {http.request.port}
+               header_up X-Forwarded-Proto {http.request.scheme}
+               header_up X-Forwarded-TlsProto {tls_protocol}
+               header_up X-Forwarded-TlsCipher {tls_cipher}
+               header_up X-Forwarded-HttpsProto {proto}
+        }
+  }
+
+  # search
+  handle @search {
+        reverse_proxy localhost:8090   {
+               header_up X-Forwarded-Port {http.request.port}
+               header_up X-Forwarded-Proto {http.request.scheme}
+               header_up X-Forwarded-TlsProto {tls_protocol}
+               header_up X-Forwarded-TlsCipher {tls_cipher}
+               header_up X-Forwarded-HttpsProto {proto}
+        }
+  }
+
+  handle @wellknown {
+        encode zstd gzip
+        root * /matrix/static-files
+	header Cache-Control max-age=14400
+        header Content-Type application/json
+        header Access-Control-Allow-Origin *
+        file_server
+  }
+  
+  # If you have other well-knowns already handled by your base domain, you can replace the above block by this one, along with the replacement suggested in the base domain
+  #handle @wellknown {
+  #  # .well-known is handled by base domain
+  #  reverse_proxy https://DOMAIN.tld {
+  #  header_up Host {http.reverse_proxy.upstream.hostport}
+  #}
+
+  handle {
+        encode zstd gzip
+
+        reverse_proxy localhost:8008  {
+               header_up X-Forwarded-Port {http.request.port}
+               header_up X-Forwarded-Proto {http.request.scheme}
+               header_up X-Forwarded-TlsProto {tls_protocol}
+               header_up X-Forwarded-TlsCipher {tls_cipher}
+               header_up X-Forwarded-HttpsProto {proto}
+        }
+  }
+}
+
+matrix.DOMAIN.tld:8448 {
+    handle {
+        encode zstd gzip
+
+        reverse_proxy 127.0.0.1:8048 {
+               header_up X-Forwarded-Port {http.request.port}
+               header_up X-Forwarded-Proto {http.request.scheme}
+               header_up X-Forwarded-TlsProto {tls_protocol}
+               header_up X-Forwarded-TlsCipher {tls_cipher}
+               header_up X-Forwarded-HttpsProto {proto}
+        }
+    }
+}
+
+element.DOMAIN.tld {
+
+      # creates letsencrypt certificate
+      # tls your@email.com
+
+      import cors https://*.DOMAIN.tld
+
+      header {
+                # Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
+                Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+                # Enable cross-site filter (XSS) and tell browser to block detected attacks
+                X-XSS-Protection "1; mode=block"
+                # Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
+                X-Content-Type-Options "nosniff"
+                # Disallow the site to be rendered within a frame (clickjacking protection)
+                X-Frame-Options "DENY"
+                # If using integrations that add frames to Element, such as Dimension and its integrations running on the same domain, it can be a good idea to limit sources allowed to be rendered
+                # Content-Security-Policy frame-src https://*.DOMAIN.tld
+                # X-Robots-Tag
+                X-Robots-Tag "noindex, noarchive, nofollow"
+        }
+
+        handle {
+              encode zstd gzip
+
+              reverse_proxy localhost:8765 {
+                     header_up X-Forwarded-Port {http.request.port}
+                     header_up X-Forwarded-Proto {http.request.scheme}
+                     header_up X-Forwarded-TlsProto {tls_protocol}
+                     header_up X-Forwarded-TlsCipher {tls_cipher}
+                     header_up X-Forwarded-HttpsProto {proto}
+        }
+}
+
+#dimension.DOMAIN.tld {
+#
+#      # creates letsencrypt certificate
+#      # tls your@email.com
+#
+#      import cors https://*.DOMAIN.tld
+#
+#      header {
+#          # Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
+#          Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+#          # Enable cross-site filter (XSS) and tell browser to block detected attacks
+#          X-XSS-Protection "1; mode=block"
+#          # Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
+#          X-Content-Type-Options "nosniff"
+#          # Only allow same base domain to render this website in a frame; Can be removed if the client (Element for example) is hosted on another domain (clickjacking protection)
+#          Content-Security-Policy frame-ancestors https://*.DOMAIN.tld
+#          # X-Robots-Tag
+#          X-Robots-Tag "noindex, noarchive, nofollow"
+#    }
+#
+#      handle {
+#          encode zstd gzip
+#
+#          reverse_proxy localhost:8184  {
+#                  header_up X-Forwarded-Port {http.request.port}
+#                  header_up X-Forwarded-Proto {http.request.scheme}
+#                  header_up X-Forwarded-TlsProto {tls_protocol}
+#                  header_up X-Forwarded-TlsCipher {tls_cipher}
+#                  header_up X-Forwarded-HttpsProto {proto}
+#          }
+#    }
+#}
+
+
+#jitsi.DOMAIN.tld {
+#
+#  creates letsencrypt certificate
+#  tls your@email.com
+#
+#  import cors https://*.DOMAIN.tld
+#
+#  header {
+#        # Enable HTTP Strict Transport Security (HSTS) to force clients to always connect via HTTPS
+#        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+#
+#        # Enable cross-site filter (XSS) and tell browser to block detected attacks
+#        X-XSS-Protection "1; mode=block"
+#
+#        # Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
+#        X-Content-Type-Options "nosniff"
+
+#        # Only allow same base domain to render this website in a frame; Can be removed if the client (Element for example) is hosted on another domain
+#        Content-Security-Policy frame-ancestors https://*.DOMAIN.tld
+#
+#        # Disable some features
+#        Feature-Policy "accelerometer 'none';ambient-light-sensor 'none'; autoplay 'none';camera 'none';encrypted-media 'none';focus-without-user-activation 'none'; geolocation 'none';gyroscope #'none';magnetometer 'none';microphone 'none';midi 'none';payment 'none';picture-in-picture 'none'; speaker 'none';sync-xhr 'none';usb 'none';vr 'none'"
+#
+#        # Referer
+#        Referrer-Policy "no-referrer"
+#
+#        # X-Robots-Tag
+#        X-Robots-Tag "none"
+#
+#        # Remove Server header
+#        -Server
+#  }
+#
+#  handle {
+#        encode zstd gzip
+#
+#        reverse_proxy 127.0.0.1:13080 {
+#               header_up X-Forwarded-Port {http.request.port}
+#               header_up X-Forwarded-Proto {http.request.scheme}
+#               header_up X-Forwarded-TlsProto {tls_protocol}
+#               header_up X-Forwarded-TlsCipher {tls_cipher}
+#               header_up X-Forwarded-HttpsProto {proto}
+#        }
+#  }
+#}
+#DOMAIN.com {
+# Uncomment this if you are following "(Option 3): Setting up reverse-proxying of the well-known files from the base domain's server to the Matrix server" of https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-well-known.md#option-3-setting-up-reverse-proxying-of-the-well-known-files-from-the-base-domains-server-to-the-matrix-server
+#    @wellknown {
+#        path /.well-known/matrix/*
+#    }
+#
+#    handle @wellknown {
+#        reverse_proxy https://matrix.DOMAIN.com {
+#            header_up Host {http.reverse_proxy.upstream.hostport}
+#        }
+#    }
+#    # If you have other well-knowns already handled by your base domain, you can replace the above block by this one, along with the replacement suggested in the matrix subdomain
+#      # handle /.well-known/* {
+#	#	encode zstd gzip
+#	#	header Cache-Control max-age=14400
+#	#	header Content-Type application/json
+#	#	header Access-Control-Allow-Origin *
+#	#}
+#
+#    # Configration for the base domain goes here
+#   # handle {
+#   #    header -Server
+#   #     encode zstd gzip
+#   #    reverse_proxy localhost:4020
+#   # }
+#}

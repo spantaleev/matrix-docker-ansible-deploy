@@ -10,7 +10,7 @@ If you'd like to use an external PostgreSQL server that you manage, you can edit
 If you'd like to use an external Postgres server, use a custom `vars.yml` configuration like this:
 
 ```yaml
-matrix_postgres_enabled: false
+devture_postgres_enabled: false
 
 # Rewire Synapse to use your external Postgres server
 matrix_synapse_database_host: "your-postgres-server-hostname"

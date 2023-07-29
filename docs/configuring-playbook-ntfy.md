@@ -15,17 +15,23 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 
 ```yaml
 # Enabling it is the only required setting
-matrix_ntfy_enabled: true
+ntfy_enabled: true
 
-# Some other options
-matrix_server_fqn_ntfy: "ntfy.{{ matrix_domain }}"
-matrix_ntfy_configuration_extension_yaml: |
-  log_level: DEBUG
+# This is the default hostname.
+# Uncomment the line below and change it, if you'd like.
+# matrix_server_fqn_ntfy: "ntfy.{{ matrix_domain }}"
+
+# Uncomment to enable the ntfy web app (disabled by default)
+# ntfy_web_root: app  # defaults to "disable"
+
+# Uncomment and change to inject additional configuration options.
+# ntfy_configuration_extension_yaml: |
+#   log_level: DEBUG
 ```
 
-For a more complete list of variables that you could override, see `roles/custom/matrix-ntfy/defaults/main.yml`.
+For a more complete list of variables that you could override, see the [`defaults/main.yml` file](https://gitlab.com/etke.cc/roles/ntfy/-/blob/main/defaults/main.yml) of the ntfy Ansible role.
 
-For a complete list of ntfy config options that you could put in `matrix_ntfy_configuration_extension_yaml`, see the [ntfy config documentation](https://ntfy.sh/docs/config/#config-options).
+For a complete list of ntfy config options that you could put in `ntfy_configuration_extension_yaml`, see the [ntfy config documentation](https://ntfy.sh/docs/config/#config-options).
 
 
 ## Installing
@@ -77,6 +83,12 @@ Steps needed for specific matrix apps:
 If the matrix app asks, "Choose a distributor: FCM Fallback or ntfy", then choose "ntfy".
 
 If the matrix app doesn't seem to pick it up, try restarting it and try the Troubleshooting section below.
+
+### Web App
+
+ntfy also has a web app to subscribe to and push to topics from the browser. This may be helpful to further troubleshoot UnifiedPush problems or to use ntfy for other purposes. The web app only runs in the browser locally (after downloading the JavaScript).
+
+The web app is disabled in this playbook by default as the expectation is that most users won't use it. You can either use the [official hosted one](https://ntfy.sh/app) (it supports using other public reachable ntfy instances) or host it yourself by setting `ntfy_web_root: "app"` and re-running Ansible.
 
 
 ## Troubleshooting

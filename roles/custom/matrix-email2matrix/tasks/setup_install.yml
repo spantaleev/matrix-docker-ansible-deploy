@@ -61,9 +61,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-email2matrix.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-email2matrix.service"
     mode: 0644
-  register: matrix_email2matrix_systemd_service_result
-
-- name: Ensure systemd reloaded after matrix-email2matrix.service installation
-  ansible.builtin.service:
-    daemon_reload: true
-  when: "matrix_email2matrix_systemd_service_result.changed | bool"

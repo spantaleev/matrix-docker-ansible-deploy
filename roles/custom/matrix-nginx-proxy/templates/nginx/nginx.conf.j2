@@ -39,12 +39,23 @@ http {
 
 	{% if matrix_nginx_proxy_access_log_enabled %}
 	access_log /var/log/nginx/access.log main;
-	{% else %}
+	{% endif %}
+
+	{% if matrix_nginx_proxy_access_log_syslog_integration_enabled %}
+	log_format prometheus_fmt 'matrix-nginx-proxy $server_name - $upstream_addr - $remote_addr - $remote_user [$time_local] '
+								'$host "$request" '
+								'$status "$http_referer" '
+								'"$http_user_agent" "$http_x_forwarded_for"';
+
+	access_log syslog:server={{ matrix_nginx_proxy_access_log_syslog_integration_server_port }},tag=matrix_nginx_proxy prometheus_fmt;
+	{% endif %}
+
+	{% if not matrix_nginx_proxy_access_log_enabled and not matrix_nginx_proxy_access_log_syslog_integration_enabled %}
 	access_log off;
 	{% endif %}
-	
+
 	proxy_connect_timeout       {{ matrix_nginx_proxy_connect_timeout }};
-	proxy_send_timeout          {{  matrix_nginx_proxy_send_timeout }};
+	proxy_send_timeout          {{ matrix_nginx_proxy_send_timeout }};
 	proxy_read_timeout          {{ matrix_nginx_proxy_read_timeout }};
 	send_timeout                {{ matrix_nginx_send_timeout }};
 

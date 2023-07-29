@@ -35,34 +35,6 @@ To use Synapse Admin, you need to have [registered at least one administrator ac
 
 The Homeserver URL to use on Synapse Admin's login page is: `https://matrix.DOMAIN`
 
-### Sample configuration for running behind Traefik 2.0
-
-Below is a sample configuration for using this playbook with a [Traefik](https://traefik.io/) 2.0 reverse proxy.
-
-This an extension to Traefik config sample in [own-webserver-documentation](./configuring-playbook-own-webserver.md).
-
-```yaml
-# Don't bind any HTTP or federation port to the host
-# (Traefik will proxy directly into the containers)
-matrix_synapse_admin_container_http_host_bind_port: ""
-
-matrix_synapse_admin_container_extra_arguments:
-    # May be unnecessary depending on Traefik config, but can't hurt
-    - '--label "traefik.enable=true"'
-
-    # The Synapse Admin container will only receive traffic from this subdomain and path
-    - '--label "traefik.http.routers.matrix-synapse-admin.rule=(Host(`{{ matrix_server_fqn_matrix }}`) && Path(`{{matrix_synapse_admin_public_endpoint}}`))"'
-
-    # (Define your entrypoint)
-    - '--label "traefik.http.routers.matrix-synapse-admin.entrypoints=web-secure"'
-
-    # (The 'default' certificate resolver must be defined in Traefik config)
-    - '--label "traefik.http.routers.matrix-synapse-admin.tls.certResolver=default"'
-
-    # The Synapse Admin container uses port 80 by default
-    - '--label "traefik.http.services.matrix-synapse-admin.loadbalancer.server.port=80"'
-```
-
 ### Sample configuration for running behind Caddy v2
 
 Below is a sample configuration for using this playbook with a [Caddy](https://caddyserver.com/v2) 2.0 reverse proxy (non-default configuration where `matrix-nginx-proxy` is disabled - `matrix_nginx_proxy_enabled: false`).

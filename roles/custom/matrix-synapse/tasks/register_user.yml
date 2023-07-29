@@ -28,6 +28,7 @@
   when: "start_result.changed"
 
 - name: Register user
-  ansible.builtin.command: "{{ matrix_local_bin_path }}/matrix-synapse-register-user {{ username | quote }} {{ password | quote }} {{ '1' if admin == 'yes' else '0' }}"
+  ansible.builtin.command:
+    cmd: "{{ matrix_synapse_bin_path }}/register-user {{ username | quote }} {{ password | quote }} {{ '1' if admin == 'yes' else '0' }}"
   register: matrix_synapse_register_user_result
   changed_when: matrix_synapse_register_user_result.rc == 0

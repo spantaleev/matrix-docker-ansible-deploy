@@ -3,12 +3,13 @@
 - name: Fail if required matrix-registration settings not defined
   ansible.builtin.fail:
     msg: >
-      You need to define a required configuration setting (`{{ item }}`) for using matrix-registration.
-  when: "vars[item] == ''"
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
   with_items:
-    - "matrix_registration_shared_secret"
-    - "matrix_registration_admin_secret"
-    - "matrix_registration_server_location"
+    - {'name': 'matrix_registration_shared_secret', when: true}
+    - {'name': 'matrix_registration_admin_secret', when: true}
+    - {'name': 'matrix_registration_server_location', when: true}
+    - {'name': 'matrix_registration_database_hostname', when: "{{ matrix_registration_database_engine == 'postgres' }}"}
 
 - name: (Deprecation) Catch and report renamed settings
   ansible.builtin.fail:

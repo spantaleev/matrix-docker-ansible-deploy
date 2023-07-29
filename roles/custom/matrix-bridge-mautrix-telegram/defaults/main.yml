@@ -9,16 +9,18 @@ matrix_telegram_lottieconverter_container_image_self_build_mask_arch: false
 matrix_telegram_lottieconverter_docker_repo: "https://mau.dev/tulir/lottieconverter.git"
 matrix_telegram_lottieconverter_docker_repo_version: "master"
 matrix_telegram_lottieconverter_docker_src_files_path: "{{ matrix_base_data_path }}/lotticonverter/docker-src"
-matrix_telegram_lottieconverter_docker_image: "dock.mau.dev/tulir/lottieconverter:alpine-3.16"  # needs to be adjusted according to the FROM clause of Dockerfile of mautrix-telegram
+matrix_telegram_lottieconverter_docker_image: "{{ matrix_telegram_lottieconverter_docker_image_name_prefix }}tulir/lottieconverter:alpine-3.16"  # needs to be adjusted according to the FROM clause of Dockerfile of mautrix-telegram
+matrix_telegram_lottieconverter_docker_image_name_prefix: "{{ 'localhost/' if matrix_telegram_lottieconverter_container_image_self_build else 'dock.mau.dev/' }}"
 
 matrix_mautrix_telegram_container_image_self_build: false
 matrix_mautrix_telegram_docker_repo: "https://mau.dev/mautrix/telegram.git"
 matrix_mautrix_telegram_docker_repo_version: "{{ 'master' if matrix_mautrix_telegram_version == 'latest' else matrix_mautrix_telegram_version }}"
 matrix_mautrix_telegram_docker_src_files_path: "{{ matrix_base_data_path }}/mautrix-telegram/docker-src"
 
-matrix_mautrix_telegram_version: v0.12.1
+matrix_mautrix_telegram_version: v0.14.1
 # See: https://mau.dev/mautrix/telegram/container_registry
-matrix_mautrix_telegram_docker_image: "dock.mau.dev/mautrix/telegram:{{ matrix_mautrix_telegram_version }}"
+matrix_mautrix_telegram_docker_image: "{{ matrix_mautrix_telegram_docker_image_name_prefix }}mautrix/telegram:{{ matrix_mautrix_telegram_version }}"
+matrix_mautrix_telegram_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_telegram_container_image_self_build else 'dock.mau.dev/' }}"
 matrix_mautrix_telegram_docker_image_force_pull: "{{ matrix_mautrix_telegram_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_telegram_base_path: "{{ matrix_base_data_path }}/mautrix-telegram"
@@ -95,7 +97,7 @@ matrix_mautrix_telegram_sqlite_database_path_in_container: "/data/mautrix-telegr
 
 matrix_mautrix_telegram_database_username: 'matrix_mautrix_telegram'
 matrix_mautrix_telegram_database_password: 'some-password'
-matrix_mautrix_telegram_database_hostname: 'matrix-postgres'
+matrix_mautrix_telegram_database_hostname: ''
 matrix_mautrix_telegram_database_port: 5432
 matrix_mautrix_telegram_database_name: 'matrix_mautrix_telegram'
 
@@ -161,6 +163,6 @@ matrix_mautrix_telegram_alias_template: 'telegram_{groupname}'
 matrix_mautrix_telegram_displayname_template: '{displayname} (Telegram)'
 
 # Enable End-to-bridge encryption
-matrix_mautrix_telegram_bridge_encryption_allow: false
+matrix_mautrix_telegram_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
 matrix_mautrix_telegram_bridge_encryption_default: "{{ matrix_mautrix_telegram_bridge_encryption_allow }}"
 matrix_mautrix_telegram_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_telegram_bridge_encryption_allow }}"

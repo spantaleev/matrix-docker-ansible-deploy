@@ -1,0 +1,29 @@
+---
+- name: Check existence of matrix-synapse-auto-compressor service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse-auto-compressor.service"
+  register: matrix_synapse_auto_compressor_service_stat
+
+- when: matrix_synapse_auto_compressor_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-synapse-auto-compressor is stopped
+      ansible.builtin.service:
+        name: matrix-synapse-auto-compressor
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-synapse-auto-compressor.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse-auto-compressor.service"
+        state: absent
+
+    - name: Ensure matrix-synapse-auto-compressor.timer doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse-auto-compressor.timer"
+        state: absent
+
+    - name: Ensure Matrix synapse-auto-compressor paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_synapse_auto_compressor_base_path }}"
+        state: absent

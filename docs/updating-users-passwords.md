@@ -1,6 +1,6 @@
 # Updating users passwords
 
-## Option 1 (if you are using the default matrix-postgres container):
+## Option 1 (if you are using the integrated Postgres database):
 
 You can reset a user's password via the Ansible playbook (make sure to edit the `<your-username>` and `<your-password>` part below):
 
@@ -36,7 +36,7 @@ Use the Synapse User Admin API as described here: https://github.com/matrix-org/
 
 This requires an [access token](obtaining-access-tokens.md) from a server admin account. *This method will also log the user out of all of their clients while the other options do not.*
 
-If you didn't make your account a server admin when you created it, you can use the `/usr/local/bin/matrix-change-user-admin-status` script as described in [registering-users.md](registering-users.md).
+If you didn't make your account a server admin when you created it, you can learn how to switch it now by reading about it in [Adding/Removing Administrator privileges to an existing Synapse user](registering-users.md#addingremoving-administrator-privileges-to-an-existing-synapse-user).
 
 ### Example:
 To set @user:domain.com's password to `correct_horse_battery_staple` you could use this curl command:

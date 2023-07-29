@@ -1,0 +1,20 @@
+---
+
+- tags:
+    - setup-all
+    - setup-sliding-sync
+    - install-all
+    - install-sliding-sync
+  block:
+    - when: matrix_sliding_sync_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_sliding_sync_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-sliding-sync
+  block:
+    - when: not matrix_sliding_sync_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

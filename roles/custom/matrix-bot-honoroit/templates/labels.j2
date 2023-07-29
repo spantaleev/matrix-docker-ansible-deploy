@@ -1,0 +1,51 @@
+{% if matrix_bot_honoroit_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_bot_honoroit_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_bot_honoroit_container_labels_traefik_docker_network }}
+{% endif %}
+
+{% set middlewares = [] %}
+{% set middlewares_metrics = [] %}
+
+{% if matrix_bot_honoroit_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-bot-honoroit-slashless-redirect.redirectregex.regex=({{ matrix_bot_honoroit_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.matrix-bot-honoroit-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-bot-honoroit-slashless-redirect'] %}
+{% endif %}
+
+{% if matrix_bot_honoroit_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-bot-honoroit-strip-prefix.stripprefix.prefixes={{ matrix_bot_honoroit_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + ['matrix-bot-honoroit-strip-prefix'] %}
+{% endif %}
+
+{% if matrix_bot_honoroit_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in matrix_bot_honoroit_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.matrix-bot-honoroit-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + ['matrix-bot-honoroit-add-headers'] %}
+{% endif %}
+
+{% if matrix_bot_honoroit_basicauth_enabled %}
+traefik.http.middlewares.matrix-bot-honoroit-auth.basicauth.users={{ lookup('ansible.builtin.file', matrix_bot_honoroit_basicauth_file) }}
+{% set middlewares_metrics = middlewares + ['matrix-bot-honoroit-auth'] %}
+{% endif %}
+
+{% if middlewares_metrics | length > 0 %}
+traefik.http.routers.matrix-bot-honoroit-metrics.rule={{ matrix_bot_honoroit_container_labels_traefik_metrics_rule }}
+{% if matrix_bot_honoroit_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-bot-honoroit-metrics.priority={{ matrix_bot_honoroit_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.matrix-bot-honoroit-metrics.service=matrix-bot-honoroit-metrics
+traefik.http.routers.matrix-bot-honoroit-metrics.middlewares={{ middlewares_metrics | join(',') }}
+traefik.http.routers.matrix-bot-honoroit-metrics.entrypoints={{ matrix_bot_honoroit_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-bot-honoroit-metrics.tls={{ matrix_bot_honoroit_container_labels_traefik_tls | to_json }}
+{% if matrix_bot_honoroit_container_labels_traefik_tls %}
+traefik.http.routers.matrix-bot-honoroit-metrics.tls.certResolver={{ matrix_bot_honoroit_container_labels_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.services.matrix-bot-honoroit-metrics.loadbalancer.server.port=8080
+{% endif %}
+
+{% endif %}
+
+{{ matrix_bot_honoroit_container_labels_additional_labels }}

@@ -2,8 +2,8 @@
 
 - name: Fail if Postgres not enabled
   ansible.builtin.fail:
-    msg: "Postgres via the matrix-postgres role is not enabled (`matrix_postgres_enabled`). Cannot migrate."
-  when: "not matrix_postgres_enabled | bool"
+    msg: "Postgres via the com.devture.ansible.role.postgres role is not enabled (`devture_postgres_enabled`). Cannot migrate."
+  when: "not devture_postgres_enabled | bool"
 
 # Defaults
 
@@ -14,19 +14,19 @@
 
 # Actual import work
 
-- name: Ensure matrix-postgres is started
+- name: Ensure Postgres is started
   ansible.builtin.service:
-    name: matrix-postgres
+    name: "{{ devture_postgres_identifier }}"
     state: started
     daemon_reload: true
-  register: matrix_postgres_service_start_result
+  register: postgres_service_start_result
 
 - name: Wait a bit, so that Postgres can start
   ansible.builtin.wait_for:
     timeout: "{{ postgres_start_wait_time }}"
   delegate_to: 127.0.0.1
   become: false
-  when: "matrix_postgres_service_start_result.changed | bool"
+  when: postgres_service_start_result.changed | bool
 
 - name: Check existence of matrix-appservice-irc service
   ansible.builtin.stat:
