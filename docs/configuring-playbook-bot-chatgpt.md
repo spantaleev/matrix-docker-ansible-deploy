@@ -43,6 +43,11 @@ matrix_bot_chatgpt_openai_api_key: ''
 # Matrix access token (from bot user above)
 # see: https://webapps.stackexchange.com/questions/131056/how-to-get-an-access-token-for-element-riot-matrix
 matrix_bot_chatgpt_matrix_access_token: ''
+
+# Configuring the system promt used, needed if the bot is used for special tasks.
+# More information: https://github.com/mustvlad/ChatGPT-System-Prompts
+matrix_bot_chatgpt_matrix_bot_prompt_prefix: 'Instructions:\nYou are ChatGPT, a large language model trained by OpenAI.'
+
 ```
 
 You will need to get tokens for ChatGPT.
