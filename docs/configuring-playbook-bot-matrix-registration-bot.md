@@ -14,8 +14,6 @@ does and why it might be useful to you.
 
 To enable the bot, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
-For `matrix_bot_matrix_registration_bot_api_token`you need an access token with the permission to access the admin api. Access to the API is needed for all restricted actions of the bot (list, create etc..). Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
-
 ```yaml
 matrix_bot_matrix_registration_bot_enabled: true
 
