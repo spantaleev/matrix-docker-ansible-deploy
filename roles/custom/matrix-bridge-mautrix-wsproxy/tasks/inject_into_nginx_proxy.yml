@@ -9,7 +9,10 @@
       so that the matrix-nginx-proxy role would run after the matrix-bridge-mautrix-wsproxy role.
   when: matrix_nginx_proxy_role_executed | default(False) | bool
 
-- block:
+- tags:
+    - always
+  when: matrix_mautrix_wsproxy_enabled|bool
+  block:
     - name: Generate Mautrix Wsproxy proxying configuration for matrix-nginx-proxy
       ansible.builtin.set_fact:
         matrix_mautrix_wsproxy_matrix_nginx_proxy_configuration: |
@@ -33,9 +36,6 @@
             +
             [matrix_mautrix_wsproxy_matrix_nginx_proxy_configuration]
           }}
-  tags:
-    - always
-  when: matrix_mautrix_wsproxy_enabled|bool
 
 - name: Warn about reverse-proxying if matrix-nginx-proxy not used
   ansible.builtin.debug:

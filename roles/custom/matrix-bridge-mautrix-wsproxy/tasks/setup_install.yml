@@ -15,14 +15,14 @@
     matrix_mautrix_wsproxy_syncproxy_requires_restart: false
 
 - name: Ensure Mautrix wsproxy image is pulled
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_mautrix_wsproxy_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mautrix_wsproxy_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_wsproxy_docker_image_force_pull }}"
 
 - name: Ensure Mautrix syncproxy image is pulled
-  docker_image:
+  community.docker.docker_image:
     name: "{{ matrix_mautrix_wsproxy_syncproxy_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_mautrix_wsproxy_syncproxy_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
