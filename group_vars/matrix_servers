@@ -4018,6 +4018,8 @@ matrix_sliding_sync_environment_variable_syncv3_secret: "{{ '%s' | format(matrix
 matrix_sliding_sync_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_sliding_sync_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'ss.db', rounds=655555) | to_uuid }}"
 
+matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_sliding_sync_enabled else matrix_homeserver_sliding_sync_url }}"
+
 ######################################################################
 #
 # /matrix-sliding-sync
@@ -4107,6 +4109,8 @@ matrix_conduit_systemd_required_services_list: |
     (['docker.service'])
   }}
 
+# Starting from version `0.6.0` conduit natively supports some sync v3 (sliding-sync) features.
+matrix_homeserver_sliding_sync_url: "{{ matrix_homeserver_url if matrix_conduit_enabled and not matrix_sliding_sync_enabled else matrix_homeserver_sliding_sync_url }}"
 
 ######################################################################
 #
