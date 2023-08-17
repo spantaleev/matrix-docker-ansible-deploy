@@ -546,8 +546,17 @@ matrix_synapse_event_cache_size: "100K"
 
 # Controls cache sizes for Synapse.
 # Raise this to increase cache sizes or lower it to potentially lower memory use.
-# To learn more, see: https://github.com/matrix-org/synapse/issues/3939
-matrix_synapse_caches_global_factor: 0.5
+# To learn more, see:
+# - https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#caching
+# - https://github.com/element-hq/synapse#help-synapse-eats-all-my-ram
+# - https://github.com/element-hq/synapse/issues/3939
+matrix_synapse_caches_global_factor: 10
+matrix_synapse_caches_expire_caches: true
+matrix_synapse_caches_cache_entry_ttl: 30m
+matrix_synapse_caches_sync_response_cache_duration: 2m
+matrix_synapse_caches_autotuning_max_cache_memory_usage: 1024M
+matrix_synapse_caches_autotuning_target_cache_memory_usage: 758M
+matrix_synapse_caches_autotuning_min_cache_ttl: 5m
 
 # Controls whether Synapse will federate at all.
 # Disable this to completely isolate your server from the rest of the Matrix network.
