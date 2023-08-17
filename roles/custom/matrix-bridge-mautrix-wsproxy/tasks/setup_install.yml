@@ -14,6 +14,15 @@
 - ansible.builtin.set_fact:
     matrix_mautrix_wsproxy_syncproxy_requires_restart: false
 
+- name: Ensure Mautrix wsproxy support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_mautrix_wsproxy_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - syncproxy-env
 - name: Ensure Mautrix wsproxy image is pulled
   community.docker.docker_image:
     name: "{{ matrix_mautrix_wsproxy_docker_image }}"

@@ -8,11 +8,11 @@ Use the following playbook configuration:
 
 ```yaml
 matrix_mautrix_wsproxy_enabled: true
-matrix_mautrix_androidsms_appservice_token: 'random string'
-matrix_mautrix_androidsms_homeserver_token: 'random string'
-matrix_mautrix_imessage_appservice_token: 'random string'
-matrix_mautrix_imessage_homeserver_token: 'random string'
-matrix_mautrix_wsproxy_syncproxy_shared_secret: 'random string'
+matrix_mautrix_androidsms_appservice_token: 'secret token from bridge'
+matrix_mautrix_androidsms_homeserver_token: 'secret token from bridge'
+matrix_mautrix_imessage_appservice_token: 'secret token from bridge'
+matrix_mautrix_imessage_homeserver_token: 'secret token from bridge'
+matrix_mautrix_wsproxy_syncproxy_shared_secret: 'secret token from bridge'
 ```
 
 Note that the tokens must match what is compiled into the `mautrix-imessage` bridge running on Mac and Android.

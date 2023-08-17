@@ -24,8 +24,10 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_docker_network }} \
-			-v {{ matrix_mautrix_wsproxy_config_path }}:/data:z \
+			{% if matrix_mautrix_wsproxy_bind_port %}
 			-p {{ matrix_mautrix_wsproxy_port }}:29331 \
+			{% endif %}
+			--mount type=bind,src={{ matrix_mautrix_wsproxy_config_path }},dst=/data:z \
 			{% for arg in matrix_mautrix_wsproxy_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
