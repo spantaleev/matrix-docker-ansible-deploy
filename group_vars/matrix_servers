@@ -1227,14 +1227,14 @@ matrix_mautrix_wsproxy_systemd_required_services_list: |
   {{
     ['docker.service']
     +
-    (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    (['matrix-' + matrix_homeserver_implementation + '.service'])
     +
     (['matrix-postgres.service'] if devture_postgres_enabled else []) 
   }}
 
 matrix_mautrix_wsproxy_homeserver_domain: '{{ matrix_domain }}'
 
-matrix_mautrix_wsproxy_homeserver_address: "{{ 'http://matrix-synapse:8008' if matrix_synapse_enabled else '' }}"
+matrix_mautrix_wsproxy_homeserver_address: "{{ matrix_homeserver_container_url }}"
 
 ######################################################################
 #
