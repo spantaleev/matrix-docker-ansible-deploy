@@ -30,7 +30,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Additional useful services
 
-- [Setting up the Dimension Integration Manager](configuring-playbook-dimension.md) (optional, but recommended; after [installing](installing.md))
+- [Setting up the Dimension Integration Manager](configuring-playbook-dimension.md) (optional; [unmaintained](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2806#issuecomment-1673559299); after [installing](installing.md))
 
 - [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md) (optional)
 

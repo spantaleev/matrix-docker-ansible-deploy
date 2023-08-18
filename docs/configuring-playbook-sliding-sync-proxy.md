@@ -12,6 +12,7 @@ Element X Android requires manual compilation to get it working with a non-`matr
 
 **NOTE**: The Sliding Sync proxy **only works with the Traefik reverse-proxy**. If you have an old server installation (from the time `matrix-nginx-proxy` was our default reverse-proxy - `matrix_playbook_reverse_proxy_type: playbook-managed-nginx`), you won't be able to use Sliding Sync.
 
+**NOTE**: The sliding-sync proxy is **not required** when using the **Conduit homeserver**. Starting from version `0.6.0` Conduit has native support for some sliding sync features. If there are issues with the native implementation, you might have a better experience when enabling the sliding-sync proxy anyway.
 
 ## Decide on a domain and path
 

@@ -26,6 +26,8 @@
 - tags:
     - setup-all
     - setup-synapse
+    - install-all
+    - install-synapse
   block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/setup_install.yml"
 
@@ -34,6 +36,8 @@
 - tags:
     - setup-all
     - setup-synapse
+    - install-all
+    - install-synapse
   block:
     - when: matrix_synapse_workers_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/setup_install.yml"
@@ -41,12 +45,16 @@
 - tags:
     - setup-all
     - setup-synapse
+    - install-all
+    - install-synapse
   block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/setup_install.yml"
 
 - tags:
     - setup-all
     - setup-synapse
+    - install-all
+    - install-synapse
   block:
     - when: matrix_s3_media_store_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/goofys/setup_install.yml"

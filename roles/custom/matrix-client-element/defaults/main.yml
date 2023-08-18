@@ -10,7 +10,7 @@ matrix_client_element_container_image_self_build_repo: "https://github.com/vecto
 # - https://github.com/vector-im/element-web/issues/19544
 matrix_client_element_container_image_self_build_low_memory_system_patch_enabled: "{{ ansible_memtotal_mb < 4096 }}"
 
-matrix_client_element_version: v1.11.36
+matrix_client_element_version: v1.11.39
 matrix_client_element_docker_image: "{{ matrix_client_element_docker_image_name_prefix }}vectorim/element-web:{{ matrix_client_element_version }}"
 matrix_client_element_docker_image_name_prefix: "{{ 'localhost/' if matrix_client_element_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_client_element_docker_image_force_pull: "{{ matrix_client_element_docker_image.endswith(':latest') }}"
@@ -149,17 +149,17 @@ matrix_client_element_integrations_ui_url: "https://scalar.vector.im/"
 matrix_client_element_integrations_rest_url: "https://scalar.vector.im/api"
 matrix_client_element_integrations_widgets_urls: ["https://scalar.vector.im/api"]
 matrix_client_element_integrations_jitsi_widget_url: "https://scalar.vector.im/api/widgets/jitsi.html"
-matrix_client_element_permalinkPrefix: "https://matrix.to"  # noqa var-naming
+matrix_client_element_permalink_prefix: "https://matrix.to"  # noqa var-naming
 matrix_client_element_bug_report_endpoint_url: "https://element.io/bugreports/submit"
-matrix_client_element_showLabsSettings: true  # noqa var-naming
+matrix_client_element_show_lab_settings: true  # noqa var-naming
 # Element public room directory server(s)
-matrix_client_element_roomdir_servers: ['matrix.org']
+matrix_client_element_room_directory_servers: ['matrix.org']
 matrix_client_element_welcome_user_id: ~
 # Branding of Element
 matrix_client_element_brand: "Element"
 
 # URL to Logo on welcome page
-matrix_client_element_welcome_logo: "welcome/images/logo.svg"
+matrix_client_element_welcome_logo: "themes/element/img/logos/element-logo.svg"
 
 # URL of link on welcome image
 matrix_client_element_welcome_logo_link: "https://element.io"
@@ -169,13 +169,13 @@ matrix_client_element_welcome_text: "_t('Decentralised, encrypted chat &amp; col
 
 # Links, shown in footer of welcome page:
 # [{"text": "Link text", "url": "https://link.target"}, {"text": "Other link"}]
-matrix_client_element_branding_authFooterLinks: ~  # noqa var-naming
+matrix_client_element_branding_auth_footer_links: ~  # noqa var-naming
 
 # URL to image, shown during Login
-matrix_client_element_branding_authHeaderLogoUrl: "{{ matrix_client_element_welcome_logo }}"  # noqa var-naming
+matrix_client_element_branding_auth_header_logo_url: "{{ matrix_client_element_welcome_logo }}"  # noqa var-naming
 
 # URL to Wallpaper, shown in background of welcome page
-matrix_client_element_branding_welcomeBackgroundUrl: ~  # noqa var-naming
+matrix_client_element_branding_welcome_background_url: ~  # noqa var-naming
 
 matrix_client_element_page_template_welcome_path: "{{ role_path }}/templates/welcome.html.j2"
 
@@ -183,7 +183,7 @@ matrix_client_element_page_template_welcome_path: "{{ role_path }}/templates/wel
 # point this to a `home.html` template file on your local filesystem.
 matrix_client_element_embedded_pages_home_path: ~
 
-matrix_client_element_jitsi_preferredDomain: ''  # noqa var-naming
+matrix_client_element_jitsi_preferred_domain: ''  # noqa var-naming
 
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_client_element_self_check_validate_certificates: true
@@ -207,14 +207,14 @@ matrix_client_element_themes_repository_version: master
 # Controls the default theme
 matrix_client_element_default_theme: 'light'
 
-# Controls the `settingsDefault.custom_themes` setting of the Element configuration.
+# Controls the `setting_defaults.custom_themes` setting of the Element configuration.
 # You can use this setting to define custom themes.
 #
 # Also, look at `matrix_client_element_themes_enabled` for a way to pull in a bunch of custom themes automatically.
 # If you define your own themes here and set `matrix_client_element_themes_enabled: true`, your themes will be preserved as well.
 #
 # Note that for a custom theme to work well, all Element instances that you use must have the same theme installed.
-matrix_client_element_settingDefaults_custom_themes: []  # noqa var-naming
+matrix_client_element_setting_defaults_custom_themes: []  # noqa var-naming
 
 # Default Element configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.

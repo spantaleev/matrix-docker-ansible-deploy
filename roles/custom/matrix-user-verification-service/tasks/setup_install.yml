@@ -30,6 +30,11 @@
     group: "{{ matrix_user_groupname }}"
     mode: 0644
 
+- name: Ensure matrix-user-verification-service container network is created
+  community.general.docker_network:
+    name: "{{ matrix_user_verification_service_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-user-verification-service.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-user-verification-service.service.j2"
