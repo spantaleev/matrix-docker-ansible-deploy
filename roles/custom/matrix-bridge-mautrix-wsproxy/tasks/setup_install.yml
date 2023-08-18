@@ -23,6 +23,8 @@
     group: "{{ matrix_user_groupname }}"
   with_items:
     - syncproxy-env
+    - wsproxy-labels
+
 - name: Ensure Mautrix wsproxy image is pulled
   community.docker.docker_image:
     name: "{{ matrix_mautrix_wsproxy_docker_image }}"
@@ -77,6 +79,11 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
+
+- name: Ensure mautrix-wsproxy container network is created
+  community.general.docker_network:
+    name: "{{ matrix_mautrix_wsproxy_container_network }}"
+    driver: bridge
 
 - name: Ensure matrix-mautrix-wsproxy.service installed
   ansible.builtin.template:
