@@ -15,13 +15,12 @@ matrix_mautrix_wsproxy_config_path: "{{ matrix_mautrix_wsproxy_base_path }}/conf
 matrix_mautrix_wsproxy_homeserver_address: "{{ matrix_homeserver_container_url }}"
 matrix_mautrix_wsproxy_homeserver_domain: "{{ matrix_domain }}"
 
-matrix_mautrix_wsproxy_bind_port: true
+matrix_mautrix_wsproxy_bind_port: false
 matrix_mautrix_wsproxy_port: 29331
 
 matrix_mautrix_wsproxy_appservice_address: "http://matrix-mautrix-wsproxy:{{ matrix_mautrix_wsproxy_port }}"
 
 matrix_mautrix_wsproxy_hostname: ""
-matrix_mautrix_wsproxy_path_prefix: ""
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
 matrix_mautrix_wsproxy_container_network: matrix-mautrix-wsproxy
@@ -34,8 +33,7 @@ matrix_mautrix_wsproxy_container_labels_traefik_enabled: true
 matrix_mautrix_wsproxy_container_labels_traefik_docker_network: "{{ matrix_mautrix_wsproxy_container_network }}"
 matrix_mautrix_wsproxy_container_labels_traefik_hostname: "{{ matrix_mautrix_wsproxy_hostname }}"
 # The path prefix must either be `/` or not end with a slash (e.g. `/wsproxy`).
-matrix_mautrix_wsproxy_container_labels_traefik_path_prefix: "{{ matrix_mautrix_wsproxy_path_prefix }}"
-matrix_mautrix_wsproxy_container_labels_traefik_rule: "Host(`{{ matrix_mautrix_wsproxy_container_labels_traefik_hostname }}`){% if matrix_mautrix_wsproxy_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_mautrix_wsproxy_container_labels_traefik_path_prefix }}`){% endif %}"
+matrix_mautrix_wsproxy_container_labels_traefik_rule: "Host(`{{ matrix_mautrix_wsproxy_container_labels_traefik_hostname }}`)"
 matrix_mautrix_wsproxy_container_labels_traefik_priority: 0
 matrix_mautrix_wsproxy_container_labels_traefik_entrypoints: web-secure
 matrix_mautrix_wsproxy_container_labels_traefik_tls: "{{ matrix_mautrix_wsproxy_container_labels_traefik_entrypoints != 'web' }}"
@@ -140,7 +138,6 @@ matrix_mautrix_wsproxy_syncproxy_systemd_wanted_services_list: []
 
 matrix_mautrix_wsproxy_syncproxy_shared_secret: ''
 matrix_mautrix_wsproxy_syncproxy_port: 29332
-matrix_mautrix_wsproxy_syncproxy_bind_port: true
 matrix_mautrix_wsproxy_syncproxy_appservice_address: "http://matrix-mautrix-wsproxy-syncproxy:{{ matrix_mautrix_wsproxy_syncproxy_port }}"
 
 # Database-related configuration fields

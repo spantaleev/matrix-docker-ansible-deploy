@@ -7,17 +7,6 @@ traefik.docker.network={{ matrix_mautrix_wsproxy_container_labels_traefik_docker
 
 {% set middlewares = [] %}
 
-{% if matrix_mautrix_wsproxy_container_labels_traefik_path_prefix != '/' %}
-traefik.http.middlewares.matrix-mautrix-wsproxy-slashless-redirect.redirectregex.regex=({{ matrix_mautrix_wsproxy_container_labels_traefik_path_prefix | quote }})$
-traefik.http.middlewares.matrix-mautrix-wsproxy-slashless-redirect.redirectregex.replacement=${1}/
-{% set middlewares = middlewares + ['matrix-mautrix-wsproxy-slashless-redirect'] %}
-{% endif %}
-
-{% if matrix_mautrix_wsproxy_container_labels_traefik_path_prefix != '/' %}
-traefik.http.middlewares.matrix-mautrix-wsproxy-strip-prefix.stripprefix.prefixes={{ matrix_mautrix_wsproxy_container_labels_traefik_path_prefix }}
-{% set middlewares = middlewares + ['matrix-mautrix-wsproxy-strip-prefix'] %}
-{% endif %}
-
 {% if matrix_mautrix_wsproxy_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
 {% for name, value in matrix_mautrix_wsproxy_container_labels_traefik_additional_response_headers.items() %}
 traefik.http.middlewares.matrix-mautrix-wsproxy-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
@@ -39,7 +28,7 @@ traefik.http.routers.matrix-mautrix-wsproxy.tls={{ matrix_mautrix_wsproxy_contai
 traefik.http.routers.matrix-mautrix-wsproxy.tls.certResolver={{ matrix_mautrix_wsproxy_container_labels_traefik_tls_certResolver }}
 {% endif %}
 
-traefik.http.services.matrix-sliding-sync.loadbalancer.server.port=8008
+traefik.http.services.matrix-mautrix-wsproxy.loadbalancer.server.port={{ matrix_mautrix_wsproxy_port }}
 {% endif %}
 
 {{ matrix_mautrix_wsproxy_container_labels_additional_labels }}
