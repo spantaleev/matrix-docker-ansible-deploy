@@ -33,10 +33,11 @@ matrix_appservice_irc_database_password: 'some-password'
 matrix_appservice_irc_database_hostname: ''
 matrix_appservice_irc_database_port: 5432
 matrix_appservice_irc_database_name: matrix_appservice_irc
+matrix_appservice_irc_database_sslmode: disable
 
 # This is just the Postgres connection string, if Postgres is used.
 # Naming clashes with `matrix_appservice_irc_database_connectionString` somewhat.
-matrix_appservice_irc_database_connection_string: 'postgresql://{{ matrix_appservice_irc_database_username }}:{{ matrix_appservice_irc_database_password }}@{{ matrix_appservice_irc_database_hostname }}:{{ matrix_appservice_irc_database_port }}/{{ matrix_appservice_irc_database_name }}?sslmode=disable'
+matrix_appservice_irc_database_connection_string: 'postgresql://{{ matrix_appservice_irc_database_username }}:{{ matrix_appservice_irc_database_password }}@{{ matrix_appservice_irc_database_hostname }}:{{ matrix_appservice_irc_database_port }}/{{ matrix_appservice_irc_database_name }}?sslmode={{ matrix_appservice_irc_database_sslmode }}'
 
 # This is what actually goes into `database.connectionString` for the bridge.
 matrix_appservice_irc_database_connectionString: |-  # noqa var-naming
