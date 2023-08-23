@@ -1,0 +1,47 @@
+---
+
+- name: Check existence of matrix-mautrix-wsproxy service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-wsproxy.service"
+  register: matrix_mautrix_wsproxy_service_stat
+
+- name: Ensure matrix-mautrix-wsproxy is stopped
+  ansible.builtin.service:
+    name: matrix-mautrix-wsproxy
+    state: stopped
+    daemon_reload: true
+  when: "matrix_mautrix_wsproxy_service_stat.stat.exists"
+
+- name: Ensure matrix-mautrix-wsproxy.service doesn't exist
+  ansible.builtin.file:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-wsproxy.service"
+    state: absent
+  when: "matrix_mautrix_wsproxy_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-mautrix-wsproxy.service removal
+  ansible.builtin.service:
+    daemon_reload: true
+  when: "matrix_mautrix_wsproxy_service_stat.stat.exists"
+
+- name: Check existence of matrix-mautrix-wsproxy-syncproxy service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-wsproxy-syncproxy.service"
+  register: matrix_mautrix_wsproxy_syncproxy_service_stat
+
+- name: Ensure matrix-mautrix-wsproxy-syncproxy is stopped
+  ansible.builtin.service:
+    name: matrix-mautrix-wsproxy-syncproxy
+    state: stopped
+    daemon_reload: true
+  when: "matrix_mautrix_wsproxy_syncproxy_service_stat.stat.exists"
+
+- name: Ensure matrix-mautrix-wsproxy-syncproxy.service doesn't exist
+  ansible.builtin.file:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-wsproxy-syncproxy.service"
+    state: absent
+  when: "matrix_mautrix_wsproxy_syncproxy_service_stat.stat.exists"
+
+- name: Ensure systemd reloaded after matrix-mautrix-wsproxy-syncproxy.service removal
+  ansible.builtin.service:
+    daemon_reload: true
+  when: "matrix_mautrix_wsproxy_syncproxy_service_stat.stat.exists"

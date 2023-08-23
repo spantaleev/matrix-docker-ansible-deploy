@@ -1,0 +1,34 @@
+{% if matrix_mautrix_wsproxy_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_mautrix_wsproxy_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_mautrix_wsproxy_container_labels_traefik_docker_network }}
+{% endif %}
+
+{% set middlewares = [] %}
+
+{% if matrix_mautrix_wsproxy_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in matrix_mautrix_wsproxy_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.matrix-mautrix-wsproxy-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + ['matrix-mautrix-wsproxy-add-headers'] %}
+{% endif %}
+
+traefik.http.routers.matrix-mautrix-wsproxy.rule={{ matrix_mautrix_wsproxy_container_labels_traefik_rule }}
+{% if matrix_mautrix_wsproxy_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-mautrix-wsproxy.priority={{ matrix_mautrix_wsproxy_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.matrix-mautrix-wsproxy.service=matrix-mautrix-wsproxy
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-mautrix-wsproxy.middlewares={{ middlewares | join(',') }}
+{% endif %}
+traefik.http.routers.matrix-mautrix-wsproxy.entrypoints={{ matrix_mautrix_wsproxy_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-mautrix-wsproxy.tls={{ matrix_mautrix_wsproxy_container_labels_traefik_tls | to_json }}
+{% if matrix_mautrix_wsproxy_container_labels_traefik_tls %}
+traefik.http.routers.matrix-mautrix-wsproxy.tls.certResolver={{ matrix_mautrix_wsproxy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.matrix-mautrix-wsproxy.loadbalancer.server.port={{ matrix_mautrix_wsproxy_port }}
+{% endif %}
+
+{{ matrix_mautrix_wsproxy_container_labels_additional_labels }}
