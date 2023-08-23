@@ -15,7 +15,7 @@ matrix_mautrix_imessage_homeserver_token: 'secret token from bridge'
 matrix_mautrix_wsproxy_syncproxy_shared_secret: 'secret token from bridge'
 ```
 
-Note that the tokens must match what is compiled into the `mautrix-imessage` bridge running on Mac and Android.
+Note that the tokens must match what is compiled into the [mautrix-imessage](https://github.com/mautrix/imessage) bridge running on your Mac or Android device.
 
 ## Usage
 

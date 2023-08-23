@@ -1,3 +1,12 @@
+# 2023-08-23
+
+## mautrix-wsproxy support
+
+Thanks to [Johan Swetzén](https://github.com/jswetzen)'s efforts (who finished what was started by [James Reilly](https://github.com/hanthor) and [Shreyas Ajjarapu](https://github.com/shreyasajj)), the playbook now supports bridging to Android SMS and Apple iMessage via the [mautrix-wsproxy](https://github.com/mautrix/wsproxy) service (in combination with a [mautrix-imessage](https://github.com/mautrix/imessage) bridge running on your Mac or Android phone).
+
+See our [Setting up Mautrix wsproxy for bridging Android SMS or Apple iMessage](docs/configuring-playbook-bridge-mautrix-wsproxy.md) documentation page for getting started.
+
+
 # 2023-07-24
 
 ## matrix-registration-bot usage changed
@@ -9,11 +18,13 @@
 * `matrix_bot_matrix_registration_bot_bot_access_token`
 * `matrix_bot_matrix_registration_bot_api_token`
 
+
 # 2023-07-21
 
 ## mautrix-gmessages support
 
 Thanks to [Shreyas Ajjarapu](https://github.com/shreyasajj)'s efforts, the playbook now supports bridging to [Google Messages](https://messages.google.com/) via the [mautrix-gmessages](https://github.com/mautrix/gmessages) bridge. See our [Setting up Mautrix Google Messages bridging](docs/configuring-playbook-bridge-mautrix-gmessages.md) documentation page for getting started.
+
 
 # 2023-07-17
 
