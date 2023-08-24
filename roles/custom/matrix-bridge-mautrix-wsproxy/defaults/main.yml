@@ -1,0 +1,155 @@
+---
+# mautrix-wsproxy is a Matrix <-> websocket bridge
+# See: https://github.com/mautrix/wsproxy
+
+matrix_mautrix_wsproxy_enabled: true
+
+matrix_mautrix_wsproxy_version: latest
+# See: https://mau.dev/mautrix/wsproxy/container_registry
+matrix_mautrix_wsproxy_docker_image: "dock.mau.dev/mautrix/wsproxy:{{ matrix_mautrix_wsproxy_version }}"
+matrix_mautrix_wsproxy_docker_image_force_pull: "{{ matrix_mautrix_wsproxy_docker_image.endswith(':latest') }}"
+
+matrix_mautrix_wsproxy_base_path: "{{ matrix_base_data_path }}/wsproxy"
+matrix_mautrix_wsproxy_config_path: "{{ matrix_mautrix_wsproxy_base_path }}/config"
+
+matrix_mautrix_wsproxy_homeserver_address: "{{ matrix_homeserver_container_url }}"
+matrix_mautrix_wsproxy_homeserver_domain: "{{ matrix_domain }}"
+
+matrix_mautrix_wsproxy_bind_port: false
+matrix_mautrix_wsproxy_port: 29331
+
+matrix_mautrix_wsproxy_appservice_address: "http://matrix-mautrix-wsproxy:{{ matrix_mautrix_wsproxy_port }}"
+
+matrix_mautrix_wsproxy_hostname: ""
+
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_mautrix_wsproxy_container_network: matrix-mautrix-wsproxy
+
+# matrix_mautrix_wsproxy_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_mautrix_wsproxy_container_labels_additional_labels`.
+matrix_mautrix_wsproxy_container_labels_traefik_enabled: true
+matrix_mautrix_wsproxy_container_labels_traefik_docker_network: "{{ matrix_mautrix_wsproxy_container_network }}"
+matrix_mautrix_wsproxy_container_labels_traefik_hostname: "{{ matrix_mautrix_wsproxy_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/wsproxy`).
+matrix_mautrix_wsproxy_container_labels_traefik_rule: "Host(`{{ matrix_mautrix_wsproxy_container_labels_traefik_hostname }}`)"
+matrix_mautrix_wsproxy_container_labels_traefik_priority: 0
+matrix_mautrix_wsproxy_container_labels_traefik_entrypoints: web-secure
+matrix_mautrix_wsproxy_container_labels_traefik_tls: "{{ matrix_mautrix_wsproxy_container_labels_traefik_entrypoints != 'web' }}"
+matrix_mautrix_wsproxy_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own headers, use `matrix_mautrix_wsproxy_container_labels_traefik_additional_response_headers_custom`
+matrix_mautrix_wsproxy_container_labels_traefik_additional_response_headers_auto: {}
+matrix_mautrix_wsproxy_container_labels_traefik_additional_response_headers_custom: {}
+matrix_mautrix_wsproxy_container_labels_traefik_additional_response_headers: "{{ matrix_mautrix_wsproxy_container_labels_traefik_additional_response_headers_auto | combine(matrix_mautrix_wsproxy_container_labels_traefik_additional_response_headers_custom) }}"
+
+# matrix_mautrix_wsproxy_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_mautrix_wsproxy_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_mautrix_wsproxy_container_labels_additional_labels: ''
+
+# A list of extra arguments to pass to the container
+matrix_mautrix_wsproxy_container_extra_arguments: []
+
+# List of systemd services that matrix-mautrix-wsproxy.service depends on.
+matrix_mautrix_wsproxy_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-mautrix-wsproxy.service wants
+matrix_mautrix_wsproxy_systemd_wanted_services_list: []
+
+matrix_mautrix_androidsms_appservice_token: ''
+matrix_mautrix_androidsms_homeserver_token: ''
+
+matrix_mautrix_imessage_appservice_token: ''
+matrix_mautrix_imessage_homeserver_token: ''
+
+matrix_mautrix_androidsms_appservice_bot_username: androidsmsbot
+matrix_mautrix_imessage_appservice_bot_username: imessagebot
+
+# Default mautrix-wsproxy configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_mautrix_wsproxy_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_mautrix_wsproxy_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_mautrix_wsproxy_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_mautrix_wsproxy_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_mautrix_wsproxy_configuration_yaml`.
+
+matrix_mautrix_wsproxy_configuration_extension: "{{ matrix_mautrix_wsproxy_configuration_extension_yaml|from_yaml if matrix_mautrix_wsproxy_configuration_extension_yaml|from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_mautrix_wsproxy_configuration_yaml`.
+matrix_mautrix_wsproxy_configuration: "{{ matrix_mautrix_wsproxy_configuration_yaml|from_yaml|combine(matrix_mautrix_wsproxy_configuration_extension, recursive=True) }}"
+
+matrix_mautrix_androidsms_registration_yaml: |
+  id: androidsms
+  url: {{ matrix_mautrix_wsproxy_appservice_address }}
+  as_token: "{{ matrix_mautrix_androidsms_appservice_token }}"
+  hs_token: "{{ matrix_mautrix_androidsms_homeserver_token }}"
+  sender_localpart: _bot_{{ matrix_mautrix_androidsms_appservice_bot_username }}
+  rate_limited: false
+  namespaces:
+      users:
+      - regex: '@androidsms_.+:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
+        exclusive: true
+      - exclusive: true
+        regex: '^@{{ matrix_mautrix_androidsms_appservice_bot_username|regex_escape }}:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
+
+matrix_mautrix_androidsms_registration: "{{ matrix_mautrix_androidsms_registration_yaml|from_yaml }}"
+
+matrix_mautrix_imessage_registration_yaml: |
+  id: imessage
+  url: {{ matrix_mautrix_wsproxy_appservice_address }}
+  as_token: "{{ matrix_mautrix_imessage_appservice_token }}"
+  hs_token: "{{ matrix_mautrix_imessage_homeserver_token }}"
+  sender_localpart: _bot_{{ matrix_mautrix_imessage_appservice_bot_username }}
+  rate_limited: false
+  namespaces:
+      users:
+      - regex: '@imessage_.+:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
+        exclusive: true
+      - exclusive: true
+        regex: '^@{{ matrix_mautrix_imessage_appservice_bot_username|regex_escape }}:{{ matrix_mautrix_wsproxy_homeserver_domain|regex_escape }}$'
+
+matrix_mautrix_imessage_registration: "{{ matrix_mautrix_imessage_registration_yaml|from_yaml }}"
+
+# Syncproxy-related configuration fields
+matrix_mautrix_wsproxy_syncproxy_version: latest
+# See: https://mau.dev/mautrix/wsproxy/container_registry
+matrix_mautrix_wsproxy_syncproxy_docker_image: "dock.mau.dev/mautrix/syncproxy:{{ matrix_mautrix_wsproxy_syncproxy_version }}"
+matrix_mautrix_wsproxy_syncproxy_docker_image_force_pull: "{{ matrix_mautrix_wsproxy_syncproxy_docker_image.endswith(':latest') }}"
+matrix_mautrix_wsproxy_syncproxy_container_extra_arguments: []
+
+matrix_mautrix_wsproxy_syncproxy_systemd_required_services_list: ['docker.service', 'matrix-mautrix-wsproxy.service']
+matrix_mautrix_wsproxy_syncproxy_systemd_wanted_services_list: []
+
+matrix_mautrix_wsproxy_syncproxy_shared_secret: ''
+matrix_mautrix_wsproxy_syncproxy_port: 29332
+matrix_mautrix_wsproxy_syncproxy_appservice_address: "http://matrix-mautrix-wsproxy-syncproxy:{{ matrix_mautrix_wsproxy_syncproxy_port }}"
+
+# Database-related configuration fields
+#
+# This bridge supports Postgres and SQLite.
+#
+matrix_mautrix_wsproxy_syncproxy_database_engine: 'postgres'
+
+matrix_mautrix_wsproxy_syncproxy_database_username: 'matrix_mautrix_wsproxy_syncproxy'
+matrix_mautrix_wsproxy_syncproxy_database_password: 'some-password'
+matrix_mautrix_wsproxy_syncproxy_database_hostname: 'matrix-postgres'
+matrix_mautrix_wsproxy_syncproxy_database_port: 5432
+matrix_mautrix_wsproxy_syncproxy_database_name: 'matrix_mautrix_wsproxy_syncproxy'
+
+matrix_mautrix_signal_wsproxy_syncproxy_connection_string: 'postgres://{{ matrix_mautrix_wsproxy_syncproxy_database_username }}:{{ matrix_mautrix_wsproxy_syncproxy_database_password }}@{{ matrix_mautrix_wsproxy_syncproxy_database_hostname }}:{{ matrix_mautrix_wsproxy_syncproxy_database_port }}/{{ matrix_mautrix_wsproxy_syncproxy_database_name }}'

@@ -223,7 +223,7 @@ federation_api:
   external_api:
     listen: http://0.0.0.0:8072
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_federation_api_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_federation_api_database }}?sslmode={{ matrix_dendrite_database_sslmode }}
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -266,7 +266,7 @@ key_server:
     listen: http://0.0.0.0:7779
     connect: http://key_server:7779
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_key_server_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_key_server_database }}?sslmode={{ matrix_dendrite_database_sslmode }}
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -279,7 +279,7 @@ media_api:
   external_api:
     listen: http://0.0.0.0:8074
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_media_api_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_media_api_database }}?sslmode={{ matrix_dendrite_database_sslmode }}
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -318,7 +318,7 @@ mscs:
   # - msc2946    (Spaces Summary, see https://github.com/matrix-org/matrix-doc/pull/2946)
   mscs: []
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_mscs_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_mscs_database }}?sslmode={{ matrix_dendrite_database_sslmode }}
     max_open_conns: 5
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -329,7 +329,7 @@ room_server:
     listen: http://0.0.0.0:7770
     connect: http://room_server:7770
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_room_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_room_database }}?sslmode={{ matrix_dendrite_database_sslmode }}
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -342,7 +342,7 @@ sync_api:
   external_api:
     listen: http://0.0.0.0:8073
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_sync_api_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_sync_api_database }}?sslmode={{ matrix_dendrite_database_sslmode }}
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -376,7 +376,7 @@ user_api:
     listen: http://0.0.0.0:7781
     connect: http://user_api:7781
   account_database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_user_api_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_user_api_database }}?sslmode={{ matrix_dendrite_database_sslmode }}
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -394,7 +394,7 @@ push_server:
     listen: http://localhost:7782
     connect: http://localhost:7782
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_push_server_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_push_server_database }}?sslmode={{ matrix_dendrite_database_sslmode }}
     max_open_conns: 10
     max_idle_conns: 2
     conn_max_lifetime: -1
@@ -403,7 +403,7 @@ push_server:
 #
 relay_api:
   database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_relay_api_database }}?sslmode=disable
+    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_relay_api_database }}?sslmode={{ matrix_dendrite_database_sslmode }}
 
 # Configuration for Opentracing.
 # See https://github.com/matrix-org/dendrite/tree/master/docs/tracing for information on

@@ -1,0 +1,14 @@
+listen_address: 0.0.0.0:29331
+appservices:
+  - id: androidsms
+    as: {{ matrix_mautrix_androidsms_appservice_token | to_json }}
+    hs: {{ matrix_mautrix_androidsms_homeserver_token | to_json }}
+  - id: imessage
+    as: {{ matrix_mautrix_imessage_appservice_token | to_json }}
+    hs: {{ matrix_mautrix_imessage_homeserver_token | to_json }}
+sync_proxy:
+  # The URL that mautrix-wsproxy can use to reach mautrix-syncproxy
+  url: {{ matrix_mautrix_wsproxy_syncproxy_appservice_address | to_json }}
+  # The URL that mautrix-syncproxy can use to reach mautrix-wsproxy
+  wsproxy_url: {{ matrix_mautrix_wsproxy_appservice_address | to_json }}
+  shared_secret: {{ matrix_mautrix_wsproxy_syncproxy_shared_secret | to_json }}

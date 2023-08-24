@@ -105,6 +105,10 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_mautrix_whatsapp_config_path + '/registration.yaml,dst=/matrix-mautrix-whatsapp-registration.yaml,ro'] if matrix_mautrix_whatsapp_enabled else [])
     +
+    (['--mount type=bind,src=' + matrix_mautrix_wsproxy_config_path + '/androidsms-registration.yaml,dst=/matrix-mautrix-androidsms-registration.yaml,ro'] if matrix_mautrix_wsproxy_enabled else [])
+    +
+    (['--mount type=bind,src=' + matrix_mautrix_wsproxy_config_path + '/imessage-registration.yaml,dst=/matrix-mautrix-imessage-registration.yaml,ro'] if matrix_mautrix_wsproxy_enabled else [])
+    +
     (['--mount type=bind,src=' + matrix_mx_puppet_discord_config_path + '/registration.yaml,dst=/matrix-mx-puppet-discord-registration.yaml,ro'] if matrix_mx_puppet_discord_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_mx_puppet_groupme_config_path + '/registration.yaml,dst=/matrix-mx-puppet-groupme-registration.yaml,ro'] if matrix_mx_puppet_groupme_enabled else [])
@@ -163,6 +167,10 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-mautrix-gmessages-registration.yaml'] if matrix_mautrix_gmessages_enabled else [])
     +
     (['/matrix-mautrix-whatsapp-registration.yaml'] if matrix_mautrix_whatsapp_enabled else [])
+    +
+    (['/matrix-mautrix-androidsms-registration.yaml'] if matrix_mautrix_wsproxy_enabled else [])
+    +
+    (['/matrix-mautrix-imessage-registration.yaml'] if matrix_mautrix_wsproxy_enabled else [])
     +
     (['/matrix-mx-puppet-discord-registration.yaml'] if matrix_mx_puppet_discord_enabled else [])
     +
@@ -277,6 +285,10 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-mautrix-gmessages.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-gmessages']}] if matrix_mautrix_gmessages_enabled else [])
     +
     ([{'name': 'matrix-mautrix-whatsapp.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-whatsapp']}] if matrix_mautrix_whatsapp_enabled else [])
+    +
+    ([{'name': 'matrix-mautrix-wsproxy.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-wsproxy']}] if matrix_mautrix_wsproxy_enabled else [])
+    +
+    ([{'name': 'matrix-mautrix-wsproxy-syncproxy.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-wsproxy-syncproxy']}] if matrix_mautrix_wsproxy_enabled else [])
     +
     ([{'name': 'matrix-mx-puppet-discord.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-discord']}] if matrix_mx_puppet_discord_enabled else [])
     +
@@ -1201,6 +1213,53 @@ matrix_mautrix_gmessages_database_password: "{{ '%s' | format(matrix_homeserver_
 ######################################################################
 #
 # /matrix-bridge-mautrix-gmessages
+#
+######################################################################
+
+######################################################################
+#
+# matrix-bridge-mautrix-wsproxy
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_mautrix_wsproxy_enabled: false
+
+matrix_mautrix_wsproxy_systemd_required_services_list: |
+  {{
+    ['docker.service']
+    +
+    ['matrix-' + matrix_homeserver_implementation + '.service']
+    +
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+    +
+    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+  }}
+
+matrix_mautrix_wsproxy_homeserver_domain: "{{ matrix_domain }}"
+
+matrix_mautrix_wsproxy_homeserver_address: "{{ matrix_homeserver_container_url }}"
+matrix_mautrix_wsproxy_hostname: "wsproxy.{{ matrix_mautrix_wsproxy_homeserver_domain }}"
+
+matrix_mautrix_wsproxy_container_additional_networks: |
+  {{
+    (
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
+      +
+      ([matrix_nginx_proxy_container_network] if matrix_nginx_proxy_enabled and matrix_nginx_proxy_container_network != matrix_mautrix_wsproxy_container_network else [])
+      +
+      ([devture_postgres_container_network] if devture_postgres_enabled and devture_postgres_container_network != matrix_mautrix_wsproxy_container_network else [])
+    ) | unique
+  }}
+
+matrix_mautrix_wsproxy_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_mautrix_wsproxy_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_mautrix_wsproxy_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_mautrix_wsproxy_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+######################################################################
+#
+# /matrix-bridge-mautrix-wsproxy
 #
 ######################################################################
 
@@ -2698,6 +2757,7 @@ matrix_nginx_proxy_proxy_dimension_enabled: "{{ matrix_dimension_enabled and mat
 matrix_nginx_proxy_proxy_rageshake_enabled: "{{ matrix_rageshake_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_etherpad_enabled: "{{ etherpad_enabled and not etherpad_nginx_proxy_dimension_integration_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
+matrix_nginx_proxy_proxy_mautrix_wsproxy_enabled: "{{ matrix_mautrix_wsproxy_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 
 matrix_nginx_proxy_proxy_jitsi_enabled: "{{ jitsi_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 
@@ -2836,6 +2896,8 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     ([matrix_server_fqn_grafana] if grafana_enabled else [])
     +
     ([matrix_server_fqn_sygnal] if matrix_sygnal_enabled else [])
+    +
+    ([matrix_server_fqn_mautrix_wsproxy] if matrix_mautrix_wsproxy_enabled else [])
     +
     ([ntfy_hostname] if ntfy_enabled else [])
     +
@@ -3054,6 +3116,12 @@ devture_postgres_managed_databases_auto: |
       'username': matrix_mautrix_signal_database_username,
       'password': matrix_mautrix_signal_database_password,
     }] if (matrix_mautrix_signal_enabled and matrix_mautrix_signal_database_engine == 'postgres' and matrix_mautrix_signal_database_hostname == devture_postgres_connection_hostname) else [])
+    +
+    ([{
+      'name': matrix_mautrix_wsproxy_syncproxy_database_name,
+      'username': matrix_mautrix_wsproxy_syncproxy_database_username,
+      'password': matrix_mautrix_wsproxy_syncproxy_database_password,
+    }] if (matrix_mautrix_wsproxy_enabled and matrix_mautrix_wsproxy_syncproxy_database_engine == 'postgres' and matrix_mautrix_wsproxy_syncproxy_database_hostname == 'matrix-postgres') else [])
     +
     ([{
       'name': matrix_mautrix_telegram_database_name,

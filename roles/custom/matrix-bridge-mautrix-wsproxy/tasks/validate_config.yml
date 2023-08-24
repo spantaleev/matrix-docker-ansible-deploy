@@ -1,0 +1,13 @@
+---
+
+- name: Fail if required settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_mautrix_androidsms_appservice_token"
+    - "matrix_mautrix_androidsms_homeserver_token"
+    - "matrix_mautrix_imessage_appservice_token"
+    - "matrix_mautrix_imessage_homeserver_token"
+    - "matrix_mautrix_wsproxy_syncproxy_shared_secret"
