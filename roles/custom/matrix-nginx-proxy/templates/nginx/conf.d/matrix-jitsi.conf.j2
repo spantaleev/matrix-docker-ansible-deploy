@@ -53,7 +53,7 @@
 
 		tcp_nodelay on;
 	}
-	{% for host in groups['jitsi_jvb_servers'] %}
+	{% for host in groups['jitsi_jvb_servers'] | default([]) %}
 	# colibri (JVB) websockets for additional JVBs
 	location ~ ^/colibri-ws/{{ hostvars[host]['jitsi_jvb_server_id'] | regex_escape }}/(.*) {
 		proxy_pass http://{{ host }}:9090/colibri-ws/{{ hostvars[host]['jitsi_jvb_server_id'] }}/$1$is_args$args;
