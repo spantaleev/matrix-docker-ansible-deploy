@@ -26,11 +26,10 @@ you can adjust this in `inventory/host_vars/matrix.<domain-name>/vars.yml` as we
 matrix_appservice_webhooks_log_level: '<log_level>'
 ```
 
-3. As of Synapse 1.90.0, you will need to add the following to ```matrix_synapse_configuration_extension_yaml``` to enable the [backwards compatibility](https://matrix-org.github.io/synapse/latest/upgrade#upgrading-to-v1900) that this bridge needs:
+3. As of Synapse 1.90.0, you will need to add the following to `matrix_synapse_configuration_extension_yaml` to enable the [backwards compatibility](https://matrix-org.github.io/synapse/latest/upgrade#upgrading-to-v1900) that this bridge needs:
 ```yaml
-use_appservice_legacy_authorization: true
-```
-*Note*: This deprecated method is considered insecure.
+matrix_synapse_configuration_extension_yaml: |
+  use_appservice_legacy_authorization: true
 
 4. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
 
