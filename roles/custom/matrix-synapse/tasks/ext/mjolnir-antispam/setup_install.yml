@@ -14,18 +14,13 @@
   become_user: "{{ matrix_synapse_username }}"
 
 - ansible.builtin.set_fact:
-    matrix_synapse_spam_checker: >
+    matrix_synapse_modules: >
       {{
-        matrix_synapse_spam_checker
+        matrix_synapse_modules | default([])
         +
         [{
-          "module": "mjolnir.AntiSpam",
-          "config": {
-            "block_invites": matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites,
-            "block_messages": matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_messages,
-            "block_usernames": matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_usernames,
-            "ban_lists": matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists,
-          }
+          "module": "mjolnir.Module",
+          "config": matrix_synapse_ext_spam_checker_mjolnir_antispam_config,
         }]
       }}
 
