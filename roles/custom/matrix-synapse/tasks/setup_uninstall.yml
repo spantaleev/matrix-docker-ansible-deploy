@@ -4,7 +4,8 @@
     - setup-all
     - setup-synapse
   block:
-    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/setup_uninstall.yml"
+    - when: not matrix_synapse_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/setup_uninstall.yml"
 
 - tags:
     - setup-all
@@ -17,7 +18,8 @@
     - setup-all
     - setup-synapse
   block:
-    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/setup_uninstall.yml"
+    - when: not matrix_synapse_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/setup_uninstall.yml"
 
 - tags:
     - setup-all

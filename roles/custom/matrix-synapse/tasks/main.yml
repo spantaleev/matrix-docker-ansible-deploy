@@ -36,8 +36,8 @@
     - setup-all
     - setup-synapse
   block:
-    - when: not matrix_synapse_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+    # This always runs because it handles uninstallation for sub-components too.
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
 
 - tags:
     - import-synapse-media-store
