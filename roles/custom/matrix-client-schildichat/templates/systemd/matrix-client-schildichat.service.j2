@@ -26,15 +26,15 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% endif %}
 			--label-file={{ matrix_client_schildichat_data_path }}/labels \
 			--tmpfs=/tmp:rw,noexec,nosuid,size=10m \
-			--mount type=bind,src={{ matrix_client_schildichat_data_path }}/config.json,dst=/app/config.json,ro \
-			--mount type=bind,src={{ matrix_client_schildichat_data_path }}/config.json,dst=/app/config.{{ matrix_server_fqn_schildichat }}.json,ro \
+			--mount type=bind,src={{ matrix_client_schildichat_data_path }}/config.json,dst=/usr/share/nginx/html/config.json,ro \
+			--mount type=bind,src={{ matrix_client_schildichat_data_path }}/config.json,dst=/usr/share/nginx/html/config.{{ matrix_server_fqn_schildichat }}.json,ro \
 			{% if matrix_client_schildichat_location_sharing_enabled %}
-			--mount type=bind,src={{ matrix_client_schildichat_data_path }}/map_style.json,dst=/app/map_style.json,ro \
+			--mount type=bind,src={{ matrix_client_schildichat_data_path }}/map_style.json,dst=/usr/share/nginx/html/map_style.json,ro \
 			{% endif %}
 			{% if matrix_client_schildichat_embedded_pages_home_path is not none %}
-			--mount type=bind,src={{ matrix_client_schildichat_data_path }}/home.html,dst=/app/home.html,ro \
+			--mount type=bind,src={{ matrix_client_schildichat_data_path }}/home.html,dst=/usr/share/nginx/html/home.html,ro \
 			{% endif %}
-			--mount type=bind,src={{ matrix_client_schildichat_data_path }}/welcome.html,dst=/app/welcome.html,ro \
+			--mount type=bind,src={{ matrix_client_schildichat_data_path }}/welcome.html,dst=/usr/share/nginx/html/welcome.html,ro \
 			{% for arg in matrix_client_schildichat_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
