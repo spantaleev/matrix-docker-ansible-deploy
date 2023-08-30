@@ -438,7 +438,9 @@ matrix_synapse_container_additional_volumes: []
 # A list of additional loggers to register in synapse.log.config.
 # This list gets populated dynamically based on Synapse extensions that have been enabled.
 # Contains definition objects like this: `{"name": "..", "level": "DEBUG"}
-matrix_synapse_additional_loggers: []
+matrix_synapse_additional_loggers: "{{ matrix_synapse_additional_loggers_auto + matrix_synapse_additional_loggers_custom }}"
+matrix_synapse_additional_loggers_auto: []
+matrix_synapse_additional_loggers_custom: []
 
 # A list of appservice config files (in-container filesystem paths).
 # This list gets populated dynamically based on Synapse extensions that have been enabled.
