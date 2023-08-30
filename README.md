@@ -47,9 +47,10 @@ Web clients for matrix that you can host on your own domains.
 
 | Name | Default? | Description | Documentation |
 | ---- | -------- | ----------- | ------------- |
-[Element](https://app.element.io/) | ✓ | Web UI, which is configured to connect to your own Synapse server by default | [Link](docs/configuring-playbook-client-element.md) |
+| [Element](https://app.element.io/) | ✓ | Web UI, which is configured to connect to your own Synapse server by default | [Link](docs/configuring-playbook-client-element.md) |
 | [Hydrogen](https://github.com/vector-im/hydrogen-web) | x | Web client | [Link](docs/configuring-playbook-client-hydrogen.md) |
 | [Cinny](https://github.com/ajbura/cinny) |  x | Web client | [Link](docs/configuring-playbook-client-cinny.md) |
+| [SchildiChat](https://schildichat.io/) | x | Web client | [Link](docs/configuring-playbook-client-schildichat.md) |
 
 
 

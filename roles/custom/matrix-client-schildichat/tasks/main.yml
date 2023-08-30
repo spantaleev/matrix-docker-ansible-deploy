@@ -1,0 +1,29 @@
+---
+
+- tags:
+    - setup-all
+    - setup-client-schildichat
+    - install-all
+    - install-client-schildichat
+  block:
+    - when: matrix_client_schildichat_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_client_schildichat_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/prepare_themes.yml"
+
+    - when: matrix_client_schildichat_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+- tags:
+    - setup-all
+    - setup-client-schildichat
+  block:
+    - when: not matrix_client_schildichat_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+
+- tags:
+    - self-check
+  block:
+    - when: matrix_client_schildichat_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check.yml"

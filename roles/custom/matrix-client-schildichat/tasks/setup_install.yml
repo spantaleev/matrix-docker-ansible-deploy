@@ -1,0 +1,109 @@
+---
+
+- name: Ensure schildichat paths exists
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_client_schildichat_data_path }}", when: true}
+    - {path: "{{ matrix_client_schildichat_docker_src_files_path }}", when: "{{ matrix_client_schildichat_container_image_self_build }}"}
+  when: "item.when | bool"
+
+- name: Ensure schildichat Docker image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_client_schildichat_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_client_schildichat_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_schildichat_docker_image_force_pull }}"
+  when: "not matrix_client_schildichat_container_image_self_build | bool"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure schildichat repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_client_schildichat_container_image_self_build_repo }}"
+    dest: "{{ matrix_client_schildichat_docker_src_files_path }}"
+    version: "{{ matrix_client_schildichat_docker_image.split(':')[1] }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
+  register: matrix_client_schildichat_git_pull_results
+  when: "matrix_client_schildichat_container_image_self_build | bool"
+
+# See:
+# - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1357
+# - https://github.com/vector-im/schildichat-web/issues/19544
+- name: Patch webpack.config.js to support building on low-memory (<4G RAM) devices
+  ansible.builtin.lineinfile:
+    path: "{{ matrix_client_schildichat_docker_src_files_path }}/webpack.config.js"
+    regexp: '(\s+)splitChunks: \{'
+    line: '\1splitChunks: { maxSize: 100000,'
+    backrefs: true
+    owner: root
+    group: root
+    mode: '0644'
+  when: "matrix_client_schildichat_container_image_self_build | bool and matrix_client_schildichat_container_image_self_build_low_memory_system_patch_enabled | bool"
+
+- name: Ensure schildichat Docker image is built
+  ansible.builtin.command:
+    cmd: |-
+      {{ devture_systemd_docker_base_host_command_docker }} buildx build
+      --tag={{ matrix_client_schildichat_docker_image }}
+      --file={{ matrix_client_schildichat_docker_src_files_path }}/Dockerfile
+      {{ matrix_client_schildichat_docker_src_files_path }}
+  changed_when: true
+  when: matrix_client_schildichat_container_image_self_build | bool
+
+- name: Ensure schildichat configuration installed
+  ansible.builtin.copy:
+    content: "{{ matrix_client_schildichat_configuration | to_nice_json }}"
+    dest: "{{ matrix_client_schildichat_data_path }}/config.json"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure schildichat location sharing map style installed
+  when: matrix_client_schildichat_location_sharing_enabled | bool
+  ansible.builtin.copy:
+    content: "{{ matrix_client_schildichat_location_sharing_map_style | to_nice_json }}"
+    dest: "{{ matrix_client_schildichat_data_path }}/map_style.json"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure schildichat config files installed
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ matrix_client_schildichat_data_path }}/{{ item.name }}"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {src: "{{ role_path }}/templates/labels.j2", name: "labels"}
+    - {src: "{{ matrix_client_schildichat_page_template_welcome_path }}", name: "welcome.html"}
+    - {src: "{{ matrix_client_schildichat_embedded_pages_home_path }}", name: "home.html"}
+  when: "item.src is not none"
+
+- name: Ensure schildichat config files removed
+  ansible.builtin.file:
+    path: "{{ matrix_client_schildichat_data_path }}/{{ item.name }}"
+    state: absent
+  with_items:
+    - {src: "{{ matrix_client_schildichat_embedded_pages_home_path }}", name: "home.html"}
+  when: "item.src is none"
+
+- name: Ensure schildichat container network is created
+  community.general.docker_network:
+    name: "{{ matrix_client_schildichat_container_network }}"
+    driver: bridge
+
+- name: Ensure matrix-client-schildichat.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-client-schildichat.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-schildichat.service"
+    mode: 0644

@@ -115,6 +115,13 @@
     mode: 0644
   when: matrix_nginx_proxy_proxy_cinny_enabled | bool
 
+- name: Ensure Matrix nginx-proxy configuration for schildichat domain exists
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-client-schildichat.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-schildichat.conf"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_schildichat_enabled | bool
+
 - name: Ensure Matrix nginx-proxy configuration for buscarron domain exists
   ansible.builtin.template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-bot-buscarron.conf.j2"

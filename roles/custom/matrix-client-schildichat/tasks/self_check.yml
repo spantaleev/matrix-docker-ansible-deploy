@@ -1,0 +1,24 @@
+---
+
+- ansible.builtin.set_fact:
+    matrix_client_schildichat_url_endpoint_public: "https://{{ matrix_server_fqn_schildichat }}/config.json"
+
+- name: Check schildichat
+  ansible.builtin.uri:
+    url: "{{ matrix_client_schildichat_url_endpoint_public }}"
+    follow_redirects: none
+    validate_certs: "{{ matrix_client_schildichat_self_check_validate_certificates }}"
+  register: matrix_client_schildichat_self_check_result
+  check_mode: false
+  ignore_errors: true
+  delegate_to: 127.0.0.1
+  become: false
+
+- name: Fail if schildichat not working
+  ansible.builtin.fail:
+    msg: "Failed checking schildichat is up at `{{ matrix_server_fqn_schildichat }}` (checked endpoint: `{{ matrix_client_schildichat_url_endpoint_public }}`). Is schildichat running? Is port 443 open in your firewall? Full error: {{ matrix_client_schildichat_self_check_result }}"
+  when: "matrix_client_schildichat_self_check_result.failed or 'json' not in matrix_client_schildichat_self_check_result"
+
+- name: Report working schildichat
+  ansible.builtin.debug:
+    msg: "schildichat at `{{ matrix_server_fqn_schildichat }}` is working (checked endpoint: `{{ matrix_client_schildichat_url_endpoint_public }}`)"
