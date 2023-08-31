@@ -1,0 +1,312 @@
+---
+# Project source code URL: https://github.com/SchildiChat/schildichat-desktop
+
+matrix_client_schildichat_enabled: true
+
+matrix_client_schildichat_container_image_self_build: false
+
+matrix_client_schildichat_version: v1.11.30-sc.2
+matrix_client_schildichat_docker_image: "{{ matrix_client_schildichat_docker_image_name_prefix }}etke.cc/schildichat-web:{{ matrix_client_schildichat_version }}"
+matrix_client_schildichat_docker_image_name_prefix: "{{ 'localhost/' if matrix_client_schildichat_container_image_self_build else 'registry.gitlab.com/' }}"
+matrix_client_schildichat_docker_image_force_pull: "{{ matrix_client_schildichat_docker_image.endswith(':latest') }}"
+
+matrix_client_schildichat_data_path: "{{ matrix_base_data_path }}/client-schildichat"
+matrix_client_schildichat_docker_src_files_path: "{{ matrix_client_schildichat_data_path }}/docker-src"
+
+# The base container network
+matrix_client_schildichat_container_network: matrix-client-schildichat
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to a reverse proxy, which runs in a different container network.
+matrix_client_schildichat_container_additional_networks: []
+
+# Controls whether the matrix-client-schildichat container exposes its HTTP port (tcp/8080 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8765"), or empty string to not expose.
+matrix_client_schildichat_container_http_host_bind_port: ''
+
+# matrix_client_schildichat_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_client_schildichat_container_labels_additional_labels`.
+matrix_client_schildichat_container_labels_traefik_enabled: true
+matrix_client_schildichat_container_labels_traefik_docker_network: "{{ matrix_client_schildichat_container_network }}"
+matrix_client_schildichat_container_labels_traefik_hostname: "{{ matrix_client_schildichat_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/schildichat`).
+matrix_client_schildichat_container_labels_traefik_path_prefix: "{{ matrix_client_schildichat_path_prefix }}"
+matrix_client_schildichat_container_labels_traefik_rule: "Host(`{{ matrix_client_schildichat_container_labels_traefik_hostname }}`){% if matrix_client_schildichat_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_client_schildichat_container_labels_traefik_path_prefix }}`){% endif %}"
+matrix_client_schildichat_container_labels_traefik_priority: 0
+matrix_client_schildichat_container_labels_traefik_entrypoints: web-secure
+matrix_client_schildichat_container_labels_traefik_tls: "{{ matrix_client_schildichat_container_labels_traefik_entrypoints != 'web' }}"
+matrix_client_schildichat_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own headers, use `matrix_client_schildichat_container_labels_traefik_additional_response_headers_custom`
+matrix_client_schildichat_container_labels_traefik_additional_response_headers: "{{ matrix_client_schildichat_container_labels_traefik_additional_response_headers_auto | combine(matrix_client_schildichat_container_labels_traefik_additional_response_headers_custom) }}"
+matrix_client_schildichat_container_labels_traefik_additional_response_headers_auto: |
+  {{
+    {}
+    | combine ({'X-XSS-Protection': matrix_client_schildichat_http_header_xss_protection} if matrix_client_schildichat_http_header_xss_protection else {})
+    | combine ({'X-Frame-Options': matrix_client_schildichat_http_header_frame_options} if matrix_client_schildichat_http_header_frame_options else {})
+    | combine ({'X-Content-Type-Options': matrix_client_schildichat_http_header_content_type_options} if matrix_client_schildichat_http_header_content_type_options else {})
+    | combine ({'Content-Security-Policy': matrix_client_schildichat_http_header_content_security_policy} if matrix_client_schildichat_http_header_content_security_policy else {})
+    | combine ({'Permission-Policy': matrix_client_schildichat_http_header_content_permission_policy} if matrix_client_schildichat_http_header_content_permission_policy else {})
+    | combine ({'Strict-Transport-Security': matrix_client_schildichat_http_header_strict_transport_security} if matrix_client_schildichat_http_header_strict_transport_security and matrix_client_schildichat_container_labels_traefik_tls else {})
+  }}
+matrix_client_schildichat_container_labels_traefik_additional_response_headers_custom: {}
+
+# matrix_client_schildichat_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_client_schildichat_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_client_schildichat_container_labels_additional_labels: ''
+
+# A list of extra arguments to pass to the container
+matrix_client_schildichat_container_extra_arguments: []
+
+# List of systemd services that matrix-client-schildichat.service depends on
+matrix_client_schildichat_systemd_required_services_list: ['docker.service']
+
+# Specifies the value of the `X-XSS-Protection` header
+# Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
+#
+# Learn more about it is here:
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+# - https://portswigger.net/web-security/cross-site-scripting/reflected
+matrix_client_schildichat_http_header_xss_protection: "1; mode=block"
+
+# Specifies the value of the `X-Frame-Options` header which controls whether framing can happen.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+matrix_client_schildichat_http_header_frame_options: SAMEORIGIN
+
+# Specifies the value of the `X-Content-Type-Options` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+matrix_client_schildichat_http_header_content_type_options: nosniff
+
+# Specifies the value of the `Content-Security-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+matrix_client_schildichat_http_header_content_security_policy: frame-ancestors 'self'
+
+# Specifies the value of the `Permission-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
+matrix_client_schildichat_http_header_content_permission_policy: "{{ 'interest-cohort=()' if matrix_client_schildichat_floc_optout_enabled else '' }}"
+
+# Specifies the value of the `Strict-Transport-Security` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+matrix_client_schildichat_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if matrix_client_schildichat_hsts_preload_enabled else '' }}"
+
+# Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
+#
+# Learn more about what it is here:
+# - https://www.eff.org/deeplinks/2021/03/googles-floc-terrible-idea
+# - https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network
+# - https://amifloced.org/
+#
+# Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
+# See: `matrix_client_schildichat_content_permission_policy`
+matrix_client_schildichat_floc_optout_enabled: true
+
+# Controls if HSTS preloading is enabled
+#
+# In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
+# indicates a willingness to be "preloaded" into browsers:
+# `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+# For more information visit:
+# - https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+# - https://hstspreload.org/#opt-in
+# See: `matrix_client_schildichat_http_header_strict_transport_security`
+matrix_client_schildichat_hsts_preload_enabled: false
+
+# The hostname at which schildichat is served.
+# Only works with with Traefik reverse-proxying.
+# For matrix-nginx-proxy, `matrix_server_fqn_schildichat` is used and this variable has no effect.
+matrix_client_schildichat_hostname: "{{ matrix_server_fqn_schildichat }}"
+
+# The path at which schildichat is exposed.
+# When matrix-nginx-proxy is used, setting this to values other than `/` will cause configuration mismatches and trouble.
+#
+# If Traefik is used, the hostname is also configurable - see `matrix_client_schildichat_container_labels_traefik_hostname`.
+# This value must either be `/` or not end with a slash (e.g. `/schildichat`).
+matrix_client_schildichat_path_prefix: /
+
+# schildichat config.json customizations
+matrix_client_schildichat_default_server_name: "{{ matrix_domain }}"
+matrix_client_schildichat_default_hs_url: ""
+matrix_client_schildichat_default_is_url: ~
+matrix_client_schildichat_disable_custom_urls: true
+matrix_client_schildichat_disable_guests: true
+matrix_client_schildichat_integrations_ui_url: "https://scalar.vector.im/"
+matrix_client_schildichat_integrations_rest_url: "https://scalar.vector.im/api"
+matrix_client_schildichat_integrations_widgets_urls: ["https://scalar.vector.im/api"]
+matrix_client_schildichat_integrations_jitsi_widget_url: "https://scalar.vector.im/api/widgets/jitsi.html"
+matrix_client_schildichat_permalink_prefix: "https://matrix.to"  # noqa var-naming
+matrix_client_schildichat_bug_report_endpoint_url: "https://element.io/bugreports/submit"
+matrix_client_schildichat_show_lab_settings: true  # noqa var-naming
+# schildichat public room directory server(s)
+matrix_client_schildichat_room_directory_servers: ['matrix.org']
+matrix_client_schildichat_welcome_user_id: ~
+# Branding of schildichat
+matrix_client_schildichat_brand: "schildichat"
+
+# URL to Logo on welcome page
+matrix_client_schildichat_welcome_logo: "themes/element/img/logos/element-logo.svg"
+
+# URL of link on welcome image
+matrix_client_schildichat_welcome_logo_link: "https://schildi.chat"
+
+matrix_client_schildichat_welcome_headline: "_t('Welcome to SchildiChat')"
+matrix_client_schildichat_welcome_text: "_t('Decentralised, encrypted chat &amp; collaboration powered by [matrix]')"
+
+# Links, shown in footer of welcome page:
+# [{"text": "Link text", "url": "https://link.target"}, {"text": "Other link"}]
+matrix_client_schildichat_branding_auth_footer_links: ~  # noqa var-naming
+
+# URL to image, shown during Login
+matrix_client_schildichat_branding_auth_header_logo_url: "{{ matrix_client_schildichat_welcome_logo }}"  # noqa var-naming
+
+# URL to Wallpaper, shown in background of welcome page
+matrix_client_schildichat_branding_welcome_background_url: ~  # noqa var-naming
+
+matrix_client_schildichat_page_template_welcome_path: "{{ role_path }}/templates/welcome.html.j2"
+
+# By default, there's no schildichat homepage (when logged in). If you wish to have one,
+# point this to a `home.html` template file on your local filesystem.
+matrix_client_schildichat_embedded_pages_home_path: ~
+
+matrix_client_schildichat_jitsi_preferred_domain: ''  # noqa var-naming
+
+# Controls whether the self-check feature should validate SSL certificates.
+matrix_client_schildichat_self_check_validate_certificates: true
+
+# don't show the registration button on welcome page
+matrix_client_schildichat_registration_enabled: false
+
+# Default country code on welcome page when login by phone number
+matrix_client_schildichat_default_country_code: "GB"
+
+# Controls whether presence will be enabled
+matrix_client_schildichat_enable_presence_by_hs_url: ~
+
+# Controls whether custom schildichat themes will be installed.
+# When enabled, all themes found in the `matrix_client_schildichat_themes_repository_url` repository
+# will be installed and enabled automatically.
+matrix_client_schildichat_themes_enabled: false
+matrix_client_schildichat_themes_repository_url: https://github.com/aaronraimist/element-themes
+matrix_client_schildichat_themes_repository_version: master
+
+# Controls the default theme
+matrix_client_schildichat_default_theme: 'light'
+
+# Controls the `setting_defaults.custom_themes` setting of the schildichat configuration.
+# You can use this setting to define custom themes.
+#
+# Also, look at `matrix_client_schildichat_themes_enabled` for a way to pull in a bunch of custom themes automatically.
+# If you define your own themes here and set `matrix_client_schildichat_themes_enabled: true`, your themes will be preserved as well.
+#
+# Note that for a custom theme to work well, all schildichat instances that you use must have the same theme installed.
+matrix_client_schildichat_setting_defaults_custom_themes: []  # noqa var-naming
+
+# Default schildichat configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_client_schildichat_configuration_extension_json`)
+# or completely replace this variable with your own template.
+#
+# The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
+# This is unlike what it does when looking up YAML template files (no automatic parsing there).
+matrix_client_schildichat_configuration_default: "{{ lookup('template', 'templates/config.json.j2') }}"
+
+# Your custom JSON configuration for schildichat should go to `matrix_client_schildichat_configuration_extension_json`.
+# This configuration extends the default starting configuration (`matrix_client_schildichat_configuration_default`).
+#
+# You can override individual variables from the default configuration, or introduce new ones.
+#
+# If you need something more special, you can take full control by
+# completely redefining `matrix_client_schildichat_configuration_default`.
+#
+# Example configuration extension follows:
+#
+# matrix_client_schildichat_configuration_extension_json: |
+#  {
+#  "disable_3pid_login": true,
+#  "disable_login_language_selector": true
+#  }
+matrix_client_schildichat_configuration_extension_json: '{}'
+
+matrix_client_schildichat_configuration_extension: "{{ matrix_client_schildichat_configuration_extension_json | from_json if matrix_client_schildichat_configuration_extension_json | from_json is mapping else {} }}"
+
+# Holds the final schildichat configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_client_schildichat_configuration_default`.
+matrix_client_schildichat_configuration: "{{ matrix_client_schildichat_configuration_default | combine(matrix_client_schildichat_configuration_extension, recursive=True) }}"
+
+# schildichat Location sharing functionality
+# More info: https://element.io/blog/element-launches-e2ee-location-sharing/
+# How to host your own map tile server: https://matrix.org/docs/guides/map-tile-server
+matrix_client_schildichat_location_sharing_enabled: false
+
+# Default schildichat location sharing map style configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_client_schildichat_location_sharing_map_style_extension_json`)
+# or completely replace this variable with your own template.
+#
+# The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
+# This is unlike what it does when looking up YAML template files (no automatic parsing there).
+matrix_client_schildichat_location_sharing_map_style_default: "{{ lookup('template', 'templates/map_style.json.j2') }}"
+
+# Your custom JSON configuration for schildichat location sharing map style should go to `matrix_client_schildichat_location_sharing_map_style_extension_json`.
+# This configuration extends the default starting configuration (`matrix_client_schildichat_location_sharing_map_style_default`).
+#
+# You can override individual variables from the default configuration, or introduce new ones.
+#
+# If you need something more special, you can take full control by
+# completely redefining `matrix_client_schildichat_location_sharing_map_style_default`.
+#
+# Example configuration override follows:
+#
+# matrix_client_schildichat_location_sharing_map_style_extension_json: |
+#  {
+#    "sources": {
+#        "localsource": {
+#            "tileSize": 512
+#        }
+#    }
+#  }
+#
+# Example configuration extension follows:
+#
+# matrix_client_schildichat_location_sharing_map_style_extension_json: |
+#  {
+#    "sources": {
+#        "anothersource": {
+#            "attribution": "",
+#            "tileSize": 256,
+#            "tiles": ["https://anothertile.example.com/{z}/{x}/{y}.png"],
+#            "type": "raster"
+#        }
+#    }
+#  }
+matrix_client_schildichat_location_sharing_map_style_extension_json: '{}'
+
+matrix_client_schildichat_location_sharing_map_style_extension: "{{ matrix_client_schildichat_location_sharing_map_style_extension_json | from_json if matrix_client_schildichat_location_sharing_map_style_extension_json | from_json is mapping else {} }}"
+
+# Holds the final schildichat location sharing map style configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_client_schildichat_location_sharing_map_style_default`.
+matrix_client_schildichat_location_sharing_map_style: "{{ matrix_client_schildichat_location_sharing_map_style_default | combine(matrix_client_schildichat_location_sharing_map_style_extension, recursive=True) }}"
+
+# Example tile servers configuration
+# matrix_client_schildichat_location_sharing_map_style_content_sources_localsource_tiles: ["https://tile.example.com/{z}/{x}/{y}.png"]
+# or
+# matrix_client_schildichat_location_sharing_map_style_content_sources_localsource_tiles: ["https://s1.example.com/{z}/{x}/{y}.png", "https://s2.example.com/{z}/{x}/{y}.png", "https://s3.example.com/{z}/{x}/{y}.png"]
+matrix_client_schildichat_location_sharing_map_style_content_sources_localsource_tiles: []
+
+# Map attribution (optional):
+# Attribution for OpenStreetMap would be like this:
+# matrix_client_schildichat_location_sharing_map_style_content_sources_localsource_attribution: "&copy; <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">OpenStreetMap</a> contributors"
+# Leave blank, if map does not require attribution.
+matrix_client_schildichat_location_sharing_map_style_content_sources_localsource_attribution: ""

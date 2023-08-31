@@ -1,0 +1,49 @@
+{
+	"default_server_config": {
+		"m.homeserver": {
+			"base_url": {{ matrix_client_schildichat_default_hs_url | string | to_json }},
+			"server_name": {{ matrix_client_schildichat_default_server_name | string | to_json }}
+		},
+		"m.identity_server": {
+			"base_url": {{ matrix_client_schildichat_default_is_url | string | to_json }}
+		}
+	},
+	"setting_defaults": {
+		"custom_themes": {{ matrix_client_schildichat_setting_defaults_custom_themes | to_json }}
+	},
+	"default_theme": {{ matrix_client_schildichat_default_theme | string | to_json }},
+	"default_country_code": {{ matrix_client_schildichat_default_country_code | string | to_json }},
+	"permalink_prefix": {{ matrix_client_schildichat_permalink_prefix | string | to_json }},
+	"disable_custom_urls": {{ matrix_client_schildichat_disable_custom_urls | to_json }},
+	"disable_guests": {{ matrix_client_schildichat_disable_guests | to_json }},
+	"brand": {{ matrix_client_schildichat_brand | to_json }},
+	"integrations_ui_url": {{ matrix_client_schildichat_integrations_ui_url | string | to_json }},
+	"integrations_rest_url": {{ matrix_client_schildichat_integrations_rest_url | string | to_json }},
+	"integrations_widgets_urls": {{ matrix_client_schildichat_integrations_widgets_urls | to_json }},
+	"integrations_jitsi_widget_url": {{ matrix_client_schildichat_integrations_jitsi_widget_url | string | to_json }},
+	"bug_report_endpoint_url": {{ matrix_client_schildichat_bug_report_endpoint_url | to_json }},
+	"show_labs_settings": {{ matrix_client_schildichat_show_lab_settings | to_json }},
+	"room_directory": {
+		"servers": {{ matrix_client_schildichat_room_directory_servers | to_json }}
+	},
+	"welcome_user_id": {{ matrix_client_schildichat_welcome_user_id | to_json }},
+	{% if matrix_client_schildichat_enable_presence_by_hs_url is not none %}
+		"enable_presence_by_hs_url": {{ matrix_client_schildichat_enable_presence_by_hs_url | to_json }},
+	{% endif %}
+	"embedded_pages": {
+		"homeUrl": {{ matrix_client_schildichat_embedded_pages_home_url | string | to_json }}
+	},
+	{% if matrix_client_schildichat_jitsi_preferred_domain %}
+	"jitsi": {
+        "preferred_domain": {{ matrix_client_schildichat_jitsi_preferred_domain | to_json }}
+    },
+	{% endif %}
+	{% if matrix_client_schildichat_location_sharing_enabled %}
+	"map_style_url": "https://{{ matrix_server_fqn_schildichat }}/map_style.json",
+	{% endif %}
+	"branding": {
+		"auth_footer_links": {{ matrix_client_schildichat_branding_auth_footer_links | to_json }},
+		"auth_header_logo_url": {{ matrix_client_schildichat_branding_auth_header_logo_url | to_json }},
+		"welcome_background_url": {{ matrix_client_schildichat_branding_welcome_background_url | to_json }}
+	}
+}

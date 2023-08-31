@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-client-schildichat.service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-schildichat.service"
+  register: matrix_client_schildichat_service_stat
+
+- when: matrix_client_schildichat_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-client-schildichat is stopped
+      ansible.builtin.service:
+        name: matrix-client-schildichat
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-client-schildichat.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-schildichat.service"
+        state: absent
+
+    - name: Ensure schildichat path doesn't exist
+      ansible.builtin.file:
+        path: "{{ matrix_client_schildichat_data_path }}"
+        state: absent
