@@ -1,18 +1,18 @@
-# Configuring schildichat (optional)
+# Configuring SchildiChat (optional)
 
-By default, this playbook does not install the [schildichat](https://github.com/SchildiChat/schildichat-desktop) Matrix client web application.
+By default, this playbook does not install the [SchildiChat](https://github.com/SchildiChat/schildichat-desktop) Matrix client web application.
 
 
-## Enabling schildichat
+## Enabling SchildiChat
 
-If you'd like for the playbook to install schildichat, you can enable it in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+If you'd like for the playbook to install SchildiChat, you can enable it in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
 matrix_client_schildichat_enabled: true
 ```
 
 
-## Configuring schildichat settings
+## Configuring SchildiChat settings
 
 The playbook provides some customization variables you could use to change schildichat's settings.
 
