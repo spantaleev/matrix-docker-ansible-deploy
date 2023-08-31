@@ -82,6 +82,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Cinny](configuring-playbook-client-cinny.md) - a web client focusing primarily on simple, elegant and secure interface (optional)
 
+- [Setting up SchildiChat](configuring-playbook-client-schildichat.md) - a web client based on [Element](https://element.io/) with some extras and tweaks (optional)
+
 
 ### Authentication and user-related
 

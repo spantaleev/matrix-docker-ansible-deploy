@@ -2,6 +2,8 @@
 
 By default, this playbook does not install the [SchildiChat](https://github.com/SchildiChat/schildichat-desktop) Matrix client web application.
 
+**WARNING**: SchildiChat is based on Element-web, but its releases are lagging behind. As an example (from 2023-08-31), SchildiChat is 10 releases behind (it being based on element-web `v1.11.30`, while element-web is now on `v1.11.40`). Element-web frequently suffers from security issues, so running something based on an ancient Element-web release is **dangerous**. Use SchildiChat at your own risk!
+
 
 ## Enabling SchildiChat
 

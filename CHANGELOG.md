@@ -1,3 +1,12 @@
+# 2023-08-31
+
+## SchildiChat support
+
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up the [SchildiChat](https://github.com/SchildiChat/schildichat-desktop) client.
+
+See our [Configuring SchildiChat](docs/configuring-playbook-client-schildichat.md) documentation to get started.
+
+
 # 2023-08-23
 
 ## mautrix-wsproxy support
