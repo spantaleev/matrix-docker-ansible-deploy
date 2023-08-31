@@ -101,33 +101,33 @@ Bridges can be used to connect your matrix installation with third-party communi
 
 | Name | Default? | Description | Documentation |
 | ---- | -------- | ----------- | ------------- |
-| [mautrix-discord](https://github.com/mautrix/discord) | x | Bridge for bridging your Matrix server to [Discord](https://discord.com/) | [Link](docs/configuring-playbook-bridge-mautrix-discord.md) |
-| [mautrix-slack](https://github.com/mautrix/slack) | x | Bridge for bridging your Matrix server to [Slack](https://slack.com/) | [Link](docs/configuring-playbook-bridge-mautrix-slack.md) |
-| [mautrix-telegram](https://github.com/mautrix/telegram) | x | Bridge for bridging your Matrix server to [Telegram](https://telegram.org/) | [Link](docs/configuring-playbook-bridge-mautrix-telegram.md) |
-| [mautrix-gmessages](https://github.com/mautrix/gmessages) | x | Bridge for bridging your Matrix server to [Google Messages](https://messages.google.com/) | [Link](docs/configuring-playbook-bridge-mautrix-gmessages.md) |
-| [mautrix-whatsapp](https://github.com/mautrix/whatsapp) | x | Bridge for bridging your Matrix server to [WhatsApp](https://www.whatsapp.com/) | [Link](docs/configuring-playbook-bridge-mautrix-whatsapp.md) |
-| [mautrix-facebook](https://github.com/mautrix/facebook) | x | Bridge for bridging your Matrix server to [Facebook](https://facebook.com/) | [Link](docs/configuring-playbook-bridge-mautrix-facebook.md) |
-| [mautrix-twitter](https://github.com/mautrix/twitter) | x | Bridge for bridging your Matrix server to [Twitter](https://twitter.com/) | [Link](docs/configuring-playbook-bridge-mautrix-twitter.md) |
-| [mautrix-hangouts](https://github.com/mautrix/hangouts) | x | Bridge for bridging your Matrix server to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts) | [Link](docs/configuring-playbook-bridge-mautrix-hangouts.md) |
-| [mautrix-googlechat](https://github.com/mautrix/googlechat) | x | Bridge for bridging your Matrix server to [Google Chat](https://en.wikipedia.org/wiki/Google_Chat) | [Link](docs/configuring-playbook-bridge-mautrix-googlechat.md) |
-| [mautrix-instagram](https://github.com/mautrix/instagram) | x | Bridge for bridging your Matrix server to [Instagram](https://instagram.com/) | [Link](docs/configuring-playbook-bridge-mautrix-instagram.md) |
-| [mautrix-signal](https://github.com/mautrix/signal) | x | Bridge for bridging your Matrix server to [Signal](https://www.signal.org/) | [Link](docs/configuring-playbook-bridge-mautrix-signal.md) |
-| [beeper-linkedin](https://github.com/beeper/linkedin) | x | Bridge for bridging your Matrix server to [LinkedIn](https://www.linkedin.com/) | [Link](docs/configuring-playbook-bridge-beeper-linkedin.md) |
-| [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) | x | Bridge for bridging your Matrix server to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) | [Link](docs/configuring-playbook-bridge-appservice-irc.md) |
-| [matrix-appservice-discord](https://github.com/Half-Shot/matrix-appservice-discord) | x | Bridge for bridging your Matrix server to [Discord](https://discordapp.com/) | [Link](docs/configuring-playbook-bridge-appservice-discord.md) |
-| [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) | x | Bridge for bridging your Matrix server to [Slack](https://slack.com/) | [Link](docs/configuring-playbook-bridge-appservice-slack.md) |
+| [mautrix-discord](https://github.com/mautrix/discord) | x | Bridge to [Discord](https://discord.com/) | [Link](docs/configuring-playbook-bridge-mautrix-discord.md) |
+| [mautrix-slack](https://github.com/mautrix/slack) | x | Bridge to [Slack](https://slack.com/) | [Link](docs/configuring-playbook-bridge-mautrix-slack.md) |
+| [mautrix-telegram](https://github.com/mautrix/telegram) | x | Bridge to [Telegram](https://telegram.org/) | [Link](docs/configuring-playbook-bridge-mautrix-telegram.md) |
+| [mautrix-gmessages](https://github.com/mautrix/gmessages) | x | Bridge to [Google Messages](https://messages.google.com/) | [Link](docs/configuring-playbook-bridge-mautrix-gmessages.md) |
+| [mautrix-whatsapp](https://github.com/mautrix/whatsapp) | x | Bridge to [WhatsApp](https://www.whatsapp.com/) | [Link](docs/configuring-playbook-bridge-mautrix-whatsapp.md) |
+| [mautrix-facebook](https://github.com/mautrix/facebook) | x | Bridge to [Facebook](https://facebook.com/) | [Link](docs/configuring-playbook-bridge-mautrix-facebook.md) |
+| [mautrix-twitter](https://github.com/mautrix/twitter) | x | Bridge to [Twitter](https://twitter.com/) | [Link](docs/configuring-playbook-bridge-mautrix-twitter.md) |
+| [mautrix-hangouts](https://github.com/mautrix/hangouts) | x | Bridge to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts) | [Link](docs/configuring-playbook-bridge-mautrix-hangouts.md) |
+| [mautrix-googlechat](https://github.com/mautrix/googlechat) | x | Bridge to [Google Chat](https://en.wikipedia.org/wiki/Google_Chat) | [Link](docs/configuring-playbook-bridge-mautrix-googlechat.md) |
+| [mautrix-instagram](https://github.com/mautrix/instagram) | x | Bridge to [Instagram](https://instagram.com/) | [Link](docs/configuring-playbook-bridge-mautrix-instagram.md) |
+| [mautrix-signal](https://github.com/mautrix/signal) | x | Bridge to [Signal](https://www.signal.org/) | [Link](docs/configuring-playbook-bridge-mautrix-signal.md) |
+| [beeper-linkedin](https://github.com/beeper/linkedin) | x | Bridge to [LinkedIn](https://www.linkedin.com/) | [Link](docs/configuring-playbook-bridge-beeper-linkedin.md) |
+| [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) | x | Bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) | [Link](docs/configuring-playbook-bridge-appservice-irc.md) |
+| [matrix-appservice-discord](https://github.com/Half-Shot/matrix-appservice-discord) | x | Bridge to [Discord](https://discordapp.com/) | [Link](docs/configuring-playbook-bridge-appservice-discord.md) |
+| [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) | x | Bridge to [Slack](https://slack.com/) | [Link](docs/configuring-playbook-bridge-appservice-slack.md) |
 | [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) | x | Bridge for slack compatible webhooks ([ConcourseCI](https://concourse-ci.org/), [Slack](https://slack.com/) etc. pp.) | [Link](docs/configuring-playbook-bridge-appservice-webhooks.md) |
-| [matrix-hookshot](https://github.com/Half-Shot/matrix-hookshot) | x | Bridge for bridging Matrix to generic webhooks and multiple project management services, such as GitHub, GitLab, Figma, and Jira in particular | [Link](docs/configuring-playbook-bridge-hookshot.md) |
-| [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) | x | Bridge for bridging your Matrix server to SMS | [Link](docs/configuring-playbook-bridge-matrix-bridge-sms.md) |
-| [Heisenbridge](https://github.com/hifi/heisenbridge) | x | Bridge for bridging your Matrix server to IRC bouncer-style | [Link](docs/configuring-playbook-bridge-heisenbridge.md) |
-| [go-skype-bridge](https://github.com/kelaresg/go-skype-bridge) | x | Bridge for bridging your Matrix server to [Skype](https://www.skype.com) | [Link](docs/configuring-playbook-bridge-go-skype-bridge.md) |
-| [mx-puppet-slack](https://hub.docker.com/r/sorunome/mx-puppet-slack) | x | Bridge for bridging your Matrix server to [Slack](https://slack.com) | [Link](docs/configuring-playbook-bridge-mx-puppet-slack.md) |
+| [matrix-hookshot](https://github.com/Half-Shot/matrix-hookshot) | x | Bridge for generic webhooks and multiple project management services, such as GitHub, GitLab, Figma, and Jira in particular | [Link](docs/configuring-playbook-bridge-hookshot.md) |
+| [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) | x | Bridge to SMS | [Link](docs/configuring-playbook-bridge-matrix-bridge-sms.md) |
+| [Heisenbridge](https://github.com/hifi/heisenbridge) | x | Bouncer-style bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) | [Link](docs/configuring-playbook-bridge-heisenbridge.md) |
+| [go-skype-bridge](https://github.com/kelaresg/go-skype-bridge) | x | Bridge to [Skype](https://www.skype.com) | [Link](docs/configuring-playbook-bridge-go-skype-bridge.md) |
+| [mx-puppet-slack](https://hub.docker.com/r/sorunome/mx-puppet-slack) | x | Bridge to [Slack](https://slack.com) | [Link](docs/configuring-playbook-bridge-mx-puppet-slack.md) |
 | [mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) | x | Bridge for Instagram-DMs ([Instagram](https://www.instagram.com/)) | [Link](docs/configuring-playbook-bridge-mx-puppet-instagram.md) |
 | [mx-puppet-twitter](https://github.com/Sorunome/mx-puppet-twitter) | x | Bridge for Twitter-DMs ([Twitter](https://twitter.com/)) | [Link](docs/configuring-playbook-bridge-mx-puppet-twitter.md) |
-| [mx-puppet-discord](https://github.com/matrix-discord/mx-puppet-discord) | x | Bridge for [Discord](https://discordapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-discord.md) |
-| [mx-puppet-groupme](https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme) | x | Bridge for [GroupMe](https://groupme.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-groupme.md) |
-| [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) | x | Bridge for [Steam](https://steamapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-steam.md) |
-| [Email2Matrix](https://github.com/devture/email2matrix) | x | Bridge for relaying email messages to Matrix rooms | [Link](docs/configuring-playbook-email2matrix.md) |
+| [mx-puppet-discord](https://github.com/matrix-discord/mx-puppet-discord) | x | Bridge to [Discord](https://discordapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-discord.md) |
+| [mx-puppet-groupme](https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme) | x | Bridge to [GroupMe](https://groupme.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-groupme.md) |
+| [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) | x | Bridge to [Steam](https://steamapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-steam.md) |
+| [Email2Matrix](https://github.com/devture/email2matrix) | x | Bridge for relaying emails to Matrix rooms | [Link](docs/configuring-playbook-email2matrix.md) |
 
 
 ### Bots
