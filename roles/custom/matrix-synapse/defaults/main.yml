@@ -1008,8 +1008,9 @@ matrix_synapse_redaction_retention_period: 7d
 matrix_synapse_user_ips_max_age: 28d
 
 
-matrix_synapse_rust_synapse_compress_state_docker_image: "{{ matrix_synapse_rust_synapse_compress_state_docker_image_name_prefix }}mb-saces/rust-synapse-compress-state:latest"
-matrix_synapse_rust_synapse_compress_state_docker_image_name_prefix: "registry.gitlab.com/"
+matrix_synapse_rust_synapse_compress_state_version: v0.1.3
+matrix_synapse_rust_synapse_compress_state_docker_image: "{{ matrix_synapse_rust_synapse_compress_state_docker_image_name_prefix }}etke.cc/rust-synapse-compress-state:{{ matrix_synapse_auto_compressor_version }}"
+matrix_synapse_rust_synapse_compress_state_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_rust_synapse_compress_state_docker_image_self_build else 'registry.gitlab.com/' }}"
 matrix_synapse_rust_synapse_compress_state_docker_image_force_pull: "{{ matrix_synapse_rust_synapse_compress_state_docker_image.endswith(':latest') }}"
 
 matrix_synapse_rust_synapse_compress_state_base_path: "{{ matrix_base_data_path }}/rust-synapse-compress-state"
