@@ -1,8 +1,8 @@
 # Setting up draupnir (optional)
 
-The playbook can install and configure the [draupnir](https://github.com/Gnuxie/Draupnir) moderation bot for you.
+The playbook can install and configure the [draupnir](https://github.com/the-draupnir-project/Draupnir) moderation bot for you.
 
-See the project's [documentation](https://github.com/Gnuxie/Draupnir) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/the-draupnir-project/Draupnir) to learn what it does and why it might be useful to you.
 
 If your migrating from Mjolnir skip to step 5b.
 
@@ -77,7 +77,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-You can refer to the upstream [documentation](https://github.com/Gnuxie/Draupnir) for additional ways to use and configure draupnir. Check out their [quickstart guide](https://github.com/matrix-org/draupnir/blob/main/docs/moderators.md#quick-usage) for some basic commands you can give to the bot.
+You can refer to the upstream [documentation](https://github.com/the-draupnir-project/Draupnir) for additional ways to use and configure draupnir. Check out their [quickstart guide](https://github.com/matrix-org/draupnir/blob/main/docs/moderators.md#quick-usage) for some basic commands you can give to the bot.
 
 You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file.
 
