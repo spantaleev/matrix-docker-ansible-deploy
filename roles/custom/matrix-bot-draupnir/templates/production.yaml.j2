@@ -51,9 +51,11 @@ recordIgnoredInvites: false
 # (see verboseLogging to adjust this a bit.)
 managementRoom: "{{ matrix_bot_draupnir_management_room }}"
 
+# Deprecated and will be removed in a future version.
+# Running with verboseLogging is unsupported.
 # Whether Draupnir should log a lot more messages in the room,
-# mainly involves "all-OK" messages, and debugging messages for when Draupnir checks bans in a room.
-verboseLogging: false
+# mainly involves "all-OK" messages, and debugging messages for when draupnir checks bans in a room.
+#verboseLogging: false
 
 # The log level of terminal (or container) output,
 # can be one of DEBUG, INFO, WARN and ERROR, in increasing order of importance and severity.
@@ -72,6 +74,10 @@ verifyPermissionsOnStartup: true
 # Whether or not Draupnir should actually apply bans and policy lists,
 # turn on to trial some untrusted configuration or lists.
 noop: false
+
+# Whether or not Draupnir should apply `m.room.server_acl` events.
+# DO NOT change this to `true` unless you are very confident that you know what you are doing.
+disableServerACL: "{{ matrix_bot_draupnir_disable_server_acl }}"
 
 # Whether Draupnir should check member lists quicker (by using a different endpoint),
 # keep in mind that enabling this will miss invited (but not joined) users.
