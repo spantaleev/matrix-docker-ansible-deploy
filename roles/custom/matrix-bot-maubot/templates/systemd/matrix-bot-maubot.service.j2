@@ -30,7 +30,11 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			{% if matrix_bot_maubot_management_interface_http_bind_port %}
 			-p {{ matrix_bot_maubot_management_interface_http_bind_port }}:{{ matrix_bot_maubot_management_interface_port }} \
 			{% endif %}
+			{% if matrix_bot_maubot_container_image_customizations_enabled %}
+			{{ matrix_bot_maubot_docker_image_customized }} \
+			{% else %}
 			{{ matrix_bot_maubot_docker_image }} \
+			{% endif %}
  			python3 -m maubot -c /config/config.yaml --no-update
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} kill matrix-bot-maubot 2>/dev/null || true'

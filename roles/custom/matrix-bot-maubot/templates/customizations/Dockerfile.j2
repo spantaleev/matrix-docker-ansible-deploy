@@ -1,0 +1,57 @@
+#jinja2: lstrip_blocks: "True"
+FROM {{ matrix_bot_maubot_docker_image }}
+
+{% if matrix_bot_maubot_container_image_customizations_azure_dependencies_installation_enabled %}
+RUN apk add gcc
+RUN pip install --upgrade pip
+RUN pip install azure-identity msgraph-core ldap3
+{% endif %}
+
+{% if matrix_bot_maubot_container_image_customizations_encryption_enabled %}
+RUN pip install --upgrade maubot[encryption]
+{% endif %}
+
+{% if matrix_bot_maubot_container_image_customizations_templates_enabled %}
+{#
+This ugly script below does quite a lot:
+	- installs git and other dependencies temporarily, just so we could do a shallow-clone
+	- prepare the SSH config: keyscanning (if enabled), private key (if enabled)
+	- performs a git shallow clone with just the branch we need
+	- makes sure the files are owned by the user that will actually run the container later
+	- removes the `.git` directory to save space, but keeps git revision in `git-revision.txt`, should we need it for debugging
+	- finally, verifies that the templates path can indeed be found within the base path (sanity check)
+#}
+{% set dependencies = ['git', 'ssh', 'openssh-client'] %}
+RUN \
+	{% if matrix_bot_maubot_container_image_customizations_templates_git_repository_ssh_private_key %}
+	echo '{{ matrix_bot_maubot_container_image_customizations_templates_git_repository_ssh_private_key | b64encode }}' | base64 -d > /custom-templates-private-key && \
+	chmod 400 /custom-templates-private-key && \
+	{% endif %}
+	apt-get update && \
+	apt-get install --no-install-recommends -y {{ dependencies | join(' ') }} && \
+	{% if matrix_bot_maubot_container_image_customizations_templates_git_repository_keyscan_enabled %}
+	mkdir ~/.ssh && \
+	chmod 700 ~/.ssh && \
+	ssh-keyscan -t rsa {{ matrix_bot_maubot_container_image_customizations_templates_git_repository_keyscan_hostname }} >> ~/.ssh/known_hosts && \
+	{% endif %}
+	{% if matrix_bot_maubot_container_image_customizations_templates_git_repository_ssh_private_key %}GIT_SSH_COMMAND='ssh -i /custom-templates-private-key'{% endif %} git \
+		clone \
+			--branch={{ matrix_bot_maubot_container_image_customizations_templates_git_repository_branch }} \
+			--depth=1 \
+			--single-branch \
+			--no-tags \
+			{{ matrix_bot_maubot_container_image_customizations_templates_git_repository_url }} \
+			{{ matrix_bot_maubot_container_image_customizations_templates_in_container_base_path }} && \
+	/bin/sh -c 'cd {{ matrix_bot_maubot_container_image_customizations_templates_in_container_base_path }} && git rev-parse HEAD > git-revision.txt' && \
+	rm -rf {{ matrix_bot_maubot_container_image_customizations_templates_in_container_base_path }}/.git && \
+	chown -R {{ matrix_bot_maubot_uid }}:{{ matrix_bot_maubot_gid }} {{ matrix_bot_maubot_container_image_customizations_templates_in_container_base_path }} && \
+	apt-get autoremove -y {{ dependencies | join(' ') }} && \
+	{% if matrix_bot_maubot_container_image_customizations_templates_git_repository_ssh_private_key %}
+	rm /custom-templates-private-key && \
+	{% endif %}
+	true
+
+RUN /bin/sh -c 'stat {{ matrix_bot_maubot_container_image_customizations_templates_in_container_base_path }}/{{ matrix_bot_maubot_container_image_customizations_templates_in_container_template_files_relative_path }} || exit 1'
+{% endif %}
+
+{{ matrix_bot_maubot_container_image_customizations_dockerfile_body_custom }}
