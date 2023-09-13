@@ -105,6 +105,16 @@ logging:
             level: {{ matrix_bot_maubot_logging_level|to_json }}
         aiohttp:
             level: {{ matrix_bot_maubot_logging_level|to_json }}
+{% if matrix_bot_maubot_container_image_customizations_azure_dependencies_installation_enabled %}
+        azure.identity._internal.get_token_mixin:
+            level: {{ matrix_bot_maubot_logging_level|to_json }}
+        urllib3.connectionpool:
+            level: {{ matrix_bot_maubot_logging_level|to_json }}
+        msal.application:
+            level: {{ matrix_bot_maubot_logging_level|to_json }}
+        msal.telemetry:
+            level: {{ matrix_bot_maubot_logging_level|to_json }}
+{% endif %}
     root:
         level: {{ matrix_bot_maubot_logging_level|to_json }}
         handlers: [console]
