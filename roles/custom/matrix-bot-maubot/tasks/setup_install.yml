@@ -17,13 +17,42 @@
     - {path: "{{ matrix_bot_maubot_docker_src_files_path }}", when: "{{ matrix_bot_maubot_container_image_self_build }}"}
   when: "item.when|bool"
 
-- name: Ensure maubot configuration file created
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/config/config.yaml.j2"
-    dest: "{{ matrix_bot_maubot_config_path }}/config.yaml"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-    mode: "u=rwx"
+- when: "matrix_bot_maubot_container_image_self_build | bool"
+  block:
+    - name: Determine the Git branch or tag to use
+      set_fact:
+        git_version_to_use: "{{ 'master' if matrix_bot_maubot_docker_image.split(':')[1] == 'latest' else matrix_bot_maubot_docker_image.split(':')[1] }}"
+
+    - name: Ensure Maubot repository is present on self-build
+      ansible.builtin.git:
+        repo: "{{ matrix_bot_maubot_docker_repo }}"
+        dest: "{{ matrix_bot_maubot_docker_src_files_path }}"
+        version: "{{ git_version_to_use }}"
+        force: "yes"
+      become: true
+      become_user: "{{ matrix_user_username }}"
+      register: matrix_bot_maubot_git_pull_results
+
+    - name: Check if Maubot Docker image exists
+      ansible.builtin.command: "{{ devture_systemd_docker_base_host_command_docker }} images --quiet --filter 'reference={{ matrix_bot_maubot_docker_image }}'"
+      register: matrix_bot_maubot_docker_image_check_result
+      changed_when: false
+
+    # Invoking the `docker build` command here, instead of calling the `docker_image` Ansible module,
+    # because the latter does not support BuildKit.
+    # See: https://github.com/ansible-collections/community.general/issues/514
+    - name: Ensure Maubot Docker image is built
+      ansible.builtin.shell:
+        chdir: "{{ matrix_bot_maubot_docker_src_files_path }}"
+        cmd: |
+          {{ devture_systemd_docker_base_host_command_docker }} build \
+          -t "{{ matrix_bot_maubot_docker_image }}" \
+          -f Dockerfile \
+          .
+      environment:
+        DOCKER_BUILDKIT: 1
+      changed_when: true
+      when: "matrix_bot_maubot_git_pull_results.changed | bool or matrix_bot_maubot_docker_image_check_result.stdout == ''"
 
 - name: Ensure maubot image is pulled
   community.docker.docker_image:
@@ -37,28 +66,34 @@
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
-- name: Ensure maubot repository is present on self-build
-  ansible.builtin.git:
-    repo: "{{ matrix_bot_maubot_docker_repo }}"
-    version: "{{ matrix_bot_maubot_docker_repo_version }}"
-    dest: "{{ matrix_bot_maubot_docker_src_files_path }}"
-    force: "yes"
-  become: true
-  become_user: "{{ matrix_user_username }}"
-  register: matrix_bot_maubot_git_pull_results
-  when: "matrix_bot_maubot_container_image_self_build|bool"
+- when: "matrix_bot_maubot_container_image_customizations_enabled | bool"
+  block:
+    - name: Ensure customizations Dockerfile is created
+      ansible.builtin.template:
+        src: "{{ role_path }}/templates/customizations/Dockerfile.j2"
+        dest: "{{ matrix_bot_maubot_customized_docker_src_files_path }}/Dockerfile"
+        owner: "{{ matrix_user_username }}"
+        group: "{{ matrix_user_groupname }}"
+        mode: 0640
+      register: matrix_bot_maubot_container_image_customizations_dockerfile_result
 
-- name: Ensure maubot image is built
-  community.docker.docker_image:
-    name: "{{ matrix_bot_maubot_docker_image }}"
-    source: build
-    force_source: "{{ matrix_bot_maubot_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_maubot_git_pull_results.changed }}"
-    build:
-      dockerfile: Dockerfile
-      path: "{{ matrix_bot_maubot_docker_src_files_path }}"
-      pull: true
-  when: "matrix_bot_maubot_container_image_self_build|bool"
+    - name: Ensure customized Docker image for Maubot is built
+      community.docker.docker_image:
+        name: "{{ matrix_bot_maubot_docker_image_customized }}"
+        source: build
+        force_source: "{{ matrix_bot_maubot_container_image_customizations_dockerfile_result.changed or matrix_bot_maubot_docker_image_customized_force_source }}"
+        build:
+          dockerfile: Dockerfile
+          path: "{{ matrix_bot_maubot_customized_docker_src_files_path }}"
+          nocache: "{{ matrix_bot_maubot_docker_image_customized_build_nocache }}"
+
+- name: Ensure maubot configuration file created
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/config/config.yaml.j2"
+    dest: "{{ matrix_bot_maubot_config_path }}/config.yaml"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: "u=rwx"
 
 - name: Ensure matrix-bot-maubot.service installed
   ansible.builtin.template:
