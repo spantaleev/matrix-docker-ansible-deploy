@@ -4,7 +4,7 @@
 
 matrix_synapse_enabled: true
 
-matrix_synapse_version: v1.90.0
+matrix_synapse_version: v1.92.1
 
 matrix_synapse_username: ''
 matrix_synapse_uid: ''
@@ -438,7 +438,24 @@ matrix_synapse_container_additional_volumes: []
 # A list of additional loggers to register in synapse.log.config.
 # This list gets populated dynamically based on Synapse extensions that have been enabled.
 # Contains definition objects like this: `{"name": "..", "level": "DEBUG"}
-matrix_synapse_additional_loggers: []
+matrix_synapse_additional_loggers: "{{ matrix_synapse_additional_loggers_auto + matrix_synapse_additional_loggers_custom }}"
+
+matrix_synapse_additional_loggers_auto:
+  # By default, we're disabling some useless (and even toxic) spammy WARNING-level logs.
+  # Related to:
+  # - https://github.com/matrix-org/synapse/issues/16208
+  # - https://github.com/matrix-org/synapse/issues/16101
+  # - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2853
+  - name: synapse.http.matrixfederationclient
+    level: CRITICAL
+  - name: synapse.federation.sender.per_destination_queue
+    level: CRITICAL
+  - name: synapse.handlers.device
+    level: CRITICAL
+  - name: synapse.replication.tcp.handler
+    level: CRITICAL
+
+matrix_synapse_additional_loggers_custom: []
 
 # A list of appservice config files (in-container filesystem paths).
 # This list gets populated dynamically based on Synapse extensions that have been enabled.
@@ -825,7 +842,7 @@ matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeserve
 # See: https://github.com/matrix-org/mjolnir#synapse-module
 matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled: false
 matrix_synapse_ext_spam_checker_mjolnir_antispam_git_repository_url: "https://github.com/matrix-org/mjolnir"
-matrix_synapse_ext_spam_checker_mjolnir_antispam_git_version: "4008e3f65d3745b9307dd31f1c5aa80c13a61a58"
+matrix_synapse_ext_spam_checker_mjolnir_antispam_git_version: "v1.6.4"
 matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites: true
 # Flag messages sent by servers/users in the ban lists as spam. Currently
 # this means that spammy messages will appear as empty to users. Default
@@ -840,7 +857,16 @@ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_usernames: false
 # these rooms.
 # ["!roomid:example.org"]
 matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
-
+# A dictionary with various fields controlling max length.
+# See https://github.com/matrix-org/mjolnir/blob/main/docs/synapse_module.md for details.
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_message_max_length: {}
+# Actual configuration passed to the mjolnir-antispam Synapse module
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config:
+  block_invites: "{{ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites }}"
+  block_messages: "{{ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_messages }}"
+  block_usernames: "{{ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_usernames }}"
+  ban_lists: "{{ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists }}"
+  message_max_length: "{{ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_message_max_length }}"
 
 # Enable this to activate the E2EE disabling Synapse module.
 # See: https://github.com/digitalentity/matrix_encryption_disabler
@@ -943,12 +969,6 @@ matrix_synapse_default_room_version: "10"
 # The upstream default is `false`, but we try to make Synapse less wasteful of resources, so we do things differently.
 matrix_synapse_forget_rooms_on_leave: true
 
-# Controls the Synapse `spam_checker` setting.
-#
-# If a spam-checker extension is enabled, this variable's value is set automatically by the playbook during runtime.
-# If not, you can also control its value manually.
-matrix_synapse_spam_checker: []
-
 # Controls the Synapse `modules` list.
 # You can define your own list of modules here. See the `modules` syntax in `homeserver.yaml.j2`
 # Certain Synapse extensions that you can enable below auto-inject themselves into `matrix_synapse_modules` at runtime.
@@ -988,9 +1008,9 @@ matrix_synapse_redaction_retention_period: 7d
 matrix_synapse_user_ips_max_age: 28d
 
 
-matrix_synapse_rust_synapse_compress_state_docker_image: "{{ matrix_synapse_rust_synapse_compress_state_docker_image_name_prefix }}mb-saces/rust-synapse-compress-state:latest"
+matrix_synapse_rust_synapse_compress_state_docker_image: "{{ matrix_synapse_rust_synapse_compress_state_docker_image_name_prefix }}mb-saces/rust-synapse-tools:v0.0.1"
 matrix_synapse_rust_synapse_compress_state_docker_image_name_prefix: "registry.gitlab.com/"
-matrix_synapse_rust_synapse_compress_state_docker_image_force_pull: "{{ matrix_synapse_rust_synapse_compress_state_docker_image.endswith(':latest') }}"
+matrix_synapse_rust_synapse_compress_state_docker_image_force_pull: "{{ matrix_synapse_rust_synapse_compress_state_docker_image.endswith(':stable') or matrix_synapse_rust_synapse_compress_state_docker_image.endswith(':latest') }}"
 
 matrix_synapse_rust_synapse_compress_state_base_path: "{{ matrix_base_data_path }}/rust-synapse-compress-state"
 matrix_synapse_rust_synapse_compress_state_synapse_compress_state_in_container_path: "/usr/local/bin/synapse_compress_state"

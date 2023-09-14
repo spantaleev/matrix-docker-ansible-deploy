@@ -218,20 +218,44 @@ jitsi_prosody_container_jvb_host_bind_port: 5222
 
 (The default is empty; if it's set then docker forwards the port.)
 
-The nginx configuration will also need to be updated in order to deal with the additional JVB servers. This is achieved via its own configuration variable
-`matrix_nginx_proxy_proxy_jitsi_additional_jvbs`, which contains a dictionary of server ids to ip addresses.
-
-For example,
-
-``` yaml
-matrix_nginx_proxy_proxy_jitsi_additional_jvbs:
-   jvb-2: 192.168.0.2
-   jvb-3: 192.168.0.3
-```
-
-
 Applied together this will allow you to provision extra JVB instances which will register themselves with the prosody service and be available for jicofo
 to route conferences too.
+
+To make Traefik reverse-proxy to these additional JVBs (living on other hosts), **you would need to add the following Traefik configuration extension**:
+
+```yaml
+# Traefik proxying for additional JVBs. These can't be configured using Docker
+# labels, like the first JVB is, because they run on different hosts, so we add
+# the necessary configuration to the file provider.
+devture_traefik_provider_configuration_extension_yaml: |
+  http:
+   routers:
+     {% for host in groups['jitsi_jvb_servers'] %}
+
+     additional-{{ hostvars[host]['jitsi_jvb_server_id'] }}-router:
+       entryPoints:
+         - "{{ devture_traefik_entrypoint_primary }}"
+       rule: "Host(`{{ jitsi_hostname }}`) && PathPrefix(`/colibri-ws/{{ hostvars[host]['jitsi_jvb_server_id'] }}/`)"
+       service: additional-{{ hostvars[host]['jitsi_jvb_server_id'] }}-service
+       {% if devture_traefik_entrypoint_primary != 'web' %}
+
+       tls:
+         certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+       {% endif %}
+
+     {% endfor %}
+
+   services:
+     {% for host in groups['jitsi_jvb_servers'] %}
+
+     additional-{{ hostvars[host]['jitsi_jvb_server_id'] }}-service:
+       loadBalancer:
+         servers:
+           - url: "http://{{ host }}:9090/"
+
+     {% endfor %}
+```
 
 ## (Optional) Enable Gravatar
 

@@ -1,13 +1,13 @@
 ---
 # A moderation tool for Matrix
-# Project source code URL: https://github.com/Gnuxie/Draupnir
+# Project source code URL: https://github.com/the-draupnir-project/Draupnir
 
 matrix_bot_draupnir_enabled: true
 
-matrix_bot_draupnir_version: "v1.84.0"
+matrix_bot_draupnir_version: "v1.85.1"
 
 matrix_bot_draupnir_container_image_self_build: false
-matrix_bot_draupnir_container_image_self_build_repo: "https://github.com/Gnuxie/Draupnir.git"
+matrix_bot_draupnir_container_image_self_build_repo: "https://github.com/the-draupnir-project/Draupnir.git"
 
 matrix_bot_draupnir_docker_image: "{{ matrix_bot_draupnir_docker_image_name_prefix }}gnuxie/draupnir:{{ matrix_bot_draupnir_version }}"
 matrix_bot_draupnir_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_draupnir_container_image_self_build else matrix_container_global_registry_prefix }}"
@@ -35,6 +35,16 @@ matrix_bot_draupnir_access_token: ""
 # This should be a room alias or room ID - not a matrix.to URL.
 # Note: draupnir is fairly verbose - expect a lot of messages from it.
 matrix_bot_draupnir_management_room: ""
+
+# Disable Server ACL is used if you want to not give the bot the right to apply Server ACLs in rooms without complaints from the bot.
+# This setting is described the following way in the Configuration.
+#
+# Whether or not Draupnir should apply `m.room.server_acl` events.
+# DO NOT change this to `true` unless you are very confident that you know what you are doing.
+#
+# Please follow the advice of upstream and only change this value if you know what your doing.
+# Its Exposed here because its common enough to be valid to expose.
+matrix_bot_draupnir_disable_server_acl: "false"
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.

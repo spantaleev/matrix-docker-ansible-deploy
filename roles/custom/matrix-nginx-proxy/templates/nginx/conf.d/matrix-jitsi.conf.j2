@@ -53,10 +53,10 @@
 
 		tcp_nodelay on;
 	}
-	{% for id, ip_address in matrix_nginx_proxy_proxy_jitsi_additional_jvbs.items() %}
+	{% for host in groups['jitsi_jvb_servers'] | default([]) %}
 	# colibri (JVB) websockets for additional JVBs
-	location ~ ^/colibri-ws/{{ id | regex_escape }}/(.*) {
-		proxy_pass http://{{ ip_address }}:9090/colibri-ws/{{ id }}/$1$is_args$args;
+	location ~ ^/colibri-ws/{{ hostvars[host]['jitsi_jvb_server_id'] | regex_escape }}/(.*) {
+		proxy_pass http://{{ host }}:9090/colibri-ws/{{ hostvars[host]['jitsi_jvb_server_id'] }}/$1$is_args$args;
 
 		proxy_set_header Host $host;
 		proxy_set_header X-Forwarded-For {{ matrix_nginx_proxy_x_forwarded_for }};

@@ -1,0 +1,37 @@
+---
+
+- name: Fail if required schildichat settings not defined
+  ansible.builtin.fail:
+    msg: >
+      You need to define a required configuration setting (`{{ item }}`) for using schildichat.
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_client_schildichat_default_hs_url"
+
+- name: Fail if schildichat location sharing enabled, but no tile server defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define at least one map tile server in matrix_client_schildichat_location_sharing_map_style_content_sources_localsource_tiles list
+  when:
+    - matrix_client_schildichat_location_sharing_enabled | bool
+    - matrix_client_schildichat_location_sharing_map_style_content_sources_localsource_tiles | length == 0
+
+- when: matrix_client_schildichat_container_labels_traefik_enabled | bool
+  block:
+    - name: Fail if required matrix-client-schildichat Traefik settings not defined
+      ansible.builtin.fail:
+        msg: >-
+          You need to define a required configuration setting (`{{ item }}`).
+      when: "vars[item] == ''"
+      with_items:
+        - matrix_client_schildichat_container_labels_traefik_hostname
+        - matrix_client_schildichat_container_labels_traefik_path_prefix
+
+    # We ensure it doesn't end with a slash, because we handle both (slash and no-slash).
+    # Knowing that `matrix_client_schildichat_container_labels_traefik_path_prefix` does not end with a slash
+    # ensures we know how to set these routes up without having to do "does it end with a slash" checks elsewhere.
+    - name: Fail if matrix_client_schildichat_container_labels_traefik_path_prefix ends with a slash
+      ansible.builtin.fail:
+        msg: >-
+          matrix_client_schildichat_container_labels_traefik_path_prefix (`{{ matrix_client_schildichat_container_labels_traefik_path_prefix }}`) must either be `/` or not end with a slash (e.g. `/schildichat`).
+      when: "matrix_client_schildichat_container_labels_traefik_path_prefix != '/' and matrix_client_schildichat_container_labels_traefik_path_prefix[-1] == '/'"

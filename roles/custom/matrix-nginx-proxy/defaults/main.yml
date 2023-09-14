@@ -212,6 +212,10 @@ matrix_nginx_proxy_proxy_hydrogen_hostname: "{{ matrix_server_fqn_hydrogen }}"
 matrix_nginx_proxy_proxy_cinny_enabled: false
 matrix_nginx_proxy_proxy_cinny_hostname: "{{ matrix_server_fqn_cinny }}"
 
+# Controls whether proxying the schildichat domain should be done.
+matrix_nginx_proxy_proxy_schildichat_enabled: false
+matrix_nginx_proxy_proxy_schildichat_hostname: "{{ matrix_server_fqn_schildichat }}"
+
 # Controls whether proxying the buscarron domain should be done.
 matrix_nginx_proxy_proxy_buscarron_enabled: false
 matrix_nginx_proxy_proxy_buscarron_hostname: "{{ matrix_server_fqn_buscarron }}"
@@ -420,6 +424,9 @@ matrix_nginx_proxy_proxy_hydrogen_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to Cinny's server configuration (matrix-client-cinny.conf).
 matrix_nginx_proxy_proxy_cinny_additional_server_configuration_blocks: []
+
+# A list of strings containing additional configuration blocks to add to schildichat's server configuration (matrix-client-schildichat.conf).
+matrix_nginx_proxy_proxy_schildichat_additional_server_configuration_blocks: []
 
 # A list of strings containing additional configuration blocks to add to buscarron's server configuration (matrix-bot-buscarron.conf).
 matrix_nginx_proxy_proxy_buscarron_additional_server_configuration_blocks: []
@@ -701,12 +708,3 @@ matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses: ['{{ ansible_def
 # http://nginx.org/en/docs/ngx_core_module.html#worker_connections
 matrix_nginx_proxy_worker_processes: auto
 matrix_nginx_proxy_worker_connections: 1024
-
-# A mapping of JVB server ids to hostname/ipa addresses used to add additional jvb blocks
-# to the Jitsi's server configuration (matrix-jitsi.conf)
-# Note: avoid using the JVB server id  "jvb-1" as this is reserved for the main host.
-# Example:
-# matrix_nginx_proxy_proxy_jitsi_additional_jvbs:
-#   jvb-2: 192.168.0.1
-#   jvb-3: 192.168.0.2
-matrix_nginx_proxy_proxy_jitsi_additional_jvbs: {}
