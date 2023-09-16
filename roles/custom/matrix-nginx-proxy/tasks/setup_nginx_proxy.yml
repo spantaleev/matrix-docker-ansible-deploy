@@ -288,6 +288,12 @@
     state: absent
   when: "not matrix_nginx_proxy_proxy_element_enabled | bool"
 
+- name: Ensure Matrix nginx-proxy configuration for Schildichat domain deleted
+  ansible.builtin.file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-schildichat.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_schildichat_enabled | bool"
+
 - name: Ensure Matrix nginx-proxy configuration for Hydrogen domain deleted
   ansible.builtin.file:
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-hydrogen.conf"
