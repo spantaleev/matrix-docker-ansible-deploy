@@ -2959,10 +2959,7 @@ devture_postgres_gid: "{{ matrix_user_gid }}"
 devture_postgres_connection_username: matrix
 devture_postgres_db_name: matrix
 
-devture_postgres_systemd_services_to_stop_for_maintenance_list: |
-  {{
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-  }}
+devture_postgres_systemd_services_to_stop_for_maintenance_list: "{{ devture_systemd_service_manager_services_list_auto | map(attribute='name') | reject('equalto', (devture_postgres_identifier + '.service')) }}"
 
 devture_postgres_managed_databases_auto: |
   {{
