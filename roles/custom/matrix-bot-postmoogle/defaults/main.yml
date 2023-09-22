@@ -9,7 +9,7 @@ matrix_bot_postmoogle_docker_repo: "https://gitlab.com/etke.cc/postmoogle.git"
 matrix_bot_postmoogle_docker_repo_version: "{{ 'main' if matrix_bot_postmoogle_version == 'latest' else matrix_bot_postmoogle_version }}"
 matrix_bot_postmoogle_docker_src_files_path: "{{ matrix_base_data_path }}/postmoogle/docker-src"
 
-matrix_bot_postmoogle_version: v0.9.14
+matrix_bot_postmoogle_version: v0.9.15
 matrix_bot_postmoogle_docker_image: "{{ matrix_bot_postmoogle_docker_image_name_prefix }}etke.cc/postmoogle:{{ matrix_bot_postmoogle_version }}"
 matrix_bot_postmoogle_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_postmoogle_container_image_self_build else 'registry.gitlab.com/' }}"
 matrix_bot_postmoogle_docker_image_force_pull: "{{ matrix_bot_postmoogle_docker_image.endswith(':latest') }}"
@@ -65,11 +65,14 @@ matrix_bot_postmoogle_database_dialect: "{{
 
 
 # The bot's username. This user needs to be created manually beforehand.
-# Also see `matrix_bot_postmoogle_password`.
+# Also see `matrix_bot_postmoogle_password` or `matrix_bot_postmoogle_sharedsecret`
 matrix_bot_postmoogle_login: "postmoogle"
 
 # The password that the bot uses to authenticate.
 matrix_bot_postmoogle_password: ''
+
+# Alternative to password - shared secret requires matrix_bot_postmoogle_login to be MXID
+matrix_bot_postmoogle_sharedsecret: ''
 
 matrix_bot_postmoogle_homeserver: "{{ matrix_homeserver_container_url }}"
 
@@ -78,6 +81,12 @@ matrix_bot_postmoogle_prefix: '!pm'
 
 # Max email size in megabytes, including attachments
 matrix_bot_postmoogle_maxsize: '1024'
+
+# Optional SMTP relay mode
+matrix_bot_postmoogle_relay_host: ''
+matrix_bot_postmoogle_relay_port: ''
+matrix_bot_postmoogle_relay_username: ''
+matrix_bot_postmoogle_relay_password: ''
 
 # A list of admins
 # Example set of rules:
@@ -101,9 +110,6 @@ matrix_bot_postmoogle_monitoring_healthchecks_duration: 60
 
 # Log level
 matrix_bot_postmoogle_loglevel: 'INFO'
-
-# Disable encryption
-matrix_bot_postmoogle_noencryption: false
 
 # deprecated, use matrix_bot_postmoogle_domains
 matrix_bot_postmoogle_domain: "{{ matrix_server_fqn_matrix }}"
@@ -146,6 +152,9 @@ matrix_bot_postmoogle_tls_required: false
 
 # trusted proxies
 matrix_bot_postmoogle_proxies: []
+
+# known forwarders
+matrix_bot_postmoogle_mailboxes_forwarded: []
 
 # reserved mailboxes
 matrix_bot_postmoogle_mailboxes_reserved: []
