@@ -2112,6 +2112,24 @@ oidc_providers:
   #    - attribute: userGroup
   #      value: "synapseUsers"
 
+{% if matrix_synapse_oidc_provider_microsoft_enabled %}
+  - idp_id: microsoft
+    idp_name: Microsoft
+    idp_icon: "{{ matrix_synapse_oidc_provider_microsoft_icon | string }}"
+    issuer: "https://login.microsoftonline.com/{{ matrix_synapse_oidc_provider_microsoft_tenant_id | string }}/v2.0"
+    client_id: "{{ matrix_synapse_oidc_provider_microsoft_client_id | string }}"
+    client_secret: "{{ matrix_synapse_oidc_provider_microsoft_client_secret | string }}"
+    scopes: ["openid", "profile"]
+    authorization_endpoint: "https://login.microsoftonline.com/{{ matrix_synapse_oidc_provider_microsoft_tenant_id | string }}/oauth2/v2.0/authorize"
+    token_endpoint: "https://login.microsoftonline.com/{{ matrix_synapse_oidc_provider_microsoft_tenant_id | string }}/oauth2/v2.0/token"
+    userinfo_endpoint: "https://graph.microsoft.com/oidc/userinfo"
+    user_mapping_provider:
+      config:
+        localpart_template: "{% raw %}{{ user.preferred_username.split('@')[0] }}{% endraw %}"
+        display_name_template: "{% raw %}{{ user.name }}{% endraw %}"
+        picture_template: "{% raw %}{{ user.picture}}{% endraw %}"
+        email_template: "{% raw %}{{ user.email }}{% endraw %}"
+{% endif %}
 
 # Enable Central Authentication Service (CAS) for registration and login.
 #
