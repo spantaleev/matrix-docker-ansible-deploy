@@ -21,3 +21,5 @@ You need to register an application in the Entra ID (AAD). Values you need:
 3. Client secret
 
 In Authentication section, create Web Redirect URI: **https://matrix.example.com/_synapse/client/oidc/callback**
+
+Easiest way to get an icon for provider is to upload it to any public (unencrypted) room and copy the mcx:// address from message source.
