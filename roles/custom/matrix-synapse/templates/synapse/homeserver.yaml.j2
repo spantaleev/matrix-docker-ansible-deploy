@@ -642,6 +642,15 @@ retention:
   #  - shortest_max_lifetime: 3d
   #    interval: 1d
 
+{% if matrix_synapse_retention_policy_enabled %}
+  enabled: true
+  default_policy:
+    min_lifetime: {{ matrix_synapse_retention_policy_min_lifetime | string }}
+    max_lifetime: {{ matrix_synapse_retention_policy_max_lifetime | string }}
+
+  allowed_lifetime_min: {{ matrix_synapse_retention_policy_allowed_min_lifetime | string }}
+  allowed_lifetime_max: {{ matrix_synapse_retention_policy_allowed_max_lifetime | string }}
+{% endif %}
 
 ## TLS ##
 
