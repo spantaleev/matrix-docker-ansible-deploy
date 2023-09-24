@@ -4,7 +4,7 @@
 
 matrix_beeper_linkedin_enabled: true
 
-matrix_beeper_linkedin_version: v0.5.4
+matrix_beeper_linkedin_version: latest
 
 # See: https://github.com/beeper/linkedin/pkgs/container/linkedin
 matrix_beeper_linkedin_docker_image: "{{ matrix_beeper_linkedin_docker_image_name_prefix }}beeper/linkedin:{{ matrix_beeper_linkedin_docker_image_tag }}"
@@ -14,7 +14,7 @@ matrix_beeper_linkedin_docker_image_tag: "{{ 'latest' if matrix_beeper_linkedin_
 
 matrix_beeper_linkedin_container_image_self_build: false
 matrix_beeper_linkedin_container_image_self_build_repo: "https://github.com/beeper/linkedin"
-matrix_beeper_linkedin_container_image_self_build_branch: "{{ matrix_beeper_linkedin_version }}"
+matrix_beeper_linkedin_container_image_self_build_branch: "{{ 'master' if matrix_beeper_linkedin_version == 'latest' else matrix_beeper_linkedin_version }}"
 
 matrix_beeper_linkedin_base_path: "{{ matrix_base_data_path }}/beeper-linkedin"
 matrix_beeper_linkedin_config_path: "{{ matrix_beeper_linkedin_base_path }}/config"
