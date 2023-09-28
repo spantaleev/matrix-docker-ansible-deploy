@@ -509,7 +509,12 @@ limit_remote_rooms:
 #
 #redaction_retention_period: 28d
 
-redaction_retention_period: {{ matrix_synapse_redaction_retention_period }}
+redaction_retention_period: {{ matrix_synapse_redaction_retention_period | to_json }}
+
+# How long to keep locally forgotten rooms before purging them from the DB.
+#
+#forgotten_room_retention_period: 28d
+forgotten_room_retention_period: {{ matrix_synapse_forgotten_room_retention_period | to_json }}
 
 # How long to track users' last seen time and IPs in the database.
 #
@@ -517,7 +522,7 @@ redaction_retention_period: {{ matrix_synapse_redaction_retention_period }}
 #
 #user_ips_max_age: 14d
 
-user_ips_max_age: {{ matrix_synapse_user_ips_max_age }}
+user_ips_max_age: {{ matrix_synapse_user_ips_max_age | to_json }}
 
 # Inhibits the /requestToken endpoints from returning an error that might leak
 # information about whether an e-mail address is in use or not on this
