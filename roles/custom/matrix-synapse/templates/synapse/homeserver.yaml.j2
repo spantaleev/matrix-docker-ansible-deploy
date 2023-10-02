@@ -2090,9 +2090,9 @@ saml2_config:
 # use 'oidc' for the idp_id to ensure that existing users continue to be
 # recognised.)
 #
-oidc_providers:
+{% if matrix_synapse_oidc_enabled and matrix_synapse_oidc_providers | length > 0 %}
   # Generic example
-  #
+  #matrix_synapse_oidc_providers:
   #- idp_id: my_idp
   #  idp_name: "My OpenID provider"
   #  idp_icon: "mxc://example.com/mediaid"
@@ -2116,6 +2116,9 @@ oidc_providers:
   #  attribute_requirements:
   #    - attribute: userGroup
   #      value: "synapseUsers"
+oidc_providers:
+  {{ matrix_synapse_oidc_providers|to_nice_yaml(indent=2, width=999999) }}
+{% endif %}
 
 
 # Enable Central Authentication Service (CAS) for registration and login.
