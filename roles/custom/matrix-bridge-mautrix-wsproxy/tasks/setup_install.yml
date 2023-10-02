@@ -14,6 +14,18 @@
 - ansible.builtin.set_fact:
     matrix_mautrix_wsproxy_syncproxy_requires_restart: false
 
+- name: Ensure Mautrix wsproxy paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - path: "{{ matrix_mautrix_wsproxy_base_path }}"
+      when: true
+  when: item.when | bool
+
 - name: Ensure Mautrix wsproxy support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
