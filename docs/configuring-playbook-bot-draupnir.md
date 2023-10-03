@@ -20,7 +20,7 @@ You can use the playbook to [register a new user](registering-users.md):
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.draupnir password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
 ```
 
-If you would like draupnir to be able to deactivate users, move aliases, shutdown rooms, etc then it must be a server admin so you need to change `admin=no` to `admin=yes` in the command above.
+If you would like draupnir to be able to deactivate users, move aliases, shutdown rooms, show abuse reports ((see below)[#abuse-reports]), etc then it must be a server admin so you need to change `admin=no` to `admin=yes` in the command above.
 
 
 ## 2. Get an access token
@@ -93,4 +93,18 @@ matrix_bot_draupnir_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_bot_draupnir_configuration_yaml`.
   recordIgnoredInvites: true
+```
+
+## Abuse Reports
+
+Draupnir supports two methods to receive reports in the management room.
+
+The first method intercepts the report API endpoint of the client-server API, which requires integration with the reverse proxy in front of the homeserver.
+While this playbook uses reverse proxies, it does not yet implement this.
+
+The other method polls an synapse admin API endpoint and is hence only available when using synapse and when the Draupnir user is an admin user (see step 1).
+To enable it, set `pollReports: true` in Draupnir's config:
+```yaml
+matrix_bot_draupnir_configuration_extension_yaml: |
+  pollReports: true
 ```
