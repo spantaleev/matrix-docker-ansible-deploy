@@ -77,7 +77,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-You can refer to the upstream [documentation](https://github.com/the-draupnir-project/Draupnir) for additional ways to use and configure draupnir. Check out their [quickstart guide](https://github.com/matrix-org/draupnir/blob/main/docs/moderators.md#quick-usage) for some basic commands you can give to the bot.
+You can refer to the upstream [documentation](https://github.com/the-draupnir-project/Draupnir) for additional ways to use and configure draupnir. Check out their [quickstart guide](https://github.com/the-draupnir-project/Draupnir/blob/main/docs/moderators.md#quick-usage) for some basic commands you can give to the bot.
 
 You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file.
 
