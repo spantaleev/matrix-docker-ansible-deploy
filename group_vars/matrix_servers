@@ -65,6 +65,8 @@ aux_file_default_group: "{{ matrix_user_groupname }}"
 
 matrix_homeserver_container_extra_arguments_auto: |
   {{
+    (['--no-healthcheck'])
+    +
     (['--mount type=bind,src=' + matrix_appservice_discord_config_path + '/registration.yaml,dst=/matrix-appservice-discord-registration.yaml,ro'] if matrix_appservice_discord_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_appservice_irc_config_path + '/registration.yaml,dst=/matrix-appservice-irc-registration.yaml,ro'] if matrix_appservice_irc_enabled else [])
