@@ -1,5 +1,37 @@
 ---
 
+- when: matrix_coturn_turn_external_ip_address_auto_detection_enabled | bool
+  block:
+    - when: matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_url == ''
+      name: Fail if enabled, but EchoIP service URL unset
+      ansible.builtin.fail:
+        msg: "To use the external IP address auto-detection feature, you need to set matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_url"
+
+    # NOTE:
+    # `ansible.builtin.uri` does not provide a way to configure whether IPv4 or IPv6 is used.
+    # Luckily, the default instance we use does not define AAAA records for now, so it's always IPv4.
+    - name: Fetch IP address information from EchoIP service
+      ansible.builtin.uri:
+        url: "{{ matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_url }}"
+        headers:
+          Content-Type: application/json
+        follow_redirects: none
+        validate_certs: "{{ matrix_coturn_turn_external_ip_address_auto_detection_echoip_validate_certs }}"
+      register: result_matrix_coturn_turn_external_ip_address_auto_detection_echoip_response
+      ignore_errors: true
+      check_mode: false
+      retries: "{{ matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_retries_count }}"
+      delay: "{{ matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_retries_delay }}"
+      until: not result_matrix_coturn_turn_external_ip_address_auto_detection_echoip_response.failed
+
+    - when: "(result_matrix_coturn_turn_external_ip_address_auto_detection_echoip_response.failed or 'json' not in result_matrix_coturn_turn_external_ip_address_auto_detection_echoip_response)"
+      name: Fail if EchoIP service failed
+      ansible.builtin.fail:
+        msg: "Failed contacting EchoIP service API at `{{ matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_url }}` (controlled by `matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_url`). Full error: {{ result_matrix_coturn_turn_external_ip_address_auto_detection_echoip_response }}"
+
+    - ansible.builtin.set_fact:
+        matrix_coturn_turn_external_ip_address: "{{ result_matrix_coturn_turn_external_ip_address_auto_detection_echoip_response.json.ip }}"
+
 - name: Ensure Matrix Coturn path exists
   ansible.builtin.file:
     path: "{{ item.path }}"
