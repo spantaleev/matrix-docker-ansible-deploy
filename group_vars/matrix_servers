@@ -2245,6 +2245,9 @@ matrix_coturn_enabled: true
 
 matrix_coturn_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
 
+# We make the assumption that `ansible_host` points to an external IP address, which may not always be the case.
+# Users are free to set `matrix_coturn_turn_external_ip_address` to an empty string
+# to allow auto-detection (via an EchoIP service) to happen at runtime.
 matrix_coturn_turn_external_ip_address: "{{ ansible_host }}"
 
 matrix_coturn_turn_static_auth_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'coturn.sas', rounds=655555) | to_uuid }}"

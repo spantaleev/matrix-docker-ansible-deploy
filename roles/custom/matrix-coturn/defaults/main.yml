@@ -8,7 +8,7 @@ matrix_coturn_container_image_self_build_repo: "https://github.com/coturn/coturn
 matrix_coturn_container_image_self_build_repo_version: "docker/{{ matrix_coturn_version }}"
 matrix_coturn_container_image_self_build_repo_dockerfile_path: "docker/coturn/alpine/Dockerfile"
 
-matrix_coturn_version: 4.6.2-r4
+matrix_coturn_version: 4.6.2-r5
 matrix_coturn_docker_image: "{{ matrix_coturn_docker_image_name_prefix }}coturn/coturn:{{ matrix_coturn_version }}-alpine"
 matrix_coturn_docker_image_name_prefix: "{{ 'localhost/' if matrix_coturn_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_coturn_docker_image_force_pull: "{{ matrix_coturn_docker_image.endswith(':latest') }}"
@@ -73,8 +73,25 @@ matrix_coturn_turn_udp_max_port: 49172
 matrix_coturn_turn_static_auth_secret: ""
 
 # The external IP address of the machine where Coturn is.
+# If do not define an IP address here or in `matrix_coturn_turn_external_ip_addresses`, auto-detection via an EchoIP service will be done.
+# See `matrix_coturn_turn_external_ip_address_auto_detection_enabled`
 matrix_coturn_turn_external_ip_address: ''
-matrix_coturn_turn_external_ip_addresses: ["{{ matrix_coturn_turn_external_ip_address }}"]
+matrix_coturn_turn_external_ip_addresses: "{{ [matrix_coturn_turn_external_ip_address] if matrix_coturn_turn_external_ip_address != '' else [] }}"
+
+# Controls whether external IP address auto-detection should be attempted.
+# We try to do this if there is no external IP address explicitly configured and if an EchoIP service URL is specified.
+# See matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_url
+matrix_coturn_turn_external_ip_address_auto_detection_enabled: "{{ matrix_coturn_turn_external_ip_addresses | length == 0 and matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_url != '' }}"
+
+# Specifies the address of the EchoIP service (https://github.com/mpolden/echoip) to use for detecting the external IP address.
+# By default, we use the official public instance.
+matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_url: https://ifconfig.co/json
+
+# Controls whether SSL certificates will be validated when contacting the EchoIP service (matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_url)
+matrix_coturn_turn_external_ip_address_auto_detection_echoip_validate_certs: true
+
+matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_retries_count: "{{ devture_playbook_help_geturl_retries_count }}"
+matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_retries_delay: "{{ devture_playbook_help_geturl_retries_delay }}"
 
 matrix_coturn_allowed_peer_ips: []
 

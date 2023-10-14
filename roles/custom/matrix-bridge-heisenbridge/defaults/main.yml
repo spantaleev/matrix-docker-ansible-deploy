@@ -30,7 +30,15 @@ matrix_heisenbridge_homeserver_url: "{{ matrix_homeserver_container_url }}"
 matrix_heisenbridge_appservice_token: ''
 matrix_heisenbridge_homeserver_token: ''
 
-# Default registration file
+matrix_heisenbridge_config_media_url: "{{ matrix_homeserver_url }}"
+matrix_heisenbridge_config_displayname: "Heisenbridge"
+
+matrix_heisenbridge_registration_yaml_heisenbridge:
+  media_url: "{{ matrix_heisenbridge_config_media_url }}"
+  displayname: "{{ matrix_heisenbridge_config_displayname }}"
+
+# Default registration file consumed by both the homeserver and Heisenbridge.
+# Besides registration information, it contains configuration (see the heisenbridge key).
 matrix_heisenbridge_registration_yaml:
   id: heisenbridge
   url: http://matrix-heisenbridge:9898
@@ -44,5 +52,6 @@ matrix_heisenbridge_registration_yaml:
         exclusive: true
     aliases: []
     rooms: []
+  heisenbridge: "{{ matrix_heisenbridge_registration_yaml_heisenbridge }}"
 
 matrix_heisenbridge_registration: "{{ matrix_heisenbridge_registration_yaml | from_yaml }}"
