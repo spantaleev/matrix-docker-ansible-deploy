@@ -12,6 +12,39 @@
     - {path: "{{ matrix_client_hydrogen_docker_src_files_path }}", when: "{{ matrix_client_hydrogen_container_image_self_build }}"}
   when: "item.when | bool"
 
+- when: "matrix_client_hydrogen_container_image_self_build | bool"
+  block:
+    - name: Ensure Hydrogen repository is present on self-build
+      ansible.builtin.git:
+        repo: "{{ matrix_client_hydrogen_container_image_self_build_repo }}"
+        dest: "{{ matrix_client_hydrogen_docker_src_files_path }}"
+        version: "{{ matrix_client_hydrogen_docker_image.split(':')[1] }}"
+        force: "yes"
+      become: true
+      become_user: "{{ matrix_user_username }}"
+      register: matrix_client_hydrogen_git_pull_results
+
+    - name: Check if Hydrogen Docker image exists
+      ansible.builtin.command: "{{ devture_systemd_docker_base_host_command_docker }} images --quiet --filter 'reference={{ matrix_client_hydrogen_docker_image }}'"
+      register: matrix_client_hydrogen_docker_image_check_result
+      changed_when: false
+
+    # Invoking the `docker build` command here, instead of calling the `docker_image` Ansible module,
+    # because the latter does not support BuildKit.
+    # See: https://github.com/ansible-collections/community.general/issues/514
+    - name: Ensure Hydrogen Docker image is built
+      ansible.builtin.shell:
+        chdir: "{{ matrix_client_hydrogen_docker_src_files_path }}"
+        cmd: |
+          {{ devture_systemd_docker_base_host_command_docker }} build \
+          -t "{{ matrix_client_hydrogen_docker_image }}" \
+          -f Dockerfile \
+          .
+      environment:
+        DOCKER_BUILDKIT: 1
+      changed_when: true
+      when: "matrix_client_hydrogen_git_pull_results.changed | bool or matrix_client_hydrogen_docker_image_check_result.stdout == ''"
+
 - name: Ensure Hydrogen Docker image is pulled
   community.docker.docker_image:
     name: "{{ matrix_client_hydrogen_docker_image }}"
@@ -23,17 +56,6 @@
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
-
-- name: Ensure Hydrogen repository is present on self-build
-  ansible.builtin.git:
-    repo: "{{ matrix_client_hydrogen_container_image_self_build_repo }}"
-    dest: "{{ matrix_client_hydrogen_docker_src_files_path }}"
-    version: "{{ matrix_client_hydrogen_docker_image.split(':')[1] }}"
-    force: "yes"
-  become: true
-  become_user: "{{ matrix_user_username }}"
-  register: matrix_client_hydrogen_git_pull_results
-  when: "matrix_client_hydrogen_container_image_self_build | bool"
 
 - name: Ensure Hydrogen configuration installed
   ansible.builtin.copy:
@@ -53,17 +75,6 @@
   with_items:
     - {src: "{{ role_path }}/templates/nginx.conf.j2", name: "nginx.conf"}
     - {src: "{{ role_path }}/templates/labels.j2", name: "labels"}
-
-- name: Ensure Hydrogen Docker image is built
-  community.docker.docker_image:
-    name: "{{ matrix_client_hydrogen_docker_image }}"
-    source: build
-    force_source: "{{ matrix_client_hydrogen_git_pull_results.changed }}"
-    build:
-      dockerfile: Dockerfile
-      path: "{{ matrix_client_hydrogen_docker_src_files_path }}"
-      pull: true
-  when: "matrix_client_hydrogen_container_image_self_build | bool"
 
 - name: Ensure Hydrogen container network is created
   community.general.docker_network:
