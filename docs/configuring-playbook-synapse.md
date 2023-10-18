@@ -34,13 +34,7 @@ We support a few configuration presets (`matrix_synapse_workers_preset: one-of-e
 
 If you'd like more customization power, you can start with one of the presets and tweak various `matrix_synapse_workers_*_count` variables manually.
 
-If you increase worker counts too much, you may need to increase the maximum number of Postgres connections too (example):
-
-```yaml
-devture_postgres_process_extra_arguments: [
-  "-c 'max_connections=200'"
-]
-```
+When Synapse workers are enabled, the integrated [Postgres database is tuned](maintenance-postgres.md#tuning-postgresql), so that the maximum number of Postgres connections are increased from `200` to `500`. If you need to decrease or increase the number of maximum Postgres connections further, use the `devture_postgres_max_connections` variable.
 
 In case any problems occur, make sure to have a look at the [list of synapse issues about workers](https://github.com/matrix-org/synapse/issues?q=workers+in%3Atitle) and your `journalctl --unit 'matrix-*'`.
 

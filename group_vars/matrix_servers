@@ -2964,6 +2964,8 @@ devture_postgres_db_name: matrix
 
 devture_postgres_systemd_services_to_stop_for_maintenance_list_auto: "{{ devture_systemd_service_manager_services_list_auto | map(attribute='name') | reject('equalto', (devture_postgres_identifier + '.service')) }}"
 
+devture_postgres_max_connections: "{{ 500 if matrix_synapse_workers_enabled else 200 }}"
+
 devture_postgres_managed_databases_auto: |
   {{
     ([{
