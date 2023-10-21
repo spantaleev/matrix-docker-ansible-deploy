@@ -1,6 +1,7 @@
 ---
 # Project source code URL: https://github.com/nginx/nginx
 matrix_nginx_proxy_enabled: true
+# renovate: datasource=docker depName=nginx
 matrix_nginx_proxy_version: 1.25.2-alpine
 
 # We use an official nginx image, which we fix-up to run unprivileged.
@@ -307,6 +308,7 @@ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_path: "{{ matrix_nginx_proxy_
 # To avoid using this, use `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content` instead of supplying username/password.
 # Learn more in: `roles/custom/matrix-nginx-proxy/tasks/nginx-proxy/setup_metrics_auth.yml`.
 matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_image: "{{ matrix_container_global_registry_prefix }}httpd:{{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_image_tag }}"
+# renovate: datasource=docker depName=httpd
 matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_image_tag: "2.4.54-alpine3.16"
 matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_force_pull: "{{ matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_apache_container_image_tag.endswith(':latest') }}"
 
