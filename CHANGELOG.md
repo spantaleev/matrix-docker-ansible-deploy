@@ -1,3 +1,35 @@
+# 2023-10-23
+
+## Enabling `allow_public_rooms_over_federation` by default for Synapse
+
+**TDLR**: if your Matrix server is federating (which it mostly likely is, unless you've [disabled federation](docs/configuring-playbook-federation.md#disabling-federation)), your public rooms will not only be joinable across federation (as they've always been), but from now on will be discoverable (made available as a list across federation). We're changing this by flipping the value for Synapse's `allow_public_rooms_over_federation` setting to `true`, going against the upstream default. Servers that disable federation are not affected.
+
+We generally try to stick to the default configuration for Synapse (and all other components), unless these defaults seem wrong or harmful. One such previous case from a few months ago was us [Enabling `forget_rooms_on_leave` by default for Synapse](#enabling-forget_rooms_on_leave-by-default-for-synapse) - the default value was making Synapse more wasteful of resources by default.
+
+Today, we're going against upstream defaults again and flipping the `allow_public_rooms_over_federation` configuration option to `true`.
+This way, public rooms on your server will be made discoverable by others via federation, using the [`GET /_matrix/federation/v1/publicRooms` of the Server-Server API](https://spec.matrix.org/v1.8/server-server-api/#get_matrixfederationv1publicrooms).
+
+The upstream Synapse default is `false` (disabled), so that public rooms are not exposed for other servers to discover (learn about their existence). Nevertheless, even if these rooms are not exposed (listed) for discovery, they are **still joinable** by anyone who knows their address or is invited to the room by an existing member.
+
+**We go against the upstream default** in an effort to make Matrix federation more useful - a public room should be globally public - not only joinable, but also discoverable across federation.
+
+The **historical reasoning** behind this change is as follows:
+
+- `allow_public_rooms_over_federation` seems to have been enabled by default for Synapse until v1.7.0 (~2019), just like we believe it should be for a globally-federating network - rooms should be joinable and discoverable across federation.
+
+- In Synapse v1.7.0 (~2019), `allow_public_rooms_over_federation` [got disabled](https://github.com/matrix-org/synapse/blob/e9069c9f919685606506f04527332e83fbfa44d9/docs/upgrade.md?plain=1#L1877-L1891) by default in a [security-by-obscurity](https://en.wikipedia.org/wiki/Security_through_obscurity) workaround for misconfigured servers. See the [Avoiding unwelcome visitors on private Matrix servers](https://matrix.org/blog/2019/11/09/avoiding-unwelcome-visitors-on-private-matrix-servers/) `matrix.org` blog article. We believe that people wishing for a truly private server, should [disable federation](docs/configuring-playbook-federation.md#disabling-federation), instead of having a fully-federating server and trying to hide its public rooms. We also provide other workarounds below. We (and the Synapse team, obviously) believe that Matrix should federate by default, so federating the public room list seems to make sense.
+
+- [etke.cc](https://etke.cc/) has been developing the free-software [Matrix Rooms Search](https://gitlab.com/etke.cc/mrs) project for a while now. One public (demo) instance of it is hosted at [matrixrooms.info](https://matrixrooms.info/). This search engine tries to go through the Matrix federation and discover & index public rooms to allow people to find them. We believe it's vital for Matrix (and any chat or social network for that matter) to be more discoverable, so that people can find communities and others to talk to. On 19th of October 2023, `matrixrooms.info` was indexing `23831` Matrix servers. Of these, only `1937` servers (8%) were making their public rooms discoverable. Who knows what wonderful communities and rooms are available on these 92% other Matrix servers that are supposedly federating, but are still gate-keeping their public room list. Indubitably, many of these servers are hosted via matrix-docker-ansible-deploy, so we feel partially responsible for making Matrix federation less useful.
+
+Here are **actions you may wish to take** as a result of this change:
+
+- (recommended) embrace the new default. If your Matrix server is federating, your public rooms have always been joinable across federation anyway. Exposing the list of public rooms does no harm and more-so does good by contributing to the usefulness of the Matrix network by facilitating room discovery.
+
+- (switch to a better way of doings things on your semi-private server) The problem that the Synapse team appears to have solved by flipping the `allow_public_rooms_over_federation` default in Synapse v1.7.0 seems to for "mostly private" servers, which federate and have a bunch of rooms made public in an effort to allow people on the same homeserver to easily find and join them (self-onboarding). With the introduction of Matrix Spaces, you can reorganize your flow around spaces - you can auto-join your users to a Matrix Space (via Synapse's `auto_join_rooms` setting - controlled by our `matrix_synapse_auto_join_rooms` variable), then add a bunch of rooms to the space and make them joinable by people belonging to the space. That is to say, do not make rooms public unless they are public - use other mechanisms for semi-public rooms. Alternatively, you can also stick to what you're doing (public rooms) and set `m.federate: true` when creating them (clients like Element have a nice UI checkbox for this) to explicitly disable federation for these rooms.
+
+- (keeping the old behavior) if you wish to keep doing what you're doing (keeping your Matrix server federating, but hiding its public rooms list), add `matrix_synapse_allow_public_rooms_over_federation: false` to your `vars.yml` configuration. This restores the old behavior. You may also consider [disabling federation](docs/configuring-playbook-federation.md#disabling-federation) completely instead of relying on security-by-obscurity measures.
+
+
 # 2023-10-18
 
 ## Postgres parameters are automatically tuned now

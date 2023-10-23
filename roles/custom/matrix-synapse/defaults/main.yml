@@ -312,8 +312,13 @@ matrix_synapse_presence_enabled: true
 matrix_synapse_allow_public_rooms_without_auth: false
 
 # Controls whether remote servers can fetch this server's public rooms directory via federation.
-# For private servers, you most likely wish to forbid it.
-matrix_synapse_allow_public_rooms_over_federation: false
+# The upstream default is `false`, but we try to make Matrix federation more useful.
+#
+# For private servers, you may wish to forbid it to align yourself with upstream defaults.
+# However, disabling federation completely (see `matrix_synapse_federation_enabled`) is a better way to make your server private,
+# instead of relying on security-by-obscurity -- federating with others, having your public rooms joinable by anyone,
+# but hiding them and thinking you've secured them.
+matrix_synapse_allow_public_rooms_over_federation: true
 
 # Whether to require authentication to retrieve profile data (avatars,
 # display names) of other users through the client API. Defaults to
