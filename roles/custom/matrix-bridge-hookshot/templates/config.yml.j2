@@ -107,6 +107,14 @@ metrics:
   # (Optional) Prometheus metrics support
   #
   enabled: {{ matrix_hookshot_metrics_enabled | to_json }}
+{% if matrix_hookshot_experimental_encryption_enabled %}
+queue:
+  monolithic: true
+  port: 6379
+  host: matrix-redis
+experimentalEncryption:
+  storagePath: /data/encryption
+{% endif %}
 logging:
   # (Optional) Logging settings. You can have a severity debug,info,warn,error
   #

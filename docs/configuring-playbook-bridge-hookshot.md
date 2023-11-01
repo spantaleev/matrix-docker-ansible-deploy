@@ -23,6 +23,11 @@ Other configuration options are available via the `matrix_hookshot_configuration
 
 Finally, run the playbook (see [installing](installing.md)).
 
+### End-to-bridge endcryption
+
+1. Enable by setting `: true`
+
+If the crypto store has become corrupted, reset it by running `ansible-playbook -i inventory/hosts setup.yml -K --tags=reset-hookshot-encryption`.
 
 ## Usage
 
