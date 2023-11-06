@@ -185,7 +185,7 @@
 	{% endif %}
 
 	{% if matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled %}
-	location ^~ /_matrix/client/r0/user_directory/search {
+	location ^~ /_matrix/client/(r0|v3)/user_directory/search {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
@@ -202,7 +202,7 @@
 	{% endif %}
 
 	{% if matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled %}
-	location ~ ^/_matrix/client/r0/register/(email|msisdn)/requestToken$ {
+	location ~ ^/_matrix/client/(r0|v3)/register/(email|msisdn)/requestToken$ {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
