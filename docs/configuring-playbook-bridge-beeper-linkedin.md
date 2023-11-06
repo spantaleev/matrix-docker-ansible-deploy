@@ -32,13 +32,9 @@ You may wish to look at `roles/custom/matrix-bridge-beeper-linkedin/templates/co
 
 ## Set up Double Puppeting
 
-If you'd like to use [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do), you have 2 ways of going about it.
-
-### Method 1: automatically, by enabling Shared Secret Auth
+If you'd like to use [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do), you have to enable Shared Secred Auth.
 
 The bridge will automatically perform Double Puppeting if you enable [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) for this playbook.
-
-This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
 
 
 ## Usage
