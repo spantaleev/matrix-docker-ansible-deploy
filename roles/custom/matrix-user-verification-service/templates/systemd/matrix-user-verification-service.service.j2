@@ -24,6 +24,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--read-only \
+			--tmpfs /.npm \
 			--network={{ matrix_user_verification_service_container_network }} \
 			{% if matrix_user_verification_service_container_http_host_bind_port %}
 			-p {{ matrix_user_verification_service_container_http_host_bind_port }}:3000 \
