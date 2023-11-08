@@ -119,7 +119,7 @@
 	# Redirect other endpoints registered by the media-repo to its container
 	# /_matrix/client/r0/logout
 	# /_matrix/client/r0/logout/all
-	location ^~ /_matrix/client/(r0|v1|v3|unstable)/(logout|logout/all) {
+	location ~ /_matrix/client/(r0|v1|v3|unstable)/(logout|logout/all) {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
@@ -142,7 +142,7 @@
 	# Redirect other endpoints registered by the media-repo to its container
 	# /_matrix/client/r0/admin/purge_media_cache
 	# /_matrix/client/r0/admin/quarantine_media/{roomId:[^/]+}
-	location ^~ /_matrix/client/(r0|v1|v3|unstable)/admin/(purge_media_cache|quarantine_media/.*) {
+	location ~ /_matrix/client/(r0|v1|v3|unstable)/admin/(purge_media_cache|quarantine_media/.*) {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
@@ -195,6 +195,9 @@
 		    {% endif %}
 			proxy_pass http://$backend;
 		{% else %}
+            {% if matrix_nginx_proxy_proxy_matrix_user_directory_search_v3_to_r0_redirect_enabled %}
+		    rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
+		    {% endif %}
 			{# Generic configuration for use outside of our container setup #}
 			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container }};
 		{% endif %}
@@ -215,6 +218,9 @@
 	        {% endif %}
 			proxy_pass http://$backend;
 		{% else %}
+            {% if matrix_nginx_proxy_proxy_matrix_user_directory_search_v3_to_r0_redirect_enabled %}
+		    rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
+		    {% endif %}
 			{# Generic configuration for use outside of our container setup #}
 			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_sans_container }};
 		{% endif %}
