@@ -218,9 +218,9 @@
 	        {% endif %}
 			proxy_pass http://$backend;
 		{% else %}
-            {% if matrix_nginx_proxy_proxy_matrix_user_directory_search_v3_to_r0_redirect_enabled %}
-		    rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
-		    {% endif %}
+   		    {% if matrix_nginx_proxy_proxy_matrix_3pid_registration_v3_to_r0_redirect_enabled %}
+            rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
+	        {% endif %}
 			{# Generic configuration for use outside of our container setup #}
 			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_sans_container }};
 		{% endif %}
