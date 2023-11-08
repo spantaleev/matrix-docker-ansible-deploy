@@ -186,6 +186,10 @@
 
 	{% if matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled %}
 	location ^~ /_matrix/client/(r0|v3)/user_directory/search {
+		{% if matrix_nginx_proxy_proxy_matrix_user_directory_search_v3_to_r0_redirect_enabled %}
+		rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
+		{% endif %}
+
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
@@ -203,6 +207,10 @@
 
 	{% if matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled %}
 	location ~ ^/_matrix/client/(r0|v3)/register/(email|msisdn)/requestToken$ {
+		{% if matrix_nginx_proxy_proxy_matrix_3pid_registration_v3_to_r0_redirect_enabled %}
+		rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
+		{% endif %}
+
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
