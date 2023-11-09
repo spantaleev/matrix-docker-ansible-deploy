@@ -8,7 +8,7 @@ See the project's [documentation](https://github.com/matrix-org/sliding-sync) to
 
 Element X iOS is [available on TestFlight](https://testflight.apple.com/join/uZbeZCOi).
 
-Element X Android is less feature-complete than the iOS version.
+Element X Android is [available on the Github Releases page](https://github.com/vector-im/element-x-android/releases).
 
 **NOTE**: The Sliding Sync proxy **only works with the Traefik reverse-proxy**. If you have an old server installation (from the time `matrix-nginx-proxy` was our default reverse-proxy - `matrix_playbook_reverse_proxy_type: playbook-managed-nginx`), you won't be able to use Sliding Sync.
 
