@@ -186,16 +186,18 @@
 
 	{% if matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled %}
 	location ~ ^/_matrix/client/(r0|v3)/user_directory/search {
-		{% if matrix_nginx_proxy_proxy_matrix_user_directory_search_v3_to_r0_redirect_enabled %}
-		rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
-		{% endif %}
-
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container }}";
+			{% if matrix_nginx_proxy_proxy_matrix_user_directory_search_v3_to_r0_redirect_enabled %}
+			rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
+			{% endif %}
 			proxy_pass http://$backend;
 		{% else %}
+			{% if matrix_nginx_proxy_proxy_matrix_user_directory_search_v3_to_r0_redirect_enabled %}
+			rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
+			{% endif %}
 			{# Generic configuration for use outside of our container setup #}
 			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container }};
 		{% endif %}
@@ -207,16 +209,18 @@
 
 	{% if matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled %}
 	location ~ ^/_matrix/client/(r0|v3)/register/(email|msisdn)/requestToken$ {
-		{% if matrix_nginx_proxy_proxy_matrix_3pid_registration_v3_to_r0_redirect_enabled %}
-		rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
-		{% endif %}
-
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_with_container }}";
+			{% if matrix_nginx_proxy_proxy_matrix_3pid_registration_v3_to_r0_redirect_enabled %}
+			rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
+			{% endif %}
 			proxy_pass http://$backend;
 		{% else %}
+			{% if matrix_nginx_proxy_proxy_matrix_3pid_registration_v3_to_r0_redirect_enabled %}
+			rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
+			{% endif %}
 			{# Generic configuration for use outside of our container setup #}
 			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_sans_container }};
 		{% endif %}
