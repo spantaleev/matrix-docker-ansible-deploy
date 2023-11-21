@@ -6,6 +6,15 @@
   block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
+- when: ansible_os_family == 'Debian' and matrix_playbook_migration_debian_signedby_migration_enabled | bool
+  tags:
+    - setup-all
+    - install-all
+    - setup-docker
+    - install-docker
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/debian_docker_signedby_migration.yml"
+
 - tags:
     - setup-all
     - install-all
