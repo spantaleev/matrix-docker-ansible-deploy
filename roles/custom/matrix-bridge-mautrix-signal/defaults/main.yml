@@ -121,8 +121,7 @@ matrix_mautrix_signal_relaybot_enabled: "{{ matrix_bridges_relay_enabled }}"
 # This variable used to contain a YAML string, but now needs to contain a hashmap/dictionary.
 matrix_mautrix_signal_bridge_permissions: |
   {{
-    {'*': 'relay'}
-    | combine({matrix_mautrix_signal_homeserver_domain: 'user'})
+    {'*': 'relay', matrix_mautrix_signal_homeserver_domain: 'user'}
     | combine({matrix_admin: 'admin'} if matrix_admin else {})
   }}
 
