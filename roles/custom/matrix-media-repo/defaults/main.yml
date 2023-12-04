@@ -19,7 +19,7 @@ matrix_media_repo_docker_image_path: "turt2live/matrix-media-repo"
 matrix_media_repo_docker_image: "{{ matrix_media_repo_docker_image_name_prefix }}{{ matrix_media_repo_docker_image_path }}:{{ matrix_media_repo_docker_image_tag }}"
 matrix_media_repo_docker_image_name_prefix: "{{ 'localhost/' if matrix_media_repo_container_image_self_build else matrix_container_global_registry_prefix }}"
 # renovate: datasource=docker depName=turt2live/matrix-media-repo
-matrix_media_repo_docker_image_tag: "v1.2.13"
+matrix_media_repo_docker_image_tag: "v1.3.3"
 matrix_media_repo_docker_image_force_pull: "{{ matrix_media_repo_docker_image.endswith(':latest') }}"
 
 matrix_media_repo_base_path: "{{ matrix_base_data_path }}/{{ matrix_media_repo_identifier }}"
@@ -105,6 +105,21 @@ matrix_media_repo_use_forwarded_host: true
 # the remote server do not count towards this.
 matrix_media_repo_federation_backoff_at: 20
 
+# The domains the media repo should never serve media for. Existing media already stored from
+# these domains will remain, however will not be downloadable without a data export. Media
+# repo administrators will bypass this check. Admin APIs will still work for media on these
+# domains.
+#
+# This will not prevent the listed domains from accessing media on this media repo - it only
+# stops users on *this* media repo from accessing media originally uploaded to the listed domains.
+#
+# Note: Adding domains controlled by the media repo itself to this list is not advisable.
+# matrix_media_repo_federation_ignored_hosts: [
+#   "example.org"
+# ]
+
+matrix_media_repo_federation_ignored_hosts: []
+
 # The database configuration for the media repository
 # Do NOT put your homeserver's existing database credentials here. Create a new database and
 # user instead. Using the same server is fine, just not the same username and database.
@@ -130,25 +145,31 @@ matrix_media_repo_database_max_idle_connections: 5
 
 # The configuration for the homeservers this media repository is known to control. Servers
 # not listed here will not be able to upload media.
-matrix_media_repo_homeservers:
-  homeservers:
+matrix_media_repo_homeservers: "{{ matrix_media_repo_homeservers_auto + matrix_media_repo_homeservers_additional }}"
+
+# Auto configured server setup by the playbook
+matrix_media_repo_homeservers_auto:
+  - # Keep the dash from this line.
+
     # This should match the server_name of your homeserver, and the Host header
     # provided to the media repo.
-    - name: "{{ matrix_server_fqn_matrix }}"
+    name: "{{ matrix_server_fqn_matrix }}"
 
-      # The base URL to where the homeserver can actually be reached
-      csApi: "http://{{ matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container }}"
+    # The base URL to where the homeserver can actually be reached by MMR.
+    csApi: "http://{{ matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container }}"
 
-      # The number of consecutive failures in calling this homeserver before the
-      # media repository will start backing off. This defaults to 10 if not given.
-      backoffAt: 10
+    # The number of consecutive failures in calling this homeserver before the
+    # media repository will start backing off. This defaults to 10 if not given.
+    backoffAt: 10
 
-      # The kind of admin API the homeserver supports. If set to "matrix",
-      # the media repo will use the Synapse-defined endpoints under the
-      # unstable client-server API. When this is "synapse", the new /_synapse
-      # endpoints will be used instead. Unknown values are treated as the
-      # default, "matrix".
-      adminApiKind: "{{ 'synapse' if matrix_homeserver_implementation == 'synapse' else 'matrix' }}"
+    # The admin API interface supported by the homeserver. MMR uses a subset of the admin API
+    # during certain operations, like attempting to purge media from a room or validating server
+    # admin status. This should be set to one of "synapse", "dendrite", or "matrix". When set
+    # to "matrix", most functionality requiring the admin API will not work.
+    adminApiKind: "{{ 'synapse' if matrix_homeserver_implementation == 'synapse' else 'matrix' }}"
+
+# Additional servers to be managed by MMR
+matrix_media_repo_homeservers_additional: []
 
 # Options for controlling how access tokens work with the media repo. It is recommended that if
 # you are going to use these options that the `/logout` and `/logout/all` client-server endpoints
@@ -166,45 +187,51 @@ matrix_media_repo_homeservers:
 # ***************************************************************************
 # *  IT IS HIGHLY RECOMMENDED TO USE PER-DOMAIN CONFIGS WITH THIS FEATURE.  *
 # ***************************************************************************
-matrix_media_repo_access_tokens:
-  accessTokens:
-    # The maximum time a cached access token will be considered valid. Set to zero (the default)
-    # to disable the cache and constantly hit the homeserver. This is recommended to be set to
-    # 43200 (12 hours) on servers with the logout endpoints proxied through the media repo, and
-    # zero for servers who do not proxy the endpoints through.
-    maxCacheTimeSeconds: 43200
 
-    # Whether or not to use the `appservices` config option below. If disabled (the default),
-    # the regular access token cache will be used for each user, potentially leading to high
-    # memory usage.
-    useLocalAppserviceConfig: false
+# The maximum time a cached access token will be considered valid. Set to zero (the default)
+# to disable the cache and constantly hit the homeserver. This is recommended to be set to
+# 43200 (12 hours) on servers with the logout endpoints proxied through the media repo, and
+# zero for servers who do not proxy the endpoints through.
+matrix_media_repo_access_tokens_max_cache_time_seconds: 43200
 
-    # The application services (and their namespaces) registered on the homeserver. Only used
-    # if `useLocalAppserviceConfig` is enabled (recommended).
-    #
-    # Usually the appservice will provide you with these config details - they'll just need
-    # translating from the appservice registration to here. Note that this does not require
-    # all options from the registration, and only requires the bare minimum required to run
-    # the media repo.
-    # appservices:
-    #   - id: Name_of_appservice_for_your_reference
-    #     asToken: Secret_token_for_appservices_to_use
-    #     senderUserId: "@_example_bridge:yourdomain.com"
-    #     userNamespaces:
-    #       - regex: "@_example_bridge_.+:yourdomain.com"
-    #         # A note about regexes: it is best to suffix *all* namespaces with the homeserver
-    #         # domain users are valid for, as otherwise the appservice can use any user with
-    #         # any domain name it feels like, even if that domain is not configured with the
-    #         # media repo. This will lead to inaccurate reporting in the case of the media
-    #         # repo, and potentially leading to media being considered "remote".
+# Whether or not to use the `appservices` config option below. If disabled (the default),
+# the regular access token cache will be used for each user, potentially leading to high
+# memory usage.
+matrix_media_repo_access_tokens_use_local_appservice_config: false
+
+# The application services (and their namespaces) registered on the homeserver. Only used
+# if `useLocalAppserviceConfig` is enabled (recommended).
+#
+# Usually the appservice will provide you with these config details - they'll just need
+# translating from the appservice registration to here. Note that this does not require
+# all options from the registration, and only requires the bare minimum required to run
+# the media repo.
+# matrix_media_repo_access_tokens_appservices: [
+#   {
+#     id: "Name_of_appservice_for_your_reference",
+#     asToken: "Secret_token_for_appservices_to_use",
+#     senderUserId: "@_example_bridge:yourdomain.com",
+#     userNamespaces: [
+#       regex: "@_example_bridge_.+:yourdomain.com"
+#       # A note about regexes: it is best to suffix *all* namespaces with the homeserver
+#       # domain users are valid for, as otherwise the appservice can use any user with
+#       # any domain name it feels like, even if that domain is not configured with the
+#       # media repo. This will lead to inaccurate reporting in the case of the media
+#       # repo, and potentially leading to media being considered "remote".
+#     ]
+#   }
+# ]
+
+matrix_media_repo_access_tokens_appservices: []
 
 # These users have full access to the administrative functions of the media repository.
 # See docs/admin.md for information on what these people can do. They must belong to one of the
 # configured homeservers above.
-matrix_media_repo_admins:
-  admins: []
-# admins:
-#   - "@your_username:example.org"
+# matrix_media_repo_admins: [
+#   "@your_username:example.org"
+# ]
+
+matrix_media_repo_admins: []
 
 # Shared secret auth is useful for applications building on top of the media repository, such
 # as a management interface. The `token` provided here is treated as a repository administrator
@@ -220,58 +247,62 @@ matrix_media_repo_shared_secret_auth_token: "PutSomeRandomSecureValueHere"
 # Datastores are places where media should be persisted. This isn't dedicated for just uploads:
 # thumbnails and other misc data is also stored in these places. The media repo, when looking
 # for a datastore to use, will always use the smallest datastore first.
-matrix_media_repo_datastores:
-  datastores:
-    - type: file
-      enabled: true  # Enable this to set up data storage.
-      # Datastores can be split into many areas when handling uploads. Media is still de-duplicated
-      # across all datastores (local content which duplicates remote content will re-use the remote
-      # content's location). This option is useful if your datastore is becoming very large, or if
-      # you want faster storage for a particular kind of media.
-      #
-      # The kinds available are:
-      #   thumbnails    - Used to store thumbnails of media (local and remote).
-      #   remote_media  - Original copies of remote media (servers not configured by this repo).
-      #   local_media   - Original uploads for local media.
-      #   archives      - Archives of content (GDPR and similar requests).
-      forKinds: ["thumbnails", "remote_media", "local_media", "archives"]
-      opts:
-        path: /data/media
 
-    - type: s3
-      enabled: false  # Enable this to set up s3 uploads
-      forKinds: ["thumbnails", "remote_media", "local_media", "archives"]
-      opts:
-        # The s3 uploader needs a temporary location to buffer files to reduce memory usage on
-        # small file uploads. If the file size is unknown, the file is written to this location
-        # before being uploaded to s3 (then the file is deleted). If you aren't concerned about
-        # memory usage, set this to an empty string.
-        tempPath: "/tmp/mediarepo_s3_upload"
-        endpoint: sfo2.digitaloceanspaces.com
-        accessKeyId: ""
-        accessSecret: ""
-        ssl: true
-        bucketName: "your-media-bucket"
-        # An optional region for where this S3 endpoint is located. Typically not needed, though
-        # some providers will need this (like Scaleway). Uncomment to use.
-        # region: "sfo2"
-        # An optional storage class for tuning how the media is stored at s3.
-        # See https://aws.amazon.com/s3/storage-classes/ for details; uncomment to use.
-        # storageClass: STANDARD
+# ID for the file datastore (cannot change). Alphanumeric recommended.
+matrix_media_repo_datastore_file_id: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'filestore.db', rounds=655555) | to_uuid }}"
 
-    # The media repo does support an IPFS datastore, but only if the IPFS feature is enabled. If
-    # the feature is not enabled, this will not work. Note that IPFS support is experimental at
-    # the moment and not recommended for general use.
-    #
-    # NOTE: Everything you upload to IPFS will be publicly accessible, even when the media repo
-    # puts authentication on the download endpoints. Only use this option for cases where you
-    # expect your media to be publicly accessible.
-    - type: ipfs
-      enabled: false  # Enable this to use IPFS support
-      forKinds: ["local_media"]
-      # The IPFS datastore currently has no options. It will use the daemon or HTTP API configured
-      # in the IPFS section of your main config.
-      opts: {}
+# Datastores can be split into many areas when handling uploads. Media is still de-duplicated
+# across all datastores (local content which duplicates remote content will re-use the remote
+# content's location). This option is useful if your datastore is becoming very large, or if
+# you want faster storage for a particular kind of media.
+#
+# To disable this datastore, making it readonly, specify `forKinds: []`.
+#
+# The kinds available are:
+#   thumbnails    - Used to store thumbnails of media (local and remote).
+#   remote_media  - Original copies of remote media (servers not configured by this repo).
+#   local_media   - Original uploads for local media.
+#   archives      - Archives of content (GDPR and similar requests).
+matrix_media_repo_datastore_file_for_kinds: ["thumbnails", "remote_media", "local_media", "archives"]
+
+# Path to datastore, relative to matrix-media-repo directory root
+matrix_media_repo_datastore_opts_path: "/data/media"
+
+# ID for the s3 datastore (cannot change). Alphanumeric recommended.
+matrix_media_repo_datastore_s3_id: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 's3store.db', rounds=655555) | to_uuid }}"
+
+# Datastores can be split into many areas when handling uploads. Media is still de-duplicated
+# across all datastores (local content which duplicates remote content will re-use the remote
+# content's location). This option is useful if your datastore is becoming very large, or if
+# you want faster storage for a particular kind of media.
+#
+# To disable this datastore, making it readonly, specify `forKinds: []`.
+#
+# The kinds available are:
+#   thumbnails    - Used to store thumbnails of media (local and remote).
+#   remote_media  - Original copies of remote media (servers not configured by this repo).
+#   local_media   - Original uploads for local media.
+#   archives      - Archives of content (GDPR and similar requests).
+matrix_media_repo_datastore_s3_for_kinds: []
+
+# The s3 uploader needs a temporary location to buffer files to reduce memory usage on
+# small file uploads. If the file size is unknown, the file is written to this location
+# before being uploaded to s3 (then the file is deleted). If you aren't concerned about
+# memory usage, set this to an empty string.
+matrix_media_repo_datastore_s3_opts_temp_path: "/tmp/mediarepo_s3_upload"
+matrix_media_repo_datastore_s3_opts_endpoint: "sfo2.digitaloceanspaces.com"
+matrix_media_repo_datastore_s3_opts_access_key_id: ""
+matrix_media_repo_datastore_s3_opts_access_secret: ""
+matrix_media_repo_datastore_s3_opts_ssl: true
+matrix_media_repo_datastore_s3_opts_bucket_name: "your-media-bucket"
+
+# An optional region for where this S3 endpoint is located. Typically not needed, though
+# some providers will need this (like Scaleway). Uncomment to use.
+# matrix_media_repo_datastore_s3_opts_region: "sfo2"
+
+# An optional storage class for tuning how the media is stored at s3.
+# See https://aws.amazon.com/s3/storage-classes/ for details; uncomment to use.
+# matrix_media_repo_datastore_s3_opts_storage_class: "STANDARD"
 
 # Options for controlling archives. Archives are exports of a particular user's content for
 # the purpose of GDPR or moving media to a different server.
@@ -291,42 +322,65 @@ matrix_media_repo_archiving_self_service: false
 matrix_media_repo_archiving_target_bytes_per_part: 209715200  # 200mb default
 
 # The file upload settings for the media repository
-matrix_media_repo_uploads:
-  uploads:
-    # The maximum individual file size a user can upload.
-    maxBytes: 104857600  # 100MB default, 0 to disable
 
-    # The minimum number of bytes to let people upload. This is recommended to be non-zero to
-    # ensure that the "cost" of running the media repo is worthwhile - small file uploads tend
-    # to waste more CPU and database resources than small files, thus a default of 100 bytes
-    # is applied here as an approximate break-even point.
-    minBytes: 100  # 100 bytes by default
+# The maximum individual file size a user can upload.
+matrix_media_repo_max_bytes: 104857600 # 100MB default, 0 to disable
 
-    # The number of bytes to claim as the maximum size for uploads for the limits API. If this
-    # is not provided then the maxBytes setting will be used instead. This is useful to provide
-    # if the media repo's settings and the reverse proxy do not match for maximum request size.
-    # This is purely for informational reasons and does not actually limit any functionality.
-    # Set this to -1 to indicate that there is no limit. Zero will force the use of maxBytes.
-    reportedMaxBytes: 0
+# The minimum number of bytes to let people upload. This is recommended to be non-zero to
+# ensure that the "cost" of running the media repo is worthwhile - small file uploads tend
+# to waste more CPU and database resources than small files, thus a default of 100 bytes
+# is applied here as an approximate break-even point.
+matrix_media_repo_min_bytes: 100 # 100 bytes by default
 
-    # Options for limiting how much content a user can upload. Quotas are applied to content
-    # associated with a user regardless of de-duplication. Quotas which affect remote servers
-    # or users will not take effect. When a user exceeds their quota they will be unable to
-    # upload any more media.
-    quotas:
-      # Whether or not quotas are enabled/enforced. Note that even when disabled the media repo
-      # will track how much media a user has uploaded. This is disabled by default.
-      enabled: false
+# The number of bytes to claim as the maximum size for uploads for the limits API. If this
+# is not provided then the maxBytes setting will be used instead. This is useful to provide
+# if the media repo's settings and the reverse proxy do not match for maximum request size.
+# This is purely for informational reasons and does not actually limit any functionality.
+# Set this to -1 to indicate that there is no limit. Zero will force the use of maxBytes.
+matrix_media_repo_reported_max_bytes: 0
 
-      # The quota rules that affect users. The first rule to match the uploader will take effect.
-      # An implied rule which matches all users and has no quota is always last in this list,
-      # meaning that if no rules are supplied then users will be able to upload anything. Similarly,
-      # if no rules match a user then the implied rule will match, allowing the user to have no
-      # quota. The quota will let the user upload to 1 media past their quota, meaning that from
-      # a statistics perspective the user might exceed their quota however only by a small amount.
-      users:
-        - glob: "@*:*"  # Affect all users. Use asterisks (*) to match any character.
-          maxBytes: 53687063712  # 50GB default, 0 to disable
+# The number of pending uploads a user is permitted to have at a given time. They must cancel,
+# complete, or otherwise let pending requests expire before uploading any more media. Set to
+# zero to disable.
+matrix_media_repo_max_pending: 5
+
+# The duration the server will wait to receive media that was asynchronously uploaded before
+# expiring it entirely. This should be set sufficiently high for a client on poor connectivity
+# to upload something. The Matrix specification recommends 24 hours (86400 seconds), however
+# this project recommends 30 minutes (1800 seconds).
+matrix_media_repo_max_age_seconds: 1800
+
+# Options for limiting how much content a user can upload. Quotas are applied to content
+# associated with a user regardless of de-duplication. Quotas which affect remote servers
+# or users will not take effect. When a user exceeds their quota they will be unable to
+# upload any more media.
+
+# Whether quotas are enabled/enforced. Note that even when disabled the media repo will
+# track how much media a user has uploaded. Quotas are disabled by default.
+matrix_media_repo_quotas_enabled: false
+
+# The upload quota rules which affect users. The first rule to match the user ID will take
+# effect. If a user does not match a rule, the defaults implied by the above config will
+# take effect instead. The user will not be permitted to upload anything above these quota
+# values, but can match them exactly.
+matrix_media_repo_quotas_users: "{{ matrix_media_repo_quotas_users_auto + matrix_media_repo_quotas_users_additional }}"
+
+matrix_media_repo_quotas_users_auto:
+  - glob: "@*:*"  # Affect all users. Use asterisks (*) to match any character.
+    # The maximum number of TOTAL bytes a user can upload. Defaults to zero (no limit).
+    maxBytes: 53687063712 # 50gb
+    # The same as maxPending above - the number of uploads the user can have waiting to
+    # complete before starting another one. Defaults to maxPending above. Set to 0 to
+    # disable.
+    maxPending: 5
+    # The maximum number of uploaded files a user can have. Defaults to zero (no limit).
+    # If both maxBytes and maxFiles are in use then the first condition a user triggers
+    # will prevent upload. Note that a user can still have uploads contributing to maxPending,
+    # but will not be able to complete them if they are at maxFiles.
+    maxFiles: 0
+
+# Additional quota glob patterns
+matrix_media_repo_quotas_users_additional: []
 
 # Settings related to downloading files from the media repository
 
@@ -344,186 +398,175 @@ matrix_media_repo_downloads_num_workers: 10
 # has passed, the media is able to be re-requested.
 matrix_media_repo_downloads_failure_cache_minutes: 5
 
-# The cache control settings for downloads. This can help speed up downloads for users by
-# keeping popular media in the cache. This cache is also used for thumbnails.
-matrix_media_repo_downloads_cache_enabled: true
-
-# The maximum size of cache to have. Higher numbers are better.
-matrix_media_repo_downloads_cache_max_size_bytes: 1048576000  # 1GB default
-
-# The maximum file size to cache. This should normally be the same size as your maximum
-# upload size.
-matrix_media_repo_downloads_cache_max_file_size_bytes: 104857600  # 100MB default
-
-# The number of minutes to track how many downloads a file gets
-matrix_media_repo_downloads_cache_tracked_minutes: 30
-
-# The number of downloads a file must receive in the window above (trackedMinutes) in
-# order to be cached.
-matrix_media_repo_downloads_cache_min_downloads: 5
-
-# The minimum amount of time an item should remain in the cache. This prevents the cache
-# from cycling out the file if it needs more room during this time. Note that the media
-# repo regularly cleans out media which is past this point from the cache, so this number
-# may need increasing depending on your use case. If the maxSizeBytes is reached for the
-# media repo, and some cached items are still under this timer, new items will not be able
-# to enter the cache. When this happens, consider raising maxSizeBytes or lowering this
-# timer.
-matrix_media_repo_downloads_cache_min_cache_time_seconds: 300
-
-# The minimum amount of time an item should remain outside the cache once it is removed.
-matrix_media_repo_downloads_cache_min_evicted_time_seconds: 60
-
 # How many days after a piece of remote content is downloaded before it expires. It can be
 # re-downloaded on demand, this just helps free up space in your datastore. Set to zero or
 # negative to disable. Defaults to disabled.
 matrix_media_repo_downloads_expire_after_days: 0
 
+# The default size, in bytes, to return for range requests on media. Range requests are used
+# by clients when they only need part of a file, such as a video or audio element. Note that
+# the entire file will still be cached (if enabled), but only part of it will be returned.
+# If the client requests a larger or smaller range, that will be honoured.
+matrix_media_repo_downloads_default_range_chunk_size_bytes: 10485760 # 10MB default
+
 # URL Preview settings
-matrix_media_repo_url_previews:
-  urlPreviews:
-    enabled: true  # If enabled, the preview_url routes will be accessible
-    maxPageSizeBytes: 10485760  # 10MB default, 0 to disable
 
-    # If true, the media repository will try to provide previews for URLs with invalid or unsafe
-    # certificates. If false (the default), the media repo will fail requests to said URLs.
-    previewUnsafeCertificates: false
+# If enabled, the preview_url routes will be accessible
+matrix_media_repo_url_previews_enabled: true
 
-    # Note: URL previews are limited to a given number of words, which are then limited to a number
-    # of characters, taking off the last word if it needs to. This also applies for the title.
+# 10MB default, 0 to disable
+matrix_media_repo_url_previews_max_page_size_bytes: 10485760
 
-    numWords: 50  # The number of words to include in a preview (maximum)
-    maxLength: 200  # The maximum number of characters for a description
+# If true, the media repository will try to provide previews for URLs with invalid or unsafe
+# certificates. If false (the default), the media repo will fail requests to said URLs.
+matrix_media_repo_url_previews_preview_unsafe_certificates: false
 
-    numTitleWords: 30  # The maximum number of words to include in a preview's title
-    maxTitleLength: 150  # The maximum number of characters for a title
+# Note: URL previews are limited to a given number of words, which are then limited to a number
+# of characters, taking off the last word if it needs to. This also applies for the title.
 
-    # The mime types to preview when OpenGraph previews cannot be rendered. OpenGraph previews are
-    # calculated on anything matching "text/*". To have a thumbnail in the preview the URL must be
-    # an image and the image's type must be allowed by the thumbnailer.
-    filePreviewTypes:
-      - "image/*"
+# The number of words to include in a preview (maximum)
+matrix_media_repo_url_previews_num_words: 50
 
-    # The number of workers to use when generating url previews. Raise this number if url
-    # previews are slow or timing out.
-    #
-    # Maximum memory usage = numWorkers multiplied by the maximum page size
-    # Average memory usage is dependent on how many concurrent urls your users are previewing.
-    numWorkers: 10
+# The maximum number of characters for a description
+matrix_media_repo_url_previews_max_length: 200
 
-    # Either allowedNetworks or disallowedNetworks must be provided. If both are provided, they
-    # will be merged. URL previews will be disabled if neither is supplied. Each entry must be
-    # a CIDR range.
-    disallowedNetworks:
-      - "127.0.0.1/8"
-      - "10.0.0.0/8"
-      - "172.16.0.0/12"
-      - "192.168.0.0/16"
-      - "100.64.0.0/10"
-      - "169.254.0.0/16"
-      - '::1/128'
-      - 'fe80::/64'
-      - 'fc00::/7'
-    allowedNetworks:
-      # "Everything". The blacklist will help limit this.
-      # This is the default value for this field.
-      - "0.0.0.0/0"
+# The maximum number of words to include in a preview's title
+matrix_media_repo_url_previews_num_title_words: 30
 
-    # How many days after a preview is generated before it expires and is deleted. The preview
-    # can be regenerated safely - this just helps free up some space in your database. Set to
-    # zero or negative to disable. Defaults to disabled.
-    expireAfterDays: 0
+# The maximum number of characters for a title
+matrix_media_repo_url_previews_max_title_length: 150
 
-    # The default Accept-Language header to supply when generating URL previews when one isn't
-    # supplied by the client.
-    # Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language
-    defaultLanguage: "en-US,en"
+# The mime types to preview when OpenGraph previews cannot be rendered. OpenGraph previews are
+# calculated on anything matching "text/*". To have a thumbnail in the preview the URL must be
+# an image and the image's type must be allowed by the thumbnailer.
+matrix_media_repo_url_previews_file_preview_types:
+  - "image/*"
 
-    # When true, oEmbed previews will be enabled. Typically these kinds of previews are used for
-    # sites that do not support OpenGraph or page scraping, such as Twitter. For information on
-    # specifying providers for oEmbed, including your own, see the following documentation:
-    # https://docs.t2bot.io/matrix-media-repo/url-previews/oembed.html
-    # Defaults to disabled.
-    oEmbed: false
+# The number of workers to use when generating url previews. Raise this number if url
+# previews are slow or timing out.
+#
+# Maximum memory usage = numWorkers multiplied by the maximum page size
+# Average memory usage is dependent on how many concurrent urls your users are previewing.
+matrix_media_repo_url_previews_num_workers: 10
+
+# Either allowedNetworks or disallowedNetworks must be provided. If both are provided, they
+# will be merged. URL previews will be disabled if neither is supplied. Each entry must be
+# a CIDR range.
+matrix_media_repo_url_previews_disallowed_networks:
+  - "127.0.0.1/8"
+  - "10.0.0.0/8"
+  - "172.16.0.0/12"
+  - "192.168.0.0/16"
+  - "100.64.0.0/10"
+  - "169.254.0.0/16"
+  - '::1/128'
+  - 'fe80::/64'
+  - 'fc00::/7'
+matrix_media_repo_url_previews_allowed_networks:
+  # "Everything". The blacklist will help limit this.
+  # This is the default value for this field.
+  - "0.0.0.0/0"
+
+# How many days after a preview is generated before it expires and is deleted. The preview
+# can be regenerated safely - this just helps free up some space in your database. Set to
+# zero or negative to disable. Defaults to disabled.
+matrix_media_repo_url_previews_expire_after_days: 0
+
+# The default Accept-Language header to supply when generating URL previews when one isn't
+# supplied by the client.
+# Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language
+matrix_media_repo_url_previews_default_language: "en-US,en"
+
+# Set the User-Agent header to supply when generating URL previews
+matrix_media_repo_url_previews_user_agent: "matrix-media-repo"
+
+# When true, oEmbed previews will be enabled. Typically these kinds of previews are used for
+# sites that do not support OpenGraph or page scraping, such as Twitter. For information on
+# specifying providers for oEmbed, including your own, see the following documentation:
+# https://docs.t2bot.io/matrix-media-repo/url-previews/oembed.html
+# Defaults to disabled.
+matrix_media_repo_url_previews_o_embed: false
 
 # The thumbnail configuration for the media repository.
-matrix_media_repo_thumbnails:
-  thumbnails:
-    # The maximum number of bytes an image can be before the thumbnailer refuses.
-    maxSourceBytes: 10485760  # 10MB default, 0 to disable
 
-    # The maximum number of pixels an image can have before the thumbnailer refuses. Note that
-    # this only applies to image types: file types like audio and video are affected solely by
-    # the maxSourceBytes.
-    maxPixels: 32000000  # 32M default
+# The maximum number of bytes an image can be before the thumbnailer refuses.
+matrix_media_repo_thumbnails_max_source_bytes: 10485760 # 10MB default, 0 to disable
 
-    # The number of workers to use when generating thumbnails. Raise this number if thumbnails
-    # are slow to generate or timing out.
-    #
-    # Maximum memory usage = numWorkers multiplied by the maximum image source size
-    # Average memory usage is dependent on how many thumbnails are being generated by your users
-    numWorkers: 100
+# The maximum number of pixels an image can have before the thumbnailer refuses. Note that
+# this only applies to image types: file types like audio and video are affected solely by
+# the maxSourceBytes.
+matrix_media_repo_thumbnails_max_pixels: 32000000 # 32M default
 
-    # All thumbnails are generated into one of the sizes listed here. The first size is used as
-    # the default for when no width or height is requested. The media repository will return
-    # either an exact match or the next largest size of thumbnail.
-    sizes:
-      - width: 32
-        height: 32
-      - width: 96
-        height: 96
-      - width: 320
-        height: 240
-      - width: 640
-        height: 480
-      - width: 768   # This size is primarily used for audio thumbnailing.
-        height: 240
-      - width: 800
-        height: 600
+# The number of workers to use when generating thumbnails. Raise this number if thumbnails
+# are slow to generate or timing out.
+#
+# Maximum memory usage = numWorkers multiplied by the maximum image source size
+# Average memory usage is dependent on how many thumbnails are being generated by your users
+matrix_media_repo_thumbnails_num_workers: 100
 
-    # To allow for thumbnails to be any size, not just in the sizes specified above, set this to
-    # true (default false). When enabled, whatever size requested by the client will be generated
-    # up to a maximum of the largest possible dimensions in the `sizes` list. For best results,
-    # specify only one size in the `sizes` list when this option is enabled.
-    dynamicSizing: false
+# All thumbnails are generated into one of the sizes listed here. The first size is used as
+# the default for when no width or height is requested. The media repository will return
+# either an exact match or the next largest size of thumbnail.
+matrix_media_repo_thumbnails_sizes:
+  - width: 32
+    height: 32
+  - width: 96
+    height: 96
+  - width: 320
+    height: 240
+  - width: 640
+    height: 480
+  - width: 768   # This size is primarily used for audio thumbnailing.
+    height: 240
+  - width: 800
+    height: 600
 
-    # The content types to thumbnail when requested. Types that are not supported by the media repo
-    # will not be thumbnailed (adding application/json here won't work). Clients may still not request
-    # thumbnails for these types - this won't make clients automatically thumbnail these file types.
-    types:
-      - "image/jpeg"
-      - "image/jpg"
-      - "image/png"
-      - "image/apng"
-      - "image/gif"
-      - "image/heif"
-      - "image/webp"
-      # - "image/svg+xml" # Be sure to have ImageMagick installed to thumbnail SVG files
-      - "audio/mpeg"
-      - "audio/ogg"
-      - "audio/wav"
-      - "audio/flac"
-      # - "video/mp4" # Be sure to have ffmpeg installed to thumbnail video files
+# To allow for thumbnails to be any size, not just in the sizes specified above, set this to
+# true (default false). When enabled, whatever size requested by the client will be generated
+# up to a maximum of the largest possible dimensions in the `sizes` list. For best results,
+# specify only one size in the `sizes` list when this option is enabled.
+matrix_media_repo_thumbnails_dynamic_sizing: false
 
-    # Animated thumbnails can be CPU intensive to generate. To disable the generation of animated
-    # thumbnails, set this to false. If disabled, regular thumbnails will be returned.
-    allowAnimated: true
+# The content types to thumbnail when requested. Types that are not supported by the media repo
+# will not be thumbnailed (adding application/json here won't work). Clients may still not request
+# thumbnails for these types - this won't make clients automatically thumbnail these file types.
+matrix_media_repo_thumbnails_types:
+  - "image/jpeg"
+  - "image/jpg"
+  - "image/png"
+  - "image/apng"
+  - "image/gif"
+  - "image/heif"
+  - "image/heic"
+  - "image/webp"
+  - "image/bmp"
+  - "image/tiff"
+  #- "image/svg+xml" # Be sure to have ImageMagick installed to thumbnail SVG files
+  - "audio/mpeg"
+  - "audio/ogg"
+  - "audio/wav"
+  - "audio/flac"
+  #- "video/mp4" # Be sure to have ffmpeg installed to thumbnail video files
 
-    # Default to animated thumbnails, if available
-    defaultAnimated: false
+# Animated thumbnails can be CPU intensive to generate. To disable the generation of animated
+# thumbnails, set this to false. If disabled, regular thumbnails will be returned.
+matrix_media_repo_thumbnails_allow_animated: true
 
-    # The maximum file size to thumbnail when a capable animated thumbnail is requested. If the image
-    # is larger than this, the thumbnail will be generated as a static image.
-    maxAnimateSizeBytes: 10485760  # 10MB default, 0 to disable
+# Default to animated thumbnails, if available
+matrix_media_repo_thumbnails_default_animated: false
 
-    # On a scale of 0 (start of animation) to 1 (end of animation), where should the thumbnailer try
-    # and thumbnail animated content? Defaults to 0.5 (middle of animation).
-    stillFrame: 0.5
+# The maximum file size to thumbnail when a capable animated thumbnail is requested. If the image
+# is larger than this, the thumbnail will be generated as a static image.
+matrix_media_repo_thumbnails_max_animate_size_bytes: 10485760 # 10MB default, 0 to disable
 
-    # How many days after a thumbnail is generated before it expires and is deleted. The thumbnail
-    # can be regenerated safely - this just helps free up some space in your datastores. Set to
-    # zero or negative to disable. Defaults to disabled.
-    expireAfterDays: 0
+# On a scale of 0 (start of animation) to 1 (end of animation), where should the thumbnailer try
+# and thumbnail animated content? Defaults to 0.5 (middle of animation).
+matrix_media_repo_thumbnails_still_frame: 0.5
+
+# How many days after a thumbnail is generated before it expires and is deleted. The thumbnail
+# can be regenerated safely - this just helps free up some space in your datastores. Set to
+# zero or negative to disable. Defaults to disabled.
+matrix_media_repo_thumbnails_expire_after_days: 0
 
 # Controls for the rate limit functionality
 
@@ -623,67 +666,31 @@ matrix_media_repo_plugins:
 # Options for controlling various MSCs/unstable features of the media repo
 # Sections of this config might disappear or be added over time. By default all
 # features are disabled in here and must be explicitly enabled to be used.
-matrix_media_repo_feature_support:
-  featureSupport:
-    # MSC2248 - Blurhash
-    MSC2448:
-      # Whether or not this MSC is enabled for use in the media repo
-      enabled: false
+# featureSupport:
+  # No unstable features are currently supported.
 
-      # Maximum dimensions for converting a blurhash to an image. When no width and
-      # height options are supplied, the default will be half these values.
-      maxWidth: 1024
-      maxHeight: 1024
+# Support for redis as a cache mechanism
+#
+# Note: Enabling Redis support will mean that the existing cache mechanism will do nothing.
+# It can be safely disabled once Redis support is enabled.
+#
+# See docs/redis.md for more information on how this works and how to set it up.
 
-      # Thumbnail size in pixels to use to generate the blurhash string
-      thumbWidth: 64
-      thumbHeight: 64
+# Whether or not use Redis instead of in-process caching.
+matrix_media_repo_redis_enabled: false
 
-      # The X and Y components to use. Higher numbers blur less, lower numbers blur more.
-      xComponents: 4
-      yComponents: 3
+# The database number to use. Leave at zero if using a dedicated Redis instance.
+matrix_media_repo_redis_database_number: 0
 
-      # The amount of contrast to apply when converting a blurhash to an image. Lower values
-      # make the effect more subtle, larger values make it stronger.
-      punch: 1
-
-    # IPFS Support
-    # This is currently experimental and might not work at all.
-    IPFS:
-      # Whether or not IPFS support is enabled for use in the media repo.
-      enabled: false
-
-      # Options for the built in IPFS daemon
-      builtInDaemon:
-        # Enable this to spawn an in-process IPFS node to use instead of a localhost
-        # HTTP agent. If this is disabled, the media repo will assume you have an HTTP
-        # IPFS agent running and accessible. Defaults to using a daemon (true).
-        enabled: true
-
-        # If the Daemon is enabled, set this to the location where the IPFS files should
-        # be stored. If you're using Docker, this should be something like "/data/ipfs"
-        # so it can be mapped to a volume.
-        repoPath: "./ipfs"
-
-    # Support for redis as a cache mechanism
-    #
-    # Note: Enabling Redis support will mean that the existing cache mechanism will do nothing.
-    # It can be safely disabled once Redis support is enabled.
-    #
-    # See docs/redis.md for more information on how this works and how to set it up.
-    redis:
-      # Whether or not use Redis instead of in-process caching.
-      enabled: false
-
-      # The Redis shards that should be used by the media repo in the ring. The names of the
-      # shards are for your reference and have no bearing on the connection, but must be unique.
-      shards:
-        - name: "server1"
-          addr: ":7000"
-        - name: "server2"
-          addr: ":7001"
-        - name: "server3"
-          addr: ":7002"
+# The Redis shards that should be used by the media repo in the ring. The names of the
+# shards are for your reference and have no bearing on the connection, but must be unique.
+matrix_media_repo_redis_shards:
+  - name: "server1"
+    addr: ":7000"
+  - name: "server2"
+    addr: ":7001"
+  - name: "server3"
+    addr: ":7002"
 
 # Optional sentry (https://sentry.io/) configuration for the media repo
 
@@ -698,3 +705,27 @@ matrix_media_repo_sentry_environment: ""
 
 # Whether or not to turn on sentry's built in debugging. This will increase log output.
 matrix_media_repo_sentry_debug: false
+
+# Configuration for the internal tasks engine in the media repo. Note that this only applies
+# to the media repo process with machine ID zero (the default in single-instance mode).
+#
+# Tasks include things like data imports/exports.
+
+# The number of workers to have available for tasks. Defaults to 5.
+matrix_media_repo_tasks_num_workers: 5
+
+# Options for collecting PGO-compatible CPU profiles and submitting them to a hosted pgo-fleet
+# server. See https://github.com/t2bot/pgo-fleet for collection/more detail.
+#
+# If you process more than 1Hz of requests or have more than a dozen media repos deployed, please
+# get in contact with `@travis:t2l.io` to submit profiles directly to MMR. Submitted profiles are
+# used to improve the build speed for everyone.
+
+# Whether collection is enabled. Defaults to false.
+matrix_media_repo_pgo_enabled: false
+
+# The pgo-fleet submit URL.
+matrix_media_repo_pgo_submit_url: "https://pgo-mmr.t2host.io/v1/submit"
+
+# The pgo-fleet submit key.
+matrix_media_repo_pgo_submit_key: "INSERT_VALUE_HERE"
