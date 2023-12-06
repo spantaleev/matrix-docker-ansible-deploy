@@ -114,6 +114,9 @@
 
 		proxy_set_header X-Real-IP $remote_addr;
 		proxy_set_header X-Forwarded-For $remote_addr;
+
+		client_body_buffer_size {{ ((matrix_media_repo_max_bytes | int) / 4) | int }};
+		client_max_body_size {{ matrix_media_repo_max_bytes }};
 	}
 
 	# Redirect other endpoints registered by the media-repo to its container
