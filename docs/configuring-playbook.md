@@ -132,6 +132,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Mautrix Signal bridging](configuring-playbook-bridge-mautrix-signal.md) (optional)
 
+- [Setting up Mautrix Signalgo bridging](configuring-playbook-bridge-mautrix-signalgo.md) (optional)
+
 - [Setting up Mautrix wsproxy for bridging Android SMS or Apple iMessage](configuring-playbook-bridge-mautrix-wsproxy.md) (optional)
 
 - [Setting up Appservice IRC bridging](configuring-playbook-bridge-appservice-irc.md) (optional)
