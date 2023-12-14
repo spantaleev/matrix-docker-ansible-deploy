@@ -31,7 +31,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_mautrix_signalgo_docker_image }} \
-			/usr/bin/mautrix-signalgo -c /config/config.yaml -r /config/registration.yaml --no-update
+			/usr/bin/mautrix-signal -c /config/config.yaml -r /config/registration.yaml --no-update
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-mautrix-signalgo 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-mautrix-signalgo 2>/dev/null || true'
