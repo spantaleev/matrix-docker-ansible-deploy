@@ -1,10 +1,10 @@
 #jinja2: lstrip_blocks: "True"
-# Homeserver details.
+# Homeserver details
 homeserver:
     # The address that this appservice can use to connect to the homeserver.
-    address: {{ matrix_mautrix_signalgo_homeserver_address | to_json }}
+    address: {{ matrix_mautrix_signalgo_homeserver_address }}
     # The domain of the homeserver (for MXIDs, etc).
-    domain: {{ matrix_mautrix_signalgo_homeserver_domain | to_json }}
+    domain: {{ matrix_mautrix_signalgo_homeserver_domain }}
 
     # What software is the homeserver running?
     # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
@@ -91,7 +91,7 @@ bridge:
     username_template: signal_{{.}}
     # Displayname template for Signal users. This is also used as the room name in DMs if private_chat_portal_meta is enabled.
     # Available variables: TODO
-    displayname_template: '{{.ProfileName}} (Signal)'
+    displayname_template: '{{.ProfileName}} (Signalgo)'
     # Whether to explicitly set the avatar and room name for private chat portal rooms.
     # If set to `default`, this will be enabled in encrypted rooms and disabled in unencrypted rooms.
     # If set to `always`, all DM rooms will have explicit names and avatars set.
@@ -252,13 +252,11 @@ bridge:
 
 # Logging config. See https://github.com/tulir/zeroconfig for details.
 logging:
-    min_level: {{ matrix_mautrix_signalgo_logging_level | to_json }}
-    writers:
-    - type: stdout
-      format: pretty-colored
-    - type: file
-      format: json
-      filename: ./logs/mautrix-signalgo.log
-      max_size: 100
-      max_backups: 10
-      compress: true
+    directory: ./logs
+    file_name_format: ''
+    file_date_format: "2006-01-02"
+    file_mode: 384
+    timestamp_format: Jan _2, 2006 15:04:05
+    print_level: {{ matrix_mautrix_signalgo_logging_level | to_json }}
+    print_json: false
+    file_json: false

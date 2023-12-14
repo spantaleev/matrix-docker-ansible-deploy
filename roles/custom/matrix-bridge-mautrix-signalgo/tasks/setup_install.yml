@@ -77,6 +77,39 @@
       pull: true
   when: "matrix_mautrix_signalgo_container_image_self_build | bool"
 
+- name: Check if an old database file exists
+  ansible.builtin.stat:
+    path: "{{ matrix_mautrix_signalgo_base_path }}/mautrix-signalgo.db"
+  register: matrix_mautrix_signalgo_stat_database
+
+- name: Check if an old matrix state file exists
+  ansible.builtin.stat:
+    path: "{{ matrix_mautrix_signalgo_base_path }}/mx-state.json"
+  register: matrix_mautrix_signalgo_stat_mx_state
+
+- name: (Data relocation) Ensure matrix-mautrix-signalgo.service is stopped
+  ansible.builtin.service:
+    name: matrix-mautrix-signalgo
+    state: stopped
+    enabled: false
+    daemon_reload: true
+  failed_when: false
+  when: "matrix_mautrix_signalgo_stat_database.stat.exists"
+
+- name: (Data relocation) Move mautrix-signalgo database file to ./data directory
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_mautrix_signalgo_base_path }}/mautrix-signalgo.db {{ matrix_mautrix_signalgo_data_path }}/mautrix-signalgo.db"
+    creates: "{{ matrix_mautrix_signalgo_data_path }}/mautrix-signalgo.db"
+    removes: "{{ matrix_mautrix_signalgo_base_path }}/mautrix-signalgo.db"
+  when: "matrix_mautrix_signalgo_stat_database.stat.exists"
+
+- name: (Data relocation) Move mautrix-signalgo mx-state file to ./data directory
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_mautrix_signalgo_base_path }}/mx-state.json {{ matrix_mautrix_signalgo_data_path }}/mx-state.json"
+    creates: "{{ matrix_mautrix_signalgo_data_path }}/mx-state.json"
+    removes: "{{ matrix_mautrix_signalgo_base_path }}/mx-state.json"
+  when: "matrix_mautrix_signalgo_stat_mx_state.stat.exists"
+
 - name: Ensure mautrix-signalgo config.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_mautrix_signalgo_configuration | to_nice_yaml(indent=2, width=999999) }}"
@@ -98,7 +131,6 @@
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-signalgo.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-signalgo.service"
     mode: 0644
-  register: matrix_mautrix_signalgo_systemd_service_result
 
 - name: Ensure matrix-mautrix-signalgo.service restarted, if necessary
   ansible.builtin.service:
