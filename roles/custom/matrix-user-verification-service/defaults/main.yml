@@ -5,6 +5,10 @@ matrix_user_verification_service_ansible_name: "Matrix User Verification Service
 # Enable by default. This is overwritten in provided group vars.
 matrix_user_verification_service_enabled: true
 
+matrix_user_verification_service_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+matrix_user_verification_service_container_image_self_build_repo: "https://github.com/matrix-org/matrix-user-verification-service"
+matrix_user_verification_service_container_image_self_build_branch: "{{ 'master' if matrix_registration_version == 'latest' else matrix_user_verification_service_version }}"
+
 # Fix version tag
 # renovate: datasource=docker depName=matrixdotorg/matrix-user-verification-service
 matrix_user_verification_service_version: "v3.0.0"
@@ -13,6 +17,7 @@ matrix_user_verification_service_version: "v3.0.0"
 matrix_user_verification_service_base_path: "{{ matrix_base_data_path }}/user-verification-service"
 matrix_user_verification_service_config_path: "{{ matrix_user_verification_service_base_path }}/config"
 matrix_user_verification_service_config_env_file: "{{ matrix_user_verification_service_config_path }}/.env"
+matrix_user_verification_service_docker_src_files_path: "{{ matrix_user_verification_service_base_path }}/docker-src"
 
 # Docker
 matrix_user_verification_service_docker_image_name_prefix: "{{ matrix_container_global_registry_prefix }}"

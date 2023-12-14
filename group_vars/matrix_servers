@@ -2101,7 +2101,7 @@ backup_borg_gid: "{{ matrix_user_gid }}"
 
 backup_borg_container_network: "{{ devture_postgres_container_network if devture_postgres_enabled else backup_borg_identifier }}"
 
-backup_borg_postgresql_version_detection_devture_postgres_role_name: "{{ 'galaxy/com.devture.ansible.role.postgres' if devture_postgres_enabled else '' }}"
+backup_borg_postgresql_version_detection_devture_postgres_role_name: "{{ 'galaxy/postgres' if devture_postgres_enabled else '' }}"
 
 backup_borg_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
 
@@ -3272,6 +3272,7 @@ devture_postgres_backup_connection_username: "{{ devture_postgres_connection_use
 devture_postgres_backup_connection_password: "{{ devture_postgres_connection_password if devture_postgres_enabled else '' }}"
 
 devture_postgres_backup_postgres_data_path: "{{ devture_postgres_data_path if devture_postgres_enabled else '' }}"
+devture_postgres_backup_postgres_role_include_name: galaxy/postgres
 
 devture_postgres_backup_databases: "{{ devture_postgres_managed_databases | map(attribute='name') if devture_postgres_enabled else [] }}"
 
@@ -4303,9 +4304,6 @@ matrix_user_creator_users_auto: |
 #
 ######################################################################
 
-## FIXME: Needs to be updated when there is a proper release by upstream.
-matrix_user_verification_service_docker_image: "{{ matrix_user_verification_service_docker_image_name_prefix }}matrixdotorg/matrix-user-verification-service@sha256:d2aabc984dd69d258c91900c36928972d7aaef19d776caa3cd6a0fbc0e307270"
-
 matrix_user_verification_service_enabled: false
 matrix_user_verification_service_systemd_required_services_list: |
   {{
@@ -4399,7 +4397,7 @@ devture_traefik_additional_domains_to_obtain_certificates_for: "{{ matrix_ssl_ad
 
 devture_traefik_config_providers_docker_endpoint: "{{ devture_container_socket_proxy_endpoint if devture_container_socket_proxy_enabled else 'unix:///var/run/docker.sock' }}"
 
-devture_traefik_container_additional_networks: |
+devture_traefik_container_additional_networks_auto: |
   {{
     ([devture_container_socket_proxy_container_network] if devture_container_socket_proxy_enabled else [])
   }}

@@ -5,14 +5,14 @@
 
   roles:
     # Most of the roles below are not distributed with the playbook, but downloaded separately using `ansible-galaxy` via the `just roles` command (see `justfile`).
-    - role: galaxy/com.devture.ansible.role.playbook_help
+    - role: galaxy/playbook_help
 
-    - role: galaxy/com.devture.ansible.role.systemd_docker_base
+    - role: galaxy/systemd_docker_base
 
     - role: custom/matrix_playbook_migration
 
     - when: matrix_playbook_docker_installation_enabled | bool
-      role: galaxy/geerlingguy.docker
+      role: galaxy/docker
       vars:
         docker_install_compose: false
         docker_install_compose_plugin: false
@@ -23,7 +23,7 @@
         - install-all
 
     - when: devture_docker_sdk_for_python_installation_enabled | bool
-      role: galaxy/com.devture.ansible.role.docker_sdk_for_python
+      role: galaxy/docker_sdk_for_python
       tags:
         - setup-docker
         - setup-all
@@ -31,7 +31,7 @@
         - install-all
 
     - when: devture_timesync_installation_enabled | bool
-      role: galaxy/com.devture.ansible.role.timesync
+      role: galaxy/timesync
       tags:
         - setup-timesync
         - setup-all
@@ -42,7 +42,7 @@
     - custom/matrix-dynamic-dns
     - custom/matrix-mailer
 
-    - role: galaxy/com.devture.ansible.role.postgres
+    - role: galaxy/postgres
 
     - galaxy/redis
     - custom/matrix-corporal
@@ -121,28 +121,28 @@
 
     - role: galaxy/auxiliary
 
-    - role: galaxy/com.devture.ansible.role.postgres_backup
+    - role: galaxy/postgres_backup
 
     - role: galaxy/backup_borg
 
     - custom/matrix-user-creator
     - custom/matrix-common-after
 
-    - role: galaxy/com.devture.ansible.role.container_socket_proxy
+    - role: galaxy/container_socket_proxy
 
-    - role: galaxy/com.devture.ansible.role.traefik
+    - role: galaxy/traefik
 
-    - role: galaxy/com.devture.ansible.role.traefik_certs_dumper
+    - role: galaxy/traefik_certs_dumper
 
     - when: devture_systemd_service_manager_enabled | bool
-      role: galaxy/com.devture.ansible.role.systemd_service_manager
+      role: galaxy/systemd_service_manager
 
     # This is pretty much last, because we want it to better serve as a "last known good configuration".
     # See: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/2217#issuecomment-1301487601
     - when: devture_playbook_state_preserver_enabled | bool
-      role: galaxy/com.devture.ansible.role.playbook_state_preserver
+      role: galaxy/playbook_state_preserver
       tags:
         - setup-all
         - install-all
 
-    - role: galaxy/com.devture.ansible.role.playbook_runtime_messages
+    - role: galaxy/playbook_runtime_messages

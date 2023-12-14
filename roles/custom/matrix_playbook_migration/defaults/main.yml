@@ -26,3 +26,19 @@ matrix_playbook_migration_matrix_aux_migration_validation_enabled: true
 
 # Controls if (`matrix_jitsi` -> `jitsi`) validation will run.
 matrix_playbook_migration_matrix_jitsi_migration_validation_enabled: true
+
+# Controls if the old apt repository (likely without a `signed-by` option) on Debian-based systems will be removed.
+#
+# Older versions of the Docker role (5.x, 6.x) used to install a repository at a path like: `/etc/apt/sources.list.d/download_docker_com_linux_*`
+# For 6.x, the repository included a `signed-by` option, but for earlier versions it did not.
+#
+# New versions of the Docker role (7.0+) install a new apt repository with `signed-by` option to a different path (`/etc/apt/sources.list.d/docker.list`),
+# but if a non-signed-by repository exists at the old path, a conflict will arise.
+#
+# Our workaround is to just delete the old repository file. Later, when the Docker role runs, it will install a new one at the new path.
+#
+# See:
+# - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2999
+# - https://github.com/geerlingguy/ansible-role-docker/pull/410
+matrix_playbook_migration_debian_signedby_migration_enabled: true
+matrix_playbook_migration_debian_signedby_migration_repository_path: "/etc/apt/sources.list.d/download_docker_com_linux_{{ ansible_distribution | lower }}.list"

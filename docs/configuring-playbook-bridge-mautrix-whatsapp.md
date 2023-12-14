@@ -21,8 +21,8 @@ By default, only admins are allowed to set themselves as relay users. To allow a
 matrix_mautrix_whatsapp_bridge_relay_admin_only: false
 ```
 
-If you want to activate the relay bot in a room, use `!whatsapp set-relay`.
-Use `!whatsapp unset-relay` to deactivate.
+If you want to activate the relay bot in a room, use `!wa set-relay`.
+Use `!wa unset-relay` to deactivate.
 
 ## Enable backfilling history
 This requires a server with MSC2716 support, which is currently an experimental feature in synapse.

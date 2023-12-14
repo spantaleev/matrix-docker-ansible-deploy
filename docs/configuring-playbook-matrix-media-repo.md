@@ -1,14 +1,20 @@
 # Setting up matrix-media-repo (optional)
 
-[matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/) is a highly customizable multi-domain media repository for Matrix. Intended for medium to large environments consisting of several homeservers, this media repo de-duplicates media (including remote media) while being fully compliant with the specification.
+[matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/) (often abbreviated "MMR") is a highly customizable multi-domain media repository for Matrix. Intended for medium to large environments consisting of several homeservers, this media repo de-duplicates media (including remote media) while being fully compliant with the specification.
 
 Smaller/individual homeservers can still make use of this project's features, though it may be difficult to set up or have higher than expected resource consumption. Please do your research before deploying this as this project may not be useful for your environment.
 
 For a simpler alternative (which allows you to offload your media repository storage to S3, etc.), you can [configure S3 storage](configuring-playbook-s3.md) instead of setting up matrix-media-repo.
 
+| **Table of Contents**                                                                       |
+| :------------------------------------------------------------------------------------------ |
+| [Quickstart](#quickstart)                                                                   |
+| [Additional configuration options](#configuring-the-media-repo)                             |
+| [Importing data from an existing media store](#importing-data-from-an-existing-media-store) |
+
 ## Quickstart
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file and [re-run the installation process](./installing.md) for the playbook:
 
 ```yaml
 matrix_media_repo_enabled: true
@@ -37,8 +43,9 @@ matrix_media_repo_database_max_connections: 25
 matrix_media_repo_database_max_idle_connections: 5
 
 # These users have full access to the administrative functions of the media repository.
-# See https://github.com/turt2live/matrix-media-repo/blob/release-v1.2.8/docs/admin.md for information on what these people can do. They must belong to one of the
-# configured homeservers above.
+# See https://github.com/turt2live/matrix-media-repo/blob/release-v1.2.8/docs/admin.md for 
+# information on what these people can do. They must belong to one of the configured 
+# homeservers above.
 matrix_media_repo_admins:
   admins: []
 # admins:
@@ -102,5 +109,56 @@ matrix_media_repo_datastores:
 
 ```
 
-Full list of configuration options with documentation can be found in `roles/custom/matrix-media-repo/templates/defaults/main.yml`
+Full list of configuration options with documentation can be found in [`roles/custom/matrix-media-repo/defaults/main.yml`](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-media-repo/defaults/main.yml)
 
+## Importing data from an existing media store
+
+If you want to add this repo to an existing homeserver managed by the playbook, you will need to import existing media into MMR's database or you will lose access to older media while it is active. MMR versions up to `v1.3.3` only support importing from Synapse, but newer versions (at time of writing: only `latest`) also support importing from Dendrite.
+
+**Before importing**: ensure you have an initial matrix-media-repo deployment by following the [quickstart](#quickstart) guide above
+
+Depending on the homeserver implementation yu're using (Synapse, Dendrite), you'll need to use a different import tool (part of matrix-media-repo) and point it to the homeserver's database.
+
+### Importing data from the Synapse media store
+
+To import the Synapse media store, you're supposed to invoke the `import_synapse` tool which is part of the matrix-media-repo container image. Your Synapse database is called `synapse` by default, unless you've changed it by modifying `matrix_synapse_database_database`.
+
+This guide here is adapted from the [upstream documentation about the import_synapse script](https://github.com/turt2live/matrix-media-repo#importing-media-from-synapse).
+
+Run the following command on the server (after replacing `devture_postgres_connection_password` in it with the value found in your `vars.yml` file):
+
+```sh
+docker exec -it matrix-media-repo \
+    /usr/local/bin/import_synapse \
+        -dbName synapse \
+        -dbHost matrix-postgres \
+        -dbPort 5432 \
+        -dbUsername matrix \
+        -dbPassword devture_postgres_connection_password
+```
+
+Enter `1` for the Machine ID when prompted (you are not doing any horizontal scaling) unless you know what you're doing.
+
+This should output a `msg="Import completed"` when finished successfully!
+
+### Importing data from the Dendrite media store
+
+If you're using the [Dendrite](configuring-playbook-dendrite.md) homeserver instead of the default for this playbook (Synapse), follow this importing guide here.
+
+To import the Dendrite media store, you're supposed to invoke the `import_dendrite` tool which is part of the matrix-media-repo container image. Your Dendrite database is called `dendrite_mediaapi` by default, unless you've changed it by modifying `matrix_dendrite_media_api_database`.
+
+Run the following command on the server (after replacing `devture_postgres_connection_password` in it with the value found in your `vars.yml` file):
+
+```sh
+docker exec -it matrix-media-repo \
+    /usr/local/bin/import_dendrite \
+        -dbName dendrite_mediaapi \
+        -dbHost matrix-postgres \
+        -dbPort 5432 \
+        -dbUsername matrix \
+        -dbPassword devture_postgres_connection_password
+```
+
+Enter `1` for the Machine ID when prompted (you are not doing any horizontal scaling) unless you know what you're doing.
+
+This should output a `msg="Import completed"` when finished successfully!
