@@ -197,8 +197,6 @@ When updating the playbook, refer to [the changelog](CHANGELOG.md) to catch up w
 
 ## Related
 
-You may also be interested in another Ansible playbook for adding non-matrix related services:
+You may also be interested in [mash-playbook](https://github.com/mother-of-all-self-hosting/mash-playbook) - another Ansible playbook for self-hosting non-Matrix services (see its [List of supported services](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/supported-services.md)).
 
-- [mash-playbook](https://github.com/mother-of-all-self-hosting/mash-playbook) - for deploying a large number of self-hosted software. [List of supported services](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/supported-services.md)
-
-It makes use of Traefik as its reverse-proxy, so it should be easy to host all these services on the same server. See `docs/interoperability.md` contained there for further details.
+mash-playbook also makes use of [Traefik](./docs/configuring-playbook-traefik.md) as its reverse-proxy, so with minor [interoperability adjustments](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/interoperability.md), you can make matrix-docker-ansible-deploy and mash-playbook co-exist and host Matrix and non-Matrix services on the same server.
