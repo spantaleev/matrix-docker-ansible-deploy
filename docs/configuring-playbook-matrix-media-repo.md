@@ -14,7 +14,7 @@ For a simpler alternative (which allows you to offload your media repository sto
 
 ## Quickstart
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file and [re-run the installation process](./installing.md) for the playbook:
 
 ```yaml
 matrix_media_repo_enabled: true
@@ -115,18 +115,48 @@ Full list of configuration options with documentation can be found in [`roles/cu
 
 If you want to add this repo to an existing homeserver managed by the playbook, you will need to import existing media into MMR's database or you will lose access to older media while it is active. MMR versions up to `v1.3.3` only support importing from Synapse, but newer versions (at time of writing: only `latest`) also support importing from Dendrite.
 
-1. Edit your vars.yml like in [quickstart](#quickstart) above and deploy with `just setup-all`
-2. SSH into the homeserver and enter the Postgres command line interface: `/matrix/postgres/bin/cli`.
-3. At that psql prompt, use `\l` to list all databases. On Dendrite, the one you're looking for is called `dendrite_mediaapi`; other homeserver software will have similar but slightly different names. Note down the correct name for your system and exit the prompt (use `\q`).
-4. The MMR docker container includes an import utility explained [in its own docs here](https://github.com/turt2live/matrix-media-repo#importing-media-from-synapse). To invoke this tool, use the following command:
+**Before importing**: ensure you have an initial matrix-media-repo deployment by following the [quickstart](#quickstart) guide above
 
-```bash
-docker exec -it matrix-media-repo /usr/local/bin/import_dendrite `# Synapse: import_synapse` \
-    -dbName dendrite_mediaapi `# This is the database found in psql above` \
-    -dbHost matrix-postgres \
-    -dbPort 5432 \
-    -dbUsername matrix \
-    -dbPassword devture_postgres_connection_password `# Replace with the value from your vars.yml`
+Depending on the homeserver implementation yu're using (Synapse, Dendrite), you'll need to use a different import tool (part of matrix-media-repo) and point it to the homeserver's database.
+
+### Importing data from the Synapse media store
+
+To import the Synapse media store, you're supposed to invoke the `import_synapse` tool which is part of the matrix-media-repo container image. Your Synapse database is called `synapse` by default, unless you've changed it by modifying `matrix_synapse_database_database`.
+
+This guide here is adapted from the [upstream documentation about the import_synapse script](https://github.com/turt2live/matrix-media-repo#importing-media-from-synapse).
+
+Run the following command on the server (after replacing `devture_postgres_connection_password` in it with the value found in your `vars.yml` file):
+
+```sh
+docker exec -it matrix-media-repo \
+    /usr/local/bin/import_synapse \
+        -dbName synapse \
+        -dbHost matrix-postgres \
+        -dbPort 5432 \
+        -dbUsername matrix \
+        -dbPassword devture_postgres_connection_password
+```
+
+Enter `1` for the Machine ID when prompted (you are not doing any horizontal scaling) unless you know what you're doing.
+
+This should output a `msg="Import completed"` when finished successfully!
+
+### Importing data from the Dendrite media store
+
+If you're using the [Dendrite](configuring-playbook-dendrite.md) homeserver instead of the default for this playbook (Synapse), follow this importing guide here.
+
+To import the Dendrite media store, you're supposed to invoke the `import_dendrite` tool which is part of the matrix-media-repo container image. Your Dendrite database is called `dendrite_mediaapi` by default, unless you've changed it by modifying `matrix_dendrite_media_api_database`.
+
+Run the following command on the server (after replacing `devture_postgres_connection_password` in it with the value found in your `vars.yml` file):
+
+```sh
+docker exec -it matrix-media-repo \
+    /usr/local/bin/import_dendrite \
+        -dbName dendrite_mediaapi \
+        -dbHost matrix-postgres \
+        -dbPort 5432 \
+        -dbUsername matrix \
+        -dbPassword devture_postgres_connection_password
 ```
 
 Enter `1` for the Machine ID when prompted (you are not doing any horizontal scaling) unless you know what you're doing.
