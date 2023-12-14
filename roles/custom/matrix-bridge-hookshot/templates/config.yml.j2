@@ -107,11 +107,13 @@ metrics:
   # (Optional) Prometheus metrics support
   #
   enabled: {{ matrix_hookshot_metrics_enabled | to_json }}
-{% if matrix_hookshot_experimental_encryption_enabled %}
+{% if matrix_hookshot_queue_host is defined and matrix_hookshot_queue_host|d('')|length > 0 %} %}
 queue:
   monolithic: true
-  port: 6379
-  host: matrix-redis
+  port: {{ matrix_hookshot_queue_port | default('6379') }}
+  host: {{ matrix_hookshot_queue_host }}
+{& endif %}
+{% if matrix_hookshot_experimental_encryption_enabled %}
 experimentalEncryption:
   storagePath: /data/encryption
 {% endif %}
