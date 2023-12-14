@@ -1,6 +1,6 @@
 # Setting up matrix-media-repo (optional)
 
-[matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/) is a highly customizable multi-domain media repository for Matrix. Intended for medium to large environments consisting of several homeservers, this media repo de-duplicates media (including remote media) while being fully compliant with the specification.
+[matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/) (often abbreviated "MMR") is a highly customizable multi-domain media repository for Matrix. Intended for medium to large environments consisting of several homeservers, this media repo de-duplicates media (including remote media) while being fully compliant with the specification.
 
 Smaller/individual homeservers can still make use of this project's features, though it may be difficult to set up or have higher than expected resource consumption. Please do your research before deploying this as this project may not be useful for your environment.
 
@@ -102,5 +102,5 @@ matrix_media_repo_datastores:
 
 ```
 
-Full list of configuration options with documentation can be found in `roles/custom/matrix-media-repo/templates/defaults/main.yml`
+Full list of configuration options with documentation can be found in [`roles/custom/matrix-media-repo/defaults/main.yml`](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-media-repo/defaults/main.yml)
 

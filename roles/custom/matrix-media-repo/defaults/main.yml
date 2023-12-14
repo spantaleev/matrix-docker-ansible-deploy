@@ -166,7 +166,7 @@ matrix_media_repo_homeservers_auto:
     # during certain operations, like attempting to purge media from a room or validating server
     # admin status. This should be set to one of "synapse", "dendrite", or "matrix". When set
     # to "matrix", most functionality requiring the admin API will not work.
-    adminApiKind: "{{ 'synapse' if matrix_homeserver_implementation == 'synapse' else 'matrix' }}"
+    adminApiKind: "{{ 'synapse' if matrix_homeserver_implementation == 'synapse' else 'dendrite' if matrix_homeserver_implementation == 'dendrite' else 'matrix' }}"
 
 # Additional servers to be managed by MMR
 matrix_media_repo_homeservers_additional: []
