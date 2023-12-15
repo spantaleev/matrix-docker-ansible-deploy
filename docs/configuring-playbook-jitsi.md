@@ -286,7 +286,7 @@ You can use the self-hosted Jitsi server in multiple ways:
 
 - **directly (without any Matrix integration)**. Just go to `https://jitsi.DOMAIN`
 
-**Note**: Element apps on mobile devices currently [don't support joining meetings on a self-hosted Jitsi server](https://github.com/vector-im/riot-web/blob/601816862f7d84ac47547891bd53effa73d32957/docs/jitsi.md#mobile-app-support).
+**Note**: Element apps on mobile devices currently [don't support joining meetings on a self-hosted Jitsi server](https://github.com/element-hq/riot-web/blob/601816862f7d84ac47547891bd53effa73d32957/docs/jitsi.md#mobile-app-support).
 
 
 ## Troubleshooting
