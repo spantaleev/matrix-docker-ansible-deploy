@@ -1118,9 +1118,13 @@ matrix_mautrix_signalgo_systemd_required_services_list: |
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
-matrix_mautrix_signalgo_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'sigo.as.token', rounds=655555) | to_uuid }}"
+matrix_mautrix_signalgo_homeserver_domain: "{{ matrix_domain }}"
+
+matrix_mautrix_signalgo_homeserver_address: "{{ matrix_homeserver_container_url }}"
 
 matrix_mautrix_signalgo_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'sigo.hs.token', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_signalgo_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'sigo.as.token', rounds=655555) | to_uuid }}"
 
 matrix_mautrix_signalgo_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
@@ -1130,10 +1134,9 @@ matrix_mautrix_signalgo_login_shared_secret: "{{ matrix_synapse_ext_password_pro
 # - `matrix_nginx_proxy_proxy_matrix_metrics_enabled`
 matrix_mautrix_signalgo_metrics_enabled: "{{ prometheus_enabled }}"
 
-# Postgres is the default, except if not using internal Postgres server
 matrix_mautrix_signalgo_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mautrix_signalgo_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
-matrix_mautrix_signalgo_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mausignalgo.db', rounds=655555) | to_uuid }}"
+matrix_mautrix_signalgo_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.signalgo.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
 #
