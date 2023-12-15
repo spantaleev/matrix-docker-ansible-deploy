@@ -7,6 +7,7 @@
       --name={{ matrix_hookshot_container_ident }}-reset-crypto
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
-      -v {{ matrix_hookshot_base_path }}/config.yml:/config.yml
-      {{ matrix_hookshot_docker_image }} yarn start:resetcrypto
+      --mount type=bind,src={{ matrix_hookshot_base_path }}/config.yml,dst=/config.yml
+      {{ matrix_hookshot_docker_image }}
+     yarn start:resetcrypto
   changed_when: false
