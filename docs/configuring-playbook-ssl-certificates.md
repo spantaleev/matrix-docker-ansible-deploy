@@ -68,21 +68,21 @@ aux_file_definitions:
   # uploading a file from the computer where Ansible is running.
   - dest: "{{ devture_traefik_ssl_dir_path }}/privkey.pem"
     src: /path/on/your/Ansible/computer/to/privkey.pem
-	# Alternatively, comment out `src` above and uncomment the lines below to provide the certificate content inline.
-	# Note the indentation level.
-	# content: |
-	#   FILE CONTENT
-	#   HERE
+    # Alternatively, comment out `src` above and uncomment the lines below to provide the certificate content inline.
+    # Note the indentation level.
+    # content: |
+    #   FILE CONTENT
+    #   HERE
 
   # Create the cert.pem file on the server
   # uploading a file from the computer where Ansible is running.
   - dest: "{{ devture_traefik_ssl_dir_path }}/cert.pem"
     src: /path/on/your/Ansible/computer/to/cert.pem
-	# Alternatively, comment out `src` above and uncomment the lines below to provide the certificate content inline.
-	# Note the indentation level.
-	# content: |
-	#   FILE CONTENT
-	#   HERE
+    # Alternatively, comment out `src` above and uncomment the lines below to provide the certificate content inline.
+    # Note the indentation level.
+    # content: |
+    #   FILE CONTENT
+    #   HERE
 
   # Create the custom Traefik configuration.
   # The `/ssl/..` paths below are in-container paths, not paths on the host (/`matrix/traefik/ssl/..`). Do not change them!

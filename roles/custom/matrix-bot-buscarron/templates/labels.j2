@@ -19,11 +19,6 @@ traefik.http.middlewares.matrix-bot-buscarron-strip-prefix.stripprefix.prefixes=
 {% set middlewares = middlewares + ['matrix-bot-buscarron-strip-prefix'] %}
 {% endif %}
 
-{% if matrix_bot_buscarron_basicauth_enabled %}
-traefik.http.middlewares.matrix-bot-buscarron-auth.basicauth.users={{ lookup('ansible.builtin.file', matrix_bot_buscarron_basicauth_file) }}
-{% set middlewares_metrics = middlewares + ['matrix-bot-buscarron-auth'] %}
-{% endif %}
-
 {% if matrix_bot_buscarron_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
 {% for name, value in matrix_bot_buscarron_container_labels_traefik_additional_response_headers.items() %}
 traefik.http.middlewares.matrix-bot-buscarron-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
@@ -45,21 +40,6 @@ traefik.http.routers.matrix-bot-buscarron.tls={{ matrix_bot_buscarron_container_
 traefik.http.routers.matrix-bot-buscarron.tls.certResolver={{ matrix_bot_buscarron_container_labels_traefik_tls_certResolver }}
 {% endif %}
 traefik.http.services.matrix-bot-buscarron.loadbalancer.server.port=8080
-
-{% if middlewares_metrics | length > 0 %}
-traefik.http.routers.matrix-bot-buscarron-metrics.rule={{ matrix_bot_buscarron_container_labels_traefik_metrics_rule }}
-{% if matrix_bot_buscarron_container_labels_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-bot-buscarron-metrics.priority={{ matrix_bot_buscarron_container_labels_traefik_priority }}
-{% endif %}
-traefik.http.routers.matrix-bot-buscarron-metrics.service=matrix-bot-buscarron
-traefik.http.routers.matrix-bot-buscarron-metrics.middlewares={{ middlewares_metrics | join(',') }}
-traefik.http.routers.matrix-bot-buscarron-metrics.entrypoints={{ matrix_bot_buscarron_container_labels_traefik_entrypoints }}
-traefik.http.routers.matrix-bot-buscarron-metrics.tls={{ matrix_bot_buscarron_container_labels_traefik_tls | to_json }}
-{% if matrix_bot_buscarron_container_labels_traefik_tls %}
-traefik.http.routers.matrix-bot-buscarron-metrics.tls.certResolver={{ matrix_bot_buscarron_container_labels_traefik_tls_certResolver }}
-{% endif %}
-traefik.http.services.matrix-bot-buscarron-metrics.loadbalancer.server.port=8080
-{% endif %}
 
 {% endif %}
 

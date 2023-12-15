@@ -114,12 +114,15 @@
 
 		proxy_set_header X-Real-IP $remote_addr;
 		proxy_set_header X-Forwarded-For $remote_addr;
+
+		client_body_buffer_size {{ ((matrix_media_repo_max_bytes | int) / 4) | int }};
+		client_max_body_size {{ matrix_media_repo_max_bytes }};
 	}
 
 	# Redirect other endpoints registered by the media-repo to its container
 	# /_matrix/client/r0/logout
 	# /_matrix/client/r0/logout/all
-	location ^~ /_matrix/client/(r0|v1|v3|unstable)/(logout|logout/all) {
+	location ~ ^/_matrix/client/(r0|v1|v3|unstable)/(logout|logout/all) {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
@@ -142,7 +145,7 @@
 	# Redirect other endpoints registered by the media-repo to its container
 	# /_matrix/client/r0/admin/purge_media_cache
 	# /_matrix/client/r0/admin/quarantine_media/{roomId:[^/]+}
-	location ^~ /_matrix/client/(r0|v1|v3|unstable)/admin/(purge_media_cache|quarantine_media/.*) {
+	location ~ ^/_matrix/client/(r0|v1|v3|unstable)/admin/(purge_media_cache|quarantine_media/.*) {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
@@ -185,13 +188,19 @@
 	{% endif %}
 
 	{% if matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled %}
-	location ^~ /_matrix/client/r0/user_directory/search {
+	location ~ ^/_matrix/client/(r0|v3)/user_directory/search {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container }}";
+			{% if matrix_nginx_proxy_proxy_matrix_user_directory_search_v3_to_r0_redirect_enabled %}
+			rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
+			{% endif %}
 			proxy_pass http://$backend;
 		{% else %}
+			{% if matrix_nginx_proxy_proxy_matrix_user_directory_search_v3_to_r0_redirect_enabled %}
+			rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
+			{% endif %}
 			{# Generic configuration for use outside of our container setup #}
 			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container }};
 		{% endif %}
@@ -202,13 +211,19 @@
 	{% endif %}
 
 	{% if matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled %}
-	location ~ ^/_matrix/client/r0/register/(email|msisdn)/requestToken$ {
+	location ~ ^/_matrix/client/(r0|v3)/register/(email|msisdn)/requestToken$ {
 		{% if matrix_nginx_proxy_enabled %}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
 			resolver {{ matrix_nginx_proxy_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_with_container }}";
+			{% if matrix_nginx_proxy_proxy_matrix_3pid_registration_v3_to_r0_redirect_enabled %}
+			rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
+			{% endif %}
 			proxy_pass http://$backend;
 		{% else %}
+			{% if matrix_nginx_proxy_proxy_matrix_3pid_registration_v3_to_r0_redirect_enabled %}
+			rewrite ^(.*?)/v3/(.*?)$  $1/r0/$2 break;
+			{% endif %}
 			{# Generic configuration for use outside of our container setup #}
 			proxy_pass http://{{ matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_sans_container }};
 		{% endif %}
