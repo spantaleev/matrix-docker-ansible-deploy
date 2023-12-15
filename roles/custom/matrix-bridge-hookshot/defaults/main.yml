@@ -10,6 +10,11 @@ matrix_hookshot_container_image_self_build: false
 matrix_hookshot_container_image_self_build_repo: "https://github.com/matrix-org/matrix-hookshot.git"
 matrix_hookshot_container_image_self_build_branch: "{{ 'main' if matrix_hookshot_version == 'latest' else matrix_hookshot_version }}"
 
+# Specifies additional networks for the Hookshot container to connect with
+matrix_hookshot_container_additional_networks: "{{ matrix_hookshot_container_additional_networks_auto + matrix_hookshot_container_additional_networks_custom }}"
+matrix_hookshot_container_additional_networks_auto: []
+matrix_hookshot_container_additional_networks_custom: []
+
 # renovate: datasource=docker depName=halfshot/matrix-hookshot
 matrix_hookshot_version: 4.7.0
 
