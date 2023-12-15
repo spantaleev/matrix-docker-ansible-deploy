@@ -1,4 +1,6 @@
-# Setting up Mautrix Signal (optional)
+# Setting up Mautrix Signal (Deprected) (optional)
+
+**This legacy bridge is known to be not working. The documentation and the setup remain available but we do encourage one to proceed with [Mautrix Signalgo](configuring-playbook-bridge-mautrix-signalgo.md).**
 
 The playbook can install and configure [mautrix-signal](https://github.com/mautrix/signal) for you.
 
