@@ -1,6 +1,6 @@
 # Configuring Riot-web (optional)
 
-By default, this playbook **used to install** the [Riot-web](https://github.com/vector-im/riot-web) Matrix client web application.
+By default, this playbook **used to install** the [Riot-web](https://github.com/element-hq/riot-web) Matrix client web application.
 
 Riot has since been [renamed to Element](https://element.io/blog/welcome-to-element/).
 
