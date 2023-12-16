@@ -28,3 +28,9 @@ namespaces:
 sender_localpart: hookshot
 url: "http://{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_appservice_port }}" # This should match the bridge.port in your config file
 rate_limited: false
+
+{% if matrix_hookshot_experimental_encryption_enabled %}
+de.sorunome.msc2409.push_ephemeral: true
+push_ephemeral: true
+org.matrix.msc3202: true
+{% endif %}

@@ -1385,6 +1385,16 @@ matrix_hookshot_systemd_wanted_services_list: |
     (['matrix-' + matrix_homeserver_implementation + '.service'])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+    +
+    ([(redis_identifier + '.service')] if redis_enabled and matrix_hookshot_queue_host == redis_identifier else [])
+  }}
+
+# Hookshot's experimental encryption feature (and possibly others) may benefit from Redis, if available.
+matrix_hookshot_queue_host: "{{ redis_identifier if redis_enabled else '' }}"
+
+matrix_hookshot_container_additional_networks_auto: |
+  {{
+    ([redis_container_network] if redis_enabled and matrix_hookshot_queue_host == redis_identifier else [])
   }}
 
 matrix_hookshot_container_http_host_bind_ports_defaultmapping:
@@ -3359,7 +3369,7 @@ ntfy_visitor_request_limit_exempt_hosts_hostnames_auto: |
 #
 ######################################################################
 
-redis_enabled: "{{ matrix_synapse_workers_enabled }}"
+redis_enabled: "{{ matrix_synapse_workers_enabled or (matrix_hookshot_enabled and matrix_hookshot_experimental_encryption_enabled) }}"
 
 redis_identifier: matrix-redis
 
