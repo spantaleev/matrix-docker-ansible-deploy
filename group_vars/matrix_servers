@@ -1390,7 +1390,9 @@ matrix_hookshot_systemd_wanted_services_list: |
   }}
 
 # Hookshot's experimental encryption feature (and possibly others) may benefit from Redis, if available.
-matrix_hookshot_queue_host: "{{ redis_identifier if redis_enabled else '' }}"
+# We only connect to Redis if encryption is enabled (not for everyone who has Redis enabled),
+# because connectivity is still potentially troublesome and is to be investigated.
+matrix_hookshot_queue_host: "{{ redis_identifier if redis_enabled and matrix_hookshot_experimental_encryption_enabled else '' }}"
 
 matrix_hookshot_container_additional_networks_auto: |
   {{
