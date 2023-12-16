@@ -87,6 +87,12 @@
   with_items:
     - "matrix_hookshot_provisioning_secret"
 
+- name: Fail if no Redis queue enabled when Hookshot encryption is enabled
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) to enable Hookshot encryption.
+  when: "matrix_hookshot_experimental_encryption_enabled and matrix_hookshot_queue_host == ''"
+
 - name: (Deprecation) Catch and report old metrics usage
   ansible.builtin.fail:
     msg: >-
