@@ -19,7 +19,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create --rm -
           --log-driver=none \
           --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
           --cap-drop=ALL \
-		  --network={{ matrix_hookshot_container_network }} \
+          --network={{ matrix_hookshot_container_network }} \
           --mount type=bind,src={{ matrix_hookshot_base_path }},dst=/data \
           {% for port in matrix_hookshot_container_http_host_bind_ports %}
           -p {{ port }} \
@@ -29,9 +29,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create --rm -
           {% endfor %}
           {{ matrix_hookshot_docker_image }}
 
-{% if matrix_hookshot_container_additional_networks %}
 {% for network in matrix_hookshot_container_additional_networks %}ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network ]] {{ matrix_hookshot_container_ident }}{% endfor %}
-{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ matrix_hookshot_container_ident }}
 
