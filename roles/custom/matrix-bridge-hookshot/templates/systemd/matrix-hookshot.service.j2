@@ -29,7 +29,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create --rm -
           {% endfor %}
           {{ matrix_hookshot_docker_image }}
 
-{% for network in matrix_hookshot_container_additional_networks %}ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network ]] {{ matrix_hookshot_container_ident }}{% endfor %}
+{% for network in matrix_hookshot_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ matrix_hookshot_container_ident }}
+{% endfor %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ matrix_hookshot_container_ident }}
 
