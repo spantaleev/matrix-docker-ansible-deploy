@@ -5,10 +5,16 @@
 
 matrix_hookshot_enabled: true
 
+matrix_hookshot_ident: matrix-hookshot
 
 matrix_hookshot_container_image_self_build: false
 matrix_hookshot_container_image_self_build_repo: "https://github.com/matrix-org/matrix-hookshot.git"
 matrix_hookshot_container_image_self_build_branch: "{{ 'main' if matrix_hookshot_version == 'latest' else matrix_hookshot_version }}"
+
+# Specifies additional networks for the Hookshot container to connect with
+matrix_hookshot_container_additional_networks: "{{ matrix_hookshot_container_additional_networks_auto + matrix_hookshot_container_additional_networks_custom }}"
+matrix_hookshot_container_additional_networks_auto: []
+matrix_hookshot_container_additional_networks_custom: []
 
 # renovate: datasource=docker depName=halfshot/matrix-hookshot
 matrix_hookshot_version: 4.7.0
@@ -30,6 +36,17 @@ matrix_hookshot_public_endpoint: /hookshot
 matrix_hookshot_appservice_port: 9993
 matrix_hookshot_appservice_endpoint: "{{ matrix_hookshot_public_endpoint }}/_matrix/app"
 
+# The variables below control the queue parameters and may optionally be pointed to a Redis instance.
+# These are required when experimental encryption is enabled (`matrix_hookshot_experimental_encryption_enabled`).
+matrix_hookshot_queue_host: ''
+matrix_hookshot_queue_port: 6739
+
+# Controls whether the experimental end-to-bridge encryption support is enabled.
+# This requires that:
+# - support to also be enabled in the homeserver, see the documentation of Hookshot.
+# - Hookshot to be pointed at a Redis instance via the `matrix_hookshot_queue_*` variables.
+matrix_hookshot_experimental_encryption_enabled: false
+
 # Controls whether metrics are enabled in the bridge configuration.
 # Enabling them is usually enough for a local (in-container) Prometheus to consume them.
 # If metrics need to be consumed by another (external) Prometheus server, consider exposing them via `matrix_hookshot_metrics_proxying_enabled`.
@@ -41,7 +58,7 @@ matrix_hookshot_metrics_enabled: false
 matrix_hookshot_metrics_proxying_enabled: false
 
 # There is no need to edit ports.
-# Read the documentation to learn about using hookshot metrics with external Prometheus
+# Read the documentation to learn about using Hookshot metrics with external Prometheus
 # If you still want something different, use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
 matrix_hookshot_metrics_port: 9001
 

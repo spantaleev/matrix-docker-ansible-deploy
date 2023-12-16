@@ -23,6 +23,11 @@ Other configuration options are available via the `matrix_hookshot_configuration
 
 Finally, run the playbook (see [installing](installing.md)).
 
+### End-to-bridge encryption
+
+You can enable [experimental encryption](https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html) for Hookshot by adding `matrix_hookshot_experimental_encryption_enabled: true` to your configuration (`vars.yml`) and [executing the playbook](installing.md) again.
+
+Should the crypto store be corrupted, you can reset it by executing this Ansible playbook with the tag `reset-hookshot-encryption` added, for example `ansible-playbook -i inventory/hosts setup.yml -K --tags=reset-hookshot-encryption`).
 
 ## Usage
 

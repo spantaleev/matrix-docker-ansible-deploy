@@ -65,7 +65,7 @@ docker run -it --rm \
 -w /work \
 -v `pwd`:/work \
 --entrypoint=/bin/sh \
-docker.io/devture/ansible:2.14.5-r0-0
+docker.io/devture/ansible:2.16.1-r0-0
 ```
 
 Once you execute the above command, you'll be dropped into a `/work` directory inside a Docker container.
@@ -86,7 +86,7 @@ docker run -it --rm \
 -v `pwd`:/work \
 -v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro \
 --entrypoint=/bin/sh \
-docker.io/devture/ansible:2.14.5-r0-0
+docker.io/devture/ansible:2.16.1-r0-0
 ```
 
 The above command tries to mount an SSH key (`$HOME/.ssh/id_rsa`) into the container (at `/root/.ssh/id_rsa`).

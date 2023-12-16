@@ -13,10 +13,9 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_hookshot_container_url }}
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_hookshot_container_url }}
-
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name {{ matrix_hookshot_container_url }} \
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_hookshot_ident }}
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_hookshot_ident }}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create --rm --name {{ matrix_hookshot_ident }} \
           --log-driver=none \
           --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
           --cap-drop=ALL \
@@ -30,11 +29,18 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
           {% endfor %}
           {{ matrix_hookshot_docker_image }}
 
-ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_hookshot_container_url }}
-ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_hookshot_container_url }}
+{% for network in matrix_hookshot_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ matrix_hookshot_ident }}
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ matrix_hookshot_ident }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_hookshot_ident }}
+ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_hookshot_ident }}
+
 Restart=always
 RestartSec=30
-SyslogIdentifier={{ matrix_hookshot_container_url }}
+SyslogIdentifier={{ matrix_hookshot_ident }}
 
 [Install]
 WantedBy=multi-user.target
