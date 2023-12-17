@@ -42,4 +42,6 @@ If your distro runs within an [LXC container](https://linuxcontainers.org/), you
   - the range `49152-49172/udp`: TURN over UDP
   - potentially some other ports, depending on the additional (non-default) services that you enable in the **configuring the playbook** step (later on). Consult each service's documentation page in `docs/` for that.
 
+- `sudo`, make sure it is installed. Some distributions, like a minimal Debian net install, do not include it by default.
+
 When ready to proceed, continue with [Configuring DNS](configuring-dns.md).
