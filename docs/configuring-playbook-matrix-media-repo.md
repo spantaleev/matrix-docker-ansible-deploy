@@ -18,7 +18,6 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 
 ```yaml
 matrix_media_repo_enabled: true
-matrix_media_repo_database_password: "your_password"
 
 # (optional) Turned off by default
 # matrix_media_repo_metrics_enabled: true
