@@ -130,9 +130,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Mautrix Twitter bridging](configuring-playbook-bridge-mautrix-twitter.md) (optional)
 
-- ~~[Setting up Mautrix Signal bridging](configuring-playbook-bridge-mautrix-signal.md)~~ (Deprecated) (optional) - Replaced by [Signalgo](configuring-playbook-bridge-mautrix-signalgo.md).
-
-- [Setting up Mautrix Signalgo bridging](configuring-playbook-bridge-mautrix-signalgo.md) (optional)
+- [Setting up Mautrix Signal bridging](configuring-playbook-bridge-mautrix-signal.md) (optional)
 
 - [Setting up Mautrix wsproxy for bridging Android SMS or Apple iMessage](configuring-playbook-bridge-mautrix-wsproxy.md) (optional)
 
