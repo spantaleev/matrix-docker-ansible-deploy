@@ -43,69 +43,47 @@ matrix_media_repo_database_max_connections: 25
 matrix_media_repo_database_max_idle_connections: 5
 
 # These users have full access to the administrative functions of the media repository.
-# See https://github.com/turt2live/matrix-media-repo/blob/release-v1.2.8/docs/admin.md for 
-# information on what these people can do. They must belong to one of the configured 
-# homeservers above.
-matrix_media_repo_admins:
-  admins: []
-# admins:
-#   - "@your_username:example.org"
+# See docs/admin.md for information on what these people can do. They must belong to one of the
+# configured homeservers above.
+# matrix_media_repo_admins: [
+#   "@your_username:example.org"
+# ]
 
-# Datastores are places where media should be persisted. This isn't dedicated for just uploads:
-# thumbnails and other misc data is also stored in these places. The media repo, when looking
-# for a datastore to use, will always use the smallest datastore first.
-matrix_media_repo_datastores:
-  datastores:
-    - type: file
-      enabled: true # Enable this to set up data storage.
-      # Datastores can be split into many areas when handling uploads. Media is still de-duplicated
-      # across all datastores (local content which duplicates remote content will re-use the remote
-      # content's location). This option is useful if your datastore is becoming very large, or if
-      # you want faster storage for a particular kind of media.
-      #
-      # The kinds available are:
-      #   thumbnails    - Used to store thumbnails of media (local and remote).
-      #   remote_media  - Original copies of remote media (servers not configured by this repo).
-      #   local_media   - Original uploads for local media.
-      #   archives      - Archives of content (GDPR and similar requests).
-      forKinds: ["thumbnails", "remote_media", "local_media", "archives"]
-      opts:
-        path: /data/media
+matrix_media_repo_admins: []
 
-    - type: s3
-      enabled: false # Enable this to set up s3 uploads
-      forKinds: ["thumbnails", "remote_media", "local_media", "archives"]
-      opts:
-        # The s3 uploader needs a temporary location to buffer files to reduce memory usage on
-        # small file uploads. If the file size is unknown, the file is written to this location
-        # before being uploaded to s3 (then the file is deleted). If you aren't concerned about
-        # memory usage, set this to an empty string.
-        tempPath: "/tmp/mediarepo_s3_upload"
-        endpoint: sfo2.digitaloceanspaces.com
-        accessKeyId: ""
-        accessSecret: ""
-        ssl: true
-        bucketName: "your-media-bucket"
-        # An optional region for where this S3 endpoint is located. Typically not needed, though
-        # some providers will need this (like Scaleway). Uncomment to use.
-        #region: "sfo2"
-        # An optional storage class for tuning how the media is stored at s3.
-        # See https://aws.amazon.com/s3/storage-classes/ for details; uncomment to use.
-        #storageClass: STANDARD
+# Datastores can be split into many areas when handling uploads. Media is still de-duplicated
+# across all datastores (local content which duplicates remote content will re-use the remote
+# content's location). This option is useful if your datastore is becoming very large, or if
+# you want faster storage for a particular kind of media.
+#
+# To disable this datastore, making it readonly, specify `forKinds: []`.
+#
+# The kinds available are:
+#   thumbnails    - Used to store thumbnails of media (local and remote).
+#   remote_media  - Original copies of remote media (servers not configured by this repo).
+#   local_media   - Original uploads for local media.
+#   archives      - Archives of content (GDPR and similar requests).
+matrix_media_repo_datastore_file_for_kinds: ["thumbnails", "remote_media", "local_media", "archives"]
+matrix_media_repo_datastore_s3_for_kinds: []
 
-    # The media repo does support an IPFS datastore, but only if the IPFS feature is enabled. If
-    # the feature is not enabled, this will not work. Note that IPFS support is experimental at
-    # the moment and not recommended for general use.
-    #
-    # NOTE: Everything you upload to IPFS will be publicly accessible, even when the media repo
-    # puts authentication on the download endpoints. Only use this option for cases where you
-    # expect your media to be publicly accessible.
-    - type: ipfs
-      enabled: false # Enable this to use IPFS support
-      forKinds: ["local_media"]
-      # The IPFS datastore currently has no options. It will use the daemon or HTTP API configured
-      # in the IPFS section of your main config.
-      opts: {}
+# The s3 uploader needs a temporary location to buffer files to reduce memory usage on
+# small file uploads. If the file size is unknown, the file is written to this location
+# before being uploaded to s3 (then the file is deleted). If you aren't concerned about
+# memory usage, set this to an empty string.
+matrix_media_repo_datastore_s3_opts_temp_path: ""
+matrix_media_repo_datastore_s3_opts_endpoint: "sfo2.digitaloceanspaces.com"
+matrix_media_repo_datastore_s3_opts_access_key_id: ""
+matrix_media_repo_datastore_s3_opts_access_secret: ""
+matrix_media_repo_datastore_s3_opts_ssl: true
+matrix_media_repo_datastore_s3_opts_bucket_name: "your-media-bucket"
+
+# An optional region for where this S3 endpoint is located. Typically not needed, though
+# some providers will need this (like Scaleway). Uncomment to use.
+# matrix_media_repo_datastore_s3_opts_region: "sfo2"
+
+# An optional storage class for tuning how the media is stored at s3.
+# See https://aws.amazon.com/s3/storage-classes/ for details; uncomment to use.
+# matrix_media_repo_datastore_s3_opts_storage_class: "STANDARD"
 
 ```
 
