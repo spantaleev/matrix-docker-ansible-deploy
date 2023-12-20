@@ -34,7 +34,7 @@ matrix_media_repo_systemd_required_services_list: ["docker.service"]
 matrix_media_repo_systemd_wanted_services_list: []
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
-matrix_media_repo_container_network: "{{ matrix_docker_network }}"
+matrix_media_repo_container_network: "{{ matrix_media_repo_identifier }}"
 
 # A list of additional container networks that the container would be connected to.
 # The role does not create these networks, so make sure they already exist.
@@ -53,6 +53,97 @@ matrix_media_repo_container_metrics_host_bind_port: ""
 
 # Extra arguments for the Docker container
 matrix_media_repo_container_extra_arguments: []
+
+# matrix_media_repo_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_media_repo_container_labels_additional_labels`.
+matrix_media_repo_container_labels_traefik_enabled: true
+matrix_media_repo_container_labels_traefik_docker_network: "{{ matrix_media_repo_container_network }}"
+
+matrix_media_repo_container_labels_traefik_media_path_prefix: "/_matrix/media"
+matrix_media_repo_container_labels_traefik_media_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_media_path_prefix | quote }}`)"
+matrix_media_repo_container_labels_traefik_media_priority: 0
+matrix_media_repo_container_labels_traefik_media_entrypoints: web-secure
+matrix_media_repo_container_labels_traefik_media_tls: "{{ matrix_media_repo_container_labels_traefik_media_entrypoints != 'web' }}"
+matrix_media_repo_container_labels_traefik_media_tls_certResolver: default  # noqa var-naming
+
+# /_matrix/client/r0/logout
+# /_matrix/client/r0/logout/all
+matrix_media_repo_container_labels_traefik_logout_path_prefix: "/_matrix/client/{version:(r0|v1|v3|unstable)}/{endpoint:(logout|logout/all)}"
+matrix_media_repo_container_labels_traefik_logout_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_logout_path_prefix }}`)"
+matrix_media_repo_container_labels_traefik_logout_priority: 0
+matrix_media_repo_container_labels_traefik_logout_entrypoints: web-secure
+matrix_media_repo_container_labels_traefik_logout_tls: "{{ matrix_media_repo_container_labels_traefik_logout_entrypoints != 'web' }}"
+matrix_media_repo_container_labels_traefik_logout_tls_certResolver: default  # noqa var-naming
+
+# /_matrix/client/r0/admin/purge_media_cache
+# /_matrix/client/r0/admin/quarantine_media/{roomId:[^/]+}
+matrix_media_repo_container_labels_traefik_admin_path_prefix: "/_matrix/client/{version:(r0|v1|v3|unstable)}/admin/{endpoint:(purge_media_cache|quarantine_media/.*)}"
+matrix_media_repo_container_labels_traefik_admin_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_admin_path_prefix }}`)"
+matrix_media_repo_container_labels_traefik_admin_priority: 0
+matrix_media_repo_container_labels_traefik_admin_entrypoints: web-secure
+matrix_media_repo_container_labels_traefik_admin_tls: "{{ matrix_media_repo_container_labels_traefik_admin_entrypoints != 'web' }}"
+matrix_media_repo_container_labels_traefik_admin_tls_certResolver: default  # noqa var-naming
+
+matrix_media_repo_container_labels_traefik_t2bot_path_prefix: "/_matrix/client/unstable/io.t2bot.media"
+matrix_media_repo_container_labels_traefik_t2bot_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_t2bot_path_prefix | quote }}`)"
+matrix_media_repo_container_labels_traefik_t2bot_priority: 0
+matrix_media_repo_container_labels_traefik_t2bot_entrypoints: web-secure
+matrix_media_repo_container_labels_traefik_t2bot_tls: "{{ matrix_media_repo_container_labels_traefik_t2bot_entrypoints != 'web' }}"
+matrix_media_repo_container_labels_traefik_t2bot_tls_certResolver: default  # noqa var-naming
+
+# Traefik federation labels
+matrix_media_repo_container_labels_traefik_media_federation_path_prefix: "/_matrix/media"
+matrix_media_repo_container_labels_traefik_media_federation_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_media_path_prefix | quote }}`)"
+matrix_media_repo_container_labels_traefik_media_federation_priority: 0
+matrix_media_repo_container_labels_traefik_media_federation_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
+matrix_media_repo_container_labels_traefik_media_federation_tls: "{{ matrix_media_repo_container_labels_traefik_media_entrypoints != 'web' }}"
+matrix_media_repo_container_labels_traefik_media_federation_tls_certResolver: default  # noqa var-naming
+
+# /_matrix/client/r0/logout
+# /_matrix/client/r0/logout/all
+matrix_media_repo_container_labels_traefik_logout_federation_path_prefix: "/_matrix/client/{version:(r0|v1|v3|unstable)}/{endpoint:(logout|logout/all)}"
+matrix_media_repo_container_labels_traefik_logout_federation_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_logout_path_prefix }}`)"
+matrix_media_repo_container_labels_traefik_logout_federation_priority: 0
+matrix_media_repo_container_labels_traefik_logout_federation_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
+matrix_media_repo_container_labels_traefik_logout_federation_tls: "{{ matrix_media_repo_container_labels_traefik_logout_entrypoints != 'web' }}"
+matrix_media_repo_container_labels_traefik_logout_federation_tls_certResolver: default  # noqa var-naming
+
+# /_matrix/client/r0/admin/purge_media_cache
+# /_matrix/client/r0/admin/quarantine_media/{roomId:[^/]+}
+matrix_media_repo_container_labels_traefik_admin_federation_path_prefix: "/_matrix/client/{version:(r0|v1|v3|unstable)}/admin/{endpoint:(purge_media_cache|quarantine_media/.*)}"
+matrix_media_repo_container_labels_traefik_admin_federation_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_admin_path_prefix }}`)"
+matrix_media_repo_container_labels_traefik_admin_federation_priority: 0
+matrix_media_repo_container_labels_traefik_admin_federation_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
+matrix_media_repo_container_labels_traefik_admin_federation_tls: "{{ matrix_media_repo_container_labels_traefik_admin_entrypoints != 'web' }}"
+matrix_media_repo_container_labels_traefik_admin_federation_tls_certResolver: default  # noqa var-naming
+
+matrix_media_repo_container_labels_traefik_t2bot_federation_path_prefix: "/_matrix/client/unstable/io.t2bot.media"
+matrix_media_repo_container_labels_traefik_t2bot_federation_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_t2bot_path_prefix | quote }}`)"
+matrix_media_repo_container_labels_traefik_t2bot_federation_priority: 0
+matrix_media_repo_container_labels_traefik_t2bot_federation_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
+matrix_media_repo_container_labels_traefik_t2bot_federation_tls: "{{ matrix_media_repo_container_labels_traefik_t2bot_entrypoints != 'web' }}"
+matrix_media_repo_container_labels_traefik_t2bot_federation_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP requests.
+# To add your own headers, use `matrix_media_repo_container_labels_traefik_additional_request_headers_custom`
+matrix_media_repo_container_labels_traefik_additional_request_headers: "{{ matrix_media_repo_container_labels_traefik_additional_request_headers_auto | combine(matrix_media_repo_container_labels_traefik_additional_request_headers_custom) }}"
+matrix_media_repo_container_labels_traefik_additional_request_headers_auto: |
+  {{
+    {}
+    | combine ({'X-Forwarded-Host': matrix_domain} if matrix_domain else {})
+  }}
+matrix_media_repo_container_labels_traefik_additional_request_headers_custom: {}
+
+# matrix_media_repo_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_media_repo_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_media_repo_container_labels_additional_labels: ''
 
 # matrix_media_repo_dashboard_urls contains a list of URLs with Grafana dashboard definitions.
 # If the Grafana role is enabled, these dashboards will be downloaded.

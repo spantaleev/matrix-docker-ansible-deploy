@@ -22,8 +22,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
-			--network={{ matrix_docker_network }} \
+			--network={{ matrix_media_repo_container_network }} \
 			--env-file={{ matrix_media_repo_base_path }}/env \
+			--label-file={{ matrix_media_repo_base_path }}/labels \
 			{% if matrix_media_repo_container_http_host_bind_port %}
 			-p {{ matrix_media_repo_container_http_host_bind_port }}:{{ matrix_media_repo_port }} \
 			{% endif %}
