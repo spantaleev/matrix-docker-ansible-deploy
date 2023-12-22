@@ -123,6 +123,7 @@ server {
 	location /.well-known/matrix {
 		proxy_pass https://matrix.example.com/.well-known/matrix;
 		proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_ssl_server_name on;
 	}
 
 	# other configuration
