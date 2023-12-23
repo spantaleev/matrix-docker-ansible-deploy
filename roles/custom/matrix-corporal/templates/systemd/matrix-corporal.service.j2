@@ -21,6 +21,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--cap-drop=ALL \
 			--read-only \
 			--network={{ matrix_corporal_container_network }} \
+			--label-file={{ matrix_corporal_base_path }}/labels \
 			{% if matrix_corporal_container_http_gateway_host_bind_port %}
 			-p {{ matrix_corporal_container_http_gateway_host_bind_port }}:41080 \
 			{% endif %}

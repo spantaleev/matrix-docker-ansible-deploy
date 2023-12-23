@@ -33,6 +33,33 @@ matrix_corporal_container_additional_networks: "{{ matrix_corporal_container_add
 matrix_corporal_container_additional_networks_auto: []
 matrix_corporal_container_additional_networks_custom: []
 
+# matrix_corporal_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_corporal_container_labels_additional_labels`.
+matrix_corporal_container_labels_traefik_enabled: true
+matrix_corporal_container_labels_traefik_docker_network: "{{ matrix_corporal_container_network }}"
+matrix_corporal_container_labels_traefik_entrypoints: web-secure
+matrix_corporal_container_labels_traefik_tls: "{{ matrix_corporal_container_labels_traefik_entrypoints != 'web' }}"
+matrix_corporal_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether labels will be added that expose matrix-corporal's HTTP API
+matrix_corporal_container_labels_api_enabled: "{{ matrix_corporal_http_api_enabled }}"
+matrix_corporal_container_labels_api_traefik_rule: "Host(`{{ matrix_corporal_matrix_homeserver_api_domain_name }}`) && PathPrefix(`/_matrix/corporal`)"
+matrix_corporal_container_labels_api_traefik_priority: 0
+matrix_corporal_container_labels_api_traefik_entrypoints: "{{ matrix_corporal_container_labels_traefik_entrypoints }}"
+matrix_corporal_container_labels_api_traefik_tls: "{{ matrix_corporal_container_labels_traefik_tls }}"
+matrix_corporal_container_labels_api_traefik_tls_certResolver: "{{ matrix_corporal_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# matrix_corporal_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_corporal_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_corporal_container_labels_additional_labels: ''
+
 # List of systemd services that matrix-corporal.service depends on
 matrix_corporal_systemd_required_services_list: ['docker.service']
 matrix_corporal_docker_image: "{{ matrix_corporal_docker_image_name_prefix }}devture/matrix-corporal:{{ matrix_corporal_docker_image_tag }}"
@@ -47,6 +74,7 @@ matrix_corporal_cache_dir_path: "{{ matrix_corporal_base_path }}/cache"
 matrix_corporal_var_dir_path: "{{ matrix_corporal_base_path }}/var"
 
 matrix_corporal_matrix_homeserver_domain_name: "{{ matrix_domain }}"
+matrix_corporal_matrix_homeserver_api_domain_name: "{{ matrix_server_fqn_matrix }}"
 
 # Controls where matrix-corporal can reach your Synapse server (e.g. "http://matrix-synapse-reverse-proxy-companion:{{ matrix_synapse_container_client_api_port }}").
 # If Synapse runs on the same machine, you may need to add its service to `matrix_corporal_systemd_required_services_list`.

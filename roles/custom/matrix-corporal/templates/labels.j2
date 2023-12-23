@@ -1,0 +1,26 @@
+{% if matrix_corporal_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_corporal_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_corporal_container_labels_traefik_docker_network }}
+{% endif %}
+
+{# HTTP API #}
+{% if matrix_corporal_container_labels_api_enabled %}
+traefik.http.routers.matrix-corporal-api.rule={{ matrix_corporal_container_labels_api_traefik_rule }}
+{% if matrix_corporal_container_labels_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-corporal-api.priority={{ matrix_corporal_container_labels_api_traefik_priority }}
+{% endif %}
+traefik.http.routers.matrix-corporal-api.service=matrix-corporal-api
+traefik.http.routers.matrix-corporal-api.entrypoints={{ matrix_corporal_container_labels_api_traefik_entrypoints }}
+traefik.http.routers.matrix-corporal-api.tls={{ matrix_corporal_container_labels_api_traefik_tls | to_json }}
+{% if matrix_corporal_container_labels_api_traefik_tls %}
+traefik.http.routers.matrix-corporal-api.tls.certResolver={{ matrix_corporal_container_labels_api_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.services.matrix-corporal-api.loadbalancer.server.port=41081
+{% endif %}
+
+
+{% endif %}
+
+{{ matrix_corporal_container_labels_additional_labels }}
