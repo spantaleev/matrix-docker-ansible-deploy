@@ -13,12 +13,14 @@ Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-corporal 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-corporal 2>/dev/null || true'
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-corporal \
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-corporal \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--read-only \
-			--network={{ matrix_docker_network }} \
+			--network={{ matrix_corporal_container_network }} \
 			{% if matrix_corporal_container_http_gateway_host_bind_port %}
 			-p {{ matrix_corporal_container_http_gateway_host_bind_port }}:41080 \
 			{% endif %}
@@ -33,6 +35,12 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			{% endfor %}
 			{{ matrix_corporal_docker_image }} \
 			/matrix-corporal -config=/etc/matrix-corporal/config.json
+
+{% for network in matrix_corporal_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-corporal
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-corporal
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-corporal 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-corporal 2>/dev/null || true'

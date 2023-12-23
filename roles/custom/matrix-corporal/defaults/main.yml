@@ -4,6 +4,9 @@
 
 matrix_corporal_enabled: true
 
+# renovate: datasource=docker depName=devture/matrix-corporal
+matrix_corporal_version: 2.7.0
+
 matrix_corporal_container_image_self_build: false
 matrix_corporal_container_image_self_build_repo: "https://github.com/devture/matrix-corporal.git"
 
@@ -20,11 +23,18 @@ matrix_corporal_container_http_api_host_bind_port: ''
 # A list of extra arguments to pass to the container
 matrix_corporal_container_extra_arguments: []
 
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_corporal_container_network: "{{ matrix_docker_network }}"
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_corporal_container_additional_networks: "{{ matrix_corporal_container_additional_networks_auto + matrix_corporal_container_additional_networks_custom }}"
+matrix_corporal_container_additional_networks_auto: []
+matrix_corporal_container_additional_networks_custom: []
+
 # List of systemd services that matrix-corporal.service depends on
 matrix_corporal_systemd_required_services_list: ['docker.service']
-
-# renovate: datasource=docker depName=devture/matrix-corporal
-matrix_corporal_version: 2.7.0
 matrix_corporal_docker_image: "{{ matrix_corporal_docker_image_name_prefix }}devture/matrix-corporal:{{ matrix_corporal_docker_image_tag }}"
 matrix_corporal_docker_image_name_prefix: "{{ 'localhost/' if matrix_corporal_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_corporal_docker_image_tag: "{{ matrix_corporal_version }}"  # for backward-compatibility
