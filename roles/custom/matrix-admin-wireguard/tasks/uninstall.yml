@@ -1,0 +1,17 @@
+---
+
+- name: Stop and Disable WireGuard Service
+  ansible.builtin.systemd:
+    name: "wg-quick@wg0"
+    state: stopped
+    enabled: false
+
+- name: Remove WireGuard Configuration File
+  ansible.builtin.file:
+    path: "/etc/wireguard/wg0.conf"
+    state: absent
+
+- name: Uninstall WireGuard
+  ansible.builtin.package:
+    name: wireguard
+    state: absent

@@ -1,0 +1,14 @@
+---
+
+- name: Install WireGuard
+  ansible.builtin.package:
+    name: wireguard
+    state: present
+
+- name: Install WireGuard Configuration Template
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/wg0.conf.j2"
+    dest: /etc/wireguard/wg0.conf
+    owner: root
+    group: root
+    mode: '0600'

@@ -1,0 +1,18 @@
+---
+
+-
+  tags:
+    - setup-all
+    - setup-admin-wireguard
+    - install-all
+    - install-admin-wireguard
+  block:
+    - when: matrix_admin_wireguard_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-bot-chatgpt
+  block:
+    - when: not matrix_admin_wireguard_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

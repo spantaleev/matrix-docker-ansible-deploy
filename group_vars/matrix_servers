@@ -393,6 +393,8 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': (devture_traefik_identifier + '.service'), 'priority': 3000, 'groups': ['matrix', 'traefik', 'reverse-proxies']}] if devture_traefik_enabled else [])
     +
     ([{'name': (devture_traefik_certs_dumper_identifier + '.service'), 'priority': 3500, 'groups': ['matrix', 'traefik-certs-dumper']}] if devture_traefik_certs_dumper_enabled else [])
+    +
+    ([{'name': 'wg-quick@wg0', 'priority': 650, 'groups': ['matrix', 'matrix-admin-wireguard']}] if matrix_admin_wireguard_enabled else [])
   }}
 
 ########################################################################
