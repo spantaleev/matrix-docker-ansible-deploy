@@ -61,6 +61,19 @@
     state: absent
   when: "not matrix_nginx_proxy_proxy_synapse_enabled | bool"
 
+- name: Ensure Matrix nginx-admin-wireguard configuration for matrix-admin-wireguard exists
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-admin-wireguard.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-admin-wireguard.conf"
+    mode: 0644
+  when: matrix_admin_wireguard_enabled | bool
+
+- name: Ensure Matrix nginx-admin-wireguard configuration for matrix-admin-wireguard deleted
+  ansible.builtin.file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-admin-wireguard.conf"
+    state: absent
+  when: "not matrix_admin_wireguard_enabled | bool"
+
 - name: Ensure Matrix nginx-proxy configuration for matrix-dendrite exists
   ansible.builtin.template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-dendrite.conf.j2"
