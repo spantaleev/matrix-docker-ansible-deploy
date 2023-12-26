@@ -2188,6 +2188,20 @@ matrix_corporal_container_image_self_build: "{{ matrix_architecture not in ['amd
 matrix_corporal_container_http_gateway_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '41080') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 matrix_corporal_container_http_api_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '41081') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
+matrix_corporal_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_corporal_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_corporal_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_corporal_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+matrix_corporal_container_additional_networks: |
+  {{
+    (
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
+      +
+      ([matrix_nginx_proxy_container_network] if matrix_nginx_proxy_enabled and matrix_nginx_proxy_container_network != matrix_corporal_container_network else [])
+    ) | unique
+  }}
+
 matrix_corporal_systemd_required_services_list: |
   {{
     (['docker.service'])
@@ -2796,7 +2810,7 @@ matrix_nginx_proxy_container_labels_traefik_tls_certResolver: "{{ devture_traefi
 
 matrix_nginx_proxy_container_labels_traefik_proxy_matrix_enabled: true
 
-matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: "{{ matrix_corporal_enabled and matrix_corporal_http_api_enabled }}"
+matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: "{{ matrix_corporal_enabled and matrix_corporal_http_api_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_sans_container: "127.0.0.1:41081"
 
@@ -4282,6 +4296,12 @@ matrix_user_creator_users_auto: |
       'initial_password': matrix_bot_matrix_registration_bot_bot_password,
       'initial_type': 'admin',
     }] if matrix_bot_matrix_registration_bot_enabled else [])
+    +
+    ([{
+      'username': matrix_bot_chatgpt_matrix_bot_username_localpart,
+      'initial_password': matrix_bot_chatgpt_matrix_bot_password,
+      'initial_type': 'bot',
+    }] if matrix_bot_chatgpt_enabled and matrix_bot_chatgpt_matrix_bot_password | length > 0 else [])
     +
     ([{
       'username': matrix_bot_matrix_reminder_bot_matrix_user_id_localpart,
