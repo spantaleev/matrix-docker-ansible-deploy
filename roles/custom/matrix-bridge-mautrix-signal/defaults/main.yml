@@ -9,7 +9,7 @@ matrix_mautrix_signal_container_image_self_build_repo: "https://mau.dev/mautrix/
 matrix_mautrix_signal_container_image_self_build_branch: "{{ 'main' if matrix_mautrix_signal_version == 'latest' else matrix_mautrix_signal_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/signal
-matrix_mautrix_signal_version: 8260ba1559fe49b4e19e78bb8a9385aee2b94a8c-amd64
+matrix_mautrix_signal_version: fb18dcebcf611375ef4887041bc3b79008246178-amd64
 
 # See: https://mau.dev/mautrix/signal/container_registry
 matrix_mautrix_signal_docker_image: "{{ matrix_mautrix_signal_docker_image_name_prefix }}mautrix/signal:{{ matrix_mautrix_signal_version }}"
@@ -32,6 +32,12 @@ matrix_mautrix_signal_bridge_permissions: |
     {'*': 'relay', matrix_mautrix_signal_homeserver_domain: 'user'}
     | combine({matrix_admin: 'admin'} if matrix_admin else {})
   }}
+
+# Enable bridge relay functionality
+matrix_mautrix_signal_bridge_relay_enabled: "{{ matrix_bridges_relay_enabled }}"
+
+# Only allow admins on this home server to set themselves as a relay user
+matrix_mautrix_signal_bridge_relay_admin_only: true
 
 # A list of extra arguments to pass to the container
 matrix_mautrix_signal_container_extra_arguments: []

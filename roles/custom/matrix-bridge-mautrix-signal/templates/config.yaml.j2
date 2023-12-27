@@ -250,6 +250,24 @@ bridge:
     #     mxid - Specific user
     permissions: {{ matrix_mautrix_signal_bridge_permissions|to_json }}
 
+    # Settings for relay mode
+    relay:
+        # Whether relay mode should be allowed. If allowed, `!signal set-relay` can be used to turn any
+        # authenticated user into a relaybot for that chat.
+        enabled: {{ matrix_mautrix_signal_bridge_relay_enabled | to_json }}
+        # Should only admins be allowed to set themselves as relay users?
+        admin_only: {{ matrix_mautrix_signal_bridge_relay_admin_only | to_json }}
+        # The formats to use when sending messages to WhatsApp via the relaybot.
+        message_formats:
+            m.text: "<b>{{ '{{ .Sender.Displayname }}' }}</b>: {{ '{{ .Message }}' }}"
+            m.notice: "<b>{{ '{{ .Sender.Displayname }}' }}</b>:: {{ '{{ .Message }}' }}"
+            m.emote: "* <b>{{ '{{ .Sender.Displayname }}' }}</b>: {{ '{{ .Message }}' }}"
+            m.file: "<b>{{ '{{ .Sender.Displayname }}' }}</b>: sent a file"
+            m.image: "<b>{{ '{{ .Sender.Displayname }}' }}</b>: sent an image"
+            m.audio: "<b>{{ '{{ .Sender.Displayname }}' }}</b>: sent an audio file"
+            m.video: "<b>{{ '{{ .Sender.Displayname }}' }}</b>: sent a video"
+            m.location: "<b>{{ '{{ .Sender.Displayname }}' }}</b>: sent a location"
+
 # Logging config. See https://github.com/tulir/zeroconfig for details.
 logging:
     directory: ./logs
