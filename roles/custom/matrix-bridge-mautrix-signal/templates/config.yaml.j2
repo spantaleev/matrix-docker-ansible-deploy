@@ -5,200 +5,142 @@ homeserver:
     address: {{ matrix_mautrix_signal_homeserver_address }}
     # The domain of the homeserver (for MXIDs, etc).
     domain: {{ matrix_mautrix_signal_homeserver_domain }}
-    # Whether or not to verify the SSL certificate of the homeserver.
-    # Only applies if address starts with https://
-    verify_ssl: true
-    asmux: false
-    # Number of retries for all HTTP requests if the homeserver isn't reachable.
-    http_retry_count: 4
+
+    # What software is the homeserver running?
+    # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
+    software: standard
     # The URL to push real-time bridge status to.
-    # If set, the bridge will make POST requests to this URL whenever a user's Signal connection state changes.
+    # If set, the bridge will make POST requests to this URL whenever a user's discord connection state changes.
     # The bridge will use the appservice as_token to authorize requests.
     status_endpoint: null
     # Endpoint for reporting per-message status.
     message_send_checkpoint_endpoint: null
+    # Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246?
+    async_media: false
 
-# Application service host/registration related details
+    # Should the bridge use a websocket for connecting to the homeserver?
+    # The server side is currently not documented anywhere and is only implemented by mautrix-wsproxy,
+    # mautrix-asmux (deprecated), and hungryserv (proprietary).
+    websocket: false
+    # How often should the websocket be pinged? Pinging will be disabled if this is zero.
+    ping_interval_seconds: 0
+
+# Application service host/registration related details.
 # Changing these values requires regeneration of the registration.
 appservice:
     # The address that the homeserver can use to connect to this appservice.
-    address: {{ matrix_mautrix_signal_appservice_address }}
-    # When using https:// the TLS certificate and key files for the address.
-    tls_cert: false
-    tls_key: false
+    address: {{ matrix_mautrix_signal_appservice_address | to_json }}
 
     # The hostname and port where this appservice should listen.
     hostname: 0.0.0.0
-    port: 29328
-    # The maximum body size of appservice API requests (from the homeserver) in mebibytes
-    # Usually 1 is enough, but on high-traffic bridges you might need to increase this to avoid 413s
-    max_body_size: 1
+    port: 8080
 
-    # The full URI to the database. SQLite and Postgres are supported.
-    # Format examples:
-    #   SQLite:   sqlite:///filename.db
-    #   Postgres: postgres://username:password@hostname/dbname
-    database: {{ matrix_mautrix_signal_database_connection_string }}
-    # Additional arguments for asyncpg.create_pool() or sqlite3.connect()
-    # https://magicstack.github.io/asyncpg/current/api/index.html#asyncpg.pool.create_pool
-    # https://docs.python.org/3/library/sqlite3.html#sqlite3.connect
-    # For sqlite, min_size is used as the connection thread pool size and max_size is ignored.
-    database_opts:
-        min_size: 5
-        max_size: 10
+    # Database config.
+    database:
+        # The database type. "sqlite3-fk-wal" and "postgres" are supported.
+        type: {{ matrix_mautrix_signal_appservice_database_type|to_json }}
+        # The database URI.
+        #   SQLite: A raw file path is supported, but `file:<path>?_txlock=immediate` is recommended.
+        #           https://github.com/mattn/go-sqlite3#connection-string
+        #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
+        #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
+        uri: {{ matrix_mautrix_signal_appservice_database_uri|to_json }}
+        # Maximum number of connections. Mostly relevant for Postgres.
+        max_open_conns: 20
+        max_idle_conns: 2
+        # Maximum connection idle time and lifetime before they're closed. Disabled if null.
+        # Parsed with https://pkg.go.dev/time#ParseDuration
+        max_conn_idle_time: null
+        max_conn_lifetime: null
 
     # The unique ID of this appservice.
     id: signal
-    # Username of the appservice bot.
-    bot_username: {{ matrix_mautrix_signal_appservice_bot_username|to_json }}
-    # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
-    # to leave display name/avatar as-is.
-    bot_displayname: Signal bridge bot
-    bot_avatar: mxc://maunium.net/wPJgTQbZOtpBFmDNkiNEMDUp
+    # Appservice bot details.
+    bot:
+        # Username of the appservice bot.
+        username: signalbot
+        # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
+        # to leave display name/avatar as-is.
+        displayname: signal bridge bot
+        avatar: mxc://maunium.net/wPJgTQbZOtpBFmDNkiNEMDUp
 
     # Whether or not to receive ephemeral events via appservice transactions.
     # Requires MSC2409 support (i.e. Synapse 1.22+).
-    # You should disable bridge -> sync_with_custom_puppets when this is enabled.
-    ephemeral_events: false
+    ephemeral_events: true
+
+    # Should incoming events be handled asynchronously?
+    # This may be necessary for large public instances with lots of messages going through.
+    # However, messages will not be guaranteed to be bridged in the same order they were sent in.
+    async_transactions: false
 
     # Authentication tokens for AS <-> HS communication. Autogenerated; do not modify.
-    as_token: "{{ matrix_mautrix_signal_appservice_token }}"
-    hs_token: "{{ matrix_mautrix_signal_homeserver_token }}"
+    as_token: {{ matrix_mautrix_signal_appservice_token | to_json }}
+    hs_token: {{ matrix_mautrix_signal_homeserver_token | to_json }}
 
-# Prometheus telemetry config. Requires prometheus-client to be installed.
+# Prometheus config.
 metrics:
-    enabled: {{ matrix_mautrix_signal_metrics_enabled | to_json }}
-    listen_port: 8000
-
-# Manhole config.
-manhole:
-    # Whether or not opening the manhole is allowed.
+    # Enable prometheus metrics?
     enabled: false
-    # The path for the unix socket.
-    path: /var/tmp/mautrix-signal.manhole
-    # The list of UIDs who can be added to the whitelist.
-    # If empty, any UIDs can be specified in the open-manhole command.
-    whitelist:
-    - 0
-
-signal:
-    # Path to signald unix socket
-    socket_path: /signald/signald.sock
-    # Directory for temp files when sending files to Signal. This should be an
-    # absolute path that signald can read. For attachments in the other direction,
-    # make sure signald is configured to use an absolute path as the data directory.
-    outgoing_attachment_dir: /signald/attachments
-    # Directory where signald stores avatars for groups.
-    avatar_dir: /signald/avatars
-    # Directory where signald stores auth data. Used to delete data when logging out.
-    data_dir: /signald/data
-    # Whether or not unknown signald accounts should be deleted when the bridge is started.
-    # When this is enabled, any UserInUse errors should be resolved by restarting the bridge.
-    delete_unknown_accounts_on_start: false
-    # Whether or not message attachments should be removed from disk after they're bridged.
-    remove_file_after_handling: true
-    # Whether or not users can register a primary device
-    registration_enabled: true
+    # IP and port where the metrics listener should be. The path is always /metrics
+    listen: 127.0.0.1:8000
 
 # Bridge config
 bridge:
     # Localpart template of MXIDs for Signal users.
-    # {userid} is replaced with an identifier for the Signal user.
-    username_template: "signal_{userid}"
-    # Displayname template for Signal users.
-    # {displayname} is replaced with the displayname of the Signal user, which is the first
-    # available variable in displayname_preference. The variables in displayname_preference
-    # can also be used here directly.
-    displayname_template: "{displayname} (Signal)"
-    # Whether or not contact list displaynames should be used.
-    # Possible values: disallow, allow, prefer
-    #
-    # Multi-user instances are recommended to disallow contact list names, as otherwise there can
-    # be conflicts between names from different users' contact lists.
-    contact_list_names: disallow
-    # Available variables: full_name, first_name, last_name, phone, uuid
-    displayname_preference:
-    - full_name
-    - phone
+    # {{ '{{.}}' }} is replaced with the internal ID of the Signal user.
+    username_template: "{{ 'signal_{{.}}' }}"
+    # Displayname template for Signal users. This is also used as the room name in DMs if private_chat_portal_meta is enabled.
+    # Available variables: TODO
+    displayname_template: "{{ '{{.ProfileName}} (Signal)' }}"
+    # Whether to explicitly set the avatar and room name for private chat portal rooms.
+    # If set to `default`, this will be enabled in encrypted rooms and disabled in unencrypted rooms.
+    # If set to `always`, all DM rooms will have explicit names and avatars set.
+    # If set to `never`, DM rooms will never have names and avatars set.
+    private_chat_portal_meta: default
 
-    # Whether or not to create portals for all groups on login/connect.
-    autocreate_group_portal: true
-    # Whether or not to create portals for all contacts on login/connect.
-    autocreate_contact_portal: false
-    # Whether or not to use /sync to get read receipts and typing notifications
-    # when double puppeting is enabled
-    sync_with_custom_puppets: true
-    # Whether or not to update the m.direct account data event when double puppeting is enabled.
+    portal_message_buffer: 128
+
+    # Should the bridge send a read receipt from the bridge bot when a message has been sent to Signal?
+    delivery_receipts: false
+    # Whether the bridge should send the message status as a custom com.beeper.message_send_status event.
+    message_status_events: false
+    # Whether the bridge should send error notices via m.notice events when a message fails to bridge.
+    message_error_notices: true
+    # Should the bridge update the m.direct account data event when double puppeting is enabled.
     # Note that updating the m.direct event is not atomic (except with mautrix-asmux)
     # and is therefore prone to race conditions.
     sync_direct_chat_list: false
-    # Allow using double puppeting from any server with a valid client .well-known file.
-    double_puppet_allow_discovery: false
-    # Servers to allow double puppeting from, even if double_puppet_allow_discovery is false.
-    double_puppet_server_map: {}
-    # Shared secret for https://github.com/devture/matrix-synapse-shared-secret-auth
-    #
-    # If set, custom puppets will be enabled automatically for local users
-    # instead of users having to find an access token and run `login-matrix`
-    # manually.
-    # If using this for other servers than the bridge's server,
-    # you must also set the URL in the double_puppet_server_map.
-    login_shared_secret_map:
-        {{ matrix_mautrix_signal_homeserver_domain }}: {{ matrix_mautrix_signal_login_shared_secret|to_json }}
+    # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
+    # This field will automatically be changed back to false after it, except if the config file is not writable.
+    resend_bridge_info: false
     # Whether or not created rooms should have federation enabled.
     # If false, created portal rooms will never be federated.
     federate_rooms: {{ matrix_mautrix_signal_federate_rooms|to_json }}
-    # End-to-bridge encryption support options. You must install the e2be optional dependency for
-    # this to work. See https://github.com/tulir/mautrix-telegram/wiki/End‐to‐bridge-encryption
-    encryption:
-        # Allow encryption, work in group chat rooms with e2ee enabled
-        allow: {{ matrix_mautrix_signal_bridge_encryption_allow|to_json }}
-        # Default to encryption, force-enable encryption in all portals the bridge creates
-        # This will cause the bridge bot to be in private chats for the encryption to work properly.
-        default: {{ matrix_mautrix_signal_bridge_encryption_default|to_json }}
-        # Options for automatic key sharing.
-        key_sharing:
-            # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
-            # You must use a client that supports requesting keys from other users to use this feature.
-            allow: {{ matrix_mautrix_signal_bridge_encryption_key_sharing_allow|to_json }}
-            # Require the requesting device to have a valid cross-signing signature?
-            # This doesn't require that the bridge has verified the device, only that the user has verified it.
-            # Not yet implemented.
-            require_cross_signing: false
-            # Require devices to be verified by the bridge?
-            # Verification by the bridge is not yet implemented.
-            require_verification: true
-    # Whether or not to explicitly set the avatar and room name for private
-    # chat portal rooms. This will be implicitly enabled if encryption.default is true.
-    private_chat_portal_meta: false
-    # Whether or not the bridge should send a read receipt from the bridge bot when a message has
-    # been sent to Signal. This let's you check manually whether the bridge is receiving your
-    # messages.
-    # Note that this is not related to Signal delivery receipts.
-    delivery_receipts: false
-    # Whether or not delivery errors should be reported as messages in the Matrix room. (not yet implemented)
-    delivery_error_reports: true
-    # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
-    # This field will automatically be changed back to false after it,
-    # except if the config file is not writable.
-    resend_bridge_info: false
-    # Interval at which to resync contacts (in seconds).
-    periodic_sync: 0
+    # Servers to always allow double puppeting from
+    double_puppet_server_map:
+        "{{ matrix_mautrix_signal_homeserver_domain }}": {{ matrix_mautrix_signal_homeserver_address }}
+    # Allow using double puppeting from any server with a valid client .well-known file.
+    double_puppet_allow_discovery: false
+    # Shared secrets for https://github.com/devture/matrix-synapse-shared-secret-auth
+    #
+    # If set, double puppeting will be enabled automatically for local users
+    # instead of users having to find an access token and run `login-matrix`
+    # manually.
+    login_shared_secret_map: {{ matrix_mautrix_signal_bridge_login_shared_secret_map|to_json }}
 
-    # Provisioning API part of the web server for automated portal creation and fetching information.
-    # Used by things like mautrix-manager (https://github.com/tulir/mautrix-manager).
-    provisioning:
-        # Whether or not the provisioning API should be enabled.
-        enabled: true
-        # The prefix to use in the provisioning API endpoints.
-        prefix: /_matrix/provision/v1
-        # The shared secret to authorize users of the API.
-        # Set to "generate" to generate and save a new token.
-        shared_secret: generate
+    # Maximum time for handling Matrix events. Duration strings formatted for https://pkg.go.dev/time#ParseDuration
+    # Null means there's no enforced timeout.
+    message_handling_timeout:
+        # Send an error message after this timeout, but keep waiting for the response until the deadline.
+        # This is counted from the origin_server_ts, so the warning time is consistent regardless of the source of delay.
+        # If the message is older than this when it reaches the bridge, the message won't be handled at all.
+        error_after: null
+        # Drop messages after this timeout. They may still go through if the message got sent to the servers.
+        # This is counted from the time the bridge starts handling the message.
+        deadline: 120s
 
     # The prefix for commands. Only required in non-management rooms.
     command_prefix: "{{ matrix_mautrix_signal_command_prefix }}"
-
     # Messages sent upon joining a management room.
     # Markdown is supported. The defaults are listed below.
     management_room_text:
@@ -207,67 +149,132 @@ bridge:
         # Sent when joining a management room and the user is already logged in.
         welcome_connected: "Use `help` for help."
         # Sent when joining a management room and the user is not logged in.
-        welcome_unconnected: "Use `help` for help or `register` to log in."
+        welcome_unconnected: "Use `help` for help or `login` to log in."
         # Optional extra text sent when joining a management room.
         additional_help: ""
 
-    # Send each message separately (for readability in some clients)
-    management_room_multiple_messages: false
+    # End-to-bridge encryption support options.
+    #
+    # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
+    encryption:
+        # Allow encryption, work in group chat rooms with e2ee enabled
+        allow: {{ matrix_mautrix_signal_bridge_encryption_allow|to_json }}
+        # Default to encryption, force-enable encryption in all portals the bridge creates
+        # This will cause the bridge bot to be in private chats for the encryption to work properly.
+        default: {{ matrix_mautrix_signal_bridge_encryption_default|to_json }}
+        # Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
+        appservice: false
+        # Require encryption, drop any unencrypted messages.
+        require: false
+        # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
+        # You must use a client that supports requesting keys from other users to use this feature.
+        allow_key_sharing: {{ matrix_mautrix_signal_bridge_encryption_key_sharing_allow|to_json }}
+        # Options for deleting megolm sessions from the bridge.
+        delete_keys:
+            # Beeper-specific: delete outbound sessions when hungryserv confirms
+            # that the user has uploaded the key to key backup.
+            delete_outbound_on_ack: false
+            # Don't store outbound sessions in the inbound table.
+            dont_store_outbound: false
+            # Ratchet megolm sessions forward after decrypting messages.
+            ratchet_on_decrypt: false
+            # Delete fully used keys (index >= max_messages) after decrypting messages.
+            delete_fully_used_on_decrypt: false
+            # Delete previous megolm sessions from same device when receiving a new one.
+            delete_prev_on_new_session: false
+            # Delete megolm sessions received from a device when the device is deleted.
+            delete_on_device_delete: false
+            # Periodically delete megolm sessions when 2x max_age has passed since receiving the session.
+            periodically_delete_expired: false
+            # Delete inbound megolm sessions that don't have the received_at field used for
+            # automatic ratcheting and expired session deletion. This is meant as a migration
+            # to delete old keys prior to the bridge update.
+            delete_outdated_inbound: false
+        # What level of device verification should be required from users?
+        #
+        # Valid levels:
+        #   unverified - Send keys to all device in the room.
+        #   cross-signed-untrusted - Require valid cross-signing, but trust all cross-signing keys.
+        #   cross-signed-tofu - Require valid cross-signing, trust cross-signing keys on first use (and reject changes).
+        #   cross-signed-verified - Require valid cross-signing, plus a valid user signature from the bridge bot.
+        #                           Note that creating user signatures from the bridge bot is not currently possible.
+        #   verified - Require manual per-device verification
+        #              (currently only possible by modifying the `trust` column in the `crypto_device` database table).
+        verification_levels:
+            # Minimum level for which the bridge should send keys to when bridging messages from Signal to Matrix.
+            receive: unverified
+            # Minimum level that the bridge should accept for incoming Matrix messages.
+            send: unverified
+            # Minimum level that the bridge should require for accepting key requests.
+            share: cross-signed-tofu
+        # Options for Megolm room key rotation. These options allow you to
+        # configure the m.room.encryption event content. See:
+        # https://spec.matrix.org/v1.3/client-server-api/#mroomencryption for
+        # more information about that event.
+        rotation:
+            # Enable custom Megolm room key rotation settings. Note that these
+            # settings will only apply to rooms created after this option is
+            # set.
+            enable_custom: false
+            # The maximum number of milliseconds a session should be used
+            # before changing it. The Matrix spec recommends 604800000 (a week)
+            # as the default.
+            milliseconds: 604800000
+            # The maximum number of messages that should be sent with a given a
+            # session before changing it. The Matrix spec recommends 100 as the
+            # default.
+            messages: 100
+
+            # Disable rotating keys when a user's devices change?
+            # You should not enable this option unless you understand all the implications.
+            disable_device_change_key_rotation: false
+
+    # Settings for provisioning API
+    provisioning:
+        # Prefix for the provisioning API paths.
+        prefix: /_matrix/provision
+        # Shared secret for authentication. If set to "generate", a random secret will be generated,
+        # or if set to "disable", the provisioning API will be disabled.
+        shared_secret: generate
+        # Enable debug API at /debug with provisioning authentication.
+        debug_endpoints: false
 
     # Permissions for using the bridge.
     # Permitted values:
-    #      relay - Allowed to be relayed through the bridge, no access to commands.
-    #       user - Use the bridge with puppeting.
-    #      admin - Use and administrate the bridge.
+    #    relay - Talk through the relaybot (if enabled), no access otherwise
+    #     user - Access to use the bridge to chat with a Signal account.
+    #    admin - User level and some additional administration tools
     # Permitted keys:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
     permissions: {{ matrix_mautrix_signal_bridge_permissions|to_json }}
 
+    # Settings for relay mode
     relay:
-        # Whether or not relay mode should be allowed. If allowed, `!signal set-relay` can be used to turn any
+        # Whether relay mode should be allowed. If allowed, `!signal set-relay` can be used to turn any
         # authenticated user into a relaybot for that chat.
-        enabled: {{ matrix_mautrix_signal_relaybot_enabled }}
-        # The formats to use when sending messages to Signal via a relay user.
-        #
-        # Available variables:
-        #   $sender_displayname - The display name of the sender (e.g. Example User)
-        #   $sender_username    - The username (Matrix ID localpart) of the sender (e.g. exampleuser)
-        #   $sender_mxid        - The Matrix ID of the sender (e.g. @exampleuser:example.com)
-        #   $message            - The message content
+        enabled: {{ matrix_mautrix_signal_bridge_relay_enabled | to_json }}
+        # Should only admins be allowed to set themselves as relay users?
+        admin_only: {{ matrix_mautrix_signal_bridge_relay_admin_only | to_json }}
+        # The formats to use when sending messages to WhatsApp via the relaybot.
         message_formats:
-            m.text: '$sender_displayname: $message'
-            m.notice: '$sender_displayname: $message'
-            m.emote: '* $sender_displayname $message'
-            m.file: '$sender_displayname sent a file'
-            m.image: '$sender_displayname  sent an image'
-            m.audio: '$sender_displayname  sent an audio file'
-            m.video: '$sender_displayname  sent a video'
-            m.location: '$sender_displayname  sent a location'
+            m.text: "<b>{{ '{{ .Sender.Displayname }}' }}</b>: {{ '{{ .Message }}' }}"
+            m.notice: "<b>{{ '{{ .Sender.Displayname }}' }}</b>:: {{ '{{ .Message }}' }}"
+            m.emote: "* <b>{{ '{{ .Sender.Displayname }}' }}</b>: {{ '{{ .Message }}' }}"
+            m.file: "<b>{{ '{{ .Sender.Displayname }}' }}</b>: sent a file"
+            m.image: "<b>{{ '{{ .Sender.Displayname }}' }}</b>: sent an image"
+            m.audio: "<b>{{ '{{ .Sender.Displayname }}' }}</b>: sent an audio file"
+            m.video: "<b>{{ '{{ .Sender.Displayname }}' }}</b>: sent a video"
+            m.location: "<b>{{ '{{ .Sender.Displayname }}' }}</b>: sent a location"
 
-
-# Python logging configuration.
-#
-# See section 16.7.2 of the Python documentation for more info:
-# https://docs.python.org/3.6/library/logging.config.html#configuration-dictionary-schema
+# Logging config. See https://github.com/tulir/zeroconfig for details.
 logging:
-    version: 1
-    formatters:
-        colored:
-            (): mautrix_signal.util.ColorFormatter
-            format: "[%(asctime)s] [%(levelname)s@%(name)s] %(message)s"
-        normal:
-            format: "[%(asctime)s] [%(levelname)s@%(name)s] %(message)s"
-    handlers:
-        console:
-            class: logging.StreamHandler
-            formatter: colored
-    loggers:
-        mau:
-            level: {{ matrix_mautrix_signal_logging_level|to_json }}
-        aiohttp:
-            level: {{ matrix_mautrix_signal_logging_level|to_json }}
-    root:
-        level: {{ matrix_mautrix_signal_logging_level|to_json }}
-        handlers: [console]
+    directory: ./logs
+    file_name_format: ''
+    file_date_format: "2006-01-02"
+    file_mode: 384
+    timestamp_format: Jan _2, 2006 15:04:05
+    print_level: {{ matrix_mautrix_signal_logging_level | to_json }}
+    print_json: false
+    file_json: false

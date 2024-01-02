@@ -1,0 +1,21 @@
+---
+
+# Signal daemon service
+- name: Check existence of matrix-mautrix-signal-daemon service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-signal-daemon.service"
+  register: matrix_mautrix_signal_daemon_service_stat
+
+- when: matrix_mautrix_signal_daemon_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-mautrix-signal-daemon is stopped
+      ansible.builtin.service:
+        name: matrix-mautrix-signal-daemon
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-mautrix-signal-daemon.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-signal-daemon.service"
+        state: absent

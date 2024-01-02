@@ -6,6 +6,8 @@ See the project's [documentation](https://docs.mau.fi/bridges/python/signal/inde
 
 **Note/Prerequisite**: If you're running with the Postgres database server integrated by the playbook (which is the default), you don't need to do anything special and can easily proceed with installing. However, if you're [using an external Postgres server](configuring-playbook-external-postgres.md), you'd need to manually prepare a Postgres database for this bridge and adjust the variables related to that (`matrix_mautrix_signal_database_*`).
 
+**Note**: This revamped version of the [mautrix-signal (legacy)](configuring-playbook-bridge-mautrix-signal.md) may increase the CPU usage of your homeserver.
+
 Use the following playbook configuration:
 
 ```yaml
@@ -14,14 +16,7 @@ matrix_mautrix_signal_enabled: true
 
 There are some additional things you may wish to configure about the bridge before you continue.
 
-The relay bot functionality is off by default. If you would like to enable the relay bot, add the following to your `vars.yml` file:
-```yaml
-matrix_mautrix_signal_relaybot_enabled: true
-```
-If you want to activate the relay bot in a room, use `!signal set-relay`.
-Use `!signal unset-relay` to deactivate.
 By default, any user on your homeserver will be able to use the bridge.
-If you enable the relay bot functionality, it will relay every user's messages in a portal room - no matter which homeserver they're from.
 
 Different levels of permission can be granted to users:
 
@@ -46,7 +41,7 @@ matrix_mautrix_signal_configuration_extension_yaml: |
       '@YOUR_USERNAME:YOUR_DOMAIN': admin
 ```
 
-This will add the admin permission to the specific user, while keepting the default permissions.
+This will add the admin permission to the specific user, while keeping the default permissions.
 
 In case you want to replace the default permissions settings **completely**, populate the following item within your `vars.yml` file:
 ```yaml

@@ -274,9 +274,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-mautrix-instagram.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-instagram']}] if matrix_mautrix_instagram_enabled else [])
     +
-    ([{'name': 'matrix-mautrix-signal.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-signal']}] if matrix_mautrix_signal_enabled else [])
-    +
-    ([{'name': 'matrix-mautrix-signal-daemon.service', 'priority': 1900, 'groups': ['matrix', 'bridges', 'mautrix-signal', 'mautrix-signal-daemon']}] if matrix_mautrix_signal_enabled else [])
+    ([{'name': 'matrix-mautrix-signal.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-signal', 'mautrix-signal']}] if matrix_mautrix_signal_enabled else [])
     +
     ([{'name': 'matrix-mautrix-telegram.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-telegram']}] if matrix_mautrix_telegram_enabled else [])
     +
@@ -1038,7 +1036,6 @@ matrix_mautrix_instagram_database_password: "{{ '%s' | format(matrix_homeserver_
 #
 ######################################################################
 
-
 ######################################################################
 #
 # matrix-bridge-mautrix-signal
@@ -1047,6 +1044,8 @@ matrix_mautrix_instagram_database_password: "{{ '%s' | format(matrix_homeserver_
 
 # We don't enable bridges by default.
 matrix_mautrix_signal_enabled: false
+
+matrix_mautrix_signal_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
 matrix_mautrix_signal_systemd_required_services_list: |
   {{
@@ -1057,8 +1056,6 @@ matrix_mautrix_signal_systemd_required_services_list: |
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
-    +
-    ['matrix-mautrix-signal-daemon.service']
   }}
 
 matrix_mautrix_signal_homeserver_domain: '{{ matrix_domain }}'
@@ -1077,12 +1074,9 @@ matrix_mautrix_signal_login_shared_secret: "{{ matrix_synapse_ext_password_provi
 # - `matrix_nginx_proxy_proxy_matrix_metrics_enabled`
 matrix_mautrix_signal_metrics_enabled: "{{ prometheus_enabled }}"
 
-matrix_mautrix_signal_database_engine: 'postgres'
+matrix_mautrix_signal_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mautrix_signal_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_mautrix_signal_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.signal.db', rounds=655555) | to_uuid }}"
-
-matrix_mautrix_signal_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
-matrix_mautrix_signal_daemon_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 ######################################################################
 #

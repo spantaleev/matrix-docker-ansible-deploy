@@ -5,68 +5,57 @@
 matrix_mautrix_signal_enabled: true
 
 matrix_mautrix_signal_container_image_self_build: false
-matrix_mautrix_signal_docker_repo: "https://mau.dev/mautrix/signal.git"
-matrix_mautrix_signal_docker_repo_version: "{{ 'master' if matrix_mautrix_signal_version == 'latest' else matrix_mautrix_signal_version }}"
-matrix_mautrix_signal_docker_src_files_path: "{{ matrix_base_data_path }}/mautrix-signal/docker-src"
+matrix_mautrix_signal_container_image_self_build_repo: "https://mau.dev/mautrix/signal.git"
+matrix_mautrix_signal_container_image_self_build_branch: "{{ 'main' if matrix_mautrix_signal_version == 'latest' else matrix_mautrix_signal_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/signal
-matrix_mautrix_signal_version: v0.4.3
-# renovate: datasource=docker depName=signald/signald
-matrix_mautrix_signal_daemon_version: 0.23.2
+matrix_mautrix_signal_version: 18e006300885e7432f0791211dec77345ae974a2-{{ matrix_architecture }}
+
 # See: https://mau.dev/mautrix/signal/container_registry
 matrix_mautrix_signal_docker_image: "{{ matrix_mautrix_signal_docker_image_name_prefix }}mautrix/signal:{{ matrix_mautrix_signal_version }}"
 matrix_mautrix_signal_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_signal_container_image_self_build else 'dock.mau.dev/' }}"
 matrix_mautrix_signal_docker_image_force_pull: "{{ matrix_mautrix_signal_docker_image.endswith(':latest') }}"
 
-matrix_mautrix_signal_daemon_container_image_self_build: false
-matrix_mautrix_signal_daemon_docker_repo: "https://gitlab.com/signald/signald"
-matrix_mautrix_signal_daemon_docker_repo_version: "{{ 'master' if matrix_mautrix_signal_daemon_version == 'latest' else matrix_mautrix_signal_daemon_version }}"
-matrix_mautrix_signal_daemon_docker_src_files_path: "{{ matrix_base_data_path }}/mautrix-signald/docker-src"
-
-matrix_mautrix_signal_daemon_docker_image: "{{ matrix_mautrix_signal_daemon_docker_image_name_prefix }}signald/signald:{{ matrix_mautrix_signal_daemon_docker_image_tag }}"
-matrix_mautrix_signal_daemon_docker_image_name_prefix: "docker.io/"
-matrix_mautrix_signal_daemon_docker_image_force_pull: "{{ matrix_mautrix_signal_daemon_docker_image_tag.endswith(':latest') }}"
-matrix_mautrix_signal_daemon_docker_image_tag: "{{ matrix_mautrix_signal_daemon_version }}"
-
 matrix_mautrix_signal_base_path: "{{ matrix_base_data_path }}/mautrix-signal"
-matrix_mautrix_signal_config_path: "{{ matrix_mautrix_signal_base_path }}/bridge"
-matrix_mautrix_signal_daemon_path: "{{ matrix_mautrix_signal_base_path }}/signald"
+matrix_mautrix_signal_config_path: "{{ matrix_mautrix_signal_base_path }}/config"
+matrix_mautrix_signal_data_path: "{{ matrix_mautrix_signal_base_path }}/data"
+matrix_mautrix_signal_docker_src_files_path: "{{ matrix_mautrix_signal_base_path }}/docker-src"
 
-matrix_mautrix_signal_homeserver_address: ''
-matrix_mautrix_signal_homeserver_domain: ''
-matrix_mautrix_signal_appservice_address: 'http://matrix-mautrix-signal:29328'
+matrix_mautrix_signal_homeserver_address: "{{ matrix_homeserver_container_url }}"
+matrix_mautrix_signal_homeserver_domain: "{{ matrix_domain }}"
+matrix_mautrix_signal_appservice_address: "http://matrix-mautrix-signal:8080"
 
 matrix_mautrix_signal_command_prefix: "!signal"
 
-# Controls whether the matrix-mautrix-signal container exposes its port (tcp/29328 in the container).
-#
-# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9006"), or empty string to not expose.
-matrix_mautrix_signal_container_http_host_bind_port: ''
+matrix_mautrix_signal_bridge_permissions: |
+  {{
+    {'*': 'relay', matrix_mautrix_signal_homeserver_domain: 'user'}
+    | combine({matrix_admin: 'admin'} if matrix_admin else {})
+  }}
+
+# Enable bridge relay functionality
+matrix_mautrix_signal_bridge_relay_enabled: "{{ matrix_bridges_relay_enabled }}"
+
+# Only allow admins on this home server to set themselves as a relay user
+matrix_mautrix_signal_bridge_relay_admin_only: true
 
 # A list of extra arguments to pass to the container
 matrix_mautrix_signal_container_extra_arguments: []
 
 # List of systemd services that matrix-mautrix-signal.service depends on.
-matrix_mautrix_signal_systemd_required_services_list:
-  - 'docker.service'
-  - 'matrix-mautrix-signal-daemon.service'
+matrix_mautrix_signal_systemd_required_services_list: ['docker.service']
 
 # List of systemd services that matrix-mautrix-signal.service wants
 matrix_mautrix_signal_systemd_wanted_services_list: []
-
-# List of systemd services that matrix-mautrix-signal-daemon.service depends on.
-matrix_mautrix_signal_daemon_systemd_required_services_list: ['docker.service']
-
-# List of systemd services that matrix-mautrix-signal-daemon.service wants
-matrix_mautrix_signal_daemon_systemd_wanted_services_list: []
 
 matrix_mautrix_signal_appservice_token: ''
 matrix_mautrix_signal_homeserver_token: ''
 
 matrix_mautrix_signal_appservice_bot_username: signalbot
 
-# Specifies the default log level for all bridge loggers.
-matrix_mautrix_signal_logging_level: WARNING
+# Minimum severity of journal log messages.
+# Options: debug, info, warn, error, fatal
+matrix_mautrix_signal_logging_level: 'warn'
 
 # Whether or not created rooms should have federation enabled.
 # If false, created portal rooms will never be federated.
@@ -82,50 +71,51 @@ matrix_mautrix_signal_metrics_enabled: false
 # See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
 matrix_mautrix_signal_metrics_proxying_enabled: false
 
-# Database-related configuration fields
+# Database-related configuration fields.
 #
-# This bridge only supports postgres.
+# To use SQLite, stick to these defaults.
 #
-matrix_mautrix_signal_database_engine: 'postgres'
+# To use Postgres:
+# - change the engine (`matrix_mautrix_signal_database_engine: 'postgres'`)
+# - adjust your database credentials via the `matrix_mautrix_signal_database_*` variables
+matrix_mautrix_signal_database_engine: 'sqlite'
+
+matrix_mautrix_signal_sqlite_database_path_local: "{{ matrix_mautrix_signal_data_path }}/mautrix-signal.db"
+matrix_mautrix_signal_sqlite_database_path_in_container: "/data/mautrix-signal.db?_txlock=immediate"
 
 matrix_mautrix_signal_database_username: 'matrix_mautrix_signal'
 matrix_mautrix_signal_database_password: 'some-password'
 matrix_mautrix_signal_database_hostname: ''
 matrix_mautrix_signal_database_port: 5432
 matrix_mautrix_signal_database_name: 'matrix_mautrix_signal'
+matrix_mautrix_signal_database_sslmode: disable
 
-matrix_mautrix_signal_database_connection_string: 'postgres://{{ matrix_mautrix_signal_database_username }}:{{ matrix_mautrix_signal_database_password }}@{{ matrix_mautrix_signal_database_hostname }}:{{ matrix_mautrix_signal_database_port }}/{{ matrix_mautrix_signal_database_name }}'
+matrix_mautrix_signal_database_connection_string: 'postgresql://{{ matrix_mautrix_signal_database_username }}:{{ matrix_mautrix_signal_database_password }}@{{ matrix_mautrix_signal_database_hostname }}:{{ matrix_mautrix_signal_database_port }}/{{ matrix_mautrix_signal_database_name }}?sslmode={{ matrix_mautrix_signal_database_sslmode }}'
 
-matrix_mautrix_signal_appservice_database: "{{
-  {
-    'postgres': matrix_mautrix_signal_database_connection_string,
-  }[matrix_mautrix_signal_database_engine]
- }}"
+matrix_mautrix_signal_appservice_database_type: "{{
+	{
+		'sqlite': 'sqlite3-fk-wal',
+		'postgres':'postgres',
+	}[matrix_mautrix_signal_database_engine]
+}}"
+
+matrix_mautrix_signal_appservice_database_uri: "{{
+	{
+		'sqlite': matrix_mautrix_signal_sqlite_database_path_in_container,
+		'postgres': matrix_mautrix_signal_database_connection_string,
+	}[matrix_mautrix_signal_database_engine]
+}}"
 
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
 matrix_mautrix_signal_login_shared_secret: ''
+matrix_mautrix_signal_bridge_login_shared_secret_map:
+  "{{ {matrix_mautrix_signal_homeserver_domain: matrix_mautrix_signal_login_shared_secret} if matrix_mautrix_signal_login_shared_secret else {} }}"
 
-# Enable bridge relay bot functionality
-matrix_mautrix_signal_relaybot_enabled: "{{ matrix_bridges_relay_enabled }}"
+# Servers to always allow double puppeting from
+matrix_mautrix_signal_bridge_double_puppet_server_map:
+  "{{ matrix_mautrix_signal_homeserver_domain :  matrix_mautrix_signal_homeserver_address }}"
 
-# Permissions for using the bridge.
-# Permitted values:
-#      relay - Allowed to be relayed through the bridge, no access to commands.
-#       user - Use the bridge with puppeting.
-#      admin - Use and administrate the bridge.
-# Permitted keys:
-#        * - All Matrix users
-#   domain - All users on that homeserver
-#     mxid - Specific user
-#
-# This variable used to contain a YAML string, but now needs to contain a hashmap/dictionary.
-matrix_mautrix_signal_bridge_permissions: |
-  {{
-    {'*': 'relay', matrix_mautrix_signal_homeserver_domain: 'user'}
-    | combine({matrix_admin: 'admin'} if matrix_admin else {})
-  }}
-
-# Default configuration template which covers the generic use case.
+# Default mautrix-signal configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
 # For a more advanced customization, you can extend the default (see `matrix_mautrix_signal_configuration_extension_yaml`)
@@ -147,19 +137,29 @@ matrix_mautrix_signal_configuration_extension: "{{ matrix_mautrix_signal_configu
 # You most likely don't need to touch this variable. Instead, see `matrix_mautrix_signal_configuration_yaml`.
 matrix_mautrix_signal_configuration: "{{ matrix_mautrix_signal_configuration_yaml | from_yaml | combine(matrix_mautrix_signal_configuration_extension, recursive=True) }}"
 
-matrix_mautrix_signal_registration_yaml: "{{ lookup('template', 'templates/registration.yaml.j2') }}"
+matrix_mautrix_signal_registration_yaml: |
+  id: signal
+  url: {{ matrix_mautrix_signal_appservice_address }}
+  as_token: "{{ matrix_mautrix_signal_appservice_token }}"
+  hs_token: "{{ matrix_mautrix_signal_homeserver_token }}"
+  # See https://github.com/mautrix/signal/issues/43
+  sender_localpart: _bot_{{ matrix_mautrix_signal_appservice_bot_username }}
+  rate_limited: false
+  namespaces:
+      users:
+      - regex: '^@signal_[-a-f0-9]+:{{ matrix_mautrix_signal_homeserver_domain | regex_escape }}$'
+        exclusive: true
+      - exclusive: true
+        regex: '^@{{ matrix_mautrix_signal_appservice_bot_username | regex_escape }}:{{ matrix_mautrix_signal_homeserver_domain | regex_escape }}$'
+  de.sorunome.msc2409.push_ephemeral: true
 
 matrix_mautrix_signal_registration: "{{ matrix_mautrix_signal_registration_yaml | from_yaml }}"
 
-matrix_mautrix_signal_log_level: 'DEBUG'
-
+# Enable End-to-bridge encryption
 matrix_mautrix_signal_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
 matrix_mautrix_signal_bridge_encryption_default: "{{ matrix_mautrix_signal_bridge_encryption_allow }}"
 matrix_mautrix_signal_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_signal_bridge_encryption_allow }}"
 
-# Additional environment variables to pass to the Signal Daemon container
-#
-# Example:
-# matrix_mautrix_signal_daemon_environment_variables_extension: |
-#   SIGNALD_TRUST_NEW_KEYS=true
-matrix_mautrix_signal_daemon_environment_variables_extension: ''
+# On conduit versions before 0.5.0 this option prevented users from joining spaces created by the bridge.
+# Setting this to false fixed the issue.
+matrix_mautrix_signal_bridge_restricted_rooms: true
