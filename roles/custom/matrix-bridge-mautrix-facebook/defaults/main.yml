@@ -20,22 +20,69 @@ matrix_mautrix_facebook_docker_src_files_path: "{{ matrix_mautrix_facebook_base_
 
 matrix_mautrix_facebook_command_prefix: "!fb"
 
-# Whether or not the public-facing endpoints should be enabled (web-based login)
-matrix_mautrix_facebook_appservice_public_enabled: true
-
-# Mautrix Facebook public endpoint to log in to Facebook
-matrix_mautrix_facebook_public_endpoint: ''
-
 matrix_mautrix_facebook_homeserver_address: "{{ matrix_homeserver_container_url }}"
 matrix_mautrix_facebook_homeserver_domain: '{{ matrix_domain }}'
+
+# Whether or not the public-facing endpoints should be enabled (web-based login)
+matrix_mautrix_facebook_appservice_public_enabled: false
+# Mautrix Facebook public endpoint to log in to Facebook
+matrix_mautrix_facebook_appservice_public_prefix: ''
+matrix_mautrix_facebook_appservice_public_hostname: ''
+matrix_mautrix_facebook_appservice_public_external: "{{ ('https://' + matrix_mautrix_facebook_appservice_public_hostname + matrix_mautrix_facebook_appservice_public_prefix) if matrix_mautrix_facebook_appservice_public_enabled else '' }}"
+
 matrix_mautrix_facebook_appservice_address: 'http://matrix-mautrix-facebook:29319'
-matrix_mautrix_facebook_appservice_public_external: 'https://{{ matrix_server_fqn_matrix }}{{ matrix_mautrix_facebook_public_endpoint }}'
+
+matrix_mautrix_facebook_container_network: ""
+
+matrix_mautrix_facebook_container_additional_networks: "{{ matrix_mautrix_facebook_container_additional_networks_auto + matrix_mautrix_facebook_container_additional_networks_custom }}"
+matrix_mautrix_facebook_container_additional_networks_auto: []
+matrix_mautrix_facebook_container_additional_networks_custom: []
 
 # A list of extra arguments to pass to the container
 matrix_mautrix_facebook_container_extra_arguments: []
 
+# matrix_mautrix_facebook_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_mautrix_facebook_container_labels_additional_labels`.
+matrix_mautrix_facebook_container_labels_traefik_enabled: true
+matrix_mautrix_facebook_container_labels_traefik_docker_network: "{{ matrix_mautrix_facebook_container_network }}"
+matrix_mautrix_facebook_container_labels_traefik_entrypoints: web-secure
+matrix_mautrix_facebook_container_labels_traefik_tls_certResolver: default
+
+# Controls whether labels will be added that expose mautrix-facebook's public endpoint
+matrix_mautrix_facebook_container_labels_public_endpoint_enabled: "{{ matrix_mautrix_facebook_appservice_public_enabled }}"
+matrix_mautrix_facebook_container_labels_public_endpoint_traefik_rule: "Host(`{{ matrix_mautrix_facebook_appservice_public_hostname }}`) && PathPrefix(`{{ matrix_mautrix_facebook_appservice_public_prefix }}`)"
+matrix_mautrix_facebook_container_labels_public_endpoint_traefik_priority: 0
+matrix_mautrix_facebook_container_labels_public_endpoint_traefik_entrypoints: "{{ matrix_mautrix_facebook_container_labels_traefik_entrypoints }}"
+matrix_mautrix_facebook_container_labels_public_endpoint_traefik_tls: "{{ matrix_mautrix_facebook_container_labels_public_endpoint_traefik_entrypoints != 'web' }}"
+matrix_mautrix_facebook_container_labels_public_endpoint_traefik_tls_certResolver: "{{ matrix_mautrix_facebook_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose mautrix-facebook's metrics
+matrix_mautrix_facebook_container_labels_metrics_enabled: "{{ matrix_mautrix_facebook_metrics_enabled and matrix_mautrix_facebook_metrics_proxying_enabled }}"
+matrix_mautrix_facebook_container_labels_metrics_traefik_rule: "Host(`{{ matrix_mautrix_facebook_metrics_proxying_hostname }}`) && PathPrefix(`{{ matrix_mautrix_facebook_metrics_proxying_path_prefix }}`)"
+matrix_mautrix_facebook_container_labels_metrics_traefik_priority: 0
+matrix_mautrix_facebook_container_labels_metrics_traefik_entrypoints: "{{ matrix_mautrix_facebook_container_labels_traefik_entrypoints }}"
+matrix_mautrix_facebook_container_labels_metrics_traefik_tls: "{{ matrix_mautrix_facebook_container_labels_public_endpoint_traefik_entrypoints != 'web' }}"
+matrix_mautrix_facebook_container_labels_metrics_traefik_tls_certResolver: "{{ matrix_mautrix_facebook_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_mautrix_facebook_container_labels_metrics_middleware_basic_auth_enabled: false
+# See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
+matrix_mautrix_facebook_container_labels_metrics_middleware_basic_auth_users: ''
+
+# matrix_mautrix_facebook_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_mautrix_facebook_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_mautrix_facebook_container_labels_additional_labels: ''
+
 # List of systemd services that matrix-mautrix-facebook.service depends on.
-matrix_mautrix_facebook_systemd_required_services_list: ['docker.service']
+matrix_mautrix_facebook_systemd_required_services_list: "{{ matrix_mautrix_facebook_systemd_required_services_list_default + matrix_mautrix_facebook_systemd_required_services_list_auto + matrix_mautrix_facebook_systemd_required_services_list_custom }}"
+matrix_mautrix_facebook_systemd_required_services_list_default: ['docker.service']
+matrix_mautrix_facebook_systemd_required_services_list_auto: []
+matrix_mautrix_facebook_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-mautrix-facebook.service wants
 matrix_mautrix_facebook_systemd_wanted_services_list: []
@@ -52,10 +99,10 @@ matrix_mautrix_facebook_federate_rooms: true
 # If metrics need to be consumed by another (external) Prometheus server, consider exposing them via `matrix_mautrix_facebook_metrics_proxying_enabled`.
 matrix_mautrix_facebook_metrics_enabled: false
 
-# Controls whether metrics should be proxied (exposed) on `matrix.DOMAIN/metrics/mautrix-facebook`.
-# This will only work take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
-# See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
+# Controls whether metrics should be exposed on `matrix.DOMAIN/metrics/mautrix-facebook`.
 matrix_mautrix_facebook_metrics_proxying_enabled: false
+matrix_mautrix_facebook_metrics_proxying_hostname: ''
+matrix_mautrix_facebook_metrics_proxying_path_prefix: ''
 
 matrix_mautrix_facebook_bridge_permissions: |
   {{

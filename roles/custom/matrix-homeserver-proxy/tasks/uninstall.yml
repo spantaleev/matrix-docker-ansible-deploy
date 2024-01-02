@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of Matrix Homeserver Proxy systemd service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_homeserver_proxy_ident }}.service"
+  register: matrix_homeserver_proxy_service_stat
+
+- when: matrix_homeserver_proxy_service_stat.stat.exists | bool
+  block:
+    - name: Ensure Matrix Homeserver Proxy systemd service is stopped
+      ansible.builtin.service:
+        name: "{{ matrix_homeserver_proxy_ident }}"
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure Matrix Homeserver Proxy systemd service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_homeserver_proxy_ident }}.service"
+        state: absent
+
+    - name: Ensure Matrix Homeserver Proxy directory is deleted
+      ansible.builtin.file:
+        path: "{{ matrix_homeserver_proxy_base_path }}"
+        state: absent

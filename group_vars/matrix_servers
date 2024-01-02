@@ -189,6 +189,17 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-cactus-comments.yaml'] if matrix_cactus_comments_enabled else [])
   }}
 
+matrix_bridges_homeserver_container_network: "{{ matrix_homeserver_proxy_container_network if matrix_homeserver_proxy_enabled else matrix_homeserver_container_network }}"
+matrix_bridges_homeserver_client_api_url: "{{ matrix_homeserver_proxy_client_api_url if matrix_homeserver_proxy_enabled else matrix_homeserver_container_url }}"
+matrix_bridges_homeserver_systemd_services_list: "{{ ([matrix_homeserver_proxy_ident + '.service']) if matrix_homeserver_proxy_enabled else matrix_homeserver_systemd_services_list }}"
+
+matrix_bots_homeserver_container_network: "{{ matrix_homeserver_proxy_container_network if matrix_homeserver_proxy_enabled else matrix_homeserver_container_network }}"
+matrix_bots_homeserver_client_api_url: "{{ matrix_homeserver_proxy_client_api_url if matrix_homeserver_proxy_enabled else matrix_homeserver_container_url }}"
+matrix_bots_homeserver_systemd_services_list: "{{ ([matrix_homeserver_proxy_ident + '.service']) if matrix_homeserver_proxy_enabled else matrix_homeserver_systemd_services_list }}"
+
+# Starting from version `0.6.0` conduit natively supports some sync v3 (sliding-sync) features.
+matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_sliding_sync_enabled else (matrix_homeserver_url if matrix_homeserver_implementation in ['conduit'] else '') }}"
+
 ########################################################################
 #                                                                      #
 # /base                                                                #
@@ -260,7 +271,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-heisenbridge.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'heisenbridge']}] if matrix_heisenbridge_enabled else [])
     +
-    ([{'name': 'matrix-hookshot.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'hookshot']}] if matrix_hookshot_enabled else [])
+    ([{'name': 'matrix-hookshot.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'hookshot', 'bridge-hookshot']}] if matrix_hookshot_enabled else [])
     +
     ([{'name': 'matrix-mautrix-discord.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-discord']}] if matrix_mautrix_discord_enabled else [])
     +
@@ -351,6 +362,8 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-nginx-proxy.service', 'priority': 3000, 'groups': ['matrix', 'nginx', 'nginx-proxy', 'reverse-proxies']}] if matrix_nginx_proxy_enabled else [])
     +
     (matrix_ssl_renewal_systemd_units_list | selectattr('applicable') | selectattr('enableable') | list )
+    +
+    ([{'name': (matrix_homeserver_proxy_ident + '.service'), 'priority': 3000, 'groups': ['matrix', 'reverse-proxies']}] if matrix_homeserver_proxy_enabled else [])
     +
     ([{'name': (ntfy_identifier + '.service'), 'priority': 800, 'groups': ['matrix', 'ntfy']}] if ntfy_enabled else [])
     +
@@ -445,28 +458,39 @@ devture_playbook_state_preserver_commit_hash_preservation_dst: "{{ matrix_base_d
 
 matrix_identity_server_url: "{{ ('https://' + matrix_server_fqn_matrix) if matrix_ma1sd_enabled else None }}"
 
-matrix_homeserver_container_url: |-
+matrix_homeserver_systemd_services_list: |-
   {{
-    'http://matrix-nginx-proxy:12080' if matrix_nginx_proxy_enabled else {
-      'synapse': ('http://matrix-synapse-reverse-proxy-companion:8008' if matrix_synapse_reverse_proxy_companion_enabled else 'http://matrix-synapse:'+ matrix_synapse_container_client_api_port|string),
-      'dendrite': ('http://matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
-      'conduit': ('http://matrix-conduit:' + matrix_conduit_port_number|string),
+    (
+      ([('matrix-' + matrix_homeserver_implementation + '.service')] if matrix_homeserver_implementation != 'synapse' else [])
+      +
+      ([('matrix-' + matrix_homeserver_implementation + '.service')] if matrix_homeserver_implementation == 'synapse' and not matrix_synapse_reverse_proxy_companion_enabled else [])
+      +
+      (['matrix-synapse-reverse-proxy-companion.service'] if matrix_synapse_reverse_proxy_companion_enabled else [])
+    ) | unique
+  }}
+
+matrix_homeserver_container_client_api_endpoint: |-
+  {{
+    {
+      'synapse': ('matrix-synapse-reverse-proxy-companion:8008' if matrix_synapse_reverse_proxy_companion_enabled else 'http://matrix-synapse:'+ matrix_synapse_container_client_api_port|string),
+      'dendrite': ('matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
+      'conduit': ('matrix-conduit:' + matrix_conduit_port_number|string),
     }[matrix_homeserver_implementation]
   }}
 
-matrix_homeserver_container_federation_url: |-
+matrix_homeserver_container_federation_api_endpoint: |-
   {{
-    'http://matrix-nginx-proxy:12088' if matrix_nginx_proxy_enabled else {
-      'synapse': ('http://matrix-synapse-reverse-proxy-companion:8048' if matrix_synapse_reverse_proxy_companion_enabled else 'http://matrix-synapse:'+ matrix_synapse_container_federation_api_plain_port|string),
-      'dendrite': ('http://matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
-      'conduit': ('http://matrix-conduit:' + matrix_conduit_port_number|string),
+    {
+      'synapse': ('matrix-synapse-reverse-proxy-companion:8048' if matrix_synapse_reverse_proxy_companion_enabled else 'http://matrix-synapse:'+ matrix_synapse_container_federation_api_plain_port|string),
+      'dendrite': ('matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
+      'conduit': ('matrix-conduit:' + matrix_conduit_port_number|string),
     }[matrix_homeserver_implementation]
   }}
 
 matrix_homeserver_container_network: |-
   {{
-    matrix_nginx_proxy_container_network if matrix_nginx_proxy_enabled else {
-      'synapse': matrix_synapse_container_network,
+    {
+      'synapse': (matrix_synapse_reverse_proxy_companion_container_network if matrix_synapse_reverse_proxy_companion_enabled else matrix_synapse_container_network),
       'dendrite': matrix_dendrite_container_network,
       'conduit': matrix_conduit_container_network,
     }[matrix_homeserver_implementation]
@@ -862,22 +886,35 @@ matrix_mautrix_facebook_enabled: false
 
 matrix_mautrix_facebook_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
-matrix_mautrix_facebook_systemd_required_services_list: |
+matrix_mautrix_facebook_container_network: "{{ matrix_bridges_container_network }}"
+
+matrix_mautrix_facebook_container_additional_networks_auto: |-
   {{
-    ['docker.service']
+    (
+      ([] if matrix_bridges_homeserver_container_network == '' else [matrix_bridges_homeserver_container_network])
+      +
+      ([devture_postgres_container_network] if devture_postgres_enabled and matrix_mautrix_facebook_database_hostname == devture_postgres_connection_hostname else [])
+      +
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network and matrix_mautrix_facebook_container_labels_traefik_enabled else [])
+    ) | unique
+  }}
+
+matrix_mautrix_facebook_systemd_required_services_list_auto: |
+  {{
+    matrix_bots_homeserver_systemd_services_list
     +
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-    +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
-    +
-    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled and matrix_mautrix_facebook_database_hostname == devture_postgres_connection_hostname else [])
   }}
 
 matrix_mautrix_facebook_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'fb.as.token', rounds=655555) | to_uuid }}"
 
+matrix_mautrix_facebook_homeserver_address: "{{ matrix_bridges_homeserver_client_api_url }}"
+
 matrix_mautrix_facebook_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'fb.hs.token', rounds=655555) | to_uuid }}"
 
-matrix_mautrix_facebook_public_endpoint: "/{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'facebook', rounds=655555) | to_uuid }}"
+matrix_mautrix_facebook_appservice_public_enabled: true
+matrix_mautrix_facebook_appservice_public_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_mautrix_facebook_appservice_public_prefix: "/{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'facebook', rounds=655555) | to_uuid }}"
 
 matrix_mautrix_facebook_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9008') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
@@ -885,17 +922,24 @@ matrix_mautrix_facebook_login_shared_secret: "{{ matrix_synapse_ext_password_pro
 
 matrix_mautrix_facebook_bridge_presence: "{{ matrix_synapse_presence_enabled if matrix_synapse_enabled else true }}"
 
-# People using an external Prometheus server will need to toggle all of these to be able to consume metrics remotely:
-# - `matrix_mautrix_facebook_metrics_enabled`
-# - `matrix_mautrix_facebook_proxying_metrics_enabled`
-# - `matrix_nginx_proxy_proxy_matrix_metrics_enabled`
 matrix_mautrix_facebook_metrics_enabled: "{{ prometheus_enabled }}"
+
+matrix_mautrix_facebook_metrics_proxying_enabled: "{{ matrix_mautrix_facebook_metrics_enabled and matrix_metrics_exposure_enabled }}"
+matrix_mautrix_facebook_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
+matrix_mautrix_facebook_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/mautrix-facebook"
+matrix_mautrix_facebook_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+matrix_mautrix_facebook_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
 # We'd like to force-set people with external Postgres to SQLite, so the bridge role can complain
 # and point them to a migration path.
 matrix_mautrix_facebook_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mautrix_facebook_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_mautrix_facebook_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.fb.db', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_facebook_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_mautrix_facebook_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_mautrix_facebook_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_mautrix_facebook_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 ######################################################################
 #
@@ -1374,11 +1418,11 @@ matrix_hookshot_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_se
 
 matrix_hookshot_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'hookshot.hs.tok', rounds=655555) | to_uuid }}"
 
+matrix_hookshot_homeserver_address: "{{ matrix_bridges_homeserver_client_api_url }}"
+
 matrix_hookshot_systemd_wanted_services_list: |
   {{
-    (['matrix-' + matrix_homeserver_implementation + '.service'])
-    +
-    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+    matrix_bridges_homeserver_systemd_services_list
     +
     ([(redis_identifier + '.service')] if redis_enabled and matrix_hookshot_queue_host == redis_identifier else [])
   }}
@@ -1388,9 +1432,15 @@ matrix_hookshot_systemd_wanted_services_list: |
 # because connectivity is still potentially troublesome and is to be investigated.
 matrix_hookshot_queue_host: "{{ redis_identifier if redis_enabled and matrix_hookshot_experimental_encryption_enabled else '' }}"
 
+matrix_hookshot_container_network: "{{ matrix_bridges_container_network }}"
+
 matrix_hookshot_container_additional_networks_auto: |
   {{
-    ([redis_container_network] if redis_enabled and matrix_hookshot_queue_host == redis_identifier else [])
+    (
+      ([] if matrix_bridges_homeserver_container_network == '' else [matrix_bridges_homeserver_container_network])
+      +
+      ([redis_container_network] if redis_enabled and matrix_hookshot_queue_host == redis_identifier else [])
+    )
   }}
 
 matrix_hookshot_container_http_host_bind_ports_defaultmapping:
@@ -1410,6 +1460,13 @@ matrix_hookshot_provisioning_enabled: "{{ matrix_hookshot_provisioning_secret an
 # - `matrix_hookshot_metrics_proxying_enabled`
 # - `matrix_nginx_proxy_proxy_matrix_metrics_enabled`
 matrix_hookshot_metrics_enabled: "{{ prometheus_enabled }}"
+
+# TODO - implement
+# matrix_hookshot_metrics_metrics_proxying_enabled: "{{ matrix_hookshot_metrics_enabled and matrix_metrics_exposure_enabled }}"
+# matrix_hookshot_metrics_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
+# matrix_hookshot_metrics_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/hookshot"
+# matrix_hookshot_metrics_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+# matrix_hookshot_metrics_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
 matrix_hookshot_urlprefix_port_enabled: "{{ matrix_nginx_proxy_container_https_host_bind_port == 443 if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_https_host_bind_port == 80 }}"
 matrix_hookshot_urlprefix_port: ":{{ matrix_nginx_proxy_container_https_host_bind_port if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_http_host_bind_port }}"
@@ -1668,15 +1725,11 @@ matrix_mx_puppet_groupme_database_password: "{{ '%s' | format(matrix_homeserver_
 # We don't enable bots by default.
 matrix_bot_matrix_reminder_bot_enabled: false
 
-matrix_bot_matrix_reminder_bot_systemd_required_services_list: |
+matrix_bot_matrix_reminder_bot_systemd_required_services_list_auto: |
   {{
-    ['docker.service']
+    matrix_bots_homeserver_systemd_services_list
     +
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-    +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
-    +
-    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled and matrix_bot_matrix_reminder_bot_database_hostname == devture_postgres_connection_hostname else [])
   }}
 
 # Postgres is the default, except if not using internal Postgres server
@@ -1684,6 +1737,18 @@ matrix_bot_matrix_reminder_bot_database_engine: "{{ 'postgres' if devture_postgr
 matrix_bot_matrix_reminder_bot_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_bot_matrix_reminder_bot_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'reminder.bot.db', rounds=655555) | to_uuid }}"
 matrix_bot_matrix_reminder_bot_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+
+matrix_bot_matrix_reminder_bot_container_network: "{{ matrix_bots_container_network }}"
+matrix_bot_matrix_reminder_bot_container_additional_networks_auto: |-
+  {{
+    (
+      ([] if matrix_bots_homeserver_container_network == '' else [matrix_bots_homeserver_container_network])
+      +
+      ([devture_postgres_container_network] if devture_postgres_enabled and matrix_bot_matrix_reminder_bot_database_hostname == devture_postgres_connection_hostname else [])
+    ) | unique
+  }}
+
+matrix_bot_matrix_reminder_bot_matrix_homeserver_url: "{{ matrix_bots_homeserver_client_api_url }}"
 
 ######################################################################
 #
@@ -1938,13 +2003,11 @@ matrix_bot_postmoogle_tls_key: |-
 
 matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services: "{% for domain in matrix_bot_postmoogle_domains %}{{ devture_traefik_certs_dumper_identifier }}-wait-for-domain@{{ domain }}.service {% endfor %}"
 
-matrix_bot_postmoogle_systemd_required_services_list: |
+matrix_bot_postmoogle_systemd_required_services_list_auto: |
   {{
-    ['docker.service']
+    matrix_bots_homeserver_systemd_services_list
     +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
-    +
-    (['matrix-synapse.service'] if matrix_synapse_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled and matrix_bot_postmoogle_database_hostname == matrix_bot_postmoogle_database_hostname else [])
     +
     (matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services | trim | split(' ') if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and devture_traefik_certs_dumper_enabled else [])
   }}
@@ -1953,6 +2016,19 @@ matrix_bot_postmoogle_systemd_required_services_list: |
 matrix_bot_postmoogle_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_bot_postmoogle_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_bot_postmoogle_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'postmoogle.db', rounds=655555) | to_uuid }}"
+
+matrix_bot_postmoogle_homeserver: "{{ matrix_bots_homeserver_client_api_url }}"
+
+matrix_bot_postmoogle_container_network: "{{ matrix_bots_container_network }}"
+
+matrix_bot_postmoogle_container_additional_networks_auto: |-
+  {{
+    (
+      ([] if matrix_bots_homeserver_container_network == '' else [matrix_bots_homeserver_container_network])
+      +
+      ([devture_postgres_container_network] if devture_postgres_enabled and matrix_bot_matrix_reminder_bot_database_hostname == devture_postgres_connection_hostname else [])
+    ) | unique
+  }}
 
 ######################################################################
 #
@@ -1971,6 +2047,13 @@ matrix_bot_postmoogle_database_password: "{{ '%s' | format(matrix_homeserver_gen
 matrix_bot_chatgpt_enabled: false
 
 matrix_bot_chatgpt_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
+
+matrix_bot_chatgpt_container_network: "{{ matrix_bots_container_network }}"
+matrix_bot_chatgpt_container_additional_networks_auto: "{{ [] if matrix_bots_homeserver_container_network == '' else [matrix_bots_homeserver_container_network] }}"
+
+matrix_bot_chatgpt_matrix_homeserver_url: "{{ matrix_bots_homeserver_client_api_url }}"
+
+matrix_bot_chatgpt_systemd_required_services_list_auto: "{{ matrix_bots_homeserver_systemd_services_list }}"
 
 ######################################################################
 #
@@ -2971,6 +3054,81 @@ matrix_nginx_proxy_access_log_syslog_integration_server_port: "{{ (matrix_promet
 #
 # /matrix-nginx-proxy
 #
+######################################################################
+
+
+######################################################################
+#                                                                    #
+# matrix-homeserver-proxy                                            #
+#                                                                    #
+######################################################################
+
+# The playbook always enables the homeserver proxy for now.
+# TODO - consider not enabling it if not necessary
+matrix_homeserver_proxy_enabled: true
+
+matrix_homeserver_proxy_access_log_syslog_integration_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
+matrix_homeserver_proxy_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_container_hostname | string + ':' + matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
+
+matrix_homeserver_proxy_container_additional_networks: |
+  {{
+    (
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
+      +
+      ([
+        {
+          'synapse': matrix_synapse_container_network,
+          'dendrite': matrix_dendrite_container_network,
+          'conduit': matrix_conduit_container_network,
+        }[matrix_homeserver_implementation] | string
+      ])
+    ) | unique
+  }}
+
+matrix_homeserver_proxy_client_api_addr: "{{ 'matrix-corporal:41080' if matrix_corporal_enabled else matrix_homeserver_container_client_api_endpoint }}"
+matrix_homeserver_proxy_client_api_client_max_body_size_mb: |-
+  {{
+    {
+      'synapse': matrix_synapse_max_upload_size_mb,
+      'dendrite': (matrix_dendrite_max_file_size_bytes / 1024 / 1024) | round,
+      'conduit': (matrix_conduit_max_request_size / 1024 / 1024) | round,
+    }[matrix_homeserver_implementation]|int
+  }}
+
+matrix_homeserver_proxy_federation_api_addr: "{{ matrix_homeserver_container_federation_api_endpoint }}"
+
+# matrix_nginx_proxy_proxy_matrix_identity_api_enabled: "{{ matrix_ma1sd_enabled }}"
+# matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-ma1sd:{{ matrix_ma1sd_container_port }}"
+# matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "127.0.0.1:{{ matrix_ma1sd_container_port }}"
+
+# # NOTE: we cannot disable this, even though matrix-media-repo is already natively exposed at the Traefik level.
+# # See: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3045#issuecomment-1867327001
+# matrix_nginx_proxy_proxy_media_repo_enabled: "{{ matrix_media_repo_enabled }}"
+# matrix_nginx_proxy_proxy_media_repo_addr_with_container: "{{ matrix_media_repo_identifier }}:{{ matrix_media_repo_port }}"
+# matrix_nginx_proxy_proxy_media_repo_addr_sans_container: "127.0.0.1:{{ matrix_media_repo_port }}"
+
+# matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_ma1sd_enabled }}"
+# matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}"
+# matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container }}"
+
+matrix_homeserver_proxy_systemd_wanted_services_list_auto: |
+  {{
+    matrix_homeserver_systemd_services_list
+    +
+    (['matrix-corporal.service'] if matrix_corporal_enabled else [])
+    +
+    (['matrix-ma1sd.service'] if matrix_ma1sd_enabled else [])
+    +
+    ([(matrix_media_repo_identifier + '.service')] if matrix_media_repo_enabled else [])
+  }}
+
+# matrix_nginx_proxy_access_log_syslog_integration_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
+# matrix_nginx_proxy_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_container_hostname | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
+
+######################################################################
+#                                                                    #
+# /matrix-homeserver-proxy                                           #
+#                                                                    #
 ######################################################################
 
 
@@ -4157,7 +4315,7 @@ matrix_sliding_sync_container_additional_networks: |
     (
       ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
       +
-      ([matrix_nginx_proxy_container_network] if matrix_nginx_proxy_enabled and matrix_nginx_proxy_container_network != matrix_sliding_sync_container_network else [])
+      ([] if matrix_homeserver_container_network in ['', matrix_sliding_sync_container_network] else [matrix_homeserver_container_network])
       +
       ([devture_postgres_container_network] if devture_postgres_enabled and devture_postgres_container_network != matrix_sliding_sync_container_network else [])
     ) | unique
@@ -4172,20 +4330,15 @@ matrix_sliding_sync_systemd_required_services_list: |
   {{
     ['docker.service']
     +
-    ['matrix-' + matrix_homeserver_implementation + '.service']
+    matrix_homeserver_systemd_services_list
     +
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
-    +
-    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
 matrix_sliding_sync_environment_variable_syncv3_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'ss.secret', rounds=655555) | to_uuid }}"
 
 matrix_sliding_sync_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_sliding_sync_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'ss.db', rounds=655555) | to_uuid }}"
-
-# Starting from version `0.6.0` conduit natively supports some sync v3 (sliding-sync) features.
-matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_sliding_sync_enabled else matrix_homeserver_url if matrix_conduit_enabled else '' }}"
 
 ######################################################################
 #

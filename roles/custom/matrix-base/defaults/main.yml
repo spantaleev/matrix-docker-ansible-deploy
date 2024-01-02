@@ -19,6 +19,30 @@ matrix_bridges_encryption_enabled: false
 # Global var to enable/disable relay mode across all bridges with relay mode support
 matrix_bridges_relay_enabled: false
 
+# A container network where all bridges would live.
+matrix_bridges_container_network: matrix-bridges
+
+# The container network that the homeserver lives on and bridges should be connected to
+matrix_bridges_homeserver_container_network: "{{ matrix_homeserver_container_network }}"
+
+# The URL where bridges can reach the homeserver.
+matrix_bridges_homeserver_client_api_url: "{{ matrix_homeserver_container_url }}"
+
+# The systemd services (representing the homeserver) that bridges should depend on
+matrix_bridges_homeserver_systemd_services_list: "{{ matrix_homeserver_systemd_services_list }}"
+
+# A container network where all bots would live.
+matrix_bots_container_network: matrix-bots
+
+# The container network that the homeserver lives on and bots should be connected to
+matrix_bots_homeserver_container_network: "{{ matrix_homeserver_container_network }}"
+
+# The URL where bots can reach the homeserver.
+matrix_bots_homeserver_client_api_url: "{{ matrix_homeserver_container_url }}"
+
+# The systemd services (representing the homeserver) that bots should depend on
+matrix_bots_homeserver_systemd_services_list: "{{ matrix_homeserver_systemd_services_list }}"
+
 # matrix_homeserver_enabled controls whether to enable the homeserver systemd service, etc.
 #
 # Unless you're wrapping this playbook in another one
@@ -146,15 +170,27 @@ matrix_host_command_openssl: "/usr/bin/env openssl"
 
 matrix_homeserver_url: "https://{{ matrix_server_fqn_matrix }}"
 
-# Specifies where the homeserver's Client-Server API is on the container network.
-# Where this is depends on whether there's a reverse-proxy in front of the homeserver, which homeserver it is, etc.
-# This likely gets overriden elsewhere.
-matrix_homeserver_container_url: ""
+# Specifies on which container network the homeserver is.
+matrix_homeserver_container_network: ""
 
-# Specifies where the homeserver's Federation API is on the container network.
+# Specifies which systemd services are responsible for the homeserver
+matrix_homeserver_systemd_services_list: []
+
+# Specifies where the homeserver's Client-Server API is on the container network (matrix_homeserver_container_network).
+matrix_homeserver_container_url: "http://{{ matrix_homeserver_container_client_api_endpoint }}"
+
+# Specifies where the homeserver's Client-Server API is on the container network (matrix_homeserver_container_network).
 # Where this is depends on whether there's a reverse-proxy in front of the homeserver, which homeserver it is, etc.
 # This likely gets overriden elsewhere.
-matrix_homeserver_container_federation_url: ""
+matrix_homeserver_container_client_api_endpoint: ""
+
+# Specifies where the homeserver's Federation API is on the container network (matrix_homeserver_container_network).
+matrix_homeserver_container_federation_url: "http://{{ matrix_homeserver_container_federation_api_endpoint }}"
+
+# Specifies where the homeserver's Federation API is on the container network (matrix_homeserver_container_network).
+# Where this is depends on whether there's a reverse-proxy in front of the homeserver, which homeserver it is, etc.
+# This likely gets overriden elsewhere.
+matrix_homeserver_container_federation_api_endpoint: ""
 
 # Specifies the public url of the Sync v3 (sliding-sync) API.
 # This will be used to set the `org.matrix.msc3575.proxy` property in `/.well-known/matrix/client`.
@@ -293,6 +329,15 @@ matrix_well_known_matrix_support_enabled: false
 
 matrix_homeserver_container_extra_arguments_auto: []
 matrix_homeserver_app_service_config_files_auto: []
+
+# Controls whether various services should expose metrics publicly.
+# If Prometheus is operating on the same machine, exposing metrics publicly is not necessary.
+matrix_metrics_exposure_enabled: false
+matrix_metrics_exposure_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_metrics_exposure_path_prefix: /metrics
+matrix_metrics_exposure_http_basic_auth_enabled: false
+# See https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
+matrix_metrics_exposure_http_basic_auth_users: ''
 
 # Specifies the type of reverse-proxy used by the playbook.
 #

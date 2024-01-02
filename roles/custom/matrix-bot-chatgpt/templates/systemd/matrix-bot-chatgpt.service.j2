@@ -16,7 +16,7 @@ Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ matrix_bot_chatgpt_container_stop_grace_time_seconds }} matrix-bot-chatgpt 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-bot-chatgpt 2>/dev/null || true'
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} run \
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--rm \
 			--name=matrix-bot-chatgpt \
 			--log-driver=none \
@@ -24,7 +24,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run \
 			--cap-drop=ALL \
 			--read-only \
 			--tmpfs /tmp \
-			--network={{ matrix_docker_network }} \
+			--network={{ matrix_bot_chatgpt_container_network }} \
 			--env-file={{ matrix_bot_chatgpt_config_path }}/env \
 			--mount type=bind,src={{ matrix_bot_chatgpt_data_path }},dst=/data \
 			--env HOME=/data/home \
@@ -32,6 +32,12 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run \
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_bot_chatgpt_container_image }}
+
+{% for network in matrix_bot_chatgpt_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-bot-chatgpt
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-bot-chatgpt
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ matrix_bot_chatgpt_container_stop_grace_time_seconds }} matrix-bot-chatgpt 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-bot-chatgpt 2>/dev/null || true'

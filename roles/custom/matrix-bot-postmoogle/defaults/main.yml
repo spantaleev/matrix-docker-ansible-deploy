@@ -19,15 +19,23 @@ matrix_bot_postmoogle_base_path: "{{ matrix_base_data_path }}/postmoogle"
 matrix_bot_postmoogle_config_path: "{{ matrix_bot_postmoogle_base_path }}/config"
 matrix_bot_postmoogle_data_path: "{{ matrix_bot_postmoogle_base_path }}/data"
 
+matrix_bot_postmoogle_container_network: ""
+
+matrix_bot_postmoogle_container_additional_networks: "{{ matrix_bot_postmoogle_container_additional_networks_auto + matrix_bot_postmoogle_container_additional_networks_custom }}"
+matrix_bot_postmoogle_container_additional_networks_auto: []
+matrix_bot_postmoogle_container_additional_networks_custom: []
+
 # A list of extra arguments to pass to the container
 matrix_bot_postmoogle_container_extra_arguments: []
 
 # List of systemd services that matrix-bot-postmoogle.service depends on
-matrix_bot_postmoogle_systemd_required_services_list: ['docker.service']
+matrix_bot_postmoogle_systemd_required_services_list: "{{ matrix_bot_postmoogle_systemd_required_services_list_default + matrix_bot_postmoogle_systemd_required_services_list_auto + matrix_bot_postmoogle_systemd_required_services_list_custom }}"
+matrix_bot_postmoogle_systemd_required_services_list_default: ['docker.service']
+matrix_bot_postmoogle_systemd_required_services_list_auto: []
+matrix_bot_postmoogle_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-bot-postmoogle.service wants
 matrix_bot_postmoogle_systemd_wanted_services_list: []
-
 
 # Database-related configuration fields.
 #
@@ -75,7 +83,7 @@ matrix_bot_postmoogle_password: ''
 # Alternative to password - shared secret requires matrix_bot_postmoogle_login to be MXID
 matrix_bot_postmoogle_sharedsecret: ''
 
-matrix_bot_postmoogle_homeserver: "{{ matrix_homeserver_container_url }}"
+matrix_bot_postmoogle_homeserver: ""
 
 # Command prefix
 matrix_bot_postmoogle_prefix: '!pm'

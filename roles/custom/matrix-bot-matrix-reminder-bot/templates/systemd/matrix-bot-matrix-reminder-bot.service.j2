@@ -16,12 +16,14 @@ Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-bot-matrix-reminder-bot 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-bot-matrix-reminder-bot 2>/dev/null || true'
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-bot-matrix-reminder-bot \
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-bot-matrix-reminder-bot \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--read-only \
-			--network={{ matrix_docker_network }} \
+			--network={{ matrix_bot_matrix_reminder_bot_container_network }} \
 			-e 'TZ={{ matrix_bot_matrix_reminder_bot_reminders_timezone }}' \
 			--mount type=bind,src={{ matrix_bot_matrix_reminder_bot_config_path }},dst=/config,ro \
 			--mount type=bind,src={{ matrix_bot_matrix_reminder_bot_data_path }},dst=/data \
@@ -31,6 +33,12 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			{% endfor %}
 			{{ matrix_bot_matrix_reminder_bot_docker_image }} \
 			-c "matrix-reminder-bot /config/config.yaml"
+
+{% for network in matrix_bot_matrix_reminder_bot_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-bot-matrix-reminder-bot
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-bot-matrix-reminder-bot
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-bot-matrix-reminder-bot 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-bot-matrix-reminder-bot 2>/dev/null || true'

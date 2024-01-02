@@ -56,6 +56,11 @@
           path: "{{ matrix_bot_chatgpt_container_src_path }}"
           pull: true
 
+- name: Ensure chatgpt container network is created
+  community.general.docker_network:
+    name: "{{ matrix_bot_chatgpt_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-bot-chatgpt.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-bot-chatgpt.service.j2"

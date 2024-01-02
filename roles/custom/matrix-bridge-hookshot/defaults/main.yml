@@ -224,7 +224,10 @@ matrix_hookshot_container_network: "{{ matrix_docker_network }}"
 matrix_hookshot_container_extra_arguments: []
 
 # List of systemd services that service depends on.
-matrix_hookshot_systemd_required_services_list: ['docker.service']
+matrix_hookshot_systemd_required_services_list: "{{ matrix_hookshot_systemd_required_services_list_default + matrix_hookshot_systemd_required_services_list_auto + matrix_hookshot_systemd_required_services_list_custom }}"
+matrix_hookshot_systemd_required_services_list_default: ['docker.service']
+matrix_hookshot_systemd_required_services_list_auto: []
+matrix_hookshot_systemd_required_services_list_custom: []
 
 # List of systemd services that service wants
 matrix_hookshot_systemd_wanted_services_list: []

@@ -1,0 +1,20 @@
+---
+
+- tags:
+    - setup-all
+    - setup-homeserver-proxy
+    - setup-synapse
+    - install-all
+    - install-homeserver-proxy
+    - install-synapse
+  block:
+    - when: matrix_homeserver_proxy_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-homeserver-proxy
+    - setup-synapse
+  block:
+    - when: not matrix_homeserver_proxy_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
