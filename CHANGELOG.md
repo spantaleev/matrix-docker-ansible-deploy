@@ -1,3 +1,15 @@
+# 2024-01-02
+
+## mautrix-signal now powered by the new Go-based bridge
+
+The old Python-based [mautrix-signal](https://github.com/mautrix/signal) bridge is no longer maintained upstream. It's also known to have issues linking new devices.
+
+It seems like the path forward is to switch to the new mautrix-signal bridge written in Golang, which we did thanks to [PR #3031](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3041) by [Pierre 'McFly' Marty](https://github.com/pm-McFly).
+
+The playbook should **automatically migrate your mautrix-signal installation to the new bridge code**.
+You will **need to relink all your devices** to continue your bridged conversations.
+
+
 # 2023-10-23
 
 ## Enabling `allow_public_rooms_over_federation` by default for Synapse
