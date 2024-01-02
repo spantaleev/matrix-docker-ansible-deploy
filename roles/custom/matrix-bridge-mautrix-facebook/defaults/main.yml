@@ -38,9 +38,6 @@ matrix_mautrix_facebook_container_additional_networks: "{{ matrix_mautrix_facebo
 matrix_mautrix_facebook_container_additional_networks_auto: []
 matrix_mautrix_facebook_container_additional_networks_custom: []
 
-# A list of extra arguments to pass to the container
-matrix_mautrix_facebook_container_extra_arguments: []
-
 # matrix_mautrix_facebook_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
 # See `../templates/labels.j2` for details.
 #
@@ -63,7 +60,7 @@ matrix_mautrix_facebook_container_labels_metrics_enabled: "{{ matrix_mautrix_fac
 matrix_mautrix_facebook_container_labels_metrics_traefik_rule: "Host(`{{ matrix_mautrix_facebook_metrics_proxying_hostname }}`) && PathPrefix(`{{ matrix_mautrix_facebook_metrics_proxying_path_prefix }}`)"
 matrix_mautrix_facebook_container_labels_metrics_traefik_priority: 0
 matrix_mautrix_facebook_container_labels_metrics_traefik_entrypoints: "{{ matrix_mautrix_facebook_container_labels_traefik_entrypoints }}"
-matrix_mautrix_facebook_container_labels_metrics_traefik_tls: "{{ matrix_mautrix_facebook_container_labels_public_endpoint_traefik_entrypoints != 'web' }}"
+matrix_mautrix_facebook_container_labels_metrics_traefik_tls: "{{ matrix_mautrix_facebook_container_labels_metrics_traefik_entrypoints != 'web' }}"
 matrix_mautrix_facebook_container_labels_metrics_traefik_tls_certResolver: "{{ matrix_mautrix_facebook_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 matrix_mautrix_facebook_container_labels_metrics_middleware_basic_auth_enabled: false
 # See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
@@ -77,6 +74,9 @@ matrix_mautrix_facebook_container_labels_metrics_middleware_basic_auth_users: ''
 #   my.label=1
 #   another.label="here"
 matrix_mautrix_facebook_container_labels_additional_labels: ''
+
+# A list of extra arguments to pass to the container
+matrix_mautrix_facebook_container_extra_arguments: []
 
 # List of systemd services that matrix-mautrix-facebook.service depends on.
 matrix_mautrix_facebook_systemd_required_services_list: "{{ matrix_mautrix_facebook_systemd_required_services_list_default + matrix_mautrix_facebook_systemd_required_services_list_auto + matrix_mautrix_facebook_systemd_required_services_list_custom }}"
