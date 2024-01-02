@@ -129,6 +129,11 @@
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-facebook.service"
     mode: 0644
 
+- name: Ensure matrix-mautrix-facebook container network is created
+  community.general.docker_network:
+    name: "{{ matrix_mautrix_facebook_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-mautrix-facebook.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-mautrix-facebook.service"
