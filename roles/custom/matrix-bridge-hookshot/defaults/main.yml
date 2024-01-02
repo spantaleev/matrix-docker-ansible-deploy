@@ -30,10 +30,14 @@ matrix_hookshot_docker_src_files_path: "{{ matrix_hookshot_base_path }}/docker-s
 matrix_hookshot_homeserver_address: "{{ matrix_homeserver_container_url }}"
 matrix_hookshot_container_url: 'matrix-hookshot'
 
+matrix_hookshot_public_hostname: "{{ matrix_server_fqn_matrix }}"
 matrix_hookshot_public_endpoint: /hookshot
+
+matrix_hookshot_urlprefix: "https://{{ matrix_hookshot_public_hostname }}{{ matrix_hookshot_public_endpoint }}"
 
 # There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
 matrix_hookshot_appservice_port: 9993
+matrix_hookshot_appservice_hostname: "{{ matrix_hookshot_public_hostname }}"
 matrix_hookshot_appservice_endpoint: "{{ matrix_hookshot_public_endpoint }}/_matrix/app"
 
 # The variables below control the queue parameters and may optionally be pointed to a Redis instance.
@@ -52,10 +56,10 @@ matrix_hookshot_experimental_encryption_enabled: false
 # If metrics need to be consumed by another (external) Prometheus server, consider exposing them via `matrix_hookshot_metrics_proxying_enabled`.
 matrix_hookshot_metrics_enabled: false
 
-# Controls whether Hookshot metrics should be proxied (exposed) on `matrix.DOMAIN/metrics/hookshot`.
-# This will only work take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
-# See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
+# Controls whether Hookshot metrics should be proxied (exposed) on a public URL.
 matrix_hookshot_metrics_proxying_enabled: false
+matrix_hookshot_metrics_proxying_hostname: ''
+matrix_hookshot_metrics_proxying_path_prefix: ''
 
 # There is no need to edit ports.
 # Read the documentation to learn about using Hookshot metrics with external Prometheus
@@ -64,6 +68,7 @@ matrix_hookshot_metrics_port: 9001
 
 # There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
 matrix_hookshot_webhook_port: 9000
+matrix_hookshot_webhook_hostname: "{{ matrix_hookshot_public_hostname }}"
 matrix_hookshot_webhook_endpoint: "{{ matrix_hookshot_public_endpoint }}/webhooks"
 
 
@@ -86,7 +91,7 @@ matrix_hookshot_github_oauth_client_id: ''  # "Client ID" on the GitHub App page
 matrix_hookshot_github_oauth_client_secret: ''  # "Client Secret" on the GitHub App page
 # Default value of matrix_hookshot_github_oauth_endpoint: "/hookshot/webhooks/oauth"
 matrix_hookshot_github_oauth_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/oauth"
-matrix_hookshot_github_oauth_redirect_uri: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_github_oauth_endpoint }}"
+matrix_hookshot_github_oauth_redirect_uri: "https://{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_github_oauth_endpoint }}"
 
 # These are the default settings mentioned here and don't need to be modified: https://matrix-org.github.io/matrix-hookshot/usage/room_configuration/github_repo.html#configuration
 matrix_hookshot_github_defaultOptions_ignoreHooks: {}  # noqa var-naming
@@ -156,12 +161,13 @@ matrix_hookshot_feeds_pollIntervalSeconds: 600  # noqa var-naming
 matrix_hookshot_feeds_pollTimeoutSeconds: 30  # noqa var-naming
 
 
+matrix_hookshot_provisioning_enabled: false
 # There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
 matrix_hookshot_provisioning_port: 9002
 matrix_hookshot_provisioning_secret: ''
 # Provisioning will be automatically enabled if dimension is enabled and you have provided a provisioning secret, unless you override it
-matrix_hookshot_provisioning_enabled: false
 matrix_hookshot_provisioning_internal: "/v1"
+matrix_hookshot_provisioning_hostname: "{{ matrix_hookshot_public_hostname }}"
 matrix_hookshot_provisioning_endpoint: "{{ matrix_hookshot_public_endpoint }}{{ matrix_hookshot_provisioning_internal }}"
 
 # Valid logging levels are: debug, info, warn, error
@@ -196,6 +202,7 @@ matrix_hookshot_widgets_roomSetupWidget_addOnInvite: false   # noqa var-naming
 matrix_hookshot_widgets_disallowedIpRanges: ''   # noqa var-naming
 matrix_hookshot_widgets_internal: "/widgetapi"
 # Default value of matrix_hookshot_widgets_endpoint: "/hookshot/widgetapi"
+matrix_hookshot_widgets_hostname: "{{ matrix_hookshot_public_hostname }}"
 matrix_hookshot_widgets_endpoint: "{{ matrix_hookshot_public_endpoint }}{{ matrix_hookshot_widgets_internal }}"
 matrix_hookshot_widgets_publicUrl: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_widgets_endpoint }}/v1/static"   # noqa var-naming
 matrix_hookshot_widgets_branding_widgetTitle: "Hookshot Configuration"   # noqa var-naming
@@ -222,6 +229,67 @@ matrix_hookshot_container_network: "{{ matrix_docker_network }}"
 
 # A list of extra arguments to pass to the container
 matrix_hookshot_container_extra_arguments: []
+
+# matrix_hookshot_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_hookshot_container_labels_additional_labels`.
+matrix_hookshot_container_labels_traefik_enabled: true
+matrix_hookshot_container_labels_traefik_docker_network: "{{ matrix_hookshot_container_network }}"
+matrix_hookshot_container_labels_traefik_entrypoints: web-secure
+matrix_hookshot_container_labels_traefik_tls_certResolver: default
+
+# Controls whether labels will be added that expose Hookshot's webhooks endpoint
+matrix_hookshot_container_labels_webhooks_enabled: true
+matrix_hookshot_container_labels_webhooks_traefik_rule: "Host(`{{ matrix_hookshot_webhook_hostname }}`) && PathPrefix(`{{ matrix_hookshot_webhook_endpoint }}`)"
+matrix_hookshot_container_labels_webhooks_traefik_priority: 0
+matrix_hookshot_container_labels_webhooks_traefik_entrypoints: "{{ matrix_hookshot_container_labels_traefik_entrypoints }}"
+matrix_hookshot_container_labels_webhooks_traefik_tls: "{{ matrix_hookshot_container_labels_webhooks_traefik_entrypoints != 'web' }}"
+matrix_hookshot_container_labels_webhooks_traefik_tls_certResolver: "{{ matrix_hookshot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose Hookshot's generic endpoint
+matrix_hookshot_container_labels_appservice_enabled: true
+matrix_hookshot_container_labels_appservice_traefik_rule: "Host(`{{ matrix_hookshot_appservice_hostname }}`) && PathPrefix(`{{ matrix_hookshot_appservice_endpoint }}`)"
+matrix_hookshot_container_labels_appservice_traefik_priority: 0
+matrix_hookshot_container_labels_appservice_traefik_entrypoints: "{{ matrix_hookshot_container_labels_traefik_entrypoints }}"
+matrix_hookshot_container_labels_appservice_traefik_tls: "{{ matrix_hookshot_container_labels_appservice_traefik_entrypoints != 'web' }}"
+matrix_hookshot_container_labels_appservice_traefik_tls_certResolver: "{{ matrix_hookshot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose Hookshot's widgets endpoint
+matrix_hookshot_container_labels_widgets_enabled: "{{ matrix_hookshot_widgets_enabled }}"
+matrix_hookshot_container_labels_widgets_traefik_rule: "Host(`{{ matrix_hookshot_widgets_hostname }}`) && PathPrefix(`{{ matrix_hookshot_widgets_endpoint }}`)"
+matrix_hookshot_container_labels_widgets_traefik_priority: 0
+matrix_hookshot_container_labels_widgets_traefik_entrypoints: "{{ matrix_hookshot_container_labels_traefik_entrypoints }}"
+matrix_hookshot_container_labels_widgets_traefik_tls: "{{ matrix_hookshot_container_labels_widgets_traefik_entrypoints != 'web' }}"
+matrix_hookshot_container_labels_widgets_traefik_tls_certResolver: "{{ matrix_hookshot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose Hookshot's provisioning endpoint
+matrix_hookshot_container_labels_provisioning_enabled: "{{ matrix_hookshot_provisioning_enabled }}"
+matrix_hookshot_container_labels_provisioning_traefik_rule: "Host(`{{ matrix_hookshot_provisioning_hostname }}`) && PathPrefix(`{{ matrix_hookshot_provisioning_endpoint }}`)"
+matrix_hookshot_container_labels_provisioning_traefik_priority: 0
+matrix_hookshot_container_labels_provisioning_traefik_entrypoints: "{{ matrix_hookshot_container_labels_traefik_entrypoints }}"
+matrix_hookshot_container_labels_provisioning_traefik_tls: "{{ matrix_hookshot_container_labels_provisioning_traefik_entrypoints != 'web' }}"
+matrix_hookshot_container_labels_provisioning_traefik_tls_certResolver: "{{ matrix_hookshot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose Hookshot's provisioning endpoint
+matrix_hookshot_container_labels_metrics_enabled: "{{ matrix_hookshot_metrics_enabled and matrix_hookshot_metrics_proxying_enabled }}"
+matrix_hookshot_container_labels_metrics_traefik_rule: "Host(`{{ matrix_hookshot_metrics_proxying_hostname }}`) && PathPrefix(`{{ matrix_hookshot_metrics_proxying_path_prefix }}`)"
+matrix_hookshot_container_labels_metrics_traefik_priority: 0
+matrix_hookshot_container_labels_metrics_traefik_entrypoints: "{{ matrix_hookshot_container_labels_traefik_entrypoints }}"
+matrix_hookshot_container_labels_metrics_traefik_tls: "{{ matrix_hookshot_container_labels_metrics_traefik_entrypoints != 'web' }}"
+matrix_hookshot_container_labels_metrics_traefik_tls_certResolver: "{{ matrix_hookshot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_hookshot_container_labels_metrics_middleware_basic_auth_enabled: false
+# See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
+matrix_hookshot_container_labels_metrics_middleware_basic_auth_users: ''
+
+# matrix_hookshot_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_hookshot_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_hookshot_container_labels_additional_labels: ''
 
 # List of systemd services that service depends on.
 matrix_hookshot_systemd_required_services_list: "{{ matrix_hookshot_systemd_required_services_list_default + matrix_hookshot_systemd_required_services_list_auto + matrix_hookshot_systemd_required_services_list_custom }}"

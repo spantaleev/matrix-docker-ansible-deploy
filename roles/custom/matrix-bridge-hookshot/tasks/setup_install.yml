@@ -112,6 +112,16 @@
     name: "{{ matrix_hookshot_container_network }}"
     driver: bridge
 
+- name: Ensure mautrix-hookshot support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_hookshot_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - labels
+
 - name: Ensure matrix-hookshot.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-hookshot.service.j2"

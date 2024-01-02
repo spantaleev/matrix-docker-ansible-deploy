@@ -21,6 +21,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create --rm -
           --cap-drop=ALL \
           --network={{ matrix_hookshot_container_network }} \
           --mount type=bind,src={{ matrix_hookshot_base_path }},dst=/data \
+          --label-file={{ matrix_hookshot_base_path }}/labels \
           {% for port in matrix_hookshot_container_http_host_bind_ports %}
           -p {{ port }} \
           {% endfor %}

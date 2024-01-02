@@ -1440,7 +1440,9 @@ matrix_hookshot_container_additional_networks_auto: |
       ([] if matrix_bridges_homeserver_container_network == '' else [matrix_bridges_homeserver_container_network])
       +
       ([redis_container_network] if redis_enabled and matrix_hookshot_queue_host == redis_identifier else [])
-    )
+      +
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network and matrix_hookshot_container_labels_traefik_enabled else [])
+    ) | unique
   }}
 
 matrix_hookshot_container_http_host_bind_ports_defaultmapping:
@@ -1451,26 +1453,24 @@ matrix_hookshot_container_http_host_bind_ports_defaultmapping:
 
 matrix_hookshot_container_http_host_bind_ports: "{{ matrix_hookshot_container_http_host_bind_ports_defaultmapping if matrix_playbook_service_host_bind_interface_prefix else [] }}"
 
+matrix_hookshot_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_hookshot_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_hookshot_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_hookshot_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
 matrix_hookshot_provisioning_enabled: "{{ matrix_hookshot_provisioning_secret and matrix_dimension_enabled }}"
 
 # We only enable metrics (locally, in the container network) for the bridge if Prometheus is enabled.
-#
-# People using an external Prometheus server will need to toggle all of these to be able to consume metrics remotely:
-# - `matrix_hookshot_metrics_enabled`
-# - `matrix_hookshot_metrics_proxying_enabled`
-# - `matrix_nginx_proxy_proxy_matrix_metrics_enabled`
 matrix_hookshot_metrics_enabled: "{{ prometheus_enabled }}"
 
-# TODO - implement
-# matrix_hookshot_metrics_metrics_proxying_enabled: "{{ matrix_hookshot_metrics_enabled and matrix_metrics_exposure_enabled }}"
-# matrix_hookshot_metrics_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
-# matrix_hookshot_metrics_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/hookshot"
-# matrix_hookshot_metrics_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
-# matrix_hookshot_metrics_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+matrix_hookshot_metrics_proxying_enabled: "{{ matrix_hookshot_metrics_enabled and matrix_metrics_exposure_enabled }}"
+matrix_hookshot_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
+matrix_hookshot_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/hookshot"
+matrix_hookshot_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+matrix_hookshot_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
-matrix_hookshot_urlprefix_port_enabled: "{{ matrix_nginx_proxy_container_https_host_bind_port == 443 if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_https_host_bind_port == 80 }}"
-matrix_hookshot_urlprefix_port: ":{{ matrix_nginx_proxy_container_https_host_bind_port if matrix_nginx_proxy_https_enabled else matrix_nginx_proxy_container_http_host_bind_port }}"
-matrix_hookshot_urlprefix: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}://{{ matrix_server_fqn_matrix }}{{ matrix_hookshot_urlprefix_port if matrix_hookshot_urlprefix_port_enabled else '' }}"
+matrix_hookshot_public_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_hookshot_urlprefix: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}://{{ matrix_server_fqn_matrix }}"
 
 ######################################################################
 #
