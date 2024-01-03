@@ -38,16 +38,13 @@ To learn how to set it up, read the Installing section below.
 
 ## (Optional) Introduction to Homeserver Admin Contact and Support page
 
-[MSC 1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929) specifies a way to add contact details of admins, as well as a link to a support page for users who are having issues with the service.
-
-This MSC did not get accepted yet, but we think it might already be useful to Homeserver admins who wish to provide this information to end-users.
+[MSC 1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929) specifies a way to add contact details of admins, as well as a link to a support page for users who are having issues with the service. Automated services may also index this information and use it for abuse reports, etc.
 
 The two playbook variables that you could look for, if you're interested in being an early adopter, are: `matrix_homeserver_admin_contacts` and `matrix_homeserver_support_url`.
 
 Example snippet for `vars.yml`:
 ```
 # Enable generation of `/.well-known/matrix/support`.
-# This needs to be enabled explicitly for now, because MSC 1929 is not yet accepted.
 matrix_well_known_matrix_support_enabled: true
 
 # Homeserver admin contacts as per MSC 1929 https://github.com/matrix-org/matrix-spec-proposals/pull/1929
