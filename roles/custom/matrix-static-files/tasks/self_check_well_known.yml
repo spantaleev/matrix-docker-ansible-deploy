@@ -1,7 +1,5 @@
 ---
 
-# TODO - deprecate the old variables in the matrix-nginx-proxy role
-
 - name: Determine well-known files to check (start with /.well-known/matrix/client)
   ansible.builtin.set_fact:
     well_known_file_checks:
@@ -11,7 +9,7 @@
         follow_redirects: "{{ matrix_static_files_self_check_well_known_matrix_client_follow_redirects }}"
         validate_certs: "{{ matrix_static_files_self_check_validate_certificates }}"
 
-- when: matrix_well_known_matrix_server_enabled | bool
+- when: matrix_static_files_file_matrix_server_enabled | bool
   block:
     - name: Prepare /.well-known/matrix/server to well-known files to check, if enabled
       ansible.builtin.set_fact:
