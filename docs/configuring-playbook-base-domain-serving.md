@@ -17,7 +17,7 @@ This documentation page tells you how to do the latter. With some easy changes, 
 Just **adjust your DNS records**, so that your base domain is pointed to the Matrix server's IP address (using a DNS `A` record) **and then use the following configuration**:
 
 ```yaml
-matrix_nginx_proxy_base_domain_serving_enabled: true
+matrix_static_files_container_labels_base_domain_enabled: true
 ```
 
 Doing this, the playbook will:
@@ -26,27 +26,46 @@ Doing this, the playbook will:
 
 - serve the `/.well-known/matrix/*` files which are necessary for [Federation Server Discovery](configuring-well-known.md#introduction-to-client-server-discovery) (also see [Server Delegation](howto-server-delegation.md)) and [Client-Server discovery](configuring-well-known.md#introduction-to-client-server-discovery)
 
-- serve a simple homepage at `https://DOMAIN` with content `Hello from DOMAIN` (configurable via the `matrix_nginx_proxy_base_domain_homepage_template` variable). You can also [serve a more complicated static website](#serving-a-static-website-at-the-base-domain).
+- serve a simple homepage at `https://DOMAIN` with content `Hello from DOMAIN` (configurable via the `matrix_static_files_file_index_html_template` variable). You can also [serve a more complicated static website](#serving-a-static-website-at-the-base-domain).
 
 
 ## Serving a static website at the base domain
 
-By default, when "serving the base domain" is enabled, the playbook hosts a simple `index.html` webpage in `/matrix/nginx-proxy/data/matrix-domain`.
-The content of this page is taken from the `matrix_nginx_proxy_base_domain_homepage_template` variable.
+By default, when "serving the base domain" is enabled, the playbook hosts a simple `index.html` webpage at `/matrix/static-files/public/index.html`.
+The content of this page is taken from the `matrix_static_files_file_index_html_template` variable.
 
 If you'd like to host your own static website (more than a single `index.html` page) at the base domain, you can disable the creation of this default `index.html` page like this:
 
 ```yaml
-matrix_nginx_proxy_base_domain_homepage_enabled: false
+# Enable base-domain serving
+matrix_static_files_container_labels_base_domain_enabled: true
+
+# Prevent the default index.html file from being installed
+matrix_static_files_file_index_html_enabled: false
 ```
 
-With this configuration, Ansible will no longer mess around with the `/matrix/nginx-proxy/data/matrix-domain/index.html` file.
+With this configuration, Ansible will no longer mess around with the `/matrix/static-files/public/index.html` file.
 
-You are then free to upload any static website files to `/matrix/nginx-proxy/data/matrix-domain` and they will get served at the base domain.
+You are then free to upload any static website files to `/matrix/static-files/public` and they will get served at the base domain.
+You can do so manually or by using the [ansible-role-aux](https://github.com/mother-of-all-self-hosting/ansible-role-aux) Ansible role, which is part of this playbook already.
 
 
 ## Serving a more complicated website at the base domain
 
 If you'd like to serve an even more complicated (dynamic) website from the Matrix server, relying on the playbook to serve the base domain is not the best choice.
 
-Instead, we recommend that you switch to [using your own webserver](configuring-playbook-own-webserver.md) (preferrably nginx). You can then make that webserver host anything you wish, and still easily plug in Matrix services into it.
+You have 2 options.
+
+**One way is to host your base domain elsewhere**. This involves:
+- you stopping to serve it from the Matrix server: remove `matrix_static_files_container_labels_base_domain_enabled` from your configuration
+- [configuring Matrix Delegation via well-known](./configuring-well-known.md)
+
+**Another way is to serve the base domain from another (your own) container on the Matrix server**. This involves:
+- telling the playbook to only serve `BASE_DOMAIN/.well-known/matrix` files by adjusting your `vars.yml` configuration like this:
+  - keep `matrix_static_files_container_labels_base_domain_enabled: true`
+  - add an extra: `matrix_static_files_container_labels_base_domain_traefik_path_prefix: /.well-known/matrix`
+- building and running a new container on the Matrix server:
+  - it should be connected to the `traefik` network, so that Traefik can reverse-proxy to it
+  - it should have appropriate [container labels](https://docs.docker.com/config/labels-custom-metadata/), which instruct Traefik to reverse-proxy to it
+
+How you'll be managing building and running this container is up-to-you. You may use of the primitives from [ansible-role-aux](https://github.com/mother-of-all-self-hosting/ansible-role-aux) Ansible role to organize it yourself, or you can set it up in another way.

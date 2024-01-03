@@ -198,31 +198,6 @@
     dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-domain.conf"
     mode: 0644
 
-- name: Ensure Matrix nginx-proxy data directory for base domain exists
-  ansible.builtin.file:
-    path: "{{ matrix_nginx_proxy_data_path }}/matrix-domain"
-    state: directory
-    mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-  when: matrix_nginx_proxy_base_domain_serving_enabled | bool and matrix_nginx_proxy_base_domain_create_directory | bool
-
-- name: Ensure Matrix nginx-proxy homepage for base domain exists
-  ansible.builtin.copy:
-    content: "{{ matrix_nginx_proxy_base_domain_homepage_template }}"
-    dest: "{{ matrix_nginx_proxy_data_path }}/matrix-domain/index.html"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-  when: matrix_nginx_proxy_base_domain_serving_enabled | bool and matrix_nginx_proxy_base_domain_homepage_enabled | bool and matrix_nginx_proxy_base_domain_create_directory | bool
-
-- name: Ensure Matrix nginx-proxy configuration for base domain exists
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/nginx/conf.d/matrix-base-domain.conf.j2"
-    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-base-domain.conf"
-    mode: 0644
-  when: matrix_nginx_proxy_base_domain_serving_enabled | bool
-
 #
 # Tasks related to setting up matrix-nginx-proxy
 #
@@ -365,18 +340,6 @@
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-etherpad.conf"
     state: absent
   when: "not matrix_nginx_proxy_proxy_etherpad_enabled | bool"
-
-- name: Ensure Matrix nginx-proxy homepage for base domain deleted
-  ansible.builtin.file:
-    path: "{{ matrix_nginx_proxy_data_path }}/matrix-domain/index.html"
-    state: absent
-  when: "not matrix_nginx_proxy_base_domain_serving_enabled | bool"
-
-- name: Ensure Matrix nginx-proxy configuration for base domain deleted
-  ansible.builtin.file:
-    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-base-domain.conf"
-    state: absent
-  when: "not matrix_nginx_proxy_base_domain_serving_enabled | bool"
 
 - name: Ensure Matrix nginx-proxy configuration for main config override deleted
   ansible.builtin.file:

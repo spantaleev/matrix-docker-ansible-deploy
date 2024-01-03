@@ -48,7 +48,7 @@ matrix_static_files_container_labels_traefik_docker_network: "{{ matrix_static_f
 matrix_static_files_container_labels_traefik_entrypoints: web-secure
 matrix_static_files_container_labels_traefik_tls_certResolver: default
 
-# Controls whether labels will be added that expose the well-known public endpoint
+# Controls whether labels will be added that expose the well-known public endpoint on the matrix domain.
 matrix_static_files_container_labels_well_known_matrix_endpoint_enabled: true
 matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_hostname: ''
 matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_path_prefix: /.well-known/matrix
@@ -57,6 +57,26 @@ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_priority
 matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_entrypoints: "{{ matrix_static_files_container_labels_traefik_entrypoints }}"
 matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls: "{{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_entrypoints != 'web' }}"
 matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls_certResolver: "{{ matrix_static_files_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that serve the base domain.
+#
+# This is similar to `matrix_static_files_container_labels_well_known_matrix_endpoint_*`, but does more.
+#
+# It's useful when you'd like to avoid setting up `/.well-known/matrix` redirects and can afford to point the base domain to the Matrix server.
+#
+# By default, these labels are configured to handle all paths for the provided base domain
+# (see `matrix_static_files_container_labels_base_domain_traefik_path_prefix`), not just the `/.well-known/matrix` prefix.
+#
+# By default, an index.html page is also served (see `matrix_static_files_file_index_html_enabled`).
+matrix_static_files_container_labels_base_domain_enabled: false
+matrix_static_files_container_labels_base_domain_traefik_hostname: ''
+matrix_static_files_container_labels_base_domain_traefik_path_prefix: /
+matrix_static_files_container_labels_base_domain_traefik_rule: "Host(`{{ matrix_static_files_container_labels_base_domain_traefik_hostname }}`){% if matrix_static_files_container_labels_base_domain_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_path_prefix }}`){% endif %}"
+matrix_static_files_container_labels_base_domain_traefik_priority: 0
+matrix_static_files_container_labels_base_domain_traefik_entrypoints: "{{ matrix_static_files_container_labels_traefik_entrypoints }}"
+matrix_static_files_container_labels_base_domain_traefik_tls: "{{ matrix_static_files_container_labels_base_domain_traefik_entrypoints != 'web' }}"
+matrix_static_files_container_labels_base_domain_traefik_tls_certResolver: "{{ matrix_static_files_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
 
 # matrix_static_files_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
@@ -295,6 +315,40 @@ matrix_static_files_file_matrix_support_configuration: "{{ matrix_static_files_f
 ########################################################################
 #                                                                      #
 # /Related to /.well-known/matrix/support                              #
+#                                                                      #
+########################################################################
+
+
+########################################################################
+#                                                                      #
+# Related to index.html                                                #
+#                                                                      #
+########################################################################
+
+# Controls whether `matrix_static_files_file_index_html_template` would be dumped to an `index.html` file
+# in the public directory (matrix_static_files_public_path).
+#
+# This is useful if you have enabled serving of the base domain (matrix_static_files_container_labels_base_domain_enabled)
+# and wish to serve more than just the `/.well-known/matrix` files from it.
+#
+# You can also use the auxiliary role (https://github.com/mother-of-all-self-hosting/ansible-role-aux) to create files in
+# the public directory (matrix_static_files_public_path) by yourself.
+#
+# Because you may wish to manage these static files yourself, disabling this variable will intentionally not delete an already existing `index.html` file.
+matrix_static_files_file_index_html_enabled: "{{ matrix_static_files_container_labels_base_domain_enabled }}"
+
+matrix_static_files_file_index_html_template: |-
+  <!doctype html>
+  <meta charset="utf-8" />
+  <html>
+    <body>
+      Hello from {{ matrix_static_files_container_labels_base_domain_traefik_hostname }}!
+    </body>
+  </html>
+
+########################################################################
+#                                                                      #
+# /Related to /index.html                                               #
 #                                                                      #
 ########################################################################
 

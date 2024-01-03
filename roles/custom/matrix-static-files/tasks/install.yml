@@ -33,24 +33,30 @@
 
 - name: Ensure matrix-static-files files are installed
   ansible.builtin.copy:
-    content: "{{ item.content | to_nice_json }}"
+    content: "{{ item.content }}"
     dest: "{{ item.dest }}"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   when: item.when | bool
   with_items:
-    - content: "{{ matrix_static_files_file_matrix_client_configuration }}"
+    - content: "{{ matrix_static_files_file_matrix_client_configuration | to_nice_json }}"
       dest: "{{ matrix_static_files_public_well_known_matrix_path }}/client"
       when: true
 
-    - content: "{{ matrix_static_files_file_matrix_server_configuration }}"
+    - content: "{{ matrix_static_files_file_matrix_server_configuration | to_nice_json }}"
       dest: "{{ matrix_static_files_public_well_known_matrix_path }}/server"
       when: "{{ matrix_static_files_file_matrix_server_enabled }}"
 
-    - content: "{{ matrix_static_files_file_matrix_support_configuration }}"
+    - content: "{{ matrix_static_files_file_matrix_support_configuration | to_nice_json }}"
       dest: "{{ matrix_static_files_public_well_known_matrix_path }}/support"
       when: "{{ matrix_static_files_file_matrix_support_enabled }}"
+
+    # This one will not be deleted if `matrix_static_files_file_index_html_enabled` flips to `false`.
+    # See the comment for `matrix_static_files_file_index_html_enabled` to learn why.
+    - content: "{{ matrix_static_files_file_index_html_template }}"
+      dest: "{{ matrix_static_files_public_path }}/index.html"
+      when: "{{ matrix_static_files_file_index_html_enabled }}"
 
 - name: Ensure /.well-known/matrix/server file deleted if not enabled
   ansible.builtin.file:

@@ -50,11 +50,6 @@ matrix_nginx_proxy_container_labels_traefik_docker_network: "{{ matrix_nginx_pro
 matrix_nginx_proxy_container_labels_traefik_entrypoints: web-secure
 matrix_nginx_proxy_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
-matrix_nginx_proxy_container_labels_traefik_proxy_base_domain_enabled: "{{ matrix_nginx_proxy_base_domain_serving_enabled }}"
-matrix_nginx_proxy_container_labels_traefik_proxy_base_domain_hostname: "{{ matrix_nginx_proxy_base_domain_hostname }}"
-matrix_nginx_proxy_container_labels_traefik_proxy_base_domain_tls: "{{ matrix_nginx_proxy_container_labels_traefik_entrypoints != 'web' }}"
-matrix_nginx_proxy_container_labels_traefik_proxy_base_domain_rule: "Host(`{{ matrix_nginx_proxy_container_labels_traefik_proxy_base_domain_hostname }}`)"
-
 matrix_nginx_proxy_container_labels_traefik_proxy_matrix_enabled: false
 matrix_nginx_proxy_container_labels_traefik_proxy_matrix_tls: "{{ matrix_nginx_proxy_container_labels_traefik_entrypoints != 'web' }}"
 matrix_nginx_proxy_container_labels_traefik_proxy_matrix_client_hostname: "{{ matrix_server_fqn_matrix }}"
@@ -118,40 +113,6 @@ matrix_nginx_proxy_container_https_host_bind_port: '443'
 # This port can take HTTP or HTTPS traffic, depending on `matrix_nginx_proxy_https_enabled`.
 # When HTTPS is disabled, you'd likely want to only expose the port locally, and front it with another HTTPS-enabled reverse-proxy.
 matrix_nginx_proxy_container_federation_host_bind_port: '8448'
-
-# Controls whether matrix-nginx-proxy should serve the base domain.
-#
-# This is useful for when you only have your Matrix server, but you need to serve
-# to serve `/.well-known/matrix/*` files from the base domain for the needs of
-# Server-Discovery (Federation) and for Client-Discovery.
-#
-# Besides serving these Matrix files, a homepage would be served with content
-# as specified in the `matrix_nginx_proxy_base_domain_homepage_template` variable.
-# You can also put additional files to use for this webpage
-# in the `{{ matrix_nginx_proxy_data_path }}/matrix-domain` (`/matrix/nginx-proxy/data/matrix-domain`) directory.
-matrix_nginx_proxy_base_domain_serving_enabled: false
-
-# Controls whether the base domain directory and default index.html file are created.
-matrix_nginx_proxy_base_domain_create_directory: true
-
-matrix_nginx_proxy_base_domain_hostname: "{{ matrix_domain }}"
-
-# Controls whether `matrix_nginx_proxy_base_domain_homepage_template` would be dumped to an `index.html` file
-# in the `/matrix/nginx-proxy/data/matrix-domain` directory.
-#
-# If you would instead like to serve a static website by yourself, you can disable this.
-# When disabled, you're expected to put website files in `/matrix/nginx-proxy/data/matrix-domain` manually
-# and can expect that the playbook won't intefere with the `index.html` file.
-matrix_nginx_proxy_base_domain_homepage_enabled: true
-
-matrix_nginx_proxy_base_domain_homepage_template: |-
-  <!doctype html>
-  <meta charset="utf-8" />
-  <html>
-    <body>
-      Hello from {{ matrix_domain }}!
-    </body>
-  </html>
 
 # Option to disable the access log
 matrix_nginx_proxy_access_log_enabled: true

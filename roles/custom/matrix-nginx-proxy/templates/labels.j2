@@ -5,19 +5,6 @@ traefik.enable=true
 traefik.docker.network={{ matrix_nginx_proxy_container_labels_traefik_docker_network }}
 {% endif %}
 
-
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_base_domain_enabled %}
-# Base domain
-traefik.http.routers.matrix-nginx-proxy-base-domain.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_base_domain_rule }}
-traefik.http.routers.matrix-nginx-proxy-base-domain.service=matrix-nginx-proxy-web
-traefik.http.routers.matrix-nginx-proxy-base-domain.tls={{ matrix_nginx_proxy_container_labels_traefik_proxy_base_domain_tls | to_json }}
-{% if matrix_nginx_proxy_container_labels_traefik_proxy_base_domain_tls %}
-traefik.http.routers.matrix-nginx-proxy-base-domain.tls.certResolver={{ matrix_nginx_proxy_container_labels_traefik_tls_certResolver }}
-{% endif %}
-traefik.http.routers.matrix-nginx-proxy-base-domain.entrypoints={{ matrix_nginx_proxy_container_labels_traefik_entrypoints }}
-{% endif %}
-
-
 {% if matrix_nginx_proxy_container_labels_traefik_proxy_matrix_enabled %}
 # Matrix Client
 traefik.http.routers.matrix-nginx-proxy-matrix-client.rule={{ matrix_nginx_proxy_container_labels_traefik_proxy_matrix_client_rule }}

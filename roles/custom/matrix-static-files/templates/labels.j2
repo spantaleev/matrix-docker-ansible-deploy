@@ -9,7 +9,7 @@ traefik.http.services.{{ matrix_static_files_ident }}.loadbalancer.server.port={
 
 
 {#
-	Related to /.well-known/matrix
+	Related to /.well-known/matrix on the matrix domain
 #}
 {% if matrix_static_files_container_labels_well_known_matrix_endpoint_enabled %}
 
@@ -33,9 +33,32 @@ traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.tls.cer
 
 {% endif %}
 {#
-	/Related to /.well-known/matrix
+	/Related to /.well-known/matrix on the matrix domain
 #}
 
+
+{#
+	Base domain serving
+#}
+{% if matrix_static_files_container_labels_base_domain_enabled %}
+traefik.http.routers.{{ matrix_static_files_ident }}-base-domain.rule={{ matrix_static_files_container_labels_base_domain_traefik_rule }}
+
+{% if matrix_static_files_container_labels_base_domain_traefik_priority | int > 0 %}
+traefik.http.routers.{{ matrix_static_files_ident }}-base-domain.priority={{ matrix_static_files_container_labels_base_domain_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.{{ matrix_static_files_ident }}-base-domain.service={{ matrix_static_files_ident }}
+traefik.http.routers.{{ matrix_static_files_ident }}-base-domain.entrypoints={{ matrix_static_files_container_labels_base_domain_traefik_entrypoints }}
+traefik.http.routers.{{ matrix_static_files_ident }}-base-domain.tls={{ matrix_static_files_container_labels_base_domain_traefik_tls | to_json }}
+
+{% if matrix_static_files_container_labels_base_domain_traefik_tls %}
+traefik.http.routers.{{ matrix_static_files_ident }}-base-domain.tls.certResolver={{ matrix_static_files_container_labels_base_domain_traefik_tls_certResolver }}
+{% endif %}
+
+{% endif %}
+{#
+	/Base domain serving
+#}
 
 {% endif %}
 
