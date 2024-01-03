@@ -51,12 +51,12 @@ matrix_well_known_matrix_support_enabled: true
 matrix_homeserver_admin_contacts:
   - matrix_id: "@admin1:{{ matrix_domain }}"
     email_address: admin@domain.tld
-    role: admin
+    role: m.role.admin
   - matrix_id: "@admin2:{{ matrix_domain }}"
     email_address: admin2@domain.tld
-    role: admin
+    role: m.role.admin
   - email_address: security@domain.tld
-    role: security
+    role: m.role.security
 
 matrix_homeserver_support_url: "https://example.domain.tld/support"
 ```
