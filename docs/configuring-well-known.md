@@ -40,15 +40,15 @@ To learn how to set it up, read the Installing section below.
 
 [MSC 1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929) specifies a way to add contact details of admins, as well as a link to a support page for users who are having issues with the service. Automated services may also index this information and use it for abuse reports, etc.
 
-The two playbook variables that you could look for, if you're interested in being an early adopter, are: `matrix_homeserver_admin_contacts` and `matrix_homeserver_support_url`.
+The two playbook variables that you could look for, if you're interested in being an early adopter, are: `matrix_static_files_file_matrix_support_property_m_contacts` and `matrix_static_files_file_matrix_support_property_m_support_page`.
 
 Example snippet for `vars.yml`:
 ```
 # Enable generation of `/.well-known/matrix/support`.
-matrix_well_known_matrix_support_enabled: true
+matrix_static_files_file_matrix_support_enabled: true
 
 # Homeserver admin contacts as per MSC 1929 https://github.com/matrix-org/matrix-spec-proposals/pull/1929
-matrix_homeserver_admin_contacts:
+matrix_static_files_file_matrix_support_property_m_contacts:
   - matrix_id: "@admin1:{{ matrix_domain }}"
     email_address: admin@domain.tld
     role: m.role.admin
@@ -58,7 +58,7 @@ matrix_homeserver_admin_contacts:
   - email_address: security@domain.tld
     role: m.role.security
 
-matrix_homeserver_support_url: "https://example.domain.tld/support"
+matrix_static_files_file_matrix_support_property_m_support_page: "https://example.domain.tld/support"
 ```
 
 To learn how to set up `/.well-known/matrix/support` for the base domain, read the Installing section below.

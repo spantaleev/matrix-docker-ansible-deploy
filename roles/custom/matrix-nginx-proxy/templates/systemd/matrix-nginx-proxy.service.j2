@@ -41,7 +41,6 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% if matrix_ssl_retrieval_method != 'none' %}
 			--mount type=bind,src={{ matrix_ssl_config_dir_path }},dst={{ matrix_ssl_config_dir_path }},ro \
 			{% endif %}
-			--mount type=bind,src={{ matrix_static_files_base_path }},dst={{ matrix_static_files_base_path }},ro \
 			{% for volume in matrix_nginx_proxy_container_additional_volumes %}
 			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
 			{% endfor %}

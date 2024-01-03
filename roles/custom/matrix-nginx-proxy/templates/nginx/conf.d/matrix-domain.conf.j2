@@ -29,18 +29,6 @@
 
 	add_header X-XSS-Protection "{{ matrix_nginx_proxy_xss_protection }}";
 
-	location /.well-known/matrix {
-		root {{ matrix_static_files_base_path }};
-		{#
-			A somewhat long expires value is used to prevent outages
-			in case this is unreachable due to network failure or
-			due to the base domain's server completely dying.
-		#}
-		expires 4h;
-		default_type application/json;
-		add_header Access-Control-Allow-Origin *;
-	}
-
 	{% if matrix_nginx_proxy_proxy_matrix_nginx_status_enabled %}
 		{{ render_nginx_status_location_block(matrix_nginx_proxy_proxy_matrix_nginx_status_allowed_addresses) }}
 	{% endif %}

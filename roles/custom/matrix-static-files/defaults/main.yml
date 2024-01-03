@@ -112,6 +112,9 @@ matrix_static_files_file_matrix_client_property_m_integrations_managers_api_url:
 matrix_static_files_file_matrix_client_property_m_integrations_managers_ui_url: "{{ matrix_integration_manager_ui_url }}"
 
 # Controls the io.element.jitsi/preferredDomain property in the /.well-known/matrix/client file
+# This specifies the domain name where a Jitsi server is self-hosted.
+# If set, `/.well-known/matrix/client` will suggest Element clients to use that Jitsi server.
+# See: https://github.com/element-hq/element-web/blob/develop/docs/jitsi.md#configuring-element-to-use-your-self-hosted-jitsi-server
 matrix_static_files_file_matrix_client_property_io_element_jitsi_preferred_domain: ""
 
 # Controls the org.matrix.msc3575.proxy/url (sliding sync) property in the /.well-known/matrix/client file
@@ -295,6 +298,17 @@ matrix_static_files_file_matrix_support_configuration: "{{ matrix_static_files_f
 #                                                                      #
 ########################################################################
 
+# Controls whether the self-check feature should validate SSL certificates.
+matrix_static_files_self_check_validate_certificates: true
+
+matrix_static_files_self_check_hostname_matrix: ''
+matrix_static_files_self_check_hostname_identity: ''
+
+# Controls whether redirects will be followed when checking the `/.well-known/matrix/client` resource.
+#
+# As per the spec (https://matrix.org/docs/spec/client_server/r0.6.0#well-known-uri), it shouldn't be,
+# so we default to not following redirects as well.
+matrix_static_files_self_check_well_known_matrix_client_follow_redirects: none
 
 # TODO - review this one
 # Specifies where requests for the root URI (`/`) on the `matrix.` domain should be redirected.

@@ -2996,8 +2996,6 @@ matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_ma1sd_
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}"
 matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container }}"
 
-matrix_nginx_proxy_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
-
 # OCSP stapling does not make sense when self-signed certificates are used.
 # See https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1073
 # and https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1074
@@ -4599,21 +4597,17 @@ matrix_static_files_container_labels_traefik_docker_network: "{{ matrix_playbook
 matrix_static_files_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 matrix_static_files_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
-matrix_static_files_file_matrix_client_property_io_element_jitsi_preferred_domain: "{{ matrix_client_element_jitsi_preferred_domain }}"
+matrix_static_files_file_matrix_client_property_io_element_jitsi_preferred_domain: "{{ matrix_server_fqn_jitsi if jitsi_enabled else '' }}"
 
 matrix_static_files_file_matrix_client_property_org_matrix_msc3575_proxy_url: "{{ matrix_homeserver_sliding_sync_url }}"
 
 matrix_static_files_file_matrix_client_property_m_tile_server_entries_enabled: "{{ matrix_client_element_location_sharing_enabled }}"
 matrix_static_files_file_matrix_client_property_m_tile_server_map_style_url: "https://{{ matrix_server_fqn_element }}/map_style.json"
 
-matrix_static_files_file_matrix_client_property_io_element_e2ee_default: "{{ matrix_well_known_matrix_client_io_element_e2ee_default }}"
-matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_required: "{{ matrix_well_known_matrix_client_io_element_e2ee_secure_backup_required }}"
-matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_setup_methods: "{{ matrix_well_known_matrix_client_io_element_e2ee_secure_backup_setup_methods }}"
-
 matrix_static_files_file_matrix_server_property_m_server: "{{ matrix_server_fqn_matrix_federation }}:{{ matrix_federation_public_port }}"
 
-matrix_static_files_file_matrix_support_property_m_contacts: "{{ matrix_homeserver_admin_contacts }}"
-matrix_static_files_file_matrix_support_property_m_support_page: "{{ matrix_homeserver_support_url }}"
+matrix_static_files_self_check_hostname_matrix: "{{ matrix_server_fqn_matrix }}"
+matrix_static_files_self_check_hostname_identity: "{{ matrix_domain }}"
 
 ########################################################################
 #                                                                      #

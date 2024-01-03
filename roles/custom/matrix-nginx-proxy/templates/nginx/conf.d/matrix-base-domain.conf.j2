@@ -24,17 +24,6 @@
 	{% for configuration_block in matrix_nginx_proxy_proxy_domain_additional_server_configuration_blocks %}
 		{{- configuration_block }}
 	{% endfor %}
-
-	location /.well-known/matrix {
-		root {{ matrix_static_files_base_path }};
-		{#
-			A somewhat long expires value is used to prevent outages
-			in case this is unreachable due to network failure.
-		#}
-		expires 4h;
-		default_type application/json;
-		add_header Access-Control-Allow-Origin *;
-	}
 {% endmacro %}
 
 server {
