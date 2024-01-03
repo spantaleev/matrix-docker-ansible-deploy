@@ -1,0 +1,25 @@
+---
+
+- tags:
+    - setup-all
+    - setup-matrix-static-files
+    - install-all
+    - install-matrix-static-files
+  block:
+    - when: matrix_static_files_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_static_files_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-matrix-static-files
+  block:
+    - when: not matrix_static_files_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
+
+- tags:
+    - self-check
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_well_known.yml"

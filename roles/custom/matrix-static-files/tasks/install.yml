@@ -1,0 +1,87 @@
+---
+
+- name: Ensure matrix-static-files paths exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_static_files_base_path }}"
+    - "{{ matrix_static_files_config_path }}"
+    - "{{ matrix_static_files_public_path }}"
+    - "{{ matrix_static_files_public_well_known_path }}"
+    - "{{ matrix_static_files_public_well_known_matrix_path }}"
+
+- name: Ensure matrix-static-files is configured
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0644
+  with_items:
+    - src: "{{ role_path }}/templates/config.toml.j2"
+      dest: "{{ matrix_static_files_config_path }}/config.toml"
+
+    - src: "{{ role_path }}/templates/env.j2"
+      dest: "{{ matrix_static_files_base_path }}/env"
+
+    - src: "{{ role_path }}/templates/labels.j2"
+      dest: "{{ matrix_static_files_base_path }}/labels"
+
+- name: Ensure matrix-static-files files are installed
+  ansible.builtin.copy:
+    content: "{{ item.content | to_nice_json }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  when: item.when | bool
+  with_items:
+    - content: "{{ matrix_static_files_file_matrix_client_configuration }}"
+      dest: "{{ matrix_static_files_public_well_known_matrix_path }}/client"
+      when: true
+
+    - content: "{{ matrix_static_files_file_matrix_server_configuration }}"
+      dest: "{{ matrix_static_files_public_well_known_matrix_path }}/server"
+      when: "{{ matrix_static_files_file_matrix_server_enabled }}"
+
+    - content: "{{ matrix_static_files_file_matrix_support_configuration }}"
+      dest: "{{ matrix_static_files_public_well_known_matrix_path }}/support"
+      when: "{{ matrix_static_files_file_matrix_support_enabled }}"
+
+- name: Ensure /.well-known/matrix/server file deleted if not enabled
+  ansible.builtin.file:
+    path: "{{ matrix_static_files_public_well_known_matrix_path }}/server"
+    state: absent
+  when: "not matrix_static_files_file_matrix_server_enabled | bool"
+
+- name: Ensure /.well-known/matrix/support file deleted if not enabled
+  ansible.builtin.file:
+    path: "{{ matrix_static_files_public_well_known_matrix_path }}/support"
+    state: absent
+  when: "not matrix_static_files_file_matrix_support_enabled | bool"
+
+- name: Ensure matrix-static-files container image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_static_files_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_static_files_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_static_files_container_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure matrix-static-files container network is created
+  community.general.docker_network:
+    name: "{{ matrix_static_files_container_network }}"
+    driver: bridge
+
+- name: Ensure matrix-static-files systemd service is installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-static-files.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_static_files_ident }}.service"
+    mode: 0644

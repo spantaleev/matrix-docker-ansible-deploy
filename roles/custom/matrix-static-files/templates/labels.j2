@@ -1,0 +1,42 @@
+{% if matrix_static_files_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_static_files_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_static_files_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.{{ matrix_static_files_ident }}.loadbalancer.server.port={{ matrix_static_files_environment_variable_server_port }}
+
+
+{#
+	Related to /.well-known/matrix
+#}
+{% if matrix_static_files_container_labels_well_known_matrix_endpoint_enabled %}
+
+traefik.http.middlewares.{{ matrix_static_files_ident }}-well-known-endpoint-compress.compress=true
+traefik.http.middlewares.{{ matrix_static_files_ident }}-well-known-endpoint-compress.compress.minResponseBodyBytes=100
+
+traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.rule={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_rule }}
+traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.middlewares={{ matrix_static_files_ident }}-well-known-endpoint-compress
+
+{% if matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_priority | int > 0 %}
+traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.priority={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.service={{ matrix_static_files_ident }}
+traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.entrypoints={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_entrypoints }}
+traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.tls={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls | to_json }}
+
+{% if matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls %}
+traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.tls.certResolver={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls_certResolver }}
+{% endif %}
+
+{% endif %}
+{#
+	/Related to /.well-known/matrix
+#}
+
+
+{% endif %}
+
+{{ matrix_static_files_container_labels_additional_labels }}

@@ -1,0 +1,50 @@
+{
+	"m.homeserver": {
+		"base_url": "{{ matrix_static_files_file_matrix_client_property_m_homeserver_base_url }}"
+	}
+	{% if matrix_static_files_file_matrix_client_property_m_identity_server_base_url %},
+	"m.identity_server": {
+		"base_url": "{{ matrix_static_files_file_matrix_client_property_m_identity_server_base_url }}"
+	}
+	{% endif %}
+	{% if matrix_static_files_file_matrix_client_property_m_integrations_managers_api_url and matrix_static_files_file_matrix_client_property_m_integrations_managers_ui_url %},
+	"m.integrations": {
+		"managers": [
+			{
+				"api_url": "{{ matrix_static_files_file_matrix_client_property_m_integrations_managers_api_url }}",
+				"ui_url": "{{ matrix_static_files_file_matrix_client_property_m_integrations_managers_ui_url }}"
+			}
+		]
+	}
+	{% endif %}
+	{% if matrix_static_files_file_matrix_client_property_io_element_jitsi_preferred_domain %},
+	"io.element.jitsi": {
+		"preferredDomain": {{ matrix_static_files_file_matrix_client_property_io_element_jitsi_preferred_domain|to_json }}
+	},
+	"im.vector.riot.jitsi": {
+		"preferredDomain": {{ matrix_static_files_file_matrix_client_property_io_element_jitsi_preferred_domain|to_json }}
+	}
+	{% endif %}
+	{% if matrix_static_files_file_matrix_client_property_org_matrix_msc3575_proxy_url %},
+	"org.matrix.msc3575.proxy": {
+		"url": "{{ matrix_static_files_file_matrix_client_property_org_matrix_msc3575_proxy_url }}"
+	}
+	{% endif %}
+	{% if matrix_static_files_file_matrix_client_property_m_tile_server_entries_enabled %},
+	"m.tile_server": {
+        "map_style_url": "{{ matrix_static_files_file_matrix_client_property_m_tile_server_map_style_url }}"
+    }
+	{% endif %}
+	{% if matrix_static_files_file_matrix_client_property_io_element_e2ee_entries_enabled %},
+	"io.element.e2ee": {
+		"default": {{ matrix_static_files_file_matrix_client_property_io_element_e2ee_default|to_json }},
+		"secure_backup_required": {{ matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_required|to_json }},
+		"secure_backup_setup_methods": {{ matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_setup_methods|to_json }}
+	}
+	{% endif %}
+	{% if matrix_static_files_file_matrix_client_property_io_element_e2ee_entries_enabled %},
+	"im.vector.riot.e2ee": {
+		"default": {{ matrix_static_files_file_matrix_client_property_io_element_e2ee_default|to_json }}
+	}
+	{% endif %}
+}

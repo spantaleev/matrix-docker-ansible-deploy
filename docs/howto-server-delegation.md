@@ -43,7 +43,7 @@ This prevents you from suffering the [Downsides of well-known-based Server Deleg
 
 To use DNS SRV record validation, you need to:
 
-- ensure that `/.well-known/matrix/server` is **not served** from the base domain, as that would interfere with DNS SRV record Server Delegation. To make the playbook **not** generate and serve the file, use the following configuration: `matrix_well_known_matrix_server_enabled: false`.
+- ensure that `/.well-known/matrix/server` is **not served** from the base domain, as that would interfere with DNS SRV record Server Delegation. To make the playbook **not** generate and serve the file, use the following configuration: `matrix_static_files_file_matrix_server_enabled: false`.
 
 - ensure that you have a `_matrix._tcp` DNS SRV record for your base domain (`<your-domain>`) with a value of `10 0 8448 matrix.<your-domain>`
 
@@ -67,11 +67,15 @@ Regardless of which method for obtaining certificates you've used, once you've m
 
 Based on your setup, you have different ways to go about it:
 
-- [Serving the Federation API with your certificates and matrix-nginx-proxy](#serving-the-federation-api-with-your-certificates-and-matrix-nginx-proxy)
-
-- [Serving the Federation API with your certificates and another webserver](#serving-the-federation-api-with-your-certificates-and-another-webserver)
-
-- [Serving the Federation API with your certificates and Synapse handling Federation](#serving-the-federation-api-with-your-certificates-and-synapse-handling-federation)
+- [Server Delegation](#server-delegation)
+	- [Server Delegation via a well-known file](#server-delegation-via-a-well-known-file)
+		- [Downsides of well-known-based Server Delegation](#downsides-of-well-known-based-server-delegation)
+	- [Server Delegation via a DNS SRV record (advanced)](#server-delegation-via-a-dns-srv-record-advanced)
+		- [Obtaining certificates](#obtaining-certificates)
+		- [Serving the Federation API with your certificates](#serving-the-federation-api-with-your-certificates)
+		- [Serving the Federation API with your certificates and matrix-nginx-proxy](#serving-the-federation-api-with-your-certificates-and-matrix-nginx-proxy)
+		- [Serving the Federation API with your certificates and another webserver](#serving-the-federation-api-with-your-certificates-and-another-webserver)
+		- [Serving the Federation API with your certificates and Synapse handling Federation](#serving-the-federation-api-with-your-certificates-and-synapse-handling-federation)
 
 
 ### Serving the Federation API with your certificates and matrix-nginx-proxy

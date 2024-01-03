@@ -399,6 +399,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-user-verification-service.service', 'priority': 800, 'groups': ['matrix', 'matrix-user-verification-service']}] if matrix_user_verification_service_enabled else [])
     +
+    ([{'name': (matrix_static_files_ident + '.service'), 'priority': 4000, 'groups': ['matrix', 'matrix-static-files']}] if matrix_static_files_enabled else [])
+    +
     ([{'name': (devture_container_socket_proxy_identifier + '.service'), 'priority': 2900, 'groups': ['matrix', 'reverse-proxies', 'container-socket-proxy']}] if devture_container_socket_proxy_enabled else [])
     +
     ([{'name': (devture_traefik_identifier + '.service'), 'priority': 3000, 'groups': ['matrix', 'traefik', 'reverse-proxies']}] if devture_traefik_enabled else [])
@@ -4578,6 +4580,46 @@ matrix_user_verification_service_uvs_auth_token: "{{ '%s' | format(matrix_homese
 # /matrix-user-verification-service
 #
 ######################################################################
+
+
+########################################################################
+#                                                                      #
+# matrix-static-files                                                  #
+#                                                                      #
+########################################################################
+
+matrix_static_files_enabled: true
+
+matrix_static_files_container_network: "{{ devture_traefik_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' else matrix_well_known_ident }}"
+
+matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_hostname: "{{ matrix_server_fqn_matrix }}"
+
+matrix_static_files_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
+matrix_static_files_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_static_files_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_static_files_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+matrix_static_files_file_matrix_client_property_io_element_jitsi_preferred_domain: "{{ matrix_client_element_jitsi_preferred_domain }}"
+
+matrix_static_files_file_matrix_client_property_org_matrix_msc3575_proxy_url: "{{ matrix_homeserver_sliding_sync_url }}"
+
+matrix_static_files_file_matrix_client_property_m_tile_server_entries_enabled: "{{ matrix_client_element_location_sharing_enabled }}"
+matrix_static_files_file_matrix_client_property_m_tile_server_map_style_url: "https://{{ matrix_server_fqn_element }}/map_style.json"
+
+matrix_static_files_file_matrix_client_property_io_element_e2ee_default: "{{ matrix_well_known_matrix_client_io_element_e2ee_default }}"
+matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_required: "{{ matrix_well_known_matrix_client_io_element_e2ee_secure_backup_required }}"
+matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_setup_methods: "{{ matrix_well_known_matrix_client_io_element_e2ee_secure_backup_setup_methods }}"
+
+matrix_static_files_file_matrix_server_property_m_server: "{{ matrix_server_fqn_matrix_federation }}:{{ matrix_federation_public_port }}"
+
+matrix_static_files_file_matrix_support_property_m_contacts: "{{ matrix_homeserver_admin_contacts }}"
+matrix_static_files_file_matrix_support_property_m_support_page: "{{ matrix_homeserver_support_url }}"
+
+########################################################################
+#                                                                      #
+# /matrix-static-files                                                 #
+#                                                                      #
+########################################################################
 
 
 ########################################################################
