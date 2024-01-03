@@ -1,0 +1,63 @@
+{% if matrix_synapse_reverse_proxy_companion_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_synapse_reverse_proxy_companion_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_synapse_reverse_proxy_companion_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-synapse-reverse-proxy-companion-client-api.loadbalancer.server.port=8008
+traefik.http.services.matrix-synapse-reverse-proxy-companion-federation-api.loadbalancer.server.port=8048
+
+
+{#
+	Client-API
+#}
+{% if matrix_synapse_reverse_proxy_companion_container_labels_client_api_enabled %}
+
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-client-api.rule={{ matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_rule }}
+
+{% if matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-client-api.priority={{ matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-client-api.service=matrix-synapse-reverse-proxy-companion-client-api
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-client-api.entrypoints={{ matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_entrypoints }}
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-client-api.tls={{ matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_tls | to_json }}
+
+{% if matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_tls %}
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-client-api.tls.certResolver={{ matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_tls_certResolver }}
+{% endif %}
+
+{% endif %}
+{#
+	/Client-API
+#}
+
+
+{#
+	Federation-API
+#}
+{% if matrix_synapse_reverse_proxy_companion_container_labels_federation_api_enabled %}
+
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-federation-api.rule={{ matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_rule }}
+
+{% if matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-federation-api.priority={{ matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-federation-api.service=matrix-synapse-reverse-proxy-companion-federation-api
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-federation-api.entrypoints={{ matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_entrypoints }}
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-federation-api.tls={{ matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_tls | to_json }}
+
+{% if matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_tls %}
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-federation-api.tls.certResolver={{ matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_tls_certResolver }}
+{% endif %}
+
+{% endif %}
+{#
+	/Federation-API
+#}
+
+{% endif %}
+
+{{ matrix_synapse_reverse_proxy_companion_container_labels_additional_labels }}

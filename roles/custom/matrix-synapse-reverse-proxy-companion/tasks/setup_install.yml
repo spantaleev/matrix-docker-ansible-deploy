@@ -25,6 +25,8 @@
       dest: "{{ matrix_synapse_reverse_proxy_companion_confd_path }}/nginx-http.conf"
     - src: "{{ role_path }}/templates/nginx/conf.d/matrix-synapse-reverse-proxy-companion.conf.j2"
       dest: "{{ matrix_synapse_reverse_proxy_companion_confd_path }}/matrix-synapse-reverse-proxy-companion.conf"
+    - src: "{{ role_path }}/templates/labels.j2"
+      dest: "{{ matrix_synapse_reverse_proxy_companion_base_path }}/labels"
 
 - name: Ensure matrix-synapse-reverse-proxy-companion nginx container image is pulled
   community.docker.docker_image:
@@ -36,6 +38,11 @@
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
+
+- name: Ensure matrix-synapse-reverse-proxy-companion container network is created
+  community.general.docker_network:
+    name: "{{ matrix_synapse_reverse_proxy_companion_container_network }}"
+    driver: bridge
 
 - name: Ensure matrix-synapse-reverse-proxy-companion.service installed
   ansible.builtin.template:

@@ -36,6 +36,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% endif %}
 			--mount type=bind,src={{ matrix_synapse_reverse_proxy_companion_base_path }}/nginx.conf,dst=/etc/nginx/nginx.conf,ro \
 			--mount type=bind,src={{ matrix_synapse_reverse_proxy_companion_confd_path }},dst=/etc/nginx/conf.d,ro \
+			--label-file={{ matrix_synapse_reverse_proxy_companion_base_path }}/labels \
 			{{ matrix_synapse_reverse_proxy_companion_container_image }}
 
 {% for network in matrix_synapse_reverse_proxy_companion_container_additional_networks %}

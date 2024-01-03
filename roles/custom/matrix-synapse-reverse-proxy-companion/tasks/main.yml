@@ -9,6 +9,9 @@
     - install-synapse
   block:
     - when: matrix_synapse_reverse_proxy_companion_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_synapse_reverse_proxy_companion_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
 
 - tags:

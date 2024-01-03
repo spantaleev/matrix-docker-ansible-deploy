@@ -32,7 +32,10 @@ matrix_synapse_reverse_proxy_companion_base_path: "{{ matrix_synapse_base_path }
 matrix_synapse_reverse_proxy_companion_confd_path: "{{ matrix_synapse_reverse_proxy_companion_base_path }}/conf.d"
 
 # List of systemd services that matrix-synapse-reverse-proxy-companion.service depends on
-matrix_synapse_reverse_proxy_companion_systemd_required_services_list: ['docker.service']
+matrix_synapse_reverse_proxy_companion_systemd_required_services_list: "{{ matrix_synapse_reverse_proxy_companion_systemd_required_services_list_default + matrix_synapse_reverse_proxy_companion_systemd_required_services_list_auto + matrix_synapse_reverse_proxy_companion_systemd_required_services_list_custom }}"
+matrix_synapse_reverse_proxy_companion_systemd_required_services_list_default: ['docker.service']
+matrix_synapse_reverse_proxy_companion_systemd_required_services_list_auto: []
+matrix_synapse_reverse_proxy_companion_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-synapse-reverse-proxy-companion.service wants
 matrix_synapse_reverse_proxy_companion_systemd_wanted_services_list: ['matrix-synapse.service']
@@ -43,15 +46,10 @@ matrix_synapse_reverse_proxy_companion_systemd_wanted_services_list: ['matrix-sy
 matrix_synapse_reverse_proxy_companion_container_image: "{{ matrix_container_global_registry_prefix }}nginx:{{ matrix_synapse_reverse_proxy_companion_version }}"
 matrix_synapse_reverse_proxy_companion_container_image_force_pull: "{{ matrix_synapse_reverse_proxy_companion_container_image.endswith(':latest') }}"
 
-matrix_synapse_reverse_proxy_companion_container_network: "{{ matrix_docker_network }}"
+matrix_synapse_reverse_proxy_companion_container_network: ""
 
 # A list of additional container networks that matrix-synapse-reverse-proxy-companion would be connected to.
 # The playbook does not create these networks, so make sure they already exist.
-#
-# Use this to expose matrix-synapse-reverse-proxy-companion to another reverse proxy, which runs in a different container network,
-# without exposing all other Matrix services to that other reverse-proxy.
-#
-# For background, see: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1498
 matrix_synapse_reverse_proxy_companion_container_additional_networks: []
 
 # Controls whether the matrix-synapse-reverse-proxy-companion container exposes its HTTP Client-Server API port (tcp/8008 in the container).
@@ -63,6 +61,46 @@ matrix_synapse_reverse_proxy_companion_container_client_api_host_bind_port: ''
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8048"), or empty string to not expose.
 matrix_synapse_reverse_proxy_companion_container_federation_api_host_bind_port: ''
+
+# matrix_synapse_reverse_proxy_companion_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_synapse_reverse_proxy_companion_container_labels_additional_labels`.
+matrix_synapse_reverse_proxy_companion_container_labels_traefik_enabled: true
+matrix_synapse_reverse_proxy_companion_container_labels_traefik_docker_network: "{{ matrix_synapse_reverse_proxy_companion_container_network }}"
+matrix_synapse_reverse_proxy_companion_container_labels_traefik_entrypoints: web-secure
+matrix_synapse_reverse_proxy_companion_container_labels_traefik_tls_certResolver: default
+
+# Controls whether labels will be added that expose the Client-Server API.
+matrix_synapse_reverse_proxy_companion_container_labels_client_api_enabled: true
+matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_hostname: ''
+matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_path_prefix: /_matrix
+matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_rule: "Host(`{{ matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_path_prefix }}`)"
+matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_priority: 0
+matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_entrypoints: "{{ matrix_synapse_reverse_proxy_companion_container_labels_traefik_entrypoints }}"
+matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_tls: "{{ matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_entrypoints != 'web' }}"
+matrix_synapse_reverse_proxy_companion_container_labels_client_api_traefik_tls_certResolver: "{{ matrix_synapse_reverse_proxy_companion_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# TODO - /_synapse public exposure, etc.?
+
+# Controls whether labels will be added that expose the Server-Server API (Federation API).
+matrix_synapse_reverse_proxy_companion_container_labels_federation_api_enabled: "{{ matrix_synapse_reverse_proxy_companion_federation_api_enabled }}"
+matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_hostname: ''
+matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_path_prefix: /_matrix
+matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_rule: "Host(`{{ matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_path_prefix }}`)"
+matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_priority: 0
+matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_entrypoints: ''
+matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_tls: "{{ matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_entrypoints != 'web' }}"
+matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_tls_certResolver: "{{ matrix_synapse_reverse_proxy_companion_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# matrix_synapse_reverse_proxy_companion_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_synapse_reverse_proxy_companion_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_synapse_reverse_proxy_companion_container_labels_additional_labels: ''
 
 # The amount of worker processes and connections
 # Consider increasing these when you are expecting high amounts of traffic
