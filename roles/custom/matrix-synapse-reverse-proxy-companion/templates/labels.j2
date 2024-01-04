@@ -10,6 +10,44 @@ traefik.http.services.matrix-synapse-reverse-proxy-companion-federation-api.load
 
 
 {#
+	Root path (/)
+#}
+{% if matrix_synapse_reverse_proxy_companion_container_labels_client_root_enabled %}
+
+{% set client_root_middlewares = [] %}
+
+{% if matrix_synapse_reverse_proxy_companion_container_labels_client_root_redirection_enabled %}
+{% set client_root_middlewares = client_root_middlewares + ['matrix-synapse-reverse-proxy-companion-client-root-redirect'] %}
+traefik.http.middlewares.matrix-synapse-reverse-proxy-companion-client-root-redirect.redirectregex.regex=(.*)
+traefik.http.middlewares.matrix-synapse-reverse-proxy-companion-client-root-redirect.redirectregex.replacement={{ matrix_synapse_reverse_proxy_companion_container_labels_client_root_redirection_url }}
+{% else %}
+{% set client_root_middlewares = client_root_middlewares + ['matrix-synapse-reverse-proxy-companion-client-root-replacepath'] %}
+traefik.http.middlewares.matrix-synapse-reverse-proxy-companion-client-root-replacepath.replacepath.path=/_matrix/static/
+{% endif %}
+
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-client-root.rule={{ matrix_synapse_reverse_proxy_companion_container_labels_client_root_traefik_rule }}
+
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-client-root.middlewares={{ client_root_middlewares | join(',') }}
+
+{% if matrix_synapse_reverse_proxy_companion_container_labels_client_root_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-client-root.priority={{ matrix_synapse_reverse_proxy_companion_container_labels_client_root_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-client-root.service=matrix-synapse-reverse-proxy-companion-client-api
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-client-root.entrypoints={{ matrix_synapse_reverse_proxy_companion_container_labels_client_root_traefik_entrypoints }}
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-client-root.tls={{ matrix_synapse_reverse_proxy_companion_container_labels_client_root_traefik_tls | to_json }}
+
+{% if matrix_synapse_reverse_proxy_companion_container_labels_client_root_traefik_tls %}
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-client-root.tls.certResolver={{ matrix_synapse_reverse_proxy_companion_container_labels_client_root_traefik_tls_certResolver }}
+{% endif %}
+
+{% endif %}
+{#
+	/Root path (/)
+#}
+
+
+{#
 	Client-API
 #}
 {% if matrix_synapse_reverse_proxy_companion_container_labels_client_api_enabled %}
