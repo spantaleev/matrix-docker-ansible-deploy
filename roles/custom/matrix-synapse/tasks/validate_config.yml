@@ -3,18 +3,30 @@
 - name: Fail if required Synapse settings not defined
   ansible.builtin.fail:
     msg: >-
-      You need to define a required configuration setting (`{{ item }}`) for using Synapse.
-  when: "vars[item] == ''"
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
   with_items:
-    - matrix_synapse_username
-    - matrix_synapse_uid
-    - matrix_synapse_gid
-    - matrix_synapse_container_network
-    - matrix_synapse_macaroon_secret_key
-    - matrix_synapse_database_host
-    - matrix_synapse_database_user
-    - matrix_synapse_database_password
-    - matrix_synapse_database_database
+    - {'name': 'matrix_synapse_username', when: true}
+    - {'name': 'matrix_synapse_uid', when: true}
+    - {'name': 'matrix_synapse_gid', when: true}
+    - {'name': 'matrix_synapse_container_network', when: true}
+    - {'name': 'matrix_synapse_macaroon_secret_key', when: true}
+    - {'name': 'matrix_synapse_database_host', when: true}
+    - {'name': 'matrix_synapse_database_user', when: true}
+    - {'name': 'matrix_synapse_database_password', when: true}
+    - {'name': 'matrix_synapse_database_database', when: true}
+
+    - {'name': 'matrix_synapse_container_labels_client_root_traefik_hostname', when: "{{ matrix_synapse_container_labels_client_root_enabled }}"}
+    - {'name': 'matrix_synapse_container_labels_client_root_redirection_url', when: "{{ matrix_synapse_container_labels_client_root_redirection_enabled }}"}
+
+    - {'name': 'matrix_synapse_container_labels_client_api_traefik_hostname', when: "{{ matrix_synapse_container_labels_client_api_enabled }}"}
+
+    - {'name': 'matrix_synapse_container_labels_client_synapse_client_api_traefik_hostname', when: "{{ matrix_synapse_container_labels_client_synapse_client_api_enabled }}"}
+    - {'name': 'matrix_synapse_container_labels_client_synapse_oidc_api_traefik_hostname', when: "{{ matrix_synapse_container_labels_client_synapse_oidc_api_enabled }}"}
+    - {'name': 'matrix_synapse_container_labels_client_synapse_admin_api_traefik_hostname', when: "{{ matrix_synapse_container_labels_client_synapse_admin_api_enabled }}"}
+
+    - {'name': 'matrix_synapse_container_labels_federation_api_traefik_hostname', when: "{{ matrix_synapse_container_labels_federation_api_enabled }}"}
+    - {'name': 'matrix_synapse_container_labels_federation_api_traefik_entrypoints', when: "{{ matrix_synapse_container_labels_federation_api_enabled }}"}
 
 - name: Fail if asking for more than 1 instance of single-instance workers
   ansible.builtin.fail:

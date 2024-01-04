@@ -3805,8 +3805,25 @@ matrix_synapse_container_manhole_api_host_bind_port: "{{ (matrix_playbook_servic
 
 matrix_synapse_container_additional_networks: |
   {{
-    ([redis_container_network] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == redis_identifier else [])
+    (
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_synapse_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network else [])
+      +
+      ([devture_postgres_container_network] if (devture_postgres_enabled and devture_postgres_container_network != matrix_synapse_container_network and matrix_synapse_database_host == devture_postgres_connection_hostname) else [])
+      +
+      ([redis_container_network] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == redis_identifier else [])
+    )
   }}
+
+matrix_synapse_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and not matrix_synapse_workers_enabled }}"
+matrix_synapse_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_synapse_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_synapse_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_synapse_container_labels_traefik_hostname: "{{ matrix_server_fqn_matrix }}"
+
+matrix_synapse_container_labels_client_root_redirection_enabled: "{{ matrix_synapse_container_labels_client_root_redirection_url != '' }}"
+matrix_synapse_container_labels_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
+
+matrix_synapse_container_labels_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
 
 # For exposing the Synapse worker (and metrics) ports to the local host.
 matrix_synapse_workers_container_host_bind_address: "{{ matrix_playbook_service_host_bind_interface_prefix[0:-1] if (matrix_synapse_workers_enabled and matrix_playbook_service_host_bind_interface_prefix) else '' }}"
@@ -3816,8 +3833,7 @@ matrix_synapse_database_password: "{{ '%s' | format(matrix_homeserver_generic_se
 
 matrix_synapse_macaroon_secret_key: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'synapse.mac', rounds=655555) | to_uuid }}"
 
-# We do not enable TLS in Synapse by default.
-# TLS is handled by the matrix-nginx-proxy, which proxies the requests to Synapse.
+# We do not enable TLS in Synapse by default, since it's handled by Traefik.
 matrix_synapse_tls_federation_listener_enabled: false
 matrix_synapse_tls_certificate_path: ~
 matrix_synapse_tls_private_key_path: ~
@@ -3858,18 +3874,16 @@ matrix_synapse_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if 
 
 matrix_synapse_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
 
-matrix_synapse_systemd_required_services_list: |
+matrix_synapse_systemd_required_services_list_auto: |
   {{
-    (['docker.service'])
-    +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if (devture_postgres_enabled and devture_postgres_container_network != matrix_synapse_container_network and matrix_synapse_database_host == devture_postgres_connection_hostname) else [])
     +
     ([redis_identifier ~ '.service'] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == redis_identifier else [])
     +
     (['matrix-goofys.service'] if matrix_s3_media_store_enabled else [])
   }}
 
-matrix_synapse_systemd_wanted_services_list: |
+matrix_synapse_systemd_wanted_services_list_auto: |
   {{
     (['matrix-coturn.service'] if matrix_coturn_enabled else [])
     +
@@ -3943,7 +3957,7 @@ matrix_synapse_reverse_proxy_companion_container_network: "{{ matrix_synapse_con
 matrix_synapse_reverse_proxy_companion_container_additional_networks: |
   {{
     (
-      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_synapse_reverse_proxy_companion_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network else [])
       +
       ([] if matrix_homeserver_container_network in ['', matrix_synapse_reverse_proxy_companion_container_network] else [matrix_homeserver_container_network])
     ) | unique
@@ -3960,15 +3974,11 @@ matrix_synapse_reverse_proxy_companion_container_labels_traefik_entrypoints: "{{
 matrix_synapse_reverse_proxy_companion_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 matrix_synapse_reverse_proxy_companion_container_labels_traefik_hostname: "{{ matrix_server_fqn_matrix }}"
 
-matrix_synapse_reverse_proxy_companion_container_labels_client_root_redirection_enabled: "{{ matrix_synapse_reverse_proxy_companion_container_labels_client_root_redirection_url != '' }}"
-matrix_synapse_reverse_proxy_companion_container_labels_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
-
-# TODO - enable these (and potentially remove them above/below), when they land in matrix-synapse
-# matrix_synapse_reverse_proxy_companion_container_labels_client_root_redirection_enabled: "{{ matrix_synapse_container_labels_client_root_redirection_enabled != '' }}"
-# matrix_synapse_reverse_proxy_companion_container_labels_client_root_redirection_url: "{{ matrix_synapse_container_labels_client_root_redirection_url }}"
-# matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_client_api_enabled: "{{ matrix_synapse_container_labels_client_synapse_client_api_enabled }}"
-# matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_oidc_api_enabled: "{{ matrix_synapse_container_labels_client_synapse_oidc_api_enabled }}"
-# matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_admin_api_enabled: "{{ matrix_synapse_container_labels_client_synapse_admin_api_enabled }}"
+matrix_synapse_reverse_proxy_companion_container_labels_client_root_redirection_enabled: "{{ matrix_synapse_container_labels_client_root_redirection_enabled != '' }}"
+matrix_synapse_reverse_proxy_companion_container_labels_client_root_redirection_url: "{{ matrix_synapse_container_labels_client_root_redirection_url }}"
+matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_client_api_enabled: "{{ matrix_synapse_container_labels_client_synapse_client_api_enabled }}"
+matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_oidc_api_enabled: "{{ matrix_synapse_container_labels_client_synapse_oidc_api_enabled }}"
+matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_admin_api_enabled: "{{ matrix_synapse_container_labels_client_synapse_admin_api_enabled }}"
 
 matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
 

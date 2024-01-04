@@ -115,28 +115,29 @@
     owner: "{{ matrix_synapse_uid }}"
     group: "{{ matrix_synapse_gid }}"
 
-- name: Ensure Synapse log config installed
-  ansible.builtin.template:
-    src: "{{ matrix_synapse_template_synapse_log }}"
-    dest: "{{ matrix_synapse_config_dir_path }}/{{ matrix_server_fqn_matrix }}.log.config"
-    mode: 0644
-
 - name: Ensure Synapse container network is created
   community.general.docker_network:
     name: "{{ matrix_synapse_container_network }}"
     driver: bridge
 
-- name: Ensure matrix-synapse.service installed
+- name: Ensure Synapse support files installed
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/synapse/systemd/matrix-synapse.service.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse.service"
-    mode: 0644
-
-- name: Ensure register-user script created
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/synapse/bin/register-user.j2"
-    dest: "{{ matrix_synapse_bin_path }}/register-user"
-    mode: 0755
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - src: "{{ matrix_synapse_template_synapse_log }}"
+      dest: "{{ matrix_synapse_config_dir_path }}/{{ matrix_server_fqn_matrix }}.log.config"
+      mode: '0644'
+    - src: "{{ role_path }}/templates/synapse/bin/register-user.j2"
+      dest: "{{ matrix_synapse_bin_path }}/register-user"
+      mode: '0755'
+    - src: "{{ role_path }}/templates/synapse/labels.j2"
+      dest: "{{ matrix_synapse_base_path }}/labels"
+      mode: '0644'
+    - src: "{{ role_path }}/templates/synapse/systemd/matrix-synapse.service.j2"
+      dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse.service"
+      mode: '0644'
 
 - name: Generate sample prometheus.yml for external scraping
   ansible.builtin.template:
