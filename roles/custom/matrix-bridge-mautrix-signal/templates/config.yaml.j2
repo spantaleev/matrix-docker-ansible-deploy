@@ -87,19 +87,29 @@ metrics:
 # Bridge config
 bridge:
     # Localpart template of MXIDs for Signal users.
-    # {{ '{{.}}' }} is replaced with the internal ID of the Signal user.
-    username_template: "{{ 'signal_{{.}}' }}"
+    # {{.}} is replaced with the internal ID of the Signal user.
+    username_template: signal_{{.}}
     # Displayname template for Signal users. This is also used as the room name in DMs if private_chat_portal_meta is enabled.
-    # Available variables: TODO
-    displayname_template: "{{ '{{.ProfileName}} (Signal)' }}"
+    # {{.ProfileName}} - The Signal profile name set by the user.
+    # {{.ContactName}} - The name for the user from your phone's contact list. This is not safe on multi-user instances.
+    # {{.PhoneNumber}} - The phone number of the user.
+    # {{.UUID}} - The UUID of the Signal user.
+    # {{.AboutEmoji}} - The emoji set by the user in their profile.
+    displayname_template: '{{or .ProfileName .PhoneNumber "Unknown user"}}'
     # Whether to explicitly set the avatar and room name for private chat portal rooms.
     # If set to `default`, this will be enabled in encrypted rooms and disabled in unencrypted rooms.
     # If set to `always`, all DM rooms will have explicit names and avatars set.
     # If set to `never`, DM rooms will never have names and avatars set.
     private_chat_portal_meta: default
+    # Should avatars from the user's contact list be used? This is not safe on multi-user instances.
+    use_contact_avatars: false
 
     portal_message_buffer: 128
 
+
+    # Should the bridge create a space for each logged-in user and add bridged rooms to it?
+    # Users who logged in before turning this on should run `!signal sync-space` to create and fill the space for the first time.
+    personal_filtering_spaces: false
     # Should the bridge send a read receipt from the bridge bot when a message has been sent to Signal?
     delivery_receipts: false
     # Whether the bridge should send the message status as a custom com.beeper.message_send_status event.
@@ -113,6 +123,9 @@ bridge:
     # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
     # This field will automatically be changed back to false after it, except if the config file is not writable.
     resend_bridge_info: false
+    # Send captions in the same message as images. This will send data compatible with both MSC2530.
+    # This is currently not supported in most clients.
+    caption_in_message: false
     # Whether or not created rooms should have federation enabled.
     # If false, created portal rooms will never be federated.
     federate_rooms: {{ matrix_mautrix_signal_federate_rooms|to_json }}
