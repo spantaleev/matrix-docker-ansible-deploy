@@ -2914,8 +2914,6 @@ matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: |-
     }[matrix_homeserver_implementation]|int
   }}
 
-matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled: "{{ matrix_synapse_admin_enabled or matrix_bot_matrix_registration_bot_enabled }}"
-
 matrix_nginx_proxy_proxy_matrix_enabled: true
 matrix_nginx_proxy_proxy_element_enabled: "{{ matrix_client_element_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_hydrogen_enabled: "{{ matrix_client_hydrogen_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
@@ -3968,6 +3966,13 @@ matrix_synapse_reverse_proxy_companion_container_labels_traefik_hostname: "{{ ma
 
 matrix_synapse_reverse_proxy_companion_container_labels_client_root_redirection_enabled: "{{ matrix_synapse_reverse_proxy_companion_container_labels_client_root_redirection_url != '' }}"
 matrix_synapse_reverse_proxy_companion_container_labels_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
+
+# TODO - enable these (and potentially remove them above/below), when they land in matrix-synapse
+# matrix_synapse_reverse_proxy_companion_container_labels_client_root_redirection_enabled: "{{ matrix_synapse_container_labels_client_root_redirection_enabled != '' }}"
+# matrix_synapse_reverse_proxy_companion_container_labels_client_root_redirection_url: "{{ matrix_synapse_container_labels_client_root_redirection_url }}"
+# matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_client_api_enabled: "{{ matrix_synapse_container_labels_client_synapse_client_api_enabled }}"
+# matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_oidc_api_enabled: "{{ matrix_synapse_container_labels_client_synapse_oidc_api_enabled }}"
+# matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_admin_api_enabled: "{{ matrix_synapse_container_labels_client_synapse_admin_api_enabled }}"
 
 matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
 
