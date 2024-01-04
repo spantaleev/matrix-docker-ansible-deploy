@@ -57,7 +57,7 @@ Unless indicated otherwise, the following endpoints are reachable on your `matri
 | provisioning | `/hookshot/v1/` | `matrix_hookshot_provisioning_endpoint` | Dimension [provisioning](#provisioning-api) |
 | appservice | `/hookshot/_matrix/app/` | `matrix_hookshot_appservice_endpoint` | Matrix server |
 | widgets | `/hookshot/widgetapi/` | `matrix_hookshot_widgets_endpoint` | Widgets |
-| metrics | `/metrics/hookshot` | `matrix_hookshot_metrics_enabled` and `matrix_hookshot_metrics_proxying_enabled`. Requires `/metrics/*` endpoints to also be enabled via `matrix_nginx_proxy_proxy_matrix_metrics_enabled` (see the `matrix-nginx-proxy` role). Read more in the [Metrics section](#metrics) below. | Prometheus |
+| metrics | `/metrics/hookshot` | `matrix_hookshot_metrics_enabled` and exposure enabled via `matrix_hookshot_metrics_proxying_enabled` or `matrix_metrics_exposure_enabled`. Read more in the [Metrics section](#metrics) below. | Prometheus |
 
 See also `matrix_hookshot_matrix_nginx_proxy_configuration` in [init.yml](/roles/custom/matrix-bridge-hookshot/tasks/inject_into_nginx_proxy.yml).
 
@@ -91,10 +91,12 @@ Metrics are **only enabled by default** if the builtin [Prometheus](configuring-
 
 To explicitly enable metrics, use `matrix_hookshot_metrics_enabled: true`. This only exposes metrics over the container network, however.
 
-**To collect metrics from an external Prometheus server**, besides enabling metrics as described above, you will also need to:
+**To collect metrics from an external Prometheus server**, besides enabling metrics as described above, you will also need to enable metrics exposure on `https://matrix.DOMAIN/metrics/hookshot` by:
 
-- enable the `https://matrix.DOMAIN/metrics/*` endpoints on `matrix.DOMAIN` using `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true` (see the `matrix-nginx-role` or [the Prometheus and Grafana docs](configuring-playbook-prometheus-grafana.md) for enabling this feature)
-- expose the Hookshot metrics under `https://matrix.DOMAIN/metrics/hookshot` by setting `matrix_hookshot_metrics_proxying_enabled: true`
+- either enabling metrics exposure for Hookshot via `matrix_hookshot_metrics_proxying_enabled: true`
+- or enabling metrics exposure for all services via `matrix_metrics_exposure_enabled: true`
+
+Whichever one you go with, by default metrics are exposed publicly **without** password-protection. See [the Prometheus and Grafana docs](configuring-playbook-prometheus-grafana.md) for details about password-protection for metrics.
 
 ### Collision with matrix-appservice-webhooks
 

@@ -38,14 +38,7 @@
             {% endif %}
           }
 
-    - name: Register synapse metrics proxying configuration with matrix-nginx-proxy (matrix.DOMAIN/metrics/synapse/main-process)
-      ansible.builtin.set_fact:
-        matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks: |
-          {{
-            matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks | default([])
-            +
-            [matrix_synapse_nginx_metrics_configuration_block]
-          }}
+# Injection code was here
 
     - name: Generate synapse worker metrics proxying configuration for matrix-nginx-proxy (matrix.DOMAIN/metrics/synapse/worker)
       ansible.builtin.set_fact:
@@ -62,12 +55,4 @@
           {% endfor %}
       when: matrix_synapse_workers_enabled_list | length > 0
 
-    - name: Register synapse worker metrics proxying configuration with matrix-nginx-proxy (matrix.DOMAIN/metrics/synapse/worker)
-      ansible.builtin.set_fact:
-        matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks: |
-          {{
-            matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks | default([])
-            +
-            [matrix_synapse_worker_nginx_metrics_configuration_block]
-          }}
-      when: matrix_synapse_workers_enabled_list | length > 0
+# Injection code was here

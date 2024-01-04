@@ -23,10 +23,3 @@
 
       in vars.yml
   when: matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled and matrix_architecture not in matrix_prometheus_nginxlog_exporter_docker_image_arch
-
-
-- name: Fail if nginx-proxy is not set to proxy metrics while prometheus-nginxlog-exporter is
-  ansible.builtin.fail:
-    msg: >
-      'matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled' is set but 'matrix_nginx_proxy_proxy_matrix_metrics_enabled' is not
-  when: matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled | bool and not matrix_nginx_proxy_proxy_matrix_metrics_enabled | bool

@@ -30,14 +30,6 @@
       `matrix_nginx_proxy_ssl_preset` needs to be set to a known value.
   when: "matrix_nginx_proxy_ssl_preset not in ['modern', 'intermediate', 'old']"
 
-- name: Fail if Basic Auth enabled for metrics, but no credentials supplied
-  ansible.builtin.fail:
-    msg: |
-      Enabling Basic Auth for metrics (`matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled`) requires:
-      - either a username/password (provided in `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username` and `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_password`)
-      - or raw htpasswd content (provided in `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content`)
-  when: "matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled | bool and (matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content == '' and (matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username == '' or matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_password == ''))"
-
 - when: "matrix_ssl_retrieval_method == 'lets-encrypt'"
   block:
     - name: (Deprecation) Catch and report renamed settings

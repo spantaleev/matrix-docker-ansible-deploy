@@ -20,12 +20,4 @@
       }
   when: matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled | bool and matrix_nginx_proxy_enabled | bool
 
-- name: Register prometheus-nginxlog-exporter metrics proxying configuration with matrix-nginx-proxy (matrix.DOMAIN/metrics/nginxlog)
-  ansible.builtin.set_fact:
-    matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks: |
-      {{
-        matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks | default([])
-        +
-        [matrix_prometheus_nginxlog_exporter_matrix_nginx_proxy_metrics_configuration_matrix_domain]
-      }}
-  when: matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled | bool
+# Injection code was here

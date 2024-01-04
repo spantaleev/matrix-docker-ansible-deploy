@@ -46,14 +46,5 @@ The playbook will automatically integrate the metrics into the Prometheus server
 The metrics of this role will be exposed on `https://matrix.DOMAIN/metrics/nginxlog` when setting
 ```yaml
 matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled: true
-
-# required dependency
-matrix_nginx_proxy_proxy_matrix_metrics_enabled: true
 ```
-The playbook can provide a single endpoint (`https://matrix.DOMAIN/metrics/*`), under which various services may expose their metrics (e.g. `/metrics/node-exporter`, `/metrics/postgres-exporter`, `/metrics/nginxlog`, etc). To enable this `/metrics/*` feature, use `matrix_nginx_proxy_proxy_matrix_metrics_enabled`. To protect access using [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication), see `matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled`.
 
-The following variables may be of interest:
-
-Name | Description
------|----------
-`matrix_nginx_proxy_proxy_matrix_metrics_enabled`|Set this to `true` to enable metrics exposure for various services on `https://matrix.DOMAIN/metrics/*`. Refer to the individual `matrix_SERVICE_metrics_proxying_enabled` variables below for exposing metrics for each individual service.
