@@ -257,11 +257,7 @@
 		See: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1058
 	#}
 	location ~* ^/$ {
-		{% if matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain %}
-			return 302 {{ matrix_nginx_proxy_x_forwarded_proto_value }}://{{ matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain }}$request_uri;
-		{% else %}
-			rewrite ^/$ /_matrix/static/ last;
-		{% endif %}
+		rewrite ^/$ /_matrix/static/ last;
 	}
 {% endmacro %}
 
