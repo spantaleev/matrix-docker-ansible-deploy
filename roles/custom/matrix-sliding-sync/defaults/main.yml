@@ -72,7 +72,10 @@ matrix_sliding_sync_container_labels_additional_labels: ''
 matrix_sliding_sync_container_extra_arguments: []
 
 # List of systemd services that matrix-sliding-sync-proxy.service depends on
-matrix_sliding_sync_systemd_required_services_list: ["docker.service"]
+matrix_sliding_sync_systemd_required_services_list: "{{ matrix_sliding_sync_systemd_required_services_list_default + matrix_sliding_sync_systemd_required_services_list_auto + matrix_sliding_sync_systemd_required_services_list_custom }}"
+matrix_sliding_sync_systemd_required_services_list_default: ["docker.service"]
+matrix_sliding_sync_systemd_required_services_list_auto: []
+matrix_sliding_sync_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-sliding-sync-proxy.service wants
 matrix_sliding_sync_systemd_wanted_services_list: []
