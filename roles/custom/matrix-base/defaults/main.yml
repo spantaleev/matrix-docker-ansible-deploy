@@ -19,29 +19,17 @@ matrix_bridges_encryption_enabled: false
 # Global var to enable/disable relay mode across all bridges with relay mode support
 matrix_bridges_relay_enabled: false
 
-# A container network where all bridges would live.
-matrix_bridges_container_network: matrix-bridges
+# A container network where all addon services (bridges, bots, etc.) would live.
+matrix_addons_container_network: matrix-addons
 
-# The container network that the homeserver lives on and bridges should be connected to
-matrix_bridges_homeserver_container_network: "{{ matrix_homeserver_container_network }}"
+# The container network that the homeserver lives on and addon services (bridges, bots, etc.) should be connected to
+matrix_addons_homeserver_container_network: "{{ matrix_homeserver_container_network }}"
 
-# The URL where bridges can reach the homeserver.
-matrix_bridges_homeserver_client_api_url: "{{ matrix_homeserver_container_url }}"
+# The URL where addon services (bridges, bots, etc.) can reach the homeserver.
+matrix_addons_homeserver_client_api_url: "{{ matrix_homeserver_container_url }}"
 
-# The systemd services (representing the homeserver) that bridges should depend on
-matrix_bridges_homeserver_systemd_services_list: "{{ matrix_homeserver_systemd_services_list }}"
-
-# A container network where all bots would live.
-matrix_bots_container_network: matrix-bots
-
-# The container network that the homeserver lives on and bots should be connected to
-matrix_bots_homeserver_container_network: "{{ matrix_homeserver_container_network }}"
-
-# The URL where bots can reach the homeserver.
-matrix_bots_homeserver_client_api_url: "{{ matrix_homeserver_container_url }}"
-
-# The systemd services (representing the homeserver) that bots should depend on
-matrix_bots_homeserver_systemd_services_list: "{{ matrix_homeserver_systemd_services_list }}"
+# The systemd services (representing the homeserver) that addon services (bridges, bots, etc.) should depend on
+matrix_addons_homeserver_systemd_services_list: "{{ matrix_homeserver_systemd_services_list }}"
 
 # matrix_homeserver_enabled controls whether to enable the homeserver systemd service, etc.
 #

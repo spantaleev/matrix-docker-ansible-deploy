@@ -189,13 +189,9 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-cactus-comments.yaml'] if matrix_cactus_comments_enabled else [])
   }}
 
-matrix_bridges_homeserver_container_network: "{{ matrix_homeserver_proxy_container_network if matrix_homeserver_proxy_enabled else matrix_homeserver_container_network }}"
-matrix_bridges_homeserver_client_api_url: "{{ matrix_homeserver_proxy_client_api_url if matrix_homeserver_proxy_enabled else matrix_homeserver_container_url }}"
-matrix_bridges_homeserver_systemd_services_list: "{{ ([matrix_homeserver_proxy_ident + '.service']) if matrix_homeserver_proxy_enabled else matrix_homeserver_systemd_services_list }}"
-
-matrix_bots_homeserver_container_network: "{{ matrix_homeserver_proxy_container_network if matrix_homeserver_proxy_enabled else matrix_homeserver_container_network }}"
-matrix_bots_homeserver_client_api_url: "{{ matrix_homeserver_proxy_client_api_url if matrix_homeserver_proxy_enabled else matrix_homeserver_container_url }}"
-matrix_bots_homeserver_systemd_services_list: "{{ ([matrix_homeserver_proxy_ident + '.service']) if matrix_homeserver_proxy_enabled else matrix_homeserver_systemd_services_list }}"
+matrix_addons_homeserver_container_network: "{{ matrix_homeserver_proxy_container_network if matrix_homeserver_proxy_enabled else matrix_homeserver_container_network }}"
+matrix_addons_homeserver_client_api_url: "{{ matrix_homeserver_proxy_client_api_url if matrix_homeserver_proxy_enabled else matrix_homeserver_container_url }}"
+matrix_addons_homeserver_systemd_services_list: "{{ ([matrix_homeserver_proxy_ident + '.service']) if matrix_homeserver_proxy_enabled else matrix_homeserver_systemd_services_list }}"
 
 # Starting from version `0.6.0` conduit natively supports some sync v3 (sliding-sync) features.
 matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_sliding_sync_enabled else (matrix_homeserver_url if matrix_homeserver_implementation in ['conduit'] else '') }}"
@@ -808,12 +804,12 @@ matrix_mautrix_discord_enabled: false
 
 matrix_mautrix_discord_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
-matrix_mautrix_discord_container_network: "{{ matrix_bridges_container_network }}"
+matrix_mautrix_discord_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_mautrix_discord_container_additional_networks_auto: |-
   {{
     (
-      ([] if matrix_bridges_homeserver_container_network == '' else [matrix_bridges_homeserver_container_network])
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
       ([devture_postgres_container_network] if devture_postgres_enabled and matrix_mautrix_facebook_database_hostname == devture_postgres_connection_hostname else [])
     ) | unique
@@ -821,14 +817,14 @@ matrix_mautrix_discord_container_additional_networks_auto: |-
 
 matrix_mautrix_discord_systemd_required_services_list_auto: |
   {{
-    matrix_bots_homeserver_systemd_services_list
+    matrix_addons_homeserver_systemd_services_list
     +
     ([devture_postgres_identifier ~ '.service'] if (devture_postgres_enabled and matrix_mautrix_discord_database_hostname == devture_postgres_connection_hostname) else [])
   }}
 
 matrix_mautrix_discord_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudisc.as.tok', rounds=655555) | to_uuid }}"
 
-matrix_mautrix_discord_homeserver_address: "{{ matrix_bridges_homeserver_client_api_url }}"
+matrix_mautrix_discord_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 
 matrix_mautrix_discord_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudisc.hs.tok', rounds=655555) | to_uuid }}"
 
@@ -897,12 +893,12 @@ matrix_mautrix_facebook_enabled: false
 
 matrix_mautrix_facebook_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
-matrix_mautrix_facebook_container_network: "{{ matrix_bridges_container_network }}"
+matrix_mautrix_facebook_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_mautrix_facebook_container_additional_networks_auto: |-
   {{
     (
-      ([] if matrix_bridges_homeserver_container_network == '' else [matrix_bridges_homeserver_container_network])
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
       ([devture_postgres_container_network] if devture_postgres_enabled and matrix_mautrix_facebook_database_hostname == devture_postgres_connection_hostname else [])
       +
@@ -912,7 +908,7 @@ matrix_mautrix_facebook_container_additional_networks_auto: |-
 
 matrix_mautrix_facebook_systemd_required_services_list_auto: |
   {{
-    matrix_bots_homeserver_systemd_services_list
+    matrix_addons_homeserver_systemd_services_list
     +
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled and matrix_mautrix_facebook_database_hostname == devture_postgres_connection_hostname else [])
   }}
@@ -928,7 +924,7 @@ matrix_mautrix_facebook_container_labels_metrics_middleware_basic_auth_users: "{
 
 matrix_mautrix_facebook_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'fb.as.token', rounds=655555) | to_uuid }}"
 
-matrix_mautrix_facebook_homeserver_address: "{{ matrix_bridges_homeserver_client_api_url }}"
+matrix_mautrix_facebook_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 
 matrix_mautrix_facebook_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'fb.hs.token', rounds=655555) | to_uuid }}"
 
@@ -1056,12 +1052,12 @@ matrix_mautrix_instagram_enabled: false
 
 matrix_mautrix_instagram_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
-matrix_mautrix_instagram_container_network: "{{ matrix_bridges_container_network }}"
+matrix_mautrix_instagram_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_mautrix_instagram_container_additional_networks_auto: |-
   {{
     (
-      ([] if matrix_bridges_homeserver_container_network == '' else [matrix_bridges_homeserver_container_network])
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
       ([devture_postgres_container_network] if devture_postgres_enabled and matrix_mautrix_instagram_database_hostname == devture_postgres_connection_hostname else [])
       +
@@ -1079,14 +1075,14 @@ matrix_mautrix_instagram_container_labels_metrics_middleware_basic_auth_users: "
 
 matrix_mautrix_instagram_systemd_required_services_list_auto: |
   {{
-    matrix_bots_homeserver_systemd_services_list
+    matrix_addons_homeserver_systemd_services_list
     +
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled and matrix_mautrix_instagram_database_hostname == devture_postgres_connection_hostname else [])
   }}
 
 matrix_mautrix_instagram_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'ig.as.token', rounds=655555) | to_uuid }}"
 
-matrix_mautrix_instagram_homeserver_address: "{{ matrix_bridges_homeserver_client_api_url }}"
+matrix_mautrix_instagram_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 
 matrix_mautrix_instagram_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'ig.hs.token', rounds=655555) | to_uuid }}"
 
@@ -1342,12 +1338,12 @@ matrix_mautrix_whatsapp_enabled: false
 
 matrix_mautrix_whatsapp_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
-matrix_mautrix_whatsapp_container_network: "{{ matrix_bridges_container_network }}"
+matrix_mautrix_whatsapp_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_mautrix_whatsapp_container_additional_networks_auto: |-
   {{
     (
-      ([] if matrix_bridges_homeserver_container_network == '' else [matrix_bridges_homeserver_container_network])
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
       ([devture_postgres_container_network] if devture_postgres_enabled and matrix_mautrix_whatsapp_database_hostname == devture_postgres_connection_hostname else [])
       +
@@ -1365,14 +1361,14 @@ matrix_mautrix_whatsapp_container_labels_metrics_middleware_basic_auth_users: "{
 
 matrix_mautrix_whatsapp_systemd_required_services_list_auto: |
   {{
-    matrix_bots_homeserver_systemd_services_list
+    matrix_addons_homeserver_systemd_services_list
     +
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled and matrix_mautrix_whatsapp_database_hostname == devture_postgres_connection_hostname else [])
   }}
 
 matrix_mautrix_whatsapp_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'whats.as.token', rounds=655555) | to_uuid }}"
 
-matrix_mautrix_whatsapp_homeserver_address: "{{ matrix_bridges_homeserver_client_api_url }}"
+matrix_mautrix_whatsapp_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_mautrix_whatsapp_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'whats.hs.token', rounds=655555) | to_uuid }}"
 
 matrix_mautrix_whatsapp_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
@@ -1464,11 +1460,11 @@ matrix_hookshot_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_se
 
 matrix_hookshot_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'hookshot.hs.tok', rounds=655555) | to_uuid }}"
 
-matrix_hookshot_homeserver_address: "{{ matrix_bridges_homeserver_client_api_url }}"
+matrix_hookshot_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 
 matrix_hookshot_systemd_wanted_services_list: |
   {{
-    matrix_bridges_homeserver_systemd_services_list
+    matrix_addons_homeserver_systemd_services_list
     +
     ([(redis_identifier + '.service')] if redis_enabled and matrix_hookshot_queue_host == redis_identifier else [])
   }}
@@ -1478,12 +1474,12 @@ matrix_hookshot_systemd_wanted_services_list: |
 # because connectivity is still potentially troublesome and is to be investigated.
 matrix_hookshot_queue_host: "{{ redis_identifier if redis_enabled and matrix_hookshot_experimental_encryption_enabled else '' }}"
 
-matrix_hookshot_container_network: "{{ matrix_bridges_container_network }}"
+matrix_hookshot_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_hookshot_container_additional_networks_auto: |
   {{
     (
-      ([] if matrix_bridges_homeserver_container_network == '' else [matrix_bridges_homeserver_container_network])
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
       ([redis_container_network] if redis_enabled and matrix_hookshot_queue_host == redis_identifier else [])
       +
@@ -1773,7 +1769,7 @@ matrix_bot_matrix_reminder_bot_enabled: false
 
 matrix_bot_matrix_reminder_bot_systemd_required_services_list_auto: |
   {{
-    matrix_bots_homeserver_systemd_services_list
+    matrix_addons_homeserver_systemd_services_list
     +
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled and matrix_bot_matrix_reminder_bot_database_hostname == devture_postgres_connection_hostname else [])
   }}
@@ -1784,17 +1780,17 @@ matrix_bot_matrix_reminder_bot_database_hostname: "{{ devture_postgres_connectio
 matrix_bot_matrix_reminder_bot_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'reminder.bot.db', rounds=655555) | to_uuid }}"
 matrix_bot_matrix_reminder_bot_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
-matrix_bot_matrix_reminder_bot_container_network: "{{ matrix_bots_container_network }}"
+matrix_bot_matrix_reminder_bot_container_network: "{{ matrix_addons_container_network }}"
 matrix_bot_matrix_reminder_bot_container_additional_networks_auto: |-
   {{
     (
-      ([] if matrix_bots_homeserver_container_network == '' else [matrix_bots_homeserver_container_network])
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
       ([devture_postgres_container_network] if devture_postgres_enabled and matrix_bot_matrix_reminder_bot_database_hostname == devture_postgres_connection_hostname else [])
     ) | unique
   }}
 
-matrix_bot_matrix_reminder_bot_matrix_homeserver_url: "{{ matrix_bots_homeserver_client_api_url }}"
+matrix_bot_matrix_reminder_bot_matrix_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
 
 ######################################################################
 #
@@ -2051,7 +2047,7 @@ matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services: "{% for dom
 
 matrix_bot_postmoogle_systemd_required_services_list_auto: |
   {{
-    matrix_bots_homeserver_systemd_services_list
+    matrix_addons_homeserver_systemd_services_list
     +
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled and matrix_bot_postmoogle_database_hostname == matrix_bot_postmoogle_database_hostname else [])
     +
@@ -2063,14 +2059,14 @@ matrix_bot_postmoogle_database_engine: "{{ 'postgres' if devture_postgres_enable
 matrix_bot_postmoogle_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_bot_postmoogle_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'postmoogle.db', rounds=655555) | to_uuid }}"
 
-matrix_bot_postmoogle_homeserver: "{{ matrix_bots_homeserver_client_api_url }}"
+matrix_bot_postmoogle_homeserver: "{{ matrix_addons_homeserver_client_api_url }}"
 
-matrix_bot_postmoogle_container_network: "{{ matrix_bots_container_network }}"
+matrix_bot_postmoogle_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_bot_postmoogle_container_additional_networks_auto: |-
   {{
     (
-      ([] if matrix_bots_homeserver_container_network == '' else [matrix_bots_homeserver_container_network])
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
       ([devture_postgres_container_network] if devture_postgres_enabled and matrix_bot_matrix_reminder_bot_database_hostname == devture_postgres_connection_hostname else [])
     ) | unique
@@ -2094,12 +2090,12 @@ matrix_bot_chatgpt_enabled: false
 
 matrix_bot_chatgpt_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
-matrix_bot_chatgpt_container_network: "{{ matrix_bots_container_network }}"
-matrix_bot_chatgpt_container_additional_networks_auto: "{{ [] if matrix_bots_homeserver_container_network == '' else [matrix_bots_homeserver_container_network] }}"
+matrix_bot_chatgpt_container_network: "{{ matrix_addons_container_network }}"
+matrix_bot_chatgpt_container_additional_networks_auto: "{{ [] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network] }}"
 
-matrix_bot_chatgpt_matrix_homeserver_url: "{{ matrix_bots_homeserver_client_api_url }}"
+matrix_bot_chatgpt_matrix_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
 
-matrix_bot_chatgpt_systemd_required_services_list_auto: "{{ matrix_bots_homeserver_systemd_services_list }}"
+matrix_bot_chatgpt_systemd_required_services_list_auto: "{{ matrix_addons_homeserver_systemd_services_list }}"
 
 ######################################################################
 #
