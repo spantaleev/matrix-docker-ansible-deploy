@@ -2623,8 +2623,6 @@ exim_relay_base_path: "{{ matrix_base_data_path }}/exim-relay"
 exim_relay_uid: "{{ matrix_user_uid }}"
 exim_relay_gid: "{{ matrix_user_gid }}"
 
-exim_relay_container_network: "{{ matrix_docker_network }}"
-
 exim_relay_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
 
 exim_relay_hostname: "{{ matrix_server_fqn_matrix }}"
@@ -2662,6 +2660,12 @@ matrix_ma1sd_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 # ma1sd's web-server port.
 matrix_ma1sd_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '' ~ matrix_ma1sd_container_port | string) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
+matrix_ma1sd_container_additional_networks: |
+ {{
+  (
+    ([exim_relay_container_network] if (exim_relay_enabled and matrix_ma1sd_threepid_medium_email_connectors_smtp_host == exim_relay_identifier and matrix_ma1sd_container_network != exim_relay_container_network) else [])
+  ) | unique
+ }}
 
 # We enable Synapse integration via its Postgres database by default.
 # When using another Identity store, you might wish to disable this and define
@@ -2684,18 +2688,16 @@ matrix_ma1sd_threepid_medium_email_connectors_smtp_tls: 0
 
 matrix_ma1sd_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
 
-matrix_ma1sd_systemd_required_services_list: |
+matrix_ma1sd_systemd_required_services_list_auto: |
   {{
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if (devture_postgres_enabled and matrix_ma1sd_database_hostname == devture_postgres_connection_hostname) else [])
   }}
 
-matrix_ma1sd_systemd_wanted_services_list: |
+matrix_ma1sd_systemd_wanted_services_list_auto: |
   {{
     (['matrix-corporal.service'] if matrix_corporal_enabled else ['matrix-' + matrix_homeserver_implementation + '.service'])
     +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
-    +
-    ([exim_relay_identifier ~ '.service'] if exim_relay_enabled else [])
+    ([exim_relay_identifier ~ '.service'] if (exim_relay_enabled and matrix_ma1sd_threepid_medium_email_connectors_smtp_host == exim_relay_identifier) else [])
   }}
 
 # Postgres is the default, except if not using internal Postgres server
@@ -3625,7 +3627,11 @@ matrix_synapse_container_manhole_api_host_bind_port: "{{ (matrix_playbook_servic
 
 matrix_synapse_container_additional_networks: |
   {{
-    ([redis_container_network] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == redis_identifier else [])
+    (
+      ([redis_container_network] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == redis_identifier else [])
+      +
+      ([exim_relay_container_network] if (exim_relay_enabled and matrix_synapse_email_enabled and matrix_synapse_email_smtp_host == exim_relay_identifier and matrix_synapse_container_network != exim_relay_container_network) else [])
+    ) | unique
   }}
 
 # For exposing the Synapse worker (and metrics) ports to the local host.
