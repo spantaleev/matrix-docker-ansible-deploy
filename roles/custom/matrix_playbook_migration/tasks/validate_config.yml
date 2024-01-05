@@ -59,6 +59,9 @@
     - {'old': 'matrix_prosody_jitsi_max_participants', 'new': 'jitsi_prosody_max_participants'}
     - {'old': 'jitsi_require_well_known', 'new': 'jitsi_web_well_known_element_jitsi_enabled'}
     - {'old': 'jitsi_wellknown_element_jitsi_json', 'new': 'jitsi_web_well_known_element_jitsi_json'}
+    - {'old': 'exim_relay_docker_image', 'new': 'exim_relay_container_image'}
+    - {'old': 'exim_relay_docker_image_name_prefix', 'new': 'exim_relay_container_image_name_prefix'}
+    - {'old': 'exim_relay_docker_image_force_pull', 'new': 'exim_relay_container_image_force_pull'}
 
 - name: (Deprecation) Catch and report matrix_postgres variables
   ansible.builtin.fail:
@@ -73,6 +76,17 @@
 
       The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'matrix_postgres_.*') | map (attribute='key') | join(', ') }}
   when: "vars | dict2items | selectattr('key', 'match', 'matrix_postgres_.*') | list | items2dict"
+
+- name: (Deprecation) Catch and report matrix_mailer_ variables
+  ansible.builtin.fail:
+    msg: |-
+      The matrix-mailer role in the playbook has been replaced with the exim-relay role (https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay).
+      The new role is pretty much the same, but uses differently named variables.
+
+      Please change your configuration (vars.yml) to rename all `matrix_mailer`-prefixed variables (`matrix_mailer_*` -> `exim_relay_*`).
+
+      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'matrix_mailer_.*') | map (attribute='key') | join(', ') }}
+  when: "vars | dict2items | selectattr('key', 'match', 'matrix_mailer_.*') | list | items2dict"
 
 - when: matrix_playbook_migration_matrix_prometheus_node_exporter_migration_validation_enabled | bool
   block:

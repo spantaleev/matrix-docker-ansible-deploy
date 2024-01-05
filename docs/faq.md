@@ -285,7 +285,7 @@ You can disable some not-so-important services to save on memory.
 matrix_ma1sd_enabled: false
 
 # Disabling this will prevent email-notifications and other such things from working.
-matrix_mailer_enabled: false
+exim_relay_enabled: false
 
 # You can also disable this to save more RAM,
 # at the expense of audio/video calls being unreliable.
