@@ -470,7 +470,7 @@ matrix_homeserver_systemd_services_list: |-
 matrix_homeserver_container_client_api_endpoint: |-
   {{
     {
-      'synapse': ('matrix-synapse-reverse-proxy-companion:8008' if matrix_synapse_reverse_proxy_companion_enabled else 'http://matrix-synapse:'+ matrix_synapse_container_client_api_port|string),
+      'synapse': ('matrix-synapse-reverse-proxy-companion:8008' if matrix_synapse_reverse_proxy_companion_enabled else 'matrix-synapse:'+ matrix_synapse_container_client_api_port|string),
       'dendrite': ('matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
       'conduit': ('matrix-conduit:' + matrix_conduit_port_number|string),
     }[matrix_homeserver_implementation]
@@ -479,7 +479,7 @@ matrix_homeserver_container_client_api_endpoint: |-
 matrix_homeserver_container_federation_api_endpoint: |-
   {{
     {
-      'synapse': ('matrix-synapse-reverse-proxy-companion:8048' if matrix_synapse_reverse_proxy_companion_enabled else 'http://matrix-synapse:'+ matrix_synapse_container_federation_api_plain_port|string),
+      'synapse': ('matrix-synapse-reverse-proxy-companion:8048' if matrix_synapse_reverse_proxy_companion_enabled else 'matrix-synapse:'+ matrix_synapse_container_federation_api_plain_port|string),
       'dendrite': ('matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
       'conduit': ('matrix-conduit:' + matrix_conduit_port_number|string),
     }[matrix_homeserver_implementation]
