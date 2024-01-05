@@ -1,27 +1,16 @@
 ---
 
-# matrix-synapse-reverse-proxy companion is a role which brings up a containerized nginx webserver which helps with reverse-proxying to Synapse.
+# matrix-synapse-reverse-proxy-companion is a role which brings up a containerized nginx webserver which helps with reverse-proxying to Synapse when workers are enabled.
 #
 # When Synapse is NOT running in worker-mode, reverse-proxying is relatively simple (everything goes to `matrix-synapse:XXXX`).
+# In such cases, using this reverse-proxy companion is possible, but unnecessary - it's one more service in the stack, which also impacts performance a bit.
 #
-# When Synapse workers are enabled, however, the reverse-proxying configuration is much more complicated.
-# Certain requests need to go to certain workers, etc.
-# In the past, the main reverse proxy (`matrix-synapse-reverse-proxy-companion`) was handling request routing to the appropriate workers,
-# but that only worked well for external requests (from outside of the Matrix server itself).
+# When Synapse workers are enabled, however, the reverse-proxying configuration is much more complicated - certain requests need to go to certain workers, etc.
+# matrix-synapse-reverse-proxy-companion is the central place services that need to reach Synapse could be pointed to.
 #
-# Without the help of `matrix-synapse-reverse-proxy-companion`, internal services (like Dimension) that would like to talk to Synapse over the container network
-# did not have an endpoint for Synapse that they could be pointed to and have it just work.
-# If `matrix-synapse-reverse-proxy-companion` was enabled, Dimension could be pointed to its vhost handling Synapse and routing to the appropriate workers,
-# but when `matrix-synapse-reverse-proxy-companion` was disabled, this helpful functionality was not available and the best we could do
-# is point Dimension to the main Synapse process at `matrix-synapse:XXXX` itself.
-# Doing that breaks requests that need to go to specific workers.
-# See: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2090
-#
-# What this role does is, it extracts all the Synapse request routing out of the `matrix-synapse-reverse-proxy-companion` role here,
-# and makes the `matrix-synapse-reverse-proxy-companion` container service represent Synapse and route appropriately,
-# regardless of whether workers are enabled or disabled.
-# All other playbook services can then forget about `matrix-synapse` or `matrix-synapse-whatever-worker`, etc.,
-# and just use `matrix-synapse-reverse-proxy-companion` as their request destination.
+# This is also similar to the matrix-homeserver-proxy role, but that one aims to wrap the homeserver
+# (along with other homeserver route-stealing services like the identity server, matrix-media-repo, etc.)
+# into a neat package that addons (bridges, bots, etc.) can consume and get a unified view of "the currently-enabled homeserver and all related services".
 
 matrix_synapse_reverse_proxy_companion_enabled: true
 
