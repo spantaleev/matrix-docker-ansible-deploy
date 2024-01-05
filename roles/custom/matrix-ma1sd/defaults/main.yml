@@ -31,10 +31,19 @@ matrix_ma1sd_container_http_host_bind_port: ''
 matrix_ma1sd_container_extra_arguments: []
 
 # List of systemd services that matrix-ma1sd.service depends on
-matrix_ma1sd_systemd_required_services_list: ['docker.service']
+matrix_ma1sd_systemd_required_services_list: "{{ matrix_ma1sd_systemd_required_services_list_default + matrix_ma1sd_systemd_required_services_list_auto + matrix_ma1sd_systemd_required_services_list_custom }}"
+matrix_ma1sd_systemd_required_services_list_default: ['docker.service']
+matrix_ma1sd_systemd_required_services_list_auto: []
+matrix_ma1sd_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-ma1sd.service wants
-matrix_ma1sd_systemd_wanted_services_list: []
+matrix_ma1sd_systemd_wanted_services_list: "{{ matrix_ma1sd_systemd_wanted_services_list_default + matrix_ma1sd_systemd_wanted_services_list_auto + matrix_ma1sd_systemd_wanted_services_list_custom }}"
+matrix_ma1sd_systemd_wanted_services_list_default: []
+matrix_ma1sd_systemd_wanted_services_list_auto: []
+matrix_ma1sd_systemd_wanted_services_list_custom: []
+
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_ma1sd_container_network: "{{ matrix_docker_network }}"
 
 # A list of additional container networks that matrix-ma1sd would be connected to.
 # The playbook does not create these networks, so make sure they already exist.
