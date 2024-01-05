@@ -1,3 +1,21 @@
+# 2024-01-05
+
+## matrix-mailer has been replaced by the exim-relay external role
+
+We're continuing our effort to make [the playbook use external roles for some things](#the-playbook-now-uses-external-roles-for-some-things), so as to avoid doing everything ourselves and to facilitate code re-use.
+
+The `matrix-mailer` role has been moved to its own repository ([ansible-role-exim-relay](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay)) that this playbook now includes.
+
+To migrate:
+
+- pull the playbook changes, as usual
+- update your roles (run `just roles` or `make roles`)
+- update your `vars.yml`, renaming `matrix_mailer`-prefixed variables to `exim_relay`-prefixed ones (e.g. `matrix_mailer_sender_address` -> `exim_relay_sender_address`). If you find none, it means you're using the default configuration and your migraiton job is even simpler.
+- re-run the playbook (`install-all` or `setup-all`)
+
+The playbook will take care of stopping the old `matrix-mailer` systemd service, relocating its directory and restarting it under the new name (`matrix-exim-relay.service`).
+
+
 # 2024-01-02
 
 ## mautrix-signal now powered by the new Go-based bridge

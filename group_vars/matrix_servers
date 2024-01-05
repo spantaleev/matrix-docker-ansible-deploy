@@ -353,7 +353,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': (matrix_media_repo_identifier + '.service'), 'priority': 4000, 'groups': ['matrix', 'matrix-media-repo']}] if matrix_media_repo_enabled else [])
     +
-    ([{'name': 'matrix-mailer.service', 'priority': 2000, 'groups': ['matrix', 'mailer']}] if matrix_mailer_enabled else [])
+    ([{'name': (exim_relay_identifier ~ '.service'), 'priority': 2000, 'groups': ['matrix', 'mailer', 'exim-relay']}] if exim_relay_enabled else [])
     +
     ([{'name': 'matrix-nginx-proxy.service', 'priority': 3000, 'groups': ['matrix', 'nginx', 'nginx-proxy', 'reverse-proxies']}] if matrix_nginx_proxy_enabled else [])
     +
@@ -2721,24 +2721,38 @@ matrix_ldap_registration_proxy_enabled: false
 #
 ######################################################################
 
-######################################################################
-#
-# matrix-mailer
-#
-######################################################################
 
-# By default, this playbook sets up an exim mailer server (running in a container).
-# This is so that Synapse can send email reminders for unread messages.
-# Other services (like ma1sd), also use the mailer.
-matrix_mailer_enabled: true
+########################################################################
+#                                                                      #
+# exim-relay                                                           #
+#                                                                      #
+########################################################################
 
-matrix_mailer_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
+# We set up an Exim email relay by default.
+# This is so that the homeserver and various other services can send emails through it.
+# To completely disable this service, use: `exim_relay_enabled: false`
 
-######################################################################
-#
-# /matrix-mailer
-#
-######################################################################
+exim_relay_identifier: "matrix-exim-relay"
+
+exim_relay_base_path: "{{ matrix_base_data_path }}/exim-relay"
+
+exim_relay_uid: "{{ matrix_user_uid }}"
+exim_relay_gid: "{{ matrix_user_gid }}"
+
+exim_relay_container_network: "{{ matrix_docker_network }}"
+
+exim_relay_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
+
+exim_relay_hostname: "{{ matrix_server_fqn_matrix }}"
+
+exim_relay_sender_address: "matrix@{{ matrix_domain }}"
+
+########################################################################
+#                                                                      #
+# /exim-relay                                                          #
+#                                                                      #
+########################################################################
+
 
 ######################################################################
 #
@@ -2779,7 +2793,7 @@ matrix_ma1sd_dns_overwrite_homeserver_client_name: "{{ matrix_server_fqn_matrix 
 matrix_ma1sd_dns_overwrite_homeserver_client_value: "{{ matrix_homeserver_container_url }}"
 
 # By default, we send mail through the `matrix-mailer` service.
-matrix_ma1sd_threepid_medium_email_identity_from: "{{ matrix_mailer_sender_address }}"
+matrix_ma1sd_threepid_medium_email_identity_from: "{{ exim_relay_sender_address }}"
 matrix_ma1sd_threepid_medium_email_connectors_smtp_host: "matrix-mailer"
 matrix_ma1sd_threepid_medium_email_connectors_smtp_port: 8025
 matrix_ma1sd_threepid_medium_email_connectors_smtp_tls: 0
@@ -2797,7 +2811,7 @@ matrix_ma1sd_systemd_wanted_services_list: |
     +
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
     +
-    (['matrix-mailer.service'] if matrix_mailer_enabled else [])
+    ([exim_relay_identifier ~ '.service'] if exim_relay_enabled else [])
   }}
 
 # Postgres is the default, except if not using internal Postgres server
@@ -3818,11 +3832,11 @@ matrix_synapse_federation_port_openid_resource_required: "{{ not matrix_synapse_
 # If someone instals Prometheus via the playbook, they most likely wish to monitor Synapse.
 matrix_synapse_metrics_enabled: "{{ prometheus_enabled }}"
 
-matrix_synapse_email_enabled: "{{ matrix_mailer_enabled }}"
-matrix_synapse_email_smtp_host: "matrix-mailer"
+matrix_synapse_email_enabled: "{{ exim_relay_enabled }}"
+matrix_synapse_email_smtp_host: "{{ exim_relay_identifier }}"
 matrix_synapse_email_smtp_port: 8025
 matrix_synapse_email_smtp_require_transport_security: false
-matrix_synapse_email_notif_from: "Matrix <{{ matrix_mailer_sender_address }}>"
+matrix_synapse_email_notif_from: "Matrix <{{ exim_relay_sender_address }}>"
 
 # Even if TURN doesn't support TLS (it does by default),
 # it doesn't hurt to try a secure connection anyway.
@@ -3862,7 +3876,7 @@ matrix_synapse_systemd_wanted_services_list_auto: |
   {{
     (['matrix-coturn.service'] if matrix_coturn_enabled else [])
     +
-    (['matrix-mailer.service'] if matrix_mailer_enabled else [])
+    ([exim_relay_identifier ~ '.service'] if exim_relay_enabled else [])
   }}
 
 # Synapse workers (used for parallel load-scaling) need Redis for IPC.

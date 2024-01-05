@@ -1,0 +1,39 @@
+---
+
+# This migrates the mailer from the old path (`/matrix/mailer`) to the new path (`/matrix/exim-relay`, controlled by `exim_relay_base_path`),
+# and from the old hardcoded systemd service name (`matrix-mailer.service`) to the new one (`matrix-exim-relay.service`, controlled by `exim_relay_identifier`).
+#
+# Here, we merely disable (and stop) the old systemd service and relocate the base directory path (`/matrix/mailer`).
+# The exim-relay role itself (running later) will then ensure this data is up-to-date and will set up the new systemd service.
+
+# It only makes sense to migrate if the identifier or path are different than the default (what we were using before).
+- name: Check existence of matrix-mailer.service systemd service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mailer.service"
+  register: matrix_mailer_service_stat
+
+- when: matrix_mailer_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-mailer.service systemd service is stopped
+      ansible.builtin.systemd:
+        name: matrix-mailer
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-mailer directory relocated
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_base_data_path }}/mailer {{ exim_relay_base_path }}"
+        creates: "{{ exim_relay_base_path }}"
+        removes: "{{ matrix_base_data_path }}"
+
+    # Remove legacy env-mailer file (named `env` in the new role)
+    - name: Ensure old exim-relay environment variables file is deleted
+      ansible.builtin.file:
+        path: "{{ exim_relay_base_path }}/env-mailer"
+        state: absent
+
+    - name: Ensure matrix-mailer.service systemd service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mailer.service"
+        state: absent
