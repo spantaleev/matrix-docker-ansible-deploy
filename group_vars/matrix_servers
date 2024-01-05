@@ -485,15 +485,6 @@ matrix_homeserver_container_federation_api_endpoint: |-
     }[matrix_homeserver_implementation]
   }}
 
-matrix_homeserver_container_network: |-
-  {{
-    {
-      'synapse': (matrix_synapse_reverse_proxy_companion_container_network if matrix_synapse_reverse_proxy_companion_enabled else matrix_synapse_container_network),
-      'dendrite': matrix_dendrite_container_network,
-      'conduit': matrix_conduit_container_network,
-    }[matrix_homeserver_implementation]
-  }}
-
 matrix_integration_manager_rest_url: "{{ matrix_dimension_integrations_rest_url if matrix_dimension_enabled else None }}"
 matrix_integration_manager_ui_url: "{{ matrix_dimension_integrations_ui_url if matrix_dimension_enabled else None }}"
 
@@ -3785,6 +3776,8 @@ matrix_synapse_container_metrics_api_host_bind_port: "{{ (matrix_playbook_servic
 # For exposing the Synapse Manhole port (plain HTTP) to the local host.
 matrix_synapse_container_manhole_api_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9000') if matrix_synapse_metrics_enabled and matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
+matrix_synapse_container_network: "{{ matrix_homeserver_container_network }}"
+
 matrix_synapse_container_additional_networks: |
   {{
     (
@@ -4414,15 +4407,19 @@ matrix_sliding_sync_database_password: "{{ '%s' | format(matrix_homeserver_gener
 
 matrix_dendrite_enabled: "{{ matrix_homeserver_implementation == 'dendrite' }}"
 
-# Normally, matrix-nginx-proxy is enabled and nginx can reach Dendrite over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it,
-# you can expose Dendrite's ports to the host.
-#
-# For exposing Dendrite's plain HTTP server to the local host.
+matrix_dendrite_container_network: "{{ matrix_homeserver_container_network }}"
+
+matrix_dendrite_container_additional_networks: |
+  {{
+    (
+      ([devture_postgres_container_network] if (devture_postgres_enabled and devture_postgres_container_network != matrix_dendrite_container_network and matrix_dendrite_database_hostname == devture_postgres_connection_hostname) else [])
+    )
+  }}
+
 matrix_dendrite_container_http_host_bind_address: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ matrix_dendrite_http_bind_port | string) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
-#
-# For exposing Dendrite's HTTPS server to the local host.
 matrix_dendrite_container_https_host_bind_address: "{{ '' if not matrix_dendrite_https_bind_port or not matrix_playbook_service_host_bind_interface_prefix else (matrix_playbook_service_host_bind_interface_prefix + matrix_dendrite_https_bind_port | string) }}"
+
+matrix_dendrite_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
 
 matrix_dendrite_client_api_registration_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.rss', rounds=655555) | to_uuid }}"
 
@@ -4452,11 +4449,9 @@ matrix_dendrite_self_check_validate_certificates: "{{ false if matrix_playbook_s
 
 matrix_dendrite_trusted_id_servers: "{{ [matrix_server_fqn_matrix] if matrix_ma1sd_enabled else ['matrix.org', 'vector.im'] }}"
 
-matrix_dendrite_systemd_required_services_list: |
+matrix_dendrite_systemd_required_services_list_auto: |
   {{
-    (['docker.service'])
-    +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if (devture_postgres_enabled and matrix_dendrite_database_hostname == devture_postgres_connection_hostname) else [])
     +
     (['matrix-goofys.service'] if matrix_s3_media_store_enabled else [])
   }}
@@ -4466,7 +4461,6 @@ matrix_dendrite_systemd_wanted_services_list: |
     (['matrix-coturn.service'] if matrix_coturn_enabled else [])
   }}
 
-matrix_dendrite_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
 matrix_dendrite_app_service_config_files_auto: "{{ matrix_homeserver_app_service_config_files_auto }}"
 
 ######################################################################
@@ -4474,6 +4468,7 @@ matrix_dendrite_app_service_config_files_auto: "{{ matrix_homeserver_app_service
 # /matrix-dendrite
 #
 ######################################################################
+
 
 ######################################################################
 #
@@ -4483,10 +4478,7 @@ matrix_dendrite_app_service_config_files_auto: "{{ matrix_homeserver_app_service
 
 matrix_conduit_enabled: "{{ matrix_homeserver_implementation == 'conduit' }}"
 
-matrix_conduit_systemd_required_services_list: |
-  {{
-    (['docker.service'])
-  }}
+matrix_conduit_container_network: "{{ matrix_homeserver_container_network }}"
 
 ######################################################################
 #

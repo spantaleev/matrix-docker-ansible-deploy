@@ -19,13 +19,16 @@ matrix_conduit_port_number: 6167
 matrix_conduit_tmp_directory_size_mb: 500
 
 # List of systemd services that matrix-conduit.service depends on
-matrix_conduit_systemd_required_services_list: ["docker.service"]
+matrix_conduit_systemd_required_services_list: "{{ matrix_conduit_systemd_required_services_list_default + matrix_conduit_systemd_required_services_list_auto + matrix_conduit_systemd_required_services_list_custom }}"
+matrix_conduit_systemd_required_services_list_default: ["docker.service"]
+matrix_conduit_systemd_required_services_list_auto: []
+matrix_conduit_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-conduit.service wants
 matrix_conduit_systemd_wanted_services_list: []
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
-matrix_conduit_container_network: "{{ matrix_docker_network }}"
+matrix_conduit_container_network: ""
 
 # A list of additional container networks that the container would be connected to.
 # The role does not create these networks, so make sure they already exist.

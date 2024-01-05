@@ -41,7 +41,7 @@ matrix_dendrite_http_bind_address: "{{ (':' + matrix_dendrite_http_bind_port | s
 matrix_dendrite_https_bind_address: "{{ (':' + matrix_dendrite_https_bind_port | string) if matrix_dendrite_https_bind_port else '' }}"
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
-matrix_dendrite_container_network: "{{ matrix_docker_network }}"
+matrix_dendrite_container_network: ""
 
 # A list of additional container networks that the container would be connected to.
 # The role does not create these networks, so make sure they already exist.
@@ -80,7 +80,10 @@ matrix_dendrite_container_arguments: "{{ matrix_dendrite_container_extra_argumen
 matrix_dendrite_process_extra_arguments: []
 
 # List of systemd services that matrix-dendrite.service depends on
-matrix_dendrite_systemd_required_services_list: ["docker.service"]
+matrix_dendrite_systemd_required_services_list: "{{ matrix_dendrite_systemd_required_services_list_default + matrix_dendrite_systemd_required_services_list_auto + matrix_dendrite_systemd_required_services_list_custom }}"
+matrix_dendrite_systemd_required_services_list_default: ["docker.service"]
+matrix_dendrite_systemd_required_services_list_auto: []
+matrix_dendrite_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-dendrite.service wants
 matrix_dendrite_systemd_wanted_services_list: []
