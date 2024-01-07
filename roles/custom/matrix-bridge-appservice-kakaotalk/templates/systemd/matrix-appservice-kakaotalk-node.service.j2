@@ -20,7 +20,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
-			--network={{ matrix_docker_network }} \
+			--network={{ matrix_appservice_kakaotalk_container_network }} \
 			--mount type=bind,src={{ matrix_appservice_kakaotalk_config_path }}/node-config.json,dst=/config.json,ro \
 			{% for arg in matrix_appservice_kakaotalk_node_container_extra_arguments %}
 			{{ arg }} \
