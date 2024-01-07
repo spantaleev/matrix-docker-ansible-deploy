@@ -39,7 +39,9 @@ matrix_bot_buscarron_container_network: matrix-bot-buscarron
 # A list of additional container networks that the container would be connected to.
 # The role does not create these networks, so make sure they already exist.
 # Use this to expose this container to another reverse proxy, which runs in a different container network.
-matrix_bot_buscarron_container_additional_networks: []
+matrix_bot_buscarron_container_additional_networks: "{{ matrix_bot_buscarron_container_additional_networks_auto + matrix_bot_buscarron_container_additional_networks_custom }}"
+matrix_bot_buscarron_container_additional_networks_auto: []
+matrix_bot_buscarron_container_additional_networks_custom: []
 
 # /metrics login
 matrix_bot_buscarron_metrics_login: ''
@@ -85,7 +87,10 @@ matrix_bot_buscarron_container_labels_additional_labels: ''
 matrix_bot_buscarron_container_extra_arguments: []
 
 # List of systemd services that matrix-bot-buscarron.service depends on
-matrix_bot_buscarron_systemd_required_services_list: ['docker.service']
+matrix_bot_buscarron_systemd_required_services_list: "{{ matrix_bot_buscarron_systemd_required_services_list_default + matrix_bot_buscarron_systemd_required_services_list_auto + matrix_bot_buscarron_systemd_required_services_list_custom }}"
+matrix_bot_buscarron_systemd_required_services_list_default: ['docker.service']
+matrix_bot_buscarron_systemd_required_services_list_auto: []
+matrix_bot_buscarron_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-bot-buscarron.service wants
 matrix_bot_buscarron_systemd_wanted_services_list: []
