@@ -592,12 +592,36 @@ matrix_appservice_webhooks_systemd_required_services_list: |
 # We don't enable bridges by default.
 matrix_appservice_slack_enabled: false
 
+matrix_appservice_slack_hostname: "{{ matrix_server_fqn_matrix }}"
+
+matrix_appservice_slack_systemd_required_services_list_auto: |
+  {{
+    matrix_addons_homeserver_systemd_services_list
+    +
+    ([devture_postgres_identifier ~ '.service'] if (devture_postgres_enabled and matrix_appservice_slack_database_hostname == devture_postgres_connection_hostname) else [])
+  }}
+
 matrix_appservice_slack_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
-# Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-slack over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# matrix-appservice-slack's client-server port to the local host.
 matrix_appservice_slack_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ matrix_appservice_slack_slack_port) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+
+matrix_appservice_slack_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_appservice_slack_container_additional_networks_auto: |-
+  {{
+    (
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+      +
+      ([devture_postgres_container_network] if (devture_postgres_enabled and matrix_appservice_slack_database_hostname == devture_postgres_connection_hostname and matrix_appservice_slack_container_network != devture_postgres_container_network) else [])
+      +
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_appservice_slack_container_labels_traefik_enabled) else [])
+    ) | unique
+  }}
+
+matrix_appservice_slack_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_appservice_slack_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_appservice_slack_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_appservice_slack_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 matrix_appservice_slack_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'slack.as.token', rounds=655555) | to_uuid }}"
 
@@ -605,15 +629,6 @@ matrix_appservice_slack_homeserver_url: "{{ matrix_homeserver_container_url }}"
 matrix_appservice_slack_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'slack.hs.token', rounds=655555) | to_uuid }}"
 
 matrix_appservice_slack_id_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'slack.id.token', rounds=655555) | to_uuid }}"
-
-matrix_appservice_slack_systemd_required_services_list: |
-  {{
-    ['docker.service']
-    +
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-    +
-    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
-  }}
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_appservice_slack_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'nedb' }}"
