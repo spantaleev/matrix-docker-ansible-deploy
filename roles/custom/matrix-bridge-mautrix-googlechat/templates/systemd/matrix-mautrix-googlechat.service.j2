@@ -27,8 +27,9 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% if matrix_mautrix_googlechat_container_http_host_bind_port %}
 			-p {{ matrix_mautrix_googlechat_container_http_host_bind_port }}:8080 \
 			{% endif %}
-			-v {{ matrix_mautrix_googlechat_config_path }}:/config:z \
-			-v {{ matrix_mautrix_googlechat_data_path }}:/data:z \
+			--mount type=bind,src={{ matrix_mautrix_googlechat_config_path }},dst=/config \
+			--mount type=bind,src={{ matrix_mautrix_googlechat_data_path }},dst=/data \
+			--label-file={{ matrix_mautrix_googlechat_base_path }}/labels \
 			{% for arg in matrix_mautrix_googlechat_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
