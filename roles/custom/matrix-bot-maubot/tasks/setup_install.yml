@@ -60,6 +60,21 @@
       pull: true
   when: "matrix_bot_maubot_container_image_self_build|bool"
 
+- name: Ensure maubot support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_bot_maubot_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - labels
+
+- name: Ensure maubot container network is created
+  community.general.docker_network:
+    name: "{{ matrix_bot_maubot_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-bot-maubot.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-bot-maubot.service.j2"

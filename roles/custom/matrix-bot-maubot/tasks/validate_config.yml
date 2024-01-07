@@ -1,11 +1,24 @@
 ---
 
+- name: (Deprecation) Catch and report renamed maubot variables
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_bot_maubot_management_interface_port', 'new': 'matrix_bot_maubot_server_port'}
+    - {'old': 'matrix_bot_maubot_management_interface_http_bind_port', 'new': 'matrix_bot_maubot_container_management_interface_http_bind_port'}
+
 - name: Fail if required maubot settings not defined
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
   when: "item.when | bool and vars[item.name] == ''"
   with_items:
+    - {'name': 'matrix_bot_maubot_hostname', when: true}
+    - {'name': 'matrix_bot_maubot_path_prefix', when: true}
     - {'name': 'matrix_bot_maubot_unshared_secret', when: true}
     - {'name': 'matrix_bot_maubot_admins', when: true}
     - {'name': 'matrix_bot_maubot_database_hostname', when: "{{ matrix_bot_maubot_database_engine == 'postgres' }}"}
+    - {'name': 'matrix_bot_maubot_container_network', when: true}

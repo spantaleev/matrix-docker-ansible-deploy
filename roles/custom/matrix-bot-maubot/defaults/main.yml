@@ -4,11 +4,15 @@
 # Project source code URL: https://mau.dev/maubot/maubot
 
 matrix_bot_maubot_enabled: true
+
+matrix_bot_maubot_scheme: https
+matrix_bot_maubot_hostname: ''
+matrix_bot_maubot_path_prefix: /_matrix/maubot
+
 matrix_bot_maubot_container_image_self_build: false
 matrix_bot_maubot_docker_repo: "https://mau.dev/maubot/maubot.git"
 matrix_bot_maubot_docker_src_files_path: "{{ matrix_bot_maubot_base_path }}/docker-src"
 matrix_bot_maubot_docker_repo_version: "{{ 'master' if matrix_bot_maubot_version == 'latest' else matrix_bot_maubot_version }}"
-
 
 # renovate: datasource=docker depName=dock.mau.dev/maubot/maubot
 matrix_bot_maubot_version: v0.4.2
@@ -20,7 +24,12 @@ matrix_bot_maubot_base_path: "{{ matrix_base_data_path }}/maubot"
 matrix_bot_maubot_data_path: "{{ matrix_bot_maubot_base_path }}/data"
 matrix_bot_maubot_config_path: "{{ matrix_bot_maubot_base_path }}/config"
 
-matrix_bot_maubot_bot_server_public_url: "https://{{ matrix_server_fqn_matrix }}"
+matrix_bot_maubot_bot_server_public_url: "{{ matrix_bot_maubot_scheme }}://{{ matrix_bot_maubot_hostname }}"
+matrix_bot_maubot_bot_server_base_path: "{{ matrix_bot_maubot_path_prefix }}/v1"
+matrix_bot_maubot_bot_server_ui_base_path: "{{ matrix_bot_maubot_path_prefix }}"
+matrix_bot_maubot_bot_server_plugin_base_path: "{{ matrix_bot_maubot_path_prefix }}/plugin/"
+matrix_bot_maubot_bot_server_appservice_base_path: "{{ matrix_bot_maubot_bot_server_base_path }}"
+
 matrix_bot_maubot_proxy_management_interface: true
 
 matrix_bot_maubot_database_engine: sqlite
@@ -43,30 +52,65 @@ matrix_bot_maubot_database_uri: "{{
  	}[matrix_bot_maubot_database_engine]
     }}"
 
-
 # Defines the port number where the management interface is
-# To actually expose the management interface outside of the container, use `matrix_bot_maubot_management_interface_http_bind_port`
-matrix_bot_maubot_management_interface_port: 29316
-
-# Controls whether the maubot container exposes its HTTP management interface port (tcp/29316 in the container).
-#
-# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:29316"), or empty string to not expose.
-# If you'll be setting this at all, it should be defined in terms of `matrix_bot_maubot_management_interface_port`.
-# Example:
-# matrix_bot_maubot_management_interface_http_bind_port: "127.0.0.1:{{ matrix_bot_maubot_management_interface_port }}"
-matrix_bot_maubot_management_interface_http_bind_port: ''
-
+# To actually expose the management interface outside of the container, use `matrix_bot_maubot_container_management_interface_http_bind_port`
+matrix_bot_maubot_server_port: 29316
 
 matrix_bot_maubot_unshared_secret: 'generate'
 
 # Specifies the default log level for all bot loggers.
 matrix_bot_maubot_logging_level: WARNING
 
+# Controls whether the maubot container exposes its HTTP management interface port (tcp/29316 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:29316"), or empty string to not expose.
+# If you'll be setting this at all, it should be defined in terms of `matrix_bot_maubot_server_port`.
+# Example:
+# matrix_bot_maubot_container_management_interface_http_bind_port: "127.0.0.1:{{ matrix_bot_maubot_server_port }}"
+matrix_bot_maubot_container_management_interface_http_bind_port: ''
+
+matrix_bot_maubot_container_network: ""
+
+matrix_bot_maubot_container_additional_networks: "{{ matrix_bot_maubot_container_additional_networks_auto + matrix_bot_maubot_container_additional_networks_custom }}"
+matrix_bot_maubot_container_additional_networks_auto: []
+matrix_bot_maubot_container_additional_networks_custom: []
+
+# matrix_bot_maubot_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_bot_maubot_container_labels_additional_labels`.
+matrix_bot_maubot_container_labels_traefik_enabled: true
+matrix_bot_maubot_container_labels_traefik_docker_network: "{{ matrix_bot_maubot_container_network }}"
+matrix_bot_maubot_container_labels_traefik_entrypoints: web-secure
+matrix_bot_maubot_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether labels will be added that expose maubot's management endpoints
+matrix_bot_maubot_container_labels_management_enabled: true
+matrix_bot_maubot_container_labels_management_hostname: "{{ matrix_bot_maubot_hostname }}"
+matrix_bot_maubot_container_labels_management_prefix: "{{ matrix_bot_maubot_path_prefix }}"
+matrix_bot_maubot_container_labels_management_traefik_rule: "Host(`{{ matrix_bot_maubot_container_labels_management_hostname }}`) && PathPrefix(`{{ matrix_bot_maubot_path_prefix }}`)"
+matrix_bot_maubot_container_labels_management_traefik_priority: 0
+matrix_bot_maubot_container_labels_management_traefik_entrypoints: "{{ matrix_bot_maubot_container_labels_traefik_entrypoints }}"
+matrix_bot_maubot_container_labels_management_traefik_tls: "{{ matrix_bot_maubot_container_labels_management_traefik_entrypoints != 'web' }}"
+matrix_bot_maubot_container_labels_management_traefik_tls_certResolver: "{{ matrix_bot_maubot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# matrix_bot_maubot_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_bot_maubot_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_bot_maubot_container_labels_additional_labels: ''
+
 # A list of extra arguments to pass to the container
 matrix_bot_maubot_container_extra_arguments: []
 
 # List of systemd services that matrix-bot-maubot.service depends on
-matrix_bot_maubot_systemd_required_services_list: ['docker.service']
+matrix_bot_maubot_systemd_required_services_list: "{{ matrix_bot_maubot_systemd_required_services_list_default + matrix_bot_maubot_systemd_required_services_list_auto + matrix_bot_maubot_systemd_required_services_list_custom }}"
+matrix_bot_maubot_systemd_required_services_list_default: ['docker.service']
+matrix_bot_maubot_systemd_required_services_list_auto: []
+matrix_bot_maubot_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-bot-maubot.service wants
 matrix_bot_maubot_systemd_wanted_services_list: []
