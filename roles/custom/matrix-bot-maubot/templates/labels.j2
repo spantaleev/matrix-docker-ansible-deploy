@@ -11,13 +11,13 @@ traefik.http.routers.matrix-bot-maubot-management.rule={{ matrix_bot_maubot_cont
 {% if matrix_bot_maubot_container_labels_management_traefik_priority | int > 0 %}
 traefik.http.routers.matrix-bot-maubot-management.priority={{ matrix_bot_maubot_container_labels_management_traefik_priority }}
 {% endif %}
-traefik.http.routers.matrix-bot-maubot-management.service=matrix-mautrix-facebook-appservice
+traefik.http.routers.matrix-bot-maubot-management.service=matrix-bot-maubot
 traefik.http.routers.matrix-bot-maubot-management.entrypoints={{ matrix_bot_maubot_container_labels_management_traefik_entrypoints }}
 traefik.http.routers.matrix-bot-maubot-management.tls={{ matrix_bot_maubot_container_labels_management_traefik_tls | to_json }}
 {% if matrix_bot_maubot_container_labels_management_traefik_tls %}
 traefik.http.routers.matrix-bot-maubot-management.tls.certResolver={{ matrix_bot_maubot_container_labels_management_traefik_tls_certResolver }}
 {% endif %}
-traefik.http.services.matrix-mautrix-facebook-appservice.loadbalancer.server.port={{ matrix_bot_maubot_server_port }}
+traefik.http.services.matrix-bot-maubot.loadbalancer.server.port={{ matrix_bot_maubot_server_port }}
 {% endif %}
 
 {% endif %}
