@@ -1798,17 +1798,19 @@ matrix_bot_matrix_reminder_bot_matrix_homeserver_url: "{{ matrix_addons_homeserv
 # We don't enable bots by default.
 matrix_bot_matrix_registration_bot_enabled: false
 
-matrix_bot_matrix_registration_bot_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
-
-matrix_bot_matrix_registration_bot_systemd_required_services_list: |
+matrix_bot_matrix_registration_bot_systemd_required_services_list_auto: |
   {{
-    ['docker.service']
-    +
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-    +
-    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+    matrix_addons_homeserver_systemd_services_list
   }}
 
+matrix_bot_matrix_registration_bot_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
+
+matrix_bot_matrix_registration_bot_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_bot_matrix_registration_bot_container_additional_networks_auto: |-
+  {{
+    ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+  }}
 
 ######################################################################
 #
