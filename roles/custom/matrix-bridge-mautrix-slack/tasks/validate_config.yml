@@ -10,6 +10,7 @@
     - {'name': 'matrix_mautrix_slack_homeserver_address', when: true}
     - {'name': 'matrix_mautrix_slack_homeserver_token', when: true}
     - {'name': 'matrix_mautrix_slack_database_hostname', when: "{{ matrix_mautrix_slack_database_engine == 'postgres' }}"}
+    - {'name': 'matrix_mautrix_slack_container_network', when: true}
 
 - name: Fail if appservice-slack and mautrix-slack have conflicting bot usernames
   when: matrix_appservice_slack_enabled | default(False) | bool and matrix_mautrix_slack_appservice_bot_username == matrix_appservice_slack_bot_name | default ('')

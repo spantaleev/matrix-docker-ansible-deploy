@@ -93,6 +93,11 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
+- name: Ensure matrix-mautrix-slack container network is created
+  community.general.docker_network:
+    name: "{{ matrix_mautrix_slack_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-mautrix-slack.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-slack.service.j2"
