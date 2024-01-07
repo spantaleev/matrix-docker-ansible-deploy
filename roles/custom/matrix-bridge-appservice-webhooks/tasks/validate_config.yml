@@ -1,13 +1,16 @@
 ---
 
-- name: Fail if required settings not defined
+- name: Fail if required matrix-appservice-webhooks settings not defined
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
   when: "vars[item] == ''"
   with_items:
-    - "matrix_appservice_webhooks_appservice_token"
-    - "matrix_appservice_webhooks_homeserver_url"
-    - "matrix_appservice_webhooks_homeserver_token"
-    - "matrix_appservice_webhooks_id_token"
-    - "matrix_appservice_webhooks_api_secret"
+    - matrix_appservice_webhooks_appservice_token
+    - matrix_appservice_webhooks_homeserver_url
+    - matrix_appservice_webhooks_homeserver_token
+    - matrix_appservice_webhooks_id_token
+    - matrix_appservice_webhooks_api_secret
+    - matrix_appservice_webhooks_container_network
+    - matrix_appservice_webhooks_hostname
+    - matrix_appservice_webhooks_path_prefix

@@ -4,6 +4,10 @@
 
 matrix_appservice_webhooks_enabled: true
 
+matrix_appservice_webhooks_scheme: https
+matrix_appservice_webhooks_hostname: ''
+matrix_appservice_webhooks_path_prefix: /appservice-webhooks
+
 matrix_appservice_webhooks_container_image_self_build: false
 matrix_appservice_webhooks_container_image_self_build_repo: "https://github.com/redoonetworks/matrix-appservice-webhooks"
 matrix_appservice_webhooks_container_image_self_build_repo_version: "{{ 'master' if matrix_appservice_webhooks_version == 'latest' else matrix_appservice_webhooks_version }}"
@@ -20,8 +24,8 @@ matrix_appservice_webhooks_data_path: "{{ matrix_appservice_webhooks_base_path }
 matrix_appservice_webhooks_docker_src_files_path: "{{ matrix_appservice_webhooks_base_path }}/docker-src"
 
 # If nginx-proxy is disabled, the bridge itself expects its endpoint to be on its own domain (e.g. "localhost:6789")
-matrix_appservice_webhooks_public_endpoint: /appservice-webhooks
-matrix_appservice_webhooks_inbound_uri_prefix: "{{ matrix_homeserver_url }}{{ matrix_appservice_webhooks_public_endpoint }}"
+matrix_appservice_webhooks_public_endpoint: "{{ matrix_appservice_webhooks_path_prefix }}"
+matrix_appservice_webhooks_inbound_uri_prefix: "{{ matrix_appservice_webhooks_scheme }}://{{ matrix_appservice_webhooks_hostname }}{{ matrix_appservice_webhooks_public_endpoint }}"
 
 matrix_appservice_webhooks_bot_name: 'webhookbot'
 matrix_appservice_webhooks_user_prefix: '_webhook_'
@@ -34,19 +38,56 @@ matrix_appservice_webhooks_matrix_port: 6789
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9999"), or empty string to not expose.
 matrix_appservice_webhooks_container_http_host_bind_port: ''
 
-matrix_appservice_webhooks_homeserver_media_url: "{{ matrix_server_fqn_matrix }}"
-matrix_appservice_webhooks_homeserver_url: ""
-matrix_appservice_webhooks_homeserver_domain: "{{ matrix_domain }}"
-matrix_appservice_webhooks_appservice_url: 'http://matrix-appservice-webhooks'
+matrix_appservice_webhooks_container_network: ""
+
+matrix_appservice_webhooks_container_additional_networks: "{{ matrix_appservice_webhooks_container_additional_networks_auto + matrix_appservice_webhooks_container_additional_networks_custom }}"
+matrix_appservice_webhooks_container_additional_networks_auto: []
+matrix_appservice_webhooks_container_additional_networks_custom: []
+
+# matrix_appservice_webhooks_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_appservice_webhooks_container_labels_additional_labels`.
+matrix_appservice_webhooks_container_labels_traefik_enabled: true
+matrix_appservice_webhooks_container_labels_traefik_docker_network: "{{ matrix_appservice_webhooks_container_network }}"
+matrix_appservice_webhooks_container_labels_traefik_entrypoints: web-secure
+matrix_appservice_webhooks_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether labels will be added that expose matrix-appservice-webhook's public endpoints
+matrix_appservice_webhooks_container_labels_public_endpoint_enabled: true
+matrix_appservice_webhooks_container_labels_public_endpoint_hostname: "{{ matrix_appservice_webhooks_hostname }}"
+matrix_appservice_webhooks_container_labels_public_endpoint_prefix: "{{ matrix_appservice_webhooks_path_prefix }}"
+matrix_appservice_webhooks_container_labels_public_endpoint_traefik_rule: "Host(`{{ matrix_appservice_webhooks_container_labels_public_endpoint_hostname }}`) && PathPrefix(`{{ matrix_appservice_webhooks_path_prefix }}`)"
+matrix_appservice_webhooks_container_labels_public_endpoint_traefik_priority: 0
+matrix_appservice_webhooks_container_labels_public_endpoint_traefik_entrypoints: "{{ matrix_appservice_webhooks_container_labels_traefik_entrypoints }}"
+matrix_appservice_webhooks_container_labels_public_endpoint_traefik_tls: "{{ matrix_appservice_webhooks_container_labels_public_endpoint_traefik_entrypoints != 'web' }}"
+matrix_appservice_webhooks_container_labels_public_endpoint_traefik_tls_certResolver: "{{ matrix_appservice_webhooks_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# matrix_appservice_webhooks_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_appservice_webhooks_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_appservice_webhooks_container_labels_additional_labels: ''
 
 # A list of extra arguments to pass to the container
 matrix_appservice_webhooks_container_extra_arguments: []
 
 # List of systemd services that matrix-appservice-webhooks.service depends on.
-matrix_appservice_webhooks_systemd_required_services_list: ['docker.service', 'matrix-synapse.service']
+matrix_appservice_webhooks_systemd_required_services_list: "{{ matrix_appservice_webhooks_systemd_required_services_list_default + matrix_appservice_webhooks_systemd_required_services_list_auto + matrix_appservice_webhooks_systemd_required_services_list_custom }}"
+matrix_appservice_webhooks_systemd_required_services_list_default: ['docker.service']
+matrix_appservice_webhooks_systemd_required_services_list_auto: []
+matrix_appservice_webhooks_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-appservice-webhooks.service wants
 matrix_appservice_webhooks_systemd_wanted_services_list: []
+
+matrix_appservice_webhooks_homeserver_media_url: "{{ matrix_server_fqn_matrix }}"
+matrix_appservice_webhooks_homeserver_url: ""
+matrix_appservice_webhooks_homeserver_domain: "{{ matrix_domain }}"
+matrix_appservice_webhooks_appservice_url: 'http://matrix-appservice-webhooks'
 
 matrix_appservice_webhooks_appservice_token: ''
 matrix_appservice_webhooks_homeserver_token: ''

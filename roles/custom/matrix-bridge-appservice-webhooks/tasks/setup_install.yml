@@ -1,6 +1,6 @@
 ---
 
-- name: Ensure AppService webhooks paths exist
+- name: Ensure matrix-appservice-webhooks paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
@@ -14,7 +14,7 @@
     - {path: "{{ matrix_appservice_webhooks_docker_src_files_path }}", when: "{{ matrix_appservice_webhooks_container_image_self_build }}"}
   when: "item.when | bool"
 
-- name: Ensure Appservice webhooks image is pulled
+- name: Ensure matrix-appservice-webhooks container image is pulled
   community.docker.docker_image:
     name: "{{ matrix_appservice_webhooks_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
@@ -28,7 +28,7 @@
 
 - when: "matrix_appservice_webhooks_container_image_self_build | bool"
   block:
-    - name: Ensure Appservice webhooks repository is present on self-build
+    - name: Ensure matrix-appservice-webhooks repository is present on self-build
       ansible.builtin.git:
         repo: "{{ matrix_appservice_webhooks_container_image_self_build_repo }}"
         dest: "{{ matrix_appservice_webhooks_docker_src_files_path }}"
@@ -38,7 +38,7 @@
       become_user: "{{ matrix_user_username }}"
       register: matrix_appservice_webhooks_git_pull_results
 
-    - name: Ensure Appservice webhooks Docker image is built
+    - name: Ensure matrix-appservice-webhooks container image is built
       community.docker.docker_image:
         name: "{{ matrix_appservice_webhooks_docker_image }}"
         source: build
@@ -49,7 +49,7 @@
           path: "{{ matrix_appservice_webhooks_docker_src_files_path }}"
           pull: true
 
-- name: Ensure Matrix Appservice webhooks config is installed
+- name: Ensure matrix-appservice-webhooks config is installed
   ansible.builtin.copy:
     content: "{{ matrix_appservice_webhooks_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_webhooks_config_path }}/config.yaml"
@@ -57,7 +57,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure Matrix Appservice webhooks schema.yml template exists
+- name: Ensure matrix-appservice-webhooks schema.yml template exists
   ansible.builtin.template:
     src: "{{ role_path }}/templates/schema.yml.j2"
     dest: "{{ matrix_appservice_webhooks_config_path }}/schema.yml"
@@ -65,7 +65,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure Matrix Appservice webhooks database.json template exists
+- name: Ensure matrix-appservice-webhooks database.json template exists
   ansible.builtin.template:
     src: "{{ role_path }}/templates/database.json.j2"
     dest: "{{ matrix_appservice_webhooks_data_path }}/database.json"
@@ -80,6 +80,21 @@
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-appservice-webhooks container network is created
+  community.general.docker_network:
+    name: "{{ matrix_appservice_webhooks_container_network }}"
+    driver: bridge
+
+- name: Ensure matrix-appservice-webhooks support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_appservice_webhooks_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - labels
 
 - name: Ensure matrix-appservice-webhooks.service installed
   ansible.builtin.template:
