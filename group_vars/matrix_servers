@@ -504,24 +504,29 @@ matrix_integration_manager_ui_url: "{{ matrix_dimension_integrations_ui_url if m
 # We don't enable bridges by default.
 matrix_appservice_discord_enabled: false
 
-# Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-discord over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# matrix-appservice-discord's client-server port to the local host.
+matrix_appservice_discord_systemd_required_services_list_auto: |
+  {{
+    matrix_addons_homeserver_systemd_services_list
+    +
+    ([devture_postgres_identifier ~ '.service'] if (devture_postgres_enabled and matrix_appservice_discord_database_hostname == devture_postgres_connection_hostname) else [])
+  }}
+
+
 matrix_appservice_discord_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9005') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+
+matrix_appservice_discord_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_appservice_discord_container_additional_networks_auto: |-
+  {{
+    (
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+      +
+      ([devture_postgres_container_network] if (devture_postgres_enabled and matrix_appservice_discord_database_hostname == devture_postgres_connection_hostname and matrix_appservice_discord_container_network != devture_postgres_container_network) else [])
+    ) | unique
+  }}
 
 # If the homeserver disables presence, it's likely better (less wasteful) to also disable presence on the bridge side.
 matrix_appservice_discord_bridge_disablePresence: "{{ not matrix_synapse_presence_enabled }}"
-
-matrix_appservice_discord_systemd_required_services_list: |
-  {{
-    ['docker.service']
-    +
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-    +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
-    +
-    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
-  }}
 
 matrix_appservice_discord_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'discord.as.token', rounds=655555) | to_uuid }}"
 

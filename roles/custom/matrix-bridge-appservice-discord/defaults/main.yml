@@ -29,11 +29,20 @@ matrix_appservice_discord_homeserver_domain: "{{ matrix_domain }}"
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9005"), or empty string to not expose.
 matrix_appservice_discord_container_http_host_bind_port: ''
 
+matrix_appservice_discord_container_network: ""
+
+matrix_appservice_discord_container_additional_networks: "{{ matrix_appservice_discord_container_additional_networks_auto + matrix_appservice_discord_container_additional_networks_custom }}"
+matrix_appservice_discord_container_additional_networks_auto: []
+matrix_appservice_discord_container_additional_networks_custom: []
+
 # A list of extra arguments to pass to the container
 matrix_appservice_discord_container_extra_arguments: []
 
 # List of systemd services that matrix-appservice-discord.service depends on.
-matrix_appservice_discord_systemd_required_services_list: ['docker.service']
+matrix_appservice_discord_systemd_required_services_list: "{{ matrix_appservice_discord_systemd_required_services_list_default + matrix_appservice_discord_systemd_required_services_list_auto + matrix_appservice_discord_systemd_required_services_list_custom }}"
+matrix_appservice_discord_systemd_required_services_list_default: ['docker.service']
+matrix_appservice_discord_systemd_required_services_list_auto: []
+matrix_appservice_discord_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-appservice-discord.service wants
 matrix_appservice_discord_systemd_wanted_services_list: []
