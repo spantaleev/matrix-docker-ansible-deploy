@@ -1479,16 +1479,23 @@ matrix_sms_bridge_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_
 # We don't enable bridges by default.
 matrix_heisenbridge_enabled: false
 
+matrix_heisenbridge_systemd_required_services_list_auto: |
+  {{
+    matrix_addons_homeserver_systemd_services_list
+  }}
+
+matrix_heisenbridge_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_heisenbridge_container_additional_networks_auto: |-
+  {{
+    ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+  }}
+
 matrix_heisenbridge_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'heisen.as.tok', rounds=655555) | to_uuid }}"
 
 matrix_heisenbridge_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'heisen.hs.tok', rounds=655555) | to_uuid }}"
 
-matrix_heisenbridge_systemd_wanted_services_list: |
-  {{
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-    +
-    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
-  }}
+matrix_heisenbridge_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
 
 ######################################################################
 #

@@ -17,6 +17,12 @@ matrix_heisenbridge_identd_enabled: false
 
 matrix_heisenbridge_base_path: "{{ matrix_base_data_path }}/heisenbridge"
 
+matrix_heisenbridge_container_network: ""
+
+matrix_heisenbridge_container_additional_networks: "{{ matrix_heisenbridge_container_additional_networks_auto + matrix_heisenbridge_container_additional_networks_custom }}"
+matrix_heisenbridge_container_additional_networks_auto: []
+matrix_heisenbridge_container_additional_networks_custom: []
+
 # Controls how long to wait for the container to stop gracefully before killing it.
 # We use a small value here, because this container does not seem to handle the SIGTERM signal.
 matrix_heisenbridge_container_stop_grace_time_seconds: 1
@@ -25,12 +31,15 @@ matrix_heisenbridge_container_stop_grace_time_seconds: 1
 matrix_heisenbridge_container_extra_arguments: []
 
 # List of systemd services that service depends on.
-matrix_heisenbridge_systemd_required_services_list: ['docker.service']
+matrix_heisenbridge_systemd_required_services_list: "{{ matrix_heisenbridge_systemd_required_services_list_default + matrix_heisenbridge_systemd_required_services_list_auto + matrix_heisenbridge_systemd_required_services_list_custom }}"
+matrix_heisenbridge_systemd_required_services_list_default: ['docker.service']
+matrix_heisenbridge_systemd_required_services_list_auto: []
+matrix_heisenbridge_systemd_required_services_list_custom: []
 
 # List of systemd services that service wants
 matrix_heisenbridge_systemd_wanted_services_list: []
 
-matrix_heisenbridge_homeserver_url: "{{ matrix_homeserver_container_url }}"
+matrix_heisenbridge_homeserver_url: ""
 
 matrix_heisenbridge_appservice_token: ''
 matrix_heisenbridge_homeserver_token: ''
