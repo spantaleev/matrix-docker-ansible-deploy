@@ -1,21 +1,18 @@
 # Using your own webserver, instead of this playbook's Traefik reverse-proxy (optional, advanced)
 
-**Note**: the playbook is [in the process of moving to Traefik](../CHANGELOG.md#reverse-proxy-configuration-changes-and-initial-traefik-support). The **documentation below may be incomplete or misleading**.
+By default, this playbook installs its own [Traefik](https://traefik.io/) reverse-proxy server (in a Docker container) which listens on ports 80 and 443.
 
-By default, this playbook installs its own nginx webserver (called `matrix-nginx-proxy`, in a Docker container) which listens on ports 80 and 443.
 If that's alright, you can skip this.
-
-Soon, this default will change and the playbook will install its own [Traefik](https://traefik.io/) reverse-proxy instead.
 
 ## Traefik
 
-[Traefik](https://traefik.io/) will be the default reverse-proxy for the playbook in the near future.
+[Traefik](https://traefik.io/) is the default reverse-proxy for the playbook since [2023-02-26](../CHANGELOG.md/#2023-02-26).
 
 There are 2 ways to use Traefik with this playbook, as described below.
 
 ### Traefik managed by the playbook
 
-To switch to Traefik now, use configuration like this:
+To have the playbook install and use Traefik, use configuration like this (as seen in `examples/vars.yml`):
 
 ```yaml
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
@@ -23,9 +20,9 @@ matrix_playbook_reverse_proxy_type: playbook-managed-traefik
 devture_traefik_config_certificatesResolvers_acme_email: YOUR_EMAIL_ADDRESS
 ```
 
-This will install Traefik in the place of `matrix-nginx-proxy`. Traefik will manage SSL certificates for all services seamlessly.
+Traefik will manage SSL certificates for all services seamlessly.
 
-**Note**: during the transition period, `matrix-nginx-proxy` will still be installed in local-only mode. Do not be alarmed to see `matrix-nginx-proxy` running even when you've chosen Traefik as your reverse-proxy. In the future, we'll be able to run without nginx, but we're not there yet.
+**Note**: for a while longer, our old reverse-proxy (`matrix-nginx-proxy`) will still be installed in local-only mode. Do not be alarmed to see `matrix-nginx-proxy` running even when you've chosen Traefik as your reverse-proxy. In the near future, we'll be able to run without nginx, but we're not there yet.
 
 ### Traefik managed by you
 
@@ -102,7 +99,7 @@ networks:
 
 ## Another webserver
 
-If you don't wish to use Traefik or `matrix-nginx-proxy`, you can also use your own webserver.
+If you don't wish to use Traefik, you can also use your own webserver.
 
 Doing this is possible, but requires manual work.
 
@@ -173,7 +170,7 @@ If your webserver is on the same machine, sure your web server user (something l
 
 #### Using your own nginx reverse-proxy running on the same machine
 
-**WARNING**: this type of setup is not maintained and will be removed in the future. We recommend that you go for [Fronting the integrated reverse-proxy webserver with another reverse-proxy](#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) instead.
+**WARNING**: this type of setup is not maintained and will be removed in the near future. We recommend that you go for [Fronting the integrated reverse-proxy webserver with another reverse-proxy](#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) instead.
 
 If you'll be using `nginx` running on the same machine (not in a container), you can make the playbook help you generate configuration for `nginx` with this configuration:
 
