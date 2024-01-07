@@ -86,7 +86,10 @@ matrix_bot_go_neb_container_labels_additional_labels: ''
 matrix_bot_go_neb_container_extra_arguments: []
 
 # List of systemd services that matrix-bot-go-neb.service depends on
-matrix_bot_go_neb_systemd_required_services_list: ['docker.service']
+matrix_bot_go_neb_systemd_required_services_list: "{{ matrix_bot_go_neb_systemd_required_services_list_default + matrix_bot_go_neb_systemd_required_services_list_auto + matrix_bot_go_neb_systemd_required_services_list_custom }}"
+matrix_bot_go_neb_systemd_required_services_list_default: ['docker.service']
+matrix_bot_go_neb_systemd_required_services_list_auto: []
+matrix_bot_go_neb_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-bot-go-neb.service wants
 matrix_bot_go_neb_systemd_wanted_services_list: []
