@@ -19,18 +19,26 @@ ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_s
 # Intentional delay, so that the homeserver (we likely depend on) can manage to start.
 ExecStartPre={{ matrix_host_command_sleep }} 5
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-beeper-linkedin \
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-beeper-linkedin \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
-			--network={{ matrix_docker_network }} \
+			--network={{ matrix_beeper_linkedin_container_network }} \
 			-v {{ matrix_beeper_linkedin_config_path }}:/data:z \
 			--workdir=/opt/linkedin-matrix \
 			{% for arg in matrix_beeper_linkedin_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_beeper_linkedin_docker_image }} \
-                        python3 -m linkedin_matrix -c /data/config.yaml -r /data/registration.yaml
+			python3 -m linkedin_matrix -c /data/config.yaml -r /data/registration.yaml
+
+{% for network in matrix_beeper_linkedin_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-beeper-linkedin
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-beeper-linkedin
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-beeper-linkedin 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-beeper-linkedin 2>/dev/null || true'

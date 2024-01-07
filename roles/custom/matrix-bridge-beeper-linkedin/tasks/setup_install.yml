@@ -83,6 +83,11 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
+- name: Ensure beeper-linkedin container network is created
+  community.general.docker_network:
+    name: "{{ matrix_beeper_linkedin_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-beeper-linkedin.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-beeper-linkedin.service.j2"
