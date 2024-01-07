@@ -1,6 +1,6 @@
 ---
 
-- name: Fail if required settings not defined
+- name: Fail if required appservice-irc settings not defined
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
@@ -9,6 +9,7 @@
     - {'name': 'matrix_appservice_irc_appservice_token', when: true}
     - {'name': 'matrix_appservice_irc_homeserver_token', when: true}
     - {'name': 'matrix_appservice_irc_database_hostname', when: "{{ matrix_appservice_irc_database_engine == 'postgres' }}"}
+    - {'name': 'matrix_appservice_irc_container_network', when: true}
 
 # Our base configuration (`matrix_appservice_irc_configuration_yaml`) is not enough to
 # let the playbook run without errors.
