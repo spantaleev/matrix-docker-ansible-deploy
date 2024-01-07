@@ -62,7 +62,7 @@ matrix_bot_go_neb_clients:
   - UserID: "@goneb:{{ matrix_domain }}"
     AccessToken: "MDASDASJDIASDJASDAFGFRGER"
     DeviceID: "DEVICE1"
-    HomeserverURL: "{{ matrix_homeserver_container_url }}"
+    HomeserverURL: "{{ matrix_addons_homeserver_client_api_url }}"
     Sync: true
     AutoJoinRooms: true
     DisplayName: "Go-NEB!"
@@ -71,7 +71,7 @@ matrix_bot_go_neb_clients:
   - UserID: "@another_goneb:{{ matrix_domain }}"
     AccessToken: "MDASDASJDIASDJASDAFGFRGER"
     DeviceID: "DEVICE2"
-    HomeserverURL: "{{ matrix_homeserver_container_url }}"
+    HomeserverURL: "{{ matrix_addons_homeserver_client_api_url }}"
     Sync: false
     AutoJoinRooms: false
     DisplayName: "Go-NEB!"
