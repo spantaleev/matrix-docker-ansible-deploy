@@ -28,6 +28,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--network={{ matrix_mautrix_instagram_container_network }} \
 			--mount type=bind,src={{ matrix_mautrix_instagram_config_path }},dst=/config \
 			--mount type=bind,src={{ matrix_mautrix_instagram_data_path }},dst=/data \
+			--label-file={{ matrix_mautrix_instagram_base_path }}/labels \
 			{% for arg in matrix_mautrix_instagram_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

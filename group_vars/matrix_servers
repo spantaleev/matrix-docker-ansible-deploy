@@ -1154,6 +1154,13 @@ matrix_mautrix_hangouts_database_password: "{{ '%s' | format(matrix_homeserver_g
 # We don't enable bridges by default.
 matrix_mautrix_instagram_enabled: false
 
+matrix_mautrix_instagram_systemd_required_services_list_auto: |
+  {{
+    matrix_addons_homeserver_systemd_services_list
+    +
+    ([devture_postgres_identifier ~ '.service'] if (devture_postgres_enabled and matrix_mautrix_instagram_database_hostname == devture_postgres_connection_hostname) else [])
+  }}
+
 matrix_mautrix_instagram_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 matrix_mautrix_instagram_container_network: "{{ matrix_addons_container_network }}"
@@ -1163,7 +1170,7 @@ matrix_mautrix_instagram_container_additional_networks_auto: |-
     (
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
-      ([devture_postgres_container_network] if devture_postgres_enabled and matrix_mautrix_instagram_database_hostname == devture_postgres_connection_hostname else [])
+      ([devture_postgres_container_network] if (devture_postgres_enabled and matrix_mautrix_instagram_database_hostname == devture_postgres_connection_hostname and matrix_mautrix_instagram_container_network != devture_postgres_container_network) else [])
       +
       ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network and matrix_mautrix_instagram_container_labels_traefik_enabled else [])
     ) | unique
@@ -1177,17 +1184,9 @@ matrix_mautrix_instagram_container_labels_traefik_tls_certResolver: "{{ devture_
 matrix_mautrix_instagram_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_instagram_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
-matrix_mautrix_instagram_systemd_required_services_list_auto: |
-  {{
-    matrix_addons_homeserver_systemd_services_list
-    +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled and matrix_mautrix_instagram_database_hostname == devture_postgres_connection_hostname else [])
-  }}
-
 matrix_mautrix_instagram_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'ig.as.token', rounds=655555) | to_uuid }}"
 
 matrix_mautrix_instagram_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-
 matrix_mautrix_instagram_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'ig.hs.token', rounds=655555) | to_uuid }}"
 
 matrix_mautrix_instagram_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
@@ -1221,23 +1220,38 @@ matrix_mautrix_instagram_database_password: "{{ '%s' | format(matrix_homeserver_
 # We don't enable bridges by default.
 matrix_mautrix_signal_enabled: false
 
-matrix_mautrix_signal_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
-
-matrix_mautrix_signal_systemd_required_services_list: |
+matrix_mautrix_signal_systemd_required_services_list_auto: |
   {{
-    ['docker.service']
+    matrix_addons_homeserver_systemd_services_list
     +
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-    +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
-    +
-    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if (devture_postgres_enabled and matrix_mautrix_signal_database_hostname == devture_postgres_connection_hostname) else [])
   }}
 
+matrix_mautrix_signal_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+
+matrix_mautrix_signal_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_mautrix_signal_container_additional_networks_auto: |-
+  {{
+    (
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+      +
+      ([devture_postgres_container_network] if (devture_postgres_enabled and matrix_mautrix_signal_database_hostname == devture_postgres_connection_hostname and matrix_mautrix_signal_container_network != devture_postgres_container_network) else [])
+      +
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network and matrix_mautrix_signal_container_labels_traefik_enabled else [])
+    ) | unique
+  }}
+
+matrix_mautrix_signal_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_mautrix_signal_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_mautrix_signal_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_mautrix_signal_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+matrix_mautrix_signal_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+matrix_mautrix_signal_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+
 matrix_mautrix_signal_homeserver_domain: '{{ matrix_domain }}'
-
 matrix_mautrix_signal_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-
 matrix_mautrix_signal_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'si.hs.token', rounds=655555) | to_uuid }}"
 
 matrix_mautrix_signal_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'si.as.token', rounds=655555) | to_uuid }}"
@@ -1246,7 +1260,9 @@ matrix_mautrix_signal_login_shared_secret: "{{ matrix_synapse_ext_password_provi
 
 matrix_mautrix_signal_metrics_enabled: "{{ prometheus_enabled }}"
 
-# TODO - add support for exposing metrics
+matrix_mautrix_signal_metrics_proxying_enabled: "{{ matrix_mautrix_signal_metrics_enabled and matrix_metrics_exposure_enabled }}"
+matrix_mautrix_signal_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
+matrix_mautrix_signal_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/mautrix-signal"
 
 matrix_mautrix_signal_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_mautrix_signal_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
