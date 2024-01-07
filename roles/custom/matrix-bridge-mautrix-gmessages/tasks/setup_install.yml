@@ -132,6 +132,21 @@
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-gmessages.service"
     mode: 0644
 
+- name: Ensure mautrix-gmessages support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_mautrix_gmessages_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - labels
+
+- name: Ensure matrix-mautrix-gmessages container network is created
+  community.general.docker_network:
+    name: "{{ matrix_mautrix_gmessages_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-mautrix-gmessages.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-mautrix-gmessages.service"
