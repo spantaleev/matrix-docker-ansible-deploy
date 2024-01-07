@@ -2175,17 +2175,18 @@ matrix_bot_mjolnir_systemd_required_services_list: |
 # We don't enable bots by default.
 matrix_bot_draupnir_enabled: false
 
+matrix_bot_draupnir_systemd_required_services_list_auto: |
+  {{
+    matrix_addons_homeserver_systemd_services_list
+  }}
+
 matrix_bot_draupnir_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
-matrix_bot_draupnir_systemd_required_services_list: |
+matrix_bot_draupnir_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_bot_draupnir_container_additional_networks_auto: |-
   {{
-    ['docker.service']
-    +
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-    +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
-    +
-    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+    ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
   }}
 
 ######################################################################
