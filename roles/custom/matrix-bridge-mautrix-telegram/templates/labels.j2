@@ -1,0 +1,45 @@
+{% if matrix_mautrix_telegram_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_mautrix_telegram_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_mautrix_telegram_container_labels_traefik_docker_network }}
+{% endif %}
+
+{# Public endpoint #}
+{% if matrix_mautrix_telegram_container_labels_public_endpoint_enabled %}
+traefik.http.routers.matrix-mautrix-telegram-public.rule={{ matrix_mautrix_telegram_container_labels_public_endpoint_traefik_rule }}
+{% if matrix_mautrix_telegram_container_labels_public_endpoint_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-mautrix-telegram-public.priority={{ matrix_mautrix_telegram_container_labels_public_endpoint_traefik_priority }}
+{% endif %}
+traefik.http.routers.matrix-mautrix-telegram-public.service=matrix-mautrix-telegram-appservice
+traefik.http.routers.matrix-mautrix-telegram-public.entrypoints={{ matrix_mautrix_telegram_container_labels_public_endpoint_traefik_entrypoints }}
+traefik.http.routers.matrix-mautrix-telegram-public.tls={{ matrix_mautrix_telegram_container_labels_public_endpoint_traefik_tls | to_json }}
+{% if matrix_mautrix_telegram_container_labels_public_endpoint_traefik_tls %}
+traefik.http.routers.matrix-mautrix-telegram-public.tls.certResolver={{ matrix_mautrix_telegram_container_labels_public_endpoint_traefik_tls_certResolver }}
+{% endif %}
+traefik.http.services.matrix-mautrix-telegram-appservice.loadbalancer.server.port=8080
+{% endif %}
+
+{# Metrics #}
+{% if matrix_mautrix_telegram_container_labels_metrics_enabled %}
+traefik.http.routers.matrix-mautrix-telegram-metrics.rule={{ matrix_mautrix_telegram_container_labels_metrics_traefik_rule }}
+{% if matrix_mautrix_telegram_container_labels_metrics_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-mautrix-telegram-metrics.priority={{ matrix_mautrix_telegram_container_labels_metrics_traefik_priority }}
+{% endif %}
+traefik.http.routers.matrix-mautrix-telegram-metrics.service=matrix-mautrix-telegram-metrics
+traefik.http.routers.matrix-mautrix-telegram-metrics.entrypoints={{ matrix_mautrix_telegram_container_labels_metrics_traefik_entrypoints }}
+traefik.http.routers.matrix-mautrix-telegram-metrics.tls={{ matrix_mautrix_telegram_container_labels_metrics_traefik_tls | to_json }}
+{% if matrix_mautrix_telegram_container_labels_metrics_traefik_tls %}
+traefik.http.routers.matrix-mautrix-telegram-metrics.tls.certResolver={{ matrix_mautrix_telegram_container_labels_metrics_traefik_tls_certResolver }}
+{% endif %}
+{% if matrix_mautrix_telegram_container_labels_metrics_middleware_basic_auth_enabled %}
+traefik.http.routers.matrix-mautrix-telegram-metrics.middlewares=matrix-mautrix-telegram-metrics-basic-auth
+traefik.http.middlewares.matrix-mautrix-telegram-metrics-basic-auth.basicauth.users={{ matrix_mautrix_telegram_container_labels_metrics_middleware_basic_auth_users }}
+{% endif %}
+
+traefik.http.services.matrix-mautrix-telegram-metrics.loadbalancer.server.port=8000
+{% endif %}
+
+{% endif %}
+
+{{ matrix_mautrix_telegram_container_labels_additional_labels }}

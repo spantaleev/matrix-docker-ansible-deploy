@@ -4,6 +4,10 @@
 
 matrix_mautrix_telegram_enabled: true
 
+matrix_mautrix_telegram_scheme: https
+matrix_mautrix_telegram_hostname: ''
+matrix_mautrix_telegram_path_prefix: ''
+
 matrix_telegram_lottieconverter_container_image_self_build: false
 matrix_telegram_lottieconverter_container_image_self_build_mask_arch: false
 matrix_telegram_lottieconverter_docker_repo: "https://mau.dev/tulir/lottieconverter.git"
@@ -50,12 +54,12 @@ matrix_mautrix_telegram_appservice_public_enabled: true
 # Mautrix telegram public endpoint to log in to telegram
 # Use an uuid so it's not easily discoverable.
 # Example: /741a0483-ba17-4682-9900-30bd7269f1cc
-matrix_mautrix_telegram_public_endpoint: ''
+matrix_mautrix_telegram_public_endpoint: "{{ matrix_mautrix_telegram_path_prefix }}"
 
 matrix_mautrix_telegram_homeserver_address: ""
 matrix_mautrix_telegram_homeserver_domain: '{{ matrix_domain }}'
 matrix_mautrix_telegram_appservice_address: 'http://matrix-mautrix-telegram:8080'
-matrix_mautrix_telegram_appservice_public_external: 'https://{{ matrix_server_fqn_matrix }}{{ matrix_mautrix_telegram_public_endpoint }}'
+matrix_mautrix_telegram_appservice_public_external: '{{ matrix_mautrix_telegram_scheme }}://{{ matrix_mautrix_telegram_hostname }}{{ matrix_mautrix_telegram_public_endpoint }}'
 
 matrix_mautrix_telegram_appservice_bot_username: telegrambot
 
@@ -71,11 +75,59 @@ matrix_mautrix_telegram_federate_rooms: true
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9006"), or empty string to not expose.
 matrix_mautrix_telegram_container_http_host_bind_port: ''
 
+matrix_mautrix_telegram_container_network: ""
+
+matrix_mautrix_telegram_container_additional_networks: "{{ matrix_mautrix_telegram_container_additional_networks_auto + matrix_mautrix_telegram_container_additional_networks_custom }}"
+matrix_mautrix_telegram_container_additional_networks_auto: []
+matrix_mautrix_telegram_container_additional_networks_custom: []
+
+# matrix_mautrix_telegram_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_mautrix_telegram_container_labels_additional_labels`.
+matrix_mautrix_telegram_container_labels_traefik_enabled: true
+matrix_mautrix_telegram_container_labels_traefik_docker_network: "{{ matrix_mautrix_telegram_container_network }}"
+matrix_mautrix_telegram_container_labels_traefik_entrypoints: web-secure
+matrix_mautrix_telegram_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether labels will be added that expose mautrix-telegram's public endpoint
+matrix_mautrix_telegram_container_labels_public_endpoint_enabled: "{{ matrix_mautrix_telegram_appservice_public_enabled }}"
+matrix_mautrix_telegram_container_labels_public_endpoint_hostname: "{{ matrix_mautrix_telegram_hostname }}"
+matrix_mautrix_telegram_container_labels_public_endpoint_path_prefix: "{{ matrix_mautrix_telegram_path_prefix }}"
+matrix_mautrix_telegram_container_labels_public_endpoint_traefik_rule: "Host(`{{ matrix_mautrix_telegram_container_labels_public_endpoint_hostname }}`) && PathPrefix(`{{ matrix_mautrix_telegram_container_labels_public_endpoint_path_prefix }}`)"
+matrix_mautrix_telegram_container_labels_public_endpoint_traefik_priority: 0
+matrix_mautrix_telegram_container_labels_public_endpoint_traefik_entrypoints: "{{ matrix_mautrix_telegram_container_labels_traefik_entrypoints }}"
+matrix_mautrix_telegram_container_labels_public_endpoint_traefik_tls: "{{ matrix_mautrix_telegram_container_labels_public_endpoint_traefik_entrypoints != 'web' }}"
+matrix_mautrix_telegram_container_labels_public_endpoint_traefik_tls_certResolver: "{{ matrix_mautrix_telegram_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose mautrix-telegram's metrics
+matrix_mautrix_telegram_container_labels_metrics_enabled: "{{ matrix_mautrix_telegram_metrics_enabled and matrix_mautrix_telegram_metrics_proxying_enabled }}"
+matrix_mautrix_telegram_container_labels_metrics_traefik_rule: "Host(`{{ matrix_mautrix_telegram_metrics_proxying_hostname }}`) && PathPrefix(`{{ matrix_mautrix_telegram_metrics_proxying_path_prefix }}`)"
+matrix_mautrix_telegram_container_labels_metrics_traefik_priority: 0
+matrix_mautrix_telegram_container_labels_metrics_traefik_entrypoints: "{{ matrix_mautrix_telegram_container_labels_traefik_entrypoints }}"
+matrix_mautrix_telegram_container_labels_metrics_traefik_tls: "{{ matrix_mautrix_telegram_container_labels_metrics_traefik_entrypoints != 'web' }}"
+matrix_mautrix_telegram_container_labels_metrics_traefik_tls_certResolver: "{{ matrix_mautrix_telegram_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_mautrix_telegram_container_labels_metrics_middleware_basic_auth_enabled: false
+# See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
+matrix_mautrix_telegram_container_labels_metrics_middleware_basic_auth_users: ''
+
+# matrix_mautrix_telegram_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_mautrix_telegram_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_mautrix_telegram_container_labels_additional_labels: ''
+
 # A list of extra arguments to pass to the container
 matrix_mautrix_telegram_container_extra_arguments: []
 
 # List of systemd services that matrix-mautrix-telegram.service depends on.
-matrix_mautrix_telegram_systemd_required_services_list: ['docker.service']
+matrix_mautrix_telegram_systemd_required_services_list: "{{ matrix_mautrix_telegram_systemd_required_services_list_default + matrix_mautrix_telegram_systemd_required_services_list_auto + matrix_mautrix_telegram_systemd_required_services_list_custom }}"
+matrix_mautrix_telegram_systemd_required_services_list_default: ['docker.service']
+matrix_mautrix_telegram_systemd_required_services_list_auto: []
+matrix_mautrix_telegram_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-mautrix-telegram.service wants
 matrix_mautrix_telegram_systemd_wanted_services_list: []
@@ -83,6 +135,15 @@ matrix_mautrix_telegram_systemd_wanted_services_list: []
 matrix_mautrix_telegram_appservice_token: ''
 matrix_mautrix_telegram_homeserver_token: ''
 
+# Whether or not metrics endpoint should be enabled.
+# Enabling them is usually enough for a local (in-container) Prometheus to consume them.
+# If metrics need to be consumed by another (external) Prometheus server, consider exposing them via `matrix_mautrix_telegram_metrics_proxying_enabled`.
+matrix_mautrix_telegram_metrics_enabled: false
+
+# Controls whether metrics should be exposed on a public URL.
+matrix_mautrix_telegram_metrics_proxying_enabled: false
+matrix_mautrix_telegram_metrics_proxying_hostname: ''
+matrix_mautrix_telegram_metrics_proxying_path_prefix: ''
 
 # Database-related configuration fields.
 #
