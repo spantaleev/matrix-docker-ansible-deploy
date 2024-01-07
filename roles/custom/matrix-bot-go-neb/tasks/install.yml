@@ -32,11 +32,6 @@
     - env
     - labels
 
-- name: Ensure go-neb container network is created
-  community.general.docker_network:
-    name: "{{ matrix_bot_go_neb_container_network }}"
-    driver: bridge
-
 - name: Ensure go-neb container image is pulled
   community.docker.docker_image:
     name: "{{ matrix_bot_go_neb_container_image }}"
@@ -47,6 +42,11 @@
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
+
+- name: Ensure go-neb container network is created
+  community.general.docker_network:
+    name: "{{ matrix_bot_go_neb_container_network }}"
+    driver: bridge
 
 - name: Ensure matrix-bot-go-neb.service installed
   ansible.builtin.template:

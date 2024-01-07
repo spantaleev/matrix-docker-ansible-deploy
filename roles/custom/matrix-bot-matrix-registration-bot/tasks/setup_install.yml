@@ -56,6 +56,11 @@
       pull: true
   when: "matrix_bot_matrix_registration_bot_container_image_self_build | bool"
 
+- name: Ensure matrix-registration-bot container network is created
+  community.general.docker_network:
+    name: "{{ matrix_bot_matrix_registration_bot_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-bot-matrix-registration-bot.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-bot-matrix-registration-bot.service.j2"
