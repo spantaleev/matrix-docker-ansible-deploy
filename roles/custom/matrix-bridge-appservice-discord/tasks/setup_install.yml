@@ -104,6 +104,11 @@
     /bin/sh -c "node /build/tools/addbot.js > /cfg/invite_link"
   changed_when: false
 
+- name: Ensure matrix-appservice-discord container network is created
+  community.general.docker_network:
+    name: "{{ matrix_appservice_discord_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-appservice-discord.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-appservice-discord.service.j2"
