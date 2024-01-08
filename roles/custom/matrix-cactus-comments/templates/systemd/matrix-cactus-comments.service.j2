@@ -16,15 +16,23 @@ Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-cactus-comments 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-cactus-comments 2>/dev/null || true'
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-cactus-comments \
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-cactus-comments \
 			--log-driver=none \
 			--cap-drop=ALL \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--read-only \
 			--env-file {{ matrix_cactus_comments_app_service_env_file }} \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_cactus_comments_tmp_directory_size_mb }}m \
-			--network={{ matrix_docker_network }} \
+			--network={{ matrix_cactus_comments_container_network }} \
 			{{ matrix_cactus_comments_docker_image }}
+
+{% for network in matrix_cactus_comments_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-cactus-comments
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-cactus-comments
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-cactus-comments 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-cactus-comments 2>/dev/null || true'

@@ -1,20 +1,17 @@
 ---
 # Cactus Comments is a federated comment system built on Matrix
 # Project source code URL: https://gitlab.com/cactus-comments/cactus-appservice
-# Project source code URL: https://gitlab.com/cactus-comments/cactus-client
 
 matrix_cactus_comments_enabled: true
-matrix_cactus_comments_serve_client_enabled: true
+
 matrix_cactus_comments_container_image_self_build: false
+
 matrix_cactus_comments_docker_repo: "https://gitlab.com/cactus-comments/cactus-appservice.git"
 matrix_cactus_comments_docker_repo_version: "{{ matrix_cactus_comments_version if matrix_cactus_comments_version != 'latest' else 'main' }}"
 matrix_cactus_comments_docker_src_files_path: "{{ matrix_cactus_comments_base_path }}/docker-src"
 
-
 matrix_cactus_comments_base_path: "{{ matrix_base_data_path }}/cactus-comments"
 matrix_cactus_comments_container_tmp_path: "{{ matrix_cactus_comments_base_path }}/tmp"
-matrix_cactus_comments_client_path: "{{ matrix_cactus_comments_base_path }}/client"
-matrix_cactus_comments_client_file_permissions: "0644"
 
 matrix_cactus_comments_app_service_config_file: "{{ matrix_cactus_comments_base_path }}/cactus_appservice.yaml"
 matrix_cactus_comments_app_service_env_file: "{{ matrix_cactus_comments_base_path }}/cactus.env"
@@ -32,32 +29,19 @@ matrix_cactus_comments_version: 0.9.0
 matrix_cactus_comments_docker_image: "{{ matrix_container_global_registry_prefix }}cactuscomments/cactus-appservice:{{ matrix_cactus_comments_version }}"
 matrix_cactus_comments_docker_image_force_pull: "{{ matrix_cactus_comments_docker_image.endswith(':latest') }}"
 
-# The released & compiled client is uploaded to a URL that changes per commit. Therefore it is necessary to check the
-# available versions and adjust the url manually.
-# For available versions, see: https://gitlab.com/cactus-comments/cactus-client/-/releases
-# Also see: `matrix_cactus_comments_client_local_dir`
-matrix_cactus_comments_webclient_js_url: "https://gateway.pinata.cloud/ipfs/QmSiWN27KZZ1XE32jKwifBnS3nWTUcFGNArKzur2nmDgoL/v0.13.0/cactus.js"
-matrix_cactus_comments_webclient_css_url: "https://gateway.pinata.cloud/ipfs/QmSiWN27KZZ1XE32jKwifBnS3nWTUcFGNArKzur2nmDgoL/v0.13.0/style.css"
+matrix_cactus_comments_container_network: ""
 
-# matrix_cactus_comments_client_local_dir specifies a local directory (on the Ansible controller, not on the remote server) with cactus-client files to use.
-# This is an alternative to `matrix_cactus_comments_client_version`, to be used when you'd like to
-# provide the files locally / manually.
-matrix_cactus_comments_client_local_dir: ''
+matrix_cactus_comments_container_additional_networks: "{{ matrix_cactus_comments_container_additional_networks_auto + matrix_cactus_comments_container_additional_networks_custom }}"
+matrix_cactus_comments_container_additional_networks_auto: []
+matrix_cactus_comments_container_additional_networks_custom: []
 
-# matrix_cactus_comments_client_nginx_path specifies the path where nginx can access the client files.
-# The default value assumes a container setup. If you're running nginx without a container, consider adjusting this path
-matrix_cactus_comments_client_nginx_path: "/cactus-comments/"
-
-# matrix_cactus_comments_client_endpoint specifies where nginx will serve the files in nginx is enabled
-matrix_cactus_comments_client_endpoint: "/cactus-comments/"
+# A list of extra arguments to pass to the container
+matrix_cactus_comments_container_extra_arguments: []
 
 # List of systemd services that matrix-cactus-comments.service depends on
 matrix_cactus_comments_systemd_required_services_list: ['docker.service']
 
 # List of systemd services that matrix-cactus-comments.service wants
 matrix_cactus_comments_systemd_wanted_services_list: []
-
-# A list of extra arguments to pass to the container
-matrix_cactus_comments_container_extra_arguments: []
 
 matrix_cactus_comments_environment_variables_extension: ''

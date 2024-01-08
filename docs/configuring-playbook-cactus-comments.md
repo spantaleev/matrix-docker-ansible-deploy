@@ -18,13 +18,14 @@ Add the following block to your `vars.yaml` and make sure to exchange the tokens
 ## Cactus Chat ##
 #################
 
+# This enables the backend (appservice)
 matrix_cactus_comments_enabled: true
 
 # To allow guest comments without users needing to log in, you need to have guest registration enabled.
-# To do this you need to uncomment one of the following lines (depending if you are using synapse or dentrite as a homeserver)
-# If you don't know which one you use: The default is synapse ;)
+# To do this you need to uncomment one of the following lines (depending if you are using Synapse or Dendrite as a homeserver)
+# If you don't know which one you use: The default is Synapse ;)
 # matrix_synapse_allow_guest_access: true
-# matrix_dentrite_allow_guest_access: true
+# matrix_dendrite_allow_guest_access: true
 ```
 
 ## Installing
