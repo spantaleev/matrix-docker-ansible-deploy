@@ -1816,17 +1816,24 @@ matrix_mx_puppet_twitter_database_password: "{{ '%s' | format(matrix_homeserver_
 # We don't enable bridges by default.
 matrix_mx_puppet_instagram_enabled: false
 
+matrix_mx_puppet_instagram_systemd_required_services_list_auto: |
+  {{
+    matrix_addons_homeserver_systemd_services_list
+    +
+    ([devture_postgres_identifier ~ '.service'] if (devture_postgres_enabled and matrix_mx_puppet_instagram_database_hostname == devture_postgres_connection_hostname) else [])
+  }}
+
 matrix_mx_puppet_instagram_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
-matrix_mx_puppet_instagram_systemd_required_services_list: |
+matrix_mx_puppet_instagram_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_mx_puppet_instagram_container_additional_networks_auto: |-
   {{
-    ['docker.service']
-    +
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-    +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
-    +
-    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+    (
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+      +
+      ([devture_postgres_container_network] if (devture_postgres_enabled and matrix_mx_puppet_instagram_database_hostname == devture_postgres_connection_hostname and matrix_mx_puppet_instagram_container_network != devture_postgres_container_network) else [])
+    ) | unique
   }}
 
 matrix_mx_puppet_instagram_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxig.as.tok', rounds=655555) | to_uuid }}"
@@ -1835,6 +1842,8 @@ matrix_mx_puppet_instagram_homeserver_address: "{{ matrix_addons_homeserver_clie
 matrix_mx_puppet_instagram_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxig.hs.tok', rounds=655555) | to_uuid }}"
 
 matrix_mx_puppet_instagram_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+
+matrix_mx_puppet_instagram_presence_enabled: "{{ matrix_homeserver_implementation != 'synapse' or matrix_synapse_presence_enabled }}"
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_mx_puppet_instagram_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"

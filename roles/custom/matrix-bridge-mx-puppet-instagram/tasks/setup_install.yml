@@ -92,6 +92,11 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
+- name: Ensure mx-puppet-instagram container network is created
+  community.general.docker_network:
+    name: "{{ matrix_mx_puppet_instagram_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-mx-puppet-instagram.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mx-puppet-instagram.service.j2"
