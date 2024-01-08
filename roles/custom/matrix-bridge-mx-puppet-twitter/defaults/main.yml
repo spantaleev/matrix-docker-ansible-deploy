@@ -5,6 +5,10 @@
 
 matrix_mx_puppet_twitter_enabled: true
 
+matrix_mx_puppet_twitter_scheme: https
+matrix_mx_puppet_twitter_hostname: ''
+matrix_mx_puppet_twitter_path_prefix: /twitter/webhook
+
 matrix_mx_puppet_twitter_container_image_self_build: false
 matrix_mx_puppet_twitter_container_image_self_build_repo: "https://github.com/Sorunome/mx-puppet-twitter.git"
 
@@ -35,8 +39,8 @@ matrix_mx_puppet_twitter_consumer_secret: ''
 matrix_mx_puppet_twitter_access_token: ''
 matrix_mx_puppet_twitter_access_token_secret: ''
 matrix_mx_puppet_twitter_environment: ''
-matrix_mx_puppet_twitter_webhook_path: '/twitter/webhook'
-matrix_mx_puppet_twitter_webhook_url: 'https://{{ matrix_server_fqn_matrix }}{{ matrix_mx_puppet_twitter_webhook_path }}'
+matrix_mx_puppet_twitter_server_path: "{{ matrix_mx_puppet_twitter_path_prefix }}"
+matrix_mx_puppet_twitter_server_url: 'https://{{ matrix_server_fqn_matrix }}{{ matrix_mx_puppet_twitter_server_path }}'
 
 # "@user:server.com" to allow specific user
 # "@.*:yourserver.com" to allow users on a specific homeserver
@@ -49,11 +53,48 @@ matrix_mx_puppet_twitter_provisioning_whitelist:
 # "@.*:yourserver.com" disallow users on a specific homeserver
 matrix_mx_puppet_twitter_provisioning_blacklist: []
 
+matrix_mx_puppet_twitter_container_network: ""
+
+matrix_mx_puppet_twitter_container_additional_networks: "{{ matrix_mx_puppet_twitter_container_additional_networks_auto + matrix_mx_puppet_twitter_container_additional_networks_custom }}"
+matrix_mx_puppet_twitter_container_additional_networks_auto: []
+matrix_mx_puppet_twitter_container_additional_networks_custom: []
+
+# matrix_mx_puppet_twitter_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_mx_puppet_twitter_container_labels_additional_labels`.
+matrix_mx_puppet_twitter_container_labels_traefik_enabled: true
+matrix_mx_puppet_twitter_container_labels_traefik_docker_network: "{{ matrix_mx_puppet_twitter_container_network }}"
+matrix_mx_puppet_twitter_container_labels_traefik_entrypoints: web-secure
+matrix_mx_puppet_twitter_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether labels will be added that expose mx-puppet-twitter's public endpoint
+matrix_mx_puppet_twitter_container_labels_public_endpoint_enabled: true
+matrix_mx_puppet_twitter_container_labels_public_endpoint_hostname: "{{ matrix_mx_puppet_twitter_hostname }}"
+matrix_mx_puppet_twitter_container_labels_public_endpoint_path_prefix: "{{ matrix_mx_puppet_twitter_path_prefix }}"
+matrix_mx_puppet_twitter_container_labels_public_endpoint_traefik_rule: "Host(`{{ matrix_mx_puppet_twitter_container_labels_public_endpoint_hostname }}`) && PathPrefix(`{{ matrix_mx_puppet_twitter_container_labels_public_endpoint_path_prefix }}`)"
+matrix_mx_puppet_twitter_container_labels_public_endpoint_traefik_priority: 0
+matrix_mx_puppet_twitter_container_labels_public_endpoint_traefik_entrypoints: "{{ matrix_mx_puppet_twitter_container_labels_traefik_entrypoints }}"
+matrix_mx_puppet_twitter_container_labels_public_endpoint_traefik_tls: "{{ matrix_mx_puppet_twitter_container_labels_public_endpoint_traefik_entrypoints != 'web' }}"
+matrix_mx_puppet_twitter_container_labels_public_endpoint_traefik_tls_certResolver: "{{ matrix_mx_puppet_twitter_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# matrix_mx_puppet_twitter_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_mx_puppet_twitter_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_mx_puppet_twitter_container_labels_additional_labels: ''
+
 # A list of extra arguments to pass to the container
 matrix_mx_puppet_twitter_container_extra_arguments: []
 
 # List of systemd services that mx-puppet-twitter.service depends on.
-matrix_mx_puppet_twitter_systemd_required_services_list: ['docker.service']
+matrix_mx_puppet_twitter_systemd_required_services_list: "{{ matrix_mx_puppet_twitter_systemd_required_services_list_default + matrix_mx_puppet_twitter_systemd_required_services_list_auto + matrix_mx_puppet_twitter_systemd_required_services_list_custom }}"
+matrix_mx_puppet_twitter_systemd_required_services_list_default: ['docker.service']
+matrix_mx_puppet_twitter_systemd_required_services_list_auto: []
+matrix_mx_puppet_twitter_systemd_required_services_list_custom: []
 
 # List of systemd services that mx-puppet-twitter.service wants
 matrix_mx_puppet_twitter_systemd_wanted_services_list: []
@@ -63,6 +104,9 @@ matrix_mx_puppet_twitter_homeserver_token: ''
 
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
 matrix_mx_puppet_twitter_login_shared_secret: ''
+
+matrix_mx_puppet_twitter_presence_enabled: true
+matrix_mx_puppet_twitter_presence_interval: 5000
 
 # Database configuration
 matrix_mx_puppet_twitter_database_engine: sqlite

@@ -113,6 +113,21 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
+- name: Ensure mx-puppet-twitter support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_mx_puppet_twitter_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - labels
+
+- name: Ensure mx-puppet-twitter container network is created
+  community.general.docker_network:
+    name: "{{ matrix_mx_puppet_twitter_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-mx-puppet-twitter.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mx-puppet-twitter.service.j2"

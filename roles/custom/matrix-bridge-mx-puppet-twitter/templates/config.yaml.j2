@@ -15,20 +15,20 @@ bridge:
   {% endif %}
 
 twitter:
-  consumerKey: "{{ matrix_mx_puppet_twitter_consumer_key }}"
-  consumerSecret: "{{ matrix_mx_puppet_twitter_consumer_secret }}"
-  accessToken: "{{ matrix_mx_puppet_twitter_access_token }}"
-  accessTokenSecret: "{{ matrix_mx_puppet_twitter_access_token_secret }}"
-  environment: "{{ matrix_mx_puppet_twitter_environment }}"
+  consumerKey: {{ matrix_mx_puppet_twitter_consumer_keyl | to_json }}
+  consumerSecret: {{ matrix_mx_puppet_twitter_consumer_secretl | to_json }}
+  accessToken: {{ matrix_mx_puppet_twitter_access_tokenl | to_json }}
+  accessTokenSecret: {{ matrix_mx_puppet_twitter_access_token_secretl | to_json }}
+  environment: {{ matrix_mx_puppet_twitter_environmentl | to_json }}
   server:
-    url: "{{ matrix_mx_puppet_twitter_webhook_url }}"
-    path: "{{ matrix_mx_puppet_twitter_webhook_path }}"
+    url: {{ matrix_mx_puppet_twitter_server_url | to_json }}
+    path: {{ matrix_mx_puppet_twitter_server_path | to_json }}
 
 presence:
   # Bridge Twitter online/offline status
-  enabled: true
+  enabled: {{ matrix_mx_puppet_twitter_presence_enabled | to_json }}
   # How often to send status to the homeserver in milliseconds
-  interval: 5000
+  interval: {{ matrix_mx_puppet_twitter_presence_interval | to_json }}
 
 provisioning:
   # Regex of Matrix IDs allowed to use the puppet bridge
