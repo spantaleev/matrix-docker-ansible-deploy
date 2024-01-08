@@ -17,22 +17,22 @@ bridge:
 
 # Slack OAuth settings. Create a slack app at https://api.slack.com/apps
 oauth:
-  enabled: true
+  enabled: {{ matrix_mx_puppet_slack_oauth_enabled | to_json }}
   # Slack app credentials.
   # N.B. This must be quoted so YAML does not parse it as a float.
   clientId: '{{ matrix_mx_puppet_slack_oauth_client_id }}'
   clientSecret: {{ matrix_mx_puppet_slack_oauth_client_secret|to_json }}
   # Path where to listen for OAuth redirect callbacks.
-  redirectPath: {{ matrix_mx_puppet_slack_redirect_path }}
+  redirectPath: {{ matrix_mx_puppet_slack_oauth_redirect_path | to_json }}
   # Set up proxying from https://your.domain/redirect_path to http://bindAddress:port/redirect_path,
   # then set this field and the Slack app redirect URI field to the former.
-  redirectUri: {{ matrix_mx_puppet_slack_redirect_uri }}
+  redirectUri: {{ matrix_mx_puppet_slack_oauth_redirect_uri | to_json }}
 
 presence:
   # Bridge Discord online/offline status
-  enabled: true
+  enabled: {{ matrix_mx_puppet_slack_presence_enabled | to_json }}
   # How often to send status to the homeserver in milliseconds
-  interval: 5000
+  interval: {{ matrix_mx_puppet_slack_presence_interval | to_json }}
 
 provisioning:
   # Regex of Matrix IDs allowed to use the puppet bridge
