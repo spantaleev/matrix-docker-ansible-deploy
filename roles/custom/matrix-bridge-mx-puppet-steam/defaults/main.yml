@@ -41,11 +41,20 @@ matrix_mx_puppet_steam_provisioning_whitelist:
 # "@.*:yourserver.com" disallow users on a specific homeserver
 matrix_mx_puppet_steam_provisioning_blacklist: []
 
+matrix_mx_puppet_steam_container_network: ""
+
+matrix_mx_puppet_steam_container_additional_networks: "{{ matrix_mx_puppet_steam_container_additional_networks_auto + matrix_mx_puppet_steam_container_additional_networks_custom }}"
+matrix_mx_puppet_steam_container_additional_networks_auto: []
+matrix_mx_puppet_steam_container_additional_networks_custom: []
+
 # A list of extra arguments to pass to the container
 matrix_mx_puppet_steam_container_extra_arguments: []
 
 # List of systemd services that matrix-puppet-steam.service depends on.
-matrix_mx_puppet_steam_systemd_required_services_list: ['docker.service']
+matrix_mx_puppet_steam_systemd_required_services_list: "{{ matrix_mx_puppet_steam_systemd_required_services_list_default + matrix_mx_puppet_steam_systemd_required_services_list_auto + matrix_mx_puppet_steam_systemd_required_services_list_custom }}"
+matrix_mx_puppet_steam_systemd_required_services_list_default: ['docker.service']
+matrix_mx_puppet_steam_systemd_required_services_list_auto: []
+matrix_mx_puppet_steam_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-puppet-steam.service wants
 matrix_mx_puppet_steam_systemd_wanted_services_list: []
@@ -55,6 +64,9 @@ matrix_mx_puppet_steam_homeserver_token: ''
 
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
 matrix_mx_puppet_steam_login_shared_secret: ''
+
+matrix_mx_puppet_steam_presence_enabled: true
+matrix_mx_puppet_steam_presence_interval: 5000
 
 matrix_mx_puppet_steam_database_engine: sqlite
 
