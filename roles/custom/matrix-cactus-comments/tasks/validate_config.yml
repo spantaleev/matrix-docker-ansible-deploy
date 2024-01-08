@@ -1,6 +1,6 @@
 ---
 
-- name: Fail if required settings not defined
+- name: Fail if required matrix-cactus-comments settings not defined
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
@@ -9,3 +9,13 @@
     - "matrix_cactus_comments_as_token"
     - "matrix_cactus_comments_hs_token"
     - "matrix_cactus_comments_homeserver_url"
+
+- name: (Deprecation) Catch and report renamed matrix-cactus-comments settings
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_bot_cactus_comments_systemd_required_services_list', 'new': 'matrix_cactus_comments_systemd_required_services_list'}
+    - {'old': 'matrix_bot_cactus_comments_systemd_wanted_services_list', 'new': 'matrix_cactus_comments_systemd_wanted_services_list'}
