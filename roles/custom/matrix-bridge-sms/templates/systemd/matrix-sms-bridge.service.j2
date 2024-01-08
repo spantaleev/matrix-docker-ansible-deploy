@@ -13,30 +13,38 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-/usr/bin/docker kill matrix-sms-bridge
-ExecStartPre=-/usr/bin/docker rm matrix-sms-bridge
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-sms-bridge 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-sms-bridge 2>/dev/null || true'
 
 # Intentional delay, so that the homeserver (we likely depend on) can manage to start.
-ExecStartPre=/bin/sleep 5
+ExecStartPre={{ matrix_host_command_sleep }} 5
 
-ExecStart=/usr/bin/docker run --rm --name matrix-sms-bridge \
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-sms-bridge \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
-			--network={{ matrix_docker_network }} \
+			--network={{ matrix_sms_bridge_container_network }} \
 			{% if matrix_sms_bridge_container_http_host_bind_port %}
 			-p {{ matrix_sms_bridge_container_http_host_bind_port }}:8080 \
 			{% endif %}
-			-v {{ matrix_sms_bridge_config_path }}:/config:z \
-			-v {{ matrix_sms_bridge_data_path }}:/data:z \
+			--mount type=bind,src={{ matrix_sms_bridge_config_path }},dst=/config \
+			--mount type=bind,src={{ matrix_sms_bridge_data_path }},dst=/data \
 			--env SPRING_CONFIG_ADDITIONAL_LOCATION=/config/application.yml \
 			{% for arg in matrix_sms_bridge_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_sms_bridge_docker_image }}
 
-ExecStop=-/usr/bin/docker kill matrix-sms-bridge
-ExecStop=-/usr/bin/docker rm matrix-sms-bridge
+{% for network in matrix_sms_bridge_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-sms-bridge
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-sms-bridge
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-sms-bridge 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-sms-bridge 2>/dev/null || true'
 Restart=always
 RestartSec=30
 SyslogIdentifier=matrix-sms-bridge

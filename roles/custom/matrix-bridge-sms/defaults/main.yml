@@ -17,17 +17,26 @@ matrix_sms_bridge_homeserver_token: ''
 
 matrix_sms_bridge_container_http_host_bind_port: ''
 
+matrix_sms_bridge_container_network: ""
+
+matrix_sms_bridge_container_additional_networks: "{{ matrix_sms_bridge_container_additional_networks_auto + matrix_sms_bridge_container_additional_networks_custom }}"
+matrix_sms_bridge_container_additional_networks_auto: []
+matrix_sms_bridge_container_additional_networks_custom: []
+
 # A list of extra arguments to pass to the container
 matrix_sms_bridge_container_extra_arguments: []
 
 # List of systemd services that service depends on.
-matrix_sms_bridge_systemd_required_services_list: ['docker.service']
+matrix_sms_bridge_systemd_required_services_list: "{{ matrix_sms_bridge_systemd_required_services_list_default + matrix_sms_bridge_systemd_required_services_list_auto + matrix_sms_bridge_systemd_required_services_list_custom }}"
+matrix_sms_bridge_systemd_required_services_list_default: ['docker.service']
+matrix_sms_bridge_systemd_required_services_list_auto: []
+matrix_sms_bridge_systemd_required_services_list_custom: []
 
 # List of systemd services that service wants
 matrix_sms_bridge_systemd_wanted_services_list: []
 
 matrix_sms_bridge_appservice_url: 'http://matrix-sms-bridge:8080'
-matrix_sms_bridge_homeserver_hostname: 'matrix-synapse'
+matrix_sms_bridge_homeserver_hostname: ''
 matrix_sms_bridge_homeserver_port: ""
 
 matrix_sms_bridge_homserver_domain: "{{ matrix_domain }}"

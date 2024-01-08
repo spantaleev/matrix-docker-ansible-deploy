@@ -1595,18 +1595,24 @@ matrix_mautrix_whatsapp_database_password: "{{ '%s' | format(matrix_homeserver_g
 # We don't enable bridges by default.
 matrix_sms_bridge_enabled: false
 
-matrix_sms_bridge_systemd_required_services_list: |
+matrix_sms_bridge_systemd_required_services_list_auto: |
   {{
-    ['docker.service']
+    matrix_addons_homeserver_systemd_services_list
     +
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-    +
-    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if (devture_postgres_enabled and matrix_mautrix_facebook_database_hostname == devture_postgres_connection_hostname) else [])
+  }}
+
+matrix_sms_bridge_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_sms_bridge_container_additional_networks_auto: |-
+  {{
+    ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
   }}
 
 matrix_sms_bridge_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'sms.as.token', rounds=655555) | to_uuid }}"
 
-matrix_sms_bridge_homeserver_port: "{{ matrix_synapse_container_client_api_port }}"
+matrix_sms_bridge_homeserver_hostname: "{{ (matrix_homeserver_container_client_api_endpoint | split(':'))[0] }}"
+matrix_sms_bridge_homeserver_port: "{{ (matrix_homeserver_container_client_api_endpoint | split(':'))[1] }}"
 matrix_sms_bridge_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'sms.hs.token', rounds=655555) | to_uuid }}"
 
 ######################################################################

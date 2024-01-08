@@ -46,6 +46,11 @@
     group: "{{ matrix_user_groupname }}"
   when: matrix_sms_bridge_provider_android_truststore_local_path != ""
 
+- name: Ensure matrix-sms-bridge container network is created
+  community.general.docker_network:
+    name: "{{ matrix_sms_bridge_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-sms-bridge.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-sms-bridge.service.j2"
