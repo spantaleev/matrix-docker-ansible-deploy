@@ -44,11 +44,20 @@ matrix_mx_puppet_discord_provisioning_whitelist:
 # "@.*:yourserver.com" disallow users on a specific homeserver
 matrix_mx_puppet_discord_provisioning_blacklist: []
 
+matrix_mx_puppet_discord_container_network: ""
+
+matrix_mx_puppet_discord_container_additional_networks: "{{ matrix_mx_puppet_discord_container_additional_networks_auto + matrix_mx_puppet_discord_container_additional_networks_custom }}"
+matrix_mx_puppet_discord_container_additional_networks_auto: []
+matrix_mx_puppet_discord_container_additional_networks_custom: []
+
 # A list of extra arguments to pass to the container
 matrix_mx_puppet_discord_container_extra_arguments: []
 
 # List of systemd services that matrix-puppet-discord.service depends on.
-matrix_mx_puppet_discord_systemd_required_services_list: ['docker.service']
+matrix_mx_puppet_discord_systemd_required_services_list: "{{ matrix_mx_puppet_discord_systemd_required_services_list_default + matrix_mx_puppet_discord_systemd_required_services_list_auto + matrix_mx_puppet_discord_systemd_required_services_list_custom }}"
+matrix_mx_puppet_discord_systemd_required_services_list_default: ['docker.service']
+matrix_mx_puppet_discord_systemd_required_services_list_auto: []
+matrix_mx_puppet_discord_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-puppet-discord.service wants
 matrix_mx_puppet_discord_systemd_wanted_services_list: []
