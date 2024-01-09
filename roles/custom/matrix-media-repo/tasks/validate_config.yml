@@ -1,6 +1,14 @@
 ---
 
-- name: (Deprecation) Catch and report renamed settings
+- name: Fail if required matrix-media-repo settings not defined
+  ansible.builtin.fail:
+    msg: >
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
+  with_items:
+    - {'name': 'matrix_media_repo_database_hostname', when: true}
+
+- name: (Deprecation) Catch and report renamed matrix-media-repo settings
   ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
