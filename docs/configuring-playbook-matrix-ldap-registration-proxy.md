@@ -29,5 +29,11 @@ matrix_ldap_registration_proxy_ldap_uri: "{{ matrix_synapse_ext_password_provide
 matrix_ldap_registration_proxy_ldap_base_dn: "{{ matrix_synapse_ext_password_provider_ldap_base }}"
 matrix_ldap_registration_proxy_ldap_user: "{{ matrix_synapse_ext_password_provider_ldap_bind_dn }}"
 matrix_ldap_registration_proxy_ldap_password: "{{ matrix_synapse_ext_password_provider_ldap_bind_password }}"
+
+matrix_ldap_registration_proxy_container_additional_networks_custom:
+  - "{{ matrix_synapse_container_network }}"
+
+matrix_ldap_registration_proxy_systemd_wanted_services_list_custom:
+  - matrix-synapse.service
 ```
 

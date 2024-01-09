@@ -78,7 +78,10 @@ matrix_ldap_registration_proxy_systemd_required_services_list_auto: []
 matrix_ldap_registration_proxy_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-ldap-registration-proxy.service wants
-matrix_ldap_registration_proxy_systemd_wanted_services_list: []
+matrix_ldap_registration_proxy_systemd_wanted_services_list: "{{ matrix_ldap_registration_proxy_systemd_wanted_services_list_default + matrix_ldap_registration_proxy_systemd_wanted_services_list_auto + matrix_ldap_registration_proxy_systemd_wanted_services_list_custom }}"
+matrix_ldap_registration_proxy_systemd_wanted_services_list_default: ['docker.service']
+matrix_ldap_registration_proxy_systemd_wanted_services_list_auto: []
+matrix_ldap_registration_proxy_systemd_wanted_services_list_custom: []
 
 # Additional environment variables to pass to the LDAP proxy environment variables.
 #
