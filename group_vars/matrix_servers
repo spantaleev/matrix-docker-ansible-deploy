@@ -311,6 +311,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-cactus-comments.service', 'priority': 2000, 'groups': ['matrix', 'cactus-comments']}] if matrix_cactus_comments_enabled else [])
     +
+    ([{'name': 'matrix-cactus-comments-client.service', 'priority': 2000, 'groups': ['matrix', 'cactus-comments-client']}] if matrix_cactus_comments_client_enabled else [])
+    +
     ([{'name': 'matrix-client-cinny.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'cinny', 'client-cinny']}] if matrix_client_cinny_enabled else [])
     +
     ([{'name': 'matrix-client-element.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'element', 'client-element']}] if matrix_client_element_enabled else [])
@@ -2590,6 +2592,36 @@ matrix_cactus_comments_homeserver_url: "{{ matrix_addons_homeserver_client_api_u
 ######################################################################
 #
 # /matrix-cactus-comments
+#
+######################################################################
+
+######################################################################
+#
+# matrix-cactus-comments-client
+#
+######################################################################
+
+matrix_cactus_comments_client_enabled: "{{ matrix_cactus_comments_enabled }}"
+
+matrix_cactus_comments_client_hostname: "{{ matrix_server_fqn_matrix }}"
+
+matrix_cactus_comments_client_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_cactus_comments_client_container_additional_networks_auto: |-
+  {{
+    (
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_cactus_comments_client_container_labels_traefik_enabled) else [])
+    ) | unique
+  }}
+
+matrix_cactus_comments_client_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_cactus_comments_client_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_cactus_comments_client_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_cactus_comments_client_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+######################################################################
+#
+# /matrix-cactus-comments-client
 #
 ######################################################################
 

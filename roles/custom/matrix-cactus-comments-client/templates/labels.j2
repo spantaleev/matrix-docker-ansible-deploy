@@ -1,0 +1,47 @@
+{% if matrix_cactus_comments_client_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_cactus_comments_client_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_cactus_comments_client_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-cactus-comments-client.loadbalancer.server.port={{ matrix_cactus_comments_client_environment_variable_server_port }}
+
+{#
+	Public
+#}
+{% if matrix_cactus_comments_client_container_labels_public_enabled %}
+
+{% set public_middlewares = [] %}
+
+{% if matrix_cactus_comments_client_container_labels_public_traefik_path_prefix != '/' %}
+{% set public_middlewares = public_middlewares + ['matrix-cactus-comments-client-strip-prefix'] %}
+traefik.http.middlewares.matrix-cactus-comments-client-strip-prefix.stripprefix.prefixes={{ matrix_cactus_comments_client_container_labels_public_traefik_path_prefix }}
+{% endif %}
+
+traefik.http.routers.matrix-cactus-comments-client-base-domain.rule={{ matrix_cactus_comments_client_container_labels_public_traefik_rule }}
+
+{% if matrix_cactus_comments_client_container_labels_public_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-cactus-comments-client-base-domain.priority={{ matrix_cactus_comments_client_container_labels_public_traefik_priority }}
+{% endif %}
+
+{% if public_middlewares | length > 0 %}
+traefik.http.routers.matrix-cactus-comments-client-base-domain.middlewares={{ public_middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers.matrix-cactus-comments-client-base-domain.service=matrix-cactus-comments-client
+traefik.http.routers.matrix-cactus-comments-client-base-domain.entrypoints={{ matrix_cactus_comments_client_container_labels_public_traefik_entrypoints }}
+
+traefik.http.routers.matrix-cactus-comments-client-base-domain.tls={{ matrix_cactus_comments_client_container_labels_public_traefik_tls | to_json }}
+{% if matrix_cactus_comments_client_container_labels_public_traefik_tls %}
+traefik.http.routers.matrix-cactus-comments-client-base-domain.tls.certResolver={{ matrix_cactus_comments_client_container_labels_public_traefik_tls_certResolver }}
+{% endif %}
+
+{% endif %}
+{#
+	/Public
+#}
+
+{% endif %}
+
+{{ matrix_cactus_comments_client_container_labels_additional_labels }}

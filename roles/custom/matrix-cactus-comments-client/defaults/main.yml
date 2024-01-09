@@ -1,0 +1,102 @@
+---
+# Cactus Comments is a federated comment system built on Matrix.
+# This role installs the client assets (JS, CSS files).
+# Project source code URL: https://gitlab.com/cactus-comments/cactus-client
+
+matrix_cactus_comments_client_enabled: true
+
+matrix_cactus_comments_client_hostname: ''
+matrix_cactus_comments_client_path_prefix: /cactus-comments
+
+matrix_cactus_comments_client_base_path: "{{ matrix_base_data_path }}/cactus-comments-client"
+matrix_cactus_comments_client_public_path: "{{ matrix_cactus_comments_client_base_path }}/public"
+matrix_cactus_comments_client_public_path_file_permissions: "0644"
+
+# renovate: datasource=docker depName=joseluisq/static-web-server
+matrix_cactus_comments_client_version: 2.24.2
+
+matrix_cactus_comments_client_container_image: "{{ matrix_container_global_registry_prefix }}joseluisq/static-web-server:{{ matrix_cactus_comments_client_container_image_tag }}"
+matrix_cactus_comments_client_container_image_tag: "{{ 'latest' if matrix_cactus_comments_client_version == 'latest' else (matrix_cactus_comments_client_version + '-alpine') }}"
+matrix_cactus_comments_client_container_image_force_pull: "{{ matrix_cactus_comments_client_container_image.endswith(':latest') }}"
+
+matrix_cactus_comments_client_container_network: ""
+
+matrix_cactus_comments_client_container_additional_networks: "{{ matrix_cactus_comments_client_container_additional_networks_auto + matrix_cactus_comments_client_container_additional_networks_custom }}"
+matrix_cactus_comments_client_container_additional_networks_auto: []
+matrix_cactus_comments_client_container_additional_networks_custom: []
+
+# Controls whether the matrix-cactus-comments-client container exposes its HTTP port (tcp/8080 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8080"), or empty string to not expose.
+matrix_cactus_comments_client_container_http_host_bind_port: ''
+
+# matrix_cactus_comments_client_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_cactus_comments_client_container_labels_additional_labels`.
+matrix_cactus_comments_client_container_labels_traefik_enabled: true
+matrix_cactus_comments_client_container_labels_traefik_docker_network: "{{ matrix_cactus_comments_client_container_network }}"
+matrix_cactus_comments_client_container_labels_traefik_entrypoints: web-secure
+matrix_cactus_comments_client_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether labels will be added that serve the /public directory.
+matrix_cactus_comments_client_container_labels_public_enabled: true
+matrix_cactus_comments_client_container_labels_public_traefik_hostname: "{{ matrix_cactus_comments_client_hostname }}"
+matrix_cactus_comments_client_container_labels_public_traefik_path_prefix: "{{ matrix_cactus_comments_client_path_prefix }}"
+matrix_cactus_comments_client_container_labels_public_traefik_rule: "Host(`{{ matrix_cactus_comments_client_container_labels_public_traefik_hostname }}`){% if matrix_cactus_comments_client_container_labels_public_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_cactus_comments_client_container_labels_public_traefik_path_prefix }}`){% endif %}"
+matrix_cactus_comments_client_container_labels_public_traefik_priority: 0
+matrix_cactus_comments_client_container_labels_public_traefik_entrypoints: "{{ matrix_cactus_comments_client_container_labels_traefik_entrypoints }}"
+matrix_cactus_comments_client_container_labels_public_traefik_tls: "{{ matrix_cactus_comments_client_container_labels_public_traefik_entrypoints != 'web' }}"
+matrix_cactus_comments_client_container_labels_public_traefik_tls_certResolver: "{{ matrix_cactus_comments_client_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# matrix_cactus_comments_client_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_cactus_comments_client_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_cactus_comments_client_container_labels_additional_labels: ''
+
+# A list of extra arguments to pass to the container
+matrix_cactus_comments_client_container_extra_arguments: []
+
+# Controls the SERVER_PORT environment variable.
+# See: https://static-web-server.net/configuration/environment-variables/
+matrix_cactus_comments_client_environment_variable_server_port: 8080
+
+# Controls the SERVER_LOG_LEVEL environment variable.
+# See: https://static-web-server.net/configuration/environment-variables/
+# Valid values: error, warn, info, debug or trace
+matrix_cactus_comments_client_environment_variable_server_log_level: error
+
+# Controls the SERVER_LOG_REMOTE_ADDRESS environment variable.
+# See: https://static-web-server.net/configuration/environment-variables/
+matrix_cactus_comments_client_environment_variable_server_log_remote_address: false
+
+# Controls the SERVER_CONFIG_FILE environment variable.
+# See: https://static-web-server.net/configuration/environment-variables/
+matrix_cactus_comments_client_environment_variable_server_config_file: /config/config.toml
+
+# Additional environment variables.
+matrix_cactus_comments_client_environment_variables_additional_variables: ''
+
+# The released & compiled client is uploaded to a URL that changes per commit. Therefore it is necessary to check the
+# available versions and adjust the url manually.
+# For available versions, see: https://gitlab.com/cactus-comments/cactus-client/-/releases
+# Also see: `matrix_cactus_comments_client_local_dir`
+matrix_cactus_comments_client_webclient_js_url: "https://gateway.pinata.cloud/ipfs/QmSiWN27KZZ1XE32jKwifBnS3nWTUcFGNArKzur2nmDgoL/v0.13.0/cactus.js"
+matrix_cactus_comments_client_webclient_css_url: "https://gateway.pinata.cloud/ipfs/QmSiWN27KZZ1XE32jKwifBnS3nWTUcFGNArKzur2nmDgoL/v0.13.0/style.css"
+
+# matrix_cactus_comments_client_local_dir specifies a local directory (on the Ansible controller, not on the remote server) with cactus-client files to use.
+# This is an alternative to `matrix_cactus_comments_client_client_version`, to be used when you'd like to
+# provide the files locally / manually.
+matrix_cactus_comments_client_local_dir: ''
+
+# List of systemd services that matrix-cactus-comments-client.service depends on
+matrix_cactus_comments_client_systemd_required_services_list: ['docker.service']
+
+# List of systemd services that matrix-cactus-comments-client.service wants
+matrix_cactus_comments_client_systemd_wanted_services_list: "{{ matrix_cactus_comments_client_systemd_wanted_services_list_auto + matrix_cactus_comments_client_systemd_wanted_services_list_custom }}"
+matrix_cactus_comments_client_systemd_wanted_services_list_auto: []
+matrix_cactus_comments_client_systemd_wanted_services_list_custom: []

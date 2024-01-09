@@ -1,0 +1,20 @@
+---
+
+- tags:
+    - setup-all
+    - setup-cactus-comments-client
+    - install-all
+    - install-cactus-comments-client
+  block:
+    - when: matrix_cactus_comments_client_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_cactus_comments_client_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-cactus-comments-client
+  block:
+    - when: not matrix_cactus_comments_client_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

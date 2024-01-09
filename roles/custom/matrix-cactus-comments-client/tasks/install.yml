@@ -1,0 +1,83 @@
+---
+
+- name: Ensure matrix-cactus-comments-client paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_cactus_comments_client_base_path }}", when: true}
+    - {path: "{{ matrix_cactus_comments_client_public_path }}", when: true}
+  when: "item.when | bool"
+
+- name: Ensure matrix-cactus-comments-client is configured
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0644
+  with_items:
+    - src: "{{ role_path }}/templates/env.j2"
+      dest: "{{ matrix_cactus_comments_client_base_path }}/env"
+
+    - src: "{{ role_path }}/templates/labels.j2"
+      dest: "{{ matrix_cactus_comments_client_base_path }}/labels"
+
+- when: matrix_cactus_comments_client_local_dir | length == 0
+  block:
+    - name: Download web client js
+      ansible.builtin.get_url:
+        url: "{{ matrix_cactus_comments_client_webclient_js_url }}"
+        dest: "{{ matrix_cactus_comments_client_public_path }}/cactus.js"
+        mode: "{{ matrix_cactus_comments_client_public_path_file_permissions }}"
+        owner: "{{ matrix_user_username }}"
+        group: "{{ matrix_user_groupname }}"
+    - name: Download web client css
+      ansible.builtin.get_url:
+        url: "{{ matrix_cactus_comments_client_webclient_css_url }}"
+        dest: "{{ matrix_cactus_comments_client_public_path }}/style.css"
+        mode: "{{ matrix_cactus_comments_client_public_path_file_permissions }}"
+        owner: "{{ matrix_user_username }}"
+        group: "{{ matrix_user_groupname }}"
+
+- when: matrix_cactus_comments_client_local_dir | length > 0
+  block:
+    - name: Upload locally distributed client JS
+      ansible.builtin.copy:
+        src: "{{ matrix_cactus_comments_client_local_dir }}/src/cactus.js"
+        dest: "{{ matrix_cactus_comments_client_public_path }}/cactus.js"
+        mode: "{{ matrix_cactus_comments_client_public_path_file_permissions }}"
+        owner: "{{ matrix_user_username }}"
+        group: "{{ matrix_user_groupname }}"
+    - name: Upload locally distributed client CSS
+      ansible.builtin.copy:
+        src: "{{ matrix_cactus_comments_client_local_dir }}/src/style.css"
+        dest: "{{ matrix_cactus_comments_client_public_path }}/style.css"
+        mode: "{{ matrix_cactus_comments_client_public_path_file_permissions }}"
+        owner: "{{ matrix_user_username }}"
+        group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-cactus-comments-client container image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_cactus_comments_client_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_cactus_comments_client_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_cactus_comments_client_container_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure matrix-cactus-comments-client container network is created
+  community.general.docker_network:
+    name: "{{ matrix_cactus_comments_client_container_network }}"
+    driver: bridge
+
+- name: Ensure matrix-cactus-comments-client.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-cactus-comments-client.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-cactus-comments-client.service"
+    mode: 0644

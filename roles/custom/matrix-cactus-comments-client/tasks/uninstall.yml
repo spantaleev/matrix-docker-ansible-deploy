@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-cactus-comments-client service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-cactus-comments-client.service"
+  register: matrix_cactus_comments_client_service_stat
+
+- when: matrix_cactus_comments_client_service_stat.stat.exists | bool
+  block:
+    - name: Ensure cactus comments is stopped
+      ansible.builtin.service:
+        name: matrix-cactus-comments-client
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-cactus-comments-client.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-cactus-comments-client.service"
+        state: absent
+
+    - name: Ensure Matrix cactus comments paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_cactus_comments_client_base_path }}"
+        state: absent

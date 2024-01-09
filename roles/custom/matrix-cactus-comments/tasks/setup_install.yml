@@ -1,6 +1,6 @@
 ---
 
-- name: Ensure cactus comments paths exist
+- name: Ensure matrix-cactus-comments paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
@@ -13,7 +13,7 @@
     - {path: "{{ matrix_cactus_comments_docker_src_files_path }}", when: matrix_cactus_comments_container_image_self_build}
   when: "item.when | bool"
 
-- name: Ensure cactus comments environment file created
+- name: Ensure matrix-cactus-comments environment file created
   ansible.builtin.template:
     src: "{{ role_path }}/templates/env.j2"
     dest: "{{ matrix_cactus_comments_app_service_env_file }}"
@@ -21,7 +21,7 @@
     group: "{{ matrix_user_groupname }}"
     mode: 0640
 
-- name: Ensure cactus comments appservice file created
+- name: Ensure matrix-cactus-comments appservice file created
   ansible.builtin.template:
     src: "{{ role_path }}/templates/cactus_appservice.yaml.j2"
     dest: "{{ matrix_cactus_comments_app_service_config_file }}"
@@ -29,7 +29,7 @@
     group: "{{ matrix_user_groupname }}"
     mode: 0640
 
-- name: Ensure cactus comments image is pulled
+- name: Ensure matrix-cactus-comments image is pulled
   community.docker.docker_image:
     name: "{{ matrix_cactus_comments_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
@@ -41,7 +41,7 @@
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
-- name: Ensure cactus comments repository is present on self-build
+- name: Ensure matrix-cactus-comments repository is present on self-build
   ansible.builtin.git:
     repo: "{{ matrix_cactus_comments_docker_repo }}"
     version: "{{ matrix_cactus_comments_docker_repo_version }}"
@@ -52,7 +52,7 @@
   register: matrix_cactus_comments_git_pull_results
   when: "matrix_cactus_comments_container_image_self_build | bool"
 
-- name: Ensure cactus comments image is built
+- name: Ensure matrix-cactus-comments image is built
   community.docker.docker_image:
     name: "{{ matrix_cactus_comments_docker_image }}"
     source: build
