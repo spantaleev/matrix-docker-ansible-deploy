@@ -4,7 +4,7 @@
 # It defaults to ansible tags "setup-all,start". You can pass alternative tags
 # to this script as arguments, e.g.
 #
-#     ./inventory/scripts/ansible-all-hosts.sh self-check
+#     ./bin/ansible-all-hosts.sh self-check
 #
 
 # set playbook root path
