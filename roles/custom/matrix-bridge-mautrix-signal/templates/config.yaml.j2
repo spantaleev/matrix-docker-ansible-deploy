@@ -84,6 +84,10 @@ metrics:
     # IP and port where the metrics listener should be. The path is always /metrics
     listen: 127.0.0.1:8000
 
+signal:
+    # Default device name that shows up in the Signal app.
+    device_name: mautrix-signal
+
 # Bridge config
 bridge:
     # Localpart template of MXIDs for Signal users.
@@ -105,6 +109,10 @@ bridge:
     private_chat_portal_meta: default
     # Should avatars from the user's contact list be used? This is not safe on multi-user instances.
     use_contact_avatars: false
+    # Should the Signal user's phone number be included in the room topic in private chat portal rooms?
+    number_in_topic: true
+    # Avatar image for the Note to Self room.
+    note_to_self_avatar: {{ matrix_mautrix_signal_bridge_note_to_self_avatar | to_json }}
 
     portal_message_buffer: 128
 
@@ -114,6 +122,8 @@ bridge:
     personal_filtering_spaces: {{ matrix_mautrix_signal_bridge_personal_filtering_spaces | to_json }}
     # Should the bridge send a read receipt from the bridge bot when a message has been sent to Signal?
     delivery_receipts: false
+    # Should Matrix m.notice-type messages be bridged?
+    bridge_notices: true
     # Whether the bridge should send the message status as a custom com.beeper.message_send_status event.
     message_status_events: false
     # Whether the bridge should send error notices via m.notice events when a message fails to bridge.
