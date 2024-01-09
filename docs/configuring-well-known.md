@@ -170,10 +170,9 @@ backend matrix-backend
 	rsprep ^Location:\ (http|https)://matrix.example.com\/(.*) Location:\ \1://matrix.example.com/.well-known/matrix/\2 if response-is-redirect
 ```
 
-**For Netlify**, it would be something like this:
+**For Netlify**, configure a [redirect](https://docs.netlify.com/routing/redirects/) using a `_redirects` file in the [publish directory](https://docs.netlify.com/configure-builds/overview/#definitions) with contents like this:
 
 ```
-# In the _redirects file in the website's root
 /.well-known/matrix/* https://matrix.example.com/.well-known/matrix/:splat 200!
 ```
 
