@@ -49,11 +49,11 @@ matrix_ldap_registration_proxy_container_labels_traefik_docker_network: "{{ matr
 matrix_ldap_registration_proxy_container_labels_traefik_entrypoints: web-secure
 matrix_ldap_registration_proxy_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
-# Controls whether labels will be added that expose ldap-registration-proxy's registration endpoint (matrix_ldap_registration_proxy_container_labels_registration_endpoint_path_prefix)
+# Controls whether labels will be added that expose ldap-registration-proxy's registration endpoint (matrix_ldap_registration_proxy_container_labels_registration_endpoint_path)
 matrix_ldap_registration_proxy_container_labels_registration_endpoint_enabled: true
 matrix_ldap_registration_proxy_container_labels_registration_endpoint_hostname: "{{ matrix_ldap_registration_proxy_hostname }}"
-matrix_ldap_registration_proxy_container_labels_registration_endpoint_path_prefix: "/_matrix/client/{version:(r0|v3)}/register"
-matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_rule: "Host(`{{ matrix_ldap_registration_proxy_container_labels_registration_endpoint_hostname }}`) && PathPrefix(`{{ matrix_ldap_registration_proxy_container_labels_registration_endpoint_path_prefix }}`)"
+matrix_ldap_registration_proxy_container_labels_registration_endpoint_path: "/_matrix/client/{version:(r0|v3)}/register"
+matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_rule: "Host(`{{ matrix_ldap_registration_proxy_container_labels_registration_endpoint_hostname }}`) && Path(`{{ matrix_ldap_registration_proxy_container_labels_registration_endpoint_path }}`)"
 matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_priority: 0
 matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_entrypoints: "{{ matrix_ldap_registration_proxy_container_labels_traefik_entrypoints }}"
 matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_tls: "{{ matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_entrypoints != 'web' }}"
