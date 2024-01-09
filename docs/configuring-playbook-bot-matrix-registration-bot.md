@@ -17,9 +17,8 @@ To enable the bot, add the following configuration to your `inventory/host_vars/
 ```yaml
 matrix_bot_matrix_registration_bot_enabled: true
 
-#By default, the playbook will set use the bot with a username like 
-## this: `@bot.matrix-registration-bot:DOMAIN`.
-# To use a different username, uncomment & adjust the variable.
+# By default, the playbook will set use the bot with a username like this: `@bot.matrix-registration-bot:DOMAIN`.
+# To use a different username, uncomment & adjust the variable below:
 # matrix_bot_matrix_registration_bot_matrix_user_id_localpart: bot.matrix-registration-bot
 
 # Generate a strong password here. Consider generating it with `pwgen -s 64 1`
@@ -32,16 +31,11 @@ matrix_synapse_enable_registration: true
 matrix_synapse_registration_requires_token: true
 ```
 
-The bot account will be automatically created.
+The bot account will be created automatically.
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command again:
-
-```
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
-```
-
+After configuring the playbook, re-run the [installation](installing.md) command again: `just install-all` or `just setup-all`
 
 ## Usage
 
