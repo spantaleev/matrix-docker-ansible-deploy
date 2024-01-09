@@ -27,10 +27,13 @@ matrix_media_repo_config_path: "{{ matrix_media_repo_base_path }}/config"
 matrix_media_repo_data_path: "{{ matrix_media_repo_base_path }}/data"
 matrix_media_repo_docker_src_files_path: "{{ matrix_media_repo_base_path }}/docker-src"
 
-# List of systemd services that matrix-conduit.service depends on
-matrix_media_repo_systemd_required_services_list: ["docker.service"]
+# List of systemd services that matrix-media-repo.service depends on
+matrix_media_repo_systemd_required_services_list: "{{ matrix_media_repo_systemd_required_services_list_default + matrix_media_repo_systemd_required_services_list_auto + matrix_media_repo_systemd_required_services_list_custom }}"
+matrix_media_repo_systemd_required_services_list_default: ["docker.service"]
+matrix_media_repo_systemd_required_services_list_auto: []
+matrix_media_repo_systemd_required_services_list_custom: []
 
-# List of systemd services that matrix-conduit.service wants
+# List of systemd services that matrix-media-repo.service wants
 matrix_media_repo_systemd_wanted_services_list: []
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.

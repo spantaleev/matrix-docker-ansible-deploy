@@ -3213,14 +3213,16 @@ matrix_ma1sd_database_password: "{{ '%s' | format(matrix_homeserver_generic_secr
 
 matrix_media_repo_enabled: false
 
-matrix_media_repo_container_network: "{{ matrix_nginx_proxy_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else matrix_media_repo_identifier }}"
+matrix_media_repo_container_network: "{{ matrix_homeserver_container_network }}"
 
 matrix_media_repo_container_additional_networks: |
   {{
     (
-      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
+      ([matrix_homeserver_container_network] if (matrix_media_repo_container_network != matrix_homeserver_container_network) else [])
       +
-      ([devture_postgres_container_network] if devture_postgres_enabled and devture_postgres_container_network != matrix_media_repo_container_network else [])
+      ([devture_postgres_container_network] if (devture_postgres_enabled and matrix_media_repo_database_hostname == devture_postgres_connection_hostname and devture_postgres_container_network != matrix_media_repo_container_network) else [])
+      +
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_media_repo_container_labels_traefik_enabled) else [])
     ) | unique
   }}
 
@@ -3234,9 +3236,9 @@ matrix_media_repo_database_username: matrix_media_repo
 matrix_media_repo_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mediarepo.db', rounds=655555) | to_uuid }}"
 matrix_media_repo_database_name: matrix_media_repo
 
-matrix_media_repo_systemd_required_services_list: |
+matrix_media_repo_systemd_required_services_list_auto: |
   {{
-    (['docker.service'])
+    matrix_addons_homeserver_systemd_services_list
     +
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled and matrix_media_repo_database_hostname == devture_postgres_connection_hostname else [])
   }}
@@ -3250,7 +3252,7 @@ matrix_media_repo_homeservers_auto:
     name: "{{ matrix_domain }}"
 
     # The base URL to where the homeserver can actually be reached by MMR.
-    csApi: "http://{{ matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container }}"
+    csApi: "{{ matrix_homeserver_container_url }}"
 
     # The number of consecutive failures in calling this homeserver before the
     # media repository will start backing off. This defaults to 10 if not given.
