@@ -3141,12 +3141,12 @@ matrix_ma1sd_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 # ma1sd's web-server port.
 matrix_ma1sd_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '' ~ matrix_ma1sd_container_port | string) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
-matrix_ma1sd_container_network: "{{ matrix_addons_container_network }}"
+matrix_ma1sd_container_network: "{{ matrix_homeserver_container_network }}"
 
 matrix_ma1sd_container_additional_networks_auto: |
   {{
     (
-      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+      ([matrix_homeserver_container_network] if (matrix_ma1sd_container_network != matrix_homeserver_container_network) else [])
       +
       ([devture_postgres_container_network] if (devture_postgres_enabled and matrix_ma1sd_database_hostname == devture_postgres_connection_hostname and matrix_ma1sd_container_network != devture_postgres_container_network) else [])
       +
