@@ -1,12 +1,26 @@
 ---
 
-- name: Fail if required settings not defined
+- name: Fail if required matrix-ldap-registration-proxy settings not defined
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
   when: "vars[item] == ''"
   with_items:
+    - "matrix_ldap_registration_proxy_hostname"
     - "matrix_ldap_registration_proxy_ldap_uri"
     - "matrix_ldap_registration_proxy_ldap_base_dn"
     - "matrix_ldap_registration_proxy_ldap_user"
     - "matrix_ldap_registration_proxy_ldap_password"
+    - "matrix_ldap_registration_proxy_container_network"
+
+- name: (Deprecation) Catch and report renamed matrix-ldap-registration-proxy settings
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_ldap_registration_proxy_registration_addr_with_container', 'new': '<removed>'}
+    - {'old': 'matrix_ldap_registration_proxy_registration_addr_sans_container', 'new': '<removed>'}
+    - {'old': 'matrix_ldap_registration_proxy_container_port', 'new': 'matrix_ldap_registration_listen_port'}
+    - {'old': 'matrix_ldap_registration_proxy_registration_endpoint', 'new': 'matrix_ldap_registration_proxy_container_labels_registration_endpoint_path_prefix'}

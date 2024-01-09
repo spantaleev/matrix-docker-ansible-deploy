@@ -4,6 +4,8 @@
 
 matrix_ldap_registration_proxy_enabled: true
 
+matrix_ldap_registration_proxy_hostname: ''
+
 matrix_ldap_registration_proxy_docker_image: matrix_ldap_registration_proxy
 matrix_ldap_registration_proxy_container_image_self_build_repo: "https://gitlab.com/activism.international/matrix_ldap_registration_proxy.git"
 matrix_ldap_registration_proxy_container_image_self_build_branch: "{{ matrix_ldap_registration_proxy_version }}"
@@ -20,34 +22,62 @@ matrix_ldap_registration_proxy_ldap_base_dn: ""
 matrix_ldap_registration_proxy_ldap_user: ""
 matrix_ldap_registration_proxy_ldap_password: ""
 matrix_ldap_registration_proxy_matrix_server_name: "{{ matrix_domain }}"
-matrix_ldap_registration_proxy_matrix_server_url: "https://{{ matrix_server_fqn_matrix }}"
-
-matrix_ldap_registration_proxy_registration_endpoint: "/_matrix/client/r0/register"
+matrix_ldap_registration_proxy_matrix_server_url: ""
 
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_matrix_ldap_registration_proxy_self_check_validate_certificates: true
 
-matrix_ldap_registration_proxy_container_port: 8080
-# Controls whether the matrix_ldap_registration_proxy container exposes its HTTP port (tcp/{{ matrix_ldap_registration_proxy_container_port }} in the container).
+matrix_ldap_registration_listen_port: 8080
+
+# Controls whether the matrix_ldap_registration_proxy container exposes its HTTP port (tcp/{{ matrix_ldap_registration_listen_port }} in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8080"), or empty string to not expose.
 matrix_ldap_registration_proxy_container_http_host_bind_port: ''
 
-# `matrix_ldap_registration_proxy_container_http_host_bind_port_number_raw` contains the raw port number extracted from `matrix_ldap_registration_proxy_container_http_host_bind_port`,
-# which can contain values like this: ('1234', '127.0.0.1:1234', '0.0.0.0:1234')
-matrix_ldap_registration_proxy_container_http_host_bind_port_number_raw: "{{ '' if matrix_ldap_registration_proxy_container_http_host_bind_port == '' else (matrix_ldap_registration_proxy_container_http_host_bind_port.split(':')[1] if ':' in matrix_ldap_registration_proxy_container_http_host_bind_port else matrix_ldap_registration_proxy_container_http_host_bind_port) }}"
+matrix_ldap_registration_proxy_container_network: ""
 
-matrix_ldap_registration_proxy_registration_addr_with_container: "matrix-ldap_registration-proxy:{{  matrix_ldap_registration_proxy_container_http_host_bind_port_number_raw }}"
-matrix_ldap_registration_proxy_registration_addr_sans_container: "127.0.0.1:{{  matrix_ldap_registration_proxy_container_http_host_bind_port_number_raw }}"
+matrix_ldap_registration_proxy_container_additional_networks: "{{ matrix_ldap_registration_proxy_container_additional_networks_auto + matrix_ldap_registration_proxy_container_additional_networks_custom }}"
+matrix_ldap_registration_proxy_container_additional_networks_auto: []
+matrix_ldap_registration_proxy_container_additional_networks_custom: []
 
+# matrix_ldap_registration_proxy_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_ldap_registration_proxy_container_labels_additional_labels`.
+matrix_ldap_registration_proxy_container_labels_traefik_enabled: true
+matrix_ldap_registration_proxy_container_labels_traefik_docker_network: "{{ matrix_ldap_registration_proxy_container_network }}"
+matrix_ldap_registration_proxy_container_labels_traefik_entrypoints: web-secure
+matrix_ldap_registration_proxy_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether labels will be added that expose ldap-registration-proxy's registration endpoint (matrix_ldap_registration_proxy_container_labels_registration_endpoint_path_prefix)
+matrix_ldap_registration_proxy_container_labels_registration_endpoint_enabled: true
+matrix_ldap_registration_proxy_container_labels_registration_endpoint_hostname: "{{ matrix_ldap_registration_proxy_hostname }}"
+matrix_ldap_registration_proxy_container_labels_registration_endpoint_path_prefix: "/_matrix/client/(r0|v3)/register"
+matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_rule: "Host(`{{ matrix_ldap_registration_proxy_container_labels_registration_endpoint_hostname }}`) && PathPrefix(`{{ matrix_ldap_registration_proxy_container_labels_registration_endpoint_path_prefix }}`)"
+matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_priority: 0
+matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_entrypoints: "{{ matrix_ldap_registration_proxy_container_labels_traefik_entrypoints }}"
+matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_tls: "{{ matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_entrypoints != 'web' }}"
+matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_tls_certResolver: "{{ matrix_ldap_registration_proxy_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# matrix_ldap_registration_proxy_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_ldap_registration_proxy_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_ldap_registration_proxy_container_labels_additional_labels: ''
 
 # A list of extra arguments to pass to the container
 matrix_ldap_registration_proxy_container_extra_arguments: []
 
-# List of systemd services that matrix_ldap_registration_proxy.service depends on
-matrix_ldap_registration_proxy_systemd_required_services_list: ['docker.service']
+# List of systemd services that matrix-ldap-registration-proxy.service depends on.
+matrix_ldap_registration_proxy_systemd_required_services_list: "{{ matrix_ldap_registration_proxy_systemd_required_services_list_default + matrix_ldap_registration_proxy_systemd_required_services_list_auto + matrix_ldap_registration_proxy_systemd_required_services_list_custom }}"
+matrix_ldap_registration_proxy_systemd_required_services_list_default: ['docker.service']
+matrix_ldap_registration_proxy_systemd_required_services_list_auto: []
+matrix_ldap_registration_proxy_systemd_required_services_list_custom: []
 
-# List of systemd services that matrix_ldap_registration_proxy.service wants
+# List of systemd services that matrix-ldap-registration-proxy.service wants
 matrix_ldap_registration_proxy_systemd_wanted_services_list: []
 
 # Additional environment variables to pass to the LDAP proxy environment variables.

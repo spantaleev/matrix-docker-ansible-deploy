@@ -3052,6 +3052,31 @@ jitsi_disable_gravatar: true
 # This is only for users with a specific LDAP setup
 matrix_ldap_registration_proxy_enabled: false
 
+matrix_ldap_registration_proxy_hostname: "{{ matrix_server_fqn_matrix }}"
+
+matrix_ldap_registration_proxy_matrix_server_url: "{{ matrix_addons_homeserver_client_api_url }}"
+
+matrix_ldap_registration_proxy_systemd_required_services_list_auto: |
+  {{
+    matrix_addons_homeserver_systemd_services_list
+  }}
+
+matrix_ldap_registration_proxy_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_ldap_registration_proxy_container_additional_networks_auto: |-
+  {{
+    (
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+      +
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_ldap_registration_proxy_container_labels_traefik_enabled) else [])
+    ) | unique
+  }}
+
+matrix_ldap_registration_proxy_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_ldap_registration_proxy_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_ldap_registration_proxy_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_ldap_registration_proxy_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
 ######################################################################
 #
 # /matrix-ldap-registration-proxy
