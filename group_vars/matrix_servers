@@ -2749,6 +2749,27 @@ matrix_media_repo_systemd_required_services_list: |
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled and matrix_media_repo_database_hostname == devture_postgres_connection_hostname else [])
   }}
 
+# Auto configured server setup by the playbook
+matrix_media_repo_homeservers_auto:
+  -  # Keep the dash from this line.
+
+    # This should match the server_name of your homeserver, and the Host header
+    # provided to the media repo.
+    name: "{{ matrix_domain }}"
+
+    # The base URL to where the homeserver can actually be reached by MMR.
+    csApi: "http://{{ matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container }}"
+
+    # The number of consecutive failures in calling this homeserver before the
+    # media repository will start backing off. This defaults to 10 if not given.
+    backoffAt: 10
+
+    # The admin API interface supported by the homeserver. MMR uses a subset of the admin API
+    # during certain operations, like attempting to purge media from a room or validating server
+    # admin status. This should be set to one of "synapse", "dendrite", or "matrix". When set
+    # to "matrix", most functionality requiring the admin API will not work.
+    adminApiKind: "{{ 'synapse' if matrix_homeserver_implementation == 'synapse' else ('dendrite' if matrix_homeserver_implementation == 'dendrite' else 'matrix') }}"
+
 ######################################################################
 #
 # /matrix-media-repo
