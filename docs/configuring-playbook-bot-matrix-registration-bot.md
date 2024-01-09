@@ -21,6 +21,9 @@ matrix_bot_matrix_registration_bot_enabled: true
 # To use a different username, uncomment & adjust the variable below:
 # matrix_bot_matrix_registration_bot_matrix_user_id_localpart: bot.matrix-registration-bot
 
+# Generate a strong password here. Consider generating it with `pwgen -s 64 1`
+matrix_bot_matrix_registration_bot_bot_password: PASSWORD_FOR_THE_BOT
+
 # Enables registration
 matrix_synapse_enable_registration: true
 
@@ -28,7 +31,7 @@ matrix_synapse_enable_registration: true
 matrix_synapse_registration_requires_token: true
 ```
 
-The bot's user account will be created automatically.
+The bot account will be created automatically.
 
 ## Installing
 
