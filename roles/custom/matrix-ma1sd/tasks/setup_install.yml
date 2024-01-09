@@ -57,22 +57,6 @@
 
 - when: "matrix_ma1sd_container_image_self_build | bool"
   block:
-    - name: Ensure gradle is installed for self-building (Debian)
-      ansible.builtin.apt:
-        name:
-          - gradle
-        state: present
-        update_cache: true
-      when: (ansible_os_family == 'Debian')
-
-    - name: Ensure gradle is installed for self-building (RedHat)
-      ansible.builtin.fail:
-        msg: "Installing gradle on RedHat ({{ ansible_distribution }}) is currently not supported, so self-building ma1sd cannot happen at this time"
-      when: ansible_os_family == 'RedHat'
-
-    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/ensure_gradle_installed_archlinux.yml"
-      when: "ansible_distribution == 'Archlinux'"
-
     - name: Ensure ma1sd repository is present on self-build
       ansible.builtin.git:
         repo: "{{ matrix_ma1sd_container_image_self_build_repo }}"
@@ -83,27 +67,14 @@
       become_user: "{{ matrix_user_username }}"
       register: matrix_ma1sd_git_pull_results
 
-    - name: Ensure ma1sd Docker image is built
+    - name: Ensure ma1sd container image is built
       ansible.builtin.command:
-        cmd: ./gradlew dockerBuild
-        chdir: "{{ matrix_ma1sd_docker_src_files_path }}"
-      environment:
-        DOCKER_BUILDKIT: 1
+        cmd: |-
+          {{ devture_systemd_docker_base_host_command_docker }} buildx build
+          --tag={{ matrix_ma1sd_docker_image }}
+          --file={{ matrix_ma1sd_docker_src_files_path }}/Dockerfile
+          {{ matrix_ma1sd_docker_src_files_path }}
       changed_when: true
-      when: matrix_ma1sd_git_pull_results.changed
-
-    - name: Ensure ma1sd Docker image is tagged correctly
-      community.docker.docker_image:
-        # The build script always tags the image with 2 tags:
-        # - based on the branch/version: e.g. `ma1uta/ma1sd:2.4.0` (when on `2.4.0`)
-        #   or `ma1uta/ma1sd:2.4.0-19-ga71d32b` (when on a given commit for a pre-release)
-        # - generic one: `ma1uta/ma1sd:latest-dev`
-        #
-        # It's hard to predict the first one, so we'll use the latter.
-        name: "ma1uta/ma1sd:latest-dev"
-        repository: "{{ matrix_ma1sd_docker_image }}"
-        force_tag: true
-        source: local
 
 - name: Ensure ma1sd config installed
   ansible.builtin.copy:
