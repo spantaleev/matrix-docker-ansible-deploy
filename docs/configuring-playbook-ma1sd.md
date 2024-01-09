@@ -44,9 +44,9 @@ To use the [Registration](https://github.com/ma1uta/ma1sd/blob/master/docs/featu
 
 - `matrix_synapse_enable_registration_captcha` - to validate registering users using reCAPTCHA, as described in the [enabling reCAPTCHA](configuring_captcha.md) documentation.
 
-- `matrix_synapse_registrations_require_3pid` - to control the types of 3pid (`'email'`, `'msisdn'`) required by the Synapse server for registering
+- `matrix_synapse_registrations_require_3pid` - a list of 3pid types (among `'email'`, `'msisdn'`) required by the Synapse server for registering
 
-- variables prefixed with `matrix_nginx_proxy_proxy_matrix_3pid_registration_` (e.g. `matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled`) - to configure the integrated nginx webserver to send registration requests to ma1sd (instead of Synapse), so it can apply its additional functionality
+- variables prefixed with `matrix_ma1sd_container_labels_` (e.g. `matrix_ma1sd_container_labels_matrix_client_3pid_registration_enabled`) - to configure the Traefik reverse-proxy to capture and send registration requests to ma1sd (instead of Synapse), so it can apply its additional functionality
 
 - `matrix_ma1sd_configuration_extension_yaml` - to configure ma1sd as required. See the [Registration feature's docs](https://github.com/ma1uta/ma1sd/blob/master/docs/features/registration.md) for inspiration. Also see the [Additional features](#additional-features) section below to learn more about how to use `matrix_ma1sd_configuration_extension_yaml`.
 

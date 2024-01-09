@@ -1,0 +1,99 @@
+{% if matrix_ma1sd_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_ma1sd_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_ma1sd_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-ma1sd.loadbalancer.server.port={{ matrix_ma1sd_container_port }}
+
+{#
+	Matrix Identity APIs (/_matrix/identity)
+#}
+{% if matrix_ma1sd_container_labels_matrix_identity_enabled %}
+traefik.http.routers.matrix-ma1sd-matrix-identity.rule={{ matrix_ma1sd_container_labels_matrix_identity_traefik_rule }}
+
+{% if matrix_ma1sd_container_labels_matrix_identity_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-ma1sd-matrix-identity.priority={{ matrix_ma1sd_container_labels_matrix_identity_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-ma1sd-matrix-identity.service=matrix-ma1sd
+traefik.http.routers.matrix-ma1sd-matrix-identity.entrypoints={{ matrix_ma1sd_container_labels_matrix_identity_traefik_entrypoints }}
+
+traefik.http.routers.matrix-ma1sd-matrix-identity.tls={{ matrix_ma1sd_container_labels_matrix_identity_traefik_tls | to_json }}
+{% if matrix_ma1sd_container_labels_matrix_identity_traefik_tls %}
+traefik.http.routers.matrix-ma1sd-matrix-identity.tls.certResolver={{ matrix_ma1sd_container_labels_matrix_identity_traefik_tls_certResolver }}
+{% endif %}
+{% endif %}
+{#
+	/Matrix Identity APIs (/_matrix/identity)
+#}
+
+
+{#
+	Matrix Client user-directory search API endpoint (/_matrix/client/VERSION/user_directory/search)
+#}
+{% if matrix_ma1sd_container_labels_matrix_client_user_directory_search_enabled %}
+{#
+	ma1sd only supports /_matrix/client/r0/user_directory/search,
+	while we potentially handle /_matrix/client/v3/user_directory/search as well,
+	so we need to transparently reroute.
+#}
+traefik.http.middlewares.matrix-ma1sd-matrix-client-user-directory-search-replacepath.replacepath.path=/_matrix/client/r0/user_directory/search
+
+traefik.http.routers.matrix-ma1sd-matrix-client-user-directory-search.rule={{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_rule }}
+
+traefik.http.routers.matrix-ma1sd-matrix-client-user-directory-search.middlewares=matrix-ma1sd-matrix-client-user-directory-search-replacepath
+
+{% if matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-ma1sd-matrix-client-user-directory-search.priority={{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-ma1sd-matrix-client-user-directory-search.service=matrix-ma1sd
+traefik.http.routers.matrix-ma1sd-matrix-client-user-directory-search.entrypoints={{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_entrypoints }}
+
+traefik.http.routers.matrix-ma1sd-matrix-client-user-directory-search.tls={{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_tls | to_json }}
+{% if matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_tls %}
+traefik.http.routers.matrix-ma1sd-matrix-client-user-directory-search.tls.certResolver={{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_tls_certResolver }}
+{% endif %}
+{% endif %}
+{#
+	/Matrix Client user-directory search API endpoint (/_matrix/client/VERSION/user_directory/search)
+#}
+
+
+{#
+	Matrix Client 3pid registration API endpoint (/_matrix/client/VERSION/register/TYPE/requestToken)
+#}
+{% if matrix_ma1sd_container_labels_matrix_client_user_directory_search_enabled %}
+{#
+	ma1sd only supports /_matrix/client/r0/user_directory/search,
+	while we potentially handle /_matrix/client/v3/user_directory/search as well,
+	so we need to transparently reroute.
+#}
+traefik.http.middlewares.matrix-ma1sd-matrix-client-3pid-registration-replacepathregex.replacepathregex.regex=^/_matrix/client/([^/]+)/register/([^/]+)/requestToken
+traefik.http.middlewares.matrix-ma1sd-matrix-client-3pid-registration-replacepathregex.replacepathregex.replacement=/_matrix/client/r0/register/${2}/requestToken
+
+traefik.http.routers.matrix-ma1sd-matrix-client-3pid-registration.rule={{ matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_rule }}
+
+traefik.http.routers.matrix-ma1sd-matrix-client-3pid-registration.middlewares=matrix-ma1sd-matrix-client-3pid-registration-replacepathregex
+
+{% if matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-ma1sd-matrix-client-3pid-registration.priority={{ matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-ma1sd-matrix-client-3pid-registration.service=matrix-ma1sd
+traefik.http.routers.matrix-ma1sd-matrix-client-3pid-registration.entrypoints={{ matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_entrypoints }}
+
+traefik.http.routers.matrix-ma1sd-matrix-client-3pid-registration.tls={{ matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_tls | to_json }}
+{% if matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_tls %}
+traefik.http.routers.matrix-ma1sd-matrix-client-3pid-registration.tls.certResolver={{ matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_tls_certResolver }}
+{% endif %}
+{% endif %}
+{#
+	/Matrix Client 3pid registration API endpoint (/_matrix/client/VERSION/register/TYPE/requestToken)
+#}
+
+{% endif %}
+
+{{ matrix_ma1sd_container_labels_additional_labels }}

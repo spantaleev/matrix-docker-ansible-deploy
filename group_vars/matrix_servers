@@ -3131,6 +3131,9 @@ exim_relay_sender_address: "matrix@{{ matrix_domain }}"
 # we can stop installing ma1sd.
 matrix_ma1sd_enabled: false
 
+matrix_ma1sd_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+matrix_ma1sd_hostname: "{{ matrix_server_fqn_matrix }}"
+
 matrix_ma1sd_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 # Normally, matrix-nginx-proxy is enabled and nginx can reach ma1sd over the container network.
@@ -3138,12 +3141,25 @@ matrix_ma1sd_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 # ma1sd's web-server port.
 matrix_ma1sd_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '' ~ matrix_ma1sd_container_port | string) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
-matrix_ma1sd_container_additional_networks: |
- {{
-  (
-    ([exim_relay_container_network] if (exim_relay_enabled and matrix_ma1sd_threepid_medium_email_connectors_smtp_host == exim_relay_identifier and matrix_ma1sd_container_network != exim_relay_container_network) else [])
-  ) | unique
- }}
+matrix_ma1sd_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_ma1sd_container_additional_networks_auto: |
+  {{
+    (
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+      +
+      ([devture_postgres_container_network] if (devture_postgres_enabled and matrix_ma1sd_database_hostname == devture_postgres_connection_hostname and matrix_ma1sd_container_network != devture_postgres_container_network) else [])
+      +
+      ([exim_relay_container_network] if (exim_relay_enabled and matrix_ma1sd_threepid_medium_email_connectors_smtp_host == exim_relay_identifier and matrix_ma1sd_container_network != exim_relay_container_network) else [])
+      +
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_ma1sd_container_labels_traefik_enabled) else [])
+    ) | unique
+  }}
+
+matrix_ma1sd_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_ma1sd_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_ma1sd_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_ma1sd_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 # We enable Synapse integration via its Postgres database by default.
 # When using another Identity store, you might wish to disable this and define
@@ -3156,7 +3172,7 @@ matrix_ma1sd_dns_overwrite_enabled: true
 matrix_ma1sd_dns_overwrite_homeserver_client_name: "{{ matrix_server_fqn_matrix }}"
 # The `matrix_ma1sd_dns_overwrite_homeserver_client_value` value when matrix_nginx_proxy_enabled is false covers the general case,
 # but may be inaccurate if matrix-corporal is enabled.
-matrix_ma1sd_dns_overwrite_homeserver_client_value: "{{ matrix_homeserver_container_url }}"
+matrix_ma1sd_dns_overwrite_homeserver_client_value: "{{ matrix_addons_homeserver_client_api_url }}"
 
 # By default, we send mail through the exim relay service.
 matrix_ma1sd_threepid_medium_email_identity_from: "{{ exim_relay_sender_address }}"
@@ -3168,13 +3184,13 @@ matrix_ma1sd_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_
 
 matrix_ma1sd_systemd_required_services_list_auto: |
   {{
+    matrix_addons_homeserver_systemd_services_list
+    +
     ([devture_postgres_identifier ~ '.service'] if (devture_postgres_enabled and matrix_ma1sd_database_hostname == devture_postgres_connection_hostname) else [])
   }}
 
 matrix_ma1sd_systemd_wanted_services_list_auto: |
   {{
-    (['matrix-corporal.service'] if matrix_corporal_enabled else ['matrix-' + matrix_homeserver_implementation + '.service'])
-    +
     ([exim_relay_identifier ~ '.service'] if (exim_relay_enabled and matrix_ma1sd_threepid_medium_email_connectors_smtp_host == exim_relay_identifier) else [])
   }}
 
@@ -3304,10 +3320,6 @@ matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: "{{ matrix_corporal_enable
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
 matrix_nginx_proxy_proxy_matrix_corporal_api_addr_sans_container: "127.0.0.1:41081"
 
-matrix_nginx_proxy_proxy_matrix_identity_api_enabled: "{{ matrix_ma1sd_enabled }}"
-matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-ma1sd:{{ matrix_ma1sd_container_port }}"
-matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "127.0.0.1:{{ matrix_ma1sd_container_port }}"
-
 # NOTE: we cannot disable this, even though matrix-media-repo is already natively exposed at the Traefik level.
 # See: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3045#issuecomment-1867327001
 matrix_nginx_proxy_proxy_media_repo_enabled: "{{ matrix_media_repo_enabled }}"
@@ -3349,10 +3361,6 @@ matrix_nginx_proxy_proxy_conduit_federation_api_addr_sans_container: "127.0.0.1:
 # When matrix-nginx-proxy is disabled, the actual port number that the vhost uses may begin to matter.
 matrix_nginx_proxy_proxy_matrix_federation_port: "{{ matrix_federation_public_port }}"
 
-matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_ma1sd_enabled }}"
-matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}"
-matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container }}"
-
 # OCSP stapling does not make sense when self-signed certificates are used.
 # See https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1073
 # and https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1074
@@ -3367,8 +3375,6 @@ matrix_nginx_proxy_systemd_wanted_services_list: |
     (['matrix-synapse-reverse-proxy-companion.service'] if matrix_synapse_reverse_proxy_companion_enabled else [])
     +
     (['matrix-corporal.service'] if matrix_corporal_enabled else [])
-    +
-    (['matrix-ma1sd.service'] if matrix_ma1sd_enabled else [])
     +
     ([(matrix_media_repo_identifier + '.service')] if matrix_media_repo_enabled else [])
     +
@@ -3498,9 +3504,7 @@ matrix_homeserver_proxy_client_api_client_max_body_size_mb: |-
 
 matrix_homeserver_proxy_federation_api_addr: "{{ matrix_homeserver_container_federation_api_endpoint }}"
 
-# matrix_nginx_proxy_proxy_matrix_identity_api_enabled: "{{ matrix_ma1sd_enabled }}"
-# matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container: "matrix-ma1sd:{{ matrix_ma1sd_container_port }}"
-# matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container: "127.0.0.1:{{ matrix_ma1sd_container_port }}"
+# TODO - connect this to the identity server, if enabled
 
 # # NOTE: we cannot disable this, even though matrix-media-repo is already natively exposed at the Traefik level.
 # # See: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3045#issuecomment-1867327001
@@ -3508,10 +3512,7 @@ matrix_homeserver_proxy_federation_api_addr: "{{ matrix_homeserver_container_fed
 # matrix_nginx_proxy_proxy_media_repo_addr_with_container: "{{ matrix_media_repo_identifier }}:{{ matrix_media_repo_port }}"
 # matrix_nginx_proxy_proxy_media_repo_addr_sans_container: "127.0.0.1:{{ matrix_media_repo_port }}"
 
-# matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled: "{{ matrix_ma1sd_enabled }}"
-# matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container }}"
-# matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container: "{{ matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container }}"
-
+# TODO - adjust ma1sd stuff below, if necessary
 matrix_homeserver_proxy_systemd_wanted_services_list_auto: |
   {{
     matrix_homeserver_systemd_services_list
@@ -4142,8 +4143,10 @@ matrix_synapse_gid: "{{ matrix_user_gid }}"
 
 matrix_synapse_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
+matrix_synapse_account_threepid_delegates_msisdn_mas1sd_url: "{{ ('http://matrix-ma1sd:' + matrix_ma1sd_container_port| string) }}"
+
 # When ma1sd is enabled, we can use it to validate phone numbers. It's something that the homeserver cannot do by itself.
-matrix_synapse_account_threepid_delegates_msisdn: "{{ 'http://matrix-ma1sd:' + matrix_ma1sd_container_port | string if matrix_ma1sd_enabled else '' }}"
+matrix_synapse_account_threepid_delegates_msisdn: "{{ matrix_synapse_account_threepid_delegates_msisdn_mas1sd_url if matrix_ma1sd_enabled else '' }}"
 
 # For exposing the Matrix Federation API's TLS port (HTTPS) to the internet on all network interfaces.
 matrix_synapse_container_federation_api_tls_host_bind_port: "{{ matrix_federation_public_port if (matrix_synapse_federation_enabled and matrix_synapse_tls_federation_listener_enabled) else '' }}"
@@ -4166,6 +4169,8 @@ matrix_synapse_container_additional_networks: |
       ([redis_container_network] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == redis_identifier else [])
       +
       ([exim_relay_container_network] if (exim_relay_enabled and matrix_synapse_email_enabled and matrix_synapse_email_smtp_host == exim_relay_identifier and matrix_synapse_container_network != exim_relay_container_network) else [])
+      +
+      ([matrix_ma1sd_container_network] if (matrix_ma1sd_enabled and matrix_synapse_account_threepid_delegates_msisdn == matrix_synapse_account_threepid_delegates_msisdn_mas1sd_url and matrix_synapse_container_network != matrix_ma1sd_container_network) else [])
     ) | unique
   }}
 

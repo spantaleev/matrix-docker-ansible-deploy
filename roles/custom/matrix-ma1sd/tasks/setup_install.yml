@@ -122,6 +122,21 @@
     - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_matrixid_template }}", location: 'mxid-template.eml'}
   when: "matrix_ma1sd_threepid_medium_email_custom_templates_enabled | bool and item.value"
 
+- name: Ensure ma1sd support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_ma1sd_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - labels
+
+- name: Ensure ma1sd container network is created
+  community.general.docker_network:
+    name: "{{ matrix_ma1sd_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-ma1sd.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-ma1sd.service.j2"

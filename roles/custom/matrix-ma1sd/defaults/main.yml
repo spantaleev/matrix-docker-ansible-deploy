@@ -4,6 +4,9 @@
 
 matrix_ma1sd_enabled: true
 
+matrix_ma1sd_scheme: https
+matrix_ma1sd_hostname: ''
+
 matrix_ma1sd_container_image_self_build: false
 matrix_ma1sd_container_image_self_build_repo: "https://github.com/ma1uta/ma1sd.git"
 matrix_ma1sd_container_image_self_build_branch: "{{ matrix_ma1sd_version }}"
@@ -43,14 +46,65 @@ matrix_ma1sd_systemd_wanted_services_list_auto: []
 matrix_ma1sd_systemd_wanted_services_list_custom: []
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
-matrix_ma1sd_container_network: "{{ matrix_docker_network }}"
+matrix_ma1sd_container_network: ""
 
 # A list of additional container networks that matrix-ma1sd would be connected to.
 # The playbook does not create these networks, so make sure they already exist.
 #
 # Use this to expose matrix-ma1sd to another docker network, that matrix-ma1sd might have to reach for authentication (e.g. an ldap instance)
+matrix_ma1sd_container_additional_networks: "{{ matrix_ma1sd_container_additional_networks_auto + matrix_ma1sd_container_additional_networks_custom }}"
+matrix_ma1sd_container_additional_networks_auto: []
+matrix_ma1sd_container_additional_networks_custom: []
+
+# matrix_ma1sd_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
 #
-matrix_ma1sd_container_additional_networks: []
+# To inject your own other container labels, see `matrix_ma1sd_container_labels_additional_labels`.
+matrix_ma1sd_container_labels_traefik_enabled: true
+matrix_ma1sd_container_labels_traefik_docker_network: "{{ matrix_ma1sd_container_network }}"
+matrix_ma1sd_container_labels_traefik_entrypoints: web-secure
+matrix_ma1sd_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether labels will be added that expose ma1sd's /_matrix/identity endpoints
+matrix_ma1sd_container_labels_matrix_identity_enabled: "{{ matrix_ma1sd_container_labels_traefik_enabled }}"
+matrix_ma1sd_container_labels_matrix_identity_hostname: "{{ matrix_ma1sd_hostname }}"
+matrix_ma1sd_container_labels_matrix_identity_path_prefix: "/_matrix/identity"
+matrix_ma1sd_container_labels_matrix_identity_traefik_rule: "Host(`{{ matrix_ma1sd_container_labels_matrix_identity_hostname }}`) && PathPrefix(`{{ matrix_ma1sd_container_labels_matrix_identity_path_prefix }}`)"
+matrix_ma1sd_container_labels_matrix_identity_traefik_priority: 0
+matrix_ma1sd_container_labels_matrix_identity_traefik_entrypoints: "{{ matrix_ma1sd_container_labels_traefik_entrypoints }}"
+matrix_ma1sd_container_labels_matrix_identity_traefik_tls: "{{ matrix_ma1sd_container_labels_matrix_identity_traefik_entrypoints != 'web' }}"
+matrix_ma1sd_container_labels_matrix_identity_traefik_tls_certResolver: "{{ matrix_ma1sd_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose ma1sd's /_matrix/client/VERSION/user_directory/search endpoint
+matrix_ma1sd_container_labels_matrix_client_user_directory_search_enabled: "{{ matrix_ma1sd_container_labels_traefik_enabled }}"
+matrix_ma1sd_container_labels_matrix_client_user_directory_search_hostname: "{{ matrix_ma1sd_hostname }}"
+matrix_ma1sd_container_labels_matrix_client_user_directory_search_path: "/_matrix/client/{version:(r0|v3)}/user_directory/search"
+matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_rule: "Host(`{{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_hostname }}`) && Path(`{{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_path }}`)"
+matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_priority: 0
+matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_entrypoints: "{{ matrix_ma1sd_container_labels_traefik_entrypoints }}"
+matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_tls: "{{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_entrypoints != 'web' }}"
+matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_tls_certResolver: "{{ matrix_ma1sd_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose ma1sd's /_matrix/client/VERSION/register/TYPE/requestToken endpoints
+# This allows another service to control registrations involving 3PIDs.
+# To learn more, see: https://github.com/ma1uta/ma1sd/blob/master/docs/features/registration.md
+matrix_ma1sd_container_labels_matrix_client_3pid_registration_enabled: false
+matrix_ma1sd_container_labels_matrix_client_3pid_registration_hostname: "{{ matrix_ma1sd_hostname }}"
+matrix_ma1sd_container_labels_matrix_client_3pid_registration_path: "/_matrix/client/{version:(r0|v3)}/register/{type:(email|msisdn)}/requestToken"
+matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_rule: "Host(`{{ matrix_ma1sd_container_labels_matrix_client_3pid_registration_hostname }}`) && Path(`{{ matrix_ma1sd_container_labels_matrix_client_3pid_registration_path }}`)"
+matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_priority: 0
+matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_entrypoints: "{{ matrix_ma1sd_container_labels_traefik_entrypoints }}"
+matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_tls: "{{ matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_entrypoints != 'web' }}"
+matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_tls_certResolver: "{{ matrix_ma1sd_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# matrix_ma1sd_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_ma1sd_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_ma1sd_container_labels_additional_labels: ''
 
 # Your identity server is private by default.
 # To ensure maximum discovery, you can make your identity server
@@ -58,7 +112,6 @@ matrix_ma1sd_container_additional_networks: []
 # (at the cost of potentially leaking all your contacts information).
 # Enabling this is discouraged. Learn more here: https://github.com/ma1uta/ma1sd/blob/master/docs/features/identity.md#lookups
 matrix_ma1sd_matrixorg_forwarding_enabled: false
-
 
 # Database-related configuration fields.
 #
@@ -130,6 +183,7 @@ matrix_ma1sd_threepid_medium_email_custom_session_unbind_notification_template: 
 # Defaults to: https://github.com/ma1uta/ma1sd/blob/master/src/main/resources/threepids/email/mxid-template.eml
 matrix_ma1sd_threepid_medium_email_custom_matrixid_template: ""
 
+matrix_ma1sd_self_check_endpoint_url: "{{ matrix_ma1sd_scheme }}://{{ matrix_ma1sd_hostname }}/_matrix/identity/api/v1"
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_ma1sd_self_check_validate_certificates: true
 

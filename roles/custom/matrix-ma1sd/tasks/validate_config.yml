@@ -45,9 +45,15 @@
       You need to define a required configuration setting (`{{ item.name }}`).
   when: "item.when | bool and vars[item.name] == ''"
   with_items:
+    - {'name': 'matrix_ma1sd_hostname', when: true}
     - {'name': 'matrix_ma1sd_threepid_medium_email_connectors_smtp_host', when: true}
     - {'name': 'matrix_ma1sd_dns_overwrite_homeserver_client_value', when: true}
     - {'name': 'matrix_ma1sd_database_hostname', when: "{{ matrix_ma1sd_database_engine == 'postgres' }}"}
+    - {'name': 'matrix_ma1sd_container_network', when: true}
+    - {'name': 'matrix_ma1sd_container_labels_matrix_identity_hostname', when: "{{ matrix_ma1sd_container_labels_matrix_identity_enabled }}"}
+    - {'name': 'matrix_ma1sd_container_labels_matrix_identity_path_prefix', when: "{{ matrix_ma1sd_container_labels_matrix_identity_enabled }}"}
+    - {'name': 'matrix_ma1sd_container_labels_matrix_client_user_directory_search_hostname', when: "{{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_enabled }}"}
+    - {'name': 'matrix_ma1sd_container_labels_matrix_client_user_directory_search_path', when: "{{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_enabled }}"}
 
 - name: (Deprecation) Catch and report renamed ma1sd variables
   ansible.builtin.fail:

@@ -35,6 +35,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% endif %}
 			--mount type=bind,src={{ matrix_ma1sd_config_path }},dst=/etc/ma1sd,ro \
 			--mount type=bind,src={{ matrix_ma1sd_data_path }},dst=/var/ma1sd \
+			--label-file={{ matrix_ma1sd_base_path }}/labels \
 			{% for arg in matrix_ma1sd_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
