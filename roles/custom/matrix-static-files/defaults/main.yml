@@ -5,12 +5,12 @@
 
 matrix_static_files_enabled: true
 
-matrix_static_files_ident: matrix-static-files
+matrix_static_files_identifier: matrix-static-files
 
 # renovate: datasource=docker depName=joseluisq/static-web-server
 matrix_static_files_version: 2.24.2
 
-matrix_static_files_base_path: "{{ matrix_base_data_path }}/{{ 'static-files' if matrix_static_files_ident == 'matrix-static-files' else matrix_static_files_ident }}"
+matrix_static_files_base_path: "{{ matrix_base_data_path }}/{{ 'static-files' if matrix_static_files_identifier == 'matrix-static-files' else matrix_static_files_identifier }}"
 matrix_static_files_config_path: "{{ matrix_static_files_base_path }}/config"
 matrix_static_files_public_path: "{{ matrix_static_files_base_path }}/public"
 matrix_static_files_public_well_known_path: "{{ matrix_static_files_public_path }}/.well-known"
@@ -28,7 +28,7 @@ matrix_static_files_container_image: "{{ matrix_container_global_registry_prefix
 matrix_static_files_container_image_tag: "{{ 'latest' if matrix_static_files_version == 'latest' else (matrix_static_files_version + '-alpine') }}"
 matrix_static_files_container_image_force_pull: "{{ matrix_static_files_container_image.endswith(':latest') }}"
 
-matrix_static_files_container_network: "{{ matrix_static_files_ident }}"
+matrix_static_files_container_network: "{{ matrix_static_files_identifier }}"
 
 # A list of additional container networks that matrix-static-files would be connected to.
 # The playbook does not create these networks, so make sure they already exist.

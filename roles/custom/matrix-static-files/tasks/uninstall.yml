@@ -2,21 +2,21 @@
 
 - name: Check existence of matrix-static-files systemd service
   ansible.builtin.stat:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_static_files_ident }}.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_static_files_identifier }}.service"
   register: matrix_static_files_service_stat
 
 - when: matrix_static_files_service_stat.stat.exists | bool
   block:
     - name: Ensure matrix-static-files systemd service is stopped
       ansible.builtin.service:
-        name: "{{ matrix_static_files_ident }}"
+        name: "{{ matrix_static_files_identifier }}"
         state: stopped
         enabled: false
         daemon_reload: true
 
     - name: Ensure matrix-static-files systemd service doesn't exist
       ansible.builtin.file:
-        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_static_files_ident }}.service"
+        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_static_files_identifier }}.service"
         state: absent
 
     - name: Ensure matrix-static-files directory is deleted

@@ -5,7 +5,7 @@ traefik.enable=true
 traefik.docker.network={{ matrix_static_files_container_labels_traefik_docker_network }}
 {% endif %}
 
-traefik.http.services.{{ matrix_static_files_ident }}.loadbalancer.server.port={{ matrix_static_files_environment_variable_server_port }}
+traefik.http.services.{{ matrix_static_files_identifier }}.loadbalancer.server.port={{ matrix_static_files_environment_variable_server_port }}
 
 
 {#
@@ -16,27 +16,27 @@ traefik.http.services.{{ matrix_static_files_ident }}.loadbalancer.server.port={
 {% set well_known_matrix_endpoint_middlewares = [] %}
 
 {% if matrix_static_files_container_labels_well_known_matrix_endpoint_middleware_compress_enabled %}
-traefik.http.middlewares.{{ matrix_static_files_ident }}-well-known-endpoint-compress.compress=true
-traefik.http.middlewares.{{ matrix_static_files_ident }}-well-known-endpoint-compress.compress.minResponseBodyBytes={{ matrix_static_files_container_labels_well_known_matrix_endpoint_middleware_compress_minResponseBodyBytes }}
-{% set well_known_matrix_endpoint_middlewares = well_known_matrix_endpoint_middlewares + [matrix_static_files_ident + '-well-known-endpoint-compress'] %}
+traefik.http.middlewares.{{ matrix_static_files_identifier }}-well-known-endpoint-compress.compress=true
+traefik.http.middlewares.{{ matrix_static_files_identifier }}-well-known-endpoint-compress.compress.minResponseBodyBytes={{ matrix_static_files_container_labels_well_known_matrix_endpoint_middleware_compress_minResponseBodyBytes }}
+{% set well_known_matrix_endpoint_middlewares = well_known_matrix_endpoint_middlewares + [matrix_static_files_identifier + '-well-known-endpoint-compress'] %}
 {% endif %}
 
-traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.rule={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_rule }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-well-known-endpoint.rule={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_rule }}
 
 {% if well_known_matrix_endpoint_middlewares | length > 0 %}
-traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.middlewares={{ well_known_matrix_endpoint_middlewares | join(',') }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-well-known-endpoint.middlewares={{ well_known_matrix_endpoint_middlewares | join(',') }}
 {% endif %}
 
 {% if matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_priority | int > 0 %}
-traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.priority={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_priority }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-well-known-endpoint.priority={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_priority }}
 {% endif %}
 
-traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.service={{ matrix_static_files_ident }}
-traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.entrypoints={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_entrypoints }}
-traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.tls={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls | to_json }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-well-known-endpoint.service={{ matrix_static_files_identifier }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-well-known-endpoint.entrypoints={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_entrypoints }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-well-known-endpoint.tls={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls | to_json }}
 
 {% if matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls %}
-traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.tls.certResolver={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls_certResolver }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-well-known-endpoint.tls.certResolver={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
@@ -49,18 +49,18 @@ traefik.http.routers.{{ matrix_static_files_ident }}-well-known-endpoint.tls.cer
 	Base domain serving
 #}
 {% if matrix_static_files_container_labels_base_domain_enabled %}
-traefik.http.routers.{{ matrix_static_files_ident }}-base-domain.rule={{ matrix_static_files_container_labels_base_domain_traefik_rule }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-base-domain.rule={{ matrix_static_files_container_labels_base_domain_traefik_rule }}
 
 {% if matrix_static_files_container_labels_base_domain_traefik_priority | int > 0 %}
-traefik.http.routers.{{ matrix_static_files_ident }}-base-domain.priority={{ matrix_static_files_container_labels_base_domain_traefik_priority }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-base-domain.priority={{ matrix_static_files_container_labels_base_domain_traefik_priority }}
 {% endif %}
 
-traefik.http.routers.{{ matrix_static_files_ident }}-base-domain.service={{ matrix_static_files_ident }}
-traefik.http.routers.{{ matrix_static_files_ident }}-base-domain.entrypoints={{ matrix_static_files_container_labels_base_domain_traefik_entrypoints }}
-traefik.http.routers.{{ matrix_static_files_ident }}-base-domain.tls={{ matrix_static_files_container_labels_base_domain_traefik_tls | to_json }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-base-domain.service={{ matrix_static_files_identifier }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-base-domain.entrypoints={{ matrix_static_files_container_labels_base_domain_traefik_entrypoints }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-base-domain.tls={{ matrix_static_files_container_labels_base_domain_traefik_tls | to_json }}
 
 {% if matrix_static_files_container_labels_base_domain_traefik_tls %}
-traefik.http.routers.{{ matrix_static_files_ident }}-base-domain.tls.certResolver={{ matrix_static_files_container_labels_base_domain_traefik_tls_certResolver }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-base-domain.tls.certResolver={{ matrix_static_files_container_labels_base_domain_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
