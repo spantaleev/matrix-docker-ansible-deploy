@@ -191,7 +191,7 @@ matrix_homeserver_app_service_config_files_auto: |
 
 matrix_addons_homeserver_container_network: "{{ matrix_homeserver_proxy_container_network if matrix_homeserver_proxy_enabled else matrix_homeserver_container_network }}"
 matrix_addons_homeserver_client_api_url: "{{ matrix_homeserver_proxy_client_api_url if matrix_homeserver_proxy_enabled else matrix_homeserver_container_url }}"
-matrix_addons_homeserver_systemd_services_list: "{{ ([matrix_homeserver_proxy_ident + '.service']) if matrix_homeserver_proxy_enabled else matrix_homeserver_systemd_services_list }}"
+matrix_addons_homeserver_systemd_services_list: "{{ ([matrix_homeserver_proxy_identifier + '.service']) if matrix_homeserver_proxy_enabled else matrix_homeserver_systemd_services_list }}"
 
 # Starting from version `0.6.0` conduit natively supports some sync v3 (sliding-sync) features.
 matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_sliding_sync_enabled else (matrix_homeserver_url if matrix_homeserver_implementation in ['conduit'] else '') }}"
@@ -361,7 +361,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     (matrix_ssl_renewal_systemd_units_list | selectattr('applicable') | selectattr('enableable') | list )
     +
-    ([{'name': (matrix_homeserver_proxy_ident + '.service'), 'priority': 3000, 'groups': ['matrix', 'reverse-proxies']}] if matrix_homeserver_proxy_enabled else [])
+    ([{'name': (matrix_homeserver_proxy_identifier + '.service'), 'priority': 3000, 'groups': ['matrix', 'reverse-proxies']}] if matrix_homeserver_proxy_enabled else [])
     +
     ([{'name': (ntfy_identifier + '.service'), 'priority': 800, 'groups': ['matrix', 'ntfy']}] if ntfy_enabled else [])
     +
