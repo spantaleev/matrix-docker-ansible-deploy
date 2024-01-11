@@ -117,19 +117,6 @@ matrix_nginx_proxy_container_federation_host_bind_port: '8448'
 # Option to disable the access log
 matrix_nginx_proxy_access_log_enabled: true
 
-# Controls whether proxying for Dendrite should be done.
-matrix_nginx_proxy_proxy_dendrite_enabled: false
-matrix_nginx_proxy_proxy_dendrite_hostname: "matrix-nginx-proxy"
-matrix_nginx_proxy_proxy_dendrite_federation_api_enabled: "{{ matrix_nginx_proxy_proxy_matrix_federation_api_enabled }}"
-# Controls whether the Client API server (usually at matrix.DOMAIN:443) should explicitly reject `/_matrix/federation` endpoints.
-# Normally, Dendrite Monolith serves both APIs (Client & Federation) at the same port, so we can serve federation at `matrix.DOMAIN:443` too.
-matrix_nginx_proxy_proxy_dendrite_block_federation_api_on_client_port: true
-# The addresses where the Matrix Client API is, when using Dendrite.
-matrix_nginx_proxy_proxy_dendrite_client_api_addr_with_container: ""
-matrix_nginx_proxy_proxy_dendrite_client_api_addr_sans_container: ""
-# A list of strings containing additional configuration blocks to add to the Dendrite's server configuration (matrix-dendrite.conf).
-matrix_nginx_proxy_proxy_dendrite_additional_server_configuration_blocks: []
-
 # Controls whether proxying the Element domain should be done.
 matrix_nginx_proxy_proxy_element_enabled: false
 matrix_nginx_proxy_proxy_element_hostname: "{{ matrix_server_fqn_element }}"
