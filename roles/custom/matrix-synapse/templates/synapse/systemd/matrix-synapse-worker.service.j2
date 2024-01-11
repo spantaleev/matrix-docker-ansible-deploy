@@ -40,7 +40,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data,ro \
 			--mount type=bind,src={{ matrix_synapse_storage_path }},dst=/matrix-media-store-parent,bind-propagation=slave \
 			{% for volume in matrix_synapse_container_additional_volumes %}
-			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
+			--mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options else '' }} \
 			{% endfor %}
 			{% for arg in matrix_synapse_container_arguments %}
 			{{ arg }} \
