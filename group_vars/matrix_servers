@@ -3364,12 +3364,6 @@ matrix_nginx_proxy_proxy_matrix_federation_api_enabled: |-
 matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container: "matrix-nginx-proxy:12088"
 matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "127.0.0.1:12088"
 
-matrix_nginx_proxy_proxy_dendrite_enabled: "{{ matrix_dendrite_enabled }}"
-matrix_nginx_proxy_proxy_dendrite_client_api_addr_with_container: "matrix-dendrite:{{ matrix_dendrite_http_bind_port | string }}"
-matrix_nginx_proxy_proxy_dendrite_client_api_addr_sans_container: "127.0.0.1:{{ matrix_dendrite_http_bind_port | string }}"
-matrix_nginx_proxy_proxy_dendrite_federation_api_addr_with_container: "matrix-dendrite:{{ matrix_dendrite_http_bind_port | string }}"
-matrix_nginx_proxy_proxy_dendrite_federation_api_addr_sans_container: "127.0.0.1:{{ matrix_dendrite_http_bind_port | string }}"
-
 # When matrix-nginx-proxy is disabled, the actual port number that the vhost uses may begin to matter.
 matrix_nginx_proxy_proxy_matrix_federation_port: "{{ matrix_federation_public_port }}"
 
@@ -4195,6 +4189,8 @@ matrix_synapse_container_labels_traefik_hostname: "{{ matrix_server_fqn_matrix }
 matrix_synapse_container_labels_client_root_redirection_enabled: "{{ matrix_synapse_container_labels_client_root_redirection_url != '' }}"
 matrix_synapse_container_labels_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
 
+matrix_synapse_container_labels_client_synapse_admin_api_enabled: "{{ matrix_synapse_admin_enabled }}"
+
 matrix_synapse_container_labels_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
 
 # For exposing the Synapse worker (and metrics) ports to the local host.
@@ -4804,17 +4800,31 @@ matrix_sliding_sync_database_password: "{{ '%s' | format(matrix_homeserver_gener
 
 matrix_dendrite_enabled: "{{ matrix_homeserver_implementation == 'dendrite' }}"
 
+matrix_dendrite_hostname: "{{ matrix_server_fqn_matrix }}"
+
 matrix_dendrite_container_network: "{{ matrix_homeserver_container_network }}"
 
 matrix_dendrite_container_additional_networks: |
   {{
     (
-      ([devture_postgres_container_network] if (devture_postgres_enabled and devture_postgres_container_network != matrix_dendrite_container_network and matrix_dendrite_database_hostname == devture_postgres_connection_hostname) else [])
-    )
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_dendrite_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network else [])
+      +
+      ([devture_postgres_container_network] if (devture_postgres_enabled and matrix_dendrite_database_hostname == devture_postgres_connection_hostname and devture_postgres_container_network != matrix_dendrite_container_network) else [])
+    ) | unique
   }}
 
 matrix_dendrite_container_http_host_bind_address: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ matrix_dendrite_http_bind_port | string) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 matrix_dendrite_container_https_host_bind_address: "{{ '' if not matrix_dendrite_https_bind_port or not matrix_playbook_service_host_bind_interface_prefix else (matrix_playbook_service_host_bind_interface_prefix + matrix_dendrite_https_bind_port | string) }}"
+
+matrix_dendrite_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and not matrix_synapse_workers_enabled }}"
+matrix_dendrite_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_dendrite_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_dendrite_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+matrix_dendrite_container_labels_client_root_redirection_enabled: "{{ matrix_dendrite_container_labels_client_root_redirection_url != '' }}"
+matrix_dendrite_container_labels_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
+
+matrix_dendrite_container_labels_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
 
 matrix_dendrite_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
 
@@ -4853,7 +4863,7 @@ matrix_dendrite_systemd_required_services_list_auto: |
     (['matrix-goofys.service'] if matrix_s3_media_store_enabled else [])
   }}
 
-matrix_dendrite_systemd_wanted_services_list: |
+matrix_dendrite_systemd_wanted_services_list_auto: |
   {{
     (['matrix-coturn.service'] if matrix_coturn_enabled else [])
   }}

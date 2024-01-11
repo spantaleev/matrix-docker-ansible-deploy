@@ -112,16 +112,20 @@
     name: "{{ matrix_dendrite_container_network }}"
     driver: bridge
 
-- name: Ensure matrix-dendrite.service installed
+- name: Ensure Dendrite support files installed
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/dendrite/systemd/matrix-dendrite.service.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-dendrite.service"
-    mode: 0644
-
-- name: Ensure Dendrite scripts created
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/dendrite/bin/{{ item }}.j2"
-    dest: "{{ matrix_dendrite_bin_path }}/{{ item }}"
-    mode: 0750
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
   with_items:
-    - create-account
+    - src: labels.j2
+      dest: "{{ matrix_dendrite_base_path }}/labels"
+      mode: "0640"
+    - src: bin/create-account.j2
+      dest: "{{ matrix_dendrite_bin_path }}/create-account"
+      mode: "0750"
+    - src: systemd/matrix-dendrite.service.j2
+      dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-dendrite.service"
+      mode: "0644"
