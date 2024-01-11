@@ -22,6 +22,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_conduit_tmp_directory_size_mb }}m \
 			--network={{ matrix_conduit_container_network }} \
 			--env CONDUIT_CONFIG=/etc/matrix-conduit/conduit.toml \
+			--label-file={{ matrix_conduit_base_path }}/labels \
 			--mount type=bind,src={{ matrix_conduit_data_path }},dst=/var/lib/matrix-conduit \
 			--mount type=bind,src={{ matrix_conduit_config_path }},dst=/etc/matrix-conduit,ro \
 			{% for arg in matrix_conduit_container_extra_arguments %}

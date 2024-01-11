@@ -55,4 +55,3 @@ Find the `registration.yaml` in the `/matrix` directory, for example `/matrix/ma
     sender_localpart: _bot_signalbot
     url: http://matrix-mautrix-signal:29328
     ```
-

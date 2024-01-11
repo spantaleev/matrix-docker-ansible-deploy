@@ -18,11 +18,21 @@
 
 - name: Ensure Conduit configuration installed
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/conduit/conduit.toml.j2"
+    src: "{{ role_path }}/templates/conduit.toml.j2"
     dest: "{{ matrix_conduit_config_path }}/conduit.toml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Conduit support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_conduit_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - labels
 
 - name: Ensure Conduit container network is created
   community.general.docker_network:
@@ -42,6 +52,6 @@
 
 - name: Ensure matrix-conduit.service installed
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/conduit/systemd/matrix-conduit.service.j2"
+    src: "{{ role_path }}/templates/systemd/matrix-conduit.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-conduit.service"
     mode: 0644

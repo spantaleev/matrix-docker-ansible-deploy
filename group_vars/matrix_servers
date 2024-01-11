@@ -4889,6 +4889,24 @@ matrix_conduit_enabled: "{{ matrix_homeserver_implementation == 'conduit' }}"
 
 matrix_conduit_container_network: "{{ matrix_homeserver_container_network }}"
 
+matrix_conduit_container_additional_networks_auto: |
+  {{
+    (
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_conduit_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network else [])
+    ) | unique
+  }}
+
+matrix_conduit_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and not matrix_synapse_workers_enabled }}"
+matrix_conduit_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_conduit_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_conduit_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_conduit_container_labels_traefik_hostname: "{{ matrix_server_fqn_matrix }}"
+
+matrix_conduit_container_labels_client_root_redirection_enabled: "{{ matrix_conduit_container_labels_client_root_redirection_url != '' }}"
+matrix_conduit_container_labels_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
+
+matrix_conduit_container_labels_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
+
 # Even if TURN doesn't support TLS (it does by default),
 # it doesn't hurt to try a secure connection anyway.
 #
