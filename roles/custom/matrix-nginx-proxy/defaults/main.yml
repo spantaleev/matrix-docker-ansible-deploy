@@ -41,34 +41,6 @@ matrix_nginx_proxy_container_additional_networks: []
 # Contains definition objects like this: `{"src": "/outside", "dst": "/inside", "options": "rw|ro|slave|.."}
 matrix_nginx_proxy_container_additional_volumes: []
 
-# matrix_nginx_proxy_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
-# See `../templates/labels.j2` for details.
-#
-# To inject your own other container labels, see `matrix_nginx_proxy_container_labels_additional_labels`.
-matrix_nginx_proxy_container_labels_traefik_enabled: false
-matrix_nginx_proxy_container_labels_traefik_docker_network: "{{ matrix_nginx_proxy_container_network }}"
-matrix_nginx_proxy_container_labels_traefik_entrypoints: web-secure
-matrix_nginx_proxy_container_labels_traefik_tls_certResolver: default  # noqa var-naming
-
-matrix_nginx_proxy_container_labels_traefik_proxy_matrix_enabled: false
-matrix_nginx_proxy_container_labels_traefik_proxy_matrix_tls: "{{ matrix_nginx_proxy_container_labels_traefik_entrypoints != 'web' }}"
-matrix_nginx_proxy_container_labels_traefik_proxy_matrix_client_hostname: "{{ matrix_server_fqn_matrix }}"
-matrix_nginx_proxy_container_labels_traefik_proxy_matrix_client_rule: "Host(`{{ matrix_nginx_proxy_container_labels_traefik_proxy_matrix_client_hostname }}`)"
-matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_hostname: "{{ matrix_server_fqn_matrix }}"
-matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_rule: "Host(`{{ matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_hostname }}`)"
-matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_entrypoint: "{{ matrix_federation_traefik_entrypoint }}"
-matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_entrypoints: "{{ matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_entrypoint }}"
-
-# matrix_nginx_proxy_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
-# See `../templates/labels.j2` for details.
-#
-# Example:
-# matrix_nginx_proxy_container_labels_additional_labels: |
-#   my.label=1
-#   another.label="here"
-matrix_nginx_proxy_container_labels_additional_labels: ''
-
-
 # A list of extra arguments to pass to the container
 matrix_nginx_proxy_container_extra_arguments: []
 
