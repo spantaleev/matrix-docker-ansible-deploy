@@ -4887,6 +4887,8 @@ matrix_dendrite_app_service_config_files_auto: "{{ matrix_homeserver_app_service
 
 matrix_conduit_enabled: "{{ matrix_homeserver_implementation == 'conduit' }}"
 
+matrix_conduit_hostname: "{{ matrix_server_fqn_matrix }}"
+
 matrix_conduit_container_network: "{{ matrix_homeserver_container_network }}"
 
 matrix_conduit_container_additional_networks_auto: |
@@ -4900,7 +4902,6 @@ matrix_conduit_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_pro
 matrix_conduit_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 matrix_conduit_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 matrix_conduit_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
-matrix_conduit_container_labels_traefik_hostname: "{{ matrix_server_fqn_matrix }}"
 
 matrix_conduit_container_labels_client_root_redirection_enabled: "{{ matrix_conduit_container_labels_client_root_redirection_url != '' }}"
 matrix_conduit_container_labels_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"

@@ -5,6 +5,8 @@
 
 matrix_conduit_enabled: true
 
+matrix_conduit_hostname: ''
+
 matrix_conduit_docker_image: "{{ matrix_conduit_docker_image_name_prefix }}matrixconduit/matrix-conduit:{{ matrix_conduit_docker_image_tag }}"
 matrix_conduit_docker_image_name_prefix: "docker.io/"
 # renovate: datasource=docker depName=matrixconduit/matrix-conduit
@@ -46,11 +48,10 @@ matrix_conduit_container_labels_traefik_enabled: true
 matrix_conduit_container_labels_traefik_docker_network: "{{ matrix_conduit_container_network }}"
 matrix_conduit_container_labels_traefik_entrypoints: web-secure
 matrix_conduit_container_labels_traefik_tls_certResolver: default  # noqa var-naming
-matrix_conduit_container_labels_traefik_hostname: ''
 
 # Controls whether labels will be added for handling the root (/) path
 matrix_conduit_container_labels_client_root_enabled: true
-matrix_conduit_container_labels_client_root_traefik_hostname: "{{ matrix_conduit_container_labels_traefik_hostname }}"
+matrix_conduit_container_labels_client_root_traefik_hostname: "{{ matrix_conduit_hostname }}"
 matrix_conduit_container_labels_client_root_traefik_rule: "Host(`{{ matrix_conduit_container_labels_client_root_traefik_hostname }}`) && Path(`/`)"
 matrix_conduit_container_labels_client_root_traefik_priority: 0
 matrix_conduit_container_labels_client_root_traefik_entrypoints: "{{ matrix_conduit_container_labels_traefik_entrypoints }}"
@@ -61,7 +62,7 @@ matrix_conduit_container_labels_client_root_redirection_url: ""
 
 # Controls whether labels will be added that expose the Client-Server API.
 matrix_conduit_container_labels_client_api_enabled: true
-matrix_conduit_container_labels_client_api_traefik_hostname: "{{ matrix_conduit_container_labels_traefik_hostname }}"
+matrix_conduit_container_labels_client_api_traefik_hostname: "{{ matrix_conduit_hostname }}"
 matrix_conduit_container_labels_client_api_traefik_path_prefix: /_matrix
 matrix_conduit_container_labels_client_api_traefik_rule: "Host(`{{ matrix_conduit_container_labels_client_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_conduit_container_labels_client_api_traefik_path_prefix }}`)"
 matrix_conduit_container_labels_client_api_traefik_priority: 0
@@ -71,7 +72,7 @@ matrix_conduit_container_labels_client_api_traefik_tls_certResolver: "{{ matrix_
 
 # Controls whether labels will be added that expose the Server-Server API (Federation API).
 matrix_conduit_container_labels_federation_api_enabled: "{{ matrix_conduit_allow_federation }}"
-matrix_conduit_container_labels_federation_api_traefik_hostname: "{{ matrix_conduit_container_labels_traefik_hostname }}"
+matrix_conduit_container_labels_federation_api_traefik_hostname: "{{ matrix_conduit_hostname }}"
 matrix_conduit_container_labels_federation_api_traefik_path_prefix: /_matrix
 matrix_conduit_container_labels_federation_api_traefik_rule: "Host(`{{ matrix_conduit_container_labels_federation_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_conduit_container_labels_federation_api_traefik_path_prefix }}`)"
 matrix_conduit_container_labels_federation_api_traefik_priority: 0
