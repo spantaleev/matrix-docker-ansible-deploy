@@ -7,15 +7,15 @@ traefik.docker.network={{ matrix_appservice_slack_container_labels_traefik_docke
 
 {# Public #}
 {% if matrix_appservice_slack_container_labels_public_endpoint_enabled %}
-traefik.http.routers.matrix-appservice-slack-public-endpoint.rule={{ matrix_appservice_slack_container_labels_public_endpoint_traefik_rule }}
+traefik.http.routers.matrix-appservice-slack-public.rule={{ matrix_appservice_slack_container_labels_public_endpoint_traefik_rule }}
 {% if matrix_appservice_slack_container_labels_public_endpoint_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-appservice-slack-public-endpoint.priority={{ matrix_appservice_slack_container_labels_public_endpoint_traefik_priority }}
+traefik.http.routers.matrix-appservice-slack-public.priority={{ matrix_appservice_slack_container_labels_public_endpoint_traefik_priority }}
 {% endif %}
-traefik.http.routers.matrix-appservice-slack-public-endpoint.service=matrix-appservice-slack
-traefik.http.routers.matrix-appservice-slack-public-endpoint.entrypoints={{ matrix_appservice_slack_container_labels_public_endpoint_traefik_entrypoints }}
-traefik.http.routers.matrix-appservice-slack-public-endpoint.tls={{ matrix_appservice_slack_container_labels_public_endpoint_traefik_tls | to_json }}
+traefik.http.routers.matrix-appservice-slack-public.service=matrix-appservice-slack
+traefik.http.routers.matrix-appservice-slack-public.entrypoints={{ matrix_appservice_slack_container_labels_public_endpoint_traefik_entrypoints }}
+traefik.http.routers.matrix-appservice-slack-public.tls={{ matrix_appservice_slack_container_labels_public_endpoint_traefik_tls | to_json }}
 {% if matrix_appservice_slack_container_labels_public_endpoint_traefik_tls %}
-traefik.http.routers.matrix-appservice-slack-public-endpoint.tls.certResolver={{ matrix_appservice_slack_container_labels_public_endpoint_traefik_tls_certResolver }}
+traefik.http.routers.matrix-appservice-slack-public.tls.certResolver={{ matrix_appservice_slack_container_labels_public_endpoint_traefik_tls_certResolver }}
 {% endif %}
 traefik.http.services.matrix-appservice-slack.loadbalancer.server.port={{ matrix_appservice_slack_slack_port }}
 {% endif %}

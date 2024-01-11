@@ -7,15 +7,15 @@ traefik.docker.network={{ matrix_mautrix_facebook_container_labels_traefik_docke
 
 {# Public endpoint #}
 {% if matrix_mautrix_facebook_container_labels_public_endpoint_enabled %}
-traefik.http.routers.matrix-mautrix-facebook-public-endpoint.rule={{ matrix_mautrix_facebook_container_labels_public_endpoint_traefik_rule }}
+traefik.http.routers.matrix-mautrix-facebook-public.rule={{ matrix_mautrix_facebook_container_labels_public_endpoint_traefik_rule }}
 {% if matrix_mautrix_facebook_container_labels_public_endpoint_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-mautrix-facebook-public-endpoint.priority={{ matrix_mautrix_facebook_container_labels_public_endpoint_traefik_priority }}
+traefik.http.routers.matrix-mautrix-facebook-public.priority={{ matrix_mautrix_facebook_container_labels_public_endpoint_traefik_priority }}
 {% endif %}
-traefik.http.routers.matrix-mautrix-facebook-public-endpoint.service=matrix-mautrix-facebook-appservice
-traefik.http.routers.matrix-mautrix-facebook-public-endpoint.entrypoints={{ matrix_mautrix_facebook_container_labels_public_endpoint_traefik_entrypoints }}
-traefik.http.routers.matrix-mautrix-facebook-public-endpoint.tls={{ matrix_mautrix_facebook_container_labels_public_endpoint_traefik_tls | to_json }}
+traefik.http.routers.matrix-mautrix-facebook-public.service=matrix-mautrix-facebook-appservice
+traefik.http.routers.matrix-mautrix-facebook-public.entrypoints={{ matrix_mautrix_facebook_container_labels_public_endpoint_traefik_entrypoints }}
+traefik.http.routers.matrix-mautrix-facebook-public.tls={{ matrix_mautrix_facebook_container_labels_public_endpoint_traefik_tls | to_json }}
 {% if matrix_mautrix_facebook_container_labels_public_endpoint_traefik_tls %}
-traefik.http.routers.matrix-mautrix-facebook-public-endpoint.tls.certResolver={{ matrix_mautrix_facebook_container_labels_public_endpoint_traefik_tls_certResolver }}
+traefik.http.routers.matrix-mautrix-facebook-public.tls.certResolver={{ matrix_mautrix_facebook_container_labels_public_endpoint_traefik_tls_certResolver }}
 {% endif %}
 traefik.http.services.matrix-mautrix-facebook-appservice.loadbalancer.server.port=29319
 {% endif %}
