@@ -42,7 +42,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--mount type=bind,src={{ matrix_dendrite_nats_storage_path }},dst=/matrix-nats-store,bind-propagation=slave \
 			--label-file={{ matrix_dendrite_base_path }}/labels \
 			{% for volume in matrix_dendrite_container_additional_volumes %}
-			-v {{ volume.src }}:{{ volume.dst }}:{{ volume.options }} \
+			--mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options else '' }} \
 			{% endfor %}
 			{% for arg in matrix_dendrite_container_arguments %}
 			{{ arg }} \
