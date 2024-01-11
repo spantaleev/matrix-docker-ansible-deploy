@@ -4828,7 +4828,16 @@ matrix_dendrite_container_labels_client_root_redirection_url: "{{ (('https://' i
 
 matrix_dendrite_container_labels_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
 
+matrix_dendrite_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+matrix_dendrite_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+
 matrix_dendrite_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
+
+matrix_dendrite_metrics_enabled: "{{ prometheus_enabled }}"
+
+matrix_dendrite_metrics_proxying_enabled: "{{ matrix_dendrite_metrics_enabled and matrix_metrics_exposure_enabled }}"
+matrix_dendrite_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
+matrix_dendrite_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/dendrite"
 
 matrix_dendrite_client_api_registration_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.rss', rounds=655555) | to_uuid }}"
 

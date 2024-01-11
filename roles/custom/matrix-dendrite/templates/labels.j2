@@ -142,6 +142,44 @@ traefik.http.routers.matrix-dendrite-federation-api.tls.certResolver={{ matrix_d
 	/Federation-API (/_matrix)
 #}
 
+
+{#
+	Metrics
+#}
+{% if matrix_dendrite_container_labels_metrics_enabled %}
+
+{% set metrics_middlewares = [] %}
+
+{% if matrix_dendrite_container_labels_metrics_middleware_basic_auth_enabled %}
+{% set metrics_middlewares = metrics_middlewares + ['matrix-dendrite-metrics-basic-auth'] %}
+traefik.http.middlewares.matrix-dendrite-metrics-basic-auth.basicauth.users={{ matrix_dendrite_container_labels_metrics_middleware_basic_auth_users }}
+{% endif %}
+
+{% set metrics_middlewares = metrics_middlewares + ['matrix-dendrite-metrics-replacepath'] %}
+traefik.http.middlewares.matrix-dendrite-metrics-replacepath.replacepath.path=/metrics
+
+traefik.http.routers.matrix-dendrite-metrics.rule={{ matrix_dendrite_container_labels_metrics_traefik_rule }}
+
+{% if metrics_middlewares | length > 0 %}
+traefik.http.routers.matrix-dendrite-metrics.middlewares={{ metrics_middlewares | join(',') }}
+{% endif %}
+
+{% if matrix_dendrite_container_labels_metrics_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-dendrite-metrics.priority={{ matrix_dendrite_container_labels_metrics_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-dendrite-metrics.service=matrix-dendrite
+traefik.http.routers.matrix-dendrite-metrics.entrypoints={{ matrix_dendrite_container_labels_metrics_traefik_entrypoints }}
+
+traefik.http.routers.matrix-dendrite-metrics.tls={{ matrix_dendrite_container_labels_metrics_traefik_tls | to_json }}
+{% if matrix_dendrite_container_labels_metrics_traefik_tls %}
+traefik.http.routers.matrix-dendrite-metrics.tls.certResolver={{ matrix_dendrite_container_labels_metrics_traefik_tls_certResolver }}
+{% endif %}
+{% endif %}
+{#
+	/Metrics
+#}
+
 {% endif %}
 
 {{ matrix_dendrite_container_labels_additional_labels }}
