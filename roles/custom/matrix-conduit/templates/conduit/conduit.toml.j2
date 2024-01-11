@@ -53,3 +53,15 @@ log = "info,state_res=warn,rocket=off,_=off,sled=off"
 
 address = "0.0.0.0"
 
+turn_uris = {{ matrix_conduit_turn_uris | to_json }}
+
+{% if matrix_conduit_turn_secret != '' %}
+turn_secret = {{ matrix_conduit_turn_secret | to_json }}
+{% endif %}
+
+# If you have your TURN server configured to use a username and password
+# you can provide these information too. In this case comment out `turn_secret above`!
+{% if matrix_conduit_turn_username != '' or matrix_conduit_turn_password != '' %}
+turn_username = {{ matrix_conduit_turn_username | to_json }}
+turn_password = {{ matrix_conduit_turn_password | to_json }}
+{% endif %}

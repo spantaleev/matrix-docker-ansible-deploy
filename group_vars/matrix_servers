@@ -4889,6 +4889,29 @@ matrix_conduit_enabled: "{{ matrix_homeserver_implementation == 'conduit' }}"
 
 matrix_conduit_container_network: "{{ matrix_homeserver_container_network }}"
 
+# Even if TURN doesn't support TLS (it does by default),
+# it doesn't hurt to try a secure connection anyway.
+#
+# When Let's Encrypt certificates are used (the default case),
+# we don't enable `turns` endpoints, because WebRTC in Element can't talk to them.
+# Learn more here: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1145
+matrix_conduit_turn_uris: |
+  {{
+    []
+    +
+    [
+      'turns:' + matrix_server_fqn_matrix + '?transport=udp',
+      'turns:' + matrix_server_fqn_matrix + '?transport=tcp',
+    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled and matrix_playbook_ssl_retrieval_method != 'lets-encrypt' else []
+    +
+    [
+      'turn:' + matrix_server_fqn_matrix + '?transport=udp',
+      'turn:' + matrix_server_fqn_matrix + '?transport=tcp',
+    ] if matrix_coturn_enabled else []
+  }}
+
+matrix_conduit_turn_secret: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
+
 ######################################################################
 #
 # /matrix-conduit
