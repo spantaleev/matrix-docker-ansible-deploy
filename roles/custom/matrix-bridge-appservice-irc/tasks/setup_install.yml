@@ -148,8 +148,8 @@
     {{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-appservice-irc-gen
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
     --cap-drop=ALL
-    -v {{ matrix_appservice_irc_config_path }}:/config:z
-    -v {{ matrix_appservice_irc_data_path }}:/data:z
+    --mount type=bind,src={{ matrix_appservice_irc_config_path }},dst=/config
+    --mount type=bind,src={{ matrix_appservice_irc_data_path }},dst=/data
     --entrypoint=/bin/bash
     {{ matrix_appservice_irc_docker_image }}
     -c

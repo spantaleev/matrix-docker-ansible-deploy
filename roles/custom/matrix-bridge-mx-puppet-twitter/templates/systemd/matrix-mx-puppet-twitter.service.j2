@@ -29,8 +29,8 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			{% endif %}
 			-e CONFIG_PATH=/config/config.yaml \
 			-e REGISTRATION_PATH=/config/registration.yaml \
-			-v {{ matrix_mx_puppet_twitter_config_path }}:/config:z \
-			-v {{ matrix_mx_puppet_twitter_data_path }}:/data:z \
+			--mount type=bind,src={{ matrix_mx_puppet_twitter_config_path }},dst=/config \
+			--mount type=bind,src={{ matrix_mx_puppet_twitter_data_path }},dst=/data \
 			{% for arg in matrix_mx_puppet_twitter_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

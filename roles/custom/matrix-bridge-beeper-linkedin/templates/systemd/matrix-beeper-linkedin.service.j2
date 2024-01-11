@@ -26,7 +26,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_beeper_linkedin_container_network }} \
-			-v {{ matrix_beeper_linkedin_config_path }}:/data:z \
+			--mount type=bind,src={{ matrix_beeper_linkedin_config_path }},dst=/data \
 			--workdir=/opt/linkedin-matrix \
 			{% for arg in matrix_beeper_linkedin_container_extra_arguments %}
 			{{ arg }} \

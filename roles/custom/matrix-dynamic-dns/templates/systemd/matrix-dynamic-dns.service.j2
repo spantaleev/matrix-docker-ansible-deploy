@@ -20,7 +20,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			--network={{ matrix_docker_network }} \
   			-e PUID={{ matrix_user_uid }} \
   			-e PGID={{ matrix_user_gid }} \
-			-v {{ matrix_dynamic_dns_config_path }}:/config:z \
+			--mount type=bind,{{ matrix_dynamic_dns_config_path }},dst=/config \
 			{% for arg in matrix_dynamic_dns_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
