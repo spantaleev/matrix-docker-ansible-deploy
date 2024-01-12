@@ -16,9 +16,6 @@ Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-mautrix-slack 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-mautrix-slack 2>/dev/null || true'
 
-# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
-ExecStartPre={{ matrix_host_command_sleep }} 5
-
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--rm \
 			--name=matrix-mautrix-slack \

@@ -27,9 +27,6 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} run \
 			{{ matrix_mautrix_hangouts_docker_image }} \
 			alembic -x config=/config/config.yaml upgrade head
 
-# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
-ExecStartPre={{ matrix_host_command_sleep }} 5
-
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--rm \
 			--name=matrix-mautrix-hangouts \

@@ -63,6 +63,10 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network conne
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-dendrite
 
+# Intentional delay, so that the homeserver can manage to start and various services
+# that depend on it (After/Requires) may only start after the homeserver is up and running.
+ExecStartPost=-{{ matrix_host_command_sleep }} 3
+
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-dendrite 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-dendrite 2>/dev/null || true'
 ExecReload={{ devture_systemd_docker_base_host_command_docker }} exec matrix-dendrite /bin/sh -c 'kill -HUP 1'

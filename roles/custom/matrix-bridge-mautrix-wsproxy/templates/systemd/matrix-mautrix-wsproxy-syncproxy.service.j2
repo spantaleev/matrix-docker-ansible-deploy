@@ -16,9 +16,6 @@ Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-mautrix-wsproxy-syncproxy 2>/dev/null'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-mautrix-wsproxy-syncproxy 2>/dev/null'
 
-# Intentional delay, so that the homeserver (we likely depend on) can manage to start.
-ExecStartPre={{ matrix_host_command_sleep }} 5
-
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-mautrix-wsproxy-syncproxy \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
