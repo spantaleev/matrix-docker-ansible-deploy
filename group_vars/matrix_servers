@@ -4457,21 +4457,22 @@ prometheus_postgres_exporter_container_network: "{{ matrix_docker_network }}"
 
 prometheus_postgres_exporter_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
 
-prometheus_postgres_exporter_container_labels_traefik_enabled: false
+prometheus_postgres_exporter_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 prometheus_postgres_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 prometheus_postgres_exporter_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 prometheus_postgres_exporter_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+prometheus_postgres_exporter_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+prometheus_postgres_exporter_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
 prometheus_postgres_exporter_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 prometheus_postgres_exporter_database_username: matrix_prometheus_postgres_exporter
 prometheus_postgres_exporter_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'prometheus.pg.db', rounds=655555) | to_uuid }}"
 prometheus_postgres_exporter_database_name: matrix_prometheus_postgres_exporter
 
-prometheus_postgres_exporter_systemd_required_services_list: |
+prometheus_postgres_exporter_systemd_required_services_list_auto: |
   {{
-    ['docker.service']
-    +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if (devture_postgres_enabled and prometheus_postgres_exporter_database_hostname == devture_postgres_connection_hostname) else [])
   }}
 
 ######################################################################
