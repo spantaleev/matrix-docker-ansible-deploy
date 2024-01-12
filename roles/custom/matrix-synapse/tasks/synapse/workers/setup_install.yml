@@ -40,6 +40,20 @@
   with_items: "{{ matrix_synapse_workers_current_systemd_services.files }}"
   when: "not ansible_check_mode and (item.path | basename | replace('.service', '')) not in matrix_synapse_enabled_worker_names"
 
+- name: Determine current worker label files
+  ansible.builtin.find:
+    path: "{{ matrix_synapse_base_path }}"
+    patterns: "worker.*.labels"
+    use_regex: true
+  register: matrix_synapse_workers_current_label_files
+
+- name: Ensure unnecessary worker labels are cleaned
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ matrix_synapse_workers_current_label_files.files }}"
+  when: "not ansible_check_mode and (item.path | basename | replace ('worker.', '') | replace('.labels', '')) not in matrix_synapse_enabled_worker_names"
+
 - name: Ensure creation of worker systemd service files and configuration files
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/util/setup_files_for_worker.yml"
   with_items: "{{ matrix_synapse_workers_enabled_list }}"

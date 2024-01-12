@@ -42,6 +42,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% for volume in matrix_synapse_container_additional_volumes %}
 			--mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options else '' }} \
 			{% endfor %}
+			--label-file={{ matrix_synapse_base_path }}/{{ matrix_synapse_worker_labels_file_name }} \
 			{% for arg in matrix_synapse_container_arguments %}
 			{{ arg }} \
 			{% endfor %}

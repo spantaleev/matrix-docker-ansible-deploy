@@ -49,6 +49,16 @@ traefik.http.routers.matrix-synapse-client-root.tls.certResolver={{ matrix_synap
 
 
 {#
+#########################################################################
+#                                                                       #
+# Matrix-related labels                                                 #
+# See: `matrix_synapse_container_labels_matrix_related_labels_enabled`  #
+#                                                                       #
+#########################################################################
+#}
+{% if matrix_synapse_container_labels_matrix_related_labels_enabled %}
+
+{#
 	Client-API (/_matrix)
 #}
 {% if matrix_synapse_container_labels_client_api_enabled %}
@@ -173,6 +183,17 @@ traefik.http.routers.matrix-synapse-federation-api.tls.certResolver={{ matrix_sy
 #}
 
 {#
+#########################################################################
+#                                                                       #
+# /Matrix-related labels                                                #
+# See: `matrix_synapse_container_labels_matrix_related_labels_enabled`  #
+#                                                                       #
+#########################################################################
+#}
+{% endif %}
+
+
+{#
 	Metrics (e.g. /metrics/synapse/main-process)
 #}
 {% if matrix_synapse_container_labels_metrics_enabled %}
@@ -203,11 +224,6 @@ traefik.http.routers.matrix-synapse-metrics.entrypoints={{ matrix_synapse_contai
 traefik.http.routers.matrix-synapse-metrics.tls={{ matrix_synapse_container_labels_metrics_traefik_tls | to_json }}
 {% if matrix_synapse_container_labels_metrics_traefik_tls %}
 traefik.http.routers.matrix-synapse-metrics.tls.certResolver={{ matrix_synapse_container_labels_metrics_traefik_tls_certResolver }}
-{% endif %}
-
-{% if matrix_synapse_container_labels_metrics_middleware_basic_auth_enabled %}
-traefik.http.routers.matrix-synapse-metrics.middlewares=matrix-synapse-metrics-basic-auth
-traefik.http.middlewares.matrix-synapse-metrics-basic-auth.basicauth.users={{ matrix_synapse_container_labels_metrics_middleware_basic_auth_users }}
 {% endif %}
 
 {% endif %}

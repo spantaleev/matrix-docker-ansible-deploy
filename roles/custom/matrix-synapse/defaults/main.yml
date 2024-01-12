@@ -156,7 +156,7 @@ matrix_synapse_container_metrics_api_host_bind_port: ''
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9100"), or empty string to not expose.
 matrix_synapse_container_manhole_api_host_bind_port: ''
 
-# matrix_synapse_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# matrix_synapse_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the main Synapse worker.
 # See `../templates/labels.j2` for details.
 #
 # To inject your own other container labels, see `matrix_synapse_container_labels_additional_labels`.
@@ -166,7 +166,19 @@ matrix_synapse_container_labels_traefik_entrypoints: web-secure
 matrix_synapse_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 matrix_synapse_container_labels_traefik_hostname: ''
 
-# Controls whether labels will be added for handling the root (/) path
+# Controls whether Matrix-related labels will be added.
+#
+# When set to false, variables like the following take no effect:
+# - `matrix_synapse_container_labels_client_api_enabled`
+# - `matrix_synapse_container_labels_client_synapse_client_api_enabled`
+# - `matrix_synapse_container_labels_client_synapse_oidc_api_enabled`
+# - `matrix_synapse_container_labels_client_synapse_admin_api_enabled`
+# - `matrix_synapse_container_labels_federation_api_enabled`
+#
+# When workers are enabled, we do not capture these requests, because we can't route them appropriately.
+matrix_synapse_container_labels_matrix_related_labels_enabled: "{{ not matrix_synapse_workers_enabled }}"
+
+# Controls whether labels will be added for handling the root (/) path.
 matrix_synapse_container_labels_client_root_enabled: true
 matrix_synapse_container_labels_client_root_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
 matrix_synapse_container_labels_client_root_traefik_rule: "Host(`{{ matrix_synapse_container_labels_client_root_traefik_hostname }}`) && Path(`/`)"
@@ -178,6 +190,8 @@ matrix_synapse_container_labels_client_root_redirection_enabled: false
 matrix_synapse_container_labels_client_root_redirection_url: ""
 
 # Controls whether labels will be added that expose the Client-Server API.
+# Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
+# See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
 matrix_synapse_container_labels_client_api_enabled: true
 matrix_synapse_container_labels_client_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
 matrix_synapse_container_labels_client_api_traefik_path_prefix: /_matrix
@@ -188,6 +202,9 @@ matrix_synapse_container_labels_client_api_traefik_tls: "{{ matrix_synapse_conta
 matrix_synapse_container_labels_client_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # Controls whether labels will be added that expose the /_synapse/client paths
+# When workers are enabled, we do not capture these requests, because they may be load-balanaced to some specific worker.
+# Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
+# See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
 matrix_synapse_container_labels_client_synapse_client_api_enabled: true
 matrix_synapse_container_labels_client_synapse_client_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
 matrix_synapse_container_labels_client_synapse_client_api_traefik_path_prefix: /_synapse/client
@@ -199,6 +216,8 @@ matrix_synapse_container_labels_client_synapse_client_api_traefik_tls_certResolv
 
 # Controls whether labels will be added that expose the /_synapse/oidc paths
 # Enable this if you need OpenID Connect authentication support.
+# Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
+# See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
 matrix_synapse_container_labels_client_synapse_oidc_api_enabled: false
 matrix_synapse_container_labels_client_synapse_oidc_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
 matrix_synapse_container_labels_client_synapse_oidc_api_traefik_path_prefix: /_synapse/oidc
@@ -210,6 +229,8 @@ matrix_synapse_container_labels_client_synapse_oidc_api_traefik_tls_certResolver
 
 # Controls whether labels will be added that expose the /_synapse/admin paths
 # Following these recommendations (https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md), by default, we don't.
+# Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
+# See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
 matrix_synapse_container_labels_client_synapse_admin_api_enabled: false
 matrix_synapse_container_labels_client_synapse_admin_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
 matrix_synapse_container_labels_client_synapse_admin_api_traefik_path_prefix: /_synapse/admin
@@ -220,7 +241,9 @@ matrix_synapse_container_labels_client_synapse_admin_api_traefik_tls: "{{ matrix
 matrix_synapse_container_labels_client_synapse_admin_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # Controls whether labels will be added that expose the Server-Server API (Federation API).
-matrix_synapse_container_labels_federation_api_enabled: "{{ matrix_synapse_federation_enabled }}"
+# Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
+# See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
+matrix_synapse_container_labels_federation_api_enabled: "{{ matrix_synapse_federation_enabled and not matrix_synapse_workers_enabled }}"
 matrix_synapse_container_labels_federation_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
 matrix_synapse_container_labels_federation_api_traefik_path_prefix: /_matrix
 matrix_synapse_container_labels_federation_api_traefik_rule: "Host(`{{ matrix_synapse_container_labels_federation_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_container_labels_federation_api_traefik_path_prefix }}`)"
@@ -229,7 +252,7 @@ matrix_synapse_container_labels_federation_api_traefik_entrypoints: ''
 matrix_synapse_container_labels_federation_api_traefik_tls: "{{ matrix_synapse_container_labels_federation_api_traefik_entrypoints != 'web' }}"
 matrix_synapse_container_labels_federation_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
-# Controls whether labels will be added that expose metrics (see `matrix_synapse_metrics_proxying_enabled`)
+# Controls whether labels will be added that expose metrics (see `matrix_synapse_metrics_proxying_enabled`) for the main Synapse process
 matrix_synapse_container_labels_metrics_enabled: "{{ matrix_synapse_metrics_enabled and matrix_synapse_metrics_proxying_enabled }}"
 matrix_synapse_container_labels_metrics_traefik_path: "{{ matrix_synapse_metrics_proxying_path_prefix }}/main-process"
 matrix_synapse_container_labels_metrics_traefik_rule: "Host(`{{ matrix_synapse_metrics_proxying_hostname }}`) && Path(`{{ matrix_synapse_container_labels_metrics_traefik_path }}`)"
@@ -666,6 +689,38 @@ matrix_synapse_workers_presets:
 # Takes an "<ip>" value (e.g. "127.0.0.1", "0.0.0.0", etc), or empty string to not expose.
 # It takes "*" to signify "bind on all interfaces" ("0.0.0.0" is IPv4-only).
 matrix_synapse_workers_container_host_bind_address: ''
+
+# matrix_synapse_worker_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to Synapse worker containers.
+# See `../templates/worker-labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_synapse_worker_container_labels_additional_labels`.
+matrix_synapse_worker_container_labels_traefik_enabled: true
+matrix_synapse_worker_container_labels_traefik_docker_network: "{{ matrix_synapse_container_labels_traefik_docker_network }}"
+matrix_synapse_worker_container_labels_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
+matrix_synapse_worker_container_labels_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_synapse_worker_container_labels_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
+
+# Controls whether labels will be added that expose metrics (see `matrix_synapse_metrics_proxying_enabled`)
+matrix_synapse_worker_container_labels_metrics_enabled: "{{ matrix_synapse_metrics_enabled and matrix_synapse_metrics_proxying_enabled }}"
+# The `__WORKER_ID__` placeholder will be replaced with the actual worker id during label-file generation (see `../templates/worker-labels.j2`).
+matrix_synapse_worker_container_labels_metrics_traefik_path: "{{ matrix_synapse_metrics_proxying_path_prefix }}/__WORKER_ID__"
+matrix_synapse_worker_container_labels_metrics_traefik_rule: "Host(`{{ matrix_synapse_metrics_proxying_hostname }}`) && Path(`{{ matrix_synapse_worker_container_labels_metrics_traefik_path }}`)"
+matrix_synapse_worker_container_labels_metrics_traefik_priority: 0
+matrix_synapse_worker_container_labels_metrics_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
+matrix_synapse_worker_container_labels_metrics_traefik_tls: "{{ matrix_synapse_container_labels_metrics_traefik_entrypoints != 'web' }}"
+matrix_synapse_worker_container_labels_metrics_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_synapse_worker_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_synapse_container_labels_metrics_middleware_basic_auth_enabled }}"
+# See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
+matrix_synapse_worker_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_synapse_container_labels_metrics_middleware_basic_auth_users }}"
+
+# matrix_synapse_worker_container_labels_additional_labels contains a multiline string with additional labels to add to the label files for Synapse worker containers.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_synapse_worker_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_synapse_worker_container_labels_additional_labels: ''
 
 matrix_synapse_workers_generic_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['generic_workers_count'] }}"
 matrix_synapse_workers_generic_workers_port_range_start: 18111
