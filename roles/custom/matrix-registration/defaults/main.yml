@@ -5,6 +5,10 @@
 
 matrix_registration_enabled: true
 
+matrix_registration_scheme: https
+matrix_registration_hostname: ''
+matrix_registration_path_prefix: /
+
 matrix_registration_container_image_self_build: false
 matrix_registration_container_image_self_build_repo: "https://github.com/ZerataX/matrix-registration"
 matrix_registration_container_image_self_build_branch: "{{ 'master' if matrix_registration_version == 'latest' else matrix_registration_version }}"
@@ -25,11 +29,46 @@ matrix_registration_docker_image: "{{ matrix_registration_docker_image_name_pref
 matrix_registration_docker_image_name_prefix: "{{ 'localhost/' if matrix_registration_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_registration_docker_image_force_pull: "{{ matrix_registration_docker_image.endswith(':latest') }}"
 
+matrix_registration_container_network: ""
+
+matrix_registration_container_additional_networks: "{{ matrix_registration_container_additional_networks_auto + matrix_registration_container_additional_networks_custom }}"
+matrix_registration_container_additional_networks_auto: []
+matrix_registration_container_additional_networks_custom: []
+
+# matrix_registration_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_registration_container_labels_additional_labels`.
+matrix_registration_container_labels_traefik_enabled: true
+matrix_registration_container_labels_traefik_docker_network: "{{ matrix_registration_container_network }}"
+matrix_registration_container_labels_traefik_entrypoints: web-secure
+matrix_registration_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether labels will be added that expose matrix-registration's public endpoints
+matrix_registration_container_labels_public_endpoint_enabled: true
+matrix_registration_container_labels_public_endpoint_traefik_rule: "Host(`{{ matrix_registration_hostname }}`){% if matrix_registration_path_prefix != '/' %} && PathPrefix(`{{ matrix_registration_path_prefix }}`){% endif %}"
+matrix_registration_container_labels_public_endpoint_traefik_priority: 0
+matrix_registration_container_labels_public_endpoint_traefik_entrypoints: "{{ matrix_registration_container_labels_traefik_entrypoints }}"
+matrix_registration_container_labels_public_endpoint_traefik_tls: "{{ matrix_registration_container_labels_public_endpoint_traefik_entrypoints != 'web' }}"
+matrix_registration_container_labels_public_endpoint_traefik_tls_certResolver: "{{ matrix_registration_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# matrix_registration_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_registration_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_registration_container_labels_additional_labels: ''
+
 # A list of extra arguments to pass to the container
 matrix_registration_container_extra_arguments: []
 
 # List of systemd services that matrix-registration.service depends on
-matrix_registration_systemd_required_services_list: ['docker.service']
+matrix_registration_systemd_required_services_list: "{{ matrix_registration_systemd_required_services_list_default + matrix_registration_systemd_required_services_list_auto + matrix_registration_systemd_required_services_list_custom }}"
+matrix_registration_systemd_required_services_list_default: ['docker.service']
+matrix_registration_systemd_required_services_list_auto: []
+matrix_registration_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-registration.service wants
 matrix_registration_systemd_wanted_services_list: []
@@ -68,15 +107,10 @@ matrix_registration_db: "{{
 	}[matrix_registration_database_engine]
 }}"
 
+matrix_registration_base_url: "{{ matrix_registration_path_prefix }}"
 
-# The path at which Matrix Registration will be exposed on `matrix.DOMAIN`
-# (only applies when matrix-nginx-proxy is used).
-matrix_registration_public_endpoint: /matrix-registration
-
-matrix_registration_base_url: "{{ matrix_registration_public_endpoint }}"
-
-matrix_registration_api_register_endpoint: "{{ matrix_homeserver_url }}{{ matrix_registration_public_endpoint }}/register"
-matrix_registration_api_token_endpoint: "{{ matrix_homeserver_url }}{{ matrix_registration_public_endpoint }}/token"
+matrix_registration_api_register_endpoint: "{{ matrix_registration_scheme }}://{{ matrix_registration_hostname }}{{ matrix_registration_base_url }}{{ '' if matrix_registration_base_url == '/' else '/' }}register"
+matrix_registration_api_token_endpoint: "{{ matrix_registration_scheme }}://{{ matrix_registration_hostname }}{{ matrix_registration_base_url }}{{ '' if matrix_registration_base_url == '/' else '/' }}token"
 
 matrix_registration_api_validate_certs: true
 
@@ -93,7 +127,7 @@ matrix_registration_shared_secret: ""
 # matrix_registration_admin_secret is your own admin secret for using matrix-registration (creating new tokens, etc.)
 matrix_registration_admin_secret: ""
 
-matrix_registration_riot_instance: "https://riot.im/app/"
+matrix_registration_riot_instance: "https://element.io/app/"
 
 # Default matrix-registration configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.

@@ -97,6 +97,21 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
+- name: Ensure matrix-registration support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_registration_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - labels
+
+- name: Ensure matrix-registration container network is created
+  community.general.docker_network:
+    name: "{{ matrix_registration_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-registration.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-registration.service.j2"

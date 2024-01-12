@@ -1,0 +1,58 @@
+{% if matrix_registration_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_registration_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_registration_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-registration.loadbalancer.server.port=5000
+
+{#
+	Public (e.g. /matrix-registration)
+#}
+{% if matrix_registration_container_labels_public_endpoint_enabled %}
+
+{% set middlewares = [] %}
+
+{% if matrix_registration_path_prefix != '/' %}
+traefik.http.middlewares.matrix-registration-slashless-redirect-slashless.redirectregex.regex=({{ matrix_registration_path_prefix | quote }})$
+traefik.http.middlewares.matrix-registration-slashless-redirect-slashless.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-registration-slashless-redirect-slashless'] %}
+{% endif %}
+
+{# matrix-registration serves nothing at the root URL, so we redirect to /register instead. #}
+traefik.http.middlewares.matrix-registration-slashless-redirect-root.redirectregex.regex=({{ matrix_registration_path_prefix | quote }}{{ '' if matrix_registration_path_prefix == '/' else '/' }})$
+traefik.http.middlewares.matrix-registration-slashless-redirect-root.redirectregex.replacement=${1}register
+{% set middlewares = middlewares + ['matrix-registration-slashless-redirect-root'] %}
+
+{% if matrix_registration_path_prefix != '/' %}
+traefik.http.middlewares.matrix-registration-strip-prefix.stripprefix.prefixes={{ matrix_registration_path_prefix }}
+{% set middlewares = middlewares + ['matrix-registration-strip-prefix'] %}
+{% endif %}
+
+traefik.http.routers.matrix-registration-public.rule={{ matrix_registration_container_labels_public_endpoint_traefik_rule }}
+
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-registration-public.middlewares={{ middlewares | join(',') }}
+{% endif %}
+
+{% if matrix_registration_container_labels_public_endpoint_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-registration-public.priority={{ matrix_registration_container_labels_public_endpoint_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-registration-public.service=matrix-registration
+traefik.http.routers.matrix-registration-public.entrypoints={{ matrix_registration_container_labels_public_endpoint_traefik_entrypoints }}
+
+traefik.http.routers.matrix-registration-public.tls={{ matrix_registration_container_labels_public_endpoint_traefik_tls | to_json }}
+{% if matrix_registration_container_labels_public_endpoint_traefik_tls %}
+traefik.http.routers.matrix-registration-public.tls.certResolver={{ matrix_registration_container_labels_public_endpoint_traefik_tls_certResolver }}
+{% endif %}
+
+{% endif %}
+{#
+	/Public (e.g. /matrix-registration)
+#}
+
+{% endif %}
+
+{{ matrix_registration_container_labels_additional_labels }}
