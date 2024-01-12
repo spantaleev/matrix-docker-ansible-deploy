@@ -4187,6 +4187,9 @@ matrix_synapse_container_labels_client_synapse_admin_api_enabled: "{{ matrix_syn
 
 matrix_synapse_container_labels_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
 
+matrix_synapse_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+matrix_synapse_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+
 # For exposing the Synapse worker (and metrics) ports to the local host.
 matrix_synapse_workers_container_host_bind_address: "{{ matrix_playbook_service_host_bind_interface_prefix[0:-1] if (matrix_synapse_workers_enabled and matrix_playbook_service_host_bind_interface_prefix) else '' }}"
 
@@ -4204,6 +4207,10 @@ matrix_synapse_federation_port_openid_resource_required: "{{ not matrix_synapse_
 
 # If someone instals Prometheus via the playbook, they most likely wish to monitor Synapse.
 matrix_synapse_metrics_enabled: "{{ prometheus_enabled }}"
+
+matrix_synapse_metrics_proxying_enabled: "{{ matrix_synapse_metrics_enabled and matrix_metrics_exposure_enabled }}"
+matrix_synapse_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
+matrix_synapse_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/synapse"
 
 matrix_synapse_email_enabled: "{{ exim_relay_enabled }}"
 matrix_synapse_email_smtp_host: "{{ exim_relay_identifier }}"

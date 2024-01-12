@@ -229,6 +229,18 @@ matrix_synapse_container_labels_federation_api_traefik_entrypoints: ''
 matrix_synapse_container_labels_federation_api_traefik_tls: "{{ matrix_synapse_container_labels_federation_api_traefik_entrypoints != 'web' }}"
 matrix_synapse_container_labels_federation_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
+# Controls whether labels will be added that expose metrics (see `matrix_synapse_metrics_proxying_enabled`)
+matrix_synapse_container_labels_metrics_enabled: "{{ matrix_synapse_metrics_enabled and matrix_synapse_metrics_proxying_enabled }}"
+matrix_synapse_container_labels_metrics_traefik_path: "{{ matrix_synapse_metrics_proxying_path_prefix }}/main-process"
+matrix_synapse_container_labels_metrics_traefik_rule: "Host(`{{ matrix_synapse_metrics_proxying_hostname }}`) && Path(`{{ matrix_synapse_container_labels_metrics_traefik_path }}`)"
+matrix_synapse_container_labels_metrics_traefik_priority: 0
+matrix_synapse_container_labels_metrics_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
+matrix_synapse_container_labels_metrics_traefik_tls: "{{ matrix_synapse_container_labels_metrics_traefik_entrypoints != 'web' }}"
+matrix_synapse_container_labels_metrics_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_synapse_container_labels_metrics_middleware_basic_auth_enabled: false
+# See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
+matrix_synapse_container_labels_metrics_middleware_basic_auth_users: ''
+
 # matrix_synapse_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
 #
@@ -598,7 +610,8 @@ matrix_synapse_grafana_dashboard_urls:
 # - `matrix.DOMAIN/metrics/synapse/main-process` for the main process
 # - `matrix.DOMAIN/metrics/synapse/worker/{type}-{id}` for each worker process
 matrix_synapse_metrics_proxying_enabled: false
-# TODO - add variables for controlling the hostname, path prefix, etc.
+matrix_synapse_metrics_proxying_hostname: ''
+matrix_synapse_metrics_proxying_path_prefix: /metrics/synapse
 
 # Enable the Synapse manhole
 # See https://github.com/matrix-org/synapse/blob/master/docs/manhole.md

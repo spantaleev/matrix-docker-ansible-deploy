@@ -7,6 +7,7 @@ traefik.docker.network={{ matrix_synapse_container_labels_traefik_docker_network
 
 traefik.http.services.matrix-synapse-client-api.loadbalancer.server.port={{ matrix_synapse_container_client_api_port }}
 traefik.http.services.matrix-synapse-federation-api.loadbalancer.server.port={{ matrix_synapse_container_federation_api_plain_port }}
+traefik.http.services.matrix-synapse-metrics.loadbalancer.server.port={{ matrix_synapse_metrics_port }}
 
 
 {#
@@ -170,6 +171,50 @@ traefik.http.routers.matrix-synapse-federation-api.tls.certResolver={{ matrix_sy
 {#
 	/Federation-API (/_matrix)
 #}
+
+{#
+	Metrics (e.g. /metrics/synapse/main-process)
+#}
+{% if matrix_synapse_container_labels_metrics_enabled %}
+
+{% set metrics_middlewares = [] %}
+
+{% if matrix_synapse_container_labels_metrics_middleware_basic_auth_enabled %}
+{% set metrics_middlewares = metrics_middlewares + ['matrix-synapse-metrics-basic-auth'] %}
+traefik.http.middlewares.matrix-synapse-metrics-basic-auth.basicauth.users={{ matrix_synapse_container_labels_metrics_middleware_basic_auth_users }}
+{% endif %}
+
+{% set metrics_middlewares = metrics_middlewares + ['matrix-synapse-metrics-replacepath'] %}
+traefik.http.middlewares.matrix-synapse-metrics-replacepath.replacepath.path=/_synapse/metrics
+
+traefik.http.routers.matrix-synapse-metrics.rule={{ matrix_synapse_container_labels_metrics_traefik_rule }}
+
+{% if metrics_middlewares | length > 0 %}
+traefik.http.routers.matrix-synapse-metrics.middlewares={{ metrics_middlewares | join(',') }}
+{% endif %}
+
+{% if matrix_synapse_container_labels_metrics_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-metrics.priority={{ matrix_synapse_container_labels_metrics_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-synapse-metrics.service=matrix-synapse-metrics
+traefik.http.routers.matrix-synapse-metrics.entrypoints={{ matrix_synapse_container_labels_metrics_traefik_entrypoints }}
+
+traefik.http.routers.matrix-synapse-metrics.tls={{ matrix_synapse_container_labels_metrics_traefik_tls | to_json }}
+{% if matrix_synapse_container_labels_metrics_traefik_tls %}
+traefik.http.routers.matrix-synapse-metrics.tls.certResolver={{ matrix_synapse_container_labels_metrics_traefik_tls_certResolver }}
+{% endif %}
+
+{% if matrix_synapse_container_labels_metrics_middleware_basic_auth_enabled %}
+traefik.http.routers.matrix-synapse-metrics.middlewares=matrix-synapse-metrics-basic-auth
+traefik.http.middlewares.matrix-synapse-metrics-basic-auth.basicauth.users={{ matrix_synapse_container_labels_metrics_middleware_basic_auth_users }}
+{% endif %}
+
+{% endif %}
+{#
+	/Metrics (e.g. /metrics/synapse/main-process)
+#}
+
 
 {% endif %}
 
