@@ -4415,18 +4415,19 @@ prometheus_node_exporter_base_path: "{{ matrix_base_data_path }}/prometheus-node
 prometheus_node_exporter_uid: "{{ matrix_user_uid }}"
 prometheus_node_exporter_gid: "{{ matrix_user_gid }}"
 
-# _server_fqn is the old var, _hostname - the new one. Seamless migration
-prometheus_node_exporter_server_fqn: "{{ matrix_server_fqn_matrix }}"
-prometheus_node_exporter_hostname: "{{ prometheus_node_exporter_server_fqn }}"
+prometheus_node_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
 
 prometheus_node_exporter_container_network: "{{ matrix_docker_network }}"
 
 prometheus_node_exporter_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
 
-prometheus_node_exporter_container_labels_traefik_enabled: false
+prometheus_node_exporter_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 prometheus_node_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 prometheus_node_exporter_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 prometheus_node_exporter_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+prometheus_node_exporter_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+prometheus_node_exporter_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
 ######################################################################
 #
