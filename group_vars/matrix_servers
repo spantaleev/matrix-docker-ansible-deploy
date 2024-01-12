@@ -3323,7 +3323,6 @@ matrix_nginx_proxy_proxy_schildichat_enabled: "{{ matrix_client_schildichat_enab
 matrix_nginx_proxy_proxy_buscarron_enabled: "{{ matrix_bot_buscarron_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_dimension_enabled: "{{ matrix_dimension_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_rageshake_enabled: "{{ matrix_rageshake_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-matrix_nginx_proxy_proxy_etherpad_enabled: "{{ etherpad_enabled and not etherpad_nginx_proxy_dimension_integration_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 matrix_nginx_proxy_proxy_mautrix_wsproxy_enabled: "{{ matrix_mautrix_wsproxy_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
 
@@ -3422,8 +3421,6 @@ matrix_ssl_domains_to_obtain_certificates_for: |
     ([matrix_server_fqn_buscarron] if matrix_bot_buscarron_enabled else [])
     +
     ([matrix_server_fqn_dimension] if matrix_dimension_enabled else [])
-    +
-    ([matrix_server_fqn_etherpad] if (etherpad_enabled and not etherpad_nginx_proxy_dimension_integration_enabled) else [])
     +
     ([matrix_server_fqn_bot_go_neb] if matrix_bot_go_neb_enabled else [])
     +

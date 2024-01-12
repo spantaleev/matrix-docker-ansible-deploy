@@ -20,16 +20,6 @@ etherpad_hostname: "{{ matrix_server_fqn_matrix }}"
 etherpad_path_prefix: /etherpad
 ```
 
-**NOTE**: When using the old `matrix-nginx-proxy` reverse-proxy instead of Traefik, you have only 2 choices:
-
-- serving Etherpad at its own dedicated domain:
-  - you need to set the domain using the `matrix_server_fqn_etherpad` variable (not `etherpad_hostname`)
-  - you must use `etherpad_path_prefix: /`
-- serving Etherpad at the [Dimension](configuring-playbook-dimension.md) integration manager's domain (`matrix_server_fqn_dimension`)
-  - you need to have Dimension enabled
-  - you need to add `etherpad_path_prefix: /etherpad` or another prefix (different than `/`)
-  - you need to add `etherpad_nginx_proxy_dimension_integration_enabled: true` to enable this integration
-
 
 ## Adjusting DNS records
 
