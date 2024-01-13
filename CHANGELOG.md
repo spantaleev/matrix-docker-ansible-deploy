@@ -4,9 +4,9 @@
 
 **TLDR**: your updated (to [v0.3.0](https://github.com/anoadragon453/matrix-reminder-bot/releases/tag/v0.3.0)) [matrix-reminder-bot](./docs/configuring-playbook-bot-matrix-reminder-bot.md) is now more secure. By default, like other bridges/bots managed by the playbook, it will only provide its services to users of your own server (not to anyone, even across the Matrix Federation). If that's fine, there's nothing you need to do.
 
-Maintenance of [matrix-reminder-bot](./docs/configuring-playbook-bot-matrix-reminder-bot.md) has been picked up by [Kim Brose](https://github.com/HarHarLinks).
+Maintenance of [matrix-reminder-bot](./docs/configuring-playbook-bot-matrix-reminder-bot.md) has been picked up by [Kim Brose](https://github.com/HarHarLinks) and [@svierne](https://github.com/svierne).
 
-Thanks to Kim, a new [v0.3.0](https://github.com/anoadragon453/matrix-reminder-bot/releases/tag/v0.3.0) release is out. The new version is now available for the ARM64 architecture, so playbook users on this architecture will no longer need to wait for [self-building](./docs/self-building.md) to happen.
+Thanks to them, a new [v0.3.0](https://github.com/anoadragon453/matrix-reminder-bot/releases/tag/v0.3.0) release is out. The new version is now available for the ARM64 architecture, so playbook users on this architecture will no longer need to wait for [self-building](./docs/self-building.md) to happen.
 
 The new version also comes with new `allowlist` and `blocklist` settings, which make it possible to restrict who can use the bot. Previously anyone, even across the Matrix Federation could talk to it and schedule reminders.
 
