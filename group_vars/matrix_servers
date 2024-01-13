@@ -1489,30 +1489,30 @@ matrix_mautrix_gmessages_database_password: "{{ '%s' | format(matrix_homeserver_
 # We don't enable bridges by default.
 matrix_mautrix_wsproxy_enabled: false
 
-matrix_mautrix_wsproxy_systemd_required_services_list: |
+matrix_mautrix_wsproxy_systemd_required_services_list_default: |
   {{
-    ['docker.service']
+    matrix_addons_homeserver_systemd_services_list
     +
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-    +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
-    +
-    (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if (devture_postgres_enabled and matrix_mautrix_wsproxy_syncproxy_database_hostname == devture_postgres_connection_hostname) else [])
   }}
 
 matrix_mautrix_wsproxy_homeserver_domain: "{{ matrix_domain }}"
-
 matrix_mautrix_wsproxy_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
+
 matrix_mautrix_wsproxy_hostname: "wsproxy.{{ matrix_mautrix_wsproxy_homeserver_domain }}"
+
+matrix_mautrix_wsproxy_syncproxy_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
+
+matrix_mautrix_wsproxy_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_mautrix_wsproxy_container_additional_networks: |
   {{
     (
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+      +
       ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
       +
-      ([matrix_nginx_proxy_container_network] if matrix_nginx_proxy_enabled and matrix_nginx_proxy_container_network != matrix_mautrix_wsproxy_container_network else [])
-      +
-      ([devture_postgres_container_network] if devture_postgres_enabled and devture_postgres_container_network != matrix_mautrix_wsproxy_container_network else [])
+      ([devture_postgres_container_network] if (devture_postgres_enabled and matrix_mautrix_wsproxy_syncproxy_database_hostname == devture_postgres_connection_hostname and devture_postgres_container_network != matrix_mautrix_wsproxy_container_network) else [])
     ) | unique
   }}
 
@@ -1520,6 +1520,9 @@ matrix_mautrix_wsproxy_container_labels_traefik_enabled: "{{ matrix_playbook_rev
 matrix_mautrix_wsproxy_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 matrix_mautrix_wsproxy_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 matrix_mautrix_wsproxy_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+matrix_mautrix_wsproxy_syncproxy_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
+matrix_mautrix_wsproxy_syncproxy_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'wsproxy.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
 #
