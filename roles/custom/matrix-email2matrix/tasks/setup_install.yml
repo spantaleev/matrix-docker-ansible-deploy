@@ -56,6 +56,11 @@
       pull: true
   when: "matrix_email2matrix_container_image_self_build | bool"
 
+- name: Ensure matrix-email2matrix container network is created
+  community.general.docker_network:
+    name: "{{ matrix_email2matrix_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-email2matrix.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-email2matrix.service.j2"

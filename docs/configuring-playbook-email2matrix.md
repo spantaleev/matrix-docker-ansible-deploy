@@ -70,7 +70,6 @@ matrix_email2matrix_matrix_mappings:
     SkipMarkdown: true
 ```
 
-You can also set `MatrixHomeserverUrl` to `http://matrix-synapse-reverse-proxy-companion:8008`, instead of the public `https://matrix.DOMAIN`.
-However, that's more likely to break in the future if you switch to another server implementation than Synapse.
+You can also set `MatrixHomeserverUrl` to the container URL where your homeserver's Client-Server API lives by using the `{{ matrix_homeserver_container_url }}` variable, instead of the public `https://matrix.DOMAIN` endpoint.
 
 Re-run the playbook (`--tags=setup-email2matrix,start`) and try sending an email to `my-mailbox@matrix.DOMAIN`.

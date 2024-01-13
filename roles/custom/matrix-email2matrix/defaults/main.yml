@@ -17,11 +17,20 @@ matrix_email2matrix_docker_image_prefix: "{{ 'localhost/' if matrix_email2matrix
 matrix_email2matrix_docker_image: "{{ matrix_email2matrix_docker_image_prefix }}devture/email2matrix:{{ matrix_email2matrix_version }}"
 matrix_email2matrix_docker_image_force_pull: "{{ matrix_email2matrix_docker_image.endswith(':latest') }}"
 
+matrix_email2matrix_container_network: ""
+
+matrix_email2matrix_container_additional_networks: "{{ matrix_email2matrix_container_additional_networks_auto + matrix_email2matrix_container_additional_networks_custom }}"
+matrix_email2matrix_container_additional_networks_auto: []
+matrix_email2matrix_container_additional_networks_custom: []
+
 # A list of extra arguments to pass to the container
 matrix_email2matrix_container_extra_arguments: []
 
 # List of systemd services that matrix-corporal.service depends on
-matrix_email2matrix_systemd_required_services_list: ['docker.service']
+matrix_email2matrix_systemd_required_services_list: "{{ matrix_email2matrix_systemd_required_services_list_default + matrix_email2matrix_systemd_required_services_list_auto + matrix_email2matrix_systemd_required_services_list_custom }}"
+matrix_email2matrix_systemd_required_services_list_default: ['docker.service']
+matrix_email2matrix_systemd_required_services_list_auto: []
+matrix_email2matrix_systemd_required_services_list_custom: []
 
 # Controls where the matrix-email2matrix container exposes the SMTP (tcp/2525 in the container).
 #
