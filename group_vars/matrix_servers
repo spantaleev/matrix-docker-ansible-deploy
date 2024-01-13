@@ -4318,10 +4318,7 @@ matrix_synapse_auto_compressor_enabled: false
 
 matrix_synapse_auto_compressor_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
 
-matrix_synapse_auto_compressor_container_additional_networks: |
-  {{
-    ([devture_postgres_container_network] if devture_postgres_enabled and devture_postgres_container_network != matrix_synapse_auto_compressor_container_network else [])
-  }}
+matrix_synapse_auto_compressor_container_network: "{{ (devture_postgres_container_network if (devture_postgres_enabled and matrix_synapse_auto_compressor_database_hostname == matrix_synapse_database_host and matrix_synapse_database_host == devture_postgres_connection_hostname) else 'matrix-synapse-auto-compressor') }}"
 
 matrix_synapse_auto_compressor_database_username: "{{ matrix_synapse_database_user if matrix_synapse_enabled else '' }}"
 matrix_synapse_auto_compressor_database_password: "{{ matrix_synapse_database_password if matrix_synapse_enabled else '' }}"
@@ -4329,11 +4326,9 @@ matrix_synapse_auto_compressor_database_hostname: "{{ matrix_synapse_database_ho
 matrix_synapse_auto_compressor_database_port: "{{ matrix_synapse_database_port if matrix_synapse_enabled else '5432' }}"
 matrix_synapse_auto_compressor_database_name: "{{ matrix_synapse_database_database if matrix_synapse_enabled else '' }}"
 
-matrix_synapse_auto_compressor_systemd_required_services_list: |
+matrix_synapse_auto_compressor_systemd_required_services_list_auto: |
   {{
-    ['docker.service']
-    +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+    ([devture_postgres_identifier ~ '.service'] if (matrix_synapse_auto_compressor_container_network == devture_postgres_container_network) else [])
   }}
 
 ######################################################################

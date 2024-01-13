@@ -31,7 +31,10 @@ matrix_synapse_auto_compressor_container_additional_networks: []
 matrix_synapse_auto_compressor_container_extra_arguments: []
 
 # List of systemd services that matrix-synapse-auto-compressor.service depends on
-matrix_synapse_auto_compressor_systemd_required_services_list: ['docker.service']
+matrix_synapse_auto_compressor_systemd_required_services_list: "{{ matrix_synapse_auto_compressor_systemd_required_services_list_default + matrix_synapse_auto_compressor_systemd_required_services_list_auto + matrix_synapse_auto_compressor_systemd_required_services_list_custom }}"
+matrix_synapse_auto_compressor_systemd_required_services_list_default: ['docker.service']
+matrix_synapse_auto_compressor_systemd_required_services_list_auto: []
+matrix_synapse_auto_compressor_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-synapse-auto-compressor.service wants
 matrix_synapse_auto_compressor_systemd_wanted_services_list: []
