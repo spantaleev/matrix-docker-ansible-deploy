@@ -24,7 +24,7 @@ matrix_corporal_container_http_api_host_bind_port: ''
 matrix_corporal_container_extra_arguments: []
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
-matrix_corporal_container_network: "{{ matrix_docker_network }}"
+matrix_corporal_container_network: ""
 
 # A list of additional container networks that the container would be connected to.
 # The role does not create these networks, so make sure they already exist.
@@ -43,13 +43,28 @@ matrix_corporal_container_labels_traefik_entrypoints: web-secure
 matrix_corporal_container_labels_traefik_tls: "{{ matrix_corporal_container_labels_traefik_entrypoints != 'web' }}"
 matrix_corporal_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
-# Controls whether labels will be added that expose matrix-corporal's HTTP API
+# Controls whether labels will be added that expose matrix-corporal's HTTP API (/_matrix/corporal).
+# Because we also capture all of `/_matrix` for the Client-Server API below (see `matrix_corporal_container_labels_matrix_client_api_*`)
+# and we explicitly set a higher priority on it (to ensure we capture it instead of the homeserver),
+# we also need to tweak the priority of this router, to avoid its requests going to the other one.
 matrix_corporal_container_labels_api_enabled: "{{ matrix_corporal_http_api_enabled }}"
 matrix_corporal_container_labels_api_traefik_rule: "Host(`{{ matrix_corporal_matrix_homeserver_api_domain_name }}`) && PathPrefix(`/_matrix/corporal`)"
-matrix_corporal_container_labels_api_traefik_priority: 0
+matrix_corporal_container_labels_api_traefik_priority: "{{ matrix_corporal_container_labels_matrix_client_api_traefik_priority + 500 }}"
 matrix_corporal_container_labels_api_traefik_entrypoints: "{{ matrix_corporal_container_labels_traefik_entrypoints }}"
 matrix_corporal_container_labels_api_traefik_tls: "{{ matrix_corporal_container_labels_traefik_tls }}"
 matrix_corporal_container_labels_api_traefik_tls_certResolver: "{{ matrix_corporal_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose the Matrix Client-Server API (/_matrix).
+# By default, we try to capture these requests with higher priority than the running homeserver,
+# so that matrix-corporal can do its job of firewalling, etc.
+matrix_corporal_container_labels_matrix_client_api_enabled: true
+matrix_corporal_container_labels_matrix_client_api_traefik_hostname: "{{ matrix_corporal_matrix_homeserver_api_domain_name }}"
+matrix_corporal_container_labels_matrix_client_api_traefik_path_prefix: /_matrix
+matrix_corporal_container_labels_matrix_client_api_traefik_rule: "Host(`{{ matrix_corporal_container_labels_matrix_client_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_corporal_container_labels_matrix_client_api_traefik_path_prefix }}`)"
+matrix_corporal_container_labels_matrix_client_api_traefik_priority: 500
+matrix_corporal_container_labels_matrix_client_api_traefik_entrypoints: "{{ matrix_corporal_container_labels_traefik_entrypoints }}"
+matrix_corporal_container_labels_matrix_client_api_traefik_tls: "{{ matrix_corporal_container_labels_matrix_client_api_traefik_entrypoints != 'web' }}"
+matrix_corporal_container_labels_matrix_client_api_traefik_tls_certResolver: "{{ matrix_corporal_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # matrix_corporal_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
@@ -61,7 +76,11 @@ matrix_corporal_container_labels_api_traefik_tls_certResolver: "{{ matrix_corpor
 matrix_corporal_container_labels_additional_labels: ''
 
 # List of systemd services that matrix-corporal.service depends on
-matrix_corporal_systemd_required_services_list: ['docker.service']
+matrix_corporal_systemd_required_services_list: "{{ matrix_corporal_systemd_required_services_list_default + matrix_corporal_systemd_required_services_list_auto + matrix_corporal_systemd_required_services_list_custom }}"
+matrix_corporal_systemd_required_services_list_default: ['docker.service']
+matrix_corporal_systemd_required_services_list_auto: []
+matrix_corporal_systemd_required_services_list_custom: []
+
 matrix_corporal_docker_image: "{{ matrix_corporal_docker_image_name_prefix }}devture/matrix-corporal:{{ matrix_corporal_docker_image_tag }}"
 matrix_corporal_docker_image_name_prefix: "{{ 'localhost/' if matrix_corporal_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_corporal_docker_image_tag: "{{ matrix_corporal_version }}"  # for backward-compatibility
@@ -144,3 +163,5 @@ matrix_corporal_configuration_extension: "{{ matrix_corporal_configuration_exten
 # Holds the final Corporal configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_corporal_configuration_default`.
 matrix_corporal_configuration: "{{ matrix_corporal_configuration_default | combine(matrix_corporal_configuration_extension, recursive=True) }}"
+
+matrix_corporal_self_check_matrix_client_api_url_endpoint_public: "https://{{ matrix_corporal_matrix_homeserver_api_domain_name }}/_matrix/client/corporal"
