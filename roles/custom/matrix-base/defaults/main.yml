@@ -26,6 +26,8 @@ matrix_addons_container_network: matrix-addons
 matrix_addons_homeserver_container_network: "{{ matrix_homeserver_container_network }}"
 
 # The URL where addon services (bridges, bots, etc.) can reach the homeserver.
+# By default, this is configured to go directly to the homeserver, but the playbook may
+# override it to go through an intermediary service.
 matrix_addons_homeserver_client_api_url: "{{ matrix_homeserver_container_url }}"
 
 # The systemd services (representing the homeserver) that addon services (bridges, bots, etc.) should depend on
@@ -151,6 +153,8 @@ matrix_homeserver_container_network: "matrix-homeserver"
 matrix_homeserver_systemd_services_list: []
 
 # Specifies where the homeserver's Client-Server API is on the container network (matrix_homeserver_container_network).
+# Most services that need to reach the homeserver do not use `matrix_homeserver_container_url`, but
+# rather `matrix_addons_homeserver_client_api_url`.
 matrix_homeserver_container_url: "http://{{ matrix_homeserver_container_client_api_endpoint }}"
 
 # Specifies where the homeserver's Client-Server API is on the container network (matrix_homeserver_container_network).
