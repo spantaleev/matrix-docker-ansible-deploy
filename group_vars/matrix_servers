@@ -4439,7 +4439,7 @@ prometheus_node_exporter_gid: "{{ matrix_user_gid }}"
 
 prometheus_node_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
 
-prometheus_node_exporter_container_network: "{{ matrix_docker_network }}"
+prometheus_node_exporter_container_network: "{{ matrix_monitoring_container_network }}"
 
 prometheus_node_exporter_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
 
@@ -4475,7 +4475,7 @@ prometheus_postgres_exporter_gid: "{{ matrix_user_gid }}"
 
 prometheus_postgres_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
 
-prometheus_postgres_exporter_container_network: "{{ matrix_docker_network }}"
+prometheus_postgres_exporter_container_network: "{{ matrix_monitoring_container_network }}"
 
 prometheus_postgres_exporter_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
 
@@ -4516,7 +4516,7 @@ matrix_prometheus_nginxlog_exporter_identifier: matrix-prometheus-nginxlog-expor
 
 matrix_prometheus_nginxlog_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
 
-matrix_prometheus_nginxlog_exporter_container_network: matrix-prometheus-nginxlog-exporter
+matrix_prometheus_nginxlog_exporter_container_network: "{{ matrix_monitoring_container_network }}"
 
 matrix_prometheus_nginxlog_exporter_container_labels_traefik_enabled: "{{ matrix_metrics_exposure_enabled }}"
 matrix_prometheus_nginxlog_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
@@ -4658,7 +4658,7 @@ grafana_hostname: "{{ matrix_server_fqn_grafana }}"
 
 grafana_base_path: "{{ matrix_base_data_path }}/grafana"
 
-grafana_container_network: "{{ matrix_nginx_proxy_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else grafana_identifier }}"
+grafana_container_network: "{{ matrix_monitoring_container_network }}"
 
 grafana_container_additional_networks: |
   {{
@@ -4685,7 +4685,7 @@ grafana_provisioning_datasources: |
       'name': (matrix_server_fqn_matrix + ' - Prometheus'),
       'type': 'prometheus',
       'access': 'proxy',
-      'url': 'http://matrix-prometheus:9090',
+      'url': ('http://' + prometheus_identifier + ':9090'),
     }] if prometheus_enabled else [])
   }}
 
