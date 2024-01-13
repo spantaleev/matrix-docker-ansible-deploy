@@ -40,7 +40,9 @@
       --rm
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
-      --network={{ matrix_docker_network }}
+      {% if matrix_appservice_slack_database_container_network %}
+      --network={{ matrix_appservice_irc_database_container_network }}
+      {% endif %}
       --mount type=bind,src={{ matrix_appservice_slack_data_path }},dst=/data
       --entrypoint=/bin/sh
       {{ matrix_appservice_slack_docker_image }}

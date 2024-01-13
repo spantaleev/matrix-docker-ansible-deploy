@@ -650,6 +650,7 @@ matrix_appservice_slack_id_token: "{{ '%s' | format(matrix_homeserver_generic_se
 matrix_appservice_slack_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'nedb' }}"
 matrix_appservice_slack_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_appservice_slack_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.slack.db', rounds=655555) | to_uuid }}"
+matrix_appservice_slack_database_container_network: "{{ devture_postgres_container_network if devture_postgres_enabled else '' }}"
 
 ######################################################################
 #
