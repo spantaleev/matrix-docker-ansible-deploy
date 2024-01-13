@@ -703,6 +703,7 @@ matrix_appservice_irc_homeserver_token: "{{ '%s' | format(matrix_homeserver_gene
 matrix_appservice_irc_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'nedb' }}"
 matrix_appservice_irc_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_appservice_irc_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.irc.db', rounds=655555) | to_uuid }}"
+matrix_appservice_irc_database_container_network: "{{ devture_postgres_container_network if devture_postgres_enabled else '' }}"
 
 ######################################################################
 #
