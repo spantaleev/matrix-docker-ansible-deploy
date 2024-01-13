@@ -3860,14 +3860,15 @@ devture_postgres_backup_architecture: "{{ matrix_architecture }}"
 
 devture_postgres_backup_base_path: "{{ matrix_base_data_path }}/postgres-backup"
 
-devture_postgres_backup_systemd_required_services_list: |
+devture_postgres_backup_systemd_required_services_list_auto: |
   {{
-    (['docker.service'])
-    +
-    ([(devture_postgres_identifier + '.service')] if devture_postgres_enabled else [])
+    ([(devture_postgres_identifier + '.service')] if (devture_postgres_enabled and devture_postgres_backup_connection_hostname == devture_postgres_connection_hostname) else [])
   }}
 
-devture_postgres_backup_container_network: "{{ matrix_docker_network }}"
+devture_postgres_backup_container_additional_networks_auto: |-
+  {{
+      ([devture_postgres_container_network] if (devture_postgres_enabled and devture_postgres_backup_connection_hostname == devture_postgres_connection_hostname and devture_postgres_backup_container_network != devture_postgres_container_network) else [])
+  }}
 
 devture_postgres_backup_uid: "{{ matrix_user_uid }}"
 devture_postgres_backup_gid: "{{ matrix_user_gid }}"
