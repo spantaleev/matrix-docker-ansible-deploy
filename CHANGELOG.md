@@ -1,3 +1,27 @@
+# 2024-01-13
+
+## matrix-reminder-bot update with more secure (backward-incompatible) default settings
+
+**TLDR**: your updated (to [v0.3.0](https://github.com/anoadragon453/matrix-reminder-bot/releases/tag/v0.3.0)) [matrix-reminder-bot](./docs/configuring-playbook-bot-matrix-reminder-bot.md) is now more secure. By default, like other bridges/bots managed by the playbook, it will only provide its services to users of your own server (not to anyone, even across the Matrix Federation). If that's fine, there's nothing you need to do.
+
+Maintenance of [matrix-reminder-bot](./docs/configuring-playbook-bot-matrix-reminder-bot.md) has been picked up by [Kim Brose](https://github.com/HarHarLinks).
+
+Thanks to Kim, a new [v0.3.0](https://github.com/anoadragon453/matrix-reminder-bot/releases/tag/v0.3.0) release is out. The new version is now available for the ARM64 architecture, so playbook users on this architecture will no longer need to wait for [self-building](./docs/self-building.md) to happen.
+
+The new version also comes with new `allowlist` and `blocklist` settings, which make it possible to restrict who can use the bot. Previously anyone, even across the Matrix Federation could talk to it and schedule reminders.
+
+The playbook defaults all bridges and bots (where possible) to only be exposed to users of the current homeserver, not users across federation.
+Thanks to the new version of this bot making such a restriction possible, we're now making use of it. The playbook (via its `group_vars/matrix_servers` file) automatically enables the `allowlist` (`matrix_bot_matrix_reminder_bot_allowlist_enabled: true`) and configures it in such a way (`matrix_bot_matrix_reminder_bot_allowlist_regexes_auto`) so as to restrict the bot to your homeserver's users.
+
+If you need **to undo or tweak these security improvements**, you can change your `vars.yml` file to:
+
+- disable the allowlist (`matrix_bot_matrix_reminder_bot_allowlist_enabled: false`), making the bot allow usage by anyone, anywhere
+
+- inject additional allowed servers or users by adding **additional** (on top of the default allowlist in `matrix_bot_matrix_reminder_bot_allowlist_regexes_auto`) custom regexes in the `matrix_bot_matrix_reminder_bot_allowlist_regexes_custom` list variable (see the [syntax reference](https://github.com/anoadragon453/matrix-reminder-bot/blob/1e910c0aa3469d280d93ee7e6c6d577227a3460c/sample.config.yaml#L43-L49))
+
+- override the default allowlist (in the `group_vars/matrix_servers` file) by redefining `matrix_bot_matrix_reminder_bot_allowlist_regexes_auto`
+
+
 # 2024-01-05
 
 ## matrix-mailer has been replaced by the exim-relay external role

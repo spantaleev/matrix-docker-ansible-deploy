@@ -1681,11 +1681,16 @@ matrix_bot_matrix_reminder_bot_systemd_required_services_list: |
     (['matrix-nginx-proxy.service'] if matrix_nginx_proxy_enabled else [])
   }}
 
+matrix_bot_matrix_reminder_bot_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
+
 # Postgres is the default, except if not using internal Postgres server
 matrix_bot_matrix_reminder_bot_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
 matrix_bot_matrix_reminder_bot_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_bot_matrix_reminder_bot_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'reminder.bot.db', rounds=655555) | to_uuid }}"
-matrix_bot_matrix_reminder_bot_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+
+matrix_bot_matrix_reminder_bot_allowlist_enabled: true
+matrix_bot_matrix_reminder_bot_allowlist_regexes_auto:
+  - "@[a-z0-9-_.]+:{{ matrix_domain }}"
 
 ######################################################################
 #

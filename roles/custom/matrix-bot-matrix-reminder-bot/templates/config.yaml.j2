@@ -33,6 +33,33 @@ reminders:
   # If not set, UTC will be used
   timezone: {{ matrix_bot_matrix_reminder_bot_reminders_timezone }}
 
+# Restrict the bot to only respond to certain MXIDs
+allowlist:
+  # Set to true to enable the allowlist
+  enabled: {{ matrix_bot_matrix_reminder_bot_allowlist_enabled | to_json }}
+  # A list of MXID regexes to be allowed
+  # To allow a certain homeserver:
+  #     regexes: ["@[a-z0-9-_.]+:myhomeserver.tld"]
+  # To allow a set of users:
+  #     regexes: ["@alice:someserver.tld", "@bob:anotherserver.tld"]
+  # To allow nobody (same as blocking every MXID):
+  #     regexes: []
+  regexes: {{ matrix_bot_matrix_reminder_bot_allowlist_regexes | to_json }}
+
+# Prevent the bot from responding to certain MXIDs
+# If both allowlist and blocklist are enabled, blocklist entries takes precedence
+blocklist:
+  # Set to true to enable the blocklist
+  enabled: {{ matrix_bot_matrix_reminder_bot_blocklist_enabled | to_json }}
+  # A list of MXID regexes to be blocked
+  # To block a certain homeserver:
+  #     regexes: [".*:myhomeserver.tld"]
+  # To block a set of users:
+  #     regexes: ["@alice:someserver.tld", "@bob:anotherserver.tld"]
+  # To block absolutely everyone (same as allowing nobody):
+  #     regexes: [".*"]
+  regexes: {{ matrix_bot_matrix_reminder_bot_blocklist_regexes | to_json }}
+
 # Logging setup
 logging:
   # Logging level
