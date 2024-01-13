@@ -19,3 +19,27 @@
 - name: Report working Matrix Corporal HTTP gateway
   ansible.builtin.debug:
     msg: "Matrix Corporal is fronting the Matrix Client API at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_corporal_self_check_matrix_client_api_url_endpoint_public }}`)"
+
+- when: matrix_corporal_http_api_enabled | bool
+  block:
+    - name: Check Matrix Corporal HTTP API
+      ansible.builtin.uri:
+        url: "{{ matrix_corporal_self_check_corporal_api_url_endpoint_public }}"
+        headers:
+          Authorization: "Bearer {{ matrix_corporal_http_api_auth_token }}"
+        follow_redirects: none
+        return_content: false
+      check_mode: false
+      register: result_corporal_api
+      ignore_errors: true
+      delegate_to: 127.0.0.1
+      become: false
+
+    - name: Fail if Matrix Corporal HTTP API not working
+      ansible.builtin.fail:
+        msg: "Failed checking Matrix Corporal is fronting the Matrix Client API at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_corporal_self_check_matrix_client_api_url_endpoint_public }}`). Is matrix-corporal running? Is port 443 open in your firewall? Full error: {{ result_corporal_api }}"
+      when: "result_corporal_api.failed or result_corporal_api.status != 200"
+
+    - name: Report working Matrix Corporal HTTP API
+      ansible.builtin.debug:
+        msg: "Matrix Corporal API is working at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_corporal_self_check_corporal_api_url_endpoint_public }}`)"
