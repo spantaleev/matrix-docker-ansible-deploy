@@ -17,7 +17,7 @@ ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_s
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-dynamic-dns 2>/dev/null || true'
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name matrix-dynamic-dns \
 			--log-driver=none \
-			--network={{ matrix_docker_network }} \
+			--network={{ matrix_dynamic_dns_container_network }} \
   			-e PUID={{ matrix_user_uid }} \
   			-e PGID={{ matrix_user_gid }} \
 			--mount type=bind,src={{ matrix_dynamic_dns_config_path }},dst=/config \

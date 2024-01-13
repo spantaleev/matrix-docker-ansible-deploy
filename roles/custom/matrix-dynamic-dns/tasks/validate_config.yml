@@ -14,3 +14,11 @@
   with_items: "{{ matrix_dynamic_dns_domain_configurations }}"
   loop_control:
     loop_var: configuration
+
+- name: Fail if required mautrix-dynamic-dns settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
+  with_items:
+    - {'name': 'matrix_dynamic_dns_container_network', when: true}
