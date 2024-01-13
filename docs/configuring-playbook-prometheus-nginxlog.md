@@ -1,10 +1,18 @@
 # Enabling metrics and graphs for NginX logs (optional)
 
-It can be useful to have some (visual) insight into NignX logs.
+It can be useful to have some (visual) insight into [nginx](https://nginx.org/) logs.
 
-This adds [prometheus-nginxlog-exporter](https://github.com/martin-helmich/prometheus-nginxlog-exporter/) to your matrix deployment.
-It will provide a prometheus 'metrics' endpoint exposing data from both the `matrix-nginx-proxy` and `matrix-synapse-reverse-proxy-companion` logs and automatically aggregates the data with prometheus.
-Optionally it visualizes the data, if [`matrix-grafana`](configuring-playbook-prometheus-grafana.md) is enabled, by means of a dedicated Grafana dashboard named `NGINX PROXY`
+This adds [prometheus-nginxlog-exporter](https://github.com/martin-helmich/prometheus-nginxlog-exporter/) to your Matrix deployment.
+
+It will collect access logs from various nginx reverse-proxies used internally (e.g. `matrix-homeserver-proxy` and `matrix-synapse-reverse-proxy-companion`) and will make them available at a Prometheus-compatible `/metrics` endpoint.
+
+**NOTE**: nginx is only used internally by this Ansible playbook. With Traefik being our default reverse-proxy, collecting nginx metrics is less relevant.
+
+To make use of this, you need to install [Prometheus](./configuring-playbook-prometheus-grafana.md) either via the playbook or externally. When using an external Prometheus, configuration adjustments are necessary - see [Save metrics on an external Prometheus server](#save-metrics-on-an-external-prometheus-server).
+
+If your setup includes [Grafana](./configuring-playbook-prometheus-grafana.md), a dedicated `NGINX PROXY` Grafana dashboard will be created.
+
+## Configuration
 
 You can enable this role by adding the following settings in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
@@ -12,10 +20,7 @@ You can enable this role by adding the following settings in your configuration 
 matrix_prometheus_nginxlog_exporter_enabled: true
 ```
 
-x | Prerequisites | Variable | Description
-|:--:|:--:|:--:|:--|
-**REQUIRED** | `matrix-prometheus`| `prometheus_enabled`|[Prometheus](https://prometheus.io) is a time series database. It holds all the data we're going to talk about.
-_Optional_ | [`matrix-grafana`](configuring-playbook-prometheus-grafana.md) | [`grafana_enabled`](configuring-playbook-prometheus-grafana.md)|[Grafana](https://grafana.com) is the visual component. It shows (on the `stats.<your-domain>` subdomain) graphs that we're interested in. When enabled the `NGINX PROXY` dashboard is automatically added.
+Then, re-run the playbook. See [installation](./installing.md).
 
 ## Docker Image Compatibility
 
