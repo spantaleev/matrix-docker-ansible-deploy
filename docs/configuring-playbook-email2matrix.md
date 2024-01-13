@@ -70,6 +70,6 @@ matrix_email2matrix_matrix_mappings:
     SkipMarkdown: true
 ```
 
-You can also set `MatrixHomeserverUrl` to the container URL where your homeserver's Client-Server API lives by using the `{{ matrix_homeserver_container_url }}` variable, instead of the public `https://matrix.DOMAIN` endpoint.
+You can also set `MatrixHomeserverUrl` to the container URL where your homeserver's Client-Server API lives by using the `{{ matrix_addons_homeserver_client_api_url }}` variable, instead of the public `https://matrix.DOMAIN` endpoint.
 
 Re-run the playbook (`--tags=setup-email2matrix,start`) and try sending an email to `my-mailbox@matrix.DOMAIN`.
