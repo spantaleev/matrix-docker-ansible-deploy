@@ -3477,12 +3477,14 @@ matrix_nginx_proxy_access_log_syslog_integration_server_port: "{{ (matrix_promet
 matrix_homeserver_proxy_enabled: true
 
 matrix_homeserver_proxy_access_log_syslog_integration_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
-matrix_homeserver_proxy_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_container_hostname | string + ':' + matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
+matrix_homeserver_proxy_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_identifier | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
 
 matrix_homeserver_proxy_container_additional_networks: |
   {{
     (
       ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
+      +
+      ([matrix_prometheus_nginxlog_exporter_container_network] if (matrix_prometheus_nginxlog_exporter_enabled and matrix_prometheus_nginxlog_exporter_container_network != matrix_homeserver_proxy_container_network) else [])
       +
       ([
         {
@@ -3525,9 +3527,6 @@ matrix_homeserver_proxy_systemd_wanted_services_list_auto: |
     +
     ([(matrix_media_repo_identifier + '.service')] if matrix_media_repo_enabled else [])
   }}
-
-# matrix_nginx_proxy_access_log_syslog_integration_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
-# matrix_nginx_proxy_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_container_hostname | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
 
 ######################################################################
 #                                                                    #
@@ -4331,6 +4330,8 @@ matrix_synapse_reverse_proxy_companion_container_additional_networks: |
   {{
     (
       ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_synapse_reverse_proxy_companion_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network else [])
+      +
+      ([matrix_prometheus_nginxlog_exporter_container_network] if (matrix_prometheus_nginxlog_exporter_enabled and matrix_prometheus_nginxlog_exporter_container_network != matrix_synapse_reverse_proxy_companion_container_network) else [])
       +
       ([] if matrix_homeserver_container_network in ['', matrix_synapse_reverse_proxy_companion_container_network] else [matrix_homeserver_container_network])
     ) | unique

@@ -71,6 +71,12 @@ matrix_homeserver_proxy_container_federation_api_host_bind_port: ''
 # Option to disable the access log
 matrix_homeserver_proxy_access_log_enabled: true
 
+# Controls whether to send access logs to a remote syslog-compatible server
+matrix_homeserver_proxy_access_log_syslog_integration_enabled: false
+matrix_homeserver_proxy_access_log_syslog_integration_server_port: ''
+# This is intentionally different. The maximum allowed length is 32 characters and dashes are not allowed.
+matrix_homeserver_proxy_access_log_syslog_integration_tag: matrix_homeserver_proxy
+
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_homeserver_proxy_tmp_directory_size_mb: "{{ (matrix_homeserver_proxy_federation_api_client_max_body_size_mb | int) * 50 }}"
 matrix_homeserver_proxy_tmp_cache_directory_size_mb: "{{ (matrix_homeserver_proxy_cache_max_size_mb | int) * 2 }}"
