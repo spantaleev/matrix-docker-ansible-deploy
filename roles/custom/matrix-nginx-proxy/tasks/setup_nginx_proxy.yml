@@ -155,6 +155,12 @@
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
+- name: Ensure matrix-nginx-proxy container network is created
+  community.general.docker_network:
+    name: "{{ matrix_nginx_proxy_container_network }}"
+    driver: bridge
+  when: matrix_nginx_proxy_enabled | bool
+
 - name: Ensure matrix-nginx-proxy.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-nginx-proxy.service.j2"
