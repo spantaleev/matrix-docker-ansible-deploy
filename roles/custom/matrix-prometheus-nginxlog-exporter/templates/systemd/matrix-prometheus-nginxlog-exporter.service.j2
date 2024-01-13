@@ -29,7 +29,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			{% if matrix_prometheus_nginxlog_exporter_container_syslog_host_bind_port %}
 			-p {{ matrix_prometheus_nginxlog_exporter_container_syslog_host_bind_port }}:{{ matrix_prometheus_nginxlog_exporter_container_syslog_port }}/udp \
 			{% endif %}
-			--mount type=bind,{{ matrix_prometheus_nginxlog_exporter_config_path }},dst=/etc/prometheus-nginxlog-exporter \
+			--mount type=bind,src={{ matrix_prometheus_nginxlog_exporter_config_path }},dst=/etc/prometheus-nginxlog-exporter \
 			{% for arg in matrix_prometheus_nginxlog_exporter_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
