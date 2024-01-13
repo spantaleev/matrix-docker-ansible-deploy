@@ -9,6 +9,7 @@
   with_items:
     - {'old': 'matrix_bot_maubot_management_interface_port', 'new': 'matrix_bot_maubot_server_port'}
     - {'old': 'matrix_bot_maubot_management_interface_http_bind_port', 'new': 'matrix_bot_maubot_container_management_interface_http_bind_port'}
+    - {'old': 'matrix_bot_maubot_registration_shared_secret', 'new': 'matrix_bot_maubot_homeserver_secret'}
 
 - name: Fail if required maubot settings not defined
   ansible.builtin.fail:
@@ -22,3 +23,5 @@
     - {'name': 'matrix_bot_maubot_admins', when: true}
     - {'name': 'matrix_bot_maubot_database_hostname', when: "{{ matrix_bot_maubot_database_engine == 'postgres' }}"}
     - {'name': 'matrix_bot_maubot_container_network', when: true}
+    - {'name': 'matrix_bot_maubot_homeserver_name', when: true}
+    - {'name': 'matrix_bot_maubot_homeserver_url', when: true}

@@ -58,13 +58,13 @@ server:
 # clients in the management UI, since you can also just type the homeserver URL
 # into the box there.
 homeservers:
-  {{  matrix_domain }}:
+  {{ matrix_bot_maubot_homeserver_name }}:
     # Client-server API URL
-        url: {{ matrix_homeserver_container_url | to_json }}
+        url: {{ matrix_bot_maubot_homeserver_url | to_json }}
     # registration_shared_secret from synapse config
     # You can leave this empty if you don't have access to the homeserver.
     # When this is empty, `mbc auth --register` won't work, but `mbc auth` (login) will.
-        secret: {{ matrix_bot_maubot_registration_shared_secret|to_json }}
+        secret: {{ matrix_bot_maubot_homeserver_secret | to_json }}
 
 # List of administrator users. Plaintext passwords will be bcrypted on startup. Set empty password
 # to prevent normal login. Root is a special user that can't have a password and will always exist.
