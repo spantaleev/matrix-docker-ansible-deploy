@@ -47,7 +47,7 @@ http {
 								'$status "$http_referer" '
 								'"$http_user_agent" "$http_x_forwarded_for"';
 
-	access_log syslog:server={{ matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_server_port }},tag=matrix_nginx_proxy_companion prometheus_fmt;
+	access_log syslog:server={{ matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_server_port }},tag={{ matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_tag }} prometheus_fmt;
 	{% endif %}
 
 	{% if not matrix_synapse_reverse_proxy_companion_access_log_enabled and not matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_enabled %}
