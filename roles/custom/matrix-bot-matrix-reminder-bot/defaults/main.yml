@@ -9,9 +9,10 @@ matrix_bot_matrix_reminder_bot_docker_repo: "https://github.com/anoadragon453/ma
 matrix_bot_matrix_reminder_bot_docker_repo_version: "{{ matrix_bot_matrix_reminder_bot_version }}"
 matrix_bot_matrix_reminder_bot_docker_src_files_path: "{{ matrix_base_data_path }}/matrix-reminder-bot/docker-src"
 
-# renovate: datasource=docker depName=anoa/matrix-reminder-bot
-matrix_bot_matrix_reminder_bot_version: release-v0.2.1
-matrix_bot_matrix_reminder_bot_docker_image: "{{ matrix_container_global_registry_prefix }}anoa/matrix-reminder-bot:{{ matrix_bot_matrix_reminder_bot_version }}"
+# renovate: datasource=docker depName=ghcr.io/anoadragon453/matrix-reminder-bot
+matrix_bot_matrix_reminder_bot_version: v0.3.0
+matrix_bot_matrix_reminder_bot_docker_image: "{{ matrix_bot_matrix_reminder_bot_docker_image_name_prefix }}anoadragon453/matrix-reminder-bot:{{ matrix_bot_matrix_reminder_bot_version }}"
+matrix_bot_matrix_reminder_bot_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_matrix_reminder_bot_container_image_self_build else 'ghcr.io/' }}"
 matrix_bot_matrix_reminder_bot_docker_image_force_pull: "{{ matrix_bot_matrix_reminder_bot_docker_image.endswith(':latest') }}"
 
 matrix_bot_matrix_reminder_bot_base_path: "{{ matrix_base_data_path }}/matrix-reminder-bot"
@@ -81,6 +82,17 @@ matrix_bot_matrix_reminder_bot_matrix_homeserver_url: ""
 # The timezone to use when creating reminders.
 # Examples: 'Europe/London', 'Etc/UTC'
 matrix_bot_matrix_reminder_bot_reminders_timezone: ''
+
+matrix_bot_matrix_reminder_bot_allowlist_enabled: false
+matrix_bot_matrix_reminder_bot_allowlist_regexes: "{{ matrix_bot_matrix_reminder_bot_allowlist_regexes_auto + matrix_bot_matrix_reminder_bot_allowlist_regexes_custom }}"
+matrix_bot_matrix_reminder_bot_allowlist_regexes_auto: []
+matrix_bot_matrix_reminder_bot_allowlist_regexes_custom: []
+
+# If both the blocklist and whitelist are enabled at the same time, the blocklist takes precedence.
+matrix_bot_matrix_reminder_bot_blocklist_enabled: false
+matrix_bot_matrix_reminder_bot_blocklist_regexes: "{{ matrix_bot_matrix_reminder_bot_blocklist_regexes_auto + matrix_bot_matrix_reminder_bot_blocklist_regexes_custom }}"
+matrix_bot_matrix_reminder_bot_blocklist_regexes_auto: []
+matrix_bot_matrix_reminder_bot_blocklist_regexes_custom: []
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
