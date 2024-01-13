@@ -3875,6 +3875,8 @@ devture_postgres_backup_systemd_required_services_list_auto: |
     ([(devture_postgres_identifier + '.service')] if (devture_postgres_enabled and devture_postgres_backup_connection_hostname == devture_postgres_connection_hostname) else [])
   }}
 
+devture_postgres_backup_container_network: "{{ (devture_postgres_container_network if (devture_postgres_enabled and devture_postgres_backup_connection_hostname == devture_postgres_connection_hostname) else devture_postgres_identifier) }}"
+
 devture_postgres_backup_container_additional_networks_auto: |-
   {{
       ([devture_postgres_container_network] if (devture_postgres_enabled and devture_postgres_backup_connection_hostname == devture_postgres_connection_hostname and devture_postgres_backup_container_network != devture_postgres_container_network) else [])
