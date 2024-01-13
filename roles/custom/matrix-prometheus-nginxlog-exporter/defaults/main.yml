@@ -3,10 +3,16 @@
 # See: https://github.com/martin-helmich/prometheus-nginxlog-exporter/
 
 matrix_prometheus_nginxlog_exporter_enabled: true
+
+matrix_prometheus_nginxlog_exporter_identifier: ''
+
+# You don't need to configure a hostname and path prefix if you're not exposing this.
+matrix_prometheus_nginxlog_exporter_hostname: ''
+matrix_prometheus_nginxlog_exporter_path_prefix: "/metrics/nginxlog"
+
 # renovate: datasource=docker depName=ghcr.io/martin-helmich/prometheus-nginxlog-exporter/exporter
 matrix_prometheus_nginxlog_exporter_version: v1.10.0
 
-matrix_prometheus_nginxlog_exporter_container_hostname: 'matrix-prometheus-nginxlog-exporter'
 matrix_prometheus_nginxlog_exporter_container_metrics_port: '4040'
 matrix_prometheus_nginxlog_exporter_container_syslog_port: '6514'
 
@@ -19,7 +25,8 @@ matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled: true
 
 # Controls whether prometheus-nginxlog-exporter metrics should be proxied (exposed) on a public URL
 matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled: false
-# TODO - add more variables for controlling the hostname, path prefix, etc.
+matrix_prometheus_nginxlog_exporter_metrics_proxying_hostname: ''
+matrix_prometheus_nginxlog_exporter_metrics_proxying_path_prefix: ''
 
 # matrix_prometheus_nginxlog_exporter_dashboard_urls contains a list of URLs with Grafana dashboard definitions.
 # If the Grafana role is enabled, these dashboards will be downloaded.
@@ -28,13 +35,42 @@ matrix_prometheus_nginxlog_exporter_dashboard_urls: []
 matrix_prometheus_nginxlog_exporter_base_path: "{{ matrix_base_data_path }}/prometheus-nginxlog-exporter"
 matrix_prometheus_nginxlog_exporter_config_path: "{{ matrix_prometheus_nginxlog_exporter_base_path }}/config"
 
-matrix_prometheus_nginxlog_exporter_container_network: "{{ matrix_docker_network }}"
+matrix_prometheus_nginxlog_exporter_container_network: "{{ matrix_prometheus_nginxlog_exporter_identifier }}"
+
+# matrix_prometheus_nginxlog_exporter_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_prometheus_nginxlog_exporter_container_labels_additional_labels`.
+matrix_prometheus_nginxlog_exporter_container_labels_traefik_enabled: "{{ true if matrix_prometheus_nginxlog_exporter_hostname else false }}"
+matrix_prometheus_nginxlog_exporter_container_labels_traefik_docker_network: "{{ matrix_prometheus_nginxlog_exporter_container_network }}"
+matrix_prometheus_nginxlog_exporter_container_labels_traefik_hostname: "{{ matrix_prometheus_nginxlog_exporter_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/metrics`).
+matrix_prometheus_nginxlog_exporter_container_labels_traefik_path_prefix: "{{ matrix_prometheus_nginxlog_exporter_path_prefix }}"
+matrix_prometheus_nginxlog_exporter_container_labels_traefik_rule: "Host(`{{ matrix_prometheus_nginxlog_exporter_container_labels_traefik_hostname }}`) && PathPrefix(`{{ matrix_prometheus_nginxlog_exporter_container_labels_traefik_path_prefix | quote }}`)"
+matrix_prometheus_nginxlog_exporter_container_labels_traefik_entrypoints: web-secure
+matrix_prometheus_nginxlog_exporter_container_labels_traefik_tls: "{{ matrix_prometheus_nginxlog_exporter_container_labels_traefik_entrypoints != 'web' }}"
+matrix_prometheus_nginxlog_exporter_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_enabled: false
+# See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
+matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_users: ''
+
+# matrix_prometheus_nginxlog_exporter_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_prometheus_nginxlog_exporter_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_prometheus_nginxlog_exporter_container_labels_additional_labels: ''
 
 # A list of extra docker arguments to pass to the container
 matrix_prometheus_nginxlog_exporter_container_extra_arguments: []
 
 # List of systemd services that matrix-prometheus_nginxlog_exporter.service depends on
-matrix_prometheus_nginxlog_exporter_systemd_required_services_list: ['docker.service']
+matrix_prometheus_nginxlog_exporter_systemd_required_services_list: "{{ matrix_prometheus_nginxlog_exporter_systemd_required_services_list_default + matrix_prometheus_nginxlog_exporter_systemd_required_services_list_auto + matrix_prometheus_nginxlog_exporter_systemd_required_services_list_custom }}"
+matrix_prometheus_nginxlog_exporter_systemd_required_services_list_default: ['docker.service']
+matrix_prometheus_nginxlog_exporter_systemd_required_services_list_auto: []
+matrix_prometheus_nginxlog_exporter_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-prometheus_nginxlog_exporter.service wants
 matrix_prometheus_nginxlog_exporter_systemd_wanted_services_list: []
@@ -49,3 +85,7 @@ matrix_prometheus_nginxlog_exporter_container_http_host_bind_port: ''
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:6514"), or empty string to not expose.
 # NOTE: is an UDP connection!
 matrix_prometheus_nginxlog_exporter_container_syslog_host_bind_port: ''
+
+matrix_prometheus_nginxlog_exporter_config_namespaces_matrix_source_tags: "{{ matrix_prometheus_nginxlog_exporter_config_namespaces_matrix_source_tags_auto + matrix_prometheus_nginxlog_exporter_config_namespaces_matrix_source_tags_custom }}"
+matrix_prometheus_nginxlog_exporter_config_namespaces_matrix_source_tags_auto: []
+matrix_prometheus_nginxlog_exporter_config_namespaces_matrix_source_tags_custom: []

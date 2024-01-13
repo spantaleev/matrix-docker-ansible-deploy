@@ -1,6 +1,6 @@
 #jinja2: lstrip_blocks: "True"
 [Unit]
-Description={{ matrix_prometheus_nginxlog_exporter_container_hostname }}
+Description=prometheus-nginxlog-exporteer ({{ matrix_prometheus_nginxlog_exporter_identifier }})
 {% for service in matrix_prometheus_nginxlog_exporter_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
@@ -13,11 +13,12 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_prometheus_nginxlog_exporter_container_hostname }} 2>/dev/null || true'
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_prometheus_nginxlog_exporter_container_hostname }} 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_prometheus_nginxlog_exporter_identifier }} 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_prometheus_nginxlog_exporter_identifier }} 2>/dev/null || true'
 
-
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name {{ matrix_prometheus_nginxlog_exporter_container_hostname }} \
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name={{ matrix_prometheus_nginxlog_exporter_identifier }} \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
@@ -30,17 +31,24 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
 			-p {{ matrix_prometheus_nginxlog_exporter_container_syslog_host_bind_port }}:{{ matrix_prometheus_nginxlog_exporter_container_syslog_port }}/udp \
 			{% endif %}
 			--mount type=bind,src={{ matrix_prometheus_nginxlog_exporter_config_path }},dst=/etc/prometheus-nginxlog-exporter \
+			--label-file={{ matrix_prometheus_nginxlog_exporter_base_path }}/labels \
 			{% for arg in matrix_prometheus_nginxlog_exporter_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_prometheus_nginxlog_exporter_docker_image }} \
 			-config-file /etc/prometheus-nginxlog-exporter/prometheus-nginxlog-exporter.yaml
 
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_prometheus_nginxlog_exporter_container_hostname }} 2>/dev/null || true'
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_prometheus_nginxlog_exporter_container_hostname }} 2>/dev/null || true'
+{% for network in matrix_mautrix_facebook_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ matrix_prometheus_nginxlog_exporter_identifier }}
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ matrix_prometheus_nginxlog_exporter_identifier }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_prometheus_nginxlog_exporter_identifier }} 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_prometheus_nginxlog_exporter_identifier }} 2>/dev/null || true'
 Restart=always
 RestartSec=30
-SyslogIdentifier={{ matrix_prometheus_nginxlog_exporter_container_hostname }}
+SyslogIdentifier={{ matrix_prometheus_nginxlog_exporter_identifier }}
 
 [Install]
 WantedBy=multi-user.target

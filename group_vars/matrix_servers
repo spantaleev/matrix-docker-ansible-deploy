@@ -3303,6 +3303,8 @@ matrix_nginx_proxy_container_additional_networks: |
     (
       ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
       +
+      ([matrix_prometheus_nginxlog_exporter_container_network] if (matrix_prometheus_nginxlog_exporter_enabled and matrix_prometheus_nginxlog_exporter_container_network != matrix_nginx_proxy_container_network) else [])
+      +
       ([jitsi_container_network] if jitsi_enabled and matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' and jitsi_container_network != matrix_nginx_proxy_container_network else [])
     ) | unique
   }}
@@ -3455,7 +3457,7 @@ matrix_ssl_architecture: "{{
 matrix_ssl_pre_obtaining_required_service_name: "{{ 'matrix-dynamic-dns' if matrix_dynamic_dns_enabled else '' }}"
 
 matrix_nginx_proxy_access_log_syslog_integration_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
-matrix_nginx_proxy_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_container_hostname | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
+matrix_nginx_proxy_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_identifier | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
 
 ######################################################################
 #
@@ -4364,8 +4366,7 @@ matrix_synapse_reverse_proxy_companion_synapse_media_repository_locations: "{{ma
 matrix_synapse_reverse_proxy_companion_synapse_user_dir_locations: "{{ matrix_synapse_workers_user_dir_worker_client_server_endpoints|default([]) }}"
 
 matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
-matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_container_hostname | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
-
+matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_identifier | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
 
 ######################################################################
 #
@@ -4493,6 +4494,27 @@ prometheus_postgres_exporter_systemd_required_services_list_auto: |
 
 matrix_prometheus_nginxlog_exporter_enabled: false
 
+matrix_prometheus_nginxlog_exporter_identifier: matrix-prometheus-nginxlog-exporter
+
+matrix_prometheus_nginxlog_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
+
+matrix_prometheus_nginxlog_exporter_container_network: matrix-prometheus-nginxlog-exporter
+
+matrix_prometheus_nginxlog_exporter_container_labels_traefik_enabled: "{{ matrix_metrics_exposure_enabled }}"
+matrix_prometheus_nginxlog_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_prometheus_nginxlog_exporter_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_prometheus_nginxlog_exporter_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+
+matrix_prometheus_nginxlog_exporter_config_namespaces_matrix_source_tags_auto: |
+  {{
+    ([matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_tag] if matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_enabled else [])
+    +
+    ([matrix_homeserver_proxy_access_log_syslog_integration_tag] if matrix_homeserver_proxy_access_log_syslog_integration_enabled else [])
+  }}
+
 ######################################################################
 #
 # /matrix-prometheus-nginxlog-exporter
@@ -4589,7 +4611,7 @@ matrix_prometheus_services_connect_scraper_hookshot_enabled: "{{ matrix_hookshot
 matrix_prometheus_services_connect_scraper_hookshot_static_configs_target: "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_metrics_port | string }}"
 
 matrix_prometheus_services_connect_scraper_nginxlog_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
-matrix_prometheus_services_connect_scraper_nginxlog_static_configs_target: "{{ matrix_prometheus_nginxlog_exporter_container_hostname }}:{{ matrix_prometheus_nginxlog_exporter_container_metrics_port | string }}"
+matrix_prometheus_services_connect_scraper_nginxlog_static_configs_target: "{{ matrix_prometheus_nginxlog_exporter_identifier }}:{{ matrix_prometheus_nginxlog_exporter_container_metrics_port | string }}"
 
 matrix_prometheus_services_connect_scraper_media_repo_enabled: "{{ matrix_media_repo_enabled and matrix_media_repo_metrics_enabled }}"
 matrix_prometheus_services_connect_scraper_media_repo_static_configs_target: "{{ matrix_media_repo_identifier }}:{{ matrix_media_repo_metrics_port }}"

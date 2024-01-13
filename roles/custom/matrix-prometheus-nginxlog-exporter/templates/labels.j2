@@ -1,0 +1,36 @@
+{% if matrix_prometheus_nginxlog_exporter_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_prometheus_nginxlog_exporter_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_prometheus_nginxlog_exporter_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.{{ matrix_prometheus_nginxlog_exporter_identifier }}.loadbalancer.server.port={{ matrix_prometheus_nginxlog_exporter_container_metrics_port }}
+
+{% set middlewares = [] %}
+
+{% if matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_enabled %}
+{% set middlewares = middlewares + [matrix_prometheus_nginxlog_exporter_identifier + '-basic-auth'] %}
+traefik.http.middlewares.{{ matrix_prometheus_nginxlog_exporter_identifier }}-basic-auth.basicauth.users={{ matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_users }}
+{% endif %}
+
+{% set middlewares = middlewares + [matrix_prometheus_nginxlog_exporter_identifier + '-replacepath'] %}
+traefik.http.middlewares.{{ matrix_prometheus_nginxlog_exporter_identifier }}-replacepath.replacepath.path=/metrics
+
+traefik.http.routers.{{ matrix_prometheus_nginxlog_exporter_identifier }}.rule={{ matrix_prometheus_nginxlog_exporter_container_labels_traefik_rule }}
+
+{% if middlewares | length > 0 %}
+traefik.http.routers.{{ matrix_prometheus_nginxlog_exporter_identifier }}.middlewares={{ middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers.{{ matrix_prometheus_nginxlog_exporter_identifier }}.service={{ matrix_prometheus_nginxlog_exporter_identifier }}
+traefik.http.routers.{{ matrix_prometheus_nginxlog_exporter_identifier }}.entrypoints={{ matrix_prometheus_nginxlog_exporter_container_labels_traefik_entrypoints }}
+
+
+traefik.http.routers.{{ matrix_prometheus_nginxlog_exporter_identifier }}.tls={{ matrix_prometheus_nginxlog_exporter_container_labels_traefik_tls | to_json }}
+{% if matrix_prometheus_nginxlog_exporter_container_labels_traefik_tls %}
+traefik.http.routers.{{ matrix_prometheus_nginxlog_exporter_identifier }}.tls.certResolver={{ matrix_prometheus_nginxlog_exporter_container_labels_traefik_tls_certResolver }}
+{% endif %}
+{% endif %}
+
+{{ matrix_prometheus_nginxlog_exporter_container_labels_additional_labels }}

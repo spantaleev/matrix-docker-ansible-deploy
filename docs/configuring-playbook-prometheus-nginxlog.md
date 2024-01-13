@@ -10,12 +10,6 @@ You can enable this role by adding the following settings in your configuration 
 
 ```yaml
 matrix_prometheus_nginxlog_exporter_enabled: true
-
-# required depency
-prometheus_enabled: true
-
-# optional for visualization
-grafana_enabled: true
 ```
 
 x | Prerequisites | Variable | Description
@@ -27,8 +21,9 @@ _Optional_ | [`matrix-grafana`](configuring-playbook-prometheus-grafana.md) | [`
 
 At the moment of writing only images for `amd64` and `arm64` architectures are available
 
-The playbook currently does not support building an image.
-You can however use a custom-build image by setting
+The playbook currently does not support [self-building](./self-building.md) a container image on other architectures.
+You can however use a custom-build image by setting:
+
 ```yaml
 matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled: false
 matrix_prometheus_nginxlog_exporter_docker_image: path/to/docker/image:tag
@@ -41,10 +36,14 @@ Please make sure you change the default Grafana password.
 
 ## Save metrics on an external Prometheus server
 
-The playbook will automatically integrate the metrics into the Prometheus server provided with this playbook. You can choose to save data on an external Prometheus instance.
+The playbook will automatically integrate the metrics into the [Prometheus](./configuring-playbook-prometheus-grafana.md) server provided with this playbook (if enabled). In such cases, the metrics endpoint is not exposed publicly - it's only available on the container network.
 
-The metrics of this role will be exposed on `https://matrix.DOMAIN/metrics/nginxlog` when setting
-```yaml
-matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled: true
-```
+When using an external Prometheus server, you'll need to expose metrics publicly. See [Collecting metrics to an external Prometheus server](./configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server).
+
+You can either use `matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled: true` to expose just this one service, or `matrix_metrics_exposure_enabled: true` to expose all services.
+
+Whichever way you go with, this service will expose its metrics endpoint **without password-protection** at `https://matrix.DOMAIN/metrics/nginxlog` by default.
+
+For password-protection, use (`matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users`) or (`matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_enabled` and `matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_users`).
+
 
