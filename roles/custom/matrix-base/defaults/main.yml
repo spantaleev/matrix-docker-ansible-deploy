@@ -110,6 +110,7 @@ matrix_server_fqn_rageshake: "rageshake.{{ matrix_domain }}"
 matrix_federation_public_port: 8448
 
 # The name of the Traefik entrypoint for handling Matrix Federation
+# Also see the `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_*` variables.
 matrix_federation_traefik_entrypoint: matrix-federation
 
 # The architecture that your server runs.
@@ -239,6 +240,23 @@ matrix_metrics_exposure_http_basic_auth_users: ''
 matrix_playbook_reverse_proxy_type: ''
 
 matrix_playbook_service_host_bind_interface_prefix: "{{ '' if matrix_playbook_reverse_proxy_type not in ['other-nginx-non-container', 'other-on-same-host', 'other-on-another-host'] else ('0.0.0.0:' if matrix_playbook_reverse_proxy_type == 'other-on-another-host' else '127.0.0.1:') }}"
+
+# Controls whether to enable an additional Traefik entrypoint for the purpose of serving Matrix Federation.
+# By default, federation is served on a special port (8448), so a separate entrypoint is necessary.
+# Group variables may influence whether this is enabled based on the port number and on the default entrypoints of the Traefik reverse-proxy.
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_enabled: true
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_name: "{{ matrix_federation_traefik_entrypoint }}"
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_port: "{{ matrix_federation_public_port }}"
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port: "{{ matrix_federation_public_port }}"
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_auto | combine(matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom, recursive=True) }}"
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_auto: {}
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom: {}
+
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_definition:
+  name: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_name }}"
+  port: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_port }}"
+  host_bind_port: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port }}"
+  config: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config }}"
 
 # Variables to Control which parts of our roles run.
 run_postgres_import: true
