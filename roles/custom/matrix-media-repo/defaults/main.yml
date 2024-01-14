@@ -71,6 +71,13 @@ matrix_media_repo_container_labels_traefik_media_entrypoints: web-secure
 matrix_media_repo_container_labels_traefik_media_tls: "{{ matrix_media_repo_container_labels_traefik_media_entrypoints != 'web' }}"
 matrix_media_repo_container_labels_traefik_media_tls_certResolver: default  # noqa var-naming
 
+# This is like `matrix_media_repo_container_labels_traefik_media_*`, but on an internal Traefik entrypoint.
+matrix_media_repo_container_labels_traefik_internal_media_enabled: false
+matrix_media_repo_container_labels_traefik_internal_media_path_prefix: "{{ matrix_media_repo_container_labels_traefik_media_path_prefix }}"
+matrix_media_repo_container_labels_traefik_internal_media_rule: "PathPrefix(`{{ matrix_media_repo_container_labels_traefik_internal_media_path_prefix | quote }}`)"
+matrix_media_repo_container_labels_traefik_internal_media_priority: "{{ matrix_media_repo_container_labels_traefik_media_priority }}"
+matrix_media_repo_container_labels_traefik_internal_media_entrypoints: ""
+
 # /_matrix/client/r0/logout
 # /_matrix/client/r0/logout/all
 matrix_media_repo_container_labels_traefik_logout_path_prefix: "/_matrix/client/{version:(r0|v1|v3|unstable)}/{endpoint:(logout|logout/all)}"

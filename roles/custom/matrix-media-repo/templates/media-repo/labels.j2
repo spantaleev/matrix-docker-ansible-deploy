@@ -46,6 +46,29 @@ traefik.http.routers.matrix-media-repo-public-media.tls.certResolver={{ matrix_m
 
 
 {#
+	Internal Media (/_matrix/media)
+#}
+{% if matrix_media_repo_container_labels_traefik_internal_media_enabled %}
+traefik.http.routers.matrix-media-repo-internal-media.rule={{ matrix_media_repo_container_labels_traefik_internal_media_rule }}
+
+{% if matrix_media_repo_container_labels_traefik_internal_media_priority | int > 0 %}
+traefik.http.routers.matrix-media-repo-internal-media.priority={{ matrix_media_repo_container_labels_traefik_internal_media_priority }}
+{% endif %}
+
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-media-repo-internal-media.middlewares={{ middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers.matrix-media-repo-internal-media.service=matrix-media-repo
+traefik.http.routers.matrix-media-repo-internal-media.entrypoints={{ matrix_media_repo_container_labels_traefik_internal_media_entrypoints }}
+
+{% endif %}
+{#
+	/Internal Media (/_matrix/media)
+#}
+
+
+{#
 	Public Client Logout (/_matrix/client/r0/logout, /_matrix/client/r0/logout/all)
 #}
 {% if matrix_media_repo_access_tokens_max_cache_time_seconds > 0 %}

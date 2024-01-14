@@ -3263,6 +3263,9 @@ matrix_media_repo_container_labels_traefik_docker_network: "{{ matrix_playbook_r
 matrix_media_repo_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 matrix_media_repo_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
+matrix_media_repo_container_labels_traefik_internal_media_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
+matrix_media_repo_container_labels_traefik_internal_media_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
+
 matrix_media_repo_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_media_repo_database_username: matrix_media_repo
 matrix_media_repo_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mediarepo.db', rounds=655555) | to_uuid }}"
@@ -4843,11 +4846,6 @@ matrix_dendrite_container_labels_public_federation_api_traefik_entrypoints: "{{ 
 
 matrix_dendrite_container_labels_public_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_dendrite_container_labels_public_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
-
-matrix_dendrite_container_labels_internal_client_api_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
-matrix_dendrite_container_labels_internal_client_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
-
-matrix_dendrite_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
 
 matrix_dendrite_metrics_enabled: "{{ prometheus_enabled }}"
 
