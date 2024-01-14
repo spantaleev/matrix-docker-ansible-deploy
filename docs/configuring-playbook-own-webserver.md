@@ -6,9 +6,11 @@ If that's alright, you can skip this.
 
 ## Traefik
 
-[Traefik](https://traefik.io/) is the default reverse-proxy for the playbook since [2023-02-26](../CHANGELOG.md/#2023-02-26).
+[Traefik](https://traefik.io/) is the default reverse-proxy for the playbook since [2023-02-26](../CHANGELOG.md/#2023-02-26) and serves **2 purposes**:
 
-Besides serving public traffic, Traefik is also used for internal communication between addon services (briges, bots, etc.) and the homeserver.
+- serving public traffic and providing SSL-termination with certificates obtained from [Let's Encrypt](https://letsencrypt.org/). See [Adjusting SSL certificate retrieval](./configuring-playbook-ssl-certificates.md).
+
+- assists internal communication between addon services (briges, bots, etc.) and the homeserver via an internal entrypoint (`matrix-internal-matrix-client-api`).
 
 There are 2 ways to use Traefik with this playbook, as described below.
 
@@ -24,7 +26,6 @@ devture_traefik_config_certificatesResolvers_acme_email: YOUR_EMAIL_ADDRESS
 
 Traefik will manage SSL certificates for all services seamlessly.
 
-**Note**: for a while longer, our old reverse-proxy (`matrix-nginx-proxy`) will still be installed in local-only mode. Do not be alarmed to see `matrix-nginx-proxy` running even when you've chosen Traefik as your reverse-proxy. In the near future, we'll be able to run without nginx, but we're not there yet.
 
 ### Traefik managed by you
 
@@ -46,7 +47,7 @@ devture_traefik_certs_dumper_ssl_dir_path: "/path/to/your/traefiks/acme.json/dir
 
 In this mode all roles will still have Traefik labels attached. You will, however, need to configure your Traefik instance and its entrypoints.
 
-By default, the playbook configured services use a `web-secure` (443) and `matrix-federation` (8448) entrypoints, as well as a `default` certificate resolver.
+By default, the playbook configured a `default` certificate resolver and multiple entrypoints.
 
 You need to configure 4 entrypoints for your Traefik server:
 
@@ -186,57 +187,3 @@ Instead of [Fronting the integrated reverse-proxy webserver with another reverse
 This is more difficult, as you would need to handle the configuration for each service manually. Enabling additional services would come with extra manual work you need to do.
 
 If your webserver is on the same machine, ensure your web server user (something like `http`, `apache`, `www-data`, `nginx`) is part of the `matrix` group. You should run something like this: `usermod -a -G matrix nginx`. This allows your webserver user to access files owned by the `matrix` group, so that it can serve static files from `/matrix/static-files`.
-
-#### Using your own nginx reverse-proxy running on the same machine
-
-**WARNING**: this type of setup is not maintained and will be removed in the near future. We recommend that you go for [Fronting the integrated reverse-proxy webserver with another reverse-proxy](#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) instead.
-
-If you'll be using `nginx` running on the same machine (not in a container), you can make the playbook help you generate configuration for `nginx` with this configuration:
-
-```yaml
-matrix_playbook_reverse_proxy_type: other-nginx-non-container
-
-# If you want https configured in /matrix/nginx-proxy/conf.d/
-matrix_nginx_proxy_https_enabled: true
-
-# If you will manage SSL certificates yourself, uncomment the line below
-# matrix_ssl_retrieval_method: none
-
-# If you're using an old nginx version, consider using a custom protocol list
-# (removing `TLSv1.3` that is enabled by default) to suit your nginx version.
-# matrix_nginx_proxy_ssl_protocols: "TLSv1.2"
-```
-
-You can most likely directly use the config files installed by this playbook at: `/matrix/nginx-proxy/conf.d`. Just include them in your own `nginx.conf` like this: `include /matrix/nginx-proxy/conf.d/*.conf;`
-
-#### Using your own reverse-proxy running on the same machine or elsewhere
-
-**WARNING**: this is difficult to set up, likely not very well supported and will be removed in the future. We recommend that you go for [Fronting the integrated reverse-proxy webserver with another reverse-proxy](#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) instead.
-
-To reverse-proxy manually for each service, use configuration like this:
-
-```yaml
-# If your reverse-proxy runs on the same machine:
-matrix_playbook_reverse_proxy_type: other-on-same-host
-
-# Or, if it runs on another machine:
-# matrix_playbook_reverse_proxy_type: other-on-another-host
-
-# Or, optionally customize the network interface prefix (note the trailing `:` character).
-# For other-on-same-host, the interface defaults to `127.0.0.1:`.
-# For other-on-another-host, the interface defaults to `0.0.0.0:`.
-# matrix_playbook_service_host_bind_interface_prefix: '192.168.30.4:'
-```
-
-With this configuration, each service will be exposed on a custom port. Example:
-
-- Synapse will be exposed on port `8008`
-- [Grafana](configuring-playbook-prometheus-grafana.md) will be exposed on port `3000`
-- [synapse-admin](configuring-playbook-synapse-admin.md) will be exposed on port `8766`
-
-You can capture traffic for these services and forward it to their port.
-Some of these services are configured with certain default expecations with regard to hostname, path, etc., so it's not completely arbitrary where you can host them (unless you change the defaults).
-
-For each new playbook service that you enable, you'll need special handling.
-
-The [`examples/`](../examples/) directory contains examples for various servers: Caddy, Apache, HAproxy, Nginx, etc.

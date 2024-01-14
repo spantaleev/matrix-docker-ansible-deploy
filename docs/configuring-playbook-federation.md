@@ -41,11 +41,10 @@ With that, your server's users will only be able to talk among themselves, but n
 **Disabling federation does not necessarily disable the federation port** (`8448`). Services like [Dimension](configuring-playbook-dimension.md) and [ma1sd](configuring-playbook-ma1sd.md) normally rely on `openid` APIs exposed on that port. Even if you disable federation and only if necessary, we may still be exposing the federation port and serving the `openid` APIs there. To override this and completely disable Synapse's federation port use:
 
 ```yaml
+matrix_homeserver_federation_enabled: false
+
 # This stops the federation port on the Synapse side (normally `matrix-synapse:8048` on the container network).
 matrix_synapse_federation_port_enabled: false
-
-# This removes the `8448` virtual host from the matrix-nginx-proxy reverse-proxy server.
-matrix_nginx_proxy_proxy_matrix_federation_api_enabled: false
 
 # This stops the federation port on the synapse-reverse-proxy-companion side (normally `matrix-synapse-reverse-proxy-companion:8048` on the container network).
 matrix_synapse_reverse_proxy_companion_federation_api_enabled: false
@@ -54,6 +53,8 @@ matrix_synapse_reverse_proxy_companion_federation_api_enabled: false
 ## Changing the federation port from 8448 to a different port to use a CDN that only accepts 443/80 ports
 
 Why? This change could be useful for people running small Synapse instances on small severs/VPSes to avoid being impacted by a simple DOS/DDOS when bandwidth, RAM, an CPU resources are limited and if your hosting provider does not provide a DOS/DDOS protection.
+
+**NOTE**: this approach hasn't been tested with the new Traefik-only setup that the playbook started using in 2024-01. It may not work.
 
 The following changes in the configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) will allow this and make it possible to proxy the federation through a CDN such as CloudFlare or any other:
 

@@ -33,6 +33,20 @@
   block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/cleanup_matrix_static_files_well_known.yml"
 
+- when: matrix_playbook_migration_matrix_nginx_proxy_uninstallation_enabled | bool
+  tags:
+    - setup-all
+    - install-all
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall_matrix_nginx_proxy.yml"
+
+- when: matrix_playbook_migration_matrix_ssl_uninstallation_enabled | bool
+  tags:
+    - setup-all
+    - install-all
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall_matrix_ssl.yml"
+
 - when: devture_traefik_enabled | bool
   tags:
     - setup-all

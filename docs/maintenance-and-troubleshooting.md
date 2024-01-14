@@ -4,15 +4,20 @@
 
 You can check the status of your services by using `systemctl status`. Example:
 ```
-sudo systemctl status matrix-nginx-proxy
+sudo systemctl status matrix-synapse
 
-● matrix-nginx-proxy.service - Matrix nginx proxy server
-   Loaded: loaded (/etc/systemd/system/matrix-nginx-proxy.service; enabled; vendor preset: enabled)
-   Active: active (running) since Wed 2018-11-14 19:38:35 UTC; 49min ago
+● matrix-synapse.service - Synapse server
+     Loaded: loaded (/etc/systemd/system/matrix-synapse.service; enabled; vendor preset: enabled)
+     Active: active (running) since Sun 2024-01-14 09:13:06 UTC; 1h 31min ago
 ```
 
-You can see the logs by using journalctl. Example:
-```
+Docker containers that the playbook configures are supervised by [systemd](https://wiki.archlinux.org/title/Systemd) and their logs are configured to go to [systemd-journald](https://wiki.archlinux.org/title/Systemd/Journal).
+
+To prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you **cannot** view logs using `docker logs`.
+
+To view systemd-journald logs using [journalctl](https://man.archlinux.org/man/journalctl.1), run a command like this:
+
+```sh
 sudo journalctl -fu matrix-synapse
 ```
 

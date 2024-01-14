@@ -20,8 +20,6 @@ matrix_bot_buscarron_hostname: "{{ matrix_server_fqn_matrix }}"
 matrix_bot_buscarron_path_prefix: /buscarron
 ```
 
-**NOTE**: When using `matrix-nginx-proxy` instead of Traefik, you won't be able to override the path prefix. You can only override the domain, but that needs to happen using another variable: `matrix_server_fqn_buscarron` (e.g. `matrix_server_fqn_buscarron: "form.{{ matrix_domain }}"`).
-
 
 ## Adjusting DNS records
 

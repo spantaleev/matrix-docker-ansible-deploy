@@ -27,10 +27,6 @@ matrix_playbook_traefik_labels_enabled: "{{ matrix_playbook_reverse_proxy_type i
 matrix_playbook_reverse_proxy_container_network: "{{ devture_traefik_container_network if devture_traefik_enabled else 'traefik' }}"
 matrix_playbook_reverse_proxy_hostname: "{{ devture_traefik_identifier if devture_traefik_enabled else 'traefik' }}"
 
-matrix_playbook_ssl_retrieval_method: "{{ 'lets-encrypt' if devture_traefik_certs_dumper_enabled else matrix_ssl_retrieval_method }}"
-
-matrix_playbook_ssl_enabled: "{{ matrix_playbook_ssl_retrieval_method in ['lets-encrypt', 'self-signed', 'manually-managed'] }}"
-
 # A separate Matrix Federation entrypoint is always enabled, unless the federation port matches one of the ports for existing (default) entrypoints
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_enabled: "{{ matrix_federation_public_port not in [devture_traefik_config_entrypoint_web_port, devture_traefik_config_entrypoint_web_secure_port] }}"
 
@@ -360,10 +356,6 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': (exim_relay_identifier ~ '.service'), 'priority': 2000, 'groups': ['matrix', 'mailer', 'exim-relay']}] if exim_relay_enabled else [])
     +
-    ([{'name': 'matrix-nginx-proxy.service', 'priority': 3000, 'groups': ['matrix', 'nginx', 'nginx-proxy', 'reverse-proxies']}] if matrix_nginx_proxy_enabled else [])
-    +
-    (matrix_ssl_renewal_systemd_units_list | selectattr('applicable') | selectattr('enableable') | list )
-    +
     ([{'name': (ntfy_identifier + '.service'), 'priority': 800, 'groups': ['matrix', 'ntfy']}] if ntfy_enabled else [])
     +
     ([{'name': (devture_postgres_identifier + '.service'), 'priority': 500, 'groups': ['matrix', 'postgres']}] if devture_postgres_enabled else [])
@@ -565,9 +557,6 @@ matrix_appservice_webhooks_systemd_required_services_list_auto: |
 
 matrix_appservice_webhooks_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
-# Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-webhooks over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# matrix-appservice-webhooks' client-server port to the local host.
 matrix_appservice_webhooks_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ matrix_appservice_webhooks_matrix_port) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_appservice_webhooks_container_network: "{{ matrix_addons_container_network }}"
@@ -677,9 +666,6 @@ matrix_appservice_irc_systemd_required_services_list_auto: |
 
 matrix_appservice_irc_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
-# Normally, matrix-nginx-proxy is enabled and nginx can reach matrix-appservice-irc over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# matrix-appservice-irc's client-server port to the local host.
 matrix_appservice_irc_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9999') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_appservice_irc_container_network: "{{ matrix_addons_container_network }}"
@@ -2318,16 +2304,9 @@ matrix_bot_postmoogle_ssl_path: |-
     {
       'playbook-managed-traefik': devture_traefik_certs_dumper_dumped_certificates_dir_path,
       'other-traefik-container': devture_traefik_certs_dumper_dumped_certificates_dir_path,
-      'playbook-managed-nginx': (matrix_ssl_config_dir_path if matrix_playbook_ssl_retrieval_method != 'none' else ''),
-      'other-nginx-non-container': (matrix_ssl_config_dir_path if matrix_playbook_ssl_retrieval_method != 'none' else ''),
-      'other-on-same-host': '',
-      'other-on-another-host': '',
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
-
-matrix_playbook_bot_postmoogle_nginx_proxy_tls_cert: "{% for domain in matrix_bot_postmoogle_domains %}/ssl/live/{{ domain }}/fullchain.pem {% endfor %}"
-matrix_playbook_bot_postmoogle_nginx_proxy_key: "{% for domain in matrix_bot_postmoogle_domains %}/ssl/live/{{ domain }}/privkey.pem {% endfor %}"
 
 matrix_playbook_bot_postmoogle_traefik_tls_cert: "{% for domain in matrix_bot_postmoogle_domains %}/ssl/{{ domain }}/certificate.crt {% endfor %}"
 matrix_playbook_bot_postmoogle_traefik_key: "{% for domain in matrix_bot_postmoogle_domains %}/ssl/{{ domain }}/privatekey.key {% endfor %}"
@@ -2337,10 +2316,6 @@ matrix_bot_postmoogle_tls_cert: |-
     {
       'playbook-managed-traefik': matrix_playbook_bot_postmoogle_traefik_tls_cert,
       'other-traefik-container': matrix_playbook_bot_postmoogle_traefik_tls_cert,
-      'playbook-managed-nginx': (matrix_playbook_bot_postmoogle_nginx_proxy_tls_cert if matrix_playbook_ssl_retrieval_method != 'none' else ''),
-      'other-nginx-non-container': (matrix_playbook_bot_postmoogle_nginx_proxy_tls_cert if matrix_playbook_ssl_retrieval_method != 'none' else ''),
-      'other-on-same-host': '',
-      'other-on-another-host': '',
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -2350,10 +2325,6 @@ matrix_bot_postmoogle_tls_key: |-
     {
       'playbook-managed-traefik': matrix_playbook_bot_postmoogle_traefik_key,
       'other-traefik-container': matrix_playbook_bot_postmoogle_traefik_key,
-      'playbook-managed-nginx': (matrix_playbook_bot_postmoogle_nginx_proxy_key if matrix_playbook_ssl_retrieval_method != 'none' else ''),
-      'other-nginx-non-container': (matrix_playbook_bot_postmoogle_nginx_proxy_key if matrix_playbook_ssl_retrieval_method != 'none' else ''),
-      'other-on-same-host': '',
-      'other-on-another-host': '',
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -2736,17 +2707,13 @@ matrix_coturn_turn_external_ip_address: "{{ ansible_host }}"
 
 matrix_coturn_turn_static_auth_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'coturn.sas', rounds=655555) | to_uuid }}"
 
-matrix_coturn_tls_enabled: "{{ matrix_playbook_ssl_retrieval_method != 'none' }}"
+matrix_coturn_tls_enabled: "{{ matrix_playbook_ssl_enabled }}"
 
 matrix_coturn_tls_cert_path: |-
   {{
     {
       'playbook-managed-traefik': '/certificate.crt',
       'other-traefik-container': '/certificate.crt',
-      'playbook-managed-nginx': '/fullchain.pem',
-      'other-nginx-non-container': '/fullchain.pem',
-      'other-on-same-host': '',
-      'other-on-another-host': '',
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -2756,31 +2723,12 @@ matrix_coturn_tls_key_path: |-
     {
       'playbook-managed-traefik': '/privatekey.key',
       'other-traefik-container': '/privatekey.key',
-      'playbook-managed-nginx': '/privkey.pem',
-      'other-nginx-non-container': '/privkey.pem',
-      'other-on-same-host': '',
-      'other-on-another-host': '',
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
 
 matrix_coturn_container_additional_volumes: |
   {{
-    (
-      [
-       {
-         'src': (matrix_ssl_config_dir_path + '/live/' + matrix_server_fqn_matrix + '/fullchain.pem'),
-         'dst': '/fullchain.pem',
-         'options': 'ro',
-       },
-       {
-         'src': (matrix_ssl_config_dir_path + '/live/' + matrix_server_fqn_matrix + '/privkey.pem'),
-         'dst': '/privkey.pem',
-         'options': 'ro',
-       },
-      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] and matrix_coturn_tls_enabled else []
-    )
-    +
     (
       [
        {
@@ -2899,7 +2847,7 @@ etherpad_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}
 
 etherpad_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9001') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
-etherpad_container_network: "{{ matrix_nginx_proxy_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else etherpad_identifier }}"
+etherpad_container_network: "{{ matrix_addons_container_network }}"
 
 etherpad_container_additional_networks: |
   {{
@@ -2998,9 +2946,6 @@ jitsi_gid: "{{ matrix_user_gid }}"
 
 jitsi_user_username: "{{ matrix_user_username }}"
 
-# Normally, matrix-nginx-proxy is enabled and nginx can reach jitsi/web over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# the Jitsi HTTP port to the local host.
 jitsi_web_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '13080') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 jitsi_web_container_additional_networks_auto: |
@@ -3062,7 +3007,7 @@ jitsi_prosody_auth_matrix_uvs_sync_power_levels: "{{ matrix_user_verification_se
 jitsi_prosody_auth_matrix_uvs_auth_token: "{{ matrix_user_verification_service_uvs_auth_token }}"
 jitsi_prosody_auth_matrix_uvs_location: "{{ matrix_user_verification_service_container_url }}"
 
-jitsi_self_check_validate_certificates: "{{ false if matrix_ssl_retrieval_method == 'self-signed' else true }}"
+jitsi_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
 # Gravatar is enabled by default upstream, but there's no need to leak data there needlessly
 # when embedding Jitsi in Matrix rooms.
@@ -3168,9 +3113,6 @@ matrix_ma1sd_hostname: "{{ matrix_server_fqn_matrix }}"
 
 matrix_ma1sd_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
-# Normally, matrix-nginx-proxy is enabled and nginx can reach ma1sd over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# ma1sd's web-server port.
 matrix_ma1sd_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '' ~ matrix_ma1sd_container_port | string) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_ma1sd_container_network: "{{ matrix_homeserver_container_network }}"
@@ -3210,7 +3152,7 @@ matrix_ma1sd_threepid_medium_email_connectors_smtp_host: "{{ exim_relay_identifi
 matrix_ma1sd_threepid_medium_email_connectors_smtp_port: 8025
 matrix_ma1sd_threepid_medium_email_connectors_smtp_tls: 0
 
-matrix_ma1sd_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_ma1sd_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
 matrix_ma1sd_systemd_required_services_list_auto: |
   {{
@@ -3302,198 +3244,6 @@ matrix_media_repo_homeserver_federation_enabled: "{{ matrix_homeserver_federatio
 ######################################################################
 #
 # /matrix-media-repo
-#
-######################################################################
-
-######################################################################
-#
-# matrix-nginx-proxy
-#
-######################################################################
-
-# This playbook installs its own nginx if
-# - it's explicitly enabled
-# - Traefik is in use. Not all services are Traefik-native yet, so we use reverse-proxy to some via a local-only matrix-nginx-proxy
-matrix_nginx_proxy_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'playbook-managed-traefik', 'other-traefik-container'] }}"
-
-# matrix-nginx-proxy is only to handle HTTPS only if it's the chosen reverse-proxy.
-# It may be enabled even if it's not chosen. See `matrix_nginx_proxy_enabled`.
-matrix_ssl_retrieval_method: "{{ 'lets-encrypt' if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else 'none' }}"
-matrix_nginx_proxy_https_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' }}"
-
-# matrix-nginx-proxy is to publish ports only if it's the chosen reverse-proxy.
-# It may be enabled even if it's not chosen. See `matrix_nginx_proxy_enabled`.
-matrix_nginx_proxy_container_http_host_bind_port: "{{ '80' if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else '' }}"
-matrix_nginx_proxy_container_federation_host_bind_port: "{{ matrix_federation_public_port if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else '' }}"
-
-# matrix-nginx-proxy is to trust reverse-proxy forwarded protocol and headers, unless it's the "main" (chosen) reverse-proxy
-matrix_nginx_proxy_trust_forwarded_proto: "{{ matrix_playbook_reverse_proxy_type != 'playbook-managed-nginx' }}"
-matrix_nginx_proxy_x_forwarded_for: "{{ '$remote_addr' if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else '$proxy_add_x_forwarded_for' }}"
-
-matrix_nginx_proxy_container_additional_networks: |
-  {{
-    (
-      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
-      +
-      ([matrix_prometheus_nginxlog_exporter_container_network] if (matrix_prometheus_nginxlog_exporter_enabled and matrix_prometheus_nginxlog_exporter_container_network != matrix_nginx_proxy_container_network) else [])
-      +
-      ([jitsi_container_network] if jitsi_enabled and matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' and jitsi_container_network != matrix_nginx_proxy_container_network else [])
-    ) | unique
-  }}
-
-matrix_nginx_proxy_proxy_matrix_client_api_addr_with_container: "{{ 'matrix-corporal:41080' if matrix_corporal_enabled else 'matrix-nginx-proxy:12080' }}"
-matrix_nginx_proxy_proxy_matrix_client_api_addr_sans_container: "{{ '127.0.0.1:41080' if matrix_corporal_enabled else '127.0.0.1:12080' }}"
-matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb: |-
-  {{
-    {
-      'synapse': matrix_synapse_max_upload_size_mb,
-      'dendrite': (matrix_dendrite_max_file_size_bytes / 1024 / 1024) | round,
-      'conduit': (matrix_conduit_max_request_size / 1024 / 1024) | round,
-    }[matrix_homeserver_implementation]|int
-  }}
-
-matrix_nginx_proxy_proxy_matrix_enabled: true
-matrix_nginx_proxy_proxy_element_enabled: "{{ matrix_client_element_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-matrix_nginx_proxy_proxy_hydrogen_enabled: "{{ matrix_client_hydrogen_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-matrix_nginx_proxy_proxy_cinny_enabled: "{{ matrix_client_cinny_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-matrix_nginx_proxy_proxy_schildichat_enabled: "{{ matrix_client_schildichat_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-matrix_nginx_proxy_proxy_buscarron_enabled: "{{ matrix_bot_buscarron_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-matrix_nginx_proxy_proxy_dimension_enabled: "{{ matrix_dimension_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-matrix_nginx_proxy_proxy_rageshake_enabled: "{{ matrix_rageshake_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-matrix_nginx_proxy_proxy_bot_go_neb_enabled: "{{ matrix_bot_go_neb_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-matrix_nginx_proxy_proxy_mautrix_wsproxy_enabled: "{{ matrix_mautrix_wsproxy_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-
-matrix_nginx_proxy_proxy_jitsi_enabled: "{{ jitsi_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-
-matrix_nginx_proxy_proxy_grafana_enabled: "{{ grafana_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-matrix_nginx_proxy_proxy_sygnal_enabled: "{{ matrix_sygnal_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-matrix_nginx_proxy_proxy_ntfy_enabled: "{{ ntfy_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-
-
-matrix_nginx_proxy_proxy_matrix_corporal_api_enabled: "{{ matrix_corporal_enabled and matrix_corporal_http_api_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] }}"
-matrix_nginx_proxy_proxy_matrix_corporal_api_addr_with_container: "matrix-corporal:41081"
-matrix_nginx_proxy_proxy_matrix_corporal_api_addr_sans_container: "127.0.0.1:41081"
-
-# NOTE: we cannot disable this, even though matrix-media-repo is already natively exposed at the Traefik level.
-# See: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3045#issuecomment-1867327001
-matrix_nginx_proxy_proxy_media_repo_enabled: "{{ matrix_media_repo_enabled }}"
-matrix_nginx_proxy_proxy_media_repo_addr_with_container: "{{ matrix_media_repo_identifier }}:{{ matrix_media_repo_port }}"
-matrix_nginx_proxy_proxy_media_repo_addr_sans_container: "127.0.0.1:{{ matrix_media_repo_port }}"
-
-# By default, we do TLS termination for the Matrix Federation API (port 8448) at matrix-nginx-proxy.
-# Unless this is handled there OR Synapse's federation listener port is disabled, we'll reverse-proxy.
-matrix_nginx_proxy_proxy_matrix_federation_api_enabled: |-
-  {{
-    {
-      'synapse': (matrix_synapse_federation_port_enabled and not matrix_synapse_tls_federation_listener_enabled),
-      'dendrite': matrix_dendrite_federation_enabled,
-      'conduit': matrix_conduit_allow_federation,
-    }[matrix_homeserver_implementation]|bool
-  }}
-
-matrix_nginx_proxy_proxy_matrix_federation_api_addr_with_container: "matrix-nginx-proxy:12088"
-matrix_nginx_proxy_proxy_matrix_federation_api_addr_sans_container: "127.0.0.1:12088"
-
-# When matrix-nginx-proxy is disabled, the actual port number that the vhost uses may begin to matter.
-matrix_nginx_proxy_proxy_matrix_federation_port: "{{ matrix_federation_public_port }}"
-
-# OCSP stapling does not make sense when self-signed certificates are used.
-# See https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1073
-# and https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1074
-matrix_nginx_proxy_ocsp_stapling_enabled: "{{ matrix_playbook_ssl_retrieval_method != 'self-signed' }}"
-
-matrix_nginx_proxy_systemd_wanted_services_list: |
-  {{
-    ['matrix-' + matrix_homeserver_implementation + '.service']
-    +
-    (matrix_synapse_webserving_workers_systemd_services_list if matrix_homeserver_implementation == 'synapse' and matrix_synapse_workers_enabled else [])
-    +
-    (['matrix-synapse-reverse-proxy-companion.service'] if matrix_synapse_reverse_proxy_companion_enabled else [])
-    +
-    (['matrix-corporal.service'] if matrix_corporal_enabled else [])
-    +
-    ([(matrix_media_repo_identifier + '.service')] if matrix_media_repo_enabled else [])
-    +
-    (['matrix-client-cinny.service'] if matrix_client_cinny_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
-    +
-    (['matrix-bot-buscarron.service'] if matrix_bot_buscarron_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
-    +
-    (['matrix-client-element.service'] if matrix_client_element_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
-    +
-    (['matrix-client-hydrogen.service'] if matrix_client_hydrogen_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
-    +
-    (['matrix-client-schildichat.service'] if matrix_client_schildichat_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
-    +
-    ([(grafana_identifier + '.service')] if grafana_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
-    +
-    (['matrix-dimension.service'] if matrix_dimension_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
-    +
-    (['matrix-rageshake.service'] if matrix_rageshake_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
-    +
-    (['matrix-sygnal.service'] if matrix_sygnal_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
-    +
-    ([(ntfy_identifier + '.service')] if ntfy_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
-    +
-    ([(jitsi_identifier + '-web.service')] if jitsi_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
-    +
-    (['matrix-bot-go-neb.service'] if matrix_bot_go_neb_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
-    +
-    ([etherpad_identifier + '.service'] if etherpad_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
-    +
-    (['matrix-hookshot.service'] if matrix_hookshot_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] else [])
-  }}
-
-matrix_ssl_domains_to_obtain_certificates_for: |
-  {{
-    ([matrix_server_fqn_matrix])
-    +
-    ([matrix_server_fqn_element] if matrix_client_element_enabled else [])
-    +
-    ([matrix_server_fqn_hydrogen] if matrix_client_hydrogen_enabled else [])
-    +
-    ([matrix_server_fqn_cinny] if matrix_client_cinny_enabled else [])
-    +
-    ([matrix_server_fqn_schildichat] if matrix_client_schildichat_enabled else [])
-    +
-    ([matrix_server_fqn_buscarron] if matrix_bot_buscarron_enabled else [])
-    +
-    ([matrix_server_fqn_dimension] if matrix_dimension_enabled else [])
-    +
-    ([matrix_server_fqn_bot_go_neb] if matrix_bot_go_neb_enabled else [])
-    +
-    ([matrix_server_fqn_jitsi] if jitsi_enabled else [])
-    +
-    ([matrix_server_fqn_grafana] if grafana_enabled else [])
-    +
-    ([matrix_server_fqn_sygnal] if matrix_sygnal_enabled else [])
-    +
-    ([matrix_server_fqn_mautrix_wsproxy] if matrix_mautrix_wsproxy_enabled else [])
-    +
-    ([ntfy_hostname] if ntfy_enabled else [])
-    +
-    ([matrix_server_fqn_rageshake] if matrix_rageshake_enabled else [])
-    +
-    (matrix_bot_postmoogle_domains if matrix_bot_postmoogle_enabled else [])
-    +
-    matrix_ssl_additional_domains_to_obtain_certificates_for
-  }}
-
-matrix_ssl_architecture: "{{
-	{
-		'amd64': 'amd64',
-		'arm32': 'arm32v6',
-		'arm64': 'arm64v8',
-	}[matrix_architecture]
-}}"
-
-matrix_ssl_pre_obtaining_required_service_name: "{{ 'matrix-dynamic-dns' if matrix_dynamic_dns_enabled else '' }}"
-
-matrix_nginx_proxy_access_log_syslog_integration_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
-matrix_nginx_proxy_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_identifier | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
-
-######################################################################
-#
-# /matrix-nginx-proxy
 #
 ######################################################################
 
@@ -3853,7 +3603,7 @@ matrix_sygnal_metrics_prometheus_enabled: "{{ prometheus_enabled }}"
 
 matrix_sygnal_hostname: "{{ matrix_server_fqn_sygnal }}"
 
-matrix_sygnal_container_network: "{{ matrix_nginx_proxy_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else 'matrix-sygnal' }}"
+matrix_sygnal_container_network: "{{ matrix_homeserver_container_network }}"
 
 matrix_sygnal_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
 
@@ -3886,8 +3636,6 @@ ntfy_uid: "{{ matrix_user_uid }}"
 ntfy_gid: "{{ matrix_user_gid }}"
 
 ntfy_hostname: "{{ matrix_server_fqn_ntfy }}"
-
-ntfy_container_network: "{{ matrix_nginx_proxy_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else ntfy_identifier }}"
 
 ntfy_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
 
@@ -3962,7 +3710,7 @@ matrix_client_element_integrations_rest_url: "{{ matrix_dimension_integrations_r
 matrix_client_element_integrations_widgets_urls: "{{ matrix_dimension_integrations_widgets_urls if matrix_dimension_enabled else ['https://scalar.vector.im/api'] }}"
 matrix_client_element_integrations_jitsi_widget_url: "{{ matrix_dimension_integrations_jitsi_widget_url if matrix_dimension_enabled else 'https://scalar.vector.im/api/widgets/jitsi.html' }}"
 
-matrix_client_element_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_client_element_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
 matrix_client_element_registration_enabled: "{{ matrix_synapse_enable_registration }}"
 
@@ -4006,7 +3754,7 @@ matrix_client_hydrogen_container_labels_traefik_tls_certResolver: "{{ devture_tr
 
 matrix_client_hydrogen_default_hs_url: "{{ matrix_homeserver_url }}"
 
-matrix_client_hydrogen_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_client_hydrogen_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
 ######################################################################
 #
@@ -4037,7 +3785,7 @@ matrix_client_cinny_container_labels_traefik_tls_certResolver: "{{ devture_traef
 
 matrix_client_cinny_default_hs_url: "{{ matrix_homeserver_url }}"
 
-matrix_client_cinny_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_client_cinny_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
 ######################################################################
 #
@@ -4075,7 +3823,7 @@ matrix_client_schildichat_integrations_rest_url: "{{ matrix_dimension_integratio
 matrix_client_schildichat_integrations_widgets_urls: "{{ matrix_dimension_integrations_widgets_urls if matrix_dimension_enabled else ['https://scalar.vector.im/api'] }}"
 matrix_client_schildichat_integrations_jitsi_widget_url: "{{ matrix_dimension_integrations_jitsi_widget_url if matrix_dimension_enabled else 'https://scalar.vector.im/api/widgets/jitsi.html' }}"
 
-matrix_client_schildichat_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_client_schildichat_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
 matrix_client_schildichat_registration_enabled: "{{ matrix_synapse_enable_registration }}"
 
@@ -4192,12 +3940,6 @@ matrix_synapse_email_smtp_port: 8025
 matrix_synapse_email_smtp_require_transport_security: false
 matrix_synapse_email_notif_from: "Matrix <{{ exim_relay_sender_address }}>"
 
-# Even if TURN doesn't support TLS (it does by default),
-# it doesn't hurt to try a secure connection anyway.
-#
-# When Let's Encrypt certificates are used (the default case),
-# we don't enable `turns` endpoints, because WebRTC in Element can't talk to them.
-# Learn more here: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1145
 matrix_synapse_turn_uris: |
   {{
     []
@@ -4205,7 +3947,7 @@ matrix_synapse_turn_uris: |
     [
       'turns:' + matrix_server_fqn_matrix + '?transport=udp',
       'turns:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled and matrix_playbook_ssl_retrieval_method != 'lets-encrypt' else []
+    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled else []
     +
     [
       'turn:' + matrix_server_fqn_matrix + '?transport=udp',
@@ -4215,7 +3957,7 @@ matrix_synapse_turn_uris: |
 
 matrix_synapse_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
 
-matrix_synapse_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_synapse_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
 matrix_synapse_systemd_required_services_list_auto: |
   {{
@@ -4356,7 +4098,7 @@ matrix_synapse_admin_container_http_host_bind_port: "{{ (matrix_playbook_service
 
 matrix_synapse_admin_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
-matrix_synapse_admin_container_network: "{{ matrix_nginx_proxy_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-nginx' else 'matrix-synapse-admin' }}"
+matrix_synapse_admin_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_synapse_admin_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
 
@@ -4522,9 +4264,6 @@ prometheus_container_additional_networks: |
     ) | unique
   }}
 
-# Normally, matrix-nginx-proxy is enabled and nginx can reach Prometheus over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# Prometheus' HTTP port to the local host.
 prometheus_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9090') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 prometheus_config_rule_files_auto: |
@@ -4624,9 +4363,6 @@ grafana_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_pro
 grafana_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 grafana_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
-# Normally, matrix-nginx-proxy is enabled and nginx can reach Grafana over the container network.
-# If matrix-nginx-proxy is not enabled, or you otherwise have a need for it, you can expose
-# Grafana's HTTP port to the local host.
 grafana_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '3000') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 grafana_provisioning_datasources: |
@@ -4733,7 +4469,7 @@ matrix_registration_shared_secret: |-
 
 matrix_registration_server_location: "{{ matrix_addons_homeserver_client_api_url }}"
 
-matrix_registration_api_validate_certs: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_registration_api_validate_certs: "{{ matrix_playbook_ssl_enabled }}"
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_registration_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
@@ -4871,9 +4607,9 @@ matrix_dendrite_client_api_turn_uris: |
 
 matrix_dendrite_client_api_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
 
-matrix_dendrite_disable_tls_validation: "{{ true if matrix_playbook_ssl_retrieval_method == 'self-signed' else false }}"
+matrix_dendrite_disable_tls_validation: "{{ not matrix_playbook_ssl_enabled }}"
 
-matrix_dendrite_self_check_validate_certificates: "{{ false if matrix_playbook_ssl_retrieval_method == 'self-signed' else true }}"
+matrix_dendrite_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
 matrix_dendrite_trusted_id_servers: "{{ [matrix_server_fqn_matrix] if matrix_ma1sd_enabled else ['matrix.org', 'vector.im'] }}"
 
@@ -4932,12 +4668,6 @@ matrix_conduit_container_labels_public_federation_api_traefik_entrypoints: "{{ m
 matrix_conduit_container_labels_internal_client_api_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
 matrix_conduit_container_labels_internal_client_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
 
-# Even if TURN doesn't support TLS (it does by default),
-# it doesn't hurt to try a secure connection anyway.
-#
-# When Let's Encrypt certificates are used (the default case),
-# we don't enable `turns` endpoints, because WebRTC in Element can't talk to them.
-# Learn more here: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1145
 matrix_conduit_turn_uris: |
   {{
     []
@@ -4945,7 +4675,7 @@ matrix_conduit_turn_uris: |
     [
       'turns:' + matrix_server_fqn_matrix + '?transport=udp',
       'turns:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled and matrix_playbook_ssl_retrieval_method != 'lets-encrypt' else []
+    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled else []
     +
     [
       'turn:' + matrix_server_fqn_matrix + '?transport=udp',
@@ -5149,8 +4879,6 @@ devture_traefik_additional_entrypoints_auto: |
     +
     ([matrix_playbook_internal_matrix_client_api_traefik_entrypoint_definition] if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else [])
   }}
-
-devture_traefik_additional_domains_to_obtain_certificates_for: "{{ matrix_ssl_additional_domains_to_obtain_certificates_for }}"
 
 devture_traefik_config_providers_docker_endpoint: "{{ devture_container_socket_proxy_endpoint if devture_container_socket_proxy_enabled else 'unix:///var/run/docker.sock' }}"
 

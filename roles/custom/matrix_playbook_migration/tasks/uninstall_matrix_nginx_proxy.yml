@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-nginx-proxy service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-nginx-proxy.service"
+  register: nginx_proxy_service_stat
+
+- when: nginx_proxy_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-nginx-proxy is stopped
+      ansible.builtin.service:
+        name: matrix-nginx-proxy
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-nginx-proxy.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-nginx-proxy.service"
+        state: absent
+
+    - name: Ensure matrix-proxy-files files are deleted
+      ansible.builtin.file:
+        path: "{{ matrix_base_data_path }}/nginx-proxy"
+        state: absent

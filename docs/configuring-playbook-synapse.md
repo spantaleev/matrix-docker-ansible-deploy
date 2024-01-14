@@ -73,7 +73,7 @@ matrix_synapse_oidc_providers:
     backchannel_logout_enabled: true # Optional
 ```
 
-**NOTE**: if you inject the OIDC configuration using `matrix_synapse_configuration_extension_yaml` (instead of `matrix_synapse_oidc_enabled: true` + `matrix_synapse_oidc_providers`), then the OIDC routes (`/_synapse/oidc`) will not be publicly exposed automatically. In such a case, you'd need to expose them manually by toggling: `matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled: true`.
+**NOTE**: if you inject the OIDC configuration using `matrix_synapse_configuration_extension_yaml` (instead of `matrix_synapse_oidc_enabled: true` + `matrix_synapse_oidc_providers` as explained above), then the OIDC routes (`/_synapse/oidc`) will not be publicly exposed automatically. In such a case, you'd need to expose them manually by toggling: `matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled: true`.
 
 
 ## Customizing templates

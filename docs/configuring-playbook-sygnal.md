@@ -26,8 +26,6 @@ matrix_sygnal_hostname: "{{ matrix_server_fqn_matrix }}"
 matrix_sygnal_path_prefix: /sygnal
 ```
 
-**NOTE**: When using `matrix-nginx-proxy` instead of Traefik, you won't be able to override the path prefix. You can only override the domain, but that needs to happen using another variable: `matrix_server_fqn_sygnal` (e.g. `matrix_server_fqn_sygnal: "push.{{ matrix_domain }}"`).
-
 
 ## Adjusting DNS records
 

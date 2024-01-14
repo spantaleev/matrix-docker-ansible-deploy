@@ -20,8 +20,6 @@ matrix_rageshake_hostname: "{{ matrix_server_fqn_matrix }}"
 matrix_rageshake_path_prefix: /rageshake
 ```
 
-**NOTE**: When using `matrix-nginx-proxy` instead of Traefik, you won't be able to override the path prefix. You can only override the domain, but that needs to happen using another variable: `matrix_server_fqn_rageshake` (e.g. `matrix_server_fqn_rageshake: "some-domain.{{ matrix_domain }}"`).
-
 
 ## Adjusting DNS records
 

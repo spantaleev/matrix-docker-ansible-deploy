@@ -39,8 +39,6 @@ matrix_bot_go_neb_hostname: "{{ matrix_server_fqn_matrix }}"
 matrix_bot_go_neb_path_prefix: /go-neb
 ```
 
-**NOTE**: When using `matrix-nginx-proxy` instead of Traefik, you won't be able to override the path prefix. You can only override the domain, but that needs to happen using another variable: `matrix_server_fqn_go_neb` (e.g. `matrix_server_fqn_go_neb: "mybot.{{ matrix_domain }}"`).
-
 
 ## Adjusting DNS records
 

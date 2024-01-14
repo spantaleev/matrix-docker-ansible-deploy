@@ -63,79 +63,6 @@
     - {'old': 'exim_relay_docker_image_name_prefix', 'new': 'exim_relay_container_image_name_prefix'}
     - {'old': 'exim_relay_docker_image_force_pull', 'new': 'exim_relay_container_image_force_pull'}
 
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_enabled', 'new': 'matrix_metrics_exposure_enabled'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled', 'new': 'matrix_metrics_exposure_http_basic_auth_enabled'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username', 'new': '<superseded by matrix_metrics_exposure_http_basic_auth_users>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_password', 'new': '<superseded by matrix_metrics_exposure_http_basic_auth_users>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content', 'new': '<superseded by matrix_metrics_exposure_http_basic_auth_users>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_additional_location_configuration_blocks', 'new': '<superseded by adding labels to each individual service that you care about>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks', 'new': '<superseded by adding labels to each individual service that you care about>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_additional_user_location_configuration_blocks', 'new': '<superseded by adding labels to each individual service that you care about>'}
-
-    - {'old': 'matrix_well_known_matrix_server_enabled', 'new': 'matrix_static_files_file_matrix_server_enabled'}
-    - {'old': 'matrix_well_known_matrix_support_enabled', 'new': 'matrix_static_files_file_matrix_support_enabled'}
-    - {'old': 'matrix_homeserver_admin_contacts', 'new': 'matrix_static_files_file_matrix_support_property_m_contacts'}
-    - {'old': 'matrix_homeserver_support_url', 'new': 'matrix_static_files_file_matrix_support_property_m_support_page'}
-    - {'old': 'matrix_well_known_matrix_client_io_element_e2ee_default', 'new': 'matrix_static_files_file_matrix_client_property_io_element_e2ee_default'}
-    - {'old': 'matrix_well_known_matrix_client_io_element_e2ee_secure_backup_required', 'new': 'matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_required'}
-    - {'old': 'matrix_well_known_matrix_client_io_element_e2ee_secure_backup_setup_methods', 'new': 'matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_setup_methods'}
-    - {'old': 'matrix_well_known_matrix_client_configuration_extension_json', 'new': 'matrix_static_files_file_matrix_client_configuration_extension_json'}
-    - {'old': 'matrix_well_known_matrix_server_configuration_extension_json', 'new': 'matrix_static_files_file_matrix_server_configuration_extension_json'}
-    - {'old': 'matrix_well_known_matrix_support_configuration_extension_json', 'new': 'matrix_static_files_file_matrix_support_configuration_extension_json'}
-    - {'old': 'matrix_nginx_proxy_self_check_validate_certificates', 'new': 'matrix_static_files_self_check_validate_certificates'}
-    - {'old': 'matrix_nginx_proxy_self_check_well_known_matrix_client_follow_redirects', 'new': 'matrix_static_files_self_check_well_known_matrix_client_follow_redirects'}
-    - {'old': 'matrix_nginx_proxy_base_domain_serving_enabled', 'new': 'matrix_static_files_container_labels_base_domain_enabled'}
-    - {'old': 'matrix_nginx_proxy_base_domain_hostname', 'new': 'matrix_static_files_container_labels_base_domain_traefik_hostname'}
-    - {'old': 'matrix_nginx_proxy_base_domain_homepage_enabled', 'new': 'matrix_static_files_file_index_html_enabled'}
-    - {'old': 'matrix_nginx_proxy_base_domain_create_directory', 'new': '<no longer necessary; see matrix_static_files_file_index_html_enabled>'}
-    - {'old': 'matrix_nginx_proxy_proxy_riot_compat_redirect_enabled', 'new': '<redirecting the riot domain to an element domain is no longer supported - you can implement it yourself using matrix_client_element_container_labels_additional_labels>'}
-    - {'old': 'matrix_nginx_proxy_proxy_riot_compat_redirect_hostname', 'new': '<redirecting the riot domain to an element domain is no longer supported - you can implement it yourself using matrix_client_element_container_labels_additional_labels>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain', 'new': '<superseded by matrix_synapse_container_labels_public_client_root_redirection_* or other equivalent variables based on the homeserver implementation you use>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_client_api_enabled', 'new': 'matrix_synapse_container_labels_public_client_synapse_client_api_enabled'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled', 'new': '<replaced by matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled, but if you use matrix_synapse_oidc_enabled then it would be toggled automatically; see the new recommended OIDC example configuration in docs/configuring-playbook-synapse.md>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled', 'new': 'matrix_synapse_container_labels_public_client_synapse_admin_api_enabled'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_identity_api_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_traefik_enabled and matrix_ma1sd_container_labels_matrix_identity_enabled>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_traefik_enabled and matrix_ma1sd_container_labels_matrix_client_user_directory_search_enabled>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_v3_to_r0_redirect_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_matrix_client_user_directory_search_path>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled', 'new': 'matrix_ma1sd_container_labels_matrix_client_3pid_registration_enabled'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_with_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_sans_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_v3_to_r0_redirect_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_matrix_client_3pid_registration_path>'}
-    - {'old': 'matrix_nginx_proxy_proxy_conduit_enabled', 'new': 'matrix_conduit_container_labels_traefik_enabled'}
-    - {'old': 'matrix_nginx_proxy_proxy_conduit_block_federation_api_on_client_port', 'new': '<not supported anymore - the /_matrix/federation endpoints are now also being served on the Client-Server API port>'}
-    - {'old': 'matrix_nginx_proxy_proxy_conduit_federation_api_enabled', 'new': 'matrix_conduit_container_labels_public_federation_api_enabled'}
-    - {'old': 'matrix_nginx_proxy_proxy_conduit_client_api_addr_with_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_conduit_client_api_addr_sans_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_conduit_federation_api_addr_with_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_conduit_federation_api_addr_sans_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_conduit_additional_server_configuration_blocks', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_dendrite_enabled', 'new': 'matrix_dendrite_container_labels_traefik_enabled'}
-    - {'old': 'matrix_nginx_proxy_proxy_dendrite_block_federation_api_on_client_port', 'new': '<not supported anymore - the /_matrix/federation endpoints are now also being served on the Client-Server API port>'}
-    - {'old': 'matrix_nginx_proxy_proxy_dendrite_federation_api_enabled', 'new': 'matrix_dendrite_container_labels_public_federation_api_enabled'}
-    - {'old': 'matrix_nginx_proxy_proxy_dendrite_client_api_addr_with_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_dendrite_client_api_addr_sans_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_dendrite_federation_api_addr_with_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_dendrite_federation_api_addr_sans_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_dendrite_additional_server_configuration_blocks', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_synapse_enabled', 'new': 'matrix_synapse_container_labels_traefik_enabled'}
-    - {'old': 'matrix_nginx_proxy_proxy_synapse_federation_api_enabled', 'new': 'matrix_synapse_container_labels_public_federation_api_enabled'}
-    - {'old': 'matrix_nginx_proxy_proxy_synapse_client_api_addr_with_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_synapse_client_api_addr_sans_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container', 'new': '<removed>'}
-    - {'old': 'matrix_nginx_proxy_proxy_synapse_additional_server_configuration_blocks', 'new': '<removed>'}
-    - {'old': 'etherpad_nginx_proxy_dimension_integration_enabled', 'new': '<removed>'}
-    - {'old': 'etherpad_nginx_proxy_dimension_integration_path_prefix', 'new': '<removed>'}
-    - {'old': 'matrix_prometheus_services_proxy_connect_prometheus_node_exporter_metrics_proxying_enabled', 'new': '<removed>'}
-    - {'old': 'matrix_prometheus_services_proxy_connect_prometheus_node_exporter_matrix_nginx_proxy_not_enabled_proxy_pass_host', 'new': '<removed>'}
-    - {'old': 'matrix_prometheus_services_proxy_connect_prometheus_postgres_exporter_metrics_proxying_enabled', 'new': '<removed>'}
-    - {'old': 'matrix_prometheus_services_proxy_connect_prometheus_postgres_exporter_matrix_nginx_proxy_not_enabled_proxy_pass_host', 'new': '<removed>'}
-    - {'old': 'matrix_docker_network', 'new': '<removed in favor of various other variables - matrix_addons_container_network, matrix_monitoring_container_network, matrix_homeserver_container_network, etc.>'}
-
 - name: (Deprecation) Catch and report matrix_postgres variables
   ansible.builtin.fail:
     msg: |-
@@ -295,3 +222,119 @@
           Please change your configuration (vars.yml) to rename all variables (`matrix_jitsi_` -> `jitsi_`).
           We found usage of the following variables: {{ matrix_playbook_migration_jitsi_migration_vars.keys() | join(', ') }}
       when: "matrix_playbook_migration_jitsi_migration_vars | length > 0"
+
+- when: matrix_playbook_migration_matrix_nginx_proxy_elimination_variable_transition_checks_enabled | bool
+  block:
+    - name: (Deprecation) Catch and report transitioned playbook settings during the matrix-nginx-proxy elimination
+      ansible.builtin.fail:
+        msg: >-
+          Your configuration contains a variable, which now has a different name.
+          Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+      when: "item.old in vars"
+      with_items:
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_enabled', 'new': 'matrix_metrics_exposure_enabled'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled', 'new': 'matrix_metrics_exposure_http_basic_auth_enabled'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_username', 'new': '<superseded by matrix_metrics_exposure_http_basic_auth_users>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_password', 'new': '<superseded by matrix_metrics_exposure_http_basic_auth_users>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_raw_content', 'new': '<superseded by matrix_metrics_exposure_http_basic_auth_users>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_additional_location_configuration_blocks', 'new': '<superseded by adding labels to each individual service that you care about>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_additional_system_location_configuration_blocks', 'new': '<superseded by adding labels to each individual service that you care about>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_additional_user_location_configuration_blocks', 'new': '<superseded by adding labels to each individual service that you care about>'}
+
+        - {'old': 'matrix_well_known_matrix_server_enabled', 'new': 'matrix_static_files_file_matrix_server_enabled'}
+        - {'old': 'matrix_well_known_matrix_support_enabled', 'new': 'matrix_static_files_file_matrix_support_enabled'}
+        - {'old': 'matrix_homeserver_admin_contacts', 'new': 'matrix_static_files_file_matrix_support_property_m_contacts'}
+        - {'old': 'matrix_homeserver_support_url', 'new': 'matrix_static_files_file_matrix_support_property_m_support_page'}
+        - {'old': 'matrix_well_known_matrix_client_io_element_e2ee_default', 'new': 'matrix_static_files_file_matrix_client_property_io_element_e2ee_default'}
+        - {'old': 'matrix_well_known_matrix_client_io_element_e2ee_secure_backup_required', 'new': 'matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_required'}
+        - {'old': 'matrix_well_known_matrix_client_io_element_e2ee_secure_backup_setup_methods', 'new': 'matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_setup_methods'}
+        - {'old': 'matrix_well_known_matrix_client_configuration_extension_json', 'new': 'matrix_static_files_file_matrix_client_configuration_extension_json'}
+        - {'old': 'matrix_well_known_matrix_server_configuration_extension_json', 'new': 'matrix_static_files_file_matrix_server_configuration_extension_json'}
+        - {'old': 'matrix_well_known_matrix_support_configuration_extension_json', 'new': 'matrix_static_files_file_matrix_support_configuration_extension_json'}
+        - {'old': 'matrix_nginx_proxy_self_check_validate_certificates', 'new': 'matrix_static_files_self_check_validate_certificates'}
+        - {'old': 'matrix_nginx_proxy_self_check_well_known_matrix_client_follow_redirects', 'new': 'matrix_static_files_self_check_well_known_matrix_client_follow_redirects'}
+        - {'old': 'matrix_nginx_proxy_base_domain_serving_enabled', 'new': 'matrix_static_files_container_labels_base_domain_enabled'}
+        - {'old': 'matrix_nginx_proxy_base_domain_hostname', 'new': 'matrix_static_files_container_labels_base_domain_traefik_hostname'}
+        - {'old': 'matrix_nginx_proxy_base_domain_homepage_enabled', 'new': 'matrix_static_files_file_index_html_enabled'}
+        - {'old': 'matrix_nginx_proxy_base_domain_homepage_template', 'new': 'matrix_static_files_file_index_html_template'}
+        - {'old': 'matrix_nginx_proxy_base_domain_create_directory', 'new': '<no longer necessary; see matrix_static_files_file_index_html_enabled>'}
+        - {'old': 'matrix_nginx_proxy_proxy_riot_compat_redirect_enabled', 'new': '<redirecting the riot domain to an element domain is no longer supported - you can implement it yourself using matrix_client_element_container_labels_additional_labels>'}
+        - {'old': 'matrix_nginx_proxy_proxy_riot_compat_redirect_hostname', 'new': '<redirecting the riot domain to an element domain is no longer supported - you can implement it yourself using matrix_client_element_container_labels_additional_labels>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_client_redirect_enabled', 'new': '<superseded by matrix_synapse_container_labels_public_client_root_redirection_enabled or other equivalent variables based on the homeserver implementation you use>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain', 'new': '<superseded by matrix_synapse_container_labels_public_client_root_redirection_url or other equivalent variables based on the homeserver implementation you use>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_client_api_enabled', 'new': 'matrix_synapse_container_labels_public_client_synapse_client_api_enabled'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled', 'new': '<replaced by matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled, but if you use matrix_synapse_oidc_enabled then it would be toggled automatically; see the new recommended OIDC example configuration in docs/configuring-playbook-synapse.md>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled', 'new': 'matrix_synapse_container_labels_public_client_synapse_admin_api_enabled'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_identity_api_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_traefik_enabled and matrix_ma1sd_container_labels_matrix_identity_enabled>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_traefik_enabled and matrix_ma1sd_container_labels_matrix_client_user_directory_search_enabled>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_v3_to_r0_redirect_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_matrix_client_user_directory_search_path>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled', 'new': 'matrix_ma1sd_container_labels_matrix_client_3pid_registration_enabled'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_with_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_sans_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_v3_to_r0_redirect_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_matrix_client_3pid_registration_path>'}
+        - {'old': 'matrix_nginx_proxy_proxy_conduit_enabled', 'new': 'matrix_conduit_container_labels_traefik_enabled'}
+        - {'old': 'matrix_nginx_proxy_proxy_conduit_block_federation_api_on_client_port', 'new': '<not supported anymore - the /_matrix/federation endpoints are now also being served on the Client-Server API port>'}
+        - {'old': 'matrix_nginx_proxy_proxy_conduit_federation_api_enabled', 'new': 'matrix_conduit_container_labels_public_federation_api_enabled'}
+        - {'old': 'matrix_nginx_proxy_proxy_conduit_client_api_addr_with_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_conduit_client_api_addr_sans_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_conduit_federation_api_addr_with_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_conduit_federation_api_addr_sans_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_conduit_additional_server_configuration_blocks', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_dendrite_enabled', 'new': 'matrix_dendrite_container_labels_traefik_enabled'}
+        - {'old': 'matrix_nginx_proxy_proxy_dendrite_block_federation_api_on_client_port', 'new': '<not supported anymore - the /_matrix/federation endpoints are now also being served on the Client-Server API port>'}
+        - {'old': 'matrix_nginx_proxy_proxy_dendrite_federation_api_enabled', 'new': 'matrix_dendrite_container_labels_public_federation_api_enabled'}
+        - {'old': 'matrix_nginx_proxy_proxy_dendrite_client_api_addr_with_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_dendrite_client_api_addr_sans_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_dendrite_federation_api_addr_with_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_dendrite_federation_api_addr_sans_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_dendrite_additional_server_configuration_blocks', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_synapse_enabled', 'new': 'matrix_synapse_container_labels_traefik_enabled'}
+        - {'old': 'matrix_nginx_proxy_proxy_synapse_federation_api_enabled', 'new': 'matrix_synapse_container_labels_public_federation_api_enabled'}
+        - {'old': 'matrix_nginx_proxy_proxy_synapse_client_api_addr_with_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_synapse_client_api_addr_sans_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_synapse_federation_api_addr_with_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_synapse_additional_server_configuration_blocks', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_access_log_enabled', 'new': 'devture_traefik_config_accessLog_enabled'}
+        - {'old': 'etherpad_nginx_proxy_dimension_integration_enabled', 'new': '<removed>'}
+        - {'old': 'etherpad_nginx_proxy_dimension_integration_path_prefix', 'new': '<removed>'}
+        - {'old': 'matrix_prometheus_services_proxy_connect_prometheus_node_exporter_metrics_proxying_enabled', 'new': '<removed>'}
+        - {'old': 'matrix_prometheus_services_proxy_connect_prometheus_node_exporter_matrix_nginx_proxy_not_enabled_proxy_pass_host', 'new': '<removed>'}
+        - {'old': 'matrix_prometheus_services_proxy_connect_prometheus_postgres_exporter_metrics_proxying_enabled', 'new': '<removed>'}
+        - {'old': 'matrix_prometheus_services_proxy_connect_prometheus_postgres_exporter_matrix_nginx_proxy_not_enabled_proxy_pass_host', 'new': '<removed>'}
+        - {'old': 'matrix_docker_network', 'new': '<removed in favor of various other variables - matrix_addons_container_network, matrix_monitoring_container_network, matrix_homeserver_container_network, etc.>'}
+        - {'old': 'matrix_playbook_ssl_retrieval_method', 'new': '<removed>'}
+        - {'old': 'matrix_ssl_lets_encrypt_support_email', 'new': 'devture_traefik_config_certificatesResolvers_acme_email'}
+
+- when: matrix_playbook_migration_matrix_nginx_proxy_leftover_variable_validation_checks_enabled | bool
+  block:
+    - ansible.builtin.set_fact:
+        matrix_playbook_migration_nginx_proxy_migration_vars: |-
+          {{ vars | dict2items | selectattr('key', 'match', 'matrix_nginx_proxy_.*') | list | items2dict }}
+
+    - name: (Deprecation) Catch and report leftover matrix_nginx_proxy variables
+      ansible.builtin.fail:
+        msg: >-
+          The matrix-nginx-proxy role that used to be part of this playbook has been removed.
+          You should remove all its variables (`matrix_nginx_proxy_*`) from your vars.yml file.
+          We found usage of the following variables: {{ matrix_playbook_migration_nginx_proxy_migration_vars.keys() | join(', ') }}
+      when: "matrix_playbook_migration_nginx_proxy_migration_vars | length > 0"
+
+- when: matrix_playbook_migration_matrix_ssl_leftover_variable_checks_enabled | bool
+  block:
+    - ansible.builtin.set_fact:
+        matrix_playbook_migration_ssl_migration_vars: |-
+          {{ vars | dict2items | selectattr('key', 'match', 'matrix_ssl_.*') | list | items2dict }}
+
+    - name: (Deprecation) Catch and report matrix_ssl variables
+      ansible.builtin.fail:
+        msg: >-
+          The matrix-nginx-proxy role that used to be part of this playbook has been removed.
+          You should remove all its variables (`matrix_ssl_*`) from your vars.yml file.
+          We found usage of the following variables: {{ matrix_playbook_migration_ssl_migration_vars.keys() | join(', ') }}
+      when: "matrix_playbook_migration_ssl_migration_vars | length > 0"

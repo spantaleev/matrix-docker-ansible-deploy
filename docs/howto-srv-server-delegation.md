@@ -105,21 +105,6 @@ matrix_coturn_container_additional_volumes: |
     (
       [
        {
-         'src': (matrix_ssl_config_dir_path + '/live/*.' + matrix_domain + '/fullchain.pem'),
-         'dst': '/fullchain.pem',
-         'options': 'ro',
-       },
-       {
-         'src': (matrix_ssl_config_dir_path + '/live/*.' + matrix_domain + '/privkey.pem'),
-         'dst': '/privkey.pem',
-         'options': 'ro',
-       },
-      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] and matrix_coturn_tls_enabled else []
-    )
-    +
-    (
-      [
-       {
          'src': (devture_traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/certificate.crt'),
          'dst': '/certificate.crt',
          'options': 'ro',
@@ -180,21 +165,6 @@ matrix_coturn_systemd_required_services_list: ['docker.service']
 # This changes the path of the loaded certificate, while maintaining the original functionality, we're now loading the wildcard certificate.
 matrix_coturn_container_additional_volumes: |
   {{
-    (
-      [
-       {
-         'src': (matrix_ssl_config_dir_path + '/live/*.' + matrix_domain + '/fullchain.pem'),
-         'dst': '/fullchain.pem',
-         'options': 'ro',
-       },
-       {
-         'src': (matrix_ssl_config_dir_path + '/live/*.' + matrix_domain + '/privkey.pem'),
-         'dst': '/privkey.pem',
-         'options': 'ro',
-       },
-      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-nginx', 'other-nginx-non-container'] and matrix_coturn_tls_enabled else []
-    )
-    +
     (
       [
        {

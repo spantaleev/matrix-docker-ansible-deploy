@@ -37,15 +37,3 @@ After installation, Synapse Admin will be accessible at: `https://matrix.DOMAIN/
 To use Synapse Admin, you need to have [registered at least one administrator account](registering-users.md) on your server.
 
 The Homeserver URL to use on Synapse Admin's login page is: `https://matrix.DOMAIN`
-
-### Sample configuration for running behind Caddy v2
-
-Below is a sample configuration for using this playbook with a [Caddy](https://caddyserver.com/v2) 2.0 reverse proxy (non-default configuration where `matrix-nginx-proxy` is disabled - `matrix_nginx_proxy_enabled: false`).
-
-```caddy
-# This is a basic configuration that will function the same as the default nginx proxy - exposing the synapse-admin panel to matrix.YOURSERVER.com/synapse-admin/
-  handle_path /synapse-admin* {
-        reverse_proxy localhost:8766  {
-        }
-  }
-```

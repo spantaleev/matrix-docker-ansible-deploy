@@ -65,8 +65,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Configure the Traefik reverse-proxy](configuring-playbook-traefik.md) (optional, advanced)
 
-- (Deprecated) [Configure the Nginx reverse-proxy](configuring-playbook-nginx.md) (optional, advanced)
-
 - [Using your own webserver, instead of this playbook's default reverse-proxy](configuring-playbook-own-webserver.md) (optional, advanced)
 
 - [Adjusting TURN server configuration](configuring-playbook-turn.md) (optional, advanced)

@@ -42,3 +42,24 @@ matrix_playbook_migration_matrix_jitsi_migration_validation_enabled: true
 # - https://github.com/geerlingguy/ansible-role-docker/pull/410
 matrix_playbook_migration_debian_signedby_migration_enabled: true
 matrix_playbook_migration_debian_signedby_migration_repository_path: "/etc/apt/sources.list.d/download_docker_com_linux_{{ ansible_distribution | lower }}.list"
+
+# Controls if variable transition checks (related to the matrix-nginx-proxy elimination) will run.
+# If you'd like to keep some `matrix_nginx_proxy` and other variables around and not be warned about them, disable this.
+# Note: this is not just about `matrix_nginx_proxy_*` variables, but about various other variables that were removed
+# during the matrix-nginx-proxy elimination.
+matrix_playbook_migration_matrix_nginx_proxy_elimination_variable_transition_checks_enabled: true
+
+# Controls if (`matrix_nginx_proxy`) leftover variable checks will run.
+# If you'd like to keep some `matrix_nginx_proxy` variables around and not be warned about them, disable this.
+matrix_playbook_migration_matrix_nginx_proxy_leftover_variable_validation_checks_enabled: true
+
+# Controls if (`matrix_ssl_`) leftover variable checks will run.
+matrix_playbook_migration_matrix_ssl_leftover_variable_checks_enabled: true
+
+# Controls whether this role will try to detect and clean up after the matrix-nginx-proxy role.
+# When enabled, the systemd serivce will be stopped and removed, as well as all data in `/matrix/nginx-proxy
+matrix_playbook_migration_matrix_nginx_proxy_uninstallation_enabled: true
+
+# Controls whether this role will try to detect and clean up the /matrix/ssl files.
+matrix_playbook_migration_matrix_ssl_uninstallation_enabled: true
+
