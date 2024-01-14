@@ -1,3 +1,52 @@
+# 2024-01-14
+
+## (Backward Compatibility) Configuration changes required for people fronting the integrated reverse-proxy webserver with another reverse-proxy
+
+If you're on the default setup (using the Traefik reverse-proxy as installed by the playbook), you don't need to do anything.
+
+People who are [Fronting the integrated Traefik reverse-proxy webserver with another reverse-proxy](./docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy), as per our previous instructions are redefining `devture_traefik_additional_entrypoints_auto` in their `vars.yml` configuration.
+
+Such a full variable redefinion is intrustive, because it prevents the playbook from injecting additional entrypoints into the Traefik webserver. In the future, the playbook may have a need to do so.
+
+For this reason, we no longer recommend completely redefining `devture_traefik_additional_entrypoints_auto`.
+The playbook now defines [various `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_*` variables in the `defaults/main.yml` file](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-base/defaults/main.yml) of the `matrix-base` role which can be used as a safer alternative to `devture_traefik_additional_entrypoints_auto`.
+
+Adapt your configuration as seen below:
+
+```diff
+-devture_traefik_additional_entrypoints_auto:
+-  - name: matrix-federation
+-    port: 8449
+-    host_bind_port: '127.0.0.1:8449'
+-    config: {}
+-    # If your reverse-proxy runs on another machine, remove the config above and use this config instead:
+-    # config:
+-    #   forwardedHeaders:
+-    #     insecure: true
+-    #     # trustedIPs: ['IP-ADDRESS-OF-YOUR-REVERSE-PROXY']
++# Uncomment and tweak the variable below if the name of your federation entrypoint is different
++# than the default value (matrix-federation).
++# matrix_federation_traefik_entrypoint: matrix-federation
++
++# Uncomment and tweak the variable below if you really wish to change the internal port number
++# that the federation endpoint uses. Changing it is generally not necessary.
++# Usually, changing `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port` below is enough.
++#matrix_playbook_public_matrix_federation_api_traefik_entrypoint_port: 8449
++
++matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port: 127.0.0.1:8449
++
++# Adapt the variable below based on where your reverse-proxy runs:
++# - if it's on the Matrix server: keep `forwardedHeaders` and `insecure: true` as is
++# - if it's on another machine: remove `forwardedHeaders` and `insecure: true` and enable/configure `trustedIPs`
++matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom:
++  forwardedHeaders:
++    insecure: true
++  # trustedIPs: ['IP-ADDRESS-OF-YOUR-REVERSE-PROXY']
+```
+
+Also, feel free to read the [Fronting the integrated Traefik reverse-proxy webserver with another reverse-proxy](./docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) documentation section again for additional details.
+
+
 # 2024-01-13
 
 ## matrix-reminder-bot update with more secure (backward-incompatible) default settings
