@@ -49,36 +49,36 @@ matrix_conduit_container_labels_traefik_docker_network: "{{ matrix_conduit_conta
 matrix_conduit_container_labels_traefik_entrypoints: web-secure
 matrix_conduit_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
-# Controls whether labels will be added for handling the root (/) path
-matrix_conduit_container_labels_client_root_enabled: true
-matrix_conduit_container_labels_client_root_traefik_hostname: "{{ matrix_conduit_hostname }}"
-matrix_conduit_container_labels_client_root_traefik_rule: "Host(`{{ matrix_conduit_container_labels_client_root_traefik_hostname }}`) && Path(`/`)"
-matrix_conduit_container_labels_client_root_traefik_priority: 0
-matrix_conduit_container_labels_client_root_traefik_entrypoints: "{{ matrix_conduit_container_labels_traefik_entrypoints }}"
-matrix_conduit_container_labels_client_root_traefik_tls: "{{ matrix_conduit_container_labels_client_root_traefik_entrypoints != 'web' }}"
-matrix_conduit_container_labels_client_root_traefik_tls_certResolver: "{{ matrix_conduit_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
-matrix_conduit_container_labels_client_root_redirection_enabled: false
-matrix_conduit_container_labels_client_root_redirection_url: ""
+# Controls whether labels will be added for handling the root (/) path on a public Traefik entrypoint.
+matrix_conduit_container_labels_public_client_root_enabled: true
+matrix_conduit_container_labels_public_client_root_traefik_hostname: "{{ matrix_conduit_hostname }}"
+matrix_conduit_container_labels_public_client_root_traefik_rule: "Host(`{{ matrix_conduit_container_labels_public_client_root_traefik_hostname }}`) && Path(`/`)"
+matrix_conduit_container_labels_public_client_root_traefik_priority: 0
+matrix_conduit_container_labels_public_client_root_traefik_entrypoints: "{{ matrix_conduit_container_labels_traefik_entrypoints }}"
+matrix_conduit_container_labels_public_client_root_traefik_tls: "{{ matrix_conduit_container_labels_public_client_root_traefik_entrypoints != 'web' }}"
+matrix_conduit_container_labels_public_client_root_traefik_tls_certResolver: "{{ matrix_conduit_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_conduit_container_labels_public_client_root_redirection_enabled: false
+matrix_conduit_container_labels_public_client_root_redirection_url: ""
 
-# Controls whether labels will be added that expose the Client-Server API.
-matrix_conduit_container_labels_client_api_enabled: true
-matrix_conduit_container_labels_client_api_traefik_hostname: "{{ matrix_conduit_hostname }}"
-matrix_conduit_container_labels_client_api_traefik_path_prefix: /_matrix
-matrix_conduit_container_labels_client_api_traefik_rule: "Host(`{{ matrix_conduit_container_labels_client_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_conduit_container_labels_client_api_traefik_path_prefix }}`)"
-matrix_conduit_container_labels_client_api_traefik_priority: 0
-matrix_conduit_container_labels_client_api_traefik_entrypoints: "{{ matrix_conduit_container_labels_traefik_entrypoints }}"
-matrix_conduit_container_labels_client_api_traefik_tls: "{{ matrix_conduit_container_labels_client_api_traefik_entrypoints != 'web' }}"
-matrix_conduit_container_labels_client_api_traefik_tls_certResolver: "{{ matrix_conduit_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+# Controls whether labels will be added that expose the Client-Server API on a public Traefik entrypoint.
+matrix_conduit_container_labels_public_client_api_enabled: true
+matrix_conduit_container_labels_public_client_api_traefik_hostname: "{{ matrix_conduit_hostname }}"
+matrix_conduit_container_labels_public_client_api_traefik_path_prefix: /_matrix
+matrix_conduit_container_labels_public_client_api_traefik_rule: "Host(`{{ matrix_conduit_container_labels_public_client_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_conduit_container_labels_public_client_api_traefik_path_prefix }}`)"
+matrix_conduit_container_labels_public_client_api_traefik_priority: 0
+matrix_conduit_container_labels_public_client_api_traefik_entrypoints: "{{ matrix_conduit_container_labels_traefik_entrypoints }}"
+matrix_conduit_container_labels_public_client_api_traefik_tls: "{{ matrix_conduit_container_labels_public_client_api_traefik_entrypoints != 'web' }}"
+matrix_conduit_container_labels_public_client_api_traefik_tls_certResolver: "{{ matrix_conduit_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
-# Controls whether labels will be added that expose the Server-Server API (Federation API).
-matrix_conduit_container_labels_federation_api_enabled: "{{ matrix_conduit_allow_federation }}"
-matrix_conduit_container_labels_federation_api_traefik_hostname: "{{ matrix_conduit_hostname }}"
-matrix_conduit_container_labels_federation_api_traefik_path_prefix: /_matrix
-matrix_conduit_container_labels_federation_api_traefik_rule: "Host(`{{ matrix_conduit_container_labels_federation_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_conduit_container_labels_federation_api_traefik_path_prefix }}`)"
-matrix_conduit_container_labels_federation_api_traefik_priority: 0
-matrix_conduit_container_labels_federation_api_traefik_entrypoints: ''
-matrix_conduit_container_labels_federation_api_traefik_tls: "{{ matrix_conduit_container_labels_federation_api_traefik_entrypoints != 'web' }}"
-matrix_conduit_container_labels_federation_api_traefik_tls_certResolver: "{{ matrix_conduit_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+# Controls whether labels will be added that expose the Server-Server API (Federation API) on a public Traefik entrypoint.
+matrix_conduit_container_labels_public_federation_api_enabled: "{{ matrix_conduit_allow_federation }}"
+matrix_conduit_container_labels_public_federation_api_traefik_hostname: "{{ matrix_conduit_hostname }}"
+matrix_conduit_container_labels_public_federation_api_traefik_path_prefix: /_matrix
+matrix_conduit_container_labels_public_federation_api_traefik_rule: "Host(`{{ matrix_conduit_container_labels_public_federation_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_conduit_container_labels_public_federation_api_traefik_path_prefix }}`)"
+matrix_conduit_container_labels_public_federation_api_traefik_priority: 0
+matrix_conduit_container_labels_public_federation_api_traefik_entrypoints: ''
+matrix_conduit_container_labels_public_federation_api_traefik_tls: "{{ matrix_conduit_container_labels_public_federation_api_traefik_entrypoints != 'web' }}"
+matrix_conduit_container_labels_public_federation_api_traefik_tls_certResolver: "{{ matrix_conduit_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # matrix_conduit_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.

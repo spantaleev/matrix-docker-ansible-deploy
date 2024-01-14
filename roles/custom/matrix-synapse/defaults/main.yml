@@ -712,17 +712,17 @@ matrix_synapse_worker_container_labels_traefik_tls_certResolver: "{{ matrix_syna
 matrix_synapse_worker_container_labels_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
 
 # Controls whether labels will be added that expose metrics (see `matrix_synapse_metrics_proxying_enabled`)
-matrix_synapse_worker_container_labels_metrics_enabled: "{{ matrix_synapse_metrics_enabled and matrix_synapse_metrics_proxying_enabled }}"
+matrix_synapse_worker_container_labels_public_metrics_enabled: "{{ matrix_synapse_metrics_enabled and matrix_synapse_metrics_proxying_enabled }}"
 # The `__WORKER_ID__` placeholder will be replaced with the actual worker id during label-file generation (see `../templates/worker-labels.j2`).
-matrix_synapse_worker_container_labels_metrics_traefik_path: "{{ matrix_synapse_metrics_proxying_path_prefix }}/__WORKER_ID__"
-matrix_synapse_worker_container_labels_metrics_traefik_rule: "Host(`{{ matrix_synapse_metrics_proxying_hostname }}`) && Path(`{{ matrix_synapse_worker_container_labels_metrics_traefik_path }}`)"
-matrix_synapse_worker_container_labels_metrics_traefik_priority: 0
-matrix_synapse_worker_container_labels_metrics_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
-matrix_synapse_worker_container_labels_metrics_traefik_tls: "{{ matrix_synapse_container_labels_public_metrics_traefik_entrypoints != 'web' }}"
-matrix_synapse_worker_container_labels_metrics_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
-matrix_synapse_worker_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_synapse_container_labels_public_metrics_middleware_basic_auth_enabled }}"
+matrix_synapse_worker_container_labels_public_metrics_traefik_path: "{{ matrix_synapse_metrics_proxying_path_prefix }}/__WORKER_ID__"
+matrix_synapse_worker_container_labels_public_metrics_traefik_rule: "Host(`{{ matrix_synapse_metrics_proxying_hostname }}`) && Path(`{{ matrix_synapse_worker_container_labels_public_metrics_traefik_path }}`)"
+matrix_synapse_worker_container_labels_public_metrics_traefik_priority: 0
+matrix_synapse_worker_container_labels_public_metrics_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
+matrix_synapse_worker_container_labels_public_metrics_traefik_tls: "{{ matrix_synapse_container_labels_public_metrics_traefik_entrypoints != 'web' }}"
+matrix_synapse_worker_container_labels_public_metrics_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_synapse_worker_container_labels_public_metrics_middleware_basic_auth_enabled: "{{ matrix_synapse_container_labels_public_metrics_middleware_basic_auth_enabled }}"
 # See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
-matrix_synapse_worker_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_synapse_container_labels_public_metrics_middleware_basic_auth_users }}"
+matrix_synapse_worker_container_labels_public_metrics_middleware_basic_auth_users: "{{ matrix_synapse_container_labels_public_metrics_middleware_basic_auth_users }}"
 
 # matrix_synapse_worker_container_labels_additional_labels contains a multiline string with additional labels to add to the label files for Synapse worker containers.
 # See `../templates/labels.j2` for details.

@@ -9,175 +9,175 @@ traefik.http.services.matrix-dendrite.loadbalancer.server.port={{ matrix_dendrit
 
 
 {#
-	Root path (/)
+	Public Root path (/)
 #}
-{% if matrix_dendrite_container_labels_client_root_enabled %}
+{% if matrix_dendrite_container_labels_public_client_root_enabled %}
 
 {% set client_root_middlewares = [] %}
 
-{% if matrix_dendrite_container_labels_client_root_redirection_enabled %}
+{% if matrix_dendrite_container_labels_public_client_root_redirection_enabled %}
 {% set client_root_middlewares = client_root_middlewares + ['matrix-dendrite-client-root-redirect'] %}
 traefik.http.middlewares.matrix-dendrite-client-root-redirect.redirectregex.regex=(.*)
-traefik.http.middlewares.matrix-dendrite-client-root-redirect.redirectregex.replacement={{ matrix_dendrite_container_labels_client_root_redirection_url }}
+traefik.http.middlewares.matrix-dendrite-client-root-redirect.redirectregex.replacement={{ matrix_dendrite_container_labels_public_client_root_redirection_url }}
 {% endif %}
 
-traefik.http.routers.matrix-dendrite-client-root.rule={{ matrix_dendrite_container_labels_client_root_traefik_rule }}
+traefik.http.routers.matrix-dendrite-client-root.rule={{ matrix_dendrite_container_labels_public_client_root_traefik_rule }}
 
 traefik.http.routers.matrix-dendrite-client-root.middlewares={{ client_root_middlewares | join(',') }}
 
-{% if matrix_dendrite_container_labels_client_root_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-dendrite-client-root.priority={{ matrix_dendrite_container_labels_client_root_traefik_priority }}
+{% if matrix_dendrite_container_labels_public_client_root_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-dendrite-client-root.priority={{ matrix_dendrite_container_labels_public_client_root_traefik_priority }}
 {% endif %}
 
 traefik.http.routers.matrix-dendrite-client-root.service=matrix-dendrite
-traefik.http.routers.matrix-dendrite-client-root.entrypoints={{ matrix_dendrite_container_labels_client_root_traefik_entrypoints }}
-traefik.http.routers.matrix-dendrite-client-root.tls={{ matrix_dendrite_container_labels_client_root_traefik_tls | to_json }}
+traefik.http.routers.matrix-dendrite-client-root.entrypoints={{ matrix_dendrite_container_labels_public_client_root_traefik_entrypoints }}
+traefik.http.routers.matrix-dendrite-client-root.tls={{ matrix_dendrite_container_labels_public_client_root_traefik_tls | to_json }}
 
-{% if matrix_dendrite_container_labels_client_root_traefik_tls %}
-traefik.http.routers.matrix-dendrite-client-root.tls.certResolver={{ matrix_dendrite_container_labels_client_root_traefik_tls_certResolver }}
+{% if matrix_dendrite_container_labels_public_client_root_traefik_tls %}
+traefik.http.routers.matrix-dendrite-client-root.tls.certResolver={{ matrix_dendrite_container_labels_public_client_root_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
 {#
-	/Root path (/)
+	/Public Root path (/)
 #}
 
 
 {#
-	Client-API (/_matrix)
+	Public Client-API (/_matrix)
 #}
-{% if matrix_dendrite_container_labels_client_api_enabled %}
+{% if matrix_dendrite_container_labels_public_client_api_enabled %}
 
-traefik.http.routers.matrix-dendrite-client-api.rule={{ matrix_dendrite_container_labels_client_api_traefik_rule }}
+traefik.http.routers.matrix-dendrite-client-api.rule={{ matrix_dendrite_container_labels_public_client_api_traefik_rule }}
 
-{% if matrix_dendrite_container_labels_client_api_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-dendrite-client-api.priority={{ matrix_dendrite_container_labels_client_api_traefik_priority }}
+{% if matrix_dendrite_container_labels_public_client_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-dendrite-client-api.priority={{ matrix_dendrite_container_labels_public_client_api_traefik_priority }}
 {% endif %}
 
 traefik.http.routers.matrix-dendrite-client-api.service=matrix-dendrite
-traefik.http.routers.matrix-dendrite-client-api.entrypoints={{ matrix_dendrite_container_labels_client_api_traefik_entrypoints }}
-traefik.http.routers.matrix-dendrite-client-api.tls={{ matrix_dendrite_container_labels_client_api_traefik_tls | to_json }}
+traefik.http.routers.matrix-dendrite-client-api.entrypoints={{ matrix_dendrite_container_labels_public_client_api_traefik_entrypoints }}
+traefik.http.routers.matrix-dendrite-client-api.tls={{ matrix_dendrite_container_labels_public_client_api_traefik_tls | to_json }}
 
-{% if matrix_dendrite_container_labels_client_api_traefik_tls %}
-traefik.http.routers.matrix-dendrite-client-api.tls.certResolver={{ matrix_dendrite_container_labels_client_api_traefik_tls_certResolver }}
+{% if matrix_dendrite_container_labels_public_client_api_traefik_tls %}
+traefik.http.routers.matrix-dendrite-client-api.tls.certResolver={{ matrix_dendrite_container_labels_public_client_api_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
 {#
-	/Client-API (/_matrix)
+	/Public Client-API (/_matrix)
 #}
 
 
 {#
-	Synapse Admin API (/_synapse/admin)
+	Public Synapse Admin API (/_synapse/admin)
 #}
-{% if matrix_dendrite_container_labels_client_synapse_admin_api_enabled %}
+{% if matrix_dendrite_container_labels_public_client_synapse_admin_api_enabled %}
 
-traefik.http.routers.matrix-dendrite-client-synapse-admin-api.rule={{ matrix_dendrite_container_labels_client_synapse_admin_api_traefik_rule }}
+traefik.http.routers.matrix-dendrite-client-synapse-admin-api.rule={{ matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_rule }}
 
-{% if matrix_dendrite_container_labels_client_synapse_admin_api_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-dendrite-client-synapse-admin-api.priority={{ matrix_dendrite_container_labels_client_synapse_admin_api_traefik_priority }}
+{% if matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-dendrite-client-synapse-admin-api.priority={{ matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_priority }}
 {% endif %}
 
 traefik.http.routers.matrix-dendrite-client-synapse-admin-api.service=matrix-dendrite
-traefik.http.routers.matrix-dendrite-client-synapse-admin-api.entrypoints={{ matrix_dendrite_container_labels_client_synapse_admin_api_traefik_entrypoints }}
-traefik.http.routers.matrix-dendrite-client-synapse-admin-api.tls={{ matrix_dendrite_container_labels_client_synapse_admin_api_traefik_tls | to_json }}
+traefik.http.routers.matrix-dendrite-client-synapse-admin-api.entrypoints={{ matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_entrypoints }}
+traefik.http.routers.matrix-dendrite-client-synapse-admin-api.tls={{ matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_tls | to_json }}
 
-{% if matrix_dendrite_container_labels_client_synapse_admin_api_traefik_tls %}
-traefik.http.routers.matrix-dendrite-client-synapse-admin-api.tls.certResolver={{ matrix_dendrite_container_labels_client_synapse_admin_api_traefik_tls_certResolver }}
+{% if matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_tls %}
+traefik.http.routers.matrix-dendrite-client-synapse-admin-api.tls.certResolver={{ matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
 {#
-	/Synapse Admin API (/_synapse/admin)
+	/Public Synapse Admin API (/_synapse/admin)
 #}
 
 
 {#
-	Dendrite Admin API (/_dendrite/admin)
+	Public Dendrite Admin API (/_dendrite/admin)
 #}
-{% if matrix_dendrite_container_labels_client_dendrite_admin_api_enabled %}
+{% if matrix_dendrite_container_labels_public_client_dendrite_admin_api_enabled %}
 
-traefik.http.routers.matrix-dendrite-client-synapse-admin-api.rule={{ matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_rule }}
+traefik.http.routers.matrix-dendrite-client-synapse-admin-api.rule={{ matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_rule }}
 
-{% if matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-dendrite-client-synapse-admin-api.priority={{ matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_priority }}
+{% if matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-dendrite-client-synapse-admin-api.priority={{ matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_priority }}
 {% endif %}
 
 traefik.http.routers.matrix-dendrite-client-synapse-admin-api.service=matrix-dendrite
-traefik.http.routers.matrix-dendrite-client-synapse-admin-api.entrypoints={{ matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_entrypoints }}
-traefik.http.routers.matrix-dendrite-client-synapse-admin-api.tls={{ matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_tls | to_json }}
+traefik.http.routers.matrix-dendrite-client-synapse-admin-api.entrypoints={{ matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_entrypoints }}
+traefik.http.routers.matrix-dendrite-client-synapse-admin-api.tls={{ matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_tls | to_json }}
 
-{% if matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_tls %}
-traefik.http.routers.matrix-dendrite-client-synapse-admin-api.tls.certResolver={{ matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_tls_certResolver }}
+{% if matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_tls %}
+traefik.http.routers.matrix-dendrite-client-synapse-admin-api.tls.certResolver={{ matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
 {#
-	/Dendrite Admin API (/_dendrite/admin)
+	/Public Dendrite Admin API (/_dendrite/admin)
 #}
 
 
 {#
-	Federation-API (/_matrix)
+	Public Federation-API (/_matrix)
 #}
-{% if matrix_dendrite_container_labels_federation_api_enabled %}
+{% if matrix_dendrite_container_labels_public_federation_api_enabled %}
 
-traefik.http.routers.matrix-dendrite-federation-api.rule={{ matrix_dendrite_container_labels_federation_api_traefik_rule }}
+traefik.http.routers.matrix-dendrite-federation-api.rule={{ matrix_dendrite_container_labels_public_federation_api_traefik_rule }}
 
-{% if matrix_dendrite_container_labels_federation_api_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-dendrite-federation-api.priority={{ matrix_dendrite_container_labels_federation_api_traefik_priority }}
+{% if matrix_dendrite_container_labels_public_federation_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-dendrite-federation-api.priority={{ matrix_dendrite_container_labels_public_federation_api_traefik_priority }}
 {% endif %}
 
 traefik.http.routers.matrix-dendrite-federation-api.service=matrix-dendrite
-traefik.http.routers.matrix-dendrite-federation-api.entrypoints={{ matrix_dendrite_container_labels_federation_api_traefik_entrypoints }}
-traefik.http.routers.matrix-dendrite-federation-api.tls={{ matrix_dendrite_container_labels_federation_api_traefik_tls | to_json }}
+traefik.http.routers.matrix-dendrite-federation-api.entrypoints={{ matrix_dendrite_container_labels_public_federation_api_traefik_entrypoints }}
+traefik.http.routers.matrix-dendrite-federation-api.tls={{ matrix_dendrite_container_labels_public_federation_api_traefik_tls | to_json }}
 
-{% if matrix_dendrite_container_labels_federation_api_traefik_tls %}
-traefik.http.routers.matrix-dendrite-federation-api.tls.certResolver={{ matrix_dendrite_container_labels_federation_api_traefik_tls_certResolver }}
+{% if matrix_dendrite_container_labels_public_federation_api_traefik_tls %}
+traefik.http.routers.matrix-dendrite-federation-api.tls.certResolver={{ matrix_dendrite_container_labels_public_federation_api_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
 {#
-	/Federation-API (/_matrix)
+	/Public Federation-API (/_matrix)
 #}
 
 
 {#
-	Metrics
+	Public Metrics
 #}
-{% if matrix_dendrite_container_labels_metrics_enabled %}
+{% if matrix_dendrite_container_labels_public_metrics_enabled %}
 
 {% set metrics_middlewares = [] %}
 
-{% if matrix_dendrite_container_labels_metrics_middleware_basic_auth_enabled %}
+{% if matrix_dendrite_container_labels_public_metrics_middleware_basic_auth_enabled %}
 {% set metrics_middlewares = metrics_middlewares + ['matrix-dendrite-metrics-basic-auth'] %}
-traefik.http.middlewares.matrix-dendrite-metrics-basic-auth.basicauth.users={{ matrix_dendrite_container_labels_metrics_middleware_basic_auth_users }}
+traefik.http.middlewares.matrix-dendrite-metrics-basic-auth.basicauth.users={{ matrix_dendrite_container_labels_public_metrics_middleware_basic_auth_users }}
 {% endif %}
 
 {% set metrics_middlewares = metrics_middlewares + ['matrix-dendrite-metrics-replacepath'] %}
 traefik.http.middlewares.matrix-dendrite-metrics-replacepath.replacepath.path=/metrics
 
-traefik.http.routers.matrix-dendrite-metrics.rule={{ matrix_dendrite_container_labels_metrics_traefik_rule }}
+traefik.http.routers.matrix-dendrite-metrics.rule={{ matrix_dendrite_container_labels_public_metrics_traefik_rule }}
 
 {% if metrics_middlewares | length > 0 %}
 traefik.http.routers.matrix-dendrite-metrics.middlewares={{ metrics_middlewares | join(',') }}
 {% endif %}
 
-{% if matrix_dendrite_container_labels_metrics_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-dendrite-metrics.priority={{ matrix_dendrite_container_labels_metrics_traefik_priority }}
+{% if matrix_dendrite_container_labels_public_metrics_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-dendrite-metrics.priority={{ matrix_dendrite_container_labels_public_metrics_traefik_priority }}
 {% endif %}
 
 traefik.http.routers.matrix-dendrite-metrics.service=matrix-dendrite
-traefik.http.routers.matrix-dendrite-metrics.entrypoints={{ matrix_dendrite_container_labels_metrics_traefik_entrypoints }}
+traefik.http.routers.matrix-dendrite-metrics.entrypoints={{ matrix_dendrite_container_labels_public_metrics_traefik_entrypoints }}
 
-traefik.http.routers.matrix-dendrite-metrics.tls={{ matrix_dendrite_container_labels_metrics_traefik_tls | to_json }}
-{% if matrix_dendrite_container_labels_metrics_traefik_tls %}
-traefik.http.routers.matrix-dendrite-metrics.tls.certResolver={{ matrix_dendrite_container_labels_metrics_traefik_tls_certResolver }}
+traefik.http.routers.matrix-dendrite-metrics.tls={{ matrix_dendrite_container_labels_public_metrics_traefik_tls | to_json }}
+{% if matrix_dendrite_container_labels_public_metrics_traefik_tls %}
+traefik.http.routers.matrix-dendrite-metrics.tls.certResolver={{ matrix_dendrite_container_labels_public_metrics_traefik_tls_certResolver }}
 {% endif %}
 {% endif %}
 {#
-	/Metrics
+	/Public Metrics
 #}
 
 {% endif %}

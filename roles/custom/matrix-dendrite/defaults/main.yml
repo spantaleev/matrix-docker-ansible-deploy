@@ -69,71 +69,71 @@ matrix_dendrite_container_labels_traefik_docker_network: "{{ matrix_dendrite_con
 matrix_dendrite_container_labels_traefik_entrypoints: web-secure
 matrix_dendrite_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
-# Controls whether labels will be added for handling the root (/) path
-matrix_dendrite_container_labels_client_root_enabled: true
-matrix_dendrite_container_labels_client_root_traefik_hostname: "{{ matrix_dendrite_hostname }}"
-matrix_dendrite_container_labels_client_root_traefik_rule: "Host(`{{ matrix_dendrite_container_labels_client_root_traefik_hostname }}`) && Path(`/`)"
-matrix_dendrite_container_labels_client_root_traefik_priority: 0
-matrix_dendrite_container_labels_client_root_traefik_entrypoints: "{{ matrix_dendrite_container_labels_traefik_entrypoints }}"
-matrix_dendrite_container_labels_client_root_traefik_tls: "{{ matrix_dendrite_container_labels_client_root_traefik_entrypoints != 'web' }}"
-matrix_dendrite_container_labels_client_root_traefik_tls_certResolver: "{{ matrix_dendrite_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
-matrix_dendrite_container_labels_client_root_redirection_enabled: false
-matrix_dendrite_container_labels_client_root_redirection_url: ""
+# Controls whether labels will be added for handling the root (/) path on a public Traefik entrypoint.
+matrix_dendrite_container_labels_public_client_root_enabled: true
+matrix_dendrite_container_labels_public_client_root_traefik_hostname: "{{ matrix_dendrite_hostname }}"
+matrix_dendrite_container_labels_public_client_root_traefik_rule: "Host(`{{ matrix_dendrite_container_labels_public_client_root_traefik_hostname }}`) && Path(`/`)"
+matrix_dendrite_container_labels_public_client_root_traefik_priority: 0
+matrix_dendrite_container_labels_public_client_root_traefik_entrypoints: "{{ matrix_dendrite_container_labels_traefik_entrypoints }}"
+matrix_dendrite_container_labels_public_client_root_traefik_tls: "{{ matrix_dendrite_container_labels_public_client_root_traefik_entrypoints != 'web' }}"
+matrix_dendrite_container_labels_public_client_root_traefik_tls_certResolver: "{{ matrix_dendrite_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_dendrite_container_labels_public_client_root_redirection_enabled: false
+matrix_dendrite_container_labels_public_client_root_redirection_url: ""
 
-# Controls whether labels will be added that expose the Client-Server API.
-matrix_dendrite_container_labels_client_api_enabled: true
-matrix_dendrite_container_labels_client_api_traefik_hostname: "{{ matrix_dendrite_hostname }}"
-matrix_dendrite_container_labels_client_api_traefik_path_prefix: /_matrix
-matrix_dendrite_container_labels_client_api_traefik_rule: "Host(`{{ matrix_dendrite_container_labels_client_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_dendrite_container_labels_client_api_traefik_path_prefix }}`)"
-matrix_dendrite_container_labels_client_api_traefik_priority: 0
-matrix_dendrite_container_labels_client_api_traefik_entrypoints: "{{ matrix_dendrite_container_labels_traefik_entrypoints }}"
-matrix_dendrite_container_labels_client_api_traefik_tls: "{{ matrix_dendrite_container_labels_client_api_traefik_entrypoints != 'web' }}"
-matrix_dendrite_container_labels_client_api_traefik_tls_certResolver: "{{ matrix_dendrite_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+# Controls whether labels will be added that expose the Client-Server API on a public Traefik entrypoint.
+matrix_dendrite_container_labels_public_client_api_enabled: true
+matrix_dendrite_container_labels_public_client_api_traefik_hostname: "{{ matrix_dendrite_hostname }}"
+matrix_dendrite_container_labels_public_client_api_traefik_path_prefix: /_matrix
+matrix_dendrite_container_labels_public_client_api_traefik_rule: "Host(`{{ matrix_dendrite_container_labels_public_client_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_dendrite_container_labels_public_client_api_traefik_path_prefix }}`)"
+matrix_dendrite_container_labels_public_client_api_traefik_priority: 0
+matrix_dendrite_container_labels_public_client_api_traefik_entrypoints: "{{ matrix_dendrite_container_labels_traefik_entrypoints }}"
+matrix_dendrite_container_labels_public_client_api_traefik_tls: "{{ matrix_dendrite_container_labels_public_client_api_traefik_entrypoints != 'web' }}"
+matrix_dendrite_container_labels_public_client_api_traefik_tls_certResolver: "{{ matrix_dendrite_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
-# Controls whether labels will be added that expose the /_synapse/admin paths.
+# Controls whether labels will be added that expose the /_synapse/admin paths on a public Traefik entrypoint.
 # Following these recommendations (https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md), by default, we don't.
 # Dendrite exposes some admin APIs under a Synapse-specific prefix.
 # See: https://matrix-org.github.io/dendrite/administration/adminapi
-matrix_dendrite_container_labels_client_synapse_admin_api_enabled: false
-matrix_dendrite_container_labels_client_synapse_admin_api_traefik_hostname: "{{ matrix_dendrite_hostname }}"
-matrix_dendrite_container_labels_client_synapse_admin_api_traefik_path_prefix: /_synapse/admin
-matrix_dendrite_container_labels_client_synapse_admin_api_traefik_rule: "Host(`{{ matrix_dendrite_container_labels_client_synapse_admin_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_dendrite_container_labels_client_synapse_admin_api_traefik_path_prefix }}`)"
-matrix_dendrite_container_labels_client_synapse_admin_api_traefik_priority: 0
-matrix_dendrite_container_labels_client_synapse_admin_api_traefik_entrypoints: "{{ matrix_dendrite_container_labels_traefik_entrypoints }}"
-matrix_dendrite_container_labels_client_synapse_admin_api_traefik_tls: "{{ matrix_dendrite_container_labels_client_synapse_admin_api_traefik_entrypoints != 'web' }}"
-matrix_dendrite_container_labels_client_synapse_admin_api_traefik_tls_certResolver: "{{ matrix_dendrite_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_dendrite_container_labels_public_client_synapse_admin_api_enabled: false
+matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_hostname: "{{ matrix_dendrite_hostname }}"
+matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_path_prefix: /_synapse/admin
+matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_rule: "Host(`{{ matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_path_prefix }}`)"
+matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_priority: 0
+matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_entrypoints: "{{ matrix_dendrite_container_labels_traefik_entrypoints }}"
+matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_tls: "{{ matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_entrypoints != 'web' }}"
+matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_tls_certResolver: "{{ matrix_dendrite_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
-# Controls whether labels will be added that expose the /_dendrite/admin paths.
+# Controls whether labels will be added that expose the /_dendrite/admin paths on a public Traefik entrypoint.
 # See: https://matrix-org.github.io/dendrite/administration/adminapi
-matrix_dendrite_container_labels_client_dendrite_admin_api_enabled: false
-matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_hostname: "{{ matrix_dendrite_hostname }}"
-matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_path_prefix: /_dendrite/admin
-matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_rule: "Host(`{{ matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_path_prefix }}`)"
-matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_priority: 0
-matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_entrypoints: "{{ matrix_dendrite_container_labels_traefik_entrypoints }}"
-matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_tls: "{{ matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_entrypoints != 'web' }}"
-matrix_dendrite_container_labels_client_dendrite_admin_api_traefik_tls_certResolver: "{{ matrix_dendrite_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_dendrite_container_labels_public_client_dendrite_admin_api_enabled: false
+matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_hostname: "{{ matrix_dendrite_hostname }}"
+matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_path_prefix: /_dendrite/admin
+matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_rule: "Host(`{{ matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_path_prefix }}`)"
+matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_priority: 0
+matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_entrypoints: "{{ matrix_dendrite_container_labels_traefik_entrypoints }}"
+matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_tls: "{{ matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_entrypoints != 'web' }}"
+matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_tls_certResolver: "{{ matrix_dendrite_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
-# Controls whether labels will be added that expose the Server-Server API (Federation API).
-matrix_dendrite_container_labels_federation_api_enabled: "{{ matrix_dendrite_federation_enabled }}"
-matrix_dendrite_container_labels_federation_api_traefik_hostname: "{{ matrix_dendrite_hostname }}"
-matrix_dendrite_container_labels_federation_api_traefik_path_prefix: /_matrix
-matrix_dendrite_container_labels_federation_api_traefik_rule: "Host(`{{ matrix_dendrite_container_labels_federation_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_dendrite_container_labels_federation_api_traefik_path_prefix }}`)"
-matrix_dendrite_container_labels_federation_api_traefik_priority: 0
-matrix_dendrite_container_labels_federation_api_traefik_entrypoints: ''
-matrix_dendrite_container_labels_federation_api_traefik_tls: "{{ matrix_dendrite_container_labels_federation_api_traefik_entrypoints != 'web' }}"
-matrix_dendrite_container_labels_federation_api_traefik_tls_certResolver: "{{ matrix_dendrite_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+# Controls whether labels will be added that expose the Server-Server API (Federation API) on a public Traefik entrypoint.
+matrix_dendrite_container_labels_public_federation_api_enabled: "{{ matrix_dendrite_federation_enabled }}"
+matrix_dendrite_container_labels_public_federation_api_traefik_hostname: "{{ matrix_dendrite_hostname }}"
+matrix_dendrite_container_labels_public_federation_api_traefik_path_prefix: /_matrix
+matrix_dendrite_container_labels_public_federation_api_traefik_rule: "Host(`{{ matrix_dendrite_container_labels_public_federation_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_dendrite_container_labels_public_federation_api_traefik_path_prefix }}`)"
+matrix_dendrite_container_labels_public_federation_api_traefik_priority: 0
+matrix_dendrite_container_labels_public_federation_api_traefik_entrypoints: ''
+matrix_dendrite_container_labels_public_federation_api_traefik_tls: "{{ matrix_dendrite_container_labels_public_federation_api_traefik_entrypoints != 'web' }}"
+matrix_dendrite_container_labels_public_federation_api_traefik_tls_certResolver: "{{ matrix_dendrite_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
-# Controls whether labels will be added that expose mautrix-facebook's metrics
-matrix_dendrite_container_labels_metrics_enabled: "{{ matrix_dendrite_metrics_enabled and matrix_dendrite_metrics_proxying_enabled }}"
-matrix_dendrite_container_labels_metrics_traefik_rule: "Host(`{{ matrix_dendrite_metrics_proxying_hostname }}`) && PathPrefix(`{{ matrix_dendrite_metrics_proxying_path_prefix }}`)"
-matrix_dendrite_container_labels_metrics_traefik_priority: 0
-matrix_dendrite_container_labels_metrics_traefik_entrypoints: "{{ matrix_dendrite_container_labels_traefik_entrypoints }}"
-matrix_dendrite_container_labels_metrics_traefik_tls: "{{ matrix_dendrite_container_labels_metrics_traefik_entrypoints != 'web' }}"
-matrix_dendrite_container_labels_metrics_traefik_tls_certResolver: "{{ matrix_dendrite_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
-matrix_dendrite_container_labels_metrics_middleware_basic_auth_enabled: false
+# Controls whether labels will be added that expose Dendrite's metrics on a public Traefik entrypoint.
+matrix_dendrite_container_labels_public_metrics_enabled: "{{ matrix_dendrite_metrics_enabled and matrix_dendrite_metrics_proxying_enabled }}"
+matrix_dendrite_container_labels_public_metrics_traefik_rule: "Host(`{{ matrix_dendrite_metrics_proxying_hostname }}`) && PathPrefix(`{{ matrix_dendrite_metrics_proxying_path_prefix }}`)"
+matrix_dendrite_container_labels_public_metrics_traefik_priority: 0
+matrix_dendrite_container_labels_public_metrics_traefik_entrypoints: "{{ matrix_dendrite_container_labels_traefik_entrypoints }}"
+matrix_dendrite_container_labels_public_metrics_traefik_tls: "{{ matrix_dendrite_container_labels_public_metrics_traefik_entrypoints != 'web' }}"
+matrix_dendrite_container_labels_public_metrics_traefik_tls_certResolver: "{{ matrix_dendrite_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_dendrite_container_labels_public_metrics_middleware_basic_auth_enabled: false
 # See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
-matrix_dendrite_container_labels_metrics_middleware_basic_auth_users: ''
+matrix_dendrite_container_labels_public_metrics_middleware_basic_auth_users: ''
 
 # matrix_dendrite_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.

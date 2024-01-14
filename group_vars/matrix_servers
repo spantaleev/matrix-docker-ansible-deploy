@@ -4378,11 +4378,11 @@ matrix_synapse_reverse_proxy_companion_container_labels_traefik_entrypoints: "{{
 matrix_synapse_reverse_proxy_companion_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 matrix_synapse_reverse_proxy_companion_container_labels_traefik_hostname: "{{ matrix_server_fqn_matrix }}"
 
-matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_client_api_enabled: "{{ matrix_synapse_container_labels_public_client_synapse_client_api_enabled }}"
-matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_oidc_api_enabled: "{{ matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled }}"
-matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_admin_api_enabled: "{{ matrix_synapse_container_labels_public_client_synapse_admin_api_enabled }}"
+matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_client_api_enabled: "{{ matrix_synapse_container_labels_public_client_synapse_client_api_enabled }}"
+matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_api_enabled: "{{ matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled }}"
+matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_enabled: "{{ matrix_synapse_container_labels_public_client_synapse_admin_api_enabled }}"
 
-matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
+matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
 
 matrix_synapse_reverse_proxy_companion_synapse_workers_enabled: "{{ matrix_synapse_workers_enabled }}"
 matrix_synapse_reverse_proxy_companion_synapse_workers_list: "{{ matrix_synapse_workers_enabled_list }}"
@@ -4896,15 +4896,15 @@ matrix_dendrite_container_labels_traefik_docker_network: "{{ matrix_playbook_rev
 matrix_dendrite_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 matrix_dendrite_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
-matrix_dendrite_container_labels_client_synapse_admin_api_enabled: "{{ matrix_synapse_admin_enabled }}"
+matrix_dendrite_container_labels_public_client_synapse_admin_api_enabled: "{{ matrix_synapse_admin_enabled }}"
 
-matrix_dendrite_container_labels_client_root_redirection_enabled: "{{ matrix_dendrite_container_labels_client_root_redirection_url != '' }}"
-matrix_dendrite_container_labels_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
+matrix_dendrite_container_labels_public_client_root_redirection_enabled: "{{ matrix_dendrite_container_labels_public_client_root_redirection_url != '' }}"
+matrix_dendrite_container_labels_public_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
 
-matrix_dendrite_container_labels_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
+matrix_dendrite_container_labels_public_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
 
-matrix_dendrite_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
-matrix_dendrite_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+matrix_dendrite_container_labels_public_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+matrix_dendrite_container_labels_public_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
 matrix_dendrite_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
 
@@ -4987,10 +4987,10 @@ matrix_conduit_container_labels_traefik_docker_network: "{{ matrix_playbook_reve
 matrix_conduit_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 matrix_conduit_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
-matrix_conduit_container_labels_client_root_redirection_enabled: "{{ matrix_conduit_container_labels_client_root_redirection_url != '' }}"
-matrix_conduit_container_labels_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
+matrix_conduit_container_labels_public_client_root_redirection_enabled: "{{ matrix_conduit_container_labels_public_client_root_redirection_url != '' }}"
+matrix_conduit_container_labels_public_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
 
-matrix_conduit_container_labels_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
+matrix_conduit_container_labels_public_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
 
 # Even if TURN doesn't support TLS (it does by default),
 # it doesn't hurt to try a secure connection anyway.
