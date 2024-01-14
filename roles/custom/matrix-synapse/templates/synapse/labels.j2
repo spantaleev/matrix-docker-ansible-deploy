@@ -11,40 +11,40 @@ traefik.http.services.matrix-synapse-metrics.loadbalancer.server.port={{ matrix_
 
 
 {#
-	Root path (/)
+	Public Root path (/)
 #}
-{% if matrix_synapse_container_labels_client_root_enabled %}
+{% if matrix_synapse_container_labels_public_client_root_enabled %}
 
 {% set client_root_middlewares = [] %}
 
-{% if matrix_synapse_container_labels_client_root_redirection_enabled %}
-{% set client_root_middlewares = client_root_middlewares + ['matrix-synapse-client-root-redirect'] %}
-traefik.http.middlewares.matrix-synapse-client-root-redirect.redirectregex.regex=(.*)
-traefik.http.middlewares.matrix-synapse-client-root-redirect.redirectregex.replacement={{ matrix_synapse_container_labels_client_root_redirection_url }}
+{% if matrix_synapse_container_labels_public_client_root_redirection_enabled %}
+{% set client_root_middlewares = client_root_middlewares + ['matrix-synapse-public-client-root-redirect'] %}
+traefik.http.middlewares.matrix-synapse-public-client-root-redirect.redirectregex.regex=(.*)
+traefik.http.middlewares.matrix-synapse-public-client-root-redirect.redirectregex.replacement={{ matrix_synapse_container_labels_public_client_root_redirection_url }}
 {% else %}
-{% set client_root_middlewares = client_root_middlewares + ['matrix-synapse-client-root-replacepath'] %}
-traefik.http.middlewares.matrix-synapse-client-root-replacepath.replacepath.path=/_matrix/static/
+{% set client_root_middlewares = client_root_middlewares + ['matrix-synapse-public-client-root-replacepath'] %}
+traefik.http.middlewares.matrix-synapse-public-client-root-replacepath.replacepath.path=/_matrix/static/
 {% endif %}
 
-traefik.http.routers.matrix-synapse-client-root.rule={{ matrix_synapse_container_labels_client_root_traefik_rule }}
+traefik.http.routers.matrix-synapse-public-client-root.rule={{ matrix_synapse_container_labels_public_client_root_traefik_rule }}
 
-traefik.http.routers.matrix-synapse-client-root.middlewares={{ client_root_middlewares | join(',') }}
+traefik.http.routers.matrix-synapse-public-client-root.middlewares={{ client_root_middlewares | join(',') }}
 
-{% if matrix_synapse_container_labels_client_root_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-synapse-client-root.priority={{ matrix_synapse_container_labels_client_root_traefik_priority }}
+{% if matrix_synapse_container_labels_public_client_root_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-public-client-root.priority={{ matrix_synapse_container_labels_public_client_root_traefik_priority }}
 {% endif %}
 
-traefik.http.routers.matrix-synapse-client-root.service=matrix-synapse-client-api
-traefik.http.routers.matrix-synapse-client-root.entrypoints={{ matrix_synapse_container_labels_client_root_traefik_entrypoints }}
-traefik.http.routers.matrix-synapse-client-root.tls={{ matrix_synapse_container_labels_client_root_traefik_tls | to_json }}
+traefik.http.routers.matrix-synapse-public-client-root.service=matrix-synapse-client-api
+traefik.http.routers.matrix-synapse-public-client-root.entrypoints={{ matrix_synapse_container_labels_public_client_root_traefik_entrypoints }}
+traefik.http.routers.matrix-synapse-public-client-root.tls={{ matrix_synapse_container_labels_public_client_root_traefik_tls | to_json }}
 
-{% if matrix_synapse_container_labels_client_root_traefik_tls %}
-traefik.http.routers.matrix-synapse-client-root.tls.certResolver={{ matrix_synapse_container_labels_client_root_traefik_tls_certResolver }}
+{% if matrix_synapse_container_labels_public_client_root_traefik_tls %}
+traefik.http.routers.matrix-synapse-public-client-root.tls.certResolver={{ matrix_synapse_container_labels_public_client_root_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
 {#
-	/Root path (/)
+	/Public Root path (/)
 #}
 
 
@@ -59,127 +59,148 @@ traefik.http.routers.matrix-synapse-client-root.tls.certResolver={{ matrix_synap
 {% if matrix_synapse_container_labels_matrix_related_labels_enabled %}
 
 {#
-	Client-API (/_matrix)
+	Public Client-API (/_matrix)
 #}
-{% if matrix_synapse_container_labels_client_api_enabled %}
+{% if matrix_synapse_container_labels_public_client_api_enabled %}
 
-traefik.http.routers.matrix-synapse-client-api.rule={{ matrix_synapse_container_labels_client_api_traefik_rule }}
+traefik.http.routers.matrix-synapse-public-client-api.rule={{ matrix_synapse_container_labels_public_client_api_traefik_rule }}
 
-{% if matrix_synapse_container_labels_client_api_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-synapse-client-api.priority={{ matrix_synapse_container_labels_client_api_traefik_priority }}
+{% if matrix_synapse_container_labels_public_client_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-public-client-api.priority={{ matrix_synapse_container_labels_public_client_api_traefik_priority }}
 {% endif %}
 
-traefik.http.routers.matrix-synapse-client-api.service=matrix-synapse-client-api
-traefik.http.routers.matrix-synapse-client-api.entrypoints={{ matrix_synapse_container_labels_client_api_traefik_entrypoints }}
-traefik.http.routers.matrix-synapse-client-api.tls={{ matrix_synapse_container_labels_client_api_traefik_tls | to_json }}
+traefik.http.routers.matrix-synapse-public-client-api.service=matrix-synapse-client-api
+traefik.http.routers.matrix-synapse-public-client-api.entrypoints={{ matrix_synapse_container_labels_public_client_api_traefik_entrypoints }}
+traefik.http.routers.matrix-synapse-public-client-api.tls={{ matrix_synapse_container_labels_public_client_api_traefik_tls | to_json }}
 
-{% if matrix_synapse_container_labels_client_api_traefik_tls %}
-traefik.http.routers.matrix-synapse-client-api.tls.certResolver={{ matrix_synapse_container_labels_client_api_traefik_tls_certResolver }}
+{% if matrix_synapse_container_labels_public_client_api_traefik_tls %}
+traefik.http.routers.matrix-synapse-public-client-api.tls.certResolver={{ matrix_synapse_container_labels_public_client_api_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
 {#
-	/Client-API (/_matrix)
+	/Public Client-API (/_matrix)
+#}
+
+
+
+{#
+	Internal Client-API (/_matrix)
+#}
+{% if matrix_synapse_container_labels_internal_client_api_enabled %}
+
+traefik.http.routers.matrix-synapse-internal-client-api.rule={{ matrix_synapse_container_labels_internal_client_api_traefik_rule }}
+
+{% if matrix_synapse_container_labels_internal_client_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-internal-client-api.priority={{ matrix_synapse_container_labels_internal_client_api_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-synapse-internal-client-api.service=matrix-synapse-client-api
+traefik.http.routers.matrix-synapse-internal-client-api.entrypoints={{ matrix_synapse_container_labels_internal_client_api_traefik_entrypoints }}
+
+{% endif %}
+{#
+	/Internal Client-API (/_matrix)
 #}
 
 
 {#
-	Synapse Admin API (/_synapse/client)
+	Public Synapse Admin API (/_synapse/client)
 #}
-{% if matrix_synapse_container_labels_client_synapse_client_api_enabled %}
+{% if matrix_synapse_container_labels_public_client_synapse_client_api_enabled %}
 
-traefik.http.routers.matrix-synapse-client-synapse-client-api.rule={{ matrix_synapse_container_labels_client_synapse_client_api_traefik_rule }}
+traefik.http.routers.matrix-synapse-public-client-synapse-client-api.rule={{ matrix_synapse_container_labels_public_client_synapse_client_api_traefik_rule }}
 
-{% if matrix_synapse_container_labels_client_synapse_client_api_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-synapse-client-synapse-client-api.priority={{ matrix_synapse_container_labels_client_synapse_client_api_traefik_priority }}
+{% if matrix_synapse_container_labels_public_client_synapse_client_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-public-client-synapse-client-api.priority={{ matrix_synapse_container_labels_public_client_synapse_client_api_traefik_priority }}
 {% endif %}
 
-traefik.http.routers.matrix-synapse-client-synapse-client-api.service=matrix-synapse-client-api
-traefik.http.routers.matrix-synapse-client-synapse-client-api.entrypoints={{ matrix_synapse_container_labels_client_synapse_client_api_traefik_entrypoints }}
-traefik.http.routers.matrix-synapse-client-synapse-client-api.tls={{ matrix_synapse_container_labels_client_synapse_client_api_traefik_tls | to_json }}
+traefik.http.routers.matrix-synapse-public-client-synapse-client-api.service=matrix-synapse-client-api
+traefik.http.routers.matrix-synapse-public-client-synapse-client-api.entrypoints={{ matrix_synapse_container_labels_public_client_synapse_client_api_traefik_entrypoints }}
+traefik.http.routers.matrix-synapse-public-client-synapse-client-api.tls={{ matrix_synapse_container_labels_public_client_synapse_client_api_traefik_tls | to_json }}
 
-{% if matrix_synapse_container_labels_client_synapse_client_api_traefik_tls %}
-traefik.http.routers.matrix-synapse-client-synapse-client-api.tls.certResolver={{ matrix_synapse_container_labels_client_synapse_client_api_traefik_tls_certResolver }}
+{% if matrix_synapse_container_labels_public_client_synapse_client_api_traefik_tls %}
+traefik.http.routers.matrix-synapse-public-client-synapse-client-api.tls.certResolver={{ matrix_synapse_container_labels_public_client_synapse_client_api_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
 {#
-	/Synapse Admin API (/_synapse/client)
+	/Public Synapse Admin API (/_synapse/client)
 #}
 
 
 {#
-	Synapse OIDC API (/_synapse/oidc)
+	Public Synapse OIDC API (/_synapse/oidc)
 #}
-{% if matrix_synapse_container_labels_client_synapse_oidc_api_enabled %}
+{% if matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled %}
 
-traefik.http.routers.matrix-synapse-client-synapse-oidc-api.rule={{ matrix_synapse_container_labels_client_synapse_oidc_api_traefik_rule }}
+traefik.http.routers.matrix-synapse-public-client-synapse-oidc-api.rule={{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_rule }}
 
-{% if matrix_synapse_container_labels_client_synapse_oidc_api_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-synapse-client-synapse-oidc-api.priority={{ matrix_synapse_container_labels_client_synapse_oidc_api_traefik_priority }}
+{% if matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-public-client-synapse-oidc-api.priority={{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_priority }}
 {% endif %}
 
-traefik.http.routers.matrix-synapse-client-synapse-oidc-api.service=matrix-synapse-client-api
-traefik.http.routers.matrix-synapse-client-synapse-oidc-api.entrypoints={{ matrix_synapse_container_labels_client_synapse_oidc_api_traefik_entrypoints }}
-traefik.http.routers.matrix-synapse-client-synapse-oidc-api.tls={{ matrix_synapse_container_labels_client_synapse_oidc_api_traefik_tls | to_json }}
+traefik.http.routers.matrix-synapse-public-client-synapse-oidc-api.service=matrix-synapse-client-api
+traefik.http.routers.matrix-synapse-public-client-synapse-oidc-api.entrypoints={{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_entrypoints }}
+traefik.http.routers.matrix-synapse-public-client-synapse-oidc-api.tls={{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_tls | to_json }}
 
-{% if matrix_synapse_container_labels_client_synapse_oidc_api_traefik_tls %}
-traefik.http.routers.matrix-synapse-client-synapse-oidc-api.tls.certResolver={{ matrix_synapse_container_labels_client_synapse_oidc_api_traefik_tls_certResolver }}
+{% if matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_tls %}
+traefik.http.routers.matrix-synapse-public-client-synapse-oidc-api.tls.certResolver={{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
 {#
-	/Synapse OIDC API (/_synapse/oidc)
+	/Public Synapse OIDC API (/_synapse/oidc)
 #}
 
 
 {#
-	Synapse Admin API (/_synapse/admin)
+	Public Synapse Admin API (/_synapse/admin)
 #}
-{% if matrix_synapse_container_labels_client_synapse_admin_api_enabled %}
+{% if matrix_synapse_container_labels_public_client_synapse_admin_api_enabled %}
 
-traefik.http.routers.matrix-synapse-client-synapse-admin-api.rule={{ matrix_synapse_container_labels_client_synapse_admin_api_traefik_rule }}
+traefik.http.routers.matrix-synapse-public-client-synapse-admin-api.rule={{ matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_rule }}
 
-{% if matrix_synapse_container_labels_client_synapse_admin_api_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-synapse-client-synapse-admin-api.priority={{ matrix_synapse_container_labels_client_synapse_admin_api_traefik_priority }}
+{% if matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-public-client-synapse-admin-api.priority={{ matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_priority }}
 {% endif %}
 
-traefik.http.routers.matrix-synapse-client-synapse-admin-api.service=matrix-synapse-client-api
-traefik.http.routers.matrix-synapse-client-synapse-admin-api.entrypoints={{ matrix_synapse_container_labels_client_synapse_admin_api_traefik_entrypoints }}
-traefik.http.routers.matrix-synapse-client-synapse-admin-api.tls={{ matrix_synapse_container_labels_client_synapse_admin_api_traefik_tls | to_json }}
+traefik.http.routers.matrix-synapse-public-client-synapse-admin-api.service=matrix-synapse-client-api
+traefik.http.routers.matrix-synapse-public-client-synapse-admin-api.entrypoints={{ matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_entrypoints }}
+traefik.http.routers.matrix-synapse-public-client-synapse-admin-api.tls={{ matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_tls | to_json }}
 
-{% if matrix_synapse_container_labels_client_synapse_admin_api_traefik_tls %}
-traefik.http.routers.matrix-synapse-client-synapse-admin-api.tls.certResolver={{ matrix_synapse_container_labels_client_synapse_admin_api_traefik_tls_certResolver }}
+{% if matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_tls %}
+traefik.http.routers.matrix-synapse-public-client-synapse-admin-api.tls.certResolver={{ matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
 {#
-	/Synapse Admin API (/_synapse/admin)
+	/Public Synapse Admin API (/_synapse/admin)
 #}
 
 
 {#
-	Federation-API (/_matrix)
+	Public Federation-API (/_matrix)
 #}
-{% if matrix_synapse_container_labels_federation_api_enabled %}
+{% if matrix_synapse_container_labels_public_federation_api_enabled %}
 
-traefik.http.routers.matrix-synapse-federation-api.rule={{ matrix_synapse_container_labels_federation_api_traefik_rule }}
+traefik.http.routers.matrix-synapse-public-federation-api.rule={{ matrix_synapse_container_labels_public_federation_api_traefik_rule }}
 
-{% if matrix_synapse_container_labels_federation_api_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-synapse-federation-api.priority={{ matrix_synapse_container_labels_federation_api_traefik_priority }}
+{% if matrix_synapse_container_labels_public_federation_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-public-federation-api.priority={{ matrix_synapse_container_labels_public_federation_api_traefik_priority }}
 {% endif %}
 
-traefik.http.routers.matrix-synapse-federation-api.service=matrix-synapse-federation-api
-traefik.http.routers.matrix-synapse-federation-api.entrypoints={{ matrix_synapse_container_labels_federation_api_traefik_entrypoints }}
-traefik.http.routers.matrix-synapse-federation-api.tls={{ matrix_synapse_container_labels_federation_api_traefik_tls | to_json }}
+traefik.http.routers.matrix-synapse-public-federation-api.service=matrix-synapse-federation-api
+traefik.http.routers.matrix-synapse-public-federation-api.entrypoints={{ matrix_synapse_container_labels_public_federation_api_traefik_entrypoints }}
+traefik.http.routers.matrix-synapse-public-federation-api.tls={{ matrix_synapse_container_labels_public_federation_api_traefik_tls | to_json }}
 
-{% if matrix_synapse_container_labels_federation_api_traefik_tls %}
-traefik.http.routers.matrix-synapse-federation-api.tls.certResolver={{ matrix_synapse_container_labels_federation_api_traefik_tls_certResolver }}
+{% if matrix_synapse_container_labels_public_federation_api_traefik_tls %}
+traefik.http.routers.matrix-synapse-public-federation-api.tls.certResolver={{ matrix_synapse_container_labels_public_federation_api_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
 {#
-	/Federation-API (/_matrix)
+	/Public Federation-API (/_matrix)
 #}
 
 {#
@@ -194,41 +215,41 @@ traefik.http.routers.matrix-synapse-federation-api.tls.certResolver={{ matrix_sy
 
 
 {#
-	Metrics (e.g. /metrics/synapse/main-process)
+	Public Metrics (e.g. /metrics/synapse/main-process)
 #}
-{% if matrix_synapse_container_labels_metrics_enabled %}
+{% if matrix_synapse_container_labels_public_metrics_enabled %}
 
 {% set metrics_middlewares = [] %}
 
-{% if matrix_synapse_container_labels_metrics_middleware_basic_auth_enabled %}
+{% if matrix_synapse_container_labels_public_metrics_middleware_basic_auth_enabled %}
 {% set metrics_middlewares = metrics_middlewares + ['matrix-synapse-metrics-basic-auth'] %}
-traefik.http.middlewares.matrix-synapse-metrics-basic-auth.basicauth.users={{ matrix_synapse_container_labels_metrics_middleware_basic_auth_users }}
+traefik.http.middlewares.matrix-synapse-metrics-basic-auth.basicauth.users={{ matrix_synapse_container_labels_public_metrics_middleware_basic_auth_users }}
 {% endif %}
 
 {% set metrics_middlewares = metrics_middlewares + ['matrix-synapse-metrics-replacepath'] %}
 traefik.http.middlewares.matrix-synapse-metrics-replacepath.replacepath.path=/_synapse/metrics
 
-traefik.http.routers.matrix-synapse-metrics.rule={{ matrix_synapse_container_labels_metrics_traefik_rule }}
+traefik.http.routers.matrix-synapse-metrics.rule={{ matrix_synapse_container_labels_public_metrics_traefik_rule }}
 
 {% if metrics_middlewares | length > 0 %}
 traefik.http.routers.matrix-synapse-metrics.middlewares={{ metrics_middlewares | join(',') }}
 {% endif %}
 
-{% if matrix_synapse_container_labels_metrics_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-synapse-metrics.priority={{ matrix_synapse_container_labels_metrics_traefik_priority }}
+{% if matrix_synapse_container_labels_public_metrics_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-metrics.priority={{ matrix_synapse_container_labels_public_metrics_traefik_priority }}
 {% endif %}
 
 traefik.http.routers.matrix-synapse-metrics.service=matrix-synapse-metrics
-traefik.http.routers.matrix-synapse-metrics.entrypoints={{ matrix_synapse_container_labels_metrics_traefik_entrypoints }}
+traefik.http.routers.matrix-synapse-metrics.entrypoints={{ matrix_synapse_container_labels_public_metrics_traefik_entrypoints }}
 
-traefik.http.routers.matrix-synapse-metrics.tls={{ matrix_synapse_container_labels_metrics_traefik_tls | to_json }}
-{% if matrix_synapse_container_labels_metrics_traefik_tls %}
-traefik.http.routers.matrix-synapse-metrics.tls.certResolver={{ matrix_synapse_container_labels_metrics_traefik_tls_certResolver }}
+traefik.http.routers.matrix-synapse-metrics.tls={{ matrix_synapse_container_labels_public_metrics_traefik_tls | to_json }}
+{% if matrix_synapse_container_labels_public_metrics_traefik_tls %}
+traefik.http.routers.matrix-synapse-metrics.tls.certResolver={{ matrix_synapse_container_labels_public_metrics_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
 {#
-	/Metrics (e.g. /metrics/synapse/main-process)
+	/Public Metrics (e.g. /metrics/synapse/main-process)
 #}
 
 

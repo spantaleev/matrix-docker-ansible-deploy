@@ -239,6 +239,15 @@ matrix_metrics_exposure_http_basic_auth_users: ''
 #     - it's up to you to expose the ports you want, etc.
 matrix_playbook_reverse_proxy_type: ''
 
+# Specifies the network that the reverse-proxy is operating at
+matrix_playbook_reverse_proxy_container_network: 'traefik'
+
+# Specifies the hostname that the reverse-proxy is available at
+matrix_playbook_reverse_proxy_hostname: 'matrix-traefik'
+
+# Controls the additional network that reverse-proxyable services will be connected to.
+matrix_playbook_reverse_proxyable_services_additional_network: "{{ matrix_playbook_reverse_proxy_container_network }}"
+
 matrix_playbook_service_host_bind_interface_prefix: "{{ '' if matrix_playbook_reverse_proxy_type not in ['other-nginx-non-container', 'other-on-same-host', 'other-on-another-host'] else ('0.0.0.0:' if matrix_playbook_reverse_proxy_type == 'other-on-another-host' else '127.0.0.1:') }}"
 
 # Controls whether to enable an additional Traefik entrypoint for the purpose of serving Matrix Federation.
@@ -257,6 +266,41 @@ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_definition:
   port: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_port }}"
   host_bind_port: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port }}"
   config: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config }}"
+
+# Controls whether to enable an additional Traefik entrypoint for the purpose of serving the homeserver's Client-Server API internally.
+#
+# Homeserver software and other core components which are part of the homeserver's Client-Server API
+# may wish to register their routes with this additional entrypoint and provide their services on it for internal (no-public-network and non-TLS) use.
+#
+# This entrypoint provides local addons (e.g. bridges, bots, etc.) with the ability to easily & quickly communicate with the homeserver and/or related software.
+# Such services can reach the homeserver over the public internet (e.g. https://matrix.DOMAIN), but this is slow due to networking and SSL-termination.
+# Talking directly to the homeserver (e.g. `http://matrix-synapse:8008`) is another option, but does not allow other homeserver-related software
+# (e.g. identity servers like ma1sd, media repository servers like matrix-media-repo, firewalls like matrix-corporal)
+# to register itself for certain homeserver routes.
+#
+# For example: when matrix-media-repo is enabled, it wishes to handle `/_matrix/media` both publicly and internally.
+# Bots/bridges that try to upload media should not hit `/_matrix/media` on the homeserver directly, but actually go through matrix-media-repo.
+#
+# This entrypoint gives us a layer of indirection, so that all these homeserver-related services can register themselves on this entrypoint
+# the same way they register themselves for the public (e.g. `web-secure`) entrypoint.
+#
+# Routers enabled on this entrypoint should use Traefik rules which do NOT do Host-matching (Host/HostRegexp),
+# because addon services (e.g. bridges, bots) cannot properly pass a `Host` HTTP header when making
+# requests to the endpoint's address (e.g. `http://devture-traefik:8008/`).
+# This entrypoint only aims to handle a single "virtual host" - one dealing with the homeserver's Client-Server API.
+matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled: true
+matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name: matrix-internal-matrix-client-api
+matrix_playbook_internal_matrix_client_api_traefik_entrypoint_port: 8008
+matrix_playbook_internal_matrix_client_api_traefik_entrypoint_host_bind_port: ''
+matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_auto | combine(matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_custom, recursive=True) }}"
+matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_auto: {}
+matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_custom: {}
+
+matrix_playbook_internal_matrix_client_api_traefik_entrypoint_definition:
+  name: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
+  port: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_port }}"
+  host_bind_port: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_host_bind_port }}"
+  config: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config }}"
 
 # Variables to Control which parts of our roles run.
 run_postgres_import: true

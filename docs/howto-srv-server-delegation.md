@@ -27,7 +27,7 @@ Also, all instructions below are from an older version of the playbook and may n
 
 ```yaml
 # To serve the federation from any domain, as long as the path matches
-matrix_synapse_container_labels_federation_api_traefik_rule: PathPrefix(`/_matrix/federation`)
+matrix_synapse_container_labels_public_federation_api_traefik_rule: PathPrefix(`/_matrix/federation`)
 ```
 
 This is because with SRV federation, some servers / tools (one of which being the federation tester) try to access the federation API using the resolved IP address instead of the domain name (or they are not using SNI). This change will make Traefik route all traffic for which the path match this rule go to the federation endpoint.
@@ -142,7 +142,7 @@ matrix_playbook_reverse_proxy_type: playbook-managed-traefik
 devture_traefik_config_certificatesResolvers_acme_email: redacted@example.com
 
 # To serve the federation from any domain, as long as the path matches
-matrix_synapse_container_labels_federation_api_traefik_rule: PathPrefix(`/_matrix/federation`)
+matrix_synapse_container_labels_public_federation_api_traefik_rule: PathPrefix(`/_matrix/federation`)
 
 # To let Traefik know which domains' certificates to serve
 matrix_synapse_container_labels_additional_labels: |

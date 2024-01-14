@@ -17,7 +17,7 @@ matrix_synapse_admin_enabled: true
 
 **Note**: Synapse Admin requires Synapse's [Admin APIs](https://matrix-org.github.io/synapse/latest/usage/administration/admin_api/index.html) to function. Access to them is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, for additional security, we normally leave them unexposed, following [official Synapse reverse-proxying recommendations](https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md#synapse-administration-endpoints). Because Synapse Admin needs these APIs to function, when installing Synapse Admin, the playbook **automatically** exposes the Synapse Admin API publicly for you. Depending on the homeserver implementation you're using (Synapse, Dendrite), this is equivalent to:
 
-- for Synapse (our default homeserver implementation): `matrix_synapse_container_labels_client_synapse_admin_api_enabled: true`
+- for Synapse (our default homeserver implementation): `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true`
 - for [Dendrite](./configuring-playbook-dendrite.md): `matrix_dendrite_container_labels_client_synapse_admin_api_enabled: true`
 
 

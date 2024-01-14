@@ -24,8 +24,8 @@ matrix_playbook_docker_installation_enabled: true
 # yet still use Traefik installed in another way.
 matrix_playbook_traefik_labels_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 
-# Controls the additional network that reverse-proxyable services will be connected to.
-matrix_playbook_reverse_proxyable_services_additional_network: "{{ devture_traefik_container_network if devture_traefik_enabled else '' }}"
+matrix_playbook_reverse_proxy_container_network: "{{ devture_traefik_container_network if devture_traefik_enabled else 'traefik' }}"
+matrix_playbook_reverse_proxy_hostname: "{{ devture_traefik_identifier if devture_traefik_enabled else 'traefik' }}"
 
 matrix_playbook_ssl_retrieval_method: "{{ 'lets-encrypt' if devture_traefik_certs_dumper_enabled else matrix_ssl_retrieval_method }}"
 
@@ -192,9 +192,9 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-cactus-comments.yaml'] if matrix_cactus_comments_enabled else [])
   }}
 
-matrix_addons_homeserver_container_network: "{{ matrix_homeserver_proxy_container_network if matrix_homeserver_proxy_enabled else matrix_homeserver_container_network }}"
-matrix_addons_homeserver_client_api_url: "{{ matrix_homeserver_proxy_client_api_url if matrix_homeserver_proxy_enabled else matrix_homeserver_container_url }}"
-matrix_addons_homeserver_systemd_services_list: "{{ ([matrix_homeserver_proxy_identifier + '.service']) if matrix_homeserver_proxy_enabled else matrix_homeserver_systemd_services_list }}"
+matrix_addons_homeserver_container_network: "{{ matrix_playbook_reverse_proxy_container_network if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else matrix_homeserver_container_network }}"
+matrix_addons_homeserver_client_api_url: "{{ ('http://' + matrix_playbook_reverse_proxy_hostname + ':' + matrix_playbook_internal_matrix_client_api_traefik_entrypoint_port | string) if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else matrix_homeserver_container_url }}"
+matrix_addons_homeserver_systemd_services_list: "{{ ([devture_traefik_identifier + '.service']) if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else matrix_homeserver_systemd_services_list }}"
 
 # Starting from version `0.6.0` conduit natively supports some sync v3 (sliding-sync) features.
 matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_sliding_sync_enabled else (matrix_homeserver_url if matrix_homeserver_implementation in ['conduit'] else '') }}"
@@ -3503,7 +3503,7 @@ matrix_nginx_proxy_access_log_syslog_integration_server_port: "{{ (matrix_promet
 
 # The playbook always enables the homeserver proxy for now.
 # TODO - consider not enabling it if not necessary
-matrix_homeserver_proxy_enabled: true
+matrix_homeserver_proxy_enabled: false
 
 matrix_homeserver_proxy_access_log_syslog_integration_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
 matrix_homeserver_proxy_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_identifier | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
@@ -4213,17 +4213,20 @@ matrix_synapse_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypo
 matrix_synapse_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 matrix_synapse_container_labels_traefik_hostname: "{{ matrix_server_fqn_matrix }}"
 
-matrix_synapse_container_labels_client_root_redirection_enabled: "{{ matrix_synapse_container_labels_client_root_redirection_url != '' }}"
-matrix_synapse_container_labels_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
-
 matrix_synapse_container_labels_matrix_labels_enabled: "{{ not matrix_synapse_workers_enabled }}"
 
-matrix_synapse_container_labels_client_synapse_admin_api_enabled: "{{ matrix_synapse_admin_enabled }}"
+matrix_synapse_container_labels_public_client_root_redirection_enabled: "{{ matrix_synapse_container_labels_public_client_root_redirection_url != '' }}"
+matrix_synapse_container_labels_public_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
 
-matrix_synapse_container_labels_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
+matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: "{{ matrix_synapse_admin_enabled }}"
 
-matrix_synapse_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
-matrix_synapse_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+matrix_synapse_container_labels_public_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
+
+matrix_synapse_container_labels_public_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+matrix_synapse_container_labels_public_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+
+matrix_synapse_container_labels_internal_client_api_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
+matrix_synapse_container_labels_internal_client_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
 
 # For exposing the Synapse worker (and metrics) ports to the local host.
 matrix_synapse_workers_container_host_bind_address: "{{ matrix_playbook_service_host_bind_interface_prefix[0:-1] if (matrix_synapse_workers_enabled and matrix_playbook_service_host_bind_interface_prefix) else '' }}"
@@ -4375,9 +4378,9 @@ matrix_synapse_reverse_proxy_companion_container_labels_traefik_entrypoints: "{{
 matrix_synapse_reverse_proxy_companion_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 matrix_synapse_reverse_proxy_companion_container_labels_traefik_hostname: "{{ matrix_server_fqn_matrix }}"
 
-matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_client_api_enabled: "{{ matrix_synapse_container_labels_client_synapse_client_api_enabled }}"
-matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_oidc_api_enabled: "{{ matrix_synapse_container_labels_client_synapse_oidc_api_enabled }}"
-matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_admin_api_enabled: "{{ matrix_synapse_container_labels_client_synapse_admin_api_enabled }}"
+matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_client_api_enabled: "{{ matrix_synapse_container_labels_public_client_synapse_client_api_enabled }}"
+matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_oidc_api_enabled: "{{ matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled }}"
+matrix_synapse_reverse_proxy_companion_container_labels_client_synapse_admin_api_enabled: "{{ matrix_synapse_container_labels_public_client_synapse_admin_api_enabled }}"
 
 matrix_synapse_reverse_proxy_companion_container_labels_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint }}"
 
@@ -5203,6 +5206,8 @@ devture_traefik_gid: "{{ matrix_user_gid }}"
 devture_traefik_additional_entrypoints_auto: |
   {{
     ([matrix_playbook_public_matrix_federation_api_traefik_entrypoint_definition] if matrix_playbook_public_matrix_federation_api_traefik_entrypoint_enabled else [])
+    +
+    ([matrix_playbook_internal_matrix_client_api_traefik_entrypoint_definition] if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else [])
   }}
 
 devture_traefik_additional_domains_to_obtain_certificates_for: "{{ matrix_ssl_additional_domains_to_obtain_certificates_for }}"

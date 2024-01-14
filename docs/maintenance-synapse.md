@@ -18,7 +18,7 @@ You can use the **[Purge History API](https://github.com/matrix-org/synapse/blob
 
 To make use of this Synapse Admin API, **you'll need an admin access token** first. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
-Synapse's Admin API is not exposed to the internet by default, following [official Synapse reverse-proxying recommendations](https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md#synapse-administration-endpoints). To expose it you will need to add `matrix_synapse_container_labels_client_synapse_admin_api_enabled: true` to your `vars.yml` file.
+Synapse's Admin API is not exposed to the internet by default, following [official Synapse reverse-proxying recommendations](https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md#synapse-administration-endpoints). To expose it you will need to add `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true` to your `vars.yml` file.
 
 Follow the [Purge History API](https://github.com/matrix-org/synapse/blob/master/docs/admin_api/purge_history_api.md) documentation page for the actual purging instructions.
 

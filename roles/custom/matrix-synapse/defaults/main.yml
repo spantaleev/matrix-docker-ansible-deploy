@@ -169,100 +169,111 @@ matrix_synapse_container_labels_traefik_hostname: ''
 # Controls whether Matrix-related labels will be added.
 #
 # When set to false, variables like the following take no effect:
-# - `matrix_synapse_container_labels_client_api_enabled`
-# - `matrix_synapse_container_labels_client_synapse_client_api_enabled`
-# - `matrix_synapse_container_labels_client_synapse_oidc_api_enabled`
-# - `matrix_synapse_container_labels_client_synapse_admin_api_enabled`
-# - `matrix_synapse_container_labels_federation_api_enabled`
+# - `matrix_synapse_container_labels_public_client_api_enabled`
+# - `matrix_synapse_container_labels_public_client_synapse_client_api_enabled`
+# - `matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled`
+# - `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled`
+# - `matrix_synapse_container_labels_public_federation_api_enabled`
 #
 # When workers are enabled, we do not capture these requests, because we can't route them appropriately.
 matrix_synapse_container_labels_matrix_related_labels_enabled: "{{ not matrix_synapse_workers_enabled }}"
 
-# Controls whether labels will be added for handling the root (/) path.
-matrix_synapse_container_labels_client_root_enabled: true
-matrix_synapse_container_labels_client_root_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
-matrix_synapse_container_labels_client_root_traefik_rule: "Host(`{{ matrix_synapse_container_labels_client_root_traefik_hostname }}`) && Path(`/`)"
-matrix_synapse_container_labels_client_root_traefik_priority: 0
-matrix_synapse_container_labels_client_root_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
-matrix_synapse_container_labels_client_root_traefik_tls: "{{ matrix_synapse_container_labels_client_root_traefik_entrypoints != 'web' }}"
-matrix_synapse_container_labels_client_root_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
-matrix_synapse_container_labels_client_root_redirection_enabled: false
-matrix_synapse_container_labels_client_root_redirection_url: ""
+# Controls whether labels will be added for handling the root (/) path on a public Traefik entrypoint.
+matrix_synapse_container_labels_public_client_root_enabled: true
+matrix_synapse_container_labels_public_client_root_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
+matrix_synapse_container_labels_public_client_root_traefik_rule: "Host(`{{ matrix_synapse_container_labels_public_client_root_traefik_hostname }}`) && Path(`/`)"
+matrix_synapse_container_labels_public_client_root_traefik_priority: 0
+matrix_synapse_container_labels_public_client_root_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
+matrix_synapse_container_labels_public_client_root_traefik_tls: "{{ matrix_synapse_container_labels_public_client_root_traefik_entrypoints != 'web' }}"
+matrix_synapse_container_labels_public_client_root_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_synapse_container_labels_public_client_root_redirection_enabled: false
+matrix_synapse_container_labels_public_client_root_redirection_url: ""
 
-# Controls whether labels will be added that expose the Client-Server API.
+# Controls whether labels will be added that expose the Client-Server API on a public Traefik entrypoint.
 # Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
 # See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
-matrix_synapse_container_labels_client_api_enabled: true
-matrix_synapse_container_labels_client_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
-matrix_synapse_container_labels_client_api_traefik_path_prefix: /_matrix
-matrix_synapse_container_labels_client_api_traefik_rule: "Host(`{{ matrix_synapse_container_labels_client_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_container_labels_client_api_traefik_path_prefix }}`)"
-matrix_synapse_container_labels_client_api_traefik_priority: 0
-matrix_synapse_container_labels_client_api_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
-matrix_synapse_container_labels_client_api_traefik_tls: "{{ matrix_synapse_container_labels_client_api_traefik_entrypoints != 'web' }}"
-matrix_synapse_container_labels_client_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_synapse_container_labels_public_client_api_enabled: true
+matrix_synapse_container_labels_public_client_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
+matrix_synapse_container_labels_public_client_api_traefik_path_prefix: /_matrix
+matrix_synapse_container_labels_public_client_api_traefik_rule: "Host(`{{ matrix_synapse_container_labels_public_client_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_container_labels_public_client_api_traefik_path_prefix }}`)"
+matrix_synapse_container_labels_public_client_api_traefik_priority: 0
+matrix_synapse_container_labels_public_client_api_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
+matrix_synapse_container_labels_public_client_api_traefik_tls: "{{ matrix_synapse_container_labels_public_client_api_traefik_entrypoints != 'web' }}"
+matrix_synapse_container_labels_public_client_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose the Client-Server API on the internal Traefik entrypoint.
+# This is similar to `matrix_synapse_container_labels_public_client_api_enabled`, but the entrypoint and intent is different.
+# Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
+# See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
+matrix_synapse_container_labels_internal_client_api_enabled: false
+matrix_synapse_container_labels_internal_client_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
+matrix_synapse_container_labels_internal_client_api_traefik_path_prefix: /_matrix
+matrix_synapse_container_labels_internal_client_api_traefik_rule: "PathPrefix(`{{ matrix_synapse_container_labels_internal_client_api_traefik_path_prefix }}`)"
+matrix_synapse_container_labels_internal_client_api_traefik_priority: "{{ matrix_synapse_container_labels_public_client_api_traefik_priority }}"
+matrix_synapse_container_labels_internal_client_api_traefik_entrypoints: ""
 
 # Controls whether labels will be added that expose the /_synapse/client paths
 # When workers are enabled, we do not capture these requests, because they may be load-balanaced to some specific worker.
 # Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
 # See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
-matrix_synapse_container_labels_client_synapse_client_api_enabled: true
-matrix_synapse_container_labels_client_synapse_client_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
-matrix_synapse_container_labels_client_synapse_client_api_traefik_path_prefix: /_synapse/client
-matrix_synapse_container_labels_client_synapse_client_api_traefik_rule: "Host(`{{ matrix_synapse_container_labels_client_synapse_client_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_container_labels_client_synapse_client_api_traefik_path_prefix }}`)"
-matrix_synapse_container_labels_client_synapse_client_api_traefik_priority: 0
-matrix_synapse_container_labels_client_synapse_client_api_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
-matrix_synapse_container_labels_client_synapse_client_api_traefik_tls: "{{ matrix_synapse_container_labels_client_synapse_client_api_traefik_entrypoints != 'web' }}"
-matrix_synapse_container_labels_client_synapse_client_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_synapse_container_labels_public_client_synapse_client_api_enabled: true
+matrix_synapse_container_labels_public_client_synapse_client_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
+matrix_synapse_container_labels_public_client_synapse_client_api_traefik_path_prefix: /_synapse/client
+matrix_synapse_container_labels_public_client_synapse_client_api_traefik_rule: "Host(`{{ matrix_synapse_container_labels_public_client_synapse_client_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_container_labels_public_client_synapse_client_api_traefik_path_prefix }}`)"
+matrix_synapse_container_labels_public_client_synapse_client_api_traefik_priority: 0
+matrix_synapse_container_labels_public_client_synapse_client_api_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
+matrix_synapse_container_labels_public_client_synapse_client_api_traefik_tls: "{{ matrix_synapse_container_labels_public_client_synapse_client_api_traefik_entrypoints != 'web' }}"
+matrix_synapse_container_labels_public_client_synapse_client_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # Controls whether labels will be added that expose the /_synapse/oidc paths
 # Enable this if you need OpenID Connect authentication support.
 # Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
 # See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
-matrix_synapse_container_labels_client_synapse_oidc_api_enabled: false
-matrix_synapse_container_labels_client_synapse_oidc_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
-matrix_synapse_container_labels_client_synapse_oidc_api_traefik_path_prefix: /_synapse/oidc
-matrix_synapse_container_labels_client_synapse_oidc_api_traefik_rule: "Host(`{{ matrix_synapse_container_labels_client_synapse_oidc_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_container_labels_client_synapse_oidc_api_traefik_path_prefix }}`)"
-matrix_synapse_container_labels_client_synapse_oidc_api_traefik_priority: 0
-matrix_synapse_container_labels_client_synapse_oidc_api_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
-matrix_synapse_container_labels_client_synapse_oidc_api_traefik_tls: "{{ matrix_synapse_container_labels_client_synapse_oidc_api_traefik_entrypoints != 'web' }}"
-matrix_synapse_container_labels_client_synapse_oidc_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled: false
+matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
+matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_path_prefix: /_synapse/oidc
+matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_rule: "Host(`{{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_path_prefix }}`)"
+matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_priority: 0
+matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
+matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_tls: "{{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_entrypoints != 'web' }}"
+matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # Controls whether labels will be added that expose the /_synapse/admin paths
 # Following these recommendations (https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md), by default, we don't.
 # Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
 # See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
-matrix_synapse_container_labels_client_synapse_admin_api_enabled: false
-matrix_synapse_container_labels_client_synapse_admin_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
-matrix_synapse_container_labels_client_synapse_admin_api_traefik_path_prefix: /_synapse/admin
-matrix_synapse_container_labels_client_synapse_admin_api_traefik_rule: "Host(`{{ matrix_synapse_container_labels_client_synapse_admin_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_container_labels_client_synapse_admin_api_traefik_path_prefix }}`)"
-matrix_synapse_container_labels_client_synapse_admin_api_traefik_priority: 0
-matrix_synapse_container_labels_client_synapse_admin_api_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
-matrix_synapse_container_labels_client_synapse_admin_api_traefik_tls: "{{ matrix_synapse_container_labels_client_synapse_admin_api_traefik_entrypoints != 'web' }}"
-matrix_synapse_container_labels_client_synapse_admin_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: false
+matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
+matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_path_prefix: /_synapse/admin
+matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_rule: "Host(`{{ matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_path_prefix }}`)"
+matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_priority: 0
+matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
+matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_tls: "{{ matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_entrypoints != 'web' }}"
+matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # Controls whether labels will be added that expose the Server-Server API (Federation API).
 # Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
 # See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
-matrix_synapse_container_labels_federation_api_enabled: "{{ matrix_synapse_federation_enabled and not matrix_synapse_workers_enabled }}"
-matrix_synapse_container_labels_federation_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
-matrix_synapse_container_labels_federation_api_traefik_path_prefix: /_matrix
-matrix_synapse_container_labels_federation_api_traefik_rule: "Host(`{{ matrix_synapse_container_labels_federation_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_container_labels_federation_api_traefik_path_prefix }}`)"
-matrix_synapse_container_labels_federation_api_traefik_priority: 0
-matrix_synapse_container_labels_federation_api_traefik_entrypoints: ''
-matrix_synapse_container_labels_federation_api_traefik_tls: "{{ matrix_synapse_container_labels_federation_api_traefik_entrypoints != 'web' }}"
-matrix_synapse_container_labels_federation_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_synapse_container_labels_public_federation_api_enabled: "{{ matrix_synapse_federation_enabled and not matrix_synapse_workers_enabled }}"
+matrix_synapse_container_labels_public_federation_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
+matrix_synapse_container_labels_public_federation_api_traefik_path_prefix: /_matrix
+matrix_synapse_container_labels_public_federation_api_traefik_rule: "Host(`{{ matrix_synapse_container_labels_public_federation_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_container_labels_public_federation_api_traefik_path_prefix }}`)"
+matrix_synapse_container_labels_public_federation_api_traefik_priority: 0
+matrix_synapse_container_labels_public_federation_api_traefik_entrypoints: ''
+matrix_synapse_container_labels_public_federation_api_traefik_tls: "{{ matrix_synapse_container_labels_public_federation_api_traefik_entrypoints != 'web' }}"
+matrix_synapse_container_labels_public_federation_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # Controls whether labels will be added that expose metrics (see `matrix_synapse_metrics_proxying_enabled`) for the main Synapse process
-matrix_synapse_container_labels_metrics_enabled: "{{ matrix_synapse_metrics_enabled and matrix_synapse_metrics_proxying_enabled }}"
-matrix_synapse_container_labels_metrics_traefik_path: "{{ matrix_synapse_metrics_proxying_path_prefix }}/main-process"
-matrix_synapse_container_labels_metrics_traefik_rule: "Host(`{{ matrix_synapse_metrics_proxying_hostname }}`) && Path(`{{ matrix_synapse_container_labels_metrics_traefik_path }}`)"
-matrix_synapse_container_labels_metrics_traefik_priority: 0
-matrix_synapse_container_labels_metrics_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
-matrix_synapse_container_labels_metrics_traefik_tls: "{{ matrix_synapse_container_labels_metrics_traefik_entrypoints != 'web' }}"
-matrix_synapse_container_labels_metrics_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
-matrix_synapse_container_labels_metrics_middleware_basic_auth_enabled: false
+matrix_synapse_container_labels_public_metrics_enabled: "{{ matrix_synapse_metrics_enabled and matrix_synapse_metrics_proxying_enabled }}"
+matrix_synapse_container_labels_public_metrics_traefik_path: "{{ matrix_synapse_metrics_proxying_path_prefix }}/main-process"
+matrix_synapse_container_labels_public_metrics_traefik_rule: "Host(`{{ matrix_synapse_metrics_proxying_hostname }}`) && Path(`{{ matrix_synapse_container_labels_public_metrics_traefik_path }}`)"
+matrix_synapse_container_labels_public_metrics_traefik_priority: 0
+matrix_synapse_container_labels_public_metrics_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
+matrix_synapse_container_labels_public_metrics_traefik_tls: "{{ matrix_synapse_container_labels_public_metrics_traefik_entrypoints != 'web' }}"
+matrix_synapse_container_labels_public_metrics_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_synapse_container_labels_public_metrics_middleware_basic_auth_enabled: false
 # See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
-matrix_synapse_container_labels_metrics_middleware_basic_auth_users: ''
+matrix_synapse_container_labels_public_metrics_middleware_basic_auth_users: ''
 
 # matrix_synapse_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
@@ -707,11 +718,11 @@ matrix_synapse_worker_container_labels_metrics_traefik_path: "{{ matrix_synapse_
 matrix_synapse_worker_container_labels_metrics_traefik_rule: "Host(`{{ matrix_synapse_metrics_proxying_hostname }}`) && Path(`{{ matrix_synapse_worker_container_labels_metrics_traefik_path }}`)"
 matrix_synapse_worker_container_labels_metrics_traefik_priority: 0
 matrix_synapse_worker_container_labels_metrics_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
-matrix_synapse_worker_container_labels_metrics_traefik_tls: "{{ matrix_synapse_container_labels_metrics_traefik_entrypoints != 'web' }}"
+matrix_synapse_worker_container_labels_metrics_traefik_tls: "{{ matrix_synapse_container_labels_public_metrics_traefik_entrypoints != 'web' }}"
 matrix_synapse_worker_container_labels_metrics_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
-matrix_synapse_worker_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_synapse_container_labels_metrics_middleware_basic_auth_enabled }}"
+matrix_synapse_worker_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_synapse_container_labels_public_metrics_middleware_basic_auth_enabled }}"
 # See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
-matrix_synapse_worker_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_synapse_container_labels_metrics_middleware_basic_auth_users }}"
+matrix_synapse_worker_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_synapse_container_labels_public_metrics_middleware_basic_auth_users }}"
 
 # matrix_synapse_worker_container_labels_additional_labels contains a multiline string with additional labels to add to the label files for Synapse worker containers.
 # See `../templates/labels.j2` for details.
