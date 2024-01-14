@@ -46,7 +46,7 @@ Certain Synapse administration tasks (managing users and rooms, etc.) can be per
 
 ## Synapse + OpenID Connect for Single-Sign-On
 
-If you'd like to use OpenID Connect authentication with Synapse, you'll need some additional reverse-proxy configuration (see [our nginx reverse-proxy doc page](configuring-playbook-nginx.md#synapse-openid-connect-for-single-sign-on)).
+If you'd like to use OpenID Connect authentication with Synapse, you'll need some additional configuration.
 
 This example configuration is for [keycloak](https://www.keycloak.org/), an opensource Identity Provider maintained by Red Hat.
 
@@ -54,23 +54,26 @@ For more detailed documentation on available options and how to setup keycloak, 
 
 In case you encounter errors regarding the parsing of the variables, you can try to add `{% raw %}` and `{% endraw %}` blocks around them. For example ;
 
+```yml
+matrix_synapse_oidc_enabled: true
+
+matrix_synapse_oidc_providers:
+  - idp_id: keycloak
+    idp_name: "My KeyCloak server"
+    issuer: "https://url.ix/auth/realms/{realm_name}"
+    client_id: "matrix"
+    client_secret: "{{ vault_synapse_keycloak }}"
+    scopes: ["openid", "profile"]
+    user_mapping_provider:
+      config:
+        localpart_template: "{% raw %}{{ user.preferred_username }}{% endraw %}"
+        display_name_template: "{% raw %}{{ user.name }}{% endraw %}"
+        email_template: "{% raw %}{{ user.email }}{% endraw %}"
+    allow_existing_users: true # Optional
+    backchannel_logout_enabled: true # Optional
 ```
-matrix_synapse_configuration_extension_yaml: |
-  oidc_providers:
-    - idp_id: keycloak
-      idp_name: "My KeyCloak server"
-      issuer: "https://url.ix/auth/realms/{realm_name}"
-      client_id: "matrix"
-      client_secret: "{{ vault_synapse_keycloak }}"
-      scopes: ["openid", "profile"]
-      user_mapping_provider:
-        config:
-          localpart_template: "{% raw %}{{ user.preferred_username }}{% endraw %}"
-          display_name_template: "{% raw %}{{ user.name }}{% endraw %}"
-          email_template: "{% raw %}{{ user.email }}{% endraw %}"
-      allow_existing_users: true # Optional
-      backchannel_logout_enabled: true # Optional
-```
+
+**NOTE**: if you inject the OIDC configuration using `matrix_synapse_configuration_extension_yaml` (instead of `matrix_synapse_oidc_enabled: true` + `matrix_synapse_oidc_providers`), then the OIDC routes (`/_synapse/oidc`) will not be publicly exposed automatically. In such a case, you'd need to expose them manually by toggling: `matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled: true`.
 
 
 ## Customizing templates
