@@ -32,6 +32,10 @@ matrix_playbook_reverse_proxy_type: other-traefik-container
 matrix_playbook_reverse_proxyable_services_additional_network: your-traefik-network
 
 devture_traefik_certs_dumper_ssl_dir_path: "/path/to/your/traefiks/acme.json/directory"
+
+# Uncomment and tweak the variable below if the name of your federation entrypoint is different
+# than the default value (matrix-federation).
+# matrix_federation_traefik_entrypoint: matrix-federation
 ```
 
 In this mode all roles will still have Traefik labels attached. You will, however, need to configure your Traefik instance and its entrypoints.
@@ -81,7 +85,7 @@ services:
       - "--providers.docker.network=traefik"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web-secure.address=:443"
-      - "--entrypoints.federation.address=:8448"
+      - "--entrypoints.matrix-federation.address=:8448"
       - "--certificatesresolvers.default.acme.tlschallenge=true"
       - "--certificatesresolvers.default.acme.email=YOUR EMAIL"
       - "--certificatesresolvers.default.acme.storage=/letsencrypt/acme.json"
