@@ -4105,6 +4105,8 @@ matrix_synapse_username: "{{ matrix_user_username }}"
 matrix_synapse_uid: "{{ matrix_user_uid }}"
 matrix_synapse_gid: "{{ matrix_user_gid }}"
 
+matrix_synapse_federation_enabled: "{{ matrix_homeserver_federation_enabled }}"
+
 matrix_synapse_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
 matrix_synapse_account_threepid_delegates_msisdn_mas1sd_url: "{{ ('http://matrix-ma1sd:' + matrix_ma1sd_container_port| string) }}"
@@ -4809,6 +4811,8 @@ matrix_dendrite_enabled: "{{ matrix_homeserver_implementation == 'dendrite' }}"
 
 matrix_dendrite_hostname: "{{ matrix_server_fqn_matrix }}"
 
+matrix_dendrite_federation_enabled: "{{ matrix_homeserver_federation_enabled }}"
+
 matrix_dendrite_container_network: "{{ matrix_homeserver_container_network }}"
 
 matrix_dendrite_container_additional_networks: |
@@ -4907,6 +4911,8 @@ matrix_dendrite_app_service_config_files_auto: "{{ matrix_homeserver_app_service
 matrix_conduit_enabled: "{{ matrix_homeserver_implementation == 'conduit' }}"
 
 matrix_conduit_hostname: "{{ matrix_server_fqn_matrix }}"
+
+matrix_conduit_allow_federation: "{{ matrix_homeserver_federation_enabled }}"
 
 matrix_conduit_container_network: "{{ matrix_homeserver_container_network }}"
 

@@ -33,7 +33,7 @@ matrix_synapse_allow_public_rooms_over_federation: true
 To completely disable federation, isolating your server from the rest of the Matrix network, add this to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
-matrix_synapse_federation_enabled: false
+matrix_homeserver_federation_enabled: false
 ```
 
 With that, your server's users will only be able to talk among themselves, but not to anyone who is on another server.
