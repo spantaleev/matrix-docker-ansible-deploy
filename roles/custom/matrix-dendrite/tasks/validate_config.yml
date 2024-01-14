@@ -1,15 +1,6 @@
 ---
-- name: Fail if required Dendrite settings not defined
-  ansible.builtin.fail:
-    msg: >-
-      You need to define a required configuration setting (`{{ item }}`) for using Dendrite.
-  when: "vars[item] == ''"
-  with_items:
-    - matrix_dendrite_hostname
-    - matrix_dendrite_client_api_registration_shared_secret
-    - matrix_dendrite_database_hostname
 
-- name: (Deprecation) Catch and report renamed settings
+- name: (Deprecation) Catch and report renamed Dendrite settings
   ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
@@ -36,3 +27,14 @@
     - {'old': 'matrix_dendrite_pushserver_database', 'new': 'matrix_dendrite_push_server_database'}
     - {'old': 'matrix_dendrite_relayapi_database', 'new': 'matrix_dendrite_relay_api_database'}
     - {'old': 'matrix_dendrite_keyserver_database', 'new': 'matrix_dendrite_key_server_database'}
+
+- name: Fail if required Dendrite settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
+  with_items:
+    - {'name': 'matrix_dendrite_hostname', when: true}
+    - {'name': 'matrix_dendrite_client_api_registration_shared_secret', when: true}
+    - {'name': 'matrix_dendrite_database_hostname', when: true}
+    - {'name': 'matrix_dendrite_container_labels_internal_client_api_traefik_entrypoints', when: "{{ matrix_dendrite_container_labels_internal_client_api_enabled }}"}
