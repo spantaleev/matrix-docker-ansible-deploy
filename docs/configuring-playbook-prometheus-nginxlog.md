@@ -4,7 +4,7 @@ It can be useful to have some (visual) insight into [nginx](https://nginx.org/) 
 
 This adds [prometheus-nginxlog-exporter](https://github.com/martin-helmich/prometheus-nginxlog-exporter/) to your Matrix deployment.
 
-It will collect access logs from various nginx reverse-proxies used internally (e.g. `matrix-homeserver-proxy` and `matrix-synapse-reverse-proxy-companion`) and will make them available at a Prometheus-compatible `/metrics` endpoint.
+It will collect access logs from various nginx reverse-proxies which may be used internally (e.g. `matrix-synapse-reverse-proxy-companion`, if Synapse workers are enabled) and will make them available at a Prometheus-compatible `/metrics` endpoint.
 
 **NOTE**: nginx is only used internally by this Ansible playbook. With Traefik being our default reverse-proxy, collecting nginx metrics is less relevant.
 
