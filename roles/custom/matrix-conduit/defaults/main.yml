@@ -70,6 +70,14 @@ matrix_conduit_container_labels_public_client_api_traefik_entrypoints: "{{ matri
 matrix_conduit_container_labels_public_client_api_traefik_tls: "{{ matrix_conduit_container_labels_public_client_api_traefik_entrypoints != 'web' }}"
 matrix_conduit_container_labels_public_client_api_traefik_tls_certResolver: "{{ matrix_conduit_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
+# Controls whether labels will be added that expose the Client-Server API on the internal Traefik entrypoint.
+# This is similar to `matrix_conduit_container_labels_public_client_api_enabled`, but the entrypoint and intent is different.
+matrix_conduit_container_labels_internal_client_api_enabled: false
+matrix_conduit_container_labels_internal_client_api_traefik_path_prefix: "{{ matrix_conduit_container_labels_public_client_api_traefik_path_prefix }}"
+matrix_conduit_container_labels_internal_client_api_traefik_rule: "PathPrefix(`{{ matrix_conduit_container_labels_internal_client_api_traefik_path_prefix }}`)"
+matrix_conduit_container_labels_internal_client_api_traefik_priority: "{{ matrix_conduit_container_labels_public_client_api_traefik_priority }}"
+matrix_conduit_container_labels_internal_client_api_traefik_entrypoints: ""
+
 # Controls whether labels will be added that expose the Server-Server API (Federation API) on a public Traefik entrypoint.
 matrix_conduit_container_labels_public_federation_api_enabled: "{{ matrix_conduit_allow_federation }}"
 matrix_conduit_container_labels_public_federation_api_traefik_hostname: "{{ matrix_conduit_hostname }}"
