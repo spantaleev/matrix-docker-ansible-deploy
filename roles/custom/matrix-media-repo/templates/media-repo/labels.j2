@@ -5,6 +5,8 @@ traefik.enable=true
 traefik.docker.network={{ matrix_media_repo_container_labels_traefik_docker_network }}
 {% endif %}
 
+traefik.http.services.matrix-media-repo.loadbalancer.server.port={{ matrix_media_repo_port }}
+
 {% set middlewares = [] %}
 
 {% if matrix_media_repo_container_labels_traefik_additional_request_headers.keys() | length > 0 %}
@@ -15,132 +17,229 @@ traefik.http.middlewares.matrix-media-repo-add-headers.headers.customrequesthead
 {% endif %}
 
 # Matrix Client
-traefik.http.routers.matrix-media-repo-media.rule={{ matrix_media_repo_container_labels_traefik_media_rule }}
+
+{#
+	Public Media (/_matrix/media)
+#}
+
+traefik.http.routers.matrix-media-repo-public-media.rule={{ matrix_media_repo_container_labels_traefik_media_rule }}
+
 {% if matrix_media_repo_container_labels_traefik_media_priority | int > 0 %}
-traefik.http.routers.matrix-media-repo-media.priority={{ matrix_media_repo_container_labels_traefik_media_priority }}
+traefik.http.routers.matrix-media-repo-public-media.priority={{ matrix_media_repo_container_labels_traefik_media_priority }}
 {% endif %}
+
 {% if middlewares | length > 0 %}
-traefik.http.routers.matrix-media-repo-media.middlewares={{ middlewares | join(',') }}
+traefik.http.routers.matrix-media-repo-public-media.middlewares={{ middlewares | join(',') }}
 {% endif %}
-traefik.http.routers.matrix-media-repo-media.service=matrix-media-repo
-traefik.http.routers.matrix-media-repo-media.entrypoints={{ matrix_media_repo_container_labels_traefik_media_entrypoints }}
-traefik.http.routers.matrix-media-repo-media.tls={{ matrix_media_repo_container_labels_traefik_media_tls | to_json }}
+
+traefik.http.routers.matrix-media-repo-public-media.service=matrix-media-repo
+traefik.http.routers.matrix-media-repo-public-media.entrypoints={{ matrix_media_repo_container_labels_traefik_media_entrypoints }}
+
+traefik.http.routers.matrix-media-repo-public-media.tls={{ matrix_media_repo_container_labels_traefik_media_tls | to_json }}
 {% if matrix_media_repo_container_labels_traefik_media_tls %}
-traefik.http.routers.matrix-media-repo-media.tls.certResolver={{ matrix_media_repo_container_labels_traefik_media_tls_certResolver }}
+traefik.http.routers.matrix-media-repo-public-media.tls.certResolver={{ matrix_media_repo_container_labels_traefik_media_tls_certResolver }}
 {% endif %}
 
+{#
+	/Public Media (/_matrix/media)
+#}
+
+
+{#
+	Public Client Logout (/_matrix/client/r0/logout, /_matrix/client/r0/logout/all)
+#}
 {% if matrix_media_repo_access_tokens_max_cache_time_seconds > 0 %}
 
-traefik.http.routers.matrix-media-repo-logout.rule={{ matrix_media_repo_container_labels_traefik_logout_rule }}
+traefik.http.routers.matrix-media-repo-public-logout.rule={{ matrix_media_repo_container_labels_traefik_logout_rule }}
+
 {% if matrix_media_repo_container_labels_traefik_logout_priority | int > 0 %}
-traefik.http.routers.matrix-media-repo-logout.priority={{ matrix_media_repo_container_labels_traefik_logout_priority }}
+traefik.http.routers.matrix-media-repo-public-logout.priority={{ matrix_media_repo_container_labels_traefik_logout_priority }}
 {% endif %}
+
 {% if middlewares | length > 0 %}
-traefik.http.routers.matrix-media-repo-logout.middlewares={{ middlewares | join(',') }}
+traefik.http.routers.matrix-media-repo-public-logout.middlewares={{ middlewares | join(',') }}
 {% endif %}
-traefik.http.routers.matrix-media-repo-logout.service=matrix-media-repo
-traefik.http.routers.matrix-media-repo-logout.entrypoints={{ matrix_media_repo_container_labels_traefik_logout_entrypoints }}
-traefik.http.routers.matrix-media-repo-logout.tls={{ matrix_media_repo_container_labels_traefik_logout_tls | to_json }}
+
+traefik.http.routers.matrix-media-repo-public-logout.service=matrix-media-repo
+traefik.http.routers.matrix-media-repo-public-logout.entrypoints={{ matrix_media_repo_container_labels_traefik_logout_entrypoints }}
+
+traefik.http.routers.matrix-media-repo-public-logout.tls={{ matrix_media_repo_container_labels_traefik_logout_tls | to_json }}
 {% if matrix_media_repo_container_labels_traefik_logout_tls %}
-traefik.http.routers.matrix-media-repo-logout.tls.certResolver={{ matrix_media_repo_container_labels_traefik_logout_tls_certResolver }}
+traefik.http.routers.matrix-media-repo-public-logout.tls.certResolver={{ matrix_media_repo_container_labels_traefik_logout_tls_certResolver }}
 {% endif %}
 
 {% endif %}
+{#
+	/Public Client Logout (/_matrix/client/r0/logout, /_matrix/client/r0/logout/all)
+#}
 
-traefik.http.routers.matrix-media-repo-admin-federation.rule={{ matrix_media_repo_container_labels_traefik_admin_rule }}
+
+{#
+	Public Client Admin (/_matrix/client/r0/admin/*)
+#}
+
+traefik.http.routers.matrix-media-repo-public-admin-federation.rule={{ matrix_media_repo_container_labels_traefik_admin_rule }}
+
 {% if matrix_media_repo_container_labels_traefik_admin_priority | int > 0 %}
-traefik.http.routers.matrix-media-repo-admin-federation.priority={{ matrix_media_repo_container_labels_traefik_admin_priority }}
+traefik.http.routers.matrix-media-repo-public-admin-federation.priority={{ matrix_media_repo_container_labels_traefik_admin_priority }}
 {% endif %}
+
 {% if middlewares | length > 0 %}
-traefik.http.routers.matrix-media-repo-admin-federation.middlewares={{ middlewares | join(',') }}
+traefik.http.routers.matrix-media-repo-public-admin-federation.middlewares={{ middlewares | join(',') }}
 {% endif %}
-traefik.http.routers.matrix-media-repo-admin-federation.service=matrix-media-repo
-traefik.http.routers.matrix-media-repo-admin-federation.entrypoints={{ matrix_media_repo_container_labels_traefik_admin_entrypoints }}
-traefik.http.routers.matrix-media-repo-admin-federation.tls={{ matrix_media_repo_container_labels_traefik_admin_tls | to_json }}
+
+traefik.http.routers.matrix-media-repo-public-admin-federation.service=matrix-media-repo
+traefik.http.routers.matrix-media-repo-public-admin-federation.entrypoints={{ matrix_media_repo_container_labels_traefik_admin_entrypoints }}
+
+traefik.http.routers.matrix-media-repo-public-admin-federation.tls={{ matrix_media_repo_container_labels_traefik_admin_tls | to_json }}
 {% if matrix_media_repo_container_labels_traefik_admin_tls %}
-traefik.http.routers.matrix-media-repo-admin-federation.tls.certResolver={{ matrix_media_repo_container_labels_traefik_admin_tls_certResolver }}
+traefik.http.routers.matrix-media-repo-public-admin-federation.tls.certResolver={{ matrix_media_repo_container_labels_traefik_admin_tls_certResolver }}
 {% endif %}
 
-traefik.http.routers.matrix-media-repo-t2bot.rule={{ matrix_media_repo_container_labels_traefik_t2bot_rule }}
+{#
+	/Public Client Admin (/_matrix/client/r0/admin/*)
+#}
+
+
+{#
+	Public Client t2bot APIs (/_matrix/client/unstable/io.t2bot.media)
+#}
+
+traefik.http.routers.matrix-media-repo-public-t2bot.rule={{ matrix_media_repo_container_labels_traefik_t2bot_rule }}
+
 {% if matrix_media_repo_container_labels_traefik_t2bot_priority | int > 0 %}
-traefik.http.routers.matrix-media-repo-t2bot.priority={{ matrix_media_repo_container_labels_traefik_t2bot_priority }}
+traefik.http.routers.matrix-media-repo-public-t2bot.priority={{ matrix_media_repo_container_labels_traefik_t2bot_priority }}
 {% endif %}
+
 {% if middlewares | length > 0 %}
-traefik.http.routers.matrix-media-repo-t2bot.middlewares={{ middlewares | join(',') }}
+traefik.http.routers.matrix-media-repo-public-t2bot.middlewares={{ middlewares | join(',') }}
 {% endif %}
-traefik.http.routers.matrix-media-repo-t2bot.service=matrix-media-repo
-traefik.http.routers.matrix-media-repo-t2bot.entrypoints={{ matrix_media_repo_container_labels_traefik_t2bot_entrypoints }}
-traefik.http.routers.matrix-media-repo-t2bot.tls={{ matrix_media_repo_container_labels_traefik_t2bot_tls | to_json }}
+
+traefik.http.routers.matrix-media-repo-public-t2bot.service=matrix-media-repo
+traefik.http.routers.matrix-media-repo-public-t2bot.entrypoints={{ matrix_media_repo_container_labels_traefik_t2bot_entrypoints }}
+
+traefik.http.routers.matrix-media-repo-public-t2bot.tls={{ matrix_media_repo_container_labels_traefik_t2bot_tls | to_json }}
 {% if matrix_media_repo_container_labels_traefik_t2bot_tls %}
-traefik.http.routers.matrix-media-repo-t2bot.tls.certResolver={{ matrix_media_repo_container_labels_traefik_t2bot_tls_certResolver }}
+traefik.http.routers.matrix-media-repo-public-t2bot.tls.certResolver={{ matrix_media_repo_container_labels_traefik_t2bot_tls_certResolver }}
 {% endif %}
 
+{#
+	/Public Client t2bot APIs (/_matrix/client/unstable/io.t2bot.media)
+#}
+
+{% if matrix_media_repo_homeserver_federation_enabled %}
 # Matrix Federation
-{% if matrix_nginx_proxy_proxy_matrix_federation_api_enabled %}
 
-traefik.http.routers.matrix-media-repo-media-federation.rule={{ matrix_media_repo_container_labels_traefik_media_federation_rule }}
+
+{#
+	Public Federation Media (/_matrix/media)
+#}
+
+traefik.http.routers.matrix-media-repo-public-media-federation.rule={{ matrix_media_repo_container_labels_traefik_media_federation_rule }}
+
 {% if matrix_media_repo_container_labels_traefik_media_federation_priority | int > 0 %}
-traefik.http.routers.matrix-media-repo-media-federation.priority={{ matrix_media_repo_container_labels_traefik_media_federation_priority }}
-{% endif %}
-{% if middlewares | length > 0 %}
-traefik.http.routers.matrix-media-repo-media-federation.middlewares={{ middlewares | join(',') }}
-{% endif %}
-traefik.http.routers.matrix-media-repo-media-federation.service=matrix-media-repo
-traefik.http.routers.matrix-media-repo-media-federation.entrypoints={{ matrix_media_repo_container_labels_traefik_media_federation_entrypoints }}
-traefik.http.routers.matrix-media-repo-media-federation.tls={{ matrix_media_repo_container_labels_traefik_media_federation_tls | to_json }}
-{% if matrix_media_repo_container_labels_traefik_media_federation_tls %}
-traefik.http.routers.matrix-media-repo-media-federation.tls.certResolver={{ matrix_media_repo_container_labels_traefik_media_federation_tls_certResolver }}
+traefik.http.routers.matrix-media-repo-public-media-federation.priority={{ matrix_media_repo_container_labels_traefik_media_federation_priority }}
 {% endif %}
 
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-media-repo-public-media-federation.middlewares={{ middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers.matrix-media-repo-public-media-federation.service=matrix-media-repo
+traefik.http.routers.matrix-media-repo-public-media-federation.entrypoints={{ matrix_media_repo_container_labels_traefik_media_federation_entrypoints }}
+
+traefik.http.routers.matrix-media-repo-public-media-federation.tls={{ matrix_media_repo_container_labels_traefik_media_federation_tls | to_json }}
+{% if matrix_media_repo_container_labels_traefik_media_federation_tls %}
+traefik.http.routers.matrix-media-repo-public-media-federation.tls.certResolver={{ matrix_media_repo_container_labels_traefik_media_federation_tls_certResolver }}
+{% endif %}
+
+{#
+	/Public Federation Media (/_matrix/media)
+#}
+
+
+{#
+	Public Federation Logout (/_matrix/client/r0/logout, /_matrix/client/r0/logout/all)
+#}
 {% if matrix_media_repo_access_tokens_max_cache_time_seconds > 0 %}
 
-traefik.http.routers.matrix-media-repo-logout-federation.rule={{ matrix_media_repo_container_labels_traefik_logout_federation_rule }}
+traefik.http.routers.matrix-media-repo-public-logout-federation.rule={{ matrix_media_repo_container_labels_traefik_logout_federation_rule }}
+
 {% if matrix_media_repo_container_labels_traefik_logout_federation_priority | int > 0 %}
-traefik.http.routers.matrix-media-repo-logout-federation.priority={{ matrix_media_repo_container_labels_traefik_logout_federation_priority }}
+traefik.http.routers.matrix-media-repo-public-logout-federation.priority={{ matrix_media_repo_container_labels_traefik_logout_federation_priority }}
 {% endif %}
+
 {% if middlewares | length > 0 %}
-traefik.http.routers.matrix-media-repo-logout-federation.middlewares={{ middlewares | join(',') }}
+traefik.http.routers.matrix-media-repo-public-logout-federation.middlewares={{ middlewares | join(',') }}
 {% endif %}
-traefik.http.routers.matrix-media-repo-logout-federation.service=matrix-media-repo
-traefik.http.routers.matrix-media-repo-logout-federation.entrypoints={{ matrix_media_repo_container_labels_traefik_logout_federation_entrypoints }}
-traefik.http.routers.matrix-media-repo-logout-federation.tls={{ matrix_media_repo_container_labels_traefik_logout_federation_tls | to_json }}
+
+traefik.http.routers.matrix-media-repo-public-logout-federation.service=matrix-media-repo
+traefik.http.routers.matrix-media-repo-public-logout-federation.entrypoints={{ matrix_media_repo_container_labels_traefik_logout_federation_entrypoints }}
+
+traefik.http.routers.matrix-media-repo-public-logout-federation.tls={{ matrix_media_repo_container_labels_traefik_logout_federation_tls | to_json }}
 {% if matrix_media_repo_container_labels_traefik_logout_federation_tls %}
-traefik.http.routers.matrix-media-repo-logout-federation.tls.certResolver={{ matrix_media_repo_container_labels_traefik_logout_federation_tls_certResolver }}
+traefik.http.routers.matrix-media-repo-public-logout-federation.tls.certResolver={{ matrix_media_repo_container_labels_traefik_logout_federation_tls_certResolver }}
 {% endif %}
 
 {% endif %}
+{#
+	/Public Federation Logout (/_matrix/client/r0/logout, /_matrix/client/r0/logout/all)
+#}
 
-traefik.http.routers.matrix-media-repo-admin.rule={{ matrix_media_repo_container_labels_traefik_admin_federation_rule }}
+
+{#
+	Public Federation Admin (/_matrix/client/r0/admin/*)
+#}
+
+traefik.http.routers.matrix-media-repo-public-admin.rule={{ matrix_media_repo_container_labels_traefik_admin_federation_rule }}
+
 {% if matrix_media_repo_container_labels_traefik_admin_federation_priority | int > 0 %}
-traefik.http.routers.matrix-media-repo-admin.priority={{ matrix_media_repo_container_labels_traefik_admin_federation_priority }}
+traefik.http.routers.matrix-media-repo-public-admin.priority={{ matrix_media_repo_container_labels_traefik_admin_federation_priority }}
 {% endif %}
+
 {% if middlewares | length > 0 %}
-traefik.http.routers.matrix-media-repo-admin.middlewares={{ middlewares | join(',') }}
+traefik.http.routers.matrix-media-repo-public-admin.middlewares={{ middlewares | join(',') }}
 {% endif %}
-traefik.http.routers.matrix-media-repo-admin.service=matrix-media-repo
-traefik.http.routers.matrix-media-repo-admin.entrypoints={{ matrix_media_repo_container_labels_traefik_admin_federation_entrypoints }}
-traefik.http.routers.matrix-media-repo-admin.tls={{ matrix_media_repo_container_labels_traefik_admin_federation_tls | to_json }}
+
+traefik.http.routers.matrix-media-repo-public-admin.service=matrix-media-repo
+traefik.http.routers.matrix-media-repo-public-admin.entrypoints={{ matrix_media_repo_container_labels_traefik_admin_federation_entrypoints }}
+
+traefik.http.routers.matrix-media-repo-public-admin.tls={{ matrix_media_repo_container_labels_traefik_admin_federation_tls | to_json }}
 {% if matrix_media_repo_container_labels_traefik_admin_federation_tls %}
-traefik.http.routers.matrix-media-repo-admin.tls.certResolver={{ matrix_media_repo_container_labels_traefik_admin_federation_tls_certResolver }}
+traefik.http.routers.matrix-media-repo-public-admin.tls.certResolver={{ matrix_media_repo_container_labels_traefik_admin_federation_tls_certResolver }}
 {% endif %}
 
-traefik.http.routers.matrix-media-repo-t2bot-federation.rule={{ matrix_media_repo_container_labels_traefik_t2bot_federation_rule }}
+{#
+	/Public Federation Admin (/_matrix/client/r0/admin/*)
+#}
+
+{#
+	Public Federation t2bot APIs (/_matrix/client/unstable/io.t2bot.media)
+#}
+
+traefik.http.routers.matrix-media-repo-public-t2bot-federation.rule={{ matrix_media_repo_container_labels_traefik_t2bot_federation_rule }}
+
 {% if matrix_media_repo_container_labels_traefik_t2bot_federation_priority | int > 0 %}
-traefik.http.routers.matrix-media-repo-t2bot-federation.priority={{ matrix_media_repo_container_labels_traefik_t2bot_federation_priority }}
+traefik.http.routers.matrix-media-repo-public-t2bot-federation.priority={{ matrix_media_repo_container_labels_traefik_t2bot_federation_priority }}
 {% endif %}
+
 {% if middlewares | length > 0 %}
-traefik.http.routers.matrix-media-repo-t2bot-federation.middlewares={{ middlewares | join(',') }}
+traefik.http.routers.matrix-media-repo-public-t2bot-federation.middlewares={{ middlewares | join(',') }}
 {% endif %}
-traefik.http.routers.matrix-media-repo-t2bot-federation.service=matrix-media-repo
-traefik.http.routers.matrix-media-repo-t2bot-federation.entrypoints={{ matrix_media_repo_container_labels_traefik_t2bot_federation_entrypoints }}
-traefik.http.routers.matrix-media-repo-t2bot-federation.tls={{ matrix_media_repo_container_labels_traefik_t2bot_federation_tls | to_json }}
+
+traefik.http.routers.matrix-media-repo-public-t2bot-federation.service=matrix-media-repo
+traefik.http.routers.matrix-media-repo-public-t2bot-federation.entrypoints={{ matrix_media_repo_container_labels_traefik_t2bot_federation_entrypoints }}
+
+traefik.http.routers.matrix-media-repo-public-t2bot-federation.tls={{ matrix_media_repo_container_labels_traefik_t2bot_federation_tls | to_json }}
 {% if matrix_media_repo_container_labels_traefik_t2bot_federation_tls %}
-traefik.http.routers.matrix-media-repo-t2bot-federation.tls.certResolver={{ matrix_media_repo_container_labels_traefik_t2bot_federation_tls_certResolver }}
+traefik.http.routers.matrix-media-repo-public-t2bot-federation.tls.certResolver={{ matrix_media_repo_container_labels_traefik_t2bot_federation_tls_certResolver }}
 {% endif %}
 
-{% endif %}
+{#
+	Public Federation t2bot APIs (/_matrix/client/unstable/io.t2bot.media)
+#}
 
-traefik.http.services.matrix-media-repo.loadbalancer.server.port={{ matrix_media_repo_port }}
+{% endif %} {# end of matrix_media_repo_homeserver_federation_enabled if-check #}
 
 {% endif %}
 
