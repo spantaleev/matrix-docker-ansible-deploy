@@ -38,7 +38,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_prometheus_nginxlog_exporter_docker_image }} \
 			-config-file /etc/prometheus-nginxlog-exporter/prometheus-nginxlog-exporter.yaml
 
-{% for network in matrix_mautrix_facebook_container_additional_networks %}
+{% for network in matrix_prometheus_nginxlog_exporter_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ matrix_prometheus_nginxlog_exporter_identifier }}
 {% endfor %}
 
