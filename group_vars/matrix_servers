@@ -4822,7 +4822,7 @@ matrix_user_verification_service_uvs_auth_token: "{{ '%s' | format(matrix_homese
 
 matrix_static_files_enabled: true
 
-matrix_static_files_container_network: "{{ devture_traefik_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' else matrix_well_known_ident }}"
+matrix_static_files_container_network: "{{ (matrix_playbook_reverse_proxy_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' else matrix_static_files_identifier) }}"
 
 matrix_static_files_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_static_files_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
