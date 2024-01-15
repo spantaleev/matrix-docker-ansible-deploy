@@ -95,9 +95,9 @@
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure Coturn network is created in Docker
-  when: matrix_coturn_docker_network not in ['', 'host']
+  when: matrix_coturn_container_network not in ['', 'host']
   community.docker.docker_network:
-    name: "{{ matrix_coturn_docker_network }}"
+    name: "{{ matrix_coturn_container_network }}"
     driver: bridge
 
 - name: Ensure matrix-coturn.service installed

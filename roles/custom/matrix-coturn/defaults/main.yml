@@ -22,13 +22,17 @@ matrix_coturn_docker_image_force_pull: "{{ matrix_coturn_docker_image.endswith('
 # Setting up deny/allow rules with `matrix_coturn_allowed_peer_ips`/`matrix_coturn_denied_peer_ips` is also
 # possible for achieving such isolation, but is more complicated due to the dynamic nature of Docker networking.
 #
-# Setting `matrix_coturn_docker_network` to 'host' will run the container with host networking,
+# Setting `matrix_coturn_container_network` to 'host' will run the container with host networking,
 # which will drastically improve performance when thousands of ports are opened due to Docker not having to set up forwarding rules for each port.
 # Running with host networking can be dangerous, as it potentially exposes your local network and its services to Coturn peers.
 # Regardless of the networking mode, we apply a deny list which via `matrix_coturn_denied_peer_ips`,
 # which hopefully prevents access to such private network ranges.
 # When running in host-networking mode, you need to adjust the firewall yourself, so that ports are opened.
-matrix_coturn_docker_network: "matrix-coturn"
+matrix_coturn_container_network: "matrix-coturn"
+
+matrix_coturn_container_additional_networks: "{{ matrix_coturn_container_additional_networks_auto + matrix_coturn_container_additional_networks_custom }}"
+matrix_coturn_container_additional_networks_auto: []
+matrix_coturn_container_additional_networks_custom: []
 
 matrix_coturn_base_path: "{{ matrix_base_data_path }}/coturn"
 matrix_coturn_docker_src_files_path: "{{ matrix_coturn_base_path }}/docker-src"
@@ -50,12 +54,12 @@ matrix_coturn_container_extra_arguments: []
 # Controls whether the Coturn container exposes its plain STUN port (tcp/3478 and udp/3478 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:3478"), or empty string to not expose.
-matrix_coturn_container_stun_plain_host_bind_port: "{{ '3478' if matrix_coturn_docker_network != 'host' else '' }}"
+matrix_coturn_container_stun_plain_host_bind_port: "{{ '3478' if matrix_coturn_container_network != 'host' else '' }}"
 
 # Controls whether the Coturn container exposes its TLS STUN port (tcp/5349 and udp/5349 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:5349"), or empty string to not expose.
-matrix_coturn_container_stun_tls_host_bind_port: "{{ '5349' if matrix_coturn_docker_network != 'host' else '' }}"
+matrix_coturn_container_stun_tls_host_bind_port: "{{ '5349' if matrix_coturn_container_network != 'host' else '' }}"
 
 # Controls whether the Coturn container exposes its TURN UDP port range and which interface to do it on.
 #
@@ -63,7 +67,7 @@ matrix_coturn_container_stun_tls_host_bind_port: "{{ '5349' if matrix_coturn_doc
 # Takes a null/none value (`~`) or 'none' (as a string) to prevent listening.
 #
 # The UDP port-range itself is specified using `matrix_coturn_turn_udp_min_port` and `matrix_coturn_turn_udp_max_port`.
-matrix_coturn_container_turn_range_listen_interface: "{{ '' if matrix_coturn_docker_network != 'host' else 'none' }}"
+matrix_coturn_container_turn_range_listen_interface: "{{ '' if matrix_coturn_container_network != 'host' else 'none' }}"
 
 # UDP port-range to use for TURN
 matrix_coturn_turn_udp_min_port: 49152
@@ -97,7 +101,7 @@ matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_retries_del
 matrix_coturn_allowed_peer_ips: []
 
 # We block loopback interfaces and private networks by default to prevent private resources from being accessible.
-# This is especially important when Coturn does not run within a container network (e.g. `matrix_coturn_docker_network: host`).
+# This is especially important when Coturn does not run within a container network (e.g. `matrix_coturn_container_network: host`).
 #
 # Learn more: https://www.rtcsec.com/article/cve-2020-26262-bypass-of-coturns-access-control-protection/
 #

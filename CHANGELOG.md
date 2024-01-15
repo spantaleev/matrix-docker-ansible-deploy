@@ -582,7 +582,7 @@ Large Coturn deployments (with a huge range of ports specified via `matrix_cotur
 Such deployments don't need to run Coturn within a private container network anymore. Coturn can now run with host-networking by using configuration like this:
 
 ```yaml
-matrix_coturn_docker_network: host
+matrix_coturn_container_network: host
 ```
 
 With such a configuration, **Docker no longer needs to configure thousands of firewall forwarding rules** each time Coturn starts and stops.
