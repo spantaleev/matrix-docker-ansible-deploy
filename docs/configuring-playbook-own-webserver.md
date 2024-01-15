@@ -42,7 +42,7 @@ devture_traefik_certs_dumper_ssl_dir_path: "/path/to/your/traefiks/acme.json/dir
 
 # Uncomment and tweak the variable below if the name of your federation entrypoint is different
 # than the default value (matrix-federation).
-# matrix_federation_traefik_entrypoint: matrix-federation
+# matrix_federation_traefik_entrypoint_name: matrix-federation
 ```
 
 In this mode all roles will still have Traefik labels attached. You will, however, need to configure your Traefik instance and its entrypoints.
@@ -145,7 +145,9 @@ matrix_playbook_reverse_proxy_type: playbook-managed-traefik
 # Ensure that public urls use https
 matrix_playbook_ssl_enabled: true
 
-# Disable the web-secure (port 443) endpoint, which also disables SSL certificate retrieval
+# Disable the web-secure (port 443) endpoint, which also disables SSL certificate retrieval.
+# This has the side-effect of also automatically disabling TLS for the matrix-federation entrypoint
+# (by toggling `matrix_federation_traefik_entrypoint_tls`).
 devture_traefik_config_entrypoint_web_secure_enabled: false
 
 # If your reverse-proxy runs on another machine, consider using `0.0.0.0:81`, just `81` or `SOME_IP_ADDRESS_OF_THIS_MACHINE:81`

@@ -111,7 +111,13 @@ matrix_federation_public_port: 8448
 
 # The name of the Traefik entrypoint for handling Matrix Federation
 # Also see the `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_*` variables.
-matrix_federation_traefik_entrypoint: matrix-federation
+matrix_federation_traefik_entrypoint_name: matrix-federation
+
+# Controls whether the federation entrypoint supports TLS.
+# TLS is force-enabled here, because the spec (https://spec.matrix.org/v1.9/server-server-api/#tls) says that the federation API must use HTTPS.
+# This may be changed at the playbook level for setups explicitly disabling TLS.
+# `matrix_playbook_ssl_enabled` has no influence over this.
+matrix_federation_traefik_entrypoint_tls: true
 
 # The architecture that your server runs.
 # Recognized values by us are 'amd64', 'arm32' and 'arm64'.
@@ -235,7 +241,8 @@ matrix_playbook_reverse_proxyable_services_additional_network: "{{ matrix_playbo
 
 # Controls if various services think if SSL is enabled or not.
 # Disabling this does not actually disable Treafik's web-secure entrypoint and TLS termination settings.
-# For that, you'd need to use other variables. This one merely serves as an indicator if SSL is used or not.
+# For that, you'd need to use another variable (`devture_traefik_config_entrypoint_web_secure_enabled`).
+# This variable merely serves as an indicator if SSL is used or not.
 matrix_playbook_ssl_enabled: true
 
 matrix_playbook_service_host_bind_interface_prefix: "{{ '' if matrix_playbook_reverse_proxy_type not in ['other-nginx-non-container', 'other-on-same-host', 'other-on-another-host'] else ('0.0.0.0:' if matrix_playbook_reverse_proxy_type == 'other-on-another-host' else '127.0.0.1:') }}"
@@ -244,7 +251,7 @@ matrix_playbook_service_host_bind_interface_prefix: "{{ '' if matrix_playbook_re
 # By default, federation is served on a special port (8448), so a separate entrypoint is necessary.
 # Group variables may influence whether this is enabled based on the port number and on the default entrypoints of the Traefik reverse-proxy.
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_enabled: true
-matrix_playbook_public_matrix_federation_api_traefik_entrypoint_name: "{{ matrix_federation_traefik_entrypoint }}"
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_name: "{{ matrix_federation_traefik_entrypoint_name }}"
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_port: "{{ matrix_federation_public_port }}"
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port: "{{ matrix_federation_public_port }}"
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_auto | combine(matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom, recursive=True) }}"

@@ -85,7 +85,8 @@ matrix_conduit_container_labels_public_federation_api_traefik_path_prefix: /_mat
 matrix_conduit_container_labels_public_federation_api_traefik_rule: "Host(`{{ matrix_conduit_container_labels_public_federation_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_conduit_container_labels_public_federation_api_traefik_path_prefix }}`)"
 matrix_conduit_container_labels_public_federation_api_traefik_priority: 0
 matrix_conduit_container_labels_public_federation_api_traefik_entrypoints: ''
-matrix_conduit_container_labels_public_federation_api_traefik_tls: "{{ matrix_conduit_container_labels_public_federation_api_traefik_entrypoints != 'web' }}"
+# TLS is force-enabled here, because the spec (https://spec.matrix.org/v1.9/server-server-api/#tls) says that the federation API must use HTTPS.
+matrix_conduit_container_labels_public_federation_api_traefik_tls: true
 matrix_conduit_container_labels_public_federation_api_traefik_tls_certResolver: "{{ matrix_conduit_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # matrix_conduit_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
