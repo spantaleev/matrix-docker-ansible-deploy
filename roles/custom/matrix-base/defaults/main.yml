@@ -245,7 +245,13 @@ matrix_playbook_reverse_proxyable_services_additional_network: "{{ matrix_playbo
 # This variable merely serves as an indicator if SSL is used or not.
 matrix_playbook_ssl_enabled: true
 
-matrix_playbook_service_host_bind_interface_prefix: "{{ '' if matrix_playbook_reverse_proxy_type not in ['other-nginx-non-container', 'other-on-same-host', 'other-on-another-host'] else ('0.0.0.0:' if matrix_playbook_reverse_proxy_type == 'other-on-another-host' else '127.0.0.1:') }}"
+# Controls on which network interface services are exposed.
+# You can use this to tell all services to expose themselves on the loopback interface, on a local network IP or or publicly.
+# Possibly not all services support exposure via this variable.
+# We recommend not using it.
+#
+# Example value: `127.0.0.1:` (note the trailing `:`).
+matrix_playbook_service_host_bind_interface_prefix: ""
 
 # Controls whether to enable an additional Traefik entrypoint for the purpose of serving Matrix Federation.
 # By default, federation is served on a special port (8448), so a separate entrypoint is necessary.
