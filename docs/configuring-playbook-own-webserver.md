@@ -133,9 +133,9 @@ This method is about leaving the integrated reverse-proxy webserver be, but maki
 
 If you wish to use another webserver, the integrated reverse-proxy webserver usually gets in the way because it attempts to fetch SSL certificates and binds to ports 80, 443 and 8448 (if Matrix Federation is enabled).
 
-You can disable such behavior and make the integrated reverse-proxy webserver only serve traffic locally (or over a local network).
+You can disable such behavior and make the integrated reverse-proxy webserver only serve traffic locally on the host itself (or over a local network).
 
-This is the recommended way for using another reverse-proxy, because the integrated one would act as a black box and wire all Matrix services correctly. You would only need to reverse-proxy a few individual domains and ports over to it.
+This is the recommended way for using another reverse-proxy, because the integrated one would act as a black box and wire all Matrix services correctly. You would then only need to reverse-proxy a few individual domains and ports over to it.
 
 To front Traefik with another reverse-proxy, you would need some configuration like this:
 
@@ -179,13 +179,22 @@ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom:
   # trustedIPs: ['IP-ADDRESS-OF-YOUR-REVERSE-PROXY']
 ```
 
-For an example where the playbook's Traefik reverse-proxy is fronted by another reverse-proxy running on the same server, see [Nginx reverse-proxy fronting the playbook's Traefik](../examples/nginx/README.md) or [Caddy reverse-proxy fronting the playbook's Traefik](../examples/caddy2/README.md).
+Such a configuration would expose all services on a local port `81` and Matrix Federation on a local port `8449`.
+
+Your reverse-proxy configuration needs to send traffic to these ports. The [`examples/reverse-proxies` directory](../examples/reverse-proxies/) contains sample configuration for various webservers (Apache2, Caddy, HAproxy, nginx).
+
+It's important that these webservers proxy-pass requests to the correct place and also set the `Host` HTTP header appropriately.
+If you don't pass the `Host` header correctly, you would get a 404 not found error from Traefik.
+
+To put it another way, `curl http://127.0.0.1:81` would give you a 404, but `curl -H 'Host: matrix.DOMAIN' http://127.0.0.1:81` should work.
 
 
 ### Using no reverse-proxy on the Matrix side at all
 
-Instead of [Fronting the integrated reverse-proxy webserver with another reverse-proxy](#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy), you can also go another way -- completely disabling the playbook-managed reverse-proxy. You would then need to reverse-proxy from your own webserver directly to Matrix services.
+Instead of [Fronting the integrated reverse-proxy webserver with another reverse-proxy](#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy), you can also go another way -- completely disabling the playbook-managed Traefik reverse-proxy. You would then need to reverse-proxy from your own webserver directly to each individual Matrix service.
 
 This is more difficult, as you would need to handle the configuration for each service manually. Enabling additional services would come with extra manual work you need to do.
+
+Also, the Traefik reverse-proxy, besides fronting everything is also serving a 2nd purpose of allowing addons services to communicate with the Matrix homeserver thanks to its `matrix-internal-matrix-client-api` entrypoint (read more about it above). Disabling Traefik completely means the playbook would wire services to directly talk to the homeserver. This can work for basic setups, but not for more complex setups involving [matrix-media-repo](./configuring-playbook-matrix-media-repo.md), [matrix-corporal](./configuring-playbook-matrix-corporal.md) or other such services that need to "steal routes" from the homeserver.
 
 If your webserver is on the same machine, ensure your web server user (something like `http`, `apache`, `www-data`, `nginx`) is part of the `matrix` group. You should run something like this: `usermod -a -G matrix nginx`. This allows your webserver user to access files owned by the `matrix` group, so that it can serve static files from `/matrix/static-files`.
