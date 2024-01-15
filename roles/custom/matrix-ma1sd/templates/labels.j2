@@ -7,10 +7,13 @@ traefik.docker.network={{ matrix_ma1sd_container_labels_traefik_docker_network }
 
 traefik.http.services.matrix-ma1sd.loadbalancer.server.port={{ matrix_ma1sd_container_port }}
 
-{#
-	Matrix Identity APIs (/_matrix/identity)
-#}
 {% if matrix_ma1sd_container_labels_matrix_identity_enabled %}
+############################################################
+#                                                          #
+# Matrix Identity APIs (/_matrix/identity)                 #
+#                                                          #
+############################################################
+
 traefik.http.routers.matrix-ma1sd-matrix-identity.rule={{ matrix_ma1sd_container_labels_matrix_identity_traefik_rule }}
 
 {% if matrix_ma1sd_container_labels_matrix_identity_traefik_priority | int > 0 %}
@@ -24,21 +27,26 @@ traefik.http.routers.matrix-ma1sd-matrix-identity.tls={{ matrix_ma1sd_container_
 {% if matrix_ma1sd_container_labels_matrix_identity_traefik_tls %}
 traefik.http.routers.matrix-ma1sd-matrix-identity.tls.certResolver={{ matrix_ma1sd_container_labels_matrix_identity_traefik_tls_certResolver }}
 {% endif %}
+
+############################################################
+#                                                          #
+# /Matrix Identity APIs (/_matrix/identity)                #
+#                                                          #
+############################################################
 {% endif %}
-{#
-	/Matrix Identity APIs (/_matrix/identity)
-#}
 
 
-{#
-	Matrix Client user-directory search API endpoint (/_matrix/client/VERSION/user_directory/search)
-#}
 {% if matrix_ma1sd_container_labels_matrix_client_user_directory_search_enabled %}
-{#
-	ma1sd only supports /_matrix/client/r0/user_directory/search,
-	while we potentially handle /_matrix/client/v3/user_directory/search as well,
-	so we need to transparently reroute.
-#}
+############################################################
+#                                                          #
+# Matrix Client user-directory search API endpoint         #
+# (/_matrix/client/VERSION/user_directory/search)          #
+#                                                          #
+############################################################
+
+# ma1sd only supports /_matrix/client/r0/user_directory/search
+# while we potentially handle /_matrix/client/v3/user_directory/search as well,
+# so we need to transparently reroute.
 traefik.http.middlewares.matrix-ma1sd-matrix-client-user-directory-search-replacepath.replacepath.path=/_matrix/client/r0/user_directory/search
 
 traefik.http.routers.matrix-ma1sd-matrix-client-user-directory-search.rule={{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_rule }}
@@ -56,21 +64,27 @@ traefik.http.routers.matrix-ma1sd-matrix-client-user-directory-search.tls={{ mat
 {% if matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_tls %}
 traefik.http.routers.matrix-ma1sd-matrix-client-user-directory-search.tls.certResolver={{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_tls_certResolver }}
 {% endif %}
+
+############################################################
+#                                                          #
+# /Matrix Client user-directory search API endpoint        #
+# (/_matrix/client/VERSION/user_directory/search)          #
+#                                                          #
+############################################################
 {% endif %}
-{#
-	/Matrix Client user-directory search API endpoint (/_matrix/client/VERSION/user_directory/search)
-#}
 
 
-{#
-	Matrix Client 3pid registration API endpoint (/_matrix/client/VERSION/register/TYPE/requestToken)
-#}
 {% if matrix_ma1sd_container_labels_matrix_client_user_directory_search_enabled %}
-{#
-	ma1sd only supports /_matrix/client/r0/user_directory/search,
-	while we potentially handle /_matrix/client/v3/user_directory/search as well,
-	so we need to transparently reroute.
-#}
+############################################################
+#                                                          #
+# Matrix Client 3pid registration API endpoint             #
+# (/_matrix/client/VERSION/register/TYPE/requestToken)     #
+#                                                          #
+############################################################
+
+# ma1sd only supports /_matrix/client/r0/register/TYPE/requestToken
+# while we potentially handle /_matrix/client/v3/register/TYPE/requestToken as well,
+# so we need to transparently reroute.
 traefik.http.middlewares.matrix-ma1sd-matrix-client-3pid-registration-replacepathregex.replacepathregex.regex=^/_matrix/client/([^/]+)/register/([^/]+)/requestToken
 traefik.http.middlewares.matrix-ma1sd-matrix-client-3pid-registration-replacepathregex.replacepathregex.replacement=/_matrix/client/r0/register/${2}/requestToken
 
@@ -89,10 +103,15 @@ traefik.http.routers.matrix-ma1sd-matrix-client-3pid-registration.tls={{ matrix_
 {% if matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_tls %}
 traefik.http.routers.matrix-ma1sd-matrix-client-3pid-registration.tls.certResolver={{ matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_tls_certResolver }}
 {% endif %}
+
+############################################################
+#                                                          #
+# /Matrix Client 3pid registration API endpoint            #
+# (/_matrix/client/VERSION/register/TYPE/requestToken)     #
+#                                                          #
+############################################################
 {% endif %}
-{#
-	/Matrix Client 3pid registration API endpoint (/_matrix/client/VERSION/register/TYPE/requestToken)
-#}
+
 
 {% endif %}
 

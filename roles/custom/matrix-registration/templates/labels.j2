@@ -7,10 +7,12 @@ traefik.docker.network={{ matrix_registration_container_labels_traefik_docker_ne
 
 traefik.http.services.matrix-registration.loadbalancer.server.port=5000
 
-{#
-	Public (e.g. /matrix-registration)
-#}
 {% if matrix_registration_container_labels_public_endpoint_enabled %}
+############################################################
+#                                                          #
+# Public (e.g. /matrix-registration)                       #
+#                                                          #
+############################################################
 
 {% set middlewares = [] %}
 
@@ -20,7 +22,7 @@ traefik.http.middlewares.matrix-registration-slashless-redirect-slashless.redire
 {% set middlewares = middlewares + ['matrix-registration-slashless-redirect-slashless'] %}
 {% endif %}
 
-{# matrix-registration serves nothing at the root URL, so we redirect to /register instead. #}
+# matrix-registration serves nothing at the root URL, so we redirect to /register instead.
 traefik.http.middlewares.matrix-registration-slashless-redirect-root.redirectregex.regex=({{ matrix_registration_path_prefix | quote }}{{ '' if matrix_registration_path_prefix == '/' else '/' }})$
 traefik.http.middlewares.matrix-registration-slashless-redirect-root.redirectregex.replacement=${1}register
 {% set middlewares = middlewares + ['matrix-registration-slashless-redirect-root'] %}
@@ -48,10 +50,13 @@ traefik.http.routers.matrix-registration-public.tls={{ matrix_registration_conta
 traefik.http.routers.matrix-registration-public.tls.certResolver={{ matrix_registration_container_labels_public_endpoint_traefik_tls_certResolver }}
 {% endif %}
 
+############################################################
+#                                                          #
+# /Public (e.g. /matrix-registration)                      #
+#                                                          #
+############################################################
 {% endif %}
-{#
-	/Public (e.g. /matrix-registration)
-#}
+
 
 {% endif %}
 

@@ -5,12 +5,15 @@ traefik.enable=true
 traefik.docker.network={{ matrix_cactus_comments_client_container_labels_traefik_docker_network }}
 {% endif %}
 
-traefik.http.services.matrix-cactus-comments-client.loadbalancer.server.port={{ matrix_cactus_comments_client_environment_variable_server_port }}
 
-{#
-	Public
-#}
 {% if matrix_cactus_comments_client_container_labels_public_enabled %}
+############################################################
+#                                                          #
+# Public                                                   #
+#                                                          #
+############################################################
+
+traefik.http.services.matrix-cactus-comments-client.loadbalancer.server.port={{ matrix_cactus_comments_client_environment_variable_server_port }}
 
 {% set public_middlewares = [] %}
 
@@ -37,10 +40,13 @@ traefik.http.routers.matrix-cactus-comments-client-base-domain.tls={{ matrix_cac
 traefik.http.routers.matrix-cactus-comments-client-base-domain.tls.certResolver={{ matrix_cactus_comments_client_container_labels_public_traefik_tls_certResolver }}
 {% endif %}
 
+############################################################
+#                                                          #
+# /Public                                                  #
+#                                                          #
+############################################################
 {% endif %}
-{#
-	/Public
-#}
+
 
 {% endif %}
 

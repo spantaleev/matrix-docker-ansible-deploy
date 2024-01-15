@@ -5,13 +5,16 @@ traefik.enable=true
 traefik.docker.network={{ matrix_corporal_container_labels_traefik_docker_network }}
 {% endif %}
 
-traefik.http.services.matrix-corporal-gateway.loadbalancer.server.port=41080
+
+{% if matrix_corporal_container_labels_api_enabled %}
+############################################################
+#                                                          #
+# Corporal API (/_matrix/corporal)                         #
+#                                                          #
+############################################################
+
 traefik.http.services.matrix-corporal-api.loadbalancer.server.port=41081
 
-{#
-	Corporal API (/_matrix/corporal)
-#}
-{% if matrix_corporal_container_labels_api_enabled %}
 traefik.http.routers.matrix-corporal-api.rule={{ matrix_corporal_container_labels_api_traefik_rule }}
 
 {% if matrix_corporal_container_labels_api_traefik_priority | int > 0 %}
@@ -26,15 +29,23 @@ traefik.http.routers.matrix-corporal-api.tls={{ matrix_corporal_container_labels
 traefik.http.routers.matrix-corporal-api.tls.certResolver={{ matrix_corporal_container_labels_api_traefik_tls_certResolver }}
 {% endif %}
 
+############################################################
+#                                                          #
+# /Corporal API (/_matrix/corporal)                        #
+#                                                          #
+############################################################
 {% endif %}
-{#
-	/Corporal API (/_matrix/corporal)
-#}
 
-{#
-	Matrix Client-Server API (/_matrix)
-#}
+
 {% if matrix_corporal_container_labels_matrix_client_api_enabled %}
+############################################################
+#                                                          #
+# Matrix Client-Server API (/_matrix)                      #
+#                                                          #
+############################################################
+
+traefik.http.services.matrix-corporal-gateway.loadbalancer.server.port=41080
+
 traefik.http.routers.matrix-corporal-matrix-client-api.rule={{ matrix_corporal_container_labels_matrix_client_api_traefik_rule }}
 
 {% if matrix_corporal_container_labels_matrix_client_api_traefik_priority | int > 0 %}
@@ -49,10 +60,13 @@ traefik.http.routers.matrix-corporal-matrix-client-api.tls={{ matrix_corporal_co
 traefik.http.routers.matrix-corporal-matrix-client-api.tls.certResolver={{ matrix_corporal_container_labels_matrix_client_api_traefik_tls_certResolver }}
 {% endif %}
 
+############################################################
+#                                                          #
+# /Matrix Client-Server API (/_matrix)                     #
+#                                                          #
+############################################################
 {% endif %}
-{#
-	/Matrix Client-Server API (/_matrix)
-#}
+
 
 {% endif %}
 

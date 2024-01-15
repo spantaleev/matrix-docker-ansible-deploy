@@ -5,25 +5,41 @@ traefik.enable=true
 traefik.docker.network={{ matrix_mautrix_twitter_container_labels_traefik_docker_network }}
 {% endif %}
 
-{# Metrics #}
 {% if matrix_mautrix_twitter_container_labels_metrics_enabled %}
+############################################################
+#                                                          #
+# Metrics                                                  #
+#                                                          #
+############################################################
+
+traefik.http.services.matrix-mautrix-twitter-metrics.loadbalancer.server.port=8000
+
+{% if matrix_mautrix_twitter_container_labels_metrics_middleware_basic_auth_enabled %}
+traefik.http.middlewares.matrix-mautrix-twitter-metrics-basic-auth.basicauth.users={{ matrix_mautrix_twitter_container_labels_metrics_middleware_basic_auth_users }}
+traefik.http.routers.matrix-mautrix-twitter-metrics.middlewares=matrix-mautrix-twitter-metrics-basic-auth
+{% endif %}
+
 traefik.http.routers.matrix-mautrix-twitter-metrics.rule={{ matrix_mautrix_twitter_container_labels_metrics_traefik_rule }}
+
 {% if matrix_mautrix_twitter_container_labels_metrics_traefik_priority | int > 0 %}
 traefik.http.routers.matrix-mautrix-twitter-metrics.priority={{ matrix_mautrix_twitter_container_labels_metrics_traefik_priority }}
 {% endif %}
+
 traefik.http.routers.matrix-mautrix-twitter-metrics.service=matrix-mautrix-twitter-metrics
 traefik.http.routers.matrix-mautrix-twitter-metrics.entrypoints={{ matrix_mautrix_twitter_container_labels_metrics_traefik_entrypoints }}
+
 traefik.http.routers.matrix-mautrix-twitter-metrics.tls={{ matrix_mautrix_twitter_container_labels_metrics_traefik_tls | to_json }}
 {% if matrix_mautrix_twitter_container_labels_metrics_traefik_tls %}
 traefik.http.routers.matrix-mautrix-twitter-metrics.tls.certResolver={{ matrix_mautrix_twitter_container_labels_metrics_traefik_tls_certResolver }}
 {% endif %}
-{% if matrix_mautrix_twitter_container_labels_metrics_middleware_basic_auth_enabled %}
-traefik.http.routers.matrix-mautrix-twitter-metrics.middlewares=matrix-mautrix-twitter-metrics-basic-auth
-traefik.http.middlewares.matrix-mautrix-twitter-metrics-basic-auth.basicauth.users={{ matrix_mautrix_twitter_container_labels_metrics_middleware_basic_auth_users }}
+
+############################################################
+#                                                          #
+# /Metrics                                                 #
+#                                                          #
+############################################################
 {% endif %}
 
-traefik.http.services.matrix-mautrix-twitter-metrics.loadbalancer.server.port=8000
-{% endif %}
 
 {% endif %}
 

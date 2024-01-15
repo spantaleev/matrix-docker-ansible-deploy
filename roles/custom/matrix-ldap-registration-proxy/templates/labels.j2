@@ -5,10 +5,14 @@ traefik.enable=true
 traefik.docker.network={{ matrix_ldap_registration_proxy_container_labels_traefik_docker_network }}
 {% endif %}
 
-{#
-	Registration
-#}
 {% if matrix_ldap_registration_proxy_container_labels_public_endpoint_enabled %}
+############################################################
+#                                                          #
+# Registration                                             #
+#                                                          #
+############################################################
+
+traefik.http.services.matrix-ldap-registration-proxy.loadbalancer.server.port={{ matrix_ldap_registration_listen_port }}
 
 traefik.http.middlewares.matrix-ldap-registration-proxy-registration-endpoint-replacepath.replacepath.path=/register
 
@@ -28,11 +32,13 @@ traefik.http.routers.matrix-ldap-registration-proxy-registration.tls={{ matrix_l
 traefik.http.routers.matrix-ldap-registration-proxy-registration.tls.certResolver={{ matrix_ldap_registration_proxy_container_labels_public_endpoint_traefik_tls_certResolver }}
 {% endif %}
 
-traefik.http.services.matrix-ldap-registration-proxy.loadbalancer.server.port={{ matrix_ldap_registration_listen_port }}
+############################################################
+#                                                          #
+# /Registration                                            #
+#                                                          #
+############################################################
 {% endif %}
-{#
-	/Registration
-#}
+
 
 {% endif %}
 

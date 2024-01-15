@@ -5,20 +5,36 @@ traefik.enable=true
 traefik.docker.network={{ matrix_appservice_slack_container_labels_traefik_docker_network }}
 {% endif %}
 
-{# Public #}
+traefik.http.services.matrix-appservice-slack.loadbalancer.server.port={{ matrix_appservice_slack_slack_port }}
+
 {% if matrix_appservice_slack_container_labels_public_endpoint_enabled %}
+############################################################
+#                                                          #
+# Public                                                   #
+#                                                          #
+############################################################
+
 traefik.http.routers.matrix-appservice-slack-public.rule={{ matrix_appservice_slack_container_labels_public_endpoint_traefik_rule }}
+
 {% if matrix_appservice_slack_container_labels_public_endpoint_traefik_priority | int > 0 %}
 traefik.http.routers.matrix-appservice-slack-public.priority={{ matrix_appservice_slack_container_labels_public_endpoint_traefik_priority }}
 {% endif %}
+
 traefik.http.routers.matrix-appservice-slack-public.service=matrix-appservice-slack
 traefik.http.routers.matrix-appservice-slack-public.entrypoints={{ matrix_appservice_slack_container_labels_public_endpoint_traefik_entrypoints }}
+
 traefik.http.routers.matrix-appservice-slack-public.tls={{ matrix_appservice_slack_container_labels_public_endpoint_traefik_tls | to_json }}
 {% if matrix_appservice_slack_container_labels_public_endpoint_traefik_tls %}
 traefik.http.routers.matrix-appservice-slack-public.tls.certResolver={{ matrix_appservice_slack_container_labels_public_endpoint_traefik_tls_certResolver }}
 {% endif %}
-traefik.http.services.matrix-appservice-slack.loadbalancer.server.port={{ matrix_appservice_slack_slack_port }}
+
+############################################################
+#                                                          #
+# /Public                                                  #
+#                                                          #
+############################################################
 {% endif %}
+
 
 {% endif %}
 

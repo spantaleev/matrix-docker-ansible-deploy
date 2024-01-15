@@ -5,20 +5,36 @@ traefik.enable=true
 traefik.docker.network={{ matrix_bot_maubot_container_labels_traefik_docker_network }}
 {% endif %}
 
-{# Management #}
+traefik.http.services.matrix-bot-maubot.loadbalancer.server.port={{ matrix_bot_maubot_server_port }}
+
 {% if matrix_bot_maubot_container_labels_management_enabled %}
+############################################################
+#                                                          #
+# Management                                               #
+#                                                          #
+############################################################
+
 traefik.http.routers.matrix-bot-maubot-management.rule={{ matrix_bot_maubot_container_labels_management_traefik_rule }}
+
 {% if matrix_bot_maubot_container_labels_management_traefik_priority | int > 0 %}
 traefik.http.routers.matrix-bot-maubot-management.priority={{ matrix_bot_maubot_container_labels_management_traefik_priority }}
 {% endif %}
+
 traefik.http.routers.matrix-bot-maubot-management.service=matrix-bot-maubot
 traefik.http.routers.matrix-bot-maubot-management.entrypoints={{ matrix_bot_maubot_container_labels_management_traefik_entrypoints }}
+
 traefik.http.routers.matrix-bot-maubot-management.tls={{ matrix_bot_maubot_container_labels_management_traefik_tls | to_json }}
 {% if matrix_bot_maubot_container_labels_management_traefik_tls %}
 traefik.http.routers.matrix-bot-maubot-management.tls.certResolver={{ matrix_bot_maubot_container_labels_management_traefik_tls_certResolver }}
 {% endif %}
-traefik.http.services.matrix-bot-maubot.loadbalancer.server.port={{ matrix_bot_maubot_server_port }}
+
+############################################################
+#                                                          #
+# /Management                                              #
+#                                                          #
+############################################################
 {% endif %}
+
 
 {% endif %}
 

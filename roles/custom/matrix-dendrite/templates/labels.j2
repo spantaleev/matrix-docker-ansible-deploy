@@ -8,10 +8,12 @@ traefik.docker.network={{ matrix_dendrite_container_labels_traefik_docker_networ
 traefik.http.services.matrix-dendrite.loadbalancer.server.port={{ matrix_dendrite_http_bind_port }}
 
 
-{#
-	Public Root path (/)
-#}
 {% if matrix_dendrite_container_labels_public_client_root_enabled %}
+############################################################
+#                                                          #
+# Public Root path (/)                                     #
+#                                                          #
+############################################################
 
 {% set client_root_middlewares = [] %}
 
@@ -37,16 +39,20 @@ traefik.http.routers.matrix-dendrite-public-client-root.tls={{ matrix_dendrite_c
 traefik.http.routers.matrix-dendrite-public-client-root.tls.certResolver={{ matrix_dendrite_container_labels_public_client_root_traefik_tls_certResolver }}
 {% endif %}
 
+############################################################
+#                                                          #
+# /Public Root path (/)                                    #
+#                                                          #
+############################################################
 {% endif %}
-{#
-	/Public Root path (/)
-#}
 
 
-{#
-	Public Client-API (/_matrix)
-#}
 {% if matrix_dendrite_container_labels_public_client_api_enabled %}
+############################################################
+#                                                          #
+# Public Client-API (/_matrix)                             #
+#                                                          #
+############################################################
 
 traefik.http.routers.matrix-dendrite-public-client-api.rule={{ matrix_dendrite_container_labels_public_client_api_traefik_rule }}
 
@@ -62,16 +68,20 @@ traefik.http.routers.matrix-dendrite-public-client-api.tls={{ matrix_dendrite_co
 traefik.http.routers.matrix-dendrite-public-client-api.tls.certResolver={{ matrix_dendrite_container_labels_public_client_api_traefik_tls_certResolver }}
 {% endif %}
 
+############################################################
+#                                                          #
+# /Public Client-API (/_matrix)                            #
+#                                                          #
+############################################################
 {% endif %}
-{#
-	/Public Client-API (/_matrix)
-#}
 
 
-{#
-	Internal Client-API (/_matrix)
-#}
 {% if matrix_dendrite_container_labels_internal_client_api_enabled %}
+############################################################
+#                                                          #
+# Internal Client-API (/_matrix)                           #
+#                                                          #
+############################################################
 
 traefik.http.routers.matrix-dendrite-internal-client-api.rule={{ matrix_dendrite_container_labels_internal_client_api_traefik_rule }}
 
@@ -82,16 +92,20 @@ traefik.http.routers.matrix-dendrite-internal-client-api.priority={{ matrix_dend
 traefik.http.routers.matrix-dendrite-internal-client-api.service=matrix-dendrite
 traefik.http.routers.matrix-dendrite-internal-client-api.entrypoints={{ matrix_dendrite_container_labels_internal_client_api_traefik_entrypoints }}
 
+############################################################
+#                                                          #
+# /Internal Client-API (/_matrix)                          #
+#                                                          #
+############################################################
 {% endif %}
-{#
-	/Internal Client-API (/_matrix)
-#}
 
 
-{#
-	Public Synapse Admin API (/_synapse/admin)
-#}
 {% if matrix_dendrite_container_labels_public_client_synapse_admin_api_enabled %}
+############################################################
+#                                                          #
+# Public Synapse Admin API (/_synapse/admin)               #
+#                                                          #
+############################################################
 
 traefik.http.routers.matrix-dendrite-public-client-synapse-admin-api.rule={{ matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_rule }}
 
@@ -107,16 +121,20 @@ traefik.http.routers.matrix-dendrite-public-client-synapse-admin-api.tls={{ matr
 traefik.http.routers.matrix-dendrite-public-client-synapse-admin-api.tls.certResolver={{ matrix_dendrite_container_labels_public_client_synapse_admin_api_traefik_tls_certResolver }}
 {% endif %}
 
+############################################################
+#                                                          #
+# /Public Synapse Admin API (/_synapse/admin)              #
+#                                                          #
+############################################################
 {% endif %}
-{#
-	/Public Synapse Admin API (/_synapse/admin)
-#}
 
 
-{#
-	Public Dendrite Admin API (/_dendrite/admin)
-#}
 {% if matrix_dendrite_container_labels_public_client_dendrite_admin_api_enabled %}
+############################################################
+#                                                          #
+# Public Dendrite Admin API (/_dendrite/admin)             #
+#                                                          #
+############################################################
 
 traefik.http.routers.matrix-dendrite-public-client-synapse-admin-api.rule={{ matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_rule }}
 
@@ -132,16 +150,20 @@ traefik.http.routers.matrix-dendrite-public-client-synapse-admin-api.tls={{ matr
 traefik.http.routers.matrix-dendrite-public-client-synapse-admin-api.tls.certResolver={{ matrix_dendrite_container_labels_public_client_dendrite_admin_api_traefik_tls_certResolver }}
 {% endif %}
 
+############################################################
+#                                                          #
+# /Public Dendrite Admin API (/_dendrite/admin)            #
+#                                                          #
+############################################################
 {% endif %}
-{#
-	/Public Dendrite Admin API (/_dendrite/admin)
-#}
 
 
-{#
-	Public Federation-API (/_matrix)
-#}
 {% if matrix_dendrite_container_labels_public_federation_api_enabled %}
+############################################################
+#                                                          #
+# Public Federation-API (/_matrix)                         #
+#                                                          #
+############################################################
 
 traefik.http.routers.matrix-dendrite-public-federation-api.rule={{ matrix_dendrite_container_labels_public_federation_api_traefik_rule }}
 
@@ -157,16 +179,20 @@ traefik.http.routers.matrix-dendrite-public-federation-api.tls={{ matrix_dendrit
 traefik.http.routers.matrix-dendrite-public-federation-api.tls.certResolver={{ matrix_dendrite_container_labels_public_federation_api_traefik_tls_certResolver }}
 {% endif %}
 
+############################################################
+#                                                          #
+# /Public Federation-API (/_matrix)                        #
+#                                                          #
+############################################################
 {% endif %}
-{#
-	/Public Federation-API (/_matrix)
-#}
 
 
-{#
-	Public Metrics
-#}
 {% if matrix_dendrite_container_labels_public_metrics_enabled %}
+############################################################
+#                                                          #
+# Public Metrics                                           #
+#                                                          #
+############################################################
 
 {% set metrics_middlewares = [] %}
 
@@ -195,10 +221,14 @@ traefik.http.routers.matrix-dendrite-metrics.tls={{ matrix_dendrite_container_la
 {% if matrix_dendrite_container_labels_public_metrics_traefik_tls %}
 traefik.http.routers.matrix-dendrite-metrics.tls.certResolver={{ matrix_dendrite_container_labels_public_metrics_traefik_tls_certResolver }}
 {% endif %}
+
+############################################################
+#                                                          #
+# /Public Metrics                                          #
+#                                                          #
+############################################################
 {% endif %}
-{#
-	/Public Metrics
-#}
+
 
 {% endif %}
 
