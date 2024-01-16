@@ -95,6 +95,36 @@ server {
 	gzip_types text/plain application/json;
 
 	{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
+		# Client-server overrides -- These locations must go to the main Synapse process
+		location ~ {{ matrix_synapse_reverse_proxy_companion_client_server_main_override_locations_regex }} {
+			{# FIXME: This block was copied from the main Synapse fallback below.  It would be better to have it in one place and avoid duplication. #}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }} valid=5s;
+			set $backend "{{ matrix_synapse_reverse_proxy_companion_client_api_addr }}";
+			proxy_pass http://$backend;
+
+			proxy_set_header Host $host;
+
+			client_body_buffer_size 25M;
+			client_max_body_size {{ matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb }}M;
+			proxy_max_temp_file_size 0;
+		}
+
+		# Client-server SSO overrides -- These locations must go to the main Synapse process
+		location ~ {{ matrix_synapse_reverse_proxy_companion_client_server_sso_override_locations_regex }} {
+			{# FIXME: This block was copied from the main Synapse fallback below.  It would be better to have it in one place and avoid duplication. #}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }} valid=5s;
+			set $backend "{{ matrix_synapse_reverse_proxy_companion_client_api_addr }}";
+			proxy_pass http://$backend;
+
+			proxy_set_header Host $host;
+
+			client_body_buffer_size 25M;
+			client_max_body_size {{ matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb }}M;
+			proxy_max_temp_file_size 0;
+		}
+
 		{# Workers redirects BEGIN #}
 
 		{% if room_workers | length > 0 %}
@@ -203,6 +233,21 @@ server {
 	gzip_types text/plain application/json;
 
 	{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
+		# Federation overrides -- These locations must go to the main Synapse process
+		location ~ {{ matrix_synapse_reverse_proxy_companion_federation_override_locations_regex }} {
+			{# FIXME: This block was copied from the fallback location below.  It would be better to have it in one place and avoid duplication. #}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }} valid=5s;
+			set $backend "{{ matrix_synapse_reverse_proxy_companion_federation_api_addr }}";
+			proxy_pass http://$backend;
+
+			proxy_set_header Host $host;
+
+			client_body_buffer_size 25M;
+			client_max_body_size {{ matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb }}M;
+			proxy_max_temp_file_size 0;
+		}
+
 		{% if room_workers | length > 0 %}
 			# https://tcpipuk.github.io/synapse/deployment/workers.html
 			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_room_worker_federation_locations, 'room_workers_upstream') }}
