@@ -127,21 +127,6 @@ server {
 
 		{# Workers redirects BEGIN #}
 
-		{% if room_workers | length > 0 %}
-			# https://tcpipuk.github.io/synapse/deployment/workers.html
-			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_room_worker_client_server_locations, 'room_workers_upstream') }}
-		{% endif %}
-
-		{% if sync_workers | length > 0 %}
-			# https://tcpipuk.github.io/synapse/deployment/workers.html
-			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_sync_worker_client_server_locations, 'sync_workers_upstream') }}
-		{% endif %}
-
-		{% if client_reader_workers | length > 0 %}
-			# https://tcpipuk.github.io/synapse/deployment/workers.html
-			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_client_reader_client_server_locations, 'client_reader_workers_upstream') }}
-		{% endif %}
-
 		{% if generic_workers | length > 0 %}
 			# https://matrix-org.github.io/synapse/latest/workers.html#synapseappgeneric_worker
 			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_generic_worker_client_server_locations, 'generic_workers_upstream') }}
@@ -170,6 +155,21 @@ server {
 		{% if stream_writer_presence_stream_workers | length > 0 %}
 			# https://matrix-org.github.io/synapse/latest/workers.html#the-presence-stream
 			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_stream_writer_presence_stream_worker_client_server_locations, 'stream_writer_presence_stream_workers_upstream') }}
+		{% endif %}
+
+		{% if room_workers | length > 0 %}
+			# https://tcpipuk.github.io/synapse/deployment/workers.html
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_room_worker_client_server_locations, 'room_workers_upstream') }}
+		{% endif %}
+
+		{% if sync_workers | length > 0 %}
+			# https://tcpipuk.github.io/synapse/deployment/workers.html
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_sync_worker_client_server_locations, 'sync_workers_upstream') }}
+		{% endif %}
+
+		{% if client_reader_workers | length > 0 %}
+			# https://tcpipuk.github.io/synapse/deployment/workers.html
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_client_reader_client_server_locations, 'client_reader_workers_upstream') }}
 		{% endif %}
 
 		{% if media_repository_workers | length > 0 %}
