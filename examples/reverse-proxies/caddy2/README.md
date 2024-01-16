@@ -5,7 +5,7 @@ This directory contains a sample config that shows you how to front the integrat
 
 ## Prerequisite configuration
 
-To get started, first follow the [front the integrated reverse-proxy webserver with another reverse-proxy](../../docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) instructions and update your playbook's configuration (`inventory/host_vars/matrix.<your-domain>/vars.yml`).
+To get started, first follow the [front the integrated reverse-proxy webserver with another reverse-proxy](../../../docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) instructions and update your playbook's configuration (`inventory/host_vars/matrix.<your-domain>/vars.yml`).
 
 
 ## Using the Caddyfile
