@@ -63,9 +63,9 @@ map $request_uri $room_name {
 	{% endif %}
 	# Round Robin "upstream" pools for workers
 
-	{{ render_worker_upstream('room_workers_upstream', room_workers, 'hash $room_name consistent;')
-	{{ render_worker_upstream('sync_workers_upstream', room_workers, 'hash $mxid_localpart consistent;')
-	{{ render_worker_upstream('client_reader_workers_upstream', client_reader_workers, 'least_conn;')
+	{{ render_worker_upstream('room_workers_upstream', room_workers, 'hash $room_name consistent;') }}
+	{{ render_worker_upstream('sync_workers_upstream', room_workers, 'hash $mxid_localpart consistent;') }}
+	{{ render_worker_upstream('client_reader_workers_upstream', client_reader_workers, 'least_conn;') }}
 	{{ render_worker_upstream('federation_reader_workers_upstream', federation_reader_workers, 'hash $http_x_forwarded_for;') }}
 
 	{{ render_worker_upstream('generic_workers_upstream', generic_workers, 'hash $http_x_forwarded_for;') }}
