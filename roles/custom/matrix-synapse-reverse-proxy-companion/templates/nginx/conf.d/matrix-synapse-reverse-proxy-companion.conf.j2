@@ -13,27 +13,6 @@
 {% set media_repository_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'media_repository') | list %}
 {% set user_dir_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'user_dir') | list %}
 
-
-# Maps from https://tcpipuk.github.io/synapse/deployment/nginx.html#mapsconf
-# Client username from MXID
-map $http_authorization $mxid_localpart {
-  default                           $http_authorization;
-  "~Bearer syt_(?<username>.*?)_.*" $username;
-  ""                                $accesstoken_from_urlparam;
-}
-
-# Whether to upgrade HTTP connection
-map $http_upgrade $connection_upgrade {
-  default upgrade;
-  '' close;
-}
-
-#Extract room name from URI
-map $request_uri $room_name {
-  ~^/_matrix/(client|federation)/.*?(?:%21|!)(?<room>[A-Za-z0-9._=\-\/]+)(?::|%3A)[A-Za-z0-9._=\-\/]+ $room;
-}
-# End maps
-
 {% macro render_worker_upstream(name, workers, load_balance) %}
 {% if workers | length > 0 %}
 	upstream {{ name }} {
@@ -58,6 +37,30 @@ map $request_uri $room_name {
 {% endmacro %}
 
 {% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
+
+# Maps from https://tcpipuk.github.io/synapse/deployment/nginx.html#mapsconf
+# Client username from access token
+map $arg_access_token $accesstoken_from_urlparam {
+  default                    $arg_access_token;
+  "~syt_(?<username>.*?)_.*" $username;
+}
+# Client username from MXID
+map $http_authorization $mxid_localpart {
+  default                           $http_authorization;
+  "~Bearer syt_(?<username>.*?)_.*" $username;
+  ""                                $accesstoken_from_urlparam;
+}
+# Whether to upgrade HTTP connection
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  '' close;
+}
+#Extract room name from URI
+map $request_uri $room_name {
+  ~^/_matrix/(client|federation)/.*?(?:%21|!)(?<room>[A-Za-z0-9._=\-\/]+)(?::|%3A)[A-Za-z0-9._=\-\/]+ $room;
+}
+# End maps
+
 	{% if matrix_synapse_reverse_proxy_companion_synapse_cache_enabled %}
     	proxy_cache_path  {{ matrix_synapse_reverse_proxy_companion_synapse_cache_path }} levels=1:2 keys_zone={{ matrix_synapse_reverse_proxy_companion_synapse_cache_keys_zone_name }}:{{ matrix_synapse_reverse_proxy_companion_synapse_cache_keys_zone_size }} inactive={{ matrix_synapse_reverse_proxy_companion_synapse_cache_inactive_time }} max_size={{ matrix_synapse_reverse_proxy_companion_synapse_cache_max_size_mb }}m;
 	{% endif %}
