@@ -8,6 +8,25 @@ matrix_synapse_media_store_directory_name: "{{ matrix_synapse_media_store_path |
 # Optionally: `false` to fully disable tls on outbound smtp
 matrix_synapse_email_smtp_enable_tls: true
 
+# Room workers handle any URL that contains a room id, either through the client-server API or the federation API
+# - see https://tcpipuk.github.io/synapse/deployment/nginx.html#locationsconf
+matrix_synapse_workers_room_worker_client_server_endpoints:
+  - ^/_matrix/client/.*?!(?<room>[A-Za-z0-9._=\-\/]+):[A-Za-z0-9.\-]+
+matrix_synapse_workers_room_worker_federation_endpoints:
+  - ^/_matrix/federation/v[12]/(?:state_ids|get_missing_events)/(?:%21|!)(?<room>[A-Za-z0-9._=\-\/]+)(:|%3A)[A-Za-z0-9.\-]+
+
+# Sync workers handle /sync and the (now deprecated) related endpoints
+matrix_synapse_workers_sync_worker_client_server_endpoints:
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/(sync|events|initialSync|rooms/[^/]+/initialSync)$
+
+# Client reader workers handle generic client-server endpoints that don't contain a roomid or sync
+matrix_synapse_workers_client_reader_client_server_endpoints:
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/(room_keys/|keys/(query|changes|claim|upload/|room_keys/)|login|register(/available|/m.login.registration_token/validity|)|password_policy|profile|rooms/.*/(joined_members|context/.*|members|state|hierarchy|relations/|event/|aliases|timestamp_to_event|redact|send|state/|(join|invite|leave|ban|unban|kick))|createRoom|publicRooms|account/(3pid|whoami|devices)|versions|voip/turnServer|joined_rooms|search|user/.*/filter(/|$)|directory/room/.*|capabilities)
+
+# Federation reader workers handle generic federation endpoints that don't contain a roomid
+matrix_synapse_workers_federation_reader_federation_endpoints:
+  - ^/_matrix/(federation/(v1|v2)|key/v2)/
+
 # A Synapse generic worker can handle both federation and client-server API endpoints.
 # We wish to split these, as we normally serve federation separately and don't want them mixed up.
 #
