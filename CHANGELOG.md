@@ -1,3 +1,9 @@
+# 2024-01-16
+
+## `Draupnir` has been relicensed to AFL-3.0
+
+As of [#204](https://github.com/the-draupnir-project/Draupnir/pull/204) Draupnir changed its licence to AFL-3.0 from the CSL licence. This change affects playbook users who could not run Draupnir under the old license restrictions. The new license is considerably less restrictive and is OSI approved. Draupnir version v1.86.0 and later are covered by this license change.
+
 # 2024-01-15
 
 ## Goodbye, `matrix-nginx-proxy` 🪦
