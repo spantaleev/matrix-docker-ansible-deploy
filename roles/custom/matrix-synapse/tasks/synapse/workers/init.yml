@@ -182,6 +182,14 @@
     matrix_synapse_dynamic_workers_list: "{{ matrix_synapse_dynamic_workers_list | default([]) + [item.ansible_facts.worker] }}"
   with_items: |
     {{
+      matrix_synapse_workers_list_results_room_workers.results
+      +
+      matrix_synapse_workers_list_results_sync_workers.results
+      +
+      matrix_synapse_workers_list_results_client_reader_workers.results
+      +
+      matrix_synapse_workers_list_results_federation_reader_workers.results
+      +
       matrix_synapse_workers_list_results_generic_workers.results
       +
       matrix_synapse_workers_list_results_stream_writer_workers.results
