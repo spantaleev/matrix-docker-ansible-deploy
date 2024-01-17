@@ -186,6 +186,15 @@ matrix_dendrite_systemd_wanted_services_list_default: ["docker.service"]
 matrix_dendrite_systemd_wanted_services_list_auto: []
 matrix_dendrite_systemd_wanted_services_list_custom: []
 
+# Controls how long to sleep for after starting the matrix-dendrite container.
+#
+# Delaying, so that the homeserver can manage to fully start and various services
+# that depend on it (`matrix_dendrite_systemd_required_services_list` and `matrix_dendrite_systemd_wanted_services_list`)
+# may only start after the homeserver is up and running.
+#
+# This can be set to 0 to remove the delay.
+matrix_dendrite_systemd_service_post_start_delay_seconds: 3
+
 # Specifies which template files to use when configuring Dendrite.
 # If you'd like to have your own different configuration, feel free to copy and paste
 # the original files into your inventory (e.g. in `inventory/host_vars/<host>/`)
