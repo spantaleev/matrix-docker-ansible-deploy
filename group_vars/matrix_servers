@@ -4827,12 +4827,7 @@ matrix_user_verification_service_uvs_auth_token: "{{ '%s' | format(matrix_homese
 
 matrix_static_files_enabled: true
 
-matrix_static_files_container_network: "{{ (matrix_playbook_reverse_proxy_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' else matrix_static_files_identifier) }}"
-
-matrix_static_files_additional_networks_auto: |-
-  {{
-    ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_playbook_reverse_proxy_type != 'playbook-managed-traefik') else [])
-  }}
+matrix_static_files_container_network: "{{ (matrix_static_files_identifier if matrix_playbook_reverse_proxy_type == 'none' else matrix_playbook_reverse_proxy_container_network) }}"
 
 matrix_static_files_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_static_files_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
