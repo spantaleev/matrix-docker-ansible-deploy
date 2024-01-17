@@ -339,3 +339,25 @@
           You should remove all its variables (`matrix_ssl_*`) from your vars.yml file.
           We found usage of the following variables: {{ matrix_playbook_migration_ssl_migration_vars.keys() | join(', ') }}
       when: "matrix_playbook_migration_ssl_migration_vars | length > 0"
+
+- block:
+    - ansible.builtin.set_fact:
+        matrix_playbook_migration_matrix_synapse_container_labels_public_client_synapse_oidc_vars: |-
+          {{ vars | dict2items | selectattr('key', 'match', 'matrix_synapse_container_labels_public_client_synapse_oidc_*') | list | items2dict }}
+
+    - name: (Deprecation) Catch and report matrix_ssl variables
+      ansible.builtin.fail:
+        msg: >-
+          We found usage of the following variables which are now removed: {{ matrix_playbook_migration_matrix_synapse_container_labels_public_client_synapse_oidc_vars.keys() | join(', ') }}
+      when: "matrix_playbook_migration_matrix_synapse_container_labels_public_client_synapse_oidc_vars | length > 0"
+
+- block:
+    - ansible.builtin.set_fact:
+        matrix_playbook_migration_matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_vars: |-
+          {{ vars | dict2items | selectattr('key', 'match', 'matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_*') | list | items2dict }}
+
+    - name: (Deprecation) Catch and report matrix_ssl variables
+      ansible.builtin.fail:
+        msg: >-
+          We found usage of the following variables which are now removed: {{ matrix_playbook_migration_matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_vars.keys() | join(', ') }}
+      when: "matrix_playbook_migration_matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_vars | length > 0"

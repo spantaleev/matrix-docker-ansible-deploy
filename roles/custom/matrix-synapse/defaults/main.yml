@@ -183,7 +183,6 @@ matrix_synapse_container_labels_traefik_hostname: ''
 # When set to false, variables like the following take no effect:
 # - `matrix_synapse_container_labels_public_client_api_enabled`
 # - `matrix_synapse_container_labels_public_client_synapse_client_api_enabled`
-# - `matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled`
 # - `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled`
 # - `matrix_synapse_container_labels_public_federation_api_enabled`
 #
@@ -235,19 +234,6 @@ matrix_synapse_container_labels_public_client_synapse_client_api_traefik_priorit
 matrix_synapse_container_labels_public_client_synapse_client_api_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
 matrix_synapse_container_labels_public_client_synapse_client_api_traefik_tls: "{{ matrix_synapse_container_labels_public_client_synapse_client_api_traefik_entrypoints != 'web' }}"
 matrix_synapse_container_labels_public_client_synapse_client_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
-
-# Controls whether labels will be added that expose the /_synapse/oidc paths
-# Enable this if you need OpenID Connect authentication support.
-# Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
-# See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
-matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled: "{{ matrix_synapse_oidc_enabled }}"
-matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
-matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_path_prefix: /_synapse/oidc
-matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_rule: "Host(`{{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_path_prefix }}`)"
-matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_priority: 0
-matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
-matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_tls: "{{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_entrypoints != 'web' }}"
-matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # Controls whether labels will be added that expose the /_synapse/admin paths
 # Following these recommendations (https://github.com/element-hq/synapse/blob/master/docs/reverse_proxy.md), by default, we don't.
