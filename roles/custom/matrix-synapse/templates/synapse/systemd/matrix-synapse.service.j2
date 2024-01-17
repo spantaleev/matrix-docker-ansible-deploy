@@ -68,7 +68,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach m
 
 # Intentional delay, so that the homeserver can manage to start and various services
 # that depend on it (After/Requires) may only start after the homeserver is up and running.
-ExecStartPost=-{{ matrix_host_command_sleep }} 5
+ExecStartPost=-{{ matrix_host_command_sleep }} 10
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-synapse 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-synapse 2>/dev/null || true'
