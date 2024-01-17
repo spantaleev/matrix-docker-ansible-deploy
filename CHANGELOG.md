@@ -1,3 +1,44 @@
+# 2024-01-17
+
+## Switching to Element's AGPLv3-licensed Synapse release
+
+A few months ago, the [Element](https://element.io/) company has [announced](https://element.io/blog/element-to-adopt-agplv3/) that their work on the Synapse homeserver would no longer be available under the permissive [Apache-2.0 license](https://www.apache.org/licenses/LICENSE-2.0), but only under:
+
+- the [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html) free-software license - the same license that this Ansible playbook has always used
+- a proprietary license, for those wishing for Element to [sell them an exception](https://gnu.org/philosophy/selling-exceptions.html) to the AGPLv3 license
+
+You can also learn more in [this post](https://matrix.org/blog/2023/11/06/future-of-synapse-dendrite/) by the Matrix Foundation.
+
+The change has [already happened](https://element.io/blog/synapse-now-lives-at-github-com-element-hq-synapse/) and the first Synapse release under the new license is here: [v1.99.0](https://github.com/element-hq/synapse/releases/tag/v1.99.0).
+
+There is no up-to-date alternative Synapse fork right now and this free-software (AGPLv3-licensed) playbook is definitely not against free-software licenses, so we are now switching to the Element-maintained Synapse release.
+
+**What does this mean to you?**
+
+For most home users, it doesn't mean anything. Your installation will continue working as it should and you don't need to do anything.
+
+For people building commercial products on top of Synapse, they may have to either buy a license exception from Element (from what we hear, the fee depends on the number of monthly-active users on your instance) or they may need to release all related code as free-software (which is what we've been doing at [etke.cc](https://etke.cc/) ([here](https://gitlab.com/etke.cc)) all along).
+
+We're no lawyers and this changelog entry does not aim to give you the best legal advice, so please research on your own!
+
+If you'd like to continue using the old Apache-2.0-licensed Synapse (for a while longer anyway), the playbook makes it possible by intruducing a new Ansible variable. You can do it like this:
+
+```yaml
+# Switch the organization that Synapse container images (or source code for self-building) are pulled from.
+# Note: the new default value is `element-hq/synapse`.
+matrix_synapse_github_org_and_repo: matrix-org/synapse
+
+# Pin the Synapse version to the last one (v1.98.0) released by the Matrix Foundation
+# under the old permissive Apache-2.0 license.
+matrix_synapse_version: v1.98.0
+```
+
+Notes:
+
+- if you had already upgraded Synapse to `v1.99.0` by running this playbook, you will still be able to downgrade to `v1.98.0`, because both releases use the same database schema version (`SCHEMA_COMPAT_VERSION = 83` - see [here for v1.98.0](https://github.com/element-hq/synapse/blob/v1.98.0/synapse/storage/schema/__init__.py#L131-L134) and [here for v1.99.0](https://github.com/element-hq/synapse/blob/v1.99.0/synapse/storage/schema/__init__.py#L137-L140)). More details on Synapse's database schema are available [here](https://element-hq.github.io/synapse/develop/development/database_schema.html). It appears that there are no new database migrations introduced in `v1.99.0`, so going back to the older release is possible. This is not guaranteed to hold true for future Synapse releases, so if you're seeing this early-enough, consider pinning the version and organization before re-running the playbook and getting upgraded to the latest version
+
+- running an outdated homeserver exposes you to security issues and incompatibilities. Only consider doing this as a short-term solution.
+
 # 2024-01-16
 
 ## `Draupnir` has been relicensed to AFL-3.0

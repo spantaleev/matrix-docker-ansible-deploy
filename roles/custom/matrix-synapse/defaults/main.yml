@@ -4,6 +4,17 @@
 
 matrix_synapse_enabled: true
 
+# Specifies which Github organization and repository name Synapse lives at.
+#
+# This influences:
+# - the Github Container Image registry that container images are pulled from (see `matrix_synapse_docker_image_name`)
+# - the git repository to code is pulled from when self-building is used (see `matrix_synapse_container_image_self_build_repo`)
+# - potentially other roles which need to reference the Synapse git repository
+#
+# A popular alternative value may be: `matrix-org/synapse`.
+# However, do note that the last Synapse version available there is v1.98.0.
+matrix_synapse_github_org_and_repo: element-hq/synapse
+
 # renovate: datasource=docker depName=ghcr.io/element-hq/synapse
 matrix_synapse_version: v1.98.0
 
@@ -12,7 +23,7 @@ matrix_synapse_uid: ''
 matrix_synapse_gid: ''
 
 matrix_synapse_container_image_self_build: false
-matrix_synapse_container_image_self_build_repo: "https://github.com/element-hq/synapse.git"
+matrix_synapse_container_image_self_build_repo: "https://github.com/{{ matrix_synapse_github_org_and_repo }}.git"
 
 # matrix_synapse_container_image_customizations_enabled controls whether a customized Synapse image will be built.
 #
@@ -72,7 +83,7 @@ matrix_synapse_container_image_customizations_dockerfile_body_custom: ''
 
 matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}{{ matrix_synapse_docker_image_name }}:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_synapse_docker_image_registry_prefix }}"
-matrix_synapse_docker_image_name: element-hq/synapse
+matrix_synapse_docker_image_name: "{{ matrix_synapse_github_org_and_repo }}"
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 matrix_synapse_docker_image_registry_prefix: ghcr.io/
