@@ -1,6 +1,6 @@
 # Configuring Conduit (optional)
 
-By default, this playbook configures the [Synapse](https://github.com/matrix-org/synapse) Matrix server, but you can also use [Conduit](https://conduit.rs).
+By default, this playbook configures the [Synapse](https://github.com/element-hq/synapse) Matrix server, but you can also use [Conduit](https://conduit.rs).
 
 **NOTES**:
 

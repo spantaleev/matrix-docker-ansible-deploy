@@ -61,7 +61,7 @@ There are 3 ways to get into Martix, depending on your technical ability and nee
 
 ### How do I set up my own Matrix server?
 
-Normally, you'd first choose the [Matrix](https://matrix.org/) server software you'd like to run. At the time of this writing (January/2021), there's only one fully-featured server program, so there's only one reasonable choice. That's [Synapse](https://github.com/matrix-org/synapse).
+Normally, you'd first choose the [Matrix](https://matrix.org/) server software you'd like to run. At the time of this writing (January/2021), there's only one fully-featured server program, so there's only one reasonable choice. That's [Synapse](https://github.com/element-hq/synapse).
 
 There are [many guides about installing Synapse](https://matrix.org/docs/guides/#installing-synapse). Using this Ansible playbook is just one way of doing it.
 
@@ -82,13 +82,13 @@ To learn more, see our [dedicated Ansible documentation page](ansible.md).
 
 ### Why use this playbook and not install Synapse and other things manually?
 
-There are various guides telling you how easy it is to install [Synapse](https://github.com/matrix-org/synapse).
+There are various guides telling you how easy it is to install [Synapse](https://github.com/element-hq/synapse).
 
 Reading the documentation of this Ansible playbook, you may also be thinking:
 
 > I don't know what [Ansible](https://www.ansible.com/) is. I don't know what [Docker](https://www.docker.com/) is. This looks more complicated.
 
-.. so you may be leaning toward [installing Synapse manually](https://github.com/matrix-org/synapse/blob/master/INSTALL.md).
+.. so you may be leaning toward [installing Synapse manually](https://github.com/element-hq/synapse/blob/master/INSTALL.md).
 
 The problem with a manual installation is:
 

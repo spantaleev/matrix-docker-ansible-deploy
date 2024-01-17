@@ -32,7 +32,7 @@ where `<password-hash>` is the hash returned by the docker command above.
 
 ## Option 3:
 
-Use the Synapse User Admin API as described here: https://github.com/matrix-org/synapse/blob/master/docs/admin_api/user_admin_api.rst#reset-password
+Use the Synapse User Admin API as described here: https://github.com/element-hq/synapse/blob/master/docs/admin_api/user_admin_api.rst#reset-password
 
 This requires an [access token](obtaining-access-tokens.md) from a server admin account. *This method will also log the user out of all of their clients while the other options do not.*
 
