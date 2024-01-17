@@ -471,18 +471,18 @@ matrix_homeserver_systemd_services_list: |-
 matrix_homeserver_container_client_api_endpoint: |-
   {{
     {
-      'synapse': ('matrix-synapse-reverse-proxy-companion:8008' if matrix_synapse_reverse_proxy_companion_enabled else 'matrix-synapse:'+ matrix_synapse_container_client_api_port|string),
-      'dendrite': ('matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
-      'conduit': ('matrix-conduit:' + matrix_conduit_port_number|string),
+      'synapse': ('matrix-synapse-reverse-proxy-companion:8008' if matrix_synapse_reverse_proxy_companion_enabled | default(false) else ('matrix-synapse:'+ matrix_synapse_container_client_api_port | default('8008') | string)),
+      'dendrite': ('matrix-dendrite:' + matrix_dendrite_http_bind_port | default('8008') | string),
+      'conduit': ('matrix-conduit:' + matrix_conduit_port_number | default('8008') | string),
     }[matrix_homeserver_implementation]
   }}
 
 matrix_homeserver_container_federation_api_endpoint: |-
   {{
     {
-      'synapse': ('matrix-synapse-reverse-proxy-companion:8048' if matrix_synapse_reverse_proxy_companion_enabled else 'matrix-synapse:'+ matrix_synapse_container_federation_api_plain_port|string),
-      'dendrite': ('matrix-dendrite:' + matrix_dendrite_http_bind_port|string),
-      'conduit': ('matrix-conduit:' + matrix_conduit_port_number|string),
+      'synapse': ('matrix-synapse-reverse-proxy-companion:8048' if matrix_synapse_reverse_proxy_companion_enabled else ('matrix-synapse:'+ matrix_synapse_container_federation_api_plain_port | default('8008') | string)),
+      'dendrite': ('matrix-dendrite:' + matrix_dendrite_http_bind_port | default('8008') | string),
+      'conduit': ('matrix-conduit:' + matrix_conduit_port_number | default('8008') | string),
     }[matrix_homeserver_implementation]
   }}
 
@@ -2152,8 +2152,8 @@ matrix_bot_maubot_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}
 matrix_bot_maubot_homeserver_secret: |-
   {{
     {
-      'synapse': matrix_synapse_registration_shared_secret,
-      'dendrite': matrix_dendrite_client_api_registration_shared_secret,
+      'synapse': matrix_synapse_registration_shared_secret | default(''),
+      'dendrite': matrix_dendrite_client_api_registration_shared_secret | default(''),
     }[matrix_homeserver_implementation]
   }}
 
@@ -4485,8 +4485,8 @@ matrix_registration_riot_instance: "{{ ('https://' + matrix_server_fqn_element) 
 matrix_registration_shared_secret: |-
   {{
     {
-      'synapse': matrix_synapse_registration_shared_secret,
-      'dendrite': matrix_dendrite_client_api_registration_shared_secret,
+      'synapse': matrix_synapse_registration_shared_secret | default (''),
+      'dendrite': matrix_dendrite_client_api_registration_shared_secret | default (''),
       'conduit': '',
     }[matrix_homeserver_implementation]
   }}
