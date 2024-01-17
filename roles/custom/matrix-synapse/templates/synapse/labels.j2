@@ -52,6 +52,13 @@ traefik.http.routers.matrix-synapse-public-client-root.tls.certResolver={{ matri
 {% endif %}
 
 
+{% if matrix_synapse_container_labels_matrix_related_labels_enabled %}
+############################################################
+#                                                          #
+# MATRIX-RELATED (/_matrix, /_synapse/..)                  #
+#                                                          #
+############################################################
+
 {% if matrix_synapse_container_labels_public_client_api_enabled %}
 ############################################################
 #                                                          #
@@ -220,6 +227,13 @@ traefik.http.routers.matrix-synapse-public-federation-api.tls.certResolver={{ ma
 #                                                          #
 ############################################################
 {% endif %}
+
+############################################################
+#                                                          #
+# /MATRIX-RELATED (/_matrix, /_synapse/..)                 #
+#                                                          #
+############################################################
+{% endif %} {# end of matrix_synapse_container_labels_matrix_related_labels_enabled if-check #}
 
 
 {% if matrix_synapse_container_labels_public_metrics_enabled %}
