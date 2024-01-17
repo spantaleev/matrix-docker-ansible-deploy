@@ -74,8 +74,20 @@ Synapse's presence feature which tracks which users are online and which are off
 
 If you have enough compute resources (CPU & RAM), you can make Synapse better use of them by [enabling load-balancing with workers](configuring-playbook-synapse.md#load-balancing-with-workers).
 
-Tuning Synapse's cache factor can help reduce RAM usage. Use the variable `matrix_synapse_caches_global_factor` to set the cache factor.
-
 [Tuning your PostgreSQL database](maintenance-postgres.md#tuning-postgresql) could also improve Synapse performance. The playbook tunes the integrated Postgres database automatically, but based on your needs you may wish to adjust tuning variables manually. If you're using an [external Postgres database](configuring-playbook-external-postgres.md), you will aslo need to tune Postgres manually.
+
+### Tuning caches and cache autotuning
+
+Tuning Synapse's cache factor is useful for performance increases but also as part of controlling Synapse ram use. Use the variable `matrix_synapse_caches_global_factor` to set the cache factor as part of this process.
+
+Tuning the cache factor is useful only to a limited degree as its crude to do in isolation and therefore users who are tuning their cache factor should likely look into tuning the autotune variables also.
+
+Cache autotune is controlled primarily via the following variables `matrix_synapse_caches_autotuning_max_cache_memory_usage: ""` `matrix_synapse_caches_autotuning_target_cache_memory_usage: ""` `matrix_synapse_caches_autotuning_min_cache_ttl: ""` 
+
+The `matrix_synapse_caches_autotuning_max_cache_memory_usage: ""` variable controls the maximum amount of ram Synapse is allowed to use before synapse aggressively tries to get rid of cache until you either hit `matrix_synapse_caches_autotuning_min_cache_ttl: ""` being the age of your cache or you hit your memory use target set by `matrix_synapse_caches_autotuning_target_cache_memory_usage: ""` 
+
+The playbook defaults these settings to `2048MB` for max use and `1024MB` as target and `5m` as the minimum age of cache entries that are allowed to be evicted by autotune. 
+
+Users who wish to lower Synapses RAM footprint should look at lowering cache factor together with autotune variables. If your cache factor is too low for a given auto tune setting your caches will not reach auto tune thresholds and therefore autotune wont be doing its job. Therefore its recommended to when running auto tune have your cache factor be too big by a resonable margin instead as to be able to have full use of autotune.  
 
 See also [How do I optimize this setup for a low-power server?](faq.md#how-do-i-optimize-this-setup-for-a-low-power-server).
