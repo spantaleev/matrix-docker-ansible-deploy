@@ -796,13 +796,13 @@ caches:
   # Controls whether cache entries are evicted after a specified time
   # period. Defaults to true. Uncomment to disable this feature.
   #
-  expire_caches: {{ matrix_synapse_caches_expire_caches }}
+  expire_caches: {{ matrix_synapse_caches_expire_caches | to_json }}
 
   # If expire_caches is enabled, this flag controls how long an entry can
   # be in a cache without having been accessed before being evicted.
   # Defaults to 30m. Uncomment to set a different time to live for cache entries.
   #
-  cache_entry_ttl: {{ matrix_synapse_caches_cache_entry_ttl }}
+  cache_entry_ttl: {{ matrix_synapse_caches_cache_entry_ttl | to_json }}
 
   # Controls how long the results of a /sync request are cached for after
   # a successful response is returned. A higher duration can help clients with
@@ -811,16 +811,16 @@ caches:
   # By default, this is zero, which means that sync responses are not cached
   # at all.
   #
-  sync_response_cache_duration: {{ matrix_synapse_caches_sync_response_cache_duration }}
-  
-  #FIX ME add documentation notes about these settings or remove this note. 
+  sync_response_cache_duration: {{ matrix_synapse_caches_sync_response_cache_duration | to_json }}
+
+  #FIX ME add documentation notes about these settings or remove this note.
   # Check upstream https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#caching
   # for information for now
   #
   cache_autotuning:
-    max_cache_memory_usage: {{ matrix_synapse_caches_autotuning_max_cache_memory_usage }}
-    target_cache_memory_usage: {{ matrix_synapse_caches_autotuning_target_cache_memory_usage }}
-    min_cache_ttl: {{ matrix_synapse_caches_autotuning_min_cache_ttl }}
+    max_cache_memory_usage: {{ matrix_synapse_caches_autotuning_max_cache_memory_usage | to_json }}
+    target_cache_memory_usage: {{ matrix_synapse_caches_autotuning_target_cache_memory_usage | to_json }}
+    min_cache_ttl: {{ matrix_synapse_caches_autotuning_min_cache_ttl | to_json }}
 
 
 ## Database ##
