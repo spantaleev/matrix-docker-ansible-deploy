@@ -1,6 +1,6 @@
 # Configuring Synapse (optional)
 
-By default, this playbook configures the [Synapse](https://github.com/matrix-org/synapse) Matrix server, so that it works for the general case.
+By default, this playbook configures the [Synapse](https://github.com/element-hq/synapse) Matrix server, so that it works for the general case.
 If that's enough for you, you can skip this document.
 
 The playbook provides lots of customization variables you could use to change Synapse's settings.
@@ -20,7 +20,7 @@ Alternatively, **if there is no pre-defined variable** for a Synapse setting you
 
 ## Load balancing with workers
 
-To have Synapse gracefully handle thousands of users, worker support should be enabled. It factors out some homeserver tasks and spreads the load of incoming client and server-to-server traffic between multiple processes. More information can be found in the [official Synapse workers documentation](https://github.com/matrix-org/synapse/blob/master/docs/workers.md).
+To have Synapse gracefully handle thousands of users, worker support should be enabled. It factors out some homeserver tasks and spreads the load of incoming client and server-to-server traffic between multiple processes. More information can be found in the [official Synapse workers documentation](https://github.com/element-hq/synapse/blob/master/docs/workers.md).
 
 To enable Synapse worker support, update your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
@@ -50,7 +50,7 @@ If you'd like to use OpenID Connect authentication with Synapse, you'll need som
 
 This example configuration is for [keycloak](https://www.keycloak.org/), an opensource Identity Provider maintained by Red Hat.
 
-For more detailed documentation on available options and how to setup keycloak, see the [Synapse documentation on OpenID Connect with keycloak](https://github.com/matrix-org/synapse/blob/develop/docs/openid.md#keycloak).
+For more detailed documentation on available options and how to setup keycloak, see the [Synapse documentation on OpenID Connect with keycloak](https://github.com/element-hq/synapse/blob/develop/docs/openid.md#keycloak).
 
 In case you encounter errors regarding the parsing of the variables, you can try to add `{% raw %}` and `{% endraw %}` blocks around them. For example ;
 
@@ -73,14 +73,12 @@ matrix_synapse_oidc_providers:
     backchannel_logout_enabled: true # Optional
 ```
 
-**NOTE**: if you inject the OIDC configuration using `matrix_synapse_configuration_extension_yaml` (instead of `matrix_synapse_oidc_enabled: true` + `matrix_synapse_oidc_providers` as explained above), then the OIDC routes (`/_synapse/oidc`) will not be publicly exposed automatically. In such a case, you'd need to expose them manually by toggling: `matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled: true`.
-
 
 ## Customizing templates
 
-[Templates](https://github.com/matrix-org/synapse/blob/develop/docs/templates.md) are used by Synapse for showing **certain web pages** handled by the server, as well as for **email notifications**.
+[Templates](https://github.com/element-hq/synapse/blob/develop/docs/templates.md) are used by Synapse for showing **certain web pages** handled by the server, as well as for **email notifications**.
 
-This playbook allows you to customize the default templates (see the [`synapse/res/templates` directory](https://github.com/matrix-org/synapse/tree/develop/synapse/res/templates)).
+This playbook allows you to customize the default templates (see the [`synapse/res/templates` directory](https://github.com/element-hq/synapse/tree/develop/synapse/res/templates)).
 
 If template customization is enabled, the playbook will build a custom container image based on the official one.
 

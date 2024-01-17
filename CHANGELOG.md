@@ -1,3 +1,44 @@
+# 2024-01-17
+
+## Switching to Element's AGPLv3-licensed Synapse release
+
+A few months ago, the [Element](https://element.io/) company has [announced](https://element.io/blog/element-to-adopt-agplv3/) that their work on the Synapse homeserver would no longer be available under the permissive [Apache-2.0 license](https://www.apache.org/licenses/LICENSE-2.0), but only under:
+
+- the [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html) free-software license - the same license that this Ansible playbook has always used
+- a proprietary license, for those wishing for Element to [sell them an exception](https://gnu.org/philosophy/selling-exceptions.html) to the AGPLv3 license
+
+You can also learn more in [this post](https://matrix.org/blog/2023/11/06/future-of-synapse-dendrite/) by the Matrix Foundation.
+
+The change has [already happened](https://element.io/blog/synapse-now-lives-at-github-com-element-hq-synapse/) and the first Synapse release under the new license is here: [v1.99.0](https://github.com/element-hq/synapse/releases/tag/v1.99.0).
+
+There is no up-to-date alternative Synapse fork right now and this free-software (AGPLv3-licensed) playbook is definitely not against free-software licenses, so we are now switching to the Element-maintained Synapse release.
+
+**What does this mean to you?**
+
+For most home users, it doesn't mean anything. Your installation will continue working as it should and you don't need to do anything.
+
+For people building commercial products on top of Synapse, they may have to either buy a license exception from Element (from what we hear, the fee depends on the number of monthly-active users on your instance) or they may need to release all related code as free-software (which is what we've been doing at [etke.cc](https://etke.cc/) ([here](https://gitlab.com/etke.cc)) all along).
+
+We're no lawyers and this changelog entry does not aim to give you the best legal advice, so please research on your own!
+
+If you'd like to continue using the old Apache-2.0-licensed Synapse (for a while longer anyway), the playbook makes it possible by intruducing a new Ansible variable. You can do it like this:
+
+```yaml
+# Switch the organization that Synapse container images (or source code for self-building) are pulled from.
+# Note: the new default value is `element-hq/synapse`.
+matrix_synapse_github_org_and_repo: matrix-org/synapse
+
+# Pin the Synapse version to the last one (v1.98.0) released by the Matrix Foundation
+# under the old permissive Apache-2.0 license.
+matrix_synapse_version: v1.98.0
+```
+
+Notes:
+
+- if you had already upgraded Synapse to `v1.99.0` by running this playbook, you will still be able to downgrade to `v1.98.0`, because both releases use the same database schema version (`SCHEMA_COMPAT_VERSION = 83` - see [here for v1.98.0](https://github.com/element-hq/synapse/blob/v1.98.0/synapse/storage/schema/__init__.py#L131-L134) and [here for v1.99.0](https://github.com/element-hq/synapse/blob/v1.99.0/synapse/storage/schema/__init__.py#L137-L140)). More details on Synapse's database schema are available [here](https://element-hq.github.io/synapse/develop/development/database_schema.html). It appears that there are no new database migrations introduced in `v1.99.0`, so going back to the older release is possible. This is not guaranteed to hold true for future Synapse releases, so if you're seeing this early-enough, consider pinning the version and organization before re-running the playbook and getting upgraded to the latest version
+
+- running an outdated homeserver exposes you to security issues and incompatibilities. Only consider doing this as a short-term solution.
+
 # 2024-01-16
 
 ## `Draupnir` has been relicensed to AFL-3.0
@@ -310,7 +351,7 @@ The **historical reasoning** behind this change is as follows:
 
 - `allow_public_rooms_over_federation` seems to have been enabled by default for Synapse until v1.7.0 (~2019), just like we believe it should be for a globally-federating network - rooms should be joinable and discoverable across federation.
 
-- In Synapse v1.7.0 (~2019), `allow_public_rooms_over_federation` [got disabled](https://github.com/matrix-org/synapse/blob/e9069c9f919685606506f04527332e83fbfa44d9/docs/upgrade.md?plain=1#L1877-L1891) by default in a [security-by-obscurity](https://en.wikipedia.org/wiki/Security_through_obscurity) workaround for misconfigured servers. See the [Avoiding unwelcome visitors on private Matrix servers](https://matrix.org/blog/2019/11/09/avoiding-unwelcome-visitors-on-private-matrix-servers/) `matrix.org` blog article. We believe that people wishing for a truly private server, should [disable federation](docs/configuring-playbook-federation.md#disabling-federation), instead of having a fully-federating server and trying to hide its public rooms. We also provide other workarounds below. We (and the Synapse team, obviously) believe that Matrix should federate by default, so federating the public room list seems to make sense.
+- In Synapse v1.7.0 (~2019), `allow_public_rooms_over_federation` [got disabled](https://github.com/element-hq/synapse/blob/e9069c9f919685606506f04527332e83fbfa44d9/docs/upgrade.md?plain=1#L1877-L1891) by default in a [security-by-obscurity](https://en.wikipedia.org/wiki/Security_through_obscurity) workaround for misconfigured servers. See the [Avoiding unwelcome visitors on private Matrix servers](https://matrix.org/blog/2019/11/09/avoiding-unwelcome-visitors-on-private-matrix-servers/) `matrix.org` blog article. We believe that people wishing for a truly private server, should [disable federation](docs/configuring-playbook-federation.md#disabling-federation), instead of having a fully-federating server and trying to hide its public rooms. We also provide other workarounds below. We (and the Synapse team, obviously) believe that Matrix should federate by default, so federating the public room list seems to make sense.
 
 - [etke.cc](https://etke.cc/) has been developing the free-software [Matrix Rooms Search](https://gitlab.com/etke.cc/mrs) project for a while now. One public (demo) instance of it is hosted at [matrixrooms.info](https://matrixrooms.info/). This search engine tries to go through the Matrix federation and discover & index public rooms to allow people to find them. We believe it's vital for Matrix (and any chat or social network for that matter) to be more discoverable, so that people can find communities and others to talk to. Today (on 23rd of October 2023), `matrixrooms.info` is indexing `23066` Matrix servers. Of these, only `1567` servers (7%) are making their public rooms discoverable. Who knows what wonderful communities and rooms are available on these 93% other Matrix servers that are supposedly federating, but are still gate-keeping their public room list. Indubitably, many of these servers are hosted via matrix-docker-ansible-deploy, so we feel partially responsible for making Matrix federation less useful.
 
@@ -1113,7 +1154,7 @@ You can also control the `background` workers count with `matrix_synapse_workers
 
 ### Appservice worker support is back
 
-We previously had an `appservice` worker type, which [Synapse deprecated in v1.59.0](https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types). So did we, at the time.
+We previously had an `appservice` worker type, which [Synapse deprecated in v1.59.0](https://github.com/element-hq/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types). So did we, at the time.
 
 The new way to implement such workers is by using a `generic_worker` and dedicating it to the task of talking to Application Services.
 From now on, we have support for this.
@@ -1123,7 +1164,7 @@ You can also control the `appservice` workers count with `matrix_synapse_workers
 
 ### User Directory worker support is back
 
-We previously had a `user_dir` worker type, which [Synapse deprecated in v1.59.0](https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types). So did we, at the time.
+We previously had a `user_dir` worker type, which [Synapse deprecated in v1.59.0](https://github.com/element-hq/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types). So did we, at the time.
 
 The new way to implement such workers is by using a `generic_worker` and dedicating it to the task of serving the user directory.
 From now on, we have support for this.
@@ -1319,7 +1360,7 @@ If you're tired of being on an old and problematic Ansible version, you can now 
 
 Synapse v1.60 will try to add a new unique index to `state_group_edges` upon startup and could fail if your database is corrupted.
 
-We haven't observed this problem yet, but [the Synapse v1.60.0 upgrade notes](https://github.com/matrix-org/synapse/blob/v1.60.0/docs/upgrade.md#adding-a-new-unique-index-to-state_group_edges-could-fail-if-your-database-is-corrupted) mention it, so we're giving you a heads up here in case you're unlucky.
+We haven't observed this problem yet, but [the Synapse v1.60.0 upgrade notes](https://github.com/element-hq/synapse/blob/v1.60.0/docs/upgrade.md#adding-a-new-unique-index-to-state_group_edges-could-fail-if-your-database-is-corrupted) mention it, so we're giving you a heads up here in case you're unlucky.
 
 **If Synapse fails to start** after your next playbook run, you'll need to:
 
@@ -1377,7 +1418,7 @@ See our [Setting up borg backup](docs/configuring-playbook-backup-borg.md) docum
 
 ## (Compatibility Break) Upgrading to Synapse v1.57 on setups using workers may require manual action
 
-If you're running a worker setup for Synapse (`matrix_synapse_workers_enabled: true`), the [Synapse v1.57 upgrade notes](https://github.com/matrix-org/synapse/blob/v1.57.0rc1/docs/upgrade.md#changes-to-database-schema-for-application-services) say that you may need to take special care when upgrading:
+If you're running a worker setup for Synapse (`matrix_synapse_workers_enabled: true`), the [Synapse v1.57 upgrade notes](https://github.com/element-hq/synapse/blob/v1.57.0rc1/docs/upgrade.md#changes-to-database-schema-for-application-services) say that you may need to take special care when upgrading:
 
 > Synapse v1.57.0 includes a change to the way transaction IDs are managed for application services. If your deployment uses a dedicated worker for application service traffic, **it must be stopped** when the database is upgraded (which normally happens when the main process is upgraded), to ensure the change is made safely without any risk of reusing transaction IDs.
 
@@ -1458,7 +1499,7 @@ See our [Setting up matrix-hookshot](docs/configuring-playbook-bridge-hookshot.m
 
 We believe that 2022 will be the year of the non-Synapse Matrix server!
 
-The playbook was previously quite [Synapse](https://github.com/matrix-org/synapse)-centric, but can now accommodate multiple homeserver implementations. Only one homeserver implementation can be active (installed) at a given time.
+The playbook was previously quite [Synapse](https://github.com/element-hq/synapse)-centric, but can now accommodate multiple homeserver implementations. Only one homeserver implementation can be active (installed) at a given time.
 
 **Synapse is still the default homeserver implementation** installed by the playbook. A new variable (`matrix_homeserver_implementation`) controls which server implementation is enabled (`synapse` or `dendrite` at the given moment).
 
@@ -2029,7 +2070,7 @@ To restore the old behavior of not redirecting anywhere and serving the Synapse 
 We used to expose the Synapse Admin APIs publicly (at `https://matrix.DOMAIN/_synapse/admin`).
 These APIs require authentication with a valid access token, so it's not that big a deal to expose them.
 
-However, following [official Synapse's reverse-proxying recommendations](https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md#synapse-administration-endpoints), we're no longer exposing `/_synapse/admin` by default.
+However, following [official Synapse's reverse-proxying recommendations](https://github.com/element-hq/synapse/blob/master/docs/reverse_proxy.md#synapse-administration-endpoints), we're no longer exposing `/_synapse/admin` by default.
 
 If you'd like to restore restore the old behavior and expose `/_synapse/admin` publicly, you can use the following configuration (in your `vars.yml`):
 
@@ -2682,7 +2723,7 @@ To avoid doing it manually, run this:
 
 ## Synapse no longer required
 
-The playbook no longer insists on installing [Synapse](https://github.com/matrix-org/synapse) via the `matrix-synapse` role.
+The playbook no longer insists on installing [Synapse](https://github.com/element-hq/synapse) via the `matrix-synapse` role.
 
 If you would prefer to install Synapse another way and just use the playbook to install other services, it should be possible (`matrix_synapse_enabled: false`).
 
@@ -3214,7 +3255,7 @@ If users participate in large rooms with many other servers, disabling presence 
 The playbook now makes the Synapse cache factor configurable, through the playbook's `matrix_synapse_cache_factor` variable (having a default value of `0.5`).
 
 Changing that value allows you to potentially decrease RAM usage or to increase performance by caching more stuff.
-Some information on it is available here: https://github.com/matrix-org/synapse#help-synapse-eats-all-my-ram
+Some information on it is available here: https://github.com/element-hq/synapse#help-synapse-eats-all-my-ram
 
 
 # 2018-09-26

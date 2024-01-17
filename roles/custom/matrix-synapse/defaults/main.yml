@@ -1,18 +1,29 @@
 ---
 # Synapse is a Matrix homeserver
-# Project source code URL: https://github.com/matrix-org/synapse
+# Project source code URL: https://github.com/element-hq/synapse
 
 matrix_synapse_enabled: true
 
-# renovate: datasource=docker depName=matrixdotorg/synapse
-matrix_synapse_version: v1.98.0
+# Specifies which Github organization and repository name Synapse lives at.
+#
+# This influences:
+# - the Github Container Image registry that container images are pulled from (see `matrix_synapse_docker_image_name`)
+# - the git repository to code is pulled from when self-building is used (see `matrix_synapse_container_image_self_build_repo`)
+# - potentially other roles which need to reference the Synapse git repository
+#
+# A popular alternative value may be: `matrix-org/synapse`.
+# However, do note that the last Synapse version available there is v1.98.0.
+matrix_synapse_github_org_and_repo: element-hq/synapse
+
+# renovate: datasource=docker depName=ghcr.io/element-hq/synapse
+matrix_synapse_version: v1.99.0
 
 matrix_synapse_username: ''
 matrix_synapse_uid: ''
 matrix_synapse_gid: ''
 
 matrix_synapse_container_image_self_build: false
-matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/synapse.git"
+matrix_synapse_container_image_self_build_repo: "https://github.com/{{ matrix_synapse_github_org_and_repo }}.git"
 
 # matrix_synapse_container_image_customizations_enabled controls whether a customized Synapse image will be built.
 #
@@ -49,7 +60,7 @@ matrix_synapse_container_image_customizations_s3_storage_provider_installation_e
 # matrix_synapse_container_image_customizations_templates_git_repository_keyscan_hostname: github.com
 # ```
 #
-# See: https://github.com/matrix-org/synapse/blob/develop/docs/templates.md
+# See: https://github.com/element-hq/synapse/blob/develop/docs/templates.md
 matrix_synapse_container_image_customizations_templates_enabled: false
 matrix_synapse_container_image_customizations_templates_in_container_base_path: /custom-templates
 matrix_synapse_container_image_customizations_templates_in_container_template_files_relative_path: ''
@@ -70,8 +81,9 @@ matrix_synapse_container_image_customizations_templates_git_repository_keyscan_h
 #  RUN echo 'You do NOT need to include a FROM clause yourself.'
 matrix_synapse_container_image_customizations_dockerfile_body_custom: ''
 
-matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrix-org/synapse:{{ matrix_synapse_docker_image_tag }}"
+matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}{{ matrix_synapse_docker_image_name }}:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_synapse_docker_image_registry_prefix }}"
+matrix_synapse_docker_image_name: "{{ matrix_synapse_github_org_and_repo }}"
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 matrix_synapse_docker_image_registry_prefix: ghcr.io/
@@ -171,7 +183,6 @@ matrix_synapse_container_labels_traefik_hostname: ''
 # When set to false, variables like the following take no effect:
 # - `matrix_synapse_container_labels_public_client_api_enabled`
 # - `matrix_synapse_container_labels_public_client_synapse_client_api_enabled`
-# - `matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled`
 # - `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled`
 # - `matrix_synapse_container_labels_public_federation_api_enabled`
 #
@@ -224,21 +235,8 @@ matrix_synapse_container_labels_public_client_synapse_client_api_traefik_entrypo
 matrix_synapse_container_labels_public_client_synapse_client_api_traefik_tls: "{{ matrix_synapse_container_labels_public_client_synapse_client_api_traefik_entrypoints != 'web' }}"
 matrix_synapse_container_labels_public_client_synapse_client_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
-# Controls whether labels will be added that expose the /_synapse/oidc paths
-# Enable this if you need OpenID Connect authentication support.
-# Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
-# See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
-matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled: "{{ matrix_synapse_oidc_enabled }}"
-matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
-matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_path_prefix: /_synapse/oidc
-matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_rule: "Host(`{{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_path_prefix }}`)"
-matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_priority: 0
-matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
-matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_tls: "{{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_entrypoints != 'web' }}"
-matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
-
 # Controls whether labels will be added that expose the /_synapse/admin paths
-# Following these recommendations (https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md), by default, we don't.
+# Following these recommendations (https://github.com/element-hq/synapse/blob/master/docs/reverse_proxy.md), by default, we don't.
 # Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
 # See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
 matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: false
@@ -309,6 +307,15 @@ matrix_synapse_systemd_wanted_services_list: "{{ matrix_synapse_systemd_wanted_s
 matrix_synapse_systemd_wanted_services_list_default: []
 matrix_synapse_systemd_wanted_services_list_auto: []
 matrix_synapse_systemd_wanted_services_list_custom: []
+
+# Controls how long to sleep for after starting the matrix-synapse container.
+#
+# Delaying, so that the homeserver can manage to fully start and various services
+# that depend on it (`matrix_synapse_systemd_required_services_list` and `matrix_synapse_systemd_wanted_services_list`)
+# may only start after the homeserver is up and running.
+#
+# This can be set to 0 to remove the delay.
+matrix_synapse_systemd_service_post_start_delay_seconds: 10
 
 matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.11/site-packages"
 
@@ -409,7 +416,7 @@ matrix_synapse_federation_rr_transactions_per_room_per_second: 50
 #
 # See:
 # - `matrix_synapse_container_image_customizations_templates_enabled`
-# - https://github.com/matrix-org/synapse/blob/develop/docs/templates.md
+# - https://github.com/element-hq/synapse/blob/develop/docs/templates.md
 matrix_synapse_templates_custom_template_directory: "{{ matrix_synapse_container_image_customizations_templates_in_container_full_path if matrix_synapse_container_image_customizations_templates_enabled else '' }}"
 
 # Controls whether the TLS federation listener is enabled (tcp/8448).
@@ -534,9 +541,7 @@ matrix_synapse_event_cache_size: "100K"
 
 # Controls cache sizes for Synapse.
 # Raise this to increase cache sizes or lower it to potentially lower memory use.
-# To learn more, see:
-# - https://github.com/matrix-org/synapse#help-synapse-eats-all-my-ram
-# - https://github.com/matrix-org/synapse/issues/3939
+# To learn more, see: https://github.com/matrix-org/synapse/issues/3939
 matrix_synapse_caches_global_factor: 0.5
 
 # Controls whether Synapse will federate at all.
@@ -631,14 +636,14 @@ matrix_synapse_url_preview_enabled: true
 matrix_url_preview_accept_language: ['en-US', 'en']
 
 # Enable exposure of metrics to Prometheus
-# See https://github.com/matrix-org/synapse/blob/master/docs/metrics-howto.md
+# See https://github.com/element-hq/synapse/blob/master/docs/metrics-howto.md
 matrix_synapse_metrics_enabled: false
 matrix_synapse_metrics_port: 9100
 
 # matrix_synapse_grafana_dashboard_urls contains a list of URLs with Grafana dashboard definitions.
 # If the Grafana role is enabled, these dashboards will be downloaded.
 matrix_synapse_grafana_dashboard_urls:
-  - https://raw.githubusercontent.com/matrix-org/synapse/master/contrib/grafana/synapse.json
+  - https://raw.githubusercontent.com/element-hq/synapse/master/contrib/grafana/synapse.json
 
 # Controls whether Synapse metrics should be proxied (exposed) on:
 # - `matrix.DOMAIN/metrics/synapse/main-process` for the main process
@@ -648,7 +653,7 @@ matrix_synapse_metrics_proxying_hostname: ''
 matrix_synapse_metrics_proxying_path_prefix: /metrics/synapse
 
 # Enable the Synapse manhole
-# See https://github.com/matrix-org/synapse/blob/master/docs/manhole.md
+# See https://github.com/element-hq/synapse/blob/master/docs/manhole.md
 matrix_synapse_manhole_enabled: false
 
 # Enable support for Synapse workers
@@ -884,7 +889,7 @@ matrix_synapse_enable_media_repo: "{{ not matrix_synapse_ext_media_repo_enabled 
 matrix_synapse_media_instance_running_background_jobs: "{{ (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list)[0].name if (matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length > 0) else '' }}"
 
 # matrix_synapse_workers_appservice_workers_count can only be 0 or 1. More instances are not supported.
-# appservice workers were deprecated since Synapse v1.59 (see: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types).
+# appservice workers were deprecated since Synapse v1.59 (see: https://github.com/element-hq/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types).
 # Our implementation uses generic worker services and assigns them to perform appservice work using the `notify_appservices_from_worker` Synapse option.
 matrix_synapse_workers_appservice_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['appservice_workers_count'] }}"
 matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
@@ -894,7 +899,7 @@ matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
 matrix_synapse_notify_appservices_from_worker: "{{ (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'appservice') | list)[0].name if (matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'appservice') | list | length > 0) else '' }}"
 
 # matrix_synapse_workers_user_dir_workers_count can only be 0 or 1. More instances are not supported.
-# user_dir workers were deprecated since Synapse v1.59 (see: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types).
+# user_dir workers were deprecated since Synapse v1.59 (see: https://github.com/element-hq/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types).
 # Our implementation uses generic worker services and assigns them to perform appservice work using the `update_user_directory_from_worker` Synapse option.
 matrix_synapse_workers_user_dir_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['user_dir_workers_count'] }}"
 matrix_synapse_workers_user_dir_workers_port_range_start: 18661

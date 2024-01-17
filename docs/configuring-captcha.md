@@ -1,4 +1,4 @@
-(Adapted from the [upstream project](https://github.com/matrix-org/synapse/blob/develop/docs/CAPTCHA_SETUP.md))
+(Adapted from the [upstream project](https://github.com/element-hq/synapse/blob/develop/docs/CAPTCHA_SETUP.md))
 
 # Overview
 Captcha can be enabled for this home server. This file explains how to do that.

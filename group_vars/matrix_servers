@@ -218,17 +218,18 @@ matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_s
 # Additional JVB workers (jitsi_jvb.yml -- roles/galaxy/jitsi/tasks/init_additional_jvb.yml) override this variable at runtime as well.
 #
 # Priority levels are like this:
+# - Traefik starts first with a level of 250, so that:
+#   - it can get an early start on obtaining SSL certificates and routing to other services as soon as they start (later)
+#   - so that addon services (starting later) can communicte with the homeserver via Traefik's internal entrypoint
+#     (see `matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled`)
 # - core services (the homeserver) get a level of ~1000
-# - services that core services depend on (database, Redis, ntfy, etc.) get a lower level - between 500 and 1000
+# - services that the homeserver depends on (database, Redis, ntfy, Coturn, etc.) get a lower level - between 500 and 1000
 # - reverse-proxying services get level 3000
 # - Matrix utility services (bridges, bots) get a level of 2000/2200, so that:
 #   - they can start before the reverse-proxy
 #   - so that, when the reverse-proxy is up (Matrix is up), all bots and bridges can be interacted with
 # - monitoring services (Prometheus, Grafana, ..) get a level of 4000 - they can start later than all-of-Matrix
 # - services which aren't time-sensitive (various crons and timers) get a level of 5000 - they can start later than all-of-Matrix
-#
-# `matrix-bot-postmoogle.service` has a higher priority number (4000), unlike other bots' priority (2200),
-# because it requires SSL certificates. If Traefik is used, then Postmoogle needs to start at least after Traefik (3500) and Traefik certs dumper (3500).
 devture_systemd_service_manager_services_list_auto: |
   {{
     ([{'name': (backup_borg_identifier + '.timer'), 'priority': 5000, 'groups': ['matrix', 'backup', 'borg']}] if backup_borg_enabled else [])
@@ -249,7 +250,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-bot-draupnir.service', 'priority': 4000, 'groups': ['matrix', 'bots', 'draupnir', 'bot-draupnir']}] if matrix_bot_draupnir_enabled else [])
     +
-    ([{'name': 'matrix-bot-postmoogle.service', 'priority': 4000, 'groups': ['matrix', 'bots', 'postmoogle', 'bot-postmoogle']}] if matrix_bot_postmoogle_enabled else [])
+    ([{'name': 'matrix-bot-postmoogle.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'postmoogle', 'bot-postmoogle']}] if matrix_bot_postmoogle_enabled else [])
     +
     ([{'name': 'matrix-bot-chatgpt.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'chatgpt', 'bot-chatgpt']}] if matrix_bot_chatgpt_enabled else [])
     +
@@ -329,7 +330,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-corporal.service', 'priority': 1500, 'groups': ['matrix', 'corporal']}] if matrix_corporal_enabled else [])
     +
-    ([{'name': 'matrix-coturn.service', 'priority': 4000, 'groups': ['matrix', 'coturn']}] if matrix_coturn_enabled else [])
+    ([{'name': 'matrix-coturn.service', 'priority': 900, 'groups': ['matrix', 'coturn']}] if matrix_coturn_enabled else [])
     +
     ([{'name': 'matrix-rageshake.service', 'priority': 4000, 'groups': ['matrix', 'rageshake']}] if matrix_rageshake_enabled else [])
     +
@@ -359,7 +360,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': (matrix_media_repo_identifier + '.service'), 'priority': 4000, 'groups': ['matrix', 'matrix-media-repo']}] if matrix_media_repo_enabled else [])
     +
-    ([{'name': (exim_relay_identifier ~ '.service'), 'priority': 2000, 'groups': ['matrix', 'mailer', 'exim-relay']}] if exim_relay_enabled else [])
+    ([{'name': (exim_relay_identifier ~ '.service'), 'priority': 800, 'groups': ['matrix', 'mailer', 'exim-relay']}] if exim_relay_enabled else [])
     +
     ([{'name': (ntfy_identifier + '.service'), 'priority': 800, 'groups': ['matrix', 'ntfy']}] if ntfy_enabled else [])
     +
@@ -379,7 +380,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-registration.service', 'priority': 4000, 'groups': ['matrix', 'registration', 'matrix-registration']}] if matrix_registration_enabled else [])
     +
-    ([{'name': 'matrix-sliding-sync.service', 'priority': 4000, 'groups': ['matrix', 'sliding-sync']}] if matrix_sliding_sync_enabled else [])
+    ([{'name': 'matrix-sliding-sync.service', 'priority': 1500, 'groups': ['matrix', 'sliding-sync']}] if matrix_sliding_sync_enabled else [])
     +
     ([{'name': 'matrix-sygnal.service', 'priority': 800, 'groups': ['matrix', 'sygnal']}] if matrix_sygnal_enabled else [])
     +
@@ -397,11 +398,11 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': (matrix_static_files_identifier + '.service'), 'priority': 4000, 'groups': ['matrix', 'matrix-static-files']}] if matrix_static_files_enabled else [])
     +
-    ([{'name': (devture_container_socket_proxy_identifier + '.service'), 'priority': 2900, 'groups': ['matrix', 'reverse-proxies', 'container-socket-proxy']}] if devture_container_socket_proxy_enabled else [])
+    ([{'name': (devture_container_socket_proxy_identifier + '.service'), 'priority': 200, 'groups': ['matrix', 'reverse-proxies', 'container-socket-proxy']}] if devture_container_socket_proxy_enabled else [])
     +
-    ([{'name': (devture_traefik_identifier + '.service'), 'priority': 3000, 'groups': ['matrix', 'traefik', 'reverse-proxies']}] if devture_traefik_enabled else [])
+    ([{'name': (devture_traefik_identifier + '.service'), 'priority': 250, 'groups': ['matrix', 'traefik', 'reverse-proxies']}] if devture_traefik_enabled else [])
     +
-    ([{'name': (devture_traefik_certs_dumper_identifier + '.service'), 'priority': 3500, 'groups': ['matrix', 'traefik-certs-dumper']}] if devture_traefik_certs_dumper_enabled else [])
+    ([{'name': (devture_traefik_certs_dumper_identifier + '.service'), 'priority': 300, 'groups': ['matrix', 'traefik-certs-dumper']}] if devture_traefik_certs_dumper_enabled else [])
   }}
 
 ########################################################################
@@ -4070,7 +4071,6 @@ matrix_synapse_reverse_proxy_companion_container_labels_traefik_tls_certResolver
 matrix_synapse_reverse_proxy_companion_container_labels_traefik_hostname: "{{ matrix_server_fqn_matrix }}"
 
 matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_client_api_enabled: "{{ matrix_synapse_container_labels_public_client_synapse_client_api_enabled }}"
-matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_api_enabled: "{{ matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled }}"
 matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_enabled: "{{ matrix_synapse_container_labels_public_client_synapse_admin_api_enabled }}"
 
 matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_traefik_entrypoints: "{{ matrix_synapse_container_labels_public_federation_api_traefik_entrypoints }}"
@@ -4188,7 +4188,12 @@ prometheus_postgres_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
 
 prometheus_postgres_exporter_container_network: "{{ matrix_monitoring_container_network }}"
 
-prometheus_postgres_exporter_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
+prometheus_postgres_exporter_container_additional_networks: |
+  {{
+    ([devture_postgres_container_network] if (devture_postgres_enabled and prometheus_postgres_exporter_database_hostname == devture_postgres_connection_hostname and prometheus_postgres_exporter_container_network != devture_postgres_container_network) else [])
+    +
+    ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network and prometheus_postgres_exporter_container_labels_traefik_enabled else [])
+  }}
 
 prometheus_postgres_exporter_container_labels_traefik_enabled: "{{ matrix_metrics_exposure_enabled }}"
 prometheus_postgres_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
@@ -4827,7 +4832,7 @@ matrix_user_verification_service_uvs_auth_token: "{{ '%s' | format(matrix_homese
 
 matrix_static_files_enabled: true
 
-matrix_static_files_container_network: "{{ (matrix_playbook_reverse_proxy_container_network if matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' else matrix_static_files_identifier) }}"
+matrix_static_files_container_network: "{{ (matrix_static_files_identifier if matrix_playbook_reverse_proxy_type == 'none' else matrix_playbook_reverse_proxy_container_network) }}"
 
 matrix_static_files_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_static_files_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"

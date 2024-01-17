@@ -176,13 +176,13 @@ matrix_bot_go_neb_services:
       Rooms:
         "!someroom:id":
           Repos:
-            "matrix-org/synapse":
+            "element-hq/synapse":
               Events: ["push", "issues"]
             "matrix-org/dendron":
               Events: ["pull_request"]
         "!anotherroom:id":
           Repos:
-            "matrix-org/synapse":
+            "element-hq/synapse":
               Events: ["push", "issues"]
             "matrix-org/dendron":
               Events: ["pull_request"]

@@ -99,7 +99,7 @@ matrix_dendrite_container_labels_internal_client_api_traefik_priority: "{{ matri
 matrix_dendrite_container_labels_internal_client_api_traefik_entrypoints: ""
 
 # Controls whether labels will be added that expose the /_synapse/admin paths on a public Traefik entrypoint.
-# Following these recommendations (https://github.com/matrix-org/synapse/blob/master/docs/reverse_proxy.md), by default, we don't.
+# Following these recommendations (https://github.com/element-hq/synapse/blob/master/docs/reverse_proxy.md), by default, we don't.
 # Dendrite exposes some admin APIs under a Synapse-specific prefix.
 # See: https://matrix-org.github.io/dendrite/administration/adminapi
 matrix_dendrite_container_labels_public_client_synapse_admin_api_enabled: false
@@ -185,6 +185,15 @@ matrix_dendrite_systemd_wanted_services_list: "{{ matrix_dendrite_systemd_wanted
 matrix_dendrite_systemd_wanted_services_list_default: ["docker.service"]
 matrix_dendrite_systemd_wanted_services_list_auto: []
 matrix_dendrite_systemd_wanted_services_list_custom: []
+
+# Controls how long to sleep for after starting the matrix-dendrite container.
+#
+# Delaying, so that the homeserver can manage to fully start and various services
+# that depend on it (`matrix_dendrite_systemd_required_services_list` and `matrix_dendrite_systemd_wanted_services_list`)
+# may only start after the homeserver is up and running.
+#
+# This can be set to 0 to remove the delay.
+matrix_dendrite_systemd_service_post_start_delay_seconds: 3
 
 # Specifies which template files to use when configuring Dendrite.
 # If you'd like to have your own different configuration, feel free to copy and paste
