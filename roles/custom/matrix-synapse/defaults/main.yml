@@ -322,6 +322,15 @@ matrix_synapse_systemd_wanted_services_list_default: []
 matrix_synapse_systemd_wanted_services_list_auto: []
 matrix_synapse_systemd_wanted_services_list_custom: []
 
+# Controls how long to sleep for after starting the matrix-synapse container.
+#
+# Delaying, so that the homeserver can manage to fully start and various services
+# that depend on it (`matrix_synapse_systemd_required_services_list` and `matrix_synapse_systemd_wanted_services_list`)
+# may only start after the homeserver is up and running.
+#
+# This can be set to 0 to remove the delay.
+matrix_synapse_systemd_service_post_start_delay_seconds: 10
+
 matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.11/site-packages"
 
 # Specifies which template files to use when configuring Synapse.
