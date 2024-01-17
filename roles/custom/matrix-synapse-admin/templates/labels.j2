@@ -5,6 +5,8 @@ traefik.enable=true
 traefik.docker.network={{ matrix_synapse_admin_container_labels_traefik_docker_network }}
 {% endif %}
 
+traefik.http.services.matrix-synapse-admin.loadbalancer.server.port=80
+
 {% set middlewares = [] %}
 
 {% if matrix_synapse_admin_container_labels_traefik_path_prefix != '/' %}
@@ -39,7 +41,6 @@ traefik.http.routers.matrix-synapse-admin.tls={{ matrix_synapse_admin_container_
 traefik.http.routers.matrix-synapse-admin.tls.certResolver={{ matrix_synapse_admin_container_labels_traefik_tls_certResolver }}
 {% endif %}
 
-traefik.http.services.matrix-synapse-admin.loadbalancer.server.port=80
 {% endif %}
 
 {{ matrix_synapse_admin_container_labels_additional_labels }}

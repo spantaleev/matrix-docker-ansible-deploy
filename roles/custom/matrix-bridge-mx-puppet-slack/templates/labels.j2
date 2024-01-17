@@ -5,14 +5,14 @@ traefik.enable=true
 traefik.docker.network={{ matrix_mx_puppet_slack_container_labels_traefik_docker_network }}
 {% endif %}
 
+traefik.http.services.matrix-mx-puppet-slack.loadbalancer.server.port={{ matrix_mx_puppet_slack_appservice_address }}
+
 {% if matrix_mx_puppet_slack_container_labels_public_endpoint_enabled %}
 ############################################################
 #                                                          #
 # Public                                                   #
 #                                                          #
 ############################################################
-
-traefik.http.services.matrix-mx-puppet-slack.loadbalancer.server.port={{ matrix_mx_puppet_slack_appservice_address }}
 
 traefik.http.routers.matrix-mx-puppet-slack-public.rule={{ matrix_mx_puppet_slack_container_labels_public_endpoint_traefik_rule }}
 

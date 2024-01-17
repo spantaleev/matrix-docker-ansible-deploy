@@ -5,6 +5,8 @@ traefik.enable=true
 traefik.docker.network={{ matrix_bot_honoroit_container_labels_traefik_docker_network }}
 {% endif %}
 
+traefik.http.services.matrix-bot-honoroit-metrics.loadbalancer.server.port=8080
+
 {% set middlewares = [] %}
 {% set middlewares_metrics = [] %}
 
@@ -43,7 +45,6 @@ traefik.http.routers.matrix-bot-honoroit-metrics.tls={{ matrix_bot_honoroit_cont
 {% if matrix_bot_honoroit_container_labels_traefik_tls %}
 traefik.http.routers.matrix-bot-honoroit-metrics.tls.certResolver={{ matrix_bot_honoroit_container_labels_traefik_tls_certResolver }}
 {% endif %}
-traefik.http.services.matrix-bot-honoroit-metrics.loadbalancer.server.port=8080
 {% endif %}
 
 {% endif %}
