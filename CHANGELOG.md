@@ -205,15 +205,17 @@ If this is still not convincing enough for you and you want the best possible pe
 
 The updated playbook will automatically perform some migration tasks for you:
 
-1. It will uninstall `matrix-nginx-proxy` for you and delete the `/matrix/nginx-proxy` directory and all files within it. You can disable this behavior by adding `matrix_playbook_migration_matrix_nginx_proxy_uninstallation_enabled: false` to your `vars.yml` configuration file. Doing so will leave an orphan (and unusable) `matrix-nginx-proxy` container and its data around. It will not let you continue using nginx for a while longer. You need to migrate - now!
+1. It will stop and remove the `matrix-nginx-proxy` systemd service and container for you. This behavior cannot be disabled. It's essential that this service gets stopped, because it remaining running (and having container labels) may confuse Traefik as to where to route HTTP requests.
 
-2. It will delete the `/matrix/ssl` directory and all files within it. You can disable this behavior by adding `matrix_playbook_migration_matrix_ssl_uninstallation_enabled: false` to your `vars.yml` configuration file. If you have some important certificates there for some reason, take them out or temporarily disable removal of these files until you do.
+2. It will delete the `/matrix/nginx-proxy` directory and all files within it. You can disable this behavior by adding `matrix_playbook_migration_matrix_nginx_proxy_uninstallation_enabled: false` to your `vars.yml` configuration file. Doing so will leave its data around.
 
-3. It will tell you about all variables (`matrix_nginx_proxy_*` and many others - even from other roles) that have changed during this large nginx-elimination upgrade. You can disable this behavior by adding `matrix_playbook_migration_matrix_nginx_proxy_elimination_variable_transition_checks_enabled: false` to your `vars.yml` configuration file.
+3. It will delete the `/matrix/ssl` directory and all files within it. You can disable this behavior by adding `matrix_playbook_migration_matrix_ssl_uninstallation_enabled: false` to your `vars.yml` configuration file. If you have some important certificates there for some reason, take them out or temporarily disable removal of these files until you do.
 
-4. It will tell you about any leftover `matrix_nginx_proxy_*` variables in your `vars.yml` file. You can disable this behavior by adding `matrix_playbook_migration_matrix_nginx_proxy_leftover_variable_validation_checks_enabled: false` to your `vars.yml` configuration file.
+4. It will tell you about all variables (`matrix_nginx_proxy_*` and many others - even from other roles) that have changed during this large nginx-elimination upgrade. You can disable this behavior by adding `matrix_playbook_migration_matrix_nginx_proxy_elimination_variable_transition_checks_enabled: false` to your `vars.yml` configuration file.
 
-5. It will tell you about any leftover `matrix_ssl_*` variables in your `vars.yml` file. You can disable this behavior by adding `matrix_playbook_migration_matrix_ssl_leftover_variable_checks_enabled: false` to your `vars.yml` configuration file.
+5. It will tell you about any leftover `matrix_nginx_proxy_*` variables in your `vars.yml` file. You can disable this behavior by adding `matrix_playbook_migration_matrix_nginx_proxy_leftover_variable_validation_checks_enabled: false` to your `vars.yml` configuration file.
+
+6. It will tell you about any leftover `matrix_ssl_*` variables in your `vars.yml` file. You can disable this behavior by adding `matrix_playbook_migration_matrix_ssl_leftover_variable_checks_enabled: false` to your `vars.yml` configuration file.
 
 We don't recommend changing these variables and suppressing warnings, unless you know what you're doing.
 
