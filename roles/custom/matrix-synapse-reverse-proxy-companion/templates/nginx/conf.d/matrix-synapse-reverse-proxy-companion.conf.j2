@@ -12,7 +12,7 @@
 {% macro render_worker_upstream(name, workers) %}
 {% if workers | length > 0 %}
 	upstream {{ name }} {
-		keepalive {{ workers | length * 2 }};
+		keepalive {{ ((workers | length) * 2) | string }};
 		{% for worker in workers %}
 			server "{{ worker.name }}:{{ worker.port }}";
 		{% endfor %}
@@ -42,7 +42,7 @@
 		# ensures that requests from the same client will always be passed
 		# to the same server (except when this server is unavailable)
 		hash $http_x_forwarded_for;
-		keepalive {{ generic_workers | length * 2 }};
+		keepalive {{ ((generic_workers | length) * 2) | string }};
 
 		{% for worker in generic_workers %}
 			server "{{ worker.name }}:{{ worker.port }}";
