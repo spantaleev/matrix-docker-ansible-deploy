@@ -2314,8 +2314,8 @@ matrix_bot_postmoogle_container_image_self_build: "{{ matrix_architecture not in
 matrix_bot_postmoogle_ssl_path: |-
   {{
     {
-      'playbook-managed-traefik': devture_traefik_certs_dumper_dumped_certificates_dir_path,
-      'other-traefik-container': devture_traefik_certs_dumper_dumped_certificates_dir_path,
+      'playbook-managed-traefik': (devture_traefik_certs_dumper_dumped_certificates_dir_path if devture_traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': (devture_traefik_certs_dumper_dumped_certificates_dir_path if devture_traefik_certs_dumper_enabled else ''),
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -2326,8 +2326,8 @@ matrix_playbook_bot_postmoogle_traefik_key: "{% for domain in matrix_bot_postmoo
 matrix_bot_postmoogle_tls_cert: |-
   {{
     {
-      'playbook-managed-traefik': matrix_playbook_bot_postmoogle_traefik_tls_cert,
-      'other-traefik-container': matrix_playbook_bot_postmoogle_traefik_tls_cert,
+      'playbook-managed-traefik': (matrix_playbook_bot_postmoogle_traefik_tls_cert if devture_traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': (matrix_playbook_bot_postmoogle_traefik_tls_cert if devture_traefik_certs_dumper_enabled else ''),
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -2335,8 +2335,8 @@ matrix_bot_postmoogle_tls_cert: |-
 matrix_bot_postmoogle_tls_key: |-
   {{
     {
-      'playbook-managed-traefik': matrix_playbook_bot_postmoogle_traefik_key,
-      'other-traefik-container': matrix_playbook_bot_postmoogle_traefik_key,
+      'playbook-managed-traefik': (matrix_playbook_bot_postmoogle_traefik_key if devture_traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': (matrix_playbook_bot_postmoogle_traefik_key if devture_traefik_certs_dumper_enabled else ''),
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -2724,8 +2724,8 @@ matrix_coturn_tls_enabled: "{{ matrix_playbook_ssl_enabled }}"
 matrix_coturn_tls_cert_path: |-
   {{
     {
-      'playbook-managed-traefik': '/certificate.crt',
-      'other-traefik-container': '/certificate.crt',
+      'playbook-managed-traefik': ('/certificate.crt' if devture_traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': ('/certificate.crt' if devture_traefik_certs_dumper_enabled else ''),
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -2733,8 +2733,8 @@ matrix_coturn_tls_cert_path: |-
 matrix_coturn_tls_key_path: |-
   {{
     {
-      'playbook-managed-traefik': '/privatekey.key',
-      'other-traefik-container': '/privatekey.key',
+      'playbook-managed-traefik': ('/privatekey.key' if devture_traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': ('/privatekey.key' if devture_traefik_certs_dumper_enabled else ''),
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -2753,7 +2753,7 @@ matrix_coturn_container_additional_volumes: |
          'dst': '/privatekey.key',
          'options': 'ro',
        },
-      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and devture_traefik_certs_dumper_enabled and matrix_coturn_tls_enabled else []
+      ] if (matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and devture_traefik_certs_dumper_enabled and matrix_coturn_tls_enabled and (matrix_coturn_tls_cert_path and matrix_coturn_tls_key_path)) else []
     )
   }}
 
