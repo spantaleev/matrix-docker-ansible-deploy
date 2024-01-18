@@ -1,0 +1,20 @@
+---
+
+- name: Check existence of matrix-appservice-polychat service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-polychat.service"
+  register: matrix_appservice_polychat_service_stat
+
+- when: matrix_appservice_polychat_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-appservice-polychat is stopped
+      ansible.builtin.service:
+        name: matrix-appservice-polychat
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-appservice-polychat.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-polychat.service"
+        state: absent

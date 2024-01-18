@@ -1,0 +1,20 @@
+---
+
+- tags:
+    - setup-all
+    - setup-appservice-polychats
+    - install-all
+    - install-appservice-polychat
+  block:
+    - when: matrix_appservice_polychat_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_appservice_polychat_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+- tags:
+    - setup-all
+    - setup-appservice-polychat
+  block:
+    - when: not matrix_appservice_polychat_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
