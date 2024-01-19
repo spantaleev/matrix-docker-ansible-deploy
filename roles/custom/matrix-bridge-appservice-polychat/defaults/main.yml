@@ -13,9 +13,16 @@ matrix_appservice_polychat_container_image_self_build_repo: "https://github.com/
 matrix_appservice_polychat_container_image_self_build_repo_version: "{{ 'master' if matrix_appservice_polychat_version == 'latest' else matrix_appservice_polychat_version }}"
 matrix_appservice_polychat_container_image_self_build_repo_dockerfile_path: "Dockerfile"
 
-matrix_appservice_polychat_version: v1.0.3-01
+
+matrix_appservice_polychat_docker_login_registry: "{{ matrix_appservice_polychat_registry_prefix }}"
+matrix_appservice_polychat_docker_login_username: "{{ vault_matrix_appservice_polychat_docker_login_username }}" 
+matrix_appservice_polychat_docker_login_password: "{{ vault_matrix_appservice_polychat_docker_login_password }}"
+    
+
+matrix_appservice_polychat_version: main
+matrix_appservice_polychat_registry_prefix: ghcr.io/
 matrix_appservice_polychat_docker_image: "{{ matrix_appservice_polychat_docker_image_name_prefix }}polychatproject/polychat-appservice:{{ matrix_appservice_polychat_version }}"
-matrix_appservice_polychat_docker_image_name_prefix: "{{ 'localhost/' if matrix_appservice_polychat_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_appservice_polychat_docker_image_name_prefix: "{{ 'localhost/' if matrix_appservice_polychat_container_image_self_build else matrix_appservice_polychat_registry_prefix }}"
 matrix_appservice_polychat_docker_image_force_pull: "{{ matrix_appservice_polychat_docker_image.endswith(':latest') }}"
 
 matrix_appservice_polychat_base_path: "{{ matrix_base_data_path }}/appservice-polychat"
@@ -31,12 +38,12 @@ matrix_appservice_polychat_bot_name: 'webhookbot'
 matrix_appservice_polychat_user_prefix: '_webhook_'
 
 # Controls the polychat_PORT and MATRIX_PORT of the installation
-matrix_appservice_polychat_matrix_port: 6789
+matrix_appservice_polychat_matrix_port: 9999
 
 # Controls whether the appservice-polychat container exposes its HTTP port (tcp/6789 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9999"), or empty string to not expose.
-matrix_appservice_polychat_container_http_host_bind_port: ''
+matrix_appservice_polychat_container_http_host_bind_port: '127.0.0.1:9998'
 
 matrix_appservice_polychat_container_network: ""
 
@@ -73,7 +80,15 @@ matrix_appservice_polychat_container_labels_public_endpoint_traefik_tls_certReso
 matrix_appservice_polychat_container_labels_additional_labels: ''
 
 # A list of extra arguments to pass to the container
-matrix_appservice_polychat_container_extra_arguments: []
+matrix_appservice_polychat_container_extra_arguments:
+  - "-e API_BIND_ADDRESS=0.0.0.0"
+  - "-e API_PORT=9998"
+  - "-e APPSERVICE_BIND_ADDRESS=127.0.0.1"
+  - "-e APPSERVICE_PORT=9999"
+  - "-e DEBUG_MXID=@testuser:polychat.de"
+  - "-e HOMESERVER_NAME={{ matrix_domain }}"
+  - "-e HOMESERVER_URL={{ matrix_homeserver_url }}"
+
 
 # List of systemd services that matrix-appservice-polychat.service depends on.
 matrix_appservice_polychat_systemd_required_services_list: "{{ matrix_appservice_polychat_systemd_required_services_list_default + matrix_appservice_polychat_systemd_required_services_list_auto + matrix_appservice_polychat_systemd_required_services_list_custom }}"
@@ -112,13 +127,15 @@ matrix_appservice_polychat_registration_yaml: |
   as_token: "{{ matrix_appservice_polychat_appservice_token }}"
   namespaces:
     users:
+      - exclusive: false
+        regex: '@polychat_*'
+    aliases:
       - exclusive: true
-        regex: '^@{{ matrix_appservice_polychat_user_prefix | regex_escape }}.*:{{ matrix_domain | regex_escape }}$'
-    aliases: []
-    rooms: []
+        regex: '#polychat_*'
   url: "{{ matrix_appservice_polychat_appservice_url }}:{{ matrix_appservice_polychat_matrix_port }}"
-  sender_localpart: _webhook
+  sender_localpart: polychat
   rate_limited: false
   protocols: null
 
 matrix_appservice_polychat_registration: "{{ matrix_appservice_polychat_registration_yaml | from_yaml }}"
+

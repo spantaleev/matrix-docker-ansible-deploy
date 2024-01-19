@@ -14,6 +14,13 @@
     - {path: "{{ matrix_appservice_polychat_docker_src_files_path }}", when: "{{ matrix_appservice_polychat_container_image_self_build }}"}
   when: "item.when | bool"
 
+- name: Log into private registry and force re-authorization
+  docker_login:
+    registry: "{{ matrix_appservice_polychat_docker_login_registry }}"
+    username: "{{ matrix_appservice_polychat_docker_login_username }}"
+    password: "{{ matrix_appservice_polychat_docker_login_password }}"
+    reauthorize: yes
+
 - name: Ensure matrix-appservice-polychat container image is pulled
   community.docker.docker_image:
     name: "{{ matrix_appservice_polychat_docker_image }}"
@@ -76,7 +83,7 @@
 - name: Ensure appservice-polychat registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_appservice_polychat_registration | to_nice_yaml(indent=2, width=999999) }}"
-    dest: "{{ matrix_appservice_polychat_config_path }}/polychat-registration.yaml"
+    dest: "{{ matrix_appservice_polychat_config_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"

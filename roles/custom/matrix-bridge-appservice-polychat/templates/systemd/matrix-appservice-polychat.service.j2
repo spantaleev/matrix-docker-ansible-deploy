@@ -32,8 +32,8 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% for arg in matrix_appservice_polychat_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_appservice_polychat_docker_image }} \
-			node index.js -p {{ matrix_appservice_polychat_matrix_port }} -c /config/config.yaml -f /config/polychat-registration.yaml
+			{{ matrix_appservice_polychat_docker_image }}
+			
 
 {% for network in matrix_appservice_polychat_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-appservice-polychat
