@@ -671,6 +671,10 @@ matrix_synapse_workers_preset: one-of-each
 
 matrix_synapse_workers_presets:
   little-federation-helper:
+    room_workers_count: 0
+    sync_workers_count: 0
+    client_reader_workers_count: 0
+    federation_reader_workers_count: 0
     generic_workers_count: 0
     pusher_workers_count: 0
     federation_sender_workers_count: 1
@@ -685,7 +689,29 @@ matrix_synapse_workers_presets:
     stream_writer_receipts_stream_workers_count: 0
     stream_writer_presence_stream_workers_count: 0
   one-of-each:
+    room_workers_count: 0
+    sync_workers_count: 0
+    client_reader_workers_count: 0
+    federation_reader_workers_count: 0
     generic_workers_count: 1
+    pusher_workers_count: 1
+    federation_sender_workers_count: 1
+    media_repository_workers_count: 1
+    appservice_workers_count: 1
+    user_dir_workers_count: 1
+    background_workers_count: 1
+    stream_writer_events_stream_workers_count: 1
+    stream_writer_typing_stream_workers_count: 1
+    stream_writer_to_device_stream_workers_count: 1
+    stream_writer_account_data_stream_workers_count: 1
+    stream_writer_receipts_stream_workers_count: 1
+    stream_writer_presence_stream_workers_count: 1
+  room-workers:
+    room_workers_count: 1
+    sync_workers_count: 1
+    client_reader_workers_count: 1
+    federation_reader_workers_count: 1
+    generic_workers_count: 0
     pusher_workers_count: 1
     federation_sender_workers_count: 1
     media_repository_workers_count: 1
@@ -738,6 +764,27 @@ matrix_synapse_worker_container_labels_public_metrics_middleware_basic_auth_user
 #   another.label="here"
 matrix_synapse_worker_container_labels_additional_labels: ''
 
+# Room workers
+matrix_synapse_workers_room_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['room_workers_count'] }}"
+matrix_synapse_workers_room_workers_port_range_start: 28111
+matrix_synapse_workers_room_workers_metrics_range_start: 29111
+
+# Sync workers
+matrix_synapse_workers_sync_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['sync_workers_count'] }}"
+matrix_synapse_workers_sync_workers_port_range_start: 28211
+matrix_synapse_workers_sync_workers_metrics_range_start: 29211
+
+# Client reader workers
+matrix_synapse_workers_client_reader_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['client_reader_workers_count'] }}"
+matrix_synapse_workers_client_reader_workers_port_range_start: 28311
+matrix_synapse_workers_client_reader_workers_metrics_range_start: 29311
+
+# Federation reader workers
+matrix_synapse_workers_federation_reader_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['federation_reader_workers_count'] }}"
+matrix_synapse_workers_federation_reader_workers_port_range_start: 28411
+matrix_synapse_workers_federation_reader_workers_metrics_range_start: 29411
+
+# Generic workers
 matrix_synapse_workers_generic_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['generic_workers_count'] }}"
 matrix_synapse_workers_generic_workers_port_range_start: 18111
 matrix_synapse_workers_generic_workers_metrics_range_start: 19111

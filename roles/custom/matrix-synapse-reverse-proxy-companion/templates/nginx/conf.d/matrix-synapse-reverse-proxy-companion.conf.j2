@@ -1,5 +1,9 @@
 #jinja2: lstrip_blocks: "True"
 
+{% set room_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'room_worker') | list %}
+{% set sync_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'sync_worker') | list %}
+{% set client_reader_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'client_reader') | list %}
+{% set federation_reader_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'federation_reader') | list %}
 {% set generic_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'generic_worker') | list %}
 {% set stream_writer_typing_stream_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'stream_writer') | selectattr('stream_writer_stream', 'equalto', 'typing') | list %}
 {% set stream_writer_to_device_stream_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'stream_writer') | selectattr('stream_writer_stream', 'equalto', 'to_device') | list %}
@@ -9,9 +13,10 @@
 {% set media_repository_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'media_repository') | list %}
 {% set user_dir_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'user_dir') | list %}
 
-{% macro render_worker_upstream(name, workers) %}
+{% macro render_worker_upstream(name, workers, load_balance) %}
 {% if workers | length > 0 %}
 	upstream {{ name }} {
+		{{ load_balance }}
 		keepalive {{ ((workers | length) * 2) | string }};
 		{% for worker in workers %}
 			server "{{ worker.name }}:{{ worker.port }}";
@@ -32,33 +37,51 @@
 {% endmacro %}
 
 {% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
+
+# Maps from https://tcpipuk.github.io/synapse/deployment/nginx.html#mapsconf
+# Client username from access token
+map $arg_access_token $accesstoken_from_urlparam {
+  default                    $arg_access_token;
+  "~syt_(?<username>.*?)_.*" $username;
+}
+# Client username from MXID
+map $http_authorization $mxid_localpart {
+  default                           $http_authorization;
+  "~Bearer syt_(?<username>.*?)_.*" $username;
+  ""                                $accesstoken_from_urlparam;
+}
+# Whether to upgrade HTTP connection
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  '' close;
+}
+#Extract room name from URI
+map $request_uri $room_name {
+  ~^/_matrix/(client|federation)/.*?(?:%21|!)(?<room>[A-Za-z0-9._=\-\/]+)(?::|%3A)[A-Za-z0-9._=\-\/]+ $room;
+}
+# End maps
+
 	{% if matrix_synapse_reverse_proxy_companion_synapse_cache_enabled %}
     	proxy_cache_path  {{ matrix_synapse_reverse_proxy_companion_synapse_cache_path }} levels=1:2 keys_zone={{ matrix_synapse_reverse_proxy_companion_synapse_cache_keys_zone_name }}:{{ matrix_synapse_reverse_proxy_companion_synapse_cache_keys_zone_size }} inactive={{ matrix_synapse_reverse_proxy_companion_synapse_cache_inactive_time }} max_size={{ matrix_synapse_reverse_proxy_companion_synapse_cache_max_size_mb }}m;
 	{% endif %}
 	# Round Robin "upstream" pools for workers
 
-	{% if generic_workers |length > 0 %}
-	upstream generic_workers_upstream {
-		# ensures that requests from the same client will always be passed
-		# to the same server (except when this server is unavailable)
-		hash $http_x_forwarded_for;
-		keepalive {{ ((generic_workers | length) * 2) | string }};
+	{{ render_worker_upstream('room_workers_upstream', room_workers, 'hash $room_name consistent;') }}
+	{{ render_worker_upstream('sync_workers_upstream', sync_workers, 'hash $mxid_localpart consistent;') }}
+	{{ render_worker_upstream('client_reader_workers_upstream', client_reader_workers, 'least_conn;') }}
+	{{ render_worker_upstream('federation_reader_workers_upstream', federation_reader_workers, 'hash $http_x_forwarded_for;') }}
 
-		{% for worker in generic_workers %}
-			server "{{ worker.name }}:{{ worker.port }}";
-		{% endfor %}
-	}
-	{% endif %}
+	{{ render_worker_upstream('generic_workers_upstream', generic_workers, 'hash $http_x_forwarded_for;') }}
 
-	{{ render_worker_upstream('stream_writer_typing_stream_workers_upstream', stream_writer_typing_stream_workers) }}
-	{{ render_worker_upstream('stream_writer_to_device_stream_workers_upstream', stream_writer_to_device_stream_workers) }}
-	{{ render_worker_upstream('stream_writer_account_data_stream_workers_upstream', stream_writer_account_data_stream_workers) }}
-	{{ render_worker_upstream('stream_writer_receipts_stream_workers_upstream', stream_writer_receipts_stream_workers) }}
-	{{ render_worker_upstream('stream_writer_presence_stream_workers_upstream', stream_writer_presence_stream_workers) }}
+	{{ render_worker_upstream('stream_writer_typing_stream_workers_upstream', stream_writer_typing_stream_workers, '') }}
+	{{ render_worker_upstream('stream_writer_to_device_stream_workers_upstream', stream_writer_to_device_stream_workers, '') }}
+	{{ render_worker_upstream('stream_writer_account_data_stream_workers_upstream', stream_writer_account_data_stream_workers, '') }}
+	{{ render_worker_upstream('stream_writer_receipts_stream_workers_upstream', stream_writer_receipts_stream_workers, '') }}
+	{{ render_worker_upstream('stream_writer_presence_stream_workers_upstream', stream_writer_presence_stream_workers, '') }}
 
-	{{ render_worker_upstream('media_repository_workers_upstream', media_repository_workers) }}
+	{{ render_worker_upstream('media_repository_workers_upstream', media_repository_workers, 'least_conn;') }}
 
-	{{ render_worker_upstream('user_dir_workers_upstream', user_dir_workers) }}
+	{{ render_worker_upstream('user_dir_workers_upstream', user_dir_workers, '') }}
 {% endif %}
 
 server {
@@ -72,6 +95,36 @@ server {
 	gzip_types text/plain application/json;
 
 	{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
+		# Client-server overrides -- These locations must go to the main Synapse process
+		location ~ {{ matrix_synapse_reverse_proxy_companion_client_server_main_override_locations_regex }} {
+			{# FIXME: This block was copied from the main Synapse fallback below.  It would be better to have it in one place and avoid duplication. #}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }} valid=5s;
+			set $backend "{{ matrix_synapse_reverse_proxy_companion_client_api_addr }}";
+			proxy_pass http://$backend;
+
+			proxy_set_header Host $host;
+
+			client_body_buffer_size 25M;
+			client_max_body_size {{ matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb }}M;
+			proxy_max_temp_file_size 0;
+		}
+
+		# Client-server SSO overrides -- These locations must go to the main Synapse process
+		location ~ {{ matrix_synapse_reverse_proxy_companion_client_server_sso_override_locations_regex }} {
+			{# FIXME: This block was copied from the main Synapse fallback below.  It would be better to have it in one place and avoid duplication. #}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }} valid=5s;
+			set $backend "{{ matrix_synapse_reverse_proxy_companion_client_api_addr }}";
+			proxy_pass http://$backend;
+
+			proxy_set_header Host $host;
+
+			client_body_buffer_size 25M;
+			client_max_body_size {{ matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb }}M;
+			proxy_max_temp_file_size 0;
+		}
+
 		{# Workers redirects BEGIN #}
 
 		{% if generic_workers | length > 0 %}
@@ -102,6 +155,21 @@ server {
 		{% if stream_writer_presence_stream_workers | length > 0 %}
 			# https://matrix-org.github.io/synapse/latest/workers.html#the-presence-stream
 			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_stream_writer_presence_stream_worker_client_server_locations, 'stream_writer_presence_stream_workers_upstream') }}
+		{% endif %}
+
+		{% if room_workers | length > 0 %}
+			# https://tcpipuk.github.io/synapse/deployment/workers.html
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_room_worker_client_server_locations, 'room_workers_upstream') }}
+		{% endif %}
+
+		{% if sync_workers | length > 0 %}
+			# https://tcpipuk.github.io/synapse/deployment/workers.html
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_sync_worker_client_server_locations, 'sync_workers_upstream') }}
+		{% endif %}
+
+		{% if client_reader_workers | length > 0 %}
+			# https://tcpipuk.github.io/synapse/deployment/workers.html
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_client_reader_client_server_locations, 'client_reader_workers_upstream') }}
 		{% endif %}
 
 		{% if media_repository_workers | length > 0 %}
@@ -165,6 +233,29 @@ server {
 	gzip_types text/plain application/json;
 
 	{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
+		# Federation overrides -- These locations must go to the main Synapse process
+		location ~ {{ matrix_synapse_reverse_proxy_companion_federation_override_locations_regex }} {
+			{# FIXME: This block was copied from the fallback location below.  It would be better to have it in one place and avoid duplication. #}
+			{# Use the embedded DNS resolver in Docker containers to discover the service #}
+			resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }} valid=5s;
+			set $backend "{{ matrix_synapse_reverse_proxy_companion_federation_api_addr }}";
+			proxy_pass http://$backend;
+
+			proxy_set_header Host $host;
+
+			client_body_buffer_size 25M;
+			client_max_body_size {{ matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb }}M;
+			proxy_max_temp_file_size 0;
+		}
+
+		{% if room_workers | length > 0 %}
+			# https://tcpipuk.github.io/synapse/deployment/workers.html
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_room_worker_federation_locations, 'room_workers_upstream') }}
+		{% endif %}
+		{% if federation_reader_workers | length > 0 %}
+			# https://tcpipuk.github.io/synapse/deployment/workers.html
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_federation_reader_federation_locations, 'federation_reader_workers_upstream') }}
+		{% endif %}
 		{% if generic_workers | length > 0 %}
 			# https://matrix-org.github.io/synapse/latest/workers.html#synapseappgeneric_worker
 			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_generic_worker_federation_locations, 'generic_workers_upstream') }}
