@@ -47,6 +47,12 @@
     - "matrix_synapse_workers_stream_writer_receipts_stream_workers_count"
     - "matrix_synapse_workers_stream_writer_presence_stream_workers_count"
 
+- name: Fail when mixing generic workers with new specialized workers
+  ansible.builtin.fail:
+    msg: >-
+      Generic workers should not be mixed with the new specialized worker types (room workers, sync workers, client readers, and federation readers)
+  when: matrix_synapse_workers_generic_workers_count | int > 0 and ((matrix_synapse_workers_room_workers_count | int + matrix_synapse_workers_sync_workers_count | int + matrix_synapse_workers_client_reader_workers_count | int + matrix_synapse_workers_federation_reader_workers_count | int) > 0)
+
 - name: (Deprecation) Catch and report renamed settings
   ansible.builtin.fail:
     msg: >-
