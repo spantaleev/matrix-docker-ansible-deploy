@@ -2,14 +2,14 @@
 
 Similar to standard nginx, [Nginx Proxy Manager](https://nginxproxymanager.com/) provides nginx capabilities but inside a pre-built Docker container. With the ability for managing proxy hosts and automatic SSL certificates via a simple web interface.
 
-This page summarizes how to use Nginx Proxy Manager (NPM) to front the integrated [Traefik](https://traefik.io/) reverse-proxy webserver with another reverse-proxy.
+This page summarizes how to use Nginx Proxy Manager (NPM) to front the integrated [Traefik](https://traefik.io/) reverse-proxy webserver.
 
 
 ## Prerequisite configuration
 
 To get started, first follow the [front the integrated reverse-proxy webserver with another reverse-proxy](../../../docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) instructions and update your playbook's configuration (`inventory/host_vars/matrix.<your-domain>/vars.yml`).
 
-If Matrix federation is enabled, then you will need to make changes to [NPM's Docker configuration](https://nginxproxymanager.com/guide/#quick-setup). By default NPM has access to ports 443, 80 and 81, but you would also need to **provide access to the federation ports** `8448` and `8449`.
+If Matrix federation is enabled, then you will need to make changes to [NPM's Docker configuration](https://nginxproxymanager.com/guide/#quick-setup). By default NPM already exposes ports `80` and `443`, but you would also need to **additionally expose the Matrix Federation port** (as it appears on the public side): `8448`.
 
 
 ## Using Nginx Proxy Manager
