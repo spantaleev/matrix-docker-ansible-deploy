@@ -48,3 +48,81 @@ devture_traefik_configuration_extension_yaml: |
   api:
     dashboard: true
 ```
+
+## Hosting another server behind traefik and terminate SSL
+
+If you want to host another webserver that is reachable via `my_fancy_website.mydomain.com` from the internet and by `https://<internal webserver IP address>:<internal port>` from inside your network, you can make traefik route the traffic to the correct one.
+
+Prerequisites: DNS and routing for the domain `my_fancy_website.mydomain.com` need to be set up correctly to reach your traefik instance.
+
+First, we have to adjust the static configuration of traefik, so that we can add additional configuration files:
+
+```yaml
+# We enable all config files in the /config/ folder to be loaded.
+devture_traefik_configuration_extension_yaml: |
+  providers:
+    file:
+      directory: /config/
+      watch: true
+      filename: ""
+```
+
+If you are using a self signed certificate on your webserver, you can tell traefik to trust your own backend servers by adding more configuration to the static configuration file:
+
+```yaml
+# We enable all config files in the /config/ folder to be loaded and
+devture_traefik_configuration_extension_yaml: |
+  providers:
+    file:
+      directory: /config/
+      watch: true
+      filename: ""
+  serversTransport:
+    insecureSkipVerify: true
+```
+
+Then you have to add a new dynamic configuration file for traefik that contains the actual information of the server using the `aux_file_definitions` variable. In this example, we will terminate SSL at the traefik instance and connect to the other server via HTTPS. Traefik will now take care of managing the certificates. 
+
+```yaml
+aux_file_definitions:
+  - dest: "{{ devture_traefik_config_dir_path }}/provider_my_fancy_website.yml"
+    content: |
+      http:
+        routers:
+          webserver-router:
+            rule: Host(`my_fancy_website.mydomain.com`)
+            service: webserver-service
+            tls:
+              certResolver: default
+        services:
+          webserver-service:
+            loadBalancer:
+              servers:
+                - url: "https://<internal webserver IP address>:<internal port>"
+```
+Changing the url to HTTP would allow to connect to the server via HTTP.
+
+## Hosting another server behind traefik but do not terminate SSL
+
+If we do not want to terminate SSL on the traefik instance, we need to adjust the static configuration as above. Afterwards, we need to adjust the dynamic configuration file as follows:
+
+```yaml
+aux_file_definitions:
+  - dest: "{{ devture_traefik_config_dir_path }}/providers_my_fancy_website.yml"
+    content: |
+      tcp:
+        routers:
+          webserver-router:
+            rule: Host(`my_fancy_website.mydomain.com`)
+            service: webserver-service
+            tls:
+              passthrough: true
+        services:
+          webserver-service:
+            loadBalancer:
+              servers:
+                - url: "https://<internal webserver IP address>:<internal port>"
+```
+Changing the url to HTTP would allow to connect to the server via HTTP.
+
+This configuration might lead to problems or need additional steps when a certbot behind traefik also tries to manage Let's Encrypt certificates, as traefik captures all traffic to ```PathPrefix(`/.well-known/acme-challenge/`)```. 
