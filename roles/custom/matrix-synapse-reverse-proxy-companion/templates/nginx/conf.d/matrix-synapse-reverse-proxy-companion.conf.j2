@@ -158,17 +158,23 @@ server {
 		{% endif %}
 
 		{% if room_workers | length > 0 %}
+			# room workers
 			# https://tcpipuk.github.io/synapse/deployment/workers.html
+			# https://tcpipuk.github.io/synapse/deployment/nginx.html#locationsconf
 			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_room_worker_client_server_locations, 'room_workers_upstream') }}
 		{% endif %}
 
 		{% if sync_workers | length > 0 %}
+			# sync workers
 			# https://tcpipuk.github.io/synapse/deployment/workers.html
+			# https://tcpipuk.github.io/synapse/deployment/nginx.html#locationsconf
 			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_sync_worker_client_server_locations, 'sync_workers_upstream') }}
 		{% endif %}
 
 		{% if client_reader_workers | length > 0 %}
+			# client_reader workers
 			# https://tcpipuk.github.io/synapse/deployment/workers.html
+			# https://tcpipuk.github.io/synapse/deployment/nginx.html#locationsconf
 			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_client_reader_client_server_locations, 'client_reader_workers_upstream') }}
 		{% endif %}
 
