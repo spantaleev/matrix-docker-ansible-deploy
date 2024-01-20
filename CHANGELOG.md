@@ -1,3 +1,16 @@
+# 2024-01-20
+
+## Support for more efficient (specialized) Synapse workers
+
+Thanks to [Charles Wright](https://github.com/cvwright) from [FUTO](https://www.futo.org/), the creators of the [Circles app](https://circu.li/), the playbook has [received support](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3100) for load-balancing the Synapse workload via [specialized workers](./docs/configuring-playbook-synapse.md#specialized-workers) which are supposed to work better than our old [generic workers]((./docs/configuring-playbook-synapse.md#generic-workers)) implementation.
+
+For now, playbook defaults remain unchanged and the `one-of-each` [workers preset](./docs/configuring-playbook-synapse.md#worker-presets) continues being the default. However, the default may change in the future. If you'd like to remain on this preset even if/when the defaults change, consider explicitly adding `matrix_synapse_workers_preset: one-of-each` to your `vars.yml` configuration.
+
+Our specialized workers setup is based on recommendations found in [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html). What's special about our new setup is that we try to parse information out of the request (who the user is; which room is being operated on) and try to forward similar requests to the same worker. As an example, this means that once a worker caches some room information, subsequent requests for the same room will be routed to the same worker (which supposedly still has the room's state cached).
+
+To get started, refer to our [Specialized workers](./docs/configuring-playbook-synapse.md#specialized-workers) documentation section.
+
+
 # 2024-01-17
 
 ## Switching to Element's AGPLv3-licensed Synapse release
