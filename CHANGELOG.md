@@ -2,7 +2,7 @@
 
 ## Support for more efficient (specialized) Synapse workers
 
-Thanks to [Charles Wright](https://github.com/cvwright) from [FUTO](https://www.futo.org/), the creators of the [Circles app](https://circu.li/), the playbook has [received support](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3100) for load-balancing the Synapse workload via [specialized workers](./docs/configuring-playbook-synapse.md#specialized-workers) which are supposed to work better than our old [generic workers]((./docs/configuring-playbook-synapse.md#generic-workers)) implementation.
+Thanks to [Charles Wright](https://github.com/cvwright) from [FUTO](https://www.futo.org/), the creators of the [Circles app](https://circu.li/), the playbook has [received support](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3100) for load-balancing the Synapse workload via [specialized workers](./docs/configuring-playbook-synapse.md#specialized-workers) which are supposed to work better than our old [generic workers](./docs/configuring-playbook-synapse.md#generic-workers) implementation.
 
 For now, playbook defaults remain unchanged and the `one-of-each` [workers preset](./docs/configuring-playbook-synapse.md#worker-presets) continues being the default. However, the default may change in the future. If you'd like to remain on this preset even if/when the defaults change, consider explicitly adding `matrix_synapse_workers_preset: one-of-each` to your `vars.yml` configuration.
 
