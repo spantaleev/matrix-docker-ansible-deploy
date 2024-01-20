@@ -5,13 +5,14 @@ traefik.enable=true
 traefik.docker.network={{ matrix_mx_puppet_twitter_container_labels_traefik_docker_network }}
 {% endif %}
 
+traefik.http.services.martix-mx-puppet-twitter.loadbalancer.server.port={{ matrix_mx_puppet_twitter_appservice_port }}
+
 {% if matrix_mx_puppet_twitter_container_labels_public_endpoint_enabled %}
 ############################################################
 #                                                          #
 # Public                                                   #
 #                                                          #
 ############################################################
-traefik.http.services.martix-mx-puppet-twitter.loadbalancer.server.port={{ matrix_mx_puppet_twitter_appservice_port }}
 
 traefik.http.routers.matrix-mx-puppet-twitter-public.rule={{ matrix_mx_puppet_twitter_container_labels_public_endpoint_traefik_rule }}
 

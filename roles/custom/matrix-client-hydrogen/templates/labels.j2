@@ -5,6 +5,8 @@ traefik.enable=true
 traefik.docker.network={{ matrix_client_hydrogen_container_labels_traefik_docker_network }}
 {% endif %}
 
+traefik.http.services.matrix-client-hydrogen.loadbalancer.server.port=8080
+
 {% set middlewares = [] %}
 
 {% if matrix_client_hydrogen_container_labels_traefik_path_prefix != '/' %}
@@ -39,7 +41,6 @@ traefik.http.routers.matrix-client-hydrogen.tls={{ matrix_client_hydrogen_contai
 traefik.http.routers.matrix-client-hydrogen.tls.certResolver={{ matrix_client_hydrogen_container_labels_traefik_tls_certResolver }}
 {% endif %}
 
-traefik.http.services.matrix-client-hydrogen.loadbalancer.server.port=8080
 {% endif %}
 
 {{ matrix_client_hydrogen_container_labels_additional_labels }}

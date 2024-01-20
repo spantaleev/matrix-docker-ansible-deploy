@@ -5,14 +5,15 @@ traefik.enable=true
 traefik.docker.network={{ matrix_mautrix_hangouts_container_labels_traefik_docker_network }}
 {% endif %}
 
+traefik.http.services.matrix-mautrix-hangouts-public.loadbalancer.server.port=8080
+traefik.http.services.matrix-mautrix-hangouts-metrics.loadbalancer.server.port=8000
+
 {% if matrix_mautrix_hangouts_container_labels_public_endpoint_enabled %}
 ############################################################
 #                                                          #
 # Public                                                   #
 #                                                          #
 ############################################################
-
-traefik.http.services.matrix-mautrix-hangouts-public.loadbalancer.server.port=8080
 
 traefik.http.routers.matrix-mautrix-hangouts-public.rule={{ matrix_mautrix_hangouts_container_labels_public_endpoint_traefik_rule }}
 
@@ -42,8 +43,6 @@ traefik.http.routers.matrix-mautrix-hangouts-public.tls.certResolver={{ matrix_m
 # Metrics                                                  #
 #                                                          #
 ############################################################
-
-traefik.http.services.matrix-mautrix-hangouts-metrics.loadbalancer.server.port=8000
 
 {% if matrix_mautrix_hangouts_container_labels_metrics_middleware_basic_auth_enabled %}
 traefik.http.middlewares.matrix-mautrix-hangouts-metrics-basic-auth.basicauth.users={{ matrix_mautrix_hangouts_container_labels_metrics_middleware_basic_auth_users }}

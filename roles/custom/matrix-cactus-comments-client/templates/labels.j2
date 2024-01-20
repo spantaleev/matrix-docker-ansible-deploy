@@ -5,6 +5,8 @@ traefik.enable=true
 traefik.docker.network={{ matrix_cactus_comments_client_container_labels_traefik_docker_network }}
 {% endif %}
 
+traefik.http.services.matrix-cactus-comments-client.loadbalancer.server.port={{ matrix_cactus_comments_client_environment_variable_server_port }}
+
 
 {% if matrix_cactus_comments_client_container_labels_public_enabled %}
 ############################################################
@@ -12,8 +14,6 @@ traefik.docker.network={{ matrix_cactus_comments_client_container_labels_traefik
 # Public                                                   #
 #                                                          #
 ############################################################
-
-traefik.http.services.matrix-cactus-comments-client.loadbalancer.server.port={{ matrix_cactus_comments_client_environment_variable_server_port }}
 
 {% set public_middlewares = [] %}
 

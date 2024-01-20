@@ -17,7 +17,7 @@
 {% if workers | length > 0 %}
 	upstream {{ name }} {
 		{{ load_balance }}
-		keepalive {{ workers | length * 2 }};
+		keepalive {{ ((workers | length) * 2) | string }};
 		{% for worker in workers %}
 			server "{{ worker.name }}:{{ worker.port }}";
 		{% endfor %}

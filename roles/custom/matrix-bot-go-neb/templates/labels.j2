@@ -5,6 +5,8 @@ traefik.enable=true
 traefik.docker.network={{ matrix_bot_go_neb_container_labels_traefik_docker_network }}
 {% endif %}
 
+traefik.http.services.matrix-bot-go-neb.loadbalancer.server.port=4050
+
 {% set middlewares = [] %}
 
 {% if matrix_bot_go_neb_container_labels_traefik_path_prefix != '/' %}
@@ -39,7 +41,6 @@ traefik.http.routers.matrix-bot-go-neb.tls={{ matrix_bot_go_neb_container_labels
 traefik.http.routers.matrix-bot-go-neb.tls.certResolver={{ matrix_bot_go_neb_container_labels_traefik_tls_certResolver }}
 {% endif %}
 
-traefik.http.services.matrix-bot-go-neb.loadbalancer.server.port=4050
 {% endif %}
 
 {{ matrix_bot_go_neb_container_labels_additional_labels }}

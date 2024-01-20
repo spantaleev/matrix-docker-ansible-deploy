@@ -5,6 +5,8 @@ traefik.enable=true
 traefik.docker.network={{ matrix_dimension_container_labels_traefik_docker_network }}
 {% endif %}
 
+traefik.http.services.matrix-dimension.loadbalancer.server.port=8184
+
 {% set middlewares = [] %}
 
 {% if matrix_dimension_container_labels_traefik_path_prefix != '/' %}
@@ -39,7 +41,6 @@ traefik.http.routers.matrix-dimension.tls={{ matrix_dimension_container_labels_t
 traefik.http.routers.matrix-dimension.tls.certResolver={{ matrix_dimension_container_labels_traefik_tls_certResolver }}
 {% endif %}
 
-traefik.http.services.matrix-dimension.loadbalancer.server.port=8184
 {% endif %}
 
 {{ matrix_dimension_container_labels_additional_labels }}

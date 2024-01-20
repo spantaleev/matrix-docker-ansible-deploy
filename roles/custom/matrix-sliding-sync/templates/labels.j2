@@ -5,6 +5,8 @@ traefik.enable=true
 traefik.docker.network={{ matrix_sliding_sync_container_labels_traefik_docker_network }}
 {% endif %}
 
+traefik.http.services.matrix-sliding-sync.loadbalancer.server.port=8008
+
 {% set middlewares = [] %}
 
 {% if matrix_sliding_sync_container_labels_traefik_path_prefix != '/' %}
@@ -39,7 +41,6 @@ traefik.http.routers.matrix-sliding-sync.tls={{ matrix_sliding_sync_container_la
 traefik.http.routers.matrix-sliding-sync.tls.certResolver={{ matrix_sliding_sync_container_labels_traefik_tls_certResolver }}
 {% endif %}
 
-traefik.http.services.matrix-sliding-sync.loadbalancer.server.port=8008
 {% endif %}
 
 {{ matrix_sliding_sync_container_labels_additional_labels }}
