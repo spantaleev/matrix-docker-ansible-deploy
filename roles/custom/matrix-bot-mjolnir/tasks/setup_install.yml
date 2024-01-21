@@ -59,6 +59,11 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
+- name: Ensure matrix-bot-mjolnir container network is created
+  community.general.docker_network:
+    name: "{{ matrix_bot_mjolnir_container_network }}"
+    driver: bridge
+
 - name: Ensure matrix-bot-mjolnir.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-bot-mjolnir.service.j2"

@@ -20,21 +20,64 @@ Alternatively, **if there is no pre-defined variable** for a Synapse setting you
 
 ## Load balancing with workers
 
-To have Synapse gracefully handle thousands of users, worker support should be enabled. It factors out some homeserver tasks and spreads the load of incoming client and server-to-server traffic between multiple processes. More information can be found in the [official Synapse workers documentation](https://github.com/element-hq/synapse/blob/master/docs/workers.md).
+To have Synapse gracefully handle thousands of users, worker support should be enabled. It factors out some homeserver tasks and spreads the load of incoming client and server-to-server traffic between multiple processes. More information can be found in the [official Synapse workers documentation](https://github.com/element-hq/synapse/blob/master/docs/workers.md) and [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html).
 
 To enable Synapse worker support, update your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_synapse_workers_enabled: true
+
+matrix_synapse_workers_preset: one-of-each
 ```
 
-We support a few configuration presets (`matrix_synapse_workers_preset: one-of-each` being the default configuration):
-- `little-federation-helper` - a very minimal worker configuration to improve federation performance
-- `one-of-each` - one worker of each supported type
+By default, this enables the `one-of-each` [worker preset](#worker-presets), but you may wish to use another preset or [control the number of worker instances](#controlling-the-number-of-worker-instances).
 
-If you'd like more customization power, you can start with one of the presets and tweak various `matrix_synapse_workers_*_count` variables manually.
+### Worker presets
+
+We support a few configuration presets (`matrix_synapse_workers_preset: one-of-each` being the default configuration right now):
+
+- (federation-only) `little-federation-helper` - a very minimal worker configuration to improve federation performance
+- (generic) `one-of-each` - defaults to one worker of each supported type - no smart routing, just generic workers
+- (specialized) `specialized-workers` - defaults to one worker of each supported type, but disables generic workers and uses [specialized workers](#specialized-workers) instead
+
+These presets represent a few common configurations. There are many worker types which can be mixed and matched based on your needs.
+
+#### Generic workers
+
+Previously, the playbook only supported the most basic type of load-balancing. We call it **generic load-balancing** below, because incoming HTTP requests are sent to a generic worker. Load-balancing was done based on the requestor's IP address. This is simple, but not necessarily optimal. If you're accessing your account from multiple IP addresses (e.g. your mobile phone being on a different network than your PC), these separate requests may potentially be routed to different workers, each of which would need to cache roughly the same data.
+
+This is **still the default load-balancing method (preset) used by the playbook**.
+
+To use generic load-balancing, do not specify `matrix_synapse_workers_preset` to make it use the default value (`one-of-each`), or better yet - explicitly set it as `one-of-each`.
+
+You may also consider [tweaking the number of workers of each type](#controlling-the-number-of-worker-instances) from the default (one of each).
+
+#### Specialized workers
+
+The playbook now supports a smarter **specialized load-balancing** inspired by [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html). Instead of routing requests to one or more [generic workers](#generic-workers) based only on the requestor's IP adddress, specialized load-balancing routes to **4 different types of specialized workers** based on **smarter criteria** - the access token (username) of the requestor and/or on the resource (room, etc.) being requested.
+
+The playbook supports these **4 types** of specialized workers:
+
+- Room workers - handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) & [Federation](https://spec.matrix.org/v1.9/server-server-api) APIs dedicated to handling specific rooms
+- Sync workers - handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) APIs related to synchronization (most notably [the `/sync` endpoint](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3sync))
+- Client readers - handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) APIs which are not for specific rooms (handled by **room workers**) or for synchronization (handled by **sync workers**)
+- Federation readers - handles various [Federation](https://spec.matrix.org/v1.9/server-server-api) APIs which are not for specific rooms (handled by **room workers**)
+
+To use specialized load-balancing, consider enabling the `specialized-workers` [worker preset](#worker-presets) and potentially [tweaking the number of workers of each type](#controlling-the-number-of-worker-instances) from the default (one of each).
+
+#### Controlling the number of worker instances
+
+If you'd like more customization power, you can start with one of the [worker presets](#worker-presets) and then tweak various `matrix_synapse_workers_*_count` variables manually.
+
+To find what variables are available for you to override in your own `vars.yml` configuration file, see the [`defaults/main.yml` file for the `matrix-synapse` Ansible role](../roles/custom/matrix-synapse/defaults/main.yml).
+
+The only thing you **cannot** do is mix [generic workers](#generic-workers) and [specialized workers](#specialized-workers).
+
+#### Effect of enabling workers on the rest of your server
 
 When Synapse workers are enabled, the integrated [Postgres database is tuned](maintenance-postgres.md#tuning-postgresql), so that the maximum number of Postgres connections are increased from `200` to `500`. If you need to decrease or increase the number of maximum Postgres connections further, use the `devture_postgres_max_connections` variable.
+
+A separate Ansible role (`matrix-synapse-reverse-proxy-companion`) and component handles load-balancing for workers. This role/component is automatically enabled when you enable workers. Make sure to use the `setup-all` tag (not `install-all`!) during the playbook's [installation](./installing.md) process, especially if you're disabling workers, so that components may be installed/uninstalled correctly.
 
 In case any problems occur, make sure to have a look at the [list of synapse issues about workers](https://github.com/matrix-org/synapse/issues?q=workers+in%3Atitle) and your `journalctl --unit 'matrix-*'`.
 

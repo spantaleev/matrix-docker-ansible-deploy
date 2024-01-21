@@ -1,5 +1,16 @@
 ---
 
+# This validation task is here, not in validate_config.yml,
+# because init.yml runs before it.
+#
+# validate_config.yml aims to validate the configuration based on the work we do,
+# so we can't change the order.
+- name: Fail when using the old (renamed) room-workers preset
+  ansible.builtin.fail:
+    msg: >-
+      The `room-workers` preset has been renamed to `specialized-workers`. Update your `matrix_synapse_workers_preset` variable to use the new name.
+  when: matrix_synapse_workers_preset == 'room-workers'
+
 # Unless `matrix_synapse_workers_enabled_list` is explicitly defined,
 # we'll generate it dynamically.
 - ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/init.yml"

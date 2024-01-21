@@ -1389,6 +1389,7 @@ matrix_mautrix_telegram_container_labels_metrics_middleware_basic_auth_users: "{
 
 matrix_mautrix_telegram_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'telegr.as.token', rounds=655555) | to_uuid }}"
 
+matrix_mautrix_telegram_homeserver_domain: "{{ matrix_domain }}"
 matrix_mautrix_telegram_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_mautrix_telegram_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'telegr.hs.token', rounds=655555) | to_uuid }}"
 
@@ -4139,6 +4140,11 @@ matrix_synapse_reverse_proxy_companion_container_labels_internal_client_api_trae
 
 matrix_synapse_reverse_proxy_companion_synapse_workers_enabled: "{{ matrix_synapse_workers_enabled }}"
 matrix_synapse_reverse_proxy_companion_synapse_workers_list: "{{ matrix_synapse_workers_enabled_list }}"
+matrix_synapse_reverse_proxy_companion_synapse_room_worker_client_server_locations: "{{ matrix_synapse_workers_room_worker_client_server_endpoints }}"
+matrix_synapse_reverse_proxy_companion_synapse_room_worker_federation_locations: "{{ matrix_synapse_workers_room_worker_federation_endpoints }}"
+matrix_synapse_reverse_proxy_companion_synapse_sync_worker_client_server_locations: "{{ matrix_synapse_workers_sync_worker_client_server_endpoints }}"
+matrix_synapse_reverse_proxy_companion_synapse_client_reader_client_server_locations: "{{ matrix_synapse_workers_client_reader_client_server_endpoints }}"
+matrix_synapse_reverse_proxy_companion_synapse_federation_reader_federation_locations: "{{ matrix_synapse_workers_federation_reader_federation_endpoints }}"
 matrix_synapse_reverse_proxy_companion_synapse_generic_worker_client_server_locations: "{{ matrix_synapse_workers_generic_worker_client_server_endpoints }}"
 matrix_synapse_reverse_proxy_companion_synapse_generic_worker_federation_locations: "{{ matrix_synapse_workers_generic_worker_federation_endpoints }}"
 matrix_synapse_reverse_proxy_companion_synapse_stream_writer_typing_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_typing_stream_worker_client_server_endpoints }}"

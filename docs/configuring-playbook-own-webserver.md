@@ -181,7 +181,7 @@ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom:
 
 Such a configuration would expose all services on a local port `81` and Matrix Federation on a local port `8449`.
 
-Your reverse-proxy configuration needs to send traffic to these ports. The [`examples/reverse-proxies` directory](../examples/reverse-proxies/) contains sample configuration for various webservers (Apache2, Caddy, HAproxy, nginx).
+Your reverse-proxy configuration needs to send traffic to these ports. The [`examples/reverse-proxies` directory](../examples/reverse-proxies/) contains sample configuration for various webservers (Apache2, Caddy, HAproxy, nginx, Nginx Proxy Manager).
 
 It's important that these webservers proxy-pass requests to the correct place and also set the `Host` HTTP header appropriately.
 If you don't pass the `Host` header correctly, you would get a 404 not found error from Traefik.
