@@ -34,16 +34,18 @@ matrix_appservice_polychat_docker_src_files_path: "{{ matrix_appservice_polychat
 matrix_appservice_polychat_public_endpoint: "{{ matrix_appservice_polychat_path_prefix }}"
 matrix_appservice_polychat_inbound_uri_prefix: "{{ matrix_appservice_polychat_scheme }}://{{ matrix_appservice_polychat_hostname }}{{ matrix_appservice_polychat_public_endpoint }}"
 
-matrix_appservice_polychat_bot_name: 'webhookbot'
-matrix_appservice_polychat_user_prefix: '_webhook_'
+matrix_appservice_polychat_user_prefix: '@polychat_'
+matrix_appservice_polychat_sender_localpart: 'polychat'
 
 # Controls the polychat_PORT and MATRIX_PORT of the installation
-matrix_appservice_polychat_matrix_port: 9999
+matrix_appservice_polychat_matrix_port: 9998
+matrix_appservice_polychat_api_port: 9999
+
 
 # Controls whether the appservice-polychat container exposes its HTTP port (tcp/6789 in the container).
 #
-# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9999"), or empty string to not expose.
-matrix_appservice_polychat_container_http_host_bind_port: '127.0.0.1:9998'
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9998"), or empty string to not expose.
+matrix_appservice_polychat_container_http_host_bind_port: "127.0.0.1:{{ $matrix_appservice_polychat_appservice_port }} "
 
 matrix_appservice_polychat_container_network: ""
 
@@ -60,7 +62,7 @@ matrix_appservice_polychat_container_labels_traefik_docker_network: "{{ matrix_a
 matrix_appservice_polychat_container_labels_traefik_entrypoints: web-secure
 matrix_appservice_polychat_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
-# Controls whether labels will be added that expose matrix-appservice-webhook's public endpoints
+# Controls whether labels will be added that expose matrix-appservice-polychats's public endpoints
 matrix_appservice_polychat_container_labels_public_endpoint_enabled: true
 matrix_appservice_polychat_container_labels_public_endpoint_hostname: "{{ matrix_appservice_polychat_hostname }}"
 matrix_appservice_polychat_container_labels_public_endpoint_prefix: "{{ matrix_appservice_polychat_path_prefix }}"
@@ -82,9 +84,9 @@ matrix_appservice_polychat_container_labels_additional_labels: ''
 # A list of extra arguments to pass to the container
 matrix_appservice_polychat_container_extra_arguments:
   - "-e API_BIND_ADDRESS=0.0.0.0"
-  - "-e API_PORT=9998"
+  - "-e API_PORT={{ $matrix_appservice_polychat_api_port }}"
   - "-e APPSERVICE_BIND_ADDRESS=127.0.0.1"
-  - "-e APPSERVICE_PORT=9999"
+  - "-e APPSERVICE_PORT={{ $matrix_appservice_polychat_matrix_port }}"
   - "-e DEBUG_MXID=@testuser:polychat.de"
   - "-e HOMESERVER_NAME={{ matrix_domain }}"
   - "-e HOMESERVER_URL={{ matrix_homeserver_url }}"
@@ -107,7 +109,6 @@ matrix_appservice_polychat_appservice_url: 'http://matrix-appservice-polychat'
 matrix_appservice_polychat_appservice_token: ''
 matrix_appservice_polychat_homeserver_token: ''
 matrix_appservice_polychat_id_token: ''
-matrix_appservice_polychat_api_secret: ''
 
 # Logging information (info and verbose is available) default is: info
 matrix_appservice_polychat_log_level: 'info'
@@ -128,12 +129,12 @@ matrix_appservice_polychat_registration_yaml: |
   namespaces:
     users:
       - exclusive: false
-        regex: '@polychat_*'
+        regex: '" {{ $matrix_appservice_polychat_user_prefix }}*'
     aliases:
       - exclusive: true
         regex: '#polychat_*'
   url: "{{ matrix_appservice_polychat_appservice_url }}:{{ matrix_appservice_polychat_matrix_port }}"
-  sender_localpart: polychat
+  sender_localpart: "{{ $matrix_appservice_polychat_sender_localpart }}"
   rate_limited: false
   protocols: null
 
