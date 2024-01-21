@@ -38,7 +38,7 @@ matrix_appservice_polychat_user_prefix: '@polychat_'
 matrix_appservice_polychat_sender_localpart: 'polychat'
 
 # Controls the polychat_PORT and MATRIX_PORT of the installation
-matrix_appservice_polychat_matrix_port: 9998
+matrix_appservice_polychat_appservice_port: 9998
 matrix_appservice_polychat_api_port: 9999
 
 
@@ -83,13 +83,15 @@ matrix_appservice_polychat_container_labels_additional_labels: ''
 
 # A list of extra arguments to pass to the container
 matrix_appservice_polychat_container_extra_arguments:
-  - "-e API_BIND_ADDRESS=0.0.0.0"
-  - "-e API_PORT={{ $matrix_appservice_polychat_api_port }}"
+  - "-e APPSERVICE_PORT={{ $matrix_appservice_polychat_appservice_port }}"
   - "-e APPSERVICE_BIND_ADDRESS=127.0.0.1"
-  - "-e APPSERVICE_PORT={{ $matrix_appservice_polychat_matrix_port }}"
+  - "-e API_PORT={{ $matrix_appservice_polychat_api_port }}"
+  - "-e API_BIND_ADDRESS=0.0.0.0"
+  - "-e APPSERVICE_BIND_ADDRESS=127.0.0.1"
   - "-e DEBUG_MXID=@testuser:polychat.de"
   - "-e HOMESERVER_NAME={{ matrix_domain }}"
   - "-e HOMESERVER_URL={{ matrix_homeserver_url }}"
+  - "-e WTF=true"
 
 
 # List of systemd services that matrix-appservice-polychat.service depends on.
@@ -129,12 +131,12 @@ matrix_appservice_polychat_registration_yaml: |
   namespaces:
     users:
       - exclusive: false
-        regex: '" {{ $matrix_appservice_polychat_user_prefix }}*'
+        regex: '" {{ matrix_appservice_polychat_user_prefix }}*'
     aliases:
       - exclusive: true
         regex: '#polychat_*'
-  url: "{{ matrix_appservice_polychat_appservice_url }}:{{ matrix_appservice_polychat_matrix_port }}"
-  sender_localpart: "{{ $matrix_appservice_polychat_sender_localpart }}"
+  url: "{{ matrix_appservice_polychat_appservice_url }}:{{ matrix_appservice_polychat_appservice_port }}"
+  sender_localpart: "{{ matrix_appservice_polychat_sender_localpart }}"
   rate_limited: false
   protocols: null
 

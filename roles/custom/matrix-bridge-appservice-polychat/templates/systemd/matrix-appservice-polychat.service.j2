@@ -24,7 +24,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--cap-drop=ALL \
 			--network={{ matrix_appservice_polychat_container_network }} \
 			{% if matrix_appservice_polychat_container_http_host_bind_port %}
-			-p {{ matrix_appservice_polychat_container_http_host_bind_port }}:{{matrix_appservice_polychat_matrix_port}} \
+			-p {{ matrix_appservice_polychat_container_http_host_bind_port }}:{{matrix_appservice_polychat_appservice_port}} \
 			{% endif %}
 			--mount type=bind,src={{ matrix_appservice_polychat_config_path }},dst=/config \
 			--mount type=bind,src={{ matrix_appservice_polychat_data_path }},dst=/data \
