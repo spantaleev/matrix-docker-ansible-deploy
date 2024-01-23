@@ -330,7 +330,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-corporal.service', 'priority': 1500, 'groups': ['matrix', 'corporal']}] if matrix_corporal_enabled else [])
     +
-    ([{'name': 'matrix-coturn.service', 'priority': 900, 'groups': ['matrix', 'coturn']}] if matrix_coturn_enabled else [])
+    ([{'name': 'matrix-coturn.service', 'priority': 4000, 'groups': ['matrix', 'coturn']}] if matrix_coturn_enabled else [])
     +
     ([{'name': 'matrix-rageshake.service', 'priority': 4000, 'groups': ['matrix', 'rageshake']}] if matrix_rageshake_enabled else [])
     +
@@ -3985,8 +3985,6 @@ matrix_synapse_systemd_required_services_list_auto: |
 
 matrix_synapse_systemd_wanted_services_list_auto: |
   {{
-    (['matrix-coturn.service'] if matrix_coturn_enabled else [])
-    +
     ([exim_relay_identifier ~ '.service'] if exim_relay_enabled else [])
   }}
 
@@ -4651,11 +4649,7 @@ matrix_dendrite_systemd_required_services_list_auto: |
     (['matrix-goofys.service'] if matrix_s3_media_store_enabled else [])
   }}
 
-matrix_dendrite_systemd_wanted_services_list_auto: |
-  {{
-    (['matrix-coturn.service'] if matrix_coturn_enabled else [])
-  }}
-
+matrix_dendrite_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
 matrix_dendrite_app_service_config_files_auto: "{{ matrix_homeserver_app_service_config_files_auto }}"
 
 ######################################################################
