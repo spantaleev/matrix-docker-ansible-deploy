@@ -15,9 +15,6 @@ prometheus_node_exporter_enabled: true
 # You can remove this, if unnecessary.
 prometheus_postgres_exporter_enabled: true
 
-# You can remove this, if unnecessary.
-matrix_prometheus_nginxlog_exporter_enabled: true
-
 grafana_enabled: true
 
 grafana_anonymous_access: false
