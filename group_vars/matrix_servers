@@ -228,6 +228,12 @@ matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_s
 #     (see `matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled`)
 # - core services (the homeserver) get a level of ~1000
 # - services that the homeserver depends on (database, Redis, ntfy, Coturn, etc.) get a lower level - between 500 and 1000
+# - Coturn gets a higher level if `devture_systemd_service_manager_service_restart_mode == 'one-by-one'` to intentionally delay it, because:
+#  - starting services one by one means that the service manager role waits for each service to fully start before proceeding to the next one
+#  - if Coturn has a lower priority than the homeserver, it would be started before it
+#  - since Coturn is started before the homeserver, there's no container label telling Traefik to get a `matrix.DOMAIN` certificate
+#  - thus, Coturn would spin and wait for a certificate until it fails. We'd get a playbook failure due to it, but service manager will proceed to start all other services anyway.
+#  - only later, when the homeserver actually starts, would that certificate be fetched and dumped
 # - reverse-proxying services get level 3000
 # - Matrix utility services (bridges, bots) get a level of 2000/2200, so that:
 #   - they can start before the reverse-proxy
@@ -336,7 +342,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-corporal.service', 'priority': 1500, 'groups': ['matrix', 'corporal']}] if matrix_corporal_enabled else [])
     +
-    ([{'name': 'matrix-coturn.service', 'priority': 900, 'groups': ['matrix', 'coturn']}] if matrix_coturn_enabled else [])
+    ([{'name': 'matrix-coturn.service', 'priority': (900 if devture_systemd_service_manager_service_restart_mode == 'clean-stop-start' else 1500), 'groups': ['matrix', 'coturn']}] if matrix_coturn_enabled else [])
     +
     ([{'name': 'matrix-rageshake.service', 'priority': 4000, 'groups': ['matrix', 'rageshake']}] if matrix_rageshake_enabled else [])
     +
@@ -1056,7 +1062,7 @@ matrix_mautrix_facebook_login_shared_secret: "{{ matrix_synapse_ext_password_pro
 
 matrix_mautrix_facebook_bridge_presence: "{{ matrix_synapse_presence_enabled if matrix_synapse_enabled else true }}"
 
-matrix_mautrix_facebook_metrics_enabled: "{{ prometheus_enabled }}"
+matrix_mautrix_facebook_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
 matrix_mautrix_facebook_metrics_proxying_enabled: "{{ matrix_mautrix_facebook_metrics_enabled and matrix_metrics_exposure_enabled }}"
 matrix_mautrix_facebook_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
@@ -1125,7 +1131,7 @@ matrix_mautrix_googlechat_homeserver_token: "{{ '%s' | format(matrix_homeserver_
 
 matrix_mautrix_googlechat_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_mautrix_googlechat_metrics_enabled: "{{ prometheus_enabled }}"
+matrix_mautrix_googlechat_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
 matrix_mautrix_googlechat_metrics_proxying_enabled: "{{ matrix_mautrix_googlechat_metrics_enabled and matrix_metrics_exposure_enabled }}"
 matrix_mautrix_googlechat_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
@@ -1193,7 +1199,7 @@ matrix_mautrix_hangouts_homeserver_token: "{{ '%s' | format(matrix_homeserver_ge
 
 matrix_mautrix_hangouts_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_mautrix_hangouts_metrics_enabled: "{{ prometheus_enabled }}"
+matrix_mautrix_hangouts_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
 matrix_mautrix_hangouts_metrics_proxying_enabled: "{{ matrix_mautrix_hangouts_metrics_enabled and matrix_metrics_exposure_enabled }}"
 matrix_mautrix_hangouts_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
@@ -1259,7 +1265,7 @@ matrix_mautrix_instagram_login_shared_secret: "{{ matrix_synapse_ext_password_pr
 
 matrix_mautrix_instagram_bridge_presence: "{{ matrix_synapse_presence_enabled if matrix_synapse_enabled else true }}"
 
-matrix_mautrix_instagram_metrics_enabled: "{{ prometheus_enabled }}"
+matrix_mautrix_instagram_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
 matrix_mautrix_instagram_metrics_proxying_enabled: "{{ matrix_mautrix_instagram_metrics_enabled and matrix_metrics_exposure_enabled }}"
 matrix_mautrix_instagram_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
@@ -1324,7 +1330,7 @@ matrix_mautrix_signal_appservice_token: "{{ '%s' | format(matrix_homeserver_gene
 
 matrix_mautrix_signal_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_mautrix_signal_metrics_enabled: "{{ prometheus_enabled }}"
+matrix_mautrix_signal_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
 matrix_mautrix_signal_metrics_proxying_enabled: "{{ matrix_mautrix_signal_metrics_enabled and matrix_metrics_exposure_enabled }}"
 matrix_mautrix_signal_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
@@ -1395,7 +1401,7 @@ matrix_mautrix_telegram_homeserver_token: "{{ '%s' | format(matrix_homeserver_ge
 
 matrix_mautrix_telegram_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_mautrix_telegram_metrics_enabled: "{{ prometheus_enabled }}"
+matrix_mautrix_telegram_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
 matrix_mautrix_telegram_metrics_proxying_enabled: "{{ matrix_mautrix_telegram_metrics_enabled and matrix_metrics_exposure_enabled }}"
 matrix_mautrix_telegram_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
@@ -1458,7 +1464,7 @@ matrix_mautrix_twitter_homeserver_token: "{{ '%s' | format(matrix_homeserver_gen
 
 matrix_mautrix_twitter_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_mautrix_twitter_metrics_enabled: "{{ prometheus_enabled }}"
+matrix_mautrix_twitter_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
 matrix_mautrix_twitter_metrics_proxying_enabled: "{{ matrix_mautrix_twitter_metrics_enabled and matrix_metrics_exposure_enabled }}"
 matrix_mautrix_twitter_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
@@ -1519,7 +1525,7 @@ matrix_mautrix_gmessages_homeserver_token: "{{ '%s' | format(matrix_homeserver_g
 
 matrix_mautrix_gmessages_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_mautrix_gmessages_metrics_enabled: "{{ prometheus_enabled }}"
+matrix_mautrix_gmessages_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
 matrix_mautrix_gmessages_metrics_proxying_enabled: "{{ matrix_mautrix_gmessages_metrics_enabled and matrix_metrics_exposure_enabled }}"
 matrix_mautrix_gmessages_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
@@ -1632,7 +1638,7 @@ matrix_mautrix_whatsapp_homeserver_token: "{{ '%s' | format(matrix_homeserver_ge
 
 matrix_mautrix_whatsapp_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_mautrix_whatsapp_metrics_enabled: "{{ prometheus_enabled }}"
+matrix_mautrix_whatsapp_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
 matrix_mautrix_whatsapp_metrics_proxying_enabled: "{{ matrix_mautrix_whatsapp_metrics_enabled and matrix_metrics_exposure_enabled }}"
 matrix_mautrix_whatsapp_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
@@ -1774,8 +1780,7 @@ matrix_hookshot_container_labels_traefik_tls_certResolver: "{{ devture_traefik_c
 
 matrix_hookshot_provisioning_enabled: "{{ matrix_hookshot_provisioning_secret and matrix_dimension_enabled }}"
 
-# We only enable metrics (locally, in the container network) for the bridge if Prometheus is enabled.
-matrix_hookshot_metrics_enabled: "{{ prometheus_enabled }}"
+matrix_hookshot_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
 matrix_hookshot_metrics_proxying_enabled: "{{ matrix_hookshot_metrics_enabled and matrix_metrics_exposure_enabled }}"
 matrix_hookshot_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
@@ -3669,8 +3674,7 @@ devture_postgres_backup_databases: "{{ devture_postgres_managed_databases | map(
 # Most people don't need their own push-server, because they also need their own app to utilize it from.
 matrix_sygnal_enabled: false
 
-# If someone instals Prometheus via the playbook, they most likely wish to monitor Sygnal.
-matrix_sygnal_metrics_prometheus_enabled: "{{ prometheus_enabled }}"
+matrix_sygnal_metrics_prometheus_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
 matrix_sygnal_hostname: "{{ matrix_server_fqn_sygnal }}"
 
@@ -4000,8 +4004,7 @@ matrix_synapse_tls_private_key_path: ~
 
 matrix_synapse_federation_port_openid_resource_required: "{{ not matrix_synapse_federation_enabled and (matrix_dimension_enabled or matrix_ma1sd_enabled or matrix_user_verification_service_enabled) }}"
 
-# If someone instals Prometheus via the playbook, they most likely wish to monitor Synapse.
-matrix_synapse_metrics_enabled: "{{ prometheus_enabled }}"
+matrix_synapse_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
 matrix_synapse_metrics_proxying_enabled: "{{ matrix_synapse_metrics_enabled and matrix_metrics_exposure_enabled }}"
 matrix_synapse_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
@@ -4668,7 +4671,7 @@ matrix_dendrite_container_labels_public_federation_api_traefik_tls: "{{ matrix_f
 matrix_dendrite_container_labels_public_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_dendrite_container_labels_public_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
-matrix_dendrite_metrics_enabled: "{{ prometheus_enabled }}"
+matrix_dendrite_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
 matrix_dendrite_metrics_proxying_enabled: "{{ matrix_dendrite_metrics_enabled and matrix_metrics_exposure_enabled }}"
 matrix_dendrite_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
