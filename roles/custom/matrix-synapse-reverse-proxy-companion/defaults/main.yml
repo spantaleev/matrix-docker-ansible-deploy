@@ -116,6 +116,20 @@ matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_tr
 #   another.label="here"
 matrix_synapse_reverse_proxy_companion_container_labels_additional_labels: ''
 
+# A list of extra arguments to pass to the container
+# Also see `matrix_synapse_reverse_proxy_companion_container_arguments`
+matrix_synapse_reverse_proxy_companion_container_extra_arguments: []
+
+# matrix_synapse_reverse_proxy_companion_container_extra_arguments_auto is a list of extra arguments to pass to the container.
+# This list is managed by the playbook. You're not meant to override this variable.
+# If you'd like to inject your own arguments, see `matrix_synapse_reverse_proxy_companion_container_extra_arguments`.
+matrix_synapse_reverse_proxy_companion_container_extra_arguments_auto: []
+
+# matrix_synapse_reverse_proxy_companion_container_arguments holds the final list of extra arguments to pass to the container.
+# You're not meant to override this variable.
+# If you'd like to inject your own arguments, see `matrix_synapse_reverse_proxy_companion_container_extra_arguments`.
+matrix_synapse_reverse_proxy_companion_container_arguments: "{{ matrix_synapse_reverse_proxy_companion_container_extra_arguments + matrix_synapse_reverse_proxy_companion_container_extra_arguments_auto }}"
+
 # The amount of worker processes and connections
 # Consider increasing these when you are expecting high amounts of traffic
 # http://nginx.org/en/docs/ngx_core_module.html#worker_connections

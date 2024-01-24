@@ -296,6 +296,10 @@ matrix_synapse_container_extra_arguments_auto: []
 # If you'd like to inject your own arguments, see `matrix_synapse_container_extra_arguments`.
 matrix_synapse_container_arguments: "{{ matrix_synapse_container_extra_arguments + matrix_synapse_container_extra_arguments_auto }}"
 
+# matrix_synapse_container_master_extra_arguments contains arguments specific to the master process whereas
+# matrix_synapse_container_extra_arguments contains arguments the apply to all synapse worker processes.
+matrix_synapse_container_master_extra_arguments: []
+
 # List of systemd services that matrix-synapse.service depends on
 matrix_synapse_systemd_required_services_list: "{{ matrix_synapse_systemd_required_services_list_default + matrix_synapse_systemd_required_services_list_auto + matrix_synapse_systemd_required_services_list_custom }}"
 matrix_synapse_systemd_required_services_list_default: ['docker.service']
@@ -769,26 +773,31 @@ matrix_synapse_worker_container_labels_additional_labels: ''
 matrix_synapse_workers_room_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['room_workers_count'] }}"
 matrix_synapse_workers_room_workers_port_range_start: 28111
 matrix_synapse_workers_room_workers_metrics_range_start: 29111
+matrix_synapse_workers_room_workers_container_arguments: []
 
 # Sync workers
 matrix_synapse_workers_sync_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['sync_workers_count'] }}"
 matrix_synapse_workers_sync_workers_port_range_start: 28211
 matrix_synapse_workers_sync_workers_metrics_range_start: 29211
+matrix_synapse_workers_sync_workers_container_arguments: []
 
 # Client reader workers
 matrix_synapse_workers_client_reader_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['client_reader_workers_count'] }}"
 matrix_synapse_workers_client_reader_workers_port_range_start: 28311
 matrix_synapse_workers_client_reader_workers_metrics_range_start: 29311
+matrix_synapse_workers_client_reader_workers_container_arguments: []
 
 # Federation reader workers
 matrix_synapse_workers_federation_reader_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['federation_reader_workers_count'] }}"
 matrix_synapse_workers_federation_reader_workers_port_range_start: 28411
 matrix_synapse_workers_federation_reader_workers_metrics_range_start: 29411
+matrix_synapse_workers_federation_reader_workers_container_arguments: []
 
 # Generic workers
 matrix_synapse_workers_generic_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['generic_workers_count'] }}"
 matrix_synapse_workers_generic_workers_port_range_start: 18111
 matrix_synapse_workers_generic_workers_metrics_range_start: 19111
+matrix_synapse_workers_generic_workers_container_arguments: []
 
 # matrix_synapse_workers_stream_writer_events_stream_workers_count controls how many stream writers that handle the `events` stream to spawn.
 # More than 1 worker is also supported of this type.
@@ -833,6 +842,8 @@ matrix_synapse_workers_stream_writers: |
     ([{'stream': 'presence'}] * matrix_synapse_workers_stream_writer_presence_stream_workers_count | int)
   }}
 
+matrix_synapse_workers_stream_writers_container_arguments: []
+
 # matrix_synapse_stream_writers populates the `stream_writers` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # What you see below is an initial default value which will be adjusted at runtime based on the value of `matrix_synapse_workers_stream_writers`.
 # Adjusting this value manually is generally not necessary.
@@ -859,6 +870,7 @@ matrix_synapse_workers_stream_writer_workers_metrics_range_start: 19211
 # See https://matrix-org.github.io/synapse/latest/workers.html#synapseapppusher
 matrix_synapse_workers_pusher_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['pusher_workers_count'] }}"
 matrix_synapse_workers_pusher_workers_metrics_range_start: 19200
+matrix_synapse_workers_pusher_workers_container_arguments: []
 
 # matrix_synapse_federation_pusher_instances populates the `pusher_instances` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # What you see below is an initial default value which will be adjusted at runtime based on the value of `matrix_synapse_workers_pusher_workers_count` or `matrix_synapse_workers_enabled_list`.
@@ -869,6 +881,7 @@ matrix_synapse_federation_pusher_instances: []
 # See https://matrix-org.github.io/synapse/latest/workers.html#synapseappfederation_sender
 matrix_synapse_workers_federation_sender_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['federation_sender_workers_count'] }}"
 matrix_synapse_workers_federation_sender_workers_metrics_range_start: 19400
+matrix_synapse_workers_federation_sender_workers_container_arguments: []
 
 # matrix_synapse_federation_sender_instances populates the `federation_sender_instances` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # What you see below is an initial default value which will be adjusted at runtime based on the value of `matrix_synapse_workers_federation_sender_workers_count` or `matrix_synapse_workers_enabled_list`.
@@ -878,6 +891,7 @@ matrix_synapse_federation_sender_instances: []
 matrix_synapse_workers_media_repository_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['media_repository_workers_count'] if not matrix_synapse_ext_media_repo_enabled else 0 }}"
 matrix_synapse_workers_media_repository_workers_port_range_start: 18551
 matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
+matrix_synapse_workers_media_repository_workers_container_arguments: []
 
 # matrix_synapse_enable_media_repo controls if the main Synapse process should serve media repository endpoints or if it should be left to media_repository workers (see `matrix_synapse_workers_media_repository_workers_count`).
 # This is enabled if workers are disabled, or if they are enabled, but there are no media repository workers.
@@ -894,6 +908,7 @@ matrix_synapse_media_instance_running_background_jobs: "{{ (matrix_synapse_worke
 # Our implementation uses generic worker services and assigns them to perform appservice work using the `notify_appservices_from_worker` Synapse option.
 matrix_synapse_workers_appservice_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['appservice_workers_count'] }}"
 matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
+matrix_synapse_workers_appservice_workers_container_arguments: []
 
 # matrix_synapse_notify_appservices_from_worker populates the `notify_appservices_from_worker` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # `notify_appservices_from_worker` is meant to point to a worker, which is dedicated to sending output traffic to Application Services.
@@ -905,6 +920,7 @@ matrix_synapse_notify_appservices_from_worker: "{{ (matrix_synapse_workers_enabl
 matrix_synapse_workers_user_dir_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['user_dir_workers_count'] }}"
 matrix_synapse_workers_user_dir_workers_port_range_start: 18661
 matrix_synapse_workers_user_dir_workers_metrics_range_start: 19661
+matrix_synapse_workers_user_dir_workers_container_arguments: []
 
 # matrix_synapse_update_user_directory_from_worker populates the `update_user_directory_from_worker` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # `update_user_directory_from_worker` is meant to point to a worker, which is dedicated to updating the user directory and servicing some user directory URL endpoints (`matrix_synapse_workers_user_dir_worker_client_server_endpoints`).
@@ -914,6 +930,7 @@ matrix_synapse_update_user_directory_from_worker: "{{ (matrix_synapse_workers_en
 # Our implementation uses a generic worker and assigns Synapse to perform background work on this worker using the `run_background_tasks_on` Synapse option.
 matrix_synapse_workers_background_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['background_workers_count'] }}"
 matrix_synapse_workers_background_workers_metrics_range_start: 19700
+matrix_synapse_workers_background_workers_container_arguments: []
 
 # matrix_synapse_run_background_tasks_on populates the `run_background_tasks_on` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # `run_background_tasks_on` is meant to point to a worker, which is dedicated to processing background tasks.
