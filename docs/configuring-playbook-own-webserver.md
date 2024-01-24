@@ -169,7 +169,7 @@ devture_traefik_config_entrypoint_web_forwardedHeaders_insecure: true
 # If your reverse-proxy runs on another machine, consider:
 # - using `0.0.0.0:8449`, just `8449` or `SOME_IP_ADDRESS_OF_THIS_MACHINE:8449` below
 # - adjusting `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom` (below) - removing `insecure: true` and enabling/configuring `trustedIPs`
-matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port: 127.0.0.1:8449
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port: '127.0.0.1:8449'
 
 # Depending on the value of `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port` above,
 # this may need to be reconfigured. See the comments above.
