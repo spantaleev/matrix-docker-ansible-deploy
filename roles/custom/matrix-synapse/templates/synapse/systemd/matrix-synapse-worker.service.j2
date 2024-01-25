@@ -5,6 +5,34 @@ AssertPathExists={{ matrix_synapse_config_dir_path }}/{{ matrix_synapse_worker_c
 After=matrix-synapse.service
 Requires=matrix-synapse.service
 
+{% set matrix_synapse_container_worker_arguments = [] %}
+
+{% if matrix_synapse_worker_type == "room_worker" %}
+	{% set matrix_synapse_container_worker_arguments = matrix_synapse_workers_room_workers_container_arguments %}
+{% elif matrix_synapse_worker_type == "sync_worker" %}
+	{% set matrix_synapse_container_worker_arguments = matrix_synapse_workers_sync_workers_container_arguments %}
+{% elif matrix_synapse_worker_type == "client_reader" %}
+	{% set matrix_synapse_container_worker_arguments = matrix_synapse_workers_client_reader_workers_container_arguments %}
+{% elif matrix_synapse_worker_type == "federation_reader" %}
+	{% set matrix_synapse_container_worker_arguments = matrix_synapse_workers_federation_reader_workers_container_arguments %}
+{% elif matrix_synapse_worker_type == "generic_worker" %}
+	{% set matrix_synapse_container_worker_arguments = matrix_synapse_workers_generic_workers_container_arguments %}
+{% elif matrix_synapse_worker_type == "stream_writer" %}
+	{% set matrix_synapse_container_worker_arguments = matrix_synapse_workers_stream_writers_container_arguments %}
+{% elif matrix_synapse_worker_type == "federation_sender" %}
+	{% set matrix_synapse_container_worker_arguments = matrix_synapse_workers_federation_sender_workers_container_arguments %}
+{% elif matrix_synapse_worker_type == "pusher" %}
+	{% set matrix_synapse_container_worker_arguments = matrix_synapse_workers_pusher_workers_container_arguments %}
+{% elif matrix_synapse_worker_type == "appservice" %}
+	{% set matrix_synapse_container_worker_arguments = matrix_synapse_workers_appservice_workers_container_arguments %}
+{% elif matrix_synapse_worker_type == "user_dir" %}
+	{% set matrix_synapse_container_worker_arguments = matrix_synapse_workers_user_dir_workers_container_arguments %}
+{% elif matrix_synapse_worker_type == "background" %}
+	{% set matrix_synapse_container_worker_arguments = matrix_synapse_workers_background_workers_container_arguments %}
+{% elif matrix_synapse_worker_type == "media_repository" %}
+	{% set matrix_synapse_container_worker_arguments = matrix_synapse_workers_media_repository_workers_container_arguments %}
+{% endif %}
+
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
@@ -41,6 +69,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% endfor %}
 			--label-file={{ matrix_synapse_base_path }}/{{ matrix_synapse_worker_labels_file_name }} \
 			{% for arg in matrix_synapse_container_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{% for arg in matrix_synapse_container_worker_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_synapse_docker_image_final }} \
