@@ -72,11 +72,14 @@ bridge:
     # Displayname template for Discord users. This is also used as the room name in DMs if private_chat_portal_meta is enabled.
     # Available variables:
     #  {{ '{{.ID}}' }} - Internal user ID
-    #  {{ '{{.Username}}' }} - User's displayname on Discord
+    #  {{ '{{.Username}}' }} - Legacy display/username on Discord
+    #  {{ '{{.GlobalName}}' }} - New displayname on Discord
     #  {{ '{{.Discriminator}}' }} - The 4 numbers after the name on Discord
     #  {{ '{{.Bot}}' }} - Whether the user is a bot
     #  {{ '{{.System}}' }} - Whether the user is an official system user
-    displayname_template: "{{ '{{.Username}} {{if .Bot}} (bot){{end}}' }}"
+    #  {{ '{{.Webhook}}' }} - Whether the user is a webhook and is not an application
+    #  {{ '{{.Application}}' }} - Whether the user is an application
+    displayname_template: "{{ '{{or .GlobalName .Username}}{{if .Bot}} (bot){{end}}' }}"
     # Displayname template for Discord channels (bridged as rooms, or spaces when type=4).
     # Available variables:
     #  {{ '{{.Name}}' }} - Channel name, or user displayname (pre-formatted with displayname_template) in DMs.
@@ -91,7 +94,11 @@ bridge:
     guild_name_template: "{{ '{{.Name}}' }}"
     # Should the bridge explicitly set the avatar and room name for DM portal rooms?
     # This is implicitly enabled in encrypted rooms.
-    private_chat_portal_meta: false
+    # Whether to explicitly set the avatar and room name for private chat portal rooms.
+    # If set to `default`, this will be enabled in encrypted rooms and disabled in unencrypted rooms.
+    # If set to `always`, all DM rooms will have explicit names and avatars set.
+    # If set to `never`, DM rooms will never have names and avatars set.
+    private_chat_portal_meta: default
     portal_message_buffer: 128
     # Number of private channel portals to create on bridge startup.
     # Other portals will be created when receiving messages.
@@ -112,12 +119,59 @@ bridge:
     # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
     # This field will automatically be changed back to false after it, except if the config file is not writable.
     resend_bridge_info: false
+    # Should incoming custom emoji reactions be bridged as mxc:// URIs?
+    # If set to false, custom emoji reactions will be bridged as the shortcode instead, and the image wont be available.
+    custom_emoji_reactions: true
     # Should the bridge attempt to completely delete portal rooms when a channel is deleted on Discord?
     # If true, the bridge will try to kick Matrix users from the room. Otherwise, the bridge only makes ghosts leave.
     delete_portal_on_channel_delete: false
+    # Should the bridge delete all portal rooms when you leave a guild on Discord?
+    # This only applies if the guild has no other Matrix users on this bridge instance.
+    delete_guild_on_leave: true
     # Whether or not created rooms should have federation enabled.
     # If false, created portal rooms will never be federated.
     federate_rooms: {{ matrix_mautrix_discord_federate_rooms|to_json }}
+    # Prefix messages from webhooks with the profile info? This can be used along with a custom displayname_template
+    # to better handle webhooks that change their name all the time (like ones used by bridges).
+    prefix_webhook_messages: false
+    # Bridge webhook avatars?
+    enable_webhook_avatars: true
+    # Should the bridge upload media to the Discord CDN directly before sending the message when using a user token,
+    # like the official client does? The other option is sending the media in the message send request as a form part
+    # (which is always used by bots and webhooks).
+    use_discord_cdn_upload: true
+    # Should mxc uris copied from Discord be cached?
+    # This can be `never` to never cache, `unencrypted` to only cache unencrypted mxc uris, or `always` to cache everything.
+    # If you have a media repo that generates non-unique mxc uris, you should set this to never.
+    cache_media: unencrypted
+    # Patterns for converting Discord media to custom mxc:// URIs instead of reuploading.
+    # Each of the patterns can be set to null to disable custom URIs for that type of media.
+    # More details can be found at https://docs.mau.fi/bridges/go/discord/direct-media.html
+    media_patterns:
+        # Should custom mxc:// URIs be used instead of reuploading media?
+        enabled: true
+        # Pattern for normal message attachments.
+        attachments: mxc://discord-media.mau.dev/attachments|{{.ChannelID}}|{{.AttachmentID}}|{{.FileName}}
+        # Pattern for custom emojis.
+        emojis: mxc://discord-media.mau.dev/emojis|{{.ID}}.{{.Ext}}
+        # Pattern for stickers. Note that animated lottie stickers will not be converted if this is enabled.
+        stickers: mxc://discord-media.mau.dev/stickers|{{.ID}}.{{.Ext}}
+        # Pattern for static user avatars.
+        avatars: mxc://discord-media.mau.dev/avatars|{{.UserID}}|{{.AvatarID}}.{{.Ext}}
+    # Settings for converting animated stickers.
+    animated_sticker:
+        # Format to which animated stickers should be converted.
+        # disable - No conversion, send as-is (lottie JSON)
+        # png - converts to non-animated png (fastest)
+        # gif - converts to animated gif
+        # webm - converts to webm video, requires ffmpeg executable with vp9 codec and webm container support
+        # webp - converts to animated webp, requires ffmpeg executable with webp codec/container support
+        target: webp
+        # Arguments for converter. All converters take width and height.
+        args:
+            width: 320
+            height: 320
+            fps: 25 # only for webm, webp and gif (2, 5, 10, 20 or 25 recommended)
     # Servers to always allow double puppeting from
     double_puppet_server_map:
         "{{ matrix_mautrix_discord_homeserver_domain }}": {{ matrix_mautrix_discord_homeserver_address }}
@@ -144,6 +198,30 @@ bridge:
         welcome_unconnected: "Use `help` for help or `login` to log in."
         # Optional extra text sent when joining a management room.
         additional_help: ""
+
+    # Settings for backfilling messages.
+    backfill:
+        # Limits for forward backfilling.
+        forward_limits:
+            # Initial backfill (when creating portal). 0 means backfill is disabled.
+            # A special unlimited value is not supported, you must set a limit. Initial backfill will
+            # fetch all messages first before backfilling anything, so high limits can take a lot of time.
+            initial:
+                dm: 0
+                channel: 0
+                thread: 0
+            # Missed message backfill (on startup).
+            # 0 means backfill is disabled, -1 means fetch all messages since last bridged message.
+            # When using unlimited backfill (-1), messages are backfilled as they are fetched.
+            # With limits, all messages up to the limit are fetched first and backfilled afterwards.
+            missed:
+                dm: 0
+                channel: 0
+                thread: 0
+        # Maximum members in a guild to enable backfilling. Set to -1 to disable limit.
+        # This can be used as a rough heuristic to disable backfilling in channels that are too active.
+        # Currently only applies to missed message backfill.
+        max_guild_members: -1
 
     # End-to-bridge encryption support options.
     #
