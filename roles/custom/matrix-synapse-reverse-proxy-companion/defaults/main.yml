@@ -35,7 +35,9 @@ matrix_synapse_reverse_proxy_companion_container_network: ""
 
 # A list of additional container networks that matrix-synapse-reverse-proxy-companion would be connected to.
 # The playbook does not create these networks, so make sure they already exist.
-matrix_synapse_reverse_proxy_companion_container_additional_networks: []
+matrix_synapse_reverse_proxy_companion_container_additional_networks: "{{ matrix_synapse_reverse_proxy_companion_container_additional_networks_auto + matrix_synapse_reverse_proxy_companion_container_additional_networks_custom }}"
+matrix_synapse_reverse_proxy_companion_container_additional_networks_auto: []
+matrix_synapse_reverse_proxy_companion_container_additional_networks_custom: []
 
 # Controls whether the matrix-synapse-reverse-proxy-companion container exposes its HTTP Client-Server API port (tcp/8008 in the container).
 #

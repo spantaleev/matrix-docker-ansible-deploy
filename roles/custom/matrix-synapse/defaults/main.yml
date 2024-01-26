@@ -132,7 +132,9 @@ matrix_synapse_container_network: ''
 # A list of additional container networks that the container would be connected to.
 # The role does not create these networks, so make sure they already exist.
 # Use this to expose this container to another reverse proxy, which runs in a different container network.
-matrix_synapse_container_additional_networks: []
+matrix_synapse_container_additional_networks: "{{ matrix_synapse_container_additional_networks_auto + matrix_synapse_container_additional_networks_custom }}"
+matrix_synapse_container_additional_networks_auto: []
+matrix_synapse_container_additional_networks_custom: []
 
 # Controls whether the matrix-synapse container exposes the Client/Server API port (tcp/{{ matrix_synapse_container_client_api_port }} in the container).
 #

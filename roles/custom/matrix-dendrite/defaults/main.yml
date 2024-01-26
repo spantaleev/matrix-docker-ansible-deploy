@@ -48,7 +48,9 @@ matrix_dendrite_container_network: ""
 # A list of additional container networks that the container would be connected to.
 # The role does not create these networks, so make sure they already exist.
 # Use this to expose this container to another reverse proxy, which runs in a different container network.
-matrix_dendrite_container_additional_networks: []
+matrix_dendrite_container_additional_networks: "{{ matrix_dendrite_container_additional_networks_auto + matrix_dendrite_container_additional_networks_custom }}"
+matrix_dendrite_container_additional_networks_auto: []
+matrix_dendrite_container_additional_networks_custom: []
 
 # Controls whether the matrix-dendrite container exposes the HTTP port (tcp/{{ matrix_dendrite_http_bind_port }} in the container).
 #
