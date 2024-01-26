@@ -3960,17 +3960,15 @@ matrix_synapse_email_notif_from: "Matrix <{{ exim_relay_sender_address }}>"
 
 matrix_synapse_turn_uris: |
   {{
-    []
-    +
-    [
+    ([
       'turns:' + matrix_server_fqn_matrix + '?transport=udp',
       'turns:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled else []
+    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled else [])
     +
-    [
+    ([
       'turn:' + matrix_server_fqn_matrix + '?transport=udp',
       'turn:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled else []
+    ] if matrix_coturn_enabled else [])
   }}
 
 matrix_synapse_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
@@ -4705,17 +4703,15 @@ matrix_conduit_container_labels_internal_client_api_traefik_entrypoints: "{{ mat
 
 matrix_conduit_turn_uris: |
   {{
-    []
-    +
-    [
+    ([
       'turns:' + matrix_server_fqn_matrix + '?transport=udp',
       'turns:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled else []
+    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled else [])
     +
-    [
+    ([
       'turn:' + matrix_server_fqn_matrix + '?transport=udp',
       'turn:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled else []
+    ] if matrix_coturn_enabled else [])
   }}
 
 matrix_conduit_turn_secret: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
