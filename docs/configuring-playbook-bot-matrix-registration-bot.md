@@ -4,7 +4,7 @@ The playbook can install and configure [matrix-registration-bot](https://github.
 
 The bot allows you to easily **create and manage registration tokens** aka. invitation codes.
 It can be used for an invitation-based server,
-where you invite someone by sending them a registration token (loook like this: `rbalQ0zkaDSRQCOp`). They can register as normal but have to provide a valid registration token in a final step of the registration.
+where you invite someone by sending them a registration token (Tokens look like this: `rbalQ0zkaDSRQCOp`). They can register as normal but have to provide a valid registration token in a final step of the registration.
 
 See the project's [documentation](https://github.com/moan0s/matrix-registration-bot#supported-commands) to learn what it
 does and why it might be useful to you.
