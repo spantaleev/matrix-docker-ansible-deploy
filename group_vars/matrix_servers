@@ -4848,6 +4848,10 @@ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_hostname
 # but we pass the hostname, so that enabling it is easy.
 matrix_static_files_container_labels_base_domain_traefik_hostname: "{{ matrix_domain }}"
 
+# If we're not serving a static webpage, serve a redirect instead of a 404.
+matrix_static_files_container_labels_base_domain_root_path_redirection_enabled: "{{ not matrix_static_files_file_index_html_enabled }}"
+matrix_static_files_container_labels_base_domain_root_path_redirection_url: "https://{{ matrix_server_fqn_matrix }}"
+
 matrix_static_files_file_matrix_client_property_io_element_jitsi_preferred_domain: "{{ matrix_server_fqn_jitsi if jitsi_enabled else '' }}"
 
 matrix_static_files_file_matrix_client_property_org_matrix_msc3575_proxy_url: "{{ matrix_homeserver_sliding_sync_url }}"
