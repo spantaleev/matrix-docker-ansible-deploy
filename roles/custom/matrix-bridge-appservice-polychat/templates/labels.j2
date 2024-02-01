@@ -24,7 +24,7 @@ traefik.http.routers.matrix-appservice-polychat-public.middlewares=matrix-appser
 traefik.http.routers.matrix-appservice-polychat-public.priority={{ matrix_appservice_polychat_container_labels_public_endpoint_traefik_priority }}
 {% endif %}
 
-traefik.http.routers.matrix-appservice-polychat-public.service=matrix-appservice-polychat
+traefik.http.routers.matrix-appservice-polychat-public.service=matrix-appservice-polychat-api
 traefik.http.routers.matrix-appservice-polychat-public.entrypoints={{ matrix_appservice_polychat_container_labels_public_endpoint_traefik_entrypoints }}
 
 traefik.http.routers.matrix-appservice-polychat-public.tls={{ matrix_appservice_polychat_container_labels_public_endpoint_traefik_tls | to_json }}
@@ -55,7 +55,7 @@ traefik.http.routers.matrix-appservice-polychat-private.middlewares=matrix-appse
 traefik.http.routers.matrix-appservice-polychat-private.priority={{ matrix_appservice_polychat_container_labels_private_endpoint_traefik_priority }}
 {% endif %}
 
-traefik.http.routers.matrix-appservice-polychat-private.service=matrix-appservice-polychat
+traefik.http.routers.matrix-appservice-polychat-private.service=matrix-appservice-polychat-appservice
 traefik.http.routers.matrix-appservice-polychat-private.entrypoints={{ matrix_appservice_polychat_container_labels_private_endpoint_traefik_entrypoints }}
 
 traefik.http.routers.matrix-appservice-polychat-private.tls={{ matrix_appservice_polychat_container_labels_private_endpoint_traefik_tls | to_json }}
@@ -65,7 +65,7 @@ traefik.http.routers.matrix-appservice-polychat-private.tls.certResolver={{ matr
 
 ############################################################
 #                                                          #
-# /Private                                                  #
+# /Private                                                 #
 #                                                          #
 ############################################################
 {% endif %}

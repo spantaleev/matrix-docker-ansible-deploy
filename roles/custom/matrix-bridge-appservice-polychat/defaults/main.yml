@@ -6,11 +6,12 @@ matrix_appservice_polychat_enabled: true
 
 matrix_appservice_polychat_scheme: https
 matrix_appservice_polychat_hostname: ''
-matrix_appservice_polychat_path_prefix: /appservice-polychat
+matrix_appservice_polychat_appservice_path_prefix: 'appservice-polychat'
+matrix_appservice_polychat_api_path_prefix: '/'
 
 matrix_appservice_polychat_container_image_self_build: false
 matrix_appservice_polychat_container_image_self_build_repo: "https://github.com/polychatproject/polychat-appservice.git"
-matrix_appservice_polychat_container_image_self_build_repo_version: "{{ 'master' if matrix_appservice_polychat_version == 'latest' else matrix_appservice_polychat_version }}"
+matrix_appservice_polychat_container_image_self_build_repo_version: "{{ 'main' if matrix_appservice_polychat_version == 'latest' else matrix_appservice_polychat_version }}"
 matrix_appservice_polychat_container_image_self_build_repo_dockerfile_path: "Dockerfile"
 
 
@@ -31,7 +32,7 @@ matrix_appservice_polychat_data_path: "{{ matrix_appservice_polychat_base_path }
 matrix_appservice_polychat_docker_src_files_path: "{{ matrix_appservice_polychat_base_path }}/docker-src"
 
 # If nginx-proxy is disabled, the bridge itself expects its endpoint to be on its own domain (e.g. "localhost:6789")
-matrix_appservice_polychat_public_endpoint: "{{ matrix_appservice_polychat_path_prefix }}"
+matrix_appservice_polychat_public_endpoint: "{{ matrix_appservice_polychat_api_path_prefix }}"
 matrix_appservice_polychat_inbound_uri_prefix: "{{ matrix_appservice_polychat_scheme }}://{{ matrix_appservice_polychat_hostname }}{{ matrix_appservice_polychat_public_endpoint }}"
 
 matrix_appservice_polychat_user_prefix: '@polychat_'
@@ -66,8 +67,8 @@ matrix_appservice_polychat_container_labels_traefik_tls_certResolver: default  #
 # Controls whether labels will be added that expose matrix-appservice-polychats's public endpoints
 matrix_appservice_polychat_container_labels_public_endpoint_enabled: true
 matrix_appservice_polychat_container_labels_public_endpoint_hostname: "{{ matrix_appservice_polychat_hostname }}"
-matrix_appservice_polychat_container_labels_public_endpoint_prefix: "{{ matrix_appservice_polychat_path_prefix }}"
-matrix_appservice_polychat_container_labels_public_endpoint_traefik_rule: "Host(`{{ matrix_appservice_polychat_container_labels_public_endpoint_hostname }}`) && PathPrefix(`{{ matrix_appservice_polychat_path_prefix }}`)"
+matrix_appservice_polychat_container_labels_public_endpoint_prefix: ""
+matrix_appservice_polychat_container_labels_public_endpoint_traefik_rule: "Host(`{{ matrix_appservice_polychat_container_labels_public_endpoint_hostname }}`) && PathPrefix(`{{ matrix_appservice_polychat_api_path_prefix }}`)"
 matrix_appservice_polychat_container_labels_public_endpoint_traefik_priority: 0
 matrix_appservice_polychat_container_labels_public_endpoint_traefik_entrypoints: "{{ matrix_appservice_polychat_container_labels_traefik_entrypoints }}"
 matrix_appservice_polychat_container_labels_public_endpoint_traefik_tls: "{{ matrix_appservice_polychat_container_labels_public_endpoint_traefik_entrypoints != 'web' }}"
@@ -76,8 +77,8 @@ matrix_appservice_polychat_container_labels_public_endpoint_traefik_tls_certReso
 # Controls whether labels will be added that expose matrix-appservice-polychats's private endpoints
 matrix_appservice_polychat_container_labels_private_endpoint_enabled: true
 matrix_appservice_polychat_container_labels_private_endpoint_hostname: "{{ matrix_appservice_polychat_hostname }}"
-matrix_appservice_polychat_container_labels_private_endpoint_prefix: "{{ matrix_appservice_polychat_path_prefix }}"
-matrix_appservice_polychat_container_labels_private_endpoint_traefik_rule: "Host(`{{ matrix_appservice_polychat_container_labels_private_endpoint_hostname }}`) && PathPrefix(`{{ matrix_appservice_polychat_path_prefix }}`)"
+matrix_appservice_polychat_container_labels_private_endpoint_prefix: "{{ matrix_appservice_polychat_appservice_path_prefix }}"
+matrix_appservice_polychat_container_labels_private_endpoint_traefik_rule: "Host(`{{ matrix_appservice_polychat_container_labels_private_endpoint_hostname }}`) && PathPrefix(`{{ matrix_appservice_polychat_appservice_path_prefix }}`)"
 matrix_appservice_polychat_container_labels_private_endpoint_traefik_priority: 0
 matrix_appservice_polychat_container_labels_private_endpoint_traefik_entrypoints: "{{ matrix_appservice_polychat_container_labels_traefik_entrypoints }}"
 matrix_appservice_polychat_container_labels_private_endpoint_traefik_tls: "{{ matrix_appservice_polychat_container_labels_public_endpoint_traefik_entrypoints != 'web' }}"
