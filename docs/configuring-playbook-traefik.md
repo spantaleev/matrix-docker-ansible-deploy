@@ -137,3 +137,25 @@ Changing the `url` to one with an `http://` prefix would allow to connect to the
 With these changes, all TCP traffic will be reverse-proxied to the target system. 
 
 **WARNING**: This configuration might lead to problems or need additional steps when a [certbot](https://certbot.eff.org/) behind Traefik also tries to manage [Let's Encrypt](https://letsencrypt.org/) certificates, as Traefik captures all traffic to ```PathPrefix(`/.well-known/acme-challenge/`)```. 
+
+
+## Traefik behind a `proxy_protocol` reverse-proxy
+
+If you run a reverse-proxy which speaks `proxy_protocol`, add the following to your configuration file:
+
+```yaml
+devture_traefik_configuration_extension_yaml: |
+  entryPoints:
+    web-secure:
+      proxyProtocol:
+        trustedIPs:
+          - "127.0.0.1/32"
+          - "<proxy internal IPv4>/32"
+          - "<proxy IPv6>/128"
+    matrix-federation:
+        proxyProtocol:
+          trustedIPs:
+            - "127.0.0.1/32"
+            - "<proxy internal IPv4>/32"
+            - "<proxy IPv6>/128"
+```
