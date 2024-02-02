@@ -144,18 +144,18 @@ With these changes, all TCP traffic will be reverse-proxied to the target system
 If you run a reverse-proxy which speaks `proxy_protocol`, add the following to your configuration file:
 
 ```yaml
-	devture_traefik_configuration_extension_yaml: |
-	  entryPoints:
-	    web-secure:
-	      proxyProtocol:
-	        trustedIPs:
-	          - "127.0.0.1/32"
-	          - "<proxy internal IPv4>/32"
-	          - "<proxy IPv6>/128"
-	    matrix-federation:
-	      proxyProtocol:
-	        trustedIPs:
-	          - "127.0.0.1/32"
-	          - "<proxy internal IPv4>/32"
-	          - "<proxy IPv6>/128"
+devture_traefik_configuration_extension_yaml: |
+  entryPoints:
+    web-secure:
+      proxyProtocol:
+        trustedIPs:
+          - "127.0.0.1/32"
+          - "<proxy internal IPv4>/32"
+          - "<proxy IPv6>/128"
+    matrix-federation:
+        proxyProtocol:
+          trustedIPs:
+            - "127.0.0.1/32"
+            - "<proxy internal IPv4>/32"
+            - "<proxy IPv6>/128"
 ```
