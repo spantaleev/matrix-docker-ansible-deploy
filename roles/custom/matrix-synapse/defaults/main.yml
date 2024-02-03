@@ -752,7 +752,7 @@ matrix_synapse_worker_container_labels_traefik_hostname: "{{ matrix_synapse_cont
 # Controls whether labels will be added that expose metrics (see `matrix_synapse_metrics_proxying_enabled`)
 matrix_synapse_worker_container_labels_public_metrics_enabled: "{{ matrix_synapse_metrics_enabled and matrix_synapse_metrics_proxying_enabled }}"
 # The `__WORKER_ID__` placeholder will be replaced with the actual worker id during label-file generation (see `../templates/worker-labels.j2`).
-matrix_synapse_worker_container_labels_public_metrics_traefik_path: "{{ matrix_synapse_metrics_proxying_path_prefix }}/__WORKER_ID__"
+matrix_synapse_worker_container_labels_public_metrics_traefik_path: "{{ matrix_synapse_metrics_proxying_path_prefix }}/worker/__WORKER_ID__"
 matrix_synapse_worker_container_labels_public_metrics_traefik_rule: "Host(`{{ matrix_synapse_metrics_proxying_hostname }}`) && Path(`{{ matrix_synapse_worker_container_labels_public_metrics_traefik_path }}`)"
 matrix_synapse_worker_container_labels_public_metrics_traefik_priority: 0
 matrix_synapse_worker_container_labels_public_metrics_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
