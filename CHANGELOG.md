@@ -1,3 +1,14 @@
+# 2024-01-31
+
+## (Backward-compatibility break) Minor changes necessary for some people serving a static website at the base domain
+
+This only affects people who are [Serving a static website at the base domain](./docs/configuring-playbook-base-domain-serving.md#serving-a-static-website-at-the-base-domain), but not managing its `index.html` through the playbook.
+
+That is, for people who have `matrix_static_files_file_index_html_enabled: false` in their `vars.yml` configuration, the playbook has a new default behavior. Since the playbook is not managing the `index.html` file, it will default to a more sensible way of handling the base domain  - redirecting `https://DOMAIN/` to `https://matrix.DOMAIN/`, instead of serving a 404 page.
+
+If you are managing your static website by yourself (by dropping files into `/matrix/static-files/public` somehow), then you probably don't wish for such redirection to happen. You can disable it by adding `matrix_static_files_container_labels_base_domain_enabled: false` to your `vars.yml` configuration file.
+
+
 # 2024-01-20
 
 ## Support for more efficient (specialized) Synapse workers
