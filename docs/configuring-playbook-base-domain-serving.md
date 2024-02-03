@@ -45,7 +45,7 @@ matrix_static_files_file_index_html_enabled: false
 
 # Disable the automatic redirectin of `https://DOMAIN/` to `https://matrix.DOMAIN/`.
 # This gets automatically enabled when you disable `matrix_static_files_file_index_html_enabled`, as we're doing above.
-matrix_static_files_container_labels_base_domain_enabled: false
+matrix_static_files_container_labels_base_domain_root_path_redirection_enabled: false
 ```
 
 With this configuration, Ansible will no longer mess around with the `/matrix/static-files/public/index.html` file.
