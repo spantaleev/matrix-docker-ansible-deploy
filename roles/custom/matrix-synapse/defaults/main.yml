@@ -16,7 +16,7 @@ matrix_synapse_enabled: true
 matrix_synapse_github_org_and_repo: element-hq/synapse
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/synapse
-matrix_synapse_version: v1.99.0
+matrix_synapse_version: v1.100.0
 
 matrix_synapse_username: ''
 matrix_synapse_uid: ''
@@ -132,7 +132,9 @@ matrix_synapse_container_network: ''
 # A list of additional container networks that the container would be connected to.
 # The role does not create these networks, so make sure they already exist.
 # Use this to expose this container to another reverse proxy, which runs in a different container network.
-matrix_synapse_container_additional_networks: []
+matrix_synapse_container_additional_networks: "{{ matrix_synapse_container_additional_networks_auto + matrix_synapse_container_additional_networks_custom }}"
+matrix_synapse_container_additional_networks_auto: []
+matrix_synapse_container_additional_networks_custom: []
 
 # Controls whether the matrix-synapse container exposes the Client/Server API port (tcp/{{ matrix_synapse_container_client_api_port }} in the container).
 #
@@ -251,7 +253,7 @@ matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_tls_cert
 # Controls whether labels will be added that expose the Server-Server API (Federation API).
 # Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
 # See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
-matrix_synapse_container_labels_public_federation_api_enabled: "{{ matrix_synapse_federation_enabled and matrix_synapse_federation_port_enabled and not matrix_synapse_workers_enabled }}"
+matrix_synapse_container_labels_public_federation_api_enabled: "{{ matrix_synapse_federation_port_enabled }}"
 matrix_synapse_container_labels_public_federation_api_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
 matrix_synapse_container_labels_public_federation_api_traefik_path_prefix: /_matrix
 matrix_synapse_container_labels_public_federation_api_traefik_rule: "Host(`{{ matrix_synapse_container_labels_public_federation_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_synapse_container_labels_public_federation_api_traefik_path_prefix }}`)"
@@ -295,6 +297,10 @@ matrix_synapse_container_extra_arguments_auto: []
 # You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_synapse_container_extra_arguments`.
 matrix_synapse_container_arguments: "{{ matrix_synapse_container_extra_arguments + matrix_synapse_container_extra_arguments_auto }}"
+
+# matrix_synapse_container_master_extra_arguments contains arguments specific to the master process whereas
+# matrix_synapse_container_arguments contains arguments the apply to all Synapse containers (master and worker).
+matrix_synapse_container_master_extra_arguments: []
 
 # List of systemd services that matrix-synapse.service depends on
 matrix_synapse_systemd_required_services_list: "{{ matrix_synapse_systemd_required_services_list_default + matrix_synapse_systemd_required_services_list_auto + matrix_synapse_systemd_required_services_list_custom }}"
@@ -746,7 +752,7 @@ matrix_synapse_worker_container_labels_traefik_hostname: "{{ matrix_synapse_cont
 # Controls whether labels will be added that expose metrics (see `matrix_synapse_metrics_proxying_enabled`)
 matrix_synapse_worker_container_labels_public_metrics_enabled: "{{ matrix_synapse_metrics_enabled and matrix_synapse_metrics_proxying_enabled }}"
 # The `__WORKER_ID__` placeholder will be replaced with the actual worker id during label-file generation (see `../templates/worker-labels.j2`).
-matrix_synapse_worker_container_labels_public_metrics_traefik_path: "{{ matrix_synapse_metrics_proxying_path_prefix }}/__WORKER_ID__"
+matrix_synapse_worker_container_labels_public_metrics_traefik_path: "{{ matrix_synapse_metrics_proxying_path_prefix }}/worker/__WORKER_ID__"
 matrix_synapse_worker_container_labels_public_metrics_traefik_rule: "Host(`{{ matrix_synapse_metrics_proxying_hostname }}`) && Path(`{{ matrix_synapse_worker_container_labels_public_metrics_traefik_path }}`)"
 matrix_synapse_worker_container_labels_public_metrics_traefik_priority: 0
 matrix_synapse_worker_container_labels_public_metrics_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
@@ -769,26 +775,31 @@ matrix_synapse_worker_container_labels_additional_labels: ''
 matrix_synapse_workers_room_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['room_workers_count'] }}"
 matrix_synapse_workers_room_workers_port_range_start: 28111
 matrix_synapse_workers_room_workers_metrics_range_start: 29111
+matrix_synapse_workers_room_workers_container_arguments: []
 
 # Sync workers
 matrix_synapse_workers_sync_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['sync_workers_count'] }}"
 matrix_synapse_workers_sync_workers_port_range_start: 28211
 matrix_synapse_workers_sync_workers_metrics_range_start: 29211
+matrix_synapse_workers_sync_workers_container_arguments: []
 
 # Client reader workers
 matrix_synapse_workers_client_reader_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['client_reader_workers_count'] }}"
 matrix_synapse_workers_client_reader_workers_port_range_start: 28311
 matrix_synapse_workers_client_reader_workers_metrics_range_start: 29311
+matrix_synapse_workers_client_reader_workers_container_arguments: []
 
 # Federation reader workers
 matrix_synapse_workers_federation_reader_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['federation_reader_workers_count'] }}"
 matrix_synapse_workers_federation_reader_workers_port_range_start: 28411
 matrix_synapse_workers_federation_reader_workers_metrics_range_start: 29411
+matrix_synapse_workers_federation_reader_workers_container_arguments: []
 
 # Generic workers
 matrix_synapse_workers_generic_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['generic_workers_count'] }}"
 matrix_synapse_workers_generic_workers_port_range_start: 18111
 matrix_synapse_workers_generic_workers_metrics_range_start: 19111
+matrix_synapse_workers_generic_workers_container_arguments: []
 
 # matrix_synapse_workers_stream_writer_events_stream_workers_count controls how many stream writers that handle the `events` stream to spawn.
 # More than 1 worker is also supported of this type.
@@ -833,6 +844,8 @@ matrix_synapse_workers_stream_writers: |
     ([{'stream': 'presence'}] * matrix_synapse_workers_stream_writer_presence_stream_workers_count | int)
   }}
 
+matrix_synapse_workers_stream_writers_container_arguments: []
+
 # matrix_synapse_stream_writers populates the `stream_writers` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # What you see below is an initial default value which will be adjusted at runtime based on the value of `matrix_synapse_workers_stream_writers`.
 # Adjusting this value manually is generally not necessary.
@@ -859,6 +872,7 @@ matrix_synapse_workers_stream_writer_workers_metrics_range_start: 19211
 # See https://matrix-org.github.io/synapse/latest/workers.html#synapseapppusher
 matrix_synapse_workers_pusher_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['pusher_workers_count'] }}"
 matrix_synapse_workers_pusher_workers_metrics_range_start: 19200
+matrix_synapse_workers_pusher_workers_container_arguments: []
 
 # matrix_synapse_federation_pusher_instances populates the `pusher_instances` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # What you see below is an initial default value which will be adjusted at runtime based on the value of `matrix_synapse_workers_pusher_workers_count` or `matrix_synapse_workers_enabled_list`.
@@ -869,6 +883,7 @@ matrix_synapse_federation_pusher_instances: []
 # See https://matrix-org.github.io/synapse/latest/workers.html#synapseappfederation_sender
 matrix_synapse_workers_federation_sender_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['federation_sender_workers_count'] }}"
 matrix_synapse_workers_federation_sender_workers_metrics_range_start: 19400
+matrix_synapse_workers_federation_sender_workers_container_arguments: []
 
 # matrix_synapse_federation_sender_instances populates the `federation_sender_instances` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # What you see below is an initial default value which will be adjusted at runtime based on the value of `matrix_synapse_workers_federation_sender_workers_count` or `matrix_synapse_workers_enabled_list`.
@@ -878,6 +893,7 @@ matrix_synapse_federation_sender_instances: []
 matrix_synapse_workers_media_repository_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['media_repository_workers_count'] if not matrix_synapse_ext_media_repo_enabled else 0 }}"
 matrix_synapse_workers_media_repository_workers_port_range_start: 18551
 matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
+matrix_synapse_workers_media_repository_workers_container_arguments: []
 
 # matrix_synapse_enable_media_repo controls if the main Synapse process should serve media repository endpoints or if it should be left to media_repository workers (see `matrix_synapse_workers_media_repository_workers_count`).
 # This is enabled if workers are disabled, or if they are enabled, but there are no media repository workers.
@@ -894,6 +910,7 @@ matrix_synapse_media_instance_running_background_jobs: "{{ (matrix_synapse_worke
 # Our implementation uses generic worker services and assigns them to perform appservice work using the `notify_appservices_from_worker` Synapse option.
 matrix_synapse_workers_appservice_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['appservice_workers_count'] }}"
 matrix_synapse_workers_appservice_workers_metrics_range_start: 19300
+matrix_synapse_workers_appservice_workers_container_arguments: []
 
 # matrix_synapse_notify_appservices_from_worker populates the `notify_appservices_from_worker` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # `notify_appservices_from_worker` is meant to point to a worker, which is dedicated to sending output traffic to Application Services.
@@ -905,6 +922,7 @@ matrix_synapse_notify_appservices_from_worker: "{{ (matrix_synapse_workers_enabl
 matrix_synapse_workers_user_dir_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['user_dir_workers_count'] }}"
 matrix_synapse_workers_user_dir_workers_port_range_start: 18661
 matrix_synapse_workers_user_dir_workers_metrics_range_start: 19661
+matrix_synapse_workers_user_dir_workers_container_arguments: []
 
 # matrix_synapse_update_user_directory_from_worker populates the `update_user_directory_from_worker` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # `update_user_directory_from_worker` is meant to point to a worker, which is dedicated to updating the user directory and servicing some user directory URL endpoints (`matrix_synapse_workers_user_dir_worker_client_server_endpoints`).
@@ -914,6 +932,7 @@ matrix_synapse_update_user_directory_from_worker: "{{ (matrix_synapse_workers_en
 # Our implementation uses a generic worker and assigns Synapse to perform background work on this worker using the `run_background_tasks_on` Synapse option.
 matrix_synapse_workers_background_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['background_workers_count'] }}"
 matrix_synapse_workers_background_workers_metrics_range_start: 19700
+matrix_synapse_workers_background_workers_container_arguments: []
 
 # matrix_synapse_run_background_tasks_on populates the `run_background_tasks_on` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # `run_background_tasks_on` is meant to point to a worker, which is dedicated to processing background tasks.

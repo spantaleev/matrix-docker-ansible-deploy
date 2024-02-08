@@ -56,10 +56,22 @@ traefik.http.routers.{{ matrix_static_files_identifier }}-well-known.tls.certRes
 #                                                          #
 ############################################################
 
+{% set middlewares = [] %}
+
+{% if matrix_static_files_container_labels_base_domain_root_path_redirection_enabled %}
+traefik.http.middlewares.{{ matrix_static_files_identifier }}-root-path-redirect.redirectregex.regex=^https://{{ matrix_static_files_container_labels_base_domain_traefik_hostname }}{{ matrix_static_files_container_labels_base_domain_traefik_path_prefix }}$
+traefik.http.middlewares.{{ matrix_static_files_identifier }}-root-path-redirect.redirectregex.replacement={{ matrix_static_files_container_labels_base_domain_root_path_redirection_url }}
+{% set middlewares = middlewares + [matrix_static_files_identifier + '-root-path-redirect'] %}
+{% endif %}
+
 traefik.http.routers.{{ matrix_static_files_identifier }}-base-domain.rule={{ matrix_static_files_container_labels_base_domain_traefik_rule }}
 
 {% if matrix_static_files_container_labels_base_domain_traefik_priority | int > 0 %}
 traefik.http.routers.{{ matrix_static_files_identifier }}-base-domain.priority={{ matrix_static_files_container_labels_base_domain_traefik_priority }}
+{% endif %}
+
+{% if middlewares | length > 0 %}
+traefik.http.routers.{{ matrix_static_files_identifier }}-base-domain.middlewares={{ middlewares | join(',') }}
 {% endif %}
 
 traefik.http.routers.{{ matrix_static_files_identifier }}-base-domain.service={{ matrix_static_files_identifier }}

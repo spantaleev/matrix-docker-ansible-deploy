@@ -1,13 +1,24 @@
 #jinja2: lstrip_blocks: "True"
 #!/bin/bash
+set -euo pipefail
 
-{{ devture_systemd_docker_base_host_command_docker }} run \
+container_id=$(\
+	{{ devture_systemd_docker_base_host_command_docker }} create \
 	-it \
 	--rm \
+	--name=matrix-synapse-s3-storage-provider-shell \
 	--env-file={{ matrix_synapse_ext_s3_storage_provider_base_path }}/env \
 	--mount type=bind,src={{ matrix_synapse_storage_path }},dst=/matrix-media-store-parent,bind-propagation=slave \
 	--mount type=bind,src={{ matrix_synapse_ext_s3_storage_provider_data_path }},dst=/data \
 	--workdir=/data \
 	--network={{ matrix_synapse_container_network }} \
 	--entrypoint=/bin/bash \
-	{{ matrix_synapse_docker_image_final }}
+	{{ matrix_synapse_docker_image_final }} \
+)
+
+{# We need to connect to the Postgres network, which should be in this list. #}
+{% for network in matrix_synapse_container_additional_networks %}
+{{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} $container_id
+{% endfor %}
+
+{{ devture_systemd_docker_base_host_command_docker }} start --attach -i $container_id
