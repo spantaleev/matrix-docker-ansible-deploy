@@ -12,18 +12,18 @@
     - when: matrix_client_element_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/prepare_themes.yml"
 
-    - when: matrix_client_element_enabled | bool
+    - when: matrix_client_element_enabled | bool and run_setup | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
 
 - tags:
     - setup-all
     - setup-client-element
   block:
-    - when: not matrix_client_element_enabled | bool
+    - when: not matrix_client_element_enabled | bool and run_setup | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
 
 - tags:
     - self-check
   block:
-    - when: matrix_client_element_enabled | bool
+    - when: matrix_client_element_enabled | bool and run_self_check | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check.yml"
