@@ -26,23 +26,15 @@ Scheme: http
 Forward Hostname/IP: IP-ADDRESS-OF-YOUR-MATRIX
 Forward Port: 81
 
-# Custom locations
-# Add one custom location
-Define location: /
-Scheme: http
-Forward Hostname/IP: IP-ADDRESS-OF-YOUR-MATRIX
-Forward Port: 81
-Custom config:
-    proxy_set_header X-Forwarded-For $remote_addr;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header X-Real-IP $remote_addr;
-    client_max_body_size 50M;
-
 # SSL
 # Either 'Request a new certificate' or select an existing one
 SSL Certificate: matrix.DOMAIN or *.DOMAIN
 Force SSL: true
 HTTP/2 Support: true
+
+# Advanced
+Custom Nginx Configuration:
+	client_max_body_size 50M;
 ```
 
 Again, under the 'Proxy Hosts' page select `Add Proxy Host`, this time for your federation traffic. Apply the proxys configuration like this:
@@ -55,17 +47,6 @@ Scheme: http
 Forward Hostname/IP: IP-ADDRESS-OF-YOUR-MATRIX
 Forward Port: 8449
 
-# Custom locations
-# Add one custom location
-Define location: /
-Scheme: http
-Forward Hostname/IP: IP-ADDRESS-OF-YOUR-MATRIX
-Forward Port: 8449
-Custom config:
-    proxy_set_header X-Forwarded-For $remote_addr;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    client_max_body_size 50M;
-
 # SSL
 # Either 'Request a new certificate' or select an existing one
 SSL Certificate: matrix.DOMAIN or *.DOMAIN
@@ -74,7 +55,9 @@ HTTP/2 Support: true
 
 # Advanced
 # Allows NPM to listen on the federation port
-Custom Nginx Configuration: listen 8448 ssl http2;
+Custom Nginx Configuration:
+	listen 8448 ssl http2;
+	client_max_body_size 50M;
 ```
 
 Also note, NPM would need to be configured for whatever other services you are using. For example, you would need to create additional proxy hosts for `element.DOMAIN` or `jitsi.DOMAIN`, which would use the forwarding port `81`.
