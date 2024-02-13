@@ -55,4 +55,4 @@ Choose a strong password for the bot. You can generate a good password with a co
 ## Obtaining an admin access token
 
 This can be done via `mbc login` then `mbc auth` (see the [maubot documentation](https://docs.mau.fi/maubot/usage/cli/auth.html)). To run these commands you'll need to open the bot docker container with `docker exec -it matrix-bot-maubot sh`
-Alternatively, use Element or curl to [obtain an access token](obtaining-access-tokens.md). However these two methods won't allow the bot to work in encrypted rooms.
+Alternatively, use Element or curl to [obtain an access token](obtaining-access-tokens.md).
