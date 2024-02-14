@@ -547,8 +547,23 @@ matrix_synapse_event_cache_size: "100K"
 
 # Controls cache sizes for Synapse.
 # Raise this to increase cache sizes or lower it to potentially lower memory use.
-# To learn more, see: https://github.com/matrix-org/synapse/issues/3939
-matrix_synapse_caches_global_factor: 0.5
+# To learn more, see:
+# - https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#caching
+# - https://github.com/matrix-org/synapse/issues/3939
+# Defaults for timings of caches is from https://tcpipuk.github.io/synapse/deployment/synapse.html
+# The idea with the timings used is that you get to evict soon but also you keep stuff around for a long time when its not forced out.
+# Long cache lifetimes together with the low minimum TTL allows autotune to be the primary eviction method assuming size of cache is hit before we hit other caps.
+matrix_synapse_caches_global_factor: 10
+matrix_synapse_caches_expire_caches: true
+matrix_synapse_caches_cache_entry_ttl: "1080m"
+matrix_synapse_caches_sync_response_cache_duration: "2m"
+matrix_synapse_cache_autotuning_min_cache_ttl: "30s"
+# The Cache tune math used here is a derivative of the same math used to autotune sizes for postgres.
+# The memtotal variable can in theory be overiden to make Synapse think it has less ram to work with.
+# But if your at the point of considering that just override the math or put static values in.
+matrix_synapse_memtotal_kb: "{{ ansible_memtotal_mb*1024|int }}"
+matrix_synapse_cache_autotuning_max_cache_memory_usage: "{{ 2097152 if (matrix_synapse_memtotal_kb|int/8)/1024 >= 2048 else matrix_synapse_memtotal_kb|int/8 }}"
+matrix_synapse_cache_autotuning_target_cache_memory_usage: "{{ 1048576 if (matrix_synapse_memtotal_kb|int/16)/1024 >= 1024 else matrix_synapse_memtotal_kb|int/16 }}"
 
 # Controls whether Synapse will federate at all.
 # Disable this to completely isolate your server from the rest of the Matrix network.
