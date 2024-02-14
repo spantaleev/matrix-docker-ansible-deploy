@@ -78,16 +78,28 @@ If you have enough compute resources (CPU & RAM), you can make Synapse better us
 
 ### Tuning caches and cache autotuning
 
-Tuning Synapse's cache factor is useful for performance increases but also as part of controlling Synapse ram use. Use the variable `matrix_synapse_caches_global_factor` to set the cache factor as part of this process.
+Tuning Synapse's cache factor is useful for performance increases but also as part of controlling Synapse's memory use. Use the variable `matrix_synapse_caches_global_factor` to set the cache factor as part of this process.
 
-Tuning the cache factor is useful only to a limited degree as its crude to do in isolation and therefore users who are tuning their cache factor should likely look into tuning the autotune variables also.
+**The playbook defaults the global cache factor to a large value** (e.g. `10`). A smaller value (e.g. `0.5`) will decrease the amount used for caches, but will [not necessarily decrease RAM usage as a whole](https://github.com/matrix-org/synapse/issues/3939).
 
-Cache autotune is controlled primarily via the following variables `matrix_synapse_cache_autotuning_max_cache_memory_usage: ""` `matrix_synapse_cache_autotuning_target_cache_memory_usage: ""` `matrix_synapse_cache_autotuning_min_cache_ttl: ""`
+Tuning the cache factor is useful only to a limited degree (as its crude to do in isolation) and therefore users who are tuning their cache factor should likely look into tuning autotune variables as well (see below).
 
-The `matrix_synapse_cache_autotuning_max_cache_memory_usage: ""` variable controls the maximum amount of ram Synapse is allowed to use before synapse aggressively tries to get rid of cache until you either hit `matrix_synapse_cache_autotuning_min_cache_ttl: ""` being the age of your cache or you hit your memory use target set by `matrix_synapse_cache_autotuning_target_cache_memory_usage: ""`
+Cache autotuning is **enabled by default** and controlled via the following variables:
 
-The playbook defaults these settings to `1/8 of system ram up to 2048mb` for max use and `1/16 of system ram up to 1024MB` as target and `30s` as the minimum age of cache entries that are allowed to be evicted by autotune.
+- `matrix_synapse_cache_autotuning_max_cache_memory_usage` - defaults to 1/8 of total RAM with a cap of 2GB; values are specified in bytes
+- `matrix_synapse_cache_autotuning_target_cache_memory_usage` - defaults to 1/16 of total RAM with a cap of 1GB; values are specified in bytes
+- `matrix_synapse_cache_autotuning_min_cache_ttl` - defaults to `30s`
 
-Users who wish to lower Synapses RAM footprint should look at lowering cache factor together with autotune variables. If your cache factor is too low for a given auto tune setting your caches will not reach auto tune thresholds and therefore autotune wont be doing its job. Therefore its recommended to when running auto tune have your cache factor be too big by a resonable margin instead as to be able to have full use of autotune.
+You can **learn more about cache-autotuning and the global cache factor settings** in the [Synapse's documentation on caches and associated values](https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#caches-and-associated-values).
+
+To **disable cache auto-tuning**, unset all values:
+
+```yml
+matrix_synapse_cache_autotuning_max_cache_memory_usage: ''
+matrix_synapse_cache_autotuning_target_cache_memory_usage: ''
+matrix_synapse_cache_autotuning_min_cache_ttl: ''
+```
+
+Users who wish to lower Synapse's RAM footprint should look into lowering the global cache factor and tweaking the autotune variables (or disabling auto-tuning). If your cache factor is too low for a given auto tune setting your caches will not reach autotune thresholds and autotune won't be able to do its job. Therefore, when auto-tuning is enabled (which it is by default), it's recommended to have your cache factor be large.
 
 See also [How do I optimize this setup for a low-power server?](faq.md#how-do-i-optimize-this-setup-for-a-low-power-server).
