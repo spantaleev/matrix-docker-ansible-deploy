@@ -86,8 +86,8 @@ Tuning the cache factor is useful only to a limited degree (as its crude to do i
 
 Cache autotuning is **enabled by default** and controlled via the following variables:
 
-- `matrix_synapse_cache_autotuning_max_cache_memory_usage` - defaults to 1/8 of total RAM with a cap of 2GB; values are specified in bytes
-- `matrix_synapse_cache_autotuning_target_cache_memory_usage` - defaults to 1/16 of total RAM with a cap of 1GB; values are specified in bytes
+- `matrix_synapse_cache_autotuning_max_cache_memory_usage` - defaults to 1/8 of total RAM with a cap of 2GB; values are specified in KB
+- `matrix_synapse_cache_autotuning_target_cache_memory_usage` - defaults to 1/16 of total RAM with a cap of 1GB; values are specified in KB
 - `matrix_synapse_cache_autotuning_min_cache_ttl` - defaults to `30s`
 
 You can **learn more about cache-autotuning and the global cache factor settings** in the [Synapse's documentation on caches and associated values](https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#caches-and-associated-values).
