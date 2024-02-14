@@ -5,6 +5,8 @@ traefik.enable=true
 traefik.docker.network={{ matrix_corporal_container_labels_traefik_docker_network }}
 {% endif %}
 
+traefik.http.services.matrix-corporal-api.loadbalancer.server.port=41081
+traefik.http.services.matrix-corporal-gateway.loadbalancer.server.port=41080
 
 {% if matrix_corporal_container_labels_api_enabled %}
 ############################################################
@@ -12,8 +14,6 @@ traefik.docker.network={{ matrix_corporal_container_labels_traefik_docker_networ
 # Corporal API (/_matrix/corporal)                         #
 #                                                          #
 ############################################################
-
-traefik.http.services.matrix-corporal-api.loadbalancer.server.port=41081
 
 traefik.http.routers.matrix-corporal-api.rule={{ matrix_corporal_container_labels_api_traefik_rule }}
 
@@ -43,8 +43,6 @@ traefik.http.routers.matrix-corporal-api.tls.certResolver={{ matrix_corporal_con
 # Matrix Client-Server API (/_matrix)                      #
 #                                                          #
 ############################################################
-
-traefik.http.services.matrix-corporal-gateway.loadbalancer.server.port=41080
 
 traefik.http.routers.matrix-corporal-matrix-client-api.rule={{ matrix_corporal_container_labels_matrix_client_api_traefik_rule }}
 

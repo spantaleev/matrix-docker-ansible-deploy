@@ -4,6 +4,58 @@
 # set_fact within a loop does not work reliably in Ansible (it only executes on the first iteration for some reason),
 # so we're forced to do something much uglier.
 
+- name: Build room workers
+  ansible.builtin.set_fact:
+    worker:
+      id: "room-worker-{{ item }}"
+      name: "matrix-synapse-worker-room-{{ item }}"
+      type: 'room_worker'
+      app: 'generic_worker'
+      webserving: true
+      port: "{{ matrix_synapse_workers_room_workers_port_range_start + item }}"
+      metrics_port: "{{ matrix_synapse_workers_room_workers_metrics_range_start + item }}"
+  register: "matrix_synapse_workers_list_results_room_workers"
+  loop: "{{ range(0, matrix_synapse_workers_room_workers_count | int) | list }}"
+
+- name: Build client sync workers
+  ansible.builtin.set_fact:
+    worker:
+      id: "sync-worker-{{ item }}"
+      name: "matrix-synapse-worker-sync-{{ item }}"
+      type: 'sync_worker'
+      app: 'generic_worker'
+      webserving: true
+      port: "{{ matrix_synapse_workers_sync_workers_port_range_start + item }}"
+      metrics_port: "{{ matrix_synapse_workers_sync_workers_metrics_range_start + item }}"
+  register: "matrix_synapse_workers_list_results_sync_workers"
+  loop: "{{ range(0, matrix_synapse_workers_sync_workers_count | int) | list }}"
+
+- name: Build client reader workers
+  ansible.builtin.set_fact:
+    worker:
+      id: "client-reader-{{ item }}"
+      name: "matrix-synapse-worker-client-reader-{{ item }}"
+      type: 'client_reader'
+      app: 'generic_worker'
+      webserving: true
+      port: "{{ matrix_synapse_workers_client_reader_workers_port_range_start + item }}"
+      metrics_port: "{{ matrix_synapse_workers_client_reader_workers_metrics_range_start + item }}"
+  register: "matrix_synapse_workers_list_results_client_reader_workers"
+  loop: "{{ range(0, matrix_synapse_workers_client_reader_workers_count | int) | list }}"
+
+- name: Build federation reader workers
+  ansible.builtin.set_fact:
+    worker:
+      id: "federation-reader-{{ item }}"
+      name: "matrix-synapse-worker-federation-reader-{{ item }}"
+      type: 'federation_reader'
+      app: 'generic_worker'
+      webserving: true
+      port: "{{ matrix_synapse_workers_federation_reader_workers_port_range_start + item }}"
+      metrics_port: "{{ matrix_synapse_workers_federation_reader_workers_metrics_range_start + item }}"
+  register: "matrix_synapse_workers_list_results_federation_reader_workers"
+  loop: "{{ range(0, matrix_synapse_workers_federation_reader_workers_count | int) | list }}"
+
 - name: Build generic workers
   ansible.builtin.set_fact:
     worker:
@@ -130,6 +182,14 @@
     matrix_synapse_dynamic_workers_list: "{{ matrix_synapse_dynamic_workers_list | default([]) + [item.ansible_facts.worker] }}"
   with_items: |
     {{
+      matrix_synapse_workers_list_results_room_workers.results
+      +
+      matrix_synapse_workers_list_results_sync_workers.results
+      +
+      matrix_synapse_workers_list_results_client_reader_workers.results
+      +
+      matrix_synapse_workers_list_results_federation_reader_workers.results
+      +
       matrix_synapse_workers_list_results_generic_workers.results
       +
       matrix_synapse_workers_list_results_stream_writer_workers.results

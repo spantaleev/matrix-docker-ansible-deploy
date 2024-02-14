@@ -142,35 +142,6 @@ traefik.http.routers.matrix-synapse-public-client-synapse-client-api.tls.certRes
 {% endif %}
 
 
-{% if matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled %}
-############################################################
-#                                                          #
-# Public Synapse OIDC API (/_synapse/oidc)                 #
-#                                                          #
-############################################################
-
-traefik.http.routers.matrix-synapse-public-client-synapse-oidc-api.rule={{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_rule }}
-
-{% if matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-synapse-public-client-synapse-oidc-api.priority={{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_priority }}
-{% endif %}
-
-traefik.http.routers.matrix-synapse-public-client-synapse-oidc-api.service=matrix-synapse-client-api
-traefik.http.routers.matrix-synapse-public-client-synapse-oidc-api.entrypoints={{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_entrypoints }}
-traefik.http.routers.matrix-synapse-public-client-synapse-oidc-api.tls={{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_tls | to_json }}
-
-{% if matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_tls %}
-traefik.http.routers.matrix-synapse-public-client-synapse-oidc-api.tls.certResolver={{ matrix_synapse_container_labels_public_client_synapse_oidc_api_traefik_tls_certResolver }}
-{% endif %}
-
-############################################################
-#                                                          #
-# /Public Synapse OIDC API (/_synapse/oidc)                #
-#                                                          #
-############################################################
-{% endif %}
-
-
 {% if matrix_synapse_container_labels_public_client_synapse_admin_api_enabled %}
 ############################################################
 #                                                          #

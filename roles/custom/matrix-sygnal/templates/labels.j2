@@ -5,6 +5,8 @@ traefik.enable=true
 traefik.docker.network={{ matrix_sygnal_container_labels_traefik_docker_network }}
 {% endif %}
 
+traefik.http.services.matrix-sygnal.loadbalancer.server.port=6000
+
 {% set middlewares = [] %}
 
 {% if matrix_sygnal_container_labels_traefik_path_prefix != '/' %}
@@ -39,7 +41,6 @@ traefik.http.routers.matrix-sygnal.tls={{ matrix_sygnal_container_labels_traefik
 traefik.http.routers.matrix-sygnal.tls.certResolver={{ matrix_sygnal_container_labels_traefik_tls_certResolver }}
 {% endif %}
 
-traefik.http.services.matrix-sygnal.loadbalancer.server.port=6000
 {% endif %}
 
 {{ matrix_sygnal_container_labels_additional_labels }}

@@ -8,7 +8,7 @@
 #
 
 # set playbook root path
-root=$(dirname "$(readlink -f "$0")")/../..
+root=$(dirname "$(readlink -f "$0")")/..
 
 # set default tags or get from first argument if any
 tags="${1:-setup-all,start}"

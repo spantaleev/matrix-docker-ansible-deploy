@@ -1,7 +1,9 @@
 #jinja2: lstrip_blocks: "True"
 #!/bin/bash
+set -euo pipefail
 
-{{ devture_systemd_docker_base_host_command_docker }} run \
+container_id=$(\
+	{{ devture_systemd_docker_base_host_command_docker }} create \
 	--rm \
 	--env-file={{ matrix_synapse_ext_s3_storage_provider_base_path }}/env \
 	--mount type=bind,src={{ matrix_synapse_storage_path }},dst=/matrix-media-store-parent,bind-propagation=slave \
@@ -10,4 +12,12 @@
 	--network={{ matrix_synapse_container_network }} \
 	--entrypoint=/bin/bash \
 	{{ matrix_synapse_docker_image_final }} \
-	-c 's3_media_upload update-db $UPDATE_DB_DURATION && s3_media_upload --no-progress check-deleted $MEDIA_PATH && s3_media_upload --no-progress upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT {% if matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_enabled %}--sse-customer-algo $SSE_CUSTOMER_ALGO --sse-customer-key $SSE_CUSTOMER_KEY{% endif %}'
+	-c 's3_media_upload update-db $UPDATE_DB_DURATION && s3_media_upload --no-progress check-deleted $MEDIA_PATH && s3_media_upload --no-progress upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT {% if matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_enabled %}--sse-customer-algo $SSE_CUSTOMER_ALGO --sse-customer-key $SSE_CUSTOMER_KEY{% endif %}' \
+)
+
+{# We need to connect to the Postgres network, which should be in this list. #}
+{% for network in matrix_synapse_container_additional_networks %}
+{{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} $container_id
+{% endfor %}
+
+{{ devture_systemd_docker_base_host_command_docker }} start --attach $container_id

@@ -5,6 +5,8 @@ traefik.enable=true
 traefik.docker.network={{ matrix_bot_buscarron_container_labels_traefik_docker_network }}
 {% endif %}
 
+traefik.http.services.matrix-bot-buscarron.loadbalancer.server.port=8080
+
 {% set middlewares = [] %}
 {% set middlewares_metrics = [] %}
 
@@ -39,7 +41,6 @@ traefik.http.routers.matrix-bot-buscarron.tls={{ matrix_bot_buscarron_container_
 {% if matrix_bot_buscarron_container_labels_traefik_tls %}
 traefik.http.routers.matrix-bot-buscarron.tls.certResolver={{ matrix_bot_buscarron_container_labels_traefik_tls_certResolver }}
 {% endif %}
-traefik.http.services.matrix-bot-buscarron.loadbalancer.server.port=8080
 
 {% endif %}
 

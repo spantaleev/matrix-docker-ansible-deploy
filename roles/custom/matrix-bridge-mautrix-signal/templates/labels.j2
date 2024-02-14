@@ -5,14 +5,14 @@ traefik.enable=true
 traefik.docker.network={{ matrix_mautrix_signal_container_labels_traefik_docker_network }}
 {% endif %}
 
+traefik.http.services.matrix-mautrix-signal-metrics.loadbalancer.server.port=8000
+
 {% if matrix_mautrix_signal_container_labels_metrics_enabled %}
 ############################################################
 #                                                          #
 # Metrics                                                  #
 #                                                          #
 ############################################################
-
-traefik.http.services.matrix-mautrix-signal-metrics.loadbalancer.server.port=8000
 
 {% if matrix_mautrix_signal_container_labels_metrics_middleware_basic_auth_enabled %}
 traefik.http.middlewares.matrix-mautrix-signal-metrics-basic-auth.basicauth.users={{ matrix_mautrix_signal_container_labels_metrics_middleware_basic_auth_users }}

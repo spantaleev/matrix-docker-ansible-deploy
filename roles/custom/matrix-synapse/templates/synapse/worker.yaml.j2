@@ -7,10 +7,17 @@ worker_log_config: /data/{{ matrix_server_fqn_matrix }}.log.config
 
 {% set http_resources = [] %}
 
-{% if matrix_synapse_worker_details.type == 'user_dir' %}
+{% if matrix_synapse_worker_details.type == 'room_worker' %}
+  {% set http_resources = http_resources + ['client', 'federation'] %}
+{% elif matrix_synapse_worker_details.type == 'sync_worker' %}
   {% set http_resources = http_resources + ['client'] %}
-{% endif %}
-{% if matrix_synapse_worker_details.type == 'generic_worker' %}
+{% elif matrix_synapse_worker_details.type == 'client_reader' %}
+  {% set http_resources = http_resources + ['client'] %}
+{% elif matrix_synapse_worker_details.type == 'federation_reader' %}
+  {% set http_resources = http_resources + ['federation'] %}
+{% elif matrix_synapse_worker_details.type == 'user_dir' %}
+  {% set http_resources = http_resources + ['client'] %}
+{% elif matrix_synapse_worker_details.type == 'generic_worker' %}
   {% set http_resources = http_resources + ['client', 'federation'] %}
 {% endif %}
 {#
