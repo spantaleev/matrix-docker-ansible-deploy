@@ -562,8 +562,8 @@ matrix_synapse_cache_autotuning_min_cache_ttl: "30s"
 # The memtotal variable can in theory be overiden to make Synapse think it has less ram to work with.
 # But if your at the point of considering that just override the math or put static values in.
 matrix_synapse_memtotal_kb: "{{ ansible_memtotal_mb*1024|int }}"
-matrix_synapse_cache_autotuning_max_cache_memory_usage: "{{ 2097152 if (matrix_synapse_memtotal_kb|int/8)/1024 >= 2048 else matrix_synapse_memtotal_kb|int/8 }}"
-matrix_synapse_cache_autotuning_target_cache_memory_usage: "{{ 1048576 if (matrix_synapse_memtotal_kb|int/16)/1024 >= 1024 else matrix_synapse_memtotal_kb|int/16 }}"
+matrix_synapse_cache_autotuning_max_cache_memory_usage: "{{ (2097152 if (matrix_synapse_memtotal_kb|int/8)/1024 >= 2048 else matrix_synapse_memtotal_kb|int/8) | int }}"
+matrix_synapse_cache_autotuning_target_cache_memory_usage: "{{ (1048576 if (matrix_synapse_memtotal_kb|int/16)/1024 >= 1024 else matrix_synapse_memtotal_kb|int/16) | int }}"
 
 # Controls whether Synapse will federate at all.
 # Disable this to completely isolate your server from the rest of the Matrix network.
