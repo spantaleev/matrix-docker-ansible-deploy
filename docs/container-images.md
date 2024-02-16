@@ -108,6 +108,8 @@ These services are not part of our default installation, but can be enabled by [
 
 - [matrixdotorg/mjolnir](https://hub.docker.com/r/matrixdotorg/mjolnir) - the [mjolnir](https://github.com/matrix-org/mjolnir) moderation bot (optional)
 
+- [gnuxie/draupnir](https://hub.docker.com/r/gnuxie/draupnir) - the [Draupnir](https://github.com/the-draupnir-project/Draupnir/) moderation bot (optional)
+
 - [awesometechnologies/synapse-admin](https://hub.docker.com/r/awesometechnologies/synapse-admin) - the [synapse-admin](https://github.com/Awesome-Technologies/synapse-admin) web UI tool for administrating users and rooms on your Matrix server (optional)
 
 - [prom/prometheus](https://hub.docker.com/r/prom/prometheus/) - [Prometheus](https://github.com/prometheus/prometheus/) is a systems and service monitoring system

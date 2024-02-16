@@ -16,7 +16,7 @@ matrix_synapse_enabled: true
 matrix_synapse_github_org_and_repo: element-hq/synapse
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/synapse
-matrix_synapse_version: v1.100.0
+matrix_synapse_version: v1.101.0
 
 matrix_synapse_username: ''
 matrix_synapse_uid: ''
@@ -547,8 +547,45 @@ matrix_synapse_event_cache_size: "100K"
 
 # Controls cache sizes for Synapse.
 # Raise this to increase cache sizes or lower it to potentially lower memory use.
-# To learn more, see: https://github.com/matrix-org/synapse/issues/3939
-matrix_synapse_caches_global_factor: 0.5
+# To learn more, see:
+# - https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#caching
+# - https://github.com/matrix-org/synapse/issues/3939
+# Defaults for timings of caches is from https://tcpipuk.github.io/synapse/deployment/synapse.html
+# The idea with the timings used is that you get to evict soon but also you keep stuff around for a long time when its not forced out.
+# Long cache lifetimes together with the low minimum TTL allows autotune to be the primary eviction method assuming size of cache is hit before we hit other caps.
+matrix_synapse_caches_global_factor: 10
+matrix_synapse_caches_expire_caches: true
+matrix_synapse_caches_cache_entry_ttl: "1080m"
+matrix_synapse_caches_sync_response_cache_duration: "2m"
+
+# Controls how much memory this role thinks is available for cache-size-related calculations.
+# By default, all of the server's memory is taken into account, but you can adjust this.
+# You can also go for directly adjusting cache-sizes (matrix_synapse_cache_autotuning_max_cache_memory_usage, matrix_synapse_cache_autotuning_target_cache_memory_usage) instead of adjusting this.
+matrix_synapse_cache_size_calculations_memtotal_bytes: "{{ (ansible_memtotal_mb * 1024 * 1024) | int }}"
+
+# Controls the cap to use for matrix_synapse_cache_autotuning_max_cache_memory_usage.
+matrix_synapse_cache_size_calculations_max_cache_memory_usage_cap_bytes: "{{ (2 * 1024 * 1024 * 1024) }}"  # 2GB
+
+# Controls the cap to use for matrix_synapse_cache_autotuning_target_cache_memory_usage.
+matrix_synapse_cache_size_calculations_target_cache_memory_usage_cap_bytes: "{{ (1 * 1024 * 1024 * 1024) }}"  # 1GB
+
+matrix_synapse_cache_autotuning_min_cache_ttl: "30s"
+
+matrix_synapse_cache_autotuning_max_cache_memory_usage: |-
+  {{
+    [
+      (((matrix_synapse_cache_size_calculations_memtotal_bytes | int) / 8) | int),
+      (matrix_synapse_cache_size_calculations_max_cache_memory_usage_cap_bytes | int),
+    ] | min
+  }}
+
+matrix_synapse_cache_autotuning_target_cache_memory_usage: |-
+  {{
+    [
+      (((matrix_synapse_cache_size_calculations_memtotal_bytes | int) / 16) | int),
+      (matrix_synapse_cache_size_calculations_target_cache_memory_usage_cap_bytes | int),
+    ] | min
+  }}
 
 # Controls whether Synapse will federate at all.
 # Disable this to completely isolate your server from the rest of the Matrix network.

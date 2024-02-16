@@ -8,7 +8,7 @@ matrix_static_files_enabled: true
 matrix_static_files_identifier: matrix-static-files
 
 # renovate: datasource=docker depName=joseluisq/static-web-server
-matrix_static_files_version: 2.25.0
+matrix_static_files_version: 2.27.0
 
 matrix_static_files_base_path: "{{ matrix_base_data_path }}/{{ 'static-files' if matrix_static_files_identifier == 'matrix-static-files' else matrix_static_files_identifier }}"
 matrix_static_files_config_path: "{{ matrix_static_files_base_path }}/config"
@@ -83,6 +83,7 @@ matrix_static_files_container_labels_base_domain_traefik_tls: "{{ matrix_static_
 matrix_static_files_container_labels_base_domain_traefik_tls_certResolver: "{{ matrix_static_files_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 # Controls whether the root path (/) at the base domain would respond with a redirect to some URL.
 matrix_static_files_container_labels_base_domain_root_path_redirection_enabled: false
+matrix_static_files_container_labels_base_domain_root_path_redirection_regex: "^https://{{ matrix_static_files_container_labels_base_domain_traefik_hostname }}{{ matrix_static_files_container_labels_base_domain_traefik_path_prefix }}$"
 matrix_static_files_container_labels_base_domain_root_path_redirection_url: ""
 
 # matrix_static_files_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
