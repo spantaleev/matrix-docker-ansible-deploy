@@ -2723,7 +2723,10 @@ matrix_coturn_container_image_self_build: "{{ matrix_architecture not in ['amd64
 # to allow auto-detection (via an EchoIP service) to happen at runtime.
 matrix_coturn_turn_external_ip_address: "{{ ansible_host }}"
 
-matrix_coturn_turn_static_auth_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'coturn.sas', rounds=655555) | to_uuid }}"
+matrix_coturn_turn_static_auth_secret: "{{ ('%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'coturn.sas', rounds=655555) | to_uuid) if matrix_coturn_authentication_method == 'auth-secret' else '' }}"
+
+matrix_coturn_lt_cred_mech_username: "{{ ('%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'coturn.user', rounds=655555) | to_uuid) if matrix_coturn_authentication_method == 'lt-cred-mech' else '' }}"
+matrix_coturn_lt_cred_mech_password: "{{ ('%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'coturn.pass', rounds=655555) | to_uuid) if matrix_coturn_authentication_method == 'lt-cred-mech' else '' }}"
 
 matrix_coturn_tls_enabled: "{{ matrix_playbook_ssl_enabled }}"
 
@@ -3007,7 +3010,9 @@ jitsi_web_stun_servers: |
 # The Jitsi instance installed by this playbook is meant for embedding into Matrix clients, so framing is allowed.
 jitsi_web_framing_enabled: true
 
-jitsi_turn_credentials: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
+# Jitsi (Prosody) only seems to support authenticating with Coturn using `auth-secret`, not `lt-cred-mech`.
+# See: https://prosody.im/doc/coturn
+jitsi_turn_credentials: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
 jitsi_turn_host: "{{ ('turn.' + matrix_server_fqn_matrix) if matrix_coturn_enabled else '' }}"
 jitsi_turns_host: "{{ ('turn.' + matrix_server_fqn_matrix) if matrix_coturn_enabled else '' }}"
 jitsi_turn_port: "{{ matrix_coturn_container_stun_plain_host_bind_port if matrix_coturn_enabled else '' }}"
@@ -3972,7 +3977,9 @@ matrix_synapse_turn_uris: |
     ] if matrix_coturn_enabled else [])
   }}
 
-matrix_synapse_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
+matrix_synapse_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
+matrix_synapse_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_synapse_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
 
 matrix_synapse_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
@@ -4639,7 +4646,9 @@ matrix_dendrite_client_api_turn_uris: |
     else []
   }}
 
-matrix_dendrite_client_api_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
+matrix_dendrite_client_api_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
+matrix_dendrite_client_api_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_dendrite_client_api_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
 
 matrix_dendrite_disable_tls_validation: "{{ not matrix_playbook_ssl_enabled }}"
 
@@ -4717,7 +4726,9 @@ matrix_conduit_turn_uris: |
     ] if matrix_coturn_enabled else [])
   }}
 
-matrix_conduit_turn_secret: "{{ matrix_coturn_turn_static_auth_secret if matrix_coturn_enabled else '' }}"
+matrix_conduit_turn_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
+matrix_conduit_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_conduit_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
 
 ######################################################################
 #

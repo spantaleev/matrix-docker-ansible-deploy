@@ -73,9 +73,25 @@ matrix_coturn_container_turn_range_listen_interface: "{{ '' if matrix_coturn_con
 matrix_coturn_turn_udp_min_port: 49152
 matrix_coturn_turn_udp_max_port: 49172
 
-# A shared secret (between Synapse and Coturn) used for authentication.
+# Controls which authentication method to enable.
+#
+# lt-cred-mech likely provides better compatibility,
+# as described here: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3191
+# but those claims are unverified.
+#
+# For now, we still default to `auth-secret` like we've always done.
+#
+# Known values: auth-secret, lt-cred-mech
+matrix_coturn_authentication_method: auth-secret
+
+# A shared secret used for authentication when `matrix_coturn_authentication_method` is `auth-secret`.
 # You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
 matrix_coturn_turn_static_auth_secret: ""
+
+# A username used authentication when `matrix_coturn_authentication_method` is `lt-cred-mech`.
+matrix_coturn_lt_cred_mech_username: ""
+# A password used authentication when `matrix_coturn_authentication_method` is `lt-cred-mech`.
+matrix_coturn_lt_cred_mech_password: ""
 
 # The external IP address of the machine where Coturn is.
 # If do not define an IP address here or in `matrix_coturn_turn_external_ip_addresses`, auto-detection via an EchoIP service will be done.
