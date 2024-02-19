@@ -1,0 +1,20 @@
+---
+
+- name: Check existence of mautrix-meta-messenger service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_mautrix_meta_messenger_identifier }}.service"
+  register: matrix_mautrix_meta_messenger_service_stat
+
+- when: matrix_mautrix_meta_messenger_service_stat.stat.exists | bool
+  block:
+    - name: Ensure mautrix-meta-messenger is stopped
+      ansible.builtin.service:
+        name: "{{ matrix_mautrix_meta_messenger_identifier }}"
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure mautrix-meta-messenger.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_mautrix_meta_messenger_identifier }}.service"
+        state: absent
