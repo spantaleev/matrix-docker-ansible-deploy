@@ -1,0 +1,12 @@
+- ansible.builtin.set_fact:
+    matrix_synapse_modules: |
+      {{
+        matrix_synapse_modules | default([])
+        +
+        [
+          {
+            "module": "synapse_auto_accept_invite.InviteAutoAccepter",
+            "config": matrix_synapse_ext_auto_accept_invite_only_for_one_to_one
+          }
+        ]
+      }}
