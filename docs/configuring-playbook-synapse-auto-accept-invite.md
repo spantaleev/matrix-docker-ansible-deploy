@@ -8,7 +8,7 @@ In short, it automatically accepts room invites. You can specify that only 1:1 r
 If you decide that you'd like to let this playbook install it for you, you need a configuration like this:
 
 ```yaml
-matrix_synapse_ext_auto_accept_invite_enabled: true
+matrix_synapse_ext_synapse_auto_accept_invite_enabled: true
 
-matrix_synapse_ext_auto_accept_invite_only_for_one_to_one: true
+matrix_synapse_ext_synapse_auto_accept_invite_only_one_to_one: true
 ```
