@@ -9,10 +9,18 @@
   with_items:
     - {'old': 'matrix_coturn_docker_network', 'new': 'matrix_coturn_container_network'}
 
+- name: Fail if matrix_coturn_authentication_method is invalid
+  ansible.builtin.fail:
+    msg: >-
+      Invalid authentication method specified in `matrix_coturn_authentication_method`
+  when: "matrix_coturn_authentication_method not in ['auth-secret', 'lt-cred-mech']"
+
 - name: Fail if required Coturn settings not defined
   ansible.builtin.fail:
     msg: >-
-      You need to define a required configuration setting (`{{ item }}`) for using Coturn.
-  when: "vars[item] == ''"
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
   with_items:
-    - "matrix_coturn_turn_static_auth_secret"
+    - {'name': 'matrix_coturn_turn_static_auth_secret', when: "{{ matrix_coturn_authentication_method == 'auth-secret' }}"}
+    - {'name': 'matrix_coturn_lt_cred_mech_username', when: "{{ matrix_coturn_authentication_method == 'lt-cred-mech' }}"}
+    - {'name': 'matrix_coturn_lt_cred_mech_password', when: "{{ matrix_coturn_authentication_method == 'lt-cred-mech' }}"}

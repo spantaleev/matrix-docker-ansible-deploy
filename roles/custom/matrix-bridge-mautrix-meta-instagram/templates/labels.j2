@@ -1,0 +1,48 @@
+{% if matrix_mautrix_meta_instagram_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_mautrix_meta_instagram_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_mautrix_meta_instagram_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.{{ matrix_mautrix_meta_instagram_identifier }}-appservice.loadbalancer.server.port=29319
+traefik.http.services.{{ matrix_mautrix_meta_instagram_identifier }}-metrics.loadbalancer.server.port=8000
+
+
+{% if matrix_mautrix_meta_instagram_container_labels_metrics_enabled %}
+############################################################
+#                                                          #
+# Metrics                                                  #
+#                                                          #
+############################################################
+
+{% if matrix_mautrix_meta_instagram_container_labels_metrics_middleware_basic_auth_enabled %}
+traefik.http.middlewares.{{ matrix_mautrix_meta_instagram_identifier }}-metrics-basic-auth.basicauth.users={{ matrix_mautrix_meta_instagram_container_labels_metrics_middleware_basic_auth_users }}
+traefik.http.routers.{{ matrix_mautrix_meta_instagram_identifier }}-metrics.middlewares={{ matrix_mautrix_meta_instagram_identifier }}-metrics-basic-auth
+{% endif %}
+
+traefik.http.routers.{{ matrix_mautrix_meta_instagram_identifier }}-metrics.rule={{ matrix_mautrix_meta_instagram_container_labels_metrics_traefik_rule }}
+
+{% if matrix_mautrix_meta_instagram_container_labels_metrics_traefik_priority | int > 0 %}
+traefik.http.routers.{{ matrix_mautrix_meta_instagram_identifier }}-metrics.priority={{ matrix_mautrix_meta_instagram_container_labels_metrics_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.{{ matrix_mautrix_meta_instagram_identifier }}-metrics.service={{ matrix_mautrix_meta_instagram_identifier }}-metrics
+traefik.http.routers.{{ matrix_mautrix_meta_instagram_identifier }}-metrics.entrypoints={{ matrix_mautrix_meta_instagram_container_labels_metrics_traefik_entrypoints }}
+
+traefik.http.routers.{{ matrix_mautrix_meta_instagram_identifier }}-metrics.tls={{ matrix_mautrix_meta_instagram_container_labels_metrics_traefik_tls | to_json }}
+{% if matrix_mautrix_meta_instagram_container_labels_metrics_traefik_tls %}
+traefik.http.routers.{{ matrix_mautrix_meta_instagram_identifier }}-metrics.tls.certResolver={{ matrix_mautrix_meta_instagram_container_labels_metrics_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Metrics                                                 #
+#                                                          #
+############################################################
+{% endif %}
+
+
+{% endif %}
+
+{{ matrix_mautrix_meta_instagram_container_labels_additional_labels }}

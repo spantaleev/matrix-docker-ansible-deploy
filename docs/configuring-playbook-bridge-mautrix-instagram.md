@@ -1,5 +1,7 @@
 # Setting up Mautrix Instagram (optional)
 
+**Note**: bridging to Facebook [Instagram](https://instagram.com) via this bridge is being [superseded by a new bridge - mautrix-meta](https://github.com/mautrix/facebook/issues/332). For now, the mautrix-instagram bridge continues to work, but the new [mautrix-meta-instagram bridge](./configuring-playbook-bridge-mautrix-meta-instagram.md) is better and more supported. Consider using that bridge instead of this one.
+
 The playbook can install and configure [mautrix-instagram](https://github.com/mautrix/instagram) for you.
 
 See the project's [documentation](https://docs.mau.fi/bridges/python/instagram/index.html) to learn what it does and why it might be useful to you.
