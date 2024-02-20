@@ -45,7 +45,7 @@ This will add the admin permission to the specific user, while keeping the defau
 
 In case you want to replace the default permissions settings **completely**, populate the following item within your `vars.yml` file:
 ```yaml
-matrix_mautrix_signal_bridge_permissions: |
+matrix_mautrix_signal_bridge_permissions:
   '@ADMIN:YOUR_DOMAIN': admin
   '@USER:YOUR_DOMAIN' : user
 ```
