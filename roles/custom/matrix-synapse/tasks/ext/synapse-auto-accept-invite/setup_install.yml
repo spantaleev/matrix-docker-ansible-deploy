@@ -1,0 +1,23 @@
+---
+
+- ansible.builtin.set_fact:
+    matrix_synapse_modules: |
+      {{
+        matrix_synapse_modules | default([])
+        +
+        [
+          {
+            "module": "synapse_auto_accept_invite.InviteAutoAccepter",
+            "config": {
+              "accept_invites_only_for_direct_messages": matrix_synapse_ext_synapse_auto_accept_invite_accept_invites_only_direct_messages,
+              "worker_to_run_on": matrix_synapse_ext_synapse_auto_accept_invite_worker_to_run_on,
+          },
+        }]
+      }}
+
+    matrix_synapse_additional_loggers_auto: >
+      {{
+        matrix_synapse_additional_loggers_auto
+        +
+        [{'name': 'synapse_auto_accept_invite', 'level': 'INFO'}]
+      }}
