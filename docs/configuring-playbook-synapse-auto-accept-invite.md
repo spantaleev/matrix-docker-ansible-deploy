@@ -10,5 +10,5 @@ If you decide that you'd like to let this playbook install it for you, you need 
 ```yaml
 matrix_synapse_ext_synapse_auto_accept_invite_enabled: true
 
-matrix_synapse_ext_synapse_auto_accept_invite_only_direct_messages: true
+matrix_synapse_ext_synapse_auto_accept_invite_accept_invites_only_direct_messages: true
 ```
