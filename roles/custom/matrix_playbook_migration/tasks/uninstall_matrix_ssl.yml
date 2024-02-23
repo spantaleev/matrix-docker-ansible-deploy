@@ -4,3 +4,11 @@
   ansible.builtin.file:
     path: "{{ matrix_base_data_path }}/ssl"
     state: absent
+
+- name: Ensure matrix-ssl-lets-encrypt-certificates-renew systemd timer and service are gone
+  ansible.builtin.file:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ item }}"
+    state: absent
+  with_items:
+    - matrix-ssl-lets-encrypt-certificates-renew.timer
+    - matrix-ssl-lets-encrypt-certificates-renew.service
