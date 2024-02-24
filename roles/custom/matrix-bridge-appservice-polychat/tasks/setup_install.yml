@@ -80,6 +80,14 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
+- name: Ensure matrix-appservice-polychat pino.json template exists
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/pino.json.j2"
+    dest: "{{ matrix_appservice_polychat_config_path }}/pino.json"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
 - name: Ensure appservice-polychat registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_appservice_polychat_registration | to_nice_yaml(indent=2, width=999999) }}"
