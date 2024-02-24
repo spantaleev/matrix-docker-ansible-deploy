@@ -1,0 +1,20 @@
+---
+
+- tags:
+    - setup-all
+    - setup-mautrix-meta-messenger
+    - install-all
+    - install-mautrix-meta-messenger
+  block:
+    - when: matrix_mautrix_meta_messenger_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_mautrix_meta_messenger_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-mautrix-meta-messenger
+  block:
+    - when: not matrix_mautrix_meta_messenger_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

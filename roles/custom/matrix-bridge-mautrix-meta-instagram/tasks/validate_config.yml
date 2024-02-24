@@ -1,0 +1,16 @@
+---
+
+- name: Fail if required mautrix-meta-instagram settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
+  with_items:
+    - {'name': 'matrix_mautrix_meta_instagram_metrics_proxying_hostname', when: "{{ matrix_mautrix_meta_instagram_metrics_proxying_enabled }}"}
+    - {'name': 'matrix_mautrix_meta_instagram_metrics_proxying_path_prefix', when: "{{ matrix_mautrix_meta_instagram_metrics_proxying_enabled }}"}
+    - {'name': 'matrix_mautrix_meta_instagram_appservice_token', when: true}
+    - {'name': 'matrix_mautrix_meta_instagram_homeserver_token', when: true}
+    - {'name': 'matrix_mautrix_meta_instagram_container_network', when: true}
+    - {'name': 'matrix_mautrix_meta_instagram_homeserver_address', when: true}
+    - {'name': 'matrix_mautrix_meta_instagram_database_hostname', when: "{{ matrix_mautrix_meta_instagram_database_engine == 'postgres' }}"}
+    - {'name': 'matrix_mautrix_meta_instagram_database_password', when: "{{ matrix_mautrix_meta_instagram_database_engine == 'postgres' }}"}

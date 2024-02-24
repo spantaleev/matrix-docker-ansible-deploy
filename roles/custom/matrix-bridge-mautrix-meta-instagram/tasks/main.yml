@@ -1,0 +1,20 @@
+---
+
+- tags:
+    - setup-all
+    - setup-mautrix-meta-instagram
+    - install-all
+    - install-mautrix-meta-instagram
+  block:
+    - when: matrix_mautrix_meta_instagram_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_mautrix_meta_instagram_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-mautrix-meta-instagram
+  block:
+    - when: not matrix_mautrix_meta_instagram_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

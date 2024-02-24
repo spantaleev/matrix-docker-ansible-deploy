@@ -34,6 +34,21 @@ If your server has multiple external IP addresses, the Coturn role offers a diff
 matrix_coturn_turn_external_ip_addresses: ['1.2.3.4', '4.5.6.7']
 ```
 
+## Changing the authentication mechanism
+
+The playbook uses the [`auth-secret` authentication method](https://github.com/coturn/coturn/blob/873cabd6a2e5edd7e9cc5662cac3ffe47fe87a8e/README.turnserver#L186-L199) by default, but you may switch to the [`lt-cred-mech` method](https://github.com/coturn/coturn/blob/873cabd6a2e5edd7e9cc5662cac3ffe47fe87a8e/README.turnserver#L178) which [some report](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3191) to be working better.
+
+To do so, add this override to your configuration:
+
+```yml
+matrix_coturn_authentication_method: lt-cred-mech
+```
+
+Regardless of the selected authentication method, the playbook generates secrets automatically and passes them to the homeserver and Coturn.
+
+If you're using [Jitsi](./configuring-playbook-jitsi.md), note that switching to `lt-cred-mech` will remove the integration between Jitsi and your own Coturn server, because Jitsi only seems to support the `auth-secret` authentication method.
+
+
 ## Using your own external Coturn server
 
 If you'd like to use another TURN server (be it Coturn or some other one), you can configure the playbook like this:

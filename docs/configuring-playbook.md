@@ -120,13 +120,17 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Mautrix Whatsapp bridging](configuring-playbook-bridge-mautrix-whatsapp.md) (optional)
 
-- [Setting up Mautrix Facebook bridging](configuring-playbook-bridge-mautrix-facebook.md) (optional)
+- [Setting up Instagram bridging via Mautrix Meta](configuring-playbook-bridge-mautrix-meta-instagram.md) (optional)
+
+- [Setting up Messenger bridging via Mautrix Meta](configuring-playbook-bridge-mautrix-meta-messenger.md) (optional)
+
+- ~~[Setting up Mautrix Facebook bridging](configuring-playbook-bridge-mautrix-facebook.md)~~ - consider bridging to Facebook/Messenger using the new [mautrix-meta-messenger](./configuring-playbook-bridge-mautrix-meta-messenger.md) bridge (optional)
 
 - [Setting up Mautrix Hangouts bridging](configuring-playbook-bridge-mautrix-hangouts.md) (optional)
 
 - [Setting up Mautrix Google Chat bridging](configuring-playbook-bridge-mautrix-googlechat.md) (optional)
 
-- [Setting up Mautrix Instagram bridging](configuring-playbook-bridge-mautrix-instagram.md) (optional)
+- ~~[Setting up Mautrix Instagram bridging](configuring-playbook-bridge-mautrix-instagram.md)~~ - consider bridging to Instagram using the new [mautrix-meta-instagram](./configuring-playbook-bridge-mautrix-meta-instagram.md) bridge (optional)
 
 - [Setting up Mautrix Twitter bridging](configuring-playbook-bridge-mautrix-twitter.md) (optional)
 

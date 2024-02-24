@@ -58,3 +58,7 @@ stop-all *extra_args: (run-tags "stop-all" extra_args)
 # Stops a specific service group
 stop-group group *extra_args:
     @just --justfile {{ justfile() }} run-tags stop-group --extra-vars="group={{ group }}" {{ extra_args }}
+
+# Rebuilds the mautrix-meta-instagram Ansible role using the mautrix-meta-messenger role as a source
+rebuild-mautrix-meta-instagram:
+    /bin/bash {{ justfile_directory() }}/bin/rebuild-mautrix-meta-instagram.sh {{ justfile_directory() }}/roles/custom
