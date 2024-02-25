@@ -54,7 +54,6 @@ matrix_synapse_reverse_proxy_companion_federation_api_enabled: false
 
 Why? This change could be useful for people running small Synapse instances on small severs/VPSes to avoid being impacted by a simple DOS/DDOS when bandwidth, RAM, an CPU resources are limited and if your hosting provider does not provide a DOS/DDOS protection.
 
-**NOTE**: this approach hasn't been tested with the new Traefik-only setup that the playbook started using in 2024-01. It may not work.
 
 The following changes in the configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) will allow this and make it possible to proxy the federation through a CDN such as CloudFlare or any other:
 
