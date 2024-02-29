@@ -60,15 +60,9 @@ This side of Draupnir for all is very much Alpha quality in the user experience 
 
 ## 1. Granting Users the ability to use D4A
 
-Draupnir for all includes several security measures like that it only allows users that are on its allow list to ask for a bot. To add a user to this list we have 2 primary options. Using the chat to tell Draupnir to do this for us or manually sending the state event via either curl or devtools in Element. 
+Draupnir for all includes several security measures like that it only allows users that are on its allow list to ask for a bot. To add a user to this list we have 2 primary options. Using the chat to tell Draupnir to do this for us or if you want to automatically do it by sending `m.policy.rule.user` events that target the subject you want to allow provisioning for with the `org.matrix.mjolnir.allow` recomendation. Using the chat is recomended.
 
-If you want to give individual users access grants the recommended way is via the chat. To use the chat to tell Draupnir to do things you need to ping it in a specific way. Clients like Element and nheko will do this correctly by default because they send `<a href=\"https://matrix.to/#/@example:example.com\">Example</a>:` when you try to mention a user. Draupnir expects this format and will NOT respond to anything else in the main control room. As mentioned earlier D4A is Alpha in its user experience for the main control room.
-
-The command is `<a href=\"https://matrix.to/#/@example:example.com\">Example</a>: allow mxid`
-
-If you want to allow all users on your homeserver you instead send a `m.policy.rule.user` event with the contents being `{"entity": "@*:matrix-homeserver-domain", "recommendation": "org.matrix.mjolnir.allow"}` and a `state_key` that is `_*:matrix-homeserver-domain`.
-
-Using curl you can send this via `curl --request PUT --url 'https://homeserver_url/_matrix/client/v3/rooms/management_room_room_ID/state/m.policy.rule.user/_*:matrix-homeserver-domain' --header 'Authorization: Bearer ACCESS_TOKEN_HERE' --header 'Content-Type: application/json' --data '{"entity": "@*:matrix-homeserver-domain", "recommendation": "org.matrix.mjolnir.allow"}'`
+To allow users or whole homeservers you type /plain @draupnir-main:matrix-homeserver-domain allow `target` and target can be either a MXID or a wildcard like `@*:example.com` to allow all users on example.com to register. We use /plain to force the client to not attempt to mess with this command as it can break Wildcard commands especially.
 
 ## 2. How to provision a D4A once you are allowed to.
 
