@@ -2,7 +2,19 @@
 
 The playbook can install and configure the [Draupnir](https://github.com/the-draupnir-project/Draupnir) moderation tool for you in appservice mode.
 
-Appservice mode can be used together with normal Draupnir or independently. 
+Appservice mode can be used together with the regular [Draupnir bot](configuring-playbook-bot-draupnir.md) or independently.
+
+D4A compared to Draupnir Normal. 
+
+Draupnir for all is the way to go if you need more than 1 Draupnir but you don't need access to Synapse Admin features as they are not accessible thru Draupnir for All (Even tho the commands do show up in help). 
+
+Draupnir for all in the playbook is rate limit exempt automatically as its part of the appservice configuration file if the appservice is rate limited or not. 
+
+Normal Draupnir does come with the benefit of access to Synapse Admin features. You are also able to more easily customise your normal Draupnir than D4A as D4A even on the branch with the Avatar command (To be Upstreamed to Mainline Draupnir) that command is clunky as it requires the use of things like Element devtools. In normal draupnir this is a quick operation where you login to Draupnir with a normal client and set Avatar and Display name normally. 
+
+Draupnir for all does also not support external tooling like [MRU](https://mru.rory.gay) as it cant access Draupnirs user account like is needed to use it. 
+
+Last downside of Draupnir for all is the state of the Admin side of the user experience being Alpha quality. This flaw is not in regular Draupnir and is mostly not in the provisioned Draupnirs either.
 
 ## 1. Create a main management room.
 
