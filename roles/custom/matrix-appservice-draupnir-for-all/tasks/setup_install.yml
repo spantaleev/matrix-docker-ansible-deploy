@@ -1,0 +1,95 @@
+---
+
+- ansible.builtin.set_fact:
+    matrix_appservice_draupnir_for_all_requires_restart: false
+
+- name: Ensure matrix-appservice-draupnir-for-all paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_appservice_draupnir_for_all_base_path }}", when: true}
+    - {path: "{{ matrix_appservice_draupnir_for_all_config_path }}", when: true}
+    - {path: "{{ matrix_appservice_draupnir_for_all_data_path }}", when: true}
+    - {path: "{{ matrix_appservice_draupnir_for_all_docker_src_files_path }}", when: "{{ matrix_appservice_draupnir_for_all_container_image_self_build }}"}
+  when: "item.when | bool"
+
+- name: Ensure draupnir Docker image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_appservice_draupnir_for_all_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_appservice_draupnir_for_all_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_draupnir_for_all_docker_image_force_pull }}"
+  when: "not matrix_appservice_draupnir_for_all_container_image_self_build | bool"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure draupnir repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_appservice_draupnir_for_all_container_image_self_build_repo }}"
+    dest: "{{ matrix_appservice_draupnir_for_all_docker_src_files_path }}"
+    version: "{{ matrix_appservice_draupnir_for_all_docker_image.split(':')[1] }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
+  register: matrix_appservice_draupnir_for_all_git_pull_results
+  when: "matrix_appservice_draupnir_for_all_container_image_self_build | bool"
+
+- name: Ensure draupnir Docker image is built
+  community.docker.docker_image:
+    name: "{{ matrix_appservice_draupnir_for_all_docker_image }}"
+    source: build
+    force_source: "{{ matrix_appservice_draupnir_for_all_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_appservice_draupnir_for_all_docker_src_files_path }}"
+      pull: true
+  when: "matrix_appservice_draupnir_for_all_container_image_self_build | bool"
+
+- name: Ensure matrix-appservice-draupnir-for-all appservice config installed
+  ansible.builtin.copy:
+    content: "{{ matrix_appservice_draupnir_for_all_configuration_appservice | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_appservice_draupnir_for_all_config_path }}/production-appservice.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-appservice-draupnir-for-all bot config installed
+  ansible.builtin.copy:
+    content: "{{ matrix_appservice_draupnir_for_all_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_appservice_draupnir_for_all_config_path }}/production-bots.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-appservice-draupnir-for-all registration.yaml installed
+  ansible.builtin.copy:
+    content: "{{ matrix_appservice_draupnir_for_all_registration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_appservice_draupnir_for_all_config_path }}/draupnir-for-all-registration.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-appservice-draupnir-for-all container network is created
+  community.general.docker_network:
+    name: "{{ matrix_appservice_draupnir_for_all_container_network }}"
+    driver: bridge
+
+- name: Ensure matrix-appservice-draupnir-for-all.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-appservice-draupnir-for-all.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-draupnir-for-all.service"
+    mode: 0644
+  register: matrix_appservice_draupnir_for_all_systemd_service_result
+
+- name: Ensure matrix-appservice-draupnir-for-all.service restarted, if necessary
+  ansible.builtin.service:
+    name: "matrix-appservice-draupnir-for-all.service"
+    state: restarted
+    daemon_reload: true
+  when: "matrix_appservice_draupnir_for_all_requires_restart | bool"

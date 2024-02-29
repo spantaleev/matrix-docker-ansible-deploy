@@ -1,0 +1,20 @@
+---
+
+- tags:
+    - setup-all
+    - setup-appservice-draupnir-for-all
+    - install-all
+    - install-appservice-draupnir-for-all
+  block:
+    - when: matrix_appservice_draupnir_for_all_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_appservice_draupnir_for_all_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+- tags:
+    - setup-all
+    - setup-appservice-draupnir-for-all
+  block:
+    - when: not matrix_appservice_draupnir_for_all_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
