@@ -146,7 +146,10 @@ matrix_bot_draupnir_configuration_extension_yaml: |
 Draupnir supports two methods to receive reports in the management room.
 
 The first method intercepts the report API endpoint of the client-server API, which requires integration with the reverse proxy in front of the homeserver.
-While this playbook uses reverse proxies, it does not yet implement this.
+If you are using traefik, this playbook can set this up for you:
+```yaml
+matrix_bot_draupnir_abuse_reporting_enabled: true
+```
 
 The other method polls an synapse admin API endpoint and is hence only available when using synapse and when the Draupnir user is an admin user (see step 1).
 To enable it, set `pollReports: true` in Draupnir's config:
