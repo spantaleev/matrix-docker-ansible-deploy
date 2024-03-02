@@ -179,7 +179,17 @@ matrix_mautrix_meta_instagram_bridge_username_prefix: |-
 # Changing this may require that you change the regex in the appservice.
 matrix_mautrix_meta_instagram_bridge_username_template: "{{ matrix_mautrix_meta_instagram_bridge_username_prefix + '{{.}}' }}"
 
-matrix_mautrix_meta_instagram_bridge_displayname_template: '{% raw %}{{or .DisplayName .Username "Unknown user"}}{% endraw %}'
+matrix_mautrix_meta_instagram_bridge_displayname_suffix: |-
+  {{
+    ({
+      'facebook': '(FB)',
+      'facebook-tor': '(FB)',
+      'messenger': '(FB)',
+      'instagram': '(IG)',
+    })[matrix_mautrix_meta_instagram_meta_mode]
+  }}
+
+matrix_mautrix_meta_instagram_bridge_displayname_template: '{% raw %}{{or .DisplayName .Username "Unknown user"}}{% endraw %}{{ (" " ~ matrix_mautrix_meta_instagram_bridge_displayname_suffix) if matrix_mautrix_meta_instagram_bridge_displayname_suffix else "" }}'
 
 # The prefix for commands. Only required in non-management rooms.
 # If set to "default", will be determined based on meta -> mode (`matrix_mautrix_meta_instagram_meta_mode`):
@@ -190,6 +200,10 @@ matrix_mautrix_meta_instagram_bridge_command_prefix: default
 # Whether or not created rooms should have federation enabled.
 # If false, created portal rooms will never be federated.
 matrix_mautrix_meta_instagram_bridge_federate_rooms: true
+
+# Should the bridge create a space for each logged-in user and add bridged rooms to it?
+# Users who logged in before turning this on should run `!meta sync-space` to create and fill the space for the first time.
+matrix_mautrix_meta_instagram_bridge_personal_filtering_spaces: true
 
 # Enable End-to-bridge encryption
 matrix_mautrix_meta_instagram_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
