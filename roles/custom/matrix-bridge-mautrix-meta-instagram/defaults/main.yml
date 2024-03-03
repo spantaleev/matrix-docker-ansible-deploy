@@ -23,8 +23,10 @@ matrix_mautrix_meta_instagram_container_src_files_path: "{{ matrix_mautrix_meta_
 matrix_mautrix_meta_instagram_container_image_self_build: false
 matrix_mautrix_meta_instagram_container_image_self_build_repo: "https://github.com/mautrix/meta.git"
 
-matrix_mautrix_meta_instagram_container_image: "{{ matrix_mautrix_meta_instagram_container_image_name_prefix }}mautrix/meta:{{ matrix_mautrix_meta_instagram_version }}"
+matrix_mautrix_meta_instagram_container_image: "{{ matrix_mautrix_meta_instagram_container_image_name_prefix }}mautrix/meta:{{ matrix_mautrix_meta_instagram_container_image_tag }}"
 matrix_mautrix_meta_instagram_container_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_meta_instagram_container_image_self_build else 'dock.mau.dev/' }}"
+# Prebuilt container images for specific commit hashes are tagged with an architecture suffix (e.g. `HASH-amd64`).
+matrix_mautrix_meta_instagram_container_image_tag: "{{ matrix_mautrix_meta_instagram_version }}{{ ('-' ~ matrix_architecture) if (matrix_mautrix_meta_instagram_version | length == 40) else '' }}"
 matrix_mautrix_meta_instagram_container_image_force_pull: "{{ matrix_mautrix_meta_instagram_container_image.endswith(':latest') }}"
 
 matrix_mautrix_meta_instagram_container_network: ""
