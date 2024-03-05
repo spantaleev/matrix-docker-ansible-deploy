@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-appservice-draupnir-for-all service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-draupnir-for-all.service"
+  register: matrix_bot_draupnir_service_stat
+
+- when: matrix_bot_draupnir_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-appservice-draupnir-for-all is stopped
+      ansible.builtin.service:
+        name: matrix-appservice-draupnir-for-all
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-appservice-draupnir-for-all.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-draupnir-for-all.service"
+        state: absent
+
+    - name: Ensure matrix-appservice-draupnir-for-all paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_bot_draupnir_base_path }}"
+        state: absent

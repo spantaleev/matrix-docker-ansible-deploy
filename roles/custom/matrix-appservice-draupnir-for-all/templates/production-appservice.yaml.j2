@@ -1,0 +1,18 @@
+homeserver:
+  # The Matrix server name, this will be the name of the server in your matrix id.
+  domain: "{{ matrix_domain }}"
+  # The url for the appservice to call the client server API from.
+  url: "{{ matrix_homeserver_url }}"
+
+# Database configuration for storing which Mjolnirs have been provisioned.
+db:
+  engine: "postgres"
+  connectionString: "{{ matrix_appservice_draupnir_for_all_database_connection_string }}"
+
+# A room you have created that scopes who can access the appservice.
+# See docs/access_control.md
+adminRoom: "{{ matrix_appservice_draupnir_for_all_master_control_room_alias }}"
+
+# This is a web api that the widget connects to in order to interact with the appservice.
+webAPI:
+  port: 9000

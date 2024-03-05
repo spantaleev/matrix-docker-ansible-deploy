@@ -1,3 +1,14 @@
+# 2024-03-05
+
+## Support for Draupnir-for-all
+
+Thanks to [FSG-Cat](https://github.com/FSG-Cat), the playbook can now install [Draupnir for all](./docs/configuring-playbook-appservice-draupnir-for-all.md) (aka multi-instance Draupnir running in appservice mode).
+
+This is an alternative to [running Draupnir in bot mode](./docs/configuring-playbook-bot-draupnir.md), which is still supported by the playbook.
+
+The documentation page for [Draupnir for all](./docs/configuring-playbook-appservice-draupnir-for-all.md) contains more information on how to install it.
+
+
 # 2024-02-19
 
 ## Support for bridging to Facebook/Messenger via the new mautrix-meta bridge

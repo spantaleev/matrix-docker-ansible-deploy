@@ -1,0 +1,48 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Draupnir for All appservice
+{% for service in matrix_appservice_draupnir_for_all_systemd_wanted_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_appservice_draupnir_for_all_systemd_required_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-appservice-draupnir-for-all 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-appservice-draupnir-for-all 2>/dev/null || true'
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-appservice-draupnir-for-all \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--network={{ matrix_appservice_draupnir_for_all_container_network }} \
+			--mount type=bind,src={{ matrix_appservice_draupnir_for_all_config_path }},dst=/data/config,ro \
+			--mount type=bind,src={{ matrix_appservice_draupnir_for_all_data_path }},dst=/data \
+			{% for arg in matrix_appservice_draupnir_for_all_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_appservice_draupnir_for_all_docker_image }} \
+			appservice -c /data/config/production-appservice.yaml -f /data/config/draupnir-for-all-registration.yaml -p {{ matrix_appservice_draupnir_for_all_appservice_port }} --draupnir-config /data/config/production-bots.yaml
+
+{% for network in matrix_appservice_draupnir_for_all_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-appservice-draupnir-for-all
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-appservice-draupnir-for-all
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-appservice-draupnir-for-all 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-appservice-draupnir-for-all 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-appservice-draupnir-for-all
+
+[Install]
+WantedBy=multi-user.target

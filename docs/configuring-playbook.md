@@ -195,6 +195,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Draupnir](configuring-playbook-bot-draupnir.md) - a moderation tool/bot, forked from Mjolnir and maintained by its former leader developer (optional)
 
+- [Setting up Draupnir for all](configuring-playbook-appservice-draupnir-for-all.md) - like the [Draupnir bot](configuring-playbook-bot-draupnir.md) mentioned above, but running in appservice mode and supporting multiple instances (optional)
+
 - [Setting up Buscarron](configuring-playbook-bot-buscarron.md) - a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room (optional)
 
 

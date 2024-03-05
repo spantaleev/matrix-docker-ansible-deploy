@@ -1,0 +1,103 @@
+---
+# A moderation tool for Matrix
+# Project source code URL: https://github.com/the-draupnir-project/Draupnir
+
+matrix_appservice_draupnir_for_all_enabled: true
+
+# renovate: datasource=docker depName=gnuxie/draupnir
+matrix_appservice_draupnir_for_all_version: "develop"
+
+matrix_appservice_draupnir_for_all_container_image_self_build: false
+matrix_appservice_draupnir_for_all_container_image_self_build_repo: "https://github.com/the-draupnir-project/Draupnir.git"
+
+matrix_appservice_draupnir_for_all_docker_image: "{{ matrix_appservice_draupnir_for_all_docker_image_name_prefix }}gnuxie/draupnir:{{ matrix_appservice_draupnir_for_all_version }}"
+matrix_appservice_draupnir_for_all_docker_image_name_prefix: "{{ 'localhost/' if matrix_appservice_draupnir_for_all_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_appservice_draupnir_for_all_docker_image_force_pull: "{{ matrix_appservice_draupnir_for_all_docker_image.endswith(':develop') }}"
+
+matrix_appservice_draupnir_for_all_base_path: "{{ matrix_base_data_path }}/draupnir-for-all"
+matrix_appservice_draupnir_for_all_config_path: "{{ matrix_appservice_draupnir_for_all_base_path }}/config"
+matrix_appservice_draupnir_for_all_data_path: "{{ matrix_appservice_draupnir_for_all_base_path }}/data"
+matrix_appservice_draupnir_for_all_docker_src_files_path: "{{ matrix_appservice_draupnir_for_all_base_path }}/docker-src"
+
+matrix_appservice_draupnir_for_all_container_network: ""
+
+matrix_appservice_draupnir_for_all_container_additional_networks: "{{ matrix_appservice_draupnir_for_all_container_additional_networks_auto + matrix_appservice_draupnir_for_all_container_additional_networks_custom }}"
+matrix_appservice_draupnir_for_all_container_additional_networks_auto: []
+matrix_appservice_draupnir_for_all_container_additional_networks_custom: []
+
+# A list of extra arguments to pass to the container
+matrix_appservice_draupnir_for_all_container_extra_arguments: []
+
+# List of systemd services that matrix-bot-draupnir.service depends on
+matrix_appservice_draupnir_for_all_systemd_required_services_list: "{{ matrix_appservice_draupnir_for_all_systemd_required_services_list_default + matrix_appservice_draupnir_for_all_systemd_required_services_list_auto + matrix_appservice_draupnir_for_all_systemd_required_services_list_custom }}"
+matrix_appservice_draupnir_for_all_systemd_required_services_list_default: ['docker.service']
+matrix_appservice_draupnir_for_all_systemd_required_services_list_auto: []
+matrix_appservice_draupnir_for_all_systemd_required_services_list_custom: []
+
+# List of systemd services that matrix-bot-draupnir.service wants
+matrix_appservice_draupnir_for_all_systemd_wanted_services_list: []
+
+# The room ID where people can use the bot. The bot has no access controls, so
+# anyone in this room can use the bot - secure your room!
+# This should be a room alias - not a matrix.to URL.
+# Note: draupnir is fairly verbose - expect a lot of messages from it.
+# This room is diffrent for Appservice Mode compared to normal mode.
+# In Appservice mode it provides functions like user management.
+matrix_appservice_draupnir_for_all_master_control_room_alias: ""
+
+# Placeholder Remenant of the fact that Cat belived Master Control Room to be separated from Access Control Policy List.
+# The alias of the Policy list used to control who can provision a bot for them selfs.
+# This should be a room alias - not a matrix.to URL.
+# matrix_appservice_draupnir_for_all_management_policy_list_alias: ""
+
+matrix_appservice_draupnir_for_all_database_username: matrix_appservice_draupnir_for_all
+matrix_appservice_draupnir_for_all_database_password: 'some-passsword'
+matrix_appservice_draupnir_for_all_database_hostname: ''
+matrix_appservice_draupnir_for_all_database_port: 5432
+matrix_appservice_draupnir_for_all_database_name: matrix_appservice_draupnir_for_all
+matrix_appservice_draupnir_for_all_database_sslmode: disable
+
+matrix_appservice_draupnir_for_all_appservice_port: "9001"
+matrix_appservice_draupnir_for_all_appservice_url: 'http://matrix-appservice-draupnir-for-all'
+
+matrix_appservice_draupnir_for_all_database_connection_string: 'postgresql://{{ matrix_appservice_draupnir_for_all_database_username }}:{{ matrix_appservice_draupnir_for_all_database_password }}@{{ matrix_appservice_draupnir_for_all_database_hostname }}:{{ matrix_appservice_draupnir_for_all_database_port }}/{{ matrix_appservice_draupnir_for_all_database_name }}?sslmode={{ matrix_appservice_draupnir_for_all_database_sslmode }}'
+
+matrix_appservice_draupnir_for_all_user_prefix: "draupnir_"
+
+matrix_appservice_draupnir_for_all_registration_yaml: |
+  id: "draupnir-for-all"
+  as_token: "{{ matrix_appservice_draupnir_for_all_appservice_token }}"
+  hs_token: "{{ matrix_appservice_draupnir_for_all_homeserver_token }}"
+  url: "{{ matrix_appservice_draupnir_for_all_appservice_url }}:{{ matrix_appservice_draupnir_for_all_appservice_port }}"
+  sender_localpart: draupnir-main
+  namespaces:
+    users:
+    - exclusive: true
+      regex: '@{{ matrix_appservice_draupnir_for_all_user_prefix }}*'
+  rate_limited: false
+
+matrix_appservice_draupnir_for_all_registration: "{{ matrix_appservice_draupnir_for_all_registration_yaml | from_yaml }}"
+matrix_appservice_draupnir_for_all_configuration_appservice: "{{ lookup('template', 'templates/production-appservice.yaml.j2') | from_yaml }}"
+
+# Default configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_appservice_draupnir_for_all_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+
+matrix_appservice_draupnir_for_all_configuration_yaml: "{{ lookup('template', 'templates/production-bots.yaml.j2') }}"
+
+matrix_appservice_draupnir_for_all_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_appservice_draupnir_for_all_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_appservice_draupnir_for_all_configuration_yaml`.
+
+matrix_appservice_draupnir_for_all_configuration_extension: "{{ matrix_appservice_draupnir_for_all_configuration_extension_yaml | from_yaml if matrix_appservice_draupnir_for_all_configuration_extension_yaml | from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_appservice_draupnir_for_all_configuration_yaml`.
+matrix_appservice_draupnir_for_all_configuration: "{{ matrix_appservice_draupnir_for_all_configuration_yaml | from_yaml | combine(matrix_appservice_draupnir_for_all_configuration_extension, recursive=True) }}"
