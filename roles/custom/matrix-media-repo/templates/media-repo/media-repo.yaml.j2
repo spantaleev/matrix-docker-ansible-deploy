@@ -229,6 +229,13 @@ datastores:
       # some providers will need this (like Scaleway). Uncomment to use.
       #region: "sfo2"
 {% endif %}
+{% if matrix_media_repo_datastore_s3_opts_storage_class is defined %}
+      storageClass: {{ matrix_media_repo_datastore_s3_opts_storage_class | to_json }}
+{% else %}
+      # An optional storage class for tuning how the media is stored at s3.
+      # See https://aws.amazon.com/s3/storage-classes/ for details; uncomment to use.
+      #storageClass: STANDARD
+{% endif %}
 {% if matrix_media_repo_datastore_s3_opts_public_base_url is defined %}
       publicBaseUrl: {{ matrix_media_repo_datastore_s3_opts_public_base_url | to_json }}
 {% else %}
