@@ -386,6 +386,21 @@ matrix_media_repo_datastore_s3_opts_bucket_name: "your-media-bucket"
 # See https://aws.amazon.com/s3/storage-classes/ for details; uncomment to use.
 # matrix_media_repo_datastore_s3_opts_storage_class: "STANDARD"
 
+# When set, if the requesting user/server supports being redirected, and MMR is capable
+# of performing that redirection, they will be redirected to the given object location.
+# The object ID used in S3 is assumed to be the file name, and will simply be appended.
+# It is therefore important to include any trailing slashes or path information. For
+# example, an object with ID "hello/world" will get converted to "https://mycdn.example.org/hello/world".
+# Note that MMR may not redirect in all cases, even if the client/server requests the
+# capability. MMR may still be responsible for bandwidth charges incurred from going to
+# the bucket directly.
+# matrix_media_repo_datastore_s3_opts_public_base_url: "https://mycdn.example.org/"
+
+# Set to `true` to bypass any local cache when `publicBaseUrl` is set. Has no effect
+# when `publicBaseUrl` is unset. Defaults to false (cached media will be served by MMR
+# before redirection if present).
+matrix_media_repo_datastore_s3_opts_redirect_when_cached: true
+
 # Options for controlling archives. Archives are exports of a particular user's content for
 # the purpose of GDPR or moving media to a different server.
 
