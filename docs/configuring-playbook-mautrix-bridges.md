@@ -40,6 +40,7 @@ Encryption support is off by default. If you would like to enable encryption, ad
 
 ```yaml
 matrix_bridges_encryption_enabled: true
+matrix_bridges_encryption_default: true
 ```
 
 **Alternatively**, for a specific bridge:
