@@ -2638,6 +2638,8 @@ matrix_bot_mjolnir_enabled: false
 matrix_bot_mjolnir_systemd_required_services_list_auto: |
   {{
     matrix_addons_homeserver_systemd_services_list
+    +
+    (['matrix-pantalaimon.service'] if matrix_bot_mjolnir_pantalaimon_use else [])
   }}
 
 matrix_bot_mjolnir_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
@@ -2649,6 +2651,8 @@ matrix_bot_mjolnir_container_additional_networks_auto: |-
     ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
   }}
 
+matrix_bot_mjolnir_homeserver_url: "{{ 'http://matrix-pantalaimon:8009' if matrix_bot_mjolnir_pantalaimon_use else matrix_addons_homeserver_client_api_url }}"
+matrix_bot_mjolnir_raw_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
 ######################################################################
 #
 # /matrix-bot-mjolnir
