@@ -156,7 +156,23 @@ matrix_homeserver_url: "https://{{ matrix_server_fqn_matrix }}"
 # Specifies on which container network the homeserver is.
 matrix_homeserver_container_network: "matrix-homeserver"
 
-# enable ipv6 for all created networks
+# Controls whether to enable IPv6 for all Docker container networks used by the various services.
+# This only affects Matrix services that are part of this playbook (`roles/custom/matrix-*`),
+# but doesn't affect external (non-Matrix-related) roles (`roles/galaxy/*`).
+#
+# For this to work the Docker daemon needs to be configured for IPv6: https://docs.docker.com/config/daemon/ipv6/
+# You may be able to apply the required Docker Daemon settings via Ansible by using the `docker_daemon_options` variable.
+# See: https://github.com/geerlingguy/ansible-role-docker/blob/dc1c9a16066506c09f426713544581dc9b38e747/defaults/main.yml#L58
+# Example:
+# docker_daemon_options:
+#   experimental: true
+#   ip6tables: true
+#
+# Changing `matrix_ipv6_enabled` subsequently may not adjust existing container networks.
+# When changing `matrix_ipv6_enabled`, consider:
+# - stopping all services (`just stop-all`)
+# - deleting all container networks on the server: `docker network rm $(docker network ls -q)`
+# - re-running the playbook fully: `just install-all`
 matrix_ipv6_enabled: false
 
 # Specifies whether the homeserver will federate at all.
