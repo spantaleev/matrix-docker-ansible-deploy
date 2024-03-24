@@ -72,7 +72,7 @@ matrix_homeserver_container_extra_arguments_auto: |
     (['--mount type=bind,src=' + matrix_appservice_discord_config_path + '/registration.yaml,dst=/matrix-appservice-discord-registration.yaml,ro'] if matrix_appservice_discord_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_appservice_draupnir_for_all_config_path + '/draupnir-for-all-registration.yaml,dst=/matrix-appservice-draupnir-for-all-registration.yaml,ro'] if matrix_appservice_draupnir_for_all_enabled else [])
-    +    
+    +
     (['--mount type=bind,src=' + matrix_appservice_irc_config_path + '/registration.yaml,dst=/matrix-appservice-irc-registration.yaml,ro'] if matrix_appservice_irc_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_appservice_kakaotalk_config_path + '/registration.yaml,dst=/matrix-appservice-kakaotalk-registration.yaml,ro'] if matrix_appservice_kakaotalk_enabled else [])
@@ -141,7 +141,7 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-appservice-discord-registration.yaml'] if matrix_appservice_discord_enabled else [])
     +
     (['/matrix-appservice-draupnir-for-all-registration.yaml'] if matrix_appservice_draupnir_for_all_enabled else [])
-    +    
+    +
     (['/matrix-appservice-irc-registration.yaml'] if matrix_appservice_irc_enabled else [])
     +
     (['/matrix-appservice-kakaotalk-registration.yaml'] if matrix_appservice_kakaotalk_enabled else [])
@@ -275,7 +275,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-appservice-discord.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'appservice-discord']}] if matrix_appservice_discord_enabled else [])
     +
     ([{'name': 'matrix-appservice-draupnir-for-all.service', 'priority': 4000, 'groups': ['matrix', 'bridges', 'draupnir-for-all', 'appservice-draupnir-for-all']}] if matrix_appservice_draupnir_for_all_enabled else [])
-    +    
+    +
     ([{'name': 'matrix-appservice-irc.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'appservice-irc']}] if matrix_appservice_irc_enabled else [])
     +
     ([{'name': 'matrix-appservice-kakaotalk.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'appservice-kakaotalk']}] if matrix_appservice_kakaotalk_enabled else [])
@@ -401,6 +401,8 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-prometheus-nginxlog-exporter.service', 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus-exporters', 'prometheus-nginxlog-exporter']}] if matrix_prometheus_nginxlog_exporter_enabled else [])
     +
     ([{'name': (redis_identifier + '.service'), 'priority': 750, 'groups': ['matrix', 'redis']}] if redis_enabled else [])
+    +
+    ([{'name': 'matrix-pantalaimon.service', 'priority': 4000, 'groups': ['matrix', 'pantalaimon']}] if matrix_pantalaimon_enabled else [])
     +
     ([{'name': 'matrix-registration.service', 'priority': 4000, 'groups': ['matrix', 'registration', 'matrix-registration']}] if matrix_registration_enabled else [])
     +
@@ -2645,6 +2647,8 @@ matrix_bot_draupnir_enabled: false
 matrix_bot_draupnir_systemd_required_services_list_auto: |
   {{
     matrix_addons_homeserver_systemd_services_list
+    +
+    (['matrix-pantalaimon.service'] if matrix_bot_draupnir_pantalaimon_use else [])
   }}
 
 matrix_bot_draupnir_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
@@ -2655,6 +2659,9 @@ matrix_bot_draupnir_container_additional_networks_auto: |-
   {{
     ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
   }}
+
+matrix_bot_draupnir_homeserver_url: "{{ 'http://matrix-pantalaimon:8009' if matrix_bot_draupnir_pantalaimon_use else matrix_addons_homeserver_client_api_url }}"
+matrix_bot_draupnir_raw_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
 
 ######################################################################
 #
@@ -2701,6 +2708,32 @@ matrix_appservice_draupnir_for_all_database_password: "{{ '%s' | format(matrix_h
 ######################################################################
 #
 # /matrix-appservice-draupnir-for-all
+#
+######################################################################
+
+
+######################################################################
+#
+# matrix-pantalaimon
+#
+######################################################################
+
+matrix_pantalaimon_enabled: false
+
+matrix_pantalaimon_systemd_required_services_list_auto: |
+  {{
+    matrix_addons_homeserver_systemd_services_list
+  }}
+
+matrix_pantalaimon_container_network: "{{ matrix_homeserver_container_network }}"
+
+matrix_pantalaimon_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
+
+matrix_pantalaimon_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
+
+######################################################################
+#
+# /matrix-pantalaimon
 #
 ######################################################################
 
@@ -3595,7 +3628,7 @@ devture_postgres_managed_databases_auto: |
       'username': matrix_appservice_draupnir_for_all_database_username,
       'password': matrix_appservice_draupnir_for_all_database_password,
     }] if (matrix_appservice_draupnir_for_all_enabled and matrix_appservice_draupnir_for_all_database_hostname == devture_postgres_connection_hostname) else [])
-    +    
+    +
     ([{
       'name': matrix_appservice_slack_database_name,
       'username': matrix_appservice_slack_database_username,

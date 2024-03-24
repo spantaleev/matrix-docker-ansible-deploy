@@ -37,14 +37,33 @@ matrix_bot_draupnir_systemd_required_services_list_custom: []
 # List of systemd services that matrix-bot-draupnir.service wants
 matrix_bot_draupnir_systemd_wanted_services_list: []
 
-# The access token for the bot user
+# Whether Draupnir should talk to the homeserver through Pantalaimon
+# If true, then other variables must be provided including pointing
+# `matrix_bot_draupnir_homeserver_url` to the Pantalaimon URL.
+matrix_bot_draupnir_pantalaimon_use: false
+
+# The access token for the bot user. Required when NOT using Pantalaimon.
+# (Otherwise provide `matrix_bot_draupnir_pantalaimon_username` and `matrix_bot_draupnir_pantalaimon_password` instead.)
 matrix_bot_draupnir_access_token: ""
+
+# User name and password for the bot. Required when using Pantalaimon.
+# (Otherwise provide `matrix_bot_draupnir_access_token` instead.)
+matrix_bot_draupnir_pantalaimon_username: "bot.draupnir"
+matrix_bot_draupnir_pantalaimon_password: ""
 
 # The room ID where people can use the bot. The bot has no access controls, so
 # anyone in this room can use the bot - secure your room!
 # This should be a room alias or room ID - not a matrix.to URL.
 # Note: draupnir is fairly verbose - expect a lot of messages from it.
 matrix_bot_draupnir_management_room: ""
+
+# Endpoint URL that Draupnir uses to interact with the matrix homeserver (client-server API).
+# Set this to the pantalaimon URL if you're using that.
+matrix_bot_draupnir_homeserver_url: ""
+
+# Endpoint URL that Draupnir could use to fetch events related to reports (client-server API and /_synapse/),
+# only set this to the public-internet homeserver client API URL, do NOT set this to the pantalaimon URL.
+matrix_bot_draupnir_raw_homeserver_url: ""
 
 # Disable Server ACL is used if you want to not give the bot the right to apply Server ACLs in rooms without complaints from the bot.
 # This setting is described the following way in the Configuration.

@@ -1,0 +1,8 @@
+---
+
+- name: Fail if required variables are undefined
+  ansible.builtin.fail:
+    msg: "The `{{ item }}` variable must be defined and have a non-null value."
+  with_items:
+    - "matrix_pantalaimon_homeserver_url"
+  when: "vars[item] == '' or vars[item] is none"

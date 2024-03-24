@@ -105,7 +105,9 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (optional, advanced)
 
-- [Matrix User Verification Service](configuring-playbook-user-verification-service.md) (optional, advanced)
+- [Setting up Matrix User Verification Service](configuring-playbook-user-verification-service.md) (optional, advanced)
+
+- [Setting up Pantalaimon (E2EE aware proxy daemon)](configuring-playbook-pantalaimon.md) (optional, advanced)
 
 
 ### Bridging other networks

@@ -1,32 +1,34 @@
 # Endpoint URL that Draupnir uses to interact with the matrix homeserver (client-server API),
 # set this to the pantalaimon URL if you're using that.
-homeserverUrl: "{{ matrix_homeserver_url }}"
+homeserverUrl: {{ matrix_bot_draupnir_homeserver_url | to_json }}
 
 # Endpoint URL that Draupnir could use to fetch events related to reports (client-server API and /_synapse/),
 # only set this to the public-internet homeserver client API URL, do NOT set this to the pantalaimon URL.
-rawHomeserverUrl: "{{ matrix_homeserver_url }}"
+rawHomeserverUrl: {{ matrix_bot_draupnir_raw_homeserver_url | to_json }}
 
 # Matrix Access Token to use, Draupnir will only use this if pantalaimon.use is false.
-accessToken: "{{ matrix_bot_draupnir_access_token }}"
+accessToken: {{ matrix_bot_draupnir_access_token | to_json }}
 
+{% if matrix_bot_draupnir_pantalaimon_use %}
 # Options related to Pantalaimon (https://github.com/matrix-org/pantalaimon)
-#pantalaimon:
-#  # Whether or not Draupnir will use pantalaimon to access the matrix homeserver,
-#  # set to `true` if you're using pantalaimon.
-#  #
-#  # Be sure to point homeserverUrl to the pantalaimon instance.
-#  #
-#  # Draupnir will log in using the given username and password once,
-#  # then store the resulting access token in a file under dataPath.
-#  use: false
-#
-#  # The username to login with.
-#  username: draupnir
-#
-#  # The password Draupnir will login with.
-#  #
-#  # After successfully logging in once, this will be ignored, so this value can be blanked after first startup.
-#  password: your_password
+pantalaimon:
+  # Whether or not Draupnir will use pantalaimon to access the matrix homeserver,
+  # set to `true` if you're using pantalaimon.
+  #
+  # Be sure to point homeserverUrl to the pantalaimon instance.
+  #
+  # Draupnir will log in using the given username and password once,
+  # then store the resulting access token in a file under dataPath.
+  use: true
+
+  # The username to login with.
+  username: {{ matrix_bot_draupnir_pantalaimon_username | to_json }}
+
+  # The password Draupnir will login with.
+  #
+  # After successfully logging in once, this will be ignored, so this value can be blanked after first startup.
+  password: {{ matrix_bot_draupnir_pantalaimon_password | to_json }}
+{% endif %}
 
 # The path Draupnir will store its state/data in, leave default ("/data/storage") when using containers.
 dataPath: "/data"
@@ -49,7 +51,7 @@ recordIgnoredInvites: false
 #
 # Note: By default, Draupnir is fairly verbose - expect a lot of messages in this room.
 # (see verboseLogging to adjust this a bit.)
-managementRoom: "{{ matrix_bot_draupnir_management_room }}"
+managementRoom: {{ matrix_bot_draupnir_management_room | to_json }}
 
 # Deprecated and will be removed in a future version.
 # Running with verboseLogging is unsupported.
@@ -77,7 +79,7 @@ noop: false
 
 # Whether or not Draupnir should apply `m.room.server_acl` events.
 # DO NOT change this to `true` unless you are very confident that you know what you are doing.
-disableServerACL: "{{ matrix_bot_draupnir_disable_server_acl }}"
+disableServerACL: {{ matrix_bot_draupnir_disable_server_acl | to_json }}
 
 # Whether Draupnir should check member lists quicker (by using a different endpoint),
 # keep in mind that enabling this will miss invited (but not joined) users.
@@ -161,7 +163,7 @@ commands:
 
   # The default reasons to be prompted with if the reason is missing from a ban command.
   ban:
-    defaultReasons: 
+    defaultReasons:
       - "spam"
       - "brigading"
       - "harassment"

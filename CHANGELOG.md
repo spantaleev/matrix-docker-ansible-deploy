@@ -1,3 +1,12 @@
+# 2024-03-24
+
+## Pantalaimon support
+
+Thanks to [Julian Foad](https://matrix.to/#/@julian:foad.me.uk), the playbook can now install the [Pantalaimon](https://github.com/matrix-org/pantalaimon) E2EE aware proxy daemon for you. It's already possible to integrate it with [Draupnir](docs/configuring-playbook-bot-draupnir.md) to allow it to work in E2EE rooms - see our Draupnir docs for details.
+
+See our [Setting up Pantalaimon](docs/configuring-playbook-pantalaimon.md) documentation to get started.
+
+
 # 2024-03-05
 
 ## Support for Draupnir-for-all
