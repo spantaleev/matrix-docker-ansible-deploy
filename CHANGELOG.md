@@ -1,5 +1,15 @@
 # 2024-03-24
 
+## Initial work on IPv6 support
+
+Thanks to [Tilo Spannagel](https://github.com/tilosp), the playbook can now enable IPv6 for container networks for various components (roles) via [the `devture_systemd_docker_base_ipv6_enabled` variable](https://github.com/devture/com.devture.ansible.role.systemd_docker_base/blob/c11a526bb8e318b42eb52055056377bb31154f13/defaults/main.yml#L14-L31).
+
+It should be noted that:
+
+- Matrix roles (`roles/custom/matrix-*`) respect this variable, but external roles (those defined in `requirements.yml` and installed via `just roles`) do not respect it yet. Additional work is necessary
+- changing the variable subsequently may not change existing container networks. Refer to [these instructions](https://github.com/devture/com.devture.ansible.role.systemd_docker_base/blob/c11a526bb8e318b42eb52055056377bb31154f13/defaults/main.yml#L26-L30)
+- this is all very new and untested
+
 ## Pantalaimon support
 
 Thanks to [Julian Foad](https://matrix.to/#/@julian:foad.me.uk), the playbook can now install the [Pantalaimon](https://github.com/matrix-org/pantalaimon) E2EE aware proxy daemon for you. It's already possible to integrate it with [Draupnir](docs/configuring-playbook-bot-draupnir.md) to allow it to work in E2EE rooms - see our Draupnir docs for details.
