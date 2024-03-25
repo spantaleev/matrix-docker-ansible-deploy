@@ -4,7 +4,7 @@ The playbook can install and configure the [pantalaimon](https://github.com/matr
 
 See the project's [documentation](https://github.com/matrix-org/pantalaimon) to learn what it does and why it might be useful to you.
 
-This role exposes Pantalaimon's API only within the container network, so bots and clients installed on the same machine can use it. In particular the [matrix-bot-draupnir](configuring-playbook-bot-draupnir.md) role and possibly others can use it.
+This role exposes Pantalaimon's API only within the container network, so bots and clients installed on the same machine can use it. In particular the [Draupnir](configuring-playbook-bot-draupnir.md) and [Mjolnir](configuring-playbook-bot-mjolnir.md) roles (and possibly others) can use it.
 
 ## 1. Adjusting the playbook configuration
 
