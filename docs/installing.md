@@ -36,6 +36,8 @@ If you **don't** use SSH keys for authentication, but rather a regular password,
 
 If you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to all Ansible commands
 
+If you **do** use SSH keys for authentication, but SSH fails to connect or unable to locate the SSH keys, you may need to add `--key-file "/PATH/TO/KEY.pem"` to all Ansible commands
+
 There 2 ways to start the installation process - depending on whether you're [Installing a brand new server (without importing data)](#installing-a-brand-new-server-without-importing-data) or [Installing a server into which you'll import old data](#installing-a-server-into-which-youll-import-old-data).
 
 
