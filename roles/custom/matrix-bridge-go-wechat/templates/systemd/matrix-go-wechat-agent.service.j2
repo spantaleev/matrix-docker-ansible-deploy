@@ -1,0 +1,45 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Go WeChat Agent
+{% for service in matrix_go_wechat_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_go_wechat_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-go-wechat-agent 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-go-wechat-agent 2>/dev/null || true'
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-go-wechat-agent \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_go_wechat_container_network }} \
+			--volume {{ matrix_go_wechat_config_path }}/configure.yaml:/home/user/matrix-wechat-agent/configure.yaml \
+			{% for arg in matrix_go_wechat_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_go_wechat_agent_docker_image }}
+
+{% for network in matrix_go_wechat_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-go-wechat-agent
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-go-wechat-agent
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-go-wechat-agent 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-go-wechat-agent 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-go-wechat-agent
+
+[Install]
+WantedBy=multi-user.target

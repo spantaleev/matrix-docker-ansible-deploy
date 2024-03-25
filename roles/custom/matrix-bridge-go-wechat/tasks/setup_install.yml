@@ -1,0 +1,179 @@
+---
+
+- ansible.builtin.set_fact:
+    matrix_go_wechat_requires_restart: false
+
+- name: Ensure Go WeChat Bridge paths exists
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_go_wechat_base_path }}", when: true}
+    - {path: "{{ matrix_go_wechat_config_path }}", when: true}
+    - {path: "{{ matrix_go_wechat_data_path }}", when: true}
+    - {path: "{{ matrix_go_wechat_docker_src_files_path }}", when: "{{ matrix_go_wechat_container_image_self_build }}"}
+    - {path: "{{ matrix_go_wechat_agent_docker_src_files_path }}", when: "{{ matrix_go_wechat_agent_container_image_self_build }}"}
+  when: item.when | bool
+
+- name: Ensure Go WeChat Bridge image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_go_wechat_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_go_wechat_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_go_wechat_docker_image_force_pull }}"
+  when: not matrix_go_wechat_container_image_self_build
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure Go WeChat Agent image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_go_wechat_agent_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_go_wechat_agent_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_go_wechat_agent_docker_image_force_pull }}"
+  when: not matrix_go_wechat_agent_container_image_self_build
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure Go WeChat Bridge repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_go_wechat_container_image_self_build_repo }}"
+    dest: "{{ matrix_go_wechat_docker_src_files_path }}"
+    version: "{{ matrix_go_wechat_container_image_self_build_branch }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
+  register: matrix_go_wechat_git_pull_results
+  when: "matrix_go_wechat_container_image_self_build | bool"
+
+- name: Ensure Go WeChat Agent repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_go_wechat_agent_container_image_self_build_repo }}"
+    dest: "{{ matrix_go_wechat_agent_docker_src_files_path }}"
+    version: "{{ matrix_go_wechat_agent_container_image_self_build_branch }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
+  register: matrix_go_wechat_agent_git_pull_results
+  when: "matrix_go_wechat_agent_container_image_self_build | bool"
+
+- name: Ensure Go WeChat Bridge Docker image is built
+  community.docker.docker_image:
+    name: "{{ matrix_go_wechat_docker_image }}"
+    source: build
+    force_source: "{{ matrix_go_wechat_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_go_wechat_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_go_wechat_docker_src_files_path }}"
+      pull: true
+  when: "matrix_go_wechat_container_image_self_build | bool"
+
+- name: Ensure Go WeChat Agent Docker image is built
+  community.docker.docker_image:
+    name: "{{ matrix_go_wechat_agent_docker_image }}"
+    source: build
+    force_source: "{{ matrix_go_wechat_agent_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_go_wechat_agent_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_go_wechat_agent_docker_src_files_path }}"
+      pull: true
+  when: "matrix_go_wechat_agent_container_image_self_build | bool"
+
+- name: Check if an old database file exists
+  ansible.builtin.stat:
+    path: "{{ matrix_go_wechat_base_path }}/go-wechat.db"
+  register: matrix_go_wechat_stat_database
+
+- name: Check if an old matrix state file exists
+  ansible.builtin.stat:
+    path: "{{ matrix_go_wechat_base_path }}/mx-state.json"
+  register: matrix_go_wechat_stat_mx_state
+
+- name: (Data relocation) Ensure matrix-go-wechat.service is stopped
+  ansible.builtin.service:
+    name: matrix-go-wechat
+    state: stopped
+    enabled: false
+    daemon_reload: true
+  failed_when: false
+  when: "matrix_go_wechat_stat_database.stat.exists"
+
+- name: (Data relocation) Move go-wechat database file to ./data directory
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_go_wechat_base_path }}/go-wechat.db {{ matrix_go_wechat_data_path }}/go-wechat.db"
+    creates: "{{ matrix_go_wechat_data_path }}/go-wechat.db"
+    removes: "{{ matrix_go_wechat_base_path }}/go-wechat.db"
+  when: "matrix_go_wechat_stat_database.stat.exists"
+
+- name: (Data relocation) Move go-wechat mx-state file to ./data directory
+  ansible.builtin.command:
+    cmd: "mv {{ matrix_go_wechat_base_path }}/mx-state.json {{ matrix_go_wechat_data_path }}/mx-state.json"
+    creates: "{{ matrix_go_wechat_data_path }}/mx-state.json"
+    removes: "{{ matrix_go_wechat_base_path }}/mx-state.json"
+  when: "matrix_go_wechat_stat_mx_state.stat.exists"
+
+- name: Ensure go-wechat config.yaml installed
+  ansible.builtin.copy:
+    content: "{{ matrix_go_wechat_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_go_wechat_config_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure go-wechat registration.yaml installed
+  ansible.builtin.copy:
+    content: "{{ matrix_go_wechat_registration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_go_wechat_config_path }}/registration.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure go-wechat-agent configure.yaml installed
+  ansible.builtin.copy:
+    content: "{{ matrix_go_wechat_agent_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_go_wechat_config_path }}/configure.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-go-wechat container network is created
+  community.general.docker_network:
+    name: "{{ matrix_go_wechat_container_network }}"
+    driver: bridge
+
+- name: Ensure matrix-go-wechat.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-go-wechat.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-go-wechat.service"
+    mode: 0644
+  register: matrix_go_wechat_systemd_service_result
+
+- name: Ensure matrix-go-wechat-agent.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-go-wechat-agent.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-go-wechat-agent.service"
+    mode: 0644
+  register: matrix_go_wechat_agent_systemd_service_result
+
+- name: Ensure matrix-go-wechat.service restarted, if necessary
+  ansible.builtin.service:
+    name: "matrix-go-wechat.service"
+    state: restarted
+    daemon_reload: true
+  when: "matrix_go_wechat_requires_restart | bool"
+
+- name: Ensure matrix-go-wechat-agent.service restarted, if necessary
+  ansible.builtin.service:
+    name: "matrix-go-wechat-agent.service"
+    state: restarted
+    daemon_reload: true
+  when: "matrix_go_wechat_requires_restart | bool"

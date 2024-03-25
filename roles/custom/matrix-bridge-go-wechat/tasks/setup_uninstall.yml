@@ -1,0 +1,39 @@
+---
+
+- name: Check existence of matrix-go-wechat service
+  ansible.builtin.stat:
+    path: "/etc/systemd/system/matrix-go-wechat.service"
+  register: matrix_go_wechat_service_stat
+
+- when: matrix_go_wechat_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-go-wechat is stopped
+      ansible.builtin.service:
+        name: matrix-go-wechat
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-go-wechat.service doesn't exist
+      ansible.builtin.file:
+        path: "/etc/systemd/system/matrix-go-wechat.service"
+        state: absent
+
+- name: Check existence of matrix-go-wechat-agent service
+  ansible.builtin.stat:
+    path: "/etc/systemd/system/matrix-go-wechat-agent.service"
+  register: matrix_go_wechat_agent_service_stat
+
+- when: matrix_go_wechat_agent_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-go-wechat-agent is stopped
+      ansible.builtin.service:
+        name: matrix-go-wechat-agent
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-go-wechat-agent.service doesn't exist
+      ansible.builtin.file:
+        path: "/etc/systemd/system/matrix-go-wechat-agent.service"
+        state: absent

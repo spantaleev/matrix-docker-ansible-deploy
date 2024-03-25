@@ -1,0 +1,18 @@
+---
+
+- name: Fail if required go-wechat settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
+  with_items:
+    - {'name': 'matrix_go_wechat_appservice_token', when: true}
+    - {'name': 'matrix_go_wechat_homeserver_address', when: true}
+    - {'name': 'matrix_go_wechat_homeserver_token', when: true}
+    - {'name': 'matrix_go_wechat_database_hostname', when: "{{ matrix_go_wechat_database_engine == 'postgres' }}"}
+    - {'name': 'matrix_go_wechat_container_network', when: true}
+
+- name: Ensure we are not running on ARM64 (which is not supported yet by the wechat agent)
+  when: matrix_architecture not in ['amd64']
+  fail:
+    msg: "The Go WeChat Agent does not support the '{{ matrix_architecture }}' architecture yet."
