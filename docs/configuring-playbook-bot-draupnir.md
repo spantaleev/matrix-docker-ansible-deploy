@@ -73,7 +73,7 @@ matrix_bot_draupnir_enabled: true
 matrix_bot_draupnir_pantalaimon_use: true
 
 # User name and password for the bot. Required when using Pantalaimon.
-matrix_bot_draupnir_pantalaimon_username: "bot.draupnir"
+matrix_bot_draupnir_pantalaimon_username: "DRAUPNIR_USERNAME_FROM_STEP_1"
 matrix_bot_draupnir_pantalaimon_password: ### you should create a secure password for the bot account
 
 matrix_bot_draupnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"

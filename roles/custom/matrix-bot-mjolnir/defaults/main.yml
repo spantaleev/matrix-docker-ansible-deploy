@@ -37,14 +37,33 @@ matrix_bot_mjolnir_systemd_required_services_list_custom: []
 # List of systemd services that matrix-bot-mjolnir.service wants
 matrix_bot_mjolnir_systemd_wanted_services_list: []
 
-# The access token for the bot user
+# Whether Mjolnir should talk to the homeserver through Pantalaimon
+# If true, then other variables must be provided including pointing
+# `matrix_bot_mjolnir_homeserver_url` to the Pantalaimon URL.
+matrix_bot_mjolnir_pantalaimon_use: false
+
+# The access token for the bot user. Required when NOT using Pantalaimon.
+# (Otherwise provide `matrix_bot_mjolnir_pantalaimon_username` and `matrix_bot_mjolnir_pantalaimon_password` instead.)
 matrix_bot_mjolnir_access_token: ""
+
+# User name and password for the bot. Required when using Pantalaimon.
+# (Otherwise provide `matrix_bot_mjolnir_access_token` instead.)
+matrix_bot_mjolnir_pantalaimon_username: ""
+matrix_bot_mjolnir_pantalaimon_password: ""
 
 # The room ID where people can use the bot. The bot has no access controls, so
 # anyone in this room can use the bot - secure your room!
 # This should be a room alias or room ID - not a matrix.to URL.
 # Note: Mjolnir is fairly verbose - expect a lot of messages from it.
 matrix_bot_mjolnir_management_room: ""
+
+# Endpoint URL that Mjolnir uses to interact with the matrix homeserver (client-server API).
+# Set this to the pantalaimon URL if you're using that.
+matrix_bot_mjolnir_homeserver_url: ""
+
+# Endpoint URL that Mjolnir could use to fetch events related to reports (client-server API and /_synapse/),
+# only set this to the public-internet homeserver client API URL, do NOT set this to the pantalaimon URL.
+matrix_bot_mjolnir_raw_homeserver_url: ""
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
