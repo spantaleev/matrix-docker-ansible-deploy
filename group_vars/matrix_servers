@@ -1871,7 +1871,7 @@ matrix_hookshot_systemd_wanted_services_list: |
 # Hookshot's experimental encryption feature (and possibly others) may benefit from Redis, if available.
 # We only connect to Redis if encryption is enabled (not for everyone who has Redis enabled),
 # because connectivity is still potentially troublesome and is to be investigated.
-matrix_hookshot_queue_host: "{{ redis_identifier if redis_enabled and matrix_hookshot_experimental_encryption_enabled else keydb_identifier if keydb_enabled and matrix_hookshot_experimental_encryption_enabled else '' }}"
+matrix_hookshot_queue_host: "{{ redis_identifier if redis_enabled and matrix_hookshot_experimental_encryption_enabled else (keydb_identifier if keydb_enabled and matrix_hookshot_experimental_encryption_enabled else '') }}"
 
 matrix_hookshot_container_network: "{{ matrix_addons_container_network }}"
 
@@ -4308,8 +4308,8 @@ matrix_synapse_systemd_wanted_services_list_auto: |
 
 # Synapse workers (used for parallel load-scaling) need Redis for IPC.
 matrix_synapse_redis_enabled: "{{ redis_enabled or keydb_enabled }}"
-matrix_synapse_redis_host: "{{ redis_identifier if redis_enabled else keydb_identifier if keydb_enabled else '' }}"
-matrix_synapse_redis_password: "{{ redis_connection_password if redis_enabled else keydb_connection_password if keydb_enabled else '' }}"
+matrix_synapse_redis_host: "{{ redis_identifier if redis_enabled else (keydb_identifier if keydb_enabled else '') }}"
+matrix_synapse_redis_password: "{{ redis_connection_password if redis_enabled else (keydb_connection_password if keydb_enabled else '') }}"
 
 matrix_synapse_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
 matrix_synapse_app_service_config_files_auto: "{{ matrix_homeserver_app_service_config_files_auto }}"
