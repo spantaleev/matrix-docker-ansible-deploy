@@ -6,7 +6,7 @@
 
 Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook now uses [KeyDB](https://docs.keydb.dev/) (a drop-in alternative for Redis), instead of [Redis](https://redis.io/).
 
-The playbook used to install Redis (and now installs KeyDB in its place) if services have a need for it ([enabling worker support for Synapse](docs/configuring-playbook-synapse.md#load-balancing-with-workers), enabling Hookshot encryption, etc.) or if you explicitly enabled the service (`redis_enabled: true` or `keydb_enabled: true`).
+The playbook used to install Redis (and now installs KeyDB in its place) if services have a need for it ([enabling worker support for Synapse](docs/configuring-playbook-synapse.md#load-balancing-with-workers), [enabling Hookshot encryption](docs/configuring-playbook-bridge-hookshot.md#end-to-bridge-encryption), etc.) or if you explicitly enabled the service (`redis_enabled: true` or `keydb_enabled: true`).
 
 This change is provoked by the fact that [Redis is now "source available"](https://redis.com/blog/redis-adopts-dual-source-available-licensing/). According to the Limitations of [the new license](https://redis.com/legal/rsalv2-agreement/) (as best as we understand them, given that we're not lawyers), using Redis in the playbook (even in a commercial FOSS service like [etke.cc](https://etke.cc/)) does not violate the new Redis license. That said, we'd rather neither risk it, nor endorse shady licenses and products that pretend to be free-software. Another high-quality alternative to Redis seems to be [Dragonfly](https://www.dragonflydb.io/), but the [Dragonfly license](https://github.com/dragonflydb/dragonfly?tab=License-1-ov-file#readme) is no better than Redis.
 
