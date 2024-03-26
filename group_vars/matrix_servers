@@ -3992,6 +3992,15 @@ keydb_gid: "{{ matrix_user_gid }}"
 
 keydb_base_path: "{{ matrix_base_data_path }}/keydb"
 
+keydb_arch: |-
+  {{
+    ({
+      'amd64': 'x86_64',
+      'arm32': 'arm32',
+      'arm64': 'arm64',
+    })[matrix_architecture]
+  }}
+
 ######################################################################
 #
 # keydb
