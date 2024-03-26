@@ -1,4 +1,4 @@
-# 2023-03-26
+# 2024-03-26
 
 ## (Backward Compatibility Break) The playbook now defaults to KeyDB, instead of Redis
 
