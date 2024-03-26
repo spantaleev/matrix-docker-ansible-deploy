@@ -1,3 +1,29 @@
+# 2023-03-26
+
+## (Backward Compatibility Break) The playbook now defaults to KeyDB, instead of Redis
+
+**TLDR**: if the playbook used installed Redis as a dependency for you before, it will now replace it with [KeyDB](https://docs.keydb.dev/) (a drop-in alternative) due to [Redis having changed its license](https://redis.com/blog/redis-adopts-dual-source-available-licensing/).
+
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook now uses [KeyDB](https://docs.keydb.dev/) (a drop-in alternative), instead of [Redis](https://redis.io/).
+
+The playbook used to install Redis (and now installs KeyDB in its place) if services have a need for it ([enabling worker support for Synapse](docs/configuring-playbook-synapse.md#load-balancing-with-workers), enabling Hookshot encryption, etc.) or if you explicitly enable the service (`redis_enabled: true` or `keydb_enabled: true`).
+
+This change is provoked by the fact that [Redis is now "source available"](https://redis.com/blog/redis-adopts-dual-source-available-licensing/). According to the limitations of the new license (as best as we understand them, given that we're not lawyers), using Redis in the playbook (even in a commercial FOSS service like [etke.cc](https://etke.cc/)) does not violate the new Redis license. That said, we'd rather neither risk it, nor endorse shady licenses and products that pretend to be free-software. Another high-quality alternative to Redis seems to be [Dragonfly](https://www.dragonflydb.io/), but the [Dragonfly license](https://github.com/dragonflydb/dragonfly?tab=License-1-ov-file#readme) is no better than Redis.
+
+Next time your run the playbook (via the `setup-all` tag), **Redis will be automatically uninstalled and replaced with KeyDB**. Some Synapse downtime may occur while the switch happens.
+
+Users on `arm32` should be aware that there's **neither a prebuilt `arm32` container image for KeyDB**, nor the KeyDB role supports self-building yet. Users on this architecture likely don't run Synapse with workers, etc., so they're likely in no need of KeyDB (or Redis). If Redis is necessary in an `arm32` deployment, disabling KeyDB and making the playbook fall back to Redis is possible (see below).
+
+**The playbook still supports Redis** and you can keep using Redis (for now) if you'd like, by adding this additional configuration to your `vars.yml` file:
+
+```yml
+# Explicitly disable KeyDB, which will auto-enable Redis
+# if the playbook requires it as a dependency for its operation.
+keydb_enabled: false
+```
+
+
+
 # 2024-03-24
 
 ## Initial work on IPv6 support
