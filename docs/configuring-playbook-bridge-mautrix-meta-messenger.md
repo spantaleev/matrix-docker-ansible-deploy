@@ -9,9 +9,9 @@ This documentation page only deals with the bridge's ability to bridge to Facebo
 
 ## Migrating from the old mautrix-facebook bridge
 
-If you've been using the [mautrix-facebook](./configuring-playbook-bridge-mautrix-facebook.md) bridge, you may wish to get rid of it first.
+If you've been using the [mautrix-facebook](./configuring-playbook-bridge-mautrix-facebook.md) bridge, it's possible to migrate the database using [instructions from the bridge documentation](https://docs.mau.fi/bridges/go/meta/facebook-migration.html) (advanced).
 
-To do so, send a `clean-rooms` command to the management room with the old bridge bot (`@facebookbot:YOUR_DOMAIN`).
+Then you may wish to get rid of the Facebook bridge. To do so, send a `clean-rooms` command to the management room with the old bridge bot (`@facebookbot:YOUR_DOMAIN`).
 
 This would give you a list of portals and groups of portals you may purge. Proceed with sending commands like `clean recommended`, etc.
 
@@ -67,7 +67,7 @@ If you don't define the `matrix_admin` in your configuration (e.g. `matrix_admin
 You may redefine `matrix_mautrix_meta_messenger_bridge_permissions_default` any way you see fit, or add extra permissions using `matrix_mautrix_meta_messenger_bridge_permissions_custom` like this:
 
 ```yaml
-matrix_mautrix_meta_messenger_bridge_permissions_custom: |
+matrix_mautrix_meta_messenger_bridge_permissions_custom:
   '@YOUR_USERNAME:YOUR_DOMAIN': admin
 ```
 
