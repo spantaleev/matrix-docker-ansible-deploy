@@ -40,16 +40,14 @@ Encryption support is off by default. If you would like to enable encryption, ad
 
 ```yaml
 matrix_bridges_encryption_enabled: true
+matrix_bridges_encryption_default: true
 ```
 
 **Alternatively**, for a specific bridge:
 
 ```yaml
-matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
-  bridge:
-    encryption:
-      allow: true
-      default: true
+matrix_mautrix_SERVICENAME_bridge_encryption_enabled: true
+matrix_mautrix_SERVICENAME_bridge_encryption_default: true
 ```
 
 ## relay mode

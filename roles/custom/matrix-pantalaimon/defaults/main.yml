@@ -1,0 +1,57 @@
+---
+# E2EE aware proxy daemon for matrix clients.
+# Project source code URL: https://github.com/matrix-org/pantalaimon
+
+matrix_pantalaimon_enabled: true
+
+matrix_pantalaimon_version: "0.10.5"
+
+matrix_pantalaimon_container_image_self_build: false
+matrix_pantalaimon_container_image_self_build_repo: "https://github.com/matrix-org/pantalaimon.git"
+matrix_pantalaimon_container_image_self_build_repo_version: "{{ 'main' if matrix_pantalaimon_version == 'latest' else matrix_pantalaimon_version }}"
+
+matrix_pantalaimon_docker_image: "{{ matrix_pantalaimon_docker_image_name_prefix }}matrixdotorg/pantalaimon:v{{ matrix_pantalaimon_version }}"
+matrix_pantalaimon_docker_image_name_prefix: "{{ 'localhost/' if matrix_pantalaimon_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_pantalaimon_docker_image_force_pull: "{{ matrix_pantalaimon_docker_image.endswith(':latest') }}"
+
+matrix_pantalaimon_base_path: "{{ matrix_base_data_path }}/pantalaimon"
+matrix_pantalaimon_data_path: "{{ matrix_pantalaimon_base_path }}/data"
+matrix_pantalaimon_container_src_files_path: "{{ matrix_pantalaimon_base_path }}/container-src"
+
+# The base container network
+matrix_pantalaimon_container_network: ''
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+matrix_pantalaimon_container_additional_networks: "{{ matrix_pantalaimon_container_additional_networks_auto + matrix_pantalaimon_container_additional_networks_custom }}"
+matrix_pantalaimon_container_additional_networks_auto: []
+matrix_pantalaimon_container_additional_networks_custom: []
+
+# A list of extra arguments to pass to the container
+matrix_pantalaimon_container_extra_arguments: []
+
+# List of systemd services that matrix-pantalaimon.service depends on
+matrix_pantalaimon_systemd_required_services_list: "{{ matrix_pantalaimon_systemd_required_services_list_default + matrix_pantalaimon_systemd_required_services_list_auto + matrix_pantalaimon_systemd_required_services_list_custom }}"
+matrix_pantalaimon_systemd_required_services_list_default: ['docker.service']
+matrix_pantalaimon_systemd_required_services_list_auto: []
+matrix_pantalaimon_systemd_required_services_list_custom: []
+
+# List of systemd services that matrix-pantalaimon.service wants
+matrix_pantalaimon_systemd_wanted_services_list: "{{ matrix_pantalaimon_systemd_wanted_services_list_default + matrix_pantalaimon_systemd_wanted_services_list_auto + matrix_pantalaimon_systemd_wanted_services_list_custom }}"
+matrix_pantalaimon_systemd_wanted_services_list_default: []
+matrix_pantalaimon_systemd_wanted_services_list_auto: []
+matrix_pantalaimon_systemd_wanted_services_list_custom: []
+
+# Pantalaimon log level, case-insensitive (Error, Warning, Info, Debug)
+matrix_pantalaimon_log_level: Warning
+
+# Base URL where matrix-pantalaimon can reach your homeserver C-S API.
+# If the homeserver runs on the same machine, you may need to add its service to `matrix_pantalaimon_systemd_required_services_list`.
+matrix_pantalaimon_homeserver_url: ""
+
+# Default configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can
+# completely replace this variable with your own template.
+matrix_pantalaimon_configuration: "{{ lookup('template', 'templates/pantalaimon.conf.j2') }}"

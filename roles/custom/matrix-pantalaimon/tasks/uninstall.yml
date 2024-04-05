@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-pantalaimon service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-pantalaimon.service"
+  register: matrix_pantalaimon_service_stat
+
+- when: matrix_pantalaimon_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-pantalaimon is stopped
+      ansible.builtin.service:
+        name: matrix-pantalaimon
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-pantalaimon.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-pantalaimon.service"
+        state: absent
+
+    - name: Ensure matrix-pantalaimon paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_pantalaimon_base_path }}"
+        state: absent

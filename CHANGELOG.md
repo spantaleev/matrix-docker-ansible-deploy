@@ -1,3 +1,59 @@
+# 2024-03-26
+
+## (Backward Compatibility Break) The playbook now defaults to KeyDB, instead of Redis
+
+**TLDR**: if the playbook used installed Redis as a dependency for you before, it will now replace it with [KeyDB](https://docs.keydb.dev/) (a drop-in alternative) due to [Redis having changed its license](https://redis.com/blog/redis-adopts-dual-source-available-licensing/).
+
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook now uses [KeyDB](https://docs.keydb.dev/) (a drop-in alternative for Redis), instead of [Redis](https://redis.io/).
+
+The playbook used to install Redis (and now installs KeyDB in its place) if services have a need for it ([enabling worker support for Synapse](docs/configuring-playbook-synapse.md#load-balancing-with-workers), [enabling Hookshot encryption](docs/configuring-playbook-bridge-hookshot.md#end-to-bridge-encryption), etc.) or if you explicitly enabled the service (`redis_enabled: true` or `keydb_enabled: true`).
+
+This change is provoked by the fact that [Redis is now "source available"](https://redis.com/blog/redis-adopts-dual-source-available-licensing/). According to the Limitations of [the new license](https://redis.com/legal/rsalv2-agreement/) (as best as we understand them, given that we're not lawyers), using Redis in the playbook (even in a commercial FOSS service like [etke.cc](https://etke.cc/)) does not violate the new Redis license. That said, we'd rather neither risk it, nor endorse shady licenses and products that pretend to be free-software. Another high-quality alternative to Redis seems to be [Dragonfly](https://www.dragonflydb.io/), but the [Dragonfly license](https://github.com/dragonflydb/dragonfly?tab=License-1-ov-file#readme) is no better than Redis's.
+
+Next time your run the playbook (via the `setup-all` tag), **Redis will be automatically uninstalled and replaced with KeyDB**. Some Synapse downtime may occur while the switch happens.
+
+Users on `arm32` should be aware that there's **neither a prebuilt `arm32` container image for KeyDB**, nor the KeyDB role supports self-building yet. Users on this architecture likely don't run Synapse with workers, etc., so they're likely in no need of KeyDB (or Redis). If Redis is necessary in an `arm32` deployment, disabling KeyDB and making the playbook fall back to Redis is possible (see below).
+
+**The playbook still supports Redis** and you can keep using Redis (for now) if you'd like, by adding this additional configuration to your `vars.yml` file:
+
+```yml
+# Explicitly disable KeyDB, which will auto-enable Redis
+# if the playbook requires it as a dependency for its operation.
+keydb_enabled: false
+```
+
+
+
+# 2024-03-24
+
+## Initial work on IPv6 support
+
+Thanks to [Tilo Spannagel](https://github.com/tilosp), the playbook can now enable IPv6 for container networks for various components (roles) via [the `devture_systemd_docker_base_ipv6_enabled` variable](https://github.com/devture/com.devture.ansible.role.systemd_docker_base/blob/c11a526bb8e318b42eb52055056377bb31154f13/defaults/main.yml#L14-L31).
+
+It should be noted that:
+
+- Matrix roles (`roles/custom/matrix-*`) respect this variable, but external roles (those defined in `requirements.yml` and installed via `just roles`) do not respect it yet. Additional work is necessary
+- changing the variable subsequently may not change existing container networks. Refer to [these instructions](https://github.com/devture/com.devture.ansible.role.systemd_docker_base/blob/c11a526bb8e318b42eb52055056377bb31154f13/defaults/main.yml#L26-L30)
+- this is all very new and untested
+
+## Pantalaimon support
+
+Thanks to [Julian Foad](https://matrix.to/#/@julian:foad.me.uk), the playbook can now install the [Pantalaimon](https://github.com/matrix-org/pantalaimon) E2EE aware proxy daemon for you. It's already possible to integrate it with [Draupnir](docs/configuring-playbook-bot-draupnir.md) to allow it to work in E2EE rooms - see our Draupnir docs for details.
+
+See our [Setting up Pantalaimon](docs/configuring-playbook-pantalaimon.md) documentation to get started.
+
+
+# 2024-03-05
+
+## Support for Draupnir-for-all
+
+Thanks to [FSG-Cat](https://github.com/FSG-Cat), the playbook can now install [Draupnir for all](./docs/configuring-playbook-appservice-draupnir-for-all.md) (aka multi-instance Draupnir running in appservice mode).
+
+This is an alternative to [running Draupnir in bot mode](./docs/configuring-playbook-bot-draupnir.md), which is still supported by the playbook.
+
+The documentation page for [Draupnir for all](./docs/configuring-playbook-appservice-draupnir-for-all.md) contains more information on how to install it.
+
+
 # 2024-02-19
 
 ## Support for bridging to Facebook/Messenger via the new mautrix-meta bridge

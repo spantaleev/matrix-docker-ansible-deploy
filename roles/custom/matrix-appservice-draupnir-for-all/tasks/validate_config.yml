@@ -1,0 +1,9 @@
+---
+
+- name: Fail if required matrix-bot-draupnir variables are undefined
+  ansible.builtin.fail:
+    msg: "The `{{ item }}` variable must be defined and have a non-null value."
+  with_items:
+    - "matrix_appservice_draupnir_for_all_master_control_room_alias"
+    - "matrix_bot_draupnir_container_network"
+  when: "vars[item] == '' or vars[item] is none"

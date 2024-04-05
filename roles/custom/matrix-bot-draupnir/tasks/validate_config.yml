@@ -2,9 +2,20 @@
 
 - name: Fail if required matrix-bot-draupnir variables are undefined
   ansible.builtin.fail:
-    msg: "The `{{ item }}` variable must be defined and have a non-null value."
+    msg: "The `{{ item.name }}` variable must be defined and have a non-null value."
   with_items:
-    - "matrix_bot_draupnir_access_token"
-    - "matrix_bot_draupnir_management_room"
-    - "matrix_bot_draupnir_container_network"
-  when: "vars[item] == '' or vars[item] is none"
+    - {'name': 'matrix_bot_draupnir_access_token', when: "{{ not matrix_bot_draupnir_pantalaimon_use }}"}
+    - {'name': 'matrix_bot_draupnir_management_room', when: true}
+    - {'name': 'matrix_bot_draupnir_container_network', when: true}
+    - {'name': 'matrix_bot_draupnir_homeserver_url', when: true}
+    - {'name': 'matrix_bot_draupnir_raw_homeserver_url', when: true}
+    - {'name': 'matrix_bot_draupnir_pantalaimon_username', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
+    - {'name': 'matrix_bot_draupnir_pantalaimon_password', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
+  when: "item.when | bool and (vars[item.name] == '' or vars[item.name] is none)"
+
+- name: Fail if inappropriate variables are defined
+  ansible.builtin.fail:
+    msg: "The `{{ item.name }}` variable must be undefined or have a null value."
+  with_items:
+    - {'name': 'matrix_bot_draupnir_access_token', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
+  when: "item.when | bool and not (vars[item.name] == '' or vars[item.name] is none)"

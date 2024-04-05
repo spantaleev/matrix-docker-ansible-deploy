@@ -5,7 +5,7 @@ traefik.enable=true
 traefik.docker.network={{ matrix_ldap_registration_proxy_container_labels_traefik_docker_network }}
 {% endif %}
 
-{% if matrix_ldap_registration_proxy_container_labels_public_endpoint_enabled %}
+{% if matrix_ldap_registration_proxy_container_labels_registration_endpoint_enabled %}
 ############################################################
 #                                                          #
 # Registration                                             #
@@ -16,20 +16,20 @@ traefik.http.services.matrix-ldap-registration-proxy.loadbalancer.server.port={{
 
 traefik.http.middlewares.matrix-ldap-registration-proxy-registration-endpoint-replacepath.replacepath.path=/register
 
-traefik.http.routers.matrix-ldap-registration-proxy-registration.rule={{ matrix_ldap_registration_proxy_container_labels_public_endpoint_traefik_rule }}
+traefik.http.routers.matrix-ldap-registration-proxy-registration.rule={{ matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_rule }}
 
 traefik.http.routers.matrix-ldap-registration-proxy-registration.middlewares=matrix-ldap-registration-proxy-registration-endpoint-replacepath
 
-{% if matrix_ldap_registration_proxy_container_labels_public_endpoint_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-ldap-registration-proxy-registration.priority={{ matrix_ldap_registration_proxy_container_labels_public_endpoint_traefik_priority }}
+{% if matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-ldap-registration-proxy-registration.priority={{ matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_priority }}
 {% endif %}
 
 traefik.http.routers.matrix-ldap-registration-proxy-registration.service=matrix-ldap-registration-proxy
-traefik.http.routers.matrix-ldap-registration-proxy-registration.entrypoints={{ matrix_ldap_registration_proxy_container_labels_public_endpoint_traefik_entrypoints }}
+traefik.http.routers.matrix-ldap-registration-proxy-registration.entrypoints={{ matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_entrypoints }}
 
-traefik.http.routers.matrix-ldap-registration-proxy-registration.tls={{ matrix_ldap_registration_proxy_container_labels_public_endpoint_traefik_tls | to_json }}
-{% if matrix_ldap_registration_proxy_container_labels_public_endpoint_traefik_tls %}
-traefik.http.routers.matrix-ldap-registration-proxy-registration.tls.certResolver={{ matrix_ldap_registration_proxy_container_labels_public_endpoint_traefik_tls_certResolver }}
+traefik.http.routers.matrix-ldap-registration-proxy-registration.tls={{ matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_tls | to_json }}
+{% if matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_tls %}
+traefik.http.routers.matrix-ldap-registration-proxy-registration.tls.certResolver={{ matrix_ldap_registration_proxy_container_labels_registration_endpoint_traefik_tls_certResolver }}
 {% endif %}
 
 ############################################################

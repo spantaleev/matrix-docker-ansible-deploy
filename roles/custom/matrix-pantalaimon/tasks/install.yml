@@ -1,0 +1,67 @@
+---
+
+- name: Ensure matrix-pantalaimon paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_pantalaimon_base_path }}", when: true}
+    - {path: "{{ matrix_pantalaimon_data_path }}", when: true}
+    - {path: "{{ matrix_pantalaimon_container_src_files_path }}", when: "{{ matrix_pantalaimon_container_image_self_build }}"}
+  when: "item.when | bool"
+
+- name: Ensure matrix-pantalaimon config installed
+  ansible.builtin.copy:
+    content: "{{ matrix_pantalaimon_configuration }}"
+    dest: "{{ matrix_pantalaimon_data_path }}/pantalaimon.conf"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure pantalaimon container image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_pantalaimon_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_pantalaimon_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_pantalaimon_docker_image_force_pull }}"
+  when: "not matrix_pantalaimon_container_image_self_build | bool"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure pantalaimon repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_pantalaimon_container_image_self_build_repo }}"
+    version: "{{ matrix_pantalaimon_container_image_self_build_repo_version }}"
+    dest: "{{ matrix_pantalaimon_container_src_files_path }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
+  register: matrix_pantalaimon_git_pull_results
+  when: "matrix_pantalaimon_container_image_self_build | bool"
+
+- name: Ensure pantalaimon container image is built
+  community.docker.docker_image:
+    name: "{{ matrix_pantalaimon_docker_image }}"
+    source: build
+    force_source: "{{ matrix_pantalaimon_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_pantalaimon_container_src_files_path }}"
+      pull: true
+  when: "matrix_pantalaimon_container_image_self_build | bool"
+
+- name: Ensure pantalaimon container network is created
+  community.general.docker_network:
+    name: "{{ matrix_pantalaimon_container_network }}"
+    driver: bridge
+
+- name: Ensure matrix-pantalaimon.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-pantalaimon.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-pantalaimon.service"
+    mode: 0644

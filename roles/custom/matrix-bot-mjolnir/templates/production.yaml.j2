@@ -1,32 +1,34 @@
 # Endpoint URL that Mjolnir uses to interact with the matrix homeserver (client-server API),
 # set this to the pantalaimon URL if you're using that.
-homeserverUrl: "{{ matrix_homeserver_url }}"
+homeserverUrl: {{ matrix_bot_mjolnir_homeserver_url | to_json }}
 
 # Endpoint URL that Mjolnir could use to fetch events related to reports (client-server API and /_synapse/),
 # only set this to the public-internet homeserver client API URL, do NOT set this to the pantalaimon URL.
-rawHomeserverUrl: "{{ matrix_homeserver_url }}"
+rawHomeserverUrl: {{ matrix_bot_mjolnir_raw_homeserver_url | to_json }}
 
 # Matrix Access Token to use, Mjolnir will only use this if pantalaimon.use is false.
-accessToken: "{{ matrix_bot_mjolnir_access_token }}"
+accessToken: {{ matrix_bot_mjolnir_access_token | to_json }}
 
+{% if matrix_bot_mjolnir_pantalaimon_use %}
 # Options related to Pantalaimon (https://github.com/matrix-org/pantalaimon)
-#pantalaimon:
-#  # Whether or not Mjolnir will use pantalaimon to access the matrix homeserver,
-#  # set to `true` if you're using pantalaimon.
-#  #
-#  # Be sure to point homeserverUrl to the pantalaimon instance.
-#  #
-#  # Mjolnir will log in using the given username and password once,
-#  # then store the resulting access token in a file under dataPath.
-#  use: false
-#
-#  # The username to login with.
-#  username: mjolnir
-#
-#  # The password Mjolnir will login with.
-#  #
-#  # After successfully logging in once, this will be ignored, so this value can be blanked after first startup.
-#  password: your_password
+pantalaimon:
+  # Whether or not Mjolnir will use pantalaimon to access the matrix homeserver,
+  # set to `true` if you're using pantalaimon.
+  #
+  # Be sure to point homeserverUrl to the pantalaimon instance.
+  #
+  # Mjolnir will log in using the given username and password once,
+  # then store the resulting access token in a file under dataPath.
+  use: true
+
+  # The username to login with.
+  username: {{ matrix_bot_mjolnir_pantalaimon_username | to_json }}
+
+  # The password Mjolnir will login with.
+  #
+  # After successfully logging in once, this will be ignored, so this value can be blanked after first startup.
+  password: {{ matrix_bot_mjolnir_pantalaimon_password | to_json }}
+{% endif %}
 
 # The path Mjolnir will store its state/data in, leave default ("/data/storage") when using containers.
 dataPath: "/data"
@@ -49,7 +51,7 @@ recordIgnoredInvites: false
 #
 # Note: By default, Mjolnir is fairly verbose - expect a lot of messages in this room.
 # (see verboseLogging to adjust this a bit.)
-managementRoom: "{{ matrix_bot_mjolnir_management_room }}"
+managementRoom: {{ matrix_bot_mjolnir_management_room | to_json }}
 
 # Whether Mjolnir should log a lot more messages in the room,
 # mainly involves "all-OK" messages, and debugging messages for when mjolnir checks bans in a room.

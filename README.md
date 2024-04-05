@@ -172,6 +172,7 @@ Various services that don't fit any other category.
 | [Etherpad](https://etherpad.org) | x | An open source collaborative text editor | [Link](docs/configuring-playbook-etherpad.md) |
 | [Jitsi](https://jitsi.org/) | x | An open source video-conferencing platform | [Link](docs/configuring-playbook-jitsi.md) |
 | [Cactus Comments](https://cactus.chat) | x | A federated comment system built on matrix | [Link](docs/configuring-playbook-cactus-comments.md) |
+| [Pantalaimon](https://github.com/matrix-org/pantalaimon) | x | An E2EE aware proxy daemon | [Link](docs/configuring-playbook-pantalaimon.md) |
 
 
 ## Installation
