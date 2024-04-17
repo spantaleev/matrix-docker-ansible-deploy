@@ -1863,15 +1863,15 @@ matrix_hookshot_systemd_wanted_services_list: |
   {{
     matrix_addons_homeserver_systemd_services_list
     +
-    ([(redis_identifier + '.service')] if redis_enabled and matrix_hookshot_queue_host == redis_identifier else [])
+    ([(redis_identifier + '.service')] if redis_enabled and matrix_hookshot_cache_redis_host == redis_identifier else [])
     +
-    ([(keydb_identifier + '.service')] if keydb_enabled and matrix_hookshot_queue_host == keydb_identifier else [])
+    ([(keydb_identifier + '.service')] if keydb_enabled and matrix_hookshot_cache_redis_host == keydb_identifier else [])
   }}
 
 # Hookshot's experimental encryption feature (and possibly others) may benefit from Redis, if available.
 # We only connect to Redis if encryption is enabled (not for everyone who has Redis enabled),
 # because connectivity is still potentially troublesome and is to be investigated.
-matrix_hookshot_queue_host: "{{ redis_identifier if redis_enabled and matrix_hookshot_experimental_encryption_enabled else (keydb_identifier if keydb_enabled and matrix_hookshot_experimental_encryption_enabled else '') }}"
+matrix_hookshot_cache_redis_host: "{{ redis_identifier if redis_enabled and matrix_hookshot_experimental_encryption_enabled else (keydb_identifier if keydb_enabled and matrix_hookshot_experimental_encryption_enabled else '') }}"
 
 matrix_hookshot_container_network: "{{ matrix_addons_container_network }}"
 
@@ -1880,9 +1880,9 @@ matrix_hookshot_container_additional_networks_auto: |
     (
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
-      ([redis_container_network] if redis_enabled and matrix_hookshot_queue_host == redis_identifier else [])
+      ([redis_container_network] if redis_enabled and matrix_hookshot_cache_redis_host == redis_identifier else [])
       +
-      ([keydb_container_network] if keydb_enabled and matrix_hookshot_queue_host == keydb_identifier else [])
+      ([keydb_container_network] if keydb_enabled and matrix_hookshot_cache_redis_host == keydb_identifier else [])
       +
       ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network and matrix_hookshot_container_labels_traefik_enabled else [])
     ) | unique

@@ -107,11 +107,9 @@ metrics:
   # (Optional) Prometheus metrics support
   #
   enabled: {{ matrix_hookshot_metrics_enabled | to_json }}
-{% if matrix_hookshot_queue_host != '' %}
-queue:
-  monolithic: true
-  port: {{ matrix_hookshot_queue_port }}
-  host: {{ matrix_hookshot_queue_host | to_json }}
+{% if matrix_hookshot_cache_redisUri %}
+cache:
+  redisUri: {{ matrix_hookshot_cache_redisUri | to_json }}
 {% endif %}
 {% if matrix_hookshot_experimental_encryption_enabled %}
 experimentalEncryption:
