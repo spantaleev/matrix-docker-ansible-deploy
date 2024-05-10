@@ -74,7 +74,7 @@ Synapse's presence feature which tracks which users are online and which are off
 
 If you have enough compute resources (CPU & RAM), you can make Synapse better use of them by [enabling load-balancing with workers](configuring-playbook-synapse.md#load-balancing-with-workers).
 
-[Tuning your PostgreSQL database](maintenance-postgres.md#tuning-postgresql) could also improve Synapse performance. The playbook tunes the integrated Postgres database automatically, but based on your needs you may wish to adjust tuning variables manually. If you're using an [external Postgres database](configuring-playbook-external-postgres.md), you will aslo need to tune Postgres manually.
+[Tuning your PostgreSQL database](maintenance-postgres.md#tuning-postgresql) could also improve Synapse performance. The playbook tunes the integrated Postgres database automatically, but based on your needs you may wish to adjust tuning variables manually. If you're using an [external Postgres database](configuring-playbook-external-postgres.md), you will also need to tune Postgres manually.
 
 ### Tuning caches and cache autotuning
 
