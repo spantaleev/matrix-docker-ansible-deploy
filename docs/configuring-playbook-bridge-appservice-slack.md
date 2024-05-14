@@ -20,8 +20,24 @@ matrix_appservice_slack_enabled: true
 matrix_appservice_slack_control_room_id: "Your matrix admin room id"
 ```
 
-3. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
-4. Invite the bridge bot user into the admin room:
+3. Enable puppeting (optional, but recommended)
+
+```yaml
+matrix_appservice_slack_puppeting_enabled: true
+matrix_appservice_slack_puppeting_slackapp_client_id: "Your Classic Slack App Client ID"
+matrix_appservice_slack_puppeting_slackapp_client_secret: "Your Classic Slack App Client Secret"
+```
+
+4. Enable Team Sync (optional)
+
+```yaml
+matrix_appservice_slack_team_sync_enabled: true
+```
+
+   See https://matrix-appservice-slack.readthedocs.io/en/latest/team_sync/
+
+4. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
+5. Invite the bridge bot user into the admin room:
 
 ```
     /invite @slackbot:MY.DOMAIN
@@ -29,7 +45,7 @@ matrix_appservice_slack_control_room_id: "Your matrix admin room id"
 
 Note that the bot's domain is your server's domain **without the `matrix.` prefix.**
 
-5. Create a Classic Slack App [here](https://api.slack.com/apps?new_classic_app=1).
+6. Create a Classic Slack App [here](https://api.slack.com/apps?new_classic_app=1).
 
     Name the app "matrixbot" (or anything else you'll remember).
 
@@ -37,7 +53,7 @@ Note that the bot's domain is your server's domain **without the `matrix.` prefi
 
     Click on bot users and add a new bot user. We will use this account to bridge the the rooms.
 
-6. Click on Event Subscriptions and enable them and use the request url `https://matrix.DOMAIN/appservice-slack`. Then add the following events and save:
+7. Click on Event Subscriptions and enable them and use the request url `https://matrix.DOMAIN/appservice-slack`. Then add the following events and save:
 
      Bot User Events:
 
@@ -47,7 +63,7 @@ Note that the bot's domain is your server's domain **without the `matrix.` prefi
     - reaction_added
     - reaction_removed
 
-7. Click on OAuth & Permissions and add the following scopes:
+8. Click on OAuth & Permissions and add the following scopes:
 
     - chat:write:bot
     - users:read
@@ -59,9 +75,9 @@ Note that the bot's domain is your server's domain **without the `matrix.` prefi
 
     Note: In order to make Slack files visible to matrix users, this bridge will make Slack files visible to anyone with the url (including files in private channels). This is different than the current behavior in Slack, which only allows authenticated access to media posted in private channels. See MSC701 for details.
 
-8. Click on Install App and Install App to Workspace. Note the access tokens shown. You will need the Bot User OAuth Access Token and if you want to bridge files, the OAuth Access Token whenever you link a room.
+9. Click on Install App and Install App to Workspace. Note the access tokens shown. You will need the Bot User OAuth Access Token and if you want to bridge files, the OAuth Access Token whenever you link a room.
 
-9. For each channel you would like to bridge, perform the following steps:
+10. If Team Sync is not enabled, for each channel you would like to bridge, perform the following steps:
 
     * Create a Matrix room in the usual manner for your client. Take a note of its Matrix room ID - it will look something like !aBcDeF:example.com.
 
@@ -86,7 +102,7 @@ Note that the bot's domain is your server's domain **without the `matrix.` prefi
 
 Other configuration options are available via the `matrix_appservice_slack_configuration_extension_yaml` variable.
 
-10. Unlinking
+11. Unlinking
 
     Channels can be unlinked again like this:
     ```
