@@ -19,6 +19,14 @@
 # Also see `devture_docker_sdk_for_python_installation_enabled`.
 matrix_playbook_docker_installation_enabled: true
 
+matrix_playbook_docker_installation_daemon_options: "{{ matrix_playbook_docker_installation_daemon_options_auto | combine(matrix_playbook_docker_installation_daemon_options_custom, recursive=True) }}"
+
+matrix_playbook_docker_installation_daemon_options_auto:
+  experimental: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+  ip6tables: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+
+matrix_playbook_docker_installation_daemon_options_custom: {}
+
 # Controls whether to attach Traefik labels to services.
 # This is separate from `devture_traefik_enabled`, because you may wish to disable Traefik installation by the playbook,
 # yet still use Traefik installed in another way.
@@ -489,13 +497,7 @@ devture_playbook_state_preserver_commit_hash_preservation_dst: "{{ matrix_base_d
 #                                                                      #
 ########################################################################
 
-docker_daemon_options: |
-  {{
-    {
-      'experimental': devture_systemd_docker_base_ipv6_enabled,
-      'ip6tables': devture_systemd_docker_base_ipv6_enabled,
-    }
-  }}
+docker_daemon_options: "{{ matrix_playbook_docker_installation_daemon_options }}"
 
 ########################################################################
 #                                                                      #
@@ -1921,15 +1923,15 @@ matrix_hookshot_systemd_wanted_services_list: |
   {{
     matrix_addons_homeserver_systemd_services_list
     +
-    ([(redis_identifier + '.service')] if redis_enabled and matrix_hookshot_queue_host == redis_identifier else [])
+    ([(redis_identifier + '.service')] if redis_enabled and matrix_hookshot_cache_redis_host == redis_identifier else [])
     +
-    ([(keydb_identifier + '.service')] if keydb_enabled and matrix_hookshot_queue_host == keydb_identifier else [])
+    ([(keydb_identifier + '.service')] if keydb_enabled and matrix_hookshot_cache_redis_host == keydb_identifier else [])
   }}
 
 # Hookshot's experimental encryption feature (and possibly others) may benefit from Redis, if available.
 # We only connect to Redis if encryption is enabled (not for everyone who has Redis enabled),
 # because connectivity is still potentially troublesome and is to be investigated.
-matrix_hookshot_queue_host: "{{ redis_identifier if redis_enabled and matrix_hookshot_experimental_encryption_enabled else (keydb_identifier if keydb_enabled and matrix_hookshot_experimental_encryption_enabled else '') }}"
+matrix_hookshot_cache_redis_host: "{{ redis_identifier if redis_enabled and matrix_hookshot_experimental_encryption_enabled else (keydb_identifier if keydb_enabled and matrix_hookshot_experimental_encryption_enabled else '') }}"
 
 matrix_hookshot_container_network: "{{ matrix_addons_container_network }}"
 
@@ -1938,9 +1940,9 @@ matrix_hookshot_container_additional_networks_auto: |
     (
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
-      ([redis_container_network] if redis_enabled and matrix_hookshot_queue_host == redis_identifier else [])
+      ([redis_container_network] if redis_enabled and matrix_hookshot_cache_redis_host == redis_identifier else [])
       +
-      ([keydb_container_network] if keydb_enabled and matrix_hookshot_queue_host == keydb_identifier else [])
+      ([keydb_container_network] if keydb_enabled and matrix_hookshot_cache_redis_host == keydb_identifier else [])
       +
       ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network and matrix_hookshot_container_labels_traefik_enabled else [])
     ) | unique
@@ -3422,7 +3424,7 @@ exim_relay_container_image_self_build: "{{ matrix_architecture not in ['amd64', 
 
 exim_relay_hostname: "{{ matrix_server_fqn_matrix }}"
 
-exim_relay_sender_address: "matrix@{{ matrix_domain }}"
+exim_relay_sender_address: "matrix@{{ exim_relay_hostname }}"
 
 ########################################################################
 #                                                                      #
@@ -5033,6 +5035,7 @@ matrix_dendrite_systemd_wanted_services_list_auto: |
     (['matrix-coturn.service'] if matrix_coturn_enabled else [])
   }}
 
+matrix_dendrite_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
 matrix_dendrite_app_service_config_files_auto: "{{ matrix_homeserver_app_service_config_files_auto }}"
 
 ######################################################################

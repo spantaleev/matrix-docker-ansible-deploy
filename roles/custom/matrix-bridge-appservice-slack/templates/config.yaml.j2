@@ -24,6 +24,26 @@ rtm:
   #
   log_level: "silent"
 
+{% if matrix_appservice_slack_puppeting_enabled %}
+puppeting:
+  enabled: true
+  onboard_users: {{ matrix_appservice_slack_puppeting_onboard_users | to_json }}
+
+oauth2:
+  client_id: {{ matrix_appservice_slack_puppeting_slackapp_client_id | to_json }}
+  client_secret: {{ matrix_appservice_slack_puppeting_slackapp_client_secret | to_json }}
+{% endif %}
+
+{% if matrix_appservice_slack_team_sync_enabled %}
+team_sync:
+  all:
+    channels:
+      enabled: true
+      alias_prefix: {{ matrix_appservice_slack_team_sync_alias_prefix | to_json }}
+    users:
+      enabled: true
+{% endif %}
+
 {% if matrix_appservice_slack_database_engine == 'nedb' %}
 dbdir: "/data"
 {% else %}
