@@ -339,6 +339,8 @@ matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.11/sit
 matrix_synapse_template_synapse_homeserver: "{{ role_path }}/templates/synapse/homeserver.yaml.j2"
 matrix_synapse_template_synapse_log: "{{ role_path }}/templates/synapse/synapse.log.config.j2"
 
+matrix_synapse_public_baseurl: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}://{{ matrix_server_fqn_matrix }}/"
+
 matrix_synapse_macaroon_secret_key: ""
 matrix_synapse_registration_shared_secret: "{{ matrix_synapse_macaroon_secret_key }}"
 matrix_synapse_allow_guest_access: false
@@ -1082,7 +1084,7 @@ matrix_synapse_email_smtp_pass: ""
 matrix_synapse_email_smtp_require_transport_security: false
 matrix_synapse_email_notif_from: "Matrix <matrix@{{ matrix_domain }}>"
 matrix_synapse_email_app_name: Matrix
-matrix_synapse_email_client_base_url: "https://{{ matrix_server_fqn_element }}"
+matrix_synapse_email_client_base_url: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}://{{ matrix_server_fqn_element }}"
 matrix_synapse_email_invite_client_location: "https://app.element.io"
 
 

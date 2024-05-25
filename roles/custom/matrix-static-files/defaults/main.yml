@@ -83,7 +83,7 @@ matrix_static_files_container_labels_base_domain_traefik_tls: "{{ matrix_static_
 matrix_static_files_container_labels_base_domain_traefik_tls_certResolver: "{{ matrix_static_files_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 # Controls whether the root path (/) at the base domain would respond with a redirect to some URL.
 matrix_static_files_container_labels_base_domain_root_path_redirection_enabled: false
-matrix_static_files_container_labels_base_domain_root_path_redirection_regex: "^https://{{ matrix_static_files_container_labels_base_domain_traefik_hostname }}{{ matrix_static_files_container_labels_base_domain_traefik_path_prefix }}$"
+matrix_static_files_container_labels_base_domain_root_path_redirection_regex: "^{{ matrix_static_files_scheme }}://{{ matrix_static_files_container_labels_base_domain_traefik_hostname }}{{ matrix_static_files_container_labels_base_domain_traefik_path_prefix }}$"
 matrix_static_files_container_labels_base_domain_root_path_redirection_url: ""
 
 # matrix_static_files_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
@@ -369,8 +369,10 @@ matrix_static_files_file_index_html_template: |-
 #                                                                      #
 ########################################################################
 
+matrix_static_files_scheme: https
+
 # Controls whether the self-check feature should validate SSL certificates.
-matrix_static_files_self_check_validate_certificates: true
+matrix_static_files_self_check_validate_certificates: "{{ matrix_static_files_scheme == 'https' }}"
 
 matrix_static_files_self_check_hostname_matrix: ''
 matrix_static_files_self_check_hostname_identity: ''
