@@ -1,14 +1,14 @@
 ---
 
 - name: Check if the Docker apt repository file exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ matrix_playbook_migration_docker_trusted_gpg_d_migration_repository_path }}"
   register: matrix_playbook_migration_docker_trusted_gpg_d_migration_repository_path_status
 
 - when: matrix_playbook_migration_docker_trusted_gpg_d_migration_repository_path_status.stat.exists | bool
   block:
     - name: Read repository file
-      slurp:
+      ansible.builtin.slurp:
         path: "{{ matrix_playbook_migration_docker_trusted_gpg_d_migration_repository_path }}"
       register: matrix_playbook_migration_docker_trusted_gpg_d_migration_repository_path_content
 
