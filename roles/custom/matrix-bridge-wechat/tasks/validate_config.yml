@@ -1,0 +1,19 @@
+---
+
+- name: Fail if required WeChat settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
+  with_items:
+    - {'name': 'matrix_wechat_appservice_token', when: true}
+    - {'name': 'matrix_wechat_homeserver_address', when: true}
+    - {'name': 'matrix_wechat_homeserver_token', when: true}
+    - {'name': 'matrix_wechat_database_hostname', when: "{{ matrix_wechat_database_engine == 'postgres' }}"}
+    - {'name': 'matrix_wechat_container_network', when: true}
+    - {'name': 'matrix_wechat_bridge_listen_secret', when: true}
+
+- name: Fail if WeChat enabled on ARM64 (not supported by the wechat agent, even with self-building)
+  when: matrix_architecture not in ['amd64']
+  ansible.builtin.fail:
+    msg: "The WeChat Agent does not support the '{{ matrix_architecture }}' architecture yet. Its Dockerfile downloads amd64 binaries and does not work on arm64."
