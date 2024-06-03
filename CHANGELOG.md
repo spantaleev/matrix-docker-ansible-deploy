@@ -1,3 +1,12 @@
+# 2024-06-03
+
+## WeChat bridging support
+
+Thanks to [Tobias Diez](https://github.com/tobiasdiez)'s [efforts](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3241), the playbook now supports bridging to [WeChat](https://www.wechat.com/) via the [matrix-wechat](https://github.com/duo/matrix-wechat) bridge.
+
+See our [Setting up WeChat bridging](docs/configuring-playbook-bridge-wechat.md) documentation page for getting started.
+
+
 # 2024-03-26
 
 ## (Backward Compatibility Break) The playbook now defaults to KeyDB, instead of Redis
