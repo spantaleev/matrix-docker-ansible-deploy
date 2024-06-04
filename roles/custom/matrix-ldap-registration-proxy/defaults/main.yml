@@ -73,13 +73,13 @@ matrix_ldap_registration_proxy_container_extra_arguments: []
 
 # List of systemd services that matrix-ldap-registration-proxy.service depends on.
 matrix_ldap_registration_proxy_systemd_required_services_list: "{{ matrix_ldap_registration_proxy_systemd_required_services_list_default + matrix_ldap_registration_proxy_systemd_required_services_list_auto + matrix_ldap_registration_proxy_systemd_required_services_list_custom }}"
-matrix_ldap_registration_proxy_systemd_required_services_list_default: ['docker.service']
+matrix_ldap_registration_proxy_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 matrix_ldap_registration_proxy_systemd_required_services_list_auto: []
 matrix_ldap_registration_proxy_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-ldap-registration-proxy.service wants
 matrix_ldap_registration_proxy_systemd_wanted_services_list: "{{ matrix_ldap_registration_proxy_systemd_wanted_services_list_default + matrix_ldap_registration_proxy_systemd_wanted_services_list_auto + matrix_ldap_registration_proxy_systemd_wanted_services_list_custom }}"
-matrix_ldap_registration_proxy_systemd_wanted_services_list_default: ['docker.service']
+matrix_ldap_registration_proxy_systemd_wanted_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 matrix_ldap_registration_proxy_systemd_wanted_services_list_auto: []
 matrix_ldap_registration_proxy_systemd_wanted_services_list_custom: []
 

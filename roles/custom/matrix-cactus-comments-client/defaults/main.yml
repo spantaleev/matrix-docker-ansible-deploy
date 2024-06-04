@@ -94,7 +94,7 @@ matrix_cactus_comments_client_webclient_css_url: "https://gateway.pinata.cloud/i
 matrix_cactus_comments_client_local_dir: ''
 
 # List of systemd services that matrix-cactus-comments-client.service depends on
-matrix_cactus_comments_client_systemd_required_services_list: ['docker.service']
+matrix_cactus_comments_client_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 
 # List of systemd services that matrix-cactus-comments-client.service wants
 matrix_cactus_comments_client_systemd_wanted_services_list: "{{ matrix_cactus_comments_client_systemd_wanted_services_list_auto + matrix_cactus_comments_client_systemd_wanted_services_list_custom }}"

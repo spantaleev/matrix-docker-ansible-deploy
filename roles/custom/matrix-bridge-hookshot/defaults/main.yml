@@ -295,7 +295,7 @@ matrix_hookshot_container_labels_additional_labels: ''
 
 # List of systemd services that service depends on.
 matrix_hookshot_systemd_required_services_list: "{{ matrix_hookshot_systemd_required_services_list_default + matrix_hookshot_systemd_required_services_list_auto + matrix_hookshot_systemd_required_services_list_custom }}"
-matrix_hookshot_systemd_required_services_list_default: ['docker.service']
+matrix_hookshot_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 matrix_hookshot_systemd_required_services_list_auto: []
 matrix_hookshot_systemd_required_services_list_custom: []
 
