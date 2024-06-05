@@ -2873,7 +2873,7 @@ backup_borg_location_exclude_patterns: |
 
 backup_borg_systemd_required_services_list: |
   {{
-    ['docker.service']
+    [devture_systemd_docker_base_docker_service_name]
     +
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
   }}
@@ -3090,7 +3090,7 @@ matrix_coturn_container_additional_volumes: |
 
 matrix_coturn_systemd_required_services_list: |
   {{
-    ['docker.service']
+    [devture_systemd_docker_base_docker_service_name]
     +
     ([devture_traefik_certs_dumper_identifier + '-wait-for-domain@' + matrix_server_fqn_matrix + '.service'] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and devture_traefik_certs_dumper_enabled and matrix_coturn_tls_enabled else [])
   }}
@@ -3208,7 +3208,7 @@ etherpad_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certReso
 
 etherpad_systemd_required_services_list: |
   {{
-    ['docker.service']
+    [devture_systemd_docker_base_docker_service_name]
     +
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
   }}
@@ -5184,7 +5184,7 @@ matrix_user_verification_service_enabled: false
 
 matrix_user_verification_service_systemd_required_services_list: |
   {{
-    ['docker.service']
+    [devture_systemd_docker_base_docker_service_name]
     +
     (['matrix-' + matrix_homeserver_implementation + '.service'])
   }}
@@ -5325,7 +5325,7 @@ devture_traefik_container_additional_networks_auto: |
 
 devture_traefik_systemd_required_services_list: |
   {{
-    (['docker.service'])
+    ([devture_systemd_docker_base_docker_service_name])
     +
     ([devture_container_socket_proxy_identifier + '.service'] if devture_container_socket_proxy_enabled else [])
   }}
