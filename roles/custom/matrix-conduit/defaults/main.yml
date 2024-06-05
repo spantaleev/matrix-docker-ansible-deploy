@@ -23,7 +23,7 @@ matrix_conduit_tmp_directory_size_mb: 500
 
 # List of systemd services that matrix-conduit.service depends on
 matrix_conduit_systemd_required_services_list: "{{ matrix_conduit_systemd_required_services_list_default + matrix_conduit_systemd_required_services_list_auto + matrix_conduit_systemd_required_services_list_custom }}"
-matrix_conduit_systemd_required_services_list_default: ["docker.service"]
+matrix_conduit_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 matrix_conduit_systemd_required_services_list_auto: []
 matrix_conduit_systemd_required_services_list_custom: []
 

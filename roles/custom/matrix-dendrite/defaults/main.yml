@@ -178,13 +178,13 @@ matrix_dendrite_process_extra_arguments: []
 
 # List of systemd services that matrix-dendrite.service depends on
 matrix_dendrite_systemd_required_services_list: "{{ matrix_dendrite_systemd_required_services_list_default + matrix_dendrite_systemd_required_services_list_auto + matrix_dendrite_systemd_required_services_list_custom }}"
-matrix_dendrite_systemd_required_services_list_default: ["docker.service"]
+matrix_dendrite_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 matrix_dendrite_systemd_required_services_list_auto: []
 matrix_dendrite_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-dendrite.service wants
 matrix_dendrite_systemd_wanted_services_list: "{{ matrix_dendrite_systemd_wanted_services_list_default + matrix_dendrite_systemd_wanted_services_list_auto + matrix_dendrite_systemd_wanted_services_list_custom }}"
-matrix_dendrite_systemd_wanted_services_list_default: ["docker.service"]
+matrix_dendrite_systemd_wanted_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 matrix_dendrite_systemd_wanted_services_list_auto: []
 matrix_dendrite_systemd_wanted_services_list_custom: []
 
