@@ -3,11 +3,13 @@
   ansible.builtin.fail:
     msg: >
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "vars[item] == ''"
+  when: "item.when | bool and vars[item.name] == ''"
   with_items:
-    - matrix_sliding_sync_hostname
-    - matrix_sliding_sync_path_prefix
-    - matrix_sliding_sync_database_hostname
-    - matrix_sliding_sync_environment_variable_syncv3_server
-    - matrix_sliding_sync_environment_variable_syncv3_secret
-    - matrix_sliding_sync_container_network
+    - {'name': 'matrix_sliding_sync_hostname', when: true}
+    - {'name': 'matrix_sliding_sync_path_prefix', when: true}
+    - {'name': 'matrix_sliding_sync_database_hostname', when: true}
+    - {'name': 'matrix_sliding_sync_environment_variable_syncv3_server', when: true}
+    - {'name': 'matrix_sliding_sync_environment_variable_syncv3_secret', when: true}
+    - {'name': 'matrix_sliding_sync_container_network', when: true}
+    - {'name': 'matrix_sliding_sync_metrics_proxying_hostname', when: "{{ matrix_sliding_sync_metrics_proxying_enabled }}"}
+    - {'name': 'matrix_sliding_sync_metrics_proxying_path_prefix', when: "{{ matrix_sliding_sync_metrics_proxying_enabled }}"}

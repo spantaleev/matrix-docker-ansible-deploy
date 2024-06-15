@@ -4941,6 +4941,9 @@ matrix_sliding_sync_container_labels_traefik_docker_network: "{{ matrix_playbook
 matrix_sliding_sync_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 matrix_sliding_sync_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
+matrix_sliding_sync_container_labels_public_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+matrix_sliding_sync_container_labels_public_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+
 matrix_sliding_sync_systemd_required_services_list_auto: |
   {{
     matrix_homeserver_systemd_services_list
@@ -4954,7 +4957,13 @@ matrix_sliding_sync_environment_variable_syncv3_secret: "{{ '%s' | format(matrix
 matrix_sliding_sync_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_sliding_sync_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'ss.db', rounds=655555) | to_uuid }}"
 
-######################################################################
+matrix_sliding_sync_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
+
+matrix_sliding_sync_metrics_proxying_enabled: "{{ matrix_sliding_sync_metrics_enabled and matrix_metrics_exposure_enabled }}"
+matrix_sliding_sync_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
+matrix_sliding_sync_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/sliding-sync"
+
+#####################################################################
 #
 # /matrix-sliding-sync
 #

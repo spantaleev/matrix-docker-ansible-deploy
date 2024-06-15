@@ -38,6 +38,16 @@ matrix_sliding_sync_container_network: ''
 # Use this to expose this container to another reverse proxy, which runs in a different container network.
 matrix_sliding_sync_container_additional_networks: []
 
+# Enable the exposure of metrics to Prometheus
+# See https://github.com/matrix-org/sliding-sync/tree/main/grafana
+matrix_sliding_sync_metrics_enabled: false
+matrix_sliding_sync_metrics_port: 2112
+
+# Controls whether Sliding Sync metrics should be proxied (exposed) on `matrix.DOMAIN/metrics/sliding-sync`
+matrix_sliding_sync_metrics_proxying_enabled: false
+matrix_sliding_sync_metrics_proxying_hostname: ''
+matrix_sliding_sync_metrics_proxying_path: /metrics/sliding-sync
+
 # matrix_sliding_sync_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
 # See `../templates/labels.j2` for details.
 #
@@ -52,6 +62,18 @@ matrix_sliding_sync_container_labels_traefik_priority: 0
 matrix_sliding_sync_container_labels_traefik_entrypoints: web-secure
 matrix_sliding_sync_container_labels_traefik_tls: "{{ matrix_sliding_sync_container_labels_traefik_entrypoints != 'web' }}"
 matrix_sliding_sync_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether labels will be added that expose metrics (see `matrix_sliding_sync_metrics_proxying_enabled`) for Sliding Sync
+matrix_sliding_sync_container_labels_public_metrics_enabled: "{{ matrix_sliding_sync_metrics_enabled and matrix_sliding_sync_metrics_proxying_enabled }}"
+matrix_sliding_sync_container_labels_public_metrics_traefik_path: "{{ matrix_sliding_sync_metrics_proxying_path }}"
+matrix_sliding_sync_container_labels_public_metrics_traefik_rule: "Host(`{{ matrix_sliding_sync_metrics_proxying_hostname }}`) && Path(`{{ matrix_sliding_sync_container_labels_public_metrics_traefik_path }}`)"
+matrix_sliding_sync_container_labels_public_metrics_traefik_priority: 0
+matrix_sliding_sync_container_labels_public_metrics_traefik_entrypoints: "{{ matrix_sliding_sync_container_labels_traefik_entrypoints }}"
+matrix_sliding_sync_container_labels_public_metrics_traefik_tls: "{{ matrix_sliding_sync_container_labels_public_metrics_traefik_entrypoints != 'web' }}"
+matrix_sliding_sync_container_labels_public_metrics_traefik_tls_certResolver: "{{ matrix_sliding_sync_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_sliding_sync_container_labels_public_metrics_middleware_basic_auth_enabled: false
+# See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
+matrix_sliding_sync_container_labels_public_metrics_middleware_basic_auth_users: ''
 
 # Controls which additional headers to attach to all HTTP responses.
 # To add your own headers, use `matrix_sliding_sync_container_labels_traefik_additional_response_headers_custom`
@@ -88,6 +110,9 @@ matrix_sliding_sync_environment_variable_syncv3_secret: ''
 
 # Controls the SYNCV3_DB environment variable
 matrix_sliding_sync_environment_variable_syncv3_db: 'user={{ matrix_sliding_sync_database_username }} password={{ matrix_sliding_sync_database_password }} host={{ matrix_sliding_sync_database_hostname }} port={{ matrix_sliding_sync_database_port }} dbname={{ matrix_sliding_sync_database_name }} sslmode={{ matrix_sliding_sync_database_sslmode }}'
+
+# Controls the SYNCV3_PROM environment variable
+matrix_sliding_sync_environment_variable_syncv3_prom: ':{{ matrix_sliding_sync_metrics_port }}'
 
 # Additional environment variables.
 matrix_sliding_sync_environment_variables_additional_variables: ''
