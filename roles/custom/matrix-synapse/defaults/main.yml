@@ -543,6 +543,27 @@ matrix_synapse_auto_join_rooms: []
 # automatically if they don't already exist.
 matrix_synapse_autocreate_auto_join_rooms: true
 
+# Controls whether room invites will be accepted on behalf of users.
+# See: https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html#auto-accept-invites
+# This should not be used together with the `synapse_auto_accept_invite` module (see `matrix_synapse_ext_synapse_auto_accept_invite_enabled`).
+# Also see:
+# - `matrix_synapse_auto_accept_invites_only_for_direct_messages`
+# - `matrix_synapse_auto_accept_invites_only_from_local_users`
+# - `matrix_synapse_auto_accept_invites_worker_to_run_on`
+matrix_synapse_auto_accept_invites_enabled: false
+
+# Controls whether auto-invite acceptance should only be done for direct messages.
+# Related to: `matrix_synapse_auto_accept_invites_enabled`
+matrix_synapse_auto_accept_invites_only_for_direct_messages: false
+
+# Controls whether auto-invite acceptance should only be done when the invitatio nis coming from a local user.
+# Related to: `matrix_synapse_auto_accept_invites_enabled`
+matrix_synapse_auto_accept_invites_only_from_local_users: false
+
+# When Synapse workers enabled it is possible (but not required) to assign a worker to run the auto-accept-invites feature on (null = main process).
+# Related to: `matrix_synapse_auto_accept_invites_enabled`
+matrix_synapse_auto_accept_invites_worker_to_run_on: null
+
 # Controls whether password authentication is allowed
 # It may be useful when you've configured OAuth, SAML or CAS and want authentication
 # to happen only through them
@@ -1228,6 +1249,10 @@ matrix_synapse_ext_synapse_s3_storage_provider_update_db_day_count: 0
 matrix_synapse_ext_synapse_s3_storage_provider_periodic_migration_schedule: '*-*-* 05:00:00'
 
 # Synapse module to automatically accept room invites.
+#
+# Since Synapse v1.109.0 (https://github.com/element-hq/synapse/pull/17147),
+# this functionality has been merged into Synapse. See `matrix_synapse_auto_accept_invites_enabled`.
+#
 # See: https://github.com/matrix-org/synapse-auto-accept-invite
 # Installing it requires building a customized Docker image for Synapse (see `matrix_synapse_container_image_customizations_enabled`).
 # Enabling this will enable customizations and inject the appropriate Dockerfile clauses for installing synapse-auto-accept-invite.

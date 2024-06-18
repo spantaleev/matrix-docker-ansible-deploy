@@ -121,3 +121,15 @@
       when: "matrix_synapse_container_image_customizations_templates_git_repository_keyscan_enabled | bool and vars[item] == ''"
       with_items:
         - matrix_synapse_container_image_customizations_templates_git_repository_keyscan_hostname
+
+
+- name: Fail when auto-accept-invite enabled as a native feature and a module at the same time
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration enables the auto-accept invites feature both as a native Synapse feature (`matrix_synapse_auto_accept_invites_enabled`) and a 3rd party module (`matrix_synapse_ext_synapse_auto_accept_invite_enabled`).
+      This is unnecessary, since they both do the same and the native feature is built on top of the 3rd party module anyway.
+      Enabling both at the same time will lead to issues.
+      We recommend leaving `matrix_synapse_auto_accept_invites_enabled` in your configuration and removing `matrix_synapse_ext_synapse_auto_accept_invite_enabled`.
+  when:
+    - matrix_synapse_auto_accept_invites_enabled
+    - matrix_synapse_ext_synapse_auto_accept_invite_enabled
