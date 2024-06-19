@@ -27,8 +27,16 @@ maubot administration interface.
 After configuring the playbook, run the [installation](installing.md) command again:
 
 ```
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
 ```
+
+**Notes**:
+
+- the `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account
+
+- if you change the bot password (`matrix_bot_maubot_initial_password` in your `vars.yml` file) subsequently,
+  the bot user's credentials on the homeserver won't be updated automatically.
+  If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it.
 
 ## Usage
 
