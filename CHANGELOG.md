@@ -1,3 +1,15 @@
+# 2024-06-22
+
+## The maubot user is now managed by the playbook
+
+To make things easier and to be consistent with other roles, the [maubot](./docs/configuring-playbook-bot-maubot.md) user (`bot.maubot` by default) is [now](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3376) automatically created be the playbook.
+
+If you have an existing maubot installation, you will need to specify `matrix_bot_maubot_initial_password` in your `vars.yml` file to make the playbook not complain about it being undefined.
+Since the bot is already registered in your installation, there's nothing for the playbook to do anyway. In case you don't remember the password you've registered your maubot user account with, you can specify any value for this variable.
+
+If you've registered another username for the bot (other than the recommended default of `bot.maubot`), consider adjusting the `matrix_bot_maubot_login` variable (e.g. `matrix_bot_maubot_login: my.maubot.username`).
+
+
 # 2024-06-03
 
 ## WeChat bridging support
