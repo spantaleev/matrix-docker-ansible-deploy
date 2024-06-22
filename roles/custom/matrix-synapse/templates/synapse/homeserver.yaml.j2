@@ -1550,6 +1550,12 @@ autocreate_auto_join_rooms: {{ matrix_synapse_autocreate_auto_join_rooms|to_json
 #
 #auto_join_rooms_for_guests: false
 
+auto_accept_invites:
+    enabled: {{ matrix_synapse_auto_accept_invites_enabled | to_json }}
+    only_for_direct_messages: {{ matrix_synapse_auto_accept_invites_only_for_direct_messages | to_json }}
+    only_from_local_users: {{ matrix_synapse_auto_accept_invites_only_from_local_users | to_json }}
+    worker_to_run_on: {{ matrix_synapse_auto_accept_invites_worker_to_run_on | to_json }}
+
 # Whether to inhibit errors raised when registering a new account if the user ID
 # already exists. If turned on, that requests to /register/available will always
 # show a user ID as available, and Synapse won't raise an error when starting
@@ -1565,7 +1571,7 @@ autocreate_auto_join_rooms: {{ matrix_synapse_autocreate_auto_join_rooms|to_json
 
 # Enable collection and rendering of performance metrics
 #
-enable_metrics: {{ matrix_synapse_metrics_enabled|to_json  }}
+enable_metrics: {{ matrix_synapse_metrics_enabled|to_json }}
 
 # Enable sentry integration
 # NOTE: While attempts are made to ensure that the logs don't contain

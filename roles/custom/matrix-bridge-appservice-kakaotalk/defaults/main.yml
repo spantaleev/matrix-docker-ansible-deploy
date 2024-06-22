@@ -55,7 +55,12 @@ matrix_appservice_kakaotalk_container_extra_arguments: []
 
 # List of systemd services that matrix-appservice-kakaotalk.service depends on.
 matrix_appservice_kakaotalk_systemd_required_services_list: "{{ matrix_appservice_kakaotalk_systemd_required_services_list_default + matrix_appservice_kakaotalk_systemd_required_services_list_auto + matrix_appservice_kakaotalk_systemd_required_services_list_custom }}"
-matrix_appservice_kakaotalk_systemd_required_services_list_default: ['docker.service', 'matrix-appservice-kakaotalk-node.service']
+matrix_appservice_kakaotalk_systemd_required_services_list_default: |-
+  {{
+    ([devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [])
+    +
+    ['matrix-appservice-kakaotalk-node.service']
+  }}
 matrix_appservice_kakaotalk_systemd_required_services_list_auto: []
 matrix_appservice_kakaotalk_systemd_required_services_list_custom: []
 
@@ -72,7 +77,7 @@ matrix_appservice_kakaotalk_container_additional_networks_custom: []
 matrix_appservice_kakaotalk_node_container_extra_arguments: []
 
 # List of systemd services that matrix-appservice-kakaotalk-node.service depends on.
-matrix_appservice_kakaotalk_node_systemd_required_services_list: ['docker.service']
+matrix_appservice_kakaotalk_node_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 
 # List of systemd services that matrix-appservice-kakaotalk-node.service wants
 matrix_appservice_kakaotalk_node_systemd_wanted_services_list: []

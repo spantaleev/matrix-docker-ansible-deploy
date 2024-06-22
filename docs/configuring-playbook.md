@@ -178,6 +178,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Heisenbridge bouncer-style IRC bridging](configuring-playbook-bridge-heisenbridge.md) (optional)
 
+- [Setting up WeChat bridging](configuring-playbook-bridge-wechat.md) (optional)
+
 
 ### Bots
 

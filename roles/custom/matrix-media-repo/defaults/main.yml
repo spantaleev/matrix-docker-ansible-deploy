@@ -15,10 +15,10 @@ matrix_media_repo_identifier: matrix-media-repo
 matrix_media_repo_container_image_self_build: false
 matrix_media_repo_container_image_self_build_repo: "https://github.com/turt2live/matrix-media-repo.git"
 
-matrix_media_repo_docker_image_path: "turt2live/matrix-media-repo"
+matrix_media_repo_docker_image_path: "t2bot/matrix-media-repo"
 matrix_media_repo_docker_image: "{{ matrix_media_repo_docker_image_name_prefix }}{{ matrix_media_repo_docker_image_path }}:{{ matrix_media_repo_docker_image_tag }}"
-matrix_media_repo_docker_image_name_prefix: "{{ 'localhost/' if matrix_media_repo_container_image_self_build else matrix_container_global_registry_prefix }}"
-# renovate: datasource=docker depName=turt2live/matrix-media-repo
+matrix_media_repo_docker_image_name_prefix: "{{ 'localhost/' if matrix_media_repo_container_image_self_build else 'ghcr.io/' }}"
+# renovate: datasource=docker depName=ghcr.io/t2bot/matrix-media-repo
 matrix_media_repo_docker_image_tag: "v1.3.4"
 matrix_media_repo_docker_image_force_pull: "{{ matrix_media_repo_docker_image.endswith(':latest') }}"
 
@@ -29,7 +29,7 @@ matrix_media_repo_docker_src_files_path: "{{ matrix_media_repo_base_path }}/dock
 
 # List of systemd services that matrix-media-repo.service depends on
 matrix_media_repo_systemd_required_services_list: "{{ matrix_media_repo_systemd_required_services_list_default + matrix_media_repo_systemd_required_services_list_auto + matrix_media_repo_systemd_required_services_list_custom }}"
-matrix_media_repo_systemd_required_services_list_default: ["docker.service"]
+matrix_media_repo_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 matrix_media_repo_systemd_required_services_list_auto: []
 matrix_media_repo_systemd_required_services_list_custom: []
 

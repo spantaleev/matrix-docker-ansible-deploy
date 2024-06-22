@@ -1,0 +1,49 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix WeChat Agent
+{% for service in matrix_wechat_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_wechat_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-wechat-agent 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-wechat-agent 2>/dev/null || true'
+
+{#
+	The agent needs to write to /home/user/.vnc.
+	`/home/user` is owned by `user:group` (`1000:1000`), so it needs to run with that user/group.
+#}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-wechat-agent \
+			--log-driver=none \
+			--user={{ matrix_wechat_agent_container_user_uid }}:{{ matrix_wechat_agent_container_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_wechat_container_network }} \
+			--mount type=bind,src={{ matrix_wechat_config_path }}/agent-config.yaml,dst=/home/user/matrix-wechat-agent/configure.yaml,ro \
+			{% for arg in matrix_wechat_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_wechat_agent_container_image }}
+
+{% for network in matrix_wechat_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-wechat-agent
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-wechat-agent
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-wechat-agent 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-wechat-agent 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-wechat-agent
+
+[Install]
+WantedBy=multi-user.target

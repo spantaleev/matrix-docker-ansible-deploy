@@ -1,0 +1,20 @@
+---
+
+- tags:
+    - setup-all
+    - setup-wechat
+    - install-all
+    - install-wechat
+  block:
+    - when: matrix_wechat_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_wechat_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-wechat
+  block:
+    - when: not matrix_wechat_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

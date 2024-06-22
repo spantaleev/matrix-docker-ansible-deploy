@@ -1,0 +1,129 @@
+---
+
+- name: Ensure WeChat Bridge paths exists
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_wechat_base_path }}", when: true}
+    - {path: "{{ matrix_wechat_config_path }}", when: true}
+    - {path: "{{ matrix_wechat_data_path }}", when: true}
+    - {path: "{{ matrix_wechat_container_src_files_path }}", when: "{{ matrix_wechat_container_image_self_build }}"}
+    - {path: "{{ matrix_wechat_agent_container_src_files_path }}", when: "{{ matrix_wechat_agent_container_image_self_build }}"}
+  when: item.when | bool
+
+- name: Ensure WeChat Bridge image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_wechat_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_wechat_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_wechat_container_image_force_pull }}"
+  when: not matrix_wechat_container_image_self_build
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- when: matrix_wechat_container_image_self_build | bool
+  block:
+    - name: Ensure WeChat Bridge repository is present on self-build
+      ansible.builtin.git:
+        repo: "{{ matrix_wechat_container_image_self_build_repo }}"
+        dest: "{{ matrix_wechat_container_src_files_path }}"
+        version: "{{ matrix_wechat_container_image_self_build_branch }}"
+        force: "yes"
+      become: true
+      become_user: "{{ matrix_user_username }}"
+      register: matrix_wechat_git_pull_results
+
+    - name: Ensure WeChat Bridge container image is built
+      community.docker.docker_image:
+        name: "{{ matrix_wechat_container_image }}"
+        source: build
+        force_source: "{{ matrix_wechat_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+        force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_wechat_git_pull_results.changed }}"
+        build:
+          dockerfile: Dockerfile
+          path: "{{ matrix_wechat_container_src_files_path }}"
+          pull: true
+
+- name: Ensure WeChat Agent image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_wechat_agent_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_wechat_agent_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_wechat_agent_container_image_force_pull }}"
+  when: not matrix_wechat_agent_container_image_self_build
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- when: matrix_wechat_agent_container_image_self_build | bool
+  block:
+    - name: Ensure WeChat Agent repository is present on self-build
+      ansible.builtin.git:
+        repo: "{{ matrix_wechat_agent_container_image_self_build_repo }}"
+        dest: "{{ matrix_wechat_agent_container_src_files_path }}"
+        version: "{{ matrix_wechat_agent_container_image_self_build_branch }}"
+        force: "yes"
+      become: true
+      become_user: "{{ matrix_user_username }}"
+      register: matrix_wechat_agent_git_pull_results
+
+    - name: Ensure WeChat Agent container image is built
+      community.docker.docker_image:
+        name: "{{ matrix_wechat_agent_container_image }}"
+        source: build
+        force_source: "{{ matrix_wechat_agent_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+        force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_wechat_agent_git_pull_results.changed }}"
+        build:
+          dockerfile: Dockerfile
+          path: "{{ matrix_wechat_agent_container_src_files_path }}"
+          pull: true
+
+- name: Ensure WeChat configuration installed
+  ansible.builtin.copy:
+    content: "{{ matrix_wechat_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_wechat_config_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure WeChat registration.yaml installed
+  ansible.builtin.copy:
+    content: "{{ matrix_wechat_registration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_wechat_config_path }}/registration.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Wechat Agent configuration installed
+  ansible.builtin.copy:
+    content: "{{ matrix_wechat_agent_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_wechat_config_path }}/agent-config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-wechat container network is created
+  community.general.docker_network:
+    name: "{{ matrix_wechat_container_network }}"
+    driver: bridge
+
+- name: Ensure matrix-wechat.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-wechat.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-wechat.service"
+    mode: 0644
+  register: matrix_wechat_systemd_service_result
+
+- name: Ensure matrix-wechat-agent.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-wechat-agent.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-wechat-agent.service"
+    mode: 0644
+  register: matrix_wechat_agent_systemd_service_result

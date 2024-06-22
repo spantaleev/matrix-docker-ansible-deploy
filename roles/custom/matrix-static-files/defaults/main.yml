@@ -8,7 +8,7 @@ matrix_static_files_enabled: true
 matrix_static_files_identifier: matrix-static-files
 
 # renovate: datasource=docker depName=joseluisq/static-web-server
-matrix_static_files_version: 2.31.1
+matrix_static_files_version: 2.32.0
 
 matrix_static_files_base_path: "{{ matrix_base_data_path }}/{{ 'static-files' if matrix_static_files_identifier == 'matrix-static-files' else matrix_static_files_identifier }}"
 matrix_static_files_config_path: "{{ matrix_static_files_base_path }}/config"
@@ -17,7 +17,7 @@ matrix_static_files_public_well_known_path: "{{ matrix_static_files_public_path 
 matrix_static_files_public_well_known_matrix_path: "{{ matrix_static_files_public_well_known_path }}/matrix"
 
 # List of systemd services that matrix-static-files.service depends on
-matrix_static_files_systemd_required_services_list: ['docker.service']
+matrix_static_files_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 
 # List of systemd services that matrix-static-files.service wants
 matrix_static_files_systemd_wanted_services_list: "{{ matrix_static_files_systemd_wanted_services_list_auto + matrix_static_files_systemd_wanted_services_list_custom }}"

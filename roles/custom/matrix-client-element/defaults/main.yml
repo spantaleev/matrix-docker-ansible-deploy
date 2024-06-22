@@ -11,7 +11,7 @@ matrix_client_element_container_image_self_build_repo: "https://github.com/eleme
 matrix_client_element_container_image_self_build_low_memory_system_patch_enabled: "{{ ansible_memtotal_mb < 4096 }}"
 
 # renovate: datasource=docker depName=vectorim/element-web
-matrix_client_element_version: v1.11.67
+matrix_client_element_version: v1.11.69
 
 matrix_client_element_docker_image: "{{ matrix_client_element_docker_image_name_prefix }}vectorim/element-web:{{ matrix_client_element_version }}"
 matrix_client_element_docker_image_name_prefix: "{{ 'localhost/' if matrix_client_element_container_image_self_build else matrix_container_global_registry_prefix }}"
@@ -76,7 +76,7 @@ matrix_client_element_container_labels_additional_labels: ''
 matrix_client_element_container_extra_arguments: []
 
 # List of systemd services that matrix-client-element.service depends on
-matrix_client_element_systemd_required_services_list: ['docker.service']
+matrix_client_element_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 
 # Specifies the value of the `X-XSS-Protection` header
 # Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
