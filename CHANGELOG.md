@@ -1,3 +1,23 @@
+# 2024-06-25
+
+## The URL-prefix for Hookshot generic webhooks has changed
+
+Until now, generic Hookshot webhook URLs looked like this: `https://matrix.DOMAIN/hookshot/webhooks/:hookId`.
+
+The `/hookshot/webhooks` common prefix gets stripped by Traefik automatically, so Hookshot only sees the part that comes after (`/:hookId`).
+
+[A few years ago](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1681), Hookshot started to prefer to handle webhooks at a `/webhook/:hookId` path (instead of directly at `/:hookId`).
+
+To avoid future problems, we've [reconfigured](https://github.com/spantaleev/matrix-docker-ansible-deploy/commit/4704a60718946fd469aeee7fc3ae8127c633bb6b) our Hookshot configuration to use webhook URLs that include `/webhook` in the URL suffix (e.g. `/hookshot/webhooks/webhook/:hookId`, instead of `/hookshot/webhooks/:hookId`). This means that when we strip the common prefi (`/hookshot/webhooks`), we'll end up sending `/webhook/:hookId` to Hookshot, just like recommended.
+
+When generating new webhooks, you should start seeing the new URLs being used.
+
+**For now**, **both** old URLs (`/hookshot/webhooks/:hookId`) and new URLs (`/hookshot/webhooks/webhook/:hookId`) **continue to work***, so your webhooks will not break just yet.
+
+However, **we recommend that you update all your old webhook URLs** (configured in other systems) to include the new `/webhook` path component, so that future Hookshot changes (whenever they come) will not break your webhooks. You don't need to do anything on the Hookshot side - you merely need to reconfigure the remote systems that use your webhook URLs.
+
+
+
 # 2024-06-22
 
 ## The maubot user is now managed by the playbook
