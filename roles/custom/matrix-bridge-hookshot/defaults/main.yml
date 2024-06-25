@@ -34,7 +34,11 @@ matrix_hookshot_public_scheme: https
 matrix_hookshot_public_hostname: "{{ matrix_server_fqn_matrix }}"
 matrix_hookshot_public_endpoint: /hookshot
 
-matrix_hookshot_urlprefix: "{{ matrix_hookshot_public_scheme }}://{{ matrix_hookshot_public_hostname }}{{ matrix_hookshot_public_endpoint }}"
+# This is the base URL prefix shared among all endpoints.
+#
+# It intentionally does not include the path prefix (`matrix_hookshot_public_endpoint`),
+# because of how it's used - it's concatenated with paths that already use matrix_hookshot_public_endpoint` within them.
+matrix_hookshot_urlprefix: "{{ matrix_hookshot_public_scheme }}://{{ matrix_hookshot_public_hostname }}"
 
 # There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
 matrix_hookshot_appservice_port: 9993
