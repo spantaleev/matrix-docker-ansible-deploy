@@ -155,6 +155,44 @@ traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-client-synaps
 ############################################################
 {% endif %}
 
+{% if matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_enabled %}
+############################################################
+#                                                          #
+# Internal Synapse Admin API (/_synapse/client)            #
+#                                                          #
+############################################################
+
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-internal-client-synapse-client-api.rule=PathPrefix(`/_synapse/client`)
+
+
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-internal-client-synapse-client-api.service=matrix-synapse-reverse-proxy-companion-client-api
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-internal-client-synapse-client-api.entrypoints=matrix-internal-matrix-client-api
+
+############################################################
+#                                                          #
+# /Internal Synapse Admin API (/_synapse/client)           #
+#                                                          #
+############################################################
+
+
+############################################################
+#                                                          #
+# Internal Synapse Admin API (/_synapse/admin)             #
+#                                                          #
+############################################################
+
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-internal-client-synapse-admin-api.rule=PathPrefix(`/_synapse/admin`)
+
+
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-internal-client-synapse-admin-api.service=matrix-synapse-reverse-proxy-companion-client-api
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-internal-client-synapse-admin-api.entrypoints=matrix-internal-matrix-client-api
+
+############################################################
+#                                                          #
+# /Internal Synapse Admin API (/_synapse/admin)            #
+#                                                          #
+############################################################
+{% endif %}
 
 {% if matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_enabled %}
 ############################################################
