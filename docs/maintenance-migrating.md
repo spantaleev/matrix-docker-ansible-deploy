@@ -11,4 +11,5 @@
 5. Remove old server from the `inventory/hosts` file and add new server.
 6. Run `ansible-playbook -i inventory/hosts setup.yml --tags=setup-system-user`. This will create the `matrix` user and group on the new server
 7. Because the `matrix` user and group are created dynamically on each server, the user/group id may differ between the old and new server. We suggest that you adjust ownership of `/matrix` files manually by running this on the new server: `chown -R matrix:matrix /matrix`.
-8. Run `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start` to finish the installation and start all services
+8. Make sure Docker is installed on the new server (remember that it is called `docker.io` on at least debian).
+9. Run `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start` to finish the installation and start all services
