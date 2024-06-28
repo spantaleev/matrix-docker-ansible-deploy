@@ -537,11 +537,17 @@ matrix_synapse_account_threepid_delegates_msisdn: ''
 
 # Users who register on this homeserver will automatically be joined to these rooms.
 # Rooms are to be specified using addresses (e.g. `#address:example.com`)
+# If any auto-join rooms are invite-only, you need to define `matrix_synapse_auto_join_mxid_localpart`.
 matrix_synapse_auto_join_rooms: []
 
 # Controls whether auto-join rooms (`matrix_synapse_auto_join_rooms`) are to be created
 # automatically if they don't already exist.
 matrix_synapse_autocreate_auto_join_rooms: true
+
+# The local part of the user id which is used to create auto-join rooms if `matrix_synapse_autocreate_auto_join_rooms` is true.
+# Defaults to the initial user account that registers.
+# The user id is also used to invite new users to any auto-join rooms which are set to invite-only.
+matrix_synapse_auto_join_mxid_localpart: ''
 
 # Controls whether room invites will be accepted on behalf of users.
 # See: https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html#auto-accept-invites
