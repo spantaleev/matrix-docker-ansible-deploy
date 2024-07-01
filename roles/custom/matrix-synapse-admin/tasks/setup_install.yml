@@ -1,12 +1,17 @@
 ---
 
-- name: Ensure matrix-synapse-admin path exist
+- name: Ensure matrix-synapse-admin paths exists
   ansible.builtin.file:
-    path: "{{ matrix_synapse_admin_base_path }}"
+    path: "{{ item.path }}"
     state: directory
-    mode: 0700
+    mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_synapse_admin_base_path }}", when: true}
+    - {path: "{{ matrix_synapse_admin_config_path }}", when: true}
+    - {path: "{{ matrix_synapse_admin_docker_src_files_path }}", when: "{{ matrix_synapse_admin_container_image_self_build }}"}
+  when: "item.when | bool"
 
 - name: Ensure matrix-synapse-admin labels file is created
   ansible.builtin.template:
@@ -15,6 +20,14 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
     mode: 0640
+
+- name: Ensure matrix-synapse-admin configuration installed
+  ansible.builtin.copy:
+    content: "{{ matrix_synapse_admin_configuration | to_nice_json }}"
+    dest: "{{ matrix_synapse_admin_config_path }}/config.json"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-synapse-admin image is pulled
   community.docker.docker_image:

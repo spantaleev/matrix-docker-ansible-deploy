@@ -6,6 +6,7 @@ matrix_synapse_admin_enabled: true
 
 # A path on host where all related files will be saved
 matrix_synapse_admin_base_path: "{{ matrix_base_data_path }}/synapse-admin"
+matrix_synapse_admin_config_path: "{{ matrix_synapse_admin_base_path }}/config"
 matrix_synapse_admin_docker_src_files_path: "{{ matrix_synapse_admin_base_path }}/docker-src"
 
 matrix_synapse_admin_container_image_self_build: false
@@ -135,3 +136,40 @@ matrix_synapse_admin_hostname: "{{ matrix_server_fqn_matrix }}"
 # The path at which Synapse Admin is exposed.
 # This value must either be `/` or not end with a slash (e.g. `/synapse-admin`).
 matrix_synapse_admin_path_prefix: /synapse-admin
+
+# Default synapse-admin configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_synapse_admin_configuration_extension_json`)
+# or completely replace this variable with your own template.
+#
+# The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
+# This is unlike what it does when looking up YAML template files (no automatic parsing there).
+matrix_synapse_admin_configuration_default: "{{ lookup('template', 'templates/config.json.j2') }}"
+
+# Your custom JSON configuration for synapse-admin should go to `matrix_synapse_admin_configuration_extension_json`.
+# This configuration extends the default starting configuration (`matrix_synapse_admin_configuration_default`).
+#
+# You can override individual variables from the default configuration, or introduce new ones.
+#
+# If you need something more special, you can take full control by
+# completely redefining `matrix_synapse_admin_configuration_default`.
+#
+# Example configuration extension follows:
+#
+# matrix_synapse_admin_configuration_extension_json: |
+#  {
+#  "some_setting": true,
+#  "another_setting": false
+#  }
+matrix_synapse_admin_configuration_extension_json: '{}'
+
+matrix_synapse_admin_configuration_extension: "{{ matrix_synapse_admin_configuration_extension_json | from_json if matrix_synapse_admin_configuration_extension_json | from_json is mapping else {} }}"
+
+# Holds the final synapse-admin configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_synapse_admin_configuration_default`.
+matrix_synapse_admin_configuration: "{{ matrix_synapse_admin_configuration_default | combine(matrix_synapse_admin_configuration_extension, recursive=True) }}"
+
+# Controls the restrictBaseUrl configuration setting, which, if defined,
+# restricts the homeserver(s), so that the user can no longer define a homeserver manually during login.
+matrix_synapse_admin_config_restrictBaseUrl: "{{ [matrix_homeserver_url] }}"  # noqa var-naming

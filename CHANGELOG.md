@@ -1,3 +1,19 @@
+# 2024-07-01
+
+## synapse-admin is now restricted to your homeserver's URL by default
+
+A new feature introduced in synapse-admin [v0.10.0](https://github.com/Awesome-Technologies/synapse-admin/releases/tag/0.10.0) (released and supported by the playbook since a a few months ago) provides the ability to [restrict its usage to a specific homeserver](https://github.com/Awesome-Technologies/synapse-admin/blob/e21e44362c879ac41f47c580b04210842b6ff3d7/README.md#restricting-available-homeserver) (or multiple homeservers).
+
+The playbook has just started making use of this feature. **From now on, your synapse-admin instance will be restricted to the homeserver you're managing via the playbook**. When configured like this, the *Homeserver URL* field in synapse-admin's web UI changes from a text field to a dropdown having a single value (the URL of your homeserver). This makes usage simpler for most people, as they won't need to manually enter a *Homeserver URL* anymore.
+
+If you'd like **to go back to the old unrestricted behavior**, use the following configuration:
+
+```yml
+# Use this configuration to allow synapse-admin to manage any homeserver instance.
+matrix_synapse_admin_config_restrictBaseUrl: []
+```
+
+
 # 2024-06-25
 
 ## The URL-prefix for Hookshot generic webhooks has changed
