@@ -16,7 +16,7 @@
           --user_type={{ user.initial_type | quote }}
         {% endif %}
       {% endif %}
-      --exists-ok
       http://localhost:{{ matrix_synapse_container_client_api_port }}
   register: matrix_synapse_register_user_result
-  changed_when: matrix_synapse_register_user_result.rc == 0 and 'User already exists' not in matrix_synapse_register_user_result.stdout
+  changed_when: matrix_synapse_register_user_result.rc == 0 and 'User ID already taken' not in matrix_synapse_register_user_result.stdout
+  failed_when: matrix_synapse_register_user_result.rc != 0 and 'User ID already taken' not in matrix_synapse_register_user_result.stdout
