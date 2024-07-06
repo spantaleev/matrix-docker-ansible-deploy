@@ -263,7 +263,16 @@ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_enabled: true
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_name: "{{ matrix_federation_traefik_entrypoint_name }}"
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_port: "{{ matrix_federation_public_port }}"
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port: "{{ matrix_federation_public_port }}"
-matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_auto | combine(matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom, recursive=True) }}"
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port_udp: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_advertisedPort if matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled else '' }}"
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config: "{{ (matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_default | combine (matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_auto)) | combine(matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom, recursive=True) }}"
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled: true
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_advertisedPort: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_port }}"
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_default: |
+  {{
+    ({'http3': {'advertisedPort': matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_advertisedPort | int}})
+    if matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled
+    else {}
+  }}
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_auto: {}
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom: {}
 
@@ -271,6 +280,7 @@ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_definition:
   name: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_name }}"
   port: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_port }}"
   host_bind_port: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port }}"
+  host_bind_port_udp: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port_udp }}"
   config: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config }}"
 
 # Controls whether to enable an additional Traefik entrypoint for the purpose of serving the homeserver's Client-Server API internally.

@@ -38,6 +38,9 @@ matrix_playbook_reverse_proxy_hostname: "{{ devture_traefik_identifier if devtur
 # A separate Matrix Federation entrypoint is always enabled, unless the federation port matches one of the ports for existing (default) entrypoints
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_enabled: "{{ matrix_federation_public_port not in [devture_traefik_config_entrypoint_web_port, devture_traefik_config_entrypoint_web_secure_port] }}"
 
+# We only enable HTTP/3 on the federation entrypoint if the main web-secure entrypoint has it enabled.
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled: "{{ devture_traefik_config_entrypoint_web_secure_http3_enabled }}"
+
 # `devture_traefik_config_entrypoint_web_secure_enabled` is the variable we currently follow to determine if SSL is enabled or not.
 # `matrix_playbook_ssl_enabled` is merely an indicator if (when looked at it publicly), the server supports SSL or not,
 # and affects how services configure their public URLs.
