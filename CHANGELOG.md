@@ -1,5 +1,12 @@
 # 2024-07-06
 
+## matrix-alertmanager-receiver support
+
+For those wishing to more easily integrate [Prometheus](https://prometheus.io/)' alerting service ([Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/)) with Matrix, the playbook can now set up [matrix-alertmanager-receiver](https://github.com/metio/matrix-alertmanager-receiver).
+
+See [Setting up Prometheus Alertmanager integration via matrix-alertmanager-receiver](./docs/configuring-playbook-alertmanager-receiver.md) for more details.
+
+
 ## Traefik v3 and HTTP/3 are here now
 
 **TLDR**: Traefik was migrated from v2 to v3. Minor changes were done to the playbook. Mostly everything else worked out of the box. Most people will not have to do any tweaks to their configuration. In addition, [HTTP/3](https://en.wikipedia.org/wiki/HTTP/3) support is now auto-enabled for the `web-secure` (port 443) and `matrix-federation` (port `8448`) entrypoints. If you have a firewall in front of your server and you wish to benefit from `HTTP3`, you will need to open the `443` and `8448` UDP ports in it.

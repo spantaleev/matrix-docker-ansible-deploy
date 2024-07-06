@@ -267,6 +267,8 @@ devture_systemd_service_manager_services_list_auto: |
   {{
     ([{'name': (backup_borg_identifier + '.timer'), 'priority': 5000, 'groups': ['matrix', 'backup', 'borg']}] if backup_borg_enabled else [])
     +
+    ([{'name': 'matrix-alertmanager-receiver.service', 'priority': 2200, 'groups': ['matrix', 'alertmanager-receiver']}] if matrix_alertmanager_receiver_enabled else [])
+    +
     ([{'name': 'matrix-bot-buscarron.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'buscarron', 'bot-buscarron']}] if matrix_bot_buscarron_enabled else [])
     +
     ([{'name': 'matrix-bot-go-neb.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'go-neb', 'bot-go-neb']}] if matrix_bot_go_neb_enabled else [])
@@ -556,6 +558,54 @@ matrix_integration_manager_ui_url: "{{ matrix_dimension_integrations_ui_url if m
 # /matrix-base
 #
 ######################################################################
+
+
+######################################################################
+#
+# matrix-alertmanager-receiver
+#
+######################################################################
+
+# We don't enable this by default.
+matrix_alertmanager_receiver_enabled: false
+
+matrix_alertmanager_receiver_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+
+matrix_alertmanager_receiver_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_alertmanager_receiver_container_additional_networks_auto: |-
+  {{
+    (
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+      +
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_alertmanager_receiver_container_labels_traefik_enabled) else [])
+    ) | unique
+  }}
+
+matrix_alertmanager_receiver_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_alertmanager_receiver_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_alertmanager_receiver_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_alertmanager_receiver_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+matrix_alertmanager_receiver_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+matrix_alertmanager_receiver_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+
+matrix_alertmanager_receiver_systemd_required_services_list_auto: "{{ matrix_addons_homeserver_systemd_services_list }}"
+
+matrix_alertmanager_receiver_config_matrix_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
+
+matrix_alertmanager_receiver_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
+
+matrix_alertmanager_receiver_metrics_proxying_enabled: "{{ matrix_alertmanager_receiver_config_http_metrics_enabled and matrix_metrics_exposure_enabled }}"
+matrix_alertmanager_receiver_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
+matrix_alertmanager_receiver_metrics_proxying_path: "{{ matrix_metrics_exposure_path_prefix }}/matrix-alertmanager-receiver"
+
+######################################################################
+#
+# /matrix-alertmanager-receiver
+#
+######################################################################
+
 
 
 ######################################################################

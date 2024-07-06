@@ -1,0 +1,37 @@
+#jinja2: lstrip_blocks: "True"
+# configuration of the HTTP server
+http:
+  address: 0.0.0.0 # bind address for this service. Can be left unspecified to bind on all interfaces
+  port: {{ matrix_alertmanager_receiver_config_http_port | to_json }} # port used by this service
+  alerts-path-prefix: {{ matrix_alertmanager_receiver_config_http_alerts_path_prefix | to_json }} # URL path for the webhook receiver called by an Alertmanager. Defaults to /alerts
+  metrics-path: {{ matrix_alertmanager_receiver_config_http_metrics_path | to_json }} # URL path to collect metrics. Defaults to /metrics
+  metrics-enabled: {{ matrix_alertmanager_receiver_config_http_metrics_enabled | to_json }} # Whether to enable metrics or not. Defaults to false
+
+# configuration for the Matrix connection
+matrix:
+  homeserver-url: {{ matrix_alertmanager_receiver_config_matrix_homeserver_url | to_json }} # FQDN of the homeserver
+  user-id: {{ matrix_alertmanager_receiver_config_matrix_user_id | to_json }} # ID of the user used by this service
+  access-token: {{ matrix_alertmanager_receiver_config_matrix_access_token | to_json }} # Access token for the user ID
+  # define short names for Matrix room ID
+  room-mapping: {{ matrix_alertmanager_receiver_config_matrix_room_mapping | to_json }}
+
+# configuration of the templating features
+templating:
+  # mapping of ExternalURL values
+  # key is the original value taken from the Alertmanager payload
+  # value is the mapped value which will be available as '.ExternalURL' in templates
+  external-url-mapping: {{ matrix_alertmanager_receiver_config_templating_external_url_mapping | to_json }}
+  # mapping of GeneratorURL values
+  # key is the original value taken from the Alertmanager payload
+  # value is the mapped value which will be available as '.GeneratorURL' in templates
+  generator-url-mapping: {{ matrix_alertmanager_receiver_config_templating_generator_url_mapping | to_json }}
+
+  # computation of arbitrary values based on matching alert annotations, labels, or status
+  # values will be evaluated top to bottom, last entry wins
+  computed-values: {{ matrix_alertmanager_receiver_config_templating_computed_values | to_json }}
+
+  # template for alerts in status 'firing'
+  firing-template: {{ matrix_alertmanager_receiver_config_templating_firing_template | to_json }}
+
+  # template for alerts in status 'resolved', if not specified will use the firing-template
+  resolved-template: {{ matrix_alertmanager_receiver_config_templating_resolved_template | to_json }}

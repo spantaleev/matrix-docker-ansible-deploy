@@ -1,0 +1,14 @@
+---
+- name: Fail if required matrix-alertmanager-receiver settings not defined
+  ansible.builtin.fail:
+    msg: >
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
+  with_items:
+    - {'name': 'matrix_alertmanager_receiver_hostname', when: true}
+    - {'name': 'matrix_alertmanager_receiver_path_prefix', when: true}
+    - {'name': 'matrix_alertmanager_receiver_config_matrix_homeserver_url', when: true}
+    - {'name': 'matrix_alertmanager_receiver_config_matrix_access_token', when: true}
+    - {'name': 'matrix_alertmanager_receiver_container_network', when: true}
+    - {'name': 'matrix_alertmanager_receiver_metrics_proxying_hostname', when: "{{ matrix_alertmanager_receiver_metrics_proxying_enabled }}"}
+    - {'name': 'matrix_alertmanager_receiver_metrics_proxying_path_prefix', when: "{{ matrix_alertmanager_receiver_metrics_proxying_enabled }}"}
