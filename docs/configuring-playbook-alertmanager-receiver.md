@@ -72,20 +72,20 @@ Then, you can proceed to [Usage](#usage).
 Configure your Prometheus Alertmanager with configuration like this:
 
 ```yml
-  receivers:
-    - name: matrix
-      webhook_configs:
-        - send_resolved: true
-          url: URL_HERE
-  route:
-    group_by:
-      - namespace
-    group_interval: 5m
-    group_wait: 30s
-    receiver: "matrix"
-    repeat_interval: 12h
-    routes:
-      - receiver: matrix
+receivers:
+  - name: matrix
+    webhook_configs:
+      - send_resolved: true
+        url: URL_HERE
+route:
+  group_by:
+    - namespace
+  group_interval: 5m
+  group_wait: 30s
+  receiver: "matrix"
+  repeat_interval: 12h
+  routes:
+    - receiver: matrix
 ```
 
 .. where `URL_HERE` looks like `https://matrix.DOMAIN/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/some-room-name` or `https://matrix.DOMAIN/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/!some-room-id:DOMAIN`.
