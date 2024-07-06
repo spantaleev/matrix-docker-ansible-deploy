@@ -1,3 +1,52 @@
+# 2024-07-06
+
+## Traefik v3 and HTTP/3 are here now
+
+**TLDR**: Traefik was migrated from v2 to v3. Minor changes were done to the playbook. Mostly everything else worked out of the box. Most people will not have to do any tweaks to their configuration. In addition, [HTTP/3](https://en.wikipedia.org/wiki/HTTP/3) support is now auto-enabled for the `web-secure` (port 443) and `matrix-federation` (port `8448`) entrypoints. If you have a firewall in front of your server and you wish to benefit from `HTTP3`, you will need to open the `443` and `8448` UDP ports in it.
+
+### Traefik v3
+
+The reverse-proxy that the playbook uses by default (Traefik) has recently been upgraded to v3 (see [this blog post](https://traefik.io/blog/announcing-traefik-proxy-v3-rc/) to learn about its new features). Version 3 includes some small breaking configuration changes requiring a [migration](https://doc.traefik.io/traefik/migration/v2-to-v3/).
+
+We have **updated the playbook to Traefik v3** (make sure to run `just roles` / `make roles` to get it).
+
+There were **only minor playbook changes required** to adapt to Traefik v3, and only to the Ansible role for [matrix-media-repo](./docs/configuring-playbook-matrix-media-repo.md) where we changed a few [`PathPrefix` instances to `PathRegexp`](https://doc.traefik.io/traefik/routing/routers/#path-pathprefix-and-pathregexp), because these instances were using a regular expression instead of a fixed path. For fixed-path values, `PathPrefix` is still the preferred matcher function to use.
+
+**Most people using the playbook should not have to do any changes**.
+
+If you're using the playbook's Traefik instance to reverse-proxy to some other services of your own (not managed by the playbook), you may wish to review their Traefik labels and make sure they're in line with the [Traefik v2 to v3 migration guide](https://doc.traefik.io/traefik/migration/v2-to-v3/).
+
+If you've tweaked any of this playbook's `_path_prefix` variables and made them use a regular expression, you will now need to make additional adjustments. The playbook makes extensive use of `PathPrefix()` matchers in Traefik rules and `PathPrefix` does not support regular expressions anymore. To work around it, you may now need to override a whole `_traefik_rule` variable and switch it from [`PathPrefix` to `PathRegexp`](https://doc.traefik.io/traefik/routing/routers/#path-pathprefix-and-pathregexp).
+
+If you're not using [matrix-media-repo](./docs/configuring-playbook-matrix-media-repo.md) (the only role we had to tweak to adapt it to Traefik v3), you **may potentially downgrade to Traefik v2** (if necessary) by adding `devture_traefik_verison: v2.11.4` to your configuration. People using `matrix-media-repo` cannot downgrade this way, because `matrix-media-repo` has been adjusted to use `PathRegexp` - a [routing matcher](https://doc.traefik.io/traefik/v2.11/routing/routers/#rule) that Traefik v2 does not understand.
+
+
+### HTTP/3 is enabled by default
+
+In Traefik v3, [HTTP/3](https://en.wikipedia.org/wiki/HTTP/3) support is no longer considered experimental now.
+Due to this, **the playbook auto-enables HTTP3** for the `web-secure` (port 443) and `matrix-federation` (port `8448`) entrypoints.
+
+HTTP3 uses the UDP protocol and **the playbook (together with Docker) will make sure that the appropriate ports** (`443` over UDP & `8448` over UDP) **are exposed and whitelisted in your server's firewall**. However, **if you have another firewall in front of your server** (as is the case for many cloud providers), **you will need to manually open these UDP ports**.
+
+If you do not open the UDP ports correctly or there is some other issue, clients (browsers, mostly) will fall-back to [HTTP/2](https://en.wikipedia.org/wiki/HTTP/2) or even [HTTP/1.1](https://en.wikipedia.org/wiki/HTTP).
+
+Still, if HTTP/3 cannot function correctly in your setup, it's best to disable advertising support for it (and misleading clients into trying to use HTTP/3).
+
+To **disable HTTP/3**, you can use the following configuration:
+
+```yml
+devture_traefik_config_entrypoint_web_secure_http3_enabled: false
+
+# Disabling HTTP/3 for the web-secure entrypoint (above),
+# automatically disables it for the Matrix Federation entrypoint as well,
+# so you do not necessarily need the configuration line below.
+#
+# Feel free to only keep it around if you're keeping HTTP/3 enabled for web-secure (by removing the line above),
+# and would only like to disable HTTP/3 for the Matrix Federation entrypoint.
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled: false
+```
+
+
 # 2024-07-01
 
 ## synapse-admin is now restricted to your homeserver's URL by default
