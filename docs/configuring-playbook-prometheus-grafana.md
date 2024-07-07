@@ -121,7 +121,7 @@ scrape_configs:
 
 ## More information
 
-- [Understanding Synapse Performance Issues Through Grafana Graphs](https://github.com/element-hq/synapse/wiki/Understanding-Synapse-Performance-Issues-Through-Grafana-Graphs) at the Synapse Github Wiki
+- [Understanding Synapse Performance Issues Through Grafana Graphs](https://element-hq.github.io/synapse/latest/usage/administration/understanding_synapse_through_grafana_graphs.html) at the Synapse Github Wiki
 - [The Prometheus scraping rules](https://github.com/element-hq/synapse/tree/master/contrib/prometheus) (we use v2)
 - [The Synapse Grafana dashboard](https://github.com/element-hq/synapse/tree/master/contrib/grafana)
 - [The Node Exporter dashboard](https://github.com/rfrail3/grafana-dashboards) (for generic non-synapse performance graphs)
