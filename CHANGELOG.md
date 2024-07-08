@@ -53,6 +53,18 @@ devture_traefik_config_entrypoint_web_secure_http3_enabled: false
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled: false
 ```
 
+If you are using [your own webserver](./docs/configuring-playbook-own-webserver.md) (in front of Traefik), port binding on UDP port `8448` by default due to HTTP/3 is either unnecessary or [may get in the way](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3402). If it does, you can disable it:
+
+```yml
+# Disable HTTP/3 for the federation entrypoint.
+# If you'd like HTTP/3, consider configuring it for your other reverse-proxy.
+#
+# Disabling this also sets `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port_udp` to an empty value.
+# If you'd like to keep HTTP/3 enabled here (for whatever reason), you may wish to explicitly
+# set `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port_udp` to something like '127.0.0.1:8449'.
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled: false
+```
+
 
 # 2024-07-01
 
