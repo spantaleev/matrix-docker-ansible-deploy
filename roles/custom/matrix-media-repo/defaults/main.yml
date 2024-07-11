@@ -67,6 +67,7 @@ matrix_media_repo_container_labels_traefik_entrypoints: web-secure
 
 # Traefik labels handling the old `/_matrix/media` endpoints on the Client-API (web-secure) entrypoint.
 # These are being superseded by `/_matrix/client/VERSION/media` endpoints - see `matrix_media_repo_container_labels_traefik_client_matrix_client_media_*`.
+matrix_media_repo_container_labels_traefik_media_enabled: true
 matrix_media_repo_container_labels_traefik_media_path_prefix: "/_matrix/media"
 matrix_media_repo_container_labels_traefik_media_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_media_path_prefix | quote }}`)"
 matrix_media_repo_container_labels_traefik_media_priority: 0
@@ -104,6 +105,7 @@ matrix_media_repo_container_labels_traefik_internal_matrix_client_media_entrypoi
 # Traefik labels handling some additional routes on the Client-API (web-secure) entrypoint:
 # - /_matrix/client/r0/logout
 # - /_matrix/client/r0/logout/all
+matrix_media_repo_container_labels_traefik_logout_enabled: true
 matrix_media_repo_container_labels_traefik_logout_path_regexp: "^/_matrix/client/(?P<version>r0|v1|v3|unstable)/(?P<endpoint>logout|logout/all)"
 matrix_media_repo_container_labels_traefik_logout_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathRegexp(`{{ matrix_media_repo_container_labels_traefik_logout_path_regexp }}`)"
 matrix_media_repo_container_labels_traefik_logout_priority: 0
@@ -114,6 +116,7 @@ matrix_media_repo_container_labels_traefik_logout_tls_certResolver: default  # n
 # Traefik labels handling some additional routes on the Client-API (web-secure) entrypoint:
 # - /_matrix/client/r0/admin/purge_media_cache
 # - /_matrix/client/r0/admin/quarantine_media/{roomId:[^/]+}
+matrix_media_repo_container_labels_traefik_admin_enabled: true
 matrix_media_repo_container_labels_traefik_admin_path_regexp: "^/_matrix/client/(?P<version>(r0|v1|v3|unstable))/admin/(?P<endpoint>(purge_media_cache|quarantine_media/.*))"
 matrix_media_repo_container_labels_traefik_admin_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathRegexp(`{{ matrix_media_repo_container_labels_traefik_admin_path_regexp }}`)"
 matrix_media_repo_container_labels_traefik_admin_priority: 0
@@ -123,6 +126,7 @@ matrix_media_repo_container_labels_traefik_admin_tls_certResolver: default  # no
 
 # Traefik labels handling some additional routes on the Client-API (web-secure) entrypoint:
 # - /_matrix/client/unstable/io.t2bot.media
+matrix_media_repo_container_labels_traefik_t2bot_enabled: true
 matrix_media_repo_container_labels_traefik_t2bot_path_prefix: "/_matrix/client/unstable/io.t2bot.media"
 matrix_media_repo_container_labels_traefik_t2bot_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_t2bot_path_prefix | quote }}`)"
 matrix_media_repo_container_labels_traefik_t2bot_priority: 0
@@ -132,6 +136,7 @@ matrix_media_repo_container_labels_traefik_t2bot_tls_certResolver: default  # no
 
 # Traefik labels handling the old `/_matrix/media` endpoints on the federation entrypint.
 # These are being superseded by `/_matrix/federation/VERSION/media` endpoints - see `matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_*`.
+matrix_media_repo_container_labels_traefik_media_federation_enabled: true
 matrix_media_repo_container_labels_traefik_media_federation_path_prefix: "/_matrix/media"
 matrix_media_repo_container_labels_traefik_media_federation_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_media_path_prefix | quote }}`)"
 matrix_media_repo_container_labels_traefik_media_federation_priority: 0
@@ -152,6 +157,7 @@ matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_tl
 # Traefik labels handling some additional routes on the federation entrypoint:
 # - /_matrix/client/r0/logout
 # - /_matrix/client/r0/logout/all
+matrix_media_repo_container_labels_traefik_logout_federation_enabled: true
 matrix_media_repo_container_labels_traefik_logout_federation_path_regexp: "{{ matrix_media_repo_container_labels_traefik_logout_path_regexp }}"
 matrix_media_repo_container_labels_traefik_logout_federation_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathRegexp(`{{ matrix_media_repo_container_labels_traefik_logout_federation_path_regexp }}`)"
 matrix_media_repo_container_labels_traefik_logout_federation_priority: 0
@@ -162,6 +168,7 @@ matrix_media_repo_container_labels_traefik_logout_federation_tls_certResolver: d
 # Traefik labels handling some additional routes on the federation entrypoint:
 # - /_matrix/client/r0/admin/purge_media_cache
 # - /_matrix/client/r0/admin/quarantine_media/{roomId:[^/]+}
+matrix_media_repo_container_labels_traefik_admin_federation_enabled: true
 matrix_media_repo_container_labels_traefik_admin_federation_path_regexp: "{{ matrix_media_repo_container_labels_traefik_admin_path_regexp }}"
 matrix_media_repo_container_labels_traefik_admin_federation_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathRegexp(`{{ matrix_media_repo_container_labels_traefik_admin_federation_path_regexp }}`)"
 matrix_media_repo_container_labels_traefik_admin_federation_priority: 0
@@ -171,6 +178,7 @@ matrix_media_repo_container_labels_traefik_admin_federation_tls_certResolver: de
 
 # Traefik labels handling some additional routes on the federation entrypoint:
 # - /_matrix/client/unstable/io.t2bot.media
+matrix_media_repo_container_labels_traefik_t2bot_federation_enabled: true
 matrix_media_repo_container_labels_traefik_t2bot_federation_path_prefix: "/_matrix/client/unstable/io.t2bot.media"
 matrix_media_repo_container_labels_traefik_t2bot_federation_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_t2bot_path_prefix | quote }}`)"
 matrix_media_repo_container_labels_traefik_t2bot_federation_priority: 0
