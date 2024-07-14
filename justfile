@@ -14,7 +14,7 @@ roles:
     fi
 
 # Updates requirements.yml if there are any new tags available. Supported flags: -u (update roles, if any new tags are available)
-update *flags: #update-self
+update *flags: update-self
     #!/usr/bin/env sh
     if [ -x "$(command -v agru)" ]; then
         echo {{ if flags == "" { "installing roles..." } else if flags == "-u" { "updating roles..." } else { "unknown flag passed" } }}
