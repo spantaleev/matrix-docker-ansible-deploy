@@ -20,7 +20,7 @@ update *flags: #update-self
         echo {{ if flags == "" { "installing roles..." } else if flags == "-u" { "updating roles..." } else { "unknown flag passed" } }}
         agru {{ flags }}
     else
-        echo "[INFO] you are using standard ansible-galaxy to install roles, it's slow and cannot update roles if there are newer tags available. We recommend to install 'agru' tool to speed up the process: https://gitlab.com/etke.cc/tools/agru#where-to-get"
+        echo "[NOTE] you are using standard ansible-galaxy to install roles, it's slow and cannot update roles if there are newer tags available. We recommend to install 'agru' tool to speed up the process: https://gitlab.com/etke.cc/tools/agru#where-to-get"
         echo "installing roles..."
         rm -rf roles/galaxy
         ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force
