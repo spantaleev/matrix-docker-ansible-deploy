@@ -6,11 +6,11 @@ If you want to be notified when new versions of Synapse are released, you should
 
 To upgrade services:
 
-- update your playbook directory (`git pull`), so you'd obtain everything new we've done
+- update your playbook directory using `just update` or`git pull`, so you'd obtain everything new we've done
 
 - take a look at [the changelog](../CHANGELOG.md) to see if there have been any backward-incompatible changes that you need to take care of
 
-- download the upstream Ansible roles used by the playbook by running `just roles`
+- download the upstream Ansible roles used by the playbook by running `just update` or `just roles`
 
 - re-run the [playbook setup](installing.md) and restart all services: `just setup-all`
 

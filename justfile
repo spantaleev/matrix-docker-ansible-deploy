@@ -5,6 +5,7 @@ default:
 # Pulls external Ansible roles
 roles:
     #!/usr/bin/env sh
+    echo "[NOTE] This command just updates the roles, but if you want to update everything at once (playbook, roles, etc.) - use 'just update'"
     if [ -x "$(command -v agru)" ]; then
     	agru
     else
@@ -12,9 +13,25 @@ roles:
     	ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force
     fi
 
-# Updates requirements.yml if there are any new tags available. Requires agru
-update:
-    @agru -u
+# Updates requirements.yml if there are any new tags available. Supported flags: -u (update roles, if any new tags are available)
+update *flags: #update-self
+    #!/usr/bin/env sh
+    if [ -x "$(command -v agru)" ]; then
+        echo {{ if flags == "" { "installing roles..." } else if flags == "-u" { "updating roles..." } else { "unknown flag passed" } }}
+        agru {{ flags }}
+    else
+        echo "[INFO] you are using standard ansible-galaxy to install roles, it's slow and cannot update roles if there are newer tags available. We recommend to install 'agru' tool to speed up the process: https://gitlab.com/etke.cc/tools/agru#where-to-get"
+        echo "installing roles..."
+        rm -rf roles/galaxy
+        ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force
+    fi
+
+# update playbook
+update-self:
+    @echo "updating playbook..."
+    @git stash -q
+    @git pull -q
+    @-git stash pop -q
 
 # Runs ansible-lint against all roles in the playbook
 lint:
