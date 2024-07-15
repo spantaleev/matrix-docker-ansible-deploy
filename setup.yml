@@ -1,4 +1,14 @@
 ---
+- name: include Lastpass-CLI.yml
+  import_playbook: ../ansible/Lastpass-CLI.yml
+  when:
+   - __import_playbooks_played is not defined or (__import_playbooks_played is defined and 'Lastpass-CLI.yml' is not in __import_playbooks_played)
+  tags:
+   - setup-all
+   - install-all
+   - setup-docker
+   - install-docker
+
 - name: "Set up a Matrix server"
   hosts: "{{ target if target is defined else 'matrix_servers' }}"
   become: true
