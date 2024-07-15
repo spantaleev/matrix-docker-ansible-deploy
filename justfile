@@ -13,22 +13,22 @@ roles:
     	ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force
     fi
 
-# Updates requirements.yml if there are any new tags available. Supported flags: -u (update roles, if any new tags are available)
-update *flags: update-self
+# Updates the playbook and installs the necessary Ansible roles pinned in requirements.yml. If a -u flag is passed, also updates the requirements.yml file with new role versions (if available)
+update *flags: update-playbook-only
     #!/usr/bin/env sh
     if [ -x "$(command -v agru)" ]; then
-        echo {{ if flags == "" { "installing roles..." } else if flags == "-u" { "updating roles..." } else { "unknown flag passed" } }}
+        echo {{ if flags == "" { "Installing roles pinned in requirements.yml..." } else if flags == "-u" { "Updating roles and pinning new versions in requirements.yml..." } else { "Unknown flags passed" } }}
         agru {{ flags }}
     else
-        echo "[NOTE] you are using standard ansible-galaxy to install roles, it's slow and cannot update roles if there are newer tags available. We recommend to install 'agru' tool to speed up the process: https://gitlab.com/etke.cc/tools/agru#where-to-get"
-        echo "installing roles..."
+        echo "[NOTE] You are using the standard ansible-galaxy tool to install roles, which is slow and lacks other features. We recommend installing the 'agru' tool to speed up the process: https://gitlab.com/etke.cc/tools/agru#where-to-get"
+        echo "Installing roles..."
         rm -rf roles/galaxy
         ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force
     fi
 
-# update playbook
-update-self:
-    @echo "updating playbook..."
+# Updates the playbook without installing/updating Ansible roles
+update-playbook-only:
+    @echo "Updating playbook..."
     @git stash -q
     @git pull -q
     @-git stash pop -q
