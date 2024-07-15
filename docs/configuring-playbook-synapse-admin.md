@@ -20,14 +20,12 @@ matrix_synapse_admin_enabled: true
 - for [Synapse](./configuring-playbook-synapse.md) (our default homeserver implementation): `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true`
 - for [Dendrite](./configuring-playbook-dendrite.md): `matrix_dendrite_container_labels_public_client_synapse_admin_api_enabled: true`
 
+By default, synapse-admin installation will be [restricted to only work with one homeserver](https://github.com/Awesome-Technologies/synapse-admin/blob/e21e44362c879ac41f47c580b04210842b6ff3d7/README.md#restricting-available-homeserver) - the one managed by the playbook. To adjust these restrictions, tweak the `matrix_synapse_admin_config_restrictBaseUrl` variable.
+
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command again:
-
-```
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
-```
+After configuring the playbook, run the [installation](installing.md) command again (`just install-all`).
 
 
 ## Usage
@@ -35,5 +33,3 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 After installation, Synapse Admin will be accessible at: `https://matrix.DOMAIN/synapse-admin/`
 
 To use Synapse Admin, you need to have [registered at least one administrator account](registering-users.md) on your server.
-
-The Homeserver URL to use on Synapse Admin's login page is: `https://matrix.DOMAIN`

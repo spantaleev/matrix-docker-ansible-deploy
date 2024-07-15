@@ -21,7 +21,7 @@ matrix_bot_honoroit_docker_repo_version: "{{ matrix_bot_honoroit_version }}"
 matrix_bot_honoroit_docker_src_files_path: "{{ matrix_base_data_path }}/honoroit/docker-src"
 
 # renovate: datasource=docker depName=registry.gitlab.com/etke.cc/honoroit
-matrix_bot_honoroit_version: v0.9.21
+matrix_bot_honoroit_version: v0.9.22
 matrix_bot_honoroit_docker_image: "{{ matrix_bot_honoroit_docker_image_name_prefix }}etke.cc/honoroit:{{ matrix_bot_honoroit_version }}"
 matrix_bot_honoroit_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_honoroit_container_image_self_build else 'registry.gitlab.com/' }}"
 matrix_bot_honoroit_docker_image_force_pull: "{{ matrix_bot_honoroit_docker_image.endswith(':latest') }}"
@@ -38,15 +38,6 @@ matrix_bot_honoroit_container_network: ""
 # The role does not create these networks, so make sure they already exist.
 # Use this to expose this container to another reverse proxy, which runs in a different container network.
 matrix_bot_honoroit_container_additional_networks: []
-
-# enable basic auth for metrics
-matrix_bot_honoroit_basicauth_enabled: false
-# temporary file name on the host that runs ansible
-matrix_bot_honoroit_basicauth_file: "/tmp/matrix_bot_honoroit_htpasswd"
-# username
-matrix_bot_honoroit_basicauth_user: ''
-# password
-matrix_bot_honoroit_basicauth_password: ''
 
 # matrix_bot_honoroit_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
 # See `../templates/labels.j2` for details.
@@ -149,8 +140,26 @@ matrix_bot_honoroit_sentry: ''
 # Log level
 matrix_bot_honoroit_loglevel: ''
 
-# Disable encryption
-matrix_bot_honoroit_noencryption: false
+# /metrics basic auth login
+matrix_bot_honoroit_auth_metrics_login: ''
+# /metrics basic auth password
+matrix_bot_honoroit_auth_metrics_password: ''
+# /metrics basic auth allowed IPs
+matrix_bot_honoroit_auth_metrics_ips: []
+
+# Optional healthchecks.io integration
+matrix_bot_honoroit_healthchecks_url: 'https://hc-ping.com'
+matrix_bot_honoroit_healthchecks_uuid: ''
+matrix_bot_honoroit_healthchecks_duration: 60  # in seconds
+
+# Optional Redmine integration
+matrix_bot_honoroit_redmine_host: ''  # e.g. https://redmine.example.com
+matrix_bot_honoroit_redmine_apikey: ''
+matrix_bot_honoroit_redmine_project: ''  # project identifier (e.g. 'myproject')
+matrix_bot_honoroit_redmine_tracker_id: ''  # tracker id (e.g. 1)
+matrix_bot_honoroit_redmine_new_status_id: ''  # new status id (e.g. 1)
+matrix_bot_honoroit_redmine_in_progress_status_id: ''  # in progress status id (e.g. 2)
+matrix_bot_honoroit_redmine_done_status_id: ''  # done status id (e.g. 3)
 
 # A list of whitelisted users allowed to use/invite honoroit
 # If not defined, everyone is allowed.

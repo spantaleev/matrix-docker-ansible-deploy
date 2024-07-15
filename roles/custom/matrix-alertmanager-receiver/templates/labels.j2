@@ -1,0 +1,69 @@
+{% if matrix_alertmanager_receiver_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_alertmanager_receiver_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_alertmanager_receiver_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-alertmanager-receiver.loadbalancer.server.port={{ matrix_alertmanager_receiver_config_http_port }}
+
+{% set middlewares = [] %}
+
+{% if matrix_alertmanager_receiver_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-alertmanager-receiver-slashless-redirect.redirectregex.regex=({{ matrix_alertmanager_receiver_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.matrix-alertmanager-receiver-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-alertmanager-receiver-slashless-redirect'] %}
+{% endif %}
+
+{% if matrix_alertmanager_receiver_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-alertmanager-receiver-strip-prefix.stripprefix.prefixes={{ matrix_alertmanager_receiver_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + ['matrix-alertmanager-receiver-strip-prefix'] %}
+{% endif %}
+
+traefik.http.routers.matrix-alertmanager-receiver.rule={{ matrix_alertmanager_receiver_container_labels_traefik_rule }}
+{% if matrix_alertmanager_receiver_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-alertmanager-receiver.priority={{ matrix_alertmanager_receiver_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.matrix-alertmanager-receiver.service=matrix-alertmanager-receiver
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-alertmanager-receiver.middlewares={{ middlewares | join(',') }}
+{% endif %}
+traefik.http.routers.matrix-alertmanager-receiver.entrypoints={{ matrix_alertmanager_receiver_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-alertmanager-receiver.tls={{ matrix_alertmanager_receiver_container_labels_traefik_tls | to_json }}
+{% if matrix_alertmanager_receiver_container_labels_traefik_tls %}
+traefik.http.routers.matrix-alertmanager-receiver.tls.certResolver={{ matrix_alertmanager_receiver_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+{% if matrix_alertmanager_receiver_container_labels_public_metrics_enabled %}
+{% set metrics_middlewares = [] %}
+
+{% if matrix_alertmanager_receiver_container_labels_public_metrics_middleware_basic_auth_enabled %}
+{% set metrics_middlewares = metrics_middlewares + ['matrix-alertmanager-receiver-metrics-basic-auth'] %}
+traefik.http.middlewares.matrix-alertmanager-receiver-metrics-basic-auth.basicauth.users={{ matrix_alertmanager_receiver_container_labels_public_metrics_middleware_basic_auth_users }}
+{% endif %}
+
+{% set metrics_middlewares = metrics_middlewares + ['matrix-alertmanager-receiver-metrics-replacepath'] %}
+traefik.http.middlewares.matrix-alertmanager-receiver-metrics-replacepath.replacepath.path={{ matrix_alertmanager_receiver_config_http_metrics_path }}
+
+traefik.http.routers.matrix-alertmanager-receiver-metrics.rule={{ matrix_alertmanager_receiver_container_labels_public_metrics_traefik_rule }}
+
+{% if metrics_middlewares | length > 0 %}
+traefik.http.routers.matrix-alertmanager-receiver-metrics.middlewares={{ metrics_middlewares | join(',') }}
+{% endif %}
+
+{% if matrix_alertmanager_receiver_container_labels_public_metrics_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-alertmanager-receiver-metrics.priority={{ matrix_alertmanager_receiver_container_labels_public_metrics_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-alertmanager-receiver-metrics.service=matrix-alertmanager-receiver
+traefik.http.routers.matrix-alertmanager-receiver-metrics.entrypoints={{ matrix_alertmanager_receiver_container_labels_public_metrics_traefik_entrypoints }}
+
+traefik.http.routers.matrix-alertmanager-receiver-metrics.tls={{ matrix_alertmanager_receiver_container_labels_public_metrics_traefik_tls | to_json }}
+{% if matrix_alertmanager_receiver_container_labels_public_metrics_traefik_tls %}
+traefik.http.routers.matrix-alertmanager-receiver-metrics.tls.certResolver={{ matrix_alertmanager_receiver_container_labels_public_metrics_traefik_tls_certResolver }}
+{% endif %}
+{% endif %}
+
+{% endif %}
+
+{{ matrix_alertmanager_receiver_container_labels_additional_labels }}

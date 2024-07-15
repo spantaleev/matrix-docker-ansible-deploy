@@ -342,7 +342,7 @@ As described in [How is the effective configuration determined?](#how-is-the-eff
 
 Refer to both of these for inspiration. Still, as mentioned in [Configuring the playbook](configuring-playbook.md), you're only ever supposed to edit your own `inventory/host_vars/matrix.DOMAIN/vars.yml` file and nothing else inside the playbook (unless you're meaning to contribute new features).
 
-**Note**: some of the roles (`roles/galaxy/*`) live in separate repositories and are only installed after your run `just roles` (or `make roles`).
+**Note**: some of the roles (`roles/galaxy/*`) live in separate repositories and are only installed after your run `just roles` (or `make roles`) or `just update` (which automatically does `git pull` and `just roles`).
 
 ### I'd like to adjust some configuration which doesn't have a corresponding variable. How do I do it?
 
@@ -356,7 +356,7 @@ Besides that, each role (component) aims to provide a `matrix_SOME_COMPONENT_con
 
 Check each role's `roles/*/*/defaults/main.yml` for the corresponding variable and an example for how use it.
 
-**Note**: some of the roles (`roles/galaxy/*`) live in separate repositories and are only installed after your run `just roles` (or `make roles`).
+**Note**: some of the roles (`roles/galaxy/*`) live in separate repositories and are only installed after your run `just roles` (or `make roles`) or `just update` (which automatically does `git pull` and `just roles`).
 
 
 ## Installation

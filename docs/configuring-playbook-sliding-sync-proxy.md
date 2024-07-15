@@ -23,7 +23,7 @@ If you'd like to run the Sliding Sync proxy on another hostname or path, use the
 
 ## Adjusting DNS records
 
-If you've changed the default hostame, **you may need to adjust your DNS** records.
+If you've changed the default hostname, **you may need to adjust your DNS** records.
 
 
 ## Adjusting the playbook configuration

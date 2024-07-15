@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-alertmanager-receiver service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-alertmanager-receiver.service"
+  register: matrix_alertmanager_receiver_service_stat
+
+- when: matrix_alertmanager_receiver_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-alertmanager-receiver is stopped
+      ansible.builtin.service:
+        name: matrix-alertmanager-receiver
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-alertmanager-receiver.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-alertmanager-receiver.service"
+        state: absent
+
+    - name: Ensure matrix-alertmanager-receiver paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_alertmanager_receiver_base_path }}"
+        state: absent

@@ -1,0 +1,80 @@
+---
+
+- name: Ensure matrix-alertmanager-receiver paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - path: "{{ matrix_alertmanager_receiver_base_path }}"
+      when: true
+    - path: "{{ matrix_alertmanager_receiver_config_path }}"
+      when: true
+    - path: "{{ matrix_alertmanager_receiver_container_src_path }}"
+      when: "{{ matrix_alertmanager_receiver_container_image_self_build }}"
+  when: item.when | bool
+
+- name: Ensure matrix-alertmanager-receiver configuration installed
+  ansible.builtin.copy:
+    content: "{{ matrix_alertmanager_receiver_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_alertmanager_receiver_config_path }}/config.yml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-alertmanager-receiver support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_alertmanager_receiver_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - labels
+
+- name: Ensure matrix-alertmanager-receiver container image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_alertmanager_receiver_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_alertmanager_receiver_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_alertmanager_receiver_container_image_force_pull }}"
+  when: "not matrix_alertmanager_receiver_container_image_self_build | bool"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- when: matrix_alertmanager_receiver_container_image_self_build | bool
+  block:
+    - name: Ensure matrix-alertmanager-receiver repository is present on self-build
+      ansible.builtin.git:
+        repo: "{{ matrix_alertmanager_receiver_container_image_self_build_repo }}"
+        version: "{{ matrix_alertmanager_receiver_container_image_self_build_repo_version }}"
+        dest: "{{ matrix_alertmanager_receiver_container_src_path }}"
+        force: "yes"
+      become: true
+      become_user: "{{ matrix_user_username }}"
+      register: matrix_alertmanager_receiver_git_pull_results
+
+    - name: Ensure matrix-alertmanager-receiver container image is built
+      ansible.builtin.command:
+        cmd: |-
+          {{ devture_systemd_docker_base_host_command_docker }} buildx build
+          --tag={{ matrix_alertmanager_receiver_container_image }}
+          --file={{ matrix_alertmanager_receiver_container_src_path }}/contrib/Dockerfile
+          {{ matrix_alertmanager_receiver_container_src_path }}
+      changed_when: true
+
+- name: Ensure matrix-alertmanager-receiver container network is created
+  community.general.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    name: "{{ matrix_alertmanager_receiver_container_network }}"
+    driver: bridge
+
+- name: Ensure matrix-alertmanager-receiver.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-alertmanager-receiver.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-alertmanager-receiver.service"
+    mode: 0644

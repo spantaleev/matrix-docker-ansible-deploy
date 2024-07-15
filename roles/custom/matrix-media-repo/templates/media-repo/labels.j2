@@ -18,6 +18,7 @@ traefik.http.middlewares.matrix-media-repo-add-headers.headers.customrequesthead
 
 # Matrix Client
 
+{% if matrix_media_repo_container_labels_traefik_media_enabled %}
 ############################################################
 #                                                          #
 # Public Media (/_matrix/media)                            #
@@ -47,6 +48,40 @@ traefik.http.routers.matrix-media-repo-public-media.tls.certResolver={{ matrix_m
 # /Public Media (/_matrix/media)                           #
 #                                                          #
 ############################################################
+{% endif %}
+
+
+{% if matrix_media_repo_container_labels_traefik_client_matrix_client_media_enabled %}
+##########################################################################
+#                                                                        #
+# Public Client Media (/_matrix/client/VERSION/media) - MSC3916          #
+#                                                                        #
+##########################################################################
+
+traefik.http.routers.matrix-media-repo-public-client-matrix-client-media.rule={{ matrix_media_repo_container_labels_traefik_client_matrix_client_media_rule }}
+
+{% if matrix_media_repo_container_labels_traefik_client_matrix_client_media_priority | int > 0 %}
+traefik.http.routers.matrix-media-repo-public-client-matrix-client-media.priority={{ matrix_media_repo_container_labels_traefik_client_matrix_client_media_priority }}
+{% endif %}
+
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-media-repo-public-client-matrix-client-media.middlewares={{ middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers.matrix-media-repo-public-client-matrix-client-media.service=matrix-media-repo
+traefik.http.routers.matrix-media-repo-public-client-matrix-client-media.entrypoints={{ matrix_media_repo_container_labels_traefik_client_matrix_client_media_entrypoints }}
+
+traefik.http.routers.matrix-media-repo-public-client-matrix-client-media.tls={{ matrix_media_repo_container_labels_traefik_client_matrix_client_media_tls | to_json }}
+{% if matrix_media_repo_container_labels_traefik_client_matrix_client_media_tls %}
+traefik.http.routers.matrix-media-repo-public-client-matrix-client-media.tls.certResolver={{ matrix_media_repo_container_labels_traefik_client_matrix_client_media_tls_certResolver }}
+{% endif %}
+
+##########################################################################
+#                                                                        #
+# /Public Client Media (/_matrix/client/VERSION/media) - MSC3916         #
+#                                                                        #
+##########################################################################
+{% endif %}
 
 
 {% if matrix_media_repo_container_labels_traefik_internal_media_enabled %}
@@ -77,7 +112,35 @@ traefik.http.routers.matrix-media-repo-internal-media.entrypoints={{ matrix_medi
 {% endif %}
 
 
-{% if matrix_media_repo_access_tokens_max_cache_time_seconds > 0 %}
+{% if matrix_media_repo_container_labels_traefik_internal_matrix_client_media_enabled %}
+##########################################################################
+#                                                                        #
+# Internal Client Media (/_matrix/client/VERSION/media) - MSC3916        #
+#                                                                        #
+##########################################################################
+
+traefik.http.routers.matrix-media-repo-internal-matrix-client-media.rule={{ matrix_media_repo_container_labels_traefik_internal_matrix_client_media_rule }}
+
+{% if matrix_media_repo_container_labels_traefik_internal_matrix_client_media_priority | int > 0 %}
+traefik.http.routers.matrix-media-repo-internal-matrix-client-media.priority={{ matrix_media_repo_container_labels_traefik_internal_matrix_client_media_priority }}
+{% endif %}
+
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-media-repo-internal-matrix-client-media.middlewares={{ middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers.matrix-media-repo-internal-matrix-client-media.service=matrix-media-repo
+traefik.http.routers.matrix-media-repo-internal-matrix-client-media.entrypoints={{ matrix_media_repo_container_labels_traefik_internal_matrix_client_media_entrypoints }}
+
+##########################################################################
+#                                                                        #
+# /Internal Client Media (/_matrix/client/VERSION/media) - MSC3916       #
+#                                                                        #
+##########################################################################
+{% endif %}
+
+
+{% if matrix_media_repo_container_labels_traefik_logout_enabled and matrix_media_repo_access_tokens_max_cache_time_seconds > 0 %}
 ############################################################
 #                                                          #
 # Public Client Logout                                     #
@@ -112,6 +175,7 @@ traefik.http.routers.matrix-media-repo-public-logout.tls.certResolver={{ matrix_
 {% endif %}
 
 
+{% if matrix_media_repo_container_labels_traefik_admin_enabled %}
 ############################################################
 #                                                          #
 # Public Client Admin (/_matrix/client/r0/admin/*)         #
@@ -141,8 +205,10 @@ traefik.http.routers.matrix-media-repo-public-admin-federation.tls.certResolver=
 # /Public Client Admin (/_matrix/client/r0/admin/*)        #
 #                                                          #
 ############################################################
+{% endif %}
 
 
+{% if matrix_media_repo_container_labels_traefik_t2bot_enabled %}
 ############################################################
 #                                                          #
 # Public Client t2bot APIs                                 #
@@ -174,11 +240,14 @@ traefik.http.routers.matrix-media-repo-public-t2bot.tls.certResolver={{ matrix_m
 # (/_matrix/client/unstable/io.t2bot.media)                #
 #                                                          #
 ############################################################
+{% endif %}
+
 
 {% if matrix_media_repo_homeserver_federation_enabled %}
 # Matrix Federation
 
 
+{% if matrix_media_repo_container_labels_traefik_media_federation_enabled %}
 ############################################################
 #                                                          #
 # Public Federation Media (/_matrix/media)                 #
@@ -208,9 +277,43 @@ traefik.http.routers.matrix-media-repo-public-media-federation.tls.certResolver=
 # /Public Federation Media (/_matrix/media)                #
 #                                                          #
 ############################################################
+{% endif %}
 
 
-{% if matrix_media_repo_access_tokens_max_cache_time_seconds > 0 %}
+{% if matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_enabled %}
+##########################################################################
+#                                                                        #
+# Public Federation Media (/_matrix/federation/VERSION/media) - MSC3916  #
+#                                                                        #
+##########################################################################
+
+traefik.http.routers.matrix-media-repo-public-federation-matrix-federation-media.rule={{ matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_rule }}
+
+{% if matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_priority | int > 0 %}
+traefik.http.routers.matrix-media-repo-public-federation-matrix-federation-media.priority={{ matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_priority }}
+{% endif %}
+
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-media-repo-public-federation-matrix-federation-media.middlewares={{ middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers.matrix-media-repo-public-federation-matrix-federation-media.service=matrix-media-repo
+traefik.http.routers.matrix-media-repo-public-federation-matrix-federation-media.entrypoints={{ matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_entrypoints }}
+
+traefik.http.routers.matrix-media-repo-public-federation-matrix-federation-media.tls={{ matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_tls | to_json }}
+{% if matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_tls %}
+traefik.http.routers.matrix-media-repo-public-federation-matrix-federation-media.tls.certResolver={{ matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_tls_certResolver }}
+{% endif %}
+
+##########################################################################
+#                                                                        #
+# /Public Federation Media (/_matrix/federation/VERSION/media) - MSC3916 #
+#                                                                        #
+##########################################################################
+{% endif %}
+
+
+{% if matrix_media_repo_container_labels_traefik_logout_federation_enabled and matrix_media_repo_access_tokens_max_cache_time_seconds > 0 %}
 ############################################################
 #                                                          #
 # Public Federation Logout                                 #
@@ -245,6 +348,7 @@ traefik.http.routers.matrix-media-repo-public-logout-federation.tls.certResolver
 {% endif %}
 
 
+{% if matrix_media_repo_container_labels_traefik_admin_federation_enabled %}
 ############################################################
 #                                                          #
 # Public Federation Admin (/_matrix/client/r0/admin/*)     #
@@ -274,8 +378,10 @@ traefik.http.routers.matrix-media-repo-public-admin.tls.certResolver={{ matrix_m
 # /Public Federation Admin (/_matrix/client/r0/admin/*)    #
 #                                                          #
 ############################################################
+{% endif %}
 
 
+{% if matrix_media_repo_container_labels_traefik_t2bot_federation_enabled %}
 ############################################################
 #                                                          #
 # Public Federation t2bot APIs                             #
@@ -307,6 +413,8 @@ traefik.http.routers.matrix-media-repo-public-t2bot-federation.tls.certResolver=
 # (/_matrix/client/unstable/io.t2bot.media)                #
 #                                                          #
 ############################################################
+{% endif %}
+
 
 {% endif %} {# end of matrix_media_repo_homeserver_federation_enabled if-check #}
 

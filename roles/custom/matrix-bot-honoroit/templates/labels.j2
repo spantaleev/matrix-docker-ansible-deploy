@@ -28,11 +28,6 @@ traefik.http.middlewares.matrix-bot-honoroit-add-headers.headers.customresponseh
 {% set middlewares = middlewares + ['matrix-bot-honoroit-add-headers'] %}
 {% endif %}
 
-{% if matrix_bot_honoroit_basicauth_enabled %}
-traefik.http.middlewares.matrix-bot-honoroit-auth.basicauth.users={{ lookup('ansible.builtin.file', matrix_bot_honoroit_basicauth_file) }}
-{% set middlewares_metrics = middlewares + ['matrix-bot-honoroit-auth'] %}
-{% endif %}
-
 {% if middlewares_metrics | length > 0 %}
 traefik.http.routers.matrix-bot-honoroit-metrics.rule={{ matrix_bot_honoroit_container_labels_traefik_metrics_rule }}
 {% if matrix_bot_honoroit_container_labels_traefik_priority | int > 0 %}
