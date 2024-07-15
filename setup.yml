@@ -12,7 +12,12 @@
 - name: "Set up a Matrix server"
   hosts: "{{ target if target is defined else 'matrix_servers' }}"
   become: true
-
+  pre_tasks: 
+    - { name: push etckeeper, include_role: { name: "org-eu-glas.common-etckeeper", tasks_from: "push.yml"} , vars: { common_etckeeper_message: "{{ inventory_hostname }}: saving uncommitted changes in /etc before deploying role: {{ ansible_play_role_names|join(',') }} {{ common_etckeeper_revision_url }} {% if common_etckeeper_issue is defined and common_etckeeper_issue_url is defined %}{{common_etckeeper_issue_url}}{{ common_etckeeper_issue }}{% endif %}" }, when: __common_etckeeper_role_exists|length >0, tags: [always]}
+  post_tasks:
+    - { name: push etckeeper, include_role: { name: "org-eu-glas.common-etckeeper", tasks_from: "push.yml"} , vars: { common_etckeeper_message: "{{ inventory_hostname }}: saving uncommitted changes in /etc after deploying role: {{ ansible_play_role_names|join(',') }} {{ common_etckeeper_revision_url }} {% if common_etckeeper_issue is defined and common_etckeeper_issue_url is defined %}{{common_etckeeper_issue_url}}{{ common_etckeeper_issue }}{% endif %}" }, when: __common_etckeeper_role_exists|length >0, tags: [always]}
+  vars:
+   __common_etckeeper_role_exists: "{{ lookup('ansible.builtin.first_found', ['../ansible/roles/org-eu-glas.common-etckeeper/meta/main.yml', '/etc/ansible/roles/org-eu-glas.common-etckeeper/meta/main.yml'], skip=true) }}"
   roles:
     # Most of the roles below are not distributed with the playbook, but downloaded separately using `ansible-galaxy` via the `just roles` command (see `justfile`).
     - role: playbook_help
@@ -56,6 +61,13 @@
     - exim_relay
 
     - role: postgres
+      apply:
+        tags:
+            - setup-all
+            - setup-postgres
+            - install-all
+            - install-postgres
+            - "{% if server_path_postgres_dump is defined %}import-postgres{% endif %}"
 
     - redis
     - keydb
