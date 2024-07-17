@@ -41,6 +41,7 @@ We support a few configuration presets (`matrix_synapse_workers_preset: one-of-e
 - (specialized) `specialized-workers` - defaults to one worker of each supported type, but disables generic workers and uses [specialized workers](#specialized-workers) instead
 
 These presets represent a few common configurations. There are many worker types which can be mixed and matched based on your needs.
+These **may not work** in combination with [Sliding Sync Proxy](../docs/configuring-playbook-sliding-sync-proxy.md) yet.
 
 #### Generic workers
 
