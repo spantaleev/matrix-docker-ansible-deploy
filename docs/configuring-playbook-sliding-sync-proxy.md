@@ -12,6 +12,8 @@ Element X Android is [available on the Github Releases page](https://github.com/
 
 **NOTE**: The sliding-sync proxy is **not required** when using the **Conduit homeserver**. Starting from version `0.6.0` Conduit has native support for some sliding sync features. If there are issues with the native implementation, you might have a better experience when enabling the sliding-sync proxy anyway.
 
+This might not work with [Synapse Workers](../docs/configuring-playbook-synapse.md) enabled.
+
 ## Decide on a domain and path
 
 By default, the Sliding Sync proxy is configured to be served on the Matrix domain (`matrix.DOMAIN`, controlled by `matrix_server_fqn_matrix`), under the `/sliding-sync` path.
