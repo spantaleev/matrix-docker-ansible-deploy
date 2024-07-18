@@ -78,8 +78,8 @@ matrix_ma1sd_container_labels_matrix_identity_traefik_tls_certResolver: "{{ matr
 # Controls whether labels will be added that expose ma1sd's /_matrix/client/VERSION/user_directory/search endpoint
 matrix_ma1sd_container_labels_matrix_client_user_directory_search_enabled: "{{ matrix_ma1sd_container_labels_traefik_enabled }}"
 matrix_ma1sd_container_labels_matrix_client_user_directory_search_hostname: "{{ matrix_ma1sd_hostname }}"
-matrix_ma1sd_container_labels_matrix_client_user_directory_search_path: "/_matrix/client/{version:(r0|v3)}/user_directory/search"
-matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_rule: "Host(`{{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_hostname }}`) && Path(`{{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_path }}`)"
+matrix_ma1sd_container_labels_matrix_client_user_directory_search_path_regexp: "/_matrix/client/(?P<version>(r0|v3))/user_directory/search"
+matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_rule: "Host(`{{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_hostname }}`) && PathRegexp(`{{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_path_regexp }}`)"
 matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_priority: 0
 matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_entrypoints: "{{ matrix_ma1sd_container_labels_traefik_entrypoints }}"
 matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_tls: "{{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_entrypoints != 'web' }}"
@@ -90,8 +90,8 @@ matrix_ma1sd_container_labels_matrix_client_user_directory_search_traefik_tls_ce
 # To learn more, see: https://github.com/ma1uta/ma1sd/blob/master/docs/features/registration.md
 matrix_ma1sd_container_labels_matrix_client_3pid_registration_enabled: false
 matrix_ma1sd_container_labels_matrix_client_3pid_registration_hostname: "{{ matrix_ma1sd_hostname }}"
-matrix_ma1sd_container_labels_matrix_client_3pid_registration_path: "/_matrix/client/{version:(r0|v3)}/register/{type:(email|msisdn)}/requestToken"
-matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_rule: "Host(`{{ matrix_ma1sd_container_labels_matrix_client_3pid_registration_hostname }}`) && Path(`{{ matrix_ma1sd_container_labels_matrix_client_3pid_registration_path }}`)"
+matrix_ma1sd_container_labels_matrix_client_3pid_registration_path_regexp: "/_matrix/client/(?P<version>(r0|v3))/register/(?P<type>(email|msisdn))/requestToken"
+matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_rule: "Host(`{{ matrix_ma1sd_container_labels_matrix_client_3pid_registration_hostname }}`) && PathRegexp(`{{ matrix_ma1sd_container_labels_matrix_client_3pid_registration_path_regexp }}`)"
 matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_priority: 0
 matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_entrypoints: "{{ matrix_ma1sd_container_labels_traefik_entrypoints }}"
 matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_tls: "{{ matrix_ma1sd_container_labels_matrix_client_3pid_registration_traefik_entrypoints != 'web' }}"

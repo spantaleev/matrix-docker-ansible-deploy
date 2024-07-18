@@ -53,7 +53,8 @@
     - {'name': 'matrix_ma1sd_container_labels_matrix_identity_hostname', when: "{{ matrix_ma1sd_container_labels_matrix_identity_enabled }}"}
     - {'name': 'matrix_ma1sd_container_labels_matrix_identity_path_prefix', when: "{{ matrix_ma1sd_container_labels_matrix_identity_enabled }}"}
     - {'name': 'matrix_ma1sd_container_labels_matrix_client_user_directory_search_hostname', when: "{{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_enabled }}"}
-    - {'name': 'matrix_ma1sd_container_labels_matrix_client_user_directory_search_path', when: "{{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_enabled }}"}
+    - {'name': 'matrix_ma1sd_container_labels_matrix_client_user_directory_search_path_regexp', when: "{{ matrix_ma1sd_container_labels_matrix_client_user_directory_search_enabled }}"}
+    - {'name': 'matrix_ma1sd_container_labels_matrix_client_3pid_registration_path_regexp', when: "{{ matrix_ma1sd_container_labels_matrix_client_3pid_registration_enabled }}"}
 
 - name: (Deprecation) Catch and report renamed ma1sd variables
   ansible.builtin.fail:
@@ -65,6 +66,8 @@
     - {'old': 'matrix_ma1sd_container_expose_port', 'new': '<superseded by matrix_ma1sd_container_http_host_bind_port>'}
     - {'old': 'matrix_ma1sd_threepid_medium_email_custom_unbind_fraudulent_template', 'new': 'matrix_ma1sd_threepid_medium_email_custom_session_unbind_notification_template'}
     - {'old': 'matrix_ma1sd_default_port', 'new': 'matrix_ma1sd_container_port'}
+    - {'old': 'matrix_ma1sd_container_labels_matrix_client_user_directory_search_path', 'new': 'matrix_ma1sd_container_labels_matrix_client_user_directory_search_path_regexp'}
+    - {'old': 'matrix_ma1sd_container_labels_matrix_client_3pid_registration_path', 'new': 'matrix_ma1sd_container_labels_matrix_client_3pid_registration_path_regexp'}
 
 - name: (Deprecation) Catch and report mxisd variables
   ansible.builtin.fail:
