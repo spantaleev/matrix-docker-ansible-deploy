@@ -2802,7 +2802,11 @@ matrix_bot_draupnir_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_bot_draupnir_container_additional_networks_auto: |-
   {{
-    ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+    (
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+      +
+      ([matrix_pantalaimon_container_network] if (matrix_bot_draupnir_pantalaimon_use and matrix_pantalaimon_container_network != matrix_bot_draupnir_container_network) else [])
+    ) | unique
   }}
 
 matrix_bot_draupnir_homeserver_url: "{{ 'http://matrix-pantalaimon:8009' if matrix_bot_draupnir_pantalaimon_use else matrix_addons_homeserver_client_api_url }}"
