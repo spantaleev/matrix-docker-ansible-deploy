@@ -24,13 +24,17 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--cap-drop=ALL \
 			--read-only \
 			--network={{ matrix_bot_draupnir_container_network }} \
+			{% if matrix_bot_draupnir_container_http_host_bind_port %}
+			-p {{ matrix_bot_draupnir_container_http_host_bind_port }}:8080 \
+			{% endif %}
+			--label-file={{ matrix_bot_draupnir_base_path }}/labels \
 			--mount type=bind,src={{ matrix_bot_draupnir_config_path }},dst=/data/config,ro \
 			--mount type=bind,src={{ matrix_bot_draupnir_data_path }},dst=/data \
 			{% for arg in matrix_bot_draupnir_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_bot_draupnir_docker_image }} \
-			bot --draupnir-config /data/config/production.yaml 
+			bot --draupnir-config /data/config/production.yaml
 
 {% for network in matrix_bot_draupnir_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-bot-draupnir

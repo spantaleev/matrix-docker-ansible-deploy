@@ -1,0 +1,53 @@
+{% if matrix_bot_draupnir_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_bot_draupnir_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_bot_draupnir_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-bot-draupnir.loadbalancer.server.port=8080
+
+############################################################
+#                                                          #
+# Abuse Reports (/_matrix/client/../rooms/../report)       #
+#                                                          #
+############################################################
+
+{% set middlewares = [] %}
+
+traefik.http.middlewares.matrix-bot-draupnir-redirect.replacepathregex.regex=^/_matrix/client/(r0|v3)/rooms/([^/]*)/report/(.*)$
+traefik.http.middlewares.matrix-bot-draupnir-redirect.replacepathregex.replacement=/api/1/report/$2/$3
+
+{% set middlewares = middlewares + ['matrix-bot-draupnir-redirect'] %}
+
+traefik.http.middlewares.matrix-bot-draupnir-cors.headers.accesscontrolalloworiginlist=*
+traefik.http.middlewares.matrix-bot-draupnir-cors.headers.accesscontrolallowheaders=Content-Type,Authorization
+traefik.http.middlewares.matrix-bot-draupnir-cors.headers.accesscontrolallowmethods=POST,OPTIONS
+
+{% set middlewares = middlewares + ['matrix-bot-draupnir-cors'] %}
+
+traefik.http.routers.matrix-bot-draupnir.rule={{ matrix_bot_draupnir_container_labels_traefik_rule }}
+
+{% if matrix_bot_draupnir_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-bot-draupnir.priority={{ matrix_bot_draupnir_container_labels_traefik_priority }}
+{% endif %}
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-bot-draupnir.middlewares={{ middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers.matrix-bot-draupnir.service=matrix-bot-draupnir
+traefik.http.routers.matrix-bot-draupnir.entrypoints={{ matrix_bot_draupnir_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-bot-draupnir.tls={{ matrix_bot_draupnir_container_labels_traefik_tls | to_json }}
+
+{% if matrix_bot_draupnir_container_labels_traefik_tls %}
+traefik.http.routers.matrix-bot-draupnir.tls.certResolver={{ matrix_bot_draupnir_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Abuse Reports (/_matrix/client/../rooms/../report)      #
+#                                                          #
+############################################################
+{% endif %}
+
+{{ matrix_bot_draupnir_container_labels_traefik_labels_additional_labels }}
