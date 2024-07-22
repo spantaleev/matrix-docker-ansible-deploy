@@ -44,6 +44,11 @@ matrix_media_repo_container_network: "{{ matrix_media_repo_identifier }}"
 # Use this to expose this container to another reverse proxy, which runs in a different container network.
 matrix_media_repo_container_additional_networks: []
 
+# Controls whether media repo metrics should be proxied (exposed) on `matrix.DOMAIN/metrics/matrix-media-repo`
+matrix_media_repo_metrics_proxying_enabled: false
+matrix_media_repo_metrics_proxying_hostname: ""
+matrix_media_repo_metrics_proxying_path: "/metrics/matrix-media-repo"
+
 # Controls whether the matrix-media-repo container exposes its HTTP port (tcp/8000 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8000"), or empty string to not expose.
@@ -133,6 +138,18 @@ matrix_media_repo_container_labels_traefik_t2bot_priority: 0
 matrix_media_repo_container_labels_traefik_t2bot_entrypoints: "{{ matrix_media_repo_container_labels_traefik_entrypoints }}"
 matrix_media_repo_container_labels_traefik_t2bot_tls: "{{ matrix_media_repo_container_labels_traefik_t2bot_entrypoints != 'web' }}"
 matrix_media_repo_container_labels_traefik_t2bot_tls_certResolver: default  # noqa var-naming
+
+# Controls whether labels will be added that expose the media repo metrics endpoint
+matrix_media_repo_container_labels_traefik_metrics_enabled: "{{ matrix_media_repo_metrics_enabled and matrix_media_repo_metrics_proxying_enabled }}"
+matrix_media_repo_container_labels_traefik_metrics_rule: "Host(`{{ matrix_media_repo_metrics_proxying_hostname }}`) && PathPrefix(`{{ matrix_media_repo_metrics_proxying_path }}`)"
+matrix_media_repo_container_labels_traefik_metrics_priority: 0
+matrix_media_repo_container_labels_traefik_metrics_entrypoints: "{{ matrix_media_repo_container_labels_traefik_entrypoints }}"
+matrix_media_repo_container_labels_traefik_metrics_tls: "{{ matrix_media_repo_container_labels_traefik_t2bot_entrypoints != 'web' }}"
+matrix_media_repo_container_labels_traefik_metrics_tls_certResolver: default  # noqa var-naming
+
+matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_enabled: false
+# See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
+matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_users: ''
 
 # Traefik labels handling the old `/_matrix/media` endpoints on the federation entrypint.
 # These are being superseded by `/_matrix/federation/VERSION/media` endpoints - see `matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_*`.

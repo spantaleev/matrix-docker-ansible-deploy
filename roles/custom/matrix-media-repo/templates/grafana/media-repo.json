@@ -1,59 +1,16 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_PROMETHEUS",
-      "label": "Prometheus",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "10.1.0"
-    },
-    {
-      "type": "panel",
-      "id": "heatmap",
-      "name": "Heatmap",
-      "version": ""
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
         "builtIn": 1,
         "datasource": {
-          "type": "datasource",
-          "uid": "grafana"
+          "type": "grafana",
+          "uid": "${DS_PROMETHEUS}"
         },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
-        "target": {
-          "limit": 100,
-          "matchAny": false,
-          "tags": [],
-          "type": "dashboard"
-        },
         "type": "dashboard"
       }
     ]
@@ -153,7 +110,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(media_http_requests_total[2m])",
+          "expr": "rate(media_http_requests_total{host=\"$host\"}[2m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{ '{{host}}: {{method}} {{action}}' }}",
@@ -166,7 +123,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(media_invalid_http_requests_total[2m])",
+          "expr": "rate(media_invalid_http_requests_total{host=\"$host\"}[2m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{ 'Invalid Host: {{method}} {{action}}' }}",
@@ -265,7 +222,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(media_http_responses_total[2m])",
+          "expr": "rate(media_http_responses_total{host=\"$host\"}[2m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{ '{{host}}: {{method}} {{action}} {{statusCode}}' }}",
@@ -278,7 +235,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(media_invalid_http_requests_total[2m])",
+          "expr": "rate(media_invalid_http_requests_total{host=\"$host\"}[2m])",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -369,7 +326,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(rate(media_http_response_time_seconds_bucket{action=~\"download|thumbnail\"}[2m])) by (le)",
+          "expr": "sum(rate(media_http_response_time_seconds_bucket{action=~\"download|thumbnail\", host=\"$host\"}[2m])) by (le)",
           "format": "heatmap",
           "instant": false,
           "interval": "",
@@ -460,7 +417,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(rate(media_http_response_time_seconds_bucket{action=\"upload\"}[2m])) by (le)",
+          "expr": "sum(rate(media_http_response_time_seconds_bucket{action=\"upload\", host=\"$host\"}[2m])) by (le)",
           "format": "heatmap",
           "instant": false,
           "legendFormat": "{{ '{{method}} {{action}} - {{le}}' }}",
@@ -560,7 +517,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "go_memstats_alloc_bytes{job=\"media_repo\"}",
+          "expr": "go_memstats_alloc_bytes",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -574,7 +531,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "exemplar": true,
-          "expr": "go_memstats_sys_bytes{job=\"media_repo\"}",
+          "expr": "go_memstats_sys_bytes",
           "interval": "",
           "legendFormat": "memory usage (sys)",
           "refId": "C"
@@ -585,7 +542,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "exemplar": true,
-          "expr": "go_memstats_heap_alloc_bytes{job=\"media_repo\"}",
+          "expr": "go_memstats_heap_alloc_bytes",
           "interval": "",
           "legendFormat": "heap usage (alloc)",
           "refId": "A"
@@ -596,7 +553,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "exemplar": true,
-          "expr": "go_memstats_heap_idle_bytes{job=\"media_repo\"}",
+          "expr": "go_memstats_heap_idle_bytes",
           "interval": "",
           "legendFormat": "heap usage (idle)",
           "refId": "D"
@@ -607,7 +564,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "exemplar": true,
-          "expr": "go_memstats_heap_inuse_bytes{job=\"media_repo\"}",
+          "expr": "go_memstats_heap_inuse_bytes",
           "interval": "",
           "legendFormat": "heap usage (used)",
           "refId": "E"
@@ -619,7 +576,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "go_memstats_heap_released_bytes{job=\"media_repo\"}",
+          "expr": "go_memstats_heap_released_bytes",
           "hide": false,
           "legendFormat": "heap usage (released)",
           "range": true,
@@ -718,7 +675,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "go_goroutines{job=\"media_repo\"}",
+          "expr": "go_goroutines",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -733,7 +690,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "go_threads{job=\"media_repo\"}",
+          "expr": "go_threads",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1263,9 +1220,51 @@
   "refresh": "1m",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "matrix"
+  ],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {},
+        "hide": 0,
+        "includeAll": false,
+        "label": "Datasource",
+        "multi": false,
+        "name": "DS_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(media_http_response_time_seconds_bucket,host)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Host",
+        "multi": false,
+        "name": "host",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(media_http_response_time_seconds_bucket,host)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
   },
   "time": {
     "from": "now-1h",
