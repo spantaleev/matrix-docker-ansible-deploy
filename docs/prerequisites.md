@@ -35,12 +35,12 @@ If your distro runs within an [LXC container](https://linuxcontainers.org/), you
 - Some TCP/UDP ports open. This playbook (actually [Docker itself](https://docs.docker.com/network/iptables/)) configures the server's internal firewall for you. In most cases, you don't need to do anything special. But **if your server is running behind another firewall**, you'd need to open these ports:
 
   - `80/tcp`: HTTP webserver
-  - `443/tcp`: HTTPS webserver
+  - `443/tcp` and `443/udp`: HTTPS webserver
   - `3478/tcp`: TURN over TCP (used by Coturn)
   - `3478/udp`: TURN over UDP (used by Coturn)
   - `5349/tcp`: TURN over TCP (used by Coturn)
   - `5349/udp`: TURN over UDP (used by Coturn)
-  - `8448/tcp`: Matrix Federation API HTTPS webserver. In some cases, this **may necessary even with federation disabled**. Integration Servers (like Dimension) and Identity Servers (like ma1sd) may need to access `openid` APIs on the federation port.
+  - `8448/tcp` and `8448/udp`: Matrix Federation API HTTPS webserver. In some cases, this **may necessary even with federation disabled**. Integration Servers (like Dimension) and Identity Servers (like ma1sd) may need to access `openid` APIs on the federation port.
   - the range `49152-49172/udp`: TURN over UDP
   - potentially some other ports, depending on the additional (non-default) services that you enable in the **configuring the playbook** step (later on). Consult each service's documentation page in `docs/` for that.
 
