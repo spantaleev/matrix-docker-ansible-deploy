@@ -3650,6 +3650,11 @@ matrix_media_repo_homeservers_auto:
     # to "matrix", most functionality requiring the admin API will not work.
     adminApiKind: "{{ 'synapse' if matrix_homeserver_implementation == 'synapse' else ('dendrite' if matrix_homeserver_implementation == 'dendrite' else 'matrix') }}"
 
+    # The signing key to use for authorizing outbound federation requests. If not specified,
+    # requests will not be authorized. See https://docs.t2bot.io/matrix-media-repo/v1.3.5/installation/signing-key/
+    # for details.
+    signingKeyPath: ""
+
 matrix_media_repo_homeserver_federation_enabled: "{{ matrix_homeserver_federation_enabled }}"
 
 ######################################################################

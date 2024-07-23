@@ -97,6 +97,11 @@ database:
 #    # admin status. This should be set to one of "synapse", "dendrite", or "matrix". When set
 #    # to "matrix", most functionality requiring the admin API will not work.
 #    adminApiKind: "synapse"
+#
+#    # The signing key to use for authorizing outbound federation requests. If not specified,
+#    # requests will not be authorized. See https://docs.t2bot.io/matrix-media-repo/v1.3.5/installation/signing-key/
+#    # for details.
+#    #signingKeyPath: "/data/example.org.key"
 homeservers:
 {{ matrix_media_repo_homeservers | to_json | from_json
   | to_nice_yaml(indent=2, width=999999, sort_keys=false) | indent(width=2, first=true) }}
@@ -253,6 +258,10 @@ datastores:
       # when `publicBaseUrl` is unset. Defaults to false (cached media will be served by MMR
       # before redirection if present).
       redirectWhenCached: {{ matrix_media_repo_datastore_s3_opts_redirect_when_cached | to_json }}
+      # The size of the prefix (path component) to use when storing media in S3. This can
+      # help improve download speeds in some S3 providers. Should not be set to higher than
+      # 16 to avoid future incompatibilities with MMR. Defaults to zero (no prefix).
+      prefixLength: {{ matrix_media_repo_datastore_s3_opts_prefix_length | to_json }}
 {% endif %}
 
 # Options for controlling archives. Archives are exports of a particular user's content for
@@ -482,6 +491,30 @@ rateLimit:
 
   # The number of requests an IP can send at once before the rate limit is actually considered.
   burst: {{ matrix_media_repo_rate_limit_burst | to_json }}
+
+  # The 'leaky bucket' configurations for MMR. Leaky buckets are limited in size and have a slow
+  # drain rate, minimizing the ability for a user to consume large amounts of resources.
+  #
+  # Buckets are checked and applied after the requests per second configuration above. Buckets are
+  # disabled when rate limiting is disabled.
+  #
+  # Note: buckets are *not* shared across processes. If download requests could end up at two different
+  # processes, two different buckets may be filled. This behaviour may change in the future.
+  buckets:
+    # The download bucket applies to both download requests and thumbnail requests. Each anonymous
+    # user is assigned a single bucket from their IP address. Authenticated requests (when supported)
+    # will use the authenticated entity as the subject - either a user or remote server.
+    downloads:
+      # The maximum size of each bucket.
+      capacityBytes: {{ matrix_media_repo_rate_limit_buckets_download_capacity_bytes | to_json }} # 500mb default
+      # The number of bytes to "drain" from the bucket every minute.
+      drainBytesPerMinute: {{ matrix_media_repo_rate_limit_buckets_download_drain_bytes_per_minute | to_json }} # 5mb default
+      # The number of bytes a requester can go over the capacity, once. This is used to give some
+      # buffer to allow a single file to be downloaded when the caller is near the limit. This
+      # should be set to either your max remote download size or 30% of the capacityBytes, whichever
+      # is smaller.
+      overflowLimitBytes: {{ matrix_media_repo_rate_limit_buckets_download_overflow_limit_bytes | to_json }} # 100mb default (the same as the default remote download maxBytes)
+
 
 # Identicons are generated avatars for a given username. Some clients use these to give users a
 # default avatar after signing up. Identicons are not part of the official matrix spec, therefore
