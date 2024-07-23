@@ -1,0 +1,38 @@
+{% if matrix_synapse_usage_exporter_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_synapse_usage_exporter_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_synapse_usage_exporter_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-synapse-usage-exporter.loadbalancer.server.port={{ matrix_synapse_usage_exporter_container_port }}
+
+############################################################
+#                                                          #
+# Report Usage Stats (/report-usage-stats/push)            #
+#                                                          #
+############################################################
+
+traefik.http.routers.matrix-synapse-usage-exporter.rule={{ matrix_synapse_usage_exporter_container_labels_traefik_rule }}
+
+{% if matrix_synapse_usage_exporter_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-usage-exporter.priority={{ matrix_synapse_usage_exporter_container_labels_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-synapse-usage-exporter.service=matrix-synapse-usage-exporter
+traefik.http.routers.matrix-synapse-usage-exporter.entrypoints={{ matrix_synapse_usage_exporter_container_labels_traefik_entrypoints }}
+
+traefik.http.routers.matrix-synapse-usage-exporter.tls={{ matrix_synapse_usage_exporter_container_labels_traefik_tls | to_json }}
+{% if matrix_synapse_usage_exporter_container_labels_traefik_tls %}
+traefik.http.routers.matrix-synapse-usage-exporter.tls.certResolver={{ matrix_synapse_usage_exporter_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Report Usage Stats (/report-usage-stats/push)           #
+#                                                          #
+############################################################
+
+{% endif %}
+
+{{ matrix_synapse_usage_exporter_container_labels_additional_labels }}
