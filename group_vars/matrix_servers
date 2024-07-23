@@ -3611,6 +3611,12 @@ matrix_media_repo_container_labels_traefik_internal_media_entrypoints: "{{ matri
 matrix_media_repo_container_labels_traefik_internal_matrix_client_media_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
 matrix_media_repo_container_labels_traefik_internal_matrix_client_media_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
 
+matrix_media_repo_metrics_proxying_enabled: "{{ matrix_media_repo_metrics_enabled and matrix_metrics_exposure_enabled }}"
+matrix_media_repo_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
+matrix_media_repo_metrics_proxying_path: "{{ matrix_metrics_exposure_path_prefix }}/matrix-media-repo"
+matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+
 matrix_media_repo_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_media_repo_database_username: matrix_media_repo
 matrix_media_repo_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mediarepo.db', rounds=655555) | to_uuid }}"
@@ -4880,11 +4886,6 @@ grafana_provisioning_dashboard_template_files: |
         'path': 'roles/custom/matrix-prometheus-nginxlog-exporter/templates/grafana/nginx-proxy.json',
         'name': 'nginx-proxy.json',
     }] if matrix_prometheus_nginxlog_exporter_enabled else [])
-    +
-    ([{
-        'path': 'roles/custom/matrix-media-repo/templates/grafana/media-repo.json',
-        'name': 'media-repo.json',
-    }] if matrix_media_repo_metrics_enabled else [])
   }}
 
 grafana_default_home_dashboard_path: |-
