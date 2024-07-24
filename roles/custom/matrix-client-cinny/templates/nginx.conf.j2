@@ -51,16 +51,20 @@ http {
 		root /usr/share/nginx/html;
 
 		location / {
-			index index.html index.htm;
-		}
+			# Inspired by: https://raw.githubusercontent.com/cinnyapp/cinny/dev/docker-nginx.conf
 
-		location ~* ^/(config(.+)?\.json$|(.+)\.html$|i18n) {
-			expires -1;
-		}
-
-		error_page 500 502 503 504 /50x.html;
-		location = /50x.html {
 			root /usr/share/nginx/html;
+
+			rewrite ^/config.json$ /config.json break;
+			rewrite ^/manifest.json$ /manifest.json break;
+
+			rewrite ^.*/olm.wasm$ /olm.wasm break;
+			rewrite ^/pdf.worker.min.js$ /pdf.worker.min.js break;
+
+			rewrite ^/public/(.*)$ /public/$1 break;
+			rewrite ^/assets/(.*)$ /assets/$1 break;
+
+			rewrite ^(.+)$ /index.html break;
 		}
 	}
 }
