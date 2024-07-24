@@ -467,6 +467,11 @@ matrix_media_repo_datastore_s3_opts_bucket_name: "your-media-bucket"
 # before redirection if present).
 matrix_media_repo_datastore_s3_opts_redirect_when_cached: true
 
+# The size of the prefix (path component) to use when storing media in S3. This can
+# help improve download speeds in some S3 providers. Should not be set to higher than
+# 16 to avoid future incompatibilities with MMR. Defaults to zero (no prefix).
+matrix_media_repo_datastore_s3_opts_prefix_length: 0
+
 # Options for controlling archives. Archives are exports of a particular user's content for
 # the purpose of GDPR or moving media to a different server.
 
@@ -741,6 +746,31 @@ matrix_media_repo_rate_limit_requests_per_second: 1
 
 # The number of requests an IP can send at once before the rate limit is actually considered.
 matrix_media_repo_rate_limit_burst: 10
+
+# The 'leaky bucket' configurations for MMR. Leaky buckets are limited in size and have a slow
+# drain rate, minimizing the ability for a user to consume large amounts of resources.
+#
+# Buckets are checked and applied after the requests per second configuration above. Buckets are
+# disabled when rate limiting is disabled.
+#
+# Note: buckets are *not* shared across processes. If download requests could end up at two different
+# processes, two different buckets may be filled. This behaviour may change in the future.
+
+# The download bucket applies to both download requests and thumbnail requests. Each anonymous
+# user is assigned a single bucket from their IP address. Authenticated requests (when supported)
+# will use the authenticated entity as the subject - either a user or remote server.
+
+# The maximum size of each bucket.
+matrix_media_repo_rate_limit_buckets_download_capacity_bytes: 524288000  # 500mb default
+
+# The number of bytes to "drain" from the bucket every minute.
+matrix_media_repo_rate_limit_buckets_download_drain_bytes_per_minute: 5242880  # 5mb default
+
+# The number of bytes a requester can go over the capacity, once. This is used to give some
+# buffer to allow a single file to be downloaded when the caller is near the limit. This
+# should be set to either your max remote download size or 30% of the capacityBytes, whichever
+# is smaller.
+matrix_media_repo_rate_limit_buckets_download_overflow_limit_bytes: 104857600  # 100mb default (the same as the default remote download maxBytes)
 
 # Identicons are generated avatars for a given username. Some clients use these to give users a
 # default avatar after signing up. Identicons are not part of the official matrix spec, therefore
