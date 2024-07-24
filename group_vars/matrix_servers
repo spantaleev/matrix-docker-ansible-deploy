@@ -4462,6 +4462,10 @@ matrix_synapse_app_service_config_files_auto: "{{ matrix_homeserver_app_service_
 # Disable creation of media repository Synapse worker when using media-repo
 matrix_synapse_ext_media_repo_enabled: "{{ matrix_media_repo_enabled }}"
 
+# Enable Synapse statistics reporting when using synapse-usage-exporter
+matrix_synapse_report_stats: "{{ matrix_synapse_usage_exporter_enabled }}"
+matrix_synapse_report_stats_endpoint: "http://{{ matrix_synapse_usage_exporter_identifier }}:{{ matrix_synapse_usage_exporter_container_port | string }}/report-usage-stats/push"
+
 ######################################################################
 #
 # /matrix-synapse
@@ -4610,9 +4614,6 @@ matrix_synapse_usage_exporter_container_labels_traefik_enabled: "{{ matrix_synap
 matrix_synapse_usage_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 matrix_synapse_usage_exporter_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 matrix_synapse_usage_exporter_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
-
-matrix_synapse_report_stats: "{{ matrix_synapse_usage_exporter_enabled }}"
-matrix_synapse_report_stats_endpoint: "http://{{ matrix_synapse_usage_exporter_identifier }}:{{ matrix_synapse_usage_exporter_container_port | string }}/report-usage-stats/push"
 
 ######################################################################
 #
