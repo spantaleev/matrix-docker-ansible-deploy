@@ -1,0 +1,17 @@
+---
+
+- tags:
+    - setup-all
+    - setup-synapse-usage-exporter
+    - install-all
+    - install-synapse-usage-exporter
+  block:
+    - when: matrix_synapse_usage_exporter_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+- tags:
+    - setup-all
+    - setup-synapse-usage-exporter
+  block:
+    - when: not matrix_synapse_usage_exporter_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"

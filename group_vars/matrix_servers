@@ -441,6 +441,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-synapse-admin.service', 'priority': 4000, 'groups': ['matrix', 'synapse-admin']}] if matrix_synapse_admin_enabled else [])
     +
+    ([{'name': (matrix_synapse_usage_exporter_identifier + '.service'), 'priority': 4000, 'groups': ['matrix', 'synapse-usage-exporter']}] if matrix_synapse_usage_exporter_enabled else [])
+    +
     ([{'name': 'matrix-synapse-reverse-proxy-companion.service', 'priority': 1500, 'groups': ['matrix', 'homeservers', 'synapse', 'synapse-reverse-proxy-companion', 'reverse-proxies']}] if matrix_synapse_reverse_proxy_companion_enabled else [])
     +
     ([{'name': 'matrix-user-verification-service.service', 'priority': 800, 'groups': ['matrix', 'matrix-user-verification-service']}] if matrix_user_verification_service_enabled else [])
@@ -4465,6 +4467,10 @@ matrix_synapse_app_service_config_files_auto: "{{ matrix_homeserver_app_service_
 # Disable creation of media repository Synapse worker when using media-repo
 matrix_synapse_ext_media_repo_enabled: "{{ matrix_media_repo_enabled }}"
 
+# Enable Synapse statistics reporting when using synapse-usage-exporter
+matrix_synapse_report_stats: "{{ matrix_synapse_usage_exporter_enabled }}"
+matrix_synapse_report_stats_endpoint: "http://{{ matrix_synapse_usage_exporter_identifier }}:{{ matrix_synapse_usage_exporter_container_port | string }}/report-usage-stats/push"
+
 ######################################################################
 #
 # /matrix-synapse
@@ -4597,6 +4603,28 @@ matrix_synapse_admin_container_labels_traefik_tls_certResolver: "{{ devture_trae
 #
 ######################################################################
 
+######################################################################
+#
+# matrix-synapse-usage-exporter
+#
+######################################################################
+
+matrix_synapse_usage_exporter_enabled: false
+
+matrix_synapse_usage_exporter_container_network: "{{ matrix_monitoring_container_network }}"
+
+matrix_synapse_usage_exporter_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
+
+matrix_synapse_usage_exporter_container_labels_traefik_enabled: "{{ matrix_synapse_usage_exporter_proxying_enabled }}"
+matrix_synapse_usage_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_synapse_usage_exporter_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_synapse_usage_exporter_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+
+######################################################################
+#
+# /matrix-synapse-usage-exporter
+#
+######################################################################
 
 ######################################################################
 #
@@ -4755,6 +4783,8 @@ prometheus_container_additional_networks_auto: |
       ([matrix_prometheus_nginxlog_exporter_container_network] if matrix_prometheus_services_connect_scraper_nginxlog_enabled and matrix_prometheus_nginxlog_exporter_container_network != prometheus_container_network else [])
       +
       ([matrix_media_repo_container_network] if matrix_prometheus_services_connect_scraper_media_repo_enabled and matrix_media_repo_container_network != prometheus_container_network else [])
+      +
+      ([matrix_synapse_usage_exporter_container_network] if matrix_prometheus_services_connect_scraper_synapse_usage_exporter_enabled and matrix_synapse_usage_exporter_container_network != prometheus_container_network else [])
     ) | unique
   }}
 
@@ -4779,6 +4809,8 @@ prometheus_config_scrape_configs_auto: |
     (matrix_prometheus_services_connect_scraper_nginxlog_scrape_configs if matrix_prometheus_services_connect_scraper_nginxlog_enabled else [])
     +
     (matrix_prometheus_services_connect_scraper_media_repo_scrape_configs if matrix_prometheus_services_connect_scraper_media_repo_enabled else [])
+    +
+    (matrix_prometheus_services_connect_scraper_synapse_usage_exporter_scrape_configs if matrix_prometheus_services_connect_scraper_synapse_usage_exporter_enabled else [])
   }}
 
 ######################################################################
@@ -4816,6 +4848,9 @@ matrix_prometheus_services_connect_scraper_nginxlog_static_configs_target: "{{ m
 
 matrix_prometheus_services_connect_scraper_media_repo_enabled: "{{ matrix_media_repo_enabled and matrix_media_repo_metrics_enabled }}"
 matrix_prometheus_services_connect_scraper_media_repo_static_configs_target: "{{ matrix_media_repo_identifier }}:{{ matrix_media_repo_metrics_port }}"
+
+matrix_prometheus_services_connect_scraper_synapse_usage_exporter_enabled: "{{ matrix_synapse_usage_exporter_enabled }}"
+matrix_prometheus_services_connect_scraper_synapse_usage_exporter_static_configs_target: "{{ matrix_synapse_usage_exporter_identifier }}:{{ matrix_synapse_usage_exporter_container_port | string }}"
 
 ######################################################################
 #
@@ -4883,6 +4918,8 @@ grafana_dashboard_download_urls: |
     (matrix_prometheus_nginxlog_exporter_dashboard_urls if matrix_prometheus_nginxlog_exporter_enabled else [])
     +
     (matrix_media_repo_dashboard_urls if matrix_media_repo_metrics_enabled else [])
+    +
+    (matrix_synapse_usage_exporter_dashboard_urls if matrix_synapse_usage_exporter_enabled else [])
   }}
 
 grafana_provisioning_dashboard_template_files: |
