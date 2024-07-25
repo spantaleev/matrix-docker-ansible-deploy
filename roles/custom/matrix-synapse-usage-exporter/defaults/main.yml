@@ -26,7 +26,7 @@ matrix_synapse_usage_exporter_docker_src_files_path: "{{ matrix_synapse_usage_ex
 
 # List of systemd services that synapse-usage-exporter.service depends on
 matrix_synapse_usage_exporter_systemd_required_services_list: "{{ matrix_synapse_usage_exporter_systemd_required_services_list_default + matrix_synapse_usage_exporter_systemd_required_services_list_auto + matrix_synapse_usage_exporter_systemd_required_services_list_custom }}"
-matrix_synapse_usage_exporter_systemd_required_services_list_default: ["docker.service"]
+matrix_synapse_usage_exporter_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 matrix_synapse_usage_exporter_systemd_required_services_list_auto: []
 matrix_synapse_usage_exporter_systemd_required_services_list_custom: []
 
