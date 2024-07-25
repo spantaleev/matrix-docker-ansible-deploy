@@ -5,6 +5,11 @@
 
 matrix_synapse_usage_exporter_enabled: false
 
+# Controls the hostname and path that this component exposes its web services on.
+# Only used if `matrix_synapse_usage_exporter_proxying_enabled` is true.
+matrix_synapse_usage_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_synapse_usage_exporter_path_prefix: /report-usage-stats/push
+
 # matrix_synapse_usage_exporter_identifier controls the identifier of this synapse-usage-exporter instance, which influences:
 # - the default storage path
 # - the names of systemd services and containers
@@ -44,7 +49,10 @@ matrix_synapse_usage_exporter_container_additional_networks: []
 # Extra arguments for the Docker container
 matrix_synapse_usage_exporter_container_extra_arguments: []
 
-# Controls whether the synapse usage exporter should be proxied (exposed) on `matrix.DOMAIN/report-usage-stats/push`
+# Controls whether the synapse-usage-exporter's web services should be proxied (exposed publicly).
+#
+# Exposure happens on `matrix.DOMAIN/report-usage-stats/push` by default.
+# See: `matrix_synapse_usage_exporter_hostname` and `matrix_synapse_usage_exporter_path_prefix`.
 matrix_synapse_usage_exporter_proxying_enabled: false
 
 # matrix_synapse_usage_exporter_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
@@ -54,8 +62,8 @@ matrix_synapse_usage_exporter_proxying_enabled: false
 matrix_synapse_usage_exporter_container_labels_traefik_enabled: "{{ matrix_synapse_usage_exporter_proxying_enabled }}"
 matrix_synapse_usage_exporter_container_labels_traefik_docker_network: "{{ matrix_synapse_usage_exporter_container_network }}"
 
-matrix_synapse_usage_exporter_container_labels_traefik_path_prefix: "/report-usage-stats/push"
-matrix_synapse_usage_exporter_container_labels_traefik_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_synapse_usage_exporter_container_labels_traefik_path_prefix | quote }}`)"
+matrix_synapse_usage_exporter_container_labels_traefik_path_prefix: "{{ matrix_synapse_usage_exporter_path_prefix }}"
+matrix_synapse_usage_exporter_container_labels_traefik_rule: "Host(`{{ matrix_synapse_usage_exporter_hostname }}`) && PathPrefix(`{{ matrix_synapse_usage_exporter_container_labels_traefik_path_prefix }}`)"
 matrix_synapse_usage_exporter_container_labels_traefik_priority: 0
 matrix_synapse_usage_exporter_container_labels_traefik_entrypoints: "web-secure"
 matrix_synapse_usage_exporter_container_labels_traefik_tls: "{{ matrix_synapse_usage_exporter_container_labels_traefik_entrypoints != 'web' }}"

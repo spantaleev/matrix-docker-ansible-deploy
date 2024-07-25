@@ -8,7 +8,7 @@ Enabling this service will automatically:
 
 - install the synapse-usage-exporter service
 - re-configure Synapse to push (via HTTP `PUT`) usage statistics information to synapse-usage-exporter
-- re-configure [Prometheus](./configuring-playbook-prometheus-grafana.md) (if Grafana is enabled), to periodically scrape metrics from synapse-usage-exporter
+- re-configure [Prometheus](./configuring-playbook-prometheus-grafana.md) (if Prometheus is enabled), to periodically scrape metrics from synapse-usage-exporter
 - add a new [Grafana](./configuring-playbook-prometheus-grafana.md) dashboard (if Grafana is enabled) containing Synapse usage statistics
 
 ## Quickstart
@@ -21,5 +21,6 @@ matrix_synapse_usage_exporter_enabled: true
 # (Optional) Expose endpoint if you want to collect statistics from outside (from other homeservers).
 # If enabled, synapse-usage-exporter will be exposed publicly at `matrix.DOMAIN/report-usage-stats/push`.
 # When collecting usage statistics for Synapse running on the same host, you don't need to enable this.
+# You can adjust the hostname and path via `matrix_synapse_usage_exporter_hostname` and `matrix_synapse_usage_exporter_path_prefix`.
 # matrix_synapse_usage_exporter_proxying_enabled: true
 ```
