@@ -1,0 +1,24 @@
+---
+
+- name: Check existence of synapse-usage-exporter service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_synapse_usage_exporter_identifier }}.service"
+  register: matrix_synapse_usage_exporter_service_stat
+
+- when: matrix_synapse_usage_exporter_service_stat.stat.exists | bool
+  block:
+    - name: Ensure synapse-usage-exporter is stopped
+      ansible.builtin.systemd:
+        name: "{{ matrix_synapse_usage_exporter_identifier }}"
+        state: stopped
+        daemon_reload: true
+
+    - name: Ensure synapse-usage-exporter service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_synapse_usage_exporter_identifier }}.service"
+        state: absent
+
+    - name: Ensure synapse-usage-exporter files deleted
+      ansible.builtin.file:
+        path: "{{ matrix_synapse_usage_exporter_base_path }}"
+        state: absent

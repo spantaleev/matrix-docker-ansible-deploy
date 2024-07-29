@@ -20,17 +20,17 @@
    __common_etckeeper_role_exists: "{{ lookup('ansible.builtin.first_found', ['../ansible/roles/org-eu-glas.common-etckeeper/meta/main.yml', '/etc/ansible/roles/org-eu-glas.common-etckeeper/meta/main.yml'], skip=true) }}"
   roles:
     # Most of the roles below are not distributed with the playbook, but downloaded separately using `ansible-galaxy` via the `just roles` command (see `justfile`).
-    - role: playbook_help
+    - role: galaxy/playbook_help
       tags:
         - setup-all
         - install-all
 
-    - role: systemd_docker_base
+    - role: galaxy/systemd_docker_base
 
     - role: custom/matrix_playbook_migration
 
     - when: matrix_playbook_docker_installation_enabled | bool
-      role: docker
+      role: galaxy/docker
       vars:
         docker_install_compose: false
         docker_install_compose_plugin: false
@@ -41,7 +41,7 @@
         - install-all
 
     - when: devture_docker_sdk_for_python_installation_enabled | bool
-      role: docker_sdk_for_python
+      role: galaxy/docker_sdk_for_python
       tags:
         - setup-docker
         - setup-all
@@ -49,7 +49,7 @@
         - install-all
 
     - when: devture_timesync_installation_enabled | bool
-      role: timesync
+      role: galaxy/timesync
       tags:
         - setup-timesync
         - setup-all
@@ -58,19 +58,12 @@
 
     - custom/matrix-base
     - custom/matrix-dynamic-dns
-    - exim_relay
+    - galaxy/exim_relay
 
-    - role: postgres
-      apply:
-        tags:
-            - setup-all
-            - setup-postgres
-            - install-all
-            - install-postgres
-            - "{% if server_path_postgres_dump is defined %}import-postgres{% endif %}"
+    - role: galaxy/postgres
 
-    - redis
-    - keydb
+    - galaxy/redis
+    - galaxy/keydb
     - custom/matrix-corporal
     - custom/matrix-appservice-draupnir-for-all
     - custom/matrix-alertmanager-receiver
@@ -124,56 +117,57 @@
     - custom/matrix-dendrite
     - custom/matrix-conduit
     - custom/matrix-synapse-admin
-    - prometheus_node_exporter
-    - prometheus_postgres_exporter
+    - custom/matrix-synapse-usage-exporter
+    - galaxy/prometheus_node_exporter
+    - galaxy/prometheus_postgres_exporter
     - custom/matrix-prometheus-nginxlog-exporter
-    - prometheus
-    - grafana
+    - galaxy/prometheus
+    - galaxy/grafana
     - custom/matrix-prometheus-services-connect
     - custom/matrix-registration
     - custom/matrix-client-element
     - custom/matrix-client-hydrogen
     - custom/matrix-client-cinny
     - custom/matrix-client-schildichat
-    - jitsi
+    - galaxy/jitsi
     - custom/matrix-user-verification-service
     - custom/matrix-ldap-registration-proxy
     - custom/matrix-ma1sd
     - custom/matrix-dimension
-    - etherpad
+    - galaxy/etherpad
     - custom/matrix-sliding-sync
     - custom/matrix-email2matrix
     - custom/matrix-sygnal
-    - ntfy
+    - galaxy/ntfy
     - custom/matrix-static-files
     - custom/matrix-coturn
     - custom/matrix-media-repo
     - custom/matrix-pantalaimon
 
-    - role: postgres_backup
+    - role: galaxy/postgres_backup
 
-    - role: backup_borg
+    - role: galaxy/backup_borg
 
     - custom/matrix-user-creator
     - custom/matrix-common-after
 
-    - role: container_socket_proxy
+    - role: galaxy/container_socket_proxy
 
-    - role: traefik
+    - role: galaxy/traefik
 
-    - role: traefik_certs_dumper
+    - role: galaxy/traefik_certs_dumper
 
-    - role: auxiliary
+    - role: galaxy/auxiliary
 
     - when: devture_systemd_service_manager_enabled | bool
-      role: systemd_service_manager
+      role: galaxy/systemd_service_manager
 
     # This is pretty much last, because we want it to better serve as a "last known good configuration".
     # See: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/2217#issuecomment-1301487601
     - when: devture_playbook_state_preserver_enabled | bool
-      role: playbook_state_preserver
+      role: galaxy/playbook_state_preserver
       tags:
         - setup-all
         - install-all
 
-    - role: playbook_runtime_messages
+    - role: galaxy/playbook_runtime_messages

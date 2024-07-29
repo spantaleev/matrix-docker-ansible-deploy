@@ -6,6 +6,7 @@ traefik.docker.network={{ matrix_media_repo_container_labels_traefik_docker_netw
 {% endif %}
 
 traefik.http.services.matrix-media-repo.loadbalancer.server.port={{ matrix_media_repo_port }}
+traefik.http.services.matrix-media-repo-metrics.loadbalancer.server.port={{ matrix_media_repo_metrics_port }}
 
 {% set middlewares = [] %}
 
@@ -242,6 +243,43 @@ traefik.http.routers.matrix-media-repo-public-t2bot.tls.certResolver={{ matrix_m
 ############################################################
 {% endif %}
 
+
+{% if matrix_media_repo_container_labels_traefik_metrics_enabled %}
+############################################################
+#                                                          #
+# Metrics                                                  #
+#                                                          #
+############################################################
+
+{% set metricsMiddlewares = ['matrix-media-repo-metrics-replace-path'] %}
+traefik.http.middlewares.matrix-media-repo-metrics-replace-path.replacepath.path=/metrics
+
+{% if matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_enabled %}
+{% set metricsMiddlewares = metricsMiddlewares + ['matrix-media-repo-metrics-basic-auth'] %}
+traefik.http.middlewares.matrix-media-repo-metrics-basic-auth.basicauth.users={{ matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_users }}
+{% endif %}
+
+traefik.http.routers.matrix-media-repo-metrics.rule={{ matrix_media_repo_container_labels_traefik_metrics_rule }}
+traefik.http.routers.matrix-media-repo-metrics.middlewares={{ metricsMiddlewares | join(',') }}
+
+{% if matrix_media_repo_container_labels_traefik_metrics_priority | int > 0 %}
+traefik.http.routers.matrix-media-repo-metrics.priority={{ matrix_media_repo_container_labels_traefik_metrics_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-media-repo-metrics.service=matrix-media-repo-metrics
+traefik.http.routers.matrix-media-repo-metrics.entrypoints={{ matrix_media_repo_container_labels_traefik_metrics_entrypoints }}
+
+traefik.http.routers.matrix-media-repo-metrics.tls={{ matrix_media_repo_container_labels_traefik_metrics_tls | to_json }}
+{% if matrix_media_repo_container_labels_traefik_metrics_tls %}
+traefik.http.routers.matrix-media-repo-metrics.tls.certResolver={{ matrix_media_repo_container_labels_traefik_metrics_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Metrics                                                 #
+#                                                          #
+############################################################
+{% endif %}
 
 {% if matrix_media_repo_homeserver_federation_enabled %}
 # Matrix Federation
