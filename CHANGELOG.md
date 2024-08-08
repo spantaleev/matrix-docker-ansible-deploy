@@ -1,3 +1,17 @@
+# 2024-08-08
+
+## (Backward Compatibility Break) matrix-corporal has been upgraded to v3
+
+The playbook now installs [matrix-corporal](https://github.com/devture/matrix-corporal) v3.0.0, which brings support for **power-level management** (thanks to [this PR](https://github.com/devture/matrix-corporal/pull/32)).
+
+This upgrade necessitates configuration policy changes as described in [matrix-corporal's changelog entry](https://github.com/devture/matrix-corporal/blob/5287cb81c82cd3b951c2a099b4697c3e0b384559/CHANGELOG.md#version-300-2024-08-08).
+
+If you'd like to remain on the old (v2) version of matrix-corporal, you can do so by adding the following configuration to your `vars.yml` file:
+
+```yml
+matrix_corporal_version: 2.8.0
+```
+
 # 2024-07-25
 
 ## synapse-usage-exporter support
