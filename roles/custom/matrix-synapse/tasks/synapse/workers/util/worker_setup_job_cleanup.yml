@@ -1,0 +1,36 @@
+---
+
+# Clean up Ansible controller temp files as a result of spawning async tasks
+- name: Check job status for configuration file {{ matrix_synapse_worker_template_job_status.result.name }}
+  ansible.builtin.async_status:
+    jid: "{{ matrix_synapse_worker_template_job_status.result.configuration.ansible_job_id }}"
+  register: configuration_status
+  until: configuration_status.finished
+  retries: 60
+  delay: 1
+  delegate_to: localhost
+  become: false
+
+- name: Check job status for service file {{ matrix_synapse_worker_template_job_status.result.name }}
+  ansible.builtin.async_status:
+    jid: "{{ matrix_synapse_worker_template_job_status.result.service.ansible_job_id }}"
+  register: service_status
+  until: service_status.finished
+  retries: 60
+  delay: 1
+  delegate_to: localhost
+  become: false
+
+- name: Cleanup job result for configuration file
+  ansible.builtin.async_status:
+    jid: "{{ matrix_synapse_worker_template_job_status.result.configuration.ansible_job_id }}"
+    mode: "cleanup"
+  delegate_to: localhost
+  become: false
+
+- name: Cleanup job result for service file
+  ansible.builtin.async_status:
+    jid: "{{ matrix_synapse_worker_template_job_status.result.service.ansible_job_id }}"
+    mode: "cleanup"
+  delegate_to: localhost
+  become: false
