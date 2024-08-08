@@ -19,11 +19,20 @@ matrix_bot_draupnir_config_path: "{{ matrix_bot_draupnir_base_path }}/config"
 matrix_bot_draupnir_data_path: "{{ matrix_bot_draupnir_base_path }}/data"
 matrix_bot_draupnir_docker_src_files_path: "{{ matrix_bot_draupnir_base_path }}/docker-src"
 
+matrix_bot_draupnir_abuse_reporting_enabled: false
+matrix_bot_draupnir_web_enabled: "{{ matrix_bot_draupnir_abuse_reporting_enabled }}"
+matrix_bot_draupnir_display_reports: "{{ matrix_bot_draupnir_abuse_reporting_enabled }}"
+
 matrix_bot_draupnir_container_network: ""
 
 matrix_bot_draupnir_container_additional_networks: "{{ matrix_bot_draupnir_container_additional_networks_auto + matrix_bot_draupnir_container_additional_networks_custom }}"
 matrix_bot_draupnir_container_additional_networks_auto: []
 matrix_bot_draupnir_container_additional_networks_custom: []
+
+# Controls whether the matrix-bot-draupnir container exposes its HTTP port (tcp/80 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8766"), or empty string to not expose.
+matrix_bot_draupnir_container_http_host_bind_port: ''
 
 # A list of extra arguments to pass to the container
 matrix_bot_draupnir_container_extra_arguments: []
@@ -96,3 +105,25 @@ matrix_bot_draupnir_configuration_extension: "{{ matrix_bot_draupnir_configurati
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_bot_draupnir_configuration_yaml`.
 matrix_bot_draupnir_configuration: "{{ matrix_bot_draupnir_configuration_yaml | from_yaml | combine(matrix_bot_draupnir_configuration_extension, recursive=True) }}"
+
+# Controls whether labels will be added that redirect the /_matrix/client/../rooms/../report paths to draupnir
+# Following these recommendations (https://github.com/element-hq/synapse/blob/master/docs/reverse_proxy.md), by default, we don't.
+# Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
+# See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
+matrix_bot_draupnir_container_labels_traefik_enabled: false
+matrix_bot_draupnir_container_labels_traefik_docker_network: "{{ matrix_draupnir_bot_container_network }}"
+matrix_bot_draupnir_container_labels_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
+matrix_bot_draupnir_container_labels_traefik_path_regexp: "^/_matrix/client/(r0|v3)/rooms/([^/]*)/report/"
+matrix_bot_draupnir_container_labels_traefik_rule: "Host(`{{ matrix_bot_draupnir_container_labels_traefik_hostname }}`) && PathRegexp(`{{ matrix_bot_draupnir_container_labels_traefik_path_regexp }}`)"
+matrix_bot_draupnir_container_labels_traefik_priority: 0
+matrix_bot_draupnir_container_labels_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
+matrix_bot_draupnir_container_labels_traefik_tls: "{{ matrix_bot_draupnir_container_labels_traefik_entrypoints != 'web' }}"
+matrix_bot_draupnir_container_labels_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+# matrix_bot_draupnir_container_labels_traefik_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_bot_draupnir_container_labels_traefik_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_bot_draupnir_container_labels_traefik_labels_additional_labels: ''

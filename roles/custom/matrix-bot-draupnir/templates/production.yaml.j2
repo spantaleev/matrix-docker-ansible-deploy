@@ -227,32 +227,29 @@ health:
     # Defaults to 418.
     unhealthyStatus: 418
 
+{% if matrix_bot_draupnir_web_enabled %}
 # Options for exposing web APIs.
-#web:
-#  # Whether to enable web APIs.
-#  enabled: false
-#
-#  # The port to expose the webserver on. Defaults to 8080.
-#  port: 8080
-#
-#  # The address to listen for requests on. Defaults to only the current
-#  # computer.
-#  address: localhost
-#
-#  # Alternative setting to open to the entire web. Be careful,
-#  # as this will increase your security perimeter:
-#  #
-#  #  address: "0.0.0.0"
-#
-#  # A web API designed to intercept Matrix API
-#  # POST /_matrix/client/r0/rooms/{roomId}/report/{eventId}
-#  # and display readable abuse reports in the moderation room.
-#  #
-#  # If you wish to take advantage of this feature, you will need
-#  # to configure a reverse proxy, see e.g. test/nginx.conf
-#  abuseReporting:
-#    # Whether to enable this feature.
-#    enabled: false
+web:
+  # Whether to enable web APIs.
+  enabled: true
+
+  # The port to expose the webserver on. Defaults to 8080.
+  port: 8080
+
+  # The address to listen for requests on. Defaults to only the current
+  # computer.
+  address: 0.0.0.0
+
+  # A web API designed to intercept Matrix API
+  # POST /_matrix/client/r0/rooms/{roomId}/report/{eventId}
+  # and display readable abuse reports in the moderation room.
+  #
+  # If you wish to take advantage of this feature, you will need
+  # to configure a reverse proxy, see e.g. test/nginx.conf
+  abuseReporting:
+    # Whether to enable this feature.
+    enabled: {{ matrix_bot_draupnir_abuse_reporting_enabled | to_json }}
+{% endif %}
 
 # Whether or not to actively poll synapse for abuse reports, to be used
 # instead of intercepting client calls to synapse's abuse endpoint, when that
@@ -261,4 +258,4 @@ pollReports: false
 
 # Whether or not new reports, received either by webapi or polling,
 # should be printed to our managementRoom.
-displayReports: false
+displayReports: {{ matrix_bot_draupnir_display_reports | to_json }}
