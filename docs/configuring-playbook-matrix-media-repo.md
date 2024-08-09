@@ -27,8 +27,6 @@ The repo is pre-configured for integrating with the Postgres database, Traefik p
 
 By default, the media-repo will use the local filesystem for data storage. You can alternatively use a `s3` cloud backend as well. Access token caching is also enabled by default since the logout endpoints are proxied through the media repo.
 
-**Note:** If you want to use authenticated media endpoints ([MSC3916](https://github.com/matrix-org/matrix-spec-proposals/pull/3916)), you must configure a signing key for your MMR instance to authorize outbound federation requests. See https://docs.t2bot.io/matrix-media-repo/v1.3.5/installation/signing-key/ for more details on how to configure your server with a signing key.
-
 ## Configuring the media-repo
 
 Additional common configuration options:

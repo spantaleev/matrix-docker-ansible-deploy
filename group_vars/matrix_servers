@@ -3642,6 +3642,11 @@ matrix_media_repo_systemd_required_services_list_auto: |
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled and matrix_media_repo_database_hostname == devture_postgres_connection_hostname else [])
   }}
 
+matrix_media_repo_generate_signing_key: "{{ matrix_homeserver_implementation == 'synapse' or matrix_homeserver_implementation == 'dendrite'}}"
+matrix_media_repo_homeserver_signing_key: "{{ matrix_media_repo_synapse_signing_key if matrix_homeserver_implementation == 'synapse' else (matrix_media_repo_dendrite_signing_key if matrix_homeserver_implementation == 'dendrite' else '') }}"
+matrix_media_repo_synapse_signing_key: "{{ matrix_synapse_config_dir_path }}/{{ matrix_server_fqn_matrix }}.signing.key"
+matrix_media_repo_dendrite_signing_key: "{{ matrix_dendrite_config_dir_path }}/{{ matrix_server_fqn_matrix }}.signing.pem"
+
 # Auto configured server setup by the playbook
 matrix_media_repo_homeservers_auto:
   -  # Keep the dash from this line.
@@ -3666,7 +3671,7 @@ matrix_media_repo_homeservers_auto:
     # The signing key to use for authorizing outbound federation requests. If not specified,
     # requests will not be authorized. See https://docs.t2bot.io/matrix-media-repo/v1.3.5/installation/signing-key/
     # for details.
-    signingKeyPath: ""
+    signingKeyPath: "{{ '/config/' + matrix_media_repo_identifier + '.signing.key' if matrix_media_repo_generate_signing_key else '' }}"
 
 matrix_media_repo_homeserver_federation_enabled: "{{ matrix_homeserver_federation_enabled }}"
 
