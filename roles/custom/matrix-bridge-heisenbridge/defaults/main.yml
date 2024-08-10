@@ -4,6 +4,10 @@
 
 matrix_heisenbridge_enabled: true
 
+matrix_heisenbridge_scheme: https
+matrix_heisenbridge_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_heisenbridge_path_prefix: "/heisenbridge"
+
 # renovate: datasource=docker depName=hif1/heisenbridge
 matrix_heisenbridge_version: 1.15.0
 matrix_heisenbridge_docker_image: "{{ matrix_container_global_registry_prefix }}hif1/heisenbridge:{{ matrix_heisenbridge_version }}"
@@ -27,6 +31,37 @@ matrix_heisenbridge_container_additional_networks_custom: []
 # We use a small value here, because this container does not seem to handle the SIGTERM signal.
 matrix_heisenbridge_container_stop_grace_time_seconds: 1
 
+# matrix_heisenbridge_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_heisenbridge_container_labels_additional_labels`.
+matrix_heisenbridge_container_labels_traefik_enabled: true
+matrix_heisenbridge_container_labels_traefik_docker_network: "{{ matrix_heisenbridge_container_network }}"
+matrix_heisenbridge_container_labels_traefik_hostname: "{{ matrix_heisenbridge_hostname }}"
+matrix_heisenbridge_container_labels_traefik_path_prefix: "{{ matrix_heisenbridge_path_prefix }}"
+matrix_heisenbridge_container_labels_traefik_entrypoints: web-secure
+matrix_heisenbridge_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls if the media router is enabled
+matrix_heisenbridge_container_labels_traefik_media_enabled: true
+matrix_heisenbridge_container_labels_traefik_media_hostname: "{{ matrix_heisenbridge_container_labels_traefik_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/heisenbridge`).
+matrix_heisenbridge_container_labels_traefik_media_path_prefix: "{{ '/_heisenbridge/media' if matrix_heisenbridge_container_labels_traefik_path_prefix == '/' else (matrix_heisenbridge_container_labels_traefik_path_prefix + '/_heisenbridge/media') }}"
+matrix_heisenbridge_container_labels_traefik_media_rule: "Host(`{{ matrix_heisenbridge_container_labels_traefik_media_hostname }}`){% if matrix_heisenbridge_container_labels_traefik_media_path_prefix != '/' %} && PathPrefix(`{{ matrix_heisenbridge_container_labels_traefik_media_path_prefix }}`){% endif %}"
+matrix_heisenbridge_container_labels_traefik_media_priority: 0
+matrix_heisenbridge_container_labels_traefik_media_entrypoints: "{{ matrix_heisenbridge_container_labels_traefik_entrypoints }}"
+matrix_heisenbridge_container_labels_traefik_media_tls: "{{ matrix_heisenbridge_container_labels_traefik_media_entrypoints != 'web' }}"
+matrix_heisenbridge_container_labels_traefik_media_tls_certResolver: "{{ matrix_heisenbridge_container_labels_traefik_tls_certResolver }}"
+
+# matrix_heisenbridge_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_heisenbridge_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_heisenbridge_container_labels_additional_labels: ''
+
 # A list of extra arguments to pass to the container
 matrix_heisenbridge_container_extra_arguments: []
 
@@ -44,11 +79,20 @@ matrix_heisenbridge_homeserver_url: ""
 matrix_heisenbridge_appservice_token: ''
 matrix_heisenbridge_homeserver_token: ''
 
-matrix_heisenbridge_config_media_url: "{{ matrix_homeserver_url }}"
+# In light of Synapse sunsetting unauthenticated media, we'd like to move to Heisenbridge's media proxy,
+# announced here: https://github.com/hifi/heisenbridge/releases/tag/v1.15.0
+#
+# It seems like the media proxy is not working as expected, so we're disabling it for now and falling back to our old media URL (pointing Heisenbridge to the homeserver URL).
+# Right now, Heisenbridge is still generating URLs like `{media_url}/_matrix/media/v3/download/DOMAIN/FILE_ID/FILE_NAME`,
+# so pointing `media_url` to the homeserver is a good fit.
+# matrix_heisenbridge_config_media_url: "{{ matrix_heisenbridge_scheme }}://{{ matrix_heisenbridge_hostname }}{{ matrix_heisenbridge_path_prefix }}"
+matrix_heisenbridge_config_media_url: "{{ matrix_heisenbridge_scheme }}://{{ matrix_heisenbridge_hostname }}"
+matrix_heisenbridge_config_media_key: "{{ matrix_heisenbridge_homeserver_token }}"
 matrix_heisenbridge_config_displayname: "Heisenbridge"
 
 matrix_heisenbridge_registration_yaml_heisenbridge:
   media_url: "{{ matrix_heisenbridge_config_media_url }}"
+  media_key: "{{ matrix_heisenbridge_config_media_key }}"
   displayname: "{{ matrix_heisenbridge_config_displayname }}"
 
 # Default registration file consumed by both the homeserver and Heisenbridge.

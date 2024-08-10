@@ -27,6 +27,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			-p 113:13113 \
 			{% endif %}
 			--mount type=bind,src={{ matrix_heisenbridge_base_path }},dst=/config \
+			--label-file={{ matrix_heisenbridge_base_path }}/labels \
 			{% for arg in matrix_heisenbridge_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

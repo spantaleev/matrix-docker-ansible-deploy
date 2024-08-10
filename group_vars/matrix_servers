@@ -1934,6 +1934,8 @@ matrix_sms_bridge_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_
 # We don't enable bridges by default.
 matrix_heisenbridge_enabled: false
 
+matrix_heisenbridge_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+
 matrix_heisenbridge_systemd_required_services_list_auto: |
   {{
     matrix_addons_homeserver_systemd_services_list
@@ -1943,8 +1945,17 @@ matrix_heisenbridge_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_heisenbridge_container_additional_networks_auto: |-
   {{
-    ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+    (
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+      +
+      [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_heisenbridge_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else []
+    ) | unique
   }}
+
+matrix_heisenbridge_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_heisenbridge_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_heisenbridge_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
+matrix_heisenbridge_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
 matrix_heisenbridge_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'heisen.as.tok', rounds=655555) | to_uuid }}"
 

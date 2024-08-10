@@ -22,6 +22,8 @@ matrix_heisenbridge_owner: "@you:your-homeserver"
 matrix_heisenbridge_identd_enabled: true
 ```
 
+By default, Heisenbrdige would be exposed on the Matrix domain (`matrix.DOMAIN`, as specified in `matrix_server_fqn_matrix`) under the `/heisenbridge` path prefix. It would handle media requests there (see the [release notes for Heisenbridge v1.15.0](https://github.com/hifi/heisenbridge/releases/tag/v1.15.0)).
+
 That's it! A registration file is automatically generated during the setup phase.
 
 Setting the owner is optional as the first local user to DM `@heisenbridge:your-homeserver` will be made the owner.
