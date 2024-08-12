@@ -1,0 +1,47 @@
+#jinja2: lstrip_blocks: "True"
+#!/bin/bash
+
+# this script is used to workaround the https://github.com/matrix-org/rust-synapse-compress-state/issues/78,
+# and it is based on postgres' cli-non-interactive and https://github.com/matrix-org/rust-synapse-compress-state/issues/78#issuecomment-1409932869
+
+docker run \
+	--rm \
+	--user={{ matrix_synapse_auto_compressor_uid }}:{{ matrix_synapse_auto_compressor_gid }} \
+	--cap-drop=ALL \
+	--interactive \
+	--network={{ matrix_synapse_auto_compressor_container_network }} \
+	--env-file={{ matrix_synapse_auto_compressor_base_path }}/env \
+	{{ matrix_synapse_auto_compressor_postgres_image }} \
+	psql -h {{ matrix_synapse_auto_compressor_database_hostname }} \
+	<<_EOF
+BEGIN;
+
+DELETE
+FROM state_compressor_state AS scs
+WHERE NOT EXISTS
+    (SELECT *
+     FROM rooms AS r
+     WHERE r.room_id = scs.room_id);
+
+DELETE
+FROM state_compressor_state AS scs
+WHERE scs.room_id in
+    (SELECT DISTINCT room_id
+     FROM state_compressor_state AS scs2
+     WHERE scs2.current_head IS NOT NULL
+       AND NOT EXISTS
+         (SELECT *
+          FROM state_groups AS sg
+          WHERE sg.id = scs2.current_head));
+
+DELETE
+FROM state_compressor_progress AS scp
+WHERE NOT EXISTS
+    (SELECT *
+     FROM state_compressor_state AS scs
+     WHERE scs.room_id = scp.room_id);
+
+COMMIT;
+_EOF
+
+# vim: ft=sh
