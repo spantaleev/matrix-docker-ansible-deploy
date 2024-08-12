@@ -20,7 +20,7 @@ update *flags: update-playbook-only
         echo {{ if flags == "" { "Installing roles pinned in requirements.yml..." } else if flags == "-u" { "Updating roles and pinning new versions in requirements.yml..." } else { "Unknown flags passed" } }}
         agru {{ flags }}
     else
-        echo "[NOTE] You are using the standard ansible-galaxy tool to install roles, which is slow and lacks other features. We recommend installing the 'agru' tool to speed up the process: https://gitlab.com/etke.cc/tools/agru#where-to-get"
+        echo "[NOTE] You are using the standard ansible-galaxy tool to install roles, which is slow and lacks other features. We recommend installing the 'agru' tool to speed up the process: https://github.com/etkecc/agru#where-to-get"
         echo "Installing roles..."
         rm -rf roles/galaxy
         ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force
