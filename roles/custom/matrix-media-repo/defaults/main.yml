@@ -319,6 +319,13 @@ matrix_media_repo_homeservers_auto: []
 # Additional servers to be managed by MMR
 matrix_media_repo_homeservers_additional: []
 
+# If true, the playbook will generate a signing key when the setup role is invoked.
+matrix_media_repo_generate_signing_key: "{{ matrix_homeserver_implementation == 'synapse' or matrix_homeserver_implementation == 'dendrite' }}"
+
+# Path where the homeserver signing key is located. Set automatically in
+# `group_vars/matrix_servers` depending on which homeserver is being used.
+matrix_media_repo_homeserver_signing_key: ""
+
 # Options for controlling how access tokens work with the media repo. It is recommended that if
 # you are going to use these options that the `/logout` and `/logout/all` client-server endpoints
 # be proxied through this process. They will also be called on the homeserver, and the response

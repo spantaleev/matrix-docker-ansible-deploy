@@ -96,8 +96,8 @@
           --workdir='/config'
           --entrypoint='generate_signing_key'
           {{ matrix_media_repo_docker_image }}
-          -output {{ matrix_media_repo_identifier }}.signing.key
-        creates: "{{ matrix_media_repo_config_path }}/{{ matrix_media_repo_identifier }}.signing.key"
+          -output {{ matrix_media_repo_identifier }}.signing.key.TEMP
+        creates: "{{ matrix_media_repo_config_path }}/{{ matrix_media_repo_identifier }}.signing.key.TEMP"
 
     - name: Merge media-repo signing key with homeserver signing key
       ansible.builtin.command:
@@ -108,12 +108,12 @@
           --user={{ matrix_synapse_uid }}:{{ matrix_synapse_gid }}
           --cap-drop=ALL
           --mount type=bind,src={{ matrix_media_repo_config_path }},dst=/config
-          --mount type=bind,src={{ matrix_base_data_path }},dst=/matrix
+          --mount type=bind,src={{ matrix_media_repo_homeserver_signing_key | dirname }},dst=/homeserver-signing-key-dir
           --workdir='/config'
           --entrypoint='combine_signing_keys'
           {{ matrix_media_repo_docker_image }}
-          -format {{ matrix_homeserver_implementation }} -output {{ matrix_media_repo_homeserver_signing_key }}.merged {{ matrix_media_repo_homeserver_signing_key }} {{ matrix_media_repo_identifier }}.signing.key
-        creates: "{{ matrix_media_repo_homeserver_signing_key }}."
+          -format {{ matrix_homeserver_implementation }} -output /homeserver-signing-key-dir/{{ matrix_media_repo_homeserver_signing_key | basename }}.merged /homeserver-signing-key-dir/{{ matrix_media_repo_homeserver_signing_key | basename }} {{ matrix_media_repo_identifier }}.signing.key.TEMP
+        creates: "{{ matrix_media_repo_homeserver_signing_key }}.merged"
 
     - name: Backup existing homeserver signing key before replacing it
       ansible.builtin.copy:
@@ -128,6 +128,11 @@
       ansible.builtin.command:
         cmd: "mv {{ matrix_media_repo_homeserver_signing_key }}.merged {{ matrix_media_repo_homeserver_signing_key }}"
         removes: "{{ matrix_media_repo_homeserver_signing_key }}.merged"
+
+    - name: Finalize media-repo signing key setup
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_media_repo_config_path }}/{{ matrix_media_repo_identifier }}.signing.key.TEMP {{ matrix_media_repo_config_path }}/{{ matrix_media_repo_identifier }}.signing.key"
+        removes: "{{ matrix_media_repo_config_path }}/{{ matrix_media_repo_identifier }}.signing.key.TEMP"
 
 - name: Ensure media-repo container network is created
   community.general.docker_network:
