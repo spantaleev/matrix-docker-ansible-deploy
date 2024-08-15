@@ -27,8 +27,6 @@ The repo is pre-configured for integrating with the Postgres database, Traefik p
 
 By default, the media-repo will use the local filesystem for data storage. You can alternatively use a `s3` cloud backend as well. Access token caching is also enabled by default since the logout endpoints are proxied through the media repo.
 
-**Note:** If you want to use authenticated media endpoints ([MSC3916](https://github.com/matrix-org/matrix-spec-proposals/pull/3916)), you must configure a signing key for your MMR instance to authorize outbound federation requests. See https://docs.t2bot.io/matrix-media-repo/v1.3.5/installation/signing-key/ for more details on how to configure your server with a signing key.
-
 ## Configuring the media-repo
 
 Additional common configuration options:
@@ -90,6 +88,26 @@ matrix_media_repo_datastore_s3_opts_bucket_name: "your-media-bucket"
 ```
 
 Full list of configuration options with documentation can be found in [`roles/custom/matrix-media-repo/defaults/main.yml`](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-media-repo/defaults/main.yml)
+
+## Signing Keys
+
+Authenticated media endpoints ([MSC3916](https://github.com/matrix-org/matrix-spec-proposals/pull/3916)) requires MMR to have a configured signing key to authorize outbound federation requests. Additionally, the signing key must be merged with your homeserver's signing key file.
+
+The playbook default is to generate a MMR signing key when invoking the setup role and merge it with your homeserver if you are using Synapse or Dendrite. This can be disabled if desired by setting the option in your inventory:
+
+```yaml
+matrix_media_repo_generate_signing_key: false
+```
+
+If you wish to manually generate the signing key and merge it with your homeserver's signing key file, see https://docs.t2bot.io/matrix-media-repo/v1.3.5/installation/signing-key/ for more details.
+
+**Note that if you uninstall MMR from the playbook, it will not remove the old MMR signing key from your homeserver's signing key file. You will have to remove it manually.**
+
+### Key backup and revoking
+
+Since your homeserver signing key file is modified by the playbook, a backup will be created in `HOMESERVER_DIR/config/DOMAIN.signing.key.backup`. If you need to remove/revoke old keys, you can restore from this backup or remove the MMR key id from your `DOMAIN.signing.key` file.
+
+Additionally, its recommended after revoking a signing key to update your homeserver config file (`old_signing_keys` field for Synapse and `old_private_keys` for Dendrite). See your homeserver config file for further documentation on how to populate the field.
 
 ## Importing data from an existing media store
 
