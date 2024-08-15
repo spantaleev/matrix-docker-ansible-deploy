@@ -98,3 +98,29 @@ aux_file_definitions:
               certFile: /ssl/cert.pem
               keyFile: /ssl/privkey.pem
 ```
+
+## Using a DNS-01 ACME challenge type, instead of HTTP-01
+
+You can configure Traefik to use the [DNS-01 challenge type](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge) for Let's Encrypt. This is less commonly used than the default [HTTP-01 challenge type](https://letsencrypt.org/docs/challenge-types/#http-01-challenge), but it can be helpful to:
+
+- hide your public IP from Let's Encrypt logs
+- allow you to obtain SSL certificates for servers which are not accessible (via HTTP) from the public internet (and for which the HTTP-01 challenge would fail)
+
+This is an example for how to edit the `vars.yml` file if you're using Cloudflare:
+
+```yaml
+devture_traefik_config_certificatesResolvers_acme_dnsChallenge_enabled: true
+devture_traefik_config_certificatesResolvers_acme_dnsChallenge_provider: "cloudflare"
+devture_traefik_config_certificatesResolvers_acme_dnsChallenge_delayBeforeCheck: 60
+devture_traefik_config_certificatesResolvers_acme_dnsChallenge_resolvers:
+  - "1.1.1.1:53"
+devture_traefik_environment_variables_additional_variables: |
+  CF_API_EMAIL=redacted
+  CF_ZONE_API_TOKEN=redacted
+  CF_DNS_API_TOKEN=redacted
+  LEGO_DISABLE_CNAME_SUPPORT=true
+```
+
+Make sure to change the value of "provider" to your particular DNS solution, and provide the appropriate environment variables. The full list of supported providers is available [here](https://doc.traefik.io/traefik/https/acme/#providers).
+
+This example assumes you're using Cloudflare to manage your DNS zone. Note that it requires the use of two tokens: one for reading all zones (`CF_ZONE_API_TOKEN`) and another that must be able to edit the particular domain you're using (`CF_DNS_API_TOKEN`). For security, it's recommended that you create two fine-grained tokens for this purpose, but you might choose to use the same token for both.
