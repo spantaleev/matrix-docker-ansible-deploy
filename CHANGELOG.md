@@ -1,3 +1,16 @@
+# 2024-08-15
+
+## matrix-media-repo now configured for Authenticated Media
+
+Thanks to [Michael Hollister](https://github.com/Michael-Hollister) from [FUTO](https://www.futo.org/), our matrix-media-repo implementation now automatically [sets up signing keys](https://docs.t2bot.io/matrix-media-repo/v1.3.5/installation/signing-key/) for Authenticated Media (as per [MSC3916](https://github.com/matrix-org/matrix-spec-proposals/pull/3916)).
+
+If you had never heard of Authenticated Media before, the [Sunsetting unauthenticated media](https://matrix.org/blog/2024/06/26/sunsetting-unauthenticated-media/) article on [matrix.org](https://matrix.org/) is a good introduction.
+
+This feature is enabled for matrix-media-repo installations by default and will append an additional (matrix-media-repo-generated signing key) to your homeserver's (Synapse or Dendrite) signing key. See the [Signing keys](./docs/configuring-playbook-matrix-media-repo.md#signing-keys) and [Key backup and revoking](./docs/configuring-playbook-matrix-media-repo.md#key-backup-and-revoking) sections of the matrix-media-repo documentation for more details.
+
+If you'd like to avoid this new feature, you can disable it by setting `matrix_media_repo_generate_signing_key: false` in your `vars.yml` configuration file.
+
+
 # 2024-08-08
 
 ## (Backward Compatibility Break) matrix-corporal has been upgraded to v3
