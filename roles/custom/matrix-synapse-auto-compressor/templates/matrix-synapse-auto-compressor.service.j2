@@ -15,6 +15,7 @@ Type=oneshot
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-synapse-auto-compressor 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-synapse-auto-compressor 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} {{ matrix_synapse_auto_compressor_base_path }}/matrix-synapse-auto-compressor-fix.sh
 
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--rm \
@@ -22,7 +23,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--log-driver=none \
 			--cap-drop=ALL \
 			--read-only \
-			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--user={{ matrix_synapse_auto_compressor_uid }}:{{ matrix_synapse_auto_compressor_gid }} \
 			--network={{ matrix_synapse_auto_compressor_container_network }} \
 			--env-file={{ matrix_synapse_auto_compressor_base_path }}/env \
 			--entrypoint=/bin/sh \
