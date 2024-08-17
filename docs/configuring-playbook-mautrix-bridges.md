@@ -96,18 +96,13 @@ You may wish to look at `roles/custom/matrix-bridge-mautrix-SERVICENAME/template
 
 ## Set up Double Puppeting
 
-To set up  [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html)
-
-please do so automatically, by enabling Shared Secret Auth
+To set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) enable the [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
 
 The bridge will automatically perform Double Puppeting if you enable [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) for this playbook by adding
 
 ```yaml
-matrix_synapse_ext_password_provider_shared_secret_auth_enabled: true
-matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret: YOUR_SHARED_SECRET_GOES_HERE
+matrix_appservice_double_puppet_enabled: true
 ```
-
-You should generate a strong shared secret with a command like this: pwgen -s 64 1
 
 This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
 
@@ -117,7 +112,7 @@ This is the recommended way of setting up Double Puppeting, as it's easier to ac
 matrix_mautrix_SERVICENAME_logging_level: WARN
 ```
 
-to `vars.yml` to control the logging level, where you may replace WARN with one of the following to control the verbosity of the logs generated:     TRACE, DEBUG, INFO, WARN, ERROR, or FATAL.
+to `vars.yml` to control the logging level, where you may replace WARN with one of the following to control the verbosity of the logs generated: TRACE, DEBUG, INFO, WARN, ERROR, or FATAL.
 
 If you have issues with a service, and are requesting support, the higher levels of logging will generally be more helpful.
 
