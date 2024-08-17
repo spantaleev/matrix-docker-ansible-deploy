@@ -89,6 +89,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Authentication and user-related
 
+- [Setting up Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) (optional)
+
 - [Setting up an ma1sd Identity Server](configuring-playbook-ma1sd.md) (optional)
 
 - [Setting up Synapse Admin](configuring-playbook-synapse-admin.md) (optional)

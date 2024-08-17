@@ -1,0 +1,20 @@
+---
+
+- tags:
+    - setup-all
+    - setup-appservice-double-puppet
+    - install-all
+    - install-appservice-double-puppet
+  block:
+    - when: matrix_appservice_double_puppet_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_appservice_double_puppet_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-appservice-double-puppet
+  block:
+    - when: not matrix_appservice_double_puppet_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

@@ -1,0 +1,38 @@
+matrix_appservice_double_puppet_enabled: true
+
+matrix_appservice_double_puppet_base_path: "{{ matrix_base_data_path }}/appservice-double-puppet"
+matrix_appservice_double_puppet_config_path: "{{ matrix_appservice_double_puppet_base_path }}/config"
+
+matrix_appservice_double_puppet_registration_id: double-puppet
+matrix_appservice_double_puppet_registration_url: ~
+matrix_appservice_double_puppet_registration_as_token: ''
+matrix_appservice_double_puppet_registration_hs_token: ''
+matrix_appservice_double_puppet_registration_sender_localpart: appservice-double-puppet
+
+matrix_appservice_double_puppet_registration_namespace_user_regex: "{{ '@.*:' + (matrix_domain | regex_escape) }}"
+
+# Default matrix-appservice-double-puppet registration configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_appservice_double_puppet_registration_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_appservice_double_puppet_registration_configuration_yaml: "{{ lookup('template', 'templates/registration.yaml.j2') }}"
+
+matrix_appservice_double_puppet_registration_configuration_extension_yaml: |
+  # Your custom YAML configuration for matrix-appservice-double-puppet goes here.
+  # This configuration extends the default starting configuration (`matrix_appservice_double_puppet_registration_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_appservice_double_puppet_registration_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  # rate_limited: true
+
+matrix_appservice_double_puppet_registration_configuration_extension: "{{ matrix_appservice_double_puppet_registration_configuration_extension_yaml | from_yaml if matrix_appservice_double_puppet_registration_configuration_extension_yaml | from_yaml is mapping else {} }}"
+
+# Holds the final matrix-appservice-double-puppet configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_appservice_double_puppet_registration_configuration_yaml`.
+matrix_appservice_double_puppet_registration_configuration: "{{ matrix_appservice_double_puppet_registration_configuration_yaml | from_yaml | combine(matrix_appservice_double_puppet_registration_configuration_extension, recursive=True) }}"

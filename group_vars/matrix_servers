@@ -84,6 +84,8 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_appservice_draupnir_for_all_config_path + '/draupnir-for-all-registration.yaml,dst=/matrix-appservice-draupnir-for-all-registration.yaml,ro'] if matrix_appservice_draupnir_for_all_enabled else [])
     +
+    (['--mount type=bind,src=' + matrix_appservice_double_puppet_config_path + '/registration.yaml,dst=/matrix-appservice-double-puppet-registration.yaml,ro'] if matrix_appservice_double_puppet_enabled else [])
+    +
     (['--mount type=bind,src=' + matrix_appservice_irc_config_path + '/registration.yaml,dst=/matrix-appservice-irc-registration.yaml,ro'] if matrix_appservice_irc_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_appservice_kakaotalk_config_path + '/registration.yaml,dst=/matrix-appservice-kakaotalk-registration.yaml,ro'] if matrix_appservice_kakaotalk_enabled else [])
@@ -154,6 +156,8 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-appservice-discord-registration.yaml'] if matrix_appservice_discord_enabled else [])
     +
     (['/matrix-appservice-draupnir-for-all-registration.yaml'] if matrix_appservice_draupnir_for_all_enabled else [])
+    +
+    (['/matrix-appservice-double-puppet-registration.yaml'] if matrix_appservice_double_puppet_enabled else [])
     +
     (['/matrix-appservice-irc-registration.yaml'] if matrix_appservice_irc_enabled else [])
     +
@@ -2887,6 +2891,24 @@ matrix_appservice_draupnir_for_all_database_password: "{{ '%s' | format(matrix_h
 ######################################################################
 #
 # /matrix-appservice-draupnir-for-all
+#
+######################################################################
+
+
+######################################################################
+#
+# matrix-appservice-double-puppet
+#
+######################################################################
+
+matrix_appservice_double_puppet_enabled: false
+
+matrix_appservice_double_puppet_registration_as_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.doub.pup', rounds=655555) | to_uuid }}"
+matrix_appservice_double_puppet_registration_hs_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'hs.doub.pup', rounds=655555) | to_uuid }}"
+
+######################################################################
+#
+# /matrix-appservice-double-puppet
 #
 ######################################################################
 

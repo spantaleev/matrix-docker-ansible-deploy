@@ -1,0 +1,21 @@
+# The ID doesn't really matter, put whatever you want.
+id: {{ matrix_appservice_double_puppet_registration_id | to_json }}
+# The URL is intentionally left empty (null), as the homeserver shouldn't
+# push events anywhere for this extra appservice. If you use a
+# non-spec-compliant server, you may need to put some fake URL here.
+url: {{ matrix_appservice_double_puppet_registration_url | to_json }}
+# Generate random strings for these three fields. Only the as_token really
+# matters, hs_token is never used because there's no url, and the default
+# user (sender_localpart) is never used either.
+as_token: {{ matrix_appservice_double_puppet_registration_as_token | to_json }}
+hs_token: {{ matrix_appservice_double_puppet_registration_hs_token | to_json }}
+sender_localpart: {{ matrix_appservice_double_puppet_registration_sender_localpart | to_json}}
+# Bridges don't like ratelimiting. This should only apply when using the
+# as_token, normal user tokens will still be ratelimited.
+rate_limited: false
+namespaces:
+  users:
+  # Replace your\.domain with your server name (escape dots for regex)
+  - regex: {{ matrix_appservice_double_puppet_registration_namespace_user_regex | to_json }}
+    # This must be false so the appservice doesn't take over all users completely.
+    exclusive: false
