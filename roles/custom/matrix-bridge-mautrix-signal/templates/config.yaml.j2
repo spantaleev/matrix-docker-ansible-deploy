@@ -312,15 +312,14 @@ backfill:
 double_puppet:
     # Servers to always allow double puppeting from.
     # This is only for other servers and should NOT contain the server the bridge is on.
-    servers:
-        "{{ matrix_mautrix_signal_homeserver_domain }}": {{ matrix_mautrix_signal_homeserver_address }}
+    servers: {}
     # Whether to allow client API URL discovery for other servers. When using this option,
     # users on other servers can use double puppeting even if their server URLs aren't
     # explicitly added to the servers map above.
     allow_discovery: false
     # Shared secrets for automatic double puppeting.
     # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
-    secrets: {{ matrix_mautrix_signal_bridge_login_shared_secret_map | to_json }}
+    secrets: {{ matrix_mautrix_signal_double_puppet_secrets | to_json }}
 
 # End-to-bridge encryption support options.
 #

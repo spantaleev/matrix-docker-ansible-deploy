@@ -145,14 +145,9 @@ matrix_mautrix_signal_appservice_database_uri: "{{
 	}[matrix_mautrix_signal_database_engine]
 }}"
 
-# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
-matrix_mautrix_signal_login_shared_secret: ''
-matrix_mautrix_signal_bridge_login_shared_secret_map:
-  "{{ {matrix_mautrix_signal_homeserver_domain: matrix_mautrix_signal_login_shared_secret} if matrix_mautrix_signal_login_shared_secret else {} }}"
-
-# Servers to always allow double puppeting from
-matrix_mautrix_signal_bridge_double_puppet_server_map:
-  "{{ matrix_mautrix_signal_homeserver_domain :  matrix_mautrix_signal_homeserver_address }}"
+matrix_mautrix_signal_double_puppet_secrets: "{{ matrix_mautrix_signal_double_puppet_secrets_auto | combine(matrix_mautrix_signal_double_puppet_secrets_custom) }}"
+matrix_mautrix_signal_double_puppet_secrets_auto: {}
+matrix_mautrix_signal_double_puppet_secrets_custom: {}
 
 # Default mautrix-signal configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
