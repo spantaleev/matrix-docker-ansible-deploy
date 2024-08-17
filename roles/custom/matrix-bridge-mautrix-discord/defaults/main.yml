@@ -100,10 +100,9 @@ matrix_mautrix_discord_appservice_database_uri: "{{
 	}[matrix_mautrix_discord_database_engine]
 }}"
 
-# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
-matrix_mautrix_discord_login_shared_secret: ''
-matrix_mautrix_discord_bridge_login_shared_secret_map:
-  "{{ {matrix_mautrix_discord_homeserver_domain: matrix_mautrix_discord_login_shared_secret} if matrix_mautrix_discord_login_shared_secret else {} }}"
+matrix_mautrix_discord_bridge_login_shared_secret_map: "{{ matrix_mautrix_discord_bridge_login_shared_secret_map_auto | combine(matrix_mautrix_discord_bridge_login_shared_secret_map_custom) }}"
+matrix_mautrix_discord_bridge_login_shared_secret_map_auto: {}
+matrix_mautrix_discord_bridge_login_shared_secret_map_custom: {}
 
 # Servers to always allow double puppeting from
 matrix_mautrix_discord_bridge_double_puppet_server_map:
