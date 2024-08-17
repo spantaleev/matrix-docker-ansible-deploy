@@ -1047,7 +1047,14 @@ matrix_mautrix_slack_appservice_token: "{{ '%s' | format(matrix_homeserver_gener
 matrix_mautrix_slack_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_mautrix_slack_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mauslack.hs.tok', rounds=655555) | to_uuid }}"
 
-matrix_mautrix_slack_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
+matrix_mautrix_slack_double_puppet_secrets_auto: |-
+  {{
+    {
+      matrix_mautrix_slack_homeserver_domain: ("as_token:" + matrix_appservice_double_puppet_registration_as_token)
+    }
+    if matrix_appservice_double_puppet_enabled
+    else {}
+  }}
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_mautrix_slack_database_engine: "{{ 'postgres' if devture_postgres_enabled else 'sqlite' }}"
