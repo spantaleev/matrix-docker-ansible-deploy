@@ -1,240 +1,444 @@
 #jinja2: lstrip_blocks: "True"
+# Network-specific config options
+network:
+    # Displayname template for Slack users. Available variables:
+    #  .Name - The username of the user
+    #  .Team.Name - The name of the team the channel is in
+    #  .Team.Domain - The Slack subdomain of the team the channel is in
+    #  .ID - The internal ID of the user
+    #  .IsBot - Whether the user is a bot
+    #  .Profile.DisplayName - The username or real name of the user (depending on settings)
+    # Variables only available for users (not bots):
+    #  .TeamID - The internal ID of the workspace the user is in
+    #  .TZ - The timezone region of the user (e.g. Europe/London)
+    #  .TZLabel - The label of the timezone of the user (e.g. Greenwich Mean Time)
+    #  .TZOffset - The UTC offset of the timezone of the user (e.g. 0)
+    #  .Profile.RealName - The real name of the user
+    #  .Profile.FirstName - The first name of the user
+    #  .Profile.LastName - The last name of the user
+    #  .Profile.Title - The job title of the user
+    #  .Profile.Pronouns - The pronouns of the user
+    #  .Profile.Email - The email address of the user
+    #  .Profile.Phone - The formatted phone number of the user
+    displayname_template: '{% raw %}{{or .Profile.DisplayName .Profile.RealName .Name}}{{if .IsBot}} (bot){{end}}{% endraw% %}'
+    # Channel name template for Slack channels (all types). Available variables:
+    #  .Name - The name of the channel
+    #  .Team.Name - The name of the team the channel is in
+    #  .Team.Domain - The Slack subdomain of the team the channel is in
+    #  .ID - The internal ID of the channel
+    #  .IsNoteToSelf - Whether the channel is a DM with yourself
+    #  .IsGeneral - Whether the channel is the #general channel
+    #  .IsChannel - Whether the channel is a channel (rather than a DM)
+    #  .IsPrivate - Whether the channel is private
+    #  .IsIM - Whether the channel is a one-to-one DM
+    #  .IsMpIM - Whether the channel is a group DM
+    #  .IsShared - Whether the channel is shared with another workspace.
+    #  .IsExtShared - Whether the channel is shared with an external organization.
+    #  .IsOrgShared - Whether the channel is shared with an organization in the same enterprise grid.
+    channel_name_template: '{% raw %}{{if and .IsChannel (not .IsPrivate)}}#{{end}}{{.Name}}{{if .IsNoteToSelf}} (you){{end}}{% endraw %}'
+    # Displayname template for Slack workspaces. Available variables:
+    #  .Name - The name of the team
+    #  .Domain - The Slack subdomain of the team
+    #  .ID - The internal ID of the team
+    team_name_template: "{% raw %}{{ .Name }}{% endraw %}"
+
+    # Should incoming custom emoji reactions be bridged as mxc:// URIs?
+    # If set to false, custom emoji reactions will be bridged as the shortcode instead, and the image won't be available.
+    custom_emoji_reactions: true
+    # Should channels and group DMs have the workspace icon as the Matrix room avatar?
+    workspace_avatar_in_rooms: false
+    # Number of participants to sync in channels (doesn't affect group DMs)
+    participant_sync_count: 5
+    # Should channel participants only be synced when creating the room?
+    # If you want participants to always be accurately synced, set participant_sync_count to a high value and this to false.
+    participant_sync_only_on_create: true
+    # Should channel portals be muted by default?
+    mute_channels_by_default: false
+
+    # Options for backfilling messages from Slack.
+    backfill:
+        # Number of conversations to fetch from Slack when syncing workspace.
+        # This option applies even if message backfill is disabled below.
+        # If set to -1, all chats in the client.boot response will be bridged, and nothing will be fetched separately.
+        conversation_count: -1
+
+
+# Config options that affect the central bridge module.
+bridge:
+    # The prefix for commands. Only required in non-management rooms.
+    command_prefix: {{ matrix_mautrix_slack_command_prefix | to_json }}
+    # Should the bridge create a space for each login containing the rooms that account is in?
+    personal_filtering_spaces: true
+    # Whether the bridge should set names and avatars explicitly for DM portals.
+    # This is only necessary when using clients that don't support MSC4171.
+    private_chat_portal_meta: false
+
+    # Should leaving Matrix rooms be bridged as leaving groups on the remote network?
+    bridge_matrix_leave: false
+    # Should room tags only be synced when creating the portal? Tags mean things like favorite/pin and archive/low priority.
+    # Tags currently can't be synced back to the remote network, so a continuous sync means tagging from Matrix will be undone.
+    tag_only_on_create: true
+    # Should room mute status only be synced when creating the portal?
+    # Like tags, mutes can't currently be synced back to the remote network.
+    mute_only_on_create: true
+
+    # What should be done to portal rooms when a user logs out or is logged out?
+    # Permitted values:
+    #   nothing - Do nothing, let the user stay in the portals
+    #   kick - Remove the user from the portal rooms, but don't delete them
+    #   unbridge - Remove all ghosts in the room and disassociate it from the remote chat
+    #   delete - Remove all ghosts and users from the room (i.e. delete it)
+    cleanup_on_logout:
+        # Should cleanup on logout be enabled at all?
+        enabled: false
+        # Settings for manual logouts (explicitly initiated by the Matrix user)
+        manual:
+            # Action for private portals which will never be shared with other Matrix users.
+            private: nothing
+            # Action for portals with a relay user configured.
+            relayed: nothing
+            # Action for portals which may be shared, but don't currently have any other Matrix users.
+            shared_no_users: nothing
+            # Action for portals which have other logged-in Matrix users.
+            shared_has_users: nothing
+        # Settings for credentials being invalidated (initiated by the remote network, possibly through user action).
+        # Keys have the same meanings as in the manual section.
+        bad_credentials:
+            private: nothing
+            relayed: nothing
+            shared_no_users: nothing
+            shared_has_users: nothing
+
+    # Settings for relay mode
+    relay:
+        # Whether relay mode should be allowed. If allowed, the set-relay command can be used to turn any
+        # authenticated user into a relaybot for that chat.
+        enabled: false
+        # Should only admins be allowed to set themselves as relay users?
+        # If true, non-admins can only set users listed in default_relays as relays in a room.
+        admin_only: true
+        # List of user login IDs which anyone can set as a relay, as long as the relay user is in the room.
+        default_relays: []
+        # The formats to use when sending messages via the relaybot.
+        # Available variables:
+        #   .Sender.UserID - The Matrix user ID of the sender.
+        #   .Sender.Displayname - The display name of the sender (if set).
+        #   .Sender.RequiresDisambiguation - Whether the sender's name may be confused with the name of another user in the room.
+        #   .Sender.DisambiguatedName - The disambiguated name of the sender. This will be the displayname if set,
+        #                               plus the user ID in parentheses if the displayname is not unique.
+        #                               If the displayname is not set, this is just the user ID.
+        #   .Message - The `formatted_body` field of the message.
+        #   .Caption - The `formatted_body` field of the message, if it's a caption. Otherwise an empty string.
+        #   .FileName - The name of the file being sent.
+        message_formats:
+            m.text: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b>: {{ .Message }}{% endraw %}"
+            m.notice: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b>: {{ .Message }}{% endraw %}"
+            m.emote: "{% raw %}* <b>{{ .Sender.DisambiguatedName }}</b> {{ .Message }}{% endraw %}"
+            m.file: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b> sent a file{{ if .Caption }}: {{ .Caption }}{{ end }}{% endraw %}"
+            m.image: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b> sent an image{{ if .Caption }}: {{ .Caption }}{{ end }}{% endraw %}"
+            m.audio: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b> sent an audio file{{ if .Caption }}: {{ .Caption }}{{ end }}{% endraw %}"
+            m.video: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b> sent a video{{ if .Caption }}: {{ .Caption }}{{ end }}{% endraw %}"
+            m.location: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b> sent a location{{ if .Caption }}: {{ .Caption }}{{ end }}{% endraw %}"
+        # For networks that support per-message displaynames (i.e. Slack and Discord), the template for those names.
+        # This has all the Sender variables available under message_formats (but without the .Sender prefix).
+        # Note that you need to manually remove the displayname from message_formats above.
+        displayname_format: "{% raw %}{{ .DisambiguatedName }}{% endraw %}"
+
+    # Permissions for using the bridge.
+    # Permitted values:
+    #    relay - Talk through the relaybot (if enabled), no access otherwise
+    # commands - Access to use commands in the bridge, but not login.
+    #     user - Access to use the bridge with puppeting.
+    #    admin - Full access, user level with some additional administration tools.
+    # Permitted keys:
+    #        * - All Matrix users
+    #   domain - All users on that homeserver
+    #     mxid - Specific user
+    permissions: {{ matrix_mautrix_slack_bridge_permissions | to_json }}
+
+# Config for the bridge's database.
+database:
+    # The database type. "sqlite3-fk-wal" and "postgres" are supported.
+    type: {{ matrix_mautrix_slack_appservice_database_type | to_json }}
+    # The database URI.
+    #   SQLite: A raw file path is supported, but `file:<path>?_txlock=immediate` is recommended.
+    #           https://github.com/mattn/go-sqlite3#connection-string
+    #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
+    #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
+    uri: {{ matrix_mautrix_slack_appservice_database_uri | to_json }}
+    # Maximum number of connections.
+    max_open_conns: 5
+    max_idle_conns: 1
+    # Maximum connection idle time and lifetime before they're closed. Disabled if null.
+    # Parsed with https://pkg.go.dev/time#ParseDuration
+    max_conn_idle_time: null
+    max_conn_lifetime: null
+
 # Homeserver details.
 homeserver:
     # The address that this appservice can use to connect to the homeserver.
+    # Local addresses without HTTPS are generally recommended when the bridge is running on the same machine,
+    # but https also works if they run on different machines.
     address: {{ matrix_mautrix_slack_homeserver_address | to_json }}
-    # The domain of the homeserver (for MXIDs, etc).
+    # The domain of the homeserver (also known as server_name, used for MXIDs, etc).
     domain: {{ matrix_mautrix_slack_homeserver_domain | to_json }}
 
     # What software is the homeserver running?
     # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
     software: standard
     # The URL to push real-time bridge status to.
-    # If set, the bridge will make POST requests to this URL whenever a user's slack connection state changes.
+    # If set, the bridge will make POST requests to this URL whenever a user's remote network connection state changes.
     # The bridge will use the appservice as_token to authorize requests.
-    status_endpoint: null
+    status_endpoint:
     # Endpoint for reporting per-message status.
-    message_send_checkpoint_endpoint: null
+    # If set, the bridge will make POST requests to this URL when processing a message from Matrix.
+    # It will make one request when receiving the message (step BRIDGE), one after decrypting if applicable
+    # (step DECRYPTED) and one after sending to the remote network (step REMOTE). Errors will also be reported.
+    # The bridge will use the appservice as_token to authorize requests.
+    message_send_checkpoint_endpoint:
     # Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246?
     async_media: false
 
+    # Should the bridge use a websocket for connecting to the homeserver?
+    # The server side is currently not documented anywhere and is only implemented by mautrix-wsproxy,
+    # mautrix-asmux (deprecated), and hungryserv (proprietary).
+    websocket: false
+    # How often should the websocket be pinged? Pinging will be disabled if this is zero.
+    ping_interval_seconds: 0
+
 # Application service host/registration related details.
-# Changing these values requires regeneration of the registration.
+# Changing these values requires regeneration of the registration (except when noted otherwise)
 appservice:
     # The address that the homeserver can use to connect to this appservice.
     address: {{ matrix_mautrix_slack_appservice_address | to_json }}
+    # A public address that external services can use to reach this appservice.
+    # This value doesn't affect the registration file.
+    public_address: https://bridge.example.com
 
     # The hostname and port where this appservice should listen.
+    # For Docker, you generally have to change the hostname to 0.0.0.0.
     hostname: 0.0.0.0
     port: 8080
-
-    # Database config.
-    database:
-        # The database type. "sqlite3-fk-wal" and "postgres" are supported.
-        type: {{ matrix_mautrix_slack_appservice_database_type|to_json }}
-        # The database URI.
-        #   SQLite: A raw file path is supported, but `file:<path>?_txlock=immediate` is recommended.
-        #           https://github.com/mattn/go-sqlite3#connection-string
-        #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
-        #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
-        uri: {{ matrix_mautrix_slack_appservice_database_uri|to_json }}
-        # Maximum number of connections. Mostly relevant for Postgres.
-        max_open_conns: 20
-        max_idle_conns: 2
-        # Maximum connection idle time and lifetime before they're closed. Disabled if null.
-        # Parsed with https://pkg.go.dev/time#ParseDuration
-        max_conn_idle_time: null
-        max_conn_lifetime: null
 
     # The unique ID of this appservice.
     id: slack
     # Appservice bot details.
     bot:
         # Username of the appservice bot.
-        username: {{ matrix_mautrix_slack_appservice_bot_username|to_json }}
+        username: {{ matrix_mautrix_slack_appservice_bot_username | to_json }}
         # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
         # to leave display name/avatar as-is.
         displayname: Slack bridge bot
         avatar: mxc://maunium.net/pVtzLmChZejGxLqmXtQjFxem
-    # Whether or not to receive ephemeral events via appservice transactions.
-    # Requires MSC2409 support (i.e. Synapse 1.22+).
-    # You should disable bridge -> sync_with_custom_puppets when this is enabled.
-    ephemeral_events: true
 
+    # Whether to receive ephemeral events via appservice transactions.
+    ephemeral_events: true
     # Should incoming events be handled asynchronously?
     # This may be necessary for large public instances with lots of messages going through.
     # However, messages will not be guaranteed to be bridged in the same order they were sent in.
+    # This value doesn't affect the registration file.
     async_transactions: false
 
     # Authentication tokens for AS <-> HS communication. Autogenerated; do not modify.
     as_token: {{ matrix_mautrix_slack_appservice_token | to_json }}
     hs_token: {{ matrix_mautrix_slack_homeserver_token | to_json }}
 
-# Bridge config
-bridge:
-    # Localpart template of MXIDs for Slack users.
-    # {{ '{{.}}' }} is replaced with the internal ID of the Slack user.
-    username_template: "{{ 'slack_{{.}}' }}"
-    # Displayname template for Slack users.
-    # TODO: document variables
-    displayname_template: "{{ '{{.RealName}} (S)' }}"
-    bot_displayname_template: "{{ '{{.Name}} (bot)' }}"
-    channel_name_template: "{{ '#{{.Name}} ({{.TeamName}})' }}"
+    # Localpart template of MXIDs for remote users.
+    # {% raw %}
+    # {{.}} is replaced with the internal ID of the user.
+    # {% endraw %}
+    username_template: "{% raw %}slack_{{.}}{% endraw %}"
 
-    portal_message_buffer: 128
-
-    # Should the bridge send a read receipt from the bridge bot when a message has been sent to Slack?
-    delivery_receipts: true
+# Config options that affect the Matrix connector of the bridge.
+matrix:
     # Whether the bridge should send the message status as a custom com.beeper.message_send_status event.
     message_status_events: false
+    # Whether the bridge should send a read receipt after successfully bridging a message.
+    delivery_receipts: false
     # Whether the bridge should send error notices via m.notice events when a message fails to bridge.
     message_error_notices: true
-
-    # Should the bridge sync with double puppeting to receive EDUs that aren't normally sent to appservices.
-    sync_with_custom_puppets: false
-    # Should the bridge update the m.direct account data event when double puppeting is enabled.
-    # Note that updating the m.direct event is not atomic (except with mautrix-asmux)
-    # and is therefore prone to race conditions.
+    # Whether the bridge should update the m.direct account data event when double puppeting is enabled.
     sync_direct_chat_list: false
+    # Whether created rooms should have federation enabled. If false, created portal rooms
+    # will never be federated. Changing this option requires recreating rooms.
+    federate_rooms: true
 
-    # Servers to always allow double puppeting from
-    double_puppet_server_map:
+# Settings for provisioning API
+provisioning:
+    # Prefix for the provisioning API paths.
+    prefix: /_matrix/provision
+    # Shared secret for authentication. If set to "generate" or null, a random secret will be generated,
+    # or if set to "disable", the provisioning API will be disabled.
+    shared_secret: {{ matrix_mautrix_slack_provisioning_shared_secret | to_json }}
+    # Whether to allow provisioning API requests to be authed using Matrix access tokens.
+    # This follows the same rules as double puppeting to determine which server to contact to check the token,
+    # which means that by default, it only works for users on the same server as the bridge.
+    allow_matrix_auth: true
+    # Enable debug API at /debug with provisioning authentication.
+    debug_endpoints: false
+
+# Some networks require publicly accessible media download links (e.g. for user avatars when using Discord webhooks).
+# These settings control whether the bridge will provide such public media access.
+public_media:
+    # Should public media be enabled at all?
+    # The public_address field under the appservice section MUST be set when enabling public media.
+    enabled: false
+    # A key for signing public media URLs.
+    # If set to "generate", a random key will be generated.
+    signing_key: {{ matrix_mautrix_slack_public_media_signing_key | to_json }}
+    # Number of seconds that public media URLs are valid for.
+    # If set to 0, URLs will never expire.
+    expiry: 0
+    # Length of hash to use for public media URLs. Must be between 0 and 32.
+    hash_length: 32
+
+# Settings for converting remote media to custom mxc:// URIs instead of reuploading.
+# More details can be found at https://docs.mau.fi/bridges/go/discord/direct-media.html
+direct_media:
+    # Should custom mxc:// URIs be used instead of reuploading media?
+    enabled: false
+    # The server name to use for the custom mxc:// URIs.
+    # This server name will effectively be a real Matrix server, it just won't implement anything other than media.
+    # You must either set up .well-known delegation from this domain to the bridge, or proxy the domain directly to the bridge.
+    server_name: media.example.com
+    # Optionally a custom .well-known response. This defaults to `server_name:443`
+    well_known_response:
+    # Optionally specify a custom prefix for the media ID part of the MXC URI.
+    media_id_prefix:
+    # If the remote network supports media downloads over HTTP, then the bridge will use MSC3860/MSC3916
+    # media download redirects if the requester supports it. Optionally, you can force redirects
+    # and not allow proxying at all by setting this to false.
+    # This option does nothing if the remote network does not support media downloads over HTTP.
+    allow_proxy: true
+    # Matrix server signing key to make the federation tester pass, same format as synapse's .signing.key file.
+    # This key is also used to sign the mxc:// URIs to ensure only the bridge can generate them.
+    server_key: ""
+
+# Settings for backfilling messages.
+# Note that the exact way settings are applied depends on the network connector.
+# See https://docs.mau.fi/bridges/general/backfill.html for more details.
+backfill:
+    # Whether to do backfilling at all.
+    enabled: false
+    # Maximum number of messages to backfill in empty rooms.
+    max_initial_messages: 50
+    # Maximum number of missed messages to backfill after bridge restarts.
+    max_catchup_messages: 500
+    # If a backfilled chat is older than this number of hours,
+    # mark it as read even if it's unread on the remote network.
+    unread_hours_threshold: 720
+    # Settings for backfilling threads within other backfills.
+    threads:
+        # Maximum number of messages to backfill in a new thread.
+        max_initial_messages: 50
+    # Settings for the backwards backfill queue. This only applies when connecting to
+    # Beeper as standard Matrix servers don't support inserting messages into history.
+    queue:
+        # Should the backfill queue be enabled?
+        enabled: false
+        # Number of messages to backfill in one batch.
+        batch_size: 100
+        # Delay between batches in seconds.
+        batch_delay: 20
+        # Maximum number of batches to backfill per portal.
+        # If set to -1, all available messages will be backfilled.
+        max_batches: -1
+        # Optional network-specific overrides for max batches.
+        # Interpretation of this field depends on the network connector.
+        max_batches_override: {}
+
+# Settings for enabling double puppeting
+double_puppet:
+    # Servers to always allow double puppeting from.
+    # This is only for other servers and should NOT contain the server the bridge is on.
+    servers:
         "{{ matrix_mautrix_slack_homeserver_domain }}": {{ matrix_mautrix_slack_homeserver_address }}
-    # Allow using double puppeting from any server with a valid client .well-known file.
-    double_puppet_allow_discovery: false
-    # Shared secrets for https://github.com/devture/matrix-synapse-shared-secret-auth
+    # Whether to allow client API URL discovery for other servers. When using this option,
+    # users on other servers can use double puppeting even if their server URLs aren't
+    # explicitly added to the servers map above.
+    allow_discovery: false
+    # Shared secrets for automatic double puppeting.
+    # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
+    secrets: {{ matrix_mautrix_slack_bridge_login_shared_secret_map | to_json }}
+
+# End-to-bridge encryption support options.
+#
+# See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
+encryption:
+    # Whether to enable encryption at all. If false, the bridge will not function in encrypted rooms.
+    allow: {{ matrix_mautrix_slack_bridge_encryption_allow | to_json }}
+    # Whether to force-enable encryption in all bridged rooms.
+    default: {{ matrix_mautrix_slack_bridge_encryption_default | to_json }}
+    # Whether to require all messages to be encrypted and drop any unencrypted messages.
+    require: false
+    # Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
+    # This option is not yet compatible with standard Matrix servers like Synapse and should not be used.
+    appservice: false
+    # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
+    # You must use a client that supports requesting keys from other users to use this feature.
+    allow_key_sharing: {{ matrix_mautrix_slack_bridge_encryption_key_sharing_allow | to_json }}
+    # Pickle key for encrypting encryption keys in the bridge database.
+    # If set to generate, a random key will be generated.
+    pickle_key: generate
+    # Options for deleting megolm sessions from the bridge.
+    delete_keys:
+        # Beeper-specific: delete outbound sessions when hungryserv confirms
+        # that the user has uploaded the key to key backup.
+        delete_outbound_on_ack: false
+        # Don't store outbound sessions in the inbound table.
+        dont_store_outbound: false
+        # Ratchet megolm sessions forward after decrypting messages.
+        ratchet_on_decrypt: false
+        # Delete fully used keys (index >= max_messages) after decrypting messages.
+        delete_fully_used_on_decrypt: false
+        # Delete previous megolm sessions from same device when receiving a new one.
+        delete_prev_on_new_session: false
+        # Delete megolm sessions received from a device when the device is deleted.
+        delete_on_device_delete: false
+        # Periodically delete megolm sessions when 2x max_age has passed since receiving the session.
+        periodically_delete_expired: false
+        # Delete inbound megolm sessions that don't have the received_at field used for
+        # automatic ratcheting and expired session deletion. This is meant as a migration
+        # to delete old keys prior to the bridge update.
+        delete_outdated_inbound: false
+    # What level of device verification should be required from users?
     #
-    # If set, double puppeting will be enabled automatically for local users
-    # instead of users having to find an access token and run `login-matrix`
-    # manually.
-    login_shared_secret_map: {{ matrix_mautrix_slack_bridge_login_shared_secret_map|to_json }}
+    # Valid levels:
+    #   unverified - Send keys to all device in the room.
+    #   cross-signed-untrusted - Require valid cross-signing, but trust all cross-signing keys.
+    #   cross-signed-tofu - Require valid cross-signing, trust cross-signing keys on first use (and reject changes).
+    #   cross-signed-verified - Require valid cross-signing, plus a valid user signature from the bridge bot.
+    #                           Note that creating user signatures from the bridge bot is not currently possible.
+    #   verified - Require manual per-device verification
+    #              (currently only possible by modifying the `trust` column in the `crypto_device` database table).
+    verification_levels:
+        # Minimum level for which the bridge should send keys to when bridging messages from the remote network to Matrix.
+        receive: unverified
+        # Minimum level that the bridge should accept for incoming Matrix messages.
+        send: unverified
+        # Minimum level that the bridge should require for accepting key requests.
+        share: cross-signed-tofu
+    # Options for Megolm room key rotation. These options allow you to configure the m.room.encryption event content.
+    # See https://spec.matrix.org/v1.10/client-server-api/#mroomencryption for more information about that event.
+    rotation:
+        # Enable custom Megolm room key rotation settings. Note that these
+        # settings will only apply to rooms created after this option is set.
+        enable_custom: false
+        # The maximum number of milliseconds a session should be used
+        # before changing it. The Matrix spec recommends 604800000 (a week)
+        # as the default.
+        milliseconds: 604800000
+        # The maximum number of messages that should be sent with a given a
+        # session before changing it. The Matrix spec recommends 100 as the
+        # default.
+        messages: 100
+        # Disable rotating keys when a user's devices change?
+        # You should not enable this option unless you understand all the implications.
+        disable_device_change_key_rotation: false
 
-    message_handling_timeout:
-        # Send an error message after this timeout, but keep waiting for the response until the deadline.
-        # This is counted from the origin_server_ts, so the warning time is consistent regardless of the source of delay.
-        # If the message is older than this when it reaches the bridge, the message won't be handled at all.
-        error_after: 10s
-        # Drop messages after this timeout. They may still go through if the message got sent to the servers.
-        # This is counted from the time the bridge starts handling the message.
-        deadline: 60s
-
-    # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "{{ matrix_mautrix_slack_command_prefix }}"
-    # Messages sent upon joining a management room.
-    # Markdown is supported. The defaults are listed below.
-    management_room_text:
-        # Sent when joining a room.
-        welcome: "Hello, I'm a Slack bridge bot."
-        # Sent when joining a management room and the user is already logged in.
-        welcome_connected: "Use `help` for help."
-        # Sent when joining a management room and the user is not logged in.
-        welcome_unconnected: "Use `help` for help, or `login-token` or `login-password` to log in."
-        # Optional extra text sent when joining a management room.
-        additional_help: ""
-
-    backfill:
-        # Allow backfilling at all? Requires MSC2716 support on homeserver.
-        enable: false
-
-        # If a backfilled chat is older than this number of hours, mark it as read even if it's unread on Slack.
-        # Set to -1 to let any chat be unread.
-        unread_hours_threshold: 720
-
-        # Number of messages to immediately backfill when creating a portal.
-        immediate_messages: 10
-
-        # Settings for incremental backfill of history.
-        incremental:
-            # Maximum number of messages to backfill per batch.
-            messages_per_batch: 100
-            # The number of seconds to wait after backfilling the batch of messages.
-            post_batch_delay: 20
-            # The maximum number of messages to backfill per portal, split by the chat type.
-            # If set to -1, all messages in the chat will eventually be backfilled.
-            max_messages:
-                # Channels
-                channel: -1
-                # Group direct messages
-                group_dm: -1
-                # 1:1 direct messages
-                dm: -1
-
-    # End-to-bridge encryption support options.
-    #
-    # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
-    encryption:
-        # Allow encryption, work in group chat rooms with e2ee enabled
-        allow: {{ matrix_mautrix_slack_bridge_encryption_allow|to_json }}
-        # Default to encryption, force-enable encryption in all portals the bridge creates
-        # This will cause the bridge bot to be in private chats for the encryption to work properly.
-        default: {{ matrix_mautrix_slack_bridge_encryption_default|to_json }}
-        # Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
-        appservice: false
-        # Require encryption, drop any unencrypted messages.
-        require: false
-        # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
-        # You must use a client that supports requesting keys from other users to use this feature.
-        allow_key_sharing: {{ matrix_mautrix_slack_bridge_encryption_key_sharing_allow|to_json }}
-        # What level of device verification should be required from users?
-        #
-        # Valid levels:
-        #   unverified - Send keys to all device in the room.
-        #   cross-signed-untrusted - Require valid cross-signing, but trust all cross-signing keys.
-        #   cross-signed-tofu - Require valid cross-signing, trust cross-signing keys on first use (and reject changes).
-        #   cross-signed-verified - Require valid cross-signing, plus a valid user signature from the bridge bot.
-        #                           Note that creating user signatures from the bridge bot is not currently possible.
-        #   verified - Require manual per-device verification
-        #              (currently only possible by modifying the `trust` column in the `crypto_device` database table).
-        verification_levels:
-            # Minimum level for which the bridge should send keys to when bridging messages from WhatsApp to Matrix.
-            receive: unverified
-            # Minimum level that the bridge should accept for incoming Matrix messages.
-            send: unverified
-            # Minimum level that the bridge should require for accepting key requests.
-            share: cross-signed-tofu
-        # Options for Megolm room key rotation. These options allow you to
-        # configure the m.room.encryption event content. See:
-        # https://spec.matrix.org/v1.3/client-server-api/#mroomencryption for
-        # more information about that event.
-        rotation:
-            # Enable custom Megolm room key rotation settings. Note that these
-            # settings will only apply to rooms created after this option is
-            # set.
-            enable_custom: false
-            # The maximum number of milliseconds a session should be used
-            # before changing it. The Matrix spec recommends 604800000 (a week)
-            # as the default.
-            milliseconds: 604800000
-            # The maximum number of messages that should be sent with a given a
-            # session before changing it. The Matrix spec recommends 100 as the
-            # default.
-            messages: 100
-
-    # Settings for provisioning API
-    provisioning:
-        # Prefix for the provisioning API paths.
-        prefix: /_matrix/provision
-        # Shared secret for authentication. If set to "generate", a random secret will be generated,
-        # or if set to "disable", the provisioning API will be disabled.
-        shared_secret: generate
-
-    # Permissions for using the bridge.
-    # Permitted values:
-    #    relay - Talk through the relaybot (if enabled), no access otherwise
-    #     user - Access to use the bridge to chat with a Slack account.
-    #    admin - User level and some additional administration tools
-    # Permitted keys:
-    #        * - All Matrix users
-    #   domain - All users on that homeserver
-    #     mxid - Specific user
-    permissions: {{ matrix_mautrix_slack_bridge_permissions|to_json }}
-
+# Logging config. See https://github.com/tulir/zeroconfig for details.
 logging:
-    directory: ./logs
-    file_name_format: ''
-    file_date_format: "2006-01-02"
-    file_mode: 384
-    timestamp_format: Jan _2, 2006 15:04:05
-    print_level: {{ matrix_mautrix_slack_logging_level | to_json }}
-    print_json: false
-    file_json: false
+    min_level: {{ matrix_mautrix_slack_logging_level | to_json }}
+    writers:
+        - type: stdout
+          format: pretty-colored

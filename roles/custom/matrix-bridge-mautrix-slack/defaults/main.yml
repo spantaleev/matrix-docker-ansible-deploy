@@ -9,7 +9,7 @@ matrix_mautrix_slack_container_image_self_build_repo: "https://mau.dev/mautrix/s
 matrix_mautrix_slack_container_image_self_build_branch: "{{ 'main' if matrix_mautrix_slack_version == 'latest' else matrix_mautrix_slack_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/slack
-matrix_mautrix_slack_version: latest
+matrix_mautrix_slack_version: v0.1.0
 # See: https://mau.dev/mautrix/slack/container_registry
 matrix_mautrix_slack_docker_image: "{{ matrix_mautrix_slack_docker_image_name_prefix }}mautrix/slack:{{ matrix_mautrix_slack_version }}"
 matrix_mautrix_slack_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_slack_container_image_self_build else 'dock.mau.dev/' }}"
@@ -127,9 +127,9 @@ matrix_mautrix_slack_configuration: "{{ matrix_mautrix_slack_configuration_yaml 
 
 matrix_mautrix_slack_registration_yaml: |
   id: slack
-  url: {{ matrix_mautrix_slack_appservice_address }}
-  as_token: "{{ matrix_mautrix_slack_appservice_token }}"
-  hs_token: "{{ matrix_mautrix_slack_homeserver_token }}"
+  url: {{ matrix_mautrix_slack_appservice_address | to_json }}
+  as_token: {{ matrix_mautrix_slack_appservice_token | to_json }}
+  hs_token: {{ matrix_mautrix_slack_homeserver_token | to_json }}
   # See https://github.com/mautrix/signal/issues/43
   sender_localpart: _bot_{{ matrix_mautrix_slack_appservice_bot_username }}
   rate_limited: false
@@ -147,3 +147,6 @@ matrix_mautrix_slack_registration: "{{ matrix_mautrix_slack_registration_yaml | 
 matrix_mautrix_slack_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
 matrix_mautrix_slack_bridge_encryption_default: "{{ matrix_bridges_encryption_default }}"
 matrix_mautrix_slack_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_slack_bridge_encryption_allow }}"
+
+matrix_mautrix_slack_provisioning_shared_secret: ''
+matrix_mautrix_slack_public_media_signing_key: ''
