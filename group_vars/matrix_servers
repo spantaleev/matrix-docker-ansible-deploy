@@ -1390,6 +1390,9 @@ matrix_mautrix_signal_database_engine: "{{ 'postgres' if devture_postgres_enable
 matrix_mautrix_signal_database_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
 matrix_mautrix_signal_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.signal.db', rounds=655555) | to_uuid }}"
 
+matrix_mautrix_signal_provisioning_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.signal.prov', rounds=655555) | to_uuid }}"
+matrix_mautrix_signal_public_media_signing_key: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.pub.media', rounds=655555) | to_uuid }}"
+
 ######################################################################
 #
 # /matrix-bridge-mautrix-signal
