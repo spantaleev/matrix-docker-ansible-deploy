@@ -1,3 +1,26 @@
+# 2024-08-17
+
+## New appservice-double-puppet service for better double-puppeting
+
+Mautrix bridges are undergoing large changes as announced in the [August 2024 releases & progress](https://mau.fi/blog/2024-08-mautrix-release/) blog post.
+
+The playbook has already upgraded to the rewritten mautrix-slack ([v0.1.0](https://github.com/mautrix/slack/releases/tag/v0.1.0)) and mautrix-signal ([v0.7.0](https://github.com/mautrix/signal/releases/tag/v0.7.0)) bridges.
+
+The newly rewritten bridges do not support double-puppeting via [Shared Secret Auth](./docs/configuring-playbook-shared-secret-auth.md) anymore, which has prompted us to switch to the new & better [appservice method](https://docs.mau.fi/bridges/general/double-puppeting.html#appservice-method-new) for double-puppeting. The playbook automates this double-puppeting setup for you if you enable the new [Appservice Double Puppet](./docs/configuring-playbook-appservice-double-puppet.md) service.
+
+All non-deprecated mautrix bridges in the playbook have been reworked to support double-puppeting via an Appservice. Most bridges still support double-puppeting via [Shared Secret Auth](./docs/configuring-playbook-shared-secret-auth.md), so the playbook supports it too. If only Shared Secret Auth is enabled, double-puppeting will be configured using that method (for the bridges that support it). That said, **Shared Secret Auth double-puppeting is being phased out and we recommend replacing it with the new Appservice method**.
+
+We recommend **enabling double-puppeting via the new Appservice method** by adding the following configuration to your `vars.yml` file:
+
+```yml
+matrix_appservice_double_puppet_enabled: true
+```
+
+You can still **keep** [Shared Secret Auth](./docs/configuring-playbook-shared-secret-auth.md) enabled. Non-mautrix bridges and other services (e.g. [matrix-corporal](./docs/configuring-playbook-matrix-corporal.md)) may still require it.
+
+When both double-puppeting methods are enabled, the playbook will automatically choose the new and better Appservice method for bridges that support it.
+
+
 # 2024-08-15
 
 ## matrix-media-repo now configured for Authenticated Media
