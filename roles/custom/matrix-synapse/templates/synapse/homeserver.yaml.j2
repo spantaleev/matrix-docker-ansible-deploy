@@ -1028,6 +1028,13 @@ federation_rr_transactions_per_room_per_second: {{ matrix_synapse_federation_rr_
 #enable_media_repo: false
 enable_media_repo: {{ matrix_synapse_enable_media_repo | to_json }}
 
+# Enable authenticated media.
+# enable_authenticated_media blocks access to new media from the legacy endpoints
+# and freezes the unauthenticated media repo by blocking all downloads that are not using
+# the new authenticated endpoints. If this option is turned off all media reverts to being considered "old"
+
+enable_authenticated_media: {{ matrix_synapse_enable_authenticated_media | to_json }}
+
 # Directory where uploaded images and attachments are stored.
 #
 media_store_path: "/matrix-media-store-parent/{{ matrix_synapse_media_store_directory_name }}"
