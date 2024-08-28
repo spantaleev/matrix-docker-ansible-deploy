@@ -99,6 +99,8 @@
   community.docker.docker_network:
     name: "{{ matrix_coturn_container_network }}"
     driver: bridge
+    driver_options:
+      com.docker.network.driver.mtu: "{{ matrix_playbook_docker_network_mtu }}"
 
 - name: Ensure matrix-coturn.service installed
   ansible.builtin.template:

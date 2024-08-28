@@ -147,6 +147,8 @@
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_mautrix_gmessages_container_network }}"
     driver: bridge
+    driver_options:
+      com.docker.network.driver.mtu: "{{ matrix_playbook_docker_network_mtu }}"
 
 - name: Ensure matrix-mautrix-gmessages.service restarted, if necessary
   ansible.builtin.service:
