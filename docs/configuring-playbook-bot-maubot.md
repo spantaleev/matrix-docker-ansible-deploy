@@ -52,4 +52,4 @@ and the plugin (how the bot will behave)
 
 This can be done via `mbc login` then `mbc auth` (see the [maubot documentation](https://docs.mau.fi/maubot/usage/cli/auth.html)). To run these commands, you'll first need to `exec` into the maubot container with `docker exec -it matrix-bot-maubot sh`.
 
-Alternatively, you can follow our generic [obtain an access token](obtaining-access-tokens.md) documentation.
+Alternatively, you can follow our generic [obtain an access token](obtaining-access-tokens.md) documentation. Be aware that you'd better use the **Obtain an access token via curl** method (not **Obtain an access token via Element**) as the latter will give your bot issues in encrypted rooms. Read [more](https://docs.mau.fi/maubot/usage/basic.html#creating-clients).
