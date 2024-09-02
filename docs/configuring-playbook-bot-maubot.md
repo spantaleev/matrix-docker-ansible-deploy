@@ -48,8 +48,16 @@ You should start in the following order
 3. **Create an instance:** An instance is the actual bot. You have to specify a client which the bot instance will use 
 and the plugin (how the bot will behave)
 
+### Server service management
+If you need to do stop and start manually of the Maubot service, you can use systemd command `systemctl` or `just`. 
+
+- **systemctl** : You will need to ssh insto the server and you can then issue `systemctl restart matrix-bot-maubot` as root.  
+
+- **just** : You can run the command from where the ansible playbook is run(probably from your laptop). `just stop-group bot-maubot` and `just start-group bot-maubot`.
+
+
 ## Obtaining an access token
 
 This can be done via `mbc login` then `mbc auth` (see the [maubot documentation](https://docs.mau.fi/maubot/usage/cli/auth.html)). To run these commands, you'll first need to `exec` into the maubot container with `docker exec -it matrix-bot-maubot sh`.
 
-Alternatively, you can follow our generic [obtain an access token](obtaining-access-tokens.md) documentation.
+Alternatively, you can follow our generic [obtain an access token](obtaining-access-tokens.md) documentation. Be aware that you can only use `Obtain an access token via curl` and not `Obtain an access token via Element`. By getting the access token via Element will give your bot issue with Encrypted room. Read [more](https://docs.mau.fi/maubot/usage/basic.html#creating-clients).
