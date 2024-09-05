@@ -74,7 +74,7 @@ matrix_media_repo_container_labels_traefik_entrypoints: web-secure
 # These are being superseded by `/_matrix/client/VERSION/media` endpoints - see `matrix_media_repo_container_labels_traefik_client_matrix_client_media_*`.
 matrix_media_repo_container_labels_traefik_media_enabled: true
 matrix_media_repo_container_labels_traefik_media_path_prefix: "/_matrix/media"
-matrix_media_repo_container_labels_traefik_media_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_media_path_prefix | quote }}`)"
+matrix_media_repo_container_labels_traefik_media_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_media_path_prefix }}`)"
 matrix_media_repo_container_labels_traefik_media_priority: 0
 matrix_media_repo_container_labels_traefik_media_entrypoints: "{{ matrix_media_repo_container_labels_traefik_entrypoints }}"
 matrix_media_repo_container_labels_traefik_media_tls: "{{ matrix_media_repo_container_labels_traefik_media_entrypoints != 'web' }}"
@@ -84,7 +84,7 @@ matrix_media_repo_container_labels_traefik_media_tls_certResolver: default  # no
 # See: https://github.com/matrix-org/matrix-spec-proposals/pull/3916
 matrix_media_repo_container_labels_traefik_client_matrix_client_media_enabled: true
 matrix_media_repo_container_labels_traefik_client_matrix_client_media_path_regexp: "/_matrix/client/(?P<version>(v1))/media"
-matrix_media_repo_container_labels_traefik_client_matrix_client_media_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathRegexp(`{{ matrix_media_repo_container_labels_traefik_client_matrix_client_media_path_regexp | quote }}`)"
+matrix_media_repo_container_labels_traefik_client_matrix_client_media_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathRegexp(`{{ matrix_media_repo_container_labels_traefik_client_matrix_client_media_path_regexp }}`)"
 matrix_media_repo_container_labels_traefik_client_matrix_client_media_priority: 0
 matrix_media_repo_container_labels_traefik_client_matrix_client_media_entrypoints: "{{ matrix_media_repo_container_labels_traefik_entrypoints }}"
 matrix_media_repo_container_labels_traefik_client_matrix_client_media_tls: "{{ matrix_media_repo_container_labels_traefik_client_matrix_client_media_entrypoints != 'web' }}"
@@ -95,7 +95,7 @@ matrix_media_repo_container_labels_traefik_client_matrix_client_media_tls_certRe
 # These are being superseded by `/_matrix/client/VERSION/media` endpoints - see `matrix_media_repo_container_labels_traefik_internal_matrix_client_media_*`.
 matrix_media_repo_container_labels_traefik_internal_media_enabled: false
 matrix_media_repo_container_labels_traefik_internal_media_path_prefix: "{{ matrix_media_repo_container_labels_traefik_media_path_prefix }}"
-matrix_media_repo_container_labels_traefik_internal_media_rule: "PathPrefix(`{{ matrix_media_repo_container_labels_traefik_internal_media_path_prefix | quote }}`)"
+matrix_media_repo_container_labels_traefik_internal_media_rule: "PathPrefix(`{{ matrix_media_repo_container_labels_traefik_internal_media_path_prefix }}`)"
 matrix_media_repo_container_labels_traefik_internal_media_priority: "{{ matrix_media_repo_container_labels_traefik_media_priority }}"
 matrix_media_repo_container_labels_traefik_internal_media_entrypoints: ""
 
@@ -103,7 +103,7 @@ matrix_media_repo_container_labels_traefik_internal_media_entrypoints: ""
 # See: https://github.com/matrix-org/matrix-spec-proposals/pull/3916
 matrix_media_repo_container_labels_traefik_internal_matrix_client_media_enabled: false
 matrix_media_repo_container_labels_traefik_internal_matrix_client_media_path_regexp: "{{ matrix_media_repo_container_labels_traefik_client_matrix_client_media_path_regexp }}"
-matrix_media_repo_container_labels_traefik_internal_matrix_client_media_rule: "PathRegexp(`{{ matrix_media_repo_container_labels_traefik_internal_matrix_client_media_path_regexp | quote }}`)"
+matrix_media_repo_container_labels_traefik_internal_matrix_client_media_rule: "PathRegexp(`{{ matrix_media_repo_container_labels_traefik_internal_matrix_client_media_path_regexp }}`)"
 matrix_media_repo_container_labels_traefik_internal_matrix_client_media_priority: "{{ matrix_media_repo_container_labels_traefik_client_matrix_client_media_priority }}"
 matrix_media_repo_container_labels_traefik_internal_matrix_client_media_entrypoints: ""
 
@@ -133,7 +133,7 @@ matrix_media_repo_container_labels_traefik_admin_tls_certResolver: default  # no
 # - /_matrix/client/unstable/io.t2bot.media
 matrix_media_repo_container_labels_traefik_t2bot_enabled: true
 matrix_media_repo_container_labels_traefik_t2bot_path_prefix: "/_matrix/client/unstable/io.t2bot.media"
-matrix_media_repo_container_labels_traefik_t2bot_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_t2bot_path_prefix | quote }}`)"
+matrix_media_repo_container_labels_traefik_t2bot_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_t2bot_path_prefix }}`)"
 matrix_media_repo_container_labels_traefik_t2bot_priority: 0
 matrix_media_repo_container_labels_traefik_t2bot_entrypoints: "{{ matrix_media_repo_container_labels_traefik_entrypoints }}"
 matrix_media_repo_container_labels_traefik_t2bot_tls: "{{ matrix_media_repo_container_labels_traefik_t2bot_entrypoints != 'web' }}"
@@ -155,7 +155,7 @@ matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_users: 
 # These are being superseded by `/_matrix/federation/VERSION/media` endpoints - see `matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_*`.
 matrix_media_repo_container_labels_traefik_media_federation_enabled: true
 matrix_media_repo_container_labels_traefik_media_federation_path_prefix: "/_matrix/media"
-matrix_media_repo_container_labels_traefik_media_federation_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_media_path_prefix | quote }}`)"
+matrix_media_repo_container_labels_traefik_media_federation_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_media_path_prefix }}`)"
 matrix_media_repo_container_labels_traefik_media_federation_priority: 0
 matrix_media_repo_container_labels_traefik_media_federation_entrypoints: "{{ matrix_federation_traefik_entrypoint_name }}"
 matrix_media_repo_container_labels_traefik_media_federation_tls: "{{ matrix_media_repo_container_labels_traefik_media_entrypoints != 'web' }}"
@@ -165,7 +165,7 @@ matrix_media_repo_container_labels_traefik_media_federation_tls_certResolver: de
 # See: https://github.com/matrix-org/matrix-spec-proposals/pull/3916
 matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_enabled: true
 matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_path_regexp: "/_matrix/federation/(?P<version>(v1))/media"
-matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathRegexp(`{{ matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_path_regexp | quote }}`)"
+matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathRegexp(`{{ matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_path_regexp }}`)"
 matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_priority: 0
 matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_entrypoints: "{{ matrix_federation_traefik_entrypoint_name }}"
 matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_tls: "{{ matrix_media_repo_container_labels_traefik_federation_matrix_federation_media_entrypoints != 'web' }}"
@@ -197,7 +197,7 @@ matrix_media_repo_container_labels_traefik_admin_federation_tls_certResolver: de
 # - /_matrix/client/unstable/io.t2bot.media
 matrix_media_repo_container_labels_traefik_t2bot_federation_enabled: true
 matrix_media_repo_container_labels_traefik_t2bot_federation_path_prefix: "/_matrix/client/unstable/io.t2bot.media"
-matrix_media_repo_container_labels_traefik_t2bot_federation_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_t2bot_path_prefix | quote }}`)"
+matrix_media_repo_container_labels_traefik_t2bot_federation_rule: "Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`{{ matrix_media_repo_container_labels_traefik_t2bot_path_prefix }}`)"
 matrix_media_repo_container_labels_traefik_t2bot_federation_priority: 0
 matrix_media_repo_container_labels_traefik_t2bot_federation_entrypoints: "{{ matrix_federation_traefik_entrypoint_name }}"
 matrix_media_repo_container_labels_traefik_t2bot_federation_tls: "{{ matrix_media_repo_container_labels_traefik_t2bot_entrypoints != 'web' }}"
