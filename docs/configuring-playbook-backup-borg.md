@@ -64,7 +64,7 @@ To backup without encryption, add `backup_borg_encryption: 'none'` to your vars.
 
 `backup_borg_location_source_directories` defines the list of directories to back up: it's set to `{{ matrix_base_data_path }}` by default, which is the base directory for every service's data, such as Synapse, Postgres and the bridges. You might want to exclude certain directories or file patterns from the backup using the `backup_borg_location_exclude_patterns` variable.
 
-Check the [backup_borg role](https://gitlab.com/etke.cc/roles/backup_borg)'s [defaults/main.yml](https://gitlab.com/etke.cc/roles/backup_borg/-/blob/main/defaults/main.yml) file for the full list of available options.
+Check the [backup_borg role](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg)'s [defaults/main.yml](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg/-/blob/main/defaults/main.yml) file for the full list of available options.
 
 ## Installing
 

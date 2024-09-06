@@ -2,12 +2,12 @@
 
 **Note**: email bridging can also happen via the [email2matrix](configuring-playbook-email2matrix.md) bridge supported by the playbook.
 
-The playbook can install and configure [Postmoogle](https://gitlab.com/etke.cc/postmoogle) for you.
+The playbook can install and configure [Postmoogle](https://github.com/etkecc/postmoogle) for you.
 
 It's a bot/bridge you can use to forward emails to Matrix rooms.
 Postmoogle runs an SMTP email server and allows you to assign mailbox addresses to Matrix rooms.
 
-See the project's [documentation](https://gitlab.com/etke.cc/postmoogle) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/etkecc/postmoogle) to learn what it does and why it might be useful to you.
 
 ## Prerequisites
 
@@ -75,7 +75,7 @@ Then send `!pm mailbox NAME` to expose this Matrix room as an inbox with the ema
 
 Send `!pm help` to the room to see the bot's help menu for additional commands.
 
-You can also refer to the upstream [documentation](https://gitlab.com/etke.cc/postmoogle).
+You can also refer to the upstream [documentation](https://github.com/etkecc/postmoogle).
 
 ### Debug/Logs
 

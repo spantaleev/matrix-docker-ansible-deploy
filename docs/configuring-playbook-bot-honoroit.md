@@ -1,10 +1,10 @@
 # Setting up Honoroit (optional)
 
-The playbook can install and configure [Honoroit](https://gitlab.com/etke.cc/honoroit) for you.
+The playbook can install and configure [Honoroit](https://github.com/etkecc/honoroit) for you.
 
 It's a bot you can use to setup **your own helpdesk on matrix**
 
-See the project's [documentation](https://gitlab.com/etke.cc/honoroit#how-it-looks-like) to learn what it does with screenshots and why it might be useful to you.
+See the project's [documentation](https://github.com/etkecc/honoroit#how-it-looks-like) to learn what it does with screenshots and why it might be useful to you.
 
 
 ## Adjusting the playbook configuration
@@ -50,4 +50,4 @@ To use the bot, invite the `@honoroit:DOMAIN` to the room you specified in confi
 
 Send `!ho help` to the room to see the bot's help menu for additional commands.
 
-You can also refer to the upstream [documentation](https://gitlab.com/etke.cc/honoroit#features).
+You can also refer to the upstream [documentation](https://github.com/etkecc/honoroit#features).

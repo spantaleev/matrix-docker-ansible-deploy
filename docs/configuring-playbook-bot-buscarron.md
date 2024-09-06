@@ -1,6 +1,6 @@
 # Setting up Buscarron (optional)
 
-The playbook can install and configure [buscarron](https://gitlab.com/etke.cc/buscarron) for you.
+The playbook can install and configure [buscarron](https://github.com/etkecc/buscarron) for you.
 
 Buscarron is bot that receives HTTP POST submissions of web forms and forwards them to a Matrix room.
 
@@ -87,4 +87,4 @@ To use the bot, invite the `@bot.buscarron:DOMAIN` to the room you specified in 
 
 If you get banned, you'd need to restart the process by running the playbook with `--tags=start` or running `systemctl restart matrix-bot-buscarron` on the server.
 
-You can also refer to the upstream [documentation](https://gitlab.com/etke.cc/buscarron).
+You can also refer to the upstream [documentation](https://github.com/etkecc/buscarron).

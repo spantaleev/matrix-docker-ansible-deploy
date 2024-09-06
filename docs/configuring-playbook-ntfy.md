@@ -29,7 +29,7 @@ ntfy_enabled: true
 #   log_level: DEBUG
 ```
 
-For a more complete list of variables that you could override, see the [`defaults/main.yml` file](https://gitlab.com/etke.cc/roles/ntfy/-/blob/main/defaults/main.yml) of the ntfy Ansible role.
+For a more complete list of variables that you could override, see the [`defaults/main.yml` file](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/-/blob/main/defaults/main.yml) of the ntfy Ansible role.
 
 For a complete list of ntfy config options that you could put in `ntfy_configuration_extension_yaml`, see the [ntfy config documentation](https://ntfy.sh/docs/config/#config-options).
 
