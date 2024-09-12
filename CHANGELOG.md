@@ -4,9 +4,9 @@
 
 The playbook now supports installing [baibot](./docs/configuring-playbook-bot-baibot.md) (pronounced bye-bot) - a [Matrix](https://matrix.org/) bot developed by [etke.cc](https://etke.cc/) that exposes the power of [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) to you. 🤖
 
-It supports [OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/chatgpt/) models, as many well as other [☁️ providers](https://github.com/etkecc/baibot/blob/main/docs/providers.md).
+It supports [OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/chatgpt/) models, as well as many other [☁️ providers](https://github.com/etkecc/baibot/blob/main/docs/providers.md).
 
-It's designed as a more private and [✨ featureful](https://github.com/etkecc/baibot/?tab=readme-ov-file#-features) alternative to [matrix-chatgpt-bot](./docs/configuring-playbook-bot-chatgpt.md).
+It's designed as a more private and [✨ featureful](https://github.com/etkecc/baibot/?tab=readme-ov-file#-features) alternative to the now-unmaintained [matrix-chatgpt-bot](./docs/configuring-playbook-bot-chatgpt.md).
 
 To get started, see the [Setting up baibot](./docs/configuring-playbook-bot-baibot.md) documentation page.
 
