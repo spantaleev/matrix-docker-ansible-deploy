@@ -1,3 +1,25 @@
+# 2024-09-12
+
+## Switching synapse-admin to etke.cc's fork
+
+The playbook now installs [etke.cc](https://etke.cc/)'s [fork](https://github.com/etkecc/synapse-admin) of [synapse-admin](https://github.com/Awesome-Technologies/synapse-admin) (originally developed by [Awesome-Technologies](https://github.com/Awesome-Technologies)). This fork is a drop-in replacement for the original software.
+
+The creation of the fork has been provoked by users frequently encountering issues with the original synapse-admin software, such as unintentionally deleting their one-and-only admin user account (fixed [here](https://github.com/etkecc/synapse-admin/pull/1) and also contributed upstream [here](https://github.com/Awesome-Technologies/synapse-admin/pull/608) - to no avail for now). Since its inception, [a bunch of other quality-of-life improvements](https://github.com/etkecc/synapse-admin?tab=readme-ov-file#changes) have been made to the fork.
+
+If upstream synapse-admin picks up the pace and improves, the etke.cc fork may disappear and the playbook may switch to the original software again. Until that time comes, we believe that etke.cc's fork is the better software to use right now.
+
+If you'd like to switch back to the original synapse-admin software, you can do so by adding the following configuration to your `vars.yml` file:
+
+```yml
+matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_name_prefix }}awesometechnologies/synapse-admin:{{ matrix_synapse_admin_version }}"
+
+matrix_synapse_admin_version: 0.10.3
+
+# If you need self-building (if running on arm32), uncomment this.
+# matrix_synapse_admin_container_image_self_build_repo: "https://github.com/Awesome-Technologies/synapse-admin.git"
+```
+
+
 # 2024-08-17
 
 ## New appservice-double-puppet service for better double-puppeting
