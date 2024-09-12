@@ -46,7 +46,7 @@ matrix_heisenbridge_container_labels_traefik_tls_certResolver: default  # noqa v
 matrix_heisenbridge_container_labels_traefik_media_enabled: true
 matrix_heisenbridge_container_labels_traefik_media_hostname: "{{ matrix_heisenbridge_container_labels_traefik_hostname }}"
 # The path prefix must either be `/` or not end with a slash (e.g. `/heisenbridge`).
-matrix_heisenbridge_container_labels_traefik_media_path_prefix: "{{ '/_heisenbridge/media' if matrix_heisenbridge_container_labels_traefik_path_prefix == '/' else (matrix_heisenbridge_container_labels_traefik_path_prefix + '/_heisenbridge/media') }}"
+matrix_heisenbridge_container_labels_traefik_media_path_prefix: "{{ '' if matrix_heisenbridge_container_labels_traefik_path_prefix == '/' else (matrix_heisenbridge_container_labels_traefik_path_prefix) }}/_heisenbridge/media"
 matrix_heisenbridge_container_labels_traefik_media_rule: "Host(`{{ matrix_heisenbridge_container_labels_traefik_media_hostname }}`){% if matrix_heisenbridge_container_labels_traefik_media_path_prefix != '/' %} && PathPrefix(`{{ matrix_heisenbridge_container_labels_traefik_media_path_prefix }}`){% endif %}"
 matrix_heisenbridge_container_labels_traefik_media_priority: 0
 matrix_heisenbridge_container_labels_traefik_media_entrypoints: "{{ matrix_heisenbridge_container_labels_traefik_entrypoints }}"
@@ -79,19 +79,16 @@ matrix_heisenbridge_homeserver_url: ""
 matrix_heisenbridge_appservice_token: ''
 matrix_heisenbridge_homeserver_token: ''
 
-# In light of Synapse sunsetting unauthenticated media, we'd like to move to Heisenbridge's media proxy,
-# announced here: https://github.com/hifi/heisenbridge/releases/tag/v1.15.0
-#
-# It seems like the media proxy is not working as expected, so we're disabling it for now and falling back to our old media URL (pointing Heisenbridge to the homeserver URL).
-# Right now, Heisenbridge is still generating URLs like `{media_url}/_matrix/media/v3/download/DOMAIN/FILE_ID/FILE_NAME`,
-# so pointing `media_url` to the homeserver is a good fit.
-# matrix_heisenbridge_config_media_url: "{{ matrix_heisenbridge_scheme }}://{{ matrix_heisenbridge_hostname }}{{ matrix_heisenbridge_path_prefix }}"
 matrix_heisenbridge_config_media_url: "{{ matrix_heisenbridge_scheme }}://{{ matrix_heisenbridge_hostname }}"
+# This matches the hardcoded `DEFAULT_MEDIA_PATH` in Heisenbridge, but uses `matrix_heisenbridge_path_prefix` as the path prefix.
+# See: https://github.com/hifi/heisenbridge/blob/7e18a5818f4a8c86cc62e474eee1631d16cb2602/heisenbridge/__main__.py#L66
+matrix_heisenbridge_config_media_path: "{{ matrix_heisenbridge_container_labels_traefik_media_path_prefix }}/{server}/{media_id}/{checksum}{filename}"
 matrix_heisenbridge_config_media_key: "{{ matrix_heisenbridge_homeserver_token }}"
 matrix_heisenbridge_config_displayname: "Heisenbridge"
 
 matrix_heisenbridge_registration_yaml_heisenbridge:
   media_url: "{{ matrix_heisenbridge_config_media_url }}"
+  media_path: "{{ matrix_heisenbridge_config_media_path }}"
   media_key: "{{ matrix_heisenbridge_config_media_key }}"
   displayname: "{{ matrix_heisenbridge_config_displayname }}"
 
