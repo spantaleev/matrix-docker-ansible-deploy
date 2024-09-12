@@ -1,0 +1,25 @@
+---
+
+- name: Fail if required baibot settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
+  with_items:
+    - {'name': 'matrix_bot_baibot_config_user_mxid_localpart', when: true}
+    - {'name': 'matrix_bot_baibot_config_user_password', when: true}
+    - {'name': 'matrix_bot_baibot_container_network', when: true}
+    - {'name': 'matrix_bot_baibot_config_homeserver_url', when: true}
+
+    - {'name': 'matrix_bot_baibot_config_agents_static_definitions_anthropic_config_api_key', when: "{{ matrix_bot_baibot_config_agents_static_definitions_anthropic_enabled }}"}
+
+    - {'name': 'matrix_bot_baibot_config_agents_static_definitions_groq_config_api_key', when: "{{ matrix_bot_baibot_config_agents_static_definitions_groq_enabled }}"}
+    - {'name': 'matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_model_id', when: "{{ matrix_bot_baibot_config_agents_static_definitions_groq_enabled and matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_enabled }}"}
+
+    - {'name': 'matrix_bot_baibot_config_agents_static_definitions_openai_config_api_key', when: "{{ matrix_bot_baibot_config_agents_static_definitions_openai_enabled }}"}
+
+- name: Fail if admin patterns list is empty
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`matrix_bot_baibot_config_access_admin_patterns`) to specify which users are bot administrators.
+  when: "matrix_bot_baibot_config_access_admin_patterns | length == 0"

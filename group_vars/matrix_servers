@@ -275,6 +275,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-bot-buscarron.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'buscarron', 'bot-buscarron']}] if matrix_bot_buscarron_enabled else [])
     +
+    ([{'name': 'matrix-bot-baibot.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'baibot', 'bot-baibot']}] if matrix_bot_baibot_enabled else [])
+    +
     ([{'name': 'matrix-bot-go-neb.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'go-neb', 'bot-go-neb']}] if matrix_bot_go_neb_enabled else [])
     +
     ([{'name': 'matrix-bot-honoroit.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'honoroit', 'bot-honoroit']}] if matrix_bot_honoroit_enabled else [])
@@ -2730,6 +2732,41 @@ matrix_bot_buscarron_database_password: "{{ '%s' | format(matrix_homeserver_gene
 # /matrix-bot-buscarron
 #
 ######################################################################
+
+
+######################################################################
+#
+# matrix-bot-baibot
+#
+######################################################################
+
+# We don't enable bots by default.
+matrix_bot_baibot_enabled: false
+
+matrix_bot_baibot_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
+
+matrix_bot_baibot_systemd_required_services_list_auto: |
+  {{
+    matrix_addons_homeserver_systemd_services_list
+  }}
+
+matrix_bot_baibot_config_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
+
+matrix_bot_baibot_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_bot_baibot_container_additional_networks_auto: |-
+  {{
+    (
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+    ) | unique
+  }}
+
+######################################################################
+#
+# /matrix-bot-baibot
+#
+######################################################################
+
 
 ######################################################################
 #
@@ -5417,6 +5454,12 @@ matrix_user_creator_users_auto: |
       'initial_password': matrix_bot_matrix_registration_bot_bot_password,
       'initial_type': 'admin',
     }] if matrix_bot_matrix_registration_bot_enabled else [])
+    +
+    ([{
+      'username': matrix_bot_baibot_config_user_mxid_localpart,
+      'initial_password': matrix_bot_baibot_config_user_password,
+      'initial_type': 'bot',
+    }] if matrix_bot_baibot_enabled else [])
     +
     ([{
       'username': matrix_bot_chatgpt_matrix_bot_username_localpart,

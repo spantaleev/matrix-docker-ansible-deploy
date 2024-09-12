@@ -1,0 +1,20 @@
+---
+
+- tags:
+    - setup-all
+    - setup-bot-baibot
+    - install-all
+    - install-bot-baibot
+  block:
+    - when: matrix_bot_baibot_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_bot_baibot_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-bot-baibot
+  block:
+    - when: not matrix_bot_baibot_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

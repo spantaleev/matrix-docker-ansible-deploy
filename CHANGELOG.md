@@ -1,5 +1,16 @@
 # 2024-09-12
 
+## Support for baibot
+
+The playbook now supports installing [baibot](./docs/configuring-playbook-bot-baibot.md) (pronounced bye-bot) - a [Matrix](https://matrix.org/) bot developed by [etke.cc](https://etke.cc/) that exposes the power of [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) to you. 🤖
+
+It supports [OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/chatgpt/) models, as many well as other [☁️ providers](https://github.com/etkecc/baibot/blob/main/docs/providers.md).
+
+It's designed as a more private and [✨ featureful](https://github.com/etkecc/baibot/?tab=readme-ov-file#-features) alternative to [matrix-chatgpt-bot](./docs/configuring-playbook-bot-chatgpt.md).
+
+To get started, see the [Setting up baibot](./docs/configuring-playbook-bot-baibot.md) documentation page.
+
+
 ## Switching synapse-admin to etke.cc's fork
 
 The playbook now installs [etke.cc](https://etke.cc/)'s [fork](https://github.com/etkecc/synapse-admin) of [synapse-admin](https://github.com/Awesome-Technologies/synapse-admin) (originally developed by [Awesome-Technologies](https://github.com/Awesome-Technologies)). This fork is a drop-in replacement for the original software.

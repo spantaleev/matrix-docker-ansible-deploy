@@ -1,0 +1,77 @@
+---
+
+- name: Ensure baibot paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_bot_baibot_config_path }}", when: true}
+    - {path: "{{ matrix_bot_baibot_data_path }}", when: true}
+    - {path: "{{ matrix_bot_baibot_container_src_files_path }}", when: matrix_bot_baibot_container_image_self_build}
+  when: "item.when | bool"
+
+- name: Ensure baibot configuration installed
+  ansible.builtin.copy:
+    content: "{{ matrix_bot_baibot_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_bot_baibot_config_path }}/config.yml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure baibot environment variables file created
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/env.j2"
+    dest: "{{ matrix_bot_baibot_config_path }}/env"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0640
+
+- name: Ensure baibot image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_bot_baibot_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_bot_baibot_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_baibot_container_image_force_pull }}"
+  when: "not matrix_bot_baibot_container_image_self_build | bool"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure baibot repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_bot_baibot_container_repo }}"
+    version: "{{ matrix_bot_baibot_container_repo_version }}"
+    dest: "{{ matrix_bot_baibot_container_src_files_path }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_username }}"
+  register: matrix_bot_baibot_git_pull_results
+  when: "matrix_bot_baibot_container_image_self_build | bool"
+
+- name: Ensure baibot image is built
+  community.docker.docker_image:
+    name: "{{ matrix_bot_baibot_container_image }}"
+    source: build
+    force_source: "{{ matrix_bot_baibot_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_baibot_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_bot_baibot_container_src_files_path }}"
+      pull: true
+  when: "matrix_bot_baibot_container_image_self_build | bool"
+
+- name: Ensure baibot container network is created
+  community.general.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    name: "{{ matrix_bot_baibot_container_network }}"
+    driver: bridge
+
+- name: Ensure matrix-bot-baibot.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-bot-baibot.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-baibot.service"
+    mode: 0644

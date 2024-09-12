@@ -1,0 +1,429 @@
+---
+
+# baibot is a bot exposing the power of Large Language Models to you.
+# Project source code URL: https://github.com/etkecc/baibot
+
+matrix_bot_baibot_enabled: true
+
+matrix_bot_baibot_container_image_self_build: false
+matrix_bot_baibot_container_repo: "https://github.com/etkecc/baibot.git"
+matrix_bot_baibot_container_repo_version: "{{ 'main' if matrix_bot_baibot_version == 'latest' else matrix_bot_baibot_version }}"
+matrix_bot_baibot_container_src_files_path: "{{ matrix_base_data_path }}/baibot/container-src"
+
+# renovate: datasource=docker depName=ghcr.io/etkecc/baibot
+matrix_bot_baibot_version: latest
+matrix_bot_baibot_container_image: "{{ matrix_bot_baibot_container_image_name_prefix }}etkecc/baibot:{{ matrix_bot_baibot_version }}"
+matrix_bot_baibot_container_image_name_prefix: "{{ 'localhost/' if matrix_bot_baibot_container_image_self_build else 'ghcr.io/' }}"
+matrix_bot_baibot_container_image_force_pull: "{{ matrix_bot_baibot_container_image.endswith(':latest') }}"
+
+matrix_bot_baibot_base_path: "{{ matrix_base_data_path }}/baibot"
+matrix_bot_baibot_config_path: "{{ matrix_bot_baibot_base_path }}/config"
+matrix_bot_baibot_data_path: "{{ matrix_bot_baibot_base_path }}/data"
+
+matrix_bot_baibot_container_network: ""
+
+matrix_bot_baibot_container_additional_networks: "{{ matrix_bot_baibot_container_additional_networks_auto + matrix_bot_baibot_container_additional_networks_custom }}"
+matrix_bot_baibot_container_additional_networks_auto: []
+matrix_bot_baibot_container_additional_networks_custom: []
+
+# A list of extra arguments to pass to the container
+matrix_bot_baibot_container_extra_arguments: []
+
+# List of systemd services that matrix-bot-baibot.service depends on
+matrix_bot_baibot_systemd_required_services_list: "{{ matrix_bot_baibot_systemd_required_services_list_default + matrix_bot_baibot_systemd_required_services_list_auto + matrix_bot_baibot_systemd_required_services_list_custom }}"
+matrix_bot_baibot_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_bot_baibot_systemd_required_services_list_auto: []
+matrix_bot_baibot_systemd_required_services_list_custom: []
+
+# List of systemd services that matrix-bot-baibot.service wants
+matrix_bot_baibot_systemd_wanted_services_list: []
+
+# Controls the `homeserver.server_name` configuration setting.
+matrix_bot_baibot_config_homeserver_server_name: "{{ matrix_domain }}"
+
+# Controls the `homeserver.url` configuration setting.
+matrix_bot_baibot_config_homeserver_url: ""
+
+# Controls the `user.mxid_localpart` configuration setting.
+#
+# This affects the bot's username.
+# Changing this subsequently will require you to drop the bot's session/database (see `matrix_bot_baibot_data_path`),
+# so it can start fresh.
+matrix_bot_baibot_config_user_mxid_localpart: baibot
+
+# Controls the `user.password` configuration setting.
+matrix_bot_baibot_config_user_password: ''
+
+# Controls the `user.name` configuration setting.
+#
+# The name the bot uses as a display name and when it refers to itself.
+# If you leave this empty, the bot will use the default (baibot).
+#
+# Also see: `matrix_bot_baibot_config_user_mxid_localpart`
+matrix_bot_baibot_config_user_name: baibot
+
+# Controls the `user.encryption.recovery_passphrase` configuration setting.
+#
+# An optional passphrase to use for backing up and recovering the bot's encryption keys.
+# You can use any string here.
+#
+# If left empty, the recovery module will not be used and losing your session/database (see persistence)
+# will mean you lose access to old messages in encrypted room.
+#
+# Changing this subsequently will also cause you to lose access to old messages in encrypted rooms.
+# If you really need to change this:
+# - Set `matrix_bot_baibot_config_user_encryption_recovery_reset_allowed` to `true` and adjust the passphrase
+# - Remove your session file and database (see persistence)
+# - Restart the bot
+# - Then restore `matrix_bot_baibot_config_user_encryption_recovery_reset_allowed` to `false` to prevent accidental resets in the future
+matrix_bot_baibot_config_user_encryption_recovery_passphrase: null
+
+# Controls the `user.encryption.recovery_passphrase` configuration setting.
+#
+# An optional flag to reset the encryption recovery passphrase (see `matrix_bot_baibot_config_user_encryption_recovery_passphrase`).
+matrix_bot_baibot_config_user_encryption_recovery_reset_allowed: false
+
+# Controls the `command_prefix` configuration setting.
+# If you leave this empty, the bot will use the default (!bai).
+matrix_bot_baibot_config_command_prefix: "!bai"
+
+# Controls the `access.admin_patterns` configuration setting.
+# A space-separated list of MXID patterns which specify who is an admin.
+#
+# Example:
+# matrix_bot_baibot_config_access_admin_patterns:
+#   - "@*:example.com"
+#   - "@admin:another.com"
+matrix_bot_baibot_config_access_admin_patterns: "{{ [matrix_admin] if matrix_admin else [] }}"
+
+# Controls the `persistence.data_dir_path` configuration setting.
+#
+# The bot runs in a container, so this is the in-container path referring to the data directory on the host
+# (see `matrix_bot_baibot_data_path`).
+#
+# You generally don't need to change this.
+matrix_bot_baibot_config_persistence_data_dir_path: /data
+
+# Controls the `persistence.session_encryption_key` configuration setting.
+#
+# An optional secret for encrypting the bot's session data (see `matrix_bot_baibot_data_path`).
+# This must be 32-bytes (64 characters when HEX-encoded).
+# Generate it with: `openssl rand -hex 32`
+# Leave null or empty to avoid using encryption.
+# Changing this subsequently requires that you also throw away all data (see `matrix_bot_baibot_data_path`)
+matrix_bot_baibot_config_persistence_session_encryption_key: null
+
+# Controls the `persistence.config_encryption_key` configuration setting.
+#
+# An optional secret for encrypting bot configuration stored in Matrix's account data.
+# This must be 32-bytes (64 characters when HEX-encoded).
+# Generate it with: `openssl rand -hex 32`
+# Leave null or empty to avoid using encryption.
+# Changing this subsequently will make you lose your configuration.
+matrix_bot_baibot_config_persistence_config_encryption_key: null
+
+# Controls the `agents.static_definitions` configuration setting.
+#
+# There are some presets (e.g. `matrix_bot_baibot_config_agents_static_definitions_openai_*`) you can easily use to get started with a given provider.
+# You can also define your own agents via `matrix_bot_baibot_config_agents_static_definitions_custom`.
+matrix_bot_baibot_config_agents_static_definitions: "{{ matrix_bot_baibot_config_agents_static_definitions_auto + matrix_bot_baibot_config_agents_static_definitions_custom }}"
+matrix_bot_baibot_config_agents_static_definitions_auto: |-
+  {{
+    ([{
+        'id': matrix_bot_baibot_config_agents_static_definitions_anthropic_id,
+        'provider': matrix_bot_baibot_config_agents_static_definitions_anthropic_provider,
+        'config': matrix_bot_baibot_config_agents_static_definitions_anthropic_config,
+    }] if matrix_bot_baibot_config_agents_static_definitions_anthropic_enabled else [])
+    +
+    ([{
+        'id': matrix_bot_baibot_config_agents_static_definitions_groq_id,
+        'provider': matrix_bot_baibot_config_agents_static_definitions_groq_provider,
+        'config': matrix_bot_baibot_config_agents_static_definitions_groq_config,
+    }] if matrix_bot_baibot_config_agents_static_definitions_groq_enabled else [])
+    +
+    ([{
+        'id': matrix_bot_baibot_config_agents_static_definitions_openai_id,
+        'provider': matrix_bot_baibot_config_agents_static_definitions_openai_provider,
+        'config': matrix_bot_baibot_config_agents_static_definitions_openai_config,
+    }] if matrix_bot_baibot_config_agents_static_definitions_openai_enabled else [])
+  }}
+matrix_bot_baibot_config_agents_static_definitions_custom: []
+
+
+########################################################################################
+#                                                                                      #
+# Anthropic agent configuration                                                        #
+#                                                                                      #
+########################################################################################
+
+matrix_bot_baibot_config_agents_static_definitions_anthropic_enabled: false
+matrix_bot_baibot_config_agents_static_definitions_anthropic_id: anthropic
+matrix_bot_baibot_config_agents_static_definitions_anthropic_provider: anthropic
+
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config: "{{ matrix_bot_baibot_config_agents_static_definitions_anthropic_config_yaml | from_yaml | combine(matrix_bot_baibot_config_agents_static_definitions_anthropic_config_extension, recursive=True)}}"
+
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_yaml: "{{ lookup('template', 'templates/provider/anthropic-config.yml.j2') }}"
+
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_extension: "{{ matrix_bot_baibot_config_agents_static_definitions_anthropic_config_extension_yaml | from_yaml if matrix_bot_baibot_config_agents_static_definitions_anthropic_config_extension_yaml | from_yaml is mapping else {} }}"
+
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_extension_yaml: |
+  # Your custom YAML configuration for this provider's configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_bot_baibot_config_agents_static_definitions_anthropic_config`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_bot_baibot_config_agents_static_definitions_anthropic_config_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  # text_generation:
+  #   temperature: 3.5
+
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_base_url: https://api.anthropic.com/v1
+
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_api_key: ""
+
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_enabled: true
+# For valid model choices, see: https://platform.anthropic.com/docs/models
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_model_id: claude-3-5-sonnet-20240620
+# The prompt text to use (can be null or empty to not use a prompt).
+# See: https://huggingface.co/docs/transformers/en/tasks/prompting
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_prompt: null
+# The temperature parameter controls the randomness of the generated text.
+# See: https://blogs.novita.ai/what-are-large-language-model-settings-temperature-top-p-and-max-tokens/#what-is-llm-temperature
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_temperature: 1.0
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_max_response_tokens: 8192
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_max_context_tokens: 204800
+
+########################################################################################
+#                                                                                      #
+# /Anthropic agent configuration                                                       #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# Groq agent configuration                                                             #
+#                                                                                      #
+########################################################################################
+
+matrix_bot_baibot_config_agents_static_definitions_groq_enabled: false
+matrix_bot_baibot_config_agents_static_definitions_groq_id: groq
+matrix_bot_baibot_config_agents_static_definitions_groq_provider: groq
+
+matrix_bot_baibot_config_agents_static_definitions_groq_config: "{{ matrix_bot_baibot_config_agents_static_definitions_groq_config_yaml | from_yaml | combine(matrix_bot_baibot_config_agents_static_definitions_groq_config_extension, recursive=True)}}"
+
+matrix_bot_baibot_config_agents_static_definitions_groq_config_yaml: "{{ lookup('template', 'templates/provider/groq-config.yml.j2') }}"
+
+matrix_bot_baibot_config_agents_static_definitions_groq_config_extension: "{{ matrix_bot_baibot_config_agents_static_definitions_groq_config_extension_yaml | from_yaml if matrix_bot_baibot_config_agents_static_definitions_groq_config_extension_yaml | from_yaml is mapping else {} }}"
+
+matrix_bot_baibot_config_agents_static_definitions_groq_config_extension_yaml: |
+  # Your custom YAML configuration for this provider's configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_bot_baibot_config_agents_static_definitions_groq_config`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_bot_baibot_config_agents_static_definitions_groq_config_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  # text_generation:
+  #   temperature: 3.5
+
+matrix_bot_baibot_config_agents_static_definitions_groq_config_base_url: https://api.groq.com/openai/v1
+
+matrix_bot_baibot_config_agents_static_definitions_groq_config_api_key: ""
+
+matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_enabled: true
+# For valid model choices, see: https://platform.groq.com/docs/models
+matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_model_id: ""
+# The prompt text to use (can be null or empty to not use a prompt).
+# See: https://huggingface.co/docs/transformers/en/tasks/prompting
+matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_prompt: null
+# The temperature parameter controls the randomness of the generated text.
+# See: https://blogs.novita.ai/what-are-large-language-model-settings-temperature-top-p-and-max-tokens/#what-is-llm-temperature
+matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_temperature: 1.0
+matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_max_response_tokens: 4096
+matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_max_context_tokens: 131072
+
+matrix_bot_baibot_config_agents_static_definitions_groq_config_speech_to_text_enabled: true
+matrix_bot_baibot_config_agents_static_definitions_groq_config_speech_to_text_model_id: whisper-large-v3
+
+########################################################################################
+#                                                                                      #
+# /Groq agent configuration                                                            #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# OpenAI agent configuration                                                           #
+#                                                                                      #
+########################################################################################
+
+matrix_bot_baibot_config_agents_static_definitions_openai_enabled: false
+matrix_bot_baibot_config_agents_static_definitions_openai_id: openai
+matrix_bot_baibot_config_agents_static_definitions_openai_provider: openai
+
+matrix_bot_baibot_config_agents_static_definitions_openai_config: "{{ matrix_bot_baibot_config_agents_static_definitions_openai_config_yaml | from_yaml | combine(matrix_bot_baibot_config_agents_static_definitions_openai_config_extension, recursive=True)}}"
+
+matrix_bot_baibot_config_agents_static_definitions_openai_config_yaml: "{{ lookup('template', 'templates/provider/openai-config.yml.j2') }}"
+
+matrix_bot_baibot_config_agents_static_definitions_openai_config_extension: "{{ matrix_bot_baibot_config_agents_static_definitions_openai_config_extension_yaml | from_yaml if matrix_bot_baibot_config_agents_static_definitions_openai_config_extension_yaml | from_yaml is mapping else {} }}"
+
+matrix_bot_baibot_config_agents_static_definitions_openai_config_extension_yaml: |
+  # Your custom YAML configuration for this provider's configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_bot_baibot_config_agents_static_definitions_openai_config`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_bot_baibot_config_agents_static_definitions_openai_config_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  # text_generation:
+  #   temperature: 3.5
+
+matrix_bot_baibot_config_agents_static_definitions_openai_config_base_url: https://api.openai.com/v1
+
+# The API key is intentionally not required. Some OpenAI-compatible APIs do not require a key.
+matrix_bot_baibot_config_agents_static_definitions_openai_config_api_key: ""
+
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_enabled: true
+# For valid model choices, see: https://platform.openai.com/docs/models
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-4o
+# The prompt text to use (can be null or empty to not use a prompt).
+# See: https://huggingface.co/docs/transformers/en/tasks/prompting
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_prompt: null
+# The temperature parameter controls the randomness of the generated text.
+# See: https://blogs.novita.ai/what-are-large-language-model-settings-temperature-top-p-and-max-tokens/#what-is-llm-temperature
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_temperature: 1.0
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_response_tokens: 16384
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_context_tokens: 128000
+
+matrix_bot_baibot_config_agents_static_definitions_openai_config_speech_to_text_enabled: true
+matrix_bot_baibot_config_agents_static_definitions_openai_config_speech_to_text_model_id: whisper-1
+
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_to_speech_enabled: true
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_to_speech_model_id: tts-1-hd
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_to_speech_voice: onyx
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_to_speech_speed: 1.0
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_to_speech_response_format: opus
+
+matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_enabled: true
+matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_model_id: dall-e-3
+matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_style: vivid
+matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_size: 1024x1024
+
+########################################################################################
+#                                                                                      #
+# /OpenAI agent configuration                                                          #
+#                                                                                      #
+########################################################################################
+
+
+# Controls the `initial_global_config.handler.catch_all` configuration setting.
+#
+# This is an initial global configuration setting.
+# It only affects the first run of the bot. Configuration is later managed at runtime.
+matrix_bot_baibot_config_initial_global_config_handler_catch_all: null
+
+# Controls the `initial_global_config.handler.text_generation` configuration setting.
+#
+# This is an initial global configuration setting.
+# It only affects the first run of the bot. Configuration is later managed at runtime.
+matrix_bot_baibot_config_initial_global_config_handler_text_generation: null
+
+# Controls the `initial_global_config.handler.text_to_speech` configuration setting.
+#
+# This is an initial global configuration setting.
+# It only affects the first run of the bot. Configuration is later managed at runtime.
+matrix_bot_baibot_config_initial_global_config_handler_text_to_speech: null
+
+# Controls the `initial_global_config.handler.speech_to_text` configuration setting.
+#
+# This is an initial global configuration setting.
+# It only affects the first run of the bot. Configuration is later managed at runtime.
+matrix_bot_baibot_config_initial_global_config_handler_speech_to_text: null
+
+# Controls the `initial_global_config.handler.image_generation` configuration setting.
+#
+# This is an initial global configuration setting.
+# It only affects the first run of the bot. Configuration is later managed at runtime.
+matrix_bot_baibot_config_initial_global_config_handler_image_generation: null
+
+# Controls the `initial_global_config.user_patterns` configuration setting.
+#
+# A space-separated list of MXID patterns which specify who can use the bot.
+# By default, we let anyone on the homeserver use the bot.
+#
+# This is an initial global configuration setting.
+# It only affects the first run of the bot. Configuration is later managed at runtime.
+matrix_bot_baibot_config_initial_global_config_user_patterns:
+  - "@*:{{ matrix_bot_baibot_config_homeserver_server_name }}"
+
+# Controls the `logging` configuration setting.
+#
+# This could take a single value (e.g. `warn`) to affect all tracing targets,
+# or individual libraries (e.g. `mxlink`, `baibot`) can be configured independently of the main level.
+#
+# Below, we configure the logging level for:
+# - the bot (baibot), via `matrix_bot_baibot_config_logging_level_baibot`
+# - the bot framework that the bot is based on (mxlink), via `matrix_bot_baibot_config_logging_level_mxlink`
+# - everything else (external libraries), via `matrix_bot_baibot_config_logging_level_other_libs`
+#
+# Valid values for each level are: `trace`, `debug`, `info`, `warn`, `error`.
+# Learn more here: https://stackoverflow.com/a/73735203
+matrix_bot_baibot_config_logging: "{{ matrix_bot_baibot_config_logging_level_other_libs }},mxlink={{ matrix_bot_baibot_config_logging_level_mxlink }},baibot={{ matrix_bot_baibot_config_logging_level_baibot }}"
+
+# Adjust the logging level for other libraries used by the bot.
+matrix_bot_baibot_config_logging_level_other_libs: warn
+
+# Affects the logging level of the bot framework (mxlink) that the bot is based on.
+# Related to `matrix_bot_baibot_config_logging`
+matrix_bot_baibot_config_logging_level_mxlink: info
+
+# Affects the logging level of the bot itself.
+# Related to `matrix_bot_baibot_config_logging`
+matrix_bot_baibot_config_logging_level_baibot: info
+
+# Holds the final baibot configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_bot_baibot_configuration_yaml` or `matrix_bot_baibot_configuration_extension_yaml`.
+matrix_bot_baibot_configuration: "{{ matrix_bot_baibot_configuration_yaml | from_yaml | combine(matrix_bot_baibot_configuration_extension, recursive=True) }}"
+
+# Default baibot configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_bot_baibot_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_bot_baibot_configuration_yaml: "{{ lookup('template', 'templates/config.yml.j2') }}"
+
+matrix_bot_baibot_configuration_extension_yaml: |
+  # Your custom YAML configuration for baibot goes here.
+  # This configuration extends the default starting configuration (`matrix_bot_baibot_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_bot_baibot_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  # user:
+  #   password: something
+
+matrix_bot_baibot_configuration_extension: "{{ matrix_bot_baibot_configuration_extension_yaml | from_yaml if matrix_bot_baibot_configuration_extension_yaml | from_yaml is mapping else {} }}"
+
+# Additional environment variables to pass to the baibot container.
+#
+# Environment variables take priority over settings in the configuration file.
+#
+# Example:
+# matrix_bot_baibot_environment_variables_extension: |
+#   BAIBOT_USER_PASSWORD=password
+matrix_bot_baibot_environment_variables_extension: ''

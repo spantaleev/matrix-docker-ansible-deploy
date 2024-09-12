@@ -187,7 +187,9 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Bots
 
-- [Setting up matrix-bot-chatgpt](configuring-playbook-bot-chatgpt.md) - a bot through which you can talk to the [ChatGPT](https://openai.com/blog/chatgpt/) model(optional)
+- [Setting up baibot](configuring-playbook-bot-baibot.md) - a bot through which you can talk to various [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) services ([OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/chatgpt/) and [others](https://github.com/etkecc/baibot/blob/main/docs/providers.md)) (optional)
+
+- [Setting up matrix-bot-chatgpt](configuring-playbook-bot-chatgpt.md) - a bot through which you can talk to the [ChatGPT](https://openai.com/blog/chatgpt/) model (optional)
 
 - [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) - a bot to remind you about stuff (optional)
 

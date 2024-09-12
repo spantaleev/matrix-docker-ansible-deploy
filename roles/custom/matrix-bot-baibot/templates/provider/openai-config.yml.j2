@@ -1,0 +1,33 @@
+#jinja2: lstrip_blocks: "True"
+base_url: {{ matrix_bot_baibot_config_agents_static_definitions_openai_config_base_url | to_json }}
+
+api_key: {{ matrix_bot_baibot_config_agents_static_definitions_openai_config_api_key | to_json }}
+
+{% if matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_enabled %}
+text_generation:
+  model_id: {{ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id | to_json }}
+  prompt: {{ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_prompt | to_json }}
+  temperature: {{ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_temperature | to_json }}
+  max_response_tokens: {{ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_response_tokens | int | to_json }}
+  max_context_tokens: {{ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_context_tokens | int | to_json }}
+{% endif %}
+
+{% if matrix_bot_baibot_config_agents_static_definitions_openai_config_speech_to_text_enabled %}
+speech_to_text:
+  model_id: {{ matrix_bot_baibot_config_agents_static_definitions_openai_config_speech_to_text_model_id | to_json }}
+{% endif %}
+
+{% if matrix_bot_baibot_config_agents_static_definitions_openai_config_text_to_speech_enabled %}
+text_to_speech:
+  model_id: {{ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_to_speech_model_id | to_json }}
+  voice: {{ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_to_speech_voice | to_json }}
+  speed: {{ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_to_speech_speed | float }}
+  response_format: {{ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_to_speech_response_format | to_json }}
+{% endif %}
+
+{% if matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_enabled %}
+image_generation:
+  model_id: {{ matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_model_id | to_json }}
+  style: {{ matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_style | to_json }}
+  size: {{ matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_size | to_json }}
+{% endif %}

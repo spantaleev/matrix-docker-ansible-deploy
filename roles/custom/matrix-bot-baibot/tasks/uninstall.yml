@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-baibot service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-baibot.service"
+  register: matrix_bot_baibot_service_stat
+
+- when: matrix_bot_baibot_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-baibot is stopped
+      ansible.builtin.service:
+        name: matrix-bot-baibot
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-bot-baibot.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-baibot.service"
+        state: absent
+
+    - name: Ensure Matrix baibot paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_bot_baibot_base_path }}"
+        state: absent
