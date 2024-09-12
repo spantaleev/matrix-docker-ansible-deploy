@@ -142,6 +142,12 @@ matrix_bot_baibot_config_agents_static_definitions_auto: |-
     }] if matrix_bot_baibot_config_agents_static_definitions_groq_enabled else [])
     +
     ([{
+        'id': matrix_bot_baibot_config_agents_static_definitions_mistral_id,
+        'provider': matrix_bot_baibot_config_agents_static_definitions_mistral_provider,
+        'config': matrix_bot_baibot_config_agents_static_definitions_mistral_config,
+    }] if matrix_bot_baibot_config_agents_static_definitions_mistral_enabled else [])
+    +
+    ([{
         'id': matrix_bot_baibot_config_agents_static_definitions_openai_id,
         'provider': matrix_bot_baibot_config_agents_static_definitions_openai_provider,
         'config': matrix_bot_baibot_config_agents_static_definitions_openai_config,
@@ -255,6 +261,59 @@ matrix_bot_baibot_config_agents_static_definitions_groq_config_speech_to_text_mo
 ########################################################################################
 #                                                                                      #
 # /Groq agent configuration                                                            #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# Mistral agent configuration                                                             #
+#                                                                                      #
+########################################################################################
+
+matrix_bot_baibot_config_agents_static_definitions_mistral_enabled: false
+matrix_bot_baibot_config_agents_static_definitions_mistral_id: mistral
+matrix_bot_baibot_config_agents_static_definitions_mistral_provider: mistral
+
+matrix_bot_baibot_config_agents_static_definitions_mistral_config: "{{ matrix_bot_baibot_config_agents_static_definitions_mistral_config_yaml | from_yaml | combine(matrix_bot_baibot_config_agents_static_definitions_mistral_config_extension, recursive=True)}}"
+
+matrix_bot_baibot_config_agents_static_definitions_mistral_config_yaml: "{{ lookup('template', 'templates/provider/mistral-config.yml.j2') }}"
+
+matrix_bot_baibot_config_agents_static_definitions_mistral_config_extension: "{{ matrix_bot_baibot_config_agents_static_definitions_mistral_config_extension_yaml | from_yaml if matrix_bot_baibot_config_agents_static_definitions_mistral_config_extension_yaml | from_yaml is mapping else {} }}"
+
+matrix_bot_baibot_config_agents_static_definitions_mistral_config_extension_yaml: |
+  # Your custom YAML configuration for this provider's configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_bot_baibot_config_agents_static_definitions_mistral_config`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_bot_baibot_config_agents_static_definitions_mistral_config_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  # text_generation:
+  #   temperature: 3.5
+
+matrix_bot_baibot_config_agents_static_definitions_mistral_config_base_url: https://api.mistral.ai/v1
+
+matrix_bot_baibot_config_agents_static_definitions_mistral_config_api_key: ""
+
+matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_enabled: true
+# For valid model choices, see: https://platform.mistral.com/docs/models
+matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_model_id: mistral-large-latest
+# The prompt text to use (can be null or empty to not use a prompt).
+# See: https://huggingface.co/docs/transformers/en/tasks/prompting
+matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_prompt: null
+# The temperature parameter controls the randomness of the generated text.
+# See: https://blogs.novita.ai/what-are-large-language-model-settings-temperature-top-p-and-max-tokens/#what-is-llm-temperature
+matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_temperature: 1.0
+matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_max_response_tokens: 4096
+matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_max_context_tokens: 128000
+
+########################################################################################
+#                                                                                      #
+# /Mistral agent configuration                                                            #
 #                                                                                      #
 ########################################################################################
 

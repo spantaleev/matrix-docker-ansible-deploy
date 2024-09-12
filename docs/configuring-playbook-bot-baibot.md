@@ -191,6 +191,30 @@ If you'd like to use more than one model, take a look at the [Configuring additi
 💡 You may also wish to use this new agent for [🤝 Configuring initial default handlers](#-configuring-initial-default-handlers).
 
 
+#### Mistral
+
+You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md) instance powered by the [🇫🇷 Mistral provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#mistral) with the help of the playbook's preset variables.
+
+Here's an example **addition** to your `vars.yml` file:
+
+```yml
+matrix_bot_baibot_config_agents_static_definitions_mistral_enabled: true
+
+matrix_bot_baibot_config_agents_static_definitions_mistral_config_api_key: "YOUR_API_KEY_HERE"
+
+# Uncomment and adjust if you're not happy with these defaults:
+# matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_model_id: mistral-large-latest
+
+# See `defaults/main.yml` in the baibot role for more configuration options.
+```
+
+Because this is a [statically](https://github.com/etkecc/baibot/blob/main/docs/configuration/README.md#static-configuration)-defined agent, it will be given a `static/` ID prefix and will be named `static/mistral`.
+
+If you'd like to use more than one model, take a look at the [Configuring additional agents (without a preset)](#configuring-additional-agents-without-a-preset) section below.
+
+💡 You may also wish to use this new agent for [🤝 Configuring initial default handlers](#-configuring-initial-default-handlers).
+
+
 #### OpenAI
 
 You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md) instance powered by the [OpenAI provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#openai) with the help of the playbook's preset variables.
