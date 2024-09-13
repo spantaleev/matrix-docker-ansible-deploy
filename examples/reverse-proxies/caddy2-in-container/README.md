@@ -2,7 +2,7 @@
 
 This directory contains a sample config that shows you how to front the integrated [Traefik](https://traefik.io/) reverse-proxy webserver with your own container-ed  [Caddy](https://caddyserver.com/) reverse-proxy. If you have a server with a Caddy container already serving several applications. And you want to install Matrix on it, but you don't want to break the existing traffic routing (so that the existing applications keep running smoothly). Then this guide is helpful.
 
-Ps. If you have a `apt-get ` or `yum` installed caddy instead of container-ed Caddy, please see [caddy2](../caddy2/README.md).
+Note: if you're running Caddy on the host itself (not in a container), refer to the [caddy2](../caddy2/README.md) example instead.
 
 
 ## Prerequisite configuration
