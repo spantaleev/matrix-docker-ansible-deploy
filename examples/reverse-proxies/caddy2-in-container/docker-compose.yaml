@@ -1,10 +1,11 @@
+---
 version: "3.9"
 
 services:
   caddy:
     image: caddy:2.5.1-alpine
     networks:
-      # add this, so that caddy can talk to the playbook-managed-traefik 
+      # add this, so that caddy can talk to the playbook-managed-traefik
       - traefik
     ports:
       - "80:80"
@@ -12,8 +13,8 @@ services:
       - "8448:8448"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
-    #   - ./site:/var/www
-    # Other configurations ...
+      # - ./site:/var/www
+    #  Other configurations ...
 
 networks:
   # add this as well
