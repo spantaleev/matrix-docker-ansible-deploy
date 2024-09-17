@@ -9,7 +9,7 @@ To upgrade services:
 - update your playbook directory and all upstream Ansible roles (defined in the `requirements.yml` file) using:
 
   - either: `just update`
-  - or: a combination of `git pull` and `just role` (or `make roles`)
+  - or: a combination of `git pull` and `just roles` (or `make roles`)
 
 - take a look at [the changelog](../CHANGELOG.md) to see if there have been any backward-incompatible changes that you need to take care of
 
