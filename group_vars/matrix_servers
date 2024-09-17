@@ -1497,17 +1497,13 @@ matrix_mautrix_meta_messenger_homeserver_address: "{{ matrix_addons_homeserver_c
 
 matrix_mautrix_meta_messenger_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.meta.fb.hs', rounds=655555) | to_uuid }}"
 
-matrix_mautrix_meta_messenger_bridge_login_shared_secret_map_auto: |-
+matrix_mautrix_meta_messenger_double_puppet_secrets_auto: |-
   {{
-    ({
+    {
       matrix_mautrix_meta_messenger_homeserver_domain: ("as_token:" + matrix_appservice_double_puppet_registration_as_token)
-    })
+    }
     if matrix_appservice_double_puppet_enabled
-    else (
-      {matrix_mautrix_meta_messenger_homeserver_domain: matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret}
-      if matrix_synapse_ext_password_provider_shared_secret_auth_enabled
-      else {}
-    )
+    else {}
   }}
 
 matrix_mautrix_meta_messenger_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
@@ -1575,17 +1571,13 @@ matrix_mautrix_meta_instagram_homeserver_address: "{{ matrix_addons_homeserver_c
 
 matrix_mautrix_meta_instagram_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.meta.ig.hs', rounds=655555) | to_uuid }}"
 
-matrix_mautrix_meta_instagram_bridge_login_shared_secret_map_auto: |-
+matrix_mautrix_meta_instagram_double_puppet_secrets_auto: |-
   {{
-    ({
+    {
       matrix_mautrix_meta_instagram_homeserver_domain: ("as_token:" + matrix_appservice_double_puppet_registration_as_token)
-    })
+    }
     if matrix_appservice_double_puppet_enabled
-    else (
-      {matrix_mautrix_meta_instagram_homeserver_domain: matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret}
-      if matrix_synapse_ext_password_provider_shared_secret_auth_enabled
-      else {}
-    )
+    else {}
   }}
 
 matrix_mautrix_meta_instagram_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
