@@ -194,10 +194,15 @@ matrix_mautrix_meta_instagram_bridge_displayname_suffix: |-
 matrix_mautrix_meta_instagram_bridge_displayname_template: '{% raw %}{{or .DisplayName .Username "Unknown user"}}{% endraw %}{{ (" " ~ matrix_mautrix_meta_instagram_bridge_displayname_suffix) if matrix_mautrix_meta_instagram_bridge_displayname_suffix else "" }}'
 
 # The prefix for commands. Only required in non-management rooms.
-# If set to "default", will be determined based on meta -> mode (`matrix_mautrix_meta_instagram_meta_mode`):
-# - "!ig" for instagram
-# - "!fb" for facebook
-matrix_mautrix_meta_instagram_bridge_command_prefix: default
+matrix_mautrix_meta_instagram_bridge_command_prefix: |-
+  {{
+    ({
+      'facebook': '!fb',
+      'facebook-tor': '!fb',
+      'messenger': '!fb',
+      'instagram': '!ig',
+    })[matrix_mautrix_meta_instagram_meta_mode]
+  }}
 
 # Whether or not created rooms should have federation enabled.
 # If false, created portal rooms will never be federated.
