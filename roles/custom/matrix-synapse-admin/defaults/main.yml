@@ -14,7 +14,7 @@ matrix_synapse_admin_container_image_self_build: false
 matrix_synapse_admin_container_image_self_build_repo: "https://github.com/etkecc/synapse-admin.git"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/synapse-admin
-matrix_synapse_admin_version: v0.10.3-etke14
+matrix_synapse_admin_version: v0.10.3-etke16
 matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_name_prefix }}etkecc/synapse-admin:{{ matrix_synapse_admin_version }}"
 matrix_synapse_admin_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else 'ghcr.io/' }}"
 matrix_synapse_admin_docker_image_force_pull: "{{ matrix_synapse_admin_docker_image.endswith(':latest') }}"
@@ -174,3 +174,23 @@ matrix_synapse_admin_configuration: "{{ matrix_synapse_admin_configuration_defau
 # Controls the restrictBaseUrl configuration setting, which, if defined,
 # restricts the homeserver(s), so that the user can no longer define a homeserver manually during login.
 matrix_synapse_admin_config_restrictBaseUrl: "{{ [matrix_homeserver_url] }}"  # noqa var-naming
+
+# Controls the asManagedUsers configuration setting (managed by playbook), which, if defined,
+# restricts modifications of the specified users (e.g., bridge-managed).
+# You should use JS regex syntax to match the user IDs.
+# Example for mautrix-telegram: ["^@telegram_[a-zA-Z0-9]+:example\\.com$"]
+# WARNING: you want to use matrix_synapse_admin_config_asManagedUsers_custom instead of this variable.
+matrix_synapse_admin_config_asManagedUsers_auto: []  # noqa var-naming
+
+# Controls the asManagedUsers configuration setting (managed per host), which, if defined,
+# restricts modifications of the specified users (e.g., bridge-managed).
+# You should use JS regex syntax to match the user IDs.
+# Example for mautrix-telegram: ["^@telegram_[a-zA-Z0-9]+:example\\.com$"]
+matrix_synapse_admin_config_asManagedUsers_custom: []  # noqa var-naming
+
+# Controls the asManagedUsers configuration setting, which, if defined,
+# restricts modifications of the specified users (e.g., bridge-managed).
+# You should use JS regex syntax to match the user IDs.
+# Example for mautrix-telegram: ["^@telegram_[a-zA-Z0-9]+:example\\.com$"]
+# WARNING: you want to use matrix_synapse_admin_config_asManagedUsers_custom instead of this variable.
+matrix_synapse_admin_config_asManagedUsers: "{{ matrix_synapse_admin_config_asManagedUsers_auto + matrix_synapse_admin_config_asManagedUsers_custom }}"  # noqa var-naming
