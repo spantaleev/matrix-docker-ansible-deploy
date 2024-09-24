@@ -4791,6 +4791,191 @@ matrix_synapse_admin_container_labels_traefik_docker_network: "{{ matrix_playboo
 matrix_synapse_admin_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 matrix_synapse_admin_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
+matrix_synapse_admin_config_asManagedUsers_auto: |
+  {{
+    ([
+      '^@'+(matrix_alertmanager_receiver_config_matrix_user_id_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_alertmanager_receiver_enabled else [])
+    +
+    ([
+      '^@'+(matrix_appservice_draupnir_for_all_user_prefix | default('') | regex_escape) +'_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_appservice_draupnir_for_all_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_baibot_config_user_mxid_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_baibot_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_buscarron_login | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_buscarron_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_chatgpt_matrix_bot_username_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_chatgpt_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_honoroit_login | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_honoroit_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_matrix_registration_bot_matrix_user_id_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_matrix_registration_bot_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_matrix_reminder_bot_matrix_user_id_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_matrix_reminder_bot_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_maubot_login | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_maubot_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_postmoogle_login | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_postmoogle_enabled else [])
+    +
+    ([
+      '^@_discord_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_appservice_discord_enabled else [])
+    +
+    ([
+      '^@'+(matrix_appservice_slack_bot_name | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@'+(matrix_appservice_slack_user_prefix | default('') | regex_escape)+'[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_appservice_slack_enabled else [])
+    +
+    ([
+      '^@'+(matrix_appservice_webhooks_bot_name | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@'+(matrix_appservice_webhooks_user_prefix | default('') | regex_escape)+'[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_appservice_webhooks_enabled else [])
+    +
+    ([
+      '^@'+(matrix_beeper_linkedin_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@linkedin_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_beeper_linkedin_enabled else [])
+    +
+    ([
+      '^@'+(matrix_go_skype_bridge_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@skype_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_go_skype_bridge_enabled else [])
+    +
+    ([
+      '^@heisenbridge:'+(matrix_domain | regex_escape)+'$',
+      '^@hbirc_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_heisenbridge_enabled else [])
+    +
+    ([
+      '^@hookshot:'+(matrix_domain | regex_escape)+'$',
+      '^@_github_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+      '^@_gitlab_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+      '^@_jira_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+      '^@'+(matrix_hookshot_generic_userIdPrefix | default('') | regex_escape)+'[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_hookshot_enabled else [])
+    +
+    ([
+      '^@'+(matrix_mautrix_discord_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@discord_[0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mautrix_discord_enabled else [])
+    +
+    ([
+      '^@'+(matrix_mautrix_facebook_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@facebook_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mautrix_facebook_enabled else [])
+    +
+    ([
+      '^@'+(matrix_mautrix_gmessages_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@gmessages_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mautrix_gmessages_enabled else [])
+    +
+    ([
+      '^@'+(matrix_mautrix_googlechat_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@googlechat_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mautrix_googlechat_enabled else [])
+    +
+    ([
+      '^@'+(matrix_mautrix_hangouts_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@hangouts_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mautrix_hangouts_enabled else [])
+    +
+    ([
+      '^@'+(matrix_mautrix_instagram_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@instagram_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mautrix_instagram_enabled else [])
+    +
+    ([
+      '^@'+(matrix_mautrix_meta_instagram_appservice_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@'+(matrix_mautrix_meta_instagram_bridge_username_prefix | default('') | regex_escape)+'[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mautrix_meta_instagram_enabled else [])
+    +
+    ([
+      '^@'+(matrix_mautrix_meta_messenger_appservice_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@'+(matrix_mautrix_meta_messenger_bridge_username_prefix | default('') | regex_escape)+'[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mautrix_meta_messenger_enabled else [])
+    +
+    ([
+      '^@'+(matrix_mautrix_signal_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@signal_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mautrix_signal_enabled else [])
+    +
+    ([
+      '^@'+(matrix_mautrix_slack_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@slack_[a-zA-Z0-9\-]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mautrix_slack_enabled else [])
+    +
+    ([
+      '^@'+(matrix_mautrix_telegram_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@telegram_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mautrix_telegram_enabled else [])
+    +
+    ([
+      '^@'+(matrix_mautrix_twitter_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@twitter_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mautrix_twitter_enabled else [])
+    +
+    ([
+      '^@'+(matrix_mautrix_whatsapp_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@whatsapp_[0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mautrix_whatsapp_enabled else [])
+    +
+    ([
+      '^@'+(matrix_mautrix_imessage_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@imessage_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mautrix_wsproxy_enabled else [])
+    +
+    ([
+      '^@_discordpuppet_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mx_puppet_discord_enabled else [])
+    +
+    ([
+      '^@_groupmepuppet_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mx_puppet_groupme_enabled else [])
+    +
+    ([
+      '^@_instagrampuppet_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mx_puppet_instagram_enabled else [])
+    +
+    ([
+      '^@_slackpuppet_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mx_puppet_slack_enabled else [])
+    +
+    ([
+      '^@_steampuppet_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mx_puppet_steam_enabled else [])
+    +
+    ([
+      '^@'+(matrix_mx_puppet_twitter_bot_localpart | default('') | regex_escape)+':'+ (matrix_domain | regex_escape)+'$',
+      '^@'+(matrix_mx_puppet_twitter_namespace_prefix | default('') | regex_escape)+'[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mx_puppet_twitter_enabled else [])
+    +
+    ([
+      '^@smsbot:'+(matrix_domain | regex_escape)+'$',
+      '^@sms_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_sms_bridge_enabled else [])
+    +
+    ([
+      '^@'+(matrix_wechat_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@_wechat_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_wechat_enabled else [])
+  }}
+
 ######################################################################
 #
 # /matrix-synapse-admin
