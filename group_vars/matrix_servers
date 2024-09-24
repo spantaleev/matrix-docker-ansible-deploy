@@ -4791,6 +4791,54 @@ matrix_synapse_admin_container_labels_traefik_docker_network: "{{ matrix_playboo
 matrix_synapse_admin_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
 matrix_synapse_admin_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
 
+matrix_synapse_admin_config_asManagedUsers_auto: |
+  {{
+    ([
+      '^@'+(matrix_alertmanager_receiver_config_matrix_user_id_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_alertmanager_receiver_enabled else [])
+    +
+    ([
+      '^@'+(matrix_appservice_draupnir_for_all_user_prefix | default('') | regex_escape) +'_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_appservice_draupnir_for_all_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_baibot_config_user_mxid_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_baibot_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_buscarron_login | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_buscarron_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_chatgpt_matrix_bot_username_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_chatgpt_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_honoroit_login | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_honoroit_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_matrix_registration_bot_matrix_user_id_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_matrix_registration_bot_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_matrix_reminder_bot_matrix_user_id_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_matrix_reminder_bot_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_maubot_login | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_maubot_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_postmoogle_login | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_postmoogle_enabled else [])
+    +
+    ([
+      '^@telegram_[a-zA-Z0-9]+:'+ (matrix_mautrix_telegram_homeserver_domain | default(matrix_domain) | regex_escape) + '$',
+      '^@'+(matrix_mautrix_telegram_appservice_bot_username| default('') | regex_escape)+':'+ (matrix_mautrix_telegram_homeserver_domain | default(matrix_domain) | regex_escape) + '$',
+    ] if matrix_mautrix_telegram_enabled else [])
+  }}
+
 ######################################################################
 #
 # /matrix-synapse-admin
