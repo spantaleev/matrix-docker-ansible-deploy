@@ -1,79 +1,17 @@
 ---
-# roles/custom/matrix-element-call/tasks/validate_config.yml
+# Validate configuration for matrix-element-call
 
-- name: Ensure required variables for Element Call are defined
+- name: Fail if required matrix-element-call settings are not defined
   ansible.builtin.fail:
-    msg: "The variable '{{ item }}' is required and must be set."
-  when: vars[item] is not defined or vars[item] == ''
-  loop:
-    - matrix_element_call_enabled
-    - matrix_element_call_version
-    - matrix_element_call_hostname
-    - matrix_element_call_path_prefix
-    - matrix_element_call_base_path
-    - matrix_element_call_container_image
-    - matrix_element_call_container_network
-    - matrix_element_call_container_labels_traefik_hostname
-    - matrix_element_call_jwt_service_url
-    - matrix_element_call_livekit_service_url
-    - matrix_element_call_livekit_dev_key
-
-- name: Validate that the Element Call hostname is properly formatted
-  ansible.builtin.assert:
-    that:
-      - matrix_element_call_hostname is match('^([a-zA-Z0-9][-a-zA-Z0-9]*[a-zA-Z0-9]\.)+[a-zA-Z]{2,}$')
-    fail_msg: "The hostname '{{ matrix_element_call_hostname }}' is not valid. It should be a valid domain or subdomain."
-    success_msg: "The hostname '{{ matrix_element_call_hostname }}' is valid."
-    
-- name: Validate that the Element Call version is specified correctly
-  ansible.builtin.assert:
-    that:
-      - matrix_element_call_version is string
-      - matrix_element_call_version != ''
-    fail_msg: "The Element Call version must be a non-empty string."
-    success_msg: "The Element Call version is set correctly."
-
-- name: Ensure LiveKit dev key is set
-  ansible.builtin.assert:
-    that:
-      - matrix_element_call_livekit_dev_key is string
-      - matrix_element_call_livekit_dev_key != ''
-    fail_msg: "The LiveKit dev key (matrix_element_call_livekit_dev_key) must be a non-empty string."
-    success_msg: "The LiveKit dev key is set correctly."
-
-- name: Ensure JWT service URL is valid
-  ansible.builtin.assert:
-    that:
-      - matrix_element_call_jwt_service_url is match('^https?://[a-zA-Z0-9.-]+$')
-    fail_msg: "The JWT service URL '{{ matrix_element_call_jwt_service_url }}' is not valid."
-    success_msg: "The JWT service URL is valid."
-
-- name: Ensure LiveKit service URL is valid
-  ansible.builtin.assert:
-    that:
-      - matrix_element_call_livekit_service_url is match('^https?://[a-zA-Z0-9.-]+$')
-    fail_msg: "The LiveKit service URL '{{ matrix_element_call_livekit_service_url }}' is not valid."
-    success_msg: "The LiveKit service URL is valid."
-
-- name: Ensure matrix-element-call base path is set and exists
-  ansible.builtin.assert:
-    that:
-      - matrix_element_call_base_path is string
-      - matrix_element_call_base_path != ''
-    fail_msg: "The base path for Element Call (matrix_element_call_base_path) must be a non-empty string."
-    success_msg: "The base path for Element Call is set correctly."
-
-- name: Ensure required paths for configurations are accessible
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
+    msg: >
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] == ''"
   with_items:
-    - "{{ matrix_element_call_base_path }}/config"
-    - "{{ matrix_element_call_base_path }}/backend"
-  register: config_paths_check
-
-- name: Fail if any required paths for configurations are not accessible
-  ansible.builtin.fail:
-    msg: "The required configuration path '{{ item.path }}' does not exist or is not accessible."
-  when: config_paths_check.results is defined and config_paths_check.results | selectattr('failed', 'eq', True) | list | length > 0
-  loop: "{{ config_paths_check.results | selectattr('failed', 'eq', True) | list }}"
+    - {'name': 'matrix_element_call_base_path', when: true}
+    - {'name': 'matrix_element_call_container_network', when: true}
+    - {'name': 'matrix_element_call_image', when: true}
+    - {'name': 'matrix_jwt_service_image', when: true}
+    - {'name': 'matrix_livekit_image', when: true}
+    - {'name': 'matrix_redis_image', when: true}
+    - {'name': 'matrix_element_call_livekit_dev_key', when: true}
+    - {'name': 'matrix_element_call_livekit_service_url', when: true}
