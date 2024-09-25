@@ -92,6 +92,10 @@
   delay: 10
   until: redis_image_result is not failed
 
+- name: Debug labels file content
+  ansible.builtin.debug:
+    msg: "{{ lookup('file', matrix_element_call_base_path ~ '/config/labels') | from_yaml }}"
+
 # Ensure Docker Containers are Running
 - name: Run matrix-element-call Docker container
   community.docker.docker_container:
