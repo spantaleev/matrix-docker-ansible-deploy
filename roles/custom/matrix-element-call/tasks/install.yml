@@ -1,17 +1,114 @@
 ---
-# Main install task for matrix-element-call
+# Main installation tasks for matrix-element-call
 
-- name: Install Docker containers for Element Call
-  include_tasks: install_docker_containers.yml
+# Ensure Required Directories Exist
+- name: Ensure matrix-element-call paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - path: "{{ matrix_element_call_base_path }}"
+    - path: "{{ matrix_element_call_config_path }}"
+    - path: "{{ matrix_element_call_backend_path }}"
 
-- name: Update .well-known/matrix/client
-  include_tasks: update_well_known_client.yml
+# Ensure Configuration Files are in Place
+- name: Ensure matrix-element-call support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_element_call_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - config.json
+    - env
+    - labels
 
-- name: Create .well-known/element/element.json
-  include_tasks: create_element_json.yml
+- name: Ensure livekit.yaml is installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/livekit.yaml.j2"
+    dest: "{{ matrix_element_call_backend_path }}/livekit.yaml"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
-- name: Update homeserver.yaml for Element Call
-  include_tasks: update_homeserver_config.yml
+- name: Ensure redis.conf is installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/redis.conf.j2"
+    dest: "{{ matrix_element_call_backend_path }}/redis.conf"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
 
-- name: Update Element-Web config.json for Element Call
-  include_tasks: update_element_web_config.yml
+# Ensure Docker Images are Pulled
+- name: Ensure matrix-element-call container image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_element_call_image }}"
+    source: pull
+  register: element_call_image_result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: element_call_image_result is not failed
+
+- name: Ensure jwt-service container image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_jwt_service_image }}"
+    source: pull
+  register: jwt_image_result
+  retries: 3
+  delay: 10
+  until: jwt_image_result is not failed
+
+- name: Ensure livekit container image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_livekit_image }}"
+    source: pull
+  register: livekit_image_result
+  retries: 3
+  delay: 10
+  until: livekit_image_result is not failed
+
+- name: Ensure redis container image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_redis_image }}"
+    source: pull
+  register: redis_image_result
+  retries: 3
+  delay: 10
+  until: redis_image_result is not failed
+
+# Ensure Docker Networks are Created
+- name: Ensure matrix-element-call container network is created
+  community.general.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    name: "{{ matrix_element_call_container_network }}"
+    driver: bridge
+    driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
+
+# Deploy Systemd Services for Containers
+- name: Ensure matrix-element-call systemd service is installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-element-call.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-element-call.service"
+    mode: 0644
+
+- name: Ensure jwt-service systemd service is installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-jwt-service.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-jwt-service.service"
+    mode: 0644
+
+- name: Ensure livekit systemd service is installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-livekit.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-livekit.service"
+    mode: 0644
+
+- name: Ensure redis systemd service is installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-redis.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-redis.service"
+    mode: 0644
