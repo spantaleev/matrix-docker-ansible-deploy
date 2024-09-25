@@ -4,8 +4,3 @@ traefik.http.routers.{{ matrix_element_call_hostname | replace('.', '_') }}-rout
 traefik.http.routers.{{ matrix_element_call_hostname | replace('.', '_') }}-router.entrypoints: "{{ matrix_element_call_container_labels_traefik_entrypoints }}"
 traefik.http.routers.{{ matrix_element_call_hostname | replace('.', '_') }}-router.tls.certresolver: "{{ matrix_element_call_container_labels_traefik_tls_certResolver }}"
 traefik.http.services.{{ matrix_element_call_hostname | replace('.', '_') }}-service.loadbalancer.server.port: "8080"
-
-# Additional labels (if any) specified by the user
-{% for key, value in matrix_element_call_container_extra_arguments.items() %}
-{{ key }}: "{{ value }}"
-{% endfor %}
