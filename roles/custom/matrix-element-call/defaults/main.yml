@@ -1,14 +1,9 @@
 ---
-# roles/custom/matrix-element-call/defaults/main.yml
-
 # Enable or disable matrix-element-call deployment
 matrix_element_call_enabled: false
 
-# Default Matrix server name (can be overridden in host_vars if needed)
-matrix_server_name: "{{ matrix_domain }}"
-
 # Base path configuration
-matrix_element_call_base_path: "/home/{{ matrix_user_username }}/dockerdata/volumes/elementcall"
+matrix_element_call_base_path: "{{ matrix_base_data_path }}/element-call"
 matrix_element_call_config_path: "{{ matrix_element_call_base_path }}/config"
 matrix_element_call_backend_path: "{{ matrix_element_call_base_path }}/backend"
 
@@ -19,19 +14,39 @@ matrix_element_call_container_network: "matrix_element_call_network"
 matrix_element_call_image: "ghcr.io/element-hq/element-call:latest"
 matrix_jwt_service_image: "ghcr.io/element-hq/lk-jwt-service:latest-ci"
 matrix_livekit_image: "livekit/livekit-server:latest"
-redis_image: "redis:6-alpine"
+matrix_redis_image: "redis:6-alpine"
 
 # Ports
 matrix_element_call_port: "8093"
 matrix_jwt_service_port: "8881"
-redis_port: "6379"
+matrix_redis_port: "6379"
 
-# LiveKit configuration (should be set in host_vars or globally)
-matrix_element_call_livekit_dev_key: "{{ matrix_livekit_dev_key | default('unset-livekit-key') }}"
+# LiveKit configuration
+matrix_element_call_livekit_dev_key: "{{ matrix_livekit_dev_key }}"  # Must be defined in host_vars
 matrix_element_call_livekit_service_url: "wss://sfu.{{ matrix_domain }}:443"
 
-# Well-known paths and domains (derived from matrix_base_domain)
+# Well-known paths and domains (derived from matrix_domain)
 matrix_element_call_domain: "call.{{ matrix_domain }}"
-matrix_element_call_well_known_client_path: "/var/www/.well-known/matrix/client"
-matrix_element_call_well_known_element_path: "/var/www/.well-known/element/element.json"
+matrix_element_call_well_known_client_path: "{{ matrix_base_data_path }}/static-files/public/.well-known/matrix/client"
+matrix_element_call_well_known_element_path: "{{ matrix_base_data_path }}/static-files/public/.well-known/element/element.json"
 matrix_element_call_base_url: "https://{{ matrix_element_call_domain }}"
+
+# Redis Configuration for Element Call
+redis_hostname: "localhost"
+redis_port: 6379
+redis_password: ""
+
+# Traefik Configuration for Element Call
+matrix_element_call_container_labels_traefik_enabled: true
+matrix_element_call_container_labels_traefik_hostname: "{{ matrix_element_call_domain }}"
+matrix_element_call_container_labels_traefik_path_prefix: "/"
+matrix_element_call_container_labels_traefik_rule: "Host(`{{ matrix_element_call_container_labels_traefik_hostname }}`)"
+matrix_element_call_container_labels_traefik_entrypoints: "websecure"
+matrix_element_call_container_labels_traefik_tls_certResolver: "default"
+
+# Additional environment variables for the container
+matrix_element_call_environment_variables_additional: {}
+
+# Enable or disable metrics collection
+matrix_element_call_metrics_enabled: false
+matrix_element_call_metrics_port: 2112
