@@ -1,14 +1,20 @@
 ---
-# roles/custom/matrix-element-call/tasks/main.yml
 
-- name: Ensure Element Call dependencies are valid and present
-  when: matrix_element_call_enabled | bool
-  ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+- tags:
+    - setup-all
+    - setup-element-call
+    - install-all
+    - install-element-call
+  block:
+    - when: matrix_element_call_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
-- name: Install Element Call and its related services
-  when: matrix_element_call_enabled | bool
-  ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+    - when: matrix_element_call_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
 
-- name: Uninstall Element Call and clean up resources
-  when: not matrix_element_call_enabled | bool
-  ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
+- tags:
+    - setup-all
+    - setup-element-call
+  block:
+    - when: not matrix_element_call_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
