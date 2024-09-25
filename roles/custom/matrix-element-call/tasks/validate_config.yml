@@ -21,10 +21,10 @@
 - name: Validate that the Element Call hostname is properly formatted
   ansible.builtin.assert:
     that:
-      - matrix_element_call_hostname is match('^([a-zA-Z0-9][-a-zA-Z0-9]*[a-zA-Z0-9])$')
+      - matrix_element_call_hostname is match('^([a-zA-Z0-9][-a-zA-Z0-9]*[a-zA-Z0-9]\.)+[a-zA-Z]{2,}$')
     fail_msg: "The hostname '{{ matrix_element_call_hostname }}' is not valid. It should be a valid domain or subdomain."
     success_msg: "The hostname '{{ matrix_element_call_hostname }}' is valid."
-
+    
 - name: Validate that the Element Call version is specified correctly
   ansible.builtin.assert:
     that:
