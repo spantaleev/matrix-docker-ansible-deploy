@@ -232,3 +232,5 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up the Rageshake bug report server](configuring-playbook-rageshake.md) (optional)
 
 - [Setting up Prometheus Alertmanager integration via matrix-alertmanager-receiver](configuring-playbook-alertmanager-receiver.md) (optional)
+
+- [Setting up the Element Call server](configuring-playbook-element-call.md) (optional)
