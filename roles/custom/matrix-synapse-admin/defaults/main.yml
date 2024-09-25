@@ -14,7 +14,7 @@ matrix_synapse_admin_container_image_self_build: false
 matrix_synapse_admin_container_image_self_build_repo: "https://github.com/etkecc/synapse-admin.git"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/synapse-admin
-matrix_synapse_admin_version: v0.10.3-etke16
+matrix_synapse_admin_version: v0.10.3-etke17
 matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_name_prefix }}etkecc/synapse-admin:{{ matrix_synapse_admin_version }}"
 matrix_synapse_admin_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else 'ghcr.io/' }}"
 matrix_synapse_admin_docker_image_force_pull: "{{ matrix_synapse_admin_docker_image.endswith(':latest') }}"
@@ -174,6 +174,9 @@ matrix_synapse_admin_configuration: "{{ matrix_synapse_admin_configuration_defau
 # Controls the restrictBaseUrl configuration setting, which, if defined,
 # restricts the homeserver(s), so that the user can no longer define a homeserver manually during login.
 matrix_synapse_admin_config_restrictBaseUrl: "{{ [matrix_homeserver_url] }}"  # noqa var-naming
+
+# Controls the supportURL configuration setting, which, if defined, replaces the default link to the Synapse Admin GitHub repository.
+matrix_synapse_admin_config_supportURL: ''  # noqa var-naming
 
 # Controls the asManagedUsers configuration setting (managed by playbook), which, if defined,
 # restricts modifications of the specified users (e.g., bridge-managed).
