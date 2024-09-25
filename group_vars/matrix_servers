@@ -5690,3 +5690,61 @@ devture_traefik_certs_dumper_ssl_dir_path: "{{ devture_traefik_ssl_dir_path if d
 # /com.devture.ansible.role.traefik_certs_dumper                       #
 #                                                                      #
 ########################################################################
+
+
+########################################################################
+#                                                                      #
+# matrix-element-call                                                  #
+#                                                                      #
+########################################################################
+
+# Matrix Element Call Configuration
+matrix_element_call_enabled: false  # Default is false; should be enabled in host_vars as needed
+matrix_element_call_version: "latest"  # Default version; can be overridden in host_vars
+matrix_element_call_scheme: "https"  # Scheme for Element Call (e.g., https)
+matrix_element_call_hostname: "call.{{ matrix_domain }}"  # Default hostname; should be overridden in host_vars if different
+matrix_element_call_path_prefix: "/"  # Path prefix for Element Call
+matrix_element_call_base_path: "{{ matrix_base_data_path }}/element-call"  # Base path for storing Element Call-related files
+matrix_element_call_container_image: "ghcr.io/element-hq/element-call:{{ matrix_element_call_version }}"
+matrix_element_call_container_image_name_prefix: ghcr.io/
+matrix_element_call_container_image_registry_prefix: ghcr.io/
+matrix_element_call_container_image_force_pull: true
+
+# Docker network configuration for Element Call
+matrix_element_call_container_network: "{{ matrix_homeserver_container_network }}"  # Use the homeserver network by default
+
+# Traefik Configuration for Element Call
+matrix_element_call_container_labels_traefik_enabled: true
+matrix_element_call_container_labels_traefik_hostname: "{{ matrix_element_call_hostname }}"
+matrix_element_call_container_labels_traefik_path_prefix: "{{ matrix_element_call_path_prefix }}"
+matrix_element_call_container_labels_traefik_rule: "Host(`{{ matrix_element_call_container_labels_traefik_hostname }}`)"
+matrix_element_call_container_labels_traefik_entrypoints: "websecure"
+matrix_element_call_container_labels_traefik_tls_certResolver: "default"
+
+# JWT Service Configuration
+matrix_element_call_jwt_service_url: "https://sfu-jwt.{{ matrix_domain }}"  # Default JWT service URL; adjust as needed
+
+# LiveKit Service Configuration
+matrix_element_call_livekit_service_url: "https://sfu.{{ matrix_domain }}"  # Default LiveKit service URL; adjust as needed
+matrix_element_call_livekit_dev_key: "{{ matrix_livekit_dev_key }}"  # LiveKit dev key
+
+# Redis Configuration for Element Call
+matrix_element_call_redis_hostname: "localhost"  # Default Redis hostname; can be overridden
+matrix_element_call_redis_port: 6379  # Default Redis port; can be overridden
+matrix_element_call_redis_password: ""  # Redis password; should be set in host_vars if needed
+
+# Additional environment variables for the container
+matrix_element_call_environment_variables_additional: {}
+
+# Additional arguments or configuration options for the Docker container
+matrix_element_call_container_extra_arguments: []
+
+# Enable or disable metrics collection
+matrix_element_call_metrics_enabled: false
+matrix_element_call_metrics_port: 2112
+
+########################################################################
+#                                                                      #
+# /matrix-element-call                                                 #
+#                                                                      #
+########################################################################

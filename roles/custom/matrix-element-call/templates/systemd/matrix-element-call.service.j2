@@ -1,0 +1,17 @@
+[Unit]
+Description=Matrix Element Call Service
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/docker start -a matrix-element-call
+ExecStop=/usr/bin/docker stop matrix-element-call
+Restart=always
+User={{ matrix_user_username }}
+Group={{ matrix_user_groupname }}
+TimeoutStartSec=0
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

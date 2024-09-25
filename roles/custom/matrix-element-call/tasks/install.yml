@@ -1,0 +1,17 @@
+---
+# Main install task for matrix-element-call
+
+- name: Install Docker containers for Element Call
+  include_tasks: install_docker_containers.yml
+
+- name: Update .well-known/matrix/client
+  include_tasks: update_well_known_client.yml
+
+- name: Create .well-known/element/element.json
+  include_tasks: create_element_json.yml
+
+- name: Update homeserver.yaml for Element Call
+  include_tasks: update_homeserver_config.yml
+
+- name: Update Element-Web config.json for Element Call
+  include_tasks: update_element_web_config.yml

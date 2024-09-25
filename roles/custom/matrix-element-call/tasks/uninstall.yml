@@ -1,0 +1,51 @@
+---
+---
+# roles/custom/matrix-element-call/tasks/uninstall.yml
+
+# Stop and remove Docker containers
+- name: Stop and remove matrix-element-call Docker container
+  community.docker.docker_container:
+    name: "matrix-element-call"
+    state: absent
+  when: matrix_element_call_enabled | bool == false
+
+- name: Stop and remove jwt-service Docker container
+  community.docker.docker_container:
+    name: "matrix-jwt-service"
+    state: absent
+  when: matrix_element_call_enabled | bool == false
+
+- name: Stop and remove livekit Docker container
+  community.docker.docker_container:
+    name: "matrix-livekit"
+    state: absent
+  when: matrix_element_call_enabled | bool == false
+
+- name: Stop and remove redis Docker container
+  community.docker.docker_container:
+    name: "matrix-redis"
+    state: absent
+  when: matrix_element_call_enabled | bool == false
+
+# Remove matrix-element-call directories
+- name: Remove matrix-element-call directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ matrix_element_call_base_path }}"
+  when: matrix_element_call_enabled | bool == false
+
+# Disable and remove systemd service for matrix-element-call
+- name: Stop and disable matrix-element-call systemd service
+  ansible.builtin.systemd:
+    name: matrix-element-call
+    state: stopped
+    enabled: false
+  when: matrix_element_call_enabled | bool == false
+
+- name: Remove matrix-element-call systemd service file
+  ansible.builtin.file:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-element-call.service"
+    state: absent
+  when: matrix_element_call_enabled | bool == false

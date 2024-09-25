@@ -1,0 +1,24 @@
+---
+---
+# Update the .well-known/matrix/client file with Element Call config
+
+- name: Ensure .well-known directory exists
+  ansible.builtin.file:
+    path: "{{ matrix_element_call_well_known_client_path | dirname }}"
+    state: directory
+    mode: 0755
+
+- name: Update .well-known/matrix/client file with Element Call config
+  ansible.builtin.blockinfile:
+    path: "{{ matrix_element_call_well_known_client_path }}"
+    block: |
+      "org.matrix.msc4143.rtc_foci": [
+        {
+          "type": "livekit",
+          "livekit_service_url": "{{ matrix_element_call_jwt_service_url }}"
+        }
+      ]
+    create: yes
+    mode: '0644'
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"

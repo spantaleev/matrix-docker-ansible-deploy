@@ -1,0 +1,34 @@
+---
+# roles/custom/matrix-element-call/defaults/main.yml
+
+# Enable or disable matrix-element-call deployment
+matrix_element_call_enabled: false
+
+# Base path configuration
+matrix_element_call_base_path: "/home/{{ matrix_user_username }}/dockerdata/volumes/elementcall"
+matrix_element_call_config_path: "{{ matrix_element_call_base_path }}/config"
+matrix_element_call_backend_path: "{{ matrix_element_call_base_path }}/backend"
+
+# Docker network configuration
+matrix_element_call_container_network: "matrix_element_call_network"
+
+# Docker images
+matrix_element_call_image: "ghcr.io/element-hq/element-call:latest"
+matrix_jwt_service_image: "ghcr.io/element-hq/lk-jwt-service:latest-ci"
+matrix_livekit_image: "livekit/livekit-server:latest"
+matrix_redis_image: "redis:6-alpine"
+
+# Ports
+matrix_element_call_port: "8093"
+matrix_jwt_service_port: "8881"
+matrix_redis_port: "6379"
+
+# LiveKit configuration (should be set in host_vars or globally)
+matrix_element_call_livekit_dev_key: "{{ matrix_livekit_dev_key | default('unset-livekit-key') }}"
+matrix_element_call_livekit_service_url: "wss://sfu.{{ matrix_base_domain }}:443"
+
+# Well-known paths and domains (derived from matrix_base_domain)
+matrix_element_call_domain: "call.{{ matrix_base_domain }}"
+matrix_element_call_well_known_client_path: "/var/www/.well-known/matrix/client"
+matrix_element_call_well_known_element_path: "/var/www/.well-known/element/element.json"
+matrix_element_call_base_url: "https://{{ matrix_element_call_domain }}"

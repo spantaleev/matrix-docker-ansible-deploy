@@ -1,0 +1,29 @@
+---
+# Update Element-Web config.json with Element Call features
+
+- name: Ensure Element-Web config.json exists
+  ansible.builtin.file:
+    path: "{{ matrix_element_web_config_path }}"
+    state: file
+    mode: 0644
+
+- name: Update Element-Web config.json with Element Call features
+  ansible.builtin.blockinfile:
+    path: "{{ matrix_element_web_config_path }}"
+    block: |
+      "features": {
+          "feature_video_rooms": true,
+          "feature_new_room_decoration_ui": true,
+          "feature_group_calls": true,
+          "feature_element_call_video_rooms": true
+      },
+      "element_call": {
+          "url": "{{ matrix_element_call_base_url }}",
+          "participant_limit": 8,
+          "brand": "Element Call",
+          "use_exclusively": true
+      }
+    marker: "# ANSIBLE MANAGED BLOCK - Element Call features"
+    mode: '0644'
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"

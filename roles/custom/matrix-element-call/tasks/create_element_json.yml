@@ -1,0 +1,22 @@
+---
+---
+# Create the element.json file to point to Element Call
+
+- name: Ensure .well-known/element directory exists
+  ansible.builtin.file:
+    path: "{{ matrix_element_call_well_known_element_path | dirname }}"
+    state: directory
+    mode: 0755
+
+- name: Create or update the element.json file with Element Call config
+  ansible.builtin.copy:
+    dest: "{{ matrix_element_call_well_known_element_path }}"
+    content: |
+      {
+        "call": {
+          "widget_url": "{{ matrix_element_call_base_url }}"
+        }
+      }
+    mode: '0644'
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
