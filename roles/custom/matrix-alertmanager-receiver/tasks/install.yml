@@ -63,7 +63,7 @@
         cmd: |-
           {{ devture_systemd_docker_base_host_command_docker }} buildx build
           --tag={{ matrix_alertmanager_receiver_container_image }}
-          --file={{ matrix_alertmanager_receiver_container_src_path }}/contrib/Dockerfile
+          --file={{ matrix_alertmanager_receiver_container_src_path }}/Dockerfile
           {{ matrix_alertmanager_receiver_container_src_path }}
       changed_when: true
 
@@ -72,6 +72,7 @@
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_alertmanager_receiver_container_network }}"
     driver: bridge
+    driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
 
 - name: Ensure matrix-alertmanager-receiver.service installed
   ansible.builtin.template:

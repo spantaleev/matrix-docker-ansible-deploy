@@ -13,7 +13,7 @@ matrix_mautrix_meta_messenger_enabled: true
 matrix_mautrix_meta_messenger_identifier: matrix-mautrix-meta-messenger
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/meta
-matrix_mautrix_meta_messenger_version: v0.3.2
+matrix_mautrix_meta_messenger_version: v0.4.0
 
 matrix_mautrix_meta_messenger_base_path: "{{ matrix_base_data_path }}/mautrix-meta-messenger"
 matrix_mautrix_meta_messenger_config_path: "{{ matrix_mautrix_meta_messenger_base_path }}/config"
@@ -194,10 +194,15 @@ matrix_mautrix_meta_messenger_bridge_displayname_suffix: |-
 matrix_mautrix_meta_messenger_bridge_displayname_template: '{% raw %}{{or .DisplayName .Username "Unknown user"}}{% endraw %}{{ (" " ~ matrix_mautrix_meta_messenger_bridge_displayname_suffix) if matrix_mautrix_meta_messenger_bridge_displayname_suffix else "" }}'
 
 # The prefix for commands. Only required in non-management rooms.
-# If set to "default", will be determined based on meta -> mode (`matrix_mautrix_meta_messenger_meta_mode`):
-# - "!ig" for instagram
-# - "!fb" for facebook
-matrix_mautrix_meta_messenger_bridge_command_prefix: default
+matrix_mautrix_meta_messenger_bridge_command_prefix: |-
+  {{
+    ({
+      'facebook': '!fb',
+      'facebook-tor': '!fb',
+      'messenger': '!fb',
+      'instagram': '!ig',
+    })[matrix_mautrix_meta_messenger_meta_mode]
+  }}
 
 # Whether or not created rooms should have federation enabled.
 # If false, created portal rooms will never be federated.
@@ -214,9 +219,9 @@ matrix_mautrix_meta_messenger_bridge_encryption_allow_key_sharing: "{{ matrix_ma
 matrix_mautrix_meta_messenger_bridge_encryption_appservice: false
 matrix_mautrix_meta_messenger_bridge_encryption_require: false
 
-matrix_mautrix_meta_messenger_bridge_login_shared_secret_map: "{{ matrix_mautrix_meta_messenger_bridge_login_shared_secret_map_auto | combine(matrix_mautrix_meta_messenger_bridge_login_shared_secret_map_custom) }}"
-matrix_mautrix_meta_messenger_bridge_login_shared_secret_map_auto: {}
-matrix_mautrix_meta_messenger_bridge_login_shared_secret_map_custom: {}
+matrix_mautrix_meta_messenger_double_puppet_secrets: "{{ matrix_mautrix_meta_messenger_double_puppet_secrets_auto | combine(matrix_mautrix_meta_messenger_double_puppet_secrets_custom) }}"
+matrix_mautrix_meta_messenger_double_puppet_secrets_auto: {}
+matrix_mautrix_meta_messenger_double_puppet_secrets_custom: {}
 
 matrix_mautrix_meta_messenger_bridge_permissions: "{{ matrix_mautrix_meta_messenger_bridge_permissions_default | combine(matrix_mautrix_meta_messenger_bridge_permissions_custom) }}"
 
@@ -231,16 +236,15 @@ matrix_mautrix_meta_messenger_bridge_permissions_custom: {}
 # Enable bridge relay bot functionality
 matrix_mautrix_meta_messenger_bridge_relay_enabled: "{{ matrix_bridges_relay_enabled }}"
 matrix_mautrix_meta_messenger_bridge_relay_admin_only: true
+matrix_mautrix_meta_messenger_bridge_relay_default_relays: []
 
-matrix_mautrix_meta_messenger_bridge_management_room_text_welcome: |-
-  {{
-    ({
-      'facebook': "Hello, I'm a Facebook bridge bot.",
-      'facebook-tor': "Hello, I'm a Facebook bridge bot which uses Tor.",
-      'messenger': "Hello, I'm a Messenger bridge bot.",
-      'instagram': "Hello, I'm an Instagram bridge bot.",
-    })[matrix_mautrix_meta_messenger_meta_mode]
-  }}
+matrix_mautrix_meta_messenger_backfill_enabled: true
+matrix_mautrix_meta_messenger_backfill_max_initial_messages: 50
+matrix_mautrix_meta_messenger_backfill_max_catchup_messages: 500
+matrix_mautrix_meta_messenger_backfill_unread_hours_threshold: 720
+matrix_mautrix_meta_messenger_backfill_threads_max_initial_messages: 50
+
+matrix_mautrix_meta_messenger_public_media_signing_key: ''
 
 # Specifies the default log level.
 # This bridge uses zerolog, so valid levels are: panic, fatal, error, warn, info, debug, trace

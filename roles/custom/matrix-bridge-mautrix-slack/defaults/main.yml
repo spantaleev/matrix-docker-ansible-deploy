@@ -9,7 +9,7 @@ matrix_mautrix_slack_container_image_self_build_repo: "https://mau.dev/mautrix/s
 matrix_mautrix_slack_container_image_self_build_branch: "{{ 'main' if matrix_mautrix_slack_version == 'latest' else matrix_mautrix_slack_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/slack
-matrix_mautrix_slack_version: v0.1.0
+matrix_mautrix_slack_version: v0.1.1
 # See: https://mau.dev/mautrix/slack/container_registry
 matrix_mautrix_slack_docker_image: "{{ matrix_mautrix_slack_docker_image_name_prefix }}mautrix/slack:{{ matrix_mautrix_slack_version }}"
 matrix_mautrix_slack_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_slack_container_image_self_build else 'dock.mau.dev/' }}"
@@ -54,6 +54,12 @@ matrix_mautrix_slack_appservice_token: ''
 matrix_mautrix_slack_homeserver_token: ''
 
 matrix_mautrix_slack_appservice_bot_username: slackbot
+
+matrix_mautrix_slack_backfill_enabled: true
+matrix_mautrix_slack_backfill_max_initial_messages: 50
+matrix_mautrix_slack_backfill_max_catchup_messages: 500
+matrix_mautrix_slack_backfill_unread_hours_threshold: 720
+matrix_mautrix_slack_backfill_threads_max_initial_messages: 50
 
 # Minimum severity of journal log messages.
 # Options: debug, info, warn, error, fatal

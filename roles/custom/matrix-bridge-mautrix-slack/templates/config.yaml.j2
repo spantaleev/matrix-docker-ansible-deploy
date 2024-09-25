@@ -244,9 +244,7 @@ appservice:
     hs_token: {{ matrix_mautrix_slack_homeserver_token | to_json }}
 
     # Localpart template of MXIDs for remote users.
-    # {% raw %}
-    # {{.}} is replaced with the internal ID of the user.
-    # {% endraw %}
+    # {% raw %}{{.}}{% endraw %} is replaced with the internal ID of the user.
     username_template: "{% raw %}slack_{{.}}{% endraw %}"
 
 # Config options that affect the Matrix connector of the bridge.
@@ -319,18 +317,18 @@ direct_media:
 # See https://docs.mau.fi/bridges/general/backfill.html for more details.
 backfill:
     # Whether to do backfilling at all.
-    enabled: false
+    enabled: {{ matrix_mautrix_slack_backfill_enabled | to_json }}
     # Maximum number of messages to backfill in empty rooms.
-    max_initial_messages: 50
+    max_initial_messages: {{ matrix_mautrix_slack_backfill_max_initial_messages | to_json }}
     # Maximum number of missed messages to backfill after bridge restarts.
-    max_catchup_messages: 500
+    max_catchup_messages: {{ matrix_mautrix_slack_backfill_max_catchup_messages | to_json }}
     # If a backfilled chat is older than this number of hours,
     # mark it as read even if it's unread on the remote network.
-    unread_hours_threshold: 720
+    unread_hours_threshold: {{ matrix_mautrix_slack_backfill_unread_hours_threshold| to_json }}
     # Settings for backfilling threads within other backfills.
     threads:
         # Maximum number of messages to backfill in a new thread.
-        max_initial_messages: 50
+        max_initial_messages: {{ matrix_mautrix_slack_backfill_threads_max_initial_messages | to_json }}
     # Settings for the backwards backfill queue. This only applies when connecting to
     # Beeper as standard Matrix servers don't support inserting messages into history.
     queue:

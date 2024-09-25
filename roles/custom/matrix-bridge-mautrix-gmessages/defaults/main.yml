@@ -9,7 +9,7 @@ matrix_mautrix_gmessages_container_image_self_build_repo: "https://github.com/ma
 matrix_mautrix_gmessages_container_image_self_build_branch: "{{ 'main' if matrix_mautrix_gmessages_version == 'latest' else matrix_mautrix_gmessages_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/gmessages
-matrix_mautrix_gmessages_version: v0.4.3
+matrix_mautrix_gmessages_version: v0.5.0
 
 # See: https://mau.dev/mautrix/gmessages/container_registry
 matrix_mautrix_gmessages_docker_image: "{{ matrix_mautrix_gmessages_docker_image_name_prefix }}mautrix/gmessages:{{ matrix_mautrix_gmessages_version }}"
@@ -24,6 +24,12 @@ matrix_mautrix_gmessages_docker_src_files_path: "{{ matrix_mautrix_gmessages_bas
 matrix_mautrix_gmessages_homeserver_address: ""
 matrix_mautrix_gmessages_homeserver_domain: "{{ matrix_domain }}"
 matrix_mautrix_gmessages_appservice_address: "http://matrix-mautrix-gmessages:8080"
+
+matrix_mautrix_gmessages_backfill_enabled: true
+matrix_mautrix_gmessages_backfill_max_initial_messages: 50
+matrix_mautrix_gmessages_backfill_max_catchup_messages: 500
+matrix_mautrix_gmessages_backfill_unread_hours_threshold: 720
+matrix_mautrix_gmessages_backfill_threads_max_initial_messages: 50
 
 matrix_mautrix_gmessages_command_prefix: "!gm"
 
@@ -132,18 +138,23 @@ matrix_mautrix_gmessages_appservice_database_uri: "{{
 	}[matrix_mautrix_gmessages_database_engine]
 }}"
 
-# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth) or Appservice Double Puppet.
-matrix_mautrix_gmessages_login_shared_secret: ''
-matrix_mautrix_gmessages_bridge_login_shared_secret_map:
-  "{{ {matrix_mautrix_gmessages_homeserver_domain: matrix_mautrix_gmessages_login_shared_secret} if matrix_mautrix_gmessages_login_shared_secret else {} }}"
+matrix_mautrix_gmessages_double_puppet_secrets: "{{ matrix_mautrix_gmessages_double_puppet_secrets_auto | combine(matrix_mautrix_gmessages_double_puppet_secrets_custom) }}"
+matrix_mautrix_gmessages_double_puppet_secrets_auto: {}
+matrix_mautrix_gmessages_double_puppet_secrets_custom: {}
 
 # Enable End-to-bridge encryption
 matrix_mautrix_gmessages_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
 matrix_mautrix_gmessages_bridge_encryption_default: "{{ matrix_bridges_encryption_default }}"
+matrix_mautrix_gmessages_bridge_encryption_require: false
+matrix_mautrix_gmessages_bridge_encryption_appservice: false
 matrix_mautrix_gmessages_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_gmessages_bridge_encryption_allow }}"
 
+matrix_mautrix_gmessages_network_displayname_template: "{% raw %}{{or .FullName .PhoneNumber}}{% endraw %}"
+matrix_mautrix_gmessages_appservice_username_template: "{% raw %}gmessages_{{.}}{% endraw %}"
+
+matrix_mautrix_gmessages_public_media_signing_key: ''
+
 matrix_mautrix_gmessages_bridge_personal_filtering_spaces: true
-matrix_mautrix_gmessages_bridge_mute_bridging: true
 
 matrix_mautrix_gmessages_bridge_permissions: |
   {{

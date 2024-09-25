@@ -9,7 +9,7 @@ matrix_mautrix_signal_container_image_self_build_repo: "https://mau.dev/mautrix/
 matrix_mautrix_signal_container_image_self_build_branch: "{{ 'main' if matrix_mautrix_signal_version == 'latest' else matrix_mautrix_signal_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/signal
-matrix_mautrix_signal_version: v0.7.0
+matrix_mautrix_signal_version: v0.7.1
 
 # See: https://mau.dev/mautrix/signal/container_registry
 matrix_mautrix_signal_docker_image: "{{ matrix_mautrix_signal_docker_image_name_prefix }}mautrix/signal:{{ matrix_mautrix_signal_docker_image_tag }}"
@@ -99,6 +99,12 @@ matrix_mautrix_signal_logging_level: 'warn'
 # Whether or not created rooms should have federation enabled.
 # If false, created portal rooms will never be federated.
 matrix_mautrix_signal_federate_rooms: true
+
+matrix_mautrix_signal_backfill_enabled: true
+matrix_mautrix_signal_backfill_max_initial_messages: 50
+matrix_mautrix_signal_backfill_max_catchup_messages: 500
+matrix_mautrix_signal_backfill_unread_hours_threshold: 720
+matrix_mautrix_signal_backfill_threads_max_initial_messages: 50
 
 # Whether or not metrics endpoint should be enabled.
 # Enabling them is usually enough for a local (in-container) Prometheus to consume them.

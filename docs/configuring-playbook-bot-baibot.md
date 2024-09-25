@@ -154,6 +154,11 @@ matrix_bot_baibot_config_agents_static_definitions_anthropic_config_api_key: "YO
 # If you'd like to use another text-generation agent, uncomment and adjust:
 # matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_model_id: claude-3-5-sonnet-20240620
 
+# The playbook defines a default prompt for all statically-defined agents.
+# You can adjust it in the `matrix_bot_baibot_config_agents_static_definitions_prompt` variable,
+# or you can adjust it below only for the Anthropic agent.
+# matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
+
 # See `defaults/main.yml` in the baibot role for more configuration options.
 ```
 
@@ -175,6 +180,11 @@ matrix_bot_baibot_config_agents_static_definitions_groq_config_api_key: "YOUR_AP
 
 # Specify the text-generation agent you'd like to use
 matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_model_id: "llama3-70b-8192"
+
+# The playbook defines a default prompt for all statically-defined agents.
+# You can adjust it in the `matrix_bot_baibot_config_agents_static_definitions_prompt` variable,
+# or you can adjust it below only for the Groq agent.
+# matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
 
 # Uncomment and adjust if you're not happy with these speech-to-text defaults:
 #
@@ -202,6 +212,11 @@ matrix_bot_baibot_config_agents_static_definitions_mistral_enabled: true
 
 matrix_bot_baibot_config_agents_static_definitions_mistral_config_api_key: "YOUR_API_KEY_HERE"
 
+# The playbook defines a default prompt for all statically-defined agents.
+# You can adjust it in the `matrix_bot_baibot_config_agents_static_definitions_prompt` variable,
+# or you can adjust it below only for the Mistral agent.
+# matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
+
 # Uncomment and adjust if you're not happy with these defaults:
 # matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_model_id: mistral-large-latest
 
@@ -228,8 +243,13 @@ matrix_bot_baibot_config_agents_static_definitions_openai_enabled: true
 
 matrix_bot_baibot_config_agents_static_definitions_openai_config_api_key: "YOUR_API_KEY_HERE"
 
+# The playbook defines a default prompt for all statically-defined agents.
+# You can adjust it in the `matrix_bot_baibot_config_agents_static_definitions_prompt` variable,
+# or you can adjust it below only for the OpenAI agent.
+# matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
+
 # If you'd like to use another text-generation agent, uncomment and adjust:
-# matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-4o
+# matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-4o-2024-08-06
 
 # See `defaults/main.yml` in the baibot role for more configuration options.
 ```
@@ -273,7 +293,7 @@ matrix_bot_baibot_config_agents_static_definitions_custom:
         api_key: "YOUR_API_KEY_HERE"
         text_generation:
           model_id: gpt-3.5-turbo-0125
-          prompt: You are a brief, but helpful bot.
+          prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
           temperature: 1.0
           max_response_tokens: 4096
           max_context_tokens: 16385
@@ -290,7 +310,7 @@ matrix_bot_baibot_config_agents_static_definitions_custom:
       api_key: ""
       text_generation:
         model_id: "llama3.1:8b"
-        prompt: "You are an assistant based on the Llama3.1:8b model. Be brief in your responses."
+        prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
         temperature: 1.0
         max_response_tokens: 4096
         max_context_tokens: 128000

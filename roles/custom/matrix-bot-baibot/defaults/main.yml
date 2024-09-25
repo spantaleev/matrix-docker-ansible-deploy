@@ -11,7 +11,7 @@ matrix_bot_baibot_container_repo_version: "{{ 'main' if matrix_bot_baibot_versio
 matrix_bot_baibot_container_src_files_path: "{{ matrix_base_data_path }}/baibot/container-src"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/baibot
-matrix_bot_baibot_version: latest
+matrix_bot_baibot_version: v1.1.1
 matrix_bot_baibot_container_image: "{{ matrix_bot_baibot_container_image_name_prefix }}etkecc/baibot:{{ matrix_bot_baibot_version }}"
 matrix_bot_baibot_container_image_name_prefix: "{{ 'localhost/' if matrix_bot_baibot_container_image_self_build else 'ghcr.io/' }}"
 matrix_bot_baibot_container_image_force_pull: "{{ matrix_bot_baibot_container_image.endswith(':latest') }}"
@@ -155,6 +155,7 @@ matrix_bot_baibot_config_agents_static_definitions_auto: |-
   }}
 matrix_bot_baibot_config_agents_static_definitions_custom: []
 
+matrix_bot_baibot_config_agents_static_definitions_prompt: "{% raw %}You are a brief, but helpful bot called {{ baibot_name }} powered by the {{ baibot_model_id }} model. The date/time now is: {{ baibot_now_utc }}.{% endraw %}"
 
 ########################################################################################
 #                                                                                      #
@@ -195,7 +196,7 @@ matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generat
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_model_id: claude-3-5-sonnet-20240620
 # The prompt text to use (can be null or empty to not use a prompt).
 # See: https://huggingface.co/docs/transformers/en/tasks/prompting
-matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_prompt: null
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
 # The temperature parameter controls the randomness of the generated text.
 # See: https://blogs.novita.ai/what-are-large-language-model-settings-temperature-top-p-and-max-tokens/#what-is-llm-temperature
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_temperature: 1.0
@@ -248,7 +249,7 @@ matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_e
 matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_model_id: ""
 # The prompt text to use (can be null or empty to not use a prompt).
 # See: https://huggingface.co/docs/transformers/en/tasks/prompting
-matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_prompt: null
+matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
 # The temperature parameter controls the randomness of the generated text.
 # See: https://blogs.novita.ai/what-are-large-language-model-settings-temperature-top-p-and-max-tokens/#what-is-llm-temperature
 matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_temperature: 1.0
@@ -267,7 +268,7 @@ matrix_bot_baibot_config_agents_static_definitions_groq_config_speech_to_text_mo
 
 ########################################################################################
 #                                                                                      #
-# Mistral agent configuration                                                             #
+# Mistral agent configuration                                                          #
 #                                                                                      #
 ########################################################################################
 
@@ -304,7 +305,7 @@ matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generatio
 matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_model_id: mistral-large-latest
 # The prompt text to use (can be null or empty to not use a prompt).
 # See: https://huggingface.co/docs/transformers/en/tasks/prompting
-matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_prompt: null
+matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
 # The temperature parameter controls the randomness of the generated text.
 # See: https://blogs.novita.ai/what-are-large-language-model-settings-temperature-top-p-and-max-tokens/#what-is-llm-temperature
 matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_temperature: 1.0
@@ -313,7 +314,7 @@ matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generatio
 
 ########################################################################################
 #                                                                                      #
-# /Mistral agent configuration                                                            #
+# /Mistral agent configuration                                                         #
 #                                                                                      #
 ########################################################################################
 
@@ -355,10 +356,10 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_api_key: ""
 
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_enabled: true
 # For valid model choices, see: https://platform.openai.com/docs/models
-matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-4o
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-4o-2024-08-06
 # The prompt text to use (can be null or empty to not use a prompt).
 # See: https://huggingface.co/docs/transformers/en/tasks/prompting
-matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_prompt: null
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
 # The temperature parameter controls the randomness of the generated text.
 # See: https://blogs.novita.ai/what-are-large-language-model-settings-temperature-top-p-and-max-tokens/#what-is-llm-temperature
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_temperature: 1.0
