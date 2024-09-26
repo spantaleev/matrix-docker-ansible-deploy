@@ -36,26 +36,6 @@ traefik.http.middlewares.element-call-add-headers.headers.customresponseheaders.
 traefik.http.routers.element-call-router.middlewares={{ middlewares | join(',') }}
 {% endif %}
 
-# LiveKit Labels
-traefik.http.routers.sfu-router.rule=Host(`{{ matrix_element_call_livekit_service_url | regex_replace('^https?://', '') }}`)
-traefik.http.routers.sfu-router.entrypoints=websecure
-traefik.http.routers.sfu-router.tls.certresolver=default
-traefik.http.services.sfu-service.loadbalancer.server.port=7880
-traefik.http.middlewares.sfu-headers.headers.customFrameOptionsValue=SAMEORIGIN
-traefik.http.middlewares.sfu-headers.headers.customResponseHeaders.X-Content-Type-Options=nosniff
-traefik.http.middlewares.sfu-headers.headers.customResponseHeaders.Strict-Transport-Security=max-age=31536000; includeSubDomains; preload
-traefik.http.routers.sfu-router.middlewares=sfu-headers
-
-# JWT Labels
-traefik.http.routers.jwt-router.rule=Host(`{{ matrix_element_call_jwt_service_url | regex_replace('^https?://', '') }}`)
-traefik.http.routers.jwt-router.entrypoints=websecure
-traefik.http.routers.jwt-router.tls.certresolver=default
-traefik.http.services.jwt-service.loadbalancer.server.port=8881
-traefik.http.middlewares.jwt-headers.headers.customFrameOptionsValue=SAMEORIGIN
-traefik.http.middlewares.jwt-headers.headers.customResponseHeaders.X-Content-Type-Options=nosniff
-traefik.http.middlewares.jwt-headers.headers.customResponseHeaders.Strict-Transport-Security=max-age=31536000; includeSubDomains; preload
-traefik.http.routers.jwt-router.middlewares=jwt-headers
-
 {% endif %}
 
 # Additional labels (if any) specified by the user
