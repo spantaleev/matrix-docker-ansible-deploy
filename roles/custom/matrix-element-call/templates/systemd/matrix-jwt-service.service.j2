@@ -1,0 +1,38 @@
+[Unit]
+Description=Matrix JWT Service
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-jwt-service 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-jwt-service 2>/dev/null || true'
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+    --rm \
+    --name=matrix-jwt-service \
+    --log-driver=none \
+    --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+    --cap-drop=ALL \
+    --network={{ matrix_element_call_container_network }} \
+    -p {{ matrix_jwt_service_port }}:8080 \
+    --env-file={{ matrix_element_call_base_path }}/config/env \
+    --label-file={{ matrix_element_call_base_path }}/config/labels \
+    {{ matrix_jwt_service_image }} \
+    serve
+
+{% for network in matrix_element_call_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-jwt-service
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-jwt-service
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-jwt-service 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-jwt-service 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-jwt-service
+
+[Install]
+WantedBy=multi-user.target
