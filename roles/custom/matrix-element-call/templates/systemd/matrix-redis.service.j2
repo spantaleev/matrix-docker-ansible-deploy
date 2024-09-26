@@ -17,7 +17,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
     --cap-drop=ALL \
     --network={{ matrix_element_call_container_network }} \
     --mount type=bind,src={{ matrix_element_call_backend_path }}/redis.conf,dst=/etc/redis.conf,ro \
-    {{ matrix_redis_image }} \
+    {{ redis_image }} \
     redis-server /etc/redis.conf
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-redis
