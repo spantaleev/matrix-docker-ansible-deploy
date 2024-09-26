@@ -1,5 +1,5 @@
 ---
-# Main installation tasks for matrix-element-call
+# roles/custom/matrix-element-call/tasks/install.yml
 
 # Ensure Required Directories Exist
 - name: Ensure matrix-element-call paths exist
@@ -9,51 +9,65 @@
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  with_items:
+  loop:
     - path: "{{ matrix_element_call_base_path }}"
-    - path: "{{ matrix_element_call_config_path }}"
-    - path: "{{ matrix_element_call_backend_path }}"
+    - path: "{{ matrix_element_call_base_path }}/data"
+    - path: "{{ matrix_element_call_base_path }}/config"
+    - path: "{{ matrix_element_call_base_path }}/backend"  # For LiveKit and Redis config
 
 # Ensure Configuration Files are in Place
-- name: Ensure matrix-element-call support files installed
+- name: Ensure Element Call config.json is in place
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/{{ item }}.j2"
-    dest: "{{ matrix_element_call_base_path }}/{{ item }}"
+    src: "{{ role_path }}/templates/config.json.j2"
+    dest: "{{ matrix_element_call_base_path }}/config/config.json"
     mode: 0640
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  with_items:
-    - config.json
-    - env
-    - labels
 
-- name: Ensure livekit.yaml is installed
+- name: Ensure LiveKit livekit.yaml is in place
   ansible.builtin.template:
     src: "{{ role_path }}/templates/livekit.yaml.j2"
-    dest: "{{ matrix_element_call_backend_path }}/livekit.yaml"
+    dest: "{{ matrix_element_call_base_path }}/backend/livekit.yaml"
     mode: 0640
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure redis.conf is installed
+- name: Ensure Redis redis.conf is in place
   ansible.builtin.template:
     src: "{{ role_path }}/templates/redis.conf.j2"
-    dest: "{{ matrix_element_call_backend_path }}/redis.conf"
+    dest: "{{ matrix_element_call_base_path }}/backend/redis.conf"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-element-call environment file is in place
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/env.j2"
+    dest: "{{ matrix_element_call_base_path }}/config/env"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure matrix-element-call Docker labels file is in place
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/labels.j2"
+    dest: "{{ matrix_element_call_base_path }}/config/labels"
     mode: 0640
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
 # Ensure Docker Images are Pulled
-- name: Ensure matrix-element-call container image is pulled
+- name: Ensure matrix-element-call Docker image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_element_call_image }}"
+    name: "{{ matrix_element_call_container_image }}"
     source: pull
+    force_source: "{{ matrix_element_call_container_image_force_pull }}"
   register: element_call_image_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: element_call_image_result is not failed
 
-- name: Ensure jwt-service container image is pulled
+- name: Ensure jwt-service Docker image is pulled
   community.docker.docker_image:
     name: "{{ matrix_jwt_service_image }}"
     source: pull
@@ -62,7 +76,7 @@
   delay: 10
   until: jwt_image_result is not failed
 
-- name: Ensure livekit container image is pulled
+- name: Ensure livekit Docker image is pulled
   community.docker.docker_image:
     name: "{{ matrix_livekit_image }}"
     source: pull
@@ -71,7 +85,7 @@
   delay: 10
   until: livekit_image_result is not failed
 
-- name: Ensure redis container image is pulled
+- name: Ensure redis Docker image is pulled
   community.docker.docker_image:
     name: "{{ matrix_redis_image }}"
     source: pull
@@ -80,15 +94,8 @@
   delay: 10
   until: redis_image_result is not failed
 
-# Ensure Docker Networks are Created
-- name: Ensure matrix-element-call container network is created
-  community.general.docker_network:
-    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
-    name: "{{ matrix_element_call_container_network }}"
-    driver: bridge
-    driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
+# Systemd Services for Element Call, JWT Service, LiveKit, and Redis
 
-# Deploy Systemd Services for Containers
 - name: Ensure matrix-element-call systemd service is installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-element-call.service.j2"
@@ -112,3 +119,73 @@
     src: "{{ role_path }}/templates/systemd/matrix-redis.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-redis.service"
     mode: 0644
+
+# Update homeserver.yaml for Element Call
+- name: Add listeners section for Element Call to homeserver.yaml
+  ansible.builtin.blockinfile:
+    path: "{{ matrix_homeserver_config_path }}"
+    block: |
+      listeners:
+        - port: 8008
+          tls: false
+          type: http
+          x_forwarded: true
+          resources:
+            - names: [client, federation, openid]
+              compress: false
+    marker: "# ANSIBLE MANAGED BLOCK - Element Call listeners"
+    mode: '0644'
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  when: matrix_element_call_enabled | bool
+
+- name: Ensure serve_server_wellknown is enabled in homeserver.yaml
+  ansible.builtin.lineinfile:
+    path: "{{ matrix_homeserver_config_path }}"
+    line: "serve_server_wellknown: true"
+    insertafter: EOF
+    state: present
+    mode: '0644'
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  when: matrix_element_call_enabled | bool
+
+# Update the .well-known/matrix/client file
+- name: Update the well-known client file
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/well_known_client.json.j2"
+    dest: "{{ matrix_base_data_path }}/static-files/public/.well-known/matrix/client"
+    mode: '0644'
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+# Create .well-known/element/element.json for Element Call
+- name: Create the well-known element.json file
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/well_known_element.json.j2"
+    dest: "{{ matrix_base_data_path }}/static-files/public/.well-known/element/element.json"
+    mode: '0644'
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+# Update Element Web config.json with Element Call settings
+- name: Update Element Web config.json
+  ansible.builtin.blockinfile:
+    path: "{{ element_web_config_path }}"
+    block: |
+      "features": {
+          "feature_video_rooms": true,
+          "feature_new_room_decoration_ui": true,
+          "feature_group_calls": true,
+          "feature_element_call_video_rooms": true
+      },
+      "element_call": {
+          "url": "https://{{ matrix_element_call_domain }}",
+          "participant_limit": 8,
+          "brand": "Element Call",
+          "use_exclusively": true
+      }
+    marker: "# ANSIBLE MANAGED BLOCK - Element Call settings"
+    mode: '0644'
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
