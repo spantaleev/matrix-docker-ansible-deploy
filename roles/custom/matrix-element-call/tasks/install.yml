@@ -52,7 +52,23 @@
 - name: Ensure matrix-element-call Docker labels file is in place
   ansible.builtin.template:
     src: "{{ role_path }}/templates/labels.j2"
-    dest: "{{ matrix_element_call_base_path }}/config/labels"
+    dest: "{{ matrix_element_call_base_path }}/config/element-call-labels"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure LiveKit labels file is in place
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/livekit-labels.j2"
+    dest: "{{ matrix_element_call_base_path }}/config/livekit-labels"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure JWT Service labels file is in place
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/jwt-service-labels.j2"
+    dest: "{{ matrix_element_call_base_path }}/config/jwt-service-labels"
     mode: 0640
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
