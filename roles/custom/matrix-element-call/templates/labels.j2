@@ -5,7 +5,7 @@ traefik.enable=true
 traefik.docker.network={{ matrix_element_call_container_labels_traefik_docker_network }}
 {% endif %}
 
-# Define the Traefik router rule
+# Element Call Labels
 traefik.http.routers.element-call-router.rule={{ matrix_element_call_container_labels_traefik_rule }}
 traefik.http.routers.element-call-router.entrypoints={{ matrix_element_call_container_labels_traefik_entrypoints }}
 traefik.http.routers.element-call-router.tls.certresolver={{ matrix_element_call_container_labels_traefik_tls_certResolver }}
@@ -13,7 +13,7 @@ traefik.http.services.element-call-service.loadbalancer.server.port=8080
 
 {% set middlewares = [] %}
 
-# Define any path prefix redirection or stripping middleware
+# Path prefix handling for Element Call
 {% if matrix_element_call_container_labels_traefik_path_prefix != '/' %}
 traefik.http.middlewares.element-call-slashless-redirect.redirectregex.regex=({{ matrix_element_call_container_labels_traefik_path_prefix | quote }})$
 traefik.http.middlewares.element-call-slashless-redirect.redirectregex.replacement=${1}/
@@ -23,7 +23,7 @@ traefik.http.middlewares.element-call-strip-prefix.stripprefix.prefixes={{ matri
 {% set middlewares = middlewares + ['element-call-strip-prefix'] %}
 {% endif %}
 
-# Apply any additional response headers if provided
+# Additional response headers for Element Call
 {% if matrix_element_call_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
 {% for name, value in matrix_element_call_container_labels_traefik_additional_response_headers.items() %}
 traefik.http.middlewares.element-call-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
@@ -31,9 +31,34 @@ traefik.http.middlewares.element-call-add-headers.headers.customresponseheaders.
 {% set middlewares = middlewares + ['element-call-add-headers'] %}
 {% endif %}
 
-# Add middlewares to the router
+# Add middlewares to the Element Call router
 {% if middlewares | length > 0 %}
 traefik.http.routers.element-call-router.middlewares={{ middlewares | join(',') }}
 {% endif %}
 
+# LiveKit Labels
+traefik.http.routers.sfu-router.rule=Host(`{{ matrix_element_call_livekit_service_url | regex_replace('^https?://', '') }}`)
+traefik.http.routers.sfu-router.entrypoints=websecure
+traefik.http.routers.sfu-router.tls.certresolver=default
+traefik.http.services.sfu-service.loadbalancer.server.port=7880
+traefik.http.middlewares.sfu-headers.headers.customFrameOptionsValue=SAMEORIGIN
+traefik.http.middlewares.sfu-headers.headers.customResponseHeaders.X-Content-Type-Options=nosniff
+traefik.http.middlewares.sfu-headers.headers.customResponseHeaders.Strict-Transport-Security=max-age=31536000; includeSubDomains; preload
+traefik.http.routers.sfu-router.middlewares=sfu-headers
+
+# JWT Labels
+traefik.http.routers.jwt-router.rule=Host(`{{ matrix_element_call_jwt_service_url | regex_replace('^https?://', '') }}`)
+traefik.http.routers.jwt-router.entrypoints=websecure
+traefik.http.routers.jwt-router.tls.certresolver=default
+traefik.http.services.jwt-service.loadbalancer.server.port=8881
+traefik.http.middlewares.jwt-headers.headers.customFrameOptionsValue=SAMEORIGIN
+traefik.http.middlewares.jwt-headers.headers.customResponseHeaders.X-Content-Type-Options=nosniff
+traefik.http.middlewares.jwt-headers.headers.customResponseHeaders.Strict-Transport-Security=max-age=31536000; includeSubDomains; preload
+traefik.http.routers.jwt-router.middlewares=jwt-headers
+
 {% endif %}
+
+# Additional labels (if any) specified by the user
+{% for key, value in matrix_element_call_container_extra_arguments.items() %}
+{{ key }}={{ value }}
+{% endfor %}
