@@ -1,12 +1,13 @@
 {% if matrix_element_call_container_labels_traefik_enabled %}
 traefik.enable=true
 
+# Network configuration for Traefik
 {% if matrix_element_call_container_labels_traefik_docker_network %}
 traefik.docker.network={{ matrix_element_call_container_labels_traefik_docker_network }}
 {% endif %}
 
-# Element Call Labels
-traefik.http.routers.element-call-router.rule={{ matrix_element_call_container_labels_traefik_rule }}
+# Traefik Router and Service configuration for Element Call
+traefik.http.routers.element-call-router.rule=Host(`{{ matrix_element_call_container_labels_traefik_hostname }}`)
 traefik.http.routers.element-call-router.entrypoints={{ matrix_element_call_container_labels_traefik_entrypoints }}
 traefik.http.routers.element-call-router.tls.certresolver={{ matrix_element_call_container_labels_traefik_tls_certResolver }}
 traefik.http.services.element-call-service.loadbalancer.server.port=8080
@@ -24,14 +25,14 @@ traefik.http.middlewares.element-call-strip-prefix.stripprefix.prefixes={{ matri
 {% endif %}
 
 # Additional response headers for Element Call
-{% if matrix_element_call_container_labels_traefik_additional_response_headers is mapping and matrix_element_call_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% if matrix_element_call_container_labels_traefik_additional_response_headers is defined and matrix_element_call_container_labels_traefik_additional_response_headers | length > 0 %}
 {% for name, value in matrix_element_call_container_labels_traefik_additional_response_headers.items() %}
 traefik.http.middlewares.element-call-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
 {% endfor %}
 {% set middlewares = middlewares + ['element-call-add-headers'] %}
 {% endif %}
 
-# Add middlewares to the Element Call router
+# Apply middlewares to the Element Call router
 {% if middlewares | length > 0 %}
 traefik.http.routers.element-call-router.middlewares={{ middlewares | join(',') }}
 {% endif %}
@@ -39,7 +40,7 @@ traefik.http.routers.element-call-router.middlewares={{ middlewares | join(',') 
 {% endif %}
 
 # Additional labels (if any) specified by the user
-{% if matrix_element_call_container_extra_arguments is mapping and matrix_element_call_container_extra_arguments.keys() | length > 0 %}
+{% if matrix_element_call_container_extra_arguments is defined and matrix_element_call_container_extra_arguments | length > 0 %}
 {% for key, value in matrix_element_call_container_extra_arguments.items() %}
 {{ key }}={{ value }}
 {% endfor %}
