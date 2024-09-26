@@ -24,7 +24,7 @@ traefik.http.middlewares.element-call-strip-prefix.stripprefix.prefixes={{ matri
 {% endif %}
 
 # Additional response headers for Element Call
-{% if matrix_element_call_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% if matrix_element_call_container_labels_traefik_additional_response_headers is mapping and matrix_element_call_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
 {% for name, value in matrix_element_call_container_labels_traefik_additional_response_headers.items() %}
 traefik.http.middlewares.element-call-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
 {% endfor %}
@@ -39,7 +39,7 @@ traefik.http.routers.element-call-router.middlewares={{ middlewares | join(',') 
 {% endif %}
 
 # Additional labels (if any) specified by the user
-{% if matrix_element_call_container_extra_arguments.keys() | length > 0 %}
+{% if matrix_element_call_container_extra_arguments is mapping and matrix_element_call_container_extra_arguments.keys() | length > 0 %}
 {% for key, value in matrix_element_call_container_extra_arguments.items() %}
 {{ key }}={{ value }}
 {% endfor %}
