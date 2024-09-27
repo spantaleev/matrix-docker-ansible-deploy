@@ -107,12 +107,12 @@ Example: `--extra-vars="postgres_dump_name=matrix-postgres-dump.sql"`
 PostgreSQL can be [tuned](https://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server) to make it run faster. This is done by passing extra arguments to the Postgres process.
 
 The [Postgres Ansible role](https://github.com/devture/com.devture.ansible.role.postgres) **already does some tuning by default**, which matches the [tuning logic](https://github.com/le0pard/pgtune/blob/master/src/features/configuration/configurationSlice.js) done by websites like https://pgtune.leopard.in.ua/.
-You can manually influence some of the tuning variables . These parameters (variables) are injected via the `devture_postgres_postgres_process_extra_arguments_auto` variable.
+You can manually influence some of the tuning variables . These parameters (variables) are injected via the `postgres_postgres_process_extra_arguments_auto` variable.
 
 Most users should be fine with the automatically-done tuning. However, you may wish to:
 
-- **adjust the automatically-determined tuning parameters manually**: change the values for the tuning variables defined in the Postgres role's [default configuration file](https://github.com/devture/com.devture.ansible.role.postgres/blob/main/defaults/main.yml) (see `devture_postgres_max_connections`, `devture_postgres_data_storage` etc). These variables are ultimately passed to Postgres via a `devture_postgres_postgres_process_extra_arguments_auto` variable
+- **adjust the automatically-determined tuning parameters manually**: change the values for the tuning variables defined in the Postgres role's [default configuration file](https://github.com/devture/com.devture.ansible.role.postgres/blob/main/defaults/main.yml) (see `postgres_max_connections`, `postgres_data_storage` etc). These variables are ultimately passed to Postgres via a `postgres_postgres_process_extra_arguments_auto` variable
 
-- **turn automatically-performed tuning off**: override it like this: `devture_postgres_postgres_process_extra_arguments_auto: []`
+- **turn automatically-performed tuning off**: override it like this: `postgres_postgres_process_extra_arguments_auto: []`
 
-- **add additional tuning parameters**: define your additional Postgres configuration parameters in `devture_postgres_postgres_process_extra_arguments_custom`. See `devture_postgres_postgres_process_extra_arguments_auto` defined in the Postgres role's [default configuration file](https://github.com/devture/com.devture.ansible.role.postgres/blob/main/defaults/main.yml) for inspiration
+- **add additional tuning parameters**: define your additional Postgres configuration parameters in `postgres_postgres_process_extra_arguments_custom`. See `postgres_postgres_process_extra_arguments_auto` defined in the Postgres role's [default configuration file](https://github.com/devture/com.devture.ansible.role.postgres/blob/main/defaults/main.yml) for inspiration

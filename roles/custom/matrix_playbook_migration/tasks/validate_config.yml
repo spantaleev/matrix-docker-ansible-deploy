@@ -72,7 +72,7 @@
       The matrix-postgres-backup role in the playbook has been replaced with the com.devture.ansible.role.postgres_backup role (https://github.com/devture/com.devture.ansible.role.postgres_backup).
       The new role is pretty much the same, but uses differently named variables.
 
-      Please change your configuration (vars.yml) to rename all `matrix_postgres`-prefixed variables (`matrix_postgres_*` -> `devture_postgres_*`).
+      Please change your configuration (vars.yml) to rename all `matrix_postgres`-prefixed variables (`matrix_postgres_*` -> `postgres_*`).
 
       The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'matrix_postgres_.*') | map (attribute='key') | join(', ') }}
   when: "vars | dict2items | selectattr('key', 'match', 'matrix_postgres_.*') | list | items2dict"
@@ -362,3 +362,25 @@
         msg: >-
           We found usage of the following variables which are now removed: {{ matrix_playbook_migration_matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_vars.keys() | join(', ') }}
       when: "matrix_playbook_migration_matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_vars | length > 0"
+
+- name: (Deprecation) Catch and report devture_postgres_backup variables
+  ansible.builtin.fail:
+    msg: |-
+      The postgres-backup role in the playbook now lives under the MASH organization (https://github.com/mother-of-all-self-hosting/ansible-role-postgres-backup).
+      The new role is pretty much the same, but uses differently named variables.
+
+      Please change your configuration (vars.yml) to rename all `devture_postgres_backup_`-prefixed variables (`devture_postgres_backup_*` -> `postgres_backup_*`).
+
+      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_postgres_backup_.*') | map (attribute='key') | join(', ') }}
+  when: "vars | dict2items | selectattr('key', 'match', 'devture_postgres_backup_.*') | list | items2dict"
+
+- name: (Deprecation) Catch and report devture_postgres variables
+  ansible.builtin.fail:
+    msg: |-
+      The postgres role in the playbook now lives under the MASH organization (https://github.com/mother-of-all-self-hosting/ansible-role-postgres).
+      The new role is pretty much the same, but uses differently named variables.
+
+      Please change your configuration (vars.yml) to rename all `devture_postgres_`-prefixed variables (`devture_postgres_*` -> `devture_postgres_*`).
+
+      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_postgres_.*') | map (attribute='key') | join(', ') }}
+  when: "vars | dict2items | selectattr('key', 'match', 'devture_postgres_.*') | list | items2dict"

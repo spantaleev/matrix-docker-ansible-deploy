@@ -711,7 +711,7 @@ From now on, the [Postgres Ansible role](https://github.com/devture/com.devture.
 
 Our [Tuning PostgreSQL](docs/maintenance-postgres.md#tuning-postgresql) documentation page has details about how you can turn auto-tuning off or adjust the automatically-determined Postgres configuration parameters manually.
 
-People who [enable load-balancing with Synapse workers](docs/configuring-playbook-synapse.md#load-balancing-with-workers) no longer need to increase the maximum number of Postgres connections manually (previously done via `devture_postgres_process_extra_arguments`). There's a new variable (`devture_postgres_max_connections`) for controlling this number and the playbook automatically raises its value from `200` to `500` for setups which enable workers.
+People who [enable load-balancing with Synapse workers](docs/configuring-playbook-synapse.md#load-balancing-with-workers) no longer need to increase the maximum number of Postgres connections manually (previously done via `postgres_process_extra_arguments`). There's a new variable (`postgres_max_connections`) for controlling this number and the playbook automatically raises its value from `200` to `500` for setups which enable workers.
 
 
 # 2023-08-31
@@ -1232,14 +1232,14 @@ See our [Setting up matrix-bot-chatgpt](docs/configuring-playbook-bot-chatgpt.md
 
 Just like we've [replaced Postgres with an external role](#matrix-postgres-has-been-replaced-by-the-comdevtureansiblerolepostgres-external-role) on 2022-11-28, we're now replacing `matrix-postgres-backup` with an external role - [com.devture.ansible.role.postgres_backup](https://github.com/devture/com.devture.ansible.role.postgres_backup).
 
-You'll need to rename your `matrix_postgres_backup`-prefixed variables such that they use a `devture_postgres_backup` prefix.
+You'll need to rename your `matrix_postgres_backup`-prefixed variables such that they use a `postgres_backup` prefix.
 
 
 # 2022-11-28
 
 ## matrix-postgres has been replaced by the com.devture.ansible.role.postgres external role
 
-**TLDR**: the tasks that install the integrated Postgres server now live in an external role - [com.devture.ansible.role.postgres](https://github.com/devture/com.devture.ansible.role.postgres). You'll need to run `make roles` to install it, and to also rename your `matrix_postgres`-prefixed variables to use a `devture_postgres` prefix (e.g. `matrix_postgres_connection_password` -> `devture_postgres_connection_password`). All your data will still be there! Some scripts have moved (`/usr/local/bin/matrix-postgres-cli` -> `/matrix/postgres/bin/cli`).
+**TLDR**: the tasks that install the integrated Postgres server now live in an external role - [com.devture.ansible.role.postgres](https://github.com/devture/com.devture.ansible.role.postgres). You'll need to run `make roles` to install it, and to also rename your `matrix_postgres`-prefixed variables to use a `devture_postgres` prefix (e.g. `matrix_postgres_connection_password` -> `postgres_connection_password`). All your data will still be there! Some scripts have moved (`/usr/local/bin/matrix-postgres-cli` -> `/matrix/postgres/bin/cli`).
 
 The `matrix-postgres` role that has been part of the playbook for a long time has been replaced with the [com.devture.ansible.role.postgres](https://github.com/devture/com.devture.ansible.role.postgres) role. This was done as part of our work to [use external roles for some things](#the-playbook-now-uses-external-roles-for-some-things) for better code re-use and maintainability.
 
