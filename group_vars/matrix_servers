@@ -28,23 +28,23 @@ matrix_playbook_docker_installation_daemon_options_auto:
 matrix_playbook_docker_installation_daemon_options_custom: {}
 
 # Controls whether to attach Traefik labels to services.
-# This is separate from `devture_traefik_enabled`, because you may wish to disable Traefik installation by the playbook,
+# This is separate from `traefik_enabled`, because you may wish to disable Traefik installation by the playbook,
 # yet still use Traefik installed in another way.
 matrix_playbook_traefik_labels_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 
-matrix_playbook_reverse_proxy_container_network: "{{ devture_traefik_container_network if devture_traefik_enabled else 'traefik' }}"
-matrix_playbook_reverse_proxy_hostname: "{{ devture_traefik_identifier if devture_traefik_enabled else 'traefik' }}"
+matrix_playbook_reverse_proxy_container_network: "{{ traefik_container_network if traefik_enabled else 'traefik' }}"
+matrix_playbook_reverse_proxy_hostname: "{{ traefik_identifier if traefik_enabled else 'traefik' }}"
 
 # A separate Matrix Federation entrypoint is always enabled, unless the federation port matches one of the ports for existing (default) entrypoints
-matrix_playbook_public_matrix_federation_api_traefik_entrypoint_enabled: "{{ matrix_federation_public_port not in [devture_traefik_config_entrypoint_web_port, devture_traefik_config_entrypoint_web_secure_port] }}"
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_enabled: "{{ matrix_federation_public_port not in [traefik_config_entrypoint_web_port, traefik_config_entrypoint_web_secure_port] }}"
 
 # We only enable HTTP/3 on the federation entrypoint if the main web-secure entrypoint has it enabled.
-matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled: "{{ devture_traefik_config_entrypoint_web_secure_http3_enabled }}"
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled: "{{ traefik_config_entrypoint_web_secure_http3_enabled }}"
 
-# `devture_traefik_config_entrypoint_web_secure_enabled` is the variable we currently follow to determine if SSL is enabled or not.
+# `traefik_config_entrypoint_web_secure_enabled` is the variable we currently follow to determine if SSL is enabled or not.
 # `matrix_playbook_ssl_enabled` is merely an indicator if (when looked at it publicly), the server supports SSL or not,
 # and affects how services configure their public URLs.
-matrix_federation_traefik_entrypoint_tls: "{{ devture_traefik_config_entrypoint_web_secure_enabled }}"
+matrix_federation_traefik_entrypoint_tls: "{{ traefik_config_entrypoint_web_secure_enabled }}"
 
 ########################################################################
 #                                                                      #
@@ -226,7 +226,7 @@ matrix_homeserver_app_service_config_files_auto: |
 
 matrix_addons_homeserver_container_network: "{{ matrix_playbook_reverse_proxy_container_network if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else matrix_homeserver_container_network }}"
 matrix_addons_homeserver_client_api_url: "{{ ('http://' + matrix_playbook_reverse_proxy_hostname + ':' + matrix_playbook_internal_matrix_client_api_traefik_entrypoint_port | string) if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else matrix_homeserver_container_url }}"
-matrix_addons_homeserver_systemd_services_list: "{{ ([devture_traefik_identifier + '.service'] if matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' else []) if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else matrix_homeserver_systemd_services_list }}"
+matrix_addons_homeserver_systemd_services_list: "{{ ([traefik_identifier + '.service'] if matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' else []) if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else matrix_homeserver_systemd_services_list }}"
 
 # Starting from version `0.6.0` conduit natively supports some sync v3 (sliding-sync) features.
 matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_sliding_sync_enabled else (matrix_homeserver_url if matrix_homeserver_implementation in ['conduit'] else '') }}"
@@ -457,9 +457,9 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': (devture_container_socket_proxy_identifier + '.service'), 'priority': 200, 'groups': ['matrix', 'reverse-proxies', 'container-socket-proxy']}] if devture_container_socket_proxy_enabled else [])
     +
-    ([{'name': (devture_traefik_identifier + '.service'), 'priority': 250, 'groups': ['matrix', 'traefik', 'reverse-proxies']}] if devture_traefik_enabled else [])
+    ([{'name': (traefik_identifier + '.service'), 'priority': 250, 'groups': ['matrix', 'traefik', 'reverse-proxies']}] if traefik_enabled else [])
     +
-    ([{'name': (devture_traefik_certs_dumper_identifier + '.service'), 'priority': 300, 'groups': ['matrix', 'traefik-certs-dumper']}] if devture_traefik_certs_dumper_enabled else [])
+    ([{'name': (traefik_certs_dumper_identifier + '.service'), 'priority': 300, 'groups': ['matrix', 'traefik-certs-dumper']}] if traefik_certs_dumper_enabled else [])
   }}
 
 ########################################################################
@@ -592,8 +592,8 @@ matrix_alertmanager_receiver_container_additional_networks_auto: |-
 
 matrix_alertmanager_receiver_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_alertmanager_receiver_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_alertmanager_receiver_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_alertmanager_receiver_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_alertmanager_receiver_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_alertmanager_receiver_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_alertmanager_receiver_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_alertmanager_receiver_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
@@ -698,8 +698,8 @@ matrix_appservice_webhooks_container_additional_networks_auto: |-
 
 matrix_appservice_webhooks_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_appservice_webhooks_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_appservice_webhooks_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_appservice_webhooks_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_appservice_webhooks_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_appservice_webhooks_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_appservice_webhooks_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'webhook.as.token', rounds=655555) | to_uuid }}"
 
@@ -752,8 +752,8 @@ matrix_appservice_slack_container_additional_networks_auto: |-
 
 matrix_appservice_slack_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_appservice_slack_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_appservice_slack_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_appservice_slack_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_appservice_slack_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_appservice_slack_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_appservice_slack_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'slack.as.token', rounds=655555) | to_uuid }}"
 
@@ -1128,8 +1128,8 @@ matrix_mautrix_facebook_container_additional_networks_auto: |-
 
 matrix_mautrix_facebook_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_mautrix_facebook_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_facebook_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_mautrix_facebook_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_mautrix_facebook_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mautrix_facebook_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mautrix_facebook_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_facebook_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
@@ -1202,8 +1202,8 @@ matrix_mautrix_googlechat_container_additional_networks_auto: |-
 
 matrix_mautrix_googlechat_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_mautrix_googlechat_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_googlechat_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_mautrix_googlechat_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_mautrix_googlechat_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mautrix_googlechat_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mautrix_googlechat_container_labels_public_endpoint_hostname: "{{ matrix_server_fqn_matrix }}"
 
@@ -1279,8 +1279,8 @@ matrix_mautrix_hangouts_container_additional_networks_auto: |-
 
 matrix_mautrix_hangouts_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_mautrix_hangouts_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_hangouts_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_mautrix_hangouts_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_mautrix_hangouts_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mautrix_hangouts_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mautrix_hangouts_container_labels_public_endpoint_hostname: "{{ matrix_server_fqn_matrix }}"
 
@@ -1345,8 +1345,8 @@ matrix_mautrix_instagram_container_additional_networks_auto: |-
 
 matrix_mautrix_instagram_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_mautrix_instagram_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_instagram_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_mautrix_instagram_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_mautrix_instagram_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mautrix_instagram_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mautrix_instagram_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_instagram_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
@@ -1411,8 +1411,8 @@ matrix_mautrix_signal_container_additional_networks_auto: |-
 
 matrix_mautrix_signal_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_mautrix_signal_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_signal_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_mautrix_signal_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_mautrix_signal_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mautrix_signal_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mautrix_signal_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_signal_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
@@ -1485,8 +1485,8 @@ matrix_mautrix_meta_messenger_container_additional_networks_auto: |-
 
 matrix_mautrix_meta_messenger_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_mautrix_meta_messenger_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_meta_messenger_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_mautrix_meta_messenger_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_mautrix_meta_messenger_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mautrix_meta_messenger_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mautrix_meta_messenger_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_meta_messenger_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
@@ -1559,8 +1559,8 @@ matrix_mautrix_meta_instagram_container_additional_networks_auto: |-
 
 matrix_mautrix_meta_instagram_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_mautrix_meta_instagram_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_meta_instagram_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_mautrix_meta_instagram_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_mautrix_meta_instagram_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mautrix_meta_instagram_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mautrix_meta_instagram_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_meta_instagram_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
@@ -1640,8 +1640,8 @@ matrix_mautrix_telegram_container_additional_networks_auto: |-
 
 matrix_mautrix_telegram_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_mautrix_telegram_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_telegram_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_mautrix_telegram_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_mautrix_telegram_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mautrix_telegram_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mautrix_telegram_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_telegram_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
@@ -1715,8 +1715,8 @@ matrix_mautrix_twitter_container_additional_networks_auto: |-
 
 matrix_mautrix_twitter_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_mautrix_twitter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_twitter_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_mautrix_twitter_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_mautrix_twitter_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mautrix_twitter_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mautrix_twitter_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_twitter_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
@@ -1787,8 +1787,8 @@ matrix_mautrix_gmessages_container_additional_networks_auto: |-
 
 matrix_mautrix_gmessages_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_mautrix_gmessages_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_gmessages_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_mautrix_gmessages_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_mautrix_gmessages_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mautrix_gmessages_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mautrix_gmessages_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_gmessages_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
@@ -1862,8 +1862,8 @@ matrix_mautrix_wsproxy_container_additional_networks: |
 
 matrix_mautrix_wsproxy_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_mautrix_wsproxy_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_wsproxy_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_mautrix_wsproxy_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_mautrix_wsproxy_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mautrix_wsproxy_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mautrix_wsproxy_syncproxy_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
 matrix_mautrix_wsproxy_syncproxy_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'wsproxy.db', rounds=655555) | to_uuid }}"
@@ -1951,8 +1951,8 @@ matrix_mautrix_whatsapp_container_additional_networks_auto: |-
 
 matrix_mautrix_whatsapp_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_mautrix_whatsapp_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_whatsapp_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_mautrix_whatsapp_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_mautrix_whatsapp_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mautrix_whatsapp_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mautrix_whatsapp_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_whatsapp_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
@@ -2063,8 +2063,8 @@ matrix_heisenbridge_container_additional_networks_auto: |-
 
 matrix_heisenbridge_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_heisenbridge_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_heisenbridge_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_heisenbridge_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_heisenbridge_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_heisenbridge_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_heisenbridge_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'heisen.as.tok', rounds=655555) | to_uuid }}"
 
@@ -2134,8 +2134,8 @@ matrix_hookshot_container_http_host_bind_ports: "{{ matrix_hookshot_container_ht
 
 matrix_hookshot_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_hookshot_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_hookshot_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_hookshot_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_hookshot_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_hookshot_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_hookshot_provisioning_enabled: "{{ matrix_hookshot_provisioning_secret and matrix_dimension_enabled }}"
 
@@ -2192,8 +2192,8 @@ matrix_mx_puppet_slack_container_additional_networks_auto: |-
 
 matrix_mx_puppet_slack_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_mx_puppet_slack_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mx_puppet_slack_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_mx_puppet_slack_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_mx_puppet_slack_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mx_puppet_slack_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mx_puppet_slack_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxslk.as.tok', rounds=655555) | to_uuid }}"
 
@@ -2252,8 +2252,8 @@ matrix_mx_puppet_twitter_container_additional_networks_auto: |-
 
 matrix_mx_puppet_twitter_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_mx_puppet_twitter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mx_puppet_twitter_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_mx_puppet_twitter_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_mx_puppet_twitter_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mx_puppet_twitter_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mx_puppet_twitter_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxtwt.as.tok', rounds=655555) | to_uuid }}"
 
@@ -2599,8 +2599,8 @@ matrix_bot_maubot_container_additional_networks_auto: |-
 
 matrix_bot_maubot_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_bot_maubot_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_bot_maubot_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_bot_maubot_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_bot_maubot_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_bot_maubot_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_bot_maubot_container_labels_management_hostname: "{{ matrix_server_fqn_matrix }}"
 
@@ -2651,8 +2651,8 @@ matrix_bot_honoroit_container_additional_networks: |
 
 matrix_bot_honoroit_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_bot_honoroit_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_bot_honoroit_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_bot_honoroit_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_bot_honoroit_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_bot_honoroit_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 # For consistency with other things hosted at the matrix FQN, we adjust the metrics endpoint
 # so that metrics would be served at something like `/metrics/SERVICE_NAME`, and not at the default path for the role (`PREFIX/metrics`).
@@ -2707,8 +2707,8 @@ matrix_bot_buscarron_container_additional_networks_auto: |-
 
 matrix_bot_buscarron_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_bot_buscarron_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_bot_buscarron_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_bot_buscarron_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_bot_buscarron_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_bot_buscarron_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_bot_buscarron_homeserver: "{{ matrix_addons_homeserver_client_api_url }}"
 
@@ -2772,8 +2772,8 @@ matrix_bot_postmoogle_container_image_self_build: "{{ matrix_architecture not in
 matrix_bot_postmoogle_ssl_path: |-
   {{
     {
-      'playbook-managed-traefik': (devture_traefik_certs_dumper_dumped_certificates_dir_path if devture_traefik_certs_dumper_enabled else ''),
-      'other-traefik-container': (devture_traefik_certs_dumper_dumped_certificates_dir_path if devture_traefik_certs_dumper_enabled else ''),
+      'playbook-managed-traefik': (traefik_certs_dumper_dumped_certificates_dir_path if traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': (traefik_certs_dumper_dumped_certificates_dir_path if traefik_certs_dumper_enabled else ''),
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -2784,8 +2784,8 @@ matrix_playbook_bot_postmoogle_traefik_key: "{% for domain in matrix_bot_postmoo
 matrix_bot_postmoogle_tls_cert: |-
   {{
     {
-      'playbook-managed-traefik': (matrix_playbook_bot_postmoogle_traefik_tls_cert if devture_traefik_certs_dumper_enabled else ''),
-      'other-traefik-container': (matrix_playbook_bot_postmoogle_traefik_tls_cert if devture_traefik_certs_dumper_enabled else ''),
+      'playbook-managed-traefik': (matrix_playbook_bot_postmoogle_traefik_tls_cert if traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': (matrix_playbook_bot_postmoogle_traefik_tls_cert if traefik_certs_dumper_enabled else ''),
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -2793,13 +2793,13 @@ matrix_bot_postmoogle_tls_cert: |-
 matrix_bot_postmoogle_tls_key: |-
   {{
     {
-      'playbook-managed-traefik': (matrix_playbook_bot_postmoogle_traefik_key if devture_traefik_certs_dumper_enabled else ''),
-      'other-traefik-container': (matrix_playbook_bot_postmoogle_traefik_key if devture_traefik_certs_dumper_enabled else ''),
+      'playbook-managed-traefik': (matrix_playbook_bot_postmoogle_traefik_key if traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': (matrix_playbook_bot_postmoogle_traefik_key if traefik_certs_dumper_enabled else ''),
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
 
-matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services: "{% for domain in matrix_bot_postmoogle_domains %}{{ devture_traefik_certs_dumper_identifier }}-wait-for-domain@{{ domain }}.service {% endfor %}"
+matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services: "{% for domain in matrix_bot_postmoogle_domains %}{{ traefik_certs_dumper_identifier }}-wait-for-domain@{{ domain }}.service {% endfor %}"
 
 matrix_bot_postmoogle_systemd_required_services_list_auto: |
   {{
@@ -2807,7 +2807,7 @@ matrix_bot_postmoogle_systemd_required_services_list_auto: |
     +
     ([postgres_identifier ~ '.service'] if postgres_enabled and matrix_bot_postmoogle_database_hostname == matrix_bot_postmoogle_database_hostname else [])
     +
-    (matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services | trim | split(' ') if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and devture_traefik_certs_dumper_enabled else [])
+    (matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services | trim | split(' ') if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled else [])
   }}
 
 # Postgres is the default, except if not using internal Postgres server
@@ -2893,8 +2893,8 @@ matrix_bot_go_neb_container_additional_networks: |
 
 matrix_bot_go_neb_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_bot_go_neb_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_bot_go_neb_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_bot_go_neb_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_bot_go_neb_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_bot_go_neb_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 ######################################################################
 #
@@ -2977,8 +2977,8 @@ matrix_bot_draupnir_raw_homeserver_url: "{{ matrix_addons_homeserver_client_api_
 
 matrix_bot_draupnir_container_labels_traefik_enabled: "{{ matrix_bot_draupnir_web_enabled and matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_bot_draupnir_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_bot_draupnir_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_bot_draupnir_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_bot_draupnir_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_bot_draupnir_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 ######################################################################
 #
@@ -3182,8 +3182,8 @@ matrix_cactus_comments_client_container_additional_networks_auto: |-
 
 matrix_cactus_comments_client_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_cactus_comments_client_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_cactus_comments_client_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_cactus_comments_client_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_cactus_comments_client_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_cactus_comments_client_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 ######################################################################
 #
@@ -3222,8 +3222,8 @@ matrix_corporal_container_additional_networks: |
 
 matrix_corporal_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_corporal_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_corporal_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_corporal_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_corporal_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_corporal_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_corporal_matrix_homeserver_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 
@@ -3264,8 +3264,8 @@ matrix_rageshake_container_http_host_bind_port: "{{ (matrix_playbook_service_hos
 
 matrix_rageshake_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_rageshake_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_rageshake_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_rageshake_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_rageshake_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_rageshake_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 ######################################################################
 #
@@ -3298,8 +3298,8 @@ matrix_coturn_tls_enabled: "{{ matrix_playbook_ssl_enabled }}"
 matrix_coturn_tls_cert_path: |-
   {{
     {
-      'playbook-managed-traefik': ('/certificate.crt' if devture_traefik_certs_dumper_enabled else ''),
-      'other-traefik-container': ('/certificate.crt' if devture_traefik_certs_dumper_enabled else ''),
+      'playbook-managed-traefik': ('/certificate.crt' if traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': ('/certificate.crt' if traefik_certs_dumper_enabled else ''),
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -3307,8 +3307,8 @@ matrix_coturn_tls_cert_path: |-
 matrix_coturn_tls_key_path: |-
   {{
     {
-      'playbook-managed-traefik': ('/privatekey.key' if devture_traefik_certs_dumper_enabled else ''),
-      'other-traefik-container': ('/privatekey.key' if devture_traefik_certs_dumper_enabled else ''),
+      'playbook-managed-traefik': ('/privatekey.key' if traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': ('/privatekey.key' if traefik_certs_dumper_enabled else ''),
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -3318,16 +3318,16 @@ matrix_coturn_container_additional_volumes: |
     (
       [
        {
-         'src': (devture_traefik_certs_dumper_dumped_certificates_dir_path +  '/' + matrix_server_fqn_matrix + '/certificate.crt'),
+         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/' + matrix_server_fqn_matrix + '/certificate.crt'),
          'dst': '/certificate.crt',
          'options': 'ro',
        },
        {
-         'src': (devture_traefik_certs_dumper_dumped_certificates_dir_path +  '/' + matrix_server_fqn_matrix + '/privatekey.key'),
+         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/' + matrix_server_fqn_matrix + '/privatekey.key'),
          'dst': '/privatekey.key',
          'options': 'ro',
        },
-      ] if (matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and devture_traefik_certs_dumper_enabled and matrix_coturn_tls_enabled and (matrix_coturn_tls_cert_path and matrix_coturn_tls_key_path)) else []
+      ] if (matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and matrix_coturn_tls_enabled and (matrix_coturn_tls_cert_path and matrix_coturn_tls_key_path)) else []
     )
   }}
 
@@ -3335,7 +3335,7 @@ matrix_coturn_systemd_required_services_list: |
   {{
     [devture_systemd_docker_base_docker_service_name]
     +
-    ([devture_traefik_certs_dumper_identifier + '-wait-for-domain@' + matrix_server_fqn_matrix + '.service'] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and devture_traefik_certs_dumper_enabled and matrix_coturn_tls_enabled else [])
+    ([traefik_certs_dumper_identifier + '-wait-for-domain@' + matrix_server_fqn_matrix + '.service'] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and matrix_coturn_tls_enabled else [])
   }}
 
 ######################################################################
@@ -3379,8 +3379,8 @@ matrix_dimension_container_http_host_bind_port: "{{ (matrix_playbook_service_hos
 
 matrix_dimension_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_dimension_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_dimension_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_dimension_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_dimension_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_dimension_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_dimension_homeserver_clientServerUrl: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_dimension_homeserver_federationUrl: "{{ matrix_homeserver_container_federation_url }}"
@@ -3446,8 +3446,8 @@ etherpad_container_additional_networks: |
 
 etherpad_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 etherpad_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-etherpad_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-etherpad_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+etherpad_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+etherpad_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 etherpad_systemd_required_services_list: |
   {{
@@ -3555,8 +3555,8 @@ jitsi_prosody_container_additional_networks_auto: |
 
 jitsi_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 jitsi_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-jitsi_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-jitsi_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+jitsi_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+jitsi_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 jitsi_jibri_xmpp_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'jibri', rounds=655555) | to_uuid }}"
 jitsi_jicofo_auth_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'jicofo', rounds=655555) | to_uuid }}"
@@ -3639,8 +3639,8 @@ matrix_ldap_registration_proxy_container_additional_networks_auto: |-
 
 matrix_ldap_registration_proxy_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_ldap_registration_proxy_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_ldap_registration_proxy_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_ldap_registration_proxy_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_ldap_registration_proxy_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_ldap_registration_proxy_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 ######################################################################
 #
@@ -3720,8 +3720,8 @@ matrix_ma1sd_container_additional_networks_auto: |
 
 matrix_ma1sd_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_ma1sd_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_ma1sd_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_ma1sd_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_ma1sd_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_ma1sd_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 # We enable Synapse integration via its Postgres database by default.
 # When using another Identity store, you might wish to disable this and define
@@ -3788,8 +3788,8 @@ matrix_media_repo_container_additional_networks: |
 
 matrix_media_repo_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_media_repo_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_media_repo_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_media_repo_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_media_repo_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_media_repo_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_media_repo_container_labels_traefik_internal_media_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
 matrix_media_repo_container_labels_traefik_internal_media_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
@@ -4241,8 +4241,8 @@ matrix_sygnal_container_http_host_bind_port: "{{ (matrix_playbook_service_host_b
 
 matrix_sygnal_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_sygnal_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_sygnal_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_sygnal_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_sygnal_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_sygnal_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 ######################################################################
 #
@@ -4273,8 +4273,8 @@ ntfy_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_inter
 
 ntfy_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 ntfy_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-ntfy_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-ntfy_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+ntfy_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+ntfy_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 ntfy_visitor_request_limit_exempt_hosts_hostnames_auto: |
   {{
@@ -4360,8 +4360,8 @@ matrix_client_element_container_additional_networks: "{{ [matrix_playbook_revers
 
 matrix_client_element_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_client_element_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_client_element_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_client_element_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_client_element_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_client_element_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_client_element_default_hs_url: "{{ matrix_homeserver_url }}"
 matrix_client_element_default_is_url: "{{ matrix_identity_server_url }}"
@@ -4409,8 +4409,8 @@ matrix_client_hydrogen_container_additional_networks: "{{ [matrix_playbook_rever
 
 matrix_client_hydrogen_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_client_hydrogen_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_client_hydrogen_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_client_hydrogen_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_client_hydrogen_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_client_hydrogen_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_client_hydrogen_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 
@@ -4442,8 +4442,8 @@ matrix_client_cinny_container_additional_networks: "{{ [matrix_playbook_reverse_
 
 matrix_client_cinny_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_client_cinny_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_client_cinny_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_client_cinny_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_client_cinny_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_client_cinny_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_client_cinny_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 
@@ -4477,8 +4477,8 @@ matrix_client_schildichat_container_additional_networks: "{{ [matrix_playbook_re
 
 matrix_client_schildichat_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_client_schildichat_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_client_schildichat_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_client_schildichat_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_client_schildichat_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_client_schildichat_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_client_schildichat_default_hs_url: "{{ matrix_homeserver_url }}"
 matrix_client_schildichat_default_is_url: "{{ matrix_identity_server_url }}"
@@ -4559,8 +4559,8 @@ matrix_synapse_container_additional_networks_auto: |
 
 matrix_synapse_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_synapse_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_synapse_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_synapse_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_synapse_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_synapse_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 matrix_synapse_container_labels_traefik_hostname: "{{ matrix_server_fqn_matrix }}"
 
 matrix_synapse_container_labels_matrix_labels_enabled: "{{ not matrix_synapse_workers_enabled }}"
@@ -4731,8 +4731,8 @@ matrix_synapse_reverse_proxy_companion_container_federation_api_host_bind_port: 
 
 matrix_synapse_reverse_proxy_companion_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_synapse_reverse_proxy_companion_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_synapse_reverse_proxy_companion_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_synapse_reverse_proxy_companion_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_synapse_reverse_proxy_companion_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_synapse_reverse_proxy_companion_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 matrix_synapse_reverse_proxy_companion_container_labels_traefik_hostname: "{{ matrix_server_fqn_matrix }}"
 
 matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_client_api_enabled: "{{ matrix_synapse_container_labels_public_client_synapse_client_api_enabled }}"
@@ -4788,8 +4788,8 @@ matrix_synapse_admin_container_additional_networks: "{{ [matrix_playbook_reverse
 
 matrix_synapse_admin_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_synapse_admin_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_synapse_admin_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_synapse_admin_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_synapse_admin_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_synapse_admin_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_synapse_admin_config_asManagedUsers_auto: |
   {{
@@ -4996,8 +4996,8 @@ matrix_synapse_usage_exporter_container_additional_networks: "{{ [matrix_playboo
 
 matrix_synapse_usage_exporter_container_labels_traefik_enabled: "{{ matrix_synapse_usage_exporter_proxying_enabled }}"
 matrix_synapse_usage_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_synapse_usage_exporter_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_synapse_usage_exporter_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_synapse_usage_exporter_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_synapse_usage_exporter_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 ######################################################################
 #
@@ -5028,8 +5028,8 @@ prometheus_node_exporter_container_additional_networks: "{{ [matrix_playbook_rev
 
 prometheus_node_exporter_container_labels_traefik_enabled: "{{ matrix_metrics_exposure_enabled }}"
 prometheus_node_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-prometheus_node_exporter_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-prometheus_node_exporter_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+prometheus_node_exporter_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+prometheus_node_exporter_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 prometheus_node_exporter_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 prometheus_node_exporter_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
@@ -5069,8 +5069,8 @@ prometheus_postgres_exporter_container_additional_networks: |
 
 prometheus_postgres_exporter_container_labels_traefik_enabled: "{{ matrix_metrics_exposure_enabled }}"
 prometheus_postgres_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-prometheus_postgres_exporter_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-prometheus_postgres_exporter_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+prometheus_postgres_exporter_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+prometheus_postgres_exporter_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 prometheus_postgres_exporter_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 prometheus_postgres_exporter_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
@@ -5113,8 +5113,8 @@ matrix_prometheus_nginxlog_exporter_container_additional_networks_auto: |-
 
 matrix_prometheus_nginxlog_exporter_container_labels_traefik_enabled: "{{ matrix_metrics_exposure_enabled }}"
 matrix_prometheus_nginxlog_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_prometheus_nginxlog_exporter_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_prometheus_nginxlog_exporter_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_prometheus_nginxlog_exporter_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_prometheus_nginxlog_exporter_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
@@ -5268,8 +5268,8 @@ grafana_container_additional_networks_auto: |
 
 grafana_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 grafana_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-grafana_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-grafana_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+grafana_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+grafana_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 grafana_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '3000') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
@@ -5361,8 +5361,8 @@ matrix_registration_container_additional_networks_auto: |-
 
 matrix_registration_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_registration_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_registration_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_registration_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_registration_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_registration_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_registration_riot_instance: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else 'https://element.io/app/' }}"
 
@@ -5423,8 +5423,8 @@ matrix_sliding_sync_container_additional_networks: |
 
 matrix_sliding_sync_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_sliding_sync_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_sliding_sync_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_sliding_sync_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_sliding_sync_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_sliding_sync_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_sliding_sync_container_labels_public_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_sliding_sync_container_labels_public_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
@@ -5483,8 +5483,8 @@ matrix_dendrite_container_https_host_bind_address: "{{ '' if not matrix_dendrite
 
 matrix_dendrite_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and not matrix_synapse_workers_enabled }}"
 matrix_dendrite_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_dendrite_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_dendrite_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_dendrite_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_dendrite_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_dendrite_container_labels_public_client_synapse_admin_api_enabled: "{{ matrix_synapse_admin_enabled }}"
 
@@ -5579,8 +5579,8 @@ matrix_conduit_container_additional_networks_auto: |
 
 matrix_conduit_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and not matrix_synapse_workers_enabled }}"
 matrix_conduit_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_conduit_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_conduit_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_conduit_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_conduit_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_conduit_container_labels_public_client_root_redirection_enabled: "{{ matrix_conduit_container_labels_public_client_root_redirection_url != '' }}"
 matrix_conduit_container_labels_public_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
@@ -5741,8 +5741,8 @@ matrix_static_files_container_network: "{{ (matrix_static_files_identifier if ma
 
 matrix_static_files_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 matrix_static_files_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_static_files_container_labels_traefik_entrypoints: "{{ devture_traefik_entrypoint_primary }}"
-matrix_static_files_container_labels_traefik_tls_certResolver: "{{ devture_traefik_certResolver_primary }}"
+matrix_static_files_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_static_files_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_hostname: "{{ matrix_server_fqn_matrix }}"
 
@@ -5806,30 +5806,30 @@ devture_container_socket_proxy_api_containers_enabled: true
 #                                                                      #
 ########################################################################
 
-devture_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' }}"
+traefik_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' }}"
 
-devture_traefik_identifier: matrix-traefik
+traefik_identifier: matrix-traefik
 
-devture_traefik_base_path: "{{ matrix_base_data_path }}/traefik"
+traefik_base_path: "{{ matrix_base_data_path }}/traefik"
 
-devture_traefik_uid: "{{ matrix_user_uid }}"
-devture_traefik_gid: "{{ matrix_user_gid }}"
+traefik_uid: "{{ matrix_user_uid }}"
+traefik_gid: "{{ matrix_user_gid }}"
 
-devture_traefik_additional_entrypoints_auto: |
+traefik_additional_entrypoints_auto: |
   {{
     ([matrix_playbook_public_matrix_federation_api_traefik_entrypoint_definition] if matrix_playbook_public_matrix_federation_api_traefik_entrypoint_enabled else [])
     +
     ([matrix_playbook_internal_matrix_client_api_traefik_entrypoint_definition] if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else [])
   }}
 
-devture_traefik_config_providers_docker_endpoint: "{{ devture_container_socket_proxy_endpoint if devture_container_socket_proxy_enabled else 'unix:///var/run/docker.sock' }}"
+traefik_config_providers_docker_endpoint: "{{ devture_container_socket_proxy_endpoint if devture_container_socket_proxy_enabled else 'unix:///var/run/docker.sock' }}"
 
-devture_traefik_container_additional_networks_auto: |
+traefik_container_additional_networks_auto: |
   {{
     ([devture_container_socket_proxy_container_network] if devture_container_socket_proxy_enabled else [])
   }}
 
-devture_traefik_systemd_required_services_list: |
+traefik_systemd_required_services_list: |
   {{
     ([devture_systemd_docker_base_docker_service_name])
     +
@@ -5849,16 +5849,16 @@ devture_traefik_systemd_required_services_list: |
 #                                                                      #
 ########################################################################
 
-devture_traefik_certs_dumper_enabled: "{{ (matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' and devture_traefik_config_entrypoint_web_secure_enabled and devture_traefik_config_certificatesResolvers_acme_enabled) or matrix_playbook_reverse_proxy_type == 'other-traefik-container' }}"
+traefik_certs_dumper_enabled: "{{ (matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' and traefik_config_entrypoint_web_secure_enabled and traefik_config_certificatesResolvers_acme_enabled) or matrix_playbook_reverse_proxy_type == 'other-traefik-container' }}"
 
-devture_traefik_certs_dumper_identifier: matrix-traefik-certs-dumper
+traefik_certs_dumper_identifier: matrix-traefik-certs-dumper
 
-devture_traefik_certs_dumper_base_path: "{{ matrix_base_data_path }}/traefik-certs-dumper"
+traefik_certs_dumper_base_path: "{{ matrix_base_data_path }}/traefik-certs-dumper"
 
-devture_traefik_certs_dumper_uid: "{{ matrix_user_uid }}"
-devture_traefik_certs_dumper_gid: "{{ matrix_user_gid }}"
+traefik_certs_dumper_uid: "{{ matrix_user_uid }}"
+traefik_certs_dumper_gid: "{{ matrix_user_gid }}"
 
-devture_traefik_certs_dumper_ssl_dir_path: "{{ devture_traefik_ssl_dir_path if devture_traefik_enabled else '' }}"
+traefik_certs_dumper_ssl_dir_path: "{{ traefik_ssl_dir_path if traefik_enabled else '' }}"
 
 ########################################################################
 #                                                                      #

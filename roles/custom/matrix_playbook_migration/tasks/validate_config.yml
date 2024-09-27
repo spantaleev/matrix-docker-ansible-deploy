@@ -36,8 +36,8 @@
     - {'old': 'matrix_systemd_services_autostart_enabled', 'new': 'devture_systemd_service_manager_services_autostart_enabled'}
     - {'old': 'matrix_prometheus_node_exporter_metrics_proxying_enabled', 'new': '<prometheus_node_exporter_container_labels_traefik_enabled or matrix_metrics_exposure_enabled>'}
     - {'old': 'matrix_prometheus_postgres_exporter_metrics_proxying_enabled', 'new': '<prometheus_postgres_exporter_container_labels_traefik_enabled or matrix_metrics_exposure_enabled>'}
-    - {'old': 'matrix_playbook_traefik_certs_dumper_role_enabled', 'new': 'devture_traefik_certs_dumper_enabled'}
-    - {'old': 'matrix_playbook_traefik_role_enabled', 'new': 'devture_traefik_enabled'}
+    - {'old': 'matrix_playbook_traefik_certs_dumper_role_enabled', 'new': 'traefik_certs_dumper_enabled'}
+    - {'old': 'matrix_playbook_traefik_role_enabled', 'new': 'traefik_enabled'}
 
     # Most important variables from the old Prometheus role here, for people who miss the changelog entry
     - {'old': 'matrix_prometheus_enabled', 'new': 'prometheus_enabled'}
@@ -300,7 +300,7 @@
         - {'old': 'matrix_nginx_proxy_proxy_synapse_federation_api_addr_sans_container', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_synapse_additional_server_configuration_blocks', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_additional_server_configuration_blocks', 'new': '<removed>'}
-        - {'old': 'matrix_nginx_proxy_access_log_enabled', 'new': 'devture_traefik_config_accessLog_enabled'}
+        - {'old': 'matrix_nginx_proxy_access_log_enabled', 'new': 'traefik_config_accessLog_enabled'}
         - {'old': 'matrix_nginx_proxy_container_labels_traefik_proxy_matrix_federation_hostname', 'new': 'matrix_server_fqn_matrix_federation'}
         - {'old': 'etherpad_nginx_proxy_dimension_integration_enabled', 'new': '<removed>'}
         - {'old': 'etherpad_nginx_proxy_dimension_integration_path_prefix', 'new': '<removed>'}
@@ -310,7 +310,7 @@
         - {'old': 'matrix_prometheus_services_proxy_connect_prometheus_postgres_exporter_matrix_nginx_proxy_not_enabled_proxy_pass_host', 'new': '<removed>'}
         - {'old': 'matrix_docker_network', 'new': '<removed in favor of various other variables - matrix_addons_container_network, matrix_monitoring_container_network, matrix_homeserver_container_network, etc.>'}
         - {'old': 'matrix_playbook_ssl_retrieval_method', 'new': '<removed; see docs/configuring-playbook-ssl-certificates.md for alternatives>'}
-        - {'old': 'matrix_ssl_lets_encrypt_support_email', 'new': 'devture_traefik_config_certificatesResolvers_acme_email'}
+        - {'old': 'matrix_ssl_lets_encrypt_support_email', 'new': 'traefik_config_certificatesResolvers_acme_email'}
         - {'old': 'matrix_federation_traefik_entrypoint', 'new': 'matrix_federation_traefik_entrypoint_name'}
 
 - when: matrix_playbook_migration_matrix_nginx_proxy_leftover_variable_validation_checks_enabled | bool
@@ -384,3 +384,25 @@
 
       The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_postgres_.*') | map (attribute='key') | join(', ') }}
   when: "vars | dict2items | selectattr('key', 'match', 'devture_postgres_.*') | list | items2dict"
+
+- name: (Deprecation) Catch and report traefik_certs_dumper variables
+  ansible.builtin.fail:
+    msg: |-
+      The traefik-certs-dumper role in the playbook now lives under the MASH organization (https://github.com/mother-of-all-self-hosting/ansible-role-traefik-certs-dumper).
+      The new role is pretty much the same, but uses differently named variables.
+
+      Please change your configuration (vars.yml) to rename all `devture_traefik_certs_dumper_`-prefixed variables (`devture_traefik_certs_dumper_*` -> `traefik_certs_dumper_*`).
+
+      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_traefik_certs_dumper_.*') | map (attribute='key') | join(', ') }}
+  when: "vars | dict2items | selectattr('key', 'match', 'devture_traefik_certs_dumper_.*') | list | items2dict"
+
+- name: (Deprecation) Catch and report devture_traefik variables
+  ansible.builtin.fail:
+    msg: |-
+      The traefik role in the playbook now lives under the MASH organization (https://github.com/mother-of-all-self-hosting/ansible-role-traefik).
+      The new role is pretty much the same, but uses differently named variables.
+
+      Please change your configuration (vars.yml) to rename all `devture_traefik_`-prefixed variables (`devture_traefik_*` -> `traefik_*`).
+
+      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_traefik_.*') | map (attribute='key') | join(', ') }}
+  when: "vars | dict2items | selectattr('key', 'match', 'devture_traefik_.*') | list | items2dict"

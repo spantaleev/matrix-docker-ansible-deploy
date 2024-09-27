@@ -58,29 +58,29 @@ We cannot just disable the default resolver as that would disable SSL in quite a
 
 ```yaml
 # 1. Add a new ACME configuration without having to disable the default one, since it would have a wide range of side effects
-devture_traefik_configuration_extension_yaml: |
+traefik_configuration_extension_yaml: |
   certificatesResolvers:
     dns:
       acme:
         # To use a staging endpoint for testing purposes, uncomment the line below.
         # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-        email: {{ devture_traefik_config_certificatesResolvers_acme_email | to_json }}
+        email: {{ traefik_config_certificatesResolvers_acme_email | to_json }}
         dnsChallenge:
           provider: cloudflare
           resolvers:
             - "1.1.1.1:53"
             - "8.8.8.8:53"
-        storage: {{ devture_traefik_config_certificatesResolvers_acme_storage | to_json }}
+        storage: {{ traefik_config_certificatesResolvers_acme_storage | to_json }}
 
 # 2. Configure the environment variables needed by Rraefik to automate the ACME DNS Challenge (example for Cloudflare)
-devture_traefik_environment_variables: |
+traefik_environment_variables: |
   CF_API_EMAIL=redacted
   CF_ZONE_API_TOKEN=redacted
   CF_DNS_API_TOKEN=redacted
   LEGO_DISABLE_CNAME_SUPPORT=true
 
 # 3. Instruct the playbook to use the new ACME configuration
-devture_traefik_certResolver_primary: dns
+traefik_certResolver_primary: dns
 ```
 
 ## Adjust Coturn's configuration
@@ -105,16 +105,16 @@ matrix_coturn_container_additional_volumes: |
     (
       [
        {
-         'src': (devture_traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/certificate.crt'),
+         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/certificate.crt'),
          'dst': '/certificate.crt',
          'options': 'ro',
        },
        {
-         'src': (devture_traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/privatekey.key'),
+         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/privatekey.key'),
          'dst': '/privatekey.key',
          'options': 'ro',
        },
-      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and devture_traefik_certs_dumper_enabled and matrix_coturn_tls_enabled else []
+      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and matrix_coturn_tls_enabled else []
     )
   }}
 ```
@@ -124,7 +124,7 @@ matrix_coturn_container_additional_volumes: |
 ```yaml
 # Choosing the reverse proxy implementation
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
-devture_traefik_config_certificatesResolvers_acme_email: redacted@example.com
+traefik_config_certificatesResolvers_acme_email: redacted@example.com
 
 # To serve the federation from any domain, as long as the path matches
 matrix_synapse_container_labels_public_federation_api_traefik_rule: PathPrefix(`/_matrix/federation`)
@@ -135,25 +135,25 @@ matrix_synapse_container_labels_additional_labels: |
   traefik.http.routers.matrix-synapse-federation-api.tls.domains.sans="*.example.com"
 
 # Add a new ACME configuration without having to disable the default one, since it would have a wide range of side effects
-devture_traefik_configuration_extension_yaml: |
+traefik_configuration_extension_yaml: |
   certificatesResolvers:
     dns:
       acme:
         # To use a staging endpoint for testing purposes, uncomment the line below.
         # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-        email: {{ devture_traefik_config_certificatesResolvers_acme_email | to_json }}
+        email: {{ traefik_config_certificatesResolvers_acme_email | to_json }}
         dnsChallenge:
           provider: cloudflare
           resolvers:
             - "1.1.1.1:53"
             - "8.8.8.8:53"
-        storage: {{ devture_traefik_config_certificatesResolvers_acme_storage | to_json }}
+        storage: {{ traefik_config_certificatesResolvers_acme_storage | to_json }}
 
 # Instruct thep laybook to use the new ACME configuration
-devture_traefik_certResolver_primary: "dns"
+traefik_certResolver_primary: "dns"
 
 # Configure the environment variables needed by Traefik to automate the ACME DNS Challenge (example for Cloudflare)
-devture_traefik_environment_variables: |
+traefik_environment_variables: |
   CF_API_EMAIL=redacted
   CF_ZONE_API_TOKEN=redacted
   CF_DNS_API_TOKEN=redacted
@@ -168,16 +168,16 @@ matrix_coturn_container_additional_volumes: |
     (
       [
        {
-         'src': (devture_traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/certificate.crt'),
+         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/certificate.crt'),
          'dst': '/certificate.crt',
          'options': 'ro',
        },
        {
-         'src': (devture_traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/privatekey.key'),
+         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/privatekey.key'),
          'dst': '/privatekey.key',
          'options': 'ro',
        },
-      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and devture_traefik_certs_dumper_enabled and matrix_coturn_tls_enabled else []
+      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and matrix_coturn_tls_enabled else []
     )
   }}
 ```

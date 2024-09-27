@@ -12,7 +12,7 @@ See the dedicated [Adjusting SSL certificate retrieval](configuring-playbook-ssl
 ## Increase logging verbosity
 
 ```yaml
-devture_traefik_config_log_level: DEBUG
+traefik_config_log_level: DEBUG
 ```
 
 ## Disable access logs
@@ -20,7 +20,7 @@ devture_traefik_config_log_level: DEBUG
 This will disable access logging.
 
 ```yaml
-devture_traefik_config_accessLog_enabled: false
+traefik_config_accessLog_enabled: false
 ```
 
 ## Enable Traefik Dashboard
@@ -28,23 +28,23 @@ devture_traefik_config_accessLog_enabled: false
 This will enable a Traefik [Dashboard](https://doc.traefik.io/traefik/operations/dashboard/) UI at `https://matrix.DOMAIN/dashboard/` (note the trailing `/`).
 
 ```yaml
-devture_traefik_dashboard_enabled: true
-devture_traefik_dashboard_hostname: "{{ matrix_server_fqn_matrix }}"
-devture_traefik_dashboard_basicauth_enabled: true
-devture_traefik_dashboard_basicauth_user: YOUR_USERNAME_HERE
-devture_traefik_dashboard_basicauth_password: YOUR_PASSWORD_HERE
+traefik_dashboard_enabled: true
+traefik_dashboard_hostname: "{{ matrix_server_fqn_matrix }}"
+traefik_dashboard_basicauth_enabled: true
+traefik_dashboard_basicauth_user: YOUR_USERNAME_HERE
+traefik_dashboard_basicauth_password: YOUR_PASSWORD_HERE
 ```
 
 **WARNING**: Enabling the dashboard on a hostname you use for something else (like `matrix_server_fqn_matrix` in the configuration above) may cause conflicts. Enabling the Traefik Dashboard makes Traefik capture all `/dashboard` and `/api` requests and forward them to itself. If any of the services hosted on the same hostname requires any of these 2 URL prefixes, you will experience problems. So far, we're not aware of any playbook services which occupy these endpoints and are likely to cause conflicts.
 
 ## Additional configuration
 
-Use the `devture_traefik_configuration_extension_yaml` variable provided by the Traefik Ansible role to override or inject additional settings, even when no dedicated variable exists.
+Use the `traefik_configuration_extension_yaml` variable provided by the Traefik Ansible role to override or inject additional settings, even when no dedicated variable exists.
 
 ```yaml
 # This is a contrived example.
 # You can enable and secure the Dashboard using dedicated variables. See above.
-devture_traefik_configuration_extension_yaml: |
+traefik_configuration_extension_yaml: |
   api:
     dashboard: true
 ```
@@ -66,8 +66,8 @@ First, we have to adjust the static configuration of Traefik, so that we can add
 ```yaml
 # We enable all config files in the /config/ folder to be loaded.
 # `/config` is the path as it appears in the Traefik container.
-# On the host, it's actually `/matrix/traefik/config` (as defined in `devture_traefik_config_dir_path`).
-devture_traefik_configuration_extension_yaml: |
+# On the host, it's actually `/matrix/traefik/config` (as defined in `traefik_config_dir_path`).
+traefik_configuration_extension_yaml: |
   providers:
     file:
       directory: /config/
@@ -79,7 +79,7 @@ If you are using a self-signed certificate on your webserver, you can tell Traef
 
 ```yaml
 # We enable all config files in the /config/ folder to be loaded and
-devture_traefik_configuration_extension_yaml: |
+traefik_configuration_extension_yaml: |
   providers:
     file:
       directory: /config/
@@ -90,11 +90,11 @@ devture_traefik_configuration_extension_yaml: |
 ```
 
 
-Next, you have to add a new dynamic configuration file for Traefik that contains the actual information of the server using the `aux_file_definitions` variable. In this example, we will terminate SSL at the Traefik instance and connect to the other server via HTTPS. Traefik will now take care of managing the certificates. 
+Next, you have to add a new dynamic configuration file for Traefik that contains the actual information of the server using the `aux_file_definitions` variable. In this example, we will terminate SSL at the Traefik instance and connect to the other server via HTTPS. Traefik will now take care of managing the certificates.
 
 ```yaml
 aux_file_definitions:
-  - dest: "{{ devture_traefik_config_dir_path }}/provider_my_fancy_website.yml"
+  - dest: "{{ traefik_config_dir_path }}/provider_my_fancy_website.yml"
     content: |
       http:
         routers:
@@ -117,7 +117,7 @@ If you do not want to terminate SSL at the Traefik instance (for example, becaus
 
 ```yaml
 aux_file_definitions:
-  - dest: "{{ devture_traefik_config_dir_path }}/providers_my_fancy_website.yml"
+  - dest: "{{ traefik_config_dir_path }}/providers_my_fancy_website.yml"
     content: |
       tcp:
         routers:
@@ -134,9 +134,9 @@ aux_file_definitions:
 ```
 Changing the `url` to one with an `http://` prefix would allow to connect to the server via HTTP.
 
-With these changes, all TCP traffic will be reverse-proxied to the target system. 
+With these changes, all TCP traffic will be reverse-proxied to the target system.
 
-**WARNING**: This configuration might lead to problems or need additional steps when a [certbot](https://certbot.eff.org/) behind Traefik also tries to manage [Let's Encrypt](https://letsencrypt.org/) certificates, as Traefik captures all traffic to ```PathPrefix(`/.well-known/acme-challenge/`)```. 
+**WARNING**: This configuration might lead to problems or need additional steps when a [certbot](https://certbot.eff.org/) behind Traefik also tries to manage [Let's Encrypt](https://letsencrypt.org/) certificates, as Traefik captures all traffic to ```PathPrefix(`/.well-known/acme-challenge/`)```.
 
 
 ## Traefik behind a `proxy_protocol` reverse-proxy
@@ -144,7 +144,7 @@ With these changes, all TCP traffic will be reverse-proxied to the target system
 If you run a reverse-proxy which speaks `proxy_protocol`, add the following to your configuration file:
 
 ```yaml
-devture_traefik_configuration_extension_yaml: |
+traefik_configuration_extension_yaml: |
   entryPoints:
     web-secure:
       proxyProtocol:

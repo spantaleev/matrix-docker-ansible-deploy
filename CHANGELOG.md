@@ -118,7 +118,7 @@ If you're using the playbook's Traefik instance to reverse-proxy to some other s
 
 If you've tweaked any of this playbook's `_path_prefix` variables and made them use a regular expression, you will now need to make additional adjustments. The playbook makes extensive use of `PathPrefix()` matchers in Traefik rules and `PathPrefix` does not support regular expressions anymore. To work around it, you may now need to override a whole `_traefik_rule` variable and switch it from [`PathPrefix` to `PathRegexp`](https://doc.traefik.io/traefik/routing/routers/#path-pathprefix-and-pathregexp).
 
-If you're not using [matrix-media-repo](./docs/configuring-playbook-matrix-media-repo.md) (the only role we had to tweak to adapt it to Traefik v3), you **may potentially downgrade to Traefik v2** (if necessary) by adding `devture_traefik_verison: v2.11.4` to your configuration. People using `matrix-media-repo` cannot downgrade this way, because `matrix-media-repo` has been adjusted to use `PathRegexp` - a [routing matcher](https://doc.traefik.io/traefik/v2.11/routing/routers/#rule) that Traefik v2 does not understand.
+If you're not using [matrix-media-repo](./docs/configuring-playbook-matrix-media-repo.md) (the only role we had to tweak to adapt it to Traefik v3), you **may potentially downgrade to Traefik v2** (if necessary) by adding `traefik_verison: v2.11.4` to your configuration. People using `matrix-media-repo` cannot downgrade this way, because `matrix-media-repo` has been adjusted to use `PathRegexp` - a [routing matcher](https://doc.traefik.io/traefik/v2.11/routing/routers/#rule) that Traefik v2 does not understand.
 
 
 ### HTTP/3 is enabled by default
@@ -135,7 +135,7 @@ Still, if HTTP/3 cannot function correctly in your setup, it's best to disable a
 To **disable HTTP/3**, you can use the following configuration:
 
 ```yml
-devture_traefik_config_entrypoint_web_secure_http3_enabled: false
+traefik_config_entrypoint_web_secure_http3_enabled: false
 
 # Disabling HTTP/3 for the web-secure entrypoint (above),
 # automatically disables it for the Matrix Federation entrypoint as well,
@@ -457,9 +457,9 @@ Because [Traefik has an extra job now](#traefik-now-has-an-extra-job), you need 
 
 ### People fronting Traefik with another reverse proxy need to do minor changes
 
-We've already previously mentioned that you need to do some minor [configuration changes related to `devture_traefik_additional_entrypoints_auto`](#backward-compatibility-configuration-changes-required-for-people-fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy).
+We've already previously mentioned that you need to do some minor [configuration changes related to `traefik_additional_entrypoints_auto`](#backward-compatibility-configuration-changes-required-for-people-fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy).
 
-If you don't do these changes (switching from `devture_traefik_additional_entrypoints_auto` to multiple other variables), your Traefik setup will not automatically receive the new `matrix-internal-matrix-client-api` Traefik entrypoint and Traefik would not be able to perform [its new duty of connecting addons with the homeserver](#traefik-now-has-an-extra-job).
+If you don't do these changes (switching from `traefik_additional_entrypoints_auto` to multiple other variables), your Traefik setup will not automatically receive the new `matrix-internal-matrix-client-api` Traefik entrypoint and Traefik would not be able to perform [its new duty of connecting addons with the homeserver](#traefik-now-has-an-extra-job).
 
 
 ### Supported reverse proxy types are now fewer
@@ -572,17 +572,17 @@ I don't actively use all the ~100 components offered by the playbook (no one doe
 
 If you're on the default setup (using the Traefik reverse-proxy as installed by the playbook), you don't need to do anything.
 
-People who are [Fronting the integrated Traefik reverse-proxy webserver with another reverse-proxy](./docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy), as per our previous instructions are redefining `devture_traefik_additional_entrypoints_auto` in their `vars.yml` configuration.
+People who are [Fronting the integrated Traefik reverse-proxy webserver with another reverse-proxy](./docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy), as per our previous instructions are redefining `traefik_additional_entrypoints_auto` in their `vars.yml` configuration.
 
 Such a full variable redefinion is intrustive, because it prevents the playbook from injecting additional entrypoints into the Traefik webserver. In the future, the playbook may have a need to do so.
 
-For this reason, we no longer recommend completely redefining `devture_traefik_additional_entrypoints_auto`.
-The playbook now defines [various `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_*` variables in the `defaults/main.yml` file](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-base/defaults/main.yml) of the `matrix-base` role which can be used as a safer alternative to `devture_traefik_additional_entrypoints_auto`.
+For this reason, we no longer recommend completely redefining `traefik_additional_entrypoints_auto`.
+The playbook now defines [various `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_*` variables in the `defaults/main.yml` file](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-base/defaults/main.yml) of the `matrix-base` role which can be used as a safer alternative to `traefik_additional_entrypoints_auto`.
 
 Adapt your configuration as seen below:
 
 ```diff
--devture_traefik_additional_entrypoints_auto:
+-traefik_additional_entrypoints_auto:
 -  - name: matrix-federation
 -    port: 8449
 -    host_bind_port: '127.0.0.1:8449'
@@ -1070,7 +1070,7 @@ Unless we have some regression, **existing `matrix-nginx-proxy` users should be 
 ```yaml
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
 
-devture_traefik_config_certificatesResolvers_acme_email: YOUR_EMAIL_ADDRESS
+traefik_config_certificatesResolvers_acme_email: YOUR_EMAIL_ADDRESS
 ```
 
 You may still need to keep certain old `matrix_nginx_proxy_*` variables (like `matrix_nginx_proxy_base_domain_serving_enabled`), even when using Traefik. For now, we recommend keeping all `matrix_nginx_proxy_*` variables just in case. In the future, reliance on `matrix-nginx-proxy` will be removed.
@@ -1097,7 +1097,7 @@ As mentioned above, Traefik still reverse-proxies to some (most) services by goi
 As Traefik support becomes complete and proves to be stable for a while, especially as a playbook default, we will **most likely remove `matrix-nginx-proxy` completely**. It will likely be some months before this happens though. Keeping support for both Traefik and nginx in the playbook will be a burden, especially with most of us running Traefik in the future. The Traefik role should do everything nginx does in a better and cleaner way. Users who use their own `nginx` server on the Matrix server will be inconvenienced, as nothing will generate ready-to-include nginx configuration for them. Still, we hope it won't be too hard to migrate their setup to another way of doing things, like:
 
 - not using nginx anymore. A common reason for using nginx until now was that you were running other containers and you need your own nginx to reverse-proxy to all of them. Just switch them to Traefik as well.
-- running Traefik in local-only mode (`devture_traefik_config_entrypoint_web_secure_enabled: false`) and using some nginx configuration which reverse-proxies to Traefik (we should introduce examples for this in `examples/nginx`).
+- running Traefik in local-only mode (`traefik_config_entrypoint_web_secure_enabled: false`) and using some nginx configuration which reverse-proxies to Traefik (we should introduce examples for this in `examples/nginx`).
 
 ### How do I help?
 
@@ -1107,7 +1107,7 @@ You can help by:
 
 - **adding native Traefik support to a role** (requires adding Traefik labels, etc.) - for inspiration, see these roles ([prometheus_node_exporter](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus-node-exporter), [prometheus_postgres_exporter](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus-postgres-exporter)) and how they're hooked into the playbook via [group_vars/matrix_servers](group_vars/matrix_servers).
 
-- **adding reverse-proxying examples for nginx users** in `examples/nginx`. People who insist on using their own `nginx` server on the same Matrix host, can run Traefik in local-only mode (`devture_traefik_config_entrypoint_web_secure_enabled: false`) and reverse-proxy to the Traefik server
+- **adding reverse-proxying examples for nginx users** in `examples/nginx`. People who insist on using their own `nginx` server on the same Matrix host, can run Traefik in local-only mode (`traefik_config_entrypoint_web_secure_enabled: false`) and reverse-proxy to the Traefik server
 
 
 # 2023-02-10

@@ -21,7 +21,7 @@ To have the playbook install and use Traefik, use configuration like this (as se
 ```yaml
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
 
-devture_traefik_config_certificatesResolvers_acme_email: YOUR_EMAIL_ADDRESS
+traefik_config_certificatesResolvers_acme_email: YOUR_EMAIL_ADDRESS
 ```
 
 Traefik will manage SSL certificates for all services seamlessly.
@@ -38,7 +38,7 @@ matrix_playbook_reverse_proxy_type: other-traefik-container
 # Adjust to point to your Traefik container
 matrix_playbook_reverse_proxy_hostname: name-of-your-traefik-container
 
-devture_traefik_certs_dumper_ssl_dir_path: "/path/to/your/traefiks/acme.json/directory"
+traefik_certs_dumper_ssl_dir_path: "/path/to/your/traefiks/acme.json/directory"
 
 # Uncomment and tweak the variable below if the name of your federation entrypoint is different
 # than the default value (matrix-federation).
@@ -148,18 +148,18 @@ matrix_playbook_ssl_enabled: true
 # Disable the web-secure (port 443) endpoint, which also disables SSL certificate retrieval.
 # This has the side-effect of also automatically disabling TLS for the matrix-federation entrypoint
 # (by toggling `matrix_federation_traefik_entrypoint_tls`).
-devture_traefik_config_entrypoint_web_secure_enabled: false
+traefik_config_entrypoint_web_secure_enabled: false
 
 # If your reverse-proxy runs on another machine, consider using `0.0.0.0:81`, just `81` or `SOME_IP_ADDRESS_OF_THIS_MACHINE:81`
-devture_traefik_container_web_host_bind_port: '127.0.0.1:81'
+traefik_container_web_host_bind_port: '127.0.0.1:81'
 
 # We bind to `127.0.0.1` by default (see above), so trusting `X-Forwarded-*` headers from
 # a reverse-proxy running on the local machine is safe enough.
-# If you're publishing the port (`devture_traefik_container_web_host_bind_port` above) to a public network interface:
-# - remove the `devture_traefik_config_entrypoint_web_forwardedHeaders_insecure` variable definition below
-# - uncomment and adjust the `devture_traefik_config_entrypoint_web_forwardedHeaders_trustedIPs` line below
-devture_traefik_config_entrypoint_web_forwardedHeaders_insecure: true
-# devture_traefik_config_entrypoint_web_forwardedHeaders_trustedIPs: ['IP-ADDRESS-OF-YOUR-REVERSE-PROXY']
+# If you're publishing the port (`traefik_container_web_host_bind_port` above) to a public network interface:
+# - remove the `traefik_config_entrypoint_web_forwardedHeaders_insecure` variable definition below
+# - uncomment and adjust the `traefik_config_entrypoint_web_forwardedHeaders_trustedIPs` line below
+traefik_config_entrypoint_web_forwardedHeaders_insecure: true
+# traefik_config_entrypoint_web_forwardedHeaders_trustedIPs: ['IP-ADDRESS-OF-YOUR-REVERSE-PROXY']
 
 # Expose the federation entrypoint on a custom port (other than port 8448, which is normally used publicly).
 #

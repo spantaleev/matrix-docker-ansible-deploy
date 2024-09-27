@@ -216,15 +216,15 @@ matrix_metrics_exposure_http_basic_auth_users: ''
 #
 # - `playbook-managed-traefik`
 #     - the playbook will run a managed Traefik instance (matrix-traefik)
-#     - Traefik will do SSL termination, unless you disable it (e.g. `devture_traefik_config_entrypoint_web_secure_enabled: false`)
-#     - if SSL termination is enabled (as it is by default), you need to populate: `devture_traefik_config_certificatesResolvers_acme_email`
+#     - Traefik will do SSL termination, unless you disable it (e.g. `traefik_config_entrypoint_web_secure_enabled: false`)
+#     - if SSL termination is enabled (as it is by default), you need to populate: `traefik_config_certificatesResolvers_acme_email`
 #
 # - `other-traefik-container`
 #     - this playbook will not install Traefik
 #     - nevertheless, the playbook expects that you would install Traefik yourself via other means
 #     - you should make sure your Traefik configuration is compatible with what the playbook would have configured (web, web-secure, matrix-federation entrypoints, etc.)
 #     - you need to set `matrix_playbook_reverse_proxyable_services_additional_network` to the name of your Traefik network
-#     - Traefik certs dumper will be enabled by default (`devture_traefik_certs_dumper_enabled`). You need to point it to your Traefik's SSL certificates (`devture_traefik_certs_dumper_ssl_dir_path`)
+#     - Traefik certs dumper will be enabled by default (`traefik_certs_dumper_enabled`). You need to point it to your Traefik's SSL certificates (`traefik_certs_dumper_ssl_dir_path`)
 #
 # - `none`
 #     - no reverse-proxy will be installed
@@ -244,7 +244,7 @@ matrix_playbook_reverse_proxyable_services_additional_network: "{{ matrix_playbo
 
 # Controls if various services think if SSL is enabled or not.
 # Disabling this does not actually disable Treafik's web-secure entrypoint and TLS termination settings.
-# For that, you'd need to use another variable (`devture_traefik_config_entrypoint_web_secure_enabled`).
+# For that, you'd need to use another variable (`traefik_config_entrypoint_web_secure_enabled`).
 # This variable merely serves as an indicator if SSL is used or not.
 matrix_playbook_ssl_enabled: true
 
