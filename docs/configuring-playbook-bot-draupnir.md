@@ -123,7 +123,68 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-You can refer to the upstream [documentation](https://github.com/the-draupnir-project/Draupnir) for additional ways to use and configure draupnir. Check out their [quickstart guide](https://github.com/the-draupnir-project/Draupnir/blob/main/docs/moderators.md#quick-usage) for some basic commands you can give to the bot.
+You can refer to the upstream [documentation](https://the-draupnir-project.github.io/draupnir-documentation/) for additional ways to use and configure Draupnir and for a more detailed usage guide.
+
+Below is a **non-exhaustive quick-start guide** for the impatient.
+
+### Making Draupnir join a room
+
+If you'd like Draupnir **to protect a public room**, you can **tell it to self-join** by using the [rooms command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#using-the-draupnir-rooms-command). This is done by sending the following command to the Management Room: `!draupnir rooms add !ROOM_ID:DOMAIN`
+
+To protect **non-public rooms**, you can [invite the bot](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#inviting-draupnir-to-rooms) (`@bot.draupnir:DOMAIN`) to the room and **then confirm** that it should join by using reactions in the Management Room.
+
+### Giving Draupnir permissions to do its job
+
+For Draupnir to do its job, you need to [give it permissions](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#giving-draupnir-permissions) in rooms it's protecting. This involves **giving it an Administrator power level**.
+
+**We recommend setting this power level as soon as the bot joins your room** (and before you create new rules), so that it can apply rules as soon as they are available. If the bot is under-privileged, it may fail to apply protections and may not retry for a while (or until your restart it).
+
+### Subscribing to a public policy list
+
+We recommend **subscribing to a public [policy list](https://the-draupnir-project.github.io/draupnir-documentation/concepts/policy-lists)** using the [watch command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-policy-lists#using-draupnirs-watch-command-to-subscribe-to-policy-rooms).
+
+Polcy lists are maintained in Matrix rooms. A popular policy list is maintained in the public `#community-moderation-effort-bl:neko.dev` room.
+
+You can tell Draupnir to subscribe to it by sending the following command to the Management Room: `!draupnir watch #community-moderation-effort-bl:neko.dev`
+
+#### Creatng your own policy lists and rules
+
+We also recommend **creating your own policy lists** with the [list create](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-policy-lists#using-draupnirs-list-create-command-to-create-a-policy-room) command.
+
+You can do so by sending the following command to the Management Room: `!draupnir list create my-bans my-bans-bl`. This will create a policy list having a name (shortcode) of `my-bans` and stored in a public `#my-bans-bl:DOMAIN` room on your server. As soon as you run this command, the bot will invite you to the policy list room.
+
+A policy list does nothing by itself, so the next step is **adding some rules to your policy list**. Policies target a so-called `entity` (one of: `user`, `room` or `server`). These entities are mentioned on the [policy lists](https://the-draupnir-project.github.io/draupnir-documentation/concepts/policy-lists) documentation page and in the Matrix Spec [here](https://spec.matrix.org/v1.11/client-server-api/#mban-recommendation).
+
+The simplest and most useful entity to target is `user`. Below are a few examples using the [ban command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#the-ban-command) and targeting users.
+
+To create rules, you run commands in the Management Room (**not** in the policy list room).
+
+- (ban a single user on a given homeserver): `!draupnir ban @someone:example.com my-bans Rude to others`
+- (ban all users on a given homeserver by using a [wildcard](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#wildcards)): `!draupnir ban @*:example.org my-bans Spam server - all users are fake`
+
+As a result of running these commands, you may observe:
+
+- Draupnir creating `m.policy.rule.user` state events in the `#my-bans-bl:DOMAIN` room on your server
+- applying these rules against all rooms that Draupnir is an Administrator in
+
+You can undo bans with the [unban command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#the-unban-command).
+
+### Enabling built-in protections
+
+You can also **turn on various built-in [protections](https://the-draupnir-project.github.io/draupnir-documentation/protections)** like `JoinWaveShortCircuit` ("If X amount of users join in Y time, set the room to invite-only").
+
+To **see which protections are available and which are enabled**, send a `!draupnir protections` command to the Management Room.
+
+To **see the configuration options for a given protection**, send a `!draupnir config get PROTECTION_NAME` (e.g. `!draupnir config get JoinWaveShortCircuit`).
+
+To **set a specific option for a given protection**, send a command like this: `!draupnir config set PROTECTION_NAME.OPTION VALUE` (e.g. `!draupnir config set JoinWaveShortCircuit.timescaleMinutes 30`).
+
+To **enable a given protection**, send a command like this: `!draupnir enable PROTECTION_NAME` (e.g. `!draupnir enable JoinWaveShortCircuit`).
+
+To **disable a given protection**, send a command like this: `!draupnir disable PROTECTION_NAME` (e.g. `!draupnir disable JoinWaveShortCircuit`).
+
+
+## Extending the configuration
 
 You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file.
 
