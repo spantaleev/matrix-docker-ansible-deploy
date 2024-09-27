@@ -1,3 +1,19 @@
+# 2024-09-27
+
+## (BC Break) Postgres & Traefik roles have been relocated and variable names need adjustments
+
+Various roles have been relocated from the [devture](https://github.com/devture) organization to the [mother-of-all-self-hosting](https://github.com/mother-of-all-self-hosting) organization.
+
+Along with the relocation, the `devture_` prefix was dropped from their variable names, so you need to adjust your `vars.yml` configuration.
+
+You need to do the following replacements:
+
+- `devture_postgres_` -> `postgres_`
+- `devture_traefik_` -> `traefik_`
+
+As always, the playbook would let you know about this and point out any variables you may have missed.
+
+
 # 2024-09-12
 
 ## Support for baibot
