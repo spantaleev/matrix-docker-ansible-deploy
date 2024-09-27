@@ -19,7 +19,8 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
     -p {{ matrix_jwt_service_port }}:8080 \
     --env-file={{ matrix_element_call_base_path }}/config/env \
     --label-file={{ matrix_element_call_base_path }}/config/jwt-service-labels \
-    {{ matrix_jwt_service_image }}
+    {{ matrix_jwt_service_image }} \
+    serve
 
 {% for network in matrix_element_call_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-jwt-service
