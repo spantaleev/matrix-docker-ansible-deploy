@@ -127,11 +127,18 @@ You can refer to the upstream [documentation](https://the-draupnir-project.githu
 
 Below is a **non-exhaustive quick-start guide** for the impatient.
 
-### Making Draupnir join a room
+### Making Draupnir join and protect a room
 
-If you'd like Draupnir **to protect a public room**, you can **tell it to self-join** by using the [rooms command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#using-the-draupnir-rooms-command). This is done by sending the following command to the Management Room: `!draupnir rooms add !ROOM_ID:DOMAIN`
+Draupnir can be told to self-join public rooms, but it's better to follow this flow which works well for all kinds of rooms:
 
-To protect **non-public rooms**, you can [invite the bot](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#inviting-draupnir-to-rooms) (`@bot.draupnir:DOMAIN`) to the room and **then confirm** that it should join by using reactions in the Management Room.
+1. Invite the bot to the room manually ([inviting Draupnir to rooms](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#inviting-draupnir-to-rooms)). Before joining, the bot *may* ask for confirmation in the Management Room
+
+2. [Give the bot permissions to do its job](#giving-draupnir-permissions-to-do-its-job)
+
+3. Tell it to protect the room (using the [rooms command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#using-the-draupnir-rooms-command)) by sending the following command to the Management Room: `!draupnir rooms add !ROOM_ID:DOMAIN`
+
+To have Draupnir provide useful room protection, you need do to a bit more work (at least the first time around).
+You may wish to [Subscribe to a public policy list](#subscribing-to-a-public-policy-list), [Create your own own policy and rules](#creating-your-own-policy-lists-and-rules) and [Enabling built-in protections](#enabling-built-in-protections).
 
 ### Giving Draupnir permissions to do its job
 
@@ -147,7 +154,7 @@ Polcy lists are maintained in Matrix rooms. A popular policy list is maintained 
 
 You can tell Draupnir to subscribe to it by sending the following command to the Management Room: `!draupnir watch #community-moderation-effort-bl:neko.dev`
 
-#### Creatng your own policy lists and rules
+#### Creating your own policy lists and rules
 
 We also recommend **creating your own policy lists** with the [list create](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-policy-lists#using-draupnirs-list-create-command-to-create-a-policy-room) command.
 
