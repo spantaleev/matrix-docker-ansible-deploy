@@ -1,7 +1,11 @@
+#jinja2: lstrip_blocks: "True"
 [Unit]
 Description=Matrix Element Call Service
-After=docker.service
-Requires=docker.service
+{% for service in matrix_client_element_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+DefaultDependencies=no
 
 [Service]
 Type=simple
@@ -15,9 +19,15 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
     --log-driver=none \
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
     --cap-drop=ALL \
+    --read-only \
     --network={{ matrix_element_call_container_network }} \
-    -p {{ matrix_element_call_port }}:8080 \
+    {% if matrix_element_call_container_http_host_bind_port %}
+    -p {{ matrix_element_call_container_http_host_bind_port }}:8080 \
+    {% endif %}
     --label-file={{ matrix_element_call_base_path }}/config/element-call-labels \
+    {% for arg in matrix_element_call_container_extra_arguments %}
+    {{ arg }} \
+    {% endfor %}
     {{ matrix_element_call_image }}
 
 {% for network in matrix_element_call_container_additional_networks %}
