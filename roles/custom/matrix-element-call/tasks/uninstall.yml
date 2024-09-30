@@ -6,16 +6,6 @@
     name: "matrix-element-call"
     state: absent
 
-- name: Stop and remove jwt-service container
-  community.docker.docker_container:
-    name: "matrix-jwt-service"
-    state: absent
-
-- name: Stop and remove livekit container
-  community.docker.docker_container:
-    name: "matrix-livekit"
-    state: absent
-
 - name: Stop and remove redis container
   community.docker.docker_container:
     name: "matrix-redis"
@@ -24,16 +14,6 @@
 - name: Remove matrix-element-call systemd service
   ansible.builtin.file:
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-element-call.service"
-    state: absent
-
-- name: Remove jwt-service systemd service
-  ansible.builtin.file:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-jwt-service.service"
-    state: absent
-
-- name: Remove livekit systemd service
-  ansible.builtin.file:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-livekit.service"
     state: absent
 
 - name: Remove redis systemd service

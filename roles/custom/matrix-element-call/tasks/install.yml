@@ -11,24 +11,13 @@
     group: "{{ matrix_user_groupname }}"
   with_items:
     - path: "{{ matrix_element_call_base_path }}"
-    - path: "{{ matrix_element_call_base_path }}/data"
-    - path: "{{ matrix_element_call_base_path }}/config"
-    - path: "{{ matrix_element_call_base_path }}/backend"  # For LiveKit and Redis config
     - path: "{{ matrix_base_data_path }}/static-files/public/.well-known/element"  # Directory for element.json
 
 # Ensure Configuration Files are in Place
 - name: Ensure Element Call config.json is in place
   ansible.builtin.template:
     src: "{{ role_path }}/templates/config.json.j2"
-    dest: "{{ matrix_element_call_base_path }}/config/config.json"
-    mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-
-- name: Ensure LiveKit livekit.yaml is in place
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/livekit.yaml.j2"
-    dest: "{{ matrix_element_call_base_path }}/backend/livekit.yaml"
+    dest: "{{ matrix_element_call_base_path }}/config.json"
     mode: 0640
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
@@ -41,34 +30,10 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure matrix-element-call environment file is in place
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/env.j2"
-    dest: "{{ matrix_element_call_base_path }}/config/env"
-    mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-
 - name: Ensure matrix-element-call Docker labels file is in place
   ansible.builtin.template:
     src: "{{ role_path }}/templates/element-call-labels.j2"
-    dest: "{{ matrix_element_call_base_path }}/config/element-call-labels"
-    mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-
-- name: Ensure LiveKit labels file is in place
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/livekit-labels.j2"
-    dest: "{{ matrix_element_call_base_path }}/config/livekit-labels"
-    mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-
-- name: Ensure JWT Service labels file is in place
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/jwt-service-labels.j2"
-    dest: "{{ matrix_element_call_base_path }}/config/jwt-service-labels"
+    dest: "{{ matrix_element_call_base_path }}/element-call-labels"
     mode: 0640
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
@@ -83,24 +48,6 @@
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: element_call_image_result is not failed
-
-- name: Ensure jwt-service Docker image is pulled
-  community.docker.docker_image:
-    name: "{{ matrix_jwt_service_image }}"
-    source: pull
-  register: jwt_image_result
-  retries: 3
-  delay: 10
-  until: jwt_image_result is not failed
-
-- name: Ensure livekit Docker image is pulled
-  community.docker.docker_image:
-    name: "{{ matrix_livekit_image }}"
-    source: pull
-  register: livekit_image_result
-  retries: 3
-  delay: 10
-  until: livekit_image_result is not failed
 
 - name: Ensure redis Docker image is pulled
   community.docker.docker_image:
@@ -117,18 +64,6 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-element-call.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-element-call.service"
-    mode: 0644
-
-- name: Ensure jwt-service systemd service is installed
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/systemd/matrix-jwt-service.service.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-jwt-service.service"
-    mode: 0644
-
-- name: Ensure livekit systemd service is installed
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/systemd/matrix-livekit.service.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-livekit.service"
     mode: 0644
 
 - name: Ensure redis systemd service is installed
