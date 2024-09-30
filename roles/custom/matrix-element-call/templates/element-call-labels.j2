@@ -6,39 +6,39 @@ traefik.enable=true
 traefik.docker.network={{ matrix_element_call_container_labels_traefik_docker_network }}
 {% endif %}
 
-traefik.http.services.element-call-service.loadbalancer.server.port=8080
+traefik.http.services.matrix-element-call.loadbalancer.server.port=8080
 
 {% set middlewares = [] %}
 
 # Path prefix handling for Element Call
 {% if matrix_element_call_container_labels_traefik_path_prefix != '/' %}
-traefik.http.middlewares.element-call-slashless-redirect.redirectregex.regex=({{ matrix_element_call_container_labels_traefik_path_prefix | quote }})$
-traefik.http.middlewares.element-call-slashless-redirect.redirectregex.replacement=${1}/
-{% set middlewares = middlewares + ['element-call-slashless-redirect'] %}
+traefik.http.middlewares.matrix-element-call-slashless-redirect.redirectregex.regex=({{ matrix_element_call_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.matrix-element-call-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-element-call-slashless-redirect'] %}
 
-traefik.http.middlewares.element-call-strip-prefix.stripprefix.prefixes={{ matrix_element_call_container_labels_traefik_path_prefix }}
-{% set middlewares = middlewares + ['element-call-strip-prefix'] %}
+traefik.http.middlewares.matrix-element-call-strip-prefix.stripprefix.prefixes={{ matrix_element_call_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + ['matrix-element-call-strip-prefix'] %}
 {% endif %}
 
 {% if matrix_element_call_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
 {% for name, value in matrix_element_call_container_labels_traefik_additional_response_headers.items() %}
-traefik.http.middlewares.element-call-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+traefik.http.middlewares.matrix-element-call-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
 {% endfor %}
-{% set middlewares = middlewares + ['element-call-add-headers'] %}
+{% set middlewares = middlewares + ['matrix-element-call-add-headers'] %}
 {% endif %}
 
-traefik.http.routers.element-call.rule={{ matrix_element_call_container_labels_traefik_rule }}
+traefik.http.routers.matrix-element-call.rule={{ matrix_element_call_container_labels_traefik_rule }}
 {% if matrix_element_call_container_labels_traefik_priority | int > 0 %}
-traefik.http.routers.element-call.priority={{ matrix_element_call_container_labels_traefik_priority }}
+traefik.http.routers.matrix-element-call.priority={{ matrix_element_call_container_labels_traefik_priority }}
 {% endif %}
-traefik.http.routers.element-call.service=element-call
+traefik.http.routers.matrix-element-call.service=matrix-element-call
 {% if middlewares | length > 0 %}
-traefik.http.routers.element-call.middlewares={{ middlewares | join(',') }}
+traefik.http.routers.matrix-element-call.middlewares={{ middlewares | join(',') }}
 {% endif %}
-traefik.http.routers.element-call.entrypoints={{ matrix_element_call_container_labels_traefik_entrypoints }}
-traefik.http.routers.element-call.tls={{ matrix_element_call_container_labels_traefik_tls | to_json }}
+traefik.http.routers.matrix-element-call.entrypoints={{ matrix_element_call_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-element-call.tls={{ matrix_element_call_container_labels_traefik_tls | to_json }}
 {% if matrix_element_call_container_labels_traefik_tls %}
-traefik.http.routers.element-call.tls.certResolver={{ matrix_element_call_container_labels_traefik_tls_certResolver }}
+traefik.http.routers.matrix-element-call.tls.certResolver={{ matrix_element_call_container_labels_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
