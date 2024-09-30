@@ -22,23 +22,23 @@ traefik.http.middlewares.element-call-strip-prefix.stripprefix.prefixes={{ matri
 
 {% if matrix_element_call_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
 {% for name, value in matrix_element_call_container_labels_traefik_additional_response_headers.items() %}
-traefik.http.middlewares.matrix-element-call-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+traefik.http.middlewares.element-call-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
 {% endfor %}
-{% set middlewares = middlewares + ['matrix-element-call-add-headers'] %}
+{% set middlewares = middlewares + ['element-call-add-headers'] %}
 {% endif %}
 
-traefik.http.routers.matrix-element-call.rule={{ matrix_element_call_container_labels_traefik_rule }}
+traefik.http.routers.element-call.rule={{ matrix_element_call_container_labels_traefik_rule }}
 {% if matrix_element_call_container_labels_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-element-call.priority={{ matrix_element_call_container_labels_traefik_priority }}
+traefik.http.routers.element-call.priority={{ matrix_element_call_container_labels_traefik_priority }}
 {% endif %}
-traefik.http.routers.matrix-element-call.service=matrix-element-call
+traefik.http.routers.element-call.service=matrix-element-call
 {% if middlewares | length > 0 %}
-traefik.http.routers.matrix-element-call.middlewares={{ middlewares | join(',') }}
+traefik.http.routers.element-call.middlewares={{ middlewares | join(',') }}
 {% endif %}
-traefik.http.routers.matrix-element-call.entrypoints={{ matrix_element_call_container_labels_traefik_entrypoints }}
-traefik.http.routers.matrix-element-call.tls={{ matrix_element_call_container_labels_traefik_tls | to_json }}
+traefik.http.routers.element-call.entrypoints={{ matrix_element_call_container_labels_traefik_entrypoints }}
+traefik.http.routers.element-call.tls={{ matrix_element_call_container_labels_traefik_tls | to_json }}
 {% if matrix_element_call_container_labels_traefik_tls %}
-traefik.http.routers.matrix-element-call.tls.certResolver={{ matrix_element_call_container_labels_traefik_tls_certResolver }}
+traefik.http.routers.element-call.tls.certResolver={{ matrix_element_call_container_labels_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
