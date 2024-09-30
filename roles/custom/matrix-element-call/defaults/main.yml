@@ -4,8 +4,6 @@ matrix_element_call_enabled: false
 
 # Base path configuration
 matrix_element_call_base_path: "{{ matrix_base_data_path }}/element-call"
-matrix_element_call_config_path: "{{ matrix_element_call_base_path }}/config"
-matrix_element_call_backend_path: "{{ matrix_element_call_base_path }}/backend"
 matrix_homeserver_config_path: "{{ matrix_base_data_path }}/synapse/config/homeserver.yaml"
 element_web_config_path: "{{ matrix_base_data_path }}/static-files/public/.well-known/matrix/client"
 
@@ -16,23 +14,11 @@ matrix_element_call_container_additional_networks: []  # No additional networks 
 
 # Docker images
 matrix_element_call_image: "ghcr.io/element-hq/element-call:latest"
-matrix_jwt_service_image: "ghcr.io/element-hq/lk-jwt-service:latest-ci"
-matrix_livekit_image: "livekit/livekit-server:latest"
 redis_image: "redis:6-alpine"
 
 # Ports
 matrix_element_call_port: "8093"
-matrix_jwt_service_port: "8881"
 redis_port: "6379"
-
-# LiveKit configuration
-matrix_element_call_livekit_dev_key: "{{ matrix_livekit_dev_key }}"  # Must be defined in host_vars
-matrix_element_call_jwt_secret:  "{{ matrix_jwt_secret }}"  # Must be defined in host_vars
-matrix_element_call_livekit_service_url: "wss://sfu.{{ matrix_domain }}:443"
-matrix_element_call_livekit_hostname: "sfu.{{ matrix_domain }}"
-
-# jwt configuration 
-matrix_element_call_jwt_hostname: "sfu-jwt.{{ matrix_domain }}"
 
 # Well-known paths and domains (derived from matrix_domain)
 matrix_element_call_domain: "call.{{ matrix_domain }}"
@@ -47,7 +33,7 @@ redis_password: ""
 
 # Traefik Configuration for Element Call
 matrix_element_call_container_labels_traefik_enabled: true
-matrix_element_call_container_labels_traefik_docker_network: "{{ matrix_element_callcontainer_network }}"
+matrix_element_call_container_labels_traefik_docker_network: "{{ matrix_element_call_container_network }}"
 matrix_element_call_container_labels_traefik_hostname: "{{ matrix_element_call_domain }}"
 # The path prefix must either be `/` or not end with a slash (e.g. `/element`).
 matrix_element_call_container_labels_traefik_path_prefix: "{{ matrix_element_call_path_prefix }}"
@@ -112,11 +98,11 @@ matrix_element_call_http_header_content_security_policy: frame-ancestors 'self'
 
 # Specifies the value of the `Permission-Policy` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
-matrix_element_call_http_header_content_permission_policy: "{{ 'interest-cohort=()' if matrix_element_callfloc_optout_enabled else '' }}"
+matrix_element_call_http_header_content_permission_policy: "{{ 'interest-cohort=()' if matrix_element_call_floc_optout_enabled else '' }}"
 
 # Specifies the value of the `Strict-Transport-Security` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
-matrix_element_call_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if matrix_element_callhsts_preload_enabled else '' }}"
+matrix_element_call_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if matrix_element_call_hsts_preload_enabled else '' }}"
 
 # Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
 #
@@ -126,8 +112,8 @@ matrix_element_call_http_header_strict_transport_security: "max-age=31536000; in
 # - https://amifloced.org/
 #
 # Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
-# See: `matrix_element_callcontent_permission_policy`
-matrix_element_callfloc_optout_enabled: true
+# See: `matrix_element_call_content_permission_policy`
+matrix_element_call_floc_optout_enabled: true
 
 # Controls if HSTS preloading is enabled
 #
@@ -139,7 +125,7 @@ matrix_element_callfloc_optout_enabled: true
 # - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
 # - https://hstspreload.org/#opt-in
 # See: `matrix_element_call_http_header_strict_transport_security`
-matrix_element_callhsts_preload_enabled: false
+matrix_element_call_hsts_preload_enabled: false
 
 # Enable or disable metrics collection
 matrix_element_call_metrics_enabled: false

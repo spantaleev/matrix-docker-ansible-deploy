@@ -15,13 +15,13 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
     --log-driver=none \
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
     --cap-drop=ALL \
-    --network={{ matrix_element_call_container_network }} \
+    --network={{ matrix_jwt_service_container_network }} \
     -p {{ matrix_jwt_service_port }}:8080 \
-    --env-file={{ matrix_element_call_base_path }}/config/env \
-    --label-file={{ matrix_element_call_base_path }}/config/jwt-service-labels \
+    --env-file={{ matrix_jwt_service_base_path }}/env \
+    --label-file={{ matrix_jwt_service_base_path }}/labels \
     {{ matrix_jwt_service_image }}
 
-{% for network in matrix_element_call_container_additional_networks %}
+{% for network in matrix_jwt_service_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-jwt-service
 {% endfor %}
 

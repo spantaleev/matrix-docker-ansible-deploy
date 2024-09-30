@@ -1,0 +1,21 @@
+---
+# Main task file for matrix-livekit-server
+
+- tags:
+    - setup-all
+    - setup-livekit-server
+    - install-all
+    - install-livekit-server
+  block:
+    - when: matrix_livekit_server_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_livekit_server_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-livekit-server
+  block:
+    - when: not matrix_livekit_server_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
