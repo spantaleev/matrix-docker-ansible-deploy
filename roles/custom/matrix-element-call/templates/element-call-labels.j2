@@ -20,12 +20,12 @@ traefik.http.middlewares.matrix-element-call-strip-prefix.stripprefix.prefixes={
 {% set middlewares = middlewares + ['matrix-element-call-strip-prefix'] %}
 {% endif %}
 
-#{% if matrix_element_call_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
-#{% for name, value in matrix_element_call_container_labels_traefik_additional_response_headers.items() %}
-#traefik.http.middlewares.matrix-element-call-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
-#{% endfor %}
-#{% set middlewares = middlewares + ['matrix-element-call-add-headers'] %}
-#{% endif %}
+{% if matrix_element_call_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in matrix_element_call_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.matrix-element-call-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + ['matrix-element-call-add-headers'] %}
+ {% endif %}
 
 traefik.http.routers.matrix-element-call.rule={{ matrix_element_call_container_labels_traefik_rule }}
 {% if matrix_element_call_container_labels_traefik_priority | int > 0 %}

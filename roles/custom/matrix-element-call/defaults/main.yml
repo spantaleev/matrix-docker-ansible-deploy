@@ -38,18 +38,18 @@ matrix_element_call_container_labels_traefik_tls_certResolver: default  # noqa v
 
 # Controls which additional headers to attach to all HTTP responses.
 # To add your own headers, use `matrix_element_call_container_labels_traefik_additional_response_headers_custom`
-#matrix_element_call_container_labels_traefik_additional_response_headers: "{{ matrix_element_call_container_labels_traefik_additional_response_headers_auto | combine(matrix_element_call_container_labels_traefik_additional_response_headers_custom) }}"
-#matrix_element_call_container_labels_traefik_additional_response_headers_auto: |
-#  {{
-#    {}
-#    | combine ({'X-XSS-Protection': matrix_element_call_http_header_xss_protection} if matrix_element_call_http_header_xss_protection else {})
-#    | combine ({'X-Frame-Options': matrix_element_call_http_header_frame_options} if matrix_element_call_http_header_frame_options else {})
-#    | combine ({'X-Content-Type-Options': matrix_element_call_http_header_content_type_options} if matrix_element_call_http_header_content_type_options else {})
-#    | combine ({'Content-Security-Policy': matrix_element_call_http_header_content_security_policy} if matrix_element_call_http_header_content_security_policy else {})
-#    | combine ({'Permission-Policy': matrix_element_call_http_header_content_permission_policy} if matrix_element_call_http_header_content_permission_policy else {})
-#    | combine ({'Strict-Transport-Security': matrix_element_call_http_header_strict_transport_security} if matrix_element_call_http_header_strict_transport_security and matrix_element_call_container_labels_traefik_tls else {})
-#  }}
-#matrix_element_call_container_labels_traefik_additional_response_headers_custom: {}
+matrix_element_call_container_labels_traefik_additional_response_headers: "{{ matrix_element_call_container_labels_traefik_additional_response_headers_auto | combine(matrix_element_call_container_labels_traefik_additional_response_headers_custom) }}"
+matrix_element_call_container_labels_traefik_additional_response_headers_auto: |
+  {{
+    {}
+    | combine ({'X-XSS-Protection': matrix_element_call_http_header_xss_protection} if matrix_element_call_http_header_xss_protection else {})
+    | combine ({'X-Frame-Options': matrix_element_call_http_header_frame_options} if matrix_element_call_http_header_frame_options else {})
+    | combine ({'X-Content-Type-Options': matrix_element_call_http_header_content_type_options} if matrix_element_call_http_header_content_type_options else {})
+    | combine ({'Content-Security-Policy': matrix_element_call_http_header_content_security_policy} if matrix_element_call_http_header_content_security_policy else {})
+    | combine ({'Permission-Policy': matrix_element_call_http_header_content_permission_policy} if matrix_element_call_http_header_content_permission_policy else {})
+    | combine ({'Strict-Transport-Security': matrix_element_call_http_header_strict_transport_security} if matrix_element_call_http_header_strict_transport_security and matrix_element_call_container_labels_traefik_tls else {})
+  }}
+matrix_element_call_container_labels_traefik_additional_response_headers_custom: {}
 
 # matrix_client_element_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
@@ -75,27 +75,27 @@ matrix_element_call_systemd_required_services_list: "{{ [devture_systemd_docker_
 # Learn more about it is here:
 # - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
 # - https://portswigger.net/web-security/cross-site-scripting/reflected
-#matrix_element_call_http_header_xss_protection: "1; mode=block"
+matrix_element_call_http_header_xss_protection: ''
 
 # Specifies the value of the `X-Frame-Options` header which controls whether framing can happen.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-#matrix_element_call_http_header_frame_options: SAMEORIGIN
+matrix_element_call_http_header_frame_options: ''
 
 # Specifies the value of the `X-Content-Type-Options` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
-#matrix_element_call_http_header_content_type_options: nosniff
+matrix_element_call_http_header_content_type_options: ''
 
 # Specifies the value of the `Content-Security-Policy` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
-#matrix_element_call_http_header_content_security_policy: frame-ancestors 'self'
+matrix_element_call_http_header_content_security_policy: ''
 
 # Specifies the value of the `Permission-Policy` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
-#matrix_element_call_http_header_content_permission_policy: "{{ 'interest-cohort=()' if matrix_element_call_floc_optout_enabled else '' }}"
+matrix_element_call_http_header_content_permission_policy: ''
 
 # Specifies the value of the `Strict-Transport-Security` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
-#matrix_element_call_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if matrix_element_call_hsts_preload_enabled else '' }}"
+matrix_element_call_http_header_strict_transport_security: ''
 
 # Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
 #
@@ -106,7 +106,7 @@ matrix_element_call_systemd_required_services_list: "{{ [devture_systemd_docker_
 #
 # Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
 # See: `matrix_element_call_content_permission_policy`
-#matrix_element_call_floc_optout_enabled: true
+matrix_element_call_floc_optout_enabled: false
 
 # Controls if HSTS preloading is enabled
 #
@@ -118,7 +118,7 @@ matrix_element_call_systemd_required_services_list: "{{ [devture_systemd_docker_
 # - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
 # - https://hstspreload.org/#opt-in
 # See: `matrix_element_call_http_header_strict_transport_security`
-#matrix_element_call_hsts_preload_enabled: true
+matrix_element_call_hsts_preload_enabled: false
 
 # Enable or disable metrics collection
 matrix_element_call_metrics_enabled: false
