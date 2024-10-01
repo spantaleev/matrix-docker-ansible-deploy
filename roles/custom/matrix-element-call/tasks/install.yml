@@ -22,14 +22,6 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure Redis redis.conf is in place
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/redis.conf.j2"
-    dest: "{{ matrix_element_call_base_path }}/backend/redis.conf"
-    mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-
 - name: Ensure matrix-element-call Docker labels file is in place
   ansible.builtin.template:
     src: "{{ role_path }}/templates/element-call-labels.j2"
@@ -49,27 +41,11 @@
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: element_call_image_result is not failed
 
-- name: Ensure redis Docker image is pulled
-  community.docker.docker_image:
-    name: "{{ redis_image }}"
-    source: pull
-  register: redis_image_result
-  retries: 3
-  delay: 10
-  until: redis_image_result is not failed
-
-# Systemd Services for Element Call, JWT Service, LiveKit, and Redis
-
+# Systemd Services for Element Call
 - name: Ensure matrix-element-call systemd service is installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-element-call.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-element-call.service"
-    mode: 0644
-
-- name: Ensure redis systemd service is installed
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/systemd/matrix-redis.service.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-redis.service"
     mode: 0644
 
 # Update homeserver.yaml for Element Call

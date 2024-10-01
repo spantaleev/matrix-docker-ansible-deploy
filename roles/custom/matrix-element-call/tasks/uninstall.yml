@@ -6,19 +6,9 @@
     name: "matrix-element-call"
     state: absent
 
-- name: Stop and remove redis container
-  community.docker.docker_container:
-    name: "matrix-redis"
-    state: absent
-
 - name: Remove matrix-element-call systemd service
   ansible.builtin.file:
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-element-call.service"
-    state: absent
-
-- name: Remove redis systemd service
-  ansible.builtin.file:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-redis.service"
     state: absent
 
 - name: Remove matrix-element-call configuration files
