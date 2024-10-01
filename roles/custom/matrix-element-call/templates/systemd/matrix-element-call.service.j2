@@ -20,6 +20,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
     --cap-drop=ALL \
     --network={{ matrix_element_call_container_network }} \
+    --mount type=bind,src={{ matrix_element_call_base_path }}/config.json,dst=/app/config.json,ro \
     {% if matrix_element_call_container_http_host_bind_port %}
     -p {{ matrix_element_call_container_http_host_bind_port }}:8080 \
     {% endif %}
