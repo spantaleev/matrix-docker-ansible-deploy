@@ -16,7 +16,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
     --cap-drop=ALL \
     --network={{ matrix_jwt_service_container_network }} \
-    -p {{ matrix_jwt_service_port }}:8080 \
+    {% if matrix_jwt_service_container_http_host_bind_port %}
+    -p {{ matrix_jwt_service_container_http_host_bind_port }}:8080 \
+    {% endif %}
     --env-file={{ matrix_jwt_service_base_path }}/env \
     --label-file={{ matrix_jwt_service_base_path }}/labels \
     {{ matrix_jwt_service_image }}
