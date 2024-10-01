@@ -34,18 +34,18 @@ matrix_jwt_service_container_labels_traefik_tls_certResolver: default  # noqa va
 
 # Controls which additional headers to attach to all HTTP responses.
 # To add your own headers, use `matrix_jwt_service_container_labels_traefik_additional_response_headers_custom`
-matrix_jwt_service_container_labels_traefik_additional_response_headers: "{{ matrix_jwt_service_container_labels_traefik_additional_response_headers_auto | combine(matrix_jwt_service_container_labels_traefik_additional_response_headers_custom) }}"
-matrix_jwt_service_container_labels_traefik_additional_response_headers_auto: |
-  {{
-    {}
-    | combine ({'X-XSS-Protection': matrix_jwt_service_http_header_xss_protection} if matrix_jwt_service_http_header_xss_protection else {})
-    | combine ({'X-Frame-Options': matrix_jwt_service_http_header_frame_options} if matrix_jwt_service_http_header_frame_options else {})
-    | combine ({'X-Content-Type-Options': matrix_jwt_service_http_header_content_type_options} if matrix_jwt_service_http_header_content_type_options else {})
-    | combine ({'Content-Security-Policy': matrix_jwt_service_http_header_content_security_policy} if matrix_jwt_service_http_header_content_security_policy else {})
-    | combine ({'Permission-Policy': matrix_jwt_service_http_header_content_permission_policy} if matrix_jwt_service_http_header_content_permission_policy else {})
-    | combine ({'Strict-Transport-Security': matrix_jwt_service_http_header_strict_transport_security} if matrix_jwt_service_http_header_strict_transport_security and matrix_jwt_service_container_labels_traefik_tls else {})
-  }}
-matrix_jwt_service_container_labels_traefik_additional_response_headers_custom: {}
+#matrix_jwt_service_container_labels_traefik_additional_response_headers: "{{ matrix_jwt_service_container_labels_traefik_additional_response_headers_auto | combine(matrix_jwt_service_container_labels_traefik_additional_response_headers_custom) }}"
+#matrix_jwt_service_container_labels_traefik_additional_response_headers_auto: |
+#  {{
+#    {}
+#    | combine ({'X-XSS-Protection': matrix_jwt_service_http_header_xss_protection} if matrix_jwt_service_http_header_xss_protection else {})
+#    | combine ({'X-Frame-Options': matrix_jwt_service_http_header_frame_options} if matrix_jwt_service_http_header_frame_options else {})
+#    | combine ({'X-Content-Type-Options': matrix_jwt_service_http_header_content_type_options} if matrix_jwt_service_http_header_content_type_options else {})
+#    | combine ({'Content-Security-Policy': matrix_jwt_service_http_header_content_security_policy} if matrix_jwt_service_http_header_content_security_policy else {})
+##    | combine ({'Permission-Policy': matrix_jwt_service_http_header_content_permission_policy} if matrix_jwt_service_http_header_content_permission_policy else {})
+#    | combine ({'Strict-Transport-Security': matrix_jwt_service_http_header_strict_transport_security} if matrix_jwt_service_http_header_strict_transport_security and matrix_jwt_service_container_labels_traefik_tls else {})
+#  }}
+#matrix_jwt_service_container_labels_traefik_additional_response_headers_custom: {}
 
 # matrix_client_element_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
@@ -114,4 +114,4 @@ matrix_jwt_service_systemd_required_services_list: "{{ [devture_systemd_docker_b
 # - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
 # - https://hstspreload.org/#opt-in
 # See: `matrix_jwt_service_http_header_strict_transport_security`
-matrix_jwt_service_hsts_preload_enabled: true
+#matrix_jwt_service_hsts_preload_enabled: true
