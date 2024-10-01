@@ -20,12 +20,12 @@ traefik.http.middlewares.matrix-livekit-server-strip-prefix.stripprefix.prefixes
 {% set middlewares = middlewares + ['matrix-livekit-server-strip-prefix'] %}
 {% endif %}
 
-{% if matrix_livekit_server_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
-{% for name, value in matrix_livekit_server_container_labels_traefik_additional_response_headers.items() %}
-traefik.http.middlewares.matrix-livekit-server-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
-{% endfor %}
-{% set middlewares = middlewares + ['matrix-livekit-server-add-headers'] %}
-{% endif %}
+#{% if matrix_livekit_server_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+#{% for name, value in matrix_livekit_server_container_labels_traefik_additional_response_headers.items() %}
+#traefik.http.middlewares.matrix-livekit-server-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+#{% endfor %}
+#{% set middlewares = middlewares + ['matrix-livekit-server-add-headers'] %}
+#{% endif %}
 
 traefik.http.routers.matrix-livekit-server.rule={{ matrix_livekit_server_container_labels_traefik_rule }}
 {% if matrix_livekit_server_container_labels_traefik_priority | int > 0 %}
