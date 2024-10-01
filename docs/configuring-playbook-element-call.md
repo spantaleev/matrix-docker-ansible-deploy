@@ -28,19 +28,13 @@ Ensure that the following DNS names have a public IP/FQDN:
 Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
+# Enable dependent services
+keydb_enabled: true
 matrix_element_call_enabled: true
+matrix_livekit_server_enabled: true
+matrix_jwt_service_enabled: true
 # Set a secure key for LiveKit authentication
 matrix_element_call_livekit_dev_key: 'your-secure-livekit-key'
-```
-
-## External databases
-
-If your setup utilizes an external database, you may need to adjust the default configuration for Redis used by Element Call. Modify the defaults in group_vars/matrix_servers.yml or host_vars to suit your setup:
-
-```yaml
-matrix_element_call_redis_hostname: 'localhost'
-matrix_element_call_redis_port: 6379
-matrix_element_call_redis_password: ''
 ```
 
 ## Installing

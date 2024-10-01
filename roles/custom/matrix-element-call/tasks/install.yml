@@ -79,20 +79,10 @@
   when: matrix_element_call_enabled | bool
 
 # Update the well-known client file for Element Call (adding RTC FOCI)
-- name: Update the existing well-known client file for Element Call (RTC FOCI)
-  ansible.builtin.blockinfile:
-    path: "{{ matrix_base_data_path }}/static-files/public/.well-known/matrix/client"
-    block: |
-      "org.matrix.msc4143.rtc_foci": [
-        {
-          "type": "livekit",
-          "livekit_service_url": "{{ matrix_jwt_service_url }}"
-        }
-      ]
-    marker: "# ANSIBLE MANAGED BLOCK - Element Call RTC FOCI"
-    mode: '0644'
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+- name: Update the well-known client file for Element Call
+  ansible.builtin.include_tasks: update_well_known_client.yml
+  when: matrix_element_call_enabled | bool
+
 
 # Create .well-known/element/element.json for Element Call
 - name: Create the well-known element.json file
@@ -105,22 +95,6 @@
 
 # Update Element Web config.json with Element Call settings
 - name: Update Element Web config.json
-  ansible.builtin.blockinfile:
-    path: "{{ element_web_config_path }}"
-    block: |
-      "features": {
-          "feature_video_rooms": true,
-          "feature_new_room_decoration_ui": true,
-          "feature_group_calls": true,
-          "feature_element_call_video_rooms": true
-      },
-      "element_call": {
-          "url": "https://{{ matrix_element_call_domain }}",
-          "participant_limit": 8,
-          "brand": "Element Call",
-          "use_exclusively": true
-      }
-    marker: "# ANSIBLE MANAGED BLOCK - Element Call settings"
-    mode: '0644'
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+  ansible.builtin.include_tasks: "tasks/update_element_web_config.yml"
+  when: matrix_element_call_enabled | bool
+
