@@ -234,3 +234,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up Prometheus Alertmanager integration via matrix-alertmanager-receiver](configuring-playbook-alertmanager-receiver.md) (optional)
 
 - [Setting up the Element Call server](configuring-playbook-element-call.md) (optional)
+
+- [Setting up the JWT Service](configuring-playbook-jwt-service.md) (optional)
+
+- [Setting up the Livekit server](configuring-playbook-livekit-server.md) (optional)
