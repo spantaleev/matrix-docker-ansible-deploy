@@ -1,39 +1,40 @@
----
-- name: Load Element Web config.json content
+- name: Read Element Web config.json
   ansible.builtin.slurp:
     src: "{{ element_web_config_path }}"
-  register: element_web_config_content_raw
-  ignore_errors: false
+  register: element_web_config_content
 
-- name: Parse Element Web config.json content
+- name: Load JSON data from config.json
   ansible.builtin.set_fact:
-    element_web_config_content: "{{ element_web_config_content_raw['content'] | b64decode | from_json }}"
-  when: element_web_config_content_raw is defined and element_web_config_content_raw['content'] is defined
+    element_web_config: "{{ element_web_config_content['content'] | b64decode | from_json }}"
 
-- name: Update Element Web config.json settings
+- name: Update Element Call configuration in config.json
   ansible.builtin.set_fact:
-    element_web_config_content:
-      "{{ element_web_config_content | combine({
-        'features': {
-          'feature_video_rooms': true,
-          'feature_new_room_decoration_ui': true,
-          'feature_group_calls': true,
-          'feature_element_call_video_rooms': true
-        },
-        'element_call': {
-          'url': 'https://{{ matrix_element_call_domain }}',
-          'participant_limit': 8,
-          'brand': 'Element Call',
-          'use_exclusively': true
+    updated_element_call_config: >
+      {{
+        {
+          "element_call": {
+            "url": "https://{{ matrix_element_call_domain }}",
+            "participant_limit": 8,
+            "brand": "Element Call",
+            "use_exclusively": true
+          },
+          "features": {
+            "feature_video_rooms": true,
+            "feature_new_room_decoration_ui": true,
+            "feature_group_calls": true,
+            "feature_element_call_video_rooms": true
+          }
         }
-      }, recursive=True) }}"
-  when: element_web_config_content is defined
+      }}
+      
+- name: Merge updated Element Call configuration with existing config.json
+  ansible.builtin.set_fact:
+    element_web_config: "{{ element_web_config | combine(updated_element_call_config, recursive=True) }}"
 
-- name: Write updated Element Web config.json back to disk
+- name: Write updated Element Web config.json
   ansible.builtin.copy:
-    content: "{{ element_web_config_content | to_nice_json }}"
+    content: "{{ element_web_config | to_nice_json }}"
     dest: "{{ element_web_config_path }}"
     mode: '0644'
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
-  when: element_web_config_content is defined
