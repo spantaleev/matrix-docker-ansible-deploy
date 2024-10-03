@@ -25,6 +25,9 @@ Ensure that the following DNS names have a public IP/FQDN:
 
 ## Adjusting the playbook configuration
 
+NOTE: Element call is dependent on two other services for it to function as intended. In orter to utilise Element Call you need to also enable the [JWT Service](configuring-playbook-jwt-service.md) and [Livekit Server](configuring-playbook-livekit-server.md).
+
+
 Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
@@ -34,7 +37,7 @@ matrix_element_call_enabled: true
 matrix_livekit_server_enabled: true
 matrix_jwt_service_enabled: true
 # Set a secure key for LiveKit authentication
-matrix_element_call_livekit_dev_key: 'your-secure-livekit-key'
+matrix_livekit_server_dev_key: 'your-secure-livekit-key'
 ```
 
 ## Installing
