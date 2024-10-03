@@ -1,3 +1,19 @@
+# 2024-09-27
+
+## (BC Break) Postgres & Traefik roles have been relocated and variable names need adjustments
+
+Various roles have been relocated from the [devture](https://github.com/devture) organization to the [mother-of-all-self-hosting](https://github.com/mother-of-all-self-hosting) organization.
+
+Along with the relocation, the `devture_` prefix was dropped from their variable names, so you need to adjust your `vars.yml` configuration.
+
+You need to do the following replacements:
+
+- `devture_postgres_` -> `postgres_`
+- `devture_traefik_` -> `traefik_`
+
+As always, the playbook would let you know about this and point out any variables you may have missed.
+
+
 # 2024-09-12
 
 ## Support for baibot
@@ -118,7 +134,7 @@ If you're using the playbook's Traefik instance to reverse-proxy to some other s
 
 If you've tweaked any of this playbook's `_path_prefix` variables and made them use a regular expression, you will now need to make additional adjustments. The playbook makes extensive use of `PathPrefix()` matchers in Traefik rules and `PathPrefix` does not support regular expressions anymore. To work around it, you may now need to override a whole `_traefik_rule` variable and switch it from [`PathPrefix` to `PathRegexp`](https://doc.traefik.io/traefik/routing/routers/#path-pathprefix-and-pathregexp).
 
-If you're not using [matrix-media-repo](./docs/configuring-playbook-matrix-media-repo.md) (the only role we had to tweak to adapt it to Traefik v3), you **may potentially downgrade to Traefik v2** (if necessary) by adding `devture_traefik_verison: v2.11.4` to your configuration. People using `matrix-media-repo` cannot downgrade this way, because `matrix-media-repo` has been adjusted to use `PathRegexp` - a [routing matcher](https://doc.traefik.io/traefik/v2.11/routing/routers/#rule) that Traefik v2 does not understand.
+If you're not using [matrix-media-repo](./docs/configuring-playbook-matrix-media-repo.md) (the only role we had to tweak to adapt it to Traefik v3), you **may potentially downgrade to Traefik v2** (if necessary) by adding `traefik_verison: v2.11.4` to your configuration. People using `matrix-media-repo` cannot downgrade this way, because `matrix-media-repo` has been adjusted to use `PathRegexp` - a [routing matcher](https://doc.traefik.io/traefik/v2.11/routing/routers/#rule) that Traefik v2 does not understand.
 
 
 ### HTTP/3 is enabled by default
@@ -135,7 +151,7 @@ Still, if HTTP/3 cannot function correctly in your setup, it's best to disable a
 To **disable HTTP/3**, you can use the following configuration:
 
 ```yml
-devture_traefik_config_entrypoint_web_secure_http3_enabled: false
+traefik_config_entrypoint_web_secure_http3_enabled: false
 
 # Disabling HTTP/3 for the web-secure entrypoint (above),
 # automatically disables it for the Matrix Federation entrypoint as well,
@@ -457,9 +473,9 @@ Because [Traefik has an extra job now](#traefik-now-has-an-extra-job), you need 
 
 ### People fronting Traefik with another reverse proxy need to do minor changes
 
-We've already previously mentioned that you need to do some minor [configuration changes related to `devture_traefik_additional_entrypoints_auto`](#backward-compatibility-configuration-changes-required-for-people-fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy).
+We've already previously mentioned that you need to do some minor [configuration changes related to `traefik_additional_entrypoints_auto`](#backward-compatibility-configuration-changes-required-for-people-fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy).
 
-If you don't do these changes (switching from `devture_traefik_additional_entrypoints_auto` to multiple other variables), your Traefik setup will not automatically receive the new `matrix-internal-matrix-client-api` Traefik entrypoint and Traefik would not be able to perform [its new duty of connecting addons with the homeserver](#traefik-now-has-an-extra-job).
+If you don't do these changes (switching from `traefik_additional_entrypoints_auto` to multiple other variables), your Traefik setup will not automatically receive the new `matrix-internal-matrix-client-api` Traefik entrypoint and Traefik would not be able to perform [its new duty of connecting addons with the homeserver](#traefik-now-has-an-extra-job).
 
 
 ### Supported reverse proxy types are now fewer
@@ -572,17 +588,17 @@ I don't actively use all the ~100 components offered by the playbook (no one doe
 
 If you're on the default setup (using the Traefik reverse-proxy as installed by the playbook), you don't need to do anything.
 
-People who are [Fronting the integrated Traefik reverse-proxy webserver with another reverse-proxy](./docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy), as per our previous instructions are redefining `devture_traefik_additional_entrypoints_auto` in their `vars.yml` configuration.
+People who are [Fronting the integrated Traefik reverse-proxy webserver with another reverse-proxy](./docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy), as per our previous instructions are redefining `traefik_additional_entrypoints_auto` in their `vars.yml` configuration.
 
 Such a full variable redefinion is intrustive, because it prevents the playbook from injecting additional entrypoints into the Traefik webserver. In the future, the playbook may have a need to do so.
 
-For this reason, we no longer recommend completely redefining `devture_traefik_additional_entrypoints_auto`.
-The playbook now defines [various `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_*` variables in the `defaults/main.yml` file](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-base/defaults/main.yml) of the `matrix-base` role which can be used as a safer alternative to `devture_traefik_additional_entrypoints_auto`.
+For this reason, we no longer recommend completely redefining `traefik_additional_entrypoints_auto`.
+The playbook now defines [various `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_*` variables in the `defaults/main.yml` file](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-base/defaults/main.yml) of the `matrix-base` role which can be used as a safer alternative to `traefik_additional_entrypoints_auto`.
 
 Adapt your configuration as seen below:
 
 ```diff
--devture_traefik_additional_entrypoints_auto:
+-traefik_additional_entrypoints_auto:
 -  - name: matrix-federation
 -    port: 8449
 -    host_bind_port: '127.0.0.1:8449'
@@ -711,7 +727,7 @@ From now on, the [Postgres Ansible role](https://github.com/devture/com.devture.
 
 Our [Tuning PostgreSQL](docs/maintenance-postgres.md#tuning-postgresql) documentation page has details about how you can turn auto-tuning off or adjust the automatically-determined Postgres configuration parameters manually.
 
-People who [enable load-balancing with Synapse workers](docs/configuring-playbook-synapse.md#load-balancing-with-workers) no longer need to increase the maximum number of Postgres connections manually (previously done via `devture_postgres_process_extra_arguments`). There's a new variable (`devture_postgres_max_connections`) for controlling this number and the playbook automatically raises its value from `200` to `500` for setups which enable workers.
+People who [enable load-balancing with Synapse workers](docs/configuring-playbook-synapse.md#load-balancing-with-workers) no longer need to increase the maximum number of Postgres connections manually (previously done via `postgres_process_extra_arguments`). There's a new variable (`postgres_max_connections`) for controlling this number and the playbook automatically raises its value from `200` to `500` for setups which enable workers.
 
 
 # 2023-08-31
@@ -1070,7 +1086,7 @@ Unless we have some regression, **existing `matrix-nginx-proxy` users should be 
 ```yaml
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
 
-devture_traefik_config_certificatesResolvers_acme_email: YOUR_EMAIL_ADDRESS
+traefik_config_certificatesResolvers_acme_email: YOUR_EMAIL_ADDRESS
 ```
 
 You may still need to keep certain old `matrix_nginx_proxy_*` variables (like `matrix_nginx_proxy_base_domain_serving_enabled`), even when using Traefik. For now, we recommend keeping all `matrix_nginx_proxy_*` variables just in case. In the future, reliance on `matrix-nginx-proxy` will be removed.
@@ -1097,7 +1113,7 @@ As mentioned above, Traefik still reverse-proxies to some (most) services by goi
 As Traefik support becomes complete and proves to be stable for a while, especially as a playbook default, we will **most likely remove `matrix-nginx-proxy` completely**. It will likely be some months before this happens though. Keeping support for both Traefik and nginx in the playbook will be a burden, especially with most of us running Traefik in the future. The Traefik role should do everything nginx does in a better and cleaner way. Users who use their own `nginx` server on the Matrix server will be inconvenienced, as nothing will generate ready-to-include nginx configuration for them. Still, we hope it won't be too hard to migrate their setup to another way of doing things, like:
 
 - not using nginx anymore. A common reason for using nginx until now was that you were running other containers and you need your own nginx to reverse-proxy to all of them. Just switch them to Traefik as well.
-- running Traefik in local-only mode (`devture_traefik_config_entrypoint_web_secure_enabled: false`) and using some nginx configuration which reverse-proxies to Traefik (we should introduce examples for this in `examples/nginx`).
+- running Traefik in local-only mode (`traefik_config_entrypoint_web_secure_enabled: false`) and using some nginx configuration which reverse-proxies to Traefik (we should introduce examples for this in `examples/nginx`).
 
 ### How do I help?
 
@@ -1107,7 +1123,7 @@ You can help by:
 
 - **adding native Traefik support to a role** (requires adding Traefik labels, etc.) - for inspiration, see these roles ([prometheus_node_exporter](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus-node-exporter), [prometheus_postgres_exporter](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus-postgres-exporter)) and how they're hooked into the playbook via [group_vars/matrix_servers](group_vars/matrix_servers).
 
-- **adding reverse-proxying examples for nginx users** in `examples/nginx`. People who insist on using their own `nginx` server on the same Matrix host, can run Traefik in local-only mode (`devture_traefik_config_entrypoint_web_secure_enabled: false`) and reverse-proxy to the Traefik server
+- **adding reverse-proxying examples for nginx users** in `examples/nginx`. People who insist on using their own `nginx` server on the same Matrix host, can run Traefik in local-only mode (`traefik_config_entrypoint_web_secure_enabled: false`) and reverse-proxy to the Traefik server
 
 
 # 2023-02-10
@@ -1232,14 +1248,14 @@ See our [Setting up matrix-bot-chatgpt](docs/configuring-playbook-bot-chatgpt.md
 
 Just like we've [replaced Postgres with an external role](#matrix-postgres-has-been-replaced-by-the-comdevtureansiblerolepostgres-external-role) on 2022-11-28, we're now replacing `matrix-postgres-backup` with an external role - [com.devture.ansible.role.postgres_backup](https://github.com/devture/com.devture.ansible.role.postgres_backup).
 
-You'll need to rename your `matrix_postgres_backup`-prefixed variables such that they use a `devture_postgres_backup` prefix.
+You'll need to rename your `matrix_postgres_backup`-prefixed variables such that they use a `postgres_backup` prefix.
 
 
 # 2022-11-28
 
 ## matrix-postgres has been replaced by the com.devture.ansible.role.postgres external role
 
-**TLDR**: the tasks that install the integrated Postgres server now live in an external role - [com.devture.ansible.role.postgres](https://github.com/devture/com.devture.ansible.role.postgres). You'll need to run `make roles` to install it, and to also rename your `matrix_postgres`-prefixed variables to use a `devture_postgres` prefix (e.g. `matrix_postgres_connection_password` -> `devture_postgres_connection_password`). All your data will still be there! Some scripts have moved (`/usr/local/bin/matrix-postgres-cli` -> `/matrix/postgres/bin/cli`).
+**TLDR**: the tasks that install the integrated Postgres server now live in an external role - [com.devture.ansible.role.postgres](https://github.com/devture/com.devture.ansible.role.postgres). You'll need to run `make roles` to install it, and to also rename your `matrix_postgres`-prefixed variables to use a `devture_postgres` prefix (e.g. `matrix_postgres_connection_password` -> `postgres_connection_password`). All your data will still be there! Some scripts have moved (`/usr/local/bin/matrix-postgres-cli` -> `/matrix/postgres/bin/cli`).
 
 The `matrix-postgres` role that has been part of the playbook for a long time has been replaced with the [com.devture.ansible.role.postgres](https://github.com/devture/com.devture.ansible.role.postgres) role. This was done as part of our work to [use external roles for some things](#the-playbook-now-uses-external-roles-for-some-things) for better code re-use and maintainability.
 

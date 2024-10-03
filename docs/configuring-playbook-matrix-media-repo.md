@@ -123,7 +123,7 @@ To import the Synapse media store, you're supposed to invoke the `import_synapse
 
 This guide here is adapted from the [upstream documentation about the import_synapse script](https://github.com/turt2live/matrix-media-repo#importing-media-from-synapse).
 
-Run the following command on the server (after replacing `devture_postgres_connection_password` in it with the value found in your `vars.yml` file):
+Run the following command on the server (after replacing `postgres_connection_password` in it with the value found in your `vars.yml` file):
 
 ```sh
 docker exec -it matrix-media-repo \
@@ -132,7 +132,7 @@ docker exec -it matrix-media-repo \
         -dbHost matrix-postgres \
         -dbPort 5432 \
         -dbUsername matrix \
-        -dbPassword devture_postgres_connection_password
+        -dbPassword postgres_connection_password
 ```
 
 Enter `1` for the Machine ID when prompted (you are not doing any horizontal scaling) unless you know what you're doing.
@@ -145,7 +145,7 @@ If you're using the [Dendrite](configuring-playbook-dendrite.md) homeserver inst
 
 To import the Dendrite media store, you're supposed to invoke the `import_dendrite` tool which is part of the matrix-media-repo container image. Your Dendrite database is called `dendrite_mediaapi` by default, unless you've changed it by modifying `matrix_dendrite_media_api_database`.
 
-Run the following command on the server (after replacing `devture_postgres_connection_password` in it with the value found in your `vars.yml` file):
+Run the following command on the server (after replacing `postgres_connection_password` in it with the value found in your `vars.yml` file):
 
 ```sh
 docker exec -it matrix-media-repo \
@@ -154,7 +154,7 @@ docker exec -it matrix-media-repo \
         -dbHost matrix-postgres \
         -dbPort 5432 \
         -dbUsername matrix \
-        -dbPassword devture_postgres_connection_password
+        -dbPassword postgres_connection_password
 ```
 
 Enter `1` for the Machine ID when prompted (you are not doing any horizontal scaling) unless you know what you're doing.

@@ -12,7 +12,7 @@ For testing purposes, you may wish to use staging certificates provide by Let's 
 You can do this with the following configuration:
 
 ```yaml
-devture_traefik_config_certificatesResolvers_acme_use_staging: true
+traefik_config_certificatesResolvers_acme_use_staging: true
 ```
 
 
@@ -23,7 +23,7 @@ For testing or other purposes, you may wish to install services without SSL term
 You can do this with the following configuration:
 
 ```yaml
-devture_traefik_config_entrypoint_web_secure_enabled: false
+traefik_config_entrypoint_web_secure_enabled: false
 ```
 
 
@@ -46,16 +46,16 @@ To use your own SSL certificates with Traefik, you need to:
 
 ```yaml
 # Disable ACME / Let's Encrypt support.
-devture_traefik_config_certificatesResolvers_acme_enabled: false
+traefik_config_certificatesResolvers_acme_enabled: false
 
 # Disabling ACME support (above) automatically disables the creation of the SSL directory.
 # Force-enable it here, because we'll add our certificate files there.
-devture_traefik_ssl_dir_enabled: true
+traefik_ssl_dir_enabled: true
 
 # Tell Traefik to load our custom configuration file (certificates.yml).
 # The file is created below, in `aux_file_definitions`.
 # The `/config/..` path is an in-container path, not a path on the host (like `/matrix/traefik/config`). Do not change it!
-devture_traefik_configuration_extension_yaml: |
+traefik_configuration_extension_yaml: |
   providers:
     file:
       filename: /config/certificates.yml
@@ -66,7 +66,7 @@ devture_traefik_configuration_extension_yaml: |
 aux_file_definitions:
   # Create the privkey.pem file on the server by
   # uploading a file from the computer where Ansible is running.
-  - dest: "{{ devture_traefik_ssl_dir_path }}/privkey.pem"
+  - dest: "{{ traefik_ssl_dir_path }}/privkey.pem"
     src: /path/on/your/Ansible/computer/to/privkey.pem
     # Alternatively, comment out `src` above and uncomment the lines below to provide the certificate content inline.
     # Note the indentation level.
@@ -76,7 +76,7 @@ aux_file_definitions:
 
   # Create the cert.pem file on the server
   # uploading a file from the computer where Ansible is running.
-  - dest: "{{ devture_traefik_ssl_dir_path }}/cert.pem"
+  - dest: "{{ traefik_ssl_dir_path }}/cert.pem"
     src: /path/on/your/Ansible/computer/to/cert.pem
     # Alternatively, comment out `src` above and uncomment the lines below to provide the certificate content inline.
     # Note the indentation level.
@@ -86,7 +86,7 @@ aux_file_definitions:
 
   # Create the custom Traefik configuration.
   # The `/ssl/..` paths below are in-container paths, not paths on the host (/`matrix/traefik/ssl/..`). Do not change them!
-  - dest: "{{ devture_traefik_config_dir_path }}/certificates.yml"
+  - dest: "{{ traefik_config_dir_path }}/certificates.yml"
     content: |
       tls:
         certificates:
@@ -109,12 +109,12 @@ You can configure Traefik to use the [DNS-01 challenge type](https://letsencrypt
 This is an example for how to edit the `vars.yml` file if you're using Cloudflare:
 
 ```yaml
-devture_traefik_config_certificatesResolvers_acme_dnsChallenge_enabled: true
-devture_traefik_config_certificatesResolvers_acme_dnsChallenge_provider: "cloudflare"
-devture_traefik_config_certificatesResolvers_acme_dnsChallenge_delayBeforeCheck: 60
-devture_traefik_config_certificatesResolvers_acme_dnsChallenge_resolvers:
+traefik_config_certificatesResolvers_acme_dnsChallenge_enabled: true
+traefik_config_certificatesResolvers_acme_dnsChallenge_provider: "cloudflare"
+traefik_config_certificatesResolvers_acme_dnsChallenge_delayBeforeCheck: 60
+traefik_config_certificatesResolvers_acme_dnsChallenge_resolvers:
   - "1.1.1.1:53"
-devture_traefik_environment_variables_additional_variables: |
+traefik_environment_variables_additional_variables: |
   CF_API_EMAIL=redacted
   CF_ZONE_API_TOKEN=redacted
   CF_DNS_API_TOKEN=redacted

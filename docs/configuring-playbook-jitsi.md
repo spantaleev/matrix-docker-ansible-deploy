@@ -227,20 +227,20 @@ To make Traefik reverse-proxy to these additional JVBs (living on other hosts), 
 # Traefik proxying for additional JVBs. These can't be configured using Docker
 # labels, like the first JVB is, because they run on different hosts, so we add
 # the necessary configuration to the file provider.
-devture_traefik_provider_configuration_extension_yaml: |
+traefik_provider_configuration_extension_yaml: |
   http:
    routers:
      {% for host in groups['jitsi_jvb_servers'] %}
 
      additional-{{ hostvars[host]['jitsi_jvb_server_id'] }}-router:
        entryPoints:
-         - "{{ devture_traefik_entrypoint_primary }}"
+         - "{{ traefik_entrypoint_primary }}"
        rule: "Host(`{{ jitsi_hostname }}`) && PathPrefix(`/colibri-ws/{{ hostvars[host]['jitsi_jvb_server_id'] }}/`)"
        service: additional-{{ hostvars[host]['jitsi_jvb_server_id'] }}-service
-       {% if devture_traefik_entrypoint_primary != 'web' %}
+       {% if traefik_entrypoint_primary != 'web' %}
 
        tls:
-         certResolver: "{{ devture_traefik_certResolver_primary }}"
+         certResolver: "{{ traefik_certResolver_primary }}"
 
        {% endif %}
 
