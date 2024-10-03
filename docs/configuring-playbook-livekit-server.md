@@ -38,7 +38,7 @@ ansible-playbook -i inventory setup.yml
 ```
 
 ## Usage
-Once installed, and in conjunction with Element Call and JWT Service, Livekit will become the WebRTC backend for all Element client calls. 
+Once installed, and in conjunction with Element Call and JWT Service, Livekit will become the WebRTC backend for all Element client calls.
 
 ## Required Firewall and Port Forwarding Rules
 
