@@ -1,6 +1,6 @@
 # Configure Traefik (optional, advanced)
 
-By default, this playbook installs and manages a [Traefik](https://doc.traefik.io/traefik/) reverse-proxy server, powered by the [com.devture.ansible.role.traefik](https://github.com/devture/com.devture.ansible.role.traefik) Ansible role.
+By default, this playbook installs and manages a [Traefik](https://doc.traefik.io/traefik/) reverse-proxy server, powered by the [ansible-role-traefik](https://github.com/mother-of-all-self-hosting/ansible-role-traefik) Ansible role.
 
 This Ansible role support various configuration options. Feel free to consult its `default/main.yml` variables file.
 

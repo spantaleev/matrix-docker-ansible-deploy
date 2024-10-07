@@ -723,7 +723,7 @@ Here are **actions you may wish to take** as a result of this change:
 
 The playbook has provided some hints about [Tuning PostgreSQL](docs/maintenance-postgres.md#tuning-postgresql) for quite a while now.
 
-From now on, the [Postgres Ansible role](https://github.com/devture/com.devture.ansible.role.postgres) automatically tunes your Postgres configuration with the same [calculation logic](https://github.com/le0pard/pgtune/blob/master/src/features/configuration/configurationSlice.js) that powers https://pgtune.leopard.in.ua/.
+From now on, the [Postgres Ansible role](https://github.com/mother-of-all-self-hosting/ansible-role-postgres) automatically tunes your Postgres configuration with the same [calculation logic](https://github.com/le0pard/pgtune/blob/master/src/features/configuration/configurationSlice.js) that powers https://pgtune.leopard.in.ua/.
 
 Our [Tuning PostgreSQL](docs/maintenance-postgres.md#tuning-postgresql) documentation page has details about how you can turn auto-tuning off or adjust the automatically-determined Postgres configuration parameters manually.
 
@@ -1244,20 +1244,20 @@ See our [Setting up matrix-bot-chatgpt](docs/configuring-playbook-bot-chatgpt.md
 
 # 2022-11-30
 
-## matrix-postgres-backup has been replaced by the com.devture.ansible.role.postgres_backup external role
+## matrix-postgres-backup has been replaced by the ansible-role-postgres-backup external role
 
-Just like we've [replaced Postgres with an external role](#matrix-postgres-has-been-replaced-by-the-comdevtureansiblerolepostgres-external-role) on 2022-11-28, we're now replacing `matrix-postgres-backup` with an external role - [com.devture.ansible.role.postgres_backup](https://github.com/devture/com.devture.ansible.role.postgres_backup).
+Just like we've [replaced Postgres with an external role](#matrix-postgres-has-been-replaced-by-the-comdevtureansiblerolepostgres-external-role) on 2022-11-28, we're now replacing `matrix-postgres-backup` with an external role - [com.devture.ansible.role.postgres_backup](https://github.com/mother-of-all-self-hosting/ansible-role-postgres_backup).
 
 You'll need to rename your `matrix_postgres_backup`-prefixed variables such that they use a `postgres_backup` prefix.
 
 
 # 2022-11-28
 
-## matrix-postgres has been replaced by the com.devture.ansible.role.postgres external role
+## matrix-postgres has been replaced by the ansible-role-postgres external role
 
-**TLDR**: the tasks that install the integrated Postgres server now live in an external role - [com.devture.ansible.role.postgres](https://github.com/devture/com.devture.ansible.role.postgres). You'll need to run `make roles` to install it, and to also rename your `matrix_postgres`-prefixed variables to use a `devture_postgres` prefix (e.g. `matrix_postgres_connection_password` -> `postgres_connection_password`). All your data will still be there! Some scripts have moved (`/usr/local/bin/matrix-postgres-cli` -> `/matrix/postgres/bin/cli`).
+**TLDR**: the tasks that install the integrated Postgres server now live in an external role - [ansible-role-postgres](https://github.com/mother-of-all-self-hosting/ansible-role-postgres). You'll need to run `make roles` to install it, and to also rename your `matrix_postgres`-prefixed variables to use a `devture_postgres` prefix (e.g. `matrix_postgres_connection_password` -> `postgres_connection_password`). All your data will still be there! Some scripts have moved (`/usr/local/bin/matrix-postgres-cli` -> `/matrix/postgres/bin/cli`).
 
-The `matrix-postgres` role that has been part of the playbook for a long time has been replaced with the [com.devture.ansible.role.postgres](https://github.com/devture/com.devture.ansible.role.postgres) role. This was done as part of our work to [use external roles for some things](#the-playbook-now-uses-external-roles-for-some-things) for better code re-use and maintainability.
+The `matrix-postgres` role that has been part of the playbook for a long time has been replaced with the [ansible-role-postgres](https://github.com/mother-of-all-self-hosting/ansible-role-postgres) role. This was done as part of our work to [use external roles for some things](#the-playbook-now-uses-external-roles-for-some-things) for better code re-use and maintainability.
 
 The new role is an upgraded version of the old `matrix-postgres` role with these notable differences:
 
