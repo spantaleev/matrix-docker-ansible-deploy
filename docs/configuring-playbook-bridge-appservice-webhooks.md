@@ -8,7 +8,7 @@ Setup Instructions:
 
 loosely based on [this](https://github.com/turt2live/matrix-appservice-webhooks/blob/master/README.md)
 
-1. All you basically need is to adjust your `inventory/host_vars/matrix.example.com/vars.yml`:
+1. Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
     ```yaml
     matrix_appservice_webhooks_enabled: true
