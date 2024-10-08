@@ -6,7 +6,7 @@ Hookshot can bridge [Webhooks](https://en.wikipedia.org/wiki/Webhook) from softw
 
 See the project's [documentation](https://matrix-org.github.io/matrix-hookshot/latest/hookshot.html) to learn what it does in detail and why it might be useful to you.
 
-Note: the playbook also supports [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), which however is soon to be archived by its author and to be replaced by hookshot.
+**Note**: the playbook also supports [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), which however is soon to be archived by its author and to be replaced by hookshot.
 
 
 ## Setup Instructions
@@ -27,7 +27,7 @@ Finally, run the playbook (see [installing](installing.md)).
 
 You can enable [experimental encryption](https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html) for Hookshot by adding `matrix_hookshot_experimental_encryption_enabled: true` to your configuration (`vars.yml`) and [executing the playbook](installing.md) again.
 
-Should the crypto store be corrupted, you can reset it by executing this Ansible playbook with the tag `reset-hookshot-encryption` added, for example `ansible-playbook -i inventory/hosts setup.yml -K --tags=reset-hookshot-encryption`).
+Should the crypto store be corrupted, you can reset it by executing this Ansible playbook with the tag `reset-hookshot-encryption` added, for example `ansible-playbook -i inventory/hosts setup.yml -K --tags=reset-hookshot-encryption`.
 
 ## Usage
 
@@ -37,9 +37,9 @@ Make sure the bot is able to send state events (usually the Moderator power leve
 
 Send a `!hookshot help` message to see a list of help commands.
 
-Refer to [Hookshot's documentation](https://matrix-org.github.io/matrix-hookshot/latest/usage.html) for more details about using the brige's various features.
+Refer to [Hookshot's documentation](https://matrix-org.github.io/matrix-hookshot/latest/usage.html) for more details about using the bridge's various features.
 
-**Important:** Note that the different listeners are bound to certain paths which might differ from those assumed by the hookshot documentation, see [URLs for bridges setup](#urls-for-bridges-setup) below.
+**Important**: Note that the different listeners are bound to certain paths which might differ from those assumed by the hookshot documentation, see [URLs for bridges setup](#urls-for-bridges-setup) below.
 
 
 ## More setup documentation
@@ -60,7 +60,7 @@ Unless indicated otherwise, the following endpoints are reachable on your `matri
 | widgets | `/hookshot/widgetapi/` | `matrix_hookshot_widgets_endpoint` | Widgets |
 | metrics | `/metrics/hookshot` | `matrix_hookshot_metrics_enabled` and exposure enabled via `matrix_hookshot_metrics_proxying_enabled` or `matrix_metrics_exposure_enabled`. Read more in the [Metrics section](#metrics) below. | Prometheus |
 
-Also see the various `matrix_hookshot_container_labels_*` variables in in [default/main.yml](/roles/custom/matrix-bridge-hookshot/default/main.yml), which expose URLs publicly.
+Also see the various `matrix_hookshot_container_labels_*` variables in [default/main.yml](/roles/custom/matrix-bridge-hookshot/default/main.yml), which expose URLs publicly.
 
 The different listeners are also reachable *internally* in the docker-network via the container's name (configured by `matrix_hookshot_container_url`) and on different ports (e.g. `matrix_hookshot_appservice_port`). Read [main.yml](/roles/custom/matrix-bridge-hookshot/defaults/main.yml) in detail for more info.
 
