@@ -25,7 +25,7 @@ matrix_bot_honoroit_enabled: true
 matrix_bot_honoroit_password: PASSWORD_FOR_THE_BOT
 
 # Adjust this to your room ID
-matrix_bot_honoroit_roomid: "!yourRoomID:DOMAIN"
+matrix_bot_honoroit_roomid: "!yourRoomID:{{ matrix_domain }}"
 ```
 
 
