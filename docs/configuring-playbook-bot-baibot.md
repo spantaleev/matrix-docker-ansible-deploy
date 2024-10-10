@@ -93,7 +93,7 @@ If `matrix_admin` is already configured in your `vars.yml` configuration, you ca
 #
 # .. unless you've made yourself an admin of all bots/bridges like this:
 #
-# matrix_admin: '@yourAdminAccount:domain.com'
+# matrix_admin: '@yourAdminAccount:example.com'
 ```
 
 ### 👥 Initial users configuration

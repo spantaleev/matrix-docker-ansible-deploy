@@ -39,7 +39,7 @@ This requires an [access token](obtaining-access-tokens.md) from a server admin 
 If you didn't make your account a server admin when you created it, you can learn how to switch it now by reading about it in [Adding/Removing Administrator privileges to an existing Synapse user](registering-users.md#addingremoving-administrator-privileges-to-an-existing-synapse-user).
 
 ### Example:
-To set @user:domain.com's password to `correct_horse_battery_staple` you could use this curl command:
+To set @user:example.com's password to `correct_horse_battery_staple` you could use this curl command:
 ```
-curl -XPOST -d '{ "new_password": "correct_horse_battery_staple" }' "https://matrix.<domain>/_matrix/client/r0/admin/reset_password/@user:domain.com?access_token=MDA...this_is_my_access_token
+curl -XPOST -d '{ "new_password": "correct_horse_battery_staple" }' "https://matrix.example.com/_matrix/client/r0/admin/reset_password/@user:example.com?access_token=MDA...this_is_my_access_token
 ```

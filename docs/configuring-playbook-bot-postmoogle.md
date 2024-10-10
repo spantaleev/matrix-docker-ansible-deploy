@@ -39,11 +39,11 @@ matrix_bot_postmoogle_password: PASSWORD_FOR_THE_BOT
 # Uncomment to add one or more admins to this bridge:
 #
 # matrix_bot_postmoogle_admins:
-#  - '@yourAdminAccount:domain.com'
+#  - '@yourAdminAccount:example.com'
 #
 # .. unless you've made yourself an admin of all bots/bridges like this:
 #
-# matrix_admin: '@yourAdminAccount:domain.com'
+# matrix_admin: '@yourAdminAccount:example.com'
 ```
 
 ### DNS
