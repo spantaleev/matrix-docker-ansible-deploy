@@ -51,7 +51,7 @@ Besides setting up your own bridges (preferable), you can also use some [public 
 
 One of [Matrix](https://matrix.org/)'s distinguishing strengths (compared to other chat networks) is its decentralized nature. There's not just one entity (company, organization) controlling the servers. Rather there's thousands of servers operated by different people - one server being insecure, slow or disrespective toward its users does not affect the rest of the network. To participate in that decentralization in its fullest, consider hosting your own server or using some public server other than the largest/default one (`matrix.org`).
 
-There are 3 ways to get into Martix, depending on your technical ability and needs:
+There are 3 ways to get into Matrix, depending on your technical ability and needs:
 
 - **using the existing default server** - the easiest way is to use an existing server. The largest public Matrix server is `matrix.org` and it's configured as a default server in clients such as [Element](https://element.io) and many others. Just use Element on the browser via that link (or download the Element app on a smartphone), create an account and start chatting.
 
