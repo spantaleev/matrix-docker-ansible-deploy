@@ -10,11 +10,10 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 
 ```yaml
 matrix_synapse_ext_password_provider_shared_secret_auth_enabled: true
+
+# Generate a strong shared secret here. Consider generating it with `pwgen -s 64 1`
 matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret: YOUR_SHARED_SECRET_GOES_HERE
 ```
-
-You can generate a strong shared secret with a command like this: `pwgen -s 64 1`
-
 
 ## Authenticating only using a password provider
 
