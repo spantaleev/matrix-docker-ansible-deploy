@@ -8,7 +8,17 @@ By default, this playbook configures the [Synapse](https://github.com/element-hq
 
 - **homeserver implementations other than Synapse may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Synapse). Make yourself familiar with the downsides before proceeding
 
-The playbook provided settings for Dendrite are defined in [`roles/custom/matrix-dendrite/defaults/main.yml`](../roles/custom/matrix-dendrite/defaults/main.yml) and they ultimately end up in the generated `/matrix/dendrite/config/dendrite.yaml` file (on the server). This file is generated from the [`roles/custom/matrix-dendrite/templates/dendrite/dendrite.yaml.j2`](../roles/custom/matrix-dendrite/templates/dendrite/dendrite.yaml.j2) template.
+## Adjusting the playbook configuration
+
+To use Dendrite, you **generally** need to add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_homeserver_implementation: dendrite
+```
+
+The playbook provides lots of customization variables you could use to change Dendrite's settings.
+
+Their defaults are defined in [`roles/custom/matrix-dendrite/defaults/main.yml`](../roles/custom/matrix-dendrite/defaults/main.yml) and they ultimately end up in the generated `/matrix/dendrite/config/dendrite.yaml` file (on the server). This file is generated from the [`roles/custom/matrix-dendrite/templates/dendrite/dendrite.yaml.j2`](../roles/custom/matrix-dendrite/templates/dendrite/dendrite.yaml.j2) template.
 
 **If there's an existing variable** which controls a setting you wish to change, you can simply define that variable in your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) and [re-run the playbook](installing.md) to apply the changes.
 
@@ -24,8 +34,4 @@ Alternatively, **if there is no pre-defined variable** for a Dendrite setting yo
 
 ## Installing
 
-To use Dendrite, you **generally** need the following additional `vars.yml` configuration:
-
-```yaml
-matrix_homeserver_implementation: dendrite
-```
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
