@@ -19,7 +19,7 @@ These services are enabled and used by default, but you can turn them off, if yo
 
 - [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay/) - the [Exim](https://www.exim.org/) email server (optional)
 
-- [nginx](https://hub.docker.com/_/nginx/) - the [nginx](http://nginx.org/) web server (optional)
+- [Traefik](https://hub.docker.com/_/traefik/) - the [Traefik](https://traefik.io/) web server (optional)
 
 - [certbot/certbot](https://hub.docker.com/r/certbot/certbot/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) (optional)
 
