@@ -101,7 +101,7 @@ matrix_bot_mjolnir_access_token: "ACCESS_TOKEN_FROM_STEP_2_GOES_HERE"
 matrix_bot_mjolnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 ```
 
-## 6. Adding mjolnir synapse antispam module (optional)
+## 6. Adding Mjolnir synapse antispam module (optional)
 
 Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
 
@@ -126,11 +126,11 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-You can refer to the upstream [documentation](https://github.com/matrix-org/mjolnir) for additional ways to use and configure mjolnir. Check out their [quickstart guide](https://github.com/matrix-org/mjolnir#quickstart-guide) for some basic commands you can give to the bot.
+You can refer to the upstream [documentation](https://github.com/matrix-org/mjolnir) for additional ways to use and configure Mjolnir. Check out their [quickstart guide](https://github.com/matrix-org/mjolnir#quickstart-guide) for some basic commands you can give to the bot.
 
 You can configure additional options by adding the `matrix_bot_mjolnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file.
 
-For example to change mjolnir's `recordIgnoredInvites` option to `true` you would add the following to your `vars.yml` file.
+For example to change Mjolnir's `recordIgnoredInvites` option to `true` you would add the following to your `vars.yml` file.
 
 ```yaml
 matrix_bot_mjolnir_configuration_extension_yaml: |
