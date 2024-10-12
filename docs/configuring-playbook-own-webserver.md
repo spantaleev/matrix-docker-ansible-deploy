@@ -16,7 +16,7 @@ There are 2 ways to use Traefik with this playbook, as described below.
 
 ### Traefik managed by the playbook
 
-To have the playbook install and use Traefik, use configuration like this (as seen in `examples/vars.yml`):
+To have the playbook install and use Traefik, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik

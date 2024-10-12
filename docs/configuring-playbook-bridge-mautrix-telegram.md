@@ -4,7 +4,9 @@ The playbook can install and configure [mautrix-telegram](https://github.com/mau
 
 See the project's [documentation](https://docs.mau.fi/bridges/python/telegram/index.html) to learn what it does and why it might be useful to you.
 
-You'll need to obtain API keys from [https://my.telegram.org/apps](https://my.telegram.org/apps) and then use the following playbook configuration:
+## Adjusting the playbook configuration
+
+You'll need to obtain API keys from [https://my.telegram.org/apps](https://my.telegram.org/apps) and then add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_mautrix_telegram_enabled: true
@@ -41,7 +43,7 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 You then need to start a chat with `@telegrambot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
 
-If you want to use the relay-bot feature ([relay bot documentation](https://docs.mau.fi/bridges/python/telegram/relay-bot.html)), which allows anonymous user to chat with telegram users, use the following additional playbook configuration:
+If you want to use the relay-bot feature ([relay bot documentation](https://docs.mau.fi/bridges/python/telegram/relay-bot.html)), which allows anonymous user to chat with telegram users, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_mautrix_telegram_bot_token: YOUR_TELEGRAM_BOT_TOKEN

@@ -6,7 +6,9 @@ This is useful for performing [double-puppeting](https://docs.mau.fi/bridges/gen
 
 Previously, bridges supported performing [double-puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) with the help of the [Shared Secret Auth password provider module](./configuring-playbook-shared-secret-auth.md), but this old and hacky solution has been superseded by this Appservice Double Puppet method.
 
-To enable the Appservice Double Puppet service, adjust your `vars.yml` configuration like this and [re-run the playbook](./installing.md) (`just install-all`):
+## Adjusting the playbook configuration
+
+To enable the Appservice Double Puppet service, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yml
 matrix_appservice_double_puppet_enabled: true

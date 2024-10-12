@@ -4,7 +4,9 @@ The playbook can install and configure the [matrix-wechat](https://github.com/du
 
 See the project page to learn what it does and why it might be useful to you.
 
-To enable the bridge, use the following playbook configuration and re-run the playbook's [installation](./installing.md) procedure:
+## Adjusting the playbook configuration
+
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_wechat_enabled: true

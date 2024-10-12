@@ -2,8 +2,9 @@
 
 Expanding on the metrics exposed by the [synapse exporter and the node exporter](configuring-playbook-prometheus-grafana.md), the playbook enables the [postgres exporter](https://github.com/prometheus-community/postgres_exporter) that exposes more detailed information about what's happening on your postgres database.
 
-You can enable this with the following settings in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+## Adjusting the playbook configuration
 
+To enable the postgres exporter, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 prometheus_postgres_exporter_enabled: true
@@ -22,4 +23,3 @@ Name | Description
 ## More information
 
 - [The PostgresSQL dashboard](https://grafana.com/grafana/dashboards/9628) (generic postgres dashboard)
-

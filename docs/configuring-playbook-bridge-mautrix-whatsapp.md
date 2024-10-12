@@ -4,11 +4,14 @@ The playbook can install and configure [mautrix-whatsapp](https://github.com/mau
 
 See the project's [documentation](https://docs.mau.fi/bridges/go/whatsapp/index.html) to learn what it does and why it might be useful to you.
 
-Use the following playbook configuration:
+## Adjusting the playbook configuration
+
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_mautrix_whatsapp_enabled: true
 ```
+
 Whatsapp multidevice beta is required, now it is enough if Whatsapp is connected to the Internet every 2 weeks.
 
 The relay bot functionality is off by default. If you would like to enable the relay bot, add the following to your `vars.yml` file:

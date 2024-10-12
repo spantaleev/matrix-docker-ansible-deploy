@@ -9,10 +9,9 @@ Using a Goofys-backed media store works, but performance may not be ideal. If po
 
 If you'd like to move your locally-stored media store data to Amazon S3 (or another S3-compatible object store), we also provide some migration instructions below.
 
+## Adjusting the playbook configuration
 
-## Usage
-
-After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#bucket-creation-and-security-configuration), you can proceed to configure Goofys in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#bucket-creation-and-security-configuration), add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
 
 ```yaml
 matrix_s3_media_store_enabled: true

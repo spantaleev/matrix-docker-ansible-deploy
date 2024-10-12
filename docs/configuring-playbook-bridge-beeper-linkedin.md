@@ -4,6 +4,10 @@ The playbook can install and configure [beeper-linkedin](https://github.com/beep
 
 See the project's [documentation](https://github.com/beeper/linkedin/blob/master/README.md) to learn what it does and why it might be useful to you.
 
+## Adjusting the playbook configuration
+
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+
 ```yaml
 matrix_beeper_linkedin_enabled: true
 ```

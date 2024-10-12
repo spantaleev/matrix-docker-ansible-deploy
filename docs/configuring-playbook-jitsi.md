@@ -19,7 +19,7 @@ You may also need to open the following ports to your server:
 
 ## Installation
 
-Add this to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
+Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 jitsi_enabled: true

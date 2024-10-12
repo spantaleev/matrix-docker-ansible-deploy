@@ -11,7 +11,7 @@ If the Jitsi server is also configured by this playbook, all plugging of variabl
 
 __Some general concepts of UVS may be helpful to understand the rest, so here they are:__
 
-UVS can be used to verify two claims: 
+UVS can be used to verify two claims:
 
 * (A) Whether a given OpenID token is valid for a given server and
 * (B) whether a user is member of a given room and the corresponding PowerLevel
@@ -31,7 +31,7 @@ In order to use UVS, an admin token for the configured homeserver must be suppli
 ## Enable
 
 [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) installation is disabled by default.
-You can enable it in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+To enable it, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_user_verification_service_enabled: true
@@ -95,12 +95,12 @@ matrix_user_verification_service_uvs_pin_openid_verify_server_name: false
 
 in your host_vars.
 
-This will instruct UVS to verify the OpenID token against any domain given in a request. 
+This will instruct UVS to verify the OpenID token against any domain given in a request.
 Homeserver discovery is done via '.well-known/matrix/server' of the given domain.
 
 ## Installation
 
-After these variables have been set, please run the following command to re-run setup and to restart UVS:
+After these variables have been set, run the [installation](installing.md) command to restart UVS:
 
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-matrix-user-verification-service,start
@@ -108,7 +108,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-matrix-user-verificat
 
 ## Logging
 
-The configuration variable `UVS_LOG_LEVEL` can be set to: 
+The configuration variable `UVS_LOG_LEVEL` can be set to:
 - warning
 - info
 - debug

@@ -43,9 +43,9 @@ You'll need the room id when doing [Configuration](#configuration) below.
 
 In order for the sender user created above to be able to send messages to the room, we'll need to obtain an access token for it. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
-## Configuration
+## Adjusting the playbook configuration
 
-After doing the preparation steps above, adjust your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration like this:
+After doing the preparation steps above, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
 
 ```yaml
 matrix_email2matrix_enabled: true

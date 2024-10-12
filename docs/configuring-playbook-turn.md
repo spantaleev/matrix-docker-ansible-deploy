@@ -7,7 +7,7 @@ By default, the Synapse chat server is configured, so that it points to the Cotu
 
 ## Disabling Coturn
 
-If, for some reason, you'd like to prevent the playbook from installing Coturn, you can use the following configuration:
+If, for some reason, you'd like to prevent the playbook from installing Coturn, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_coturn_enabled: false

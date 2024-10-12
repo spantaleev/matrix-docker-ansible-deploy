@@ -16,7 +16,7 @@ Must be a reCAPTCHA **v2** key using the "I'm not a robot" Checkbox option
 
 ### Setting ReCaptcha keys
 
-Once registered as above, set the following values:
+Once registered as above, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 # for Synapse
