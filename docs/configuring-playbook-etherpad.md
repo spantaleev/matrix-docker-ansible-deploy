@@ -40,8 +40,9 @@ etherpad_enabled: true
 # etherpad_admin_password: some-password
 ```
 
-Then, [run the installation process](installing.md) again (e.g. `just install-all`).
+## Installing
 
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 

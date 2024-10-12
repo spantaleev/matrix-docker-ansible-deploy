@@ -17,7 +17,13 @@ matrix_appservice_kakaotalk_enabled: true
 
 You may optionally wish to add some [Additional configuration](#additional-configuration), or to [prepare for double-puppeting](#set-up-double-puppeting) before the initial installation.
 
-After adjusting your `vars.yml` file, re-run the playbook and restart all services: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command:
+
+```
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
 To make use of the Kakaotalk bridge, see [Usage](#usage) below.
 

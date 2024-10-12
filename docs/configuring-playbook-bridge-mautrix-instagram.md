@@ -40,6 +40,9 @@ matrix_mautrix_instagram_configuration_extension_yaml: |
 
 You may wish to look at `roles/custom/matrix-bridge-mautrix-instagram/templates/config.yaml.j2` and `roles/custom/matrix-bridge-mautrix-instagram/defaults/main.yml` to find other things you would like to configure.
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 

@@ -38,7 +38,7 @@ For a complete list of ntfy config options that you could put in `ntfy_configura
 
 Don't forget to add `ntfy.<your-domain>` to DNS as described in [Configuring DNS](configuring-dns.md) before running the playbook.
 
-After configuring the playbook, run the [installation](installing.md) command again:
+After configuring the playbook, run the [installation](installing.md) command:
 
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start

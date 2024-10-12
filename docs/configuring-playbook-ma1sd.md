@@ -35,6 +35,9 @@ matrix_ma1sd_matrixorg_forwarding_enabled: true
 If you'd like to change the default email templates used by ma1sd, take a look at the `matrix_ma1sd_threepid_medium_email_custom_` variables
 (in the `roles/custom/matrix-ma1sd/defaults/main.yml` file.
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## ma1sd-controlled Registration
 

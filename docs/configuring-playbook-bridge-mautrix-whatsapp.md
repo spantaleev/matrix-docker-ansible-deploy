@@ -27,6 +27,10 @@ matrix_mautrix_whatsapp_bridge_relay_admin_only: false
 If you want to activate the relay bot in a room, use `!wa set-relay`.
 Use `!wa unset-relay` to deactivate.
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+
 ## Set up Double Puppeting
 
 If you'd like to use [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do), you have 2 ways of going about it.

@@ -12,6 +12,10 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 matrix_wechat_enabled: true
 ```
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+
 ## Usage
 
 Once the bridge is installed, start a chat with `@wechatbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).

@@ -54,6 +54,10 @@ matrix_mautrix_signal_bridge_permissions:
 
 You may wish to look at `roles/custom/matrix-bridge-mautrix-signal/templates/config.yaml.j2` to find more information on the permissions settings and other options you would like to configure.
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+
 ## Set up Double Puppeting
 
 If you'd like to use [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do), you have 2 ways of going about it.

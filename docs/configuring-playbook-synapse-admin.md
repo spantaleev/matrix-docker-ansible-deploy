@@ -25,7 +25,7 @@ By default, synapse-admin installation will be [restricted to only work with one
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command again (`just install-all`).
+After configuring the playbook, run the [installation](installing.md) command again: `just install-all`
 
 
 ## Usage

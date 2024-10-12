@@ -115,7 +115,9 @@ aux_file_definitions:
 
 To learn more about what the policy configuration, see the matrix-corporal documentation on [policy](https://github.com/devture/matrix-corporal/blob/master/docs/policy.md).
 
-Each time you update the policy in your `vars.yml` file, you'd need to re-run the playbook and restart matrix-corporal (`--tags=setup-all,start` or `--tags=setup-aux-files,setup-corporal,start`).
+## Installing
+
+After configuring the playbook, re-run the [installation](installing.md) command again (`--tags=setup-all,start` or `--tags=setup-aux-files,setup-corporal,start`).
 
 
 ## Matrix Corporal files

@@ -26,6 +26,9 @@ matrix_mautrix_wsproxy_syncproxy_shared_secret: 'secret token from bridge'
 
 Note that the tokens must match what is compiled into the [mautrix-imessage](https://github.com/mautrix/imessage) bridge running on your Mac or Android device.
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 

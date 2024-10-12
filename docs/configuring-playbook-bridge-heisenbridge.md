@@ -29,6 +29,10 @@ That's it! A registration file is automatically generated during the setup phase
 Setting the owner is optional as the first local user to DM `@heisenbridge:your-homeserver` will be made the owner.
 If you are not using a local user you must set it as otherwise you can't DM it at all.
 
+## Installing
+
+After configuring the playbook, re-run the [installation](installing.md) command: `just install-all` or `just setup-all`
+
 ## Usage
 
 After the bridge is successfully running just DM `@heisenbridge:your-homeserver` to start setting it up.

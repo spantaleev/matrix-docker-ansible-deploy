@@ -12,6 +12,9 @@ To enable the [Google Chat](https://chat.google.com/) bridge, add the following 
 matrix_mautrix_googlechat_enabled: true
 ```
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Set up Double Puppeting
 

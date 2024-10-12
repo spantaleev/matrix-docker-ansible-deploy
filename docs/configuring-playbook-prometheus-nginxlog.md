@@ -20,7 +20,9 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 matrix_prometheus_nginxlog_exporter_enabled: true
 ```
 
-Then, re-run the playbook. See [installation](./installing.md).
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Docker Image Compatibility
 
