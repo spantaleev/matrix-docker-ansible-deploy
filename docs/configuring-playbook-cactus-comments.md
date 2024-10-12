@@ -21,7 +21,7 @@ Add the following block to your `vars.yaml` and make sure to exchange the tokens
 
 ```yaml
 #################
-## Cactus Chat ##
+## Cactus Comments ##
 #################
 
 # This enables the backend (appservice)

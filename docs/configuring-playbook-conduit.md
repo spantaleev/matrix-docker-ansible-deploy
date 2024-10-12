@@ -29,11 +29,11 @@ However, since Conduit is difficult (see [famedly/conduit#276](https://gitlab.co
 
 ## Configuring bridges / appservices
 
-Automatic appservice setup is currently unsupported when using conduit. After setting up the service as usual you may notice that it is unable to start.
+Automatic appservice setup is currently unsupported when using Conduit. After setting up the service as usual you may notice that it is unable to start.
 
 You will have to manually register appservices using the the [register-appservice](https://gitlab.com/famedly/conduit/-/blob/next/APPSERVICES.md) command.
 
-Find the `registration.yaml` in the `/matrix` directory, for example `/matrix/mautrix-signal/bridge/registration.yaml`, then pass the content to conduit:
+Find the `registration.yaml` in the `/matrix` directory, for example `/matrix/mautrix-signal/bridge/registration.yaml`, then pass the content to Conduit:
 
 
     @conduit:your.server.name: register-appservice
