@@ -8,25 +8,28 @@ The playbook can install and configure [Beeper](https://www.beeper.com/)-maintai
 
 See the project page to learn what it does and why it might be useful to you.
 
-## Setup
+## Prerequisite
 
-To enable the [Slack](https://slack.com/) bridge:
+Follow the [OAuth credentials](https://github.com/Sorunome/mx-puppet-slack#option-2-oauth) instructions to create a new Slack app, setting the redirect URL to `https://matrix.DOMAIN/slack/oauth`.
 
-1. Follow the
-   [OAuth credentials](https://github.com/Sorunome/mx-puppet-slack#option-2-oauth)
-   instructions to create a new Slack app, setting the redirect URL to
-   `https://matrix.YOUR_DOMAIN/slack/oauth`.
-2. Update your `vars.yml` with the following:
-    ```yaml
-    matrix_mx_puppet_slack_enabled: true
-    # Client ID must be quoted so YAML does not parse it as a float.
-    matrix_mx_puppet_slack_oauth_client_id: "<SLACK_APP_CLIENT_ID>"
-    matrix_mx_puppet_slack_oauth_client_secret: "<SLACK_APP_CLIENT_SECRET>"
-    ```
-3. Run playbooks with `setup-all` and `start` tags:
-    ```
-    ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
-    ```
+## Adjusting the playbook configuration
+
+To enable the [Slack](https://slack.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+
+```yaml
+matrix_mx_puppet_slack_enabled: true
+# Client ID must be quoted so YAML does not parse it as a float.
+matrix_mx_puppet_slack_oauth_client_id: "<SLACK_APP_CLIENT_ID>"
+matrix_mx_puppet_slack_oauth_client_secret: "<SLACK_APP_CLIENT_SECRET>"
+```
+
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command:
+
+```
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
 ## Usage
 

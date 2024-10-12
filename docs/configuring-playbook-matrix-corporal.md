@@ -16,9 +16,9 @@ If you decide that you'd like to let this playbook install it for you, you'd nee
 - (optional, but encouraged) [set up the REST authentication password provider module](configuring-playbook-rest-auth.md)
 
 
-## Playbook configuration
+## Adjusting the playbook configuration
 
-You would then need some configuration like this:
+Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
 
 ```yaml
 # The Shared Secret Auth password provider module is required for Corporal to work.

@@ -6,7 +6,9 @@ The playbook can install and configure the [matrix-appservice-irc](https://githu
 
 See the project's [documentation](https://github.com/matrix-org/matrix-appservice-irc/blob/master/HOWTO.md) to learn what it does and why it might be useful to you.
 
-You'll need to use the following playbook configuration:
+## Adjusting the playbook configuration
+
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_appservice_irc_enabled: true

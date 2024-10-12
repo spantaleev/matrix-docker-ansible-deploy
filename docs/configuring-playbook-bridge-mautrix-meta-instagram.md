@@ -21,9 +21,9 @@ This would give you a list of portals and groups of portals you may purge. Proce
 Then, consider disabling the old bridge in your configuration, so it won't recreate the portals when you receive new messages.
 
 
-## Configuration
+## Adjusting the playbook configuration
 
-Most simply, you can enable the bridge with the following playbook configuration:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_mautrix_meta_instagram_enabled: true

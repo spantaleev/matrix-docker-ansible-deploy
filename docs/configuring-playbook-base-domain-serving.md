@@ -14,7 +14,7 @@ Usually, there are 2 options:
 
 This documentation page tells you how to do the latter. With some easy changes, we make it possible to serve the base domain from the Matrix server via the integrated webserver.
 
-Just **adjust your DNS records**, so that your base domain is pointed to the Matrix server's IP address (using a DNS `A` record) **and then use the following configuration**:
+Just **adjust your DNS records**, so that your base domain is pointed to the Matrix server's IP address (using a DNS `A` record) **and then add the following configuration** to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_static_files_container_labels_base_domain_enabled: true

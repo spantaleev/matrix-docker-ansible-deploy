@@ -6,6 +6,10 @@ The playbook can install and configure [mautrix-facebook](https://github.com/mau
 
 See the project's [documentation](https://github.com/mautrix/facebook/blob/master/ROADMAP.md) to learn what it does and why it might be useful to you.
 
+## Adjusting the playbook configuration
+
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+
 ```yaml
 matrix_mautrix_facebook_enabled: true
 ```

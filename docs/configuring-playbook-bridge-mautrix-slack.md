@@ -18,9 +18,9 @@ For using this bridge, you would need to authenticate by **providing your userna
 Note that neither of these methods are officially supported by Slack. [matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md) uses a Slack bot account which is the only officially supported method for bridging a Slack channel.
 
 
-## Installing
+## Adjusting the playbook configuration
 
-To enable the bridge, add this to your `vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_mautrix_slack_enabled: true

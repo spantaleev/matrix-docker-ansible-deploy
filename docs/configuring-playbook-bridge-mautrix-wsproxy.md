@@ -10,10 +10,9 @@ See the project's [documentation](https://github.com/mautrix/wsproxy#readme) to 
 You need to create a `wsproxy.DOMAIN` DNS record pointing to your Matrix server (a `CNAME` pointing to `matrix.DOMAIN`) to use wsproxy.
 The hostname is configurable via a `matrix_mautrix_wsproxy_hostname` variable.
 
+## Adjusting the playbook configuration
 
-## Configuration
-
-Use the following playbook configuration:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_mautrix_wsproxy_enabled: true

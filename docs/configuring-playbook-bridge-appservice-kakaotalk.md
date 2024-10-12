@@ -9,7 +9,7 @@ See the project's [documentation](https://src.miscworks.net/fair/matrix-appservi
 
 ## Installing
 
-To enable the bridge, add this to your `vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_appservice_kakaotalk_enabled: true

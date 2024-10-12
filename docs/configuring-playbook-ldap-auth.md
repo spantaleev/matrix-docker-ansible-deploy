@@ -4,11 +4,11 @@ The playbook can install and configure the [matrix-synapse-ldap3](https://github
 
 See that project's documentation to learn what it does and why it might be useful to you.
 
-If you decide that you'd like to let this playbook install it for you, you need some configuration like this:
+If you decide that you'd like to let this playbook install it for you, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
 
 ```yaml
 matrix_synapse_ext_password_provider_ldap_enabled: true
-matrix_synapse_ext_password_provider_ldap_uri: 
+matrix_synapse_ext_password_provider_ldap_uri:
   - "ldap://ldap-01.mydomain.tld:389"
   - "ldap://ldap-02.mydomain.tld:389"
 matrix_synapse_ext_password_provider_ldap_start_tls: true

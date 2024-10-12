@@ -6,6 +6,10 @@ The playbook can install and configure [mautrix-twitter](https://github.com/maut
 
 See the project's [documentation](https://github.com/mautrix/twitter) to learn what it does and why it might be useful to you.
 
+## Adjusting the playbook configuration
+
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+
 ```yaml
 matrix_mautrix_twitter_enabled: true
 ```

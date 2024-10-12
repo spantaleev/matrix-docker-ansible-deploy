@@ -4,7 +4,9 @@ The playbook can install and configure [mautrix-gmessages](https://github.com/ma
 
 See the project's [documentation](https://docs.mau.fi/bridges/go/gmessages/index.html) to learn what it does and why it might be useful to you.
 
-Use the following playbook configuration:
+## Adjusting the playbook configuration
+
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_mautrix_gmessages_enabled: true

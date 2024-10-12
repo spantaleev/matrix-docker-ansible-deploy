@@ -28,9 +28,9 @@ Once you've decided on the domain and path, **you may need to adjust your DNS** 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
 
-## Installing
+## Adjusting the playbook configuration
 
-[Etherpad](https://etherpad.org) installation is disabled by default. You can enable it in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+[Etherpad](https://etherpad.org) installation is disabled by default. To enable Etherpad, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 etherpad_enabled: true

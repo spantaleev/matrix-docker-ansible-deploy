@@ -5,9 +5,9 @@ The playbook can install and configure
 
 This allows you to bridge Instagram DirectMessages into Matrix.
 
-To enable the [Instagram](https://www.instagram.com/) bridge just use the following
-playbook configuration:
+## Adjusting the playbook configuration
 
+To enable the [Instagram](https://www.instagram.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_mx_puppet_instagram_enabled: true
@@ -33,4 +33,3 @@ For double-puppeting, you probably want to issue these commands:
 If you are linking only one Instagram account, your `$puppetId` is probably 1, but use the `list` command find out.
 
 The `help` command shows which commands are available, though at the time of writing, not every command is fully implemented.
-

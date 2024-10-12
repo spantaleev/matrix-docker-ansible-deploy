@@ -8,8 +8,9 @@ At the moment, **setting up this service's bot requires some manual actions** as
 
 This service is meant to be used with an external [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) instance. It's **not** meant to be integrated with the [Prometheus & Grafana stack](./configuring-playbook-prometheus-grafana.md) installed by this playbook, because the Alertmanager component is not installed by it.
 
+## Adjusting the playbook configuration
 
-## Configuration
+Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yml
 matrix_alertmanager_receiver_enabled: true
