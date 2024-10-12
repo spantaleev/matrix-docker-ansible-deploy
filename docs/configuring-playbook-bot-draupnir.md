@@ -37,7 +37,7 @@ You will need to prevent Synapse from rate limiting the bot's account. This is n
 
 If your Synapse Admin API is exposed to the internet for some reason like running the Synapse Admin Role [Link](/docs/configuring-playbook-synapse-admin.md) or running `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true` in your playbook config. If your API is not externally exposed you should still be able to on the local host for your synapse run these commands.
 
-The following command works on semi up to date Windows 10 installs and All Windows 11 installations and other systems that ship curl. `curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@example:example.com/override_ratelimit` Replace `@example:example.com` with the MXID of your Draupnir and example.com with your homeserver domain. You can easily obtain an access token for a homeserver admin account the same way you can obtain an access token for Draupnir it self. If you made Draupnir Admin you can just use the Draupnir token.
+The following command works on semi up to date Windows 10 installs and All Windows 11 installations and other systems that ship curl. `curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@example:example.com/override_ratelimit` Replace `@example:example.com` with the MXID of your Draupnir and example.com with your homeserver domain. You can easily obtain an access token for a homeserver admin account the same way you can obtain an access token for Draupnir itself. If you made Draupnir Admin you can just use the Draupnir token.
 
 
 
@@ -47,7 +47,7 @@ Using your own account, create a new invite only room that you will use to manag
 
 If you make the management room encrypted (E2EE), then you MUST enable and use Pantalaimon (see below).
 
-Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element you can do this by going to the room's settings, clicking Advanced, and then coping the internal room ID. The room ID will look something like `!QvgVuKq0ha8glOLGMG:DOMAIN`.
+Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!QvgVuKq0ha8glOLGMG:DOMAIN`.
 
 Finally invite the `@bot.draupnir:DOMAIN` account you created earlier into the room.
 
