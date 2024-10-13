@@ -31,7 +31,7 @@ If you are not using a local user you must set it as otherwise you can't DM it a
 
 ## Installing
 
-After configuring the playbook, re-run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 

@@ -31,7 +31,7 @@ matrix_bot_honoroit_roomid: "!yourRoomID:DOMAIN"
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command again:
+After configuring the playbook, run the [installation](installing.md) command:
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start

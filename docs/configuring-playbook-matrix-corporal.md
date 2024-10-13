@@ -117,7 +117,7 @@ To learn more about what the policy configuration, see the matrix-corporal docum
 
 ## Installing
 
-After configuring the playbook, re-run the [installation](installing.md) command again (`--tags=setup-all,start` or `--tags=setup-aux-files,setup-corporal,start`).
+After configuring the playbook, run the [installation](installing.md) command (`--tags=setup-all,start` or `--tags=setup-aux-files,setup-corporal,start`).
 
 
 ## Matrix Corporal files
