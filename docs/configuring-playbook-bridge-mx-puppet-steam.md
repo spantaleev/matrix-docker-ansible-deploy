@@ -13,6 +13,9 @@ To enable the [Steam](https://steampowered.com/) bridge, add the following confi
 matrix_mx_puppet_steam_enabled: true
 ```
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 

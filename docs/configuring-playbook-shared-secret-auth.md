@@ -23,3 +23,7 @@ If you wish for users to **authenticate only against configured password provide
 ```yaml
 matrix_synapse_password_config_localdb_enabled: false
 ```
+
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`

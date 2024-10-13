@@ -30,7 +30,7 @@ You can add multiple admins. The admin accounts are only used to access the maub
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command again (`just install-all`):
+After configuring the playbook, run the [installation](installing.md) command: `just install-all`
 
 **Notes**:
 

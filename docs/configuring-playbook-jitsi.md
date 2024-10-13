@@ -17,7 +17,7 @@ You may also need to open the following ports to your server:
 - `10000/udp` - RTP media over UDP. Depending on your firewall/NAT setup, incoming RTP packets on port `10000` may have the external IP of your firewall as destination address, due to the usage of STUN in JVB (see [`jitsi_jvb_stun_servers`](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/defaults/main.yml)).
 
 
-## Installation
+## Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
@@ -271,10 +271,13 @@ jitsi_disable_gravatar: false
 **Beware:** This leaks information to a third party, namely the Gravatar-Service (unless configured otherwise: gravatar.com).
 Besides metadata, this includes the matrix user_id and possibly the room identifier (via `referrer` header).
 
-## Apply changes
+## Installing
 
-Then re-run the playbook: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
+After configuring the playbook, run the [installation](installing.md) command:
 
+```
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
 ## Usage
 

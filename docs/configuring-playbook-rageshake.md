@@ -51,7 +51,7 @@ matrix_rageshake_configuration_extension_yaml: |
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command again:
+After configuring the playbook, run the [installation](installing.md) command:
 
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start

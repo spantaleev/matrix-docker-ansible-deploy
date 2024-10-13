@@ -92,6 +92,9 @@ Can be used to set the username for the bridge.
 
 You may wish to look at `roles/custom/matrix-bridge-mautrix-SERVICENAME/templates/config.yaml.j2` and `roles/custom/matrix-bridge-mautrix-SERVICENAME/defaults/main.yml` to find other things you would like to configure.
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Set up Double Puppeting
 

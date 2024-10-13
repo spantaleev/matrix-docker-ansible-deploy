@@ -30,5 +30,4 @@ There are a few options for handling this:
 
 ### Re-running the playbook
 
-As always, after making the necessary DNS and configuration adjustments, [re-run the playbook](./installing.md) to apply the changes.
-```
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`

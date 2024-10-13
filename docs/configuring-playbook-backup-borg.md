@@ -68,7 +68,7 @@ Check the [backup_borg role](https://github.com/mother-of-all-self-hosting/ansib
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command again:
+After configuring the playbook, run the [installation](installing.md) command:
 
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start

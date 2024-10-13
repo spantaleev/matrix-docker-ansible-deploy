@@ -60,4 +60,10 @@ matrix_appservice_irc_ircService_servers:
       lineLimit: 3
 ```
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+
+## Usage
+
 You then need to start a chat with `@irc_bot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).

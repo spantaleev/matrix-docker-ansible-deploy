@@ -14,6 +14,9 @@ To enable the [Google Hangouts](https://hangouts.google.com/) bridge, add the fo
 matrix_mautrix_hangouts_enabled: true
 ```
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Set up Double Puppeting
 

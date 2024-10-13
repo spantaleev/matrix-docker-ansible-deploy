@@ -24,6 +24,9 @@ matrix_mx_puppet_twitter_access_token_secret: ''
 matrix_mx_puppet_twitter_environment: ''
 ```
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 

@@ -14,4 +14,10 @@ To enable the Appservice Double Puppet service, add the following configuration 
 matrix_appservice_double_puppet_enabled: true
 ```
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+
+## Usage
+
 When enabled, double puppeting will automatically be enabled for all bridges that support double puppeting via the appservice method.

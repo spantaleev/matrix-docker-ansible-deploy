@@ -1,6 +1,6 @@
 # Configuring Element (optional)
 
-By default, this playbook installs the [Element](https://github.com/element-hq/element-web) Matrix client web application.
+By default, this playbook installs the [Element](https://github.com/element-hq/element-web) Matrix web client for you.
 If that's okay, you can skip this document.
 
 

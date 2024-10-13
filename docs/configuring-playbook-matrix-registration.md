@@ -17,9 +17,9 @@ Use matrix-registration to **create unique registration links**, which people ca
 - **a user registration page**, where people can use these registration tokens. By default, exposed at `https://matrix.DOMAIN/matrix-registration`
 
 
-## Installing
+## Adjusting the playbook configuration
 
-Adjust your playbook configuration (your `inventory/host_vars/matrix.DOMAIN/vars.yml` file):
+Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_registration_enabled: true
@@ -28,7 +28,9 @@ matrix_registration_enabled: true
 matrix_registration_admin_secret: "ENTER_SOME_SECRET_HERE"
 ```
 
-Then, run the [installation](installing.md) command again:
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command:
 
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start

@@ -10,6 +10,10 @@ To enable the postgres exporter, add the following configuration to your `invent
 prometheus_postgres_exporter_enabled: true
 ```
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+
 ## What does it do?
 
 Name | Description

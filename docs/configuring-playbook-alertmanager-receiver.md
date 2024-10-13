@@ -63,7 +63,7 @@ Steps 3 and 4 need to be done for each new room you'd like the bot to deliver al
 
 ## Installation
 
-Now that you've [prepared the bot account and room](#account-and-room-preparation) and have [configured the playbook](#configuration), you can re-run the [installation](./installing.md) process (`just install-all`).
+Now that you've [prepared the bot account and room](#account-and-room-preparation) and have [configured the playbook](#configuration), you can run the [installation](installing.md) command: `just install-all`
 
 Then, you can proceed to [Usage](#usage).
 

@@ -13,6 +13,9 @@ To enable the [Instagram](https://www.instagram.com/) bridge, add the following 
 matrix_mx_puppet_instagram_enabled: true
 ```
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 

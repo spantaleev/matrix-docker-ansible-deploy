@@ -33,6 +33,9 @@ matrix_beeper_linkedin_configuration_extension_yaml: |
 
 You may wish to look at `roles/custom/matrix-bridge-beeper-linkedin/templates/config.yaml.j2` to find other things you would like to configure.
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Set up Double Puppeting by enabling Appservice Double Puppet or Shared Secret Auth
 

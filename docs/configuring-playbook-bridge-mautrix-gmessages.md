@@ -12,6 +12,10 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 matrix_mautrix_gmessages_enabled: true
 ```
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+
 ## Set up Double Puppeting
 
 If you'd like to use [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do), you have 2 ways of going about it.
