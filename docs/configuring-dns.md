@@ -89,7 +89,7 @@ To make the [ma1sd](https://github.com/ma1uta/ma1sd) Identity Server (which this
 
 This is an optional feature for the optionally-installed [ma1sd service](configuring-playbook-ma1sd.md). See [ma1sd's documentation](https://github.com/ma1uta/ma1sd/wiki/mxisd-and-your-privacy#choices-are-never-easy) for information on the privacy implications of setting up this SRV record.
 
-Note: This `_matrix-identity._tcp` SRV record for the identity server is different from the `_matrix._tcp` that can be used for Synapse delegation. See [howto-server-delegation.md](howto-server-delegation.md) for more information about delegation.
+**Note**: This `_matrix-identity._tcp` SRV record for the identity server is different from the `_matrix._tcp` that can be used for Synapse delegation. See [howto-server-delegation.md](howto-server-delegation.md) for more information about delegation.
 
 When you're done with the DNS configuration and ready to proceed, continue with [Getting the playbook](getting-the-playbook.md).
 

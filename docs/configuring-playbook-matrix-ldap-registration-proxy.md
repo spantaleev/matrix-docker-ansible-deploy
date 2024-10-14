@@ -4,7 +4,7 @@ The playbook can install and configure [matrix-ldap-registration-proxy](https://
 
 This proxy handles Matrix registration requests and forwards them to LDAP.
 
-**Please note:** This does support the full Matrix specification for registrations. It only provide a very coarse
+**Note**: This does support the full Matrix specification for registrations. It only provide a very coarse
 implementation of a basic password registration.
 
 ## Quickstart
