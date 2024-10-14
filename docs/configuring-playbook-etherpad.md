@@ -35,9 +35,9 @@ If you've decided to reuse the `matrix.` domain, you won't need to do any extra 
 ```yaml
 etherpad_enabled: true
 
-# Uncomment below to enable the admin web UI
-# etherpad_admin_username: admin
-# etherpad_admin_password: some-password
+# Uncomment and adjust if you'd like to enable the admin web UI
+# etherpad_admin_username: YOUR_USERNAME_HERE
+# etherpad_admin_password: YOUR_PASSWORD_HERE
 ```
 
 ## Installing
