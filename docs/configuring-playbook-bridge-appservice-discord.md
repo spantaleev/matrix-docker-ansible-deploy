@@ -28,7 +28,7 @@ matrix_appservice_discord_bot_token: "YOUR DISCORD APP BOT TOKEN"
 matrix_synapse_configuration_extension_yaml: |
   use_appservice_legacy_authorization: true
 ```
-*Note*: This deprecated method is considered insecure.
+**Note**: This deprecated method is considered insecure.
 
 6. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
 

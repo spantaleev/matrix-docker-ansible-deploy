@@ -20,7 +20,7 @@ matrix_appservice_webhooks_api_secret: '<your_secret>'
 2. In case you want to change the verbosity of logging via `journalctl -fu matrix-appservice-webhooks.service`
 you can adjust this in `inventory/host_vars/matrix.<domain-name>/vars.yml` as well.
 
-*Note*: default value is: `info` and availabe log levels are : `info`, `verbose`
+**Note**: default value is: `info` and availabe log levels are : `info`, `verbose`
 
 ```yaml
 matrix_appservice_webhooks_log_level: '<log_level>'
@@ -31,7 +31,7 @@ matrix_appservice_webhooks_log_level: '<log_level>'
 matrix_synapse_configuration_extension_yaml: |
   use_appservice_legacy_authorization: true
 ```
-*Note*: This deprecated method is considered insecure.
+**Note**: This deprecated method is considered insecure.
 
 4. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
 
@@ -39,7 +39,7 @@ matrix_synapse_configuration_extension_yaml: |
 
 6. Invite the bridge bot user to your room:
 
-    - either with `/invite @_webhook:<domain.name>` (*Note*: Make sure you have administration permissions in your room)
+    - either with `/invite @_webhook:<domain.name>` (**Note**: Make sure you have administration permissions in your room)
 
     - or simply add the bridge bot to a private channel (personal channels imply you being an administrator)
 
