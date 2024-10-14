@@ -71,7 +71,7 @@ If you're opening up registrations publicly like this, you might also wish to [c
 To change the admin privileges for a user, you need to run an SQL query like this against the `synapse` database:
 
 ```sql
-UPDATE users SET admin=ADMIN_VALUE WHERE name = '@USER:DOMAIN'
+UPDATE users SET admin=ADMIN_VALUE WHERE name = '@USER:DOMAIN';
 ```
 
 where:
