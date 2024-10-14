@@ -9,16 +9,16 @@
   with_items:
     - {'old': 'matrix_client_schildichat_welcome_user_id', 'new': '<removed>'}
 
-- name: Fail if required schildichat settings not defined
+- name: Fail if required SchildiChat settings not defined
   ansible.builtin.fail:
     msg: >
-      You need to define a required configuration setting (`{{ item }}`) for using schildichat.
+      You need to define a required configuration setting (`{{ item }}`) for using SchildiChat.
   when: "vars[item] == ''"
   with_items:
     - matrix_client_schildichat_default_hs_url
     - matrix_client_schildichat_container_network
 
-- name: Fail if schildichat location sharing enabled, but no tile server defined
+- name: Fail if SchildiChat location sharing enabled, but no tile server defined
   ansible.builtin.fail:
     msg: >-
       You need to define at least one map tile server in matrix_client_schildichat_location_sharing_map_style_content_sources_localsource_tiles list

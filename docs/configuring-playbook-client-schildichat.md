@@ -26,15 +26,15 @@ To enable SchildiChat, add the following configuration to your `inventory/host_v
 matrix_client_schildichat_enabled: true
 ```
 
-The playbook provides some customization variables you could use to change schildichat's settings.
+The playbook provides some customization variables you could use to change SchildiChat's settings.
 
 Their defaults are defined in [`roles/custom/matrix-client-schildichat/defaults/main.yml`](../roles/custom/matrix-client-schildichat/defaults/main.yml) and they ultimately end up in the generated `/matrix/schildichat/config.json` file (on the server). This file is generated from the [`roles/custom/matrix-client-schildichat/templates/config.json.j2`](../roles/custom/matrix-client-schildichat/templates/config.json.j2) template.
 
 **If there's an existing variable** which controls a setting you wish to change, you can simply define that variable in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) and [re-run the playbook](installing.md) to apply the changes.
 
-Alternatively, **if there is no pre-defined variable** for an schildichat setting you wish to change:
+Alternatively, **if there is no pre-defined variable** for a SchildiChat setting you wish to change:
 
-- you can either **request a variable to be created** (or you can submit such a contribution yourself). Keep in mind that it's **probably not a good idea** to create variables for each one of schildichat's various settings that rarely get used.
+- you can either **request a variable to be created** (or you can submit such a contribution yourself). Keep in mind that it's **probably not a good idea** to create variables for each one of SchildiChat's various settings that rarely get used.
 
 - or, you can **extend and override the default configuration** ([`config.json.j2`](../roles/custom/matrix-client-schildichat/templates/config.json.j2)) by making use of the `matrix_client_schildichat_configuration_extension_json_` variable. You can find information about this in [`roles/custom/matrix-client-schildichat/defaults/main.yml`](../roles/custom/matrix-client-schildichat/defaults/main.yml).
 
@@ -42,13 +42,13 @@ Alternatively, **if there is no pre-defined variable** for an schildichat settin
 
 ### Themes
 
-To change the look of schildichat, you can define your own themes manually by using the `matrix_client_schildichat_setting_defaults_custom_themes` setting.
+To change the look of SchildiChat, you can define your own themes manually by using the `matrix_client_schildichat_setting_defaults_custom_themes` setting.
 
 Or better yet, you can automatically pull it all themes provided by the [aaronraimist/element-themes](https://github.com/aaronraimist/element-themes) project by simply flipping a flag (`matrix_client_schildichat_themes_enabled: true`).
 
 If you make your own theme, we encourage you to submit it to the **aaronraimist/element-themes** project, so that the whole community could easily enjoy it.
 
-Note that for a custom theme to work well, all schildichat instances that you use must have the same theme installed.
+Note that for a custom theme to work well, all SchildiChat instances that you use must have the same theme installed.
 
 ## Installing
 
