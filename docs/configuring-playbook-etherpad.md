@@ -62,7 +62,7 @@ Then from the plugin manager page (`https://etherpad.<your-domain>/admin/plugins
 
 This is how it works in Element, it might work quite similar with other clients:
 
-To integrate a standalone etherpad in a room, create your pad by visiting `https://etherpad.DOMAIN`. When the pad opens, copy the URL and send a command like this to the room: `/addwidget URL`. You will then find your integrated Etherpad within the right sidebar in the `Widgets` section.
+To integrate a standalone Etherpad in a room, create your pad by visiting `https://etherpad.DOMAIN`. When the pad opens, copy the URL and send a command like this to the room: `/addwidget URL`. You will then find your integrated Etherpad within the right sidebar in the `Widgets` section.
 
 
 ### Set Dimension default to the self-hosted Etherpad (optional)
