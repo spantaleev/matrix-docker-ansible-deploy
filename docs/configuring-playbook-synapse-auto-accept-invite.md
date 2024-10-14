@@ -38,7 +38,7 @@ Here's example configuration for using the **native** Synapse feature:
 ```yml
 matrix_synapse_auto_accept_invites_enabled: true
 
-# Default settings below. Uncomment and adjust if necessary.
+# Default settings below. Uncomment and adjust this part if necessary.
 # matrix_synapse_auto_accept_invites_only_for_direct_messages: false
 # matrix_synapse_auto_accept_invites_only_from_local_users: false
 

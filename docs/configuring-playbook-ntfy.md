@@ -17,8 +17,7 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 # Enabling it is the only required setting
 ntfy_enabled: true
 
-# This is the default hostname.
-# Uncomment the line below and change it, if you'd like.
+# Uncomment and adjust this part if you'd like to use a hostname different than the default
 # matrix_server_fqn_ntfy: "ntfy.{{ matrix_domain }}"
 
 # Uncomment to enable the ntfy web app (disabled by default)
