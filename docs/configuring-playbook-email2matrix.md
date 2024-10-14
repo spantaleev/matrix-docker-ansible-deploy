@@ -35,8 +35,8 @@ It doesn't matter who creates and owns the rooms and who joins later (you or the
 What matters is that both you and the sender user are part of the same room and that the sender user has enough privileges in the room to be able to send messages there.
 Inviting additional people to the room is okay too.
 
-Take note of each room's room id (different clients show the room id in a different place).
-You'll need the room id when doing [Configuration](#configuration) below.
+Take note of each room's room ID (different clients show the room ID in a different place).
+You'll need the room ID when doing [Configuration](#configuration) below.
 
 
 ### Obtaining an access token for the sender user
