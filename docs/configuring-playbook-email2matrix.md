@@ -36,7 +36,7 @@ What matters is that both you and the sender user are part of the same room and 
 Inviting additional people to the room is okay too.
 
 Take note of each room's room ID (different clients show the room ID in a different place).
-You'll need the room ID when doing [Configuration](#configuration) below.
+You'll need the room ID when [configuring the playbook](#adjusting-the-playbook-configuration) below.
 
 
 ### Obtaining an access token for the sender user
@@ -72,4 +72,8 @@ matrix_email2matrix_matrix_mappings:
 
 You can also set `MatrixHomeserverUrl` to the container URL where your homeserver's Client-Server API lives by using the `{{ matrix_addons_homeserver_client_api_url }}` variable, instead of the public `https://matrix.DOMAIN` endpoint.
 
-Re-run the playbook (`--tags=setup-email2matrix,start`) and try sending an email to `my-mailbox@matrix.DOMAIN`.
+## Installing
+
+To enable Email2Matrix, run the [installation](installing.md) command (`--tags=setup-email2matrix,start`).
+
+After installation, you may wish to send a test email to `my-mailbox@matrix.DOMAIN` to make sure that Email2Matrix works as expected.
