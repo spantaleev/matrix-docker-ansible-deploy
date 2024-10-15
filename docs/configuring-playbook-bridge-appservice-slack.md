@@ -35,9 +35,9 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
 
    See https://matrix-appservice-slack.readthedocs.io/en/latest/team_sync/
 
-4. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
+5. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
 
-5. Invite the bridge bot user into the admin room:
+6. Invite the bridge bot user into the admin room:
 
     ```
     /invite @slackbot:MY.DOMAIN
@@ -45,7 +45,7 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
 
     Note that the bot's domain is your server's domain **without the `matrix.` prefix.**
 
-6. Create a Classic Slack App [here](https://api.slack.com/apps?new_classic_app=1).
+7. Create a Classic Slack App [here](https://api.slack.com/apps?new_classic_app=1).
 
     Name the app "matrixbot" (or anything else you'll remember).
 
@@ -53,7 +53,7 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
 
     Click on bot users and add a new bot user. We will use this account to bridge the the rooms.
 
-7. Click on Event Subscriptions and enable them and use the request url `https://matrix.DOMAIN/appservice-slack`. Then add the following events and save:
+8. Click on Event Subscriptions and enable them and use the request url `https://matrix.DOMAIN/appservice-slack`. Then add the following events and save:
 
      Bot User Events:
 
@@ -63,7 +63,7 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
     - reaction_added
     - reaction_removed
 
-8. Click on OAuth & Permissions and add the following scopes:
+9. Click on OAuth & Permissions and add the following scopes:
 
     - chat:write:bot
     - users:read
@@ -75,9 +75,9 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
 
     **Note**: In order to make Slack files visible to matrix users, this bridge will make Slack files visible to anyone with the url (including files in private channels). This is different than the current behavior in Slack, which only allows authenticated access to media posted in private channels. See MSC701 for details.
 
-9. Click on Install App and Install App to Workspace. Note the access tokens shown. You will need the Bot User OAuth Access Token and if you want to bridge files, the OAuth Access Token whenever you link a room.
+10. Click on Install App and Install App to Workspace. Note the access tokens shown. You will need the Bot User OAuth Access Token and if you want to bridge files, the OAuth Access Token whenever you link a room.
 
-10. If Team Sync is not enabled, for each channel you would like to bridge, perform the following steps:
+11. If Team Sync is not enabled, for each channel you would like to bridge, perform the following steps:
 
     * Create a Matrix room in the usual manner for your client. Take a note of its Matrix room ID - it will look something like !aBcDeF:example.com.
 
@@ -107,7 +107,7 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
 
         Other configuration options are available via the `matrix_appservice_slack_configuration_extension_yaml` variable.
 
-11. Unlinking
+12. Unlinking
 
     Channels can be unlinked again like this:
 
