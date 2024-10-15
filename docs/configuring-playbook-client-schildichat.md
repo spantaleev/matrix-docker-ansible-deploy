@@ -15,7 +15,7 @@ for `schildichat`. See [Configuring DNS](configuring-dns.md).
 If you would like to use a different domain, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (changing it to use your preferred domain):
 
 ```yaml
- matrix_server_fqn_schildichat: "sc.{{ matrix_domain }}"
+matrix_server_fqn_schildichat: "sc.{{ matrix_domain }}"
 ```
 
 ## Adjusting the playbook configuration
