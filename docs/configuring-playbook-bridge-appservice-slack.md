@@ -10,7 +10,7 @@ See the project's [documentation](https://github.com/matrix-org/matrix-appservic
 
 loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Setup)
 
-1. Create a new Matrix room to act as the administration control room. Note its internal room ID. This can be done in Element by making a message, opening the options for that message and choosing "view source". The room ID will be displayed near the top.
+1. Create a new Matrix room to act as the administration control room. Note its internal room ID. This can be done in Element by sending a message, opening the options for that message and choosing "view source". The room ID will be displayed near the top.
 
 2. Enable the bridge by adding the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
@@ -81,7 +81,7 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
 
     * Create a Matrix room in the usual manner for your client. Take a note of its Matrix room ID - it will look something like !aBcDeF:example.com.
 
-    * Invite the bot user to both the Slack and Matrix channels you would like to bridge using `/invite @matrixbot` for slack and `/invite @slackbot:MY.DOMAIN` for matrix.
+    * Invite the bot user to both the Slack and Matrix channels you would like to bridge using `/invite @matrixbot` for Slack and `/invite @slackbot:MY.DOMAIN` for Matrix.
 
     * Determine the "channel ID" that Slack uses to identify the channel. You can see it when you open a given Slack channel in a browser. The URL reads like this: `https://app.slack.com/client/XXX/<the channel id>/details/`.
 
@@ -123,12 +123,12 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
 
 * Linking: "Room is now pending-name"
 
-  This typically means that you haven't used the correct slack channel id. Unlink the room and recheck 'Determine the "channel ID"' from above.
+  This typically means that you haven't used the correct Slack channel id. Unlink the room and recheck 'Determine the "channel ID"' from above.
 
 * Messages work from M to S, but not the other way around
 
   Check you logs, if they say something like
 
-  `WARN SlackEventHandler Ignoring message from unrecognised slack channel id : %s (%s) <the channel id> <some other id>`
+  `WARN SlackEventHandler Ignoring message from unrecognised Slack channel id : %s (%s) <the channel id> <some other id>`
 
   then unlink your room, reinvite the bot and re-link it again. This may particularly hit you, if you tried to unsuccessfully link your room multiple times without unlinking it after each failed attempt.
