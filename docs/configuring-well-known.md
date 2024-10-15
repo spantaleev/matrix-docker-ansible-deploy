@@ -25,7 +25,7 @@ To learn how to set up `/.well-known/matrix/server`, read the Installing section
 
 ## Introduction to Client Server Discovery
 
-Client Server Service discovery lets various client programs which support it, to receive a full user id (e.g. `@username:example.com`) and determine where the Matrix server is automatically (e.g. `https://matrix.example.com`).
+Client Server Service discovery lets various client programs which support it, to receive a full user ID (e.g. `@username:example.com`) and determine where the Matrix server is automatically (e.g. `https://matrix.example.com`).
 
 This lets you (and your users) easily connect to your Matrix server without having to customize connection URLs. When using client programs that support it, you won't need to point them to `https://matrix.example.com` in Custom Server options manually anymore. The connection URL would be discovered automatically from your full username.
 

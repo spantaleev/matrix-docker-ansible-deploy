@@ -22,7 +22,7 @@ grafana_enabled: true
 
 grafana_anonymous_access: false
 
-# This has no relation to your Matrix user id. It can be any username you'd like.
+# This has no relation to your Matrix user ID. It can be any username you'd like.
 # Changing the username subsequently won't work.
 grafana_default_admin_user: "some_username_chosen_by_you"
 

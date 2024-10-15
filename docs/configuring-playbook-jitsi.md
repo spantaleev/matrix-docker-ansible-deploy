@@ -173,8 +173,8 @@ For this role to work you will need an additional section in the ansible hosts f
 <your jvb hosts> ansible_host=<ip address of the jvb host>
 ```
 
-Each JVB will require a server id to be set so that it can be uniquely identified and this allows Jitsi to keep track of which conferences are on which JVB.
-The server id is set with the variable `jitsi_jvb_server_id` which ends up as the JVB_WS_SERVER_ID environment variables in the JVB docker container.
+Each JVB will require a server ID to be set so that it can be uniquely identified and this allows Jitsi to keep track of which conferences are on which JVB.
+The server ID is set with the variable `jitsi_jvb_server_id` which ends up as the JVB_WS_SERVER_ID environment variables in the JVB docker container.
 This variable can be set via the host file, a parameter to the ansible command or in the `vars.yaml` for the host which will have the additional JVB. For example:
 
 ``` yaml
@@ -187,7 +187,7 @@ jvb-2.example.com ansible_host=192.168.0.2 jitsi_jvb_server_id=jvb-2
 jvb-3.example.com ansible_host=192.168.0.3 jitsi_jvb_server_id=jvb-2
 ```
 
-Note that the server id `jvb-1` is reserved for the JVB instance running on the Matrix host and therefore should not be used as the id of an additional jvb host.
+Note that the server ID `jvb-1` is reserved for the JVB instance running on the Matrix host and therefore should not be used as the ID of an additional jvb host.
 
 The additional JVB will also need to expose the colibri web socket port and this can be done with the following variable:
 
@@ -195,7 +195,7 @@ The additional JVB will also need to expose the colibri web socket port and this
 jitsi_jvb_container_colibri_ws_host_bind_port: 9090
 ```
 
-The JVB will also need to know where the prosody xmpp server is located, similar to the server id this can be set in the vars for the JVB by using the variable
+The JVB will also need to know where the prosody xmpp server is located, similar to the server ID this can be set in the vars for the JVB by using the variable
 `jitsi_xmpp_server`. The Jitsi prosody container is deployed on the matrix server by default so the value can be set to the matrix domain. For example:
 
 ```yaml

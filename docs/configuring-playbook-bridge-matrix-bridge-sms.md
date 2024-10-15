@@ -13,7 +13,7 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 ```yaml
 matrix_sms_bridge_enabled: true
 
-# (optional but recommended) a room id to a default room
+# (optional but recommended) a room ID to a default room
 matrix_sms_bridge_default_room: ""
 
 # (optional but recommended) configure your server location
