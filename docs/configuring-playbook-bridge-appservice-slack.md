@@ -12,7 +12,7 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
 
 1. Create a new Matrix room to act as the administration control room. Note its internal room ID. This can be done in Element by making a message, opening the options for that message and choosing "view source". The room ID will be displayed near the top.
 
-2. Enable the bridge with the following configuration in your `vars.yml` file:
+2. Enable the bridge by adding the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
     ```yaml
     matrix_appservice_slack_enabled: true
