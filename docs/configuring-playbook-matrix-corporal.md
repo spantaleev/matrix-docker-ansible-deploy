@@ -52,7 +52,7 @@ matrix_corporal_policy_provider_config: |
 matrix_corporal_http_api_enabled: true
 matrix_corporal_http_api_auth_token: "AUTH_TOKEN_HERE"
 
-# If you need to change matrix-corporal's user id from the default (matrix-corporal).
+# If you need to change matrix-corporal's user ID from the default (matrix-corporal).
 # In any case, you need to make sure this Matrix user is created on your server.
 matrix_corporal_corporal_user_id_local_part: "matrix-corporal"
 
@@ -73,7 +73,7 @@ matrix_synapse_rc_login:
 
 Matrix Corporal operates with a specific Matrix user on your server.
 By default, it's `matrix-corporal` (controllable by the `matrix_corporal_reconciliation_user_id_local_part` setting, see above).
-No matter what Matrix user id you configure to run it with, make sure that:
+No matter what Matrix user ID you configure to run it with, make sure that:
 
 - the Matrix Corporal user is created by [registering it](registering-users.md) **with administrator privileges**. Use a password you remember, as you'll need to log in from time to time to create or join rooms
 

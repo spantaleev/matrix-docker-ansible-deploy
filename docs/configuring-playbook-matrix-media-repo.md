@@ -105,7 +105,7 @@ If you wish to manually generate the signing key and merge it with your homeserv
 
 ### Key backup and revoking
 
-Since your homeserver signing key file is modified by the playbook, a backup will be created in `HOMESERVER_DIR/config/DOMAIN.signing.key.backup`. If you need to remove/revoke old keys, you can restore from this backup or remove the MMR key id from your `DOMAIN.signing.key` file.
+Since your homeserver signing key file is modified by the playbook, a backup will be created in `HOMESERVER_DIR/config/DOMAIN.signing.key.backup`. If you need to remove/revoke old keys, you can restore from this backup or remove the MMR key ID from your `DOMAIN.signing.key` file.
 
 Additionally, its recommended after revoking a signing key to update your homeserver config file (`old_signing_keys` field for Synapse and `old_private_keys` for Dendrite). See your homeserver config file for further documentation on how to populate the field.
 

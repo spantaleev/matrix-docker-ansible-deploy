@@ -16,7 +16,7 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
 
     ```yaml
     matrix_appservice_slack_enabled: true
-    matrix_appservice_slack_control_room_id: "Your matrix admin room id"
+    matrix_appservice_slack_control_room_id: "Your matrix admin room ID"
     ```
 
 3. Enable puppeting (optional, but recommended)
@@ -83,7 +83,7 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
 
     * Invite the bot user to both the Slack and Matrix channels you would like to bridge using `/invite @matrixbot` for Slack and `/invite @slackbot:MY.DOMAIN` for Matrix.
 
-    * Determine the "channel ID" that Slack uses to identify the channel. You can see it when you open a given Slack channel in a browser. The URL reads like this: `https://app.slack.com/client/XXX/<the channel id>/details/`.
+    * Determine the "channel ID" that Slack uses to identify the channel. You can see it when you open a given Slack channel in a browser. The URL reads like this: `https://app.slack.com/client/XXX/<the channel ID>/details/`.
 
     * Issue a link command in the administration control room with these collected values as arguments:
 
@@ -123,12 +123,12 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
 
 * Linking: "Room is now pending-name"
 
-  This typically means that you haven't used the correct Slack channel id. Unlink the room and recheck 'Determine the "channel ID"' from above.
+  This typically means that you haven't used the correct Slack channel ID. Unlink the room and recheck 'Determine the "channel ID"' from above.
 
 * Messages work from M to S, but not the other way around
 
   Check you logs, if they say something like
 
-  `WARN SlackEventHandler Ignoring message from unrecognised Slack channel id : %s (%s) <the channel id> <some other id>`
+  `WARN SlackEventHandler Ignoring message from unrecognised Slack channel ID : %s (%s) <the channel ID> <some other ID>`
 
   then unlink your room, reinvite the bot and re-link it again. This may particularly hit you, if you tried to unsuccessfully link your room multiple times without unlinking it after each failed attempt.

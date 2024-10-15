@@ -54,7 +54,7 @@ The playbook can automatically create users, but it cannot automatically obtain 
 2. [Obtain an access token](obtaining-access-tokens.md) for the bot's user account
 3. Invite the bot to a room where you'd like to alerts to be delivered
 4. Log in as the bot using any Matrix client of your choosing, accept the room invitation from the bot's account and log out
-5. (Optionally) Adjust `matrix_alertmanager_receiver_config_matrix_room_mapping` to create a mapping between the new room and its id
+5. (Optionally) Adjust `matrix_alertmanager_receiver_config_matrix_room_mapping` to create a mapping between the new room and its ID
 
 Steps 1 and 2 above only need to be done once, while preparing your [configuration](#configuration).
 

@@ -16,7 +16,7 @@ UVS can be used to verify two claims:
 * (A) Whether a given OpenID token is valid for a given server and
 * (B) whether a user is member of a given room and the corresponding PowerLevel
 
-Verifying an OpenID token id done by finding the corresponding Homeserver via  '.well-known/matrix/server' for the given domain.
+Verifying an OpenID token ID done by finding the corresponding Homeserver via  '.well-known/matrix/server' for the given domain.
 The configured `matrix_user_verification_service_uvs_homeserver_url` does **not** factor into this.
 By default, this playbook only checks against `matrix_server_fqn_matrix`.
 Therefore, the request will be made against the public openid API for `matrix_server_fqn_matrix`.

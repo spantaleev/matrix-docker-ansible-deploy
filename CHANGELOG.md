@@ -3478,7 +3478,7 @@ By default, public registration is forbidden.
 
 You can also make people automatically get auto-joined to rooms (controlled via `matrix_synapse_auto_join_rooms`).
 
-## Support for changing the welcome user id (welcome bot)
+## Support for changing the welcome user ID (welcome bot)
 
 By default, `@riot-bot:matrix.org` is used to welcome newly registered users.
 This can be changed to something else (or disabled) via the new `matrix_riot_web_welcome_user_id` variable.
