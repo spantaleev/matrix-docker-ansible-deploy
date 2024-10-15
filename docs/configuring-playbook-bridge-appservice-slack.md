@@ -10,9 +10,8 @@ See the project's [documentation](https://github.com/matrix-org/matrix-appservic
 
 loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Setup)
 
-1. Create a new Matrix room to act as the administration control room. Note its internal room ID. This can
-be done in Element by making a message, opening the options for that message and choosing "view source". The
-room ID will be displayed near the top.
+1. Create a new Matrix room to act as the administration control room. Note its internal room ID. This can be done in Element by making a message, opening the options for that message and choosing "view source". The room ID will be displayed near the top.
+
 2. Enable the bridge with the following configuration in your `vars.yml` file:
 
     ```yaml
@@ -37,6 +36,7 @@ room ID will be displayed near the top.
    See https://matrix-appservice-slack.readthedocs.io/en/latest/team_sync/
 
 4. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
+
 5. Invite the bridge bot user into the admin room:
 
     ```
@@ -119,16 +119,16 @@ room ID will be displayed near the top.
 
 ## Troubleshooting
 
-* as always, check the logs:
-`journalctl -fu matrix-appservice-slack`
+* as always, check the logs: `journalctl -fu matrix-appservice-slack`
 
 * linking: "Room is now pending-name"
+
   This typically means that you haven't used the correct slack channel id. Unlink the room and recheck 'Determine the "channel ID"' from above.
 
 * Messages work from M to S, but not the other way around
+
   Check you logs, if they say something like
 
   `WARN SlackEventHandler Ignoring message from unrecognised slack channel id : %s (%s) <the channel id> <some other id>`
 
-  then unlink your room, reinvite the bot and re-link it again. This may particularly hit you, if you tried to unsuccessfully link
-  your room multiple times without unlinking it after each failed attempt.
+  then unlink your room, reinvite the bot and re-link it again. This may particularly hit you, if you tried to unsuccessfully link your room multiple times without unlinking it after each failed attempt.
