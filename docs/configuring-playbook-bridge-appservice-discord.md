@@ -28,7 +28,7 @@ matrix_appservice_discord_bot_token: "YOUR DISCORD APP BOT TOKEN"
 matrix_synapse_configuration_extension_yaml: |
   use_appservice_legacy_authorization: true
 ```
-*Note*: This deprecated method is considered insecure.
+**Note**: This deprecated method is considered insecure.
 
 6. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
 
@@ -42,14 +42,14 @@ Self-service bridging allows you to bridge specific and existing Matrix rooms to
 matrix_appservice_discord_bridge_enableSelfServiceBridging: true
 ```
 
-_Note: If self-service bridging is not enabled, `!discord help` commands will return no results._
+**Note**: If self-service bridging is not enabled, `!discord help` commands will return no results.
 
 Once self-service is enabled:
 
 1. Start a chat with `@_discord_bot:<YOUR_DOMAIN>` and say `!discord help bridge`.
 2. Follow the instructions in the help output message. If the bot is not already in the Discord server, follow the provided invite link. This may require you to be a administrator of the Discord server.
 
-_Note: Encrypted Matrix rooms are not supported as of writing._
+**Note**: Encrypted Matrix rooms are not supported as of writing.
 
 On the Discord side, you can say `!matrix help` to get a list of available commands to manage the bridge and Matrix users.
 

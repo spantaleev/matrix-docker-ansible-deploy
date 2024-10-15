@@ -65,7 +65,7 @@ You'll need an Amazon S3 bucket and some IAM user credentials (access key + secr
 }
 ```
 
-**NOTE**: This policy needs to be attached to an IAM user created from the **Security Credentials** menu. This is not a **Bucket Policy**.
+**Note**: This policy needs to be attached to an IAM user created from the **Security Credentials** menu. This is not a **Bucket Policy**.
 
 
 ## Backblaze B2

@@ -79,7 +79,7 @@ To use the bot, invite the `@bot.buscarron:DOMAIN` to the room you specified in 
 </form>
 ```
 
-**NOTE**: to fight against spam, Buscarron is **very aggressive when it comes to banning** and will ban you if:
+**Note**: to fight against spam, Buscarron is **very aggressive when it comes to banning** and will ban you if:
 
 - if you hit the homepage (HTTP `GET` request to `/`)
 - if you submit a form to the wrong URL (`POST` request to `/non-existing-form`)

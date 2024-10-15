@@ -40,7 +40,7 @@ If you're fine with such an open Jitsi instance, please skip to [Apply changes](
 If you would like to control who is allowed to open meetings on your new Jitsi instance, then please follow the following steps to enable Jitsi's authentication and optionally guests mode.
 Currently, there are three supported authentication modes: 'internal' (default), 'matrix' and 'ldap'.
 
-**Note:** Authentication is not tested via the playbook's self-checks.
+**Note**: Authentication is not tested via the playbook's self-checks.
 We therefore recommend that you manually verify if authentication is required by jitsi.
 For this, try to manually create a conference on jitsi.DOMAIN in your browser.
 

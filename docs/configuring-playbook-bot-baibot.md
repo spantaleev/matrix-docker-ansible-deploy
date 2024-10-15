@@ -357,7 +357,7 @@ You can configure the **initial values** for these via Ansible, via the `matrix_
 Example **additional** `vars.yml` configuration:
 
 ```yml
-# NOTE: these are initial defaults for the bot's global configuration.
+# Note: these are initial defaults for the bot's global configuration.
 # As such, changing any of these values subsequently has no effect on the bot's behavior.
 # Once initially configured, the global configuration is managed via bot commands, not via Ansible.
 

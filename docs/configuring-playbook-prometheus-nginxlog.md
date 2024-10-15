@@ -6,7 +6,7 @@ This adds [prometheus-nginxlog-exporter](https://github.com/martin-helmich/prome
 
 It will collect access logs from various nginx reverse-proxies which may be used internally (e.g. `matrix-synapse-reverse-proxy-companion`, if Synapse workers are enabled) and will make them available at a Prometheus-compatible `/metrics` endpoint.
 
-**NOTE**: nginx is only used internally by this Ansible playbook. With Traefik being our default reverse-proxy, collecting nginx metrics is less relevant.
+**Note**: nginx is only used internally by this Ansible playbook. With Traefik being our default reverse-proxy, collecting nginx metrics is less relevant.
 
 To make use of this, you need to install [Prometheus](./configuring-playbook-prometheus-grafana.md) either via the playbook or externally. When using an external Prometheus, configuration adjustments are necessary - see [Save metrics on an external Prometheus server](#save-metrics-on-an-external-prometheus-server).
 

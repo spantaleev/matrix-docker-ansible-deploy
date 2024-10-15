@@ -73,7 +73,7 @@ Note that the bot's domain is your server's domain **without the `matrix.` prefi
 
     - files:write:user
 
-    Note: In order to make Slack files visible to matrix users, this bridge will make Slack files visible to anyone with the url (including files in private channels). This is different than the current behavior in Slack, which only allows authenticated access to media posted in private channels. See MSC701 for details.
+    **Note**: In order to make Slack files visible to matrix users, this bridge will make Slack files visible to anyone with the url (including files in private channels). This is different than the current behavior in Slack, which only allows authenticated access to media posted in private channels. See MSC701 for details.
 
 9. Click on Install App and Install App to Workspace. Note the access tokens shown. You will need the Bot User OAuth Access Token and if you want to bridge files, the OAuth Access Token whenever you link a room.
 
