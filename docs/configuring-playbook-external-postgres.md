@@ -1,7 +1,6 @@
 # Using an external PostgreSQL server (optional)
 
-By default, this playbook would set up a PostgreSQL database server on your machine, running in a Docker container.
-If that's alright, you can skip this.
+By default, this playbook would set up a PostgreSQL database server on your machine, running in a Docker container. If that's okay, you can skip this document.
 
 **Note**: using **an external Postgres server is currently [not very seamless](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1682#issuecomment-1061461683) when it comes to enabling various other playbook services** - you will need to create a new database/credentials for each service and to point each service to its corresponding database using custom `vars.yml` configuration. **For the best experience with the playbook, stick to using the integrated Postgres server**.
 

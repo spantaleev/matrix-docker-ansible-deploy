@@ -1,7 +1,6 @@
 # Configuring Synapse (optional)
 
-By default, this playbook configures the [Synapse](https://github.com/element-hq/synapse) Matrix server, so that it works for the general case.
-If that's enough for you, you can skip this document.
+By default, this playbook configures the [Synapse](https://github.com/element-hq/synapse) Matrix server, so that it works for the general case. If that's okay, you can skip this document.
 
 The playbook provides lots of customization variables you could use to change Synapse's settings.
 

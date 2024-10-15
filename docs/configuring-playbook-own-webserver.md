@@ -1,8 +1,6 @@
 # Using your own webserver, instead of this playbook's Traefik reverse-proxy (optional, advanced)
 
-By default, this playbook installs its own [Traefik](https://traefik.io/) reverse-proxy server (in a Docker container) which listens on ports 80 and 443.
-
-If that's alright, you can skip this.
+By default, this playbook installs its own [Traefik](https://traefik.io/) reverse-proxy server (in a Docker container) which listens on ports 80 and 443. If that's okay, you can skip this document.
 
 ## Traefik
 
