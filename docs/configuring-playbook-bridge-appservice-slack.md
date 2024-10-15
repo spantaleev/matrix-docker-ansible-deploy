@@ -119,9 +119,9 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
 
 ## Troubleshooting
 
-* as always, check the logs: `journalctl -fu matrix-appservice-slack`
+* As always, check the logs: `journalctl -fu matrix-appservice-slack`
 
-* linking: "Room is now pending-name"
+* Linking: "Room is now pending-name"
 
   This typically means that you haven't used the correct slack channel id. Unlink the room and recheck 'Determine the "channel ID"' from above.
 
