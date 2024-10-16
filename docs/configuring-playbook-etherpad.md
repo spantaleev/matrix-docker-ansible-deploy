@@ -68,6 +68,7 @@ To integrate a standalone etherpad in a room, create your pad by visiting `https
 ### Set Dimension default to the self-hosted Etherpad (optional)
 
 If you decided to install [Dimension integration manager](configuring-playbook-dimension.md) alongside Etherpad, the Dimension administrator users can configure the default URL template.
+
 The Dimension configuration menu can be accessed with the sprocket icon as you begin to add a widget to a room in Element. There you will find the Etherpad Widget Configuration action beneath the _Widgets_ tab.
 
 
@@ -81,4 +82,5 @@ Example: `https://etherpad.<your-domain>/p/$roomId_$padName?showChat=false`
 ## Known issues
 
 If your Etherpad widget fails to load, this might be due to Dimension generating a Pad name so long, the Etherpad app rejects it.
+
 `$roomId_$padName` can end up being longer than 50 characters. You can avoid having this problem by altering the template so it only contains the three word random identifier `$padName`.
