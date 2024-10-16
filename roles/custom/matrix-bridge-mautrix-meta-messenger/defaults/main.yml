@@ -59,9 +59,8 @@ matrix_mautrix_meta_messenger_container_labels_metrics_middleware_basic_auth_use
 matrix_mautrix_meta_messenger_container_labels_bridgev2_enabled: "{{ matrix_mautrix_meta_messenger_appservice_bridgev2_enabled }}"
 matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_hostname: ""
 # Following two variables should be RegEx-escaped, see https://doc.traefik.io/traefik/middlewares/http/replacepathregex/
-matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_path_external: "/_matrix/{{ matrix_mautrix_meta_messenger_identifier }}/provision"
-matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_path_internal: "/_matrix/provision"
-matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_rule: "Host(`{{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_hostname }}`) && PathPrefix(`{{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_path_external }}`)"
+matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_stripprefix: "/_matrix/{{ matrix_mautrix_meta_messenger_identifier }}"
+matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_rule: "Host(`{{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_hostname }}`) && PathPrefix(`{{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_stripprefix }}`)"
 matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_priority: 0
 matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_entrypoints: "{{ matrix_mautrix_meta_messenger_container_labels_traefik_entrypoints }}"
 matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_tls: "{{ matrix_mautrix_meta_messenger_container_labels_metrics_traefik_entrypoints != 'web' }}"

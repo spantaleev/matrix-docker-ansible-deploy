@@ -50,9 +50,8 @@ traefik.http.routers.{{ matrix_mautrix_meta_messenger_identifier }}-metrics.tls.
 #                                                          #
 ############################################################
 
-traefik.http.middlewares.{{ matrix_mautrix_meta_messenger_identifier }}-bridgev2-replacepathregex.replacepathregex.regex=^{{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_path_external }}/(.*)
-traefik.http.middlewares.{{ matrix_mautrix_meta_messenger_identifier }}-bridgev2-replacepathregex.replacepathregex.replacement={{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_path_internal }}/$1
-traefik.http.routers.{{ matrix_mautrix_meta_messenger_identifier }}-bridgev2.middlewares={{ matrix_mautrix_meta_messenger_identifier }}-bridgev2-replacepathregex
+traefik.http.middlewares.{{ matrix_mautrix_meta_messenger_identifier }}-bridgev2-stripprefix.stripprefix.prefixes={{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_stripprefix }}
+traefik.http.routers.{{ matrix_mautrix_meta_messenger_identifier }}-bridgev2.middlewares={{ matrix_mautrix_meta_messenger_identifier }}-bridgev2-stripprefix
 
 traefik.http.routers.{{ matrix_mautrix_meta_messenger_identifier }}-bridgev2.rule={{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_rule }}
 
