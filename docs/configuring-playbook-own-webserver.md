@@ -32,7 +32,7 @@ Traefik will manage SSL certificates for all services seamlessly.
 ```yaml
 matrix_playbook_reverse_proxy_type: other-traefik-container
 
-# Uncomment and adjust if your Traefik container is on another network
+# Uncomment and adjust this part if your Traefik container is on another network
 # matrix_playbook_reverse_proxy_container_network: traefik
 
 # Adjust to point to your Traefik container
@@ -40,7 +40,7 @@ matrix_playbook_reverse_proxy_hostname: name-of-your-traefik-container
 
 traefik_certs_dumper_ssl_dir_path: "/path/to/your/traefiks/acme.json/directory"
 
-# Uncomment and tweak the variable below if the name of your federation entrypoint is different
+# Uncomment and adjust the variable below if the name of your federation entrypoint is different
 # than the default value (matrix-federation).
 # matrix_federation_traefik_entrypoint_name: matrix-federation
 ```

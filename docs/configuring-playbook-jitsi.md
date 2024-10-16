@@ -24,10 +24,10 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 ```yaml
 jitsi_enabled: true
 
-# Uncomment and adjust if you need to use another hostname
+# Uncomment and adjust this part if you'd like to use a hostname different than the default
 # jitsi_hostname: "jitsi.{{ matrix_domain }}"
 
-# Uncomment and possible adjust if you'd like to host under a subpath
+# Uncomment and possible adjust this part if you'd like to host under a subpath
 # jitsi_path_prefix: /jitsi
 ```
 

@@ -186,7 +186,7 @@ matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_m
 # or you can adjust it below only for the Groq agent.
 # matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
 
-# Uncomment and adjust if you're not happy with these speech-to-text defaults:
+# Uncomment and adjust this part if you're not happy with these speech-to-text defaults:
 #
 # matrix_bot_baibot_config_agents_static_definitions_groq_config_speech_to_text_enabled: true
 # matrix_bot_baibot_config_agents_static_definitions_groq_config_speech_to_text_model_id: whisper-large-v3
@@ -217,7 +217,7 @@ matrix_bot_baibot_config_agents_static_definitions_mistral_config_api_key: "YOUR
 # or you can adjust it below only for the Mistral agent.
 # matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
 
-# Uncomment and adjust if you're not happy with these defaults:
+# Uncomment and adjust this part if you're not happy with these defaults:
 # matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_model_id: mistral-large-latest
 
 # See `defaults/main.yml` in the baibot role for more configuration options.
