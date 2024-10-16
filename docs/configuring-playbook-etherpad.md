@@ -35,9 +35,9 @@ If you've decided to reuse the `matrix.` domain, you won't need to do any extra 
 ```yaml
 etherpad_enabled: true
 
-# Uncomment below to enable the admin web UI
-# etherpad_admin_username: admin
-# etherpad_admin_password: some-password
+# Uncomment and adjust if you'd like to enable the admin web UI
+# etherpad_admin_username: YOUR_USERNAME_HERE
+# etherpad_admin_password: YOUR_PASSWORD_HERE
 ```
 
 ## Installing
@@ -62,12 +62,13 @@ Then from the plugin manager page (`https://etherpad.<your-domain>/admin/plugins
 
 This is how it works in Element, it might work quite similar with other clients:
 
-To integrate a standalone etherpad in a room, create your pad by visiting `https://etherpad.DOMAIN`. When the pad opens, copy the URL and send a command like this to the room: `/addwidget URL`. You will then find your integrated Etherpad within the right sidebar in the `Widgets` section.
+To integrate a standalone Etherpad in a room, create your pad by visiting `https://etherpad.DOMAIN`. When the pad opens, copy the URL and send a command like this to the room: `/addwidget URL`. You will then find your integrated Etherpad within the right sidebar in the `Widgets` section.
 
 
 ### Set Dimension default to the self-hosted Etherpad (optional)
 
 If you decided to install [Dimension integration manager](configuring-playbook-dimension.md) alongside Etherpad, the Dimension administrator users can configure the default URL template.
+
 The Dimension configuration menu can be accessed with the sprocket icon as you begin to add a widget to a room in Element. There you will find the Etherpad Widget Configuration action beneath the _Widgets_ tab.
 
 
@@ -81,4 +82,5 @@ Example: `https://etherpad.<your-domain>/p/$roomId_$padName?showChat=false`
 ## Known issues
 
 If your Etherpad widget fails to load, this might be due to Dimension generating a Pad name so long, the Etherpad app rejects it.
+
 `$roomId_$padName` can end up being longer than 50 characters. You can avoid having this problem by altering the template so it only contains the three word random identifier `$padName`.
