@@ -57,9 +57,9 @@ However, if your service does not run on a container or runs on another machine,
 
 ## Reverse-proxying a remote HTTP/HTTPS service behind Traefik
 
-If you want to host another webserver would be reachable via `my-fancy-website.mydomain.com` from the internet and via `https://<internal webserver IP address>:<internal port>` from inside your network, you can make the playbook's integrated Traefik instance reverse-proxy the traffic to the correct host.
+If you want to host another webserver would be reachable via `my-fancy-website.example.com` from the internet and via `https://<internal webserver IP address>:<internal port>` from inside your network, you can make the playbook's integrated Traefik instance reverse-proxy the traffic to the correct host.
 
-Prerequisites: DNS and routing for the domain `my-fancy-website.mydomain.com` need to be set up correctly. In this case, you'd be pointing the domain name to your Matrix server - `my-fancy-website.mydomain.com` would be a CNAME going to `matrix.example.com`.
+Prerequisites: DNS and routing for the domain `my-fancy-website.example.com` need to be set up correctly. In this case, you'd be pointing the domain name to your Matrix server - `my-fancy-website.example.com` would be a CNAME going to `matrix.example.com`.
 
 First, we have to adjust the static configuration of Traefik, so that we can add additional configuration files:
 
@@ -99,7 +99,7 @@ aux_file_definitions:
       http:
         routers:
           webserver-router:
-            rule: Host(`my_fancy_website.mydomain.com`)
+            rule: Host(`my_fancy_website.example.com`)
             service: webserver-service
             tls:
               certResolver: default
@@ -122,7 +122,7 @@ aux_file_definitions:
       tcp:
         routers:
           webserver-router:
-            rule: Host(`my_fancy_website.mydomain.com`)
+            rule: Host(`my_fancy_website.example.com`)
             service: webserver-service
             tls:
               passthrough: true
