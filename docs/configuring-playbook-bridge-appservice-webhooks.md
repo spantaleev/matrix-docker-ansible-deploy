@@ -39,7 +39,7 @@ matrix_synapse_configuration_extension_yaml: |
 
 6. Invite the bridge bot user to your room:
 
-    - either with `/invite @_webhook:<domain.name>` (**Note**: Make sure you have administration permissions in your room)
+    - either with `/invite @_webhook:example.com` (**Note**: Make sure you have administration permissions in your room)
 
     - or simply add the bridge bot to a private channel (personal channels imply you being an administrator)
 
