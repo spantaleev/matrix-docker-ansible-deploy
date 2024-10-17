@@ -10,7 +10,7 @@ See the project's [README](https://github.com/hifi/heisenbridge/blob/master/READ
 
 Below are the common configuration options that you may want to set, exhaustive list is in [the bridge's defaults var file](../roles/custom/matrix-bridge-heisenbridge/defaults/main.yml).
 
-At a minimum, you only need to enable the bridge to get it up and running (`inventory/host_vars/matrix.DOMAIN/vars.yml`):
+At a minimum, you only need to enable the bridge to get it up and running (`inventory/host_vars/matrix.example.com/vars.yml`):
 
 ```yaml
 matrix_heisenbridge_enabled: true
@@ -22,7 +22,7 @@ matrix_heisenbridge_owner: "@you:your-homeserver"
 matrix_heisenbridge_identd_enabled: true
 ```
 
-By default, Heisenbrdige would be exposed on the Matrix domain (`matrix.DOMAIN`, as specified in `matrix_server_fqn_matrix`) under the `/heisenbridge` path prefix. It would handle media requests there (see the [release notes for Heisenbridge v1.15.0](https://github.com/hifi/heisenbridge/releases/tag/v1.15.0)).
+By default, Heisenbrdige would be exposed on the Matrix domain (`matrix.example.com`, as specified in `matrix_server_fqn_matrix`) under the `/heisenbridge` path prefix. It would handle media requests there (see the [release notes for Heisenbridge v1.15.0](https://github.com/hifi/heisenbridge/releases/tag/v1.15.0)).
 
 That's it! A registration file is automatically generated during the setup phase.
 

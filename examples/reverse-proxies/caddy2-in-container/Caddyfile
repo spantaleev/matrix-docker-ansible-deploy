@@ -1,4 +1,4 @@
-matrix.example.tld {
+matrix.example.com {
 
   handle {
         encode zstd gzip
@@ -14,7 +14,7 @@ matrix.example.tld {
 }
 
 # Put `https://` at the beginning to enforce https protocol as 8448 is not the default https port (which is 443) 
-https://matrix.example.tld:8448 {
+https://matrix.example.com:8448 {
     handle {
         encode zstd gzip
 
@@ -29,14 +29,14 @@ https://matrix.example.tld:8448 {
 }
 
 
-example.tld {
+example.com {
 # Uncomment this if you are following "(Option 3): Setting up reverse-proxying of the well-known files from the base domain's server to the Matrix server" of https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-well-known.md#option-3-setting-up-reverse-proxying-of-the-well-known-files-from-the-base-domains-server-to-the-matrix-server
     @wellknown {
         path /.well-known/matrix/*
     }
 
     handle @wellknown {
-        reverse_proxy https://matrix.example.tld {
+        reverse_proxy https://matrix.example.com {
             header_up Host {http.reverse_proxy.upstream.hostport}
         }
     }

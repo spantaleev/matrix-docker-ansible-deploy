@@ -13,7 +13,7 @@ Make an app on [developer.twitter.com](https://developer.twitter.com/en/apps).
 
 ## Adjusting the playbook configuration
 
-To enable the [Twitter](https://twitter.com) bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the [Twitter](https://twitter.com) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mx_puppet_twitter_enabled: true
@@ -31,7 +31,7 @@ After configuring the playbook, run the [installation](installing.md) command: `
 ## Usage
 
 Once the bot is enabled you need to start a chat with `Twitter Puppet Bridge` with
-the handle `@_twitterpuppet_bot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base
+the handle `@_twitterpuppet_bot:example.com` (where `example.com` is your base
 domain, not the `matrix.` domain).
 
 To log in, use `link` and click the link.

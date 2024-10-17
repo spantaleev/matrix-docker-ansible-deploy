@@ -31,9 +31,9 @@ curl -XPOST -d '{
     "password": "PASSWORD",
     "type": "m.login.password",
     "device_id": "YOURDEVICEID"
-}' 'https://matrix.YOURDOMAIN/_matrix/client/r0/login'
+}' 'https://matrix.example.com/_matrix/client/r0/login'
 ```
-Change `USERNAME`, `PASSWORD`, and `YOURDOMAIN` accordingly.
+Change `USERNAME`, `PASSWORD`, and `example.com` accordingly.
 
 `YOURDEVICEID` is optional and can be used to more easily identify the session later. When omitted (mind the commas in the JSON payload if you'll be omitting it), a random device ID will be generated.
 
@@ -41,9 +41,9 @@ Your response will look like this (prettified):
 
 ```
 {
-    "user_id":"@USERNAME:YOURDOMAIN",
+    "user_id":"@USERNAME:example.com",
     "access_token":">>>YOUR_ACCESS_TOKEN_IS_HERE<<<",
-    "home_server":"YOURDOMAIN",
+    "home_server":"example.com",
     "device_id":"YOURDEVICEID"
 }
 ```

@@ -8,7 +8,7 @@ This role exposes Pantalaimon's API only within the container network, so bots a
 
 ## 1. Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 matrix_pantalaimon_enabled: true

@@ -6,7 +6,7 @@ See the project page to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 
-To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_wechat_enabled: true
@@ -18,6 +18,6 @@ After configuring the playbook, run the [installation](installing.md) command: `
 
 ## Usage
 
-Once the bridge is installed, start a chat with `@wechatbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+Once the bridge is installed, start a chat with `@wechatbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 Send `help` to the bot to see the available commands.

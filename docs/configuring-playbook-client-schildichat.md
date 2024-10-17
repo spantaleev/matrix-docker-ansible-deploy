@@ -8,11 +8,11 @@ SchildiChat can be installed alongside or instead of Element.
 
 ## DNS
 
-You need to add a `schildichat.DOMAIN` DNS record so that SchildiChat can be accessed.
-By default SchildiChat will use https://schildichat.DOMAIN so you will need to create an CNAME record
+You need to add a `schildichat.example.com` DNS record so that SchildiChat can be accessed.
+By default SchildiChat will use https://schildichat.example.com so you will need to create an CNAME record
 for `schildichat`. See [Configuring DNS](configuring-dns.md).
 
-If you would like to use a different domain, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (changing it to use your preferred domain):
+If you would like to use a different domain, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (changing it to use your preferred domain):
 
 ```yaml
 matrix_server_fqn_schildichat: "sc.{{ matrix_domain }}"
@@ -20,7 +20,7 @@ matrix_server_fqn_schildichat: "sc.{{ matrix_domain }}"
 
 ## Adjusting the playbook configuration
 
-To enable SchildiChat, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable SchildiChat, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_client_schildichat_enabled: true
@@ -30,7 +30,7 @@ The playbook provides some customization variables you could use to change Schil
 
 Their defaults are defined in [`roles/custom/matrix-client-schildichat/defaults/main.yml`](../roles/custom/matrix-client-schildichat/defaults/main.yml) and they ultimately end up in the generated `/matrix/schildichat/config.json` file (on the server). This file is generated from the [`roles/custom/matrix-client-schildichat/templates/config.json.j2`](../roles/custom/matrix-client-schildichat/templates/config.json.j2) template.
 
-**If there's an existing variable** which controls a setting you wish to change, you can simply define that variable in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) and [re-run the playbook](installing.md) to apply the changes.
+**If there's an existing variable** which controls a setting you wish to change, you can simply define that variable in your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) and [re-run the playbook](installing.md) to apply the changes.
 
 Alternatively, **if there is no pre-defined variable** for a SchildiChat setting you wish to change:
 

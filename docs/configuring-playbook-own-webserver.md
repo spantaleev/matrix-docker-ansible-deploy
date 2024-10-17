@@ -14,7 +14,7 @@ There are 2 ways to use Traefik with this playbook, as described below.
 
 ### Traefik managed by the playbook
 
-To have the playbook install and use Traefik, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To have the playbook install and use Traefik, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
@@ -192,7 +192,7 @@ Your reverse-proxy configuration needs to send traffic to these ports. The [`exa
 It's important that these webservers proxy-pass requests to the correct place and also set the `Host` HTTP header appropriately.
 If you don't pass the `Host` header correctly, you would get a 404 not found error from Traefik.
 
-To put it another way, `curl http://127.0.0.1:81` would give you a 404, but `curl -H 'Host: matrix.DOMAIN' http://127.0.0.1:81` should work.
+To put it another way, `curl http://127.0.0.1:81` would give you a 404, but `curl -H 'Host: matrix.example.com' http://127.0.0.1:81` should work.
 
 
 ### Using no reverse-proxy on the Matrix side at all

@@ -7,12 +7,12 @@ This is useful if you're developing your own applications and would like to coll
 
 ## Decide on a domain and path
 
-By default, Rageshake is configured to use its own dedicated domain (`rageshake.DOMAIN`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+By default, Rageshake is configured to use its own dedicated domain (`rageshake.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
 
 You can override the domain and path like this:
 
 ```yaml
-# Switch to the domain used for Matrix services (`matrix.DOMAIN`),
+# Switch to the domain used for Matrix services (`matrix.example.com`),
 # so we won't need to add additional DNS records for Rageshake.
 matrix_rageshake_hostname: "{{ matrix_server_fqn_matrix }}"
 
@@ -30,7 +30,7 @@ If you've decided to reuse the `matrix.` domain, you won't need to do any extra 
 
 ## Enabling the Rageshake service
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 matrix_rageshake_enabled: true

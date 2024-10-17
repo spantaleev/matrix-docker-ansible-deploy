@@ -13,12 +13,12 @@ This optional playbook component is only useful to people who develop/build thei
 
 ## Decide on a domain and path
 
-By default, Sygnal is configured to use its own dedicated domain (`sygnal.DOMAIN`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+By default, Sygnal is configured to use its own dedicated domain (`sygnal.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
 
 You can override the domain and path like this:
 
 ```yaml
-# Switch to the domain used for Matrix services (`matrix.DOMAIN`),
+# Switch to the domain used for Matrix services (`matrix.example.com`),
 # so we won't need to add additional DNS records for Sygnal.
 matrix_sygnal_hostname: "{{ matrix_server_fqn_matrix }}"
 
@@ -36,7 +36,7 @@ If you've decided to reuse the `matrix.` domain, you won't need to do any extra 
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 matrix_sygnal_enabled: true
@@ -87,6 +87,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-To make use of your Sygnal installation, you'd need to build your own Matrix client application, which uses the same API keys (for [GCM/FCM](https://firebase.google.com/docs/cloud-messaging/)) and certificates (for [APNS](https://developer.apple.com/notifications/)) and is to your Sygnal URL endpoint (e.g. `https://sygnal.DOMAIN`).
+To make use of your Sygnal installation, you'd need to build your own Matrix client application, which uses the same API keys (for [GCM/FCM](https://firebase.google.com/docs/cloud-messaging/)) and certificates (for [APNS](https://developer.apple.com/notifications/)) and is to your Sygnal URL endpoint (e.g. `https://sygnal.example.com`).
 
 Refer to Sygnal's [Notes for application developers](https://github.com/matrix-org/sygnal/blob/master/docs/applications.md) document.

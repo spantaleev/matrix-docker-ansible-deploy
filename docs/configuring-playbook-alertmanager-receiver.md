@@ -10,7 +10,7 @@ This service is meant to be used with an external [Alertmanager](https://prometh
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yml
 matrix_alertmanager_receiver_enabled: true
@@ -33,10 +33,10 @@ matrix_alertmanager_receiver_config_matrix_access_token: ''
 # Optionally, configure some mappings (URL-friendly room name -> actual Matrix room ID).
 #
 # If you don't configure mappings, you can still deliver alerts using URLs like this:
-# https://matrix.DOMAIN/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/!some-room-id:example.com
+# https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/!some-room-id:example.com
 #
 # If a mapping like the one below is configured, you can deliver alerts using friendlier URLs like this:
-# https://matrix.DOMAIN/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/some-room-name
+# https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/some-room-name
 matrix_alertmanager_receiver_config_matrix_room_mapping:
   some-room-name: "!some-room-id:{{ matrix_domain }}"
 ```
@@ -89,6 +89,6 @@ route:
     - receiver: matrix
 ```
 
-.. where `URL_HERE` looks like `https://matrix.DOMAIN/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/some-room-name` or `https://matrix.DOMAIN/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/!some-room-id:DOMAIN`.
+.. where `URL_HERE` looks like `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/some-room-name` or `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/!some-room-id:example.com`.
 
 This bot does **not** accept room invitations automatically (like many other bots do). To deliver messages to rooms, **the bot must be joined to all rooms manually** - see Step 5 of the [Account and room preparation](#account-and-room-preparation) section.

@@ -9,7 +9,7 @@ See the project's [documentation](https://github.com/etkecc/honoroit#how-it-look
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_honoroit_enabled: true
@@ -25,7 +25,7 @@ matrix_bot_honoroit_enabled: true
 matrix_bot_honoroit_password: PASSWORD_FOR_THE_BOT
 
 # Adjust this to your room ID
-matrix_bot_honoroit_roomid: "!yourRoomID:DOMAIN"
+matrix_bot_honoroit_roomid: "!yourRoomID:{{ matrix_domain }}"
 ```
 
 
@@ -46,7 +46,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bot, invite the `@honoroit:DOMAIN` to the room you specified in config, after that any matrix user can send a message to the `@honoroit:DOMAIN` to start a new thread in that room.
+To use the bot, invite the `@honoroit:example.com` to the room you specified in config, after that any matrix user can send a message to the `@honoroit:example.com` to start a new thread in that room.
 
 Send `!ho help` to the room to see the bot's help menu for additional commands.
 

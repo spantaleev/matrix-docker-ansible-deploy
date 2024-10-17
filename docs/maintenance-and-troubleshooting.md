@@ -28,7 +28,7 @@ Because the [Synapse](https://github.com/element-hq/synapse) Matrix server is or
 
 If you'd like to debug an issue or [report a Synapse bug](https://github.com/matrix-org/synapse/issues/new/choose) to the developers, it'd be better if you temporarily increasing the logging level to `INFO`.
 
-Example configuration (`inventory/host_vars/matrix.DOMAIN/vars.yml`):
+Example configuration (`inventory/host_vars/matrix.example.com/vars.yml`):
 
 ```yaml
 matrix_synapse_log_level: "INFO"

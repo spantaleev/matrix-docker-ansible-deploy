@@ -8,7 +8,7 @@ See the project's [documentation](https://github.com/mautrix/facebook/blob/maste
 
 ## Adjusting the playbook configuration
 
-To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mautrix_facebook_enabled: true
@@ -76,7 +76,7 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 ## Usage
 
-You then need to start a chat with `@facebookbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+You then need to start a chat with `@facebookbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 Send `login YOUR_FACEBOOK_EMAIL_ADDRESS` to the bridge bot to enable bridging for your Facebook Messenger account. You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/facebook/authentication.html).
 
@@ -98,7 +98,7 @@ The easiest way to do this may be to use [sshuttle](https://sshuttle.readthedocs
 Example command for proxying your traffic through the Matrix server:
 
 ```
-sshuttle -r root@matrix.DOMAIN:22 0/0
+sshuttle -r root@matrix.example.com:22 0/0
 ```
 
 Once connected, you should be able to verify that you're browsing the web through the Matrix server's IP by checking [icanhazip](https://icanhazip.com/).

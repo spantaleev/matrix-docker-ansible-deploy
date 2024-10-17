@@ -9,7 +9,7 @@ implementation of a basic password registration.
 
 ## Quickstart
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_ldap_registration_proxy_enabled: true

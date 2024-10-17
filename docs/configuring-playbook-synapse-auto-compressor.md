@@ -9,7 +9,7 @@ See the project's [documentation](https://github.com/matrix-org/rust-synapse-com
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_synapse_auto_compressor_enabled: true

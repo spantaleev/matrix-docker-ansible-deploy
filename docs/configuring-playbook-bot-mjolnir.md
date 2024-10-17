@@ -41,9 +41,9 @@ Using your own account, create a new invite only room that you will use to manag
 
 If you make the management room encrypted (E2EE), then you MUST enable and use Pantalaimon (see below).
 
-Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!QvgVuKq0ha8glOLGMG:DOMAIN`.
+Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!QvgVuKq0ha8glOLGMG:example.com`.
 
-Finally invite the `@bot.mjolnir:DOMAIN` account you created earlier into the room.
+Finally invite the `@bot.mjolnir:example.com` account you created earlier into the room.
 
 
 ## 5. Adjusting the playbook configuration
@@ -54,7 +54,7 @@ Decide whether you want Mjolnir to be capable of operating in end-to-end encrypt
 
 When using Pantalaimon, Mjolnir will log in to its bot account itself through Pantalaimon, so configure its username and password.
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 # Enable Pantalaimon. See docs/configuring-playbook-pantalaimon.md
@@ -89,7 +89,7 @@ matrix_bot_mjolnir_raw_homeserver_url: "{{ matrix_addons_homeserver_client_api_u
 
 When NOT using Pantalaimon, Mjolnir does not log in by itself and you must give it an access token for its bot account.
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 You must replace `ACCESS_TOKEN_FROM_STEP_2_GOES_HERE` and `ROOM_ID_FROM_STEP_4_GOES_HERE` with the your own values.
 
@@ -103,7 +103,7 @@ matrix_bot_mjolnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 
 ## 6. Adding Mjolnir synapse antispam module (optional)
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 
 ```yaml
@@ -128,7 +128,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 You can refer to the upstream [documentation](https://github.com/matrix-org/mjolnir) for additional ways to use and configure Mjolnir. Check out their [quickstart guide](https://github.com/matrix-org/mjolnir#quickstart-guide) for some basic commands you can give to the bot.
 
-You can configure additional options by adding the `matrix_bot_mjolnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file.
+You can configure additional options by adding the `matrix_bot_mjolnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
 
 For example to change Mjolnir's `recordIgnoredInvites` option to `true` you would add the following to your `vars.yml` file.
 

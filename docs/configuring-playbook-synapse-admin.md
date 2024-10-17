@@ -9,7 +9,7 @@ See the project's [documentation](https://github.com/etkecc/synapse-admin) to le
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_synapse_admin_enabled: true
@@ -30,6 +30,6 @@ After configuring the playbook, run the [installation](installing.md) command: `
 
 ## Usage
 
-After installation, Synapse Admin will be accessible at: `https://matrix.DOMAIN/synapse-admin/`
+After installation, Synapse Admin will be accessible at: `https://matrix.example.com/synapse-admin/`
 
 To use Synapse Admin, you need to have [registered at least one administrator account](registering-users.md) on your server.

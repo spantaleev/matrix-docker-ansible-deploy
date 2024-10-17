@@ -6,7 +6,7 @@ The playbook provides lots of customization variables you could use to change Sy
 
 Their defaults are defined in [`roles/custom/matrix-synapse/defaults/main.yml`](../roles/custom/matrix-synapse/defaults/main.yml) and they ultimately end up in the generated `/matrix/synapse/config/homeserver.yaml` file (on the server). This file is generated from the [`roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2`](../roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2) template.
 
-**If there's an existing variable** which controls a setting you wish to change, you can simply define that variable in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) and [re-run the playbook](installing.md) to apply the changes.
+**If there's an existing variable** which controls a setting you wish to change, you can simply define that variable in your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) and [re-run the playbook](installing.md) to apply the changes.
 
 Alternatively, **if there is no pre-defined variable** for a Synapse setting you wish to change:
 
@@ -21,7 +21,7 @@ Alternatively, **if there is no pre-defined variable** for a Synapse setting you
 
 To have Synapse gracefully handle thousands of users, worker support should be enabled. It factors out some homeserver tasks and spreads the load of incoming client and server-to-server traffic between multiple processes. More information can be found in the [official Synapse workers documentation](https://github.com/element-hq/synapse/blob/master/docs/workers.md) and [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html).
 
-To enable Synapse worker support, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable Synapse worker support, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_synapse_workers_enabled: true
@@ -126,7 +126,7 @@ If template customization is enabled, the playbook will build a custom container
 
 Your custom templates need to live in a public or private git repository. This repository will be cloned during Synapse image customization (during the playbook run).
 
-To enable template customizations, use a configuration (`inventory/host_vars/matrix.DOMAIN/vars.yml`) like this:
+To enable template customizations, use a configuration (`inventory/host_vars/matrix.example.com/vars.yml`) like this:
 
 ```yaml
 # If you'd like to ensure that the customized image is built each time the playbook runs, enable this.

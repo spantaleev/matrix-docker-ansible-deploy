@@ -75,11 +75,11 @@ You [can't easily change which region (US, Europe) your Backblaze account stores
 
 After logging in to Backblaze:
 
-- create a new **private** bucket through its user interface (you can call it something like `matrix-DOMAIN-media-store`)
+- create a new **private** bucket through its user interface (you can call it something like `matrix-example-media-store`)
 - note the **Endpoint** for your bucket (something like `s3.us-west-002.backblazeb2.com`).
 - adjust its Lifecycle Rules to: Keep only the last version of the file
 - go to [App Keys](https://secure.backblaze.com/app_keys.htm) and use the **Add a New Application Key** to create a new one
-  - restrict it to the previously created bucket (e.g. `matrix-DOMAIN-media-store`)
+  - restrict it to the previously created bucket (e.g. `matrix-example-media-store`)
   - give it *Read & Write* access
 
 The `keyID` value is your **Access Key** and `applicationKey` is your **Secret Key**.

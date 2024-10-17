@@ -10,7 +10,7 @@ In short, it automatically accepts room invites. You can specify that only 1:1 r
 
 ## Configuration
 
-If you decide that you'd like to let this playbook install the [synapse-auto-invite-accept](https://github.com/matrix-org/synapse-auto-accept-invite module for you, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+If you decide that you'd like to let this playbook install the [synapse-auto-invite-accept](https://github.com/matrix-org/synapse-auto-accept-invite module for you, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_synapse_ext_synapse_auto_accept_invite_enabled: true

@@ -34,9 +34,9 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-usern
 /matrix/synapse/bin/register-user <your-username> <your-password> <admin access: 0 or 1>
 ```
 
-**Note**: `<your-username>` is just a plain username (like `john`), not your full `@<username>:<your-domain>` identifier.
+**Note**: `<your-username>` is just a plain username (like `john`), not your full `@<username>:example.com` identifier.
 
-**You can then log in with that user** via the Element service that this playbook has created for you at a URL like this: `https://element.<domain>/`.
+**You can then log in with that user** via the Element service that this playbook has created for you at a URL like this: `https://element.example.com/`.
 
 -----
 
@@ -71,13 +71,13 @@ If you're opening up registrations publicly like this, you might also wish to [c
 To change the admin privileges for a user, you need to run an SQL query like this against the `synapse` database:
 
 ```sql
-UPDATE users SET admin=ADMIN_VALUE WHERE name = '@USER:DOMAIN';
+UPDATE users SET admin=ADMIN_VALUE WHERE name = '@USER:example.com';
 ```
 
 where:
 
 - `ADMIN_VALUE` being either `0` (regular user) or `1` (admin)
-- `USER` and `DOMAIN` pointing to a valid user on your server
+- `USER` and `example.com` pointing to a valid user on your server
 
 If you're using the integrated Postgres server and not an [external Postgres server](configuring-playbook-external-postgres.md), you can launch a Postgres into the `synapse` database by:
 

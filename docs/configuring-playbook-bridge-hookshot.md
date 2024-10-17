@@ -31,7 +31,7 @@ Should the crypto store be corrupted, you can reset it by executing this Ansible
 
 ## Usage
 
-Create a room and invite the Hookshot bot (`@hookshot:DOMAIN`) to it.
+Create a room and invite the Hookshot bot (`@hookshot:example.com`) to it.
 
 Make sure the bot is able to send state events (usually the Moderator power level in clients).
 
@@ -92,7 +92,7 @@ Metrics are **only enabled by default** if the builtin [Prometheus](configuring-
 
 To explicitly enable metrics, use `matrix_hookshot_metrics_enabled: true`. This only exposes metrics over the container network, however.
 
-**To collect metrics from an external Prometheus server**, besides enabling metrics as described above, you will also need to enable metrics exposure on `https://matrix.DOMAIN/metrics/hookshot` by:
+**To collect metrics from an external Prometheus server**, besides enabling metrics as described above, you will also need to enable metrics exposure on `https://matrix.example.com/metrics/hookshot` by:
 
 - either enabling metrics exposure for Hookshot via `matrix_hookshot_metrics_proxying_enabled: true`
 - or enabling metrics exposure for all services via `matrix_metrics_exposure_enabled: true`

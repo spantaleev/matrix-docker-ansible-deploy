@@ -31,7 +31,7 @@ To make sure the bot can read encrypted messages, it will need an encryption key
 
 ## 3. Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 matrix_bot_chatgpt_enabled: true
@@ -66,6 +66,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
 
 ## Usage
 
-To use the bot, invite the `@bot.chatgpt:DOMAIN` to the room you specified in a config, after that start speaking to it, use the prefix if you configured one or mention the bot.
+To use the bot, invite the `@bot.chatgpt:example.com` to the room you specified in a config, after that start speaking to it, use the prefix if you configured one or mention the bot.
 
 You can also refer to the upstream [documentation](https://github.com/matrixgpt/matrix-chatgpt-bot).

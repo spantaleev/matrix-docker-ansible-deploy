@@ -339,9 +339,9 @@ matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.11/sit
 
 # Specifies which template files to use when configuring Synapse.
 # If you'd like to have your own different configuration, feel free to copy and paste
-# the original files into your inventory (e.g. in `inventory/host_vars/<host>/`)
+# the original files into your inventory (e.g. in `inventory/host_vars/matrix.example.com/`)
 # and then change the specific host's `vars.yml` file like this:
-# matrix_synapse_template_synapse_homeserver: "{{ playbook_dir }}/inventory/host_vars/<host>/homeserver.yaml.j2"
+# matrix_synapse_template_synapse_homeserver: "{{ playbook_dir }}/inventory/host_vars/matrix.example.com/homeserver.yaml.j2"
 matrix_synapse_template_synapse_homeserver: "{{ role_path }}/templates/synapse/homeserver.yaml.j2"
 matrix_synapse_template_synapse_log: "{{ role_path }}/templates/synapse/synapse.log.config.j2"
 
@@ -733,8 +733,8 @@ matrix_synapse_grafana_dashboard_urls:
   - https://raw.githubusercontent.com/element-hq/synapse/master/contrib/grafana/synapse.json
 
 # Controls whether Synapse metrics should be proxied (exposed) on:
-# - `matrix.DOMAIN/metrics/synapse/main-process` for the main process
-# - `matrix.DOMAIN/metrics/synapse/worker/{type}-{id}` for each worker process
+# - `matrix.example.com/metrics/synapse/main-process` for the main process
+# - `matrix.example.com/metrics/synapse/worker/{type}-{id}` for each worker process
 matrix_synapse_metrics_proxying_enabled: false
 matrix_synapse_metrics_proxying_hostname: ''
 matrix_synapse_metrics_proxying_path_prefix: /metrics/synapse
@@ -1153,7 +1153,7 @@ matrix_synapse_ext_password_provider_shared_secret_config_yaml: |
 
 # Enable this to activate LDAP password provider
 matrix_synapse_ext_password_provider_ldap_enabled: false
-matrix_synapse_ext_password_provider_ldap_uri: "ldap://ldap.mydomain.tld:389"
+matrix_synapse_ext_password_provider_ldap_uri: "ldap://ldap.example.com:389"
 matrix_synapse_ext_password_provider_ldap_start_tls: true
 matrix_synapse_ext_password_provider_ldap_mode: "search"
 matrix_synapse_ext_password_provider_ldap_base: ""
@@ -1398,7 +1398,7 @@ matrix_synapse_configuration_extension_yaml: |
   # server_notices:
   #   system_mxid_localpart: notices
   #   system_mxid_display_name: "Server Notices"
-  #   system_mxid_avatar_url: "mxc://server.com/oumMVlgDnLYFaPVkExemNVVZ"
+  #   system_mxid_avatar_url: "mxc://example.com/oumMVlgDnLYFaPVkExemNVVZ"
   #   room_name: "Server Notices"
 
 matrix_synapse_configuration_extension: "{{ matrix_synapse_configuration_extension_yaml | from_yaml if matrix_synapse_configuration_extension_yaml | from_yaml is mapping else {} }}"

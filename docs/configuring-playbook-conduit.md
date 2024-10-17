@@ -36,7 +36,7 @@ You will have to manually register appservices using the the [register-appservic
 Find the `registration.yaml` in the `/matrix` directory, for example `/matrix/mautrix-signal/bridge/registration.yaml`, then pass the content to Conduit:
 
 
-    @conduit:your.server.name: register-appservice
+    @conduit:example.com: register-appservice
     ```
     as_token: <token>
     de.sorunome.msc2409.push_ephemeral: true
