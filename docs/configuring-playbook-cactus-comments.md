@@ -52,7 +52,7 @@ After configuring the playbook, run the [installation](installing.md) command: `
 
 Upon starting Cactus Comments, a `bot.cactusbot` user account is created automatically.
 
-To get started, send a `help` message to the `@bot.cactusbot:your-homeserver.com` bot to confirm it's working.
+To get started, send a `help` message to the `@bot.cactusbot:example.com` bot to confirm it's working.
 
 Then, register a site by typing: `register <sitename>`. You will then be invited into a moderation room.
 
