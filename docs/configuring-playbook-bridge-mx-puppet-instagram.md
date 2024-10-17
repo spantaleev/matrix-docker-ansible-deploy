@@ -7,7 +7,7 @@ This allows you to bridge Instagram DirectMessages into Matrix.
 
 ## Adjusting the playbook configuration
 
-To enable the [Instagram](https://www.instagram.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the [Instagram](https://www.instagram.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mx_puppet_instagram_enabled: true

@@ -18,7 +18,7 @@ If you decide that you'd like to let this playbook install it for you, you'd nee
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 # The Shared Secret Auth password provider module is required for Corporal to work.

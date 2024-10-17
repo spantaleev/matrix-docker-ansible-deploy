@@ -6,7 +6,7 @@ See the project's [documentation](https://github.com/beeper/linkedin/blob/master
 
 ## Adjusting the playbook configuration
 
-To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_beeper_linkedin_enabled: true

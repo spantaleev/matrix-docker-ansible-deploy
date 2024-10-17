@@ -12,20 +12,20 @@ Riot has since been [renamed to Element](https://element.io/blog/welcome-to-elem
 
 ### Migrating your custom settings
 
-If you have custom `matrix_riot_web_` variables in your `inventory/host_vars/matrix.DOMAIN/vars.yml` file, you'll need to rename them (`matrix_riot_web_` -> `matrix_client_element_`).
+If you have custom `matrix_riot_web_` variables in your `inventory/host_vars/matrix.example.com/vars.yml` file, you'll need to rename them (`matrix_riot_web_` -> `matrix_client_element_`).
 
 Some other playbook variables (but not all) with `riot` in their name are also renamed. The playbook checks and warns if you are using the old name for some commonly used ones.
 
 
 ### Domain migration
 
-We used to set up Riot at the `riot.DOMAIN` domain. The playbook now sets up Element at `element.DOMAIN` by default.
+We used to set up Riot at the `riot.example.com` domain. The playbook now sets up Element at `element.example.com` by default.
 
 There are a few options for handling this:
 
-- (**avoiding changes** - using the old `riot.DOMAIN` domain and avoiding DNS changes) -- to keep using `riot.DOMAIN` instead of `element.DOMAIN`, override the domain at which the playbook serves Element: `matrix_server_fqn_element: "riot.{{ matrix_domain }}"`
+- (**avoiding changes** - using the old `riot.example.com` domain and avoiding DNS changes) -- to keep using `riot.example.com` instead of `element.example.com`, override the domain at which the playbook serves Element: `matrix_server_fqn_element: "riot.{{ matrix_domain }}"`
 
-- (**embracing changes** - using only `element.DOMAIN`) - set up the `element.DOMAIN` DNS record (see [Configuring DNS](configuring-dns.md)). You can drop the `riot.DOMAIN` in this case.
+- (**embracing changes** - using only `element.example.com`) - set up the `element.example.com` DNS record (see [Configuring DNS](configuring-dns.md)). You can drop the `riot.example.com` in this case.
 
 
 ### Re-running the playbook

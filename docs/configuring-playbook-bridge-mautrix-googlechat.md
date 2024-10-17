@@ -6,7 +6,7 @@ See the project's [documentation](https://docs.mau.fi/bridges/python/googlechat/
 
 ## Adjusting the playbook configuration
 
-To enable the [Google Chat](https://chat.google.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the [Google Chat](https://chat.google.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mautrix_googlechat_enabled: true

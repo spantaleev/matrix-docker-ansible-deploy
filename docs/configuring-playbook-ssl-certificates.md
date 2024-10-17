@@ -9,7 +9,7 @@ This guide is about using the integrated Traefik server and doesn't apply if you
 
 For testing purposes, you may wish to use staging certificates provide by Let's Encrypt.
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 traefik_config_certificatesResolvers_acme_use_staging: true
@@ -20,7 +20,7 @@ traefik_config_certificatesResolvers_acme_use_staging: true
 
 For testing or other purposes, you may wish to install services without SSL termination and have services exposed to `http://` instead of `https://`.
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 traefik_config_entrypoint_web_secure_enabled: false

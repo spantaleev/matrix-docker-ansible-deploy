@@ -25,7 +25,7 @@ These port numbers are configurable via the `matrix_bot_postmoogle_smtp_host_bin
 
 ### Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_postmoogle_enabled: true
@@ -69,7 +69,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bot, invite the `@postmoogle:DOMAIN` bot user into a room you want to use as a mailbox.
+To use the bot, invite the `@postmoogle:example.com` bot user into a room you want to use as a mailbox.
 
 Then send `!pm mailbox NAME` to expose this Matrix room as an inbox with the email address `NAME@matrix.domain`. Emails sent to that email address will be forwarded to the room.
 

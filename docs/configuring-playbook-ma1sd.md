@@ -12,7 +12,7 @@ This server is private by default, potentially at the expense of user discoverab
 
 ## Adjusting the playbook configuration
 
-To enable ma1sd, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable ma1sd, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_ma1sd_enabled: true
@@ -53,7 +53,7 @@ To use the [Registration](https://github.com/ma1uta/ma1sd/blob/master/docs/featu
 
 - `matrix_ma1sd_configuration_extension_yaml` - to configure ma1sd as required. See the [Registration feature's docs](https://github.com/ma1uta/ma1sd/blob/master/docs/features/registration.md) for inspiration. Also see the [Additional features](#additional-features) section below to learn more about how to use `matrix_ma1sd_configuration_extension_yaml`.
 
-**Note**: For this to work, either the homeserver needs to [federate](configuring-playbook-federation.md) or the `openid` APIs need to exposed on the federation port. When federation is disabled and ma1sd is enabled, we automatically expose the `openid` APIs (only!) on the federation port. Make sure the federation port (usually `https://matrix.DOMAIN:8448`) is whitelisted in your firewall (even if you don't actually use/need federation).
+**Note**: For this to work, either the homeserver needs to [federate](configuring-playbook-federation.md) or the `openid` APIs need to exposed on the federation port. When federation is disabled and ma1sd is enabled, we automatically expose the `openid` APIs (only!) on the federation port. Make sure the federation port (usually `https://matrix.example.com:8448`) is whitelisted in your firewall (even if you don't actually use/need federation).
 
 
 ## Authentication
@@ -129,7 +129,7 @@ If email address validation emails sent by ma1sd are not reaching you, you shoul
 
 If you'd like additional logging information, temporarily enable verbose logging for ma1sd.
 
-Example configuration (`inventory/host_vars/matrix.DOMAIN/vars.yml`):
+Example configuration (`inventory/host_vars/matrix.example.com/vars.yml`):
 
 ```yaml
 matrix_ma1sd_verbose_logging: true

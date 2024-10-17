@@ -13,13 +13,13 @@ Enabling this service will automatically:
 
 ## Quickstart
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file and [re-run the installation process](./installing.md) for the playbook:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file and [re-run the installation process](./installing.md) for the playbook:
 
 ```yaml
 matrix_synapse_usage_exporter_enabled: true
 
 # (Optional) Expose endpoint if you want to collect statistics from outside (from other homeservers).
-# If enabled, synapse-usage-exporter will be exposed publicly at `matrix.DOMAIN/report-usage-stats/push`.
+# If enabled, synapse-usage-exporter will be exposed publicly at `matrix.example.com/report-usage-stats/push`.
 # When collecting usage statistics for Synapse running on the same host, you don't need to enable this.
 # You can adjust the hostname and path via `matrix_synapse_usage_exporter_hostname` and `matrix_synapse_usage_exporter_path_prefix`.
 # matrix_synapse_usage_exporter_proxying_enabled: true

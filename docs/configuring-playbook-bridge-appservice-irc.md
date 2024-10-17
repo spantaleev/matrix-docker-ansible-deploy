@@ -8,7 +8,7 @@ See the project's [documentation](https://github.com/matrix-org/matrix-appservic
 
 ## Adjusting the playbook configuration
 
-To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_appservice_irc_enabled: true

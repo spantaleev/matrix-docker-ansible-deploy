@@ -14,7 +14,7 @@ If your setup includes [Grafana](./configuring-playbook-prometheus-grafana.md), 
 
 ## Configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_prometheus_nginxlog_exporter_enabled: true
@@ -49,6 +49,6 @@ When using an external Prometheus server, you'll need to expose metrics publicly
 
 You can either use `matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled: true` to expose just this one service, or `matrix_metrics_exposure_enabled: true` to expose all services.
 
-Whichever way you go with, this service will expose its metrics endpoint **without password-protection** at `https://matrix.DOMAIN/metrics/nginxlog` by default.
+Whichever way you go with, this service will expose its metrics endpoint **without password-protection** at `https://matrix.example.com/metrics/nginxlog` by default.
 
 For password-protection, use (`matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users`) or (`matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_enabled` and `matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_users`).

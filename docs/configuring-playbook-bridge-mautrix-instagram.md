@@ -8,7 +8,7 @@ See the project's [documentation](https://docs.mau.fi/bridges/python/instagram/i
 
 ## Adjusting the playbook configuration
 
-To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mautrix_instagram_enabled: true

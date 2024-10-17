@@ -33,7 +33,7 @@ matrix_cactus_comments_enabled: true
 # matrix_synapse_allow_guest_access: true
 # matrix_dendrite_allow_guest_access: true
 
-# This enables client assets static files serving on `https://matrix.DOMAIN/cactus-comments`.
+# This enables client assets static files serving on `https://matrix.example.com/cactus-comments`.
 # When the backend (appservice) is enabled, this is also enabled automatically,
 # but we explicitly enable it here.
 matrix_cactus_comments_client_enabled: true

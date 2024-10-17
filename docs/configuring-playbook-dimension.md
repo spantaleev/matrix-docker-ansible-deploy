@@ -10,7 +10,7 @@ If you're just installing Matrix services for the first time, please continue wi
 
 ## Decide on a domain and path
 
-By default, Dimension is configured to use its own dedicated domain (`dimension.DOMAIN`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+By default, Dimension is configured to use its own dedicated domain (`dimension.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
 
 You can override the domain and path like this:
 

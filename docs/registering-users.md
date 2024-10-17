@@ -71,13 +71,13 @@ If you're opening up registrations publicly like this, you might also wish to [c
 To change the admin privileges for a user, you need to run an SQL query like this against the `synapse` database:
 
 ```sql
-UPDATE users SET admin=ADMIN_VALUE WHERE name = '@USER:DOMAIN';
+UPDATE users SET admin=ADMIN_VALUE WHERE name = '@USER:example.com';
 ```
 
 where:
 
 - `ADMIN_VALUE` being either `0` (regular user) or `1` (admin)
-- `USER` and `DOMAIN` pointing to a valid user on your server
+- `USER` and `example.com` pointing to a valid user on your server
 
 If you're using the integrated Postgres server and not an [external Postgres server](configuring-playbook-external-postgres.md), you can launch a Postgres into the `synapse` database by:
 

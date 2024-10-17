@@ -7,7 +7,7 @@ See the project page to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 
-To enable the [Skype](https://www.skype.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the [Skype](https://www.skype.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_go_skype_bridge_enabled: true

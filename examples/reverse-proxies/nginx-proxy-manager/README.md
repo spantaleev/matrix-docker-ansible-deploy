@@ -21,14 +21,14 @@ Open the 'Proxy Hosts' page in the NPM web interface and select `Add Proxy Host`
 ```md
 # Details
 # Matrix web proxy config
-Domain Names: matrix.DOMAIN
+Domain Names: matrix.example.com
 Scheme: http
 Forward Hostname/IP: IP-ADDRESS-OF-YOUR-MATRIX
 Forward Port: 81
 
 # SSL
 # Either 'Request a new certificate' or select an existing one
-SSL Certificate: matrix.DOMAIN or *.DOMAIN
+SSL Certificate: matrix.example.com or *.example.com
 Force SSL: true
 HTTP/2 Support: true
 
@@ -42,14 +42,14 @@ Again, under the 'Proxy Hosts' page select `Add Proxy Host`, this time for your 
 ```md
 # Details
 # Matrix Federation proxy config
-Domain Names: matrix.DOMAIN:8448
+Domain Names: matrix.example.com:8448
 Scheme: http
 Forward Hostname/IP: IP-ADDRESS-OF-YOUR-MATRIX
 Forward Port: 8449
 
 # SSL
 # Either 'Request a new certificate' or select an existing one
-SSL Certificate: matrix.DOMAIN or *.DOMAIN
+SSL Certificate: matrix.example.com or *.example.com
 Force SSL: true
 HTTP/2 Support: true
 
@@ -60,4 +60,4 @@ Custom Nginx Configuration:
 	client_max_body_size 50M;
 ```
 
-Also note, NPM would need to be configured for whatever other services you are using. For example, you would need to create additional proxy hosts for `element.DOMAIN` or `jitsi.DOMAIN`, which would use the forwarding port `81`.
+Also note, NPM would need to be configured for whatever other services you are using. For example, you would need to create additional proxy hosts for `element.example.com` or `jitsi.example.com`, which would use the forwarding port `81`.

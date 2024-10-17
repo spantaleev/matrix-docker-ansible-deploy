@@ -61,7 +61,7 @@ Most of our docker containers run with limited system access, but the `prometheu
 
 When you'd like **to collect metrics from an external Prometheus server**, you need to expose service metrics outside of the container network.
 
-The playbook provides a single endpoint (`https://matrix.DOMAIN/metrics/*`), under which various services may expose their metrics (e.g. `/metrics/node-exporter`, `/metrics/postgres-exporter`, `/metrics/hookshot`, etc). To expose all services on this `/metrics/*` feature, use `matrix_metrics_exposure_enabled`. To protect access using [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication), see `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users` below.
+The playbook provides a single endpoint (`https://matrix.example.com/metrics/*`), under which various services may expose their metrics (e.g. `/metrics/node-exporter`, `/metrics/postgres-exporter`, `/metrics/hookshot`, etc). To expose all services on this `/metrics/*` feature, use `matrix_metrics_exposure_enabled`. To protect access using [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication), see `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users` below.
 
 When using `matrix_metrics_exposure_enabled`, you don't need to expose metrics for individual services one by one.
 
@@ -69,26 +69,26 @@ The following variables may be of interest:
 
 Name | Description
 -----|----------
-`matrix_metrics_exposure_enabled`|Set this to `true` to **enable metrics exposure for all services** on `https://matrix.DOMAIN/metrics/*`. If you think this is too much, refer to the helpful (but nonexhaustive) list of individual `matrix_SERVICE_metrics_proxying_enabled` (or similar) variables below for exposing metrics on a per-service basis.
-`matrix_metrics_exposure_http_basic_auth_enabled`|Set this to `true` to protect all `https://matrix.DOMAIN/metrics/*` endpoints with [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) (see the other variables below for supplying the actual credentials). When enabled, all endpoints beneath `/metrics` will be protected with the same credentials
+`matrix_metrics_exposure_enabled`|Set this to `true` to **enable metrics exposure for all services** on `https://matrix.example.com/metrics/*`. If you think this is too much, refer to the helpful (but nonexhaustive) list of individual `matrix_SERVICE_metrics_proxying_enabled` (or similar) variables below for exposing metrics on a per-service basis.
+`matrix_metrics_exposure_http_basic_auth_enabled`|Set this to `true` to protect all `https://matrix.example.com/metrics/*` endpoints with [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) (see the other variables below for supplying the actual credentials). When enabled, all endpoints beneath `/metrics` will be protected with the same credentials
 `matrix_metrics_exposure_http_basic_auth_users`|Set this to the Basic Authentication credentials (raw `htpasswd` file content) used to protect `/metrics/*`. This htpasswd-file needs to be generated with the `htpasswd` tool and can include multiple username/password pairs.
 `matrix_synapse_metrics_enabled`|Set this to `true` to make Synapse expose metrics (locally, on the container network)
-`matrix_synapse_metrics_proxying_enabled`|Set this to `true` to expose Synapse's metrics on `https://matrix.DOMAIN/metrics/synapse/main-process` and `https://matrix.DOMAIN/metrics/synapse/worker/TYPE-ID`. Read [below](#collecting-synapse-worker-metrics-to-an-external-prometheus-server) if you're running a Synapse worker setup (`matrix_synapse_workers_enabled: true`). To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
+`matrix_synapse_metrics_proxying_enabled`|Set this to `true` to expose Synapse's metrics on `https://matrix.example.com/metrics/synapse/main-process` and `https://matrix.example.com/metrics/synapse/worker/TYPE-ID`. Read [below](#collecting-synapse-worker-metrics-to-an-external-prometheus-server) if you're running a Synapse worker setup (`matrix_synapse_workers_enabled: true`). To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
 `prometheus_node_exporter_enabled`|Set this to `true` to enable the node (general system stats) exporter (locally, on the container network)
-`prometheus_node_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the node (general system stats) metrics on `https://matrix.DOMAIN/metrics/node-exporter`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
+`prometheus_node_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the node (general system stats) metrics on `https://matrix.example.com/metrics/node-exporter`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
 `prometheus_postgres_exporter_enabled`|Set this to `true` to enable the [Postgres exporter](configuring-playbook-prometheus-postgres.md) (locally, on the container network)
-`prometheus_postgres_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the [Postgres exporter](configuring-playbook-prometheus-postgres.md) metrics on `https://matrix.DOMAIN/metrics/postgres-exporter`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
+`prometheus_postgres_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the [Postgres exporter](configuring-playbook-prometheus-postgres.md) metrics on `https://matrix.example.com/metrics/postgres-exporter`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
 `matrix_prometheus_nginxlog_exporter_enabled`|Set this to `true` to enable the [NGINX Log exporter](configuring-playbook-prometheus-nginxlog.md) (locally, on the container network)
 `matrix_sliding_sync_metrics_enabled`|Set this to `true` to make [Sliding Sync](configuring-playbook-sliding-sync-proxy.md) expose metrics (locally, on the container network)
-`matrix_sliding_sync_metrics_proxying_enabled`|Set this to `true` to expose the [Sliding Sync](configuring-playbook-sliding-sync-proxy.md) metrics on `https://matrix.DOMAIN/metrics/sliding-sync`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
+`matrix_sliding_sync_metrics_proxying_enabled`|Set this to `true` to expose the [Sliding Sync](configuring-playbook-sliding-sync-proxy.md) metrics on `https://matrix.example.com/metrics/sliding-sync`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
 `matrix_bridge_hookshot_metrics_enabled`|Set this to `true` to make [Hookshot](configuring-playbook-bridge-hookshot.md) expose metrics (locally, on the container network)
-`matrix_bridge_hookshot_metrics_proxying_enabled`|Set this to `true` to expose the [Hookshot](configuring-playbook-bridge-hookshot.md) metrics on `https://matrix.DOMAIN/metrics/hookshot`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
+`matrix_bridge_hookshot_metrics_proxying_enabled`|Set this to `true` to expose the [Hookshot](configuring-playbook-bridge-hookshot.md) metrics on `https://matrix.example.com/metrics/hookshot`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
 `matrix_SERVICE_metrics_proxying_enabled`|Various other services/roles may provide similar `_metrics_enabled` and `_metrics_proxying_enabled` variables for exposing their metrics. Refer to each role for details. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above or `matrix_SERVICE_container_labels_metrics_middleware_basic_auth_enabled`/`matrix_SERVICE_container_labels_metrics_middleware_basic_auth_users` variables provided by each role.
 `matrix_media_repo_metrics_enabled`|Set this to `true` to make media-repo expose metrics (locally, on the container network)
 
 ### Collecting Synapse worker metrics to an external Prometheus server
 
-If you are using workers (`matrix_synapse_workers_enabled: true`) and have enabled `matrix_synapse_metrics_proxying_enabled` as described above, the playbook will also automatically expose all Synapse worker threads' metrics to `https://matrix.DOMAIN/metrics/synapse/worker/ID`, where `ID` corresponds to the worker `id` as exemplified in `matrix_synapse_workers_enabled_list`.
+If you are using workers (`matrix_synapse_workers_enabled: true`) and have enabled `matrix_synapse_metrics_proxying_enabled` as described above, the playbook will also automatically expose all Synapse worker threads' metrics to `https://matrix.example.com/metrics/synapse/worker/ID`, where `ID` corresponds to the worker `id` as exemplified in `matrix_synapse_workers_enabled_list`.
 
 The playbook also generates an exemplary config file (`/matrix/synapse/external_prometheus.yml.template`) with all the correct paths which you can copy to your Prometheus server and adapt to your needs. Make sure to edit the specified `password_file` path and contents and path to your `synapse-v2.rules`.
 It will look a bit like this:
@@ -101,7 +101,7 @@ scrape_configs:
       username: prometheus
       password_file: /etc/prometheus/password.pwd
     static_configs:
-      - targets: ['matrix.DOMAIN:443']
+      - targets: ['matrix.example.com:443']
         labels:
           job: "master"
           index: 1
@@ -112,7 +112,7 @@ scrape_configs:
       username: prometheus
       password_file: /etc/prometheus/password.pwd
     static_configs:
-      - targets: ['matrix.DOMAIN:443']
+      - targets: ['matrix.example.com:443']
         labels:
           job: "generic_worker"
           index: 18111

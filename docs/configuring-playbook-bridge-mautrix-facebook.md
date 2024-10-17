@@ -8,7 +8,7 @@ See the project's [documentation](https://github.com/mautrix/facebook/blob/maste
 
 ## Adjusting the playbook configuration
 
-To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mautrix_facebook_enabled: true
@@ -98,7 +98,7 @@ The easiest way to do this may be to use [sshuttle](https://sshuttle.readthedocs
 Example command for proxying your traffic through the Matrix server:
 
 ```
-sshuttle -r root@matrix.DOMAIN:22 0/0
+sshuttle -r root@matrix.example.com:22 0/0
 ```
 
 Once connected, you should be able to verify that you're browsing the web through the Matrix server's IP by checking [icanhazip](https://icanhazip.com/).

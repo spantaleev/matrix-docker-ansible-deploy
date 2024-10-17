@@ -13,7 +13,7 @@ Make an app on [developer.twitter.com](https://developer.twitter.com/en/apps).
 
 ## Adjusting the playbook configuration
 
-To enable the [Twitter](https://twitter.com) bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the [Twitter](https://twitter.com) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mx_puppet_twitter_enabled: true

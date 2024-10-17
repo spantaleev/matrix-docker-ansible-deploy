@@ -38,7 +38,7 @@ Give the room from step 1 an alias. This alias can be anything you want and its 
 
 ### 3. Adjusting the playbook configuration.
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 You must replace `ALIAS_FROM_STEP_2_GOES_HERE` with the alias you created in step 2.
 
@@ -83,7 +83,7 @@ You can refer to the upstream [documentation](https://github.com/the-draupnir-pr
 
 Please note that Config extension does not affect the appservices config as this config is not extensible in current Draupnir anyways. Config extension instead touches the config passed to the Draupnirs that your Appservice creates. So for example below makes all provisioned Draupnirs protect all joined rooms.
 
-You can configure additional options by adding the `matrix_appservice_draupnir_for_all_extension_yaml` variable to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file.
+You can configure additional options by adding the `matrix_appservice_draupnir_for_all_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
 
 For example to change draupnir's `protectAllJoinedRooms` option to `true` you would add the following to your `vars.yml` file.
 

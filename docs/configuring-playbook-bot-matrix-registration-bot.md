@@ -11,12 +11,12 @@ does and why it might be useful to you.
 
 ## Configuration
 
-To enable the bot, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_matrix_registration_bot_enabled: true
 
-# By default, the playbook will set use the bot with a username like this: `@bot.matrix-registration-bot:DOMAIN`.
+# By default, the playbook will set use the bot with a username like this: `@bot.matrix-registration-bot:example.com`.
 # Uncomment and adjust this part if you'd like to use a username different than the default
 # matrix_bot_matrix_registration_bot_matrix_user_id_localpart: bot.matrix-registration-bot
 
@@ -38,7 +38,7 @@ After configuring the playbook, run the [installation](installing.md) command: `
 
 ## Usage
 
-To use the bot, start a chat with `@bot.matrix-registration-bot:DOMAIN` (where `DOMAIN` is your base domain, not the `matrix.` domain).
+To use the bot, start a chat with `@bot.matrix-registration-bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 In this room send `help` and the bot will reply with all options.
 

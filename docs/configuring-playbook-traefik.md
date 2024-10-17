@@ -25,7 +25,7 @@ traefik_config_accessLog_enabled: false
 
 ## Enable Traefik Dashboard
 
-This will enable a Traefik [Dashboard](https://doc.traefik.io/traefik/operations/dashboard/) UI at `https://matrix.DOMAIN/dashboard/` (note the trailing `/`).
+This will enable a Traefik [Dashboard](https://doc.traefik.io/traefik/operations/dashboard/) UI at `https://matrix.example.com/dashboard/` (note the trailing `/`).
 
 ```yaml
 traefik_dashboard_enabled: true

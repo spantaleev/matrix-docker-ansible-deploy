@@ -8,11 +8,11 @@ SchildiChat can be installed alongside or instead of Element.
 
 ## DNS
 
-You need to add a `schildichat.DOMAIN` DNS record so that SchildiChat can be accessed.
-By default SchildiChat will use https://schildichat.DOMAIN so you will need to create an CNAME record
+You need to add a `schildichat.example.com` DNS record so that SchildiChat can be accessed.
+By default SchildiChat will use https://schildichat.example.com so you will need to create an CNAME record
 for `schildichat`. See [Configuring DNS](configuring-dns.md).
 
-If you would like to use a different domain, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (changing it to use your preferred domain):
+If you would like to use a different domain, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (changing it to use your preferred domain):
 
 ```yaml
 matrix_server_fqn_schildichat: "sc.{{ matrix_domain }}"
@@ -20,7 +20,7 @@ matrix_server_fqn_schildichat: "sc.{{ matrix_domain }}"
 
 ## Adjusting the playbook configuration
 
-To enable SchildiChat, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable SchildiChat, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_client_schildichat_enabled: true

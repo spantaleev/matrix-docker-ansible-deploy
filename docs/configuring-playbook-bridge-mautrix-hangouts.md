@@ -8,7 +8,7 @@ See the project's [documentation](https://docs.mau.fi/bridges/python/hangouts/in
 
 ## Adjusting the playbook configuration
 
-To enable the [Google Hangouts](https://hangouts.google.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the [Google Hangouts](https://hangouts.google.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mautrix_hangouts_enabled: true

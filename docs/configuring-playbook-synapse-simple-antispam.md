@@ -7,7 +7,7 @@ In short, it lets you fight invite-spam by automatically blocking invitiations f
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 matrix_synapse_ext_spam_checker_synapse_simple_antispam_enabled: true

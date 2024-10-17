@@ -7,7 +7,7 @@ You can see each bridge's features at in the `ROADMAP.md` file in its correspond
 
 ## Adjusting the playbook configuration
 
-To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 # Replace SERVICENAME with one of: twitter, facebook, instagram, ..
@@ -16,7 +16,7 @@ matrix_mautrix_SERVICENAME_enabled: true
 
 There are some additional things you may wish to configure about the bridge before you continue. Each bridge may have additional requirements besides `_enabled: true`. For example, the mautrix-telegram bridge (our documentation page about it is [here](configuring-playbook-bridge-mautrix-telegram.md)) requires the `matrix_mautrix_telegram_api_id` and `matrix_mautrix_telegram_api_hash` variables to be defined. Refer to each bridge's individual documentation page for details about enabling bridges.
 
-To **configure a user as an administrator for all bridges**, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To **configure a user as an administrator for all bridges**, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_admin: "@YOUR_USERNAME:{{ matrix_domain }}"
@@ -33,7 +33,7 @@ matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
 
 ## encryption
 
-Encryption support is off by default. If you would like to enable encryption, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Encryption support is off by default. If you would like to enable encryption, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 **for all bridges with encryption support**:
 
@@ -51,7 +51,7 @@ matrix_mautrix_SERVICENAME_bridge_encryption_default: true
 
 ## relay mode
 
-Relay mode is off by default. If you would like to enable relay mode, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Relay mode is off by default. If you would like to enable relay mode, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 **for all bridges with relay mode support**:
 

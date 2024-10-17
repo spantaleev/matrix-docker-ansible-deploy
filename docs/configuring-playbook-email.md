@@ -17,7 +17,7 @@ No matter whether you send email directly (the default) or you relay email throu
 
 ## Relaying email through another SMTP server
 
-If you'd like to relay email through another SMTP server, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+If you'd like to relay email through another SMTP server, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 exim_relay_sender_address: "another.sender@example.com"

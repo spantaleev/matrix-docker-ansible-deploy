@@ -47,9 +47,9 @@ Using your own account, create a new invite only room that you will use to manag
 
 If you make the management room encrypted (E2EE), then you MUST enable and use Pantalaimon (see below).
 
-Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!QvgVuKq0ha8glOLGMG:DOMAIN`.
+Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!QvgVuKq0ha8glOLGMG:example.com`.
 
-Finally invite the `@bot.draupnir:DOMAIN` account you created earlier into the room.
+Finally invite the `@bot.draupnir:example.com` account you created earlier into the room.
 
 
 ## 5. Adjusting the playbook configuration
@@ -60,7 +60,7 @@ Decide whether you want Draupnir to be capable of operating in end-to-end encryp
 
 When using Pantalaimon, Draupnir will log in to its bot account itself through Pantalaimon, so configure its username and password.
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 # Enable Pantalaimon. See docs/configuring-playbook-pantalaimon.md
@@ -95,7 +95,7 @@ matrix_bot_draupnir_raw_homeserver_url: "{{ matrix_addons_homeserver_client_api_
 
 When NOT using Pantalaimon, Draupnir does not log in by itself and you must give it an access token for its bot account.
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 You must replace `ACCESS_TOKEN_FROM_STEP_2_GOES_HERE` and `ROOM_ID_FROM_STEP_4_GOES_HERE` with the your own values.
 
@@ -135,7 +135,7 @@ Draupnir can be told to self-join public rooms, but it's better to follow this f
 
 2. [Give the bot permissions to do its job](#giving-draupnir-permissions-to-do-its-job)
 
-3. Tell it to protect the room (using the [rooms command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#using-the-draupnir-rooms-command)) by sending the following command to the Management Room: `!draupnir rooms add !ROOM_ID:DOMAIN`
+3. Tell it to protect the room (using the [rooms command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#using-the-draupnir-rooms-command)) by sending the following command to the Management Room: `!draupnir rooms add !ROOM_ID:example.com`
 
 To have Draupnir provide useful room protection, you need do to a bit more work (at least the first time around).
 You may wish to [Subscribe to a public policy list](#subscribing-to-a-public-policy-list), [Create your own own policy and rules](#creating-your-own-policy-lists-and-rules) and [Enabling built-in protections](#enabling-built-in-protections).
@@ -158,7 +158,7 @@ You can tell Draupnir to subscribe to it by sending the following command to the
 
 We also recommend **creating your own policy lists** with the [list create](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-policy-lists#using-draupnirs-list-create-command-to-create-a-policy-room) command.
 
-You can do so by sending the following command to the Management Room: `!draupnir list create my-bans my-bans-bl`. This will create a policy list having a name (shortcode) of `my-bans` and stored in a public `#my-bans-bl:DOMAIN` room on your server. As soon as you run this command, the bot will invite you to the policy list room.
+You can do so by sending the following command to the Management Room: `!draupnir list create my-bans my-bans-bl`. This will create a policy list having a name (shortcode) of `my-bans` and stored in a public `#my-bans-bl:example.com` room on your server. As soon as you run this command, the bot will invite you to the policy list room.
 
 A policy list does nothing by itself, so the next step is **adding some rules to your policy list**. Policies target a so-called `entity` (one of: `user`, `room` or `server`). These entities are mentioned on the [policy lists](https://the-draupnir-project.github.io/draupnir-documentation/concepts/policy-lists) documentation page and in the Matrix Spec [here](https://spec.matrix.org/v1.11/client-server-api/#mban-recommendation).
 
@@ -171,7 +171,7 @@ To create rules, you run commands in the Management Room (**not** in the policy 
 
 As a result of running these commands, you may observe:
 
-- Draupnir creating `m.policy.rule.user` state events in the `#my-bans-bl:DOMAIN` room on your server
+- Draupnir creating `m.policy.rule.user` state events in the `#my-bans-bl:example.com` room on your server
 - applying these rules against all rooms that Draupnir is an Administrator in
 
 You can undo bans with the [unban command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#the-unban-command).
@@ -193,7 +193,7 @@ To **disable a given protection**, send a command like this: `!draupnir disable 
 
 ## Extending the configuration
 
-You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file.
+You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
 
 For example to change draupnir's `recordIgnoredInvites` option to `true` you would add the following to your `vars.yml` file.
 

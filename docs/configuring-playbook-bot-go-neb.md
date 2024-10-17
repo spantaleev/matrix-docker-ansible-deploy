@@ -26,12 +26,12 @@ Once the user is created you can [obtain an access token](obtaining-access-token
 
 ## Decide on a domain and path
 
-By default, Go-NEB is configured to use its own dedicated domain (`goneb.DOMAIN`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+By default, Go-NEB is configured to use its own dedicated domain (`goneb.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
 
 You can override the domain and path like this:
 
 ```yaml
-# Switch to the domain used for Matrix services (`matrix.DOMAIN`),
+# Switch to the domain used for Matrix services (`matrix.example.com`),
 # so we won't need to add additional DNS records for Go-NEB.
 matrix_bot_go_neb_hostname: "{{ matrix_server_fqn_matrix }}"
 
@@ -49,7 +49,7 @@ If you've decided to reuse the `matrix.` domain, you won't need to do any extra 
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 matrix_bot_go_neb_enabled: true

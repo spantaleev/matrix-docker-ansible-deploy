@@ -11,7 +11,7 @@ See the project's [documentation](https://github.com/devture/email2matrix/blob/m
 
 ### DNS configuration
 
-It's not strictly necessary, but you may increase the chances that incoming emails reach your server by adding an `MX` record for `matrix.DOMAIN`, as described in the [Configuring DNS](configuring-dns.md) documentation page.
+It's not strictly necessary, but you may increase the chances that incoming emails reach your server by adding an `MX` record for `matrix.example.com`, as described in the [Configuring DNS](configuring-dns.md) documentation page.
 
 ### Port availability
 
@@ -43,7 +43,7 @@ In order for the sender user created above to be able to send messages to the ro
 
 ## Adjusting the playbook configuration
 
-After doing the preparation steps above, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+After doing the preparation steps above, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 matrix_email2matrix_enabled: true
@@ -85,4 +85,4 @@ Refer to the official documentation [here](https://github.com/devture/email2matr
 
 To enable Email2Matrix, run the [installation](installing.md) command (`--tags=setup-email2matrix,start`).
 
-After installation, you may wish to send a test email to the email address assigned to `mailbox1` (default: `mailbox1@matrix.DOMAIN`) to make sure that Email2Matrix works as expected.
+After installation, you may wish to send a test email to the email address assigned to `mailbox1` (default: `mailbox1@matrix.example.com`) to make sure that Email2Matrix works as expected.

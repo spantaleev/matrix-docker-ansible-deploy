@@ -10,11 +10,11 @@ See the project page to learn what it does and why it might be useful to you.
 
 ## Prerequisite
 
-Follow the [OAuth credentials](https://github.com/Sorunome/mx-puppet-slack#option-2-oauth) instructions to create a new Slack app, setting the redirect URL to `https://matrix.DOMAIN/slack/oauth`.
+Follow the [OAuth credentials](https://github.com/Sorunome/mx-puppet-slack#option-2-oauth) instructions to create a new Slack app, setting the redirect URL to `https://matrix.example.com/slack/oauth`.
 
 ## Adjusting the playbook configuration
 
-To enable the [Slack](https://slack.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the [Slack](https://slack.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mx_puppet_slack_enabled: true

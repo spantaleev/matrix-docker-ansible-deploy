@@ -258,7 +258,7 @@ matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_s
 # - Coturn gets a higher level if `devture_systemd_service_manager_service_restart_mode == 'one-by-one'` to intentionally delay it, because:
 #  - starting services one by one means that the service manager role waits for each service to fully start before proceeding to the next one
 #  - if Coturn has a lower priority than the homeserver, it would be started before it
-#  - since Coturn is started before the homeserver, there's no container label telling Traefik to get a `matrix.DOMAIN` certificate
+#  - since Coturn is started before the homeserver, there's no container label telling Traefik to get a `matrix.example.com` certificate
 #  - thus, Coturn would spin and wait for a certificate until it fails. We'd get a playbook failure due to it, but service manager will proceed to start all other services anyway.
 #  - only later, when the homeserver actually starts, would that certificate be fetched and dumped
 # - reverse-proxying services get level 3000

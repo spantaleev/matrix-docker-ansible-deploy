@@ -74,9 +74,9 @@ To get started with the playbook, start at the [Prerequisites](prerequisites.md)
 
 We have written these automated tasks for you and all you need to do is execute them using the Ansible program.
 
-You can install Ansible and this playbook code repository on your own computer and tell it to install Matrix services at the server living at `matrix.DOMAIN`. We recommend installing Ansible on your own computer.
+You can install Ansible and this playbook code repository on your own computer and tell it to install Matrix services at the server living at `matrix.example.com`. We recommend installing Ansible on your own computer.
 
-Alternatively, you can download Ansible and the playbook itself directly on the `matrix.DOMAIN` server.
+Alternatively, you can download Ansible and the playbook itself directly on the `matrix.example.com` server.
 
 To learn more, see our [dedicated Ansible documentation page](ansible.md).
 
@@ -218,61 +218,61 @@ If your distro runs within an [LXC container](https://linuxcontainers.org/), you
 
 ## Configuration
 
-### Why install my server at matrix.DOMAIN and not at the base DOMAIN?
+### Why install my server at matrix.example.com and not at the base domain?
 
 It's the same with email servers. Your email address is likely `name@company.com`, not `name@mail.company.com`, even though it's `mail.company.com` that is really handling your data for `@company.com` email to work.
 
 Using a separate domain name is easier to manage (although it's a little hard to get right at first) and keeps your Matrix server isolated from your website (if you have one), from your email server (if you have one), etc.
 
-We allow `matrix.DOMAIN` to be the Matrix server handling Matrix stuff for `DOMAIN` by [Server Delegation](howto-server-delegation.md). During the installation procedure, we recommend that you set up server delegation using the [.well-known](configuring-well-known.md) method.
+We allow `matrix.example.com` to be the Matrix server handling Matrix stuff for `example.com` by [Server Delegation](howto-server-delegation.md). During the installation procedure, we recommend that you set up server delegation using the [.well-known](configuring-well-known.md) method.
 
-If you'd really like to install Matrix services directly on the base domain, see [How do I install on matrix.DOMAIN without involving the base DOMAIN?](#how-do-i-install-on-matrixdomain-without-involving-the-base-domain)
+If you'd really like to install Matrix services directly on the base domain, see [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain)
 
-### I don't control anything on the base domain and can't set up delegation to matrix.DOMAIN. What do I do?
+### I don't control anything on the base domain and can't set up delegation to matrix.example.com. What do I do?
 
-If you're not in control of your base domain (or the server handling it) at all, you can take a look at [How do I install on matrix.DOMAIN without involving the base DOMAIN?](#how-do-i-install-on-matrixdomain-without-involving-the-base-domain)
+If you're not in control of your base domain (or the server handling it) at all, you can take a look at [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain)
 
 ### I can't set up HTTPS on the base domain. How will I get Matrix federating?
 
-If you really can't obtain an HTTPS certificate for your base domain, you can take a look at [How do I install on matrix.DOMAIN without involving the base DOMAIN?](#how-do-i-install-on-matrixdomain-without-involving-the-base-domain)
+If you really can't obtain an HTTPS certificate for your base domain, you can take a look at [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain)
 
-### How do I install on matrix.DOMAIN without involving the base DOMAIN?
+### How do I install on matrix.example.com without involving the base domain?
 
-This Ansible playbook guides you into installing a server for `DOMAIN` (user identifiers are like this: `@user:DOMAIN`), while the server is at `matrix.DOMAIN`.
+This Ansible playbook guides you into installing a server for `example.com` (user identifiers are like this: `@user:example.com`), while the server is at `matrix.example.com`.
 
-We allow `matrix.DOMAIN` to be the Matrix server handling Matrix stuff for `DOMAIN` by [Server Delegation](howto-server-delegation.md). During the installation procedure, we recommend that you set up server delegation using the [.well-known](configuring-well-known.md) method.
+We allow `matrix.example.com` to be the Matrix server handling Matrix stuff for `example.com` by [Server Delegation](howto-server-delegation.md). During the installation procedure, we recommend that you set up server delegation using the [.well-known](configuring-well-known.md) method.
 
-If you're fine with uglier identifiers (`@user:matrix.DOMAIN`, which is the equivalent of having an email address like `bob@mail.company.com`, instead of just `bob@company.com`), you can do that as well using the following configuration in your `vars.yml` file:
+If you're fine with uglier identifiers (`@user:matrix.example.com`, which is the equivalent of having an email address like `bob@mail.company.com`, instead of just `bob@company.com`), you can do that as well using the following configuration in your `vars.yml` file:
 
 ```yaml
-# This is what your identifiers are like (e.g. `@bob:matrix.YOUR_BASE_DOMAIN`).
-matrix_domain: "matrix.YOUR_BASE_DOMAIN"
+# This is what your identifiers are like (e.g. `@bob:matrix.example.com`).
+matrix_domain: "matrix.example.com"
 
 # This is where Matrix services
-matrix_server_fqn_matrix: "matrix.YOUR_BASE_DOMAIN"
+matrix_server_fqn_matrix: "matrix.example.com"
 
 # This is where you access the Element web UI from (if enabled via `matrix_client_element_enabled: true`; enabled by default).
 # This and the Matrix FQN (see above) are expected to be on the same server.
 #
-# Feel free to use `element.matrix.YOUR_BASE_DOMAIN`, if you'd prefer that.
-matrix_server_fqn_element: "element.YOUR_BASE_DOMAIN"
+# Feel free to use `element.matrix.example.com`, if you'd prefer that.
+matrix_server_fqn_element: "element.example.com"
 
 # This is where you access Dimension (if enabled via `matrix_dimension_enabled: true`; NOT enabled by default).
 #
-# Feel free to use `dimension.matrix.YOUR_BASE_DOMAIN`, if you'd prefer that.
-matrix_server_fqn_dimension: "dimension.YOUR_BASE_DOMAIN"
+# Feel free to use `dimension.matrix.example.com`, if you'd prefer that.
+matrix_server_fqn_dimension: "dimension.example.com"
 
 # This is where you access Jitsi (if enabled via `jitsi_enabled: true`; NOT enabled by default).
 #
-# Feel free to use `jitsi.matrix.YOUR_BASE_DOMAIN`, if you'd prefer that.
-matrix_server_fqn_jitsi: "jitsi.YOUR_BASE_DOMAIN"
+# Feel free to use `jitsi.matrix.example.com`, if you'd prefer that.
+matrix_server_fqn_jitsi: "jitsi.example.com"
 ```
 
 ### I don't use the base domain for anything. How am I supposed to set up Server Delegation for Matrix services?
 
 If you don't use your base domain for anything, then it's hard for you to "serve files over HTTPS" on it -- something we ask you to do for the [.well-known](configuring-well-known.md) setup (needed for [Server Delegation](howto-server-delegation.md)).
 
-Luckily, the playbook can set up your Matrix server (at `matrix.DOMAIN`) to also handle traffic for the base domain (`DOMAIN`).
+Luckily, the playbook can set up your Matrix server (at `matrix.example.com`) to also handle traffic for the base domain (`example.com`).
 
 See [Serving the base domain](configuring-playbook-base-domain-serving.md).
 
@@ -332,7 +332,7 @@ Configuration variables are defined in multiple places in this playbook and are 
 
 - then, there are overrides in `group_vars/matrix_servers`, which aim to adjust these "standalone role defaults" to something which better fits the playbook in its entirety.
 
-- finally, there's your `inventory/host_vars/matrix.DOMAIN/vars.yml` file, which is the ultimate override
+- finally, there's your `inventory/host_vars/matrix.example.com/vars.yml` file, which is the ultimate override
 
 ### What configuration variables are available?
 
@@ -340,7 +340,7 @@ You can discover the variables you can override in each role (`roles/*/*/default
 
 As described in [How is the effective configuration determined?](#how-is-the-effective-configuration-determined), these role-defaults may be overriden by values defined in `group_vars/matrix_servers`.
 
-Refer to both of these for inspiration. Still, as mentioned in [Configuring the playbook](configuring-playbook.md), you're only ever supposed to edit your own `inventory/host_vars/matrix.DOMAIN/vars.yml` file and nothing else inside the playbook (unless you're meaning to contribute new features).
+Refer to both of these for inspiration. Still, as mentioned in [Configuring the playbook](configuring-playbook.md), you're only ever supposed to edit your own `inventory/host_vars/matrix.example.com/vars.yml` file and nothing else inside the playbook (unless you're meaning to contribute new features).
 
 **Note**: some of the roles (`roles/galaxy/*`) live in separate repositories and are only installed after your run `just roles` (or `make roles`) or `just update` (which automatically does `git pull` and `just roles`).
 
@@ -373,7 +373,7 @@ Yes, you can.
 
 You generally need to do a playbook installation (start at the [Prerequisites](prerequisites.md) page), followed by importing your existing data into it.
 
-This Ansible playbook guides you into installing a server for `DOMAIN` (user identifiers are like this: `@user:DOMAIN`), while the server is at `matrix.DOMAIN`. If your existing setup has a server name (`server_name` configuration setting in Synapse's `homeserver.yaml` file) other than the base `DOMAIN`, you may need to tweak some additional variables. This FAQ entry may be of use if you're dealing with a more complicated setup - [How do I install on matrix.DOMAIN without involving the base DOMAIN?](#how-do-i-install-on-matrixdomain-without-involving-the-base-domain)
+This Ansible playbook guides you into installing a server for `example.com` (user identifiers are like this: `@user:example.com`), while the server is at `matrix.example.com`. If your existing setup has a server name (`server_name` configuration setting in Synapse's `homeserver.yaml` file) other than the base `example.com`, you may need to tweak some additional variables. This FAQ entry may be of use if you're dealing with a more complicated setup - [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain)
 
 After configuring the playbook and installing and **before starting** services (done with `ansible-playbook ... --tags=start`) you'd import [your SQLite](importing-synapse-sqlite.md) (or [Postgres](importing-postgres.md)) database and also [import your media store](importing-synapse-media-store.md).
 
