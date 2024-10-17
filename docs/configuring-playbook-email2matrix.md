@@ -49,29 +49,40 @@ After doing the preparation steps above, add the following configuration to your
 matrix_email2matrix_enabled: true
 
 matrix_email2matrix_matrix_mappings:
-  - MailboxName: "my-mailbox"
-    MatrixRoomId: "!someRoom:DOMAIN"
-    MatrixHomeserverUrl: "https://matrix.DOMAIN"
-    MatrixUserId: "@email2matrix:DOMAIN"
-    MatrixAccessToken: "ACCESS_TOKEN_GOES_HERE"
+  - MailboxName: "mailbox1"
+    MatrixRoomId: "!someRoom:{{ matrix_domain }}"
+    MatrixHomeserverUrl: "{{ matrix_homeserver_url }}"
+    MatrixUserId: "@email2matrix:{{ matrix_domain }}"
+    MatrixAccessToken: "MATRIX_ACCESS_TOKEN_HERE"
     IgnoreSubject: false
     IgnoreBody: false
     SkipMarkdown: false
 
-  - MailboxName: "my-mailbox2"
-    MatrixRoomId: "!anotherRoom:DOMAIN"
-    MatrixHomeserverUrl: "https://matrix.DOMAIN"
-    MatrixUserId: "@email2matrix:DOMAIN"
-    MatrixAccessToken: "ACCESS_TOKEN_GOES_HERE"
+  - MailboxName: "mailbox2"
+    MatrixRoomId: "!anotherRoom:{{ matrix_domain }}"
+    MatrixHomeserverUrl: "{{ matrix_homeserver_url }}"
+    MatrixUserId: "@email2matrix:{{ matrix_domain }}"
+    MatrixAccessToken: "MATRIX_ACCESS_TOKEN_HERE"
     IgnoreSubject: true
     IgnoreBody: false
     SkipMarkdown: true
 ```
 
-You can also set `MatrixHomeserverUrl` to the container URL where your homeserver's Client-Server API lives by using the `{{ matrix_addons_homeserver_client_api_url }}` variable, instead of the public `https://matrix.DOMAIN` endpoint.
+where:
+
+* MailboxName - local-part of the email address, through which emails are bridged to the room whose ID is defined with MatrixRoomId
+* MatrixRoomId - internal ID of the room, to which received emails are sent as Matrix message
+* MatrixHomeserverUrl - URL of your Matrix homeserver, through which to send Matrix messages. You can also set `MatrixHomeserverUrl` to the container URL where your homeserver's Client-Server API lives by using the `{{ matrix_addons_homeserver_client_api_url }}` variable
+* MatrixUserId - the full ID of the sender user which sends bridged messages to the room
+* MatrixAccessToken - sender user's access token
+* IgnoreSubject - if set to "true", the subject is not bridged to Matrix
+* IgnoreBody - if set to "true", the message body is not bridged to Matrix
+* SkipMarkdown - if set to "true", emails are bridged as plain text Matrix message instead of Markdown (actually HTML)
+
+Refer to the official documentation [here](https://github.com/devture/email2matrix/blob/master/docs/configuration.md).
 
 ## Installing
 
 To enable Email2Matrix, run the [installation](installing.md) command (`--tags=setup-email2matrix,start`).
 
-After installation, you may wish to send a test email to `my-mailbox@matrix.DOMAIN` to make sure that Email2Matrix works as expected.
+After installation, you may wish to send a test email to the email address assigned to `mailbox1` (default: `mailbox1@matrix.DOMAIN`) to make sure that Email2Matrix works as expected.
