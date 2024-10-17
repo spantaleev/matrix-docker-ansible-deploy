@@ -50,15 +50,15 @@ matrix_static_files_file_matrix_support_enabled: true
 # Homeserver admin contacts as per MSC 1929 https://github.com/matrix-org/matrix-spec-proposals/pull/1929
 matrix_static_files_file_matrix_support_property_m_contacts:
   - matrix_id: "@admin1:{{ matrix_domain }}"
-    email_address: admin@domain.tld
+    email_address: admin@example.com
     role: m.role.admin
   - matrix_id: "@admin2:{{ matrix_domain }}"
-    email_address: admin2@domain.tld
+    email_address: admin2@example.com
     role: m.role.admin
-  - email_address: security@domain.tld
+  - email_address: security@example.com
     role: m.role.security
 
-matrix_static_files_file_matrix_support_property_m_support_page: "https://example.domain.tld/support"
+matrix_static_files_file_matrix_support_property_m_support_page: "https://example.example.com/support"
 ```
 
 To learn how to set up `/.well-known/matrix/support` for the base domain, read the Installing section below.
