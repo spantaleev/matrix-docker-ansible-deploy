@@ -66,4 +66,4 @@ After configuring the playbook, run the [installation](installing.md) command: `
 
 ## Usage
 
-You then need to start a chat with `@irc_bot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+You then need to start a chat with `@irc_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).

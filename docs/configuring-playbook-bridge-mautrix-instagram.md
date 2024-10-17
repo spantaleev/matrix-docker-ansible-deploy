@@ -35,7 +35,7 @@ matrix_admin: "@YOUR_USERNAME:{{ matrix_domain }}"
 matrix_mautrix_instagram_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@YOUR_USERNAME:YOUR_DOMAIN': admin
+      '@YOUR_USERNAME:example.com': admin
 ```
 
 You may wish to look at `roles/custom/matrix-bridge-mautrix-instagram/templates/config.yaml.j2` and `roles/custom/matrix-bridge-mautrix-instagram/defaults/main.yml` to find other things you would like to configure.
@@ -46,7 +46,7 @@ After configuring the playbook, run the [installation](installing.md) command: `
 
 ## Usage
 
-You then need to start a chat with `@instagrambot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+You then need to start a chat with `@instagrambot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 Send `login YOUR_INSTAGRAM_EMAIL_ADDRESS YOUR_INSTAGRAM_PASSWORD` to the bridge bot to enable bridging for your instagram/Messenger account.
 

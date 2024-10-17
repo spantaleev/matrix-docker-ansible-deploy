@@ -36,7 +36,7 @@ This method is currently not available for the Mautrix-Twitter bridge, but is on
 
 ## Usage
 
-1. You then need to start a chat with `@twitterbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+1. You then need to start a chat with `@twitterbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 2. Send login-cookie to start the login. The bot should respond with instructions on how to proceed.
 
 You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/twitter/authentication.html).

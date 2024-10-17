@@ -41,4 +41,4 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 ## Usage
 
-You then need to start a chat with `@gmessagesbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+You then need to start a chat with `@gmessagesbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).

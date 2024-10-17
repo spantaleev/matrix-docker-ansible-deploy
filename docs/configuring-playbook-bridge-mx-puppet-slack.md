@@ -34,7 +34,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ## Usage
 
 Once the bot is enabled you need to start a chat with `Slack Puppet Bridge` with
-the handle `@_slackpuppet_bot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base
+the handle `@_slackpuppet_bot:example.com` (where `example.com` is your base
 domain, not the `matrix.` domain).
 
 Three authentication methods are available, Legacy Token, OAuth and xoxc token.

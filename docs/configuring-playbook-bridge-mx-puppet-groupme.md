@@ -20,7 +20,7 @@ After configuring the playbook, run the [installation](installing.md) command: `
 ## Usage
 
 Once the bot is enabled you need to start a chat with `GroupMe Puppet Bridge` with
-the handle `@_groupmepuppet_bot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base
+the handle `@_groupmepuppet_bot:example.com` (where `example.com` is your base
 domain, not the `matrix.` domain).
 
 One authentication method is available.

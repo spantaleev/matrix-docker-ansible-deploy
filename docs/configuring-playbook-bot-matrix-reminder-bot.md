@@ -42,7 +42,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bot, start a chat with `@bot.matrix-reminder-bot:DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+To use the bot, start a chat with `@bot.matrix-reminder-bot:DOMAIN` (where `example.com` is your base domain, not the `matrix.` domain).
 
 You can also add the bot to any existing Matrix room (`/invite @bot.matrix-reminder-bot:DOMAIN`).
 

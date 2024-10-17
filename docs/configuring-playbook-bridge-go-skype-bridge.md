@@ -20,7 +20,7 @@ After configuring the playbook, run the [installation](installing.md) command: `
 ## Usage
 
 Once the bot is enabled, you need to start a chat with `Skype bridge bot`
-with the handle `@skypebridgebot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base
+with the handle `@skypebridgebot:example.com` (where `example.com` is your base
 domain, not the `matrix.` domain).
 
 Send `help` to the bot to see the commands available.

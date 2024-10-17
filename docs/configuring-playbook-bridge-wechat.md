@@ -18,6 +18,6 @@ After configuring the playbook, run the [installation](installing.md) command: `
 
 ## Usage
 
-Once the bridge is installed, start a chat with `@wechatbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+Once the bridge is installed, start a chat with `@wechatbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 Send `help` to the bot to see the available commands.

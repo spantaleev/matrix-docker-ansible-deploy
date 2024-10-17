@@ -225,7 +225,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-To use the bot, invite it to any existing Matrix room (`/invite @whatever_you_chose:DOMAIN` where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain, make sure you have permission from the room owner if that's not you).
+To use the bot, invite it to any existing Matrix room (`/invite @whatever_you_chose:example.com` where `example.com` is your base domain, not the `matrix.` domain, make sure you have permission from the room owner if that's not you).
 
 Basic usage is like this: `!echo hi` or `!imgur puppies` or `!giphy matrix`
 

@@ -31,7 +31,7 @@ After configuring the playbook, run the [installation](installing.md) command: `
 ## Usage
 
 Once the bot is enabled you need to start a chat with `Twitter Puppet Bridge` with
-the handle `@_twitterpuppet_bot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base
+the handle `@_twitterpuppet_bot:example.com` (where `example.com` is your base
 domain, not the `matrix.` domain).
 
 To log in, use `link` and click the link.

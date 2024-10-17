@@ -46,7 +46,7 @@ matrix_appservice_discord_bridge_enableSelfServiceBridging: true
 
 Once self-service is enabled:
 
-1. Start a chat with `@_discord_bot:<YOUR_DOMAIN>` and say `!discord help bridge`.
+1. Start a chat with `@_discord_bot:<example.com>` and say `!discord help bridge`.
 2. Follow the instructions in the help output message. If the bot is not already in the Discord server, follow the provided invite link. This may require you to be a administrator of the Discord server.
 
 **Note**: Encrypted Matrix rooms are not supported as of writing.

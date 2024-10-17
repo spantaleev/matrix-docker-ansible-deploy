@@ -74,7 +74,7 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 ## Usage
 
-1. Start a chat with `@slackbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+1. Start a chat with `@slackbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 2. If you would like to login to Slack using a token, send the `login-token` command, otherwise, send the `login-password` command. Read [here](https://docs.mau.fi/bridges/go/slack/authentication.html) on how to retrieve your token and cookie token.
 3. The bot should respond with "Successfully logged into <email> for team <workspace>"
 4. Now that you're logged in, you can send a `help` command to the bot again, to see additional commands you have access to.
