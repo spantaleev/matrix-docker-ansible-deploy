@@ -3,11 +3,9 @@
 By default, this playbook would set up a PostgreSQL database server on your machine, running in a Docker container.
 If that's alright, you can skip this.
 
-If you'd like to use an external PostgreSQL server that you manage, you can edit your configuration file  (`inventory/host_vars/matrix.<your-domain>/vars.yml`).
-
 **Note**: using **an external Postgres server is currently [not very seamless](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1682#issuecomment-1061461683) when it comes to enabling various other playbook services** - you will need to create a new database/credentials for each service and to point each service to its corresponding database using custom `vars.yml` configuration. **For the best experience with the playbook, stick to using the integrated Postgres server**.
 
-If you'd like to use an external Postgres server, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+If you'd like to use an external Postgres server that you manage, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
 
 ```yaml
 postgres_enabled: false
