@@ -53,7 +53,9 @@ After configuring the playbook, run the [installation](installing.md) command: `
 Upon starting Cactus Comments, a `bot.cactusbot` user account is created automatically.
 
 To get started, send a `help` message to the `@bot.cactusbot:your-homeserver.com` bot to confirm it's working.
+
 Then, register a site by typing: `register <sitename>`. You will then be invited into a moderation room.
+
 Now you are good to go and can include the comment section on your website!
 
 **Careful**: To really make use of self-hosting you need change a few things in comparison to the official docs!
