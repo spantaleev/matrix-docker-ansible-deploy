@@ -10,7 +10,7 @@ Setup Instructions:
 
 loosely based on [this](https://github.com/turt2live/matrix-appservice-webhooks/blob/master/README.md)
 
-1. All you basically need is to adjust your `inventory/host_vars/matrix.<domain-name>/vars.yml`:
+1. All you basically need is to adjust your `inventory/host_vars/matrix.example.com/vars.yml`:
 
 ```yaml
 matrix_appservice_webhooks_enabled: true
@@ -18,7 +18,7 @@ matrix_appservice_webhooks_api_secret: '<your_secret>'
 ```
 
 2. In case you want to change the verbosity of logging via `journalctl -fu matrix-appservice-webhooks.service`
-you can adjust this in `inventory/host_vars/matrix.<domain-name>/vars.yml` as well.
+you can adjust this in `inventory/host_vars/matrix.example.com/vars.yml` as well.
 
 **Note**: default value is: `info` and availabe log levels are : `info`, `verbose`
 
