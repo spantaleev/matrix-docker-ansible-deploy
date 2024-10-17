@@ -17,7 +17,7 @@ You can enable whichever component you need (typically both).
 
 ## Configuration
 
-Add the following block to your `vars.yaml` and make sure to exchange the tokens to randomly generated values.
+Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 #################
