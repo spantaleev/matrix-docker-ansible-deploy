@@ -46,7 +46,7 @@ matrix_bot_baibot_enabled: true
 matrix_bot_baibot_config_user_password: 'PASSWORD_FOR_THE_BOT'
 
 # An optional passphrase to use for backing up and recovering the bot's encryption keys.
-# You can use any string here. Consider generating it with `pwgen -s 64 1`.
+# You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
 #
 # If set to null, the recovery module will not be used and losing your session/database
 # will mean you lose access to old messages in encrypted room.
