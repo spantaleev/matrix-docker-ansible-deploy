@@ -11,7 +11,7 @@ To make your server only federate with servers of your choosing, add the followi
 ```yaml
 matrix_synapse_federation_domain_whitelist:
 - example.com
-- another.com
+- example.net
 ```
 
 If you wish to disable federation, you can do that with an empty list (`[]`), or better yet by completely disabling federation (see below).

@@ -14,5 +14,5 @@ matrix_synapse_ext_spam_checker_synapse_simple_antispam_enabled: true
 
 matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeservers:
 - example.com
-- another.com
+- example.net
 ```

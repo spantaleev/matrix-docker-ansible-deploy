@@ -89,7 +89,7 @@ If `matrix_admin` is already configured in your `vars.yml` configuration, you ca
 #
 # matrix_bot_baibot_config_access_admin_patterns:
 #   - "@*:example.com"
-#   - "@admin:another.com"
+#   - "@admin:example.net"
 #
 # .. unless you've made yourself an admin of all bots/bridges like this:
 #
