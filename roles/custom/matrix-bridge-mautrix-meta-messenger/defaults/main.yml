@@ -55,6 +55,18 @@ matrix_mautrix_meta_messenger_container_labels_metrics_middleware_basic_auth_ena
 # See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
 matrix_mautrix_meta_messenger_container_labels_metrics_middleware_basic_auth_users: ''
 
+# Controls whether labels will be added that expose the bridge's bridgev2 API endpoints
+matrix_mautrix_meta_messenger_container_labels_bridgev2_enabled: "{{ matrix_mautrix_meta_messenger_appservice_bridgev2_enabled }}"
+matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_hostname: ""
+# Following two variables should be RegEx-escaped, see https://doc.traefik.io/traefik/middlewares/http/replacepathregex/
+matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_path_external: "/_matrix/{{ matrix_mautrix_meta_messenger_identifier }}/provision"
+matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_path_internal: "/_matrix/provision"
+matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_rule: "Host(`{{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_hostname }}`) && PathPrefix(`{{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_path_external }}`)"
+matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_priority: 0
+matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_entrypoints: "{{ matrix_mautrix_meta_messenger_container_labels_traefik_entrypoints }}"
+matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_tls: "{{ matrix_mautrix_meta_messenger_container_labels_metrics_traefik_entrypoints != 'web' }}"
+matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_tls_certResolver: "{{ matrix_mautrix_meta_messenger_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
 # matrix_mautrix_meta_messenger_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
 #
@@ -143,6 +155,10 @@ matrix_mautrix_meta_messenger_appservice_database_uri: |-
   }}
 
 matrix_mautrix_meta_messenger_appservice_token: ''
+
+# Whether to make public the bridgev2 API endpoints.
+# See https://spec.mau.fi/megabridge/
+matrix_mautrix_meta_messenger_appservice_bridgev2_enabled: false
 
 # Controls which service this bridge is for.
 # Valid options:

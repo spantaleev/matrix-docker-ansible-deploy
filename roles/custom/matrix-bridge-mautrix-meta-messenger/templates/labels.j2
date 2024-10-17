@@ -43,6 +43,39 @@ traefik.http.routers.{{ matrix_mautrix_meta_messenger_identifier }}-metrics.tls.
 {% endif %}
 
 
+{% if matrix_mautrix_meta_messenger_container_labels_bridgev2_enabled %}
+############################################################
+#                                                          #
+# Appservice Bridgev2 API                                  #
+#                                                          #
+############################################################
+
+traefik.http.middlewares.{{ matrix_mautrix_meta_messenger_identifier }}-bridgev2-replacepathregex.replacepathregex.regex=^{{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_path_external }}/(.*)
+traefik.http.middlewares.{{ matrix_mautrix_meta_messenger_identifier }}-bridgev2-replacepathregex.replacepathregex.replacement={{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_path_internal }}/$1
+traefik.http.routers.{{ matrix_mautrix_meta_messenger_identifier }}-bridgev2.middlewares={{ matrix_mautrix_meta_messenger_identifier }}-bridgev2-replacepathregex
+
+traefik.http.routers.{{ matrix_mautrix_meta_messenger_identifier }}-bridgev2.rule={{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_rule }}
+
+{% if matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_priority | int > 0 %}
+traefik.http.routers.{{ matrix_mautrix_meta_messenger_identifier }}-bridgev2.priority={{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.{{ matrix_mautrix_meta_messenger_identifier }}-bridgev2.service={{ matrix_mautrix_meta_messenger_identifier }}-appservice
+traefik.http.routers.{{ matrix_mautrix_meta_messenger_identifier }}-bridgev2.entrypoints={{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_entrypoints }}
+
+traefik.http.routers.{{ matrix_mautrix_meta_messenger_identifier }}-bridgev2.tls={{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_tls | to_json }}
+{% if matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_tls %}
+traefik.http.routers.{{ matrix_mautrix_meta_messenger_identifier }}-bridgev2.tls.certResolver={{ matrix_mautrix_meta_messenger_container_labels_bridgev2_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Appservice Bridgev2 API                                 #
+#                                                          #
+############################################################
+{% endif %}
+
+
 {% endif %}
 
 {{ matrix_mautrix_meta_messenger_container_labels_additional_labels }}
