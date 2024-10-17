@@ -40,7 +40,7 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
 6. Invite the bridge bot user into the admin room:
 
     ```
-    /invite @slackbot:MY.example.com
+    /invite @slackbot:example.com
     ```
 
     Note that the bot's domain is your server's domain **without the `matrix.` prefix.**
@@ -81,7 +81,7 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
 
     * Create a Matrix room in the usual manner for your client. Take a note of its Matrix room ID - it will look something like !aBcDeF:example.com.
 
-    * Invite the bot user to both the Slack and Matrix channels you would like to bridge using `/invite @matrixbot` for Slack and `/invite @slackbot:MY.example.com` for Matrix.
+    * Invite the bot user to both the Slack and Matrix channels you would like to bridge using `/invite @matrixbot` for Slack and `/invite @slackbot:example.com` for Matrix.
 
     * Determine the "channel ID" that Slack uses to identify the channel. You can see it when you open a given Slack channel in a browser. The URL reads like this: `https://app.slack.com/client/XXX/<the channel ID>/details/`.
 
