@@ -9,7 +9,7 @@ matrix_mautrix_whatsapp_container_image_self_build_repo: "https://mau.dev/mautri
 matrix_mautrix_whatsapp_container_image_self_build_branch: "{{ 'master' if matrix_mautrix_whatsapp_version == 'latest' else matrix_mautrix_whatsapp_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/whatsapp
-matrix_mautrix_whatsapp_version: v0.10.9
+matrix_mautrix_whatsapp_version: v0.11.0
 
 # See: https://mau.dev/mautrix/whatsapp/container_registry
 matrix_mautrix_whatsapp_docker_image: "{{ matrix_mautrix_whatsapp_docker_image_name_prefix }}mautrix/whatsapp:{{ matrix_mautrix_whatsapp_version }}"
@@ -122,7 +122,7 @@ matrix_mautrix_whatsapp_database_connection_string: 'postgresql://{{ matrix_maut
 
 matrix_mautrix_whatsapp_appservice_database_type: "{{
 	{
-		'sqlite': 'sqlite3',
+		'sqlite': 'sqlite3-fk-wal',
 		'postgres':'postgres',
 	}[matrix_mautrix_whatsapp_database_engine]
 }}"
@@ -134,19 +134,24 @@ matrix_mautrix_whatsapp_appservice_database_uri: "{{
 	}[matrix_mautrix_whatsapp_database_engine]
 }}"
 
-matrix_mautrix_whatsapp_bridge_login_shared_secret_map: "{{ matrix_mautrix_whatsapp_bridge_login_shared_secret_map_auto | combine(matrix_mautrix_whatsapp_bridge_login_shared_secret_map_custom) }}"
-matrix_mautrix_whatsapp_bridge_login_shared_secret_map_auto: {}
-matrix_mautrix_whatsapp_bridge_login_shared_secret_map_custom: {}
+matrix_mautrix_whatsapp_double_puppet_secrets: "{{ matrix_mautrix_whatsapp_double_puppet_secrets_auto | combine(matrix_mautrix_whatsapp_double_puppet_secrets_custom) }}"
+matrix_mautrix_whatsapp_double_puppet_secrets_auto: {}
+matrix_mautrix_whatsapp_double_puppet_secrets_custom: {}
 
 # Enable End-to-bridge encryption
 matrix_mautrix_whatsapp_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
 matrix_mautrix_whatsapp_bridge_encryption_default: "{{ matrix_bridges_encryption_default }}"
+matrix_mautrix_whatsapp_bridge_encryption_require: false
 matrix_mautrix_whatsapp_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_whatsapp_bridge_encryption_allow }}"
+# This pickle key value is backward-compatible with the old bridge.
+# See: https://github.com/mautrix/whatsapp/blob/v0.11.0/cmd/mautrix-whatsapp/legacymigrate.go#L44
+matrix_mautrix_whatsapp_bridge_encryption_pickle_key: maunium.net/go/mautrix-whatsapp
 
 matrix_mautrix_whatsapp_bridge_personal_filtering_spaces: true
-matrix_mautrix_whatsapp_bridge_mute_bridging: true
-matrix_mautrix_whatsapp_bridge_enable_status_broadcast: false
-matrix_mautrix_whatsapp_bridge_allow_user_invite: true
+matrix_mautrix_whatsapp_bridge_enable_status_broadcast: true
+
+matrix_mautrix_whatsapp_provisioning_shared_secret: ''
+matrix_mautrix_whatsapp_public_media_signing_key: ''
 
 matrix_mautrix_whatsapp_bridge_permissions: |
   {{
@@ -159,6 +164,12 @@ matrix_mautrix_whatsapp_bridge_relay_enabled: "{{ matrix_bridges_relay_enabled }
 
 # Only allow admins on this home server to set themselves as a relay user
 matrix_mautrix_whatsapp_bridge_relay_admin_only: true
+
+# List of user login IDs which anyone can set as a relay, as long as the relay user is in the room.
+matrix_mautrix_whatsapp_bridge_relay_default_relays: []
+
+# Controls whether to do backfilling at all.
+matrix_mautrix_whatsapp_backfill_enabled: true
 
 # Default mautrix-whatsapp configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
