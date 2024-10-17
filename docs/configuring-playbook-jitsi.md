@@ -61,7 +61,7 @@ jitsi_prosody_auth_internal_accounts:
     password: "another-password"
 ```
 
-**Caution:** Accounts added here and subsequently removed will not be automatically removed from the Prosody server until user account cleaning is integrated into the playbook.
+**Caution**: Accounts added here and subsequently removed will not be automatically removed from the Prosody server until user account cleaning is integrated into the playbook.
 
 **If you get an error** like this: "Error: Account creation/modification not supported.", it's likely that you had previously installed Jitsi without auth/guest support. In such a case, you should look into [Rebuilding your Jitsi installation](#rebuilding-your-jitsi-installation).
 
@@ -268,7 +268,7 @@ To enable Gravatar set:
 jitsi_disable_gravatar: false
 ```
 
-**Beware:** This leaks information to a third party, namely the Gravatar-Service (unless configured otherwise: gravatar.com).
+**Beware**: This leaks information to a third party, namely the Gravatar-Service (unless configured otherwise: gravatar.com).
 Besides metadata, this includes the matrix user_id and possibly the room identifier (via `referrer` header).
 
 ## Installing

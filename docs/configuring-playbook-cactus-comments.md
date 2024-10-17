@@ -56,7 +56,7 @@ To get started, send a `help` message to the `@bot.cactusbot:your-homeserver.com
 Then, register a site by typing: `register <sitename>`. You will then be invited into a moderation room.
 Now you are good to go and can include the comment section on your website!
 
-**Careful:** To really make use of self-hosting you need change a few things in comparison to the official docs!
+**Careful**: To really make use of self-hosting you need change a few things in comparison to the official docs!
 
 Insert the following snippet into you page and make sure to replace `example.com` with your base domain!
 
