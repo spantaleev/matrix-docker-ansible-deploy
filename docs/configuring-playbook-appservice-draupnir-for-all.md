@@ -59,7 +59,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-If you made it through all the steps above and your main control room was joined by a user called `@draupnir-main:matrix-homeserver-domain` you have succesfully installed Draupnir for All and can now start using it.
+If you made it through all the steps above and your main control room was joined by a user called `@draupnir-main:example.com` you have succesfully installed Draupnir for All and can now start using it.
 
 The installation of Draupnir for all in this playbook is very much Alpha quality. Usage-wise, Draupnir for allis almost identical to Draupnir bot mode.
 
@@ -69,11 +69,11 @@ Draupnir for all includes several security measures like that it only allows use
 
 The bot requires a powerlevel of 50 in the management room to control who is allowed to use the bot. The bot does currently not say anything if this is true or false. (This is considered a bug and is documented in issue [#297](https://github.com/the-draupnir-project/Draupnir/issues/297))
 
-To allow users or whole homeservers you type /plain @draupnir-main:matrix-homeserver-domain allow `target` and target can be either a MXID or a wildcard like `@*:example.com` to allow all users on example.com to register. We use /plain to force the client to not attempt to mess with this command as it can break Wildcard commands especially.
+To allow users or whole homeservers you type /plain @draupnir-main:example.com allow `target` and target can be either a MXID or a wildcard like `@*:example.com` to allow all users on example.com to register. We use /plain to force the client to not attempt to mess with this command as it can break Wildcard commands especially.
 
 ### 2. How to provision a D4A once you are allowed to.
 
-Open a DM with @draupnir-main:matrix-homeserver-domain and if using Element send a message into this DM to finalise creating it. The bot will reject this invite and you will shortly get invited to the Draupnir control room for your newly provisioned Draupnir. From here its just a normal Draupnir experience.
+Open a DM with @draupnir-main:example.com and if using Element send a message into this DM to finalise creating it. The bot will reject this invite and you will shortly get invited to the Draupnir control room for your newly provisioned Draupnir. From here its just a normal Draupnir experience.
 
 Congratulations if you made it all the way here because you now have a fully working Draupnir for all deployment.
 
