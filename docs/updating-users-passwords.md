@@ -8,7 +8,7 @@ You can reset a user's password via the Ansible playbook (make sure to edit the 
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-username> password=<your-password>' --tags=update-user-password
 ```
 
-**Note**: `<your-username>` is just a plain username (like `john`), not your full `@<username>:<your-domain>` identifier.
+**Note**: `<your-username>` is just a plain username (like `john`), not your full `@<username>:example.com` identifier.
 
 **You can then log in with that user** via the Element service that this playbook has created for you at a URL like this: `https://element.<domain>/`.
 

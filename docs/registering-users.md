@@ -34,7 +34,7 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-usern
 /matrix/synapse/bin/register-user <your-username> <your-password> <admin access: 0 or 1>
 ```
 
-**Note**: `<your-username>` is just a plain username (like `john`), not your full `@<username>:<your-domain>` identifier.
+**Note**: `<your-username>` is just a plain username (like `john`), not your full `@<username>:example.com` identifier.
 
 **You can then log in with that user** via the Element service that this playbook has created for you at a URL like this: `https://element.<domain>/`.
 

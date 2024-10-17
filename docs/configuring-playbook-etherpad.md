@@ -46,7 +46,7 @@ After configuring the playbook, run the [installation](installing.md) command: `
 
 ## Usage
 
-The Etherpad UI should be available at `https://etherpad.<your-domain>`, while the admin UI (if enabled) should then be available at `https://etherpad.<your-domain>/admin`.
+The Etherpad UI should be available at `https://etherpad.example.com`, while the admin UI (if enabled) should then be available at `https://etherpad.example.com/admin`.
 
 If you've [decided on another hostname or path-prefix](#decide-on-a-domain-and-path) (e.g. `https://matrix.example.com/etherpad`), adjust these URLs accordingly before usage.
 
@@ -55,7 +55,7 @@ If you've [decided on another hostname or path-prefix](#decide-on-a-domain-and-p
 
 If you want to manage and remove old unused pads from Etherpad, you will first need to able Admin access as described above.
 
-Then from the plugin manager page (`https://etherpad.<your-domain>/admin/plugins`, install the `adminpads2` plugin. Once installed, you should have a "Manage pads" section in the Admin web-UI.
+Then from the plugin manager page (`https://etherpad.example.com/admin/plugins`, install the `adminpads2` plugin. Once installed, you should have a "Manage pads" section in the Admin web-UI.
 
 
 ### How to use Etherpad widgets without an Integration Manager (like Dimension)
@@ -76,7 +76,7 @@ The Dimension configuration menu can be accessed with the sprocket icon as you b
 
 If you wish to disable the Etherpad chat button, you can do it by appending `?showChat=false` to the end of the pad URL, or the template.
 
-Example: `https://etherpad.<your-domain>/p/$roomId_$padName?showChat=false`
+Example: `https://etherpad.example.com/p/$roomId_$padName?showChat=false`
 
 
 ## Known issues

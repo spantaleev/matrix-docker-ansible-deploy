@@ -7,7 +7,7 @@ This page summarizes how to use Nginx Proxy Manager (NPM) to front the integrate
 
 ## Prerequisite configuration
 
-To get started, first follow the [front the integrated reverse-proxy webserver with another reverse-proxy](../../../docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) instructions and update your playbook's configuration (`inventory/host_vars/matrix.<your-domain>/vars.yml`).
+To get started, first follow the [front the integrated reverse-proxy webserver with another reverse-proxy](../../../docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) instructions and update your playbook's configuration (`inventory/host_vars/matrix.example.com/vars.yml`).
 
 If Matrix federation is enabled, then you will need to make changes to [NPM's Docker configuration](https://nginxproxymanager.com/guide/#quick-setup). By default NPM already exposes ports `80` and `443`, but you would also need to **additionally expose the Matrix Federation port** (as it appears on the public side): `8448`.
 

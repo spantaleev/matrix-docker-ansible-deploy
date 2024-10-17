@@ -11,11 +11,11 @@ There are 2 types of well-known service discovery that Matrix makes use of:
 
 ## Introduction to Federation Server Discovery
 
-All services created by this playbook are meant to be installed on their own server (such as `matrix.<your-domain>`).
+All services created by this playbook are meant to be installed on their own server (such as `matrix.example.com`).
 
-As [per the Server-Server specification](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), to use a Matrix user identifier like `@<username>:<your-domain>` while hosting services on a subdomain like `matrix.<your-domain>`, the Matrix network needs to be instructed of such delegation/redirection.
+As [per the Server-Server specification](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), to use a Matrix user identifier like `@<username>:example.com` while hosting services on a subdomain like `matrix.example.com`, the Matrix network needs to be instructed of such delegation/redirection.
 
-Server delegation can be configured using DNS SRV records or by setting up a `/.well-known/matrix/server` file on the base domain (`<your-domain>`).
+Server delegation can be configured using DNS SRV records or by setting up a `/.well-known/matrix/server` file on the base domain (`example.com`).
 
 Both methods have their place and will continue to do so. You only need to use just one of these delegation methods.
 For simplicity reasons, our setup advocates for the `/.well-known/matrix/server` method and guides you into using that.
@@ -178,7 +178,7 @@ backend matrix-backend
 
 **For AWS CloudFront**
 
-   1. Add a custom origin with matrix.<your-domain> to your distribution
+   1. Add a custom origin with matrix.example.com to your distribution
    1. Add two behaviors, one for `.well-known/matrix/client` and one for `.well-known/matrix/server` and point them to your new origin.
 
 Make sure to:

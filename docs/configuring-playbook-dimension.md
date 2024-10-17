@@ -30,7 +30,7 @@ Once you've decided on the domain and path, **you may need to adjust your DNS** 
 
 ## Enable
 
-To enable Dimension, add this to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+To enable Dimension, add this to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
 
 ```yaml
 matrix_dimension_enabled: true
@@ -40,7 +40,7 @@ matrix_dimension_enabled: true
 ## Define admin users
 
 These users can modify the integrations this Dimension supports.
-Add this to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+Add this to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
 
 ```yaml
 matrix_dimension_admins:
@@ -60,7 +60,7 @@ To get an access token for the Dimension user, you can follow the documentation 
 
 **Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.**
 
-Add access token to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+Add access token to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
 
 ```yaml
 matrix_dimension_access_token: "YOUR ACCESS TOKEN HERE"
