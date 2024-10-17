@@ -10,7 +10,7 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-usern
 
 **Note**: `<your-username>` is just a plain username (like `john`), not your full `@<username>:example.com` identifier.
 
-**You can then log in with that user** via the Element service that this playbook has created for you at a URL like this: `https://element.<domain>/`.
+**You can then log in with that user** via the Element service that this playbook has created for you at a URL like this: `https://element.example.com/`.
 
 
 ## Option 2 (if you are using an external Postgres server):
