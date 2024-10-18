@@ -5,7 +5,7 @@ By default, this playbook sets up an [Exim](https://www.exim.org/) email server 
 The email server would attempt to deliver emails directly to their final destination.
 This may or may not work, depending on your domain configuration (SPF settings, etc.)
 
-By default, emails are sent from `matrix@<your-domain-name>` (as specified by the `exim_relay_sender_address` playbook variable).
+By default, emails are sent from `matrix@matrix.example.com`, as specified by the `exim_relay_sender_address` playbook variable.
 
 **Note**: If you are using a Google Cloud instance, [port 25 is always blocked](https://cloud.google.com/compute/docs/tutorials/sending-mail/), so you need to relay email through another SMTP server as described below.
 
@@ -17,7 +17,7 @@ No matter whether you send email directly (the default) or you relay email throu
 
 ## Relaying email through another SMTP server
 
-If you'd like to relay email through another SMTP server, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+If you'd like to relay email through another SMTP server, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 exim_relay_sender_address: "another.sender@example.com"

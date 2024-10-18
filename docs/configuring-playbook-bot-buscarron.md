@@ -7,12 +7,12 @@ Buscarron is bot that receives HTTP POST submissions of web forms and forwards t
 
 ## Decide on a domain and path
 
-By default, Buscarron is configured to use its own dedicated domain (`buscarron.DOMAIN`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+By default, Buscarron is configured to use its own dedicated domain (`buscarron.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
 
 You can override the domain and path like this:
 
 ```yaml
-# Switch to the domain used for Matrix services (`matrix.DOMAIN`),
+# Switch to the domain used for Matrix services (`matrix.example.com`),
 # so we won't need to add additional DNS records for Buscarron.
 matrix_bot_buscarron_hostname: "{{ matrix_server_fqn_matrix }}"
 
@@ -30,7 +30,7 @@ If you've decided to reuse the `matrix.` domain, you won't need to do any extra 
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_buscarron_enabled: true
@@ -43,9 +43,9 @@ matrix_bot_buscarron_password: PASSWORD_FOR_THE_BOT
 
 # Adjust accepted forms
 matrix_bot_buscarron_forms:
-  - name: contact # (mandatory) Your form name, will be used as endpoint, eg: buscarron.DOMAIN/contact
-    room: "!yourRoomID:DOMAIN" # (mandatory) Room ID where form submission will be posted
-    redirect: https://DOMAIN # (mandatory) To what page user will be redirected after the form submission
+  - name: contact # (mandatory) Your form name, will be used as endpoint, eg: buscarron.example.com/contact
+    room: "!yourRoomID:{{ matrix_domain }}" # (mandatory) Room ID where form submission will be posted
+    redirect: https://example.com # (mandatory) To what page user will be redirected after the form submission
     ratelimit: 1r/m # (optional) rate limit of the form, format: <max requests>r/<interval:s,m>, eg: 1r/s or 54r/m
     hasemail: 1 # (optional) form has "email" field that should be validated
     extensions: [] # (optional) list of form extensions (not used yet)
@@ -71,10 +71,10 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bot, invite the `@bot.buscarron:DOMAIN` to the room you specified in a config, after that any point your form to the form url, example for the `contact` form:
+To use the bot, invite the `@bot.buscarron:example.com` to the room you specified in a config, after that any point your form to the form url, example for the `contact` form:
 
 ```html
-<form method="POST" action="https://buscarron.DOMAIN/contact">
+<form method="POST" action="https://buscarron.example.com/contact">
 <!--your fields-->
 </form>
 ```

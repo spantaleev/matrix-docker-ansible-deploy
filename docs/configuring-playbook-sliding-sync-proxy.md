@@ -14,7 +14,7 @@ Element X Android is [available on the Github Releases page](https://github.com/
 
 ## Decide on a domain and path
 
-By default, the Sliding Sync proxy is configured to be served on the Matrix domain (`matrix.DOMAIN`, controlled by `matrix_server_fqn_matrix`), under the `/sliding-sync` path.
+By default, the Sliding Sync proxy is configured to be served on the Matrix domain (`matrix.example.com`, controlled by `matrix_server_fqn_matrix`), under the `/sliding-sync` path.
 
 This makes it easy to set it up, **without** having to [adjust your DNS records](#adjusting-dns-records).
 
@@ -28,7 +28,7 @@ If you've changed the default hostname, **you may need to adjust your DNS** reco
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_sliding_sync_enabled: true
@@ -56,6 +56,6 @@ matrix_sliding_sync_database_name: 'matrix_sliding_sync'
 You **don't need to do anything special** to make use of the Sliding Sync Proxy.
 Simply open your client which supports Sliding Sync (like Element X) and log in.
 
-When the Sliding Sync proxy is [installed](#installing), your `/.well-known/matrix/client` file is also updated. A new `org.matrix.msc3575.proxy` section and `url` property are added there and made to point to your Sliding Sync proxy's base URL (e.g. `https://matrix.DOMAIN/sliding-sync`).
+When the Sliding Sync proxy is [installed](#installing), your `/.well-known/matrix/client` file is also updated. A new `org.matrix.msc3575.proxy` section and `url` property are added there and made to point to your Sliding Sync proxy's base URL (e.g. `https://matrix.example.com/sliding-sync`).
 
 This allows clients which support Sliding Sync to detect the Sliding Sync Proxy's URL and make use of it.

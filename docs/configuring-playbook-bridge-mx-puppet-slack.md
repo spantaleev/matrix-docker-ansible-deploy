@@ -10,11 +10,11 @@ See the project page to learn what it does and why it might be useful to you.
 
 ## Prerequisite
 
-Follow the [OAuth credentials](https://github.com/Sorunome/mx-puppet-slack#option-2-oauth) instructions to create a new Slack app, setting the redirect URL to `https://matrix.DOMAIN/slack/oauth`.
+Follow the [OAuth credentials](https://github.com/Sorunome/mx-puppet-slack#option-2-oauth) instructions to create a new Slack app, setting the redirect URL to `https://matrix.example.com/slack/oauth`.
 
 ## Adjusting the playbook configuration
 
-To enable the [Slack](https://slack.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the [Slack](https://slack.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mx_puppet_slack_enabled: true
@@ -34,7 +34,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ## Usage
 
 Once the bot is enabled you need to start a chat with `Slack Puppet Bridge` with
-the handle `@_slackpuppet_bot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base
+the handle `@_slackpuppet_bot:example.com` (where `example.com` is your base
 domain, not the `matrix.` domain).
 
 Three authentication methods are available, Legacy Token, OAuth and xoxc token.

@@ -6,7 +6,7 @@ See the project's [documentation](https://docs.mau.fi/bridges/python/googlechat/
 
 ## Adjusting the playbook configuration
 
-To enable the [Google Chat](https://chat.google.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the [Google Chat](https://chat.google.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mautrix_googlechat_enabled: true
@@ -44,7 +44,7 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 ## Usage
 
-Once the bot is enabled you need to start a chat with `googlechat bridge bot` with handle `@googlechatbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+Once the bot is enabled you need to start a chat with `googlechat bridge bot` with handle `@googlechatbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 Send `login` to the bridge bot to receive a link to the portal from which you can enable the bridging. Open the link sent by the bot and follow the instructions.
 

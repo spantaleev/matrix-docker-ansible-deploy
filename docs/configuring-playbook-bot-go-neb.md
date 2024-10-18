@@ -26,12 +26,12 @@ Once the user is created you can [obtain an access token](obtaining-access-token
 
 ## Decide on a domain and path
 
-By default, Go-NEB is configured to use its own dedicated domain (`goneb.DOMAIN`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+By default, Go-NEB is configured to use its own dedicated domain (`goneb.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
 
 You can override the domain and path like this:
 
 ```yaml
-# Switch to the domain used for Matrix services (`matrix.DOMAIN`),
+# Switch to the domain used for Matrix services (`matrix.example.com`),
 # so we won't need to add additional DNS records for Go-NEB.
 matrix_bot_go_neb_hostname: "{{ matrix_server_fqn_matrix }}"
 
@@ -49,7 +49,7 @@ If you've decided to reuse the `matrix.` domain, you won't need to do any extra 
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 matrix_bot_go_neb_enabled: true
@@ -207,7 +207,7 @@ matrix_bot_go_neb_services:
       webhook_url: "http://localhost/services/hooks/YWxlcnRtYW5hZ2VyX3NlcnZpY2U"
       # Each room will get the notification with the alert rendered with the given template
       rooms:
-        "!someroomid:domain.tld":
+        "!someroomid:example.com":
           text_template: "{% raw %}{{range .Alerts -}} [{{ .Status }}] {{index .Labels \"alertname\" }}: {{index .Annotations \"description\"}} {{ end -}}{% endraw %}"
           html_template: "{% raw %}{{range .Alerts -}}  {{ $severity := index .Labels \"severity\" }}    {{ if eq .Status \"firing\" }}      {{ if eq $severity \"critical\"}}        <font color='red'><b>[FIRING - CRITICAL]</b></font>      {{ else if eq $severity \"warning\"}}        <font color='orange'><b>[FIRING - WARNING]</b></font>      {{ else }}        <b>[FIRING - {{ $severity }}]</b>      {{ end }}    {{ else }}      <font color='green'><b>[RESOLVED]</b></font>    {{ end }}  {{ index .Labels \"alertname\"}} : {{ index .Annotations \"description\"}}   <a href=\"{{ .GeneratorURL }}\">source</a><br/>{{end -}}{% endraw %}"
           msg_type: "m.text"  # Must be either `m.text` or `m.notice`
@@ -225,7 +225,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-To use the bot, invite it to any existing Matrix room (`/invite @whatever_you_chose:DOMAIN` where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain, make sure you have permission from the room owner if that's not you).
+To use the bot, invite it to any existing Matrix room (`/invite @whatever_you_chose:example.com` where `example.com` is your base domain, not the `matrix.` domain, make sure you have permission from the room owner if that's not you).
 
 Basic usage is like this: `!echo hi` or `!imgur puppies` or `!giphy matrix`
 

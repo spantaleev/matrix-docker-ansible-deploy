@@ -1,7 +1,7 @@
 # Serving the base domain
 
-This playbook sets up services on your Matrix server (`matrix.DOMAIN`).
-To have this server officially be responsible for Matrix services for the base domain (`DOMAIN`), you need to set up [Server Delegation](howto-server-delegation.md).
+This playbook sets up services on your Matrix server (`matrix.example.com`).
+To have this server officially be responsible for Matrix services for the base domain (`example.com`), you need to set up [Server Delegation](howto-server-delegation.md).
 This is normally done by [configuring well-known](configuring-well-known.md) files on the base domain.
 
 People who don't have a separate server to dedicate to the base domain have trouble arranging this.
@@ -14,7 +14,7 @@ Usually, there are 2 options:
 
 This documentation page tells you how to do the latter. With some easy changes, we make it possible to serve the base domain from the Matrix server via the integrated webserver.
 
-Just **adjust your DNS records**, so that your base domain is pointed to the Matrix server's IP address (using a DNS `A` record) **and then add the following configuration** to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Just **adjust your DNS records**, so that your base domain is pointed to the Matrix server's IP address (using a DNS `A` record) **and then add the following configuration** to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_static_files_container_labels_base_domain_enabled: true
@@ -26,7 +26,7 @@ Doing this, the playbook will:
 
 - serve the `/.well-known/matrix/*` files which are necessary for [Federation Server Discovery](configuring-well-known.md#introduction-to-client-server-discovery) (also see [Server Delegation](howto-server-delegation.md)) and [Client-Server discovery](configuring-well-known.md#introduction-to-client-server-discovery)
 
-- serve a simple homepage at `https://DOMAIN` with content `Hello from DOMAIN` (configurable via the `matrix_static_files_file_index_html_template` variable). You can also [serve a more complicated static website](#serving-a-static-website-at-the-base-domain).
+- serve a simple homepage at `https://example.com` with content `Hello from example.com` (configurable via the `matrix_static_files_file_index_html_template` variable). You can also [serve a more complicated static website](#serving-a-static-website-at-the-base-domain).
 
 
 ## Serving a static website at the base domain
@@ -43,7 +43,7 @@ matrix_static_files_container_labels_base_domain_enabled: true
 # Prevent the default index.html file from being installed
 matrix_static_files_file_index_html_enabled: false
 
-# Disable the automatic redirectin of `https://DOMAIN/` to `https://matrix.DOMAIN/`.
+# Disable the automatic redirectin of `https://example.com/` to `https://matrix.example.com/`.
 # This gets automatically enabled when you disable `matrix_static_files_file_index_html_enabled`, as we're doing above.
 matrix_static_files_container_labels_base_domain_root_path_redirection_enabled: false
 ```
@@ -65,7 +65,7 @@ You have 2 options.
 - [configuring Matrix Delegation via well-known](./configuring-well-known.md)
 
 **Another way is to serve the base domain from another (your own) container on the Matrix server**. This involves:
-- telling the playbook to only serve `BASE_DOMAIN/.well-known/matrix` files by adjusting your `vars.yml` configuration like this:
+- telling the playbook to only serve `example.com/.well-known/matrix` files by adjusting your `vars.yml` configuration like this:
   - keep `matrix_static_files_container_labels_base_domain_enabled: true`
   - add an extra: `matrix_static_files_container_labels_base_domain_traefik_path_prefix: /.well-known/matrix`
 - building and running a new container on the Matrix server:

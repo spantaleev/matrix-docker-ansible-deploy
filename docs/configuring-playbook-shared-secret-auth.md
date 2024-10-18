@@ -6,7 +6,7 @@ See that project's documentation to learn what it does and why it might be usefu
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_synapse_ext_password_provider_shared_secret_auth_enabled: true

@@ -6,7 +6,7 @@ See the project's [documentation](https://github.com/beeper/linkedin/blob/master
 
 ## Adjusting the playbook configuration
 
-To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_beeper_linkedin_enabled: true
@@ -28,7 +28,7 @@ If you would like to be able to administrate the bridge from your account it can
 matrix_beeper_linkedin_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@YOUR_USERNAME:YOUR_DOMAIN': admin
+      '@YOUR_USERNAME:example.com': admin
 ```
 
 You may wish to look at `roles/custom/matrix-bridge-beeper-linkedin/templates/config.yaml.j2` to find other things you would like to configure.
@@ -48,7 +48,7 @@ Enabling double puppeting by enabling the [Shared Secret Auth](configuring-playb
 
 ## Usage
 
-You then need to start a chat with `@linkedinbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+You then need to start a chat with `@linkedinbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 Send `login YOUR_LINKEDIN_EMAIL_ADDRESS` to the bridge bot to enable bridging for your LinkedIn account.
 

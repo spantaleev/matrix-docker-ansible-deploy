@@ -9,7 +9,7 @@ The setup done by the playbook is very similar to [docker-jitsi-meet](https://gi
 
 ## Prerequisites
 
-Before installing Jitsi, make sure you've created the `jitsi.DOMAIN` DNS record (unless you've changed `jitsi_hostname`, as described below). See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+Before installing Jitsi, make sure you've created the `jitsi.example.com` DNS record (unless you've changed `jitsi_hostname`, as described below). See [Configuring DNS](configuring-dns.md) for details about DNS changes.
 
 You may also need to open the following ports to your server:
 
@@ -19,7 +19,7 @@ You may also need to open the following ports to your server:
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 jitsi_enabled: true
@@ -42,14 +42,14 @@ Currently, there are three supported authentication modes: 'internal' (default),
 
 **Note**: Authentication is not tested via the playbook's self-checks.
 We therefore recommend that you manually verify if authentication is required by jitsi.
-For this, try to manually create a conference on jitsi.DOMAIN in your browser.
+For this, try to manually create a conference on jitsi.example.com in your browser.
 
 ### Authenticate using Jitsi accounts (Auth-Type 'internal')
 The default authentication mechanism is 'internal' auth, which requires jitsi-accounts to be setup and is the recommended setup, as it also works in federated rooms.
 With authentication enabled, all meeting rooms have to be opened by a registered user, after which guests are free to join.
 If a registered host is not yet present, guests are put on hold in individual waiting rooms.
 
-Add these lines to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
+Add these lines to your `inventory/host_vars/matrix.example.com/vars.yml` configuration:
 
 ```yaml
 jitsi_enable_auth: true
@@ -89,8 +89,8 @@ An example LDAP configuration could be:
 ```yaml
 jitsi_enable_auth: true
 jitsi_auth_type: ldap
-jitsi_ldap_url: "ldap://ldap.DOMAIN"
-jitsi_ldap_base: "OU=People,DC=DOMAIN"
+jitsi_ldap_url: "ldap://ldap.example.com"
+jitsi_ldap_base: "OU=People,DC=example.com"
 #jitsi_ldap_binddn: ""
 #jitsi_ldap_bindpw: ""
 jitsi_ldap_filter: "uid=%u"
@@ -115,7 +115,7 @@ The reason is the Jitsi VideoBridge git to LAN client the IP address of the dock
 
 Here is how to do it in the playbook.
 
-Add these two lines to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
+Add these two lines to your `inventory/host_vars/matrix.example.com/vars.yml` configuration:
 
 ```yaml
 jitsi_jvb_container_extra_arguments:
@@ -124,7 +124,7 @@ jitsi_jvb_container_extra_arguments:
 
 ## (Optional) Fine tune Jitsi
 
-Sample **additional** `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration to save up resources (explained below):
+Sample **additional** `inventory/host_vars/matrix.example.com/vars.yml` configuration to save up resources (explained below):
 
 ```yaml
 jitsi_web_custom_config_extension: |
@@ -283,11 +283,11 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 You can use the self-hosted Jitsi server in multiple ways:
 
-- **by adding a widget to a room via Element** (the one configured by the playbook at `https://element.DOMAIN`). Just start a voice or a video call in a room containing more than 2 members and that would create a Jitsi widget which utilizes your self-hosted Jitsi server.
+- **by adding a widget to a room via Element** (the one configured by the playbook at `https://element.example.com`). Just start a voice or a video call in a room containing more than 2 members and that would create a Jitsi widget which utilizes your self-hosted Jitsi server.
 
 - **by adding a widget to a room via the Dimension Integration Manager**. You'll have to point the widget to your own Jitsi server manually. See our [Dimension](./configuring-playbook-dimension.md) documentation page for more details. Naturally, Dimension would need to be installed first (the playbook doesn't install it by default).
 
-- **directly (without any Matrix integration)**. Just go to `https://jitsi.DOMAIN`
+- **directly (without any Matrix integration)**. Just go to `https://jitsi.example.com`
 
 **Note**: Element apps on mobile devices currently [don't support joining meetings on a self-hosted Jitsi server](https://github.com/element-hq/riot-web/blob/601816862f7d84ac47547891bd53effa73d32957/docs/jitsi.md#mobile-app-support).
 

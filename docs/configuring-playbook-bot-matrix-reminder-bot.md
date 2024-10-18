@@ -9,7 +9,7 @@ See the project's [documentation](https://github.com/anoadragon453/matrix-remind
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_matrix_reminder_bot_enabled: true
@@ -42,9 +42,9 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bot, start a chat with `@bot.matrix-reminder-bot:DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+To use the bot, start a chat with `@bot.matrix-reminder-bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-You can also add the bot to any existing Matrix room (`/invite @bot.matrix-reminder-bot:DOMAIN`).
+You can also add the bot to any existing Matrix room (`/invite @bot.matrix-reminder-bot:example.com`).
 
 Basic usage is like this: `!remindme in 2 minutes; This is a test`
 

@@ -33,7 +33,7 @@ Depending on your current `vars.yml` file and desired configuration, **you may r
 
 ### Base configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_baibot_enabled: true
@@ -82,18 +82,18 @@ To specify who is considered a bot [👮‍♂️ Administrator](https://github.
 
 If `matrix_admin` is already configured in your `vars.yml` configuration, you can skip this section.
 
-**If necessary**, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+**If necessary**, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yml
 # Uncomment to add one or more admins to this bridge:
 #
 # matrix_bot_baibot_config_access_admin_patterns:
 #   - "@*:example.com"
-#   - "@admin:another.com"
+#   - "@admin:example.net"
 #
 # .. unless you've made yourself an admin of all bots/bridges like this:
 #
-# matrix_admin: '@yourAdminAccount:domain.com'
+# matrix_admin: '@yourAdminAccount:{{ matrix_domain }}'
 ```
 
 ### 👥 Initial users configuration
@@ -111,7 +111,7 @@ Configuring `matrix_bot_baibot_config_initial_global_config_user_patterns` is op
 
 **Note**: Once initially configured, the allowed users list **cannot be managed via Ansible anymore**. It can only be managed subsequently via bot commands.
 
-**If necessary**, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+**If necessary**, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yml
 # Uncomment and adjust the bot users if necessary:
@@ -391,7 +391,7 @@ just run-tags install-all,ensure-matrix-users-created,start
 
 ## Usage
 
-To use the bot, invite the `@baibot:DOMAIN` bot user into a room.
+To use the bot, invite the `@baibot:example.com` bot user into a room.
 
 If you're an allowed bot [👥 user](https://github.com/etkecc/baibot/blob/main/docs/access.md#user) (see [👥 Initial users configuration](#-initial-users-configuration)), the bot will accept your invitation and join the room.
 

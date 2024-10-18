@@ -35,7 +35,7 @@ cat PUBKEY | ssh USER@HOST 'dd of=.ssh/authorized_keys oflag=append conv=notrunc
 
 ## Adjusting the playbook configuration
 
-Minimal working configuration (`inventory/host_vars/matrix.DOMAIN/vars.yml`) to enable borg backup:
+Minimal working configuration (`inventory/host_vars/matrix.example.com/vars.yml`) to enable borg backup:
 
 ```yaml
 backup_borg_enabled: true

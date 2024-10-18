@@ -8,7 +8,7 @@ See the project's [documentation](https://github.com/matrix-org/matrix-appservic
 
 ## Adjusting the playbook configuration
 
-To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_appservice_irc_enabled: true
@@ -66,4 +66,4 @@ After configuring the playbook, run the [installation](installing.md) command: `
 
 ## Usage
 
-You then need to start a chat with `@irc_bot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+You then need to start a chat with `@irc_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).

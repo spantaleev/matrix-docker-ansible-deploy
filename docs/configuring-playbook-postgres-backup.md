@@ -7,7 +7,7 @@ For a more complete backup solution (one that includes not only Postgres, but al
 
 ## Adjusting the playbook configuration
 
-To enable Postgres backup, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable Postgres backup, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 postgres_backup_enabled: true

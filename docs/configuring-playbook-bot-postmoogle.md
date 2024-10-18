@@ -25,7 +25,7 @@ These port numbers are configurable via the `matrix_bot_postmoogle_smtp_host_bin
 
 ### Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_postmoogle_enabled: true
@@ -39,11 +39,11 @@ matrix_bot_postmoogle_password: PASSWORD_FOR_THE_BOT
 # Uncomment to add one or more admins to this bridge:
 #
 # matrix_bot_postmoogle_admins:
-#  - '@yourAdminAccount:domain.com'
+#  - '@yourAdminAccount:{{ matrix_domain }}'
 #
 # .. unless you've made yourself an admin of all bots/bridges like this:
 #
-# matrix_admin: '@yourAdminAccount:domain.com'
+# matrix_admin: '@yourAdminAccount:{{ matrix_domain }}'
 ```
 
 ### DNS
@@ -69,9 +69,9 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bot, invite the `@postmoogle:DOMAIN` bot user into a room you want to use as a mailbox.
+To use the bot, invite the `@postmoogle:example.com` bot user into a room you want to use as a mailbox.
 
-Then send `!pm mailbox NAME` to expose this Matrix room as an inbox with the email address `NAME@matrix.domain`. Emails sent to that email address will be forwarded to the room.
+Then send `!pm mailbox NAME` to expose this Matrix room as an inbox with the email address `NAME@matrix.example.com`. Emails sent to that email address will be forwarded to the room.
 
 Send `!pm help` to the room to see the bot's help menu for additional commands.
 

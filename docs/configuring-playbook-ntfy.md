@@ -11,7 +11,7 @@ This role is intended to support UnifiedPush notifications for use with the Matr
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 # Enabling it is the only required setting
@@ -35,7 +35,7 @@ For a complete list of ntfy config options that you could put in `ntfy_configura
 
 ## Installing
 
-Don't forget to add `ntfy.<your-domain>` to DNS as described in [Configuring DNS](configuring-dns.md) before running the playbook.
+Don't forget to add `ntfy.example.com` to DNS as described in [Configuring DNS](configuring-dns.md) before running the playbook.
 
 After configuring the playbook, run the [installation](installing.md) command:
 
@@ -56,7 +56,7 @@ You need to install the `ntfy` app on each device on which you want to receive p
 ### Setting up the `ntfy` Android app
 
 1. Install the [ntfy Android app](https://ntfy.sh/docs/subscribe/phone/) from F-droid or Google Play.
-2. In its Settings -> `General: Default server`, enter your ntfy server URL, such as `https://ntfy.DOMAIN`.
+2. In its Settings -> `General: Default server`, enter your ntfy server URL, such as `https://ntfy.example.com`.
 3. In its Settings -> `Advanced: Connection protocol`, choose `WebSockets`.
 
 That is all you need to do in the ntfy app. It has many other features, but for our purposes you can ignore them. In particular you do not need to follow any instructions about subscribing to a notification topic as UnifiedPush will do that automatically.

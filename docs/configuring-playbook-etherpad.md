@@ -7,12 +7,12 @@ When enabled together with the Jitsi audio/video conferencing system (see [our d
 
 ## Decide on a domain and path
 
-By default, Etherpad is configured to use its own dedicated domain (`etherpad.DOMAIN`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+By default, Etherpad is configured to use its own dedicated domain (`etherpad.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
 
 You can override the domain and path like this:
 
 ```yaml
-# Switch to the domain used for Matrix services (`matrix.DOMAIN`),
+# Switch to the domain used for Matrix services (`matrix.example.com`),
 # so we won't need to add additional DNS records for Etherpad.
 etherpad_hostname: "{{ matrix_server_fqn_matrix }}"
 
@@ -30,7 +30,7 @@ If you've decided to reuse the `matrix.` domain, you won't need to do any extra 
 
 ## Adjusting the playbook configuration
 
-[Etherpad](https://etherpad.org) installation is disabled by default. To enable Etherpad, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+[Etherpad](https://etherpad.org) installation is disabled by default. To enable Etherpad, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 etherpad_enabled: true
@@ -46,23 +46,23 @@ After configuring the playbook, run the [installation](installing.md) command: `
 
 ## Usage
 
-The Etherpad UI should be available at `https://etherpad.<your-domain>`, while the admin UI (if enabled) should then be available at `https://etherpad.<your-domain>/admin`.
+The Etherpad UI should be available at `https://etherpad.example.com`, while the admin UI (if enabled) should then be available at `https://etherpad.example.com/admin`.
 
-If you've [decided on another hostname or path-prefix](#decide-on-a-domain-and-path) (e.g. `https://matrix.DOMAIN/etherpad`), adjust these URLs accordingly before usage.
+If you've [decided on another hostname or path-prefix](#decide-on-a-domain-and-path) (e.g. `https://matrix.example.com/etherpad`), adjust these URLs accordingly before usage.
 
 
 ### Managing / Deleting old pads
 
 If you want to manage and remove old unused pads from Etherpad, you will first need to able Admin access as described above.
 
-Then from the plugin manager page (`https://etherpad.<your-domain>/admin/plugins`, install the `adminpads2` plugin. Once installed, you should have a "Manage pads" section in the Admin web-UI.
+Then from the plugin manager page (`https://etherpad.example.com/admin/plugins`, install the `adminpads2` plugin. Once installed, you should have a "Manage pads" section in the Admin web-UI.
 
 
 ### How to use Etherpad widgets without an Integration Manager (like Dimension)
 
 This is how it works in Element, it might work quite similar with other clients:
 
-To integrate a standalone Etherpad in a room, create your pad by visiting `https://etherpad.DOMAIN`. When the pad opens, copy the URL and send a command like this to the room: `/addwidget URL`. You will then find your integrated Etherpad within the right sidebar in the `Widgets` section.
+To integrate a standalone Etherpad in a room, create your pad by visiting `https://etherpad.example.com`. When the pad opens, copy the URL and send a command like this to the room: `/addwidget URL`. You will then find your integrated Etherpad within the right sidebar in the `Widgets` section.
 
 
 ### Set Dimension default to the self-hosted Etherpad (optional)
@@ -76,7 +76,7 @@ The Dimension configuration menu can be accessed with the sprocket icon as you b
 
 If you wish to disable the Etherpad chat button, you can do it by appending `?showChat=false` to the end of the pad URL, or the template.
 
-Example: `https://etherpad.<your-domain>/p/$roomId_$padName?showChat=false`
+Example: `https://etherpad.example.com/p/$roomId_$padName?showChat=false`
 
 
 ## Known issues
