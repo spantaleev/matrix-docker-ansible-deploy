@@ -151,13 +151,13 @@ matrix_bot_go_neb_services:
       RealmID: "github_realm"
       ClientUserID: "@YOUR_USER_ID:{{ matrix_domain }}" # needs to be an authenticated user so Go-NEB can create webhooks. Check the UserID field in the github_realm in matrix_bot_go_neb_sessions.
       Rooms:
-        "!someroom:id":
+        "!someroom:example.com":
           Repos:
             "element-hq/synapse":
               Events: ["push", "issues"]
             "matrix-org/dendron":
               Events: ["pull_request"]
-        "!anotherroom:id":
+        "!anotherroom:example.com":
           Repos:
             "element-hq/synapse":
               Events: ["push", "issues"]
@@ -170,7 +170,7 @@ matrix_bot_go_neb_services:
     Config:
       Hooks:
         "hook1":
-          RoomID: "!someroom:id"
+          RoomID: "!someroom:example.com"
           MessageType: "m.text" # default is m.text
 
   - ID: "alertmanager_service"
