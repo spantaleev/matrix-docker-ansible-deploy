@@ -1,7 +1,6 @@
 # Storing Synapse media files on Amazon S3 with synapse-s3-storage-provider (optional)
 
-If you'd like to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service),
-you can use the [synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider) media provider module for Synapse.
+If you'd like to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service), you can use the [synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider) media provider module for Synapse.
 
 An alternative (which has worse performance) is to use [Goofys to mount the S3 store to the local filesystem](configuring-playbook-s3-goofys.md).
 

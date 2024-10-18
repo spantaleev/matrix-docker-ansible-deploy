@@ -30,6 +30,7 @@ Before proceeding to [re-running the playbook](./installing.md), you may wish to
 ### Bridge mode
 
 As mentioned above, the [mautrix-meta](https://github.com/mautrix/meta) bridge supports multiple modes of operation.
+
 The bridge can pull your Messenger messages via 3 different methods:
 
 - (`facebook`) Facebook via `facebook.com`

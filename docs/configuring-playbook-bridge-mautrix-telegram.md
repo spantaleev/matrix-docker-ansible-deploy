@@ -65,8 +65,7 @@ matrix_mautrix_telegram_configuration_extension_yaml: |
       '@user:example.com': admin
 ```
 
-More details about permissions in this example:
-https://github.com/mautrix/telegram/blob/master/mautrix_telegram/example-config.yaml#L410
+More details about permissions in this example: https://github.com/mautrix/telegram/blob/master/mautrix_telegram/example-config.yaml#L410
 
 If you like to exclude all groups from syncing and use the Telgeram-Bridge only for direct chats, you can add the following additional playbook configuration:
 ```yaml

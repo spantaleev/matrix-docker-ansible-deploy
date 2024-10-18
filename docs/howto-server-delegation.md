@@ -2,8 +2,7 @@
 
 To have a server on a subdomain (e.g. `matrix.example.com`) handle Matrix federation traffic for the base domain (`example.com`), we need to instruct the Matrix network of such a delegation.
 
-By default, this playbook guides you into setting up [Server Delegation via a well-known file](#server-delegation-via-a-well-known-file).
-However, that method may have some downsides that are not to your liking. Hence this guide about alternative ways to set up Server Delegation.
+By default, this playbook guides you into setting up [Server Delegation via a well-known file](#server-delegation-via-a-well-known-file). However, that method may have some downsides that are not to your liking. Hence this guide about alternative ways to set up Server Delegation.
 
 It is a complicated matter, so unless you are affected by the [Downsides of well-known-based Server Delegation](#downsides-of-well-known-based-server-delegation), we suggest you stay on the simple/default path.
 
@@ -12,8 +11,7 @@ It is a complicated matter, so unless you are affected by the [Downsides of well
 
 Serving a `/.well-known/matrix/server` file from the base domain is the most straightforward way to set up server delegation, but it suffers from some problems that we list in [Downsides of well-known-based Server Delegation](#downsides-of-well-known-based-server-delegation).
 
-As we already mention in [Configuring DNS](configuring-dns.md) and [Configuring Service Discovery via .well-known](configuring-well-known.md),
-this playbook already properly guides you into setting up such delegation by means of a `/.well-known/matrix/server` file served from the base domain (`example.com`).
+As we already mention in [Configuring DNS](configuring-dns.md) and [Configuring Service Discovery via .well-known](configuring-well-known.md), this playbook already properly guides you into setting up such delegation by means of a `/.well-known/matrix/server` file served from the base domain (`example.com`).
 
 If this is okay with you, feel free to not read ahead.
 
@@ -57,8 +55,7 @@ How you can obtain a valid certificate for `example.com` on the `matrix.example.
 
 If `example.com` and `matrix.example.com` are hosted on the same machine, you can let the playbook obtain the certificate for you, by following our [Obtaining SSL certificates for additional domains](configuring-playbook-ssl-certificates.md#obtaining-ssl-certificates-for-additional-domains) guide.
 
-If `example.com` and `matrix.example.com` are not hosted on the same machine, you can copy over the certificate files manually.
-Don't forget that they may get renewed once in a while, so you may also have to transfer them periodically. How often you do that is up to you, as long as the certificate files don't expire.
+If `example.com` and `matrix.example.com` are not hosted on the same machine, you can copy over the certificate files manually. Don't forget that they may get renewed once in a while, so you may also have to transfer them periodically. How often you do that is up to you, as long as the certificate files don't expire.
 
 
 ### Serving the Federation API with your certificates
@@ -81,8 +78,7 @@ Based on your setup, you have different ways to go about it:
 
 ### Serving the Federation API with your certificates and another webserver
 
-**If you are using some other webserver**, you can set up reverse-proxying for the `tcp/8448` port by yourself.
-Make sure to use the proper certificates for `example.com` (not for `matrix.example.com`) when serving the `tcp/8448` port.
+**If you are using some other webserver**, you can set up reverse-proxying for the `tcp/8448` port by yourself. Make sure to use the proper certificates for `example.com` (not for `matrix.example.com`) when serving the `tcp/8448` port.
 
 As recommended in our [Fronting the integrated reverse-proxy webserver with another reverse-proxy](./configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) documentation section, we recommend you to expose the Matrix Federation entrypoint from traffic at a local port (e.g. `127.0.0.1:8449`), so your reverese-proxy should send traffic there.
 
@@ -105,5 +101,4 @@ matrix_synapse_tls_certificate_path: /some/path/inside/the/container/certificate
 matrix_synapse_tls_private_key_path: /some/path/inside/the/container/private.key
 ```
 
-Make sure to reload Synapse once in a while (`systemctl reload matrix-synapse`), so that newer certificates can kick in.
-Reloading doesn't cause any downtime.
+Make sure to reload Synapse once in a while (`systemctl reload matrix-synapse`), so that newer certificates can kick in. Reloading doesn't cause any downtime.

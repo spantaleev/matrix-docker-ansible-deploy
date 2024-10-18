@@ -65,8 +65,7 @@ matrix_synapse_turn_uris:
 - turn:HOSTNAME_OR_IP?transport=tcp
 ```
 
-If you have or want to enable [Jitsi](configuring-playbook-jitsi.md), you might want to enable the TURN server there too.
-If you do not do it, Jitsi will fall back to an upstream service.
+If you have or want to enable [Jitsi](configuring-playbook-jitsi.md), you might want to enable the TURN server there too. If you do not do it, Jitsi will fall back to an upstream service.
 
 ```yaml
 jitsi_web_stun_servers:

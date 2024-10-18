@@ -110,6 +110,7 @@ matrix_bot_draupnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 ### 5c. Migrating from Mjolnir (Only required if migrating.)
 
 Replace your `matrix_bot_mjolnir` config with `matrix_bot_draupnir` config. Also disable Mjolnir if you're doing migration.
+
 That is all you need to do due to that Draupnir can complete migration on its own.
 
 ## 6. Installing
@@ -137,8 +138,7 @@ Draupnir can be told to self-join public rooms, but it's better to follow this f
 
 3. Tell it to protect the room (using the [rooms command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#using-the-draupnir-rooms-command)) by sending the following command to the Management Room: `!draupnir rooms add !qporfwt:example.com`
 
-To have Draupnir provide useful room protection, you need do to a bit more work (at least the first time around).
-You may wish to [Subscribe to a public policy list](#subscribing-to-a-public-policy-list), [Create your own own policy and rules](#creating-your-own-policy-lists-and-rules) and [Enabling built-in protections](#enabling-built-in-protections).
+To have Draupnir provide useful room protection, you need do to a bit more work (at least the first time around). You may wish to [Subscribe to a public policy list](#subscribing-to-a-public-policy-list), [Create your own own policy and rules](#creating-your-own-policy-lists-and-rules) and [Enabling built-in protections](#enabling-built-in-protections).
 
 ### Giving Draupnir permissions to do its job
 
@@ -213,14 +213,14 @@ matrix_bot_draupnir_configuration_extension_yaml: |
 
 Draupnir supports two methods to receive reports in the management room.
 
-The first method intercepts the report API endpoint of the client-server API, which requires integration with the reverse proxy in front of the homeserver.
-If you are using traefik, this playbook can set this up for you:
+The first method intercepts the report API endpoint of the client-server API, which requires integration with the reverse proxy in front of the homeserver. If you are using traefik, this playbook can set this up for you:
+
 ```yaml
 matrix_bot_draupnir_abuse_reporting_enabled: true
 ```
 
-The other method polls an synapse admin API endpoint and is hence only available when using synapse and when the Draupnir user is an admin user (see step 1).
-To enable it, set `pollReports: true` in Draupnir's config:
+The other method polls an synapse admin API endpoint and is hence only available when using synapse and when the Draupnir user is an admin user (see step 1). To enable it, set `pollReports: true` in Draupnir's config:
+
 ```yaml
 matrix_bot_draupnir_configuration_extension_yaml: |
   pollReports: true

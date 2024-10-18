@@ -1,7 +1,6 @@
 # Controlling Matrix federation (optional)
 
-By default, your server federates with the whole Matrix network.
-That is, people on your server can communicate with people on any other Matrix server.
+By default, your server federates with the whole Matrix network. That is, people on your server can communicate with people on any other Matrix server.
 
 
 ## Federating only with select servers

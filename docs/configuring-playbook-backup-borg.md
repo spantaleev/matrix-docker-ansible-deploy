@@ -1,8 +1,8 @@
 # Setting up borg backup (optional)
 
 The playbook can install and configure [borgbackup](https://www.borgbackup.org/) with [borgmatic](https://torsion.org/borgmatic/) for you.
-BorgBackup is a deduplicating backup program with optional compression and encryption.
-That means your daily incremental backups can be stored in a fraction of the space and is safe whether you store it at home or on a cloud service.
+
+BorgBackup is a deduplicating backup program with optional compression and encryption. That means your daily incremental backups can be stored in a fraction of the space and is safe whether you store it at home or on a cloud service.
 
 You will need a remote server where borg will store the backups. There are hosted, borg compatible solutions available, such as [BorgBase](https://www.borgbase.com).
 
@@ -76,6 +76,4 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Manually start a backup
 
-For testing your setup it can be helpful to not wait until 4am. If you want to run the backup immediately, log onto the server
-and run `systemctl start matrix-backup-borg`. This will not return until the backup is done, so possibly a long time.
-Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.
+For testing your setup it can be helpful to not wait until 4am. If you want to run the backup immediately, log onto the server and run `systemctl start matrix-backup-borg`. This will not return until the backup is done, so possibly a long time. Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.

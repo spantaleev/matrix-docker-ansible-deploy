@@ -31,6 +31,4 @@ After installation, `synapse_auto_compressor` will run automatically every day a
 
 ## Manually start the tool
 
-For testing your setup it can be helpful to not wait until 00:00. If you want to run the tool immediately, log onto the server
-and run `systemctl start matrix-synapse-auto-compressor`. Running this command will not return control to your terminal until the compression run is done, which may take a long time.
-Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.
+For testing your setup it can be helpful to not wait until 00:00. If you want to run the tool immediately, log onto the server and run `systemctl start matrix-synapse-auto-compressor`. Running this command will not return control to your terminal until the compression run is done, which may take a long time. Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.

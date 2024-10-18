@@ -1,7 +1,6 @@
 # Setting up Matrix User Verification Service (optional)
 
-**[Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) (hereafter: UVS) can only be installed after Matrix services are installed and running.**
-If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) flow and come back here later.
+**[Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) (hereafter: UVS) can only be installed after Matrix services are installed and running.** If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) flow and come back here later.
 
 Currently, the main purpose of this role is to allow Jitsi to authenticate Matrix users and check if they are authorized to join a conference. Please refer to the documentation of the [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) to understand how it works.
 
@@ -16,13 +15,9 @@ UVS can be used to verify two claims:
 * (A) Whether a given OpenID token is valid for a given server and
 * (B) whether a user is member of a given room and the corresponding PowerLevel
 
-Verifying an OpenID token ID done by finding the corresponding Homeserver via  '.well-known/matrix/server' for the given domain.
-The configured `matrix_user_verification_service_uvs_homeserver_url` does **not** factor into this.
-By default, this playbook only checks against `matrix_server_fqn_matrix`.
-Therefore, the request will be made against the public openid API for `matrix_server_fqn_matrix`.
+Verifying an OpenID token ID done by finding the corresponding Homeserver via  '.well-known/matrix/server' for the given domain. The configured `matrix_user_verification_service_uvs_homeserver_url` does **not** factor into this. By default, this playbook only checks against `matrix_server_fqn_matrix`. Therefore, the request will be made against the public openid API for `matrix_server_fqn_matrix`.
 
-Verifying RoomMembership and PowerLevel is done against `matrix_user_verification_service_uvs_homeserver_url` which is by default done via the docker network.
-UVS will verify the validity of the token beforehand though.
+Verifying RoomMembership and PowerLevel is done against `matrix_user_verification_service_uvs_homeserver_url` which is by default done via the docker network. UVS will verify the validity of the token beforehand though.
 
 ## Prerequisites
 
@@ -40,21 +35,17 @@ matrix_user_verification_service_enabled: true
 
 The only required configuration variable is `matrix_user_verification_service_uvs_access_token` (see below).
 
-For a list of all configuration options see the role defaults [`roles/matrix-user-verification-service/defaults/main.yml`](../roles/custom/matrix-user-verification-service/defaults/main.yml).
-But be aware of all the plugging happening in `group_vars/matrix_servers`.
+For a list of all configuration options see the role defaults [`roles/matrix-user-verification-service/defaults/main.yml`](../roles/custom/matrix-user-verification-service/defaults/main.yml). But be aware of all the plugging happening in `group_vars/matrix_servers`.
 
-In the default configuration, the UVS Server is only reachable via the docker network, which is fine if e.g. Jitsi is also running in a container on the host.
-However, it is possible to expose UVS via setting `matrix_user_verification_service_container_http_host_bind_port`.
+In the default configuration, the UVS Server is only reachable via the docker network, which is fine if e.g. Jitsi is also running in a container on the host. However, it is possible to expose UVS via setting `matrix_user_verification_service_container_http_host_bind_port`.
 
 ### Access token
 
 The Synapse Access Token is used to verify RoomMembership and PowerLevel against `matrix_user_verification_service_uvs_homeserver_url`.
 
-We recommend that you create a dedicated Matrix user for uvs (`uvs` is a good username).
-Follow our [Registering users](registering-users.md) guide to register a user with administration privileges.
+We recommend that you create a dedicated Matrix user for uvs (`uvs` is a good username). Follow our [Registering users](registering-users.md) guide to register a user with administration privileges.
 
-You are required to specify an access token (belonging to this new user) for UVS to work.
-To get an access token for the UVS user, you can follow the documentation on [how to do obtain an access token](obtaining-access-tokens.md).
+You are required to specify an access token (belonging to this new user) for UVS to work. To get an access token for the UVS user, you can follow the documentation on [how to do obtain an access token](obtaining-access-tokens.md).
 
 **Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.**
 
@@ -67,6 +58,7 @@ matrix_user_verification_service_uvs_access_token: "YOUR ACCESS TOKEN HERE"
 It is possible to set an API Auth Token to restrict access to the UVS. If this is enabled, anyone making a request to UVS must provide it via the header "Authorization: Bearer TOKEN"
 
 By default, the token will be derived from `matrix_homeserver_generic_secret_key` in `group_vars/matrix_servers`.
+
 To set your own Token, simply put the following in your host_vars.
 
 ```yaml
@@ -94,8 +86,7 @@ matrix_user_verification_service_uvs_pin_openid_verify_server_name: false
 
 in your host_vars.
 
-This will instruct UVS to verify the OpenID token against any domain given in a request.
-Homeserver discovery is done via '.well-known/matrix/server' of the given domain.
+This will instruct UVS to verify the OpenID token against any domain given in a request. Homeserver discovery is done via '.well-known/matrix/server' of the given domain.
 
 ## Installing
 

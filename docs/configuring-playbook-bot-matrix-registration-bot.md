@@ -2,11 +2,9 @@
 
 The playbook can install and configure [matrix-registration-bot](https://github.com/moan0s/matrix-registration-bot) for you.
 
-The bot allows you to easily **create and manage registration tokens** aka. invitation codes.
-It can be used for an invitation-based server, where you invite someone by sending them a registration token (tokens look like this: `rbalQ0zkaDSRQCOp`). They can register as per normal but have to provide a valid registration token in the final step of the registration process.
+The bot allows you to easily **create and manage registration tokens** aka. invitation codes. It can be used for an invitation-based server, where you invite someone by sending them a registration token (tokens look like this: `rbalQ0zkaDSRQCOp`). They can register as per normal but have to provide a valid registration token in the final step of the registration process.
 
-See the project's [documentation](https://github.com/moan0s/matrix-registration-bot#supported-commands) to learn what it
-does and why it might be useful to you.
+See the project's [documentation](https://github.com/moan0s/matrix-registration-bot#supported-commands) to learn what it does and why it might be useful to you.
 
 
 ## Configuration
@@ -43,8 +41,8 @@ To use the bot, start a chat with `@bot.matrix-registration-bot:example.com` (wh
 In this room send `help` and the bot will reply with all options.
 
 You can also refer to the upstream [Usage documentation](https://github.com/moan0s/matrix-registration-bot#supported-commands).
-If you have any questions, or if you need help setting it up, read the [troublshooting guide](https://github.com/moan0s/matrix-registration-bot/blob/main/docs/troubleshooting.md)
-or join [#matrix-registration-bot:hyteck.de](https://matrix.to/#/#matrix-registration-bot:hyteck.de).
+
+If you have any questions, or if you need help setting it up, read the [troublshooting guide](https://github.com/moan0s/matrix-registration-bot/blob/main/docs/troubleshooting.md) or join [#matrix-registration-bot:hyteck.de](https://matrix.to/#/#matrix-registration-bot:hyteck.de).
 
 To clean the cache (session & encryption data) after you changed the bot's username, changed the login method from access_token to password etc... you can use:
 

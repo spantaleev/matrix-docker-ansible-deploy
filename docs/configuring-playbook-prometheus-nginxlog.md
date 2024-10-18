@@ -26,10 +26,7 @@ After configuring the playbook, run the [installation](installing.md) command: `
 
 ## Docker Image Compatibility
 
-At the moment of writing only images for `amd64` and `arm64` architectures are available
-
-The playbook currently does not support [self-building](./self-building.md) a container image on other architectures.
-You can however use a custom-build image by setting:
+At the moment of writing only images for `amd64` and `arm64` architectures are available. The playbook currently does not support [self-building](./self-building.md) a container image on other architectures. You can however use a custom-build image by setting:
 
 ```yaml
 matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled: false
@@ -38,8 +35,7 @@ matrix_prometheus_nginxlog_exporter_docker_image: path/to/docker/image:tag
 
 ## Security and privacy
 
-Metrics and resulting graphs can contain a lot of information. NginX logs contain information like IP address, URLs, UserAgents and more. This information can reveal usage patterns and could be considered Personally Identifiable Information (PII). Think about this before enabling (anonymous) access.
-Please make sure you change the default Grafana password.
+Metrics and resulting graphs can contain a lot of information. NginX logs contain information like IP address, URLs, UserAgents and more. This information can reveal usage patterns and could be considered Personally Identifiable Information (PII). Think about this before enabling (anonymous) access. Please make sure you change the default Grafana password.
 
 ## Save metrics on an external Prometheus server
 

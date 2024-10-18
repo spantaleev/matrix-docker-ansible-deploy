@@ -21,19 +21,16 @@ Once you've installed git on your computer, you can go to any directory of your 
 git clone https://github.com/spantaleev/matrix-docker-ansible-deploy.git
 ```
 
-This will create a new `matrix-docker-ansible-deploy` directory.
-You're supposed to execute all other installation commands inside that directory.
+This will create a new `matrix-docker-ansible-deploy` directory. You're supposed to execute all other installation commands inside that directory.
 
 
 ## Downloading the playbook as a ZIP archive
 
-Alternatively, you can download the playbook as a ZIP archive.
-This is not recommended, as it's not easy to keep up to date with future updates. We suggest you [use git](#using-git-to-get-the-playbook) instead.
+Alternatively, you can download the playbook as a ZIP archive. This is not recommended, as it's not easy to keep up to date with future updates. We suggest you [use git](#using-git-to-get-the-playbook) instead.
 
 The latest version is always at the following URL: https://github.com/spantaleev/matrix-docker-ansible-deploy/archive/master.zip
 
-You can extract this archive anywhere. You'll get a directory called `matrix-docker-ansible-deploy-master`.
-You're supposed to execute all other installation commands inside that directory.
+You can extract this archive anywhere. You'll get a directory called `matrix-docker-ansible-deploy-master`. You're supposed to execute all other installation commands inside that directory.
 
 
 ---------------------------------------------
