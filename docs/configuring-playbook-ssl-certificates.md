@@ -52,14 +52,19 @@ traefik_config_certificatesResolvers_acme_enabled: false
 # Force-enable it here, because we'll add our certificate files there.
 traefik_ssl_dir_enabled: true
 
-# Tell Traefik to load our custom configuration file (certificates.yml).
-# The file is created below, in `aux_file_definitions`.
-# The `/config/..` path is an in-container path, not a path on the host (like `/matrix/traefik/config`). Do not change it!
-traefik_configuration_extension_yaml: |
-  providers:
-    file:
-      filename: /config/certificates.yml
-      watch: true
+# Tell Traefik to load our custom ssl key pair by extending provider configuration.
+# The key pair files are created below, in `aux_file_definitions`.
+# The `/ssl/..` path is an in-container path, not a path on the host (like `/matrix/traefik/ssl`). Do not change it!
+traefik_provider_configuration_extension_yaml:
+  tls:
+    certificates:
+      - certFile: /ssl/cert.pem
+        keyFile: /ssl/privkey.pem
+    stores:
+      default:
+        defaultCertificate:
+          certFile: /ssl/cert.pem
+          keyFile: /ssl/privkey.pem
 
 # Use the aux role to create our custom files on the server.
 # If you'd like to do this manually, you remove this `aux_file_definitions` variable.
@@ -83,20 +88,6 @@ aux_file_definitions:
     # content: |
     #   FILE CONTENT
     #   HERE
-
-  # Create the custom Traefik configuration.
-  # The `/ssl/..` paths below are in-container paths, not paths on the host (/`matrix/traefik/ssl/..`). Do not change them!
-  - dest: "{{ traefik_config_dir_path }}/certificates.yml"
-    content: |
-      tls:
-        certificates:
-          - certFile: /ssl/cert.pem
-            keyFile: /ssl/privkey.pem
-        stores:
-          default:
-            defaultCertificate:
-              certFile: /ssl/cert.pem
-              keyFile: /ssl/privkey.pem
 ```
 
 ## Using a DNS-01 ACME challenge type, instead of HTTP-01
