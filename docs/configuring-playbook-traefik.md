@@ -99,7 +99,7 @@ aux_file_definitions:
       http:
         routers:
           webserver-router:
-            rule: Host(`my_fancy_website.example.com`)
+            rule: Host(`my-fancy-website.example.net`)
             service: webserver-service
             tls:
               certResolver: default
@@ -122,7 +122,7 @@ aux_file_definitions:
       tcp:
         routers:
           webserver-router:
-            rule: Host(`my_fancy_website.example.com`)
+            rule: Host(`my-fancy-website.example.net`)
             service: webserver-service
             tls:
               passthrough: true
