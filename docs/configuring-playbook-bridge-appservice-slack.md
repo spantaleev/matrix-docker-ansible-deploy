@@ -90,19 +90,19 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
         with file bridging:
 
         ```
-        link --channel_id CHANNELID --room !the-matrix:room.id --slack_bot_token xoxb-xxxxxxxxxx-xxxxxxxxxxxxxxxxxxxx --slack_user_token xoxp-xxxxxxxx-xxxxxxxxx-xxxxxxxx-xxxxxxxx
+        link --channel_id CHANNELID --room !the-matrix:example.com --slack_bot_token xoxb-xxxxxxxxxx-xxxxxxxxxxxxxxxxxxxx --slack_user_token xoxp-xxxxxxxx-xxxxxxxxx-xxxxxxxx-xxxxxxxx
         ```
 
         without file bridging:
 
         ```
-        link --channel_id CHANNELID --room !the-matrix:room.id --slack_bot_token xoxb-xxxxxxxxxx-xxxxxxxxxxxxxxxxxxxx
+        link --channel_id CHANNELID --room !the-matrix:example.com --slack_bot_token xoxb-xxxxxxxxxx-xxxxxxxxxxxxxxxxxxxx
         ```
 
         These arguments can be shortened to single-letter forms:
 
         ```
-        link -I CHANNELID -R !the-matrix:room.id -t xoxb-xxxxxxxxxx-xxxxxxxxxxxxxxxxxxxx
+        link -I CHANNELID -R !the-matrix:example.com -t xoxb-xxxxxxxxxx-xxxxxxxxxxxxxxxxxxxx
         ```
 
         Other configuration options are available via the `matrix_appservice_slack_configuration_extension_yaml` variable.
@@ -112,7 +112,7 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
     Channels can be unlinked again like this:
 
     ```
-    unlink --room !the-matrix:room.id
+    unlink --room !the-matrix:example.com
     ```
 
     Unlinking doesn't only disconnect the bridge, but also makes the slackbot leave the bridged Matrix room. So in case you want to re-link later, don't forget to re-invite the slackbot into this room again.
