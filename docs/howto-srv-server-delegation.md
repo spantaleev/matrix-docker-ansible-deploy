@@ -36,7 +36,7 @@ This is because with SRV federation, some servers / tools (one of which being th
 
 Now that the federation endpoint is not bound to a domain anymore we need to explicitely tell Traefik to use a wildcard certificate in addition to one containing the base name.
 
-This is because the matrix specification expects the federation endpoint to be served using a certificate compatible with the base domain, however, the other resources on the endpoint still need a valid certificate to work.
+This is because the Matrix specification expects the federation endpoint to be served using a certificate compatible with the base domain, however, the other resources on the endpoint still need a valid certificate to work.
 
 ```yaml
 # To let Traefik know which domains' certificates to serve

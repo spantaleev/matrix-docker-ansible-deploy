@@ -51,7 +51,7 @@ When the [Synapse Admin API](https://github.com/element-hq/synapse/tree/master/d
 
 Editing the database manually is not recommended or supported by the Synapse developers. If you are going to do so you should [make a database backup](./maintenance-postgres.md#backing-up-postgresql).
 
-First, set up an SSH tunnel to your matrix server (skip if it is your local machine):
+First, set up an SSH tunnel to your Matrix server (skip if it is your local machine):
 
 ```
 # you may replace 1799 with an arbitrary port unbound on both machines

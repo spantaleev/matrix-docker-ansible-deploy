@@ -24,7 +24,7 @@ Server Delegation by means of a `/.well-known/matrix/server` file is the most st
 
 - you need to have a working HTTPS server for the base domain (`example.com`). If you don't have any server for the base domain at all, you can easily solve it by making the playbook [serve the base domain from the Matrix server](configuring-playbook-base-domain-serving.md).
 
-- any downtime on the base domain (`example.com`) or network trouble between the matrix subdomain (`matrix.example.com`) and the base `example.com` may cause Matrix Federation outages. As the [Server-Server spec says](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery):
+- any downtime on the base domain (`example.com`) or network trouble between the Matrix subdomain (`matrix.example.com`) and the base `example.com` may cause Matrix Federation outages. As the [Server-Server spec says](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery):
 
 > Errors are recommended to be cached for up to an hour, and servers are encouraged to exponentially back off for repeated failures.
 

@@ -2,7 +2,7 @@
 
 The playbook can install and configure the [ntfy](https://ntfy.sh/) push notifications server for you.
 
-Using the [UnifiedPush](https://unifiedpush.org) standard, ntfy enables self-hosted (Google-free) push notifications from Matrix (and other) servers to UnifiedPush-compatible matrix compatible client apps running on Android and other devices.
+Using the [UnifiedPush](https://unifiedpush.org) standard, ntfy enables self-hosted (Google-free) push notifications from Matrix (and other) servers to UnifiedPush-compatible Matrix compatible client apps running on Android and other devices.
 
 This role is intended to support UnifiedPush notifications for use with the Matrix and Matrix-related services that this playbook installs. This role is not intended to support all of ntfy's other features.
 
@@ -49,7 +49,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 To make use of your ntfy installation, on Android for example, you need two things:
 
 * the `ntfy` app
-* a UnifiedPush-compatible matrix app
+* a UnifiedPush-compatible Matrix app
 
 You need to install the `ntfy` app on each device on which you want to receive push notifications through your ntfy server. The `ntfy` app will provide UnifiedPush notifications to any number of UnifiedPush-compatible messaging apps installed on the same device.
 
@@ -61,11 +61,11 @@ You need to install the `ntfy` app on each device on which you want to receive p
 
 That is all you need to do in the ntfy app. It has many other features, but for our purposes you can ignore them. In particular you do not need to follow any instructions about subscribing to a notification topic as UnifiedPush will do that automatically.
 
-### Setting up a UnifiedPush-compatible matrix app
+### Setting up a UnifiedPush-compatible Matrix app
 
-Install any UnifiedPush-enabled matrix app on that same device. The matrix app will learn from the `ntfy` app that you have configured UnifiedPush on this device, and then it will tell your matrix server to use it.
+Install any UnifiedPush-enabled Matrix app on that same device. The Matrix app will learn from the `ntfy` app that you have configured UnifiedPush on this device, and then it will tell your Matrix server to use it.
 
-Steps needed for specific matrix apps:
+Steps needed for specific Matrix apps:
 
 * FluffyChat-android:
   - Should auto-detect and use it. No manual settings.
@@ -79,9 +79,9 @@ Steps needed for specific matrix apps:
   1. choose `Settings` -> `Notifications` -> `Notification method` -> `ntfy`
   2. verify `Settings` -> `Troubleshoot` -> `Troubleshoot notification settings`
 
-If the matrix app asks, "Choose a distributor: FCM Fallback or ntfy", then choose "ntfy".
+If the Matrix app asks, "Choose a distributor: FCM Fallback or ntfy", then choose "ntfy".
 
-If the matrix app doesn't seem to pick it up, try restarting it and try the Troubleshooting section below.
+If the Matrix app doesn't seem to pick it up, try restarting it and try the Troubleshooting section below.
 
 ### Web App
 
@@ -92,11 +92,11 @@ The web app is disabled in this playbook by default as the expectation is that m
 
 ## Troubleshooting
 
-First check that the matrix client app you are using supports UnifiedPush. There may well be different variants of the app.
+First check that the Matrix client app you are using supports UnifiedPush. There may well be different variants of the app.
 
 Set the ntfy server's log level to 'DEBUG', as shown in the example settings above, and watch the server's logs with `sudo journalctl -fu matrix-ntfy`.
 
-To check if UnifiedPush is correctly configured on the client device, look at "Settings -> Notifications -> Notification Targets" in Element-Android or SchildiChat, or "Settings -> Notifications -> Devices" in FluffyChat. There should be one entry for each matrix client app that has enabled push notifications, and when that client is using UnifiedPush you should see a URL that begins with your ntfy server's URL.
+To check if UnifiedPush is correctly configured on the client device, look at "Settings -> Notifications -> Notification Targets" in Element-Android or SchildiChat, or "Settings -> Notifications -> Devices" in FluffyChat. There should be one entry for each Matrix client app that has enabled push notifications, and when that client is using UnifiedPush you should see a URL that begins with your ntfy server's URL.
 
 In the "Notification Targets" screen in Element-Android or SchildiChat, two relevant URLs are shown, "push\_key" and "Url", and both should begin with your ntfy server's URL. If "push\_key" shows your server but "Url" shows an external server such as `up.schildi.chat` then push notifications will still work but are being routed through that external server before they reach your ntfy server. To rectify that, in SchildiChat (at least around version 1.4.20.sc55) you must enable the `Force custom push gateway` setting as described in the "Usage" section above.
 

@@ -3,7 +3,7 @@
 **[Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) (hereafter: UVS) can only be installed after Matrix services are installed and running.**
 If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) flow and come back here later.
 
-Currently, the main purpose of this role is to allow Jitsi to authenticate matrix users and check if they are authorized to join a conference. Please refer to the documentation of the [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) to understand how it works.
+Currently, the main purpose of this role is to allow Jitsi to authenticate Matrix users and check if they are authorized to join a conference. Please refer to the documentation of the [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) to understand how it works.
 
 **Note**: enabling Matrix User Verification Service, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled.
 
@@ -114,7 +114,7 @@ The configuration variable `UVS_LOG_LEVEL` can be set to:
 - debug
 
 ## TLS Certificate Checking
-If the matrix Homeserver does not provide a valid TLS certificate, UVS will fail with the following error message:
+If the Matrix Homeserver does not provide a valid TLS certificate, UVS will fail with the following error message:
 
 > message: 'No response received: [object Object]',
 

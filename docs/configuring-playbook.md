@@ -81,7 +81,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Adjusting email-sending settings](configuring-playbook-email.md) (optional)
 
-- [Setting up Hydrogen](configuring-playbook-client-hydrogen.md) - a new lightweight matrix client with legacy and mobile browser support (optional)
+- [Setting up Hydrogen](configuring-playbook-client-hydrogen.md) - a new lightweight Matrix client with legacy and mobile browser support (optional)
 
 - [Setting up Cinny](configuring-playbook-client-cinny.md) - a web client focusing primarily on simple, elegant and secure interface (optional)
 

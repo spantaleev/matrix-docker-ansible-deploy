@@ -14,9 +14,9 @@ If Matrix federation is enabled, then you will need to make changes to [NPM's Do
 
 ## Using Nginx Proxy Manager
 
-You'll need to create two proxy hosts in NPM for matrix web and federation traffic.
+You'll need to create two proxy hosts in NPM for Matrix web and federation traffic.
 
-Open the 'Proxy Hosts' page in the NPM web interface and select `Add Proxy Host`, the first being for matrix web traffic. Apply the proxys configuration like this:
+Open the 'Proxy Hosts' page in the NPM web interface and select `Add Proxy Host`, the first being for Matrix web traffic. Apply the proxys configuration like this:
 
 ```md
 # Details
