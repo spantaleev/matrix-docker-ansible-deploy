@@ -59,7 +59,7 @@ matrix_email2matrix_matrix_mappings:
     SkipMarkdown: false
 
   - MailboxName: "mailbox2"
-    MatrixRoomId: "!anotherRoom:{{ matrix_domain }}"
+    MatrixRoomId: "!aaabaa:{{ matrix_domain }}"
     MatrixHomeserverUrl: "{{ matrix_homeserver_url }}"
     MatrixUserId: "@email2matrix:{{ matrix_domain }}"
     MatrixAccessToken: "MATRIX_ACCESS_TOKEN_HERE"

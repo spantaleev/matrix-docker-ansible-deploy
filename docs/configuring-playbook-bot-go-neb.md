@@ -157,7 +157,7 @@ matrix_bot_go_neb_services:
               Events: ["push", "issues"]
             "matrix-org/dendron":
               Events: ["pull_request"]
-        "!anotherRoom:example.com":
+        "!aaabaa:example.com":
           Repos:
             "element-hq/synapse":
               Events: ["push", "issues"]
