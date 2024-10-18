@@ -58,7 +58,8 @@ matrix_static_files_file_matrix_support_property_m_contacts:
   - email_address: security@example.com
     role: m.role.security
 
-matrix_static_files_file_matrix_support_property_m_support_page: "https://matrix.example.com/support"
+# Your organization's support page on the base (or another) domain, if any
+matrix_static_files_file_matrix_support_property_m_support_page: "https://example.com/support"
 ```
 
 To learn how to set up `/.well-known/matrix/support` for the base domain, read the Installing section below.
