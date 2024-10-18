@@ -47,7 +47,7 @@ Using your own account, create a new invite only room that you will use to manag
 
 If you make the management room encrypted (E2EE), then you MUST enable and use Pantalaimon (see below).
 
-Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!QvgVuKq0ha8glOLGMG:example.com`.
+Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!someRoom:example.com`.
 
 Finally invite the `@bot.draupnir:example.com` account you created earlier into the room.
 
@@ -135,7 +135,7 @@ Draupnir can be told to self-join public rooms, but it's better to follow this f
 
 2. [Give the bot permissions to do its job](#giving-draupnir-permissions-to-do-its-job)
 
-3. Tell it to protect the room (using the [rooms command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#using-the-draupnir-rooms-command)) by sending the following command to the Management Room: `!draupnir rooms add !ROOM_ID:example.com`
+3. Tell it to protect the room (using the [rooms command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#using-the-draupnir-rooms-command)) by sending the following command to the Management Room: `!draupnir rooms add !someRoom:example.com`
 
 To have Draupnir provide useful room protection, you need do to a bit more work (at least the first time around).
 You may wish to [Subscribe to a public policy list](#subscribing-to-a-public-policy-list), [Create your own own policy and rules](#creating-your-own-policy-lists-and-rules) and [Enabling built-in protections](#enabling-built-in-protections).

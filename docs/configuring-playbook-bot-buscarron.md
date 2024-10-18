@@ -20,7 +20,7 @@ matrix_bot_buscarron_password: PASSWORD_FOR_THE_BOT
 # Adjust accepted forms
 matrix_bot_buscarron_forms:
   - name: contact # (mandatory) Your form name, will be used as endpoint, eg: buscarron.example.com/contact
-    room: "!yourRoomID:{{ matrix_domain }}" # (mandatory) Room ID where form submission will be posted
+    room: "!someRoom:{{ matrix_domain }}" # (mandatory) Room ID where form submission will be posted
     redirect: https://example.com # (mandatory) To what page user will be redirected after the form submission
     ratelimit: 1r/m # (optional) rate limit of the form, format: <max requests>r/<interval:s,m>, eg: 1r/s or 54r/m
     hasemail: 1 # (optional) form has "email" field that should be validated
