@@ -76,7 +76,7 @@ matrix_bot_mjolnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 The playbook's `group_vars` will configure other required settings. If using this role separately without the playbook, you also need to configure the two URLs that Mjolnir uses to reach the homeserver, one through Pantalaimon and one "raw". This example is taken from the playbook's `group_vars`:
 
 ```yaml
-# Endpoint URL that Mjolnir uses to interact with the matrix homeserver (client-server API).
+# Endpoint URL that Mjolnir uses to interact with the Matrix homeserver (client-server API).
 # Set this to the pantalaimon URL if you're using that.
 matrix_bot_mjolnir_homeserver_url: "{{ 'http://matrix-pantalaimon:8009' if matrix_bot_mjolnir_pantalaimon_use else matrix_addons_homeserver_client_api_url }}"
 

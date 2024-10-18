@@ -161,7 +161,7 @@ frontend www-https
 	# Use the challenge backend if the challenge is set
 	use_backend matrix-backend if matrix-acl
 backend matrix-backend
-	# Redirects the .well-known matrix to the matrix server for federation.
+	# Redirects the .well-known Matrix to the Matrix server for federation.
 	http-request set-header Host matrix.example.com
 	server matrix matrix.example.com:80
 	# Map url path as ProxyPass does

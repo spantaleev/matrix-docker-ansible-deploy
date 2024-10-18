@@ -41,7 +41,7 @@ After configuring the playbook, run the [installation](installing.md) command: `
 You can visit `matrix.example.com/_matrix/maubot/` to manage your available plugins, clients and instances.
 
 You should start in the following order
-1. **Create one or more clients**: A client is a matrix account which the bot will use to message. By default, the playbook creates a `bot.maubot` account (as per the configuration above). You only need to [obtain an access token](#obtaining-an-access-token) for it
+1. **Create one or more clients**: A client is a Matrix account which the bot will use to message. By default, the playbook creates a `bot.maubot` account (as per the configuration above). You only need to [obtain an access token](#obtaining-an-access-token) for it
 2. **Upload some Plugins**: Plugins can be obtained from [here](https://github.com/maubot/maubot#plugins) or any other source.
 3. **Create an instance**: An instance is the actual bot. You have to specify a client which the bot instance will use
 and the plugin (how the bot will behave)

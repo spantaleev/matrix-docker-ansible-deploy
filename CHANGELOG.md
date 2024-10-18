@@ -1968,7 +1968,7 @@ If you need to downgrade to the previous version, changing `matrix_sygnal_versio
 
 ## Hydrogen support
 
-Thanks to [Aaron Raimist](https://github.com/aaronraimist), the playbook now supports [Hydrogen](https://github.com/vector-im/hydrogen-web) - a new lightweight matrix client with legacy and mobile browser support.
+Thanks to [Aaron Raimist](https://github.com/aaronraimist), the playbook now supports [Hydrogen](https://github.com/vector-im/hydrogen-web) - a new lightweight Matrix client with legacy and mobile browser support.
 
 By default, we still install Element, as Hydrogen is still not fully-featured. Still, people who'd like to try Hydrogen out can now install it via the playbook.
 

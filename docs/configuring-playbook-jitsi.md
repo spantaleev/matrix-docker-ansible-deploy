@@ -196,13 +196,13 @@ jitsi_jvb_container_colibri_ws_host_bind_port: 9090
 ```
 
 The JVB will also need to know where the prosody xmpp server is located, similar to the server ID this can be set in the vars for the JVB by using the variable
-`jitsi_xmpp_server`. The Jitsi prosody container is deployed on the matrix server by default so the value can be set to the matrix domain. For example:
+`jitsi_xmpp_server`. The Jitsi prosody container is deployed on the Matrix server by default so the value can be set to the Matrix domain. For example:
 
 ```yaml
 jitsi_xmpp_server: "{{ matrix_domain }}"
 ```
 
-However, it can also be set the ip address of the matrix server. This can be useful if you wish to use a private ip. For example:
+However, it can also be set the ip address of the Matrix server. This can be useful if you wish to use a private ip. For example:
 
 ```yaml
 jitsi_xmpp_server: "192.168.0.1"
@@ -269,7 +269,7 @@ jitsi_disable_gravatar: false
 ```
 
 **Beware**: This leaks information to a third party, namely the Gravatar-Service (unless configured otherwise: gravatar.com).
-Besides metadata, this includes the matrix user_id and possibly the room identifier (via `referrer` header).
+Besides metadata, this includes the Matrix user_id and possibly the room identifier (via `referrer` header).
 
 ## Installing
 

@@ -32,7 +32,7 @@ modules: {{ matrix_synapse_modules|to_json }}
 # created on this server. For example if the server_name was example.com,
 # usernames on this server would be in the format @user:example.com
 #
-# In most cases you should avoid using a matrix specific subdomain such as
+# In most cases you should avoid using a Matrix specific subdomain such as
 # matrix.example.com or synapse.example.com as the server_name for the same
 # reasons you wouldn't use user@email.example.com as your email address.
 # See https://matrix-org.github.io/synapse/latest/delegate.html
@@ -293,7 +293,7 @@ listeners:
 {% endif %}
 
 {% if matrix_synapse_federation_port_enabled and matrix_synapse_tls_federation_listener_enabled %}
-  # TLS-enabled listener: for when matrix traffic is sent directly to synapse.
+  # TLS-enabled listener: for when Matrix traffic is sent directly to synapse.
   - port: {{ matrix_synapse_container_federation_api_tls_port|to_json }}
     tls: true
     bind_addresses: ['::']
@@ -305,7 +305,7 @@ listeners:
         compress: false
 {% endif %}
 
-  # Unsecure HTTP listener (Client API): for when matrix traffic passes through a reverse proxy
+  # Unsecure HTTP listener (Client API): for when Matrix traffic passes through a reverse proxy
   # that unwraps TLS.
   - port: {{ matrix_synapse_container_client_api_port|to_json }}
     tls: false
@@ -318,7 +318,7 @@ listeners:
         compress: false
 
 {% if matrix_synapse_federation_port_enabled %}
-  # Unsecure HTTP listener (Federation API): for when matrix traffic passes through a reverse proxy
+  # Unsecure HTTP listener (Federation API): for when Matrix traffic passes through a reverse proxy
   # that unwraps TLS.
   - port: {{ matrix_synapse_container_federation_api_plain_port|to_json }}
     tls: false
@@ -1873,7 +1873,7 @@ saml2_config:
   #saml_session_lifetime: 5m
 
   # An external module can be provided here as a custom solution to
-  # mapping attributes returned from a saml provider onto a matrix user.
+  # mapping attributes returned from a saml provider onto a Matrix user.
   #
   user_mapping_provider:
     # The custom module's class. Uncomment to use a custom module.
@@ -1896,7 +1896,7 @@ saml2_config:
       #mxid_source_attribute: displayName
 
       # The mapping system to use for mapping the saml attribute onto a
-      # matrix ID.
+      # Matrix ID.
       #
       # Options include:
       #  * 'hexencode' (which maps unpermitted characters to '=xx')
@@ -2037,7 +2037,7 @@ saml2_config:
 #       switching from password logins to OIDC. Defaults to false.
 #
 #   user_mapping_provider: Configuration for how attributes returned from a OIDC
-#       provider are mapped onto a matrix user. This setting has the following
+#       provider are mapped onto a Matrix user. This setting has the following
 #       sub-properties:
 #
 #       module: The class name of a custom mapping module. Default is
@@ -2831,7 +2831,7 @@ opentracing:
     #homeserver_whitelist:
     #  - ".*"
 
-    # A list of the matrix IDs of users whose requests will always be traced,
+    # A list of the Matrix IDs of users whose requests will always be traced,
     # even if the tracing system would otherwise drop the traces due to
     # probabilistic sampling.
     #
