@@ -33,7 +33,7 @@ loosely based on [this](https://github.com/matrix-org/matrix-appservice-slack#Se
     matrix_appservice_slack_team_sync_enabled: true
     ```
 
-   See https://matrix-appservice-slack.readthedocs.io/en/latest/team_sync/
+    See https://matrix-appservice-slack.readthedocs.io/en/latest/team_sync/
 
 5. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
 
