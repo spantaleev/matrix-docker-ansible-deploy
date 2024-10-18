@@ -50,7 +50,7 @@ matrix_email2matrix_enabled: true
 
 matrix_email2matrix_matrix_mappings:
   - MailboxName: "mailbox1"
-    MatrixRoomId: "!someRoom:{{ matrix_domain }}"
+    MatrixRoomId: "!qporfwt:{{ matrix_domain }}"
     MatrixHomeserverUrl: "{{ matrix_homeserver_url }}"
     MatrixUserId: "@email2matrix:{{ matrix_domain }}"
     MatrixAccessToken: "MATRIX_ACCESS_TOKEN_HERE"

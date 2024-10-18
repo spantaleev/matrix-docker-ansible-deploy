@@ -25,12 +25,12 @@ matrix_alertmanager_receiver_config_matrix_access_token: ''
 # Optionally, configure some mappings (URL-friendly room name -> actual Matrix room ID).
 #
 # If you don't configure mappings, you can still deliver alerts using URLs like this:
-# https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/!someRoom:example.com
+# https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/!qporfwt:example.com
 #
 # If a mapping like the one below is configured, you can deliver alerts using friendlier URLs like this:
 # https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/some-room-name
 matrix_alertmanager_receiver_config_matrix_room_mapping:
-  some-room-name: "!someRoom:{{ matrix_domain }}"
+  some-room-name: "!qporfwt:{{ matrix_domain }}"
 ```
 
 See `roles/custom/matrix-alertmanager-receiver/defaults/main.yml` for additional configuration variables.
@@ -102,6 +102,6 @@ route:
     - receiver: matrix
 ```
 
-.. where `URL_HERE` looks like `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/some-room-name` or `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/!someRoom:example.com`.
+.. where `URL_HERE` looks like `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/some-room-name` or `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/!qporfwt:example.com`.
 
 This bot does **not** accept room invitations automatically (like many other bots do). To deliver messages to rooms, **the bot must be joined to all rooms manually** - see Step 5 of the [Account and room preparation](#account-and-room-preparation) section.

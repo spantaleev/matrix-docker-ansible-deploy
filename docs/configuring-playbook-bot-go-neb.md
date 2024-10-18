@@ -125,7 +125,7 @@ matrix_bot_go_neb_services:
     Config:
       feeds:
         "http://lorem-rss.herokuapp.com/feed?unit=second&interval=60":
-          rooms: ["!someRoom:{{ matrix_domain }}"]
+          rooms: ["!qporfwt:{{ matrix_domain }}"]
           must_include:
             author:
               - author1
@@ -151,7 +151,7 @@ matrix_bot_go_neb_services:
       RealmID: "github_realm"
       ClientUserID: "@YOUR_USER_ID:{{ matrix_domain }}" # needs to be an authenticated user so Go-NEB can create webhooks. Check the UserID field in the github_realm in matrix_bot_go_neb_sessions.
       Rooms:
-        "!someRoom:example.com":
+        "!qporfwt:example.com":
           Repos:
             "element-hq/synapse":
               Events: ["push", "issues"]
@@ -170,7 +170,7 @@ matrix_bot_go_neb_services:
     Config:
       Hooks:
         "hook1":
-          RoomID: "!someRoom:example.com"
+          RoomID: "!qporfwt:example.com"
           MessageType: "m.text" # default is m.text
 
   - ID: "alertmanager_service"
@@ -184,7 +184,7 @@ matrix_bot_go_neb_services:
       webhook_url: "http://localhost/services/hooks/YWxlcnRtYW5hZ2VyX3NlcnZpY2U"
       # Each room will get the notification with the alert rendered with the given template
       rooms:
-        "!someRoom:example.com":
+        "!qporfwt:example.com":
           text_template: "{% raw %}{{range .Alerts -}} [{{ .Status }}] {{index .Labels \"alertname\" }}: {{index .Annotations \"description\"}} {{ end -}}{% endraw %}"
           html_template: "{% raw %}{{range .Alerts -}}  {{ $severity := index .Labels \"severity\" }}    {{ if eq .Status \"firing\" }}      {{ if eq $severity \"critical\"}}        <font color='red'><b>[FIRING - CRITICAL]</b></font>      {{ else if eq $severity \"warning\"}}        <font color='orange'><b>[FIRING - WARNING]</b></font>      {{ else }}        <b>[FIRING - {{ $severity }}]</b>      {{ end }}    {{ else }}      <font color='green'><b>[RESOLVED]</b></font>    {{ end }}  {{ index .Labels \"alertname\"}} : {{ index .Annotations \"description\"}}   <a href=\"{{ .GeneratorURL }}\">source</a><br/>{{end -}}{% endraw %}"
           msg_type: "m.text"  # Must be either `m.text` or `m.notice`

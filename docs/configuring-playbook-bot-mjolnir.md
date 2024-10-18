@@ -41,7 +41,7 @@ Using your own account, create a new invite only room that you will use to manag
 
 If you make the management room encrypted (E2EE), then you MUST enable and use Pantalaimon (see below).
 
-Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!someRoom:example.com`.
+Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!qporfwt:example.com`.
 
 Finally invite the `@bot.mjolnir:example.com` account you created earlier into the room.
 
