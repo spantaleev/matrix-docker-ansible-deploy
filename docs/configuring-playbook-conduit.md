@@ -8,16 +8,17 @@ By default, this playbook configures the [Synapse](https://github.com/element-hq
 
 - **homeserver implementations other than Synapse may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Synapse). Make yourself familiar with the downsides before proceeding
 
+## Adjusting the playbook configuration
 
-## Installing
-
-To use Conduit, you **generally** need the following additional `vars.yml` configuration:
+To use Conduit, you **generally** need to add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_homeserver_implementation: conduit
 ```
 
-However, since Conduit is difficult (see [famedly/conduit#276](https://gitlab.com/famedly/conduit/-/issues/276) and [famedly/conduit#354](https://gitlab.com/famedly/conduit/-/merge_requests/354)) when it comes to creating the first user account and does not support [registering users](registering-users.md) (via the command line or via the playbook) like Synapse and Dendrite do, we recommend the following flow:
+## Creating the first user account
+
+Since it is difficult to create the first user account on Conduit (see [famedly/conduit#276](https://gitlab.com/famedly/conduit/-/issues/276) and [famedly/conduit#354](https://gitlab.com/famedly/conduit/-/merge_requests/354)) and it does not support [registering users](registering-users.md) (via the command line or via the playbook) like Synapse and Dendrite do, we recommend the following procedure:
 
 1. Add `matrix_conduit_allow_registration: true` to your `vars.yml` the first time around, temporarily
 2. Run the playbook (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start` - see [Installing](installing.md))
