@@ -1,6 +1,6 @@
 ---
 
-- set_fact:
+- ansible.builtin.set_fact:
     matrix_authentication_service_syn2mas_dry_run: "{{ matrix_authentication_service_syn2mas_dry_run | bool }}"
 
 - name: Abort, if not using Synapse
@@ -124,14 +124,14 @@
   ansible.builtin.debug:
     var: matrix_authentication_service_syn2mas_migration_command_result
 
-- when: "not matrix_authentication_service_syn2mas_dry_run and matrix_authentication_service_synapse_ensure_stopped_result.changed"
-  name: Ensure Synapse is started (if it previously was)
+- name: Ensure Synapse is started (if it previously was)
+  when: "not matrix_authentication_service_syn2mas_dry_run and matrix_authentication_service_synapse_ensure_stopped_result.changed"
   ansible.builtin.service:
     name: matrix-synapse
     state: started
 
-- when: "not matrix_authentication_service_syn2mas_dry_run and matrix_authentication_service_mas_ensure_stopped_result.changed"
-  name: Ensure Matrix Authentication Service is started (if it previously was)
+- name: Ensure Matrix Authentication Service is started (if it previously was)
+  when: "not matrix_authentication_service_syn2mas_dry_run and matrix_authentication_service_mas_ensure_stopped_result.changed"
   ansible.builtin.service:
     name: matrix-authentication-service
     state: started

@@ -7,8 +7,8 @@
     daemon_reload: true
   register: matrix_authentication_service_mas_ensure_started_result
 
-- when: matrix_authentication_service_mas_ensure_started_result.changed | bool
-  name: Wait a bit, so that Matrix Authentication Service can start
+- name: Wait a bit, so that Matrix Authentication Service can start
+  when: matrix_authentication_service_mas_ensure_started_result.changed | bool
   ansible.builtin.wait_for:
     timeout: "{{ matrix_authentication_service_syn2mas_start_wait_time_seconds }}"
   delegate_to: 127.0.0.1
