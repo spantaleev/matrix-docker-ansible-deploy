@@ -2,7 +2,7 @@
 
 ## Support for Matrix Authentication Service
 
-The playbook now supports installing and configuring [Matrix Authentication Service](./docs/matrix-authentication-service.md) (MAS).
+The playbook now supports installing and configuring [Matrix Authentication Service](./docs/configuring-playbook-matrix-authentication-service.md) (MAS).
 
 Huge thanks to [Quentin Gliech](https://github.com/sandhose) from the [Element](https://element.io/) / [Matrix Authentication Service](https://github.com/element-hq/matrix-authentication-service) team for answering our numerous questions about MAS.
 
