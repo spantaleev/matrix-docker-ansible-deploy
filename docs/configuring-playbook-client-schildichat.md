@@ -1,16 +1,16 @@
 # Configuring SchildiChat (optional)
 
 This playbook can install the [SchildiChat](https://github.com/SchildiChat/schildichat-desktop) Matrix web client for you.
-SchildiChat is a feature-rich messenger for Matrix based on Element with some extras and tweaks.
-SchildiChat can be installed alongside or instead of Element.
+
+SchildiChat is a feature-rich messenger for Matrix based on Element with some extras and tweaks. It can be installed alongside or instead of Element.
 
 **WARNING**: SchildiChat Web is based on Element-web, but its releases are lagging behind. As an example (from 2024-02-26), SchildiChat Web is 22 releases behind (it being based on element-web `v1.11.36`, while element-web is now on `v1.11.58`). Element-web frequently suffers from security issues, so running something based on an ancient Element-web release is **dangerous**. Use SchildiChat Web at your own risk!
 
 ## DNS
 
-You need to add a `schildichat.example.com` DNS record so that SchildiChat can be accessed.
-By default SchildiChat will use https://schildichat.example.com so you will need to create an CNAME record
-for `schildichat`. See [Configuring DNS](configuring-dns.md).
+You need to add a DNS record so that SchildiChat can be accessed.
+
+By default SchildiChat will use https://schildichat.example.com so you will need to create an CNAME record for `schildichat`. See [Configuring DNS](configuring-dns.md).
 
 If you would like to use a different domain, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (changing it to use your preferred domain):
 
