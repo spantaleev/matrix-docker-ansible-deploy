@@ -88,6 +88,8 @@ Certain Synapse administration tasks (managing users and rooms, etc.) can be per
 
 ## Synapse + OpenID Connect for Single-Sign-On
 
+💡 An alternative to setting up OIDC in Synapse is to use [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) (MAS). Newer clients (like Element X) only support SSO-based authentication via MAS and not via the legacy Synapse OIDC setup described below. That said, MAS is still a new experimental service which comes with its own downsides. Consult its documentation to learn if it will be a good fit for your deployment.
+
 If you'd like to use OpenID Connect authentication with Synapse, you'll need some additional configuration.
 
 This example configuration is for [keycloak](https://www.keycloak.org/), an opensource Identity Provider maintained by Red Hat.

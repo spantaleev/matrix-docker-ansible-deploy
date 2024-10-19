@@ -1,0 +1,134 @@
+{% if matrix_authentication_service_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_authentication_service_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_authentication_service_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-authentication-service.loadbalancer.server.port=8080
+
+########################################################################################
+#                                                                                      #
+# Public Main                                                                          #
+#                                                                                      #
+########################################################################################
+
+{% set main_middlewares = [] %}
+
+{% if matrix_authentication_service_container_labels_public_main_path_prefix != '/' %}
+traefik.http.middlewares.matrix-authentication-service-slashless-redirect.redirectregex.regex=({{ matrix_authentication_service_container_labels_public_main_path_prefix | quote }})$
+traefik.http.middlewares.matrix-authentication-service-slashless-redirect.redirectregex.replacement=${1}/
+{% set main_middlewares = main_middlewares + ['matrix-authentication-service-slashless-redirect'] %}
+{% endif %}
+
+{% if matrix_authentication_service_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in matrix_authentication_service_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.matrix-authentication-service-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set main_middlewares = main_middlewares + ['matrix-authentication-service-add-headers'] %}
+{% endif %}
+
+traefik.http.routers.matrix-authentication-service.rule={{ matrix_authentication_service_container_labels_public_main_rule }}
+
+{% if matrix_authentication_service_container_labels_public_main_priority | int > 0 %}
+traefik.http.routers.matrix-authentication-service.priority={{ matrix_authentication_service_container_labels_public_main_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-authentication-service.service=matrix-authentication-service
+
+{% if main_middlewares | length > 0 %}
+traefik.http.routers.matrix-authentication-service.middlewares={{ main_middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers.matrix-authentication-service.entrypoints={{ matrix_authentication_service_container_labels_public_main_entrypoints }}
+traefik.http.routers.matrix-authentication-service.tls={{ matrix_authentication_service_container_labels_public_main_tls | to_json }}
+{% if matrix_authentication_service_container_labels_public_main_tls %}
+traefik.http.routers.matrix-authentication-service.tls.certResolver={{ matrix_authentication_service_container_labels_public_main_tls_certResolver }}
+{% endif %}
+
+########################################################################################
+#                                                                                      #
+# /Public Main                                                                         #
+#                                                                                      #
+########################################################################################
+
+{% if matrix_authentication_service_container_labels_public_compatibility_layer_enabled %}
+########################################################################################
+#                                                                                      #
+# Public Compatibility Layer                                                           #
+#                                                                                      #
+########################################################################################
+
+{% set compatibility_layer_middlewares = [] %}
+
+{% if matrix_authentication_service_container_labels_public_main_path_prefix != '/' %}
+traefik.http.middlewares.matrix-authentication-service-add-prefix.addprefix.prefix={{ matrix_authentication_service_container_labels_public_main_path_prefix }}
+{% set compatibility_layer_middlewares = compatibility_layer_middlewares + ['matrix-authentication-service-add-prefix'] %}
+{% endif %}
+
+traefik.http.routers._internalmatrix-authentication-service-public-compatibility-layer.rule={{ matrix_authentication_service_container_labels_public_compatibility_layer_rule }}
+
+{% if matrix_authentication_service_container_labels_public_compatibility_layer_priority | int > 0 %}
+traefik.http.routers._internalmatrix-authentication-service-public-compatibility-layer.priority={{ matrix_authentication_service_container_labels_public_compatibility_layer_priority }}
+{% endif %}
+
+traefik.http.routers._internalmatrix-authentication-service-public-compatibility-layer.service=matrix-authentication-service
+
+{% if compatibility_layer_middlewares | length > 0 %}
+traefik.http.routers._internalmatrix-authentication-service-public-compatibility-layer.middlewares={{ compatibility_layer_middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers._internalmatrix-authentication-service-public-compatibility-layer.entrypoints={{ matrix_authentication_service_container_labels_public_compatibility_layer_entrypoints }}
+
+traefik.http.routers._internalmatrix-authentication-service-public-compatibility-layer.tls={{ matrix_authentication_service_container_labels_public_compatibility_layer_tls | to_json }}
+{% if matrix_authentication_service_container_labels_public_compatibility_layer_tls %}
+traefik.http.routers._internalmatrix-authentication-service-public-compatibility-layer.tls.certResolver={{ matrix_authentication_service_container_labels_public_compatibility_layer_tls_certResolver }}
+{% endif %}
+
+########################################################################################
+#                                                                                      #
+# /Public Compatibility Layer                                                          #
+#                                                                                      #
+########################################################################################
+{% endif %}
+
+
+{% if matrix_authentication_service_container_labels_internal_compatibility_layer_enabled %}
+########################################################################################
+#                                                                                      #
+# Internal Compatibility Layer                                                         #
+#                                                                                      #
+########################################################################################
+
+{% set compatibility_layer_middlewares = [] %}
+
+{% if matrix_authentication_service_container_labels_public_main_path_prefix != '/' %}
+traefik.http.middlewares.matrix-authentication-service-add-prefix.addprefix.prefix={{ matrix_authentication_service_container_labels_public_main_path_prefix }}
+{% set compatibility_layer_middlewares = compatibility_layer_middlewares + ['matrix-authentication-service-add-prefix'] %}
+{% endif %}
+
+traefik.http.routers._internalmatrix-authentication-service-internal-compatibility-layer.rule={{ matrix_authentication_service_container_labels_internal_compatibility_layer_rule }}
+
+{% if matrix_authentication_service_container_labels_internal_compatibility_layer_priority | int > 0 %}
+traefik.http.routers._internalmatrix-authentication-service-internal-compatibility-layer.priority={{ matrix_authentication_service_container_labels_internal_compatibility_layer_priority }}
+{% endif %}
+
+traefik.http.routers._internalmatrix-authentication-service-internal-compatibility-layer.service=matrix-authentication-service
+
+{% if compatibility_layer_middlewares | length > 0 %}
+traefik.http.routers._internalmatrix-authentication-service-internal-compatibility-layer.middlewares={{ compatibility_layer_middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers._internalmatrix-authentication-service-internal-compatibility-layer.entrypoints={{ matrix_authentication_service_container_labels_internal_compatibility_layer_entrypoints }}
+
+########################################################################################
+#                                                                                      #
+# /Internal Compatibility Layer                                                        #
+#                                                                                      #
+########################################################################################
+{% endif %}
+
+
+{% endif %}
+
+{{ matrix_authentication_service_container_labels_additional_labels }}

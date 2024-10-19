@@ -1,0 +1,82 @@
+#jinja2: lstrip_blocks: "True"
+http:
+  listeners:
+  - name: web
+    resources:
+    - name: discovery
+    - name: human
+    - name: oauth
+    - name: compat
+    - name: graphql
+    - name: assets
+    binds:
+    - address: '[::]:8080'
+    proxy_protocol: false
+    prefix: {{ matrix_authentication_service_path_prefix }}
+  - name: internal
+    resources:
+    - name: health
+    binds:
+    - host: localhost
+      port: 8081
+    proxy_protocol: false
+    prefix: {{ matrix_authentication_service_path_prefix }}
+  trusted_proxies: {{ matrix_authentication_service_config_http_trusted_proxies | to_json }}
+  public_base: {{ matrix_authentication_service_config_http_public_base | to_json }}
+  issuer: {{ matrix_authentication_service_config_http_issuer | to_json }}
+
+database:
+  host: {{ matrix_authentication_service_config_database_host | to_json }}
+  port: {{ matrix_authentication_service_config_database_port | to_json }}
+  username: {{ matrix_authentication_service_config_database_username | to_json }}
+  password: {{ matrix_authentication_service_config_database_password | to_json }}
+  database: {{ matrix_authentication_service_config_database_database | to_json }}
+  ssl_mode: {{ matrix_authentication_service_config_database_ssl_mode | to_json }}
+  max_connections: {{ matrix_authentication_service_config_database_max_connections | to_json }}
+  min_connections: {{ matrix_authentication_service_config_database_min_connections | to_json }}
+  connect_timeout: {{ matrix_authentication_service_config_database_connect_timeout | to_json }}
+  idle_timeout: {{ matrix_authentication_service_config_database_idle_timeout | to_json }}
+  max_lifetime: {{ matrix_authentication_service_config_database_max_lifetime | to_json }}
+
+email:
+  from: {{ matrix_authentication_service_config_email_from | to_json }}
+  reply_to: {{ matrix_authentication_service_config_email_reply_to | to_json }}
+  transport: {{ matrix_authentication_service_config_email_transport | to_json }}
+  {% if matrix_authentication_service_config_email_transport == 'smtp' %}
+  mode: {{ matrix_authentication_service_config_email_mode | to_json }}
+  hostname: {{ matrix_authentication_service_config_email_hostname | to_json }}
+  port: {{ matrix_authentication_service_config_email_port | int | to_json }}
+  {% if matrix_authentication_service_config_email_username %}
+  username: {{ matrix_authentication_service_config_email_username | to_json }}
+  {% endif %}
+  {% if matrix_authentication_service_config_email_password %}
+  password: {{ matrix_authentication_service_config_email_password | to_json }}
+  {% endif %}
+  {% endif %}
+secrets:
+  encryption: {{ matrix_authentication_service_config_secrets_encryption | to_json }}
+  keys: {{ matrix_authentication_service_config_secrets_keys | to_json }}
+
+passwords:
+  enabled: {{ matrix_authentication_service_config_passwords_enabled | to_json }}
+  schemes: {{ matrix_authentication_service_config_passwords_schemes | to_json }}
+  minimum_complexity: {{ matrix_authentication_service_config_passwords_minimum_complexity | to_json }}
+
+matrix:
+  homeserver: {{ matrix_authentication_service_config_matrix_homeserver | to_json }}
+  secret: {{ matrix_authentication_service_config_matrix_secret | to_json }}
+  endpoint: {{ matrix_authentication_service_config_matrix_endpoint | to_json }}
+
+account:
+  email_change_allowed: {{ matrix_authentication_service_config_account_email_change_allowed | to_json }}
+  displayname_change_allowed: {{ matrix_authentication_service_config_account_displayname_change_allowed | to_json }}
+  password_registration_enabled: {{ matrix_authentication_service_config_account_password_registration_enabled | to_json }}
+  password_change_allowed: {{ matrix_authentication_service_config_account_password_change_allowed | to_json }}
+  password_recovery_enabled: {{ matrix_authentication_service_config_account_password_recovery_enabled | to_json }}
+
+clients: {{ matrix_authentication_service_config_clients | to_json }}
+
+{% if matrix_authentication_service_config_upstream_oauth2_providers | length > 0 %}
+upstream_oauth2:
+  providers: {{ matrix_authentication_service_config_upstream_oauth2_providers | to_json }}
+{% endif %}

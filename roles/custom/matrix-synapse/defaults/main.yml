@@ -1129,6 +1129,61 @@ matrix_synapse_email_client_base_url: "{{ 'https' if matrix_playbook_ssl_enabled
 matrix_synapse_email_invite_client_location: "https://app.element.io"
 
 
+################################################################################
+#
+# Next-generation auth for Matrix, based on OAuth 2.0/OIDC
+#
+################################################################################
+
+# Controls whether to enable the "Next-generation auth for Matrix, based on OAuth 2.0/OIDC" experimental feature.
+#
+# See:
+# - https://matrix.org/blog/2023/09/better-auth/
+# - https://github.com/matrix-org/matrix-spec-proposals/pull/3861
+matrix_synapse_experimental_features_msc3861_enabled: false
+
+# Specifies the issuer URL for the OAuth 2.0/OIDC authentication provider.
+#
+# This can be set to a private (container) URL.
+#
+# Example: https://matrix.example.com/auth/
+matrix_synapse_experimental_features_msc3861_issuer: ''
+
+# Specifies the introspection endpoint URL for the OAuth 2.0/OIDC authentication provider.
+#
+# This can be set to a private (container) URL.
+#
+# If this is left empty, `{issuer}/.well-known/openid-configuration` will be fetched and the `introspection_endpoint` will be extracted from there.
+# We define it explicitly, because this allows us to override it and use an internal (container network) URL instead of using the public one.
+# Avoiding public addresses is an optimization that decreases overhead due to public networking and SSL termination.
+#
+# Example: https://matrix.example.com/auth/oauth2/introspect
+matrix_synapse_experimental_features_msc3861_introspection_endpoint: "{{ matrix_synapse_experimental_features_msc3861_issuer + 'oauth2/introspect' }}"
+
+# A unique identifier for the client.
+#
+# It must be a valid ULID (https://github.com/ulid/spec),
+# and it happens that 0000000000000000000SYNAPSE is a valid ULID.
+matrix_synapse_experimental_features_msc3861_client_id: '0000000000000000000SYNAPSE'
+
+matrix_synapse_experimental_features_msc3861_client_auth_method: client_secret_basic
+
+matrix_synapse_experimental_features_msc3861_client_secret: ''
+
+# A token that can be used to make admin API calls.
+# Matches `matrix.secret` in the matrix-authentication-service config
+matrix_synapse_experimental_features_msc3861_admin_token: ''
+
+# URL to advertise to clients where users can self-manage their account.
+matrix_synapse_experimental_features_msc3861_account_management_url: ''
+
+################################################################################
+#
+# /Next-generation auth for Matrix, based on OAuth 2.0/OIDC
+#
+################################################################################
+
+
 # Enable this to activate the REST auth password provider module.
 # See: https://github.com/ma1uta/matrix-synapse-rest-password-provider
 matrix_synapse_ext_password_provider_rest_auth_enabled: false
@@ -1406,3 +1461,8 @@ matrix_synapse_configuration_extension: "{{ matrix_synapse_configuration_extensi
 # Holds the final Synapse configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_synapse_configuration_yaml`.
 matrix_synapse_configuration: "{{ matrix_synapse_configuration_yaml | from_yaml | combine(matrix_synapse_configuration_extension, recursive=True) }}"
+
+# Holds the path to the register-user script provided by the Matrix Authentication Service.
+# When the Matrix Authentication Service is enabled, the register-user script from this role cannot be used
+# and users will be pointed to the one provided by Matrix Authentication Service.
+matrix_synapse_register_user_script_matrix_authentication_service_path: ""

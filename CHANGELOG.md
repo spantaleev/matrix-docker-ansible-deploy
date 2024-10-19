@@ -1,3 +1,16 @@
+# 2024-10-19
+
+## Support for Matrix Authentication Service
+
+The playbook now supports installing and configuring [Matrix Authentication Service](./docs/matrix-authentication-service.md) (MAS).
+
+Huge thanks to [Quentin Gliech](https://github.com/sandhose) from the [Element](https://element.io/) / [Matrix Authentication Service](https://github.com/element-hq/matrix-authentication-service) team for answering our numerous questions about MAS.
+
+This is an **experimental service** and there are **still certain issues with it** (see [Expectations](./docs/configuring-playbook-matrix-authentication-service.md#expectations)). Matrix server administrators should only consider switching if they identify with one or more [reasons to use Matrix Authentication Service](./docs/configuring-playbook-matrix-authentication-service.md#reasons-to-use-matrix-authentication-service). As MAS adoption improves and more services are adjusted to support it, we expect that using MAS will become the norm.
+
+Our [Setting up Matrix Authentication Service](./docs/configuring-playbook-matrix-authentication-service.md) documentation page has more details about this new service, what you might expect from the switch and how you can migrate your existing (Synapse) homeserver setup to MAS.
+
+
 # 2024-09-27
 
 ## (BC Break) Postgres & Traefik roles have been relocated and variable names need adjustments

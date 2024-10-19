@@ -1,0 +1,103 @@
+---
+
+- name: Ensure Matrix Authentication Service paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - {path: "{{ matrix_authentication_service_base_path }}", when: true}
+    - {path: "{{ matrix_authentication_service_bin_path }}", when: true}
+    - {path: "{{ matrix_authentication_service_config_path }}", when: true}
+    - {path: "{{ matrix_authentication_service_data_path }}", when: true}
+    - {path: "{{ matrix_authentication_service_data_keys_path }}", when: true}
+    - {path: "{{ matrix_authentication_service_container_src_files_path }}", when: "{{ matrix_authentication_service_container_image_self_build }}"}
+  when: "item.when | bool"
+
+- when: matrix_authentication_service_key_management_enabled | bool
+  block:
+    - name: Ensure openssl installed
+      ansible.builtin.package:
+        name: openssl
+        state: present
+
+    - name: Prepare private key
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/prepare_key.yml"
+      with_items: "{{ matrix_authentication_service_key_management_list }}"
+      loop_control:
+        loop_var: private_key_definition
+
+- name: Ensure Matrix Authentication Service configuration installed
+  ansible.builtin.copy:
+    content: "{{ matrix_authentication_service_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_authentication_service_config_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Matrix Authentication Service support files created
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - src: "{{ role_path }}/templates/env.j2"
+      dest: "{{ matrix_authentication_service_config_path }}/env"
+      mode: '0644'
+    - src: "{{ role_path }}/templates/labels.j2"
+      dest: "{{ matrix_authentication_service_config_path }}/labels"
+      mode: '0644'
+    - src: "{{ role_path }}/templates/bin/register-user.j2"
+      dest: "{{ matrix_authentication_service_bin_path }}/register-user"
+      mode: '0755'
+    - src: "{{ role_path }}/templates/bin/mas-cli.j2"
+      dest: "{{ matrix_authentication_service_bin_path }}/mas-cli"
+      mode: '0755'
+
+- name: Ensure Matrix Authentication Service container image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_authentication_service_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_authentication_service_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_authentication_service_container_image_force_pull }}"
+  when: "not matrix_authentication_service_container_image_self_build | bool"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- when: "matrix_authentication_service_container_image_self_build | bool"
+  block:
+    - name: Ensure Matrix Authentication Service repository is present on self-build
+      ansible.builtin.git:
+        repo: "{{ matrix_authentication_service_container_repo }}"
+        version: "{{ matrix_authentication_service_container_repo_version }}"
+        dest: "{{ matrix_authentication_service_container_src_files_path }}"
+        force: "yes"
+      become: true
+      become_user: "{{ matrix_user_username }}"
+
+    - name: Ensure Matrix Authentication Service container image is built
+      ansible.builtin.command:
+        cmd: |-
+          {{ devture_systemd_docker_base_host_command_docker }} buildx build
+          --tag={{ matrix_authentication_service_container_image }}
+          --file={{ matrix_authentication_service_container_src_files_path }}/Dockerfile
+          {{ matrix_authentication_service_container_src_files_path }}
+      changed_when: true
+
+- name: Ensure Matrix Authentication Service container network is created
+  community.general.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    name: "{{ matrix_authentication_service_container_network }}"
+    driver: bridge
+
+- name: Ensure matrix-authentication-service.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-authentication-service.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-authentication-service.service"
+    mode: 0644

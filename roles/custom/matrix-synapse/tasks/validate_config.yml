@@ -4,7 +4,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and vars[item.name] | length == 0"
   with_items:
     - {'name': 'matrix_synapse_username', when: true}
     - {'name': 'matrix_synapse_uid', when: true}
@@ -31,6 +31,13 @@
 
     - {'name': 'matrix_synapse_metrics_proxying_hostname', when: "{{ matrix_synapse_metrics_proxying_enabled }}"}
     - {'name': 'matrix_synapse_metrics_proxying_path_prefix', when: "{{ matrix_synapse_metrics_proxying_enabled }}"}
+
+    - {'name': 'matrix_synapse_experimental_features_msc3861_issuer', when: "{{ matrix_synapse_experimental_features_msc3861_enabled }}"}
+    - {'name': 'matrix_synapse_experimental_features_msc3861_client_id', when: "{{ matrix_synapse_experimental_features_msc3861_enabled }}"}
+    - {'name': 'matrix_synapse_experimental_features_msc3861_client_auth_method', when: "{{ matrix_synapse_experimental_features_msc3861_enabled }}"}
+    - {'name': 'matrix_synapse_experimental_features_msc3861_client_secret', when: "{{ matrix_synapse_experimental_features_msc3861_enabled }}"}
+    - {'name': 'matrix_synapse_experimental_features_msc3861_admin_token', when: "{{ matrix_synapse_experimental_features_msc3861_enabled }}"}
+    - {'name': 'matrix_synapse_experimental_features_msc3861_account_management_url', when: "{{ matrix_synapse_experimental_features_msc3861_enabled }}"}
 
 - name: Fail if asking for more than 1 instance of single-instance workers
   ansible.builtin.fail:
@@ -133,3 +140,17 @@
   when:
     - matrix_synapse_auto_accept_invites_enabled
     - matrix_synapse_ext_synapse_auto_accept_invite_enabled
+
+- name: Fail if known Synapse password provider modules are enabled when auth is delegated to Matrix Authentication Service
+  ansible.builtin.fail:
+    msg: "When Synapse is delegating authentication to Matrix Authentication Service, it does not make sense to enable password provider modules, because it is not Synapse that is handling authentication. Please disable {{ item }} before enabling Matrix Authentication Service integration for Synapse. Synapse will refuse to start otherwise."
+  when: matrix_synapse_experimental_features_msc3861_enabled and vars[item] | bool
+  with_items:
+    - matrix_synapse_ext_password_provider_rest_auth_enabled
+    - matrix_synapse_ext_password_provider_shared_secret_auth_enabled
+    - matrix_synapse_ext_password_provider_ldap_enabled
+
+- name: Fail if password config is enabled for Synapse when auth is delegated to Matrix Authentication Service
+  ansible.builtin.fail:
+    msg: "When Synapse is delegating authentication to Matrix Authentication Service, it doesn't make sense to enable the password config (`matrix_synapse_password_config_enabled: true`), because it is not Synapse that is handling authentication. Please remove your `matrix_synapse_password_config_enabled: true` setting before enabling Matrix Authentication Service integration for Synapse. Synapse will refuse to start otherwise."
+  when: matrix_synapse_experimental_features_msc3861_enabled and matrix_synapse_password_config_enabled

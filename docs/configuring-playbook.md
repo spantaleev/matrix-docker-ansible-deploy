@@ -90,6 +90,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Authentication and user-related
 
+- [Setting up Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md) (Next-generation auth for Matrix, based on OAuth 2.0/OIDC) (optional)
+
 - [Setting up Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) (optional)
 
 - [Setting up an ma1sd Identity Server](configuring-playbook-ma1sd.md) (optional)

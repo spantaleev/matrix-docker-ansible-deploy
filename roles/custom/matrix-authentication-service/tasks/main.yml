@@ -1,0 +1,38 @@
+---
+
+- tags:
+    - setup-all
+    - setup-matrix-authentication-service
+    - install-all
+    - install-matrix-authentication-service
+  block:
+    - when: matrix_authentication_service_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_authentication_service_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - matrix-authentication-service-syn2mas
+  block:
+    - when: matrix_authentication_service_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/syn2mas.yml"
+
+- tags:
+    - matrix-authentication-service-mas-cli-doctor
+  block:
+    - when: matrix_authentication_service_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/mas_cli_doctor.yml"
+
+- tags:
+    - register-user
+  block:
+    - when: matrix_authentication_service_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/register_user.yml"
+
+- tags:
+    - setup-all
+    - setup-matrix-authentication-service
+  block:
+    - when: not matrix_authentication_service_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

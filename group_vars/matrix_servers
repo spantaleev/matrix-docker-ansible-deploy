@@ -273,6 +273,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-alertmanager-receiver.service', 'priority': 2200, 'groups': ['matrix', 'alertmanager-receiver']}] if matrix_alertmanager_receiver_enabled else [])
     +
+    ([{'name': 'matrix-authentication-service.service', 'priority': 2200, 'groups': ['matrix', 'matrix-authentication-service']}] if matrix_authentication_service_enabled else [])
+    +
     ([{'name': 'matrix-bot-buscarron.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'buscarron', 'bot-buscarron']}] if matrix_bot_buscarron_enabled else [])
     +
     ([{'name': 'matrix-bot-baibot.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'baibot', 'bot-baibot']}] if matrix_bot_baibot_enabled else [])
@@ -613,6 +615,106 @@ matrix_alertmanager_receiver_metrics_proxying_path: "{{ matrix_metrics_exposure_
 # /matrix-alertmanager-receiver
 #
 ######################################################################
+
+
+######################################################################
+#
+# matrix-authentication-service
+#
+######################################################################
+
+matrix_authentication_service_enabled: false
+
+matrix_authentication_service_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_authentication_service_path_prefix: /auth
+
+matrix_authentication_service_config_database_host: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
+matrix_authentication_service_config_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mas.db', rounds=655555) | to_uuid }}"
+
+matrix_authentication_service_config_matrix_homeserver: "{{ matrix_domain }}"
+matrix_authentication_service_config_matrix_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mas.hs.secret', rounds=655555) | to_uuid }}"
+matrix_authentication_service_config_matrix_endpoint: "{{ matrix_homeserver_container_url }}"
+
+# We're using a non-default configuration which:
+# - allows passwords from Synapse (hashed with bcrypt) to be imported with scheme version 1 so existing users will be able to login
+# - as soon as they do one login, the hash will be 'upgraded' to argon2id
+matrix_authentication_service_config_passwords_schemes:
+  - version: 1
+    secret: "{{ matrix_synapse_password_config_pepper }}"
+    algorithm: bcrypt
+  - version: 2
+    algorithm: argon2id
+
+matrix_authentication_service_config_clients_auto: |-
+  {{
+    ([
+      {
+        'client_id': matrix_synapse_experimental_features_msc3861_client_id,
+        'client_auth_method': matrix_synapse_experimental_features_msc3861_client_auth_method,
+        'client_secret': matrix_synapse_experimental_features_msc3861_client_secret,
+      }
+    ] if matrix_synapse_experimental_features_msc3861_enabled else [])
+  }}
+
+matrix_authentication_service_config_email_transport: "{{ 'smtp' if exim_relay_enabled else 'blackhole' }}"
+matrix_authentication_service_config_email_hostname: "{{ exim_relay_identifier if exim_relay_enabled else '' }}"
+matrix_authentication_service_config_email_port: "{{ 8025 if exim_relay_enabled else 587 }}"
+matrix_authentication_service_config_email_mode: "{{ 'plain' if exim_relay_enabled else 'starttls' }}"
+matrix_authentication_service_config_email_from_address: "{{ exim_relay_sender_address }}"
+
+matrix_authentication_service_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
+
+matrix_authentication_service_container_network: "{{ matrix_homeserver_container_network }}"
+
+matrix_authentication_service_container_additional_networks_auto: |-
+  {{
+    (
+      ([postgres_container_network] if postgres_enabled and matrix_authentication_service_config_database_host == postgres_connection_hostname else [])
+      +
+      ([exim_relay_container_network] if (exim_relay_enabled and matrix_authentication_service_config_email_transport == 'smtp' and matrix_authentication_service_config_email_hostname == exim_relay_identifier and matrix_authentication_service_container_network != exim_relay_container_network) else [])
+      +
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network and matrix_authentication_service_container_labels_traefik_enabled else [])
+    ) | unique
+  }}
+
+matrix_authentication_service_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_authentication_service_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_authentication_service_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_authentication_service_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+
+matrix_authentication_service_container_labels_public_compatibility_layer_enabled: "{{ not matrix_authentication_service_migration_in_progress}}"
+matrix_authentication_service_container_labels_public_compatibility_layer_hostname: "{{ matrix_server_fqn_matrix }}"
+
+matrix_authentication_service_container_labels_internal_compatibility_layer_enabled: "{{ not matrix_authentication_service_migration_in_progress}}"
+matrix_authentication_service_container_labels_internal_compatibility_layer_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
+
+# MAS somewhat depends on the homeserver service, but the homeserver also depends on MAS.
+# To avoid a circular dependency, we make MAS not depend on the homeserver here.
+# The homeserver is more lost without MAS than MAS is without the homeserver, so we'll define the dependency on the homeserver side.
+# We'll put our dependency on the homeserver as a "want", rather than a requirement.
+matrix_authentication_service_systemd_required_services_list_auto: |
+  {{
+    ([postgres_identifier ~ '.service'] if postgres_enabled and matrix_authentication_service_config_database_host == postgres_connection_hostname else [])
+  }}
+
+# See more information about this homeserver "want" in the comment for `matrix_authentication_service_systemd_required_services_list_auto` above.
+matrix_authentication_service_systemd_wanted_services_list_auto: |
+  {{
+    ['matrix-' + matrix_homeserver_implementation + '.service']
+    +
+    ([exim_relay_identifier ~ '.service'] if (exim_relay_enabled and matrix_authentication_service_config_email_transport == 'smtp' and matrix_authentication_service_config_email_hostname == exim_relay_identifier and matrix_authentication_service_container_network != exim_relay_container_network) else [])
+  }}
+
+matrix_authentication_service_syn2mas_container_network: "{{ postgres_container_network if postgres_enabled and matrix_authentication_service_config_database_host == postgres_connection_hostname else matrix_authentication_service_container_network }}"
+
+matrix_authentication_service_syn2mas_synapse_homeserver_config_path: "{{ matrix_synapse_config_dir_path + '/homeserver.yaml' if matrix_synapse_enabled else '' }}"
+
+######################################################################
+#
+# /matrix-authentication-service
+#
+######################################################################
+
 
 
 
@@ -3922,6 +4024,12 @@ postgres_managed_databases_auto: |
     }] if (matrix_dendrite_enabled and matrix_dendrite_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
+      'name': matrix_authentication_service_config_database_database,
+      'username': matrix_authentication_service_config_database_username,
+      'password': matrix_authentication_service_config_database_password,
+    }] if (matrix_authentication_service_config_database_host == postgres_connection_hostname) else [])
+    +
+    ([{
       'name': matrix_sliding_sync_database_name,
       'username': matrix_sliding_sync_database_username,
       'password': matrix_sliding_sync_database_password,
@@ -4632,6 +4740,8 @@ matrix_synapse_systemd_required_services_list_auto: |
     ([keydb_identifier ~ '.service'] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == keydb_identifier else [])
     +
     (['matrix-goofys.service'] if matrix_s3_media_store_enabled else [])
+    +
+    (['matrix-authentication-service.service'] if (matrix_authentication_service_enabled and matrix_synapse_experimental_features_msc3861_enabled) else [])
   }}
 
 matrix_synapse_systemd_wanted_services_list_auto: |
@@ -4655,6 +4765,20 @@ matrix_synapse_ext_media_repo_enabled: "{{ matrix_media_repo_enabled }}"
 # Enable Synapse statistics reporting when using synapse-usage-exporter
 matrix_synapse_report_stats: "{{ matrix_synapse_usage_exporter_enabled }}"
 matrix_synapse_report_stats_endpoint: "http://{{ matrix_synapse_usage_exporter_identifier }}:{{ matrix_synapse_usage_exporter_container_port | string }}/report-usage-stats/push"
+
+matrix_synapse_experimental_features_msc3861_enabled: "{{ matrix_authentication_service_enabled and not matrix_authentication_service_migration_in_progress }}"
+matrix_synapse_experimental_features_msc3861_issuer: "{{ matrix_authentication_service_http_base_container_url if matrix_authentication_service_enabled else '' }}"
+matrix_synapse_experimental_features_msc3861_client_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'syn.ngauth.cs', rounds=655555) | to_uuid }}"
+matrix_synapse_experimental_features_msc3861_admin_token: "{{ matrix_authentication_service_config_matrix_secret if matrix_authentication_service_enabled else '' }}"
+matrix_synapse_experimental_features_msc3861_account_management_url: "{{ matrix_authentication_service_account_management_url if matrix_authentication_service_enabled else '' }}"
+
+# Disable password authentication when delegating authentication to Matrix Authentication Service.
+# Unless this is done, Synapse fails on startup with:
+# > Error in configuration at 'password_config.enabled':
+# > Password auth cannot be enabled when OAuth delegation is enabled
+matrix_synapse_password_config_enabled: "{{ not matrix_synapse_experimental_features_msc3861_enabled }}"
+
+matrix_synapse_register_user_script_matrix_authentication_service_path: "{{ matrix_authentication_service_bin_path }}/register-user"
 
 ######################################################################
 #
@@ -5753,6 +5877,10 @@ matrix_static_files_container_labels_base_domain_root_path_redirection_url: "{{ 
 matrix_static_files_file_matrix_client_property_io_element_jitsi_preferred_domain: "{{ matrix_server_fqn_jitsi if jitsi_enabled else '' }}"
 
 matrix_static_files_file_matrix_client_property_org_matrix_msc3575_proxy_url: "{{ matrix_homeserver_sliding_sync_url }}"
+
+matrix_static_files_file_matrix_client_property_org_matrix_msc2965_authentication_enabled: "{{ matrix_authentication_service_enabled }}"
+matrix_static_files_file_matrix_client_property_org_matrix_msc2965_authentication_issuer: "{{ matrix_authentication_service_config_http_issuer if matrix_authentication_service_enabled else '' }}"
+matrix_static_files_file_matrix_client_property_org_matrix_msc2965_authentication_account: "{{ matrix_authentication_service_account_management_url }}"
 
 matrix_static_files_file_matrix_client_property_m_tile_server_entries_enabled: "{{ matrix_client_element_location_sharing_enabled }}"
 matrix_static_files_file_matrix_client_property_m_tile_server_map_style_url: "{{ ('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element }}/map_style.json"
