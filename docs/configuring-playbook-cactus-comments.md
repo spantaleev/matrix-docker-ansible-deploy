@@ -16,7 +16,7 @@ You can enable whichever component you need (typically both).
 
 ## Configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 #################
