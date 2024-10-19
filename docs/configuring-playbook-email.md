@@ -7,7 +7,9 @@ This may or may not work, depending on your domain configuration (SPF settings, 
 
 By default, emails are sent from `matrix@matrix.example.com`, as specified by the `exim_relay_sender_address` playbook variable.
 
-**Note**: If you are using a Google Cloud instance, [port 25 is always blocked](https://cloud.google.com/compute/docs/tutorials/sending-mail/), so you need to relay email through another SMTP server as described below.
+⚠ **Warning**: On some cloud providers (Google Cloud, etc.), [port 25 is always blocked](https://cloud.google.com/compute/docs/tutorials/sending-mail/), so sending email directly from your server is not possible. You will need to [relay email through another SMTP server](#relaying-email-through-another-smtp-server).
+
+💡 To improve deliverability, we recommend [relaying email through another SMTP server](#relaying-email-through-another-smtp-server) anyway.
 
 
 ## Firewall settings
