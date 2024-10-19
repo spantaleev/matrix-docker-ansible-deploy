@@ -98,7 +98,7 @@ in your host_vars.
 This will instruct UVS to verify the OpenID token against any domain given in a request.
 Homeserver discovery is done via '.well-known/matrix/server' of the given domain.
 
-## Installation
+## Installing
 
 After these variables have been set, run the [installation](installing.md) command to restart UVS:
 

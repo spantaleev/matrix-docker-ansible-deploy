@@ -22,7 +22,7 @@ Alternatively, **if there is no pre-defined variable** for a Dendrite setting yo
 
 
 
-## Installation
+## Installing
 
 To use Dendrite, you **generally** need the following additional `vars.yml` configuration:
 

@@ -9,7 +9,7 @@ By default, this playbook configures the [Synapse](https://github.com/element-hq
 - **homeserver implementations other than Synapse may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Synapse). Make yourself familiar with the downsides before proceeding
 
 
-## Installation
+## Installing
 
 To use Conduit, you **generally** need the following additional `vars.yml` configuration:
 
