@@ -180,7 +180,7 @@ backend matrix-backend
 **For AWS CloudFront**
 
    1. Add a custom origin with matrix.example.com to your distribution
-   1. Add two behaviors, one for `.well-known/matrix/client` and one for `.well-known/matrix/server` and point them to your new origin.
+   2. Add two behaviors, one for `.well-known/matrix/client` and one for `.well-known/matrix/server` and point them to your new origin.
 
 Make sure to:
 

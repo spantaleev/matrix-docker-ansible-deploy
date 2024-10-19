@@ -13,10 +13,10 @@ Below, we describe 2 ways to generate an access token for a user - using [Elemen
 ## Obtain an access token via Element
 
 1. In a private browsing session (incognito window), open Element.
-1. Log in with the user's credentials.
-1. In the settings page, choose "Help & About", scroll down to the bottom and expand the `Access Token` section (see screenshot below).
-1. Copy the access token to your configuration.
-1. Close the private browsing session. **Do not log out**. Logging out will invalidate the token, making it not work.
+2. Log in with the user's credentials.
+3. In the settings page, choose "Help & About", scroll down to the bottom and expand the `Access Token` section (see screenshot below).
+4. Copy the access token to your configuration.
+5. Close the private browsing session. **Do not log out**. Logging out will invalidate the token, making it not work.
 
 ![Obtaining an access token with Element](assets/obtain_admin_access_token_element.png)
 
