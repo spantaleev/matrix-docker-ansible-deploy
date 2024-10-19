@@ -59,9 +59,9 @@ matrix_s3_media_store_path: /matrix/s3-media-store
 
 This enables S3 support, but mounts the S3 storage bucket to `/matrix/s3-media-store` without hooking it to your homeserver yet. Your homeserver will still continue using your local filesystem for its media store.
 
-5. Run the playbook to apply the changes: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
+4. Run the playbook to apply the changes: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
 
-6. Do an **initial sync of your files** by running this **on the server** (it may take a very long time):
+5. Do an **initial sync of your files** by running this **on the server** (it may take a very long time):
 
 ```sh
 sudo -u matrix -- rsync --size-only --ignore-existing -avr /matrix/synapse/storage/media-store/. /matrix/s3-media-store/.
@@ -69,27 +69,27 @@ sudo -u matrix -- rsync --size-only --ignore-existing -avr /matrix/synapse/stora
 
 You may need to install `rsync` manually.
 
-7. Stop all Matrix services (`ansible-playbook -i inventory/hosts setup.yml --tags=stop`)
+6. Stop all Matrix services (`ansible-playbook -i inventory/hosts setup.yml --tags=stop`)
 
-8. Start the S3 service by running this **on the server**: `systemctl start matrix-goofys`
+7. Start the S3 service by running this **on the server**: `systemctl start matrix-goofys`
 
-9. Sync the files again by re-running the `rsync` command you see in step #6
+8. Sync the files again by re-running the `rsync` command you see in step #6
 
-10. Stop the S3 service by running this **on the server**: `systemctl stop matrix-goofys`
+9. Stop the S3 service by running this **on the server**: `systemctl stop matrix-goofys`
 
-11. Get the old media store out of the way by running this command on the server:
+10. Get the old media store out of the way by running this command on the server:
 
 ```sh
 mv /matrix/synapse/storage/media-store /matrix/synapse/storage/media-store-local-backup
 ```
 
-12. Remove the `matrix_s3_media_store_path` configuration from your `vars.yml` file (undoing step #3 above)
+11. Remove the `matrix_s3_media_store_path` configuration from your `vars.yml` file (undoing step #3 above)
 
-13. Run the playbook: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
+12. Run the playbook: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
 
-14. You're done! Verify that loading existing (old) media files works and that you can upload new ones.
+13. You're done! Verify that loading existing (old) media files works and that you can upload new ones.
 
-15. When confident that it all works, get rid of the local media store directory: `rm -rf /matrix/synapse/storage/media-store-local-backup`
+14. When confident that it all works, get rid of the local media store directory: `rm -rf /matrix/synapse/storage/media-store-local-backup`
 
 
 ### Migrating to Backblaze B2
