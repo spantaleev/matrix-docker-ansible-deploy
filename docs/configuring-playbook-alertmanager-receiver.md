@@ -61,7 +61,7 @@ Steps 1 and 2 above only need to be done once, while preparing your [configurati
 Steps 3 and 4 need to be done for each new room you'd like the bot to deliver alerts to. Step 5 is optional and provides cleaner `/alert/` URLs.
 
 
-## Installation
+## Installing
 
 Now that you've [prepared the bot account and room](#account-and-room-preparation) and have [configured the playbook](#configuration), you can run the [installation](installing.md) command: `just install-all`
 
