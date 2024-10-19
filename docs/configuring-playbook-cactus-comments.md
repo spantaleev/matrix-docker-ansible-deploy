@@ -4,8 +4,7 @@ The playbook can install and configure the [Cactus Comments](https://cactus.chat
 
 Cactus Comments is a **federated comment system** built on Matrix. It respects your privacy, and puts you in control.
 
-See the project's [documentation](https://cactus.chat/docs/getting-started/introduction/) to learn what it
-does and why it might be useful to you.
+See the project's [documentation](https://cactus.chat/docs/getting-started/introduction/) to learn what it does and why it might be useful to you.
 
 The playbook contains 2 roles for configuring different pieces of the Cactus Comments system:
 
@@ -17,7 +16,7 @@ You can enable whichever component you need (typically both).
 
 ## Configuration
 
-Add the following block to your `vars.yaml` and make sure to exchange the tokens to randomly generated values.
+Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 #################
@@ -54,25 +53,41 @@ Upon starting Cactus Comments, a `bot.cactusbot` user account is created automat
 
 To get started, send a `help` message to the `@bot.cactusbot:example.com` bot to confirm it's working.
 
-Then, register a site by typing: `register <sitename>`. You will then be invited into a moderation room.
+Then, register a site by sending `register <YourSiteName>` (where `<YourSiteName>` is a unique identifier you choose. It does not have to match your domain). You will then be invited into a moderation room.
 
-Now you are good to go and can include the comment section on your website!
+Now you are good to go and can embed the comment section on your website!
 
-**Careful**: To really make use of self-hosting you need change a few things in comparison to the official docs!
+## Embed Cactus Comments
 
-Insert the following snippet into you page and make sure to replace `example.com` with your base domain!
+The official [documentation](https://cactus.chat/docs/getting-started/quick-start/) provides a useful guide to embed Cactus Comments on your website.
+
+After including the JavaScript and CSS asset files, insert a `<div>` where you'd like to display the comment section:
+
+````html
+<div id="comment-section"></div>
+````
+
+Then, you need to initialize the comment section. Make sure to replace `example.com` with your base domain and `<YourSiteName>` with the one that has been registered above:
 
 ```html
-<script type="text/javascript" src="https://matrix.example.com/cactus-comments/cactus.js"></script>
-<link rel="stylesheet" href="https://matrix.example.com/cactus-comments/style.css" type="text/css">
-<div id="comment-section"></div>
 <script>
 initComments({
   node: document.getElementById("comment-section"),
   defaultHomeserverUrl: "https://matrix.example.com:8448",
   serverName: "example.com",
-  siteName: "YourSiteName",
+  siteName: "<YourSiteName>",
   commentSectionId: "1"
 })
 </script>
+```
+
+### Adjust the domain name for self-hosting
+
+To have the assets served from your homeserver (not from `cactus.chat`), you need to adjust the domain name on the official documentation.
+
+Make sure to replace `example.com` with your base domain before you include the following lines, instead of the one provided by the official documentation:
+
+```html
+<script type="text/javascript" src="https://matrix.example.com/cactus-comments/cactus.js"></script>
+<link rel="stylesheet" href="https://matrix.example.com/cactus-comments/style.css" type="text/css">
 ```
