@@ -69,14 +69,14 @@ The playbook can automatically create users, but it cannot automatically obtain 
 4. Log in as the bot using any Matrix client of your choosing, accept the room invitation from the bot's account and log out
 5. (Optionally) Adjust `matrix_alertmanager_receiver_config_matrix_room_mapping` to create a mapping between the new room and its ID
 
-Steps 1 and 2 above only need to be done once, while preparing your [configuration](#configuration).
+Steps 1 and 2 above only need to be done once, while preparing your [configuration](#adjusting-the-playbook-configuration).
 
 Steps 3 and 4 need to be done for each new room you'd like the bot to deliver alerts to. Step 5 is optional and provides cleaner `/alert/` URLs.
 
 
 ## Installing
 
-Now that you've [prepared the bot account and room](#account-and-room-preparation), [configured the playbook](#configuration), and potentially [adjusted your DNS records](#adjusting-dns-records), you can run the [installation](installing.md) command: `just install-all`
+Now that you've [prepared the bot account and room](#account-and-room-preparation), [configured the playbook](#adjusting-the-playbook-configuration), and potentially [adjusted your DNS records](#adjusting-dns-records), you can run the [installation](installing.md) command: `just install-all`
 
 Then, you can proceed to [Usage](#usage).
 
