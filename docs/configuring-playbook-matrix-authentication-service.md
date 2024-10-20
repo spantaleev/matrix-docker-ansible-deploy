@@ -269,7 +269,7 @@ If you've decided to use the default hostname, you won't need to do any extra DN
 
 ## Installing
 
-Now that you've [adjusted the playbook configuration](#adjusting-the-playbook-configuration), you can run the [installation](installing.md) command: `just install-all`
+Now that you've [adjusted the playbook configuration](#adjusting-the-playbook-configuration) and [your DNS records](#adjusting-dns-records), you can run the [installation](installing.md) command: `just install-all`
 
 If you're in the process of migrating an existing Synapse homeserver to MAS, you should now follow the rest of the steps in the [Migrating an existing homeserver to Matrix Authentication Service](#migrating-an-existing-homeserver-to-matrix-authentication-service) guide.
 

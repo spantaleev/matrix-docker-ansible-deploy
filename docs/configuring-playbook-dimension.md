@@ -73,7 +73,7 @@ By default, you will need to create a CNAME record for `dimension`. See [Configu
 
 ## Installing
 
-After these variables have been set and you have potentially [adjusted your DNS records](#adjusting-dns-records), please run the following command to re-run setup and to restart Dimension:
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command:
 
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start

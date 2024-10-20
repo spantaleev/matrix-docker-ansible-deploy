@@ -48,7 +48,7 @@ If you've decided to use the default hostname, you won't need to do any extra DN
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command:
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command:
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start

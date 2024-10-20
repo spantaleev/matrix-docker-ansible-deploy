@@ -284,7 +284,7 @@ Besides metadata, this includes the Matrix user_id and possibly the room identif
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command:
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command:
 
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
