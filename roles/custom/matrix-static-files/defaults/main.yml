@@ -332,6 +332,65 @@ matrix_static_files_file_matrix_support_configuration: "{{ matrix_static_files_f
 #                                                                      #
 ########################################################################
 
+########################################################################
+#                                                                      #
+# Related to /.well-known/matrix/mautrix                               #
+#                                                                      #
+########################################################################
+
+# Controls whether a `/.well-known/matrix/mautrix` file is generated and used at all.
+# For details about this file, see mautrix/manager auto-configuration section : https://github.com/mautrix/manager#auto-configuration
+#
+# This is not enabled by default, as for it to be useful, other information is necessary.
+# See `matrix_static_files_file_matrix_mautrix_property_fi_mau_bridges`, `matrix_static_files_file_matrix_mautrix_property_fi_mau_external_bridge_servers`, etc.
+matrix_static_files_file_matrix_mautrix_enabled: false
+
+# Controls the fi.mau.bridges property in the /.well-known/matrix/mautrix file
+# It indexes local bridges implementing the bridgev2 API
+# Example entry : https://bridges.example.com/signal
+matrix_static_files_file_matrix_mautrix_property_fi_mau_bridges: []
+
+# Controls the fi.mau.external_bridge_servers property in the /.well-known/matrix/mautrix file
+# It indexes remote servers with bridges implementing the bridgev2 API
+# Example entry : anotherserver.example.org
+matrix_static_files_file_matrix_mautrix_property_fi_mau_external_bridge_servers:
+  []
+
+# Default /.well-known/matrix/mautrix configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_static_files_file_matrix_mautrix_configuration_extension_json`)
+# or completely replace this variable with your own template.
+matrix_static_files_file_matrix_mautrix_configuration_json: "{{ lookup('template', 'templates/public/.well-known/matrix/mautrix.j2') }}"
+
+# Your custom JSON configuration for /.well-known/matrix/mautrix should go to `matrix_static_files_file_matrix_mautrix_configuration_extension_json`.
+# This configuration extends the default starting configuration (`matrix_static_files_file_matrix_mautrix_configuration_extension_json`).
+#
+# You can override individual variables from the default configuration, or introduce new ones.
+#
+# If you need something more special, you can take full control by
+# completely redefining `matrix_static_files_file_matrix_mautrix_configuration_json`.
+#
+# Example configuration extension follows:
+#
+# matrix_static_files_file_matrix_mautrix_configuration_extension_json: |
+#   {
+#     "m.another": "value",
+#     "m.yet_another": 3
+#   }
+matrix_static_files_file_matrix_mautrix_configuration_extension_json: "{}"
+
+matrix_static_files_file_matrix_mautrix_configuration_extension: "{{ matrix_static_files_file_matrix_mautrix_configuration_extension_json | from_json if matrix_static_files_file_matrix_mautrix_configuration_extension_json | from_json is mapping else {} }}"
+
+# Holds the final /.well-known/matrix/mautrix configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_static_files_file_matrix_mautrix_configuration_json` or `matrix_static_files_file_matrix_mautrix_configuration_extension_json`.
+matrix_static_files_file_matrix_mautrix_configuration: "{{ matrix_static_files_file_matrix_mautrix_configuration_json | combine(matrix_static_files_file_matrix_mautrix_configuration_extension, recursive=True) }}"
+
+########################################################################
+#                                                                      #
+# /Related to /.well-known/matrix/mautrix                              #
+#                                                                      #
+########################################################################
 
 ########################################################################
 #                                                                      #
