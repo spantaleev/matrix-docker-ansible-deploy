@@ -94,7 +94,7 @@ For existing Synapse homeservers:
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable Matrix Authentication Service, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_authentication_service_enabled: true
@@ -115,7 +115,7 @@ There are many other configuration options available. Consult the [`defaults/mai
 
 ### Adjusting the Matrix Authentication Service URL
 
-By default, this playbook installs the Matrix Authentication Service on the `matrix.` subdomain, at the `/auth` path (e.g. https://matrix.example.com/auth). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+By default, this playbook installs the Matrix Authentication Service on the `matrix.` subdomain, at the `/auth` path (https://matrix.example.com/auth). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
 
 By tweaking the `matrix_authentication_service_hostname` and `matrix_authentication_service_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
@@ -259,6 +259,13 @@ matrix_authentication_service_config_upstream_oauth2_providers:
 
 ⚠ The syntax for existing [OIDC providers configured in Synapse](./configuring-playbook-synapse.md#synapse--openid-connect-for-single-sign-on) is slightly different, so you will need to adjust your configuration when switching from Synapse OIDC to MAS upstream OAuth2.
 
+## Adjusting DNS records
+
+If you've changed the default hostname, **you may need to adjust your DNS** records to point the Matrix Authentication Service domain to the Matrix server.
+
+See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+
+If you've decided to use the default hostname, you won't need to do any extra DNS configuration.
 
 ## Installing
 
