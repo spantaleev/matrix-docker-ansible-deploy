@@ -10,33 +10,9 @@ See the project's [documentation](https://github.com/matrix-org/sygnal) to learn
 
 This optional playbook component is only useful to people who develop/build their own Matrix client applications themselves.
 
-
-## Decide on a domain and path
-
-By default, Sygnal is configured to use its own dedicated domain (`sygnal.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
-
-You can override the domain and path like this:
-
-```yaml
-# Switch to the domain used for Matrix services (`matrix.example.com`),
-# so we won't need to add additional DNS records for Sygnal.
-matrix_sygnal_hostname: "{{ matrix_server_fqn_matrix }}"
-
-# Expose under the /sygnal subpath
-matrix_sygnal_path_prefix: /sygnal
-```
-
-
-## Adjusting DNS records
-
-Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Sygnal domain to the Matrix server.
-
-If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
-
-
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
+To enable Sygnal, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_sygnal_enabled: true
@@ -75,6 +51,30 @@ To do that, the above example configuration:
 
 - references these files in the Sygnal configuration (`matrix_sygnal_apps`) using a path like `/data/..` (the `/matrix/sygnal/data` directory on the host system is mounted into the `/data` directory inside the container)
 
+### Adjusting the Sygnal URL
+
+By default, this playbook installs Sygnal on the `sygnal.` subdomain (`sygnal.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+
+By tweaking the `matrix_sygnal_hostname` and `matrix_sygnal_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+
+Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Switch to the domain used for Matrix services (`matrix.example.com`),
+# so we won't need to add additional DNS records for Sygnal.
+matrix_sygnal_hostname: "{{ matrix_server_fqn_matrix }}"
+
+# Expose under the /sygnal subpath
+matrix_sygnal_path_prefix: /sygnal
+```
+
+## Adjusting DNS records
+
+Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Sygnal domain to the Matrix server.
+
+By default, you will need to create a CNAME record for `sygnal`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+
+If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
 ## Installing
 

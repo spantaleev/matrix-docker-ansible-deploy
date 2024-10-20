@@ -7,28 +7,7 @@ If you're just installing Matrix services for the first time, please continue wi
 
 **Note**: This playbook now supports running [Dimension](https://dimension.t2bot.io) in both a federated and [unfederated](https://github.com/turt2live/matrix-dimension/blob/master/docs/unfederated.md) environments. This is handled automatically based on the value of `matrix_homeserver_federation_enabled`. Enabling Dimension, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. It's something to be aware of, especially in terms of firewall whitelisting (make sure port `8448` is accessible).
 
-
-## Decide on a domain and path
-
-By default, Dimension is configured to use its own dedicated domain (`dimension.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
-
-You can override the domain and path like this:
-
-```yaml
-# Switch to another hostname compared to the default (`dimension.{{ matrix_domain }}`)
-matrix_dimension_hostname: "integrations.{{ matrix_domain }}"
-
-```
-
-While there is a `matrix_dimension_path_prefix` variable for changing the path where Dimension is served, overriding it is not possible right now due to [this Dimension issue](https://github.com/turt2live/matrix-dimension/issues/510). You must serve Dimension at a dedicated subdomain until this issue is solved.
-
-
-## Adjusting DNS records
-
-Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Dimension domain to the Matrix server.
-
-
-## Enable
+## Adjusting the playbook configuration
 
 To enable Dimension, add this to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
 
@@ -36,8 +15,7 @@ To enable Dimension, add this to your configuration file (`inventory/host_vars/m
 matrix_dimension_enabled: true
 ```
 
-
-## Define admin users
+### Define admin users
 
 These users can modify the integrations this Dimension supports.
 Add this to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
@@ -50,7 +28,7 @@ matrix_dimension_admins:
 
 The admin interface is accessible within Element by accessing it in any room and clicking the cog wheel/settings icon in the top right. Currently, Dimension can be opened in Element by the "Add widgets, bridges, & bots" link in the room information.
 
-## Access token
+### Access token
 
 We recommend that you create a dedicated Matrix user for Dimension (`dimension` is a good username).
 Follow our [Registering users](registering-users.md) guide to learn how to register **a regular (non-admin) user**.
@@ -68,6 +46,30 @@ matrix_dimension_access_token: "YOUR ACCESS TOKEN HERE"
 
 For more information on how to acquire an access token, visit [https://t2bot.io/docs/access_tokens](https://t2bot.io/docs/access_tokens).
 
+### Adjusting the Dimension URL
+
+By default, this playbook installs Dimension on the `dimension.` subdomain (`dimension.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+
+By tweaking the `matrix_dimension_hostname` and `matrix_dimension_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+
+Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Switch to the domain used for Matrix services (`matrix.example.com`),
+# so we won't need to add additional DNS records for Dimension.
+matrix_dimension_hostname: "{{ matrix_server_fqn_matrix }}"
+
+# Expose under the /dimension subpath
+# matrix_dimension_path_prefix: /dimension
+```
+
+**Note**: While there is a `matrix_dimension_path_prefix` variable for changing the path where Dimension is served, overriding it is not possible due to [this Dimension issue](https://github.com/turt2live/matrix-dimension/issues/510). You must serve Dimension at a dedicated subdomain.
+
+## Adjusting DNS records
+
+Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Dimension domain to the Matrix server.
+
+By default, you will need to create a CNAME record for `dimension`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
 
 ## Installing
 

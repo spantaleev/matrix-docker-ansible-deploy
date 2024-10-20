@@ -1,10 +1,10 @@
 # Enabling metrics and graphs for your Matrix server (optional)
 
-It can be useful to have some (visual) insight into the performance of your homeserver.
+The playbook can install [Grafana](https://grafana.com/) with [Prometheus](https://prometheus.io/) and configure performance metrics of your homeserver with graphs for you.
 
-You can enable this with the following settings in your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
+## Adjusting the playbook configuration
 
-Remember to add `stats.example.com` to DNS as described in [Configuring DNS](configuring-dns.md) before running the playbook.
+To enable Grafana and/or Prometheus, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 prometheus_enabled: true
@@ -30,10 +30,32 @@ grafana_default_admin_user: "some_username_chosen_by_you"
 grafana_default_admin_password: "some_strong_password_chosen_by_you"
 ```
 
-By default, a [Grafana](https://grafana.com/) web user-interface will be available at `https://stats.example.com`.
-
 The retention policy of Prometheus metrics is [15 days by default](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Older data gets deleted automatically.
 
+### Adjusting the Grafana URL
+
+By default, this playbook installs Grafana web user-interface on the `stats.` subdomain (`stats.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+
+By tweaking the `grafana_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
+
+Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Change the default hostname
+grafana_hostname: stats.example.com
+```
+
+## Adjusting DNS records
+
+Once you've decided on the domain, **you may need to adjust your DNS** records to point the Grafana domain to the Matrix server.
+
+By default, you will need to create a CNAME record for `stats`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+
+**Note**: It is possible to install Prometheus without installing Grafana. This case it is not required to create the CNAME record.
+
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## What does it do?
 
