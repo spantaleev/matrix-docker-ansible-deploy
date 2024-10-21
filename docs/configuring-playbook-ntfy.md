@@ -39,7 +39,7 @@ Example additional configuration for your `inventory/host_vars/matrix.example.co
 
 ```yaml
 # Change the default hostname
-ntfy_hostname: ntfy.example.com
+ntfy_hostname: push.example.com
 ```
 
 ## Adjusting DNS records

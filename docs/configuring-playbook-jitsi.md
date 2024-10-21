@@ -33,7 +33,7 @@ Example additional configuration for your `inventory/host_vars/matrix.example.co
 
 ```yaml
 # Change the default hostname
-jitsi_hostname: jitsi.example.com
+jitsi_hostname: call.example.com
 ```
 
 ## Adjusting DNS records

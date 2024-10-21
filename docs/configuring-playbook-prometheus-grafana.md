@@ -42,7 +42,7 @@ Example additional configuration for your `inventory/host_vars/matrix.example.co
 
 ```yaml
 # Change the default hostname
-grafana_hostname: stats.example.com
+grafana_hostname: grafana.example.com
 ```
 
 ## Adjusting DNS records
