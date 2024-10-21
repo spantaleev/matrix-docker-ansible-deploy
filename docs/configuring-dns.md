@@ -10,7 +10,7 @@ over to `matrix.example.com`.
 As we discuss in [Server Delegation](howto-server-delegation.md), there are 2 different ways to set up such delegation:
 
 - either by serving a `https://example.com/.well-known/matrix/server` file (from the base domain!)
-- or by  using a `_matrix._tcp` DNS SRV record (don't confuse this with the `_matrix-identity._tcp` SRV record described below)
+- or by using a `_matrix._tcp` DNS SRV record (don't confuse this with the `_matrix-identity._tcp` SRV record described below)
 
 This playbook mostly discusses the well-known file method, because it's easier to manage with regard to certificates.
 If you decide to go with the alternative method ([Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)), please be aware that the general flow that this playbook guides you through may not match what you need to do.

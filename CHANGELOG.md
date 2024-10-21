@@ -927,7 +927,7 @@ Until now, we've been doing the migration gradually and keeping full backward co
 
 Each change we do and each new feature that comes in needs to support all these different ways of reverse-proxying. Because `matrix-nginx-proxy` was the default and pretty much everyone was (and still is) using it, means that new PRs also come with `matrix-nginx-proxy` as their main focus and Traefik as an afterthought, which means we need to spend hours fixing up Traefik support.
 
-We can't spend all this time maintaining so many different configurations anymore. Traefik support has been an option for 2 weeks and lots of people have  already migrated their server and have tested things out. Traefik is what we use and preferentially test for.
+We can't spend all this time maintaining so many different configurations anymore. Traefik support has been an option for 2 weeks and lots of people have already migrated their server and have tested things out. Traefik is what we use and preferentially test for.
 
 It's time for the **next step in our migration process** to Traefik and elimination of `matrix-nginx-proxy`:
 
