@@ -30,7 +30,7 @@ Example additional configuration for your `inventory/host_vars/matrix.example.co
 
 ```yaml
 # Change the default hostname
-matrix_mautrix_wsproxy_hostname: wsproxy.example.com
+matrix_mautrix_wsproxy_hostname: ws.example.com
 ```
 
 ## Adjusting DNS records
