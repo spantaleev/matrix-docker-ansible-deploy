@@ -229,21 +229,21 @@ matrix_authentication_service_config_upstream_oauth2_providers:
       # By default it uses the `sub` claim as per the OIDC spec,
       # which should fit most use cases.
       subject:
-        #template: "{{ user.sub }}"
+        #template: "{% raw %}{{ user.sub }}{% endraw %}"
       # The localpart is the local part of the user's Matrix ID.
       # For example, on the `example.com` server, if the localpart is `alice`,
       #  the user's Matrix ID will be `@alice:example.com`.
       localpart:
         #action: force
-        #template: "{{ user.preferred_username }}"
+        #template: "{% raw %}{{ user.preferred_username }}{% endraw %}"
       # The display name is the user's display name.
       displayname:
         #action: suggest
-        #template: "{{ user.name }}"
+        #template: "{% raw %}{{ user.name }}{% endraw %}"
       # An email address to import.
       email:
         #action: suggest
-        #template: "{{ user.email }}"
+        #template: "{% raw %}{{ user.email }}{% endraw %}"
         # Whether the email address must be marked as verified.
         # Possible values are:
         #  - `import`: mark the email address as verified if the upstream provider
