@@ -13,9 +13,9 @@ To enable Heisenbridge, add the following configuration to your `inventory/host_
 ```yaml
 matrix_heisenbridge_enabled: true
 
-# Setting the owner is optional as the first local user to DM `@heisenbridge:your-homeserver` will be made the owner.
+# Setting the owner is optional as the first local user to DM `@heisenbridge:example.com` will be made the owner.
 # If you are not using a local user you must set it as otherwise you can't DM it at all.
-matrix_heisenbridge_owner: "@you:your-homeserver"
+matrix_heisenbridge_owner: "@you:example.com"
 
 # Uncomment to enable identd on host port 113/TCP (optional)
 # matrix_heisenbridge_identd_enabled: true
@@ -53,9 +53,9 @@ After configuring the playbook and potentially [adjusting your DNS records](#adj
 
 ## Usage
 
-After the bridge is successfully running just DM `@heisenbridge:your-homeserver` to start setting it up.
+After the bridge is successfully running just DM `@heisenbridge:example.com` to start setting it up. If the bridge ignores you and a DM is not accepted then the owner setting may be wrong.
+
 Help is available for all commands with the `-h` switch.
-If the bridge ignores you and a DM is not accepted then the owner setting may be wrong.
 
 You can also learn the basics by watching [this demonstration video](https://www.youtube.com/watch?v=nQk1Bp4tk4I).
 
