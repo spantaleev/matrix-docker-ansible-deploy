@@ -84,7 +84,7 @@ The `wsproxy.example.com` subdomain may be necessary, because this playbook coul
 
 The `buscarron.example.com` subdomain may be necessary, because this playbook could install the [buscarron](https://github.com/etkecc/buscarron) bot. The installation of buscarron is disabled by default, it is not a core required component. To learn how to install it, see our [configuring buscarron guide](configuring-playbook-bot-buscarron.md). If you do not wish to set up buscarron, feel free to skip the `buscarron.example.com` DNS record.
 
-The `rageshake.example.com` subdomain may be necessary, because this playbook could install the [rageshake](https://github.com/matrix-org/rageshake) bug report server. The installation of Rageshake is disabled by default, it is not a core required component. To learn how to install it, see our [configuring Rageshake guide](docs/configuring-playbook-rageshake.md). If you do not wish to set up Rageshake, feel free to skip the `rageshake.example.com` DNS record.
+The `rageshake.example.com` subdomain may be necessary, because this playbook could install the [rageshake](https://github.com/matrix-org/rageshake) bug report server. The installation of Rageshake is disabled by default, it is not a core required component. To learn how to install it, see our [configuring Rageshake guide](configuring-playbook-rageshake.md). If you do not wish to set up Rageshake, feel free to skip the `rageshake.example.com` DNS record.
 
 ## `_matrix-identity._tcp` SRV record setup
 
