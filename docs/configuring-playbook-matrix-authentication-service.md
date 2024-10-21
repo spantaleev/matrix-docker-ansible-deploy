@@ -259,6 +259,9 @@ matrix_authentication_service_config_upstream_oauth2_providers:
 
 ⚠ The syntax for existing [OIDC providers configured in Synapse](./configuring-playbook-synapse.md#synapse--openid-connect-for-single-sign-on) is slightly different, so you will need to adjust your configuration when switching from Synapse OIDC to MAS upstream OAuth2.
 
+⚠ When [migrating an existing homeserver](#migrating-an-existing-homeserver-to-matrix-authentication-service) which contains OIDC-sourced users, you will need to [Configure upstream OIDC provider mapping for syn2mas](#configuring-upstream-oidc-provider-mapping-for-syn2mas).
+
+
 ## Adjusting DNS records
 
 If you've changed the default hostname, **you may need to adjust your DNS** records to point the Matrix Authentication Service domain to the Matrix server.
@@ -317,9 +320,40 @@ We **don't** ask you to [run the `syn2mas` migration advisor command](https://el
 
 You can invoke the `syn2mas` tool via the playbook by running the playbook's `matrix-authentication-service-syn2mas` tag. We recommend first doing a [dry-run](#performing-a-syn2mas-dry-run) and then a [real migration](#performing-a-real-syn2mas-migration).
 
+#### Configuring syn2mas
+
+If you're using [OIDC with Synapse](./configuring-playbook-synapse.md#synapse--openid-connect-for-single-sign-on), you will need to [Configuring upstream OIDC provider mapping for syn2mas](#configuring-upstream-oidc-provider-mapping-for-syn2mas).
+
+If you only have local (non-OIDC) users in your Synapse database, you can likely run `syn2mas` as-is (without doing additional configuration changes).
+
+When you're done with potentially configuring `syn2mas`, proceed to doing a [dry-run](#performing-a-syn2mas-dry-run) and then a [real migration](#performing-a-real-syn2mas-migration).
+
+##### Configuring upstream OIDC provider mapping for syn2mas
+
+If you have existing OIDC users in your Synapse user database (which will be the case if when using [OIDC with Synapse](./configuring-playbook-synapse.md#synapse--openid-connect-for-single-sign-on)), you may need to pass an additional `--upstreamProviderMapping` argument to the `syn2mas` tool to tell it which provider (on the Synapse side) maps to which other provider on the MAS side.
+
+If you don't do this, `syn2mas` would report errors like this one:
+
+> [FATAL] migrate - [Failed to import external id 4264b0f0-4f11-4ddd-aedb-b500e4d07c25 with oidc-keycloak for user @user:example.com: Error: Unknown upstream provider oidc-keycloak]
+
+Below is an example situation and a guide for how to solve it.
+
+If in `matrix_synapse_oidc_providers` your provider `idp_id` is (was) named `keycloak`, in the Synapse database users would be associated with the `oidc-keycloak` provider (note the `oidc-` prefix that was added automatically by Synapse to your `idp_id` value).
+
+The same OIDC provider may have an `id` of `01HFVBY12TMNTYTBV8W921M5FA` on the MAS side, as defined in `matrix_authentication_service_config_upstream_oauth2_providers` (see the [Upstream OAuth2 configuration](#upstream-oauth2-configuration) section above).
+
+To tell `syn2mas` how the Synapse-configured OIDC provider maps to the new MAS-configured OIDC provider, add this additional configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yml
+# Adjust the mapping below to match your provider ids on the Synapse side and the MAS side.
+# Don't forget that Synapse automatically adds an `oidc-` prefix to provider ids defined in its configuration.
+matrix_authentication_service_syn2mas_process_extra_arguments:
+  - "--upstreamProviderMapping oidc-keycloak:01HFVBY12TMNTYTBV8W921M5FA"
+```
+
 #### Performing a syn2mas dry-run
 
-We recommend doing a [dry-run](https://en.wikipedia.org/wiki/Dry_run_(testing)) first to verify that everything will work out as expected.
+Having [configured syn2mas](#configuring-syn2mas), we recommend doing a [dry-run](https://en.wikipedia.org/wiki/Dry_run_(testing)) first to verify that everything will work out as expected.
 
 A dry-run would not cause downtime, because it avoids stopping Synapse.
 
@@ -333,13 +367,17 @@ Observe the command output (especially the last line of the the syn2mas output).
 
 #### Performing a real syn2mas migration
 
-Before performing a real migration:
+Before performing a real migration make sure:
 
-- make sure you've familiarized yourself with the [expectations](#expectations)
+- you've familiarized yourself with the [expectations](#expectations)
 
-- make sure you've performed a Postgres backup, just in case
+- you've performed a Postgres backup, just in case
 
-- make sure you're aware of the irreversibility of the migration process without disruption after users have created new login sessions via the new MAS setup
+- you're aware of the irreversibility of the migration process without disruption after users have created new login sessions via the new MAS setup
+
+- you've [configured syn2mas](#configuring-syn2mas), especially if you've used [OIDC with Synapse](./configuring-playbook-synapse.md#synapse--openid-connect-for-single-sign-on)
+
+- you've performed a [syn2mas dry-run](#performing-a-syn2mas-dry-run) and don't see any issues in its output
 
 To perform a real migration, run the `matrix-authentication-service-syn2mas` tag **without** the `matrix_authentication_service_syn2mas_dry_run` variable:
 
