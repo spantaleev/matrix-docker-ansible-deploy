@@ -99,13 +99,13 @@ If you'd rather **keep your server private** (public registration closed, as is 
 
 ## Enabling public user registration
 
-To **open up user registration publicly** (usually **not recommended**), consider using the following configuration:
+To **open up user registration publicly** (usually **not recommended**), add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_synapse_enable_registration: true
 ```
 
-and running the [installation](installing.md) procedure once again.
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 If you're opening up registrations publicly like this, you might also wish to [configure CAPTCHA protection](configuring-captcha.md).
 
