@@ -30,8 +30,7 @@ In order to use UVS, an admin token for the configured homeserver must be suppli
 
 ## Enable
 
-[Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) installation is disabled by default.
-To enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable Matrix User Verification Service, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_user_verification_service_enabled: true
