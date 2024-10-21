@@ -19,7 +19,7 @@ Use matrix-registration to **create unique registration links**, which people ca
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable matrix-registration, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_registration_enabled: true
@@ -28,9 +28,31 @@ matrix_registration_enabled: true
 matrix_registration_admin_secret: "ENTER_SOME_SECRET_HERE"
 ```
 
+### Adjusting the matrix-registration URL
+
+By default, this playbook installs the matrix-registration on the `matrix.` subdomain, at the `/matrix-registration` path (https://matrix.example.com/matrix-registration). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+
+By tweaking the `matrix_registration_hostname` and `matrix_registration_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+
+Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Change the default hostname and path prefix
+matrix_registration_hostname: registration.example.com
+matrix_registration_path_prefix: /
+```
+
+## Adjusting DNS records
+
+If you've changed the default hostname, **you may need to adjust your DNS** records to point the matrix-registration domain to the Matrix server.
+
+See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+
+If you've decided to use the default hostname, you won't need to do any extra DNS configuration.
+
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command:
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command:
 
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start

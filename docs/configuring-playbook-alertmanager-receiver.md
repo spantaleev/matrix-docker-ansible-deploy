@@ -10,18 +10,10 @@ This service is meant to be used with an external [Alertmanager](https://prometh
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable matrix-alertmanager-receiver, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yml
 matrix_alertmanager_receiver_enabled: true
-
-# This exposes matrix-alertmanager-receiver on the `matrix.` domain.
-# Adjust, if necessary.
-matrix_alertmanager_receiver_hostname: "{{ matrix_server_fqn_matrix }}"
-
-# This exposes matrix-alertmanager-receiver under a path prefix containing a random (secret) value.
-# Adjust the `RANDOM_VALUE_HERE` part with a long and secure value.
-matrix_alertmanager_receiver_path_prefix: /matrix-alertmanager-receiver-RANDOM_VALUE_HERE
 
 # If you'd like to change the username for this bot, uncomment and adjust. Otherwise, remove.
 # matrix_alertmanager_receiver_config_matrix_user_id_localpart: "bot.alertmanager.receiver"
@@ -43,6 +35,27 @@ matrix_alertmanager_receiver_config_matrix_room_mapping:
 
 See `roles/custom/matrix-alertmanager-receiver/defaults/main.yml` for additional configuration variables.
 
+### Adjusting the matrix-alertmanager-receiver URL
+
+By default, this playbook installs matrix-alertmanager-receiver on the `matrix.` subdomain, at the `/matrix-alertmanager-receiver` path (https://matrix.example.com/matrix-alertmanager-receiver). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+
+By tweaking the `matrix_alertmanager_receiver_hostname` and `matrix_alertmanager_receiver_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+
+Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Change the default hostname and path prefix
+matrix_alertmanager_receiver_hostname: alertmanager.example.com
+matrix_alertmanager_receiver_path_prefix: /
+```
+
+## Adjusting DNS records
+
+If you've changed the default hostname, **you may need to adjust your DNS** records to point the matrix-alertmanager-receiver domain to the Matrix server.
+
+See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+
+If you've decided to use the default hostname, you won't need to do any extra DNS configuration.
 
 ## Account and room preparation
 
@@ -56,14 +69,14 @@ The playbook can automatically create users, but it cannot automatically obtain 
 4. Log in as the bot using any Matrix client of your choosing, accept the room invitation from the bot's account and log out
 5. (Optionally) Adjust `matrix_alertmanager_receiver_config_matrix_room_mapping` to create a mapping between the new room and its ID
 
-Steps 1 and 2 above only need to be done once, while preparing your [configuration](#configuration).
+Steps 1 and 2 above only need to be done once, while preparing your [configuration](#adjusting-the-playbook-configuration).
 
 Steps 3 and 4 need to be done for each new room you'd like the bot to deliver alerts to. Step 5 is optional and provides cleaner `/alert/` URLs.
 
 
 ## Installing
 
-Now that you've [prepared the bot account and room](#account-and-room-preparation) and have [configured the playbook](#configuration), you can run the [installation](installing.md) command: `just install-all`
+Now that you've [prepared the bot account and room](#account-and-room-preparation), [configured the playbook](#adjusting-the-playbook-configuration), and potentially [adjusted your DNS records](#adjusting-dns-records), you can run the [installation](installing.md) command: `just install-all`
 
 Then, you can proceed to [Usage](#usage).
 

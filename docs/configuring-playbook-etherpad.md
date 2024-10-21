@@ -4,12 +4,25 @@
 
 When enabled together with the Jitsi audio/video conferencing system (see [our docs on Jitsi](configuring-playbook-jitsi.md)), it will be made available as an option during the conferences.
 
+## Adjusting the playbook configuration
 
-## Decide on a domain and path
+To enable Etherpad, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
-By default, Etherpad is configured to use its own dedicated domain (`etherpad.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+```yaml
+etherpad_enabled: true
 
-You can override the domain and path like this:
+# Uncomment and adjust this part if you'd like to enable the admin web UI
+# etherpad_admin_username: YOUR_USERNAME_HERE
+# etherpad_admin_password: YOUR_PASSWORD_HERE
+```
+
+### Adjusting the Etherpad URL
+
+By default, this playbook installs Etherpad on the `etherpad.` subdomain (`etherpad.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+
+By tweaking the `etherpad_hostname` and `etherpad_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+
+Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 # Switch to the domain used for Matrix services (`matrix.example.com`),
@@ -25,24 +38,13 @@ etherpad_path_prefix: /etherpad
 
 Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Etherpad domain to the Matrix server.
 
+By default, you will need to create a CNAME record for `etherpad`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
-
-
-## Adjusting the playbook configuration
-
-[Etherpad](https://etherpad.org) installation is disabled by default. To enable Etherpad, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
-
-```yaml
-etherpad_enabled: true
-
-# Uncomment and adjust this part if you'd like to enable the admin web UI
-# etherpad_admin_username: YOUR_USERNAME_HERE
-# etherpad_admin_password: YOUR_PASSWORD_HERE
-```
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 

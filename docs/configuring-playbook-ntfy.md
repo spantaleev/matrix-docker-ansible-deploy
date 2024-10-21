@@ -11,14 +11,11 @@ This role is intended to support UnifiedPush notifications for use with the Matr
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
+To enable ntfy, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 # Enabling it is the only required setting
 ntfy_enabled: true
-
-# Uncomment and adjust this part if you'd like to use a hostname different than the default
-# matrix_server_fqn_ntfy: "ntfy.{{ matrix_domain }}"
 
 # Uncomment to enable the ntfy web app (disabled by default)
 # ntfy_web_root: app  # defaults to "disable"
@@ -32,12 +29,28 @@ For a more complete list of variables that you could override, see the [`default
 
 For a complete list of ntfy config options that you could put in `ntfy_configuration_extension_yaml`, see the [ntfy config documentation](https://ntfy.sh/docs/config/#config-options).
 
+### Adjusting the ntfy URL
+
+By default, this playbook installs ntfy on the `ntfy.` subdomain (`ntfy.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+
+By tweaking the `ntfy_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
+
+Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Change the default hostname
+ntfy_hostname: ntfy.example.com
+```
+
+## Adjusting DNS records
+
+Once you've decided on the domain, **you may need to adjust your DNS** records to point the ntfy domain to the Matrix server.
+
+By default, you will need to create a CNAME record for `ntfy`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
 
 ## Installing
 
-Don't forget to add `ntfy.example.com` to DNS as described in [Configuring DNS](configuring-dns.md) before running the playbook.
-
-After configuring the playbook, run the [installation](installing.md) command:
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command:
 
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start

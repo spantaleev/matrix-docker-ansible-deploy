@@ -16,7 +16,7 @@ You can enable whichever component you need (typically both).
 
 ## Configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable Cactus Comments, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 #################
@@ -36,16 +36,34 @@ matrix_cactus_comments_enabled: true
 # When the backend (appservice) is enabled, this is also enabled automatically,
 # but we explicitly enable it here.
 matrix_cactus_comments_client_enabled: true
-
-# Uncomment and adjust this part if you'd like to host the client assets at a different location.
-# These variables are only make used if (`matrix_cactus_comments_client_enabled: true`)
-# matrix_cactus_comments_client_hostname: "{{ matrix_server_fqn_matrix }}"
-# matrix_cactus_comments_client_path_prefix: /cactus-comments
 ```
+
+### Adjusting the Cactus Comments' client URL
+
+By default, this playbook installs Cactus Comments' client on the `matrix.` subdomain, at the `/cactus-comments` path (https://matrix.example.com/cactus-comments). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+
+By tweaking the `matrix_cactus_comments_client_hostname` and `matrix_cactus_comments_client_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+
+Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Change the default hostname and path prefix to host the client assets at a different location
+# These variables are used only if (`matrix_cactus_comments_client_enabled: true`)
+matrix_cactus_comments_client_hostname: cactus.example.com
+matrix_cactus_comments_client_path_prefix: /
+```
+
+## Adjusting DNS records
+
+If you've changed the default hostname, **you may need to adjust your DNS** records to point the Cactus Comments' client domain to the Matrix server.
+
+See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+
+If you've decided to use the default hostname, you won't need to do any extra DNS configuration.
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 
@@ -91,3 +109,5 @@ Make sure to replace `example.com` with your base domain before you include the 
 <script type="text/javascript" src="https://matrix.example.com/cactus-comments/cactus.js"></script>
 <link rel="stylesheet" href="https://matrix.example.com/cactus-comments/style.css" type="text/css">
 ```
+
+**Note**: if the `matrix_cactus_comments_client_hostname` and `matrix_cactus_comments_client_path_prefix` variables are tweaked, you would need to adjust the URLs of the assets accordingly.

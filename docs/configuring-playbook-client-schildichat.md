@@ -6,18 +6,6 @@ SchildiChat is a feature-rich messenger for Matrix based on Element with some ex
 
 **WARNING**: SchildiChat Web is based on Element-web, but its releases are lagging behind. As an example (from 2024-02-26), SchildiChat Web is 22 releases behind (it being based on element-web `v1.11.36`, while element-web is now on `v1.11.58`). Element-web frequently suffers from security issues, so running something based on an ancient Element-web release is **dangerous**. Use SchildiChat Web at your own risk!
 
-## DNS
-
-You need to add a DNS record so that SchildiChat can be accessed.
-
-By default SchildiChat will use https://schildichat.example.com so you will need to create an CNAME record for `schildichat`. See [Configuring DNS](configuring-dns.md).
-
-If you would like to use a different domain, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (changing it to use your preferred domain):
-
-```yaml
-matrix_server_fqn_schildichat: "sc.{{ matrix_domain }}"
-```
-
 ## Adjusting the playbook configuration
 
 To enable SchildiChat, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -50,6 +38,31 @@ If you make your own theme, we encourage you to submit it to the **aaronraimist/
 
 Note that for a custom theme to work well, all SchildiChat instances that you use must have the same theme installed.
 
+### Adjusting the SchildiChat URL
+
+By default, this playbook installs SchildiChat on the `schildichat.` subdomain (`schildichat.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+
+By tweaking the `matrix_client_schildichat_hostname` and `matrix_client_schildichat_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+
+Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Switch to the domain used for Matrix services (`matrix.example.com`),
+# so we won't need to add additional DNS records for SchildiChat.
+matrix_client_schildichat_hostname: "{{ matrix_server_fqn_matrix }}"
+
+# Expose under the /schildichat subpath
+matrix_client_schildichat_path_prefix: /schildichat
+```
+
+## Adjusting DNS records
+
+Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the SchildiChat domain to the Matrix server.
+
+By default, you will need to create a CNAME record for `schildichat`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+
+If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
+
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command: `just install-all` or `just setup-all`

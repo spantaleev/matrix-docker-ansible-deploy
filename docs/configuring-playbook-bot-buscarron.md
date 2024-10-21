@@ -4,33 +4,9 @@ The playbook can install and configure [buscarron](https://github.com/etkecc/bus
 
 Buscarron is bot that receives HTTP POST submissions of web forms and forwards them to a Matrix room.
 
-
-## Decide on a domain and path
-
-By default, Buscarron is configured to use its own dedicated domain (`buscarron.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
-
-You can override the domain and path like this:
-
-```yaml
-# Switch to the domain used for Matrix services (`matrix.example.com`),
-# so we won't need to add additional DNS records for Buscarron.
-matrix_bot_buscarron_hostname: "{{ matrix_server_fqn_matrix }}"
-
-# Expose under the /buscarron subpath
-matrix_bot_buscarron_path_prefix: /buscarron
-```
-
-
-## Adjusting DNS records
-
-Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Buscarron domain to the Matrix server.
-
-If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
-
-
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable Buscarron, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_buscarron_enabled: true
@@ -53,10 +29,34 @@ matrix_bot_buscarron_forms:
 matrix_bot_buscarron_spamlist: [] # (optional) list of emails/domains/hosts (with wildcards support) that should be rejected automatically
 ```
 
+### Adjusting the Buscarron URL
+
+By default, this playbook installs Buscarron on the `buscarron.` subdomain (`buscarron.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+
+By tweaking the `matrix_bot_buscarron_hostname` and `matrix_bot_buscarron_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+
+Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Switch to the domain used for Matrix services (`matrix.example.com`),
+# so we won't need to add additional DNS records for Buscarron.
+matrix_bot_buscarron_hostname: "{{ matrix_server_fqn_matrix }}"
+
+# Expose under the /buscarron subpath
+matrix_bot_buscarron_path_prefix: /buscarron
+```
+
+## Adjusting DNS records
+
+Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Buscarron domain to the Matrix server.
+
+By default, you will need to create a CNAME record for `buscarron`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+
+If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command:
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command:
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start

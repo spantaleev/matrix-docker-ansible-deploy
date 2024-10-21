@@ -9,9 +9,7 @@ The setup done by the playbook is very similar to [docker-jitsi-meet](https://gi
 
 ## Prerequisites
 
-Before installing Jitsi, make sure you've created the `jitsi.example.com` DNS record (unless you've changed `jitsi_hostname`, as described below). See [Configuring DNS](configuring-dns.md) for details about DNS changes.
-
-You may also need to open the following ports to your server:
+You may need to open the following ports to your server:
 
 - `4443/tcp` - RTP media fallback over TCP
 - `10000/udp` - RTP media over UDP. Depending on your firewall/NAT setup, incoming RTP packets on port `10000` may have the external IP of your firewall as destination address, due to the usage of STUN in JVB (see [`jitsi_jvb_stun_servers`](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/defaults/main.yml)).
@@ -19,17 +17,30 @@ You may also need to open the following ports to your server:
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable Jitsi, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 jitsi_enabled: true
-
-# Uncomment and adjust this part if you'd like to use a hostname different than the default
-# jitsi_hostname: "jitsi.{{ matrix_domain }}"
-
-# Uncomment and possible adjust this part if you'd like to host under a subpath
-# jitsi_path_prefix: /jitsi
 ```
+
+### Adjusting the Jitsi URL
+
+By default, this playbook installs Jitsi on the `jitsi.` subdomain (`jitsi.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+
+By tweaking the `jitsi_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
+
+Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Change the default hostname
+jitsi_hostname: jitsi.example.com
+```
+
+## Adjusting DNS records
+
+Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Jitsi domain to the Matrix server.
+
+By default, you will need to create a CNAME record for `jitsi`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
 
 ## (Optional) Configure Jitsi authentication and guests mode
 
@@ -273,7 +284,7 @@ Besides metadata, this includes the Matrix user_id and possibly the room identif
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command:
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command:
 
 ```
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start

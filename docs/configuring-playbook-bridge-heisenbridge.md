@@ -8,30 +8,48 @@ See the project's [README](https://github.com/hifi/heisenbridge/blob/master/READ
 
 ## Configuration
 
-Below are the common configuration options that you may want to set, exhaustive list is in [the bridge's defaults var file](../roles/custom/matrix-bridge-heisenbridge/defaults/main.yml).
-
-At a minimum, you only need to enable the bridge to get it up and running (`inventory/host_vars/matrix.example.com/vars.yml`):
+To enable Heisenbridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_heisenbridge_enabled: true
 
-# set owner (optional)
+# Setting the owner is optional as the first local user to DM `@heisenbridge:your-homeserver` will be made the owner.
+# If you are not using a local user you must set it as otherwise you can't DM it at all.
 matrix_heisenbridge_owner: "@you:your-homeserver"
 
-# to enable identd on host port 113/TCP (optional)
-matrix_heisenbridge_identd_enabled: true
+# Uncomment to enable identd on host port 113/TCP (optional)
+# matrix_heisenbridge_identd_enabled: true
 ```
 
-By default, Heisenbrdige would be exposed on the Matrix domain (`matrix.example.com`, as specified in `matrix_server_fqn_matrix`) under the `/heisenbridge` path prefix. It would handle media requests there (see the [release notes for Heisenbridge v1.15.0](https://github.com/hifi/heisenbridge/releases/tag/v1.15.0)).
+For a more complete list of variables that you could override, see the [`defaults/main.yml` file](../roles/custom/matrix-bridge-heisenbridge/defaults/main.yml) of the Heisenbridge Ansible role.
 
-That's it! A registration file is automatically generated during the setup phase.
+### Adjusting the Heisenbridge URL
 
-Setting the owner is optional as the first local user to DM `@heisenbridge:your-homeserver` will be made the owner.
-If you are not using a local user you must set it as otherwise you can't DM it at all.
+By default, this playbook installs Heisenbridge on the `matrix.` subdomain, at the `/heisenbridge` path (https://matrix.example.com/heisenbridge). It would handle media requests there (see the [release notes for Heisenbridge v1.15.0](https://github.com/hifi/heisenbridge/releases/tag/v1.15.0)).
+
+This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+
+By tweaking the `matrix_heisenbridge_hostname` and `matrix_heisenbridge_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+
+Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Change the default hostname and path prefix
+matrix_heisenbridge_hostname: heisenbridge.example.com
+matrix_heisenbridge_path_prefix: /
+```
+
+## Adjusting DNS records
+
+If you've changed the default hostname, **you may need to adjust your DNS** records to point the Heisenbridge domain to the Matrix server.
+
+See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+
+If you've decided to use the default hostname, you won't need to do any extra DNS configuration.
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 
