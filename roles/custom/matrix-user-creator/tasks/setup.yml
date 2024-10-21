@@ -31,7 +31,7 @@
       # Suppress logging to avoid dumping the credentials to the shell
       no_log: true
 
-- when: matrix_authentication_service_enabled | bool
+- when: matrix_authentication_service_enabled and not matrix_authentication_service_migration_in_progress
   block:
     - name: Ensure Matrix Authentication Service is started before creating Matrix users
       ansible.builtin.service:
