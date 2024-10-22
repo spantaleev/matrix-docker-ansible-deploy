@@ -972,11 +972,11 @@ We recommend that you follow the guide for [Fronting the integrated reverse-prox
 
 # 2023-02-25
 
-## Rageshake support
+## rageshake support
 
-Thanks to [Benjamin Kampmann](https://github.com/gnunicorn), the playbook can now install and configure the [Rageshake](https://github.com/matrix-org/rageshake) bug report server.
+Thanks to [Benjamin Kampmann](https://github.com/gnunicorn), the playbook can now install and configure the [rageshake](https://github.com/matrix-org/rageshake) bug report server.
 
-Additional details are available in [Setting up Rageshake](docs/configuring-playbook-rageshake.md).
+Additional details are available in [Setting up rageshake](docs/configuring-playbook-rageshake.md).
 
 
 # 2023-02-17
