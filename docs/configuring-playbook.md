@@ -66,7 +66,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Serving your base domain using this playbook's nginx server](configuring-playbook-base-domain-serving.md) (optional)
 
-- [Configure the Traefik reverse-proxy](configuring-playbook-traefik.md) (optional, advanced)
+- [Configuring the Traefik reverse-proxy](configuring-playbook-traefik.md) (optional, advanced)
 
 - [Using your own webserver, instead of this playbook's default reverse-proxy](configuring-playbook-own-webserver.md) (optional, advanced)
 
