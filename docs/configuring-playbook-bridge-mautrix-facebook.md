@@ -1,4 +1,4 @@
-# Setting up Mautrix Facebook (optional)
+# Setting up Mautrix Facebook bridging (optional)
 
 **Note**: bridging to Facebook [Messenger](https://messenger.com) via this bridge is being [superseded by a new bridge - mautrix-meta](https://github.com/mautrix/facebook/issues/332). For now, the mautrix-facebook bridge continues to work, but the new [mautrix-meta-messenger bridge](./configuring-playbook-bridge-mautrix-meta-messenger.md) is better and more supported. Consider using that bridge instead of this one.
 

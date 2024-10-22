@@ -1,4 +1,4 @@
-# Configuring Cinny (optional)
+# Setting up Cinny (optional)
 
 This playbook can install the [cinny](https://github.com/ajbura/cinny) Matrix web client for you.
 

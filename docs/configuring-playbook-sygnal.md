@@ -1,4 +1,4 @@
-# Setting up Sygnal (optional)
+# Setting up the Sygnal push gateway (optional)
 
 The playbook can install and configure the [Sygnal](https://github.com/matrix-org/sygnal) push gateway for you.
 

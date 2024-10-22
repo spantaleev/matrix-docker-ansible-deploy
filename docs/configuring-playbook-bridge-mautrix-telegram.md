@@ -1,4 +1,4 @@
-# Setting up Mautrix Telegram (optional)
+# Setting up Mautrix Telegram bridging (optional)
 
 The playbook can install and configure [mautrix-telegram](https://github.com/mautrix/telegram) for you.
 

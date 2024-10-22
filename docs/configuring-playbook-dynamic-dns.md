@@ -1,4 +1,4 @@
-# Dynamic DNS
+# Setting up Dynamic DNS (optional)
 
 ## Setup
 

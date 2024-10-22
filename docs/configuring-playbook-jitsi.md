@@ -1,4 +1,4 @@
-# Jitsi
+# Setting up the Jitsi video-conferencing platform (optional)
 
 The playbook can install the [Jitsi](https://jitsi.org/) video-conferencing platform and integrate it with [Element](configuring-playbook-client-element.md).
 

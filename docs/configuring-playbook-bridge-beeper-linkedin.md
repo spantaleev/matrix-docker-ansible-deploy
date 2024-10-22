@@ -1,4 +1,4 @@
-# Setting up Beeper Linkedin (optional)
+# Setting up Beeper Linkedin bridging (optional)
 
 The playbook can install and configure [beeper-linkedin](https://github.com/beeper/linkedin) for you, for bridging to [LinkedIn](https://www.linkedin.com/) Messaging. This bridge is based on the mautrix-python framework and can be configured in a similar way to the other mautrix bridges
 

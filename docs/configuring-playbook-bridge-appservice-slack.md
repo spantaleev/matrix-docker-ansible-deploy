@@ -1,4 +1,4 @@
-# Setting up Appservice Slack (optional)
+# Setting up Appservice Slack bridging (optional)
 
 **Note**: bridging to [Slack](https://slack.com) can also happen via the [mx-puppet-slack](configuring-playbook-bridge-mx-puppet-slack.md) and [mautrix-slack](configuring-playbook-bridge-mautrix-slack.md) bridges supported by the playbook.
 

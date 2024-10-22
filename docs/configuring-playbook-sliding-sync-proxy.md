@@ -1,4 +1,4 @@
-# Setting up Sliding Sync proxy (optional)
+# Setting up the Sliding Sync proxy (optional)
 
 The playbook can install and configure [sliding-sync](https://github.com/matrix-org/sliding-sync) proxy for you.
 

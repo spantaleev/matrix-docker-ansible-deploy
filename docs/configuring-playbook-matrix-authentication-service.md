@@ -1,4 +1,4 @@
-# Matrix Authentication Service (MAS)
+# Setting up Matrix Authentication Service (optional)
 
 This playbook can install and configure [Matrix Authentication Service](https://github.com/element-hq/matrix-authentication-service/) (MAS) - a service operating alongside your existing [Synapse](./configuring-playbook-synapse.md) homeserver and providing [better authentication, session management and permissions in Matrix](https://matrix.org/blog/2023/09/better-auth/).
 

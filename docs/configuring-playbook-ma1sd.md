@@ -1,4 +1,4 @@
-# Adjusting ma1sd Identity Server configuration (optional)
+# Setting up ma1sd Identity Server (optional)
 
 The playbook can configure the [ma1sd](https://github.com/ma1uta/ma1sd) Identity Server for you.
 

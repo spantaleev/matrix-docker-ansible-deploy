@@ -1,4 +1,4 @@
-# Setting up the WeChat Bridge (optional)
+# Setting up WeChat bridging (optional)
 
 The playbook can install and configure the [matrix-wechat](https://github.com/duo/matrix-wechat) bridge for you (for bridging to the [WeChat](https://www.wechat.com/) network).
 

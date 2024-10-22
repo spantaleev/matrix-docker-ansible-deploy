@@ -1,4 +1,4 @@
-# Setting up Appservice IRC (optional)
+# Setting up Appservice IRC bridging (optional)
 
 **Note**: bridging to [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) can also happen via the [Heisenbridge](configuring-playbook-bridge-heisenbridge.md) bridge supported by the playbook.
 

@@ -1,4 +1,4 @@
-# Configuring SchildiChat (optional)
+# Setting up SchildiChat (optional)
 
 This playbook can install the [SchildiChat](https://github.com/SchildiChat/schildichat-desktop) Matrix web client for you.
 

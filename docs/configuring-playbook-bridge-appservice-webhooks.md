@@ -1,4 +1,4 @@
-# Setting up Appservice Webhooks (optional)
+# Setting up Appservice Webhooks bridging (optional)
 
 The playbook can install and configure [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) for you.
 

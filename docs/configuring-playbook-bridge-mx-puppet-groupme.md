@@ -1,4 +1,4 @@
-# Setting up MX Puppet GroupMe (optional)
+# Setting up MX Puppet GroupMe bridging (optional)
 
 The playbook can install and configure [mx-puppet-groupme](https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme) for you.
 

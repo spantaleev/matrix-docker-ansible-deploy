@@ -1,4 +1,4 @@
-# Setting up ntfy (optional)
+# Setting up the ntfy push notifications server (optional)
 
 The playbook can install and configure the [ntfy](https://ntfy.sh/) push notifications server for you.
 

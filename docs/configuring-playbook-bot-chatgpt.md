@@ -1,4 +1,4 @@
-# Setting up ChatGPT (optional)
+# Setting up matrix-bot-chatgpt (optional)
 
 The playbook can install and configure [matrix-chatgpt-bot](https://github.com/matrixgpt/matrix-chatgpt-bot) for you.
 

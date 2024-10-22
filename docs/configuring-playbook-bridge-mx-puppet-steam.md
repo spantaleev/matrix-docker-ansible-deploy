@@ -1,4 +1,4 @@
-# Setting up MX Puppet Steam (optional)
+# Setting up MX Puppet Steam bridging (optional)
 
 The playbook can install and configure [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) for you.
 

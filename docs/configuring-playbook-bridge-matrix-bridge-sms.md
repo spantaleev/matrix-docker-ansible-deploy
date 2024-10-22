@@ -1,4 +1,4 @@
-# Setting up matrix-sms-bridge (optional)
+# Setting up Matrix SMS bridging (optional)
 
 The playbook can install and configure [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) for you.
 

@@ -1,4 +1,4 @@
-# Setting up Hookshot (optional)
+# Setting up matrix-hookshot (optional)
 
 The playbook can install and configure [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) for you.
 
