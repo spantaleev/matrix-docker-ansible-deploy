@@ -11,8 +11,6 @@ See the project's [documentation](https://github.com/etkecc/postmoogle) to learn
 
 ## Prerequisites
 
-### Networking
-
 Open the following ports on your server to be able to receive incoming emails:
 
   - `25/tcp`: SMTP
@@ -23,7 +21,7 @@ If you don't open these ports, you will still be able to send emails, but not re
 These port numbers are configurable via the `matrix_bot_postmoogle_smtp_host_bind_port` and `matrix_bot_postmoogle_submission_host_bind_port` variables, but other email servers will try to deliver on these default (standard) ports, so changing them is of little use.
 
 
-### Adjusting the playbook configuration
+## Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
@@ -46,11 +44,9 @@ matrix_bot_postmoogle_password: PASSWORD_FOR_THE_BOT
 # matrix_admin: '@yourAdminAccount:{{ matrix_domain }}'
 ```
 
-### DNS
+## Adjusting DNS records
 
-You will also need to add several DNS records so that Postmoogle can send emails.
-See [Configuring DNS](configuring-dns.md).
-
+You will also need to add several DNS records so that Postmoogle can send emails. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
 
 ## Installing
 
