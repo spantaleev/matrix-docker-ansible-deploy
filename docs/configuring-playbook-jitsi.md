@@ -281,7 +281,7 @@ You can use the self-hosted Jitsi server in multiple ways:
 
 - **by adding a widget to a room via Element** (the one configured by the playbook at `https://element.example.com`). Just start a voice or a video call in a room containing more than 2 members and that would create a Jitsi widget which utilizes your self-hosted Jitsi server.
 
-- **by adding a widget to a room via the Dimension Integration Manager**. You'll have to point the widget to your own Jitsi server manually. See our [Dimension](./configuring-playbook-dimension.md) documentation page for more details. Naturally, Dimension would need to be installed first (the playbook doesn't install it by default).
+- **by adding a widget to a room via the Dimension integration manager**. You'll have to point the widget to your own Jitsi server manually. See our [Dimension integration manager](./configuring-playbook-dimension.md) documentation page for more details. Naturally, Dimension would need to be installed first (the playbook doesn't install it by default).
 
 - **directly (without any Matrix integration)**. Just go to `https://jitsi.example.com`
 

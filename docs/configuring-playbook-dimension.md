@@ -75,7 +75,7 @@ After configuring the playbook and potentially [adjusting your DNS records](#adj
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
-After Dimension has been installed you may need to log out and log back in for it to pick up the new integrations manager. Then you can access integrations in Element by opening a room, clicking the Room info button (`i`) button in the top right corner of the screen, and then clicking Add widgets, bridges & bots.
+After Dimension has been installed you may need to log out and log back in for it to pick up the new integration manager. Then you can access integrations in Element by opening a room, clicking the Room info button (`i`) button in the top right corner of the screen, and then clicking Add widgets, bridges & bots.
 
 
 ## Jitsi domain
