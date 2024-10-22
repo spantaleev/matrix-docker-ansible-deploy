@@ -94,6 +94,6 @@ To acquire the token, open Discord in a private browser window. Then open the de
 5. Now that you're logged in, you can send a `help` command to the bot again, to see additional commands you have access to
 6. Some Direct Messages from Discord should start syncing automatically
 7. If you'd like to bridge guilds:
-- send `guilds status` to see the list of guilds
-- for each guild that you'd like bridged, send `guilds bridge GUILD_ID --entire`
+    - send `guilds status` to see the list of guilds
+    - for each guild that you'd like bridged, send `guilds bridge GUILD_ID --entire`
 8. You may wish to uninstall the Discord app from your phone now. It's not needed for the bridge to function.
