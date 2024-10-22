@@ -1,14 +1,14 @@
-# Setting up borg backup (optional)
+# Setting up BorgBackup (optional)
 
-The playbook can install and configure [borgbackup](https://www.borgbackup.org/) with [borgmatic](https://torsion.org/borgmatic/) for you.
+The playbook can install and configure [BorgBackup](https://www.borgbackup.org/) (short: Borg) with [borgmatic](https://torsion.org/borgmatic/) for you.
 
 BorgBackup is a deduplicating backup program with optional compression and encryption. That means your daily incremental backups can be stored in a fraction of the space and is safe whether you store it at home or on a cloud service.
 
-You will need a remote server where borg will store the backups. There are hosted, borg compatible solutions available, such as [BorgBase](https://www.borgbase.com).
+You will need a remote server where BorgBackup will store the backups. There are hosted, BorgBackup compatible solutions available, such as [BorgBase](https://www.borgbase.com).
 
 The backup will run based on `backup_borg_schedule` var (systemd timer calendar), default: 4am every day.
 
-By default, if you're using the integrated Postgres database server (as opposed to [an external Postgres server](configuring-playbook-external-postgres.md)), Borg backups will also include dumps of your Postgres database. An alternative solution for backing up the Postgres database is [postgres backup](configuring-playbook-postgres-backup.md). If you decide to go with another solution, you can disable Postgres-backup support for Borg using the `backup_borg_postgresql_enabled` variable.
+By default, if you're using the integrated Postgres database server (as opposed to [an external Postgres server](configuring-playbook-external-postgres.md)), backups with BorgBackup will also include dumps of your Postgres database. An alternative solution for backing up the Postgres database is [postgres backup](configuring-playbook-postgres-backup.md). If you decide to go with another solution, you can disable Postgres-backup support for BorgBackup using the `backup_borg_postgresql_enabled` variable.
 
 
 ## Prerequisites
@@ -21,7 +21,7 @@ ssh-keygen -t ed25519 -N '' -f matrix-borg-backup -C matrix
 
 This can be done on any machine and you don't need to place the key in the `.ssh` folder. It will be added to the Ansible config later.
 
-2. Add the **public** part of this SSH key (the `matrix-borg-backup.pub` file) to your borg provider/server:
+2. Add the **public** part of this SSH key (the `matrix-borg-backup.pub` file) to your BorgBackup provider/server:
 
 If you plan to use a hosted solution, follow their instructions. If you have your own server, copy the key over:
 
@@ -35,7 +35,7 @@ cat PUBKEY | ssh USER@HOST 'dd of=.ssh/authorized_keys oflag=append conv=notrunc
 
 ## Adjusting the playbook configuration
 
-Minimal working configuration (`inventory/host_vars/matrix.example.com/vars.yml`) to enable borg backup:
+Minimal working configuration (`inventory/host_vars/matrix.example.com/vars.yml`) to enable BorgBackup:
 
 ```yaml
 backup_borg_enabled: true
@@ -56,7 +56,7 @@ where:
 
 * USER - SSH user of a provider/server
 * HOST - SSH host of a provider/server
-* REPO - borg repository name, it will be initialized on backup start, eg: `matrix`, regarding Syntax see [Remote repositories](https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls)
+* REPO - BorgBackup repository name, it will be initialized on backup start, eg: `matrix`, regarding Syntax see [Remote repositories](https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls)
 * PASSPHRASE - passphrase used for encrypting backups, you may generate it with `pwgen -s 64 1` or use any password manager
 * PRIVATE KEY - the content of the **private** part of the SSH key you created before. The whole key (all of its belonging lines) under `backup_borg_ssh_key_private` needs to be indented with 2 spaces
 
