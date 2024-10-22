@@ -870,13 +870,13 @@ See our [Setting up synapse-auto-compressor](docs/configuring-playbook-synapse-a
 
 # 2023-03-07
 
-## Sliding Sync Proxy (Element X) support
+## Sliding Sync proxy (Element X) support
 
 Thanks to [Benjamin Kampmann](https://github.com/gnunicorn) for [getting it started](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/2515), [FSG-Cat](https://github.com/FSG-Cat) for fixing it up and me ([Slavi](https://github.com/spantaleev)) for polishing it up, the playbook can now install and configure the [sliding-sync proxy](https://github.com/matrix-org/sliding-sync).
 
 The upcoming Element X clients ([Element X iOS](https://github.com/vector-im/element-x-ios) and [Element X Android](https://github.com/vector-im/element-x-android)) require the `sliding-sync` proxy to do their job. **These clients are still in beta** (especially Element X Android, which requires manual compilation to get it working with a non-`matrix.org` homeseserver). Playbook users can now easily give these clients a try and help test them thanks to us having `sliding-sync` support.
 
-To get started, see our [Setting up Sliding Sync Proxy](docs/configuring-playbook-sliding-sync-proxy.md) documentation page.
+To get started, see our [Setting up Sliding Sync proxy](docs/configuring-playbook-sliding-sync-proxy.md) documentation page.
 
 
 # 2023-03-02

@@ -1,4 +1,4 @@
-# Setting up Sliding Sync Proxy (optional)
+# Setting up Sliding Sync proxy (optional)
 
 The playbook can install and configure [sliding-sync](https://github.com/matrix-org/sliding-sync) proxy for you.
 
@@ -60,8 +60,8 @@ matrix_sliding_sync_database_name: 'matrix_sliding_sync'
 
 ## Usage
 
-You **don't need to do anything special** to make use of the Sliding Sync Proxy. Simply open your client which supports Sliding Sync (like Element X) and log in.
+You **don't need to do anything special** to make use of the Sliding Sync proxy. Simply open your client which supports Sliding Sync (like Element X) and log in.
 
 When the Sliding Sync proxy is [installed](#installing), your `/.well-known/matrix/client` file is also updated. A new `org.matrix.msc3575.proxy` section and `url` property are added there and made to point to your Sliding Sync proxy's base URL (e.g. `https://matrix.example.com/sliding-sync`).
 
-This allows clients which support Sliding Sync to detect the Sliding Sync Proxy's URL and make use of it.
+This allows clients which support Sliding Sync to detect the Sliding Sync proxy's URL and make use of it.
