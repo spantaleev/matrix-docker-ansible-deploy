@@ -12,7 +12,7 @@ This service is meant to be used with an external [Alertmanager](https://prometh
 
 To enable matrix-alertmanager-receiver, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
-```yml
+```yaml
 matrix_alertmanager_receiver_enabled: true
 
 # If you'd like to change the username for this bot, uncomment and adjust. Otherwise, remove.
@@ -85,7 +85,7 @@ Then, you can proceed to [Usage](#usage).
 
 Configure your Prometheus Alertmanager with configuration like this:
 
-```yml
+```yaml
 receivers:
   - name: matrix
     webhook_configs:

@@ -10,7 +10,7 @@ Previously, bridges supported performing [double-puppeting](https://docs.mau.fi/
 
 To enable the Appservice Double Puppet service, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
-```yml
+```yaml
 matrix_appservice_double_puppet_enabled: true
 ```
 

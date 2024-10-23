@@ -93,7 +93,7 @@ You can **learn more about cache-autotuning and the global cache factor settings
 
 To **disable cache auto-tuning**, unset all values:
 
-```yml
+```yaml
 matrix_synapse_cache_autotuning_max_cache_memory_usage: ''
 matrix_synapse_cache_autotuning_target_cache_memory_usage: ''
 matrix_synapse_cache_autotuning_min_cache_ttl: ''

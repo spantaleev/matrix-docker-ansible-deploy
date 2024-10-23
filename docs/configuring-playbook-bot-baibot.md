@@ -84,7 +84,7 @@ If `matrix_admin` is already configured in your `vars.yml` configuration, you ca
 
 **If necessary**, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
-```yml
+```yaml
 # Uncomment to add one or more admins to this bridge:
 #
 # matrix_bot_baibot_config_access_admin_patterns:
@@ -113,7 +113,7 @@ Configuring `matrix_bot_baibot_config_initial_global_config_user_patterns` is op
 
 **If necessary**, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
-```yml
+```yaml
 # Uncomment and adjust the bot users if necessary:
 #
 # Subsequent changes to `matrix_bot_baibot_config_initial_global_config_user_patterns` do not affect the bot's behavior.
@@ -146,7 +146,7 @@ You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot
 
 Here's an example **addition** to your `vars.yml` file:
 
-```yml
+```yaml
 matrix_bot_baibot_config_agents_static_definitions_anthropic_enabled: true
 
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_api_key: "YOUR_API_KEY_HERE"
@@ -173,7 +173,7 @@ You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot
 
 Here's an example **addition** to your `vars.yml` file:
 
-```yml
+```yaml
 matrix_bot_baibot_config_agents_static_definitions_groq_enabled: true
 
 matrix_bot_baibot_config_agents_static_definitions_groq_config_api_key: "YOUR_API_KEY_HERE"
@@ -207,7 +207,7 @@ You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot
 
 Here's an example **addition** to your `vars.yml` file:
 
-```yml
+```yaml
 matrix_bot_baibot_config_agents_static_definitions_mistral_enabled: true
 
 matrix_bot_baibot_config_agents_static_definitions_mistral_config_api_key: "YOUR_API_KEY_HERE"
@@ -238,7 +238,7 @@ The OpenAI provider is **only meant to be used with OpenAI's official API** and 
 
 Here's an example **addition** to your `vars.yml` file:
 
-```yml
+```yaml
 matrix_bot_baibot_config_agents_static_definitions_openai_enabled: true
 
 matrix_bot_baibot_config_agents_static_definitions_openai_config_api_key: "YOUR_API_KEY_HERE"
@@ -282,7 +282,7 @@ You can also define providers at runtime, by chatting with the bot, so using Ans
 
 Below is an an **example** demonstrating **statically-defining agents via Ansible without using presets**:
 
-```yml
+```yaml
 matrix_bot_baibot_config_agents_static_definitions_custom:
   # This agent will use the GPT 3.5 model and will only support text-generation,
   # even though the `openai` provider could support other features (e.g. image-generation).
@@ -356,7 +356,7 @@ You can configure the **initial values** for these via Ansible, via the `matrix_
 
 Example **additional** `vars.yml` configuration:
 
-```yml
+```yaml
 # Note: these are initial defaults for the bot's global configuration.
 # As such, changing any of these values subsequently has no effect on the bot's behavior.
 # Once initially configured, the global configuration is managed via bot commands, not via Ansible.

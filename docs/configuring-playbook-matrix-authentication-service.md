@@ -364,7 +364,7 @@ The same OIDC provider may have an `id` of `01HFVBY12TMNTYTBV8W921M5FA` on the M
 
 To tell `syn2mas` how the Synapse-configured OIDC provider maps to the new MAS-configured OIDC provider, add this additional configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
-```yml
+```yaml
 # Adjust the mapping below to match your provider IDs on the Synapse side and the MAS side.
 # Don't forget that Synapse automatically adds an `oidc-` prefix to provider ids defined in its configuration.
 matrix_authentication_service_syn2mas_process_extra_arguments:

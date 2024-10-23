@@ -98,7 +98,7 @@ For more detailed documentation on available options and how to setup keycloak, 
 
 In case you encounter errors regarding the parsing of the variables, you can try to add `{% raw %}` and `{% endraw %}` blocks around them. For example ;
 
-```yml
+```yaml
 matrix_synapse_oidc_enabled: true
 
 matrix_synapse_oidc_providers:

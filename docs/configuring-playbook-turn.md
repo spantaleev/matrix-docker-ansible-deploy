@@ -40,7 +40,7 @@ The playbook uses the [`auth-secret` authentication method](https://github.com/c
 
 To do so, add this override to your configuration:
 
-```yml
+```yaml
 matrix_coturn_authentication_method: lt-cred-mech
 ```
 

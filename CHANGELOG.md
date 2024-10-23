@@ -174,7 +174,7 @@ If upstream synapse-admin picks up the pace and improves, the etke.cc fork may d
 
 If you'd like to switch back to the original synapse-admin software, you can do so by adding the following configuration to your `vars.yml` file:
 
-```yml
+```yaml
 matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_name_prefix }}awesometechnologies/synapse-admin:{{ matrix_synapse_admin_version }}"
 matrix_synapse_admin_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else matrix_container_global_registry_prefix }}"
 
@@ -199,7 +199,7 @@ All non-deprecated mautrix bridges in the playbook have been reworked to support
 
 We recommend **enabling double-puppeting via the new Appservice method** by adding the following configuration to your `vars.yml` file:
 
-```yml
+```yaml
 matrix_appservice_double_puppet_enabled: true
 ```
 
@@ -231,7 +231,7 @@ This upgrade necessitates configuration policy changes as described in [matrix-c
 
 If you'd like to remain on the old (v2) version of matrix-corporal, you can do so by adding the following configuration to your `vars.yml` file:
 
-```yml
+```yaml
 matrix_corporal_version: 2.8.0
 ```
 
@@ -287,7 +287,7 @@ Still, if HTTP/3 cannot function correctly in your setup, it's best to disable a
 
 To **disable HTTP/3**, you can use the following configuration:
 
-```yml
+```yaml
 traefik_config_entrypoint_web_secure_http3_enabled: false
 
 # Disabling HTTP/3 for the web-secure entrypoint (above),
@@ -301,7 +301,7 @@ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_ena
 
 If you are using [your own webserver](./docs/configuring-playbook-own-webserver.md) (in front of Traefik), port binding on UDP port `8448` by default due to HTTP/3 is either unnecessary or [may get in the way](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3402). If it does, you can disable it:
 
-```yml
+```yaml
 # Disable HTTP/3 for the federation entrypoint.
 # If you'd like HTTP/3, consider configuring it for your other reverse-proxy.
 #
@@ -322,7 +322,7 @@ The playbook has just started making use of this feature. **From now on, your sy
 
 If you'd like **to go back to the old unrestricted behavior**, use the following configuration:
 
-```yml
+```yaml
 # Use this configuration to allow synapse-admin to manage any homeserver instance.
 matrix_synapse_admin_config_restrictBaseUrl: []
 ```
@@ -387,7 +387,7 @@ Users on `arm32` should be aware that there's **neither a prebuilt `arm32` conta
 
 **The playbook still supports Redis** and you can keep using Redis (for now) if you'd like, by adding this additional configuration to your `vars.yml` file:
 
-```yml
+```yaml
 # Explicitly disable KeyDB, which will auto-enable Redis
 # if the playbook requires it as a dependency for its operation.
 keydb_enabled: false
