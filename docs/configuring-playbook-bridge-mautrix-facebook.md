@@ -97,7 +97,7 @@ The easiest way to do this may be to use [sshuttle](https://sshuttle.readthedocs
 
 Example command for proxying your traffic through the Matrix server:
 
-```
+```sh
 sshuttle -r root@matrix.example.com:22 0/0
 ```
 

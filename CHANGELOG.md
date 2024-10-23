@@ -2800,7 +2800,7 @@ You can now customize the server name string that Riot-web displays in its login
 
 These playbook variables, with these default values, have been added:
 
-```
+```yaml
 matrix_riot_web_default_server_name: "{{ matrix_domain }}"
 ```
 
@@ -2828,7 +2828,7 @@ Still, we might become affected in the future. In any case, it's imminent that S
 
 To avoid future problems, we recommend that you run the following command:
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=upgrade-postgres --extra-vars='{"postgres_force_upgrade": true}'
 ```
 
@@ -3289,7 +3289,7 @@ The certificates from the Matrix domain will be used for the Coturn server.
 This feature is enabled by default for new installations.
 To make use of TLS support for your existing Matrix server's Coturn, make sure to rebuild both Coturn and Synapse:
 
-```bash
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-coturn,setup-synapse,start
 ```
 
@@ -3628,7 +3628,7 @@ The playbook now allows you to set the log levels used by Synapse. The default l
 
 You can now override following variables with any of the supported log levels listed here: https://docs.python.org/3/library/logging.html#logging-levels
 
-```
+```yaml
 matrix_synapse_log_level: "INFO"
 matrix_synapse_storage_sql_log_level: "INFO"
 matrix_synapse_root_log_level: "INFO"
@@ -3641,7 +3641,7 @@ matrix_synapse_root_log_level: "INFO"
 
 You can now customize some parts of Riot's `config.json`. These playbook variables, with these default values, have been added:
 
-```
+```yaml
 matrix_riot_web_disable_custom_urls: true
 matrix_riot_web_disable_guests: true
 matrix_riot_web_integrations_ui_url: "https://scalar.vector.im/"
@@ -3652,7 +3652,7 @@ matrix_riot_web_integrations_jitsi_widget_url: "https://scalar.vector.im/api/wid
 
 This now allows you use a custom integration manager like [Dimension](https://dimension.t2bot.io). For example, if you wish to use the Dimension instance hosted at dimension.t2bot.io, you can set the following in your vars.yml file:
 
-```
+```yaml
 matrix_riot_web_integrations_ui_url: "https://dimension.t2bot.io/riot"
 matrix_riot_web_integrations_rest_url: "https://dimension.t2bot.io/api/v1/scalar"
 matrix_riot_web_integrations_widgets_urls: "https://dimension.t2bot.io/widgets"

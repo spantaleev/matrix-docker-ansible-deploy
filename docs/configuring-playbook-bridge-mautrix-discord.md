@@ -29,7 +29,7 @@ You may optionally wish to add some [Additional configuration](#additional-confi
 
 After configuring the playbook, run the [installation](installing.md) command:
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 

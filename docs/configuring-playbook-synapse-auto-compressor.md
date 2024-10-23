@@ -20,7 +20,7 @@ matrix_synapse_auto_compressor_enabled: true
 
 After configuring the playbook, run the [installation](installing.md) command:
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 

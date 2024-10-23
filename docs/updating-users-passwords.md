@@ -8,7 +8,7 @@
 
 You can reset a user's password via the Ansible playbook:
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=USERNAME_HERE password=PASSWORD_HERE' --tags=update-user-password
 ```
 
@@ -19,7 +19,7 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=USERNAME_HE
 
 You can manually generate the password hash by using the command-line after **SSH**-ing to your server (requires that [all services have been started](installing.md#finalize-the-installation):
 
-```
+```sh
 docker exec -it matrix-synapse /usr/local/bin/hash_password -c /data/homeserver.yaml
 ```
 
@@ -42,6 +42,6 @@ If you didn't make your account a server admin when you created it, you can lear
 
 ### Example:
 To set @user:example.com's password to `correct_horse_battery_staple` you could use this curl command:
-```
+```sh
 curl -XPOST -d '{ "new_password": "correct_horse_battery_staple" }' "https://matrix.example.com/_matrix/client/r0/admin/reset_password/@user:example.com?access_token=MDA...this_is_my_access_token
 ```

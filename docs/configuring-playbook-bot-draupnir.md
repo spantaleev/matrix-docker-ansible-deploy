@@ -19,7 +19,7 @@ Choose a strong password for the bot. You can generate a good password with a co
 
 You can use the playbook to [register a new user](registering-users.md):
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.draupnir password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
 ```
 
@@ -117,7 +117,7 @@ That is all you need to do due to that Draupnir can complete migration on its ow
 
 After configuring the playbook, run the [installation](installing.md) command:
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 

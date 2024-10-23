@@ -19,7 +19,7 @@ Choose a strong password for the bot. You can generate a good password with a co
 
 You can use the playbook to [register a new user](registering-users.md):
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.go-neb password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
 ```
 
@@ -221,7 +221,7 @@ If you've decided to reuse the `matrix.` domain, you won't need to do any extra 
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command:
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 

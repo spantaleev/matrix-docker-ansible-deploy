@@ -267,7 +267,7 @@ matrix_server_fqn_etherpad: "etherpad.example.com"
 
 After configuring the playbook, run the [installation](installing.md) command:
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
