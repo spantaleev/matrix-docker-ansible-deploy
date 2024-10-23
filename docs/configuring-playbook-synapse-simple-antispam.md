@@ -2,8 +2,7 @@
 
 The playbook can install and configure [synapse-simple-antispam](https://github.com/t2bot/synapse-simple-antispam) for you.
 
-See that project's documentation to learn what it does and why it might be useful to you.
-In short, it lets you fight invite-spam by automatically blocking invitiations from a list of servers specified by you (blacklisting).
+See that project's documentation to learn what it does and why it might be useful to you. In short, it lets you fight invite-spam by automatically blocking invitiations from a list of servers specified by you (blacklisting).
 
 ## Adjusting the playbook configuration
 

@@ -1,7 +1,6 @@
 # Setting up a Generic Mautrix Bridge (optional)
 
-The playbook can install and configure various [mautrix](https://github.com/mautrix) bridges (twitter, facebook, instagram, signal, hangouts, googlechat, etc.), as well as many other (non-mautrix) bridges.
-This is a common guide for configuring mautrix bridges.
+The playbook can install and configure various [mautrix](https://github.com/mautrix) bridges (twitter, facebook, instagram, signal, hangouts, googlechat, etc.), as well as many other (non-mautrix) bridges. This is a common guide for configuring mautrix bridges.
 
 You can see each bridge's features at in the `ROADMAP.md` file in its corresponding [mautrix](https://github.com/mautrix) repository.
 
@@ -132,4 +131,5 @@ If you run into trouble, check the [Troubleshooting](#troubleshooting) section b
 ## Troubleshooting
 
 For troubleshooting information with a specific bridge, please see the playbook documentation about it (some other document in in `docs/`) and the upstream ([mautrix](https://github.com/mautrix)) bridge documentation for that specific bridge.
+
 Reporting bridge bugs should happen upstream, in the corresponding mautrix repository, not to us.

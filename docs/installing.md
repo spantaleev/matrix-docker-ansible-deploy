@@ -56,8 +56,7 @@ Proceed to [Maintaining your setup in the future](#2-maintaining-your-setup-in-t
 
 ### Installing a server into which you'll import old data
 
-If you will be importing data into your newly created Matrix server, install it, but **do not** start its services just yet.
-Starting its services or messing with its database now will affect your data import later on.
+If you will be importing data into your newly created Matrix server, install it, but **do not** start its services just yet. Starting its services or messing with its database now will affect your data import later on.
 
 To do the installation **without** starting services, run only the `install-all` tag:
 

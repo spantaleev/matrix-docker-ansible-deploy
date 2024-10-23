@@ -17,8 +17,7 @@ As [per the Server-Server specification](https://matrix.org/docs/spec/server_ser
 
 Server delegation can be configured using DNS SRV records or by setting up a `/.well-known/matrix/server` file on the base domain (`example.com`).
 
-Both methods have their place and will continue to do so. You only need to use just one of these delegation methods.
-For simplicity reasons, our setup advocates for the `/.well-known/matrix/server` method and guides you into using that.
+Both methods have their place and will continue to do so. You only need to use just one of these delegation methods. For simplicity reasons, our setup advocates for the `/.well-known/matrix/server` method and guides you into using that.
 
 To learn how to set up `/.well-known/matrix/server`, read the Installing section below.
 
@@ -43,6 +42,7 @@ To learn how to set it up, read the Installing section below.
 The two playbook variables that you could look for, if you're interested in being an early adopter, are: `matrix_static_files_file_matrix_support_property_m_contacts` and `matrix_static_files_file_matrix_support_property_m_support_page`.
 
 Example snippet for `vars.yml`:
+
 ```
 # Enable generation of `/.well-known/matrix/support`.
 matrix_static_files_file_matrix_support_enabled: true
@@ -69,9 +69,7 @@ To learn how to set up `/.well-known/matrix/support` for the base domain, read t
 
 To implement the two service discovery mechanisms, your base domain's server (e.g. `example.com`) needs to run an HTTPS-capable webserver.
 
-If you don't have a server for your base domain at all, you can use the Matrix server for this.
-See [Serving the base domain](configuring-playbook-base-domain-serving.md) to learn how the playbook can help you set it up.
-If you decide to go this route, you don't need to read ahead in this document. When **Serving the base domain**, the playbook takes care to serve the appropriate well-known files automatically.
+If you don't have a server for your base domain at all, you can use the Matrix server for this. See [Serving the base domain](configuring-playbook-base-domain-serving.md) to learn how the playbook can help you set it up. If you decide to go this route, you don't need to read ahead in this document. When **Serving the base domain**, the playbook takes care to serve the appropriate well-known files automatically.
 
 If you're managing the base domain by yourself somehow, you'll need to set up serving of some `/.well-known/matrix/*` files from it via HTTPS.
 
@@ -90,8 +88,7 @@ All you need to do is:
 
 - set up the server at your base domain (e.g. `example.com`) so that it adds an extra HTTP header when serving the `/.well-known/matrix/client` file. [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), the `Access-Control-Allow-Origin` header should be set with a value of `*`. If you don't do this step, web-based Matrix clients (like Element) may fail to work. Setting up headers for the `/.well-known/matrix/server` file is not necessary, as this file is only consumed by non-browsers, which don't care about CORS.
 
-This is relatively easy to do and possibly your only choice if you can only host static files from the base domain's server.
-It is, however, **a little fragile**, as future updates performed by this playbook may regenerate the well-known files and you may need to notice that and copy them over again.
+This is relatively easy to do and possibly your only choice if you can only host static files from the base domain's server. It is, however, **a little fragile**, as future updates performed by this playbook may regenerate the well-known files and you may need to notice that and copy them over again.
 
 
 ### (Option 2): **Serving the base domain** from the Matrix server via the playbook

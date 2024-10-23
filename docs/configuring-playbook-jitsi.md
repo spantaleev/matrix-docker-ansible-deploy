@@ -49,16 +49,14 @@ By default the Jitsi Meet instance does not require any kind of login and is ope
 If you're fine with such an open Jitsi instance, please skip to [Apply changes](#apply-changes).
 
 If you would like to control who is allowed to open meetings on your new Jitsi instance, then please follow the following steps to enable Jitsi's authentication and optionally guests mode.
+
 Currently, there are three supported authentication modes: 'internal' (default), 'matrix' and 'ldap'.
 
-**Note**: Authentication is not tested via the playbook's self-checks.
-We therefore recommend that you manually verify if authentication is required by jitsi.
-For this, try to manually create a conference on jitsi.example.com in your browser.
+**Note**: Authentication is not tested via the playbook's self-checks. We therefore recommend that you manually verify if authentication is required by jitsi. For this, try to manually create a conference on jitsi.example.com in your browser.
 
 ### Authenticate using Jitsi accounts (Auth-Type 'internal')
-The default authentication mechanism is 'internal' auth, which requires jitsi-accounts to be setup and is the recommended setup, as it also works in federated rooms.
-With authentication enabled, all meeting rooms have to be opened by a registered user, after which guests are free to join.
-If a registered host is not yet present, guests are put on hold in individual waiting rooms.
+
+The default authentication mechanism is 'internal' auth, which requires jitsi-accounts to be setup and is the recommended setup, as it also works in federated rooms. With authentication enabled, all meeting rooms have to be opened by a registered user, after which guests are free to join. If a registered host is not yet present, guests are put on hold in individual waiting rooms.
 
 Add these lines to your `inventory/host_vars/matrix.example.com/vars.yml` configuration:
 
@@ -80,8 +78,7 @@ jitsi_prosody_auth_internal_accounts:
 
 **Attention: Probably breaks Jitsi in federated rooms and does not allow sharing conference links with guests.**
 
-Using this authentication type require a [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service).
-By default, this playbook creates and configures a user-verification-service to run locally, see [configuring-user-verification-service](configuring-playbook-user-verification-service.md).
+Using this authentication type require a [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service). By default, this playbook creates and configures a user-verification-service to run locally, see [configuring-user-verification-service](configuring-playbook-user-verification-service.md).
 
 To enable set this configuration at host level:
 
@@ -150,14 +147,11 @@ jitsi_web_config_resolution_width_ideal_and_max: 480
 jitsi_web_config_resolution_height_ideal_and_max: 240
 ```
 
-You may want to **suspend unused video layers** until they are requested again, to save up resources on both server and clients.
-Read more on this feature [here](https://jitsi.org/blog/new-off-stage-layer-suppression-feature/)
+You may want to **suspend unused video layers** until they are requested again, to save up resources on both server and clients. Read more on this feature [here](https://jitsi.org/blog/new-off-stage-layer-suppression-feature/)
 
 You may wish to **disable audio levels** to avoid excessive refresh of the client-side page and decrease the CPU consumption involved.
 
-You may want to **limit the number of video feeds forwarded to each client**, to save up resources on both server and clients. As clients’ bandwidth and CPU may not bear the load, use this setting to avoid lag and crashes.
-This feature is found by default in other webconference applications such as Office 365 Teams (limit is set to 4).
-Read how it works [here](https://github.com/jitsi/jitsi-videobridge/blob/master/doc/last-n.md) and performance evaluation on this [study](https://jitsi.org/wp-content/uploads/2016/12/nossdav2015lastn.pdf).
+You may want to **limit the number of video feeds forwarded to each client**, to save up resources on both server and clients. As clients’ bandwidth and CPU may not bear the load, use this setting to avoid lag and crashes. This feature is found by default in other webconference applications such as Office 365 Teams (limit is set to 4). Read how it works [here](https://github.com/jitsi/jitsi-videobridge/blob/master/doc/last-n.md) and performance evaluation on this [study](https://jitsi.org/wp-content/uploads/2016/12/nossdav2015lastn.pdf).
 
 You may want to **limit the maximum video resolution**, to save up resources on both server and clients.
 
@@ -175,8 +169,7 @@ jitsi_prosody_max_participants: 4 # example value
 
 By default, a single JVB ([Jitsi VideoBridge](https://github.com/jitsi/jitsi-videobridge)) is deployed on the same host as the Matrix server. To allow more video-conferences to happen at the same time, you may need to provision additional JVB services on other hosts.
 
-There is an ansible playbook that can be run with the following tag:
-`ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers jitsi_jvb.yml --tags=common,setup-additional-jitsi-jvb,start`
+There is an ansible playbook that can be run with the following tag: `ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers jitsi_jvb.yml --tags=common,setup-additional-jitsi-jvb,start`
 
 For this role to work you will need an additional section in the ansible hosts file with the details of the JVB hosts, for example:
 ```
@@ -184,9 +177,7 @@ For this role to work you will need an additional section in the ansible hosts f
 <your jvb hosts> ansible_host=<ip address of the jvb host>
 ```
 
-Each JVB will require a server ID to be set so that it can be uniquely identified and this allows Jitsi to keep track of which conferences are on which JVB.
-The server ID is set with the variable `jitsi_jvb_server_id` which ends up as the JVB_WS_SERVER_ID environment variables in the JVB docker container.
-This variable can be set via the host file, a parameter to the ansible command or in the `vars.yaml` for the host which will have the additional JVB. For example:
+Each JVB will require a server ID to be set so that it can be uniquely identified and this allows Jitsi to keep track of which conferences are on which JVB. The server ID is set with the variable `jitsi_jvb_server_id` which ends up as the JVB_WS_SERVER_ID environment variables in the JVB docker container. This variable can be set via the host file, a parameter to the ansible command or in the `vars.yaml` for the host which will have the additional JVB. For example:
 
 ``` yaml
 jitsi_jvb_server_id: 'jvb-2'
@@ -206,8 +197,7 @@ The additional JVB will also need to expose the colibri web socket port and this
 jitsi_jvb_container_colibri_ws_host_bind_port: 9090
 ```
 
-The JVB will also need to know where the prosody xmpp server is located, similar to the server ID this can be set in the vars for the JVB by using the variable
-`jitsi_xmpp_server`. The Jitsi prosody container is deployed on the Matrix server by default so the value can be set to the Matrix domain. For example:
+The JVB will also need to know where the prosody xmpp server is located, similar to the server ID this can be set in the vars for the JVB by using the variable `jitsi_xmpp_server`. The Jitsi prosody container is deployed on the Matrix server by default so the value can be set to the Matrix domain. For example:
 
 ```yaml
 jitsi_xmpp_server: "{{ matrix_domain }}"
@@ -219,9 +209,7 @@ However, it can also be set the ip address of the Matrix server. This can be use
 jitsi_xmpp_server: "192.168.0.1"
 ```
 
-For the JVB to be able to contact the XMPP server, the latter must expose the XMPP port (5222). By default, the Matrix server does not expose the
-port; only the XMPP container exposes it internally inside the host, which means that the first JVB (which runs on the Matrix server) can reach it but
-the additional JVB cannot. The port is exposed by setting `jitsi_prosody_container_jvb_host_bind_port` like this:
+For the JVB to be able to contact the XMPP server, the latter must expose the XMPP port (5222). By default, the Matrix server does not expose the port; only the XMPP container exposes it internally inside the host, which means that the first JVB (which runs on the Matrix server) can reach it but the additional JVB cannot. The port is exposed by setting `jitsi_prosody_container_jvb_host_bind_port` like this:
 
 ```yaml
 jitsi_prosody_container_jvb_host_bind_port: 5222
@@ -229,8 +217,7 @@ jitsi_prosody_container_jvb_host_bind_port: 5222
 
 (The default is empty; if it's set then docker forwards the port.)
 
-Applied together this will allow you to provision extra JVB instances which will register themselves with the prosody service and be available for jicofo
-to route conferences too.
+Applied together this will allow you to provision extra JVB instances which will register themselves with the prosody service and be available for jicofo to route conferences too.
 
 To make Traefik reverse-proxy to these additional JVBs (living on other hosts), **you would need to add the following Traefik configuration extension**:
 
@@ -270,8 +257,7 @@ traefik_provider_configuration_extension_yaml: |
 
 ## (Optional) Enable Gravatar
 
-In the default Jisti Meet configuration, gravatar.com is enabled as an avatar service. This results in third party request leaking data to gravatar.
-Since element already sends the url of configured Matrix avatars to Jitsi, we disabled gravatar.
+In the default Jisti Meet configuration, gravatar.com is enabled as an avatar service. This results in third party request leaking data to gravatar. Since element already sends the url of configured Matrix avatars to Jitsi, we disabled gravatar.
 
 To enable Gravatar set:
 
@@ -279,8 +265,7 @@ To enable Gravatar set:
 jitsi_disable_gravatar: false
 ```
 
-**Beware**: This leaks information to a third party, namely the Gravatar-Service (unless configured otherwise: gravatar.com).
-Besides metadata, this includes the Matrix user_id and possibly the room identifier (via `referrer` header).
+**Beware**: This leaks information to a third party, namely the Gravatar-Service (unless configured otherwise: gravatar.com). Besides metadata, this includes the Matrix user_id and possibly the room identifier (via `referrer` header).
 
 ## Installing
 

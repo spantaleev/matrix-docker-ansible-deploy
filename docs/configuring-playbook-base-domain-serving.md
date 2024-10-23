@@ -1,8 +1,6 @@
 # Serving the base domain
 
-This playbook sets up services on your Matrix server (`matrix.example.com`).
-To have this server officially be responsible for Matrix services for the base domain (`example.com`), you need to set up [Server Delegation](howto-server-delegation.md).
-This is normally done by [configuring well-known](configuring-well-known.md) files on the base domain.
+This playbook sets up services on your Matrix server (`matrix.example.com`). To have this server officially be responsible for Matrix services for the base domain (`example.com`), you need to set up [Server Delegation](howto-server-delegation.md). This is normally done by [configuring well-known](configuring-well-known.md) files on the base domain.
 
 People who don't have a separate server to dedicate to the base domain have trouble arranging this.
 
@@ -31,8 +29,7 @@ Doing this, the playbook will:
 
 ## Serving a static website at the base domain
 
-By default, when "serving the base domain" is enabled, the playbook hosts a simple `index.html` webpage at `/matrix/static-files/public/index.html`.
-The content of this page is taken from the `matrix_static_files_file_index_html_template` variable.
+By default, when "serving the base domain" is enabled, the playbook hosts a simple `index.html` webpage at `/matrix/static-files/public/index.html`. The content of this page is taken from the `matrix_static_files_file_index_html_template` variable.
 
 If you'd like to host your own static website (more than a single `index.html` page) at the base domain, you can disable the creation of this default `index.html` page like this:
 
@@ -50,8 +47,7 @@ matrix_static_files_container_labels_base_domain_root_path_redirection_enabled: 
 
 With this configuration, Ansible will no longer mess around with the `/matrix/static-files/public/index.html` file.
 
-You are then free to upload any static website files to `/matrix/static-files/public` and they will get served at the base domain.
-You can do so manually or by using the [ansible-role-aux](https://github.com/mother-of-all-self-hosting/ansible-role-aux) Ansible role, which is part of this playbook already.
+You are then free to upload any static website files to `/matrix/static-files/public` and they will get served at the base domain. You can do so manually or by using the [ansible-role-aux](https://github.com/mother-of-all-self-hosting/ansible-role-aux) Ansible role, which is part of this playbook already.
 
 
 ## Serving a more complicated website at the base domain

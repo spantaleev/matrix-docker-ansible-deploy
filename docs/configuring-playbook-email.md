@@ -2,8 +2,7 @@
 
 By default, this playbook sets up an [Exim](https://www.exim.org/) email server through which all Matrix services send emails.
 
-The email server would attempt to deliver emails directly to their final destination.
-This may or may not work, depending on your domain configuration (SPF settings, etc.)
+The email server would attempt to deliver emails directly to their final destination. This may or may not work, depending on your domain configuration (SPF settings, etc.)
 
 By default, emails are sent from `matrix@matrix.example.com`, as specified by the `exim_relay_sender_address` playbook variable.
 

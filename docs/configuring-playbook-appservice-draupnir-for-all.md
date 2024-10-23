@@ -24,8 +24,7 @@ Draupnir for all does not support external tooling like [MRU](https://mru.rory.g
 
 The playbook does not create a management room for your Main Draupnir. This task you have to do on your own.
 
-The management room has to be given an alias and be public when you are setting up the bot for the first time as the bot does not differentiate between invites
-and invites to the management room.
+The management room has to be given an alias and be public when you are setting up the bot for the first time as the bot does not differentiate between invites and invites to the management room.
 
 This management room is used to control who has access to your D4A deployment. The room stores this data inside of the control room state so your bot must have sufficient powerlevel to send custom state events. This is default 50 or moderator as Element calls this powerlevel.
 

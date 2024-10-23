@@ -189,8 +189,7 @@ Such a configuration would expose all services on a local port `81` and Matrix F
 
 Your reverse-proxy configuration needs to send traffic to these ports. The [`examples/reverse-proxies` directory](../examples/reverse-proxies/) contains sample configuration for various webservers (Apache2, Caddy, HAproxy, nginx, Nginx Proxy Manager).
 
-It's important that these webservers proxy-pass requests to the correct place and also set the `Host` HTTP header appropriately.
-If you don't pass the `Host` header correctly, you would get a 404 not found error from Traefik.
+It's important that these webservers proxy-pass requests to the correct place and also set the `Host` HTTP header appropriately. If you don't pass the `Host` header correctly, you would get a 404 not found error from Traefik.
 
 To put it another way, `curl http://127.0.0.1:81` would give you a 404, but `curl -H 'Host: matrix.example.com' http://127.0.0.1:81` should work.
 

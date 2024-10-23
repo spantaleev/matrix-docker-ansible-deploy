@@ -2,11 +2,9 @@
 
 The playbook can install and configure [maubot](https://github.com/maubot/maubot) for you.
 
-After setting up maubot, you can use the web management interface to make it do things.
-The default location of the management interface is `matrix.example.com/_matrix/maubot/`
+After setting up maubot, you can use the web management interface to make it do things. The default location of the management interface is `matrix.example.com/_matrix/maubot/`
 
-See the project's [documentation](https://docs.mau.fi/maubot/usage/basic.html) to learn what it
-does and why it might be useful to you.
+See the project's [documentation](https://docs.mau.fi/maubot/usage/basic.html) to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 
@@ -64,8 +62,7 @@ By default, you can visit `matrix.example.com/_matrix/maubot/` to manage your av
 You should start in the following order
 1. **Create one or more clients**: A client is a Matrix account which the bot will use to message. By default, the playbook creates a `bot.maubot` account (as per the configuration above). You only need to [obtain an access token](#obtaining-an-access-token) for it
 2. **Upload some Plugins**: Plugins can be obtained from [here](https://github.com/maubot/maubot#plugins) or any other source.
-3. **Create an instance**: An instance is the actual bot. You have to specify a client which the bot instance will use
-and the plugin (how the bot will behave)
+3. **Create an instance**: An instance is the actual bot. You have to specify a client which the bot instance will use and the plugin (how the bot will behave)
 
 ## Obtaining an access token
 

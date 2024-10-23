@@ -4,8 +4,7 @@ The playbook can install and configure [matrix-ldap-registration-proxy](https://
 
 This proxy handles Matrix registration requests and forwards them to LDAP.
 
-**Note**: This does support the full Matrix specification for registrations. It only provide a very coarse
-implementation of a basic password registration.
+**Note**: This does support the full Matrix specification for registrations. It only provide a very coarse implementation of a basic password registration.
 
 ## Quickstart
 
@@ -20,8 +19,7 @@ matrix_ldap_registration_proxy_ldap_user: <USER>
 matrix_ldap_registration_proxy_ldap_password: <password>
 ```
 
-If you already use the [synapse external password provider via LDAP](configuring-playbook-ldap-auth.md) (that is, you have `matrix_synapse_ext_password_provider_ldap_enabled: true` and other options in your configuration)
-you can use the following values as configuration:
+If you already use the [synapse external password provider via LDAP](configuring-playbook-ldap-auth.md) (that is, you have `matrix_synapse_ext_password_provider_ldap_enabled: true` and other options in your configuration) you can use the following values as configuration:
 
 ```yaml
 # Use the LDAP values specified for the synapse role to setup LDAP proxy

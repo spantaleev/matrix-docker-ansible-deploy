@@ -2,18 +2,16 @@
 
 To set up Matrix on your domain, you'd need to do some DNS configuration.
 
-To use an identifier like `@<username>:example.com`, you don't actually need
-to install anything on the actual `example.com` server.
+To use an identifier like `@<username>:example.com`, you don't actually need to install anything on the actual `example.com` server.
 
-You do, however need to instruct the Matrix network that Matrix services for `example.com` are delegated
-over to `matrix.example.com`.
+You do, however, need to instruct the Matrix network that Matrix services for `example.com` are delegated over to `matrix.example.com`.
+
 As we discuss in [Server Delegation](howto-server-delegation.md), there are 2 different ways to set up such delegation:
 
 - either by serving a `https://example.com/.well-known/matrix/server` file (from the base domain!)
 - or by using a `_matrix._tcp` DNS SRV record (don't confuse this with the `_matrix-identity._tcp` SRV record described below)
 
-This playbook mostly discusses the well-known file method, because it's easier to manage with regard to certificates.
-If you decide to go with the alternative method ([Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)), please be aware that the general flow that this playbook guides you through may not match what you need to do.
+This playbook mostly discusses the well-known file method, because it's easier to manage with regard to certificates. If you decide to go with the alternative method ([Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)), please be aware that the general flow that this playbook guides you through may not match what you need to do.
 
 ## DNS settings for services enabled by default
 
@@ -57,8 +55,7 @@ When setting up a SRV record, if you are asked for a service and protocol instea
 
 As the table above illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your new server's IP address (DNS `A` record or `CNAME` record is fine).
 
-The `element.example.com` subdomain may be necessary, because this playbook installs the [Element](https://github.com/element-hq/element-web) web client for you.
-If you'd rather instruct the playbook not to install Element (`matrix_client_element_enabled: false` when [Configuring the playbook](configuring-playbook.md) later), feel free to skip the `element.example.com` DNS record.
+The `element.example.com` subdomain may be necessary, because this playbook installs the [Element](https://github.com/element-hq/element-web) web client for you. If you'd rather instruct the playbook not to install Element (`matrix_client_element_enabled: false` when [Configuring the playbook](configuring-playbook.md) later), feel free to skip the `element.example.com` DNS record.
 
 The `dimension.example.com` subdomain may be necessary, because this playbook could install the [Dimension integrations manager](http://dimension.t2bot.io/) for you. The installation of Dimension is disabled by default, because it's only possible to install it after the other Matrix services are working (see [Setting up Dimension](configuring-playbook-dimension.md) later). If you do not wish to set up Dimension, feel free to skip the `dimension.example.com` DNS record.
 
@@ -100,5 +97,4 @@ When you're done with the DNS configuration and ready to proceed, continue with 
 
 ## `_dmarc`, `postmoogle._domainkey` TXT and `matrix` MX records setup
 
-To make the [postmoogle](configuring-playbook-bot-postmoogle.md) email bridge enable its email sending features, you need to configure
-SPF (TXT), DMARC (TXT), DKIM (TXT) and MX records
+To make the [postmoogle](configuring-playbook-bot-postmoogle.md) email bridge enable its email sending features, you need to configure SPF (TXT), DMARC (TXT), DKIM (TXT) and MX records

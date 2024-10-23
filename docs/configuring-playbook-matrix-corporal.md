@@ -8,8 +8,7 @@
 
 The playbook can install and configure [matrix-corporal](https://github.com/devture/matrix-corporal) for you.
 
-In short, it's a sort of automation and firewalling service, which is helpful if you're instaling Matrix services in a controlled corporate environment.
-See that project's documentation to learn what it does and why it might be useful to you.
+In short, it's a sort of automation and firewalling service, which is helpful if you're instaling Matrix services in a controlled corporate environment. See that project's documentation to learn what it does and why it might be useful to you.
 
 If you decide that you'd like to let this playbook install it for you, you'd need to also:
 - (required) [set up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md)
@@ -71,8 +70,8 @@ matrix_synapse_rc_login:
     burst_count: 3
 ```
 
-Matrix Corporal operates with a specific Matrix user on your server.
-By default, it's `matrix-corporal` (controllable by the `matrix_corporal_reconciliation_user_id_local_part` setting, see above).
+Matrix Corporal operates with a specific Matrix user on your server. By default, it's `matrix-corporal` (controllable by the `matrix_corporal_reconciliation_user_id_local_part` setting, see above).
+
 No matter what Matrix user ID you configure to run it with, make sure that:
 
 - the Matrix Corporal user is created by [registering it](registering-users.md) **with administrator privileges**. Use a password you remember, as you'll need to log in from time to time to create or join rooms

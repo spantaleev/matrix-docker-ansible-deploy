@@ -346,11 +346,9 @@ Refer to both of these for inspiration. Still, as mentioned in [Configuring the 
 
 ### I'd like to adjust some configuration which doesn't have a corresponding variable. How do I do it?
 
-The playbook doesn't aim to expose all configuration settings for all services using variables.
-Doing so would amount to hundreds of variables that we have to create and maintain.
+The playbook doesn't aim to expose all configuration settings for all services using variables. Doing so would amount to hundreds of variables that we have to create and maintain.
 
-Instead, we only try to make some important basics configurable using dedicated variables you can see in each role.
-See [What configuration variables are available?](#what-configuration-variables-are-available).
+Instead, we only try to make some important basics configurable using dedicated variables you can see in each role. See [What configuration variables are available?](#what-configuration-variables-are-available).
 
 Besides that, each role (component) aims to provide a `matrix_SOME_COMPONENT_configuration_extension_yaml` (or `matrix_SOME_COMPONENT_configuration_extension_json`) variable, which can be used to override the configuration.
 

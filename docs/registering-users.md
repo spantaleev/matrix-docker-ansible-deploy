@@ -70,8 +70,7 @@ If you're using the [Matrix Authentication Service](./configuring-playbook-matri
 # Example: `/matrix/matrix-authentication-service/bin/register-user john secret-password 1`
 ```
 
-This `register-user` script actually invokes the `mas-cli manage register-user` command under the hood.
-If you'd like more control over the registration process, consider invoking the `mas-cli` command directly:
+This `register-user` script actually invokes the `mas-cli manage register-user` command under the hood. If you'd like more control over the registration process, consider invoking the `mas-cli` command directly:
 
 ```sh
 /matrix/matrix-authentication-service/bin/mas-cli manage register-user --help

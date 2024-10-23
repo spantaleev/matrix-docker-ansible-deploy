@@ -1,7 +1,6 @@
 # Storing Matrix media files on Amazon S3 with Goofys (optional)
 
-If you'd like to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service),
-you can let this playbook configure [Goofys](https://github.com/kahing/goofys) for you.
+If you'd like to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service), you can let this playbook configure [Goofys](https://github.com/kahing/goofys) for you.
 
 Another (and better performing) way to use S3 storage with Synapse is [synapse-s3-storage-provider](configuring-playbook-synapse-s3-storage-provider.md).
 

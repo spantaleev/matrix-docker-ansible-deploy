@@ -1,7 +1,6 @@
 # Setting up Dimension (optional)
 
-**[Dimension](https://dimension.t2bot.io) can only be installed after Matrix services are installed and running.**
-If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) flow and come back here later.
+**[Dimension](https://dimension.t2bot.io) can only be installed after Matrix services are installed and running.** If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) flow and come back here later.
 
 **Note**: Dimension is **[officially unmaintained](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2806#issuecomment-1673559299)**. We recommend not bothering with installing it.
 
@@ -17,8 +16,7 @@ matrix_dimension_enabled: true
 
 ### Define admin users
 
-These users can modify the integrations this Dimension supports.
-Add this to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
+These users can modify the integrations this Dimension supports. Add this to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
 
 ```yaml
 matrix_dimension_admins:
@@ -30,11 +28,9 @@ The admin interface is accessible within Element by accessing it in any room and
 
 ### Access token
 
-We recommend that you create a dedicated Matrix user for Dimension (`dimension` is a good username).
-Follow our [Registering users](registering-users.md) guide to learn how to register **a regular (non-admin) user**.
+We recommend that you create a dedicated Matrix user for Dimension (`dimension` is a good username). Follow our [Registering users](registering-users.md) guide to learn how to register **a regular (non-admin) user**.
 
-You are required to specify an access token (belonging to this new user) for Dimension to work.
-To get an access token for the Dimension user, you can follow the documentation on [how to do obtain an access token](obtaining-access-tokens.md).
+You are required to specify an access token (belonging to this new user) for Dimension to work. To get an access token for the Dimension user, you can follow the documentation on [how to do obtain an access token](obtaining-access-tokens.md).
 
 **Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.**
 
@@ -91,7 +87,6 @@ In the interim until the above limitation is resolved, an admin user needs to co
 
 ## Additional features
 
-To use a more custom configuration, you can define a `matrix_dimension_configuration_extension_yaml` string variable and put your configuration in it.
-To learn more about how to do this, refer to the information about `matrix_dimension_configuration_extension_yaml` in the [default variables file](../roles/custom/matrix-dimension/defaults/main.yml) of the Dimension component.
+To use a more custom configuration, you can define a `matrix_dimension_configuration_extension_yaml` string variable and put your configuration in it. To learn more about how to do this, refer to the information about `matrix_dimension_configuration_extension_yaml` in the [default variables file](../roles/custom/matrix-dimension/defaults/main.yml) of the Dimension component.
 
 You can find all configuration options on [GitHub page of Dimension project](https://github.com/turt2live/matrix-dimension/blob/master/config/default.yaml).
