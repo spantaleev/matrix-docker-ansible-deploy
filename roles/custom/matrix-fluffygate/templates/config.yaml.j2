@@ -1,0 +1,26 @@
+port: 8080
+bindAddress: "0.0.0.0"
+
+# Information about the corresponding app
+appName: "{{ matrix_fluffygate_app_name }}"
+appWebsite: "{{ matrix_fluffygate_app_website }}"
+
+# (Optional) Display logs for debugging
+debugLogs: {{ matrix_fluffygate_debug_logs | to_json }}
+
+# The default notification title and body. {count} will be replaced by the unread
+# count of the push notification. Won't be set by default for clearing notifications.
+notificationTitle: "{{ matrix_fluffygate_notification_title }}"
+notificationBody: "{{ matrix_fluffygate_notification_body }}"
+
+# Add json keys to send to fcm for android and apns configurations
+androidNotificationOptions: {{ matrix_fluffygate_android_notification_options | to_json }}
+apnsNotificationOptions: {{ matrix_fluffygate_apns_notification_options | to_json }}
+
+# You firebase project ID and the path to the key file for your service account.
+{% if matrix_fluffygate_firebase_project %}
+projectId: "{{ matrix_fluffygate_firebase_project }}"
+{% endif %}
+{% if matrix_fluffygate_firebase_key %}
+fcmKeyFilePath: "/data/firebase-key.json"
+{% endif %}
