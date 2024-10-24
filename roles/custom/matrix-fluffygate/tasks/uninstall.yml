@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-fluffygate service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-fluffygate.service"
+  register: matrix_fluffygate_service_stat
+
+- when: matrix_fluffygate_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-fluffygate is stopped
+      ansible.builtin.service:
+        name: matrix-fluffygate
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-fluffygate.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-fluffygate.service"
+        state: absent
+
+    - name: Ensure Fluffygate base directory doesn't exist
+      ansible.builtin.file:
+        path: "{{ matrix_fluffygate_base_path }}"
+        state: absent

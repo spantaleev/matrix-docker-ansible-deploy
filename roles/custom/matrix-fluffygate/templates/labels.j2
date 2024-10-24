@@ -1,0 +1,46 @@
+{% if matrix_fluffygate_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_fluffygate_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_fluffygate_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-fluffygate.loadbalancer.server.port=8080
+
+{% set middlewares = [] %}
+
+{% if matrix_fluffygate_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-fluffygate-slashless-redirect.redirectregex.regex=({{ matrix_fluffygate_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.matrix-fluffygate-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-fluffygate-slashless-redirect'] %}
+{% endif %}
+
+{% if matrix_fluffygate_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-fluffygate-strip-prefix.stripprefix.prefixes={{ matrix_fluffygate_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + ['matrix-fluffygate-strip-prefix'] %}
+{% endif %}
+
+{% if matrix_fluffygate_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in matrix_fluffygate_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.matrix-fluffygate-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + ['matrix-fluffygate-add-headers'] %}
+{% endif %}
+
+traefik.http.routers.matrix-fluffygate.rule={{ matrix_fluffygate_container_labels_traefik_rule }}
+{% if matrix_fluffygate_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-fluffygate.priority={{ matrix_fluffygate_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.matrix-fluffygate.service=matrix-fluffygate
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-fluffygate.middlewares={{ middlewares | join(',') }}
+{% endif %}
+traefik.http.routers.matrix-fluffygate.entrypoints={{ matrix_fluffygate_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-fluffygate.tls={{ matrix_fluffygate_container_labels_traefik_tls | to_json }}
+{% if matrix_fluffygate_container_labels_traefik_tls %}
+traefik.http.routers.matrix-fluffygate.tls.certResolver={{ matrix_fluffygate_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+{% endif %}
+
+{{ matrix_fluffygate_container_labels_additional_labels }}
