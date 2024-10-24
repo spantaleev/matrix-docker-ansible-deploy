@@ -3197,10 +3197,9 @@ There's a new `matrix_nginx_proxy_data_path` variable, which has a different use
 
 # 2019-03-10
 
-## Dimension Integration Manager support
+## Dimension integration manager support
 
-Thanks to [NullIsNot0](https://github.com/NullIsNot0), the playbook can now (optionally) install the [Dimension](https://dimension.t2bot.io/) Integration Manager.
-To learn more, see the [Setting up Dimension](docs/configuring-playbook-dimension.md) documentation page.
+Thanks to [NullIsNot0](https://github.com/NullIsNot0), the playbook can now (optionally) install the [Dimension](https://dimension.t2bot.io/) integration manager. To learn more, see the [Setting up Dimension](docs/configuring-playbook-dimension.md) documentation page.
 
 
 # 2019-03-07
@@ -3527,7 +3526,7 @@ matrix_riot_web_integrations_widgets_urls: "https://scalar.vector.im/api"
 matrix_riot_web_integrations_jitsi_widget_url: "https://scalar.vector.im/api/widgets/jitsi.html"
 ```
 
-This now allows you use a custom integrations manager like [Dimesion](https://dimension.t2bot.io). For example, if you wish to use the Dimension instance hosted at dimension.t2bot.io, you can set the following in your vars.yml file:
+This now allows you use a custom integration manager like [Dimension](https://dimension.t2bot.io). For example, if you wish to use the Dimension instance hosted at dimension.t2bot.io, you can set the following in your vars.yml file:
 
 ```
 matrix_riot_web_integrations_ui_url: "https://dimension.t2bot.io/riot"

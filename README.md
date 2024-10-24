@@ -64,7 +64,7 @@ Services that run on the server to make the various parts of your installation w
 | [Let's Encrypt](https://letsencrypt.org/) | ✓ | Free SSL certificate, which secures the connection to all components | [Link](docs/configuring-playbook-ssl-certificates.md) |
 | [ma1sd](https://github.com/ma1uta/ma1sd) | x | Matrix Identity Server | [Link](docs/configuring-playbook-ma1sd.md)
 | [Exim](https://www.exim.org/) | ✓ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) | [Link](docs/configuring-playbook-email.md) |
-| [Dimension](https://github.com/turt2live/matrix-dimension) | x | An open source integrations manager for Matrix clients | [Link](docs/configuring-playbook-dimension.md) |
+| [Dimension](https://github.com/turt2live/matrix-dimension) | x | An open source integration manager for Matrix clients | [Link](docs/configuring-playbook-dimension.md) |
 | [Sygnal](https://github.com/matrix-org/sygnal) | x | Push gateway | [Link](docs/configuring-playbook-sygnal.md) |
 | [ntfy](https://ntfy.sh) | x | Push notifications server | [Link](docs/configuring-playbook-ntfy.md) |
 
