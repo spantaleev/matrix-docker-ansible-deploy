@@ -36,11 +36,8 @@ It's a good idea to [make a complete server backup](faq.md#how-do-i-backup-the-d
 
 Follow one of the guides below for a migration path from a locally-stored media store to one stored on S3-compatible storage:
 
-- [Storing Matrix media files on Amazon S3 with Goofys (optional)](#storing-matrix-media-files-on-amazon-s3-with-goofys-optional)
-	- [Usage](#usage)
-	- [Migrating from local filesystem storage to S3](#migrating-from-local-filesystem-storage-to-s3)
-		- [Migrating to any S3-compatible storage (universal, but likely slow)](#migrating-to-any-s3-compatible-storage-universal-but-likely-slow)
-		- [Migrating to Backblaze B2](#migrating-to-backblaze-b2)
+- [Migrating to any S3-compatible storage (universal, but likely slow)](#migrating-to-any-s3-compatible-storage-universal-but-likely-slow)
+- [Migrating to Backblaze B2](#migrating-to-backblaze-b2)
 
 ### Migrating to any S3-compatible storage (universal, but likely slow)
 
