@@ -224,7 +224,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up synapse-auto-compressor](configuring-playbook-synapse-auto-compressor.md) for compressing the database on Synapse homeservers (optional)
 
-- [Setting up the Sliding Sync Proxy](configuring-playbook-sliding-sync-proxy.md) for clients which require Sliding Sync support (like Element X) (optional)
+- [Setting up the Sliding Sync proxy](configuring-playbook-sliding-sync-proxy.md) for clients which require Sliding Sync support (like Element X) (optional)
 
 - [Setting up the Sygnal push gateway](configuring-playbook-sygnal.md) (optional)
 
@@ -232,6 +232,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up a Cactus Comments server](configuring-playbook-cactus-comments.md) - a federated comment system built on Matrix (optional)
 
-- [Setting up the Rageshake bug report server](configuring-playbook-rageshake.md) (optional)
+- [Setting up the rageshake bug report server](configuring-playbook-rageshake.md) (optional)
 
 - [Setting up Prometheus Alertmanager integration via matrix-alertmanager-receiver](configuring-playbook-alertmanager-receiver.md) (optional)
