@@ -1021,9 +1021,9 @@ You need to **update your roles** (`just roles` or `make roles`) regardless of w
 
 **TLDR**: the `matrix-backup-borg` role is now included from another repository. Some variables have been renamed. All functionality remains intact.
 
-Thanks to [moan0s](https://github.com/moan0s), the `matrix-backup-borg` role (which configures [Borg backups](docs/configuring-playbook-backup-borg.md)) has been extracted from the playbook and now lives in its [own repository](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg). This makes it possible to easily use it in other Ansible playbooks and will become part of [nextcloud-docker-ansible-deploy](https://github.com/spantaleev/nextcloud-docker-ansible-deploy) soon.
+Thanks to [moan0s](https://github.com/moan0s), the `matrix-backup-borg` role (which configures [BorgBackup](docs/configuring-playbook-backup-borg.md)) has been extracted from the playbook and now lives in its [own repository](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg). This makes it possible to easily use it in other Ansible playbooks and will become part of [nextcloud-docker-ansible-deploy](https://github.com/spantaleev/nextcloud-docker-ansible-deploy) soon.
 
-You need to **update your roles** (`just roles` or `make roles`) regardless of whether you're enabling Borg backup functionality or not. If you're making use of Borg backups via this playbook, you will need to update variable references in your `vars.yml` file (`matrix_backup_borg_` -> `backup_borg_`).
+You need to **update your roles** (`just roles` or `make roles`) regardless of whether you're enabling Borg's backup functionality or not. If you're making use of BorgBackup via this playbook, you will need to update variable references in your `vars.yml` file (`matrix_backup_borg_` -> `backup_borg_`).
 
 
 # 2023-02-12
@@ -1775,11 +1775,11 @@ See our [Setting up matrix-registration-bot](docs/configuring-playbook-bot-matri
 
 # 2022-04-19
 
-## Borg backup support
+## BorgBackup support
 
 Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up [Borg](https://www.borgbackup.org/) backups with [borgmatic](https://torsion.org/borgmatic/) of your Matrix server.
 
-See our [Setting up borg backup](docs/configuring-playbook-backup-borg.md) documentation to get started.
+See our [Setting up BorgBackup](docs/configuring-playbook-backup-borg.md) documentation to get started.
 
 
 ## (Compatibility Break) Upgrading to Synapse v1.57 on setups using workers may require manual action

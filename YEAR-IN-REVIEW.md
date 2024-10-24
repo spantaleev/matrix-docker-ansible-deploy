@@ -84,7 +84,7 @@ Support for the following new **bots** was added:
 
 Support for the following new **components and services** was added:
 
-*   [Borg backup](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#borg-backup-support)
+*   [BorgBackup](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#borg-backup-support)
 *   [Cactus Comments](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#cactus-comments-support)
 *   [Cinny](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#cinny-support) client support
 *   [ntfy](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#ntfy-push-notifications-support) notifications

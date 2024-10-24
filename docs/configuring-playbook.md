@@ -215,7 +215,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Backups
 
-- [Setting up borg backup](configuring-playbook-backup-borg.md) - a full Matrix server backup solution, including the Postgres database (optional)
+- [Setting up BorgBackup](configuring-playbook-backup-borg.md) - a full Matrix server backup solution, including the Postgres database (optional)
 
 - [Setting up postgres backup](configuring-playbook-postgres-backup.md) - a Postgres-database backup solution (note: does not include other files) (optional)
 
