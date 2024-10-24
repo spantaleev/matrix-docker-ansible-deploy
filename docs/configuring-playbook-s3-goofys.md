@@ -126,7 +126,7 @@ It's a good idea to [make a complete server backup](faq.md#how-do-i-backup-the-d
     mv /matrix/synapse/storage/media-store /matrix/synapse/storage/media-store-local-backup
     ```
 
-5. Put the [Backblaze B2 settings seen above](#backblaze-b2) in your `vars.yml` file
+5. Put the [Backblaze B2 settings](configuring-playbook-s3.md#backblaze-b2) in your `vars.yml` file
 
 6. Run the playbook: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
 
