@@ -1,6 +1,6 @@
 # Setting up Synapse Admin (optional)
 
-The playbook can install and configure [etkecc/synapse-admin](https://github.com/etkecc/synapse-admin) (a [feature-rich](https://github.com/etkecc/synapse-admin#fork-differences) fork of [Awesome-Technologies/synapse-admin](https://github.com/Awesome-Technologies/synapse-admin)) for you.
+The playbook can install and configure [etkecc/synapse-admin](https://github.com/etkecc/synapse-admin) (a [feature-rich](https://github.com/etkecc/synapse-admin#fork-differences) fork of [Awesome-Technologies/synapse-admin](https://github.com/Awesome-Technologies/synapse-admin), community room: [#synapse-admin:etke.cc](https://matrix.to/#/#synapse-admin:etke.cc)) for you.
 
 synapse-admin is a web UI tool you can use to **administrate users, rooms, media, etc. on your Matrix server**. It's designed to work with the Synapse homeserver implementation and WON'T work with Dendrite because [Dendrite Admin API](https://matrix-org.github.io/dendrite/administration/adminapi) differs from [Synapse Admin API](https://element-hq.github.io/synapse/latest/usage/administration/admin_api/).
 
