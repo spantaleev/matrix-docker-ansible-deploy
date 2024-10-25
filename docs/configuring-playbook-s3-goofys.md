@@ -52,21 +52,21 @@ It's a good idea to [make a complete server backup](faq.md#how-do-i-backup-the-d
 
 3. In addition to the base configuration you see above, add this to your `vars.yml` file:
 
-```yaml
-matrix_s3_media_store_path: /matrix/s3-media-store
-```
+    ```yaml
+    matrix_s3_media_store_path: /matrix/s3-media-store
+    ```
 
-This enables S3 support, but mounts the S3 storage bucket to `/matrix/s3-media-store` without hooking it to your homeserver yet. Your homeserver will still continue using your local filesystem for its media store.
+    This enables S3 support, but mounts the S3 storage bucket to `/matrix/s3-media-store` without hooking it to your homeserver yet. Your homeserver will still continue using your local filesystem for its media store.
 
 4. Run the playbook to apply the changes: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
 
 5. Do an **initial sync of your files** by running this **on the server** (it may take a very long time):
 
-```sh
-sudo -u matrix -- rsync --size-only --ignore-existing -avr /matrix/synapse/storage/media-store/. /matrix/s3-media-store/.
-```
+    ```sh
+    sudo -u matrix -- rsync --size-only --ignore-existing -avr /matrix/synapse/storage/media-store/. /matrix/s3-media-store/.
+    ```
 
-You may need to install `rsync` manually.
+    You may need to install `rsync` manually.
 
 6. Stop all Matrix services (`ansible-playbook -i inventory/hosts setup.yml --tags=stop`)
 
@@ -78,9 +78,9 @@ You may need to install `rsync` manually.
 
 10. Get the old media store out of the way by running this command on the server:
 
-```sh
-mv /matrix/synapse/storage/media-store /matrix/synapse/storage/media-store-local-backup
-```
+    ```sh
+    mv /matrix/synapse/storage/media-store /matrix/synapse/storage/media-store-local-backup
+    ```
 
 11. Remove the `matrix_s3_media_store_path` configuration from your `vars.yml` file (undoing step #3 above)
 
@@ -97,34 +97,34 @@ It's a good idea to [make a complete server backup](faq.md#how-do-i-backup-the-d
 
 1. While all Matrix services are running, run the following command on the server:
 
-(you need to adjust the 3 `--env` line below with your own data)
+    (you need to adjust the 3 `--env` line below with your own data)
 
-```sh
-docker run -it --rm -w /work \
---env='B2_KEY_ID=YOUR_KEY_GOES_HERE' \
---env='B2_KEY_SECRET=YOUR_SECRET_GOES_HERE' \
---env='B2_BUCKET_NAME=YOUR_BUCKET_NAME_GOES_HERE' \
---mount type=bind,src=/matrix/synapse/storage/media-store,dst=/work,ro \
---entrypoint=/bin/sh \
-docker.io/tianon/backblaze-b2:3.6.0 \
--c 'b2 authorize-account $B2_KEY_ID $B2_KEY_SECRET && b2 sync /work b2://$B2_BUCKET_NAME --skipNewer'
-```
+    ```sh
+    docker run -it --rm -w /work \
+    --env='B2_KEY_ID=YOUR_KEY_GOES_HERE' \
+    --env='B2_KEY_SECRET=YOUR_SECRET_GOES_HERE' \
+    --env='B2_BUCKET_NAME=YOUR_BUCKET_NAME_GOES_HERE' \
+    --mount type=bind,src=/matrix/synapse/storage/media-store,dst=/work,ro \
+    --entrypoint=/bin/sh \
+    docker.io/tianon/backblaze-b2:3.6.0 \
+    -c 'b2 authorize-account $B2_KEY_ID $B2_KEY_SECRET && b2 sync /work b2://$B2_BUCKET_NAME --skipNewer'
+    ```
 
-This is some initial file sync, which may take a very long time.
+    This is some initial file sync, which may take a very long time.
 
 2. Stop all Matrix services (`ansible-playbook -i inventory/hosts setup.yml --tags=stop`)
 
 3. Run the command from step #1 again.
 
-Doing this will sync any new files that may have been created locally in the meantime.
+    Doing this will sync any new files that may have been created locally in the meantime.
 
-Now that Matrix services aren't running, we're sure to get Backblaze B2 and your local media store fully in sync.
+    Now that Matrix services aren't running, we're sure to get Backblaze B2 and your local media store fully in sync.
 
 4. Get the old media store out of the way by running this command on the server:
 
-```sh
-mv /matrix/synapse/storage/media-store /matrix/synapse/storage/media-store-local-backup
-```
+    ```sh
+    mv /matrix/synapse/storage/media-store /matrix/synapse/storage/media-store-local-backup
+    ```
 
 5. Put the [Backblaze B2 settings seen above](#backblaze-b2) in your `vars.yml` file
 

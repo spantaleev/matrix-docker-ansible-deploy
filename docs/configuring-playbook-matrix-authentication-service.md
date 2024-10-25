@@ -298,13 +298,13 @@ The installation + migration steps are like this:
 
 2. Perform the initial [installation](#installing). At this point:
 
-  - Matrix Authentication Service will be installed. Its database will be empty, so it cannot validate existing access tokens or authentication users yet.
+    - Matrix Authentication Service will be installed. Its database will be empty, so it cannot validate existing access tokens or authentication users yet.
 
-  - The homeserver will still continue to use its local database for validating existing access tokens.
+    - The homeserver will still continue to use its local database for validating existing access tokens.
 
-  - Various [compatibility layer URLs](https://element-hq.github.io/matrix-authentication-service/setup/homeserver.html#set-up-the-compatibility-layer) are not yet installed. New login sessions will still be forwarded to the homeserver, which is capable of completing them.
+    - Various [compatibility layer URLs](https://element-hq.github.io/matrix-authentication-service/setup/homeserver.html#set-up-the-compatibility-layer) are not yet installed. New login sessions will still be forwarded to the homeserver, which is capable of completing them.
 
-  - The `matrix-user-creator` role would be suppressed, so that it doesn't automatically attempt to create users (for bots, etc.) in the MAS database. These user accounts likely already exist in Synapse's user database and could be migrated over (via syn2mas, as per the steps below), so creating them in the MAS database would have been unnecessary and potentially problematic (conflicts during the syn2mas migration).
+    - The `matrix-user-creator` role would be suppressed, so that it doesn't automatically attempt to create users (for bots, etc.) in the MAS database. These user accounts likely already exist in Synapse's user database and could be migrated over (via syn2mas, as per the steps below), so creating them in the MAS database would have been unnecessary and potentially problematic (conflicts during the syn2mas migration).
 
 3. Consider taking a full [backup of your Postgres database](./maintenance-postgres.md#backing-up-postgresql). This is done just in case. The **syn2mas migration tool does not delete any data**, so it should be possible to revert to your previous setup by merely disabling MAS and re-running the playbook (no need to restore a Postgres backup). However, do note that as users start logging in (creating new login sessions) via the new MAS setup, disabling MAS and reverting back to the Synapse user database will cause these new sessions to break.
 
@@ -318,9 +318,9 @@ The installation + migration steps are like this:
 
 5. Perform the [installation](#installing) again. At this point:
 
-  - The homeserver will start delegating authentication to MAS.
+    - The homeserver will start delegating authentication to MAS.
 
-  - The compatibility layer URLs will be installed. New login sessions will be completed by MAS.
+    - The compatibility layer URLs will be installed. New login sessions will be completed by MAS.
 
 6. [Verify that Matrix Authentication Service is installed correctly](#verify-that-matrix-authentication-service-is-installed-correctly)
 

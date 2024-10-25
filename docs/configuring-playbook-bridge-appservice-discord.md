@@ -18,17 +18,20 @@ Instructions loosely based on [this](https://github.com/Half-Shot/matrix-appserv
 3. Create a bot from the Bot tab and retrieve the Bot token.
 4. Enable the bridge with the following configuration in your `vars.yml` file:
 
-```yaml
-matrix_appservice_discord_enabled: true
-matrix_appservice_discord_client_id: "YOUR DISCORD APP CLIENT ID"
-matrix_appservice_discord_bot_token: "YOUR DISCORD APP BOT TOKEN"
-```
+    ```yaml
+    matrix_appservice_discord_enabled: true
+    matrix_appservice_discord_client_id: "YOUR DISCORD APP CLIENT ID"
+    matrix_appservice_discord_bot_token: "YOUR DISCORD APP BOT TOKEN"
+    ```
+
 5. As of Synapse 1.90.0, you will need to add the following to `matrix_synapse_configuration_extension_yaml` to enable the [backwards compatibility](https://matrix-org.github.io/synapse/latest/upgrade#upgrading-to-v1900) that this bridge needs:
-```yaml
-matrix_synapse_configuration_extension_yaml: |
-  use_appservice_legacy_authorization: true
-```
-**Note**: This deprecated method is considered insecure.
+
+    ```yaml
+    matrix_synapse_configuration_extension_yaml: |
+      use_appservice_legacy_authorization: true
+    ```
+
+    **Note**: This deprecated method is considered insecure.
 
 6. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
 

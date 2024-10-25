@@ -15,23 +15,23 @@ By default, if you're using the integrated Postgres database server (as opposed 
 
 1. Create a new SSH key:
 
-```bash
-ssh-keygen -t ed25519 -N '' -f matrix-borg-backup -C matrix
-```
+    ```bash
+    ssh-keygen -t ed25519 -N '' -f matrix-borg-backup -C matrix
+    ```
 
-This can be done on any machine and you don't need to place the key in the `.ssh` folder. It will be added to the Ansible config later.
+    This can be done on any machine and you don't need to place the key in the `.ssh` folder. It will be added to the Ansible config later.
 
 2. Add the **public** part of this SSH key (the `matrix-borg-backup.pub` file) to your BorgBackup provider/server:
 
-If you plan to use a hosted solution, follow their instructions. If you have your own server, copy the key over:
+    If you plan to use a hosted solution, follow their instructions. If you have your own server, copy the key over:
 
-```bash
-# example to append the new PUBKEY contents, where:
-# PUBKEY is path to the public key,
-# USER is a ssh user on a provider / server
-# HOST is a ssh host of a provider / server
-cat PUBKEY | ssh USER@HOST 'dd of=.ssh/authorized_keys oflag=append conv=notrunc'
-```
+    ```bash
+    # example to append the new PUBKEY contents, where:
+    # PUBKEY is path to the public key,
+    # USER is a ssh user on a provider / server
+    # HOST is a ssh host of a provider / server
+    cat PUBKEY | ssh USER@HOST 'dd of=.ssh/authorized_keys oflag=append conv=notrunc'
+    ```
 
 ## Adjusting the playbook configuration
 

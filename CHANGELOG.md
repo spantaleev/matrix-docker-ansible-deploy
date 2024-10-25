@@ -1684,8 +1684,8 @@ See our [Setting up the ntfy push notifications server](docs/configuring-playboo
 
 **If you are using the [Hookshot bridge](docs/configuring-playbook-bridge-hookshot.md)**, you may find that:
 1. **Metrics may not be enabled by default anymore**:
-  - If Prometheus is enabled (`prometheus_enabled: true`), then Hookshot metrics will be enabled automatically (`matrix_hookshot_metrics_enabled: true`). These metrics will be collected from the local (in-container) Prometheus over the container network.
-  - **If Prometheus is not enabled** (you are either not using Prometheus or are using an external one), **Hookshot metrics will not be enabled by default anymore**. Feel free to enable them by setting `matrix_hookshot_metrics_enabled: true`. Also, see below.
+    - If Prometheus is enabled (`prometheus_enabled: true`), then Hookshot metrics will be enabled automatically (`matrix_hookshot_metrics_enabled: true`). These metrics will be collected from the local (in-container) Prometheus over the container network.
+    - **If Prometheus is not enabled** (you are either not using Prometheus or are using an external one), **Hookshot metrics will not be enabled by default anymore**. Feel free to enable them by setting `matrix_hookshot_metrics_enabled: true`. Also, see below.
 2. When metrics are meant to be **consumed by an external Prometheus server**, `matrix_hookshot_metrics_proxying_enabled` needs to be set to `true`, so that metrics would be exposed (proxied) "publicly" on `https://matrix.example.com/metrics/hookshot`. To make use of this, you'll also need to enable the new `https://matrix.example.com/metrics/*` endpoints mentioned above, using `matrix_nginx_proxy_proxy_matrix_metrics_enabled`. Learn more in our [Collecting metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) documentation.
 3. **We've changed the URL we're exposing Hookshot metrics at** for external Prometheus servers. Until now, you were advised to consume Hookshot metrics from `https://stats.example.com/hookshot/metrics` (working in conjunction with `matrix_nginx_proxy_proxy_synapse_metrics`). From now on, **this no longer works**. As described above, you need to start consuming metrics from `https://matrix.example.com/metrics/hookshot`.
 
@@ -2136,9 +2136,9 @@ To migrate to the new setup, expect a few minutes of downtime, while you follow 
 2. Generate a strong password to be used for your superuser Postgres user (called `matrix`). You can use `pwgen -s 64 1` to generate it, or some other tool. The **maximum length** for a Postgres password is 100 bytes (characters). Don't go crazy!
 
 3. Update your playbook's `inventory/host_vars/matrix.example.com/vars.yml` file, adding a line like this:
-```yaml
-matrix_postgres_connection_password: 'YOUR_POSTGRES_PASSWORD_HERE'
-```
+    ```yaml
+    matrix_postgres_connection_password: 'YOUR_POSTGRES_PASSWORD_HERE'
+    ```
 
 .. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #2.
 
@@ -2148,31 +2148,31 @@ matrix_postgres_connection_password: 'YOUR_POSTGRES_PASSWORD_HERE'
 7. Open a Postgres shell: `/usr/local/bin/matrix-postgres-cli`
 8. Execute the following query, while making sure to **change the password inside** (**don't forget the ending `;`**):
 
-```sql
-CREATE ROLE matrix LOGIN SUPERUSER PASSWORD 'YOUR_POSTGRES_PASSWORD_HERE';
-```
+    ```sql
+    CREATE ROLE matrix LOGIN SUPERUSER PASSWORD 'YOUR_POSTGRES_PASSWORD_HERE';
+    ```
 
 .. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #2.
 
 9. Execute the following queries as you see them (no modifications necessary, so you can just **paste them all at once**):
 
-```sql
-CREATE DATABASE matrix OWNER matrix;
+    ```sql
+    CREATE DATABASE matrix OWNER matrix;
 
-ALTER DATABASE postgres OWNER TO matrix;
-ALTER DATABASE template0 OWNER TO matrix;
-ALTER DATABASE template1 OWNER TO matrix;
+    ALTER DATABASE postgres OWNER TO matrix;
+    ALTER DATABASE template0 OWNER TO matrix;
+    ALTER DATABASE template1 OWNER TO matrix;
 
-\c matrix;
+    \c matrix;
 
-ALTER DATABASE homeserver RENAME TO synapse;
+    ALTER DATABASE homeserver RENAME TO synapse;
 
-ALTER ROLE synapse NOSUPERUSER NOCREATEDB NOCREATEROLE;
+    ALTER ROLE synapse NOSUPERUSER NOCREATEDB NOCREATEROLE;
 
-\quit
-```
+    \quit
+    ```
 
-You may need to press *Enter* after pasting the lines above.
+    You may need to press *Enter* after pasting the lines above.
 
 10. Re-run the playbook normally: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
 
