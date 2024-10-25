@@ -67,7 +67,7 @@ After making the backup, follow one of the guides below for a migration path fro
 
 7. Start the S3 service by running this **on the server**: `systemctl start matrix-goofys`
 
-8. Sync the files again by re-running the `rsync` command you see in step #6
+8. Sync the files again by re-running the `rsync` command you see in step #5
 
 9. Stop the S3 service by running this **on the server**: `systemctl stop matrix-goofys`
 
