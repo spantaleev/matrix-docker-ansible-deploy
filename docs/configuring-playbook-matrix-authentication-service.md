@@ -261,7 +261,11 @@ matrix_authentication_service_config_upstream_oauth2_providers:
 
 ⚠ The syntax for existing [OIDC providers configured in Synapse](./configuring-playbook-synapse.md#synapse--openid-connect-for-single-sign-on) is slightly different, so you will need to adjust your configuration when switching from Synapse OIDC to MAS upstream OAuth2.
 
-⚠ When [migrating an existing homeserver](#migrating-an-existing-homeserver-to-matrix-authentication-service) which contains OIDC-sourced users, you will need to [Configure upstream OIDC provider mapping for syn2mas](#configuring-upstream-oidc-provider-mapping-for-syn2mas).
+⚠ When [migrating an existing homeserver](#migrating-an-existing-homeserver-to-matrix-authentication-service) which contains OIDC-sourced users, you will need to:
+
+- [Configure upstream OIDC provider mapping for syn2mas](#configuring-upstream-oidc-provider-mapping-for-syn2mas)
+- go through the [migrating an existing homeserver](#migrating-an-existing-homeserver-to-matrix-authentication-service) process
+- remove all Synapse OIDC-related configuration (`matrix_synapse_oidc_*`) to prevent it being in conflict with the MAS OIDC configuration
 
 
 ## Adjusting DNS records
@@ -271,6 +275,7 @@ If you've changed the default hostname, **you may need to adjust your DNS** reco
 See [Configuring DNS](configuring-dns.md) for details about DNS changes.
 
 If you've decided to use the default hostname, you won't need to do any extra DNS configuration.
+
 
 ## Installing
 
@@ -305,7 +310,11 @@ The installation + migration steps are like this:
 
 4. [Migrate your data from Synapse to Matrix Authentication Service using syn2mas](#migrate-your-data-from-synapse-to-matrix-authentication-service-using-syn2mas)
 
-5. [Adjust your configuration](#adjusting-the-playbook-configuration) again, removing the `matrix_authentication_service_migration_in_progress: false` line
+5. [Adjust your configuration](#adjusting-the-playbook-configuration) again, to:
+
+  - remove the `matrix_authentication_service_migration_in_progress: false` line
+
+  - if you had been using [OIDC providers configured in Synapse](./configuring-playbook-synapse.md#synapse--openid-connect-for-single-sign-on), remove all Synapse OIDC-related configuration (`matrix_synapse_oidc_*`) to prevent it being in conflict with the MAS OIDC configuration
 
 5. Perform the [installation](#installing) again. At this point:
 
