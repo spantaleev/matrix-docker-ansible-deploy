@@ -15,22 +15,22 @@ Finally, [set up S3 storage for Synapse](#setting-up) (with [Goofys](configuring
 
 ## Choosing an Object Storage provider
 
-You can create [Amazon S3](https://aws.amazon.com/s3/) or another S3-compatible object store like [Backblaze B2](https://www.backblaze.com/b2/cloud-storage.html), [Wasabi](https://wasabi.com), [Digital Ocean Spaces](https://www.digitalocean.com/products/spaces), etc.
+You can create [Amazon S3](https://aws.amazon.com/s3/) or another S3-compatible object storage like [Backblaze B2](https://www.backblaze.com/b2/cloud-storage.html), [Storj](https://storj.io), [Wasabi](https://wasabi.com), [Digital Ocean Spaces](https://www.digitalocean.com/products/spaces), etc.
 
-Amazon S3 and Backblaze S3 are pay-as-you with no minimum charges for storing too little data.
+Amazon S3, Backblaze B2, and Storj are pay-as-you with no minimum charges for storing too little data.
 
-All these providers have different prices, with Backblaze B2 appearing to be the cheapest.
+All these providers have different prices, with Storj appearing to be the cheapest (as of 2024-10, storage fee is $0.004 per GB/month, and egress fee is $0.007 per GB). Backblaze egress is free, but for only certain users for up to 3x the amount of data stored. Beyond that you will pay $0.01/GB of egress.
 
-Wasabi has a minimum charge of 1TB if you're storing less than 1TB, which becomes expensive if you need to store less data than that.
+Wasabi has a minimum charge of 1TB if you're storing less than 1TB, which becomes expensive if you need to store less data than that. Likewise, Digital Ocean Spaces has also a minimum charge of 250GB ($5/month as of 2022-10).
 
-Digital Ocean Spaces has a minimum charge of 250GB ($5/month as of 2022-10), which is also expensive if you're storing less data than that.
+Here are some of the important aspects of choosing the right provider:
 
-Important aspects of choosing the right provider are:
-
-- a provider by a company you like and trust (or dislike less than the others)
-- a provider which has a data region close to your Matrix server (if it's farther away, high latency may cause slowdowns)
-- a provider which is OK pricewise
-- a provider with free or cheap egress (if you need to get the data out often, for some reason) - likely not too important for the common use-case
+- if a provider is a company you like and trust (or dislike less than the others)
+- if a provider implements end-to-end encryption of your data
+- if a provider has a data region close to your Matrix server (if it's farther away, high latency may cause slowdowns)
+- if a provider's infrastructure such as data center is centralized or distributed
+- if a provider's price model is transparent (whether it includes hidden costs like minimum charge, minimum storage term, etc.)
+- if a provider has free or cheap egress fee (in case you need to get the data out often, for some reason) - likely not too important for the common use-case
 
 
 ## Bucket creation and Security Configuration
