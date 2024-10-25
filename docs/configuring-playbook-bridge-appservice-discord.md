@@ -55,7 +55,7 @@ On the Discord side, you can say `!matrix help` to get a list of available comma
 
 ## Portal Bridging (Automatic)
 
-Through portal bridging, Matrix rooms will automatically be created by the bot and bridged to the relevant Discord room. This is done by simply joining a room with a specific name pattern (`#_discord_<guildID>_<channlID>`).
+Through portal bridging, Matrix rooms will automatically be created by the bot and bridged to the relevant Discord room. This is done by simply joining a room with a specific name pattern (`#_discord_<guildID>_<channelID>`).
 
 All Matrix rooms created this way are **listed publicly** by default, and you will not have admin permissions to change this. To get more control, [make yourself a room Administrator](#getting-administrator-access-in-a-portal-bridged-room). You can then unlist the room from the directory and change the join rules.
 
