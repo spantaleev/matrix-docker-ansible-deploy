@@ -34,17 +34,12 @@ If you have local media store files and wish to migrate to Backblaze B2 subseque
 
 It's a good idea to [make a complete server backup](faq.md#how-do-i-backup-the-data-on-my-server) before migrating your local media store to an S3-backed one.
 
-Follow one of the guides below for a migration path from a locally-stored media store to one stored on S3-compatible storage:
+After making the backup, follow one of the guides below for a migration path from a locally-stored media store to one stored on S3-compatible storage:
 
-- [Storing Matrix media files on Amazon S3 with Goofys (optional)](#storing-matrix-media-files-on-amazon-s3-with-goofys-optional)
-	- [Usage](#usage)
-	- [Migrating from local filesystem storage to S3](#migrating-from-local-filesystem-storage-to-s3)
-		- [Migrating to any S3-compatible storage (universal, but likely slow)](#migrating-to-any-s3-compatible-storage-universal-but-likely-slow)
-		- [Migrating to Backblaze B2](#migrating-to-backblaze-b2)
+- [Migrating to any S3-compatible storage (universal, but likely slow)](#migrating-to-any-s3-compatible-storage-universal-but-likely-slow)
+- [Migrating to Backblaze B2](#migrating-to-backblaze-b2)
 
 ### Migrating to any S3-compatible storage (universal, but likely slow)
-
-It's a good idea to [make a complete server backup](faq.md#how-do-i-backup-the-data-on-my-server) before doing this.
 
 1. Proceed with the steps below without stopping Matrix services
 
@@ -72,7 +67,7 @@ It's a good idea to [make a complete server backup](faq.md#how-do-i-backup-the-d
 
 7. Start the S3 service by running this **on the server**: `systemctl start matrix-goofys`
 
-8. Sync the files again by re-running the `rsync` command you see in step #6
+8. Sync the files again by re-running the `rsync` command you see in step #5
 
 9. Stop the S3 service by running this **on the server**: `systemctl stop matrix-goofys`
 
@@ -92,8 +87,6 @@ It's a good idea to [make a complete server backup](faq.md#how-do-i-backup-the-d
 
 
 ### Migrating to Backblaze B2
-
-It's a good idea to [make a complete server backup](faq.md#how-do-i-backup-the-data-on-my-server) before doing this.
 
 1. While all Matrix services are running, run the following command on the server:
 
@@ -126,7 +119,7 @@ It's a good idea to [make a complete server backup](faq.md#how-do-i-backup-the-d
     mv /matrix/synapse/storage/media-store /matrix/synapse/storage/media-store-local-backup
     ```
 
-5. Put the [Backblaze B2 settings seen above](#backblaze-b2) in your `vars.yml` file
+5. Put the [Backblaze B2 settings](configuring-playbook-s3.md#backblaze-b2) in your `vars.yml` file
 
 6. Run the playbook: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
 
