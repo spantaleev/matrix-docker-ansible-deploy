@@ -10,7 +10,7 @@ Matrix Authentication Service is an implementation of [MSC3861: Next-generation 
 - the [Expectations](#expectations) section below
 - the [FAQ section on areweoidcyet.com](https://areweoidcyet.com/#faqs)
 
-**If you've already been using Synapse** and have user accounts in its database, you can [migrate to Matrix Authentication Service](#migrating-an-existing-homeserver-to-matrix-authentication-service).
+**If you've already been using Synapse** and have user accounts in its database, you can [migrate to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service).
 
 
 ## Reasons to use Matrix Authentication Service
@@ -57,7 +57,7 @@ This section details what you can expect when switching to the Matrix Authentica
 
 - ⚠ **You will need to have email sending configured** (see [Adjusting email-sending settings](./configuring-playbook-email.md)), because **Matrix Authentication Service [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user** going through the new SSO-based login flow. It's also possible to [work around email deliverability issues](#working-around-email-deliverability-issues) if your email configuration is not working.
 
-- ⚠ **Migrating an existing homeserver to MAS is possible**, but requires **some playbook-assisted manual work** as described in the [Migrating an existing homeserver to Matrix Authentication Service](#migrating-an-existing-homeserver-to-matrix-authentication-service) section below. **Migration is reversible with no or minor issues if done quickly enough**, but as users start logging in (creating new login sessions) via the new MAS setup, disabling MAS and reverting back to the Synapse user database will cause these new sessions to break.
+- ⚠ [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) is **possible**, but requires **some playbook-assisted manual work**. Migration is **reversible with no or minor issues if done quickly enough**, but as users start logging in (creating new login sessions) via the new MAS setup, disabling MAS and reverting back to the Synapse user database will cause these new sessions to break.
 
 - ⚠ Delegating user authentication to MAS causes **your Synapse server to be completely dependant on one more service** for its operations. MAS is quick & lightweight and should be stable enough already, but this is something to keep in mind when making the switch.
 
@@ -91,7 +91,7 @@ For existing Synapse homeservers:
 
 - when following the [Adjusting the playbook configuration](#adjusting-the-playbook-configuration) instructions, make sure to **disable the integration between Synapse and MAS** by **uncommenting** the `matrix_authentication_service_migration_in_progress: true` line as described in the [Marking an existing homeserver for migration](#marking-an-existing-homeserver-for-migration) section below.
 
-- then follow the [Migrating an existing homeserver to Matrix Authentication Service](#migrating-an-existing-homeserver-to-matrix-authentication-service) instructions to perform the installation and migration
+- then follow the [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) instructions to perform the installation and migration
 
 
 ## Adjusting the playbook configuration
@@ -133,7 +133,7 @@ matrix_authentication_service_path_prefix: /
 
 The [configuration above](#adjusting-the-playbook-configuration) instructs existing users wishing to migrate to add `matrix_authentication_service_migration_in_progress: true` to their configuration.
 
-This is done temporarily. The migration steps are described in more detail in the [Migrating an existing homeserver to Matrix Authentication Service](#migrating-an-existing-homeserver-to-matrix-authentication-service) section below.
+This is done temporarily. The migration steps are described in more detail in the [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) section below.
 
 
 ### Upstream OAuth2 configuration
@@ -261,10 +261,10 @@ matrix_authentication_service_config_upstream_oauth2_providers:
 
 ⚠ The syntax for existing [OIDC providers configured in Synapse](./configuring-playbook-synapse.md#synapse--openid-connect-for-single-sign-on) is slightly different, so you will need to adjust your configuration when switching from Synapse OIDC to MAS upstream OAuth2.
 
-⚠ When [migrating an existing homeserver](#migrating-an-existing-homeserver-to-matrix-authentication-service) which contains OIDC-sourced users, you will need to:
+⚠ When [migrating an existing homeserver](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) which contains OIDC-sourced users, you will need to:
 
 - [Configure upstream OIDC provider mapping for syn2mas](#configuring-upstream-oidc-provider-mapping-for-syn2mas)
-- go through the [migrating an existing homeserver](#migrating-an-existing-homeserver-to-matrix-authentication-service) process
+- go through the [migrating an existing homeserver](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) process
 - remove all Synapse OIDC-related configuration (`matrix_synapse_oidc_*`) to prevent it being in conflict with the MAS OIDC configuration
 
 
@@ -281,7 +281,7 @@ If you've decided to use the default hostname, you won't need to do any extra DN
 
 Now that you've [adjusted the playbook configuration](#adjusting-the-playbook-configuration) and [your DNS records](#adjusting-dns-records), you can run the [installation](installing.md) command: `just install-all`
 
-If you're in the process of migrating an existing Synapse homeserver to MAS, you should now follow the rest of the steps in the [Migrating an existing homeserver to Matrix Authentication Service](#migrating-an-existing-homeserver-to-matrix-authentication-service) guide.
+If you're in the process of migrating an existing Synapse homeserver to MAS, you should now follow the rest of the steps in the [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) guide.
 
 💡 After installation, you should [verify that Matrix Authentication Service is installed correctly](#verify-that-matrix-authentication-service-is-installed-correctly).
 
