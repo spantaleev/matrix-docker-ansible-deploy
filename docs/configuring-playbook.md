@@ -222,6 +222,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Deprecated / unmaintained / removed services
 
+**Note**: since a deprecated or unmaintained service will not be updated, its bug or vulnerability will be unlikely to get patched. It is recommended to migrate from the service to an alternative if any, and make sure to do your own research before you decide to keep it running nonetheless.
+
 - [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (deprecated; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md))
 
 - [Setting up the Dimension integration manager](configuring-playbook-dimension.md) ([unmaintained](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2806#issuecomment-1673559299); after [installing](installing.md))
