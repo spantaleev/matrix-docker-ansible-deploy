@@ -4,11 +4,9 @@
 - For using as a Bot we recommend the [Appservice Discord](configuring-playbook-bridge-appservice-discord.md), because it supports plumbing.  
 - For personal use with a discord account we recommend the [mautrix-discord](configuring-playbook-bridge-mautrix-discord.md) bridge, because it is the most fully-featured and stable of the 3 Discord bridges supported by the playbook.
 
-The playbook can install and configure [mx-puppet-discord](https://github.com/matrix-discord/mx-puppet-discord) for you.
+The playbook can install and configure [mx-puppet-discord](https://gitlab.com/mx-puppet/discord/mx-puppet-discord) for you.
 
 See the project page to learn what it does and why it might be useful to you.
-
-**Note**: we actually use the [Beeper](https://www.beeper.com/)-maintained [fork of mx-puppet-discord](https://gitlab.com/beeper/mx-puppet-monorepo), because `matrix-discord/mx-puppet-discord` is a low-quality and poorly maintained project.
 
 ## Adjusting the playbook configuration
 
@@ -26,7 +24,7 @@ After configuring the playbook, run the [installation](installing.md) command: `
 
 Once the bot is enabled you need to start a chat with `Discord Puppet Bridge` with the handle `@_discordpuppet_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-Three authentication methods are available, Legacy Token, OAuth and xoxc token. See mx-puppet-discord [documentation](https://github.com/matrix-discord/mx-puppet-discord) for more information about how to configure the bridge.
+Three authentication methods are available, Legacy Token, OAuth and xoxc token. See mx-puppet-discord [documentation](https://gitlab.com/mx-puppet/discord/mx-puppet-discord) for more information about how to configure the bridge.
 
 Once logged in, send `list` to the bot user to list the available rooms.
 

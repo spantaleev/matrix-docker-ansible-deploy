@@ -72,13 +72,13 @@ These services are not part of our default installation, but can be enabled by [
 
 - [folivonet/matrix-sms-bridge](https://hub.docker.com/repository/docker/folivonet/matrix-sms-bridge) - the [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) (optional)
 
+- [mx-puppet/discord/mx-puppet-discord](https://gitlab.com/mx-puppet/discord/mx-puppet-discord/container_registry) - the [mx-puppet-discord](https://gitlab.com/mx-puppet/discord/mx-puppet-discord) bridge to [Discord](https://discordapp.com) (optional)
+
 - [mx-puppet/slack/mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack/container_registry) - the [mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack) bridge to [Slack](https://slack.com) (optional)
 
 - [sorunome/mx-puppet-instagram](https://hub.docker.com/r/sorunome/mx-puppet-instagram) - the [mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) bridge to [Instagram](https://www.instagram.com) (optional)
 
 - [sorunome/mx-puppet-twitter](https://hub.docker.com/r/sorunome/mx-puppet-twitter) - the [mx-puppet-twitter](https://github.com/Sorunome/mx-puppet-twitter) bridge to [Twitter](https://twitter.com) (optional)
-
-- [sorunome/mx-puppet-discord](https://hub.docker.com/r/sorunome/mx-puppet-discord) - the [mx-puppet-discord](https://github.com/matrix-discord/mx-puppet-discord) bridge to [Discord](https://discordapp.com) (optional)
 
 - [xangelix/mx-puppet-groupme](https://hub.docker.com/r/xangelix/mx-puppet-groupme) - the [mx-puppet-groupme](https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme) bridge to [GroupMe](https://groupme.com/) (optional)
 

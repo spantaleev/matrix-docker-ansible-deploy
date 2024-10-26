@@ -121,7 +121,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack) | x | Bridge to [Slack](https://slack.com) | [Link](docs/configuring-playbook-bridge-mx-puppet-slack.md) |
 | [mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) | x | Bridge for Instagram-DMs ([Instagram](https://www.instagram.com/)) | [Link](docs/configuring-playbook-bridge-mx-puppet-instagram.md) |
 | [mx-puppet-twitter](https://github.com/Sorunome/mx-puppet-twitter) | x | Bridge for Twitter-DMs ([Twitter](https://twitter.com/)) | [Link](docs/configuring-playbook-bridge-mx-puppet-twitter.md) |
-| [mx-puppet-discord](https://github.com/matrix-discord/mx-puppet-discord) | x | Bridge to [Discord](https://discordapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-discord.md) |
+| [mx-puppet-discord](https://gitlab.com/mx-puppet/discord/mx-puppet-discord) | x | Bridge to [Discord](https://discordapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-discord.md) |
 | [mx-puppet-groupme](https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme) | x | Bridge to [GroupMe](https://groupme.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-groupme.md) |
 | [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) | x | Bridge to [Steam](https://steamapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-steam.md) |
 | [Email2Matrix](https://github.com/devture/email2matrix) | x | Bridge for relaying emails to Matrix rooms | [Link](docs/configuring-playbook-email2matrix.md) |
