@@ -1757,7 +1757,7 @@ You could then restart services: `ansible-playbook -i inventory/hosts setup.yml 
 
 # 2022-04-25
 
-## buscarron bot support
+## Buscarron bot support
 
 Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up [the Buscarron bot](https://github.com/etkecc/buscarron). It's a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room
 

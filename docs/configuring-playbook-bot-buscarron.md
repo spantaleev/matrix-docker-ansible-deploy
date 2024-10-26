@@ -1,6 +1,6 @@
 # Setting up Buscarron (optional)
 
-The playbook can install and configure [buscarron](https://github.com/etkecc/buscarron) for you.
+The playbook can install and configure [Buscarron](https://github.com/etkecc/buscarron) for you.
 
 Buscarron is bot that receives HTTP POST submissions of web forms and forwards them to a Matrix room.
 
