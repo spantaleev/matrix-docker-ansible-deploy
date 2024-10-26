@@ -1641,7 +1641,7 @@ See our [Setting up maubot](docs/configuring-playbook-bot-maubot.md) documentati
 
 ## mx-puppet-skype removal
 
-The playbook no longer includes the [mx-puppet-skype](https://github.com/Sorunome/mx-puppet-skype) bridge, because it has been broken and unmaintaned for a long time. Users that have `matrix_mx_puppet_skype_enabled` in their configuration files will encounter an error when running the playbook until they remove references to this bridge from their configuration.
+The playbook no longer includes the [mx-puppet-skype](https://github.com/Sorunome/mx-puppet-skype) bridge, because it has been broken and unmaintained for a long time. Users that have `matrix_mx_puppet_skype_enabled` in their configuration files will encounter an error when running the playbook until they remove references to this bridge from their configuration.
 
 To completely clean up your server from `mx-puppet-skype`'s presence on it:
 

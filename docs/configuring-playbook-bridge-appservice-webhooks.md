@@ -1,4 +1,4 @@
-# Setting up Appservice Webhooks bridging (optional)
+# Setting up Appservice Webhooks bridging (optional, deprecated)
 
 **Note**: This bridge has been deprecated. We recommend not bothering with installing it. While not a 1:1 replacement, the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md). Consider using that bridge instead of this one.
 
