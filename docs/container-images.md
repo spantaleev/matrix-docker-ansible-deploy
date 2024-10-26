@@ -66,7 +66,7 @@ These services are not part of our default installation, but can be enabled by [
 
 - [matrix-org/matrix-appservice-discord](https://ghcr.io/matrix-org/matrix-appservice-discord) - the [matrix-appservice-discord](https://github.com/matrix-org/matrix-appservice-discord) bridge to [Discord](https://discordapp.com/) (optional)
 
-- [cadair/matrix-appservice-slack](https://hub.docker.com/r/cadair/matrix-appservice-slack) - the [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) bridge to [Slack](https://slack.com/) (optional)
+- [matrixdotorg/matrix-appservice-slack](https://hub.docker.com/r/matrixdotorg/matrix-appservice-slack) - the [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) bridge to [Slack](https://slack.com/) (optional)
 
 - [turt2live/matrix-appservice-webhooks](https://hub.docker.com/r/turt2live/matrix-appservice-webhooks) - the [Appservice Webhooks](https://github.com/turt2live/matrix-appservice-webhooks) bridge (optional)
 
