@@ -100,7 +100,7 @@ These services are not part of our default installation, but can be enabled by [
 
 - [dock.mau.dev/maubot/maubot](https://mau.dev/maubot/maubot/container_registry) - the [maubot](https://github.com/maubot/maubot) bot (a plugin-based Matrix bot system) (optional)
 
-- [etke.cc/honoroit](https://github.com/etkecc/honoroit/container_registry) - the [honoroit](https://github.com/etkecc/honoroit) helpdesk bot (optional)
+- [etke.cc/honoroit](https://github.com/etkecc/honoroit/container_registry) - the [Honoroit](https://github.com/etkecc/honoroit) helpdesk bot (optional)
 
 - [etke.cc/postmoogle](https://github.com/etkecc/postmoogle/container_registry) - the [Postmoogle](https://github.com/etkecc/postmoogle) email bridge bot (optional)
 
