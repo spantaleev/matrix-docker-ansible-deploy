@@ -1,10 +1,8 @@
 # Setting up Appservice Webhooks bridging (optional)
 
-The playbook can install and configure [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) for you.
+**Note**: This bridge has been deprecated. We recommend not bothering with installing it. While not a 1:1 replacement, the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/Half-Shot/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md). Consider using that bridge instead of this one.
 
-**Note**: This bridge is no longer maintained. While not a 1:1 replacement, the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/Half-Shot/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md).
-
-This bridge provides support for Slack-compatible webhooks.
+The playbook can install and configure [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) for you. This bridge provides support for Slack-compatible webhooks.
 
 Setup Instructions:
 
