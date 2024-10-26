@@ -1,5 +1,7 @@
 # Setting up Go-NEB (optional)
 
+**Note**: [Go-NEB](https://github.com/matrix-org/go-neb) is now an archived (**unmaintained**) project. We recommend not bothering with installing it. While not a 1:1 replacement, the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md). Consider using that bridge instead of this one.
+
 The playbook can install and configure [Go-NEB](https://github.com/matrix-org/go-neb) for you.
 
 Go-NEB is a Matrix bot written in Go. It is the successor to Matrix-NEB, the original Matrix bot written in Python.
