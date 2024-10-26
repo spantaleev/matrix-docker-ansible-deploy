@@ -118,7 +118,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) | x | Bridge to SMS | [Link](docs/configuring-playbook-bridge-matrix-bridge-sms.md) |
 | [Heisenbridge](https://github.com/hifi/heisenbridge) | x | Bouncer-style bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) | [Link](docs/configuring-playbook-bridge-heisenbridge.md) |
 | [go-skype-bridge](https://github.com/kelaresg/go-skype-bridge) | x | Bridge to [Skype](https://www.skype.com) | [Link](docs/configuring-playbook-bridge-go-skype-bridge.md) |
-| [mx-puppet-slack](https://hub.docker.com/r/sorunome/mx-puppet-slack) | x | Bridge to [Slack](https://slack.com) | [Link](docs/configuring-playbook-bridge-mx-puppet-slack.md) |
+| [mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack) | x | Bridge to [Slack](https://slack.com) | [Link](docs/configuring-playbook-bridge-mx-puppet-slack.md) |
 | [mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) | x | Bridge for Instagram-DMs ([Instagram](https://www.instagram.com/)) | [Link](docs/configuring-playbook-bridge-mx-puppet-instagram.md) |
 | [mx-puppet-twitter](https://github.com/Sorunome/mx-puppet-twitter) | x | Bridge for Twitter-DMs ([Twitter](https://twitter.com/)) | [Link](docs/configuring-playbook-bridge-mx-puppet-twitter.md) |
 | [mx-puppet-discord](https://github.com/matrix-discord/mx-puppet-discord) | x | Bridge to [Discord](https://discordapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-discord.md) |

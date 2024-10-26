@@ -72,7 +72,7 @@ These services are not part of our default installation, but can be enabled by [
 
 - [folivonet/matrix-sms-bridge](https://hub.docker.com/repository/docker/folivonet/matrix-sms-bridge) - the [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) (optional)
 
-- [sorunome/mx-puppet-slack](https://hub.docker.com/r/sorunome/mx-puppet-slack) - the [mx-puppet-slack](https://github.com/Sorunome/mx-puppet-slack) bridge to [Slack](https://slack.com) (optional)
+- [mx-puppet/slack/mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack/container_registry) - the [mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack) bridge to [Slack](https://slack.com) (optional)
 
 - [sorunome/mx-puppet-instagram](https://hub.docker.com/r/sorunome/mx-puppet-instagram) - the [mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) bridge to [Instagram](https://www.instagram.com) (optional)
 
