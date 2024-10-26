@@ -104,4 +104,4 @@ route:
 
 .. where `URL_HERE` looks like `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/some-room-name` or `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/!qporfwt:example.com`.
 
-This bot does **not** accept room invitations automatically (like many other bots do). To deliver messages to rooms, **the bot must be joined to all rooms manually** - see Step 5 of the [Account and room preparation](#account-and-room-preparation) section.
+This bot does **not** accept room invitations automatically (like many other bots do). To deliver messages to rooms, **the bot must be joined to all rooms manually** - see Step 4 of the [Account and room preparation](#account-and-room-preparation) section.
