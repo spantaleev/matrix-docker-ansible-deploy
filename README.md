@@ -137,7 +137,7 @@ Bots provide various additional functionality to your installation.
 | [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot) | x | Bot for scheduling one-off & recurring reminders and alarms | [Link](docs/configuring-playbook-bot-matrix-reminder-bot.md) |
 | [matrix-registration-bot](https://github.com/moan0s/matrix-registration-bot) | x | Bot for invitations by creating and managing registration tokens | [Link](docs/configuring-playbook-bot-matrix-registration-bot.md) |
 | [maubot](https://github.com/maubot/maubot) | x | A plugin-based Matrix bot system | [Link](docs/configuring-playbook-bot-maubot.md) |
-| [honoroit](https://github.com/etkecc/honoroit) | x | A helpdesk bot | [Link](docs/configuring-playbook-bot-honoroit.md) |
+| [Honoroit](https://github.com/etkecc/honoroit) | x | A helpdesk bot | [Link](docs/configuring-playbook-bot-honoroit.md) |
 | [Postmoogle](https://github.com/etkecc/postmoogle) | x | Email to Matrix bot | [Link](docs/configuring-playbook-bot-postmoogle.md) |
 | [Go-NEB](https://github.com/matrix-org/go-neb) | x | A multi functional bot written in Go | [Link](docs/configuring-playbook-bot-go-neb.md) |
 | [Mjolnir](https://github.com/matrix-org/mjolnir) | x | A moderation tool for Matrix | [Link](docs/configuring-playbook-bot-mjolnir.md) |
