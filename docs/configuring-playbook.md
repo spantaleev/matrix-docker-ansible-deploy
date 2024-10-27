@@ -41,6 +41,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md) (optional)
 
+- [Enabling metrics and graphs for NginX logs](docs/configuring-playbook-prometheus-nginxlog.md) (optional)
+
 - [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md) (optional)
 
 ### Core service adjustments
