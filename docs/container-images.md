@@ -15,32 +15,30 @@ We try to stick to official images (provided by their respective projects) as mu
 
 ## Clients
 
-- [vectorim/element-web](https://hub.docker.com/r/vectorim/element-web/) - the [Element](https://element.io/) web client (optional)
-
-- [element-hq/hydrogen-web](https://ghcr.io/element-hq/hydrogen-web) - the [Hydrogen](https://github.com/element-hq/hydrogen-web) Matrix web client (optional)
-
-- [ajbura/cinny](https://hub.docker.com/r/ajbura/cinny) - the [Cinny](https://github.com/ajbura/cinny) Matrix web client (optional)
-
-- [etke.cc/schildichat-web](https://ghcr.io/etkecc/schildichat-web) - the [SchildiChat](https://github.com/SchildiChat/schildichat-desktop) Matrix web client (optional)
+| Service | Container image | Default? | Description |
+| ------- | --------------- | -------- | ----------- |
+| [Element](configuring-playbook-client-element.md) | [vectorim/element-web](https://hub.docker.com/r/vectorim/element-web/) | ✓ | Web UI, which is configured to connect to your own Synapse server by default |
+| [Hydrogen](configuring-playbook-client-hydrogen.md) | [element-hq/hydrogen-web](https://ghcr.io/element-hq/hydrogen-web) | x | Lightweight Matrix client with legacy and mobile browser support |
+| [Cinny](configuring-playbook-client-cinny.md) | [ajbura/cinny](https://hub.docker.com/r/ajbura/cinny) | x | Simple, elegant and secure web client |
+| [SchildiChat](configuring-playbook-client-schildichat.md) | [etke.cc/schildichat-web](https://ghcr.io/etkecc/schildichat-web) | x | Based on Element, with a more traditional instant messaging experience |
 
 ## Server Components
 
-- [coturn/coturn](https://hub.docker.com/r/coturn/coturn/) - the [Coturn](https://github.com/coturn/coturn) STUN/TURN server (optional)
-
-- [postgres](https://hub.docker.com/_/postgres/) - the [Postgres](https://www.postgresql.org/) database server (optional)
-
-- [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay/) - the [Exim](https://www.exim.org/) email server (optional)
-
-- [Traefik](https://hub.docker.com/_/traefik/) - the [Traefik](https://traefik.io/) web server (optional)
-
-- [certbot/certbot](https://hub.docker.com/r/certbot/certbot/) - the [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) (optional)
-
+| Service | Container image | Default? | Description |
+| ------- | --------------- | -------- | ----------- |
+| [PostgreSQL](configuring-playbook-external-postgres.md) | [postgres](https://hub.docker.com/_/postgres/) | ✓ | Database for Synapse. [Using an external PostgreSQL server](configuring-playbook-external-postgres.md) is also possible. |
+| [Coturn](configuring-playbook-turn.md) | [coturn/coturn](https://hub.docker.com/r/coturn/coturn/) | ✓ | STUN/TURN server for WebRTC audio/video calls |
+| [Traefik](configuring-playbook-traefik.md) | [Traefik](https://hub.docker.com/_/traefik/) | ✓ | Web server, listening on ports 80, 443 and 8448 - standing in front of all the other services. Using your own webserver [is possible](configuring-playbook-own-webserver.md) |
+| [Let's Encrypt](configuring-playbook-ssl-certificates.md) | [certbot/certbot](https://hub.docker.com/r/certbot/certbot/) | ✓ | The [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) |
+| [ma1sd](configuring-playbook-ma1sd.md) | [ma1uta/ma1sd](https://hub.docker.com/r/ma1uta/ma1sd/) | x | Matrix Identity Server |
+| [Exim](configuring-playbook-email.md) | [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay/) | ✓ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) |
+| [ddclient](configuring-playbook-dynamic-dns.md) | [linuxserver/ddclient](https://hub.docker.com/r/linuxserver/ddclient) | x | Update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider |
+| [Sygnal](configuring-playbook-sygnal.md) | [matrixdotorg/sygnal](https://hub.docker.com/r/matrixdotorg/sygnal/) | x | Reference Push Gateway for Matrix |
+| [ntfy](configuring-playbook-ntfy.md) | [binwiederhier/ntfy](https://hub.docker.com/r/binwiederhier/ntfy/) | x | Self-hosted, UnifiedPush-compatible push notifications server |
 
 ## Optional other container images we may use
 
 These services are not part of our default installation, but can be enabled by [configuring the playbook](configuring-playbook.md) (either before the initial installation or any time later):
-
-- [ma1uta/ma1sd](https://hub.docker.com/r/ma1uta/ma1sd/) - the [ma1sd](https://github.com/ma1uta/ma1sd) Matrix Identity server (optional)
 
 - [activism.international/matrix_ldap_registration_proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy/container_registry) - the [matrix-ldap-registration-proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy) for handling Matrix registration requests and forwards them to LDAP (optional)
 
@@ -108,8 +106,6 @@ These services are not part of our default installation, but can be enabled by [
 
 - [icewind1991/mx-puppet-steam](https://hub.docker.com/r/icewind1991/mx-puppet-steam) - the [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) bridge to [Steam](https://steampowered.com) (optional)
 
-- [linuxserver/ddclient](https://hub.docker.com/r/linuxserver/ddclient) - [ddclient](https://github.com/linuxserver/docker-ddclient) used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider (optional)
-
 - [jitsi/web](https://hub.docker.com/r/jitsi/web) - the [Jitsi](https://jitsi.org/) web UI (optional)
 
 - [jitsi/jicofo](https://hub.docker.com/r/jitsi/jicofo) - the [Jitsi](https://jitsi.org/) Focus component (optional)
@@ -151,10 +147,6 @@ These services are not part of our default installation, but can be enabled by [
 - [martin-helmich/prometheus-nginxlog-exporter/exporter](https://ghcr.io/martin-helmich/prometheus-nginxlog-exporter/exporter) - [NGINX-to-Prometheus log file exporter](https://github.com/martin-helmich/prometheus-nginxlog-exporter/) is an addon for Prometheus that gathers access logs from various nginx reverse-proxies (optional)
 
 - [grafana/grafana](https://hub.docker.com/r/grafana/grafana/) - [Grafana](https://github.com/grafana/grafana/) is a graphing tool that works well with the above two images. Our playbook also adds two dashboards for [Synapse](https://github.com/element-hq/synapse/tree/master/contrib/grafana) and  [Node Exporter](https://github.com/rfrail3/grafana-dashboards)
-
-- [matrixdotorg/sygnal](https://hub.docker.com/r/matrixdotorg/sygnal/) - [Sygnal](https://github.com/matrix-org/sygnal) is a reference Push Gateway for Matrix
-
-- [binwiederhier/ntfy](https://hub.docker.com/r/binwiederhier/ntfy/) - [ntfy](https://ntfy.sh/) is a self-hosted, UnifiedPush-compatible push notifications server
 
 - [matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync) - the [Sliding Sync](https://github.com/matrix-org/sliding-sync) proxy (optional)
 
