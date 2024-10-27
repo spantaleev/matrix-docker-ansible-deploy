@@ -5,15 +5,27 @@ This page summarizes the container ([Docker](https://www.docker.com/)) images us
 We try to stick to official images (provided by their respective projects) as much as possible.
 
 
-## Container images used by default
+## Homeserver
 
-These services are enabled and used by default, but you can turn them off, if you wish.
+| Service | Container image | Default? | Description |
+| ------- | --------------- | -------- | ----------- |
+| [Synapse](configuring-playbook-synapse.md) | [element-hq/synapse](https://ghcr.io/element-hq/synapse) | ✓ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network |
+| [Conduit](configuring-playbook-conduit.md) | [matrixconduit/matrix-conduit](https://hub.docker.com/r/matrixconduit/matrix-conduit) | x | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Conduit is a lightweight open-source server implementation of the Matrix Specification with a focus on easy setup and low system requirements |
+| [Dendrite](configuring-playbook-dendrite.md) | [matrixdotorg/dendrite-monolith](https://hub.docker.com/r/matrixdotorg/dendrite-monolith/) | x | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Dendrite is a second-generation Matrix homeserver written in Go, an alternative to Synapse. |
 
-- [element-hq/synapse](https://ghcr.io/element-hq/synapse) - a fork of [matrixdotorg/synapse](https://github.com/matrix-org/synapse) Matrix homeserver
-
-- [coturn/coturn](https://hub.docker.com/r/coturn/coturn/) - the [Coturn](https://github.com/coturn/coturn) STUN/TURN server (optional)
+## Clients
 
 - [vectorim/element-web](https://hub.docker.com/r/vectorim/element-web/) - the [Element](https://element.io/) web client (optional)
+
+- [element-hq/hydrogen-web](https://ghcr.io/element-hq/hydrogen-web) - the [Hydrogen](https://github.com/element-hq/hydrogen-web) Matrix web client (optional)
+
+- [ajbura/cinny](https://hub.docker.com/r/ajbura/cinny) - the [Cinny](https://github.com/ajbura/cinny) Matrix web client (optional)
+
+- [etke.cc/schildichat-web](https://ghcr.io/etkecc/schildichat-web) - the [SchildiChat](https://github.com/SchildiChat/schildichat-desktop) Matrix web client (optional)
+
+## Server Components
+
+- [coturn/coturn](https://hub.docker.com/r/coturn/coturn/) - the [Coturn](https://github.com/coturn/coturn) STUN/TURN server (optional)
 
 - [postgres](https://hub.docker.com/_/postgres/) - the [Postgres](https://www.postgresql.org/) database server (optional)
 
@@ -29,16 +41,6 @@ These services are enabled and used by default, but you can turn them off, if yo
 These services are not part of our default installation, but can be enabled by [configuring the playbook](configuring-playbook.md) (either before the initial installation or any time later):
 
 - [ma1uta/ma1sd](https://hub.docker.com/r/ma1uta/ma1sd/) - the [ma1sd](https://github.com/ma1uta/ma1sd) Matrix Identity server (optional)
-
-- [matrixconduit/matrix-conduit](https://hub.docker.com/r/matrixconduit/matrix-conduit) - the [Conduit](https://conduit.rs) Matrix homeserver (optional)
-
-- [matrixdotorg/dendrite-monolith](https://hub.docker.com/r/matrixdotorg/dendrite-monolith/) - the [Dendrite](https://github.com/matrix-org/dendrite) Matrix homeserver (optional)
-
-- [element-hq/hydrogen-web](https://ghcr.io/element-hq/hydrogen-web) - the [Hydrogen](https://github.com/element-hq/hydrogen-web) Matrix web client (optional)
-
-- [ajbura/cinny](https://hub.docker.com/r/ajbura/cinny) - the [Cinny](https://github.com/ajbura/cinny) Matrix web client (optional)
-
-- [etke.cc/schildichat-web](https://ghcr.io/etkecc/schildichat-web) - the [SchildiChat](https://github.com/SchildiChat/schildichat-desktop) Matrix web client (optional)
 
 - [activism.international/matrix_ldap_registration_proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy/container_registry) - the [matrix-ldap-registration-proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy) for handling Matrix registration requests and forwards them to LDAP (optional)
 
