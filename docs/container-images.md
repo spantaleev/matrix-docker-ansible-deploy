@@ -36,11 +36,20 @@ We try to stick to official images (provided by their respective projects) as mu
 | [Sygnal](configuring-playbook-sygnal.md) | [matrixdotorg/sygnal](https://hub.docker.com/r/matrixdotorg/sygnal/) | x | Reference Push Gateway for Matrix |
 | [ntfy](configuring-playbook-ntfy.md) | [binwiederhier/ntfy](https://hub.docker.com/r/binwiederhier/ntfy/) | x | Self-hosted, UnifiedPush-compatible push notifications server |
 
+## Authentication
+
+| Service | Container image | Default? | Description |
+| ------- | --------------- | -------- | ----------- |
+| [matrix-synapse-rest-auth](configuring-playbook-rest-auth.md) | (N/A) | x | REST authentication password provider module |
+| [matrix-synapse-shared-secret-auth](configuring-playbook-shared-secret-auth.md) | (N/A) | x | Password provider module |
+| [matrix-synapse-ldap3](configuring-playbook-ldap-auth.md) (advanced) | (N/A) | x | LDAP Auth password provider module |
+| [matrix-ldap-registration-proxy](configuring-playbook-matrix-ldap-registration-proxy.md) | [activism.international/matrix_ldap_registration_proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy/container_registry) | x | A proxy that handles Matrix registration requests and forwards them to LDAP. |
+| [matrix-registration](configuring-playbook-matrix-registration.md) | [zeratax/matrix-registration](https://hub.docker.com/r/devture/zeratax-matrix-registration/) | x | A simple python application to have a token based Matrix registration |
+| [Matrix User Verification Service](configuring-playbook-user-verification-service.md) (UVS) | [matrixdotorg/matrix-user-verification-service](https://hub.docker.com/r/atrixdotorg/matrix-user-verification-service) | x | Service to verify details of a user based on an Open ID token |
+
 ## Optional other container images we may use
 
 These services are not part of our default installation, but can be enabled by [configuring the playbook](configuring-playbook.md) (either before the initial installation or any time later):
-
-- [activism.international/matrix_ldap_registration_proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy/container_registry) - the [matrix-ldap-registration-proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy) for handling Matrix registration requests and forwards them to LDAP (optional)
 
 - [ewoutp/goofys](https://hub.docker.com/r/ewoutp/goofys/) - the [Goofys](https://github.com/kahing/goofys) Amazon [S3](https://aws.amazon.com/s3/) file-system-mounting program (optional)
 
@@ -51,10 +60,6 @@ These services are not part of our default installation, but can be enabled by [
 - [devture/email2matrix](https://hub.docker.com/r/devture/email2matrix/) - the [Email2Matrix](https://github.com/devture/email2matrix) email server, which can relay email messages to Matrix rooms (optional)
 
 - [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal/) - [Matrix Corporal](https://github.com/devture/matrix-corporal): reconciliator and gateway for a managed Matrix server (optional)
-
-- [zeratax/matrix-registration](https://hub.docker.com/r/devture/zeratax-matrix-registration/) - [matrix-registration](https://github.com/ZerataX/matrix-registration): a simple python application to have a token based Matrix registration (optional)
-
-- [matrixdotorg/matrix-user-verification-service](https://hub.docker.com/r/matrixdotorg/matrix-user-verification-service) - [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) for verifying details of a user based on an Open ID token (optional)
 
 - [mautrix/discord](https://mau.dev/mautrix/discord/container_registry) - the [mautrix-discord](https://github.com/mautrix/discord) bridge to [Discord](https://discord.com/) (optional)
 
