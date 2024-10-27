@@ -116,29 +116,23 @@ We try to stick to official images (provided by their respective projects) as mu
 | [rageshake](configuring-playbook-rageshake.md) | [matrix-org/rageshake](https://ghcr.io/matrix-org/rageshake) | x | Bug report server |
 | [synapse-usage-exporter](configuring-playbook-synapse-usage-exporter.md) | Self-building | x | Export the usage statistics of a Synapse homeserver to be scraped by Prometheus. |
 
-## Optional other container images we may use
+## Misc
 
-These services are not part of our default installation, but can be enabled by [configuring the playbook](configuring-playbook.md) (either before the initial installation or any time later):
-
-- [etherpad/etherpad](https://hub.docker.com/r/etherpad/etherpad/) - the [Etherpad](https://etherpad.org) realtime collaborative text editor that can be used in a Jitsi audio/video call or integrated as a widget into Matrix chat rooms via the Dimension integration manager (optional)
-
-- [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal/) - [Matrix Corporal](https://github.com/devture/matrix-corporal): reconciliator and gateway for a managed Matrix server (optional)
-
-- [jitsi/web](https://hub.docker.com/r/jitsi/web) - the [Jitsi](https://jitsi.org/) web UI (optional)
-
-- [jitsi/jicofo](https://hub.docker.com/r/jitsi/jicofo) - the [Jitsi](https://jitsi.org/) Focus component (optional)
-
-- [jitsi/prosody](https://hub.docker.com/r/jitsi/prosody) - the [Jitsi](https://jitsi.org/) Prosody XMPP server component (optional)
-
-- [jitsi/jvb](https://hub.docker.com/r/jitsi/jvb) - the [Jitsi](https://jitsi.org/) Video Bridge component (optional)
-
-- [matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync) - the [Sliding Sync](https://github.com/matrix-org/sliding-sync) proxy (optional)
-
-- [etke.cc/rust-synapse-compress-state](https://gitlab.com/etke.cc/rust-synapse-compress-state/container_registry) - [synapse-auto-compressor](https://github.com/matrix-org/rust-synapse-compress-state/#automated-tool-synapse_auto_compressor) for automatic compression of Synapse's `state_groups` database table (optional)
-
-- [cactuscomments/cactus-appservice](https://hub.docker.com/r/cactuscomments/cactus-appservice/) and [joseluisq/static-web-server](https://hub.docker.com/r/joseluisq/static-web-server) - [Cactus Comments](https://cactus.chat) a federated comment system built on Matrix
-
-- [matrixdotorg/pantalaimon](https://hub.docker.com/r/matrixdotorg/pantalaimon) - the [pantalaimon](https://github.com/matrix-org/pantalaimon) E2EE aware proxy daemon (optional)
+| Service | Container image | Default? | Description |
+| ------- | --------------- | -------- | ----------- |
+| [sliding-sync](configuring-playbook-sliding-sync-proxy.md) | [matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync) | x | Sliding Sync support for clients which require it (e.g. Element X) |
+| [synapse_auto_accept_invite](configuring-playbook-synapse-auto-accept-invite.md) | (N/A) | x | A Synapse module to automatically accept invites. |
+| [synapse_auto_compressor](configuring-playbook-synapse-auto-compressor.md) | [etke.cc/rust-synapse-compress-state](https://gitlab.com/etke.cc/rust-synapse-compress-state/container_registry) | x | A cli tool that automatically compresses `state_groups` database table in background. |
+| [synapse-simple-antispam](configuring-playbook-synapse-simple-antispam.md) (advanced) | (N/A) | x | A spam checker module |
+| [Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced) | [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal/) | x | Reconciliator and gateway for a managed Matrix server |
+| [Etherpad](configuring-playbook-etherpad.md) | [etherpad/etherpad](https://hub.docker.com/r/etherpad/etherpad/) | x | An open source collaborative text editor |
+| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/web](https://hub.docker.com/r/jitsi/web) | x | the [Jitsi](https://jitsi.org/) web UI |
+| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/jicofo](https://hub.docker.com/r/jitsi/jicofo) | x | the [Jitsi](https://jitsi.org/) Focus component |
+| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/prosody](https://hub.docker.com/r/jitsi/prosody) | x | the [Jitsi](https://jitsi.org/) Prosody XMPP server component |
+| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/jvb](https://hub.docker.com/r/jitsi/jvb) | x | the [Jitsi](https://jitsi.org/) Video Bridge component |
+| [Cactus Comments](configuring-playbook-cactus-comments.md) | [cactuscomments/cactus-appservice](https://hub.docker.com/r/cactuscomments/cactus-appservice/) | x | A federated comment system built on Matrix |
+| [Cactus Comments](configuring-playbook-cactus-comments.md) | [joseluisq/static-web-server](https://hub.docker.com/r/joseluisq/static-web-server) | x | A federated comment system built on Matrix |
+| [Pantalaimon](configuring-playbook-pantalaimon.md) | [matrixdotorg/pantalaimon](https://hub.docker.com/r/matrixdotorg/pantalaimon) | x | An E2EE aware proxy daemon |
 
 ## Container images of deprecated / unmaintained services
 
