@@ -112,6 +112,8 @@ These services are not part of our default installation, but can be enabled by [
 
 - [metio/matrix-alertmanager-receiver](https://hub.docker.com/r/metio/matrix-alertmanager-receiver) - the [matrix-alertmanager-receiver](https://github.com/metio/matrix-alertmanager-receiver) client for Prometheus' [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) (optional)
 
+- [element-hq/matrix-authentication-service](https://ghcr.io/element-hq/matrix-authentication-service) - [matrix-authentication-service](https://github.com/element-hq/matrix-authentication-service) (MAS) OAuth 2.0 and OpenID Provider server (optional)
+
 - [etke.cc/synapse-admin](https://ghcr.io/etkecc/synapse-admin) - the [etkecc/synapse-admin](https://github.com/etkecc/synapse-admin) (a [feature-rich](https://github.com/etkecc/synapse-admin#fork-differences) fork of [Awesome-Technologies/synapse-admin](https://github.com/Awesome-Technologies/synapse-admin) web UI tool for administrating users and rooms on your Matrix server (optional)
 
 - [prom/prometheus](https://hub.docker.com/r/prom/prometheus/) - [Prometheus](https://github.com/prometheus/prometheus/) is a systems and service monitoring system

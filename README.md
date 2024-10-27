@@ -153,6 +153,7 @@ Services that help you in administrating and monitoring your Matrix installation
 | Name | Default? | Description | Documentation |
 | ---- | -------- | ----------- | ------------- |
 | [matrix-alertmanager-receiver](https://github.com/metio/matrix-alertmanager-receiver) | x | Prometheus' [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) client | [Link](docs/configuring-playbook-alertmanager-receiver.md) |
+| [Matrix Authentication Service](https://github.com/element-hq/matrix-authentication-service/) | x | OAuth 2.0 and OpenID Provider server | [Link](docs/configuring-playbook-matrix-authentication-service.md) |
 | [synapse-admin](https://github.com/etkecc/synapse-admin) | x | A web UI tool for administrating users and rooms on your Matrix server | [Link](docs/configuring-playbook-synapse-admin.md) |
 | Metrics and Graphs | x | Consists of the [Prometheus](https://prometheus.io) time-series database server, the Prometheus [node-exporter](https://prometheus.io/docs/guides/node-exporter/) host metrics exporter, and the [Grafana](https://grafana.com/) web UI | [Link](docs/configuring-playbook-prometheus-grafana.md) |
 | [Borg](https://borgbackup.org) | x | Backups | [Link](docs/configuring-playbook-backup-borg.md) |
