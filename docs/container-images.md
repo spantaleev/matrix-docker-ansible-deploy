@@ -9,7 +9,7 @@ We try to stick to official images (provided by their respective projects) as mu
 
 These services are enabled and used by default, but you can turn them off, if you wish.
 
-- [matrixdotorg/synapse](https://hub.docker.com/r/matrixdotorg/synapse/) - the official [Synapse](https://github.com/element-hq/synapse) Matrix homeserver (optional)
+- [element-hq/synapse](https://ghcr.io/element-hq/synapse) - a fork of [matrixdotorg/synapse](https://github.com/matrix-org/synapse) Matrix homeserver
 
 - [coturn/coturn](https://hub.docker.com/r/coturn/coturn/) - the [Coturn](https://github.com/coturn/coturn) STUN/TURN server (optional)
 
