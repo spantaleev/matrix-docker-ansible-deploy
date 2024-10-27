@@ -108,6 +108,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [mautrix-hangouts](https://github.com/mautrix/hangouts) | x | Bridge to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts) | [Link](docs/configuring-playbook-bridge-mautrix-hangouts.md) |
 | [mautrix-googlechat](https://github.com/mautrix/googlechat) | x | Bridge to [Google Chat](https://en.wikipedia.org/wiki/Google_Chat) | [Link](docs/configuring-playbook-bridge-mautrix-googlechat.md) |
 | [mautrix-instagram](https://github.com/mautrix/instagram) | x | Bridge to [Instagram](https://instagram.com/) | [Link](docs/configuring-playbook-bridge-mautrix-instagram.md) |
+| [mautrix-meta](https://github.com/mautrix/instagram) | x | Bridge to [Messenger](https://messenger.com/) and [Instagram](https://instagram.com/) | Link for [Messenger](docs/configuring-playbook-bridge-mautrix-meta-messenger.md) / [Instagram](docs/configuring-playbook-bridge-mautrix-meta-instagram.md) |
 | [mautrix-signal](https://github.com/mautrix/signal) | x | Bridge to [Signal](https://www.signal.org/) | [Link](docs/configuring-playbook-bridge-mautrix-signal.md) |
 | [beeper-linkedin](https://github.com/beeper/linkedin) | x | Bridge to [LinkedIn](https://www.linkedin.com/) | [Link](docs/configuring-playbook-bridge-beeper-linkedin.md) |
 | [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) | x | Bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) | [Link](docs/configuring-playbook-bridge-appservice-irc.md) |

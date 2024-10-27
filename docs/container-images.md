@@ -60,6 +60,8 @@ These services are not part of our default installation, but can be enabled by [
 
 - [mautrix/instagram](https://mau.dev/mautrix/instagram/container_registry) - the [mautrix-instagram](https://github.com/mautrix/instagram) bridge to [Instagram](https://instagram.com/) (optional)
 
+- [mautrix/meta](https://mau.dev/mautrix/meta/container_registry) - the [mautrix-meta](https://github.com/mautrix/meta) bridge to [Messenger](https://messenger.com/) and [Instagram](https://instagram.com/) (optional)
+
 - [mautrix/signal](https://mau.dev/mautrix/signal/container_registry) - the [mautrix-signal](https://github.com/mautrix/signal) bridge to [Signal](https://www.signal.org/) (optional)
 
 - [matrixdotorg/matrix-appservice-irc](https://hub.docker.com/r/matrixdotorg/matrix-appservice-irc) - the [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) (optional)
