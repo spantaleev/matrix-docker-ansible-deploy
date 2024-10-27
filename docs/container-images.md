@@ -1,4 +1,4 @@
-# Container Images used by the playbook
+# Container images used by the playbook
 
 This page summarizes the container ([Docker](https://www.docker.com/)) images used by the playbook when setting up your server.
 
