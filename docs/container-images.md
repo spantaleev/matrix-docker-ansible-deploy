@@ -68,15 +68,9 @@ These services are not part of our default installation, but can be enabled by [
 
 - [mautrix/wsproxy](https://mau.dev/mautrix/wsproxy/container_registry) - the [mautrix-wsproxy](https://github.com/mautrix/wsproxy) bridge to Android SMS or Apple iMessage (optional)
 
-- [mautrix/facebook](https://mau.dev/mautrix/facebook/container_registry) - the [mautrix-facebook](https://github.com/mautrix/facebook) bridge to [Facebook](https://facebook.com/) (optional)
-
 - [mautrix/twitter](https://mau.dev/mautrix/twitter/container_registry) - the [mautrix-twitter](https://github.com/mautrix/twitter) bridge to [Twitter](https://twitter.com/) (optional)
 
-- [mautrix/hangouts](https://mau.dev/mautrix/hangouts/container_registry) - the [mautrix-hangouts](https://github.com/mautrix/hangouts) bridge to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts) (optional)
-
 - [mautrix/googlechat](https://mau.dev/mautrix/googlechat/container_registry) - the [mautrix-googlechat](https://github.com/mautrix/googlechat) bridge to [Google Chat](https://en.wikipedia.org/wiki/Google_Chat) (optional)
-
-- [mautrix/instagram](https://mau.dev/mautrix/instagram/container_registry) - the [mautrix-instagram](https://github.com/mautrix/instagram) bridge to [Instagram](https://instagram.com/) (optional)
 
 - [mautrix/meta](https://mau.dev/mautrix/meta/container_registry) - the [mautrix-meta](https://github.com/mautrix/meta) bridge to [Messenger](https://messenger.com/) and [Instagram](https://instagram.com/) (optional)
 
@@ -89,8 +83,6 @@ These services are not part of our default installation, but can be enabled by [
 - [matrix-org/matrix-appservice-discord](https://ghcr.io/matrix-org/matrix-appservice-discord) - the [matrix-appservice-discord](https://github.com/matrix-org/matrix-appservice-discord) bridge to [Discord](https://discordapp.com/) (optional)
 
 - [matrixdotorg/matrix-appservice-slack](https://hub.docker.com/r/matrixdotorg/matrix-appservice-slack) - the [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) bridge to [Slack](https://slack.com/) (optional)
-
-- [turt2live/matrix-appservice-webhooks](https://hub.docker.com/r/turt2live/matrix-appservice-webhooks) - the [Appservice Webhooks](https://github.com/turt2live/matrix-appservice-webhooks) bridge (optional)
 
 - [halfshot/matrix-hookshot](https://hub.docker.com/r/halfshot/matrix-hookshot) - the [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) Bridge for generic webhooks and multiple project management services (optional)
 
@@ -114,8 +106,6 @@ These services are not part of our default installation, but can be enabled by [
 
 - [icewind1991/mx-puppet-steam](https://hub.docker.com/r/icewind1991/mx-puppet-steam) - the [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) bridge to [Steam](https://steampowered.com) (optional)
 
-- [turt2live/matrix-dimension](https://hub.docker.com/r/turt2live/matrix-dimension) - the [Dimension](https://dimension.t2bot.io/) integration manager (optional)
-
 - [linuxserver/ddclient](https://hub.docker.com/r/linuxserver/ddclient) - [ddclient](https://github.com/linuxserver/docker-ddclient) used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider (optional)
 
 - [jitsi/web](https://hub.docker.com/r/jitsi/web) - the [Jitsi](https://jitsi.org/) web UI (optional)
@@ -138,15 +128,11 @@ These services are not part of our default installation, but can be enabled by [
 
 - [etke.cc/postmoogle](https://github.com/etkecc/postmoogle/container_registry) - the [Postmoogle](https://github.com/etkecc/postmoogle) email bridge bot (optional)
 
-- [matrixdotorg/go-neb](https://hub.docker.com/r/matrixdotorg/go-neb) - the [Go-NEB](https://github.com/matrix-org/go-neb) bot (optional)
-
 - [matrixdotorg/mjolnir](https://hub.docker.com/r/matrixdotorg/mjolnir) - the [Mjolnir](https://github.com/matrix-org/mjolnir) moderation bot (optional)
 
 - [gnuxie/draupnir](https://hub.docker.com/r/gnuxie/draupnir) - the [Draupnir](https://github.com/the-draupnir-project/Draupnir/) moderation bot (optional)
 
 - [etke.cc/buscarron](https://ghcr.io/etkecc/buscarron) - the [Buscarron](https://github.com/etkecc/buscarron) bot for web forms (HTTP POST) (optional)
-
-- [matrixgpt/matrix-chatgpt-bot](https://ghcr.io/matrixgpt/matrix-chatgpt-bot) - the [matrix-chatgpt-bot](https://github.com/matrixgpt/matrix-chatgpt-bot) for accessing ChatGPT via your favourite Matrix client (optional)
 
 - [metio/matrix-alertmanager-receiver](https://hub.docker.com/r/metio/matrix-alertmanager-receiver) - the [matrix-alertmanager-receiver](https://github.com/metio/matrix-alertmanager-receiver) client for Prometheus' [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) (optional)
 
@@ -175,3 +161,21 @@ These services are not part of our default installation, but can be enabled by [
 - [cactuscomments/cactus-appservice](https://hub.docker.com/r/cactuscomments/cactus-appservice/) and [joseluisq/static-web-server](https://hub.docker.com/r/joseluisq/static-web-server) - [Cactus Comments](https://cactus.chat) a federated comment system built on Matrix
 
 - [matrixdotorg/pantalaimon](https://hub.docker.com/r/matrixdotorg/pantalaimon) - the [pantalaimon](https://github.com/matrix-org/pantalaimon) E2EE aware proxy daemon (optional)
+
+## Container images of deprecated / unmaintained services
+
+The list of the deprecated or unmaintained services is available [here](configuring-playbook.md#deprecated--unmaintained--removed-services).
+
+- [turt2live/matrix-appservice-webhooks](https://hub.docker.com/r/turt2live/matrix-appservice-webhooks) - the [Appservice Webhooks](https://github.com/turt2live/matrix-appservice-webhooks) bridge (optional)
+
+- [turt2live/matrix-dimension](https://hub.docker.com/r/turt2live/matrix-dimension) - the [Dimension](https://dimension.t2bot.io/) integration manager (optional)
+
+- [matrixdotorg/go-neb](https://hub.docker.com/r/matrixdotorg/go-neb) - the [Go-NEB](https://github.com/matrix-org/go-neb) bot (optional)
+
+- [matrixgpt/matrix-chatgpt-bot](https://ghcr.io/matrixgpt/matrix-chatgpt-bot) - the [matrix-chatgpt-bot](https://github.com/matrixgpt/matrix-chatgpt-bot) for accessing ChatGPT via your favourite Matrix client (optional)
+
+- [mautrix/facebook](https://mau.dev/mautrix/facebook/container_registry) - the [mautrix-facebook](https://github.com/mautrix/facebook) bridge to [Facebook](https://facebook.com/) (optional)
+
+- [mautrix/hangouts](https://mau.dev/mautrix/hangouts/container_registry) - the [mautrix-hangouts](https://github.com/mautrix/hangouts) bridge to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts) (optional)
+
+- [mautrix/instagram](https://mau.dev/mautrix/instagram/container_registry) - the [mautrix-instagram](https://github.com/mautrix/instagram) bridge to [Instagram](https://instagram.com/) (optional)
