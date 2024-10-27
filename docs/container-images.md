@@ -88,6 +88,19 @@ We try to stick to official images (provided by their respective projects) as mu
 | [Email2Matrix](configuring-playbook-email2matrix.md) | [devture/email2matrix](https://hub.docker.com/r/devture/email2matrix/) | x | Bridge for relaying emails to Matrix rooms |
 | [Postmoogle](docs/configuring-playbook-bridge-postmoogle.md) | [etke.cc/postmoogle](https://github.com/etkecc/postmoogle/container_registry) | x | Email to Matrix bridge |
 
+## Bots
+
+| Service | Container image | Default? | Description |
+| ------- | --------------- | -------- | ----------- |
+| [baibot](configuring-playbook-bot-baibot.md) | [etke.cc/baibot](https://ghcr.io/etkecc/baibot) | x | A bot that exposes the power of [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) to you |
+| [matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) | [anoa/matrix-reminder-bot](https://hub.docker.com/r/anoa/matrix-reminder-bot) |  x | Bot for scheduling one-off & recurring reminders and alarms |
+| [matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md) | [moanos/matrix-registration-bot](https://hub.docker.com/r/moanos/matrix-registration-bot/) | x | Bot for invitations by creating and managing registration tokens |
+| [maubot](configuring-playbook-bot-maubot.md) | [dock.mau.dev/maubot/maubot](https://mau.dev/maubot/maubot/container_registry) | x | A plugin-based Matrix bot system |
+| [Honoroit](configuring-playbook-bot-honoroit.md) | [etke.cc/honoroit](https://github.com/etkecc/honoroit/container_registry) | x | A helpdesk bot |
+| [Mjolnir](configuring-playbook-bot-mjolnir.md) | [matrixdotorg/mjolnir](https://hub.docker.com/r/matrixdotorg/mjolnir) | x | A moderation tool for Matrix |
+| [Draupnir](configuring-playbook-bot-draupnir.md) | [gnuxie/draupnir](https://hub.docker.com/r/gnuxie/draupnir) | x | A moderation tool for Matrix (Fork of Mjolnir) |
+| [Buscarron](configuring-playbook-bot-buscarron.md) | [etke.cc/buscarron](https://ghcr.io/etkecc/buscarron) | x | Web forms (HTTP POST) to Matrix |
+
 ## Optional other container images we may use
 
 These services are not part of our default installation, but can be enabled by [configuring the playbook](configuring-playbook.md) (either before the initial installation or any time later):
@@ -103,22 +116,6 @@ These services are not part of our default installation, but can be enabled by [
 - [jitsi/prosody](https://hub.docker.com/r/jitsi/prosody) - the [Jitsi](https://jitsi.org/) Prosody XMPP server component (optional)
 
 - [jitsi/jvb](https://hub.docker.com/r/jitsi/jvb) - the [Jitsi](https://jitsi.org/) Video Bridge component (optional)
-
-- [etke.cc/baibot](https://ghcr.io/etkecc/baibot) - the [baibot](https://github.com/etkecc/baibot) for accessing [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) (optional)
-
-- [anoa/matrix-reminder-bot](https://hub.docker.com/r/anoa/matrix-reminder-bot) - the [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot) bot for one-off & recurring reminders and alarms (optional)
-
-- [moanos/matrix-registration-bot/](https://hub.docker.com/r/moanos/matrix-registration-bot/) - the [matrix-registration-bot](https://github.com/moan0s/matrix-registration-bot) bot (manage registration tokens for invitations to the server) (optional)
-
-- [dock.mau.dev/maubot/maubot](https://mau.dev/maubot/maubot/container_registry) - the [maubot](https://github.com/maubot/maubot) bot (a plugin-based Matrix bot system) (optional)
-
-- [etke.cc/honoroit](https://github.com/etkecc/honoroit/container_registry) - the [Honoroit](https://github.com/etkecc/honoroit) helpdesk bot (optional)
-
-- [matrixdotorg/mjolnir](https://hub.docker.com/r/matrixdotorg/mjolnir) - the [Mjolnir](https://github.com/matrix-org/mjolnir) moderation bot (optional)
-
-- [gnuxie/draupnir](https://hub.docker.com/r/gnuxie/draupnir) - the [Draupnir](https://github.com/the-draupnir-project/Draupnir/) moderation bot (optional)
-
-- [etke.cc/buscarron](https://ghcr.io/etkecc/buscarron) - the [Buscarron](https://github.com/etkecc/buscarron) bot for web forms (HTTP POST) (optional)
 
 - [metio/matrix-alertmanager-receiver](https://hub.docker.com/r/metio/matrix-alertmanager-receiver) - the [matrix-alertmanager-receiver](https://github.com/metio/matrix-alertmanager-receiver) client for Prometheus' [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) (optional)
 
