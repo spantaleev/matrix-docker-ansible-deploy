@@ -118,6 +118,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) | x | Bridge for slack compatible webhooks ([ConcourseCI](https://concourse-ci.org/), [Slack](https://slack.com/) etc. pp.) | [Link](docs/configuring-playbook-bridge-appservice-webhooks.md) |
 | [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) | x | Bridge for generic webhooks and multiple project management services, such as GitHub, GitLab, Figma, and Jira in particular | [Link](docs/configuring-playbook-bridge-hookshot.md) |
 | [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) | x | Bridge to SMS | [Link](docs/configuring-playbook-bridge-matrix-bridge-sms.md) |
+| [matrix-wechat](https://github.com/duo/matrix-wechat) | x | Bridge to [WeChat](https://www.wechat.com/) | [Link](docs/configuring-playbook-bridge-wechat.md) |
 | [Heisenbridge](https://github.com/hifi/heisenbridge) | x | Bouncer-style bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) | [Link](docs/configuring-playbook-bridge-heisenbridge.md) |
 | [go-skype-bridge](https://github.com/kelaresg/go-skype-bridge) | x | Bridge to [Skype](https://www.skype.com) | [Link](docs/configuring-playbook-bridge-go-skype-bridge.md) |
 | [mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack) | x | Bridge to [Slack](https://slack.com) | [Link](docs/configuring-playbook-bridge-mx-puppet-slack.md) |
