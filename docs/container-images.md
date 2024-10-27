@@ -55,65 +55,46 @@ We try to stick to official images (provided by their respective projects) as mu
 | [synapse-s3-storage-provider](configuring-playbook-s3.md) | (N/A) | x | [Amazon S3](https://aws.amazon.com/s3/) (or other S3-compatible object store) storage for Synapse's content repository (`media_store`) files |
 | [matrix-media-repo](configuring-playbook-matrix-media-repo.md) | [t2bot/matrix-media-repo](https://ghcr.io/t2bot/matrix-media-repo) | x | matrix-media-repo is a highly customizable multi-domain media repository for Matrix. Intended for medium to large deployments, this media repo de-duplicates media while being fully compliant with the specification. |
 
+# Bridges
+
+| Service | Container image | Default? | Description |
+| ------- | --------------- | -------- | ----------- |
+| [mautrix-discord](configuring-playbook-bridge-mautrix-discord.md) | [mautrix/discord](https://mau.dev/mautrix/discord/container_registry) | x | Bridge to [Discord](https://discord.com/) |
+| [mautrix-slack](configuring-playbook-bridge-mautrix-slack.md) | [mautrix/slack](https://mau.dev/mautrix/slack/container_registry) | x | Bridge to [Slack](https://slack.com/) |
+| [mautrix-telegram](configuring-playbook-bridge-mautrix-telegram.md) | [mautrix/telegram](https://mau.dev/mautrix/telegram/container_registry) | x | Bridge to [Telegram](https://telegram.org/) |
+| [mautrix-gmessages](configuring-playbook-bridge-mautrix-gmessages.md) | [mautrix/gmessages](https://mau.dev/mautrix/gmessages/container_registry) | x | Bridge to [Google Messages](https://messages.google.com/) |
+| [mautrix-whatsapp](configuring-playbook-bridge-mautrix-whatsapp.md) | [mautrix/whatsapp](https://mau.dev/mautrix/whatsapp/container_registry) | x | Bridge to [WhatsApp](https://www.whatsapp.com/) |
+| [mautrix-wsproxy](configuring-playbook-bridge-mautrix-wsproxy.md) | [mautrix/wsproxy](https://mau.dev/mautrix/wsproxy/container_registry) | x | Bridge to Android SMS or Apple iMessage |
+| [mautrix-twitter](configuring-playbook-bridge-mautrix-twitter.md) | [mautrix/twitter](https://mau.dev/mautrix/twitter/container_registry) | x | Bridge to [Twitter](https://twitter.com/) |
+| [mautrix-googlechat](configuring-playbook-bridge-mautrix-googlechat.md) | [mautrix/googlechat](https://mau.dev/mautrix/googlechat/container_registry) | x | Bridge to [Google Chat](https://en.wikipedia.org/wiki/Google_Chat) |
+| mautrix-meta (for [Messenger](configuring-playbook-bridge-mautrix-meta-messenger.md) and [Instagram](configuring-playbook-bridge-mautrix-meta-instagram.md)) | [mautrix/meta](https://mau.dev/mautrix/meta/container_registry) | x | Bridge to [Messenger](https://messenger.com/) and [Instagram](https://instagram.com/) |
+| [mautrix-signal](configuring-playbook-bridge-mautrix-signal.md) | [mautrix/signal](https://mau.dev/mautrix/signal/container_registry) | x | Bridge to [Signal](https://www.signal.org/) |
+| [beeper-linkedin](configuring-playbook-bridge-beeper-linkedin.md) | [beeper/linkedin](https://ghcr.io/beeper/linkedin) | x | Bridge to [LinkedIn](https://www.linkedin.com/) |
+| [matrix-appservice-irc](configuring-playbook-bridge-appservice-irc.md) | [matrixdotorg/matrix-appservice-irc](https://hub.docker.com/r/matrixdotorg/matrix-appservice-irc) | x | Bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) |
+| [matrix-appservice-kakaotalk](configuring-playbook-bridge-appservice-kakaotalk.md) | Self-building | x | Bridge to [Kakaotalk](https://www.kakaocorp.com/page/service/service/KakaoTalk?lang=ENG) |
+| [matrix-appservice-discord](configuring-playbook-bridge-appservice-discord.md) | [matrix-org/matrix-appservice-discord](https://ghcr.io/matrix-org/matrix-appservice-discord) | x | Bridge to [Discord](https://discordapp.com/) |
+| [matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md) | [matrixdotorg/matrix-appservice-slack](https://hub.docker.com/r/matrixdotorg/matrix-appservice-slack) | x | Bridge to [Slack](https://slack.com/) |
+| [matrix-hookshot](configuring-playbook-bridge-hookshot.md) | [halfshot/matrix-hookshot](https://hub.docker.com/r/halfshot/matrix-hookshot) | x | Bridge for generic webhooks and multiple project management services, such as GitHub, GitLab, Figma, and Jira in particular |
+| [matrix-sms-bridge](configuring-playbook-bridge-matrix-bridge-sms.md) | [folivonet/matrix-sms-bridge](https://hub.docker.com/repository/docker/folivonet/matrix-sms-bridge) | x | Bridge to SMS |
+| [matrix-wechat](configuring-playbook-bridge-wechat.md) | [lxduo/matrix-wechat](https://hub.docker.com/r/lxduo/matrix-wechat) | x | Bridge to [WeChat](https://www.wechat.com/) |
+| [Heisenbridge](configuring-playbook-bridge-heisenbridge.md) | [hif1/heisenbridge](https://hub.docker.com/r/hif1/heisenbridge) | x | Bouncer-style bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) |
+| [go-skype-bridge](configuring-playbook-bridge-go-skype-bridge.md) | [nodefyme/go-skype-bridge](https://hub.docker.com/r/nodefyme/go-skype-bridge) | x | Bridge to [Skype](https://www.skype.com) |
+| [mx-puppet-slack](configuring-playbook-bridge-mx-puppet-slack.md) | [mx-puppet/slack/mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack/container_registry) | x | Bridge to [Slack](https://slack.com) |
+| [mx-puppet-instagram](configuring-playbook-bridge-mx-puppet-instagram.md) | [sorunome/mx-puppet-instagram](https://hub.docker.com/r/sorunome/mx-puppet-instagram) | x | Bridge for Instagram-DMs ([Instagram](https://www.instagram.com/)) |
+| [mx-puppet-twitter](configuring-playbook-bridge-mx-puppet-twitter.md) | [sorunome/mx-puppet-twitter](https://hub.docker.com/r/sorunome/mx-puppet-twitter) | x | Bridge for Twitter-DMs ([Twitter](https://twitter.com/)) |
+| [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) | [mx-puppet/discord/mx-puppet-discord](https://gitlab.com/mx-puppet/discord/mx-puppet-discord/container_registry) | x | Bridge to [Discord](https://discordapp.com/) |
+| [mx-puppet-groupme](configuring-playbook-bridge-mx-puppet-groupme.md) | [xangelix/mx-puppet-groupme](https://hub.docker.com/r/xangelix/mx-puppet-groupme) | x | Bridge to [GroupMe](https://groupme.com/) |
+| [mx-puppet-steam](configuring-playbook-bridge-mx-puppet-steam.md) | [icewind1991/mx-puppet-steam](https://hub.docker.com/r/icewind1991/mx-puppet-steam) | x | Bridge to [Steam](https://steamapp.com/) |
+| [Email2Matrix](configuring-playbook-email2matrix.md) | [devture/email2matrix](https://hub.docker.com/r/devture/email2matrix/) | x | Bridge for relaying emails to Matrix rooms |
+| [Postmoogle](docs/configuring-playbook-bridge-postmoogle.md) | [etke.cc/postmoogle](https://github.com/etkecc/postmoogle/container_registry) | x | Email to Matrix bridge |
+
 ## Optional other container images we may use
 
 These services are not part of our default installation, but can be enabled by [configuring the playbook](configuring-playbook.md) (either before the initial installation or any time later):
 
 - [etherpad/etherpad](https://hub.docker.com/r/etherpad/etherpad/) - the [Etherpad](https://etherpad.org) realtime collaborative text editor that can be used in a Jitsi audio/video call or integrated as a widget into Matrix chat rooms via the Dimension integration manager (optional)
 
-- [devture/email2matrix](https://hub.docker.com/r/devture/email2matrix/) - the [Email2Matrix](https://github.com/devture/email2matrix) email server, which can relay email messages to Matrix rooms (optional)
-
 - [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal/) - [Matrix Corporal](https://github.com/devture/matrix-corporal): reconciliator and gateway for a managed Matrix server (optional)
-
-- [mautrix/discord](https://mau.dev/mautrix/discord/container_registry) - the [mautrix-discord](https://github.com/mautrix/discord) bridge to [Discord](https://discord.com/) (optional)
-
-- [mautrix/slack](https://mau.dev/mautrix/slack/container_registry) - the [mautrix-slack](https://github.com/mautrix/slack) bridge to [Slack](https://slack.com/) (optional)
-
-- [mautrix/telegram](https://mau.dev/mautrix/telegram/container_registry) - the [mautrix-telegram](https://github.com/mautrix/telegram) bridge to [Telegram](https://telegram.org/) (optional)
-
-- [mautrix/gmessages](https://mau.dev/mautrix/gmessages/container_registry) - the [mautrix-gmessages](https://github.com/mautrix/gmessages) bridge to [Google Messages](https://messages.google.com/) (optional)
-
-- [mautrix/whatsapp](https://mau.dev/mautrix/whatsapp/container_registry) - the [mautrix-whatsapp](https://github.com/mautrix/whatsapp) bridge to [Whatsapp](https://www.whatsapp.com/) (optional)
-
-- [mautrix/wsproxy](https://mau.dev/mautrix/wsproxy/container_registry) - the [mautrix-wsproxy](https://github.com/mautrix/wsproxy) bridge to Android SMS or Apple iMessage (optional)
-
-- [mautrix/twitter](https://mau.dev/mautrix/twitter/container_registry) - the [mautrix-twitter](https://github.com/mautrix/twitter) bridge to [Twitter](https://twitter.com/) (optional)
-
-- [mautrix/googlechat](https://mau.dev/mautrix/googlechat/container_registry) - the [mautrix-googlechat](https://github.com/mautrix/googlechat) bridge to [Google Chat](https://en.wikipedia.org/wiki/Google_Chat) (optional)
-
-- [mautrix/meta](https://mau.dev/mautrix/meta/container_registry) - the [mautrix-meta](https://github.com/mautrix/meta) bridge to [Messenger](https://messenger.com/) and [Instagram](https://instagram.com/) (optional)
-
-- [mautrix/signal](https://mau.dev/mautrix/signal/container_registry) - the [mautrix-signal](https://github.com/mautrix/signal) bridge to [Signal](https://www.signal.org/) (optional)
-
-- [beeper/linkedin](https://ghcr.io/beeper/linkedin) - the [beeper-linkedin](https://github.com/beeper/linkedin) bridge to [LinkedIn](https://www.linkedin.com/) Messaging (optional)
-
-- [matrixdotorg/matrix-appservice-irc](https://hub.docker.com/r/matrixdotorg/matrix-appservice-irc) - the [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) (optional)
-
-- [matrix-org/matrix-appservice-discord](https://ghcr.io/matrix-org/matrix-appservice-discord) - the [matrix-appservice-discord](https://github.com/matrix-org/matrix-appservice-discord) bridge to [Discord](https://discordapp.com/) (optional)
-
-- [matrixdotorg/matrix-appservice-slack](https://hub.docker.com/r/matrixdotorg/matrix-appservice-slack) - the [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) bridge to [Slack](https://slack.com/) (optional)
-
-- [halfshot/matrix-hookshot](https://hub.docker.com/r/halfshot/matrix-hookshot) - the [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) Bridge for generic webhooks and multiple project management services (optional)
-
-- [folivonet/matrix-sms-bridge](https://hub.docker.com/repository/docker/folivonet/matrix-sms-bridge) - the [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) (optional)
-
-- [lxduo/matrix-wechat](https://hub.docker.com/r/lxduo/matrix-wechat) - the [matrix-wechat](https://github.com/duo/matrix-wechat) bridge to WeChat (optional)
-
-- [hif1/heisenbridge](https://hub.docker.com/r/hif1/heisenbridge) - the [Heisenbridge](https://github.com/hifi/heisenbridge) bouncer-style bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) (optional)
-
-- [nodefyme/go-skype-bridge](https://hub.docker.com/r/nodefyme/go-skype-bridge) - the [go-skype-bridge](https://github.com/kelaresg/go-skype-bridge) to [Skype](https://www.skype.com/) (optional)
-
-- [mx-puppet/discord/mx-puppet-discord](https://gitlab.com/mx-puppet/discord/mx-puppet-discord/container_registry) - the [mx-puppet-discord](https://gitlab.com/mx-puppet/discord/mx-puppet-discord) bridge to [Discord](https://discordapp.com) (optional)
-
-- [mx-puppet/slack/mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack/container_registry) - the [mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack) bridge to [Slack](https://slack.com) (optional)
-
-- [sorunome/mx-puppet-instagram](https://hub.docker.com/r/sorunome/mx-puppet-instagram) - the [mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) bridge to [Instagram](https://www.instagram.com) (optional)
-
-- [sorunome/mx-puppet-twitter](https://hub.docker.com/r/sorunome/mx-puppet-twitter) - the [mx-puppet-twitter](https://github.com/Sorunome/mx-puppet-twitter) bridge to [Twitter](https://twitter.com) (optional)
-
-- [xangelix/mx-puppet-groupme](https://hub.docker.com/r/xangelix/mx-puppet-groupme) - the [mx-puppet-groupme](https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme) bridge to [GroupMe](https://groupme.com/) (optional)
-
-- [icewind1991/mx-puppet-steam](https://hub.docker.com/r/icewind1991/mx-puppet-steam) - the [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) bridge to [Steam](https://steampowered.com) (optional)
 
 - [jitsi/web](https://hub.docker.com/r/jitsi/web) - the [Jitsi](https://jitsi.org/) web UI (optional)
 
@@ -132,8 +113,6 @@ These services are not part of our default installation, but can be enabled by [
 - [dock.mau.dev/maubot/maubot](https://mau.dev/maubot/maubot/container_registry) - the [maubot](https://github.com/maubot/maubot) bot (a plugin-based Matrix bot system) (optional)
 
 - [etke.cc/honoroit](https://github.com/etkecc/honoroit/container_registry) - the [Honoroit](https://github.com/etkecc/honoroit) helpdesk bot (optional)
-
-- [etke.cc/postmoogle](https://github.com/etkecc/postmoogle/container_registry) - the [Postmoogle](https://github.com/etkecc/postmoogle) email bridge bot (optional)
 
 - [matrixdotorg/mjolnir](https://hub.docker.com/r/matrixdotorg/mjolnir) - the [Mjolnir](https://github.com/matrix-org/mjolnir) moderation bot (optional)
 
