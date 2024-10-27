@@ -1,4 +1,4 @@
-# Setting up Mautrix Signal (optional)
+# Setting up Mautrix Signal bridging (optional)
 
 The playbook can install and configure [mautrix-signal](https://github.com/mautrix/signal) for you.
 

@@ -1,4 +1,4 @@
-# Setting up rageshake (optional)
+# Setting up the rageshake bug report server (optional)
 
 The playbook can install and configure the [rageshake](https://github.com/matrix-org/rageshake) bug report server for you.
 

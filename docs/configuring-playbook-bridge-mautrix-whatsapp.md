@@ -1,4 +1,4 @@
-# Setting up Mautrix Whatsapp (optional)
+# Setting up Mautrix Whatsapp bridging (optional)
 
 The playbook can install and configure [mautrix-whatsapp](https://github.com/mautrix/whatsapp) for you.
 

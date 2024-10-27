@@ -1,4 +1,4 @@
-# Setting up Go Skype Bridge (optional)
+# Setting up Go Skype Bridge bridging (optional)
 
 The playbook can install and configure [go-skype-bridge](https://github.com/kelaresg/go-skype-bridge) for you.
 

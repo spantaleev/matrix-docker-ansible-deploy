@@ -1,4 +1,4 @@
-# Setting up Mautrix Google Chat (optional)
+# Setting up Mautrix Google Chat bridging (optional)
 
 The playbook can install and configure [mautrix-googlechat](https://github.com/mautrix/googlechat) for you.
 

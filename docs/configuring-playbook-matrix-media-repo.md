@@ -1,4 +1,4 @@
-# Setting up matrix-media-repo (optional)
+# Storing Matrix media files using matrix-media-repo (optional)
 
 [matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/) (often abbreviated "MMR") is a highly customizable multi-domain media repository for Matrix. Intended for medium to large environments consisting of several homeservers, this media repo de-duplicates media (including remote media) while being fully compliant with the specification.
 

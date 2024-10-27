@@ -1,4 +1,4 @@
-# Setting up synapse_auto_compressor
+# Setting up synapse-auto-compressor (optional)
 
 The playbook can install and configure [synapse_auto_compressor](https://github.com/matrix-org/rust-synapse-compress-state/#automated-tool-synapse_auto_compressor) for you.
 

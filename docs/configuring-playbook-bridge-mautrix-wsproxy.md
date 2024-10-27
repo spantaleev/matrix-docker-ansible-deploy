@@ -1,4 +1,4 @@
-# Setting up Mautrix wsproxy (optional)
+# Setting up Mautrix wsproxy for bridging Android SMS or Apple iMessage (optional)
 
 The playbook can install and configure [mautrix-wsproxy](https://github.com/mautrix/wsproxy) for you.
 

@@ -1,4 +1,4 @@
-# Setting up synapse-usage-exporter (optional)
+# Enabling synapse-usage-exporter for Synapse usage statistics (optional)
 
 [synapse-usage-exporter](https://github.com/loelkes/synapse-usage-exporter) allows you to export the usage statistics of a Synapse homeserver to this container service and for the collected metrics to later be scraped by Prometheus.
 

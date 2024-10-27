@@ -876,7 +876,7 @@ Thanks to [Benjamin Kampmann](https://github.com/gnunicorn) for [getting it star
 
 The upcoming Element X clients ([Element X iOS](https://github.com/vector-im/element-x-ios) and [Element X Android](https://github.com/vector-im/element-x-android)) require the `sliding-sync` proxy to do their job. **These clients are still in beta** (especially Element X Android, which requires manual compilation to get it working with a non-`matrix.org` homeseserver). Playbook users can now easily give these clients a try and help test them thanks to us having `sliding-sync` support.
 
-To get started, see our [Setting up Sliding Sync proxy](docs/configuring-playbook-sliding-sync-proxy.md) documentation page.
+To get started, see our [Setting up the Sliding Sync proxy](docs/configuring-playbook-sliding-sync-proxy.md) documentation page.
 
 
 # 2023-03-02
@@ -1464,7 +1464,7 @@ With the new Synapse-customization feature in the playbook, we use the original 
 
 Thanks to [@TheOneWithTheBraid](https://github.com/TheOneWithTheBraid), we now support installing [matrix-ldap-registration-proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy) - a proxy which handles Matrix registration requests and forwards them to LDAP.
 
-See our [Setting up the ldap-registration-proxy](docs/configuring-playbook-matrix-ldap-registration-proxy.md) documentation to get started.
+See our [Setting up matrix-ldap-registration-proxy](docs/configuring-playbook-matrix-ldap-registration-proxy.md) documentation to get started.
 
 
 # 2022-09-15
@@ -1564,7 +1564,7 @@ Below we'll discuss **potential backward incompatibilities**.
 
 Thanks to [Julian-Samuel Gebühr (@moan0s)](https://github.com/moan0s), the playbook can now set up [Cactus Comments](https://cactus.chat) - federated comment system for the web based on Matrix.
 
-See our [Setting up a Cactus Comments server](docs/configuring-playbook-cactus-comments.md) documentation to get started.
+See our [Setting up Cactus Comments](docs/configuring-playbook-cactus-comments.md) documentation to get started.
 
 
 # 2022-08-23
@@ -1708,7 +1708,7 @@ See our [Setting up the ntfy push notifications server](docs/configuring-playboo
 
 Thanks to [CyberShadow](https://github.com/CyberShadow), the playbook can now install the [go-skype-bridge](https://github.com/kelaresg/go-skype-bridge) bridge for bridging Matrix to [Skype](https://www.skype.com/).
 
-See our [Setting up Go Skype Bridge](docs/configuring-playbook-bridge-go-skype-bridge.md) documentation to get started.
+See our [Setting up Go Skype Bridge bridging](docs/configuring-playbook-bridge-go-skype-bridge.md) documentation to get started.
 
 The playbook has supported [mx-puppet-skype](https://github.com/Sorunome/mx-puppet-skype) bridging (see [Setting up MX Puppet Skype bridging](docs/configuring-playbook-bridge-mx-puppet-skype.md)) since [2020-04-09](#2020-04-09), but `mx-puppet-skype` is reportedly broken.
 
@@ -2038,7 +2038,7 @@ The playbook can now install the [Sygnal](https://github.com/matrix-org/sygnal) 
 
 This is only useful to people who develop/build their own Matrix client applications.
 
-Additional details are available in our [Setting up Sygnal](docs/configuring-playbook-sygnal.md) docs.
+Additional details are available in our [Setting up the Sygnal push gateway](docs/configuring-playbook-sygnal.md) docs.
 
 
 # 2021-03-16
@@ -2717,7 +2717,7 @@ It forces a [Postgres database upgrade](docs/maintenance-postgres.md#upgrading-p
 
 Thanks to a contribution from [Björn Marten](https://github.com/tripleawwy) from [netresearch](https://www.netresearch.de/), the playbook can now install and configure [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) for you. This bridge provides support for Slack-compatible webhooks.
 
-Learn more in [Setting up Appservice Webhooks](docs/configuring-playbook-bridge-appservice-webhooks.md).
+Learn more in [Setting up Appservice Webhooks bridging](docs/configuring-playbook-bridge-appservice-webhooks.md).
 
 
 # 2020-01-12
@@ -3292,7 +3292,7 @@ When using:
 ## IRC bridging support
 
 [Devon Maloney (@Plailect)](https://github.com/Plailect) has done some great work bringing IRC bridging support via [matrix-appservice-irc](https://github.com/TeDomum/matrix-appservice-irc).
-To learn more, see the [Setting up Appservice IRC](docs/configuring-playbook-bridge-appservice-irc.md) documentation page.
+To learn more, see the [Setting up Appservice IRC bridging](docs/configuring-playbook-bridge-appservice-irc.md) documentation page.
 
 
 # 2019-01-29
@@ -3757,7 +3757,7 @@ The Client APIs run only on the http port (8008) now.
 ## mxisd Identity Server support
 
 The playbook now sets up an [mxisd](https://github.com/kamax-io/mxisd) Identity Server for you by default.
-Additional details are available in [Adjusting mxisd Identity Server configuration](docs/configuring-playbook-mxisd.md).
+Additional details are available in [Setting up ma1sd Identity Server](docs/configuring-playbook-mxisd.md).
 
 
 # 2018-08-14

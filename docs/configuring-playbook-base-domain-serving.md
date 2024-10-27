@@ -1,4 +1,4 @@
-# Serving the base domain
+# Serving the base domain (optional)
 
 This playbook sets up services on your Matrix server (`matrix.example.com`). To have this server officially be responsible for Matrix services for the base domain (`example.com`), you need to set up [Server Delegation](howto-server-delegation.md). This is normally done by [configuring well-known](configuring-well-known.md) files on the base domain.
 

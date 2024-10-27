@@ -1,4 +1,4 @@
-# Setting up pantalaimon (optional)
+# Setting up Pantalaimon (E2EE aware proxy daemon) (optional)
 
 The playbook can install and configure the [pantalaimon](https://github.com/matrix-org/pantalaimon) E2EE aware proxy daemon for you.
 

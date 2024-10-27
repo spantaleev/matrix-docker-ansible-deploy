@@ -1,4 +1,4 @@
-# Setting up Postmoogle (optional)
+# Setting up Postmoogle email bridging (optional)
 
 **Note**: email bridging can also happen via the [email2matrix](configuring-playbook-email2matrix.md) bridge supported by the playbook.
 

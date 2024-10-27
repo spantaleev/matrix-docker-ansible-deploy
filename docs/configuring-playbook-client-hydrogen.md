@@ -1,4 +1,4 @@
-# Configuring Hydrogen (optional)
+# Setting up Hydrogen (optional)
 
 This playbook can install the [Hydrogen](https://github.com/element-hq/hydrogen-web) Matrix web client for you.
 

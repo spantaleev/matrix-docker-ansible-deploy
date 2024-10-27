@@ -1,4 +1,4 @@
-# Setting up Mautrix Slack (optional)
+# Setting up Mautrix Slack bridging (optional)
 
 **Note**: bridging to [Slack](https://slack.com/) can also happen via the [mx-puppet-slack](configuring-playbook-bridge-mx-puppet-slack.md) and [matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md) bridges supported by the playbook.
 - For using as a Bot we recommend the [Appservice Slack](configuring-playbook-bridge-appservice-slack.md), because it supports plumbing.
