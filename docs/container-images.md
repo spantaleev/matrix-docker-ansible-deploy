@@ -101,6 +101,21 @@ We try to stick to official images (provided by their respective projects) as mu
 | [Draupnir](configuring-playbook-bot-draupnir.md) | [gnuxie/draupnir](https://hub.docker.com/r/gnuxie/draupnir) | x | A moderation tool for Matrix (Fork of Mjolnir) |
 | [Buscarron](configuring-playbook-bot-buscarron.md) | [etke.cc/buscarron](https://ghcr.io/etkecc/buscarron) | x | Web forms (HTTP POST) to Matrix |
 
+## Administration
+
+| Service | Container image | Default? | Description |
+| ------- | --------------- | -------- | ----------- |
+| [matrix-alertmanager-receiver](configuring-playbook-alertmanager-receiver.md) | [metio/matrix-alertmanager-receiver](https://hub.docker.com/r/metio/matrix-alertmanager-receiver)  | x | Prometheus' [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) client |
+| [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md) | [element-hq/matrix-authentication-service](https://ghcr.io/element-hq/matrix-authentication-service) | x | OAuth 2.0 and OpenID Provider server |
+| [synapse-admin](configuring-playbook-synapse-admin.md) | [etke.cc/synapse-admin](https://ghcr.io/etkecc/synapse-admin) | x | A web UI tool for administrating users and rooms on your Matrix server |
+| [Metrics and Graphs](configuring-playbook-prometheus-grafana.md) | [prom/prometheus](https://hub.docker.com/r/prom/prometheus/) | x | [Prometheus](https://prometheus.io) time-series database server |
+| [Metrics and Graphs](configuring-playbook-prometheus-grafana.md) | [prom/node-exporter](https://hub.docker.com/r/prom/node-exporter/) | x | Prometheus [node-exporter](https://prometheus.io/docs/guides/node-exporter/) host metrics exporter |
+| [Metrics and Graphs](configuring-playbook-prometheus-grafana.md) | [grafana/grafana](https://hub.docker.com/r/grafana/grafana/) | x | Graphing tool that works well with the above two images. Our playbook also adds two dashboards for [Synapse](https://github.com/element-hq/synapse/tree/master/contrib/grafana) and [Node Exporter](https://github.com/rfrail3/grafana-dashboards) |
+| [Metrics and Graphs](configuring-playbook-prometheus-nginxlog.md) | [martin-helmich/prometheus-nginxlog-exporter/exporter](https://ghcr.io/martin-helmich/prometheus-nginxlog-exporter/exporter) | x | Addon for Prometheus that gathers access logs from various nginx reverse-proxies |
+| [Borg](configuring-playbook-backup-borg.md) | (N/A) | x | Backups |
+| [rageshake](configuring-playbook-rageshake.md) | [matrix-org/rageshake](https://ghcr.io/matrix-org/rageshake) | x | Bug report server |
+| [synapse-usage-exporter](configuring-playbook-synapse-usage-exporter.md) | Self-building | x | Export the usage statistics of a Synapse homeserver to be scraped by Prometheus. |
+
 ## Optional other container images we may use
 
 These services are not part of our default installation, but can be enabled by [configuring the playbook](configuring-playbook.md) (either before the initial installation or any time later):
@@ -116,22 +131,6 @@ These services are not part of our default installation, but can be enabled by [
 - [jitsi/prosody](https://hub.docker.com/r/jitsi/prosody) - the [Jitsi](https://jitsi.org/) Prosody XMPP server component (optional)
 
 - [jitsi/jvb](https://hub.docker.com/r/jitsi/jvb) - the [Jitsi](https://jitsi.org/) Video Bridge component (optional)
-
-- [metio/matrix-alertmanager-receiver](https://hub.docker.com/r/metio/matrix-alertmanager-receiver) - the [matrix-alertmanager-receiver](https://github.com/metio/matrix-alertmanager-receiver) client for Prometheus' [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) (optional)
-
-- [element-hq/matrix-authentication-service](https://ghcr.io/element-hq/matrix-authentication-service) - [matrix-authentication-service](https://github.com/element-hq/matrix-authentication-service) (MAS) OAuth 2.0 and OpenID Provider server (optional)
-
-- [etke.cc/synapse-admin](https://ghcr.io/etkecc/synapse-admin) - the [etkecc/synapse-admin](https://github.com/etkecc/synapse-admin) (a [feature-rich](https://github.com/etkecc/synapse-admin#fork-differences) fork of [Awesome-Technologies/synapse-admin](https://github.com/Awesome-Technologies/synapse-admin) web UI tool for administrating users and rooms on your Matrix server (optional)
-
-- [matrix-org/rageshake](https://ghcr.io/matrix-org/rageshake) - the [rageshake](https://github.com/matrix-org/rageshake) bug report server (optional)
-
-- [prom/prometheus](https://hub.docker.com/r/prom/prometheus/) - [Prometheus](https://github.com/prometheus/prometheus/) is a systems and service monitoring system
-
-- [prom/node-exporter](https://hub.docker.com/r/prom/node-exporter/) - [Prometheus Node Exporter](https://github.com/prometheus/node_exporter/) is an addon for Prometheus that gathers standard system metrics
-
-- [martin-helmich/prometheus-nginxlog-exporter/exporter](https://ghcr.io/martin-helmich/prometheus-nginxlog-exporter/exporter) - [NGINX-to-Prometheus log file exporter](https://github.com/martin-helmich/prometheus-nginxlog-exporter/) is an addon for Prometheus that gathers access logs from various nginx reverse-proxies (optional)
-
-- [grafana/grafana](https://hub.docker.com/r/grafana/grafana/) - [Grafana](https://github.com/grafana/grafana/) is a graphing tool that works well with the above two images. Our playbook also adds two dashboards for [Synapse](https://github.com/element-hq/synapse/tree/master/contrib/grafana) and  [Node Exporter](https://github.com/rfrail3/grafana-dashboards)
 
 - [matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync) - the [Sliding Sync](https://github.com/matrix-org/sliding-sync) proxy (optional)
 
