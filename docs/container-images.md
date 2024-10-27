@@ -94,6 +94,8 @@ These services are not part of our default installation, but can be enabled by [
 
 - [turt2live/matrix-dimension](https://hub.docker.com/r/turt2live/matrix-dimension) - the [Dimension](https://dimension.t2bot.io/) integration manager (optional)
 
+- [linuxserver/ddclient](https://hub.docker.com/r/linuxserver/ddclient) - [ddclient](https://github.com/linuxserver/docker-ddclient) used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider (optional)
+
 - [jitsi/web](https://hub.docker.com/r/jitsi/web) - the [Jitsi](https://jitsi.org/) web UI (optional)
 
 - [jitsi/jicofo](https://hub.docker.com/r/jitsi/jicofo) - the [Jitsi](https://jitsi.org/) Focus component (optional)

@@ -1,24 +1,31 @@
 # Setting up Dynamic DNS (optional)
 
-## Setup
+The playbook can configure Dynamic DNS with [ddclient⁠](https://github.com/ddclient/ddclient) for you. It is a Perl client used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider.
 
 Most cloud providers / ISPs will charge you extra for a static IP address. If you're not hosting a highly reliable homeserver you can workaround this via dynamic DNS.
 
-To set this up, you'll need to get the username/password from your DNS provider. For google domains, this process is described [here](https://support.google.com/domains/answer/6147083).
+## Prerequisite
 
-After you've gotten the proper credentials you can add the following config to your `inventory/host_vars/matrix.example.com/vars.yml`:
+You'll need to get a username and password from your DNS provider. Please consult with the provider about how to retrieve them.
+
+## Adjusting the playbook configuration
+
+To enable dynamic DNS, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_dynamic_dns_enabled: true
 
 matrix_dynamic_dns_domain_configurations:
-  - provider: domains.google.com
+  - provider: example.net
     protocol: dyndn2
-    username: XXXXXXXXXXXXXXXX
-    password: XXXXXXXXXXXXXXXX
+    username: YOUR_USERNAME_HERE
+    password: YOUR_PASSWORD_HERE
     domain: "{{ matrix_domain }}"
 ```
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Additional Reading
 
