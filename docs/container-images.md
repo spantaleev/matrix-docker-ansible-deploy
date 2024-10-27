@@ -47,13 +47,17 @@ We try to stick to official images (provided by their respective projects) as mu
 | [matrix-registration](configuring-playbook-matrix-registration.md) | [zeratax/matrix-registration](https://hub.docker.com/r/devture/zeratax-matrix-registration/) | x | A simple python application to have a token based Matrix registration |
 | [Matrix User Verification Service](configuring-playbook-user-verification-service.md) (UVS) | [matrixdotorg/matrix-user-verification-service](https://hub.docker.com/r/atrixdotorg/matrix-user-verification-service) | x | Service to verify details of a user based on an Open ID token |
 
+## File Storage
+
+| Service | Container image | Default? | Description |
+| ------- | --------------- | -------- | ----------- |
+| [Goofys](configuring-playbook-s3-goofys.md) | [ewoutp/goofys](https://hub.docker.com/r/ewoutp/goofys/) | x | [Amazon S3](https://aws.amazon.com/s3/) (or other S3-compatible object store) storage for Synapse's content repository (`media_store`) files |
+| [synapse-s3-storage-provider](configuring-playbook-s3.md) | (N/A) | x | [Amazon S3](https://aws.amazon.com/s3/) (or other S3-compatible object store) storage for Synapse's content repository (`media_store`) files |
+| [matrix-media-repo](configuring-playbook-matrix-media-repo.md) | [t2bot/matrix-media-repo](https://ghcr.io/t2bot/matrix-media-repo) | x | matrix-media-repo is a highly customizable multi-domain media repository for Matrix. Intended for medium to large deployments, this media repo de-duplicates media while being fully compliant with the specification. |
+
 ## Optional other container images we may use
 
 These services are not part of our default installation, but can be enabled by [configuring the playbook](configuring-playbook.md) (either before the initial installation or any time later):
-
-- [ewoutp/goofys](https://hub.docker.com/r/ewoutp/goofys/) - the [Goofys](https://github.com/kahing/goofys) Amazon [S3](https://aws.amazon.com/s3/) file-system-mounting program (optional)
-
-- [t2bot/matrix-media-repo](https://ghcr.io/t2bot/matrix-media-repo) - the [matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/) highly customizable multi-domain media repository (optional)
 
 - [etherpad/etherpad](https://hub.docker.com/r/etherpad/etherpad/) - the [Etherpad](https://etherpad.org) realtime collaborative text editor that can be used in a Jitsi audio/video call or integrated as a widget into Matrix chat rooms via the Dimension integration manager (optional)
 
