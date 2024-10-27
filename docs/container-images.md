@@ -50,6 +50,8 @@ These services are not part of our default installation, but can be enabled by [
 
 - [mautrix/whatsapp](https://mau.dev/mautrix/whatsapp/container_registry) - the [mautrix-whatsapp](https://github.com/mautrix/whatsapp) bridge to [Whatsapp](https://www.whatsapp.com/) (optional)
 
+- [mautrix/wsproxy](https://mau.dev/mautrix/wsproxy/container_registry) - the [mautrix-wsproxy](https://github.com/mautrix/wsproxy) bridge to Android SMS or Apple iMessage (optional)
+
 - [mautrix/facebook](https://mau.dev/mautrix/facebook/container_registry) - the [mautrix-facebook](https://github.com/mautrix/facebook) bridge to [Facebook](https://facebook.com/) (optional)
 
 - [mautrix/twitter](https://mau.dev/mautrix/twitter/container_registry) - the [mautrix-twitter](https://github.com/mautrix/twitter) bridge to [Twitter](https://twitter.com/) (optional)

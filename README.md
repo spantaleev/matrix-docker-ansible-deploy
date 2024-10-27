@@ -103,6 +103,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [mautrix-telegram](https://github.com/mautrix/telegram) | x | Bridge to [Telegram](https://telegram.org/) | [Link](docs/configuring-playbook-bridge-mautrix-telegram.md) |
 | [mautrix-gmessages](https://github.com/mautrix/gmessages) | x | Bridge to [Google Messages](https://messages.google.com/) | [Link](docs/configuring-playbook-bridge-mautrix-gmessages.md) |
 | [mautrix-whatsapp](https://github.com/mautrix/whatsapp) | x | Bridge to [WhatsApp](https://www.whatsapp.com/) | [Link](docs/configuring-playbook-bridge-mautrix-whatsapp.md) |
+| [mautrix-wsproxy](https://github.com/mautrix/wsproxy) | x | Bridge to Android SMS or Apple iMessage | [Link](docs/configuring-playbook-bridge-mautrix-wsproxy.md) |
 | [mautrix-facebook](https://github.com/mautrix/facebook) | x | Bridge to [Facebook](https://facebook.com/) | [Link](docs/configuring-playbook-bridge-mautrix-facebook.md) |
 | [mautrix-twitter](https://github.com/mautrix/twitter) | x | Bridge to [Twitter](https://twitter.com/) | [Link](docs/configuring-playbook-bridge-mautrix-twitter.md) |
 | [mautrix-hangouts](https://github.com/mautrix/hangouts) | x | Bridge to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts) | [Link](docs/configuring-playbook-bridge-mautrix-hangouts.md) |
