@@ -152,7 +152,7 @@ Services that help you in administrating and monitoring your Matrix installation
 
 | Name | Default? | Description | Documentation |
 | ---- | -------- | ----------- | ------------- |
-| [synapse-admin](https://github.com/Awesome-Technologies/synapse-admin) | x | A web UI tool for administrating users and rooms on your Matrix server | [Link](docs/configuring-playbook-synapse-admin.md) |
+| [synapse-admin](https://github.com/etkecc/synapse-admin) | x | A web UI tool for administrating users and rooms on your Matrix server | [Link](docs/configuring-playbook-synapse-admin.md) |
 | Metrics and Graphs | x | Consists of the [Prometheus](https://prometheus.io) time-series database server, the Prometheus [node-exporter](https://prometheus.io/docs/guides/node-exporter/) host metrics exporter, and the [Grafana](https://grafana.com/) web UI | [Link](docs/configuring-playbook-prometheus-grafana.md) |
 | [Borg](https://borgbackup.org) | x | Backups | [Link](docs/configuring-playbook-backup-borg.md) |
 | [rageshake](https://github.com/matrix-org/rageshake) | x | Bug report server | [Link](docs/configuring-playbook-rageshake.md) |
