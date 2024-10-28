@@ -16,6 +16,10 @@ Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-bot-maubot 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-bot-maubot 2>/dev/null || true'
 
+{#
+	We mount a tmpfs at /tmp, because some maubot plugins may wish to write to it.
+	It makes sense to provide at least some sort of temporary storage.
+#}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--rm \
 			--name=matrix-bot-maubot \
@@ -25,6 +29,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--cap-drop=ALL \
 			--mount type=bind,src={{ matrix_bot_maubot_config_path }},dst=/config,ro \
 			--mount type=bind,src={{ matrix_bot_maubot_data_path }},dst=/data \
+			--tmpfs=/tmp:rw,noexec,nosuid,size=1024m \
 			--label-file={{ matrix_bot_maubot_base_path }}/labels \
 			{% for arg in matrix_bot_maubot_container_extra_arguments %}
 			{{ arg }} \
