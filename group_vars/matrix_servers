@@ -5310,6 +5310,8 @@ prometheus_config_scrape_configs_auto: |
     (matrix_prometheus_services_connect_scraper_media_repo_scrape_configs if matrix_prometheus_services_connect_scraper_media_repo_enabled else [])
     +
     (matrix_prometheus_services_connect_scraper_synapse_usage_exporter_scrape_configs if matrix_prometheus_services_connect_scraper_synapse_usage_exporter_enabled else [])
+    +
+    (matrix_prometheus_services_connect_scraper_traefik_scrape_configs if matrix_prometheus_services_connect_scraper_traefik_enabled else [])
   }}
 
 ######################################################################
@@ -5344,6 +5346,9 @@ matrix_prometheus_services_connect_scraper_hookshot_static_configs_target: "{{ m
 
 matrix_prometheus_services_connect_scraper_nginxlog_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
 matrix_prometheus_services_connect_scraper_nginxlog_static_configs_target: "{{ matrix_prometheus_nginxlog_exporter_identifier }}:{{ matrix_prometheus_nginxlog_exporter_container_metrics_port | string }}"
+
+matrix_prometheus_services_connect_scraper_traefik_enabled: "{{ matrix_prometheus_traefik_exporter_enabled }}"
+matrix_prometheus_services_connect_scraper_traefik_static_configs_target: "{{ traefik_identifier }}:{{ traefik_config_entrypoint_metrics_port | string }}"
 
 matrix_prometheus_services_connect_scraper_media_repo_enabled: "{{ matrix_media_repo_enabled and matrix_media_repo_metrics_enabled }}"
 matrix_prometheus_services_connect_scraper_media_repo_static_configs_target: "{{ matrix_media_repo_identifier }}:{{ matrix_media_repo_metrics_port }}"
@@ -5419,6 +5424,8 @@ grafana_dashboard_download_urls: |
     (matrix_media_repo_dashboard_urls if matrix_media_repo_metrics_enabled else [])
     +
     (matrix_synapse_usage_exporter_dashboard_urls if matrix_synapse_usage_exporter_enabled else [])
+    +
+    (matrix_traefik_dashboard_download_urls if matrix_traefik_dashboard_download_enabled else [])
   }}
 
 grafana_provisioning_dashboard_template_files: |
@@ -5932,6 +5939,9 @@ devture_container_socket_proxy_api_containers_enabled: true
 
 traefik_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' }}"
 
+# Controls whether Traefik prometheus exporter integration should be done
+matrix_prometheus_traefik_exporter_enabled: false
+
 traefik_identifier: matrix-traefik
 
 traefik_base_path: "{{ matrix_base_data_path }}/traefik"
@@ -5951,6 +5961,8 @@ traefik_config_providers_docker_endpoint: "{{ devture_container_socket_proxy_end
 traefik_container_additional_networks_auto: |
   {{
     ([devture_container_socket_proxy_container_network] if devture_container_socket_proxy_enabled else [])
+    +
+    ([matrix_monitoring_container_network] if matrix_prometheus_traefik_exporter_enabled else [])
   }}
 
 traefik_systemd_required_services_list: |
@@ -5959,6 +5971,14 @@ traefik_systemd_required_services_list: |
     +
     ([devture_container_socket_proxy_identifier + '.service'] if devture_container_socket_proxy_enabled else [])
   }}
+
+traefik_config_metrics_prometheus_enabled: "{{ matrix_prometheus_traefik_exporter_enabled }}"
+traefik_container_metrics_host_bind_port: "{{ '' if matrix_prometheus_traefik_exporter_enabled else (traefik_config_entrypoint_metrics_port if traefik_config_entrypoint_metrics_enabled else '') }}"
+
+# Controls whether the Traefik grafana dashboard shall be downloaded
+matrix_traefik_dashboard_download_enabled: "{{ matrix_prometheus_traefik_exporter_enabled }}"
+matrix_traefik_dashboard_download_download_tag: master
+matrix_traefik_dashboard_download_urls: ["https://raw.githubusercontent.com/traefik/traefik/refs/heads/{{ matrix_traefik_dashboard_download_download_tag }}/contrib/grafana/traefik.json"]
 
 ########################################################################
 #                                                                      #
