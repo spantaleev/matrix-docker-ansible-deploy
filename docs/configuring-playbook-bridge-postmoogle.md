@@ -74,7 +74,7 @@ You can also refer to the upstream [documentation](https://github.com/etkecc/pos
 
 ### Debug/Logs
 
-As with all other services, you can find their logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by running something like `journalctl -fu matrix-bot-postmoogle`
+As with all other services, you can find their logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by running something like `journalctl -fu matrix-postmoogle`
 
 The default logging level for this bridge is `INFO`, but you can increase it to `DEBUG` with the following additional configuration:
 

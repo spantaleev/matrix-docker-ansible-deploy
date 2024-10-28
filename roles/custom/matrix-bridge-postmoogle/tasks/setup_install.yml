@@ -18,7 +18,7 @@
               caller: "{{ role_path | basename }}"
               engine_variable_name: 'matrix_postmoogle_database_engine'
               engine_old: 'sqlite'
-              systemd_services_to_stop: ['matrix-bot-postmoogle.service']
+              systemd_services_to_stop: ['matrix-postmoogle.service']
 
         - ansible.builtin.set_fact:
             matrix_postmoogle_requires_restart: true
@@ -86,9 +86,9 @@
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
 
-- name: Ensure matrix-bot-postmoogle.service installed
+- name: Ensure matrix-postmoogle.service installed
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/systemd/matrix-bot-postmoogle.service.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-postmoogle.service"
+    src: "{{ role_path }}/templates/systemd/matrix-postmoogle.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postmoogle.service"
     mode: 0644
   register: matrix_postmoogle_systemd_service_result
