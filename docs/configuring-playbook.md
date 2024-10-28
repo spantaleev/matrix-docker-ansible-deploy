@@ -167,6 +167,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (optional)
 
+- [Setting up Postmoogle email bridging](configuring-playbook-bot-postmoogle.md) (optional)
+
 - [Setting up Matrix SMS bridging](configuring-playbook-bridge-matrix-bridge-sms.md) (optional)
 
 - [Setting up Heisenbridge bouncer-style IRC bridging](configuring-playbook-bridge-heisenbridge.md) (optional)
@@ -185,8 +187,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up maubot](configuring-playbook-bot-maubot.md) - a plugin-based Matrix bot system (optional)
 
 - [Setting up Honoroit](configuring-playbook-bot-honoroit.md) - a helpdesk bot (optional)
-
-- [Setting up Postmoogle email bridging](configuring-playbook-bot-postmoogle.md) (optional)
 
 - [Setting up Mjolnir](configuring-playbook-bot-mjolnir.md) - a moderation tool/bot (optional)
 
