@@ -2591,14 +2591,14 @@ matrix_postmoogle_ssl_path: |-
     }[matrix_playbook_reverse_proxy_type]
   }}
 
-matrix_playbook_bot_postmoogle_traefik_tls_cert: "{% for domain in matrix_postmoogle_domains %}/ssl/{{ domain }}/certificate.crt {% endfor %}"
-matrix_playbook_bot_postmoogle_traefik_key: "{% for domain in matrix_postmoogle_domains %}/ssl/{{ domain }}/privatekey.key {% endfor %}"
+matrix_playbook_bridge_postmoogle_traefik_tls_cert: "{% for domain in matrix_postmoogle_domains %}/ssl/{{ domain }}/certificate.crt {% endfor %}"
+matrix_playbook_bridge_postmoogle_traefik_key: "{% for domain in matrix_postmoogle_domains %}/ssl/{{ domain }}/privatekey.key {% endfor %}"
 
 matrix_postmoogle_tls_cert: |-
   {{
     {
-      'playbook-managed-traefik': (matrix_playbook_bot_postmoogle_traefik_tls_cert if traefik_certs_dumper_enabled else ''),
-      'other-traefik-container': (matrix_playbook_bot_postmoogle_traefik_tls_cert if traefik_certs_dumper_enabled else ''),
+      'playbook-managed-traefik': (matrix_playbook_bridge_postmoogle_traefik_tls_cert if traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': (matrix_playbook_bridge_postmoogle_traefik_tls_cert if traefik_certs_dumper_enabled else ''),
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -2606,13 +2606,13 @@ matrix_postmoogle_tls_cert: |-
 matrix_postmoogle_tls_key: |-
   {{
     {
-      'playbook-managed-traefik': (matrix_playbook_bot_postmoogle_traefik_key if traefik_certs_dumper_enabled else ''),
-      'other-traefik-container': (matrix_playbook_bot_postmoogle_traefik_key if traefik_certs_dumper_enabled else ''),
+      'playbook-managed-traefik': (matrix_playbook_bridge_postmoogle_traefik_key if traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': (matrix_playbook_bridge_postmoogle_traefik_key if traefik_certs_dumper_enabled else ''),
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
 
-matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services: "{% for domain in matrix_postmoogle_domains %}{{ traefik_certs_dumper_identifier }}-wait-for-domain@{{ domain }}.service {% endfor %}"
+matrix_playbook_bridge_postmoogle_traefik_certs_dumper_waiter_services: "{% for domain in matrix_postmoogle_domains %}{{ traefik_certs_dumper_identifier }}-wait-for-domain@{{ domain }}.service {% endfor %}"
 
 matrix_postmoogle_systemd_required_services_list_auto: |
   {{
@@ -2620,7 +2620,7 @@ matrix_postmoogle_systemd_required_services_list_auto: |
     +
     ([postgres_identifier ~ '.service'] if postgres_enabled and matrix_postmoogle_database_hostname == matrix_postmoogle_database_hostname else [])
     +
-    (matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services | trim | split(' ') if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled else [])
+    (matrix_playbook_bridge_postmoogle_traefik_certs_dumper_waiter_services | trim | split(' ') if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled else [])
   }}
 
 # Postgres is the default, except if not using internal Postgres server
