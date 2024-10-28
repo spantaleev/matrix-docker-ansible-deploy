@@ -1110,7 +1110,7 @@ Switching to Traefik will obtain new SSL certificates from Let's Encrypt (stored
 
 Treafik directly reverse-proxies to **some** services right now, but for most other services it goes through `matrix-nginx-proxy` (e.g. Traefik -> `matrix-nginx-proxy` -> [Ntfy](docs/configuring-playbook-ntfy.md)). So, even if you opt into Traefik, you'll still see `matrix-nginx-proxy` being installed in local-only mode. This will improve with time.
 
-Some services (like [Coturn](docs/configuring-playbook-turn.md) and [Postmoogle](docs/configuring-playbook-bot-postmoogle.md)) cannot be reverse-proxied to directly from Traefik, so they require direct access to SSL certificate files extracted out of Traefik. The playbook does this automatically thanks to a new [com.devture.ansible.role.traefik_certs_dumper](https://github.com/devture/com.devture.ansible.role.traefik_certs_dumper) role utilizing the [traefik-certs-dumper](https://github.com/ldez/traefik-certs-dumper) tool.
+Some services (like [Coturn](docs/configuring-playbook-turn.md) and [Postmoogle](docs/configuring-playbook-bridge-postmoogle.md)) cannot be reverse-proxied to directly from Traefik, so they require direct access to SSL certificate files extracted out of Traefik. The playbook does this automatically thanks to a new [com.devture.ansible.role.traefik_certs_dumper](https://github.com/devture/com.devture.ansible.role.traefik_certs_dumper) role utilizing the [traefik-certs-dumper](https://github.com/ldez/traefik-certs-dumper) tool.
 
 Our Traefik setup mostly works, but certain esoteric features may not work. If you have a default setup, we expect you to have a good experience.
 
@@ -1571,9 +1571,9 @@ See our [Setting up Cactus Comments](docs/configuring-playbook-cactus-comments.m
 
 ## Postmoogle email bridge support
 
-Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up the new [Postmoogle](https://github.com/etkecc/postmoogle) email bridge/bot. Postmoogle is like the [email2matrix bridge](https://github.com/devture/email2matrix) (also [already supported by the playbook](docs/configuring-playbook-email2matrix.md)), but more capable and with the intention to soon support *sending* emails, not just receiving.
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up the new [Postmoogle](https://github.com/etkecc/postmoogle) email bridge. Postmoogle is like the [email2matrix bridge](https://github.com/devture/email2matrix) (also [already supported by the playbook](docs/configuring-playbook-email2matrix.md)), but more capable and with the intention to soon support *sending* emails, not just receiving.
 
-See our [Setting up Postmoogle email bridging](docs/configuring-playbook-bot-postmoogle.md) documentation to get started.
+See our [Setting up Postmoogle email bridging](docs/configuring-playbook-bridge-postmoogle.md) documentation to get started.
 
 
 # 2022-08-10

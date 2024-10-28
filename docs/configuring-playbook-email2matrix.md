@@ -1,6 +1,6 @@
 # Setting up Email2Matrix (optional)
 
-**Note**: email bridging can also happen via the [Postmoogle](configuring-playbook-bot-postmoogle.md) bot supported by the playbook. Postmoogle is much more powerful and easier to use, so we recommend that you use it, instead of Email2Matrix.
+**Note**: email bridging can also happen via the [Postmoogle](configuring-playbook-bridge-postmoogle.md) bridge supported by the playbook. Postmoogle is much more powerful and easier to use, so we recommend that you use it, instead of Email2Matrix.
 
 The playbook can install and configure [email2matrix](https://github.com/devture/email2matrix) for you.
 

@@ -4,7 +4,7 @@
 
 The playbook can install and configure [Postmoogle](https://github.com/etkecc/postmoogle) for you.
 
-Postmoogle is a bot/bridge you can use to forward emails to Matrix rooms. It runs an SMTP email server and allows you to assign mailbox addresses to Matrix rooms.
+Postmoogle is a bridge you can use to have its bot user forward emails to Matrix rooms. It runs an SMTP email server and allows you to assign mailbox addresses to the rooms.
 
 See the project's [documentation](https://github.com/etkecc/postmoogle) to learn what it does and why it might be useful to you.
 
@@ -57,18 +57,18 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 **Notes**:
 
-- the `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account
+- the `ensure-matrix-users-created` playbook tag makes the playbook automatically create a user account of the bridge's bot
 
-- if you change the bot password (`matrix_bot_postmoogle_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_postmoogle_password` to let the bot know its new password
+- if you change the bridge's bot password (`matrix_bot_postmoogle_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_postmoogle_password` to let the bot know its new password
 
 
 ## Usage
 
-To use the bot, invite the `@postmoogle:example.com` bot user into a room you want to use as a mailbox.
+To use the bridge, invite the `@postmoogle:example.com` bot user into a room you want to use as a mailbox.
 
 Then send `!pm mailbox NAME` to expose this Matrix room as an inbox with the email address `NAME@matrix.example.com`. Emails sent to that email address will be forwarded to the room.
 
-Send `!pm help` to the room to see the bot's help menu for additional commands.
+Send `!pm help` to the room to see the bridge's help menu for additional commands.
 
 You can also refer to the upstream [documentation](https://github.com/etkecc/postmoogle).
 
