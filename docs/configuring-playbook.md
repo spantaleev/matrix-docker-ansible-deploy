@@ -33,8 +33,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Additional useful services
 
-- [Setting up the Dimension integration manager](configuring-playbook-dimension.md) (optional; [unmaintained](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2806#issuecomment-1673559299); after [installing](installing.md))
-
 - [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md) (optional)
 
 - [Setting up Etherpad](configuring-playbook-etherpad.md) (optional)
@@ -133,13 +131,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Messenger bridging via Mautrix Meta](configuring-playbook-bridge-mautrix-meta-messenger.md) (optional)
 
-- ~~[Setting up Mautrix Facebook bridging](configuring-playbook-bridge-mautrix-facebook.md)~~ - consider bridging to Facebook/Messenger using the new [mautrix-meta-messenger](./configuring-playbook-bridge-mautrix-meta-messenger.md) bridge (optional)
-
-- [Setting up Mautrix Hangouts bridging](configuring-playbook-bridge-mautrix-hangouts.md) (optional)
-
 - [Setting up Mautrix Google Chat bridging](configuring-playbook-bridge-mautrix-googlechat.md) (optional)
-
-- ~~[Setting up Mautrix Instagram bridging](configuring-playbook-bridge-mautrix-instagram.md)~~ - consider bridging to Instagram using the new [mautrix-meta-instagram](./configuring-playbook-bridge-mautrix-meta-instagram.md) bridge (optional)
 
 - [Setting up Mautrix Twitter bridging](configuring-playbook-bridge-mautrix-twitter.md) (optional)
 
@@ -153,15 +145,11 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Appservice Slack bridging](configuring-playbook-bridge-appservice-slack.md) (optional)
 
-- [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (optional)
-
 - [Setting up Appservice Kakaotalk bridging](configuring-playbook-bridge-appservice-kakaotalk.md) (optional)
 
 - [Setting up Beeper LinkedIn bridging](configuring-playbook-bridge-beeper-linkedin.md) (optional)
 
 - [Setting up matrix-hookshot](configuring-playbook-bridge-hookshot.md) - a bridge between Matrix and multiple project management services, such as [GitHub](https://github.com), [GitLab](https://about.gitlab.com) and [JIRA](https://www.atlassian.com/software/jira). (optional)
-
-- ~~[Setting up MX Puppet Skype bridging](configuring-playbook-bridge-mx-puppet-skype.md)~~ (optional) - this component has been broken for a long time, so it has been removed from the playbook. Consider [Setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md)
 
 - [Setting up MX Puppet Slack bridging](configuring-playbook-bridge-mx-puppet-slack.md) (optional)
 
@@ -192,8 +180,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up baibot](configuring-playbook-bot-baibot.md) - a bot through which you can talk to various [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) services ([OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/chatgpt/) and [others](https://github.com/etkecc/baibot/blob/main/docs/providers.md)) (optional)
 
-- [Setting up matrix-bot-chatgpt](configuring-playbook-bot-chatgpt.md) - a bot through which you can talk to the [ChatGPT](https://openai.com/blog/chatgpt/) model (optional)
-
 - [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) - a bot to remind you about stuff (optional)
 
 - [Setting up matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md) - a bot to create and manage registration tokens to invite users (optional)
@@ -201,8 +187,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up maubot](configuring-playbook-bot-maubot.md) - a plugin-based Matrix bot system (optional)
 
 - [Setting up Honoroit](configuring-playbook-bot-honoroit.md) - a helpdesk bot (optional)
-
-- [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) - an extensible multifunctional bot (optional)
 
 - [Setting up Mjolnir](configuring-playbook-bot-mjolnir.md) - a moderation tool/bot (optional)
 
@@ -235,3 +219,23 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up the rageshake bug report server](configuring-playbook-rageshake.md) (optional)
 
 - [Setting up Prometheus Alertmanager integration via matrix-alertmanager-receiver](configuring-playbook-alertmanager-receiver.md) (optional)
+
+### Deprecated / unmaintained / removed services
+
+**Note**: since a deprecated or unmaintained service will not be updated, its bug or vulnerability will be unlikely to get patched. It is recommended to migrate from the service to an alternative if any, and make sure to do your own research before you decide to keep it running nonetheless.
+
+- [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (deprecated; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md))
+
+- [Setting up the Dimension integration manager](configuring-playbook-dimension.md) ([unmaintained](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2806#issuecomment-1673559299); after [installing](installing.md))
+
+- [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) (unmaintained; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md))
+
+- [Setting up matrix-bot-chatgpt](configuring-playbook-bot-chatgpt.md) (unmaintained; the bridge's author suggests taking a look at [baibot](https://github.com/etkecc/baibot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bot-baibot.md))
+
+- [Setting up Mautrix Facebook bridging](configuring-playbook-bridge-mautrix-facebook.md) (deprecated in favor of the Messenger/Instagram bridge with [mautrix-meta-messenger](configuring-playbook-bridge-mautrix-meta-messenger.md))
+
+- [Setting up Mautrix Hangouts bridging](configuring-playbook-bridge-mautrix-hangouts.md) (deprecated in favor of the Google Chat bridge with [mautrix-googlechat](configuring-playbook-bridge-mautrix-googlechat.md))
+
+- [Setting up Mautrix Instagram bridging](configuring-playbook-bridge-mautrix-instagram.md) (deprecated in favor of the Messenger/Instagram bridge with [mautrix-meta-instagram](configuring-playbook-bridge-mautrix-meta-instagram.md))
+
+- [Setting up MX Puppet Skype bridging](configuring-playbook-bridge-mx-puppet-skype.md) (removed; this component has been broken for a long time, so it has been removed from the playbook. Consider [setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md))
