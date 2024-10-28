@@ -51,7 +51,7 @@ This section details what you can expect when switching to the Matrix Authentica
 
 - ❌ Certain **tools like [synapse-admin](./configuring-playbook-synapse-admin.md) do not have full compatibility with MAS yet**. synapse-admin already supports [login with access token](https://github.com/etkecc/synapse-admin/pull/58), browsing users (which Synapse will internally fetch from MAS) and updating user avatars. However, editing users (passwords, etc.) now needs to happen directly against MAS using the [MAS Admin API](https://element-hq.github.io/matrix-authentication-service/api/index.html), which synapse-admin cannot interact with yet.
 
-- ❌ **Some services** (e.g. [Postmoogle](./configuring-playbook-bot-postmoogle.md), but possibly others - the list is yet to be determined) appear to **experience issues when authenticating via MAS**. We're still investigating what breaks and why.
+- ❌ **Some services** (e.g. [Postmoogle](./configuring-playbook-bridge-postmoogle.md), but possibly others - the list is yet to be determined) appear to **experience issues when authenticating via MAS**. We're still investigating what breaks and why.
 
 - ❌ **Encrypted appservices** do not work yet (related to [MSC4190](https://github.com/matrix-org/matrix-spec-proposals/pull/4190) and [PR 17705 for Synapse](https://github.com/element-hq/synapse/pull/17705)), so all bridges/bots that rely on encryption will fail to start (see [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3658) for Hookshot). You can use these bridges/bots only if you **keep end-to-bridge encryption disabled** (which is the default setting).
 

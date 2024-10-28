@@ -28,26 +28,26 @@ When you're done configuring DNS, proceed to [Configuring the playbook](configur
 
 ## DNS settings for optional services/features
 
-| Used by component                                                                                                       | Type  | Host                           | Priority | Weight | Port | Target                      |
-| ----------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------ | -------- | ------ | ---- | --------------------------- |
-| [ma1sd](configuring-playbook-ma1sd.md) identity server                                                                  | SRV   | `_matrix-identity._tcp`        | 10       | 0      | 443  | `matrix.example.com`      |
-| [Dimension](configuring-playbook-dimension.md) integration server                                                       | CNAME | `dimension`                    | -        | -      | -    | `matrix.example.com`      |
-| [Jitsi](configuring-playbook-jitsi.md) video-conferencing platform                                                      | CNAME | `jitsi`                        | -        | -      | -    | `matrix.example.com`      |
-| [Prometheus/Grafana](configuring-playbook-prometheus-grafana.md) monitoring system                                      | CNAME | `stats`                        | -        | -      | -    | `matrix.example.com`      |
-| [Go-NEB](configuring-playbook-bot-go-neb.md) bot                                                                        | CNAME | `goneb`                        | -        | -      | -    | `matrix.example.com`      |
-| [Sygnal](configuring-playbook-sygnal.md) push notification gateway                                                      | CNAME | `sygnal`                       | -        | -      | -    | `matrix.example.com`      |
-| [ntfy](configuring-playbook-ntfy.md) push notifications server                                                          | CNAME | `ntfy`                         | -        | -      | -    | `matrix.example.com`      |
-| [Etherpad](configuring-playbook-etherpad.md) collaborative text editor                                                  | CNAME | `etherpad`                     | -        | -      | -    | `matrix.example.com`      |
-| [Hydrogen](configuring-playbook-client-hydrogen.md) web client                                                          | CNAME | `hydrogen`                     | -        | -      | -    | `matrix.example.com`      |
-| [Cinny](configuring-playbook-client-cinny.md) web client                                                                | CNAME | `cinny`                        | -        | -      | -    | `matrix.example.com`      |
-| [SchildiChat](configuring-playbook-client-schildichat.md) web client                                                    | CNAME | `schildichat`                  | -        | -      | -    | `matrix.example.com`      |
-| [wsproxy](configuring-playbook-bridge-mautrix-wsproxy.md) sms bridge                                                    | CNAME | `wsproxy`                      | -        | -      | -    | `matrix.example.com`      |
-| [Buscarron](configuring-playbook-bot-buscarron.md) helpdesk bot                                                         | CNAME | `buscarron`                    | -        | -      | -    | `matrix.example.com`      |
-| [rageshake](docs/configuring-playbook-rageshake.md) bug report server                                                   | CNAME | `rageshake`                    | -        | -      | -    | `matrix.example.com`      |
-| [Postmoogle](configuring-playbook-bot-postmoogle.md)/[Email2Matrix](configuring-playbook-email2matrix.md) email bridges | MX    | `matrix`                       | 10       | 0      | -    | `matrix.example.com`      |
-| [Postmoogle](configuring-playbook-bot-postmoogle.md) email bridge                                                       | TXT   | `matrix`                       | -        | -      | -    | `v=spf1 ip4:<your-ip> -all` |
-| [Postmoogle](configuring-playbook-bot-postmoogle.md) email bridge                                                       | TXT   | `_dmarc.matrix`                | -        | -      | -    | `v=DMARC1; p=quarantine;`   |
-| [Postmoogle](configuring-playbook-bot-postmoogle.md) email bridge                                                       | TXT   | `postmoogle._domainkey.matrix` | -        | -      | -    | get it from `!pm dkim`      |
+| Used by component                                                                                                          | Type  | Host                           | Priority | Weight | Port | Target                      |
+| -------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------ | -------- | ------ | ---- | --------------------------- |
+| [ma1sd](configuring-playbook-ma1sd.md) identity server                                                                     | SRV   | `_matrix-identity._tcp`        | 10       | 0      | 443  | `matrix.example.com`      |
+| [Dimension](configuring-playbook-dimension.md) integration server                                                          | CNAME | `dimension`                    | -        | -      | -    | `matrix.example.com`      |
+| [Jitsi](configuring-playbook-jitsi.md) video-conferencing platform                                                         | CNAME | `jitsi`                        | -        | -      | -    | `matrix.example.com`      |
+| [Prometheus/Grafana](configuring-playbook-prometheus-grafana.md) monitoring system                                         | CNAME | `stats`                        | -        | -      | -    | `matrix.example.com`      |
+| [Go-NEB](configuring-playbook-bot-go-neb.md) bot                                                                           | CNAME | `goneb`                        | -        | -      | -    | `matrix.example.com`      |
+| [Sygnal](configuring-playbook-sygnal.md) push notification gateway                                                         | CNAME | `sygnal`                       | -        | -      | -    | `matrix.example.com`      |
+| [ntfy](configuring-playbook-ntfy.md) push notifications server                                                             | CNAME | `ntfy`                         | -        | -      | -    | `matrix.example.com`      |
+| [Etherpad](configuring-playbook-etherpad.md) collaborative text editor                                                     | CNAME | `etherpad`                     | -        | -      | -    | `matrix.example.com`      |
+| [Hydrogen](configuring-playbook-client-hydrogen.md) web client                                                             | CNAME | `hydrogen`                     | -        | -      | -    | `matrix.example.com`      |
+| [Cinny](configuring-playbook-client-cinny.md) web client                                                                   | CNAME | `cinny`                        | -        | -      | -    | `matrix.example.com`      |
+| [SchildiChat](configuring-playbook-client-schildichat.md) web client                                                       | CNAME | `schildichat`                  | -        | -      | -    | `matrix.example.com`      |
+| [wsproxy](configuring-playbook-bridge-mautrix-wsproxy.md) sms bridge                                                       | CNAME | `wsproxy`                      | -        | -      | -    | `matrix.example.com`      |
+| [Buscarron](configuring-playbook-bot-buscarron.md) helpdesk bot                                                            | CNAME | `buscarron`                    | -        | -      | -    | `matrix.example.com`      |
+| [rageshake](docs/configuring-playbook-rageshake.md) bug report server                                                      | CNAME | `rageshake`                    | -        | -      | -    | `matrix.example.com`      |
+| [Postmoogle](configuring-playbook-bridge-postmoogle.md)/[Email2Matrix](configuring-playbook-email2matrix.md) email bridges | MX    | `matrix`                       | 10       | 0      | -    | `matrix.example.com`      |
+| [Postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge                                                       | TXT   | `matrix`                       | -        | -      | -    | `v=spf1 ip4:<your-ip> -all` |
+| [Postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge                                                       | TXT   | `_dmarc.matrix`                | -        | -      | -    | `v=DMARC1; p=quarantine;`   |
+| [Postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge                                                       | TXT   | `postmoogle._domainkey.matrix` | -        | -      | -    | get it from `!pm dkim`      |
 
 When setting up a SRV record, if you are asked for a service and protocol instead of a hostname split the host value from the table where the period is. For example use service as `_matrix-identity` and protocol as `_tcp`.
 
@@ -97,4 +97,4 @@ When you're done with the DNS configuration and ready to proceed, continue with 
 
 ## `_dmarc`, `postmoogle._domainkey` TXT and `matrix` MX records setup
 
-To make the [postmoogle](configuring-playbook-bot-postmoogle.md) email bridge enable its email sending features, you need to configure SPF (TXT), DMARC (TXT), DKIM (TXT) and MX records
+To make the [postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge enable its email sending features, you need to configure SPF (TXT), DMARC (TXT), DKIM (TXT) and MX records
