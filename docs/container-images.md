@@ -64,7 +64,7 @@ These services are not part of our default installation, but can be enabled by [
 
 - [matrixdotorg/matrix-appservice-irc](https://hub.docker.com/r/matrixdotorg/matrix-appservice-irc) - the [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) (optional)
 
-- [halfshot/matrix-appservice-discord](https://hub.docker.com/r/halfshot/matrix-appservice-discord) - the [matrix-appservice-discord](https://github.com/Half-Shot/matrix-appservice-discord) bridge to [Discord](https://discordapp.com/) (optional)
+- [matrix-org/matrix-appservice-discord](https://ghcr.io/matrix-org/matrix-appservice-discord) - the [matrix-appservice-discord](https://github.com/matrix-org/matrix-appservice-discord) bridge to [Discord](https://discordapp.com/) (optional)
 
 - [cadair/matrix-appservice-slack](https://hub.docker.com/r/cadair/matrix-appservice-slack) - the [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) bridge to [Slack](https://slack.com/) (optional)
 
