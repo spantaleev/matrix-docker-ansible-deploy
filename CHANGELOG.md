@@ -1,3 +1,9 @@
+# 2024-10-28
+
+## (BC Break) Postmoogle's variable names need adjustments
+
+Due to the recategorization of [Postmoogle](./docs/configuring-playbook-bridge-postmoogle.md) from the bot to the bridge, its variables were renamed (`matrix_bot_postmoogle_` -> `matrix_postmoogle_`). You need to adjust your `vars.yml` configuration accordingly.
+
 # 2024-10-19
 
 ## Support for Matrix Authentication Service

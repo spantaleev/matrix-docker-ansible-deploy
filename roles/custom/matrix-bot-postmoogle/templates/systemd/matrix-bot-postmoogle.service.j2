@@ -1,11 +1,11 @@
 #jinja2: lstrip_blocks: "True"
 [Unit]
 Description=Matrix Postmoogle bot
-{% for service in matrix_bot_postmoogle_systemd_required_services_list %}
+{% for service in matrix_postmoogle_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
-{% for service in matrix_bot_postmoogle_systemd_wanted_services_list %}
+{% for service in matrix_postmoogle_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
 DefaultDependencies=no
@@ -23,22 +23,22 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--read-only \
-			--network={{ matrix_bot_postmoogle_container_network }} \
-			--env-file={{ matrix_bot_postmoogle_config_path }}/env \
-			-p {{ matrix_bot_postmoogle_smtp_host_bind_port }}:{{ matrix_bot_postmoogle_port }} \
-			{% if matrix_bot_postmoogle_ssl_path %}
-			-p {{ matrix_bot_postmoogle_submission_host_bind_port }}:{{ matrix_bot_postmoogle_tls_port }} \
+			--network={{ matrix_postmoogle_container_network }} \
+			--env-file={{ matrix_postmoogle_config_path }}/env \
+			-p {{ matrix_postmoogle_smtp_host_bind_port }}:{{ matrix_postmoogle_port }} \
+			{% if matrix_postmoogle_ssl_path %}
+			-p {{ matrix_postmoogle_submission_host_bind_port }}:{{ matrix_postmoogle_tls_port }} \
 			{% endif %}
-			--mount type=bind,src={{ matrix_bot_postmoogle_data_path }},dst=/data \
-			{% if matrix_bot_postmoogle_ssl_path %}
-			--mount type=bind,src={{ matrix_bot_postmoogle_ssl_path }},dst=/ssl \
+			--mount type=bind,src={{ matrix_postmoogle_data_path }},dst=/data \
+			{% if matrix_postmoogle_ssl_path %}
+			--mount type=bind,src={{ matrix_postmoogle_ssl_path }},dst=/ssl \
 			{% endif %}
-			{% for arg in matrix_bot_postmoogle_container_extra_arguments %}
+			{% for arg in matrix_postmoogle_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_bot_postmoogle_docker_image }}
+			{{ matrix_postmoogle_docker_image }}
 
-{% for network in matrix_bot_postmoogle_container_additional_networks %}
+{% for network in matrix_postmoogle_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-bot-postmoogle
 {% endfor %}
 

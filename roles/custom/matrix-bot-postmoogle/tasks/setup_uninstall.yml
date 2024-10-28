@@ -3,9 +3,9 @@
 - name: Check existence of matrix-postmoogle service
   ansible.builtin.stat:
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-postmoogle.service"
-  register: matrix_bot_postmoogle_service_stat
+  register: matrix_postmoogle_service_stat
 
-- when: matrix_bot_postmoogle_service_stat.stat.exists | bool
+- when: matrix_postmoogle_service_stat.stat.exists | bool
   block:
     - name: Ensure matrix-postmoogle is stopped
       ansible.builtin.service:
@@ -21,5 +21,5 @@
 
     - name: Ensure Matrix postmoogle paths don't exist
       ansible.builtin.file:
-        path: "{{ matrix_bot_postmoogle_base_path }}"
+        path: "{{ matrix_postmoogle_base_path }}"
         state: absent
