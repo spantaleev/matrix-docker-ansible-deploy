@@ -3,13 +3,13 @@
 **Note**: bridging to [Slack](https://slack.com) can also happen via the
 [matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md) and [mautrix-slack](configuring-playbook-bridge-mautrix-slack.md) bridges supported by the playbook.
 
-The playbook can install and configure [Beeper](https://www.beeper.com/)-maintained fork of [mx-puppet-slack](https://gitlab.com/beeper/mx-puppet-monorepo) for you.
+The playbook can install and configure [mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack) for you.
 
 See the project page to learn what it does and why it might be useful to you.
 
 ## Prerequisite
 
-Follow the [OAuth credentials](https://github.com/Sorunome/mx-puppet-slack#option-2-oauth) instructions to create a new Slack app, setting the redirect URL to `https://matrix.example.com/slack/oauth`.
+Follow the [OAuth credentials](https://gitlab.com/mx-puppet/slack/mx-puppet-slack#option-2-oauth) instructions to create a new Slack app, setting the redirect URL to `https://matrix.example.com/slack/oauth`.
 
 ## Adjusting the playbook configuration
 
@@ -34,7 +34,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 Once the bot is enabled you need to start a chat with `Slack Puppet Bridge` with the handle `@_slackpuppet_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-Three authentication methods are available, Legacy Token, OAuth and xoxc token. See mx-puppet-slack [documentation](https://github.com/Sorunome/mx-puppet-slack) for more information about how to configure the bridge.
+Three authentication methods are available, Legacy Token, OAuth and xoxc token. See mx-puppet-slack [documentation](https://gitlab.com/mx-puppet/slack/mx-puppet-slack) for more information about how to configure the bridge.
 
 Once logged in, send `list` to the bot user to list the available rooms.
 
